@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace Engine.Impl.UI.Controls
+﻿namespace Engine.Impl.UI.Controls
 {
   public class HideableProgressFading : HideableView
   {
@@ -13,33 +11,33 @@ namespace Engine.Impl.UI.Controls
 
     private void Update()
     {
-      if ((Object) this.progressView == (Object) null)
+      if ((Object) progressView == (Object) null)
         return;
-      float progress = this.progressView.Progress;
-      float target = this.Visible ? 1f : 0.0f;
-      if ((double) progress == (double) target)
+      float progress = progressView.Progress;
+      float target = Visible ? 1f : 0.0f;
+      if (progress == (double) target)
         return;
-      float num = (double) progress >= (double) target ? this.fadeOutTime : this.fadeInTime;
-      if ((double) num > 0.0)
-        this.progressView.Progress = Mathf.MoveTowards(progress, target, Time.deltaTime / num);
+      float num = progress >= (double) target ? fadeOutTime : fadeInTime;
+      if (num > 0.0)
+        progressView.Progress = Mathf.MoveTowards(progress, target, Time.deltaTime / num);
       else
-        this.progressView.Progress = target;
+        progressView.Progress = target;
     }
 
     public override void SkipAnimation()
     {
       base.SkipAnimation();
-      if ((Object) this.progressView == (Object) null)
+      if ((Object) progressView == (Object) null)
         return;
-      this.progressView.Progress = this.Visible ? 1f : 0.0f;
-      this.progressView.SkipAnimation();
+      progressView.Progress = Visible ? 1f : 0.0f;
+      progressView.SkipAnimation();
     }
 
     protected override void ApplyVisibility()
     {
       if (Application.isPlaying)
         return;
-      this.SkipAnimation();
+      SkipAnimation();
     }
   }
 }

@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEngine;
 
 namespace RootMotion.Dynamics
 {
@@ -10,8 +9,8 @@ namespace RootMotion.Dynamics
     public string name;
     public ConfigurableJoint joint;
     public Transform target;
-    public Muscle.Props props = new Muscle.Props();
-    public Muscle.State state = Muscle.State.Default;
+    public Props props = new Props();
+    public State state = State.Default;
     [HideInInspector]
     public int[] parentIndexes = new int[0];
     [HideInInspector]
@@ -63,7 +62,7 @@ namespace RootMotion.Dynamics
 
     public Vector3 targetAnimatedPosition { get; private set; }
 
-    public Collider[] colliders => this._colliders;
+    public Collider[] colliders => _colliders;
 
     public Vector3 targetVelocity { get; private set; }
 
@@ -77,114 +76,114 @@ namespace RootMotion.Dynamics
 
     public bool IsValid(bool log)
     {
-      if ((UnityEngine.Object) this.joint == (UnityEngine.Object) null)
+      if ((UnityEngine.Object) joint == (UnityEngine.Object) null)
       {
         if (log)
           Debug.LogError((object) "Muscle joint is null");
         return false;
       }
-      if ((UnityEngine.Object) this.target == (UnityEngine.Object) null)
+      if ((UnityEngine.Object) target == (UnityEngine.Object) null)
       {
         if (log)
-          Debug.LogError((object) ("Muscle " + this.joint.name + "target is null, please remove the muscle from PuppetMaster or disable PuppetMaster before destroying a muscle's target."));
+          Debug.LogError((object) ("Muscle " + joint.name + "target is null, please remove the muscle from PuppetMaster or disable PuppetMaster before destroying a muscle's target."));
         return false;
       }
-      if (this.props == null && log)
-        Debug.LogError((object) ("Muscle " + this.joint.name + "props is null"));
+      if (props == null && log)
+        Debug.LogError((object) ("Muscle " + joint.name + "props is null"));
       return true;
     }
 
     public virtual void Initiate(Muscle[] colleagues)
     {
-      this.initiated = false;
-      if (!this.IsValid(true))
+      initiated = false;
+      if (!IsValid(true))
         return;
-      this.name = this.joint.name;
-      this.state = Muscle.State.Default;
-      if ((UnityEngine.Object) this.joint.connectedBody != (UnityEngine.Object) null)
+      name = joint.name;
+      state = State.Default;
+      if ((UnityEngine.Object) joint.connectedBody != (UnityEngine.Object) null)
       {
         for (int index = 0; index < colleagues.Length; ++index)
         {
-          if ((UnityEngine.Object) colleagues[index].joint.GetComponent<Rigidbody>() == (UnityEngine.Object) this.joint.connectedBody)
-            this.connectedBodyTarget = colleagues[index].target;
+          if ((UnityEngine.Object) colleagues[index].joint.GetComponent<Rigidbody>() == (UnityEngine.Object) joint.connectedBody)
+            connectedBodyTarget = colleagues[index].target;
         }
       }
-      this.transform = this.joint.transform;
-      this.rigidbody = this.transform.GetComponent<Rigidbody>();
-      this.rigidbody.isKinematic = false;
-      this.UpdateColliders();
-      if (this._colliders.Length == 0)
+      transform = joint.transform;
+      rigidbody = transform.GetComponent<Rigidbody>();
+      rigidbody.isKinematic = false;
+      UpdateColliders();
+      if (_colliders.Length == 0)
       {
         Vector3 size = Vector3.one * 0.1f;
-        Renderer component = this.transform.GetComponent<Renderer>();
+        Renderer component = transform.GetComponent<Renderer>();
         if ((UnityEngine.Object) component != (UnityEngine.Object) null)
           size = component.bounds.size;
-        this.rigidbody.inertiaTensor = this.CalculateInertiaTensorCuboid(size, this.rigidbody.mass);
+        rigidbody.inertiaTensor = CalculateInertiaTensorCuboid(size, rigidbody.mass);
       }
-      this.targetParent = (UnityEngine.Object) this.connectedBodyTarget != (UnityEngine.Object) null ? this.connectedBodyTarget : this.target.parent;
-      this.defaultLocalRotation = this.localRotation;
-      Vector3 normalized1 = Vector3.Cross(this.joint.axis, this.joint.secondaryAxis).normalized;
-      Vector3 normalized2 = Vector3.Cross(normalized1, this.joint.axis).normalized;
+      targetParent = (UnityEngine.Object) connectedBodyTarget != (UnityEngine.Object) null ? connectedBodyTarget : target.parent;
+      defaultLocalRotation = localRotation;
+      Vector3 normalized1 = Vector3.Cross(joint.axis, joint.secondaryAxis).normalized;
+      Vector3 normalized2 = Vector3.Cross(normalized1, joint.axis).normalized;
       if (normalized1 == normalized2)
       {
-        Debug.LogError((object) ("Joint " + this.joint.name + " secondaryAxis is in the exact same direction as it's axis. Please make sure they are not aligned."));
+        Debug.LogError((object) ("Joint " + joint.name + " secondaryAxis is in the exact same direction as it's axis. Please make sure they are not aligned."));
       }
       else
       {
-        this.rotationRelativeToTarget = Quaternion.Inverse(this.target.rotation) * this.transform.rotation;
+        rotationRelativeToTarget = Quaternion.Inverse(target.rotation) * transform.rotation;
         Quaternion rotation = Quaternion.LookRotation(normalized1, normalized2);
-        this.toJointSpaceInverse = Quaternion.Inverse(rotation);
-        this.toJointSpaceDefault = this.defaultLocalRotation * rotation;
-        this.toParentSpace = Quaternion.Inverse(this.targetParentRotation) * this.parentRotation;
-        this.localRotationConvert = Quaternion.Inverse(this.targetLocalRotation) * this.localRotation;
-        if ((UnityEngine.Object) this.joint.connectedBody != (UnityEngine.Object) null)
+        toJointSpaceInverse = Quaternion.Inverse(rotation);
+        toJointSpaceDefault = defaultLocalRotation * rotation;
+        toParentSpace = Quaternion.Inverse(targetParentRotation) * parentRotation;
+        localRotationConvert = Quaternion.Inverse(targetLocalRotation) * localRotation;
+        if ((UnityEngine.Object) joint.connectedBody != (UnityEngine.Object) null)
         {
-          this.joint.autoConfigureConnectedAnchor = false;
-          this.connectedBodyTransform = this.joint.connectedBody.transform;
-          this.directTargetParent = (UnityEngine.Object) this.target.parent == (UnityEngine.Object) this.connectedBodyTarget;
+          joint.autoConfigureConnectedAnchor = false;
+          connectedBodyTransform = joint.connectedBody.transform;
+          directTargetParent = (UnityEngine.Object) target.parent == (UnityEngine.Object) connectedBodyTarget;
         }
-        this.angularXMotionDefault = this.joint.angularXMotion;
-        this.angularYMotionDefault = this.joint.angularYMotion;
-        this.angularZMotionDefault = this.joint.angularZMotion;
-        if ((UnityEngine.Object) this.joint.connectedBody == (UnityEngine.Object) null)
-          this.props.mapPosition = true;
-        this.targetRotationRelative = Quaternion.Inverse(this.rigidbody.rotation) * this.target.rotation;
-        if ((UnityEngine.Object) this.joint.connectedBody == (UnityEngine.Object) null)
+        angularXMotionDefault = joint.angularXMotion;
+        angularYMotionDefault = joint.angularYMotion;
+        angularZMotionDefault = joint.angularZMotion;
+        if ((UnityEngine.Object) joint.connectedBody == (UnityEngine.Object) null)
+          props.mapPosition = true;
+        targetRotationRelative = Quaternion.Inverse(rigidbody.rotation) * target.rotation;
+        if ((UnityEngine.Object) joint.connectedBody == (UnityEngine.Object) null)
         {
-          this.defaultPosition = this.transform.localPosition;
-          this.defaultRotation = this.transform.localRotation;
-        }
-        else
-        {
-          this.defaultPosition = this.joint.connectedBody.transform.InverseTransformPoint(this.transform.position);
-          this.defaultRotation = Quaternion.Inverse(this.joint.connectedBody.transform.rotation) * this.transform.rotation;
-        }
-        this.defaultTargetLocalPosition = this.target.localPosition;
-        this.defaultTargetLocalRotation = this.target.localRotation;
-        this.joint.rotationDriveMode = RotationDriveMode.Slerp;
-        if (!this.joint.gameObject.activeInHierarchy)
-        {
-          Debug.LogError((object) "Can not initiate a puppet that has deactivated muscles.", (UnityEngine.Object) this.joint.transform);
+          defaultPosition = transform.localPosition;
+          defaultRotation = transform.localRotation;
         }
         else
         {
-          this.joint.configuredInWorldSpace = false;
-          this.joint.projectionMode = JointProjectionMode.None;
-          if (this.joint.anchor != Vector3.zero)
+          defaultPosition = joint.connectedBody.transform.InverseTransformPoint(transform.position);
+          defaultRotation = Quaternion.Inverse(joint.connectedBody.transform.rotation) * transform.rotation;
+        }
+        defaultTargetLocalPosition = target.localPosition;
+        defaultTargetLocalRotation = target.localRotation;
+        joint.rotationDriveMode = RotationDriveMode.Slerp;
+        if (!joint.gameObject.activeInHierarchy)
+        {
+          Debug.LogError((object) "Can not initiate a puppet that has deactivated muscles.", (UnityEngine.Object) joint.transform);
+        }
+        else
+        {
+          joint.configuredInWorldSpace = false;
+          joint.projectionMode = JointProjectionMode.None;
+          if (joint.anchor != Vector3.zero)
           {
-            Debug.LogError((object) ("PuppetMaster joint anchors need to be Vector3.zero. Joint axis on " + this.transform.name + " is " + (object) this.joint.anchor), (UnityEngine.Object) this.transform);
+            Debug.LogError((object) ("PuppetMaster joint anchors need to be Vector3.zero. Joint axis on " + transform.name + " is " + (object) joint.anchor), (UnityEngine.Object) transform);
           }
           else
           {
-            this.targetAnimatedPosition = this.target.position;
-            this.targetAnimatedWorldRotation = this.target.rotation;
-            this.targetAnimatedRotation = this.targetLocalRotation * this.localRotationConvert;
-            this.Read();
-            this.lastReadTime = Time.time;
-            this.lastWriteTime = Time.time;
-            this.lastMappedPosition = this.target.position;
-            this.lastMappedRotation = this.target.rotation;
-            this.initiated = true;
+            targetAnimatedPosition = target.position;
+            targetAnimatedWorldRotation = target.rotation;
+            targetAnimatedRotation = targetLocalRotation * localRotationConvert;
+            Read();
+            lastReadTime = Time.time;
+            lastWriteTime = Time.time;
+            lastMappedPosition = target.position;
+            lastMappedRotation = target.rotation;
+            initiated = true;
           }
         }
       }
@@ -192,30 +191,30 @@ namespace RootMotion.Dynamics
 
     public void UpdateColliders()
     {
-      this._colliders = new Collider[0];
-      this.AddColliders(this.joint.transform, ref this._colliders, true);
-      int childCount = this.joint.transform.childCount;
+      _colliders = new Collider[0];
+      AddColliders(joint.transform, ref _colliders, true);
+      int childCount = joint.transform.childCount;
       for (int index = 0; index < childCount; ++index)
-        this.AddCompoundColliders(this.joint.transform.GetChild(index), ref this._colliders);
-      this.disabledColliders = new bool[this._colliders.Length];
+        AddCompoundColliders(joint.transform.GetChild(index), ref _colliders);
+      disabledColliders = new bool[_colliders.Length];
     }
 
     public void DisableColliders()
     {
-      for (int index = 0; index < this._colliders.Length; ++index)
+      for (int index = 0; index < _colliders.Length; ++index)
       {
-        this.disabledColliders[index] = this._colliders[index].enabled;
-        this._colliders[index].enabled = false;
+        disabledColliders[index] = _colliders[index].enabled;
+        _colliders[index].enabled = false;
       }
     }
 
     public void EnableColliders()
     {
-      for (int index = 0; index < this._colliders.Length; ++index)
+      for (int index = 0; index < _colliders.Length; ++index)
       {
-        if (this.disabledColliders[index])
-          this._colliders[index].enabled = true;
-        this.disabledColliders[index] = false;
+        if (disabledColliders[index])
+          _colliders[index].enabled = true;
+        disabledColliders[index] = false;
       }
     }
 
@@ -232,7 +231,7 @@ namespace RootMotion.Dynamics
       if (num1 == 0)
         return;
       int length = C.Length;
-      Array.Resize<Collider>(ref C, length + num1);
+      Array.Resize(ref C, length + num1);
       int num2 = 0;
       for (int index = 0; index < components.Length; ++index)
       {
@@ -249,15 +248,15 @@ namespace RootMotion.Dynamics
     {
       if ((UnityEngine.Object) t.GetComponent<Rigidbody>() != (UnityEngine.Object) null)
         return;
-      this.AddColliders(t, ref colliders, false);
+      AddColliders(t, ref colliders, false);
       int childCount = t.childCount;
       for (int index = 0; index < childCount; ++index)
-        this.AddCompoundColliders(t.GetChild(index), ref colliders);
+        AddCompoundColliders(t.GetChild(index), ref colliders);
     }
 
     public void IgnoreCollisions(Muscle m, bool ignore)
     {
-      foreach (Collider collider1 in this.colliders)
+      foreach (Collider collider1 in colliders)
       {
         foreach (Collider collider2 in m.colliders)
         {
@@ -269,78 +268,78 @@ namespace RootMotion.Dynamics
 
     public void IgnoreAngularLimits(bool ignore)
     {
-      if (!this.initiated)
+      if (!initiated)
         return;
-      this.joint.angularXMotion = ignore ? ConfigurableJointMotion.Free : this.angularXMotionDefault;
-      this.joint.angularYMotion = ignore ? ConfigurableJointMotion.Free : this.angularYMotionDefault;
-      this.joint.angularZMotion = ignore ? ConfigurableJointMotion.Free : this.angularZMotionDefault;
+      joint.angularXMotion = ignore ? ConfigurableJointMotion.Free : angularXMotionDefault;
+      joint.angularYMotion = ignore ? ConfigurableJointMotion.Free : angularYMotionDefault;
+      joint.angularZMotion = ignore ? ConfigurableJointMotion.Free : angularZMotionDefault;
     }
 
     public void FixTargetTransforms()
     {
-      if (!this.initiated)
+      if (!initiated)
         return;
-      this.target.localPosition = this.defaultTargetLocalPosition;
-      this.target.localRotation = this.defaultTargetLocalRotation;
+      target.localPosition = defaultTargetLocalPosition;
+      target.localRotation = defaultTargetLocalRotation;
     }
 
     public void Reset()
     {
-      if (!this.initiated || (UnityEngine.Object) this.joint == (UnityEngine.Object) null)
+      if (!initiated || (UnityEngine.Object) joint == (UnityEngine.Object) null)
         return;
-      if ((UnityEngine.Object) this.joint.connectedBody == (UnityEngine.Object) null)
+      if ((UnityEngine.Object) joint.connectedBody == (UnityEngine.Object) null)
       {
-        this.transform.localPosition = this.defaultPosition;
-        this.transform.localRotation = this.defaultRotation;
+        transform.localPosition = defaultPosition;
+        transform.localRotation = defaultRotation;
       }
       else
       {
-        this.transform.position = this.joint.connectedBody.transform.TransformPoint(this.defaultPosition);
-        this.transform.rotation = this.joint.connectedBody.transform.rotation * this.defaultRotation;
+        transform.position = joint.connectedBody.transform.TransformPoint(defaultPosition);
+        transform.rotation = joint.connectedBody.transform.rotation * defaultRotation;
       }
     }
 
     public void MoveToTarget()
     {
-      if (!this.initiated)
+      if (!initiated)
         return;
-      this.transform.position = this.target.position;
-      this.transform.rotation = this.target.rotation * this.rotationRelativeToTarget;
+      transform.position = target.position;
+      transform.rotation = target.rotation * rotationRelativeToTarget;
     }
 
     public void Read()
     {
-      float num = Time.time - this.lastReadTime;
-      this.lastReadTime = Time.time;
-      if ((double) num > 0.0)
+      float num = Time.time - lastReadTime;
+      lastReadTime = Time.time;
+      if (num > 0.0)
       {
-        this.targetVelocity = (this.target.position - this.targetAnimatedPosition) / num;
-        this.targetAngularVelocity = QuaTools.FromToRotation(this.targetAnimatedWorldRotation, this.target.rotation).eulerAngles / num;
+        targetVelocity = (target.position - targetAnimatedPosition) / num;
+        targetAngularVelocity = QuaTools.FromToRotation(targetAnimatedWorldRotation, target.rotation).eulerAngles / num;
       }
-      this.targetAnimatedPosition = this.target.position;
-      this.targetAnimatedWorldRotation = this.target.rotation;
-      if (!((UnityEngine.Object) this.joint.connectedBody != (UnityEngine.Object) null))
+      targetAnimatedPosition = target.position;
+      targetAnimatedWorldRotation = target.rotation;
+      if (!((UnityEngine.Object) joint.connectedBody != (UnityEngine.Object) null))
         return;
-      this.targetAnimatedRotation = this.targetLocalRotation * this.localRotationConvert;
+      targetAnimatedRotation = targetLocalRotation * localRotationConvert;
     }
 
     public void ClearVelocities()
     {
-      this.targetVelocity = Vector3.zero;
-      this.targetAngularVelocity = Vector3.zero;
-      this.mappedVelocity = Vector3.zero;
-      this.mappedAngularVelocity = Vector3.zero;
-      this.targetAnimatedPosition = this.target.position;
-      this.targetAnimatedWorldRotation = this.target.rotation;
-      this.lastMappedPosition = this.target.position;
-      this.lastMappedRotation = this.target.rotation;
+      targetVelocity = Vector3.zero;
+      targetAngularVelocity = Vector3.zero;
+      mappedVelocity = Vector3.zero;
+      mappedAngularVelocity = Vector3.zero;
+      targetAnimatedPosition = target.position;
+      targetAnimatedWorldRotation = target.rotation;
+      lastMappedPosition = target.position;
+      lastMappedRotation = target.rotation;
     }
 
     public void UpdateAnchor(bool supportTranslationAnimation)
     {
-      if ((UnityEngine.Object) this.joint.connectedBody == (UnityEngine.Object) null || (UnityEngine.Object) this.connectedBodyTarget == (UnityEngine.Object) null || this.directTargetParent && !supportTranslationAnimation)
+      if ((UnityEngine.Object) joint.connectedBody == (UnityEngine.Object) null || (UnityEngine.Object) connectedBodyTarget == (UnityEngine.Object) null || directTargetParent && !supportTranslationAnimation)
         return;
-      this.joint.connectedAnchor = (this.joint.connectedAnchor = Muscle.InverseTransformPointUnscaled(this.connectedBodyTarget.position, this.connectedBodyTarget.rotation * this.toParentSpace, this.target.position)) * (1f / this.connectedBodyTransform.lossyScale.x);
+      joint.connectedAnchor = (joint.connectedAnchor = InverseTransformPointUnscaled(connectedBodyTarget.position, connectedBodyTarget.rotation * toParentSpace, target.position)) * (1f / connectedBodyTransform.lossyScale.x);
     }
 
     public virtual void Update(
@@ -352,96 +351,96 @@ namespace RootMotion.Dynamics
       float pinDistanceFalloff,
       bool rotationTargetChanged)
     {
-      this.state.velocity = this.rigidbody.velocity;
-      this.state.angularVelocity = this.rigidbody.angularVelocity;
-      this.props.Clamp();
-      this.state.Clamp();
-      this.Pin(pinWeightMaster, pinPow, pinDistanceFalloff);
+      state.velocity = rigidbody.velocity;
+      state.angularVelocity = rigidbody.angularVelocity;
+      props.Clamp();
+      state.Clamp();
+      Pin(pinWeightMaster, pinPow, pinDistanceFalloff);
       if (!rotationTargetChanged)
         return;
-      this.MuscleRotation(muscleWeightMaster, muscleSpring, muscleDamper);
+      MuscleRotation(muscleWeightMaster, muscleSpring, muscleDamper);
     }
 
     public void Map(float mappingWeightMaster)
     {
-      float t = this.props.mappingWeight * mappingWeightMaster * this.state.mappingWeightMlp;
-      if ((double) t <= 0.0)
+      float t = props.mappingWeight * mappingWeightMaster * state.mappingWeightMlp;
+      if (t <= 0.0)
         return;
-      Vector3 position = this.transform.position;
-      Quaternion rotation = this.transform.rotation;
-      if ((double) t >= 1.0)
+      Vector3 position = transform.position;
+      Quaternion rotation = transform.rotation;
+      if (t >= 1.0)
       {
-        this.target.rotation = rotation * this.targetRotationRelative;
-        if (!this.props.mapPosition)
+        target.rotation = rotation * targetRotationRelative;
+        if (!props.mapPosition)
           return;
-        this.target.position = !((UnityEngine.Object) this.connectedBodyTransform != (UnityEngine.Object) null) ? position : this.connectedBodyTarget.TransformPoint(this.connectedBodyTransform.InverseTransformPoint(position));
+        target.position = !((UnityEngine.Object) connectedBodyTransform != (UnityEngine.Object) null) ? position : connectedBodyTarget.TransformPoint(connectedBodyTransform.InverseTransformPoint(position));
       }
       else
       {
-        this.target.rotation = Quaternion.Lerp(this.target.rotation, rotation * this.targetRotationRelative, t);
-        if (!this.props.mapPosition)
+        target.rotation = Quaternion.Lerp(target.rotation, rotation * targetRotationRelative, t);
+        if (!props.mapPosition)
           return;
-        this.target.position = !((UnityEngine.Object) this.connectedBodyTransform != (UnityEngine.Object) null) ? Vector3.Lerp(this.target.position, position, t) : Vector3.Lerp(this.target.position, this.connectedBodyTarget.TransformPoint(this.connectedBodyTransform.InverseTransformPoint(position)), t);
+        target.position = !((UnityEngine.Object) connectedBodyTransform != (UnityEngine.Object) null) ? Vector3.Lerp(target.position, position, t) : Vector3.Lerp(target.position, connectedBodyTarget.TransformPoint(connectedBodyTransform.InverseTransformPoint(position)), t);
       }
     }
 
     public void CalculateMappedVelocity()
     {
-      float num = Time.time - this.lastWriteTime;
-      if ((double) num > 0.0)
+      float num = Time.time - lastWriteTime;
+      if (num > 0.0)
       {
-        this.mappedVelocity = (this.target.position - this.lastMappedPosition) / num;
-        this.mappedAngularVelocity = QuaTools.FromToRotation(this.lastMappedRotation, this.target.rotation).eulerAngles / num;
-        this.lastWriteTime = Time.time;
+        mappedVelocity = (target.position - lastMappedPosition) / num;
+        mappedAngularVelocity = QuaTools.FromToRotation(lastMappedRotation, target.rotation).eulerAngles / num;
+        lastWriteTime = Time.time;
       }
-      this.lastMappedPosition = this.target.position;
-      this.lastMappedRotation = this.target.rotation;
+      lastMappedPosition = target.position;
+      lastMappedRotation = target.rotation;
     }
 
     private void Pin(float pinWeightMaster, float pinPow, float pinDistanceFalloff)
     {
-      this.positionOffset = this.targetAnimatedPosition - this.rigidbody.position;
-      if (float.IsNaN(this.positionOffset.x))
-        this.positionOffset = Vector3.zero;
-      float f = pinWeightMaster * this.props.pinWeight * this.state.pinWeightMlp;
-      if ((double) f <= 0.0)
+      positionOffset = targetAnimatedPosition - rigidbody.position;
+      if (float.IsNaN(positionOffset.x))
+        positionOffset = Vector3.zero;
+      float f = pinWeightMaster * props.pinWeight * state.pinWeightMlp;
+      if (f <= 0.0)
         return;
-      Vector3 vector3 = (-this.rigidbody.velocity + this.targetVelocity + this.positionOffset / Time.fixedDeltaTime) * Mathf.Pow(f, pinPow);
-      if ((double) pinDistanceFalloff > 0.0)
-        vector3 /= (float) (1.0 + (double) this.positionOffset.sqrMagnitude * (double) pinDistanceFalloff);
-      this.rigidbody.velocity += vector3;
+      Vector3 vector3 = (-rigidbody.velocity + targetVelocity + positionOffset / Time.fixedDeltaTime) * Mathf.Pow(f, pinPow);
+      if (pinDistanceFalloff > 0.0)
+        vector3 /= (float) (1.0 + (double) positionOffset.sqrMagnitude * pinDistanceFalloff);
+      rigidbody.velocity += vector3;
     }
 
     private void MuscleRotation(float muscleWeightMaster, float muscleSpring, float muscleDamper)
     {
-      float a = (float) ((double) muscleWeightMaster * (double) this.props.muscleWeight * (double) muscleSpring * (double) this.state.muscleWeightMlp * 10.0);
-      if ((UnityEngine.Object) this.joint.connectedBody == (UnityEngine.Object) null)
+      float a = (float) (muscleWeightMaster * (double) props.muscleWeight * muscleSpring * state.muscleWeightMlp * 10.0);
+      if ((UnityEngine.Object) joint.connectedBody == (UnityEngine.Object) null)
         a = 0.0f;
-      else if ((double) a > 0.0)
-        this.joint.targetRotation = this.LocalToJointSpace(this.targetAnimatedRotation);
-      float b = this.props.muscleDamper * muscleDamper * this.state.muscleDamperMlp + this.state.muscleDamperAdd;
-      if ((double) a == (double) this.lastJointDriveRotationWeight && (double) b == (double) this.lastRotationDamper)
+      else if (a > 0.0)
+        joint.targetRotation = LocalToJointSpace(targetAnimatedRotation);
+      float b = props.muscleDamper * muscleDamper * state.muscleDamperMlp + state.muscleDamperAdd;
+      if (a == (double) lastJointDriveRotationWeight && b == (double) lastRotationDamper)
         return;
-      this.lastJointDriveRotationWeight = a;
-      this.lastRotationDamper = b;
-      this.slerpDrive.positionSpring = a;
-      this.slerpDrive.maximumForce = Mathf.Max(a, b) * this.state.maxForceMlp;
-      this.slerpDrive.positionDamper = b;
-      this.joint.slerpDrive = this.slerpDrive;
+      lastJointDriveRotationWeight = a;
+      lastRotationDamper = b;
+      slerpDrive.positionSpring = a;
+      slerpDrive.maximumForce = Mathf.Max(a, b) * state.maxForceMlp;
+      slerpDrive.positionDamper = b;
+      joint.slerpDrive = slerpDrive;
     }
 
     private Quaternion localRotation
     {
-      get => Quaternion.Inverse(this.parentRotation) * this.transform.rotation;
+      get => Quaternion.Inverse(parentRotation) * transform.rotation;
     }
 
     private Quaternion parentRotation
     {
       get
       {
-        if ((UnityEngine.Object) this.joint.connectedBody != (UnityEngine.Object) null)
-          return this.joint.connectedBody.rotation;
-        return (UnityEngine.Object) this.transform.parent == (UnityEngine.Object) null ? Quaternion.identity : this.transform.parent.rotation;
+        if ((UnityEngine.Object) joint.connectedBody != (UnityEngine.Object) null)
+          return joint.connectedBody.rotation;
+        return (UnityEngine.Object) transform.parent == (UnityEngine.Object) null ? Quaternion.identity : transform.parent.rotation;
       }
     }
 
@@ -449,7 +448,7 @@ namespace RootMotion.Dynamics
     {
       get
       {
-        return (UnityEngine.Object) this.targetParent == (UnityEngine.Object) null ? Quaternion.identity : this.targetParent.rotation;
+        return (UnityEngine.Object) targetParent == (UnityEngine.Object) null ? Quaternion.identity : targetParent.rotation;
       }
     }
 
@@ -457,13 +456,13 @@ namespace RootMotion.Dynamics
     {
       get
       {
-        return Quaternion.Inverse(this.targetParentRotation * this.toParentSpace) * this.target.rotation;
+        return Quaternion.Inverse(targetParentRotation * toParentSpace) * target.rotation;
       }
     }
 
     private Quaternion LocalToJointSpace(Quaternion localRotation)
     {
-      return this.toJointSpaceInverse * Quaternion.Inverse(localRotation) * this.toJointSpaceDefault;
+      return toJointSpaceInverse * Quaternion.Inverse(localRotation) * toJointSpaceDefault;
     }
 
     private static Vector3 InverseTransformPointUnscaled(
@@ -501,7 +500,7 @@ namespace RootMotion.Dynamics
     public class Props
     {
       [Tooltip("Which body part does this muscle belong to?")]
-      public Muscle.Group group;
+      public Group group;
       [Tooltip("The weight (multiplier) of mapping this muscle's target to the muscle.")]
       [Range(0.0f, 1f)]
       public float mappingWeight = 1f;
@@ -519,10 +518,10 @@ namespace RootMotion.Dynamics
 
       public Props()
       {
-        this.mappingWeight = 1f;
-        this.pinWeight = 1f;
-        this.muscleWeight = 1f;
-        this.muscleDamper = 1f;
+        mappingWeight = 1f;
+        pinWeight = 1f;
+        muscleWeight = 1f;
+        muscleDamper = 1f;
       }
 
       public Props(
@@ -531,7 +530,7 @@ namespace RootMotion.Dynamics
         float mappingWeight,
         float muscleDamper,
         bool mapPosition,
-        Muscle.Group group = Muscle.Group.Hips)
+        Group group = Group.Hips)
       {
         this.pinWeight = pinWeight;
         this.muscleWeight = muscleWeight;
@@ -543,10 +542,10 @@ namespace RootMotion.Dynamics
 
       public void Clamp()
       {
-        this.mappingWeight = Mathf.Clamp(this.mappingWeight, 0.0f, 1f);
-        this.pinWeight = Mathf.Clamp(this.pinWeight, 0.0f, 1f);
-        this.muscleWeight = Mathf.Clamp(this.muscleWeight, 0.0f, 1f);
-        this.muscleDamper = Mathf.Clamp(this.muscleDamper, 0.0f, 1f);
+        mappingWeight = Mathf.Clamp(mappingWeight, 0.0f, 1f);
+        pinWeight = Mathf.Clamp(pinWeight, 0.0f, 1f);
+        muscleWeight = Mathf.Clamp(muscleWeight, 0.0f, 1f);
+        muscleDamper = Mathf.Clamp(muscleDamper, 0.0f, 1f);
       }
     }
 
@@ -563,12 +562,11 @@ namespace RootMotion.Dynamics
       public Vector3 velocity;
       public Vector3 angularVelocity;
 
-      public static Muscle.State Default
+      public static State Default
       {
         get
         {
-          return new Muscle.State()
-          {
+          return new State {
             mappingWeightMlp = 1f,
             pinWeightMlp = 1f,
             muscleWeightMlp = 1f,
@@ -583,11 +581,11 @@ namespace RootMotion.Dynamics
 
       public void Clamp()
       {
-        this.mappingWeightMlp = Mathf.Clamp(this.mappingWeightMlp, 0.0f, 1f);
-        this.pinWeightMlp = Mathf.Clamp(this.pinWeightMlp, 0.0f, 1f);
-        this.muscleWeightMlp = Mathf.Clamp(this.muscleWeightMlp, 0.0f, this.muscleWeightMlp);
-        this.immunity = Mathf.Clamp(this.immunity, 0.0f, 1f);
-        this.impulseMlp = Mathf.Max(this.impulseMlp, 0.0f);
+        mappingWeightMlp = Mathf.Clamp(mappingWeightMlp, 0.0f, 1f);
+        pinWeightMlp = Mathf.Clamp(pinWeightMlp, 0.0f, 1f);
+        muscleWeightMlp = Mathf.Clamp(muscleWeightMlp, 0.0f, muscleWeightMlp);
+        immunity = Mathf.Clamp(immunity, 0.0f, 1f);
+        impulseMlp = Mathf.Max(impulseMlp, 0.0f);
       }
     }
   }

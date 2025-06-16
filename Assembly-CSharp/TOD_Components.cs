@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-[ExecuteInEditMode]
+﻿[ExecuteInEditMode]
 public class TOD_Components : MonoBehaviour
 {
   public GameObject Space = (GameObject) null;
@@ -99,71 +97,71 @@ public class TOD_Components : MonoBehaviour
 
   public void Initialize()
   {
-    this.DomeTransform = this.GetComponent<Transform>();
-    this.Sky = this.GetComponent<TOD_Sky>();
-    this.Animation = this.GetComponent<TOD_Animation>();
-    this.Time = this.GetComponent<TOD_Time>();
-    if ((bool) (Object) this.Space)
+    DomeTransform = this.GetComponent<Transform>();
+    Sky = this.GetComponent<TOD_Sky>();
+    Animation = this.GetComponent<TOD_Animation>();
+    Time = this.GetComponent<TOD_Time>();
+    if ((bool) (Object) Space)
     {
-      this.SpaceTransform = this.Space.GetComponent<Transform>();
-      this.SpaceRenderer = this.Space.GetComponent<Renderer>();
-      this.SpaceMeshFilter = this.Space.GetComponent<MeshFilter>();
-      this.SpaceMaterial = this.SpaceRenderer.sharedMaterial;
+      SpaceTransform = Space.GetComponent<Transform>();
+      SpaceRenderer = Space.GetComponent<Renderer>();
+      SpaceMeshFilter = Space.GetComponent<MeshFilter>();
+      SpaceMaterial = SpaceRenderer.sharedMaterial;
     }
-    if ((bool) (Object) this.Stars)
+    if ((bool) (Object) Stars)
     {
-      this.StarTransform = this.Stars.GetComponent<Transform>();
-      this.StarRenderer = this.Stars.GetComponent<Renderer>();
-      this.StarMeshFilter = this.Stars.GetComponent<MeshFilter>();
-      this.StarMaterial = this.StarRenderer.sharedMaterial;
+      StarTransform = Stars.GetComponent<Transform>();
+      StarRenderer = Stars.GetComponent<Renderer>();
+      StarMeshFilter = Stars.GetComponent<MeshFilter>();
+      StarMaterial = StarRenderer.sharedMaterial;
     }
-    if ((bool) (Object) this.Sun)
+    if ((bool) (Object) Sun)
     {
-      this.SunTransform = this.Sun.GetComponent<Transform>();
-      this.SunRenderer = this.Sun.GetComponent<Renderer>();
-      this.SunMeshFilter = this.Sun.GetComponent<MeshFilter>();
-      this.SunMaterial = this.SunRenderer.sharedMaterial;
+      SunTransform = Sun.GetComponent<Transform>();
+      SunRenderer = Sun.GetComponent<Renderer>();
+      SunMeshFilter = Sun.GetComponent<MeshFilter>();
+      SunMaterial = SunRenderer.sharedMaterial;
     }
-    if ((bool) (Object) this.Moon)
+    if ((bool) (Object) Moon)
     {
-      this.MoonTransform = this.Moon.GetComponent<Transform>();
-      this.MoonRenderer = this.Moon.GetComponent<Renderer>();
-      this.MoonMeshFilter = this.Moon.GetComponent<MeshFilter>();
-      this.MoonMaterial = this.MoonRenderer.sharedMaterial;
+      MoonTransform = Moon.GetComponent<Transform>();
+      MoonRenderer = Moon.GetComponent<Renderer>();
+      MoonMeshFilter = Moon.GetComponent<MeshFilter>();
+      MoonMaterial = MoonRenderer.sharedMaterial;
     }
-    if ((bool) (Object) this.Atmosphere)
+    if ((bool) (Object) Atmosphere)
     {
-      this.AtmosphereTransform = this.Atmosphere.GetComponent<Transform>();
-      this.AtmosphereRenderer = this.Atmosphere.GetComponent<Renderer>();
-      this.AtmosphereMeshFilter = this.Atmosphere.GetComponent<MeshFilter>();
-      this.AtmosphereMaterial = this.AtmosphereRenderer.sharedMaterial;
+      AtmosphereTransform = Atmosphere.GetComponent<Transform>();
+      AtmosphereRenderer = Atmosphere.GetComponent<Renderer>();
+      AtmosphereMeshFilter = Atmosphere.GetComponent<MeshFilter>();
+      AtmosphereMaterial = AtmosphereRenderer.sharedMaterial;
     }
-    if ((bool) (Object) this.Clear)
+    if ((bool) (Object) Clear)
     {
-      this.ClearTransform = this.Clear.GetComponent<Transform>();
-      this.ClearRenderer = this.Clear.GetComponent<Renderer>();
-      this.ClearMeshFilter = this.Clear.GetComponent<MeshFilter>();
-      this.ClearMaterial = this.ClearRenderer.sharedMaterial;
+      ClearTransform = Clear.GetComponent<Transform>();
+      ClearRenderer = Clear.GetComponent<Renderer>();
+      ClearMeshFilter = Clear.GetComponent<MeshFilter>();
+      ClearMaterial = ClearRenderer.sharedMaterial;
     }
-    if ((bool) (Object) this.Clouds)
+    if ((bool) (Object) Clouds)
     {
-      this.CloudTransform = this.Clouds.GetComponent<Transform>();
-      this.CloudRenderer = this.Clouds.GetComponent<Renderer>();
-      this.CloudMeshFilter = this.Clouds.GetComponent<MeshFilter>();
-      this.CloudMaterial = this.CloudRenderer.sharedMaterial;
+      CloudTransform = Clouds.GetComponent<Transform>();
+      CloudRenderer = Clouds.GetComponent<Renderer>();
+      CloudMeshFilter = Clouds.GetComponent<MeshFilter>();
+      CloudMaterial = CloudRenderer.sharedMaterial;
     }
-    if ((bool) (Object) this.Billboards)
+    if ((bool) (Object) Billboards)
     {
-      this.BillboardTransform = this.Billboards.GetComponent<Transform>();
-      this.BillboardRenderers = this.Billboards.GetComponentsInChildren<Renderer>();
-      this.BillboardMeshFilters = this.Billboards.GetComponentsInChildren<MeshFilter>();
-      this.BillboardMaterials = new Material[this.BillboardRenderers.Length];
-      for (int index = 0; index < this.BillboardRenderers.Length; ++index)
-        this.BillboardMaterials[index] = this.BillboardRenderers[index].sharedMaterial;
+      BillboardTransform = Billboards.GetComponent<Transform>();
+      BillboardRenderers = Billboards.GetComponentsInChildren<Renderer>();
+      BillboardMeshFilters = Billboards.GetComponentsInChildren<MeshFilter>();
+      BillboardMaterials = new Material[BillboardRenderers.Length];
+      for (int index = 0; index < BillboardRenderers.Length; ++index)
+        BillboardMaterials[index] = BillboardRenderers[index].sharedMaterial;
     }
-    if (!(bool) (Object) this.Light)
+    if (!(bool) (Object) Light)
       return;
-    this.LightTransform = this.Light.GetComponent<Transform>();
-    this.LightSource = this.Light.GetComponent<UnityEngine.Light>();
+    LightTransform = Light.GetComponent<Transform>();
+    LightSource = Light.GetComponent<UnityEngine.Light>();
   }
 }

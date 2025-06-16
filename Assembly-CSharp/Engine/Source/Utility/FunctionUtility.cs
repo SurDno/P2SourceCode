@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace Engine.Source.Utility
+﻿namespace Engine.Source.Utility
 {
   public static class FunctionUtility
   {
@@ -9,7 +7,7 @@ namespace Engine.Source.Utility
     public static float EyeFunction(float progress, float total)
     {
       float num = total * 0.5f;
-      return (float) ((double) Mathf.Clamp01(1f - Mathf.Pow((float) ((double) progress / (double) num - 1.0), 2f)) * 0.5 + 0.5);
+      return (float) ((double) Mathf.Clamp01(1f - Mathf.Pow((float) (progress / (double) num - 1.0), 2f)) * 0.5 + 0.5);
     }
   }
 }

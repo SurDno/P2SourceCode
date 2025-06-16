@@ -1,6 +1,4 @@
-﻿using Cinemachine.Utility;
-using System;
-using UnityEngine;
+﻿using System;
 
 namespace Cinemachine
 {
@@ -11,34 +9,34 @@ namespace Cinemachine
   public class CinemachineTargetGroup : MonoBehaviour
   {
     [Tooltip("How the group's position is calculated.  Select GroupCenter for the center of the bounding box, and GroupAverage for a weighted average of the positions of the members.")]
-    public CinemachineTargetGroup.PositionMode m_PositionMode = CinemachineTargetGroup.PositionMode.GroupCenter;
+    public PositionMode m_PositionMode = PositionMode.GroupCenter;
     [Tooltip("How the group's rotation is calculated.  Select Manual to use the value in the group's transform, and GroupAverage for a weighted average of the orientations of the members.")]
-    public CinemachineTargetGroup.RotationMode m_RotationMode = CinemachineTargetGroup.RotationMode.Manual;
+    public RotationMode m_RotationMode = RotationMode.Manual;
     [Tooltip("When to update the group's transform based on the position of the group members")]
-    public CinemachineTargetGroup.UpdateMethod m_UpdateMethod = CinemachineTargetGroup.UpdateMethod.LateUpdate;
+    public UpdateMethod m_UpdateMethod = UpdateMethod.LateUpdate;
     [NoSaveDuringPlay]
     [Tooltip("The target objects, together with their weights and radii, that will contribute to the group's average position, orientation, and size.")]
-    public CinemachineTargetGroup.Target[] m_Targets = new CinemachineTargetGroup.Target[0];
-    private float m_lastRadius = 0.0f;
+    public Target[] m_Targets = new Target[0];
+    private float m_lastRadius;
 
     public Bounds BoundingBox
     {
       get
       {
         float averageWeight;
-        Vector3 averagePosition = this.CalculateAveragePosition(out averageWeight);
+        Vector3 averagePosition = CalculateAveragePosition(out averageWeight);
         bool flag = false;
-        Bounds boundingBox = new Bounds(averagePosition, new Vector3(this.m_lastRadius * 2f, this.m_lastRadius * 2f, this.m_lastRadius * 2f));
-        if ((double) averageWeight > 9.9999997473787516E-05)
+        Bounds boundingBox = new Bounds(averagePosition, new Vector3(m_lastRadius * 2f, m_lastRadius * 2f, m_lastRadius * 2f));
+        if (averageWeight > 9.9999997473787516E-05)
         {
-          for (int index = 0; index < this.m_Targets.Length; ++index)
+          for (int index = 0; index < m_Targets.Length; ++index)
           {
-            if ((UnityEngine.Object) this.m_Targets[index].target != (UnityEngine.Object) null)
+            if ((UnityEngine.Object) m_Targets[index].target != (UnityEngine.Object) null)
             {
-              float weight = this.m_Targets[index].weight;
-              float t = (double) weight >= (double) averageWeight - 9.9999997473787516E-05 ? 1f : weight / averageWeight;
-              float num = this.m_Targets[index].radius * 2f * t;
-              Bounds bounds = new Bounds(Vector3.Lerp(averagePosition, this.m_Targets[index].target.position, t), new Vector3(num, num, num));
+              float weight = m_Targets[index].weight;
+              float t = weight >= averageWeight - 9.9999997473787516E-05 ? 1f : weight / averageWeight;
+              float num = m_Targets[index].radius * 2f * t;
+              Bounds bounds = new Bounds(Vector3.Lerp(averagePosition, m_Targets[index].target.position, t), new Vector3(num, num, num));
               if (!flag)
                 boundingBox = bounds;
               else
@@ -48,7 +46,7 @@ namespace Cinemachine
           }
         }
         Vector3 extents = boundingBox.extents;
-        this.m_lastRadius = Mathf.Max(extents.x, Mathf.Max(extents.y, extents.z));
+        m_lastRadius = Mathf.Max(extents.x, Mathf.Max(extents.y, extents.z));
         return boundingBox;
       }
     }
@@ -57,9 +55,9 @@ namespace Cinemachine
     {
       get
       {
-        for (int index = 0; index < this.m_Targets.Length; ++index)
+        for (int index = 0; index < m_Targets.Length; ++index)
         {
-          if ((UnityEngine.Object) this.m_Targets[index].target != (UnityEngine.Object) null && (double) this.m_Targets[index].weight > 9.9999997473787516E-05)
+          if ((UnityEngine.Object) m_Targets[index].target != (UnityEngine.Object) null && m_Targets[index].weight > 9.9999997473787516E-05)
             return false;
         }
         return true;
@@ -70,19 +68,19 @@ namespace Cinemachine
     {
       Matrix4x4 inverse = mView.inverse;
       float averageWeight;
-      Vector3 vector3 = inverse.MultiplyPoint3x4(this.CalculateAveragePosition(out averageWeight));
+      Vector3 vector3 = inverse.MultiplyPoint3x4(CalculateAveragePosition(out averageWeight));
       bool flag = false;
-      Bounds spaceBoundingBox = new Bounds(vector3, new Vector3(this.m_lastRadius * 2f, this.m_lastRadius * 2f, this.m_lastRadius * 2f));
-      if ((double) averageWeight > 9.9999997473787516E-05)
+      Bounds spaceBoundingBox = new Bounds(vector3, new Vector3(m_lastRadius * 2f, m_lastRadius * 2f, m_lastRadius * 2f));
+      if (averageWeight > 9.9999997473787516E-05)
       {
-        for (int index = 0; index < this.m_Targets.Length; ++index)
+        for (int index = 0; index < m_Targets.Length; ++index)
         {
-          if ((UnityEngine.Object) this.m_Targets[index].target != (UnityEngine.Object) null)
+          if ((UnityEngine.Object) m_Targets[index].target != (UnityEngine.Object) null)
           {
-            float weight = this.m_Targets[index].weight;
-            float t = (double) weight >= (double) averageWeight - 9.9999997473787516E-05 ? 1f : weight / averageWeight;
-            float num = this.m_Targets[index].radius * 2f;
-            Vector4 b = (Vector4) inverse.MultiplyPoint3x4(this.m_Targets[index].target.position);
+            float weight = m_Targets[index].weight;
+            float t = weight >= averageWeight - 9.9999997473787516E-05 ? 1f : weight / averageWeight;
+            float num = m_Targets[index].radius * 2f;
+            Vector4 b = (Vector4) inverse.MultiplyPoint3x4(m_Targets[index].target.position);
             Bounds bounds = new Bounds((Vector3) (Vector4) Vector3.Lerp(vector3, (Vector3) b, t), new Vector3(num, num, num));
             if (!flag)
               spaceBoundingBox = bounds;
@@ -93,7 +91,7 @@ namespace Cinemachine
         }
       }
       Vector3 extents = spaceBoundingBox.extents;
-      this.m_lastRadius = Mathf.Max(extents.x, Mathf.Max(extents.y, extents.z));
+      m_lastRadius = Mathf.Max(extents.x, Mathf.Max(extents.y, extents.z));
       return spaceBoundingBox;
     }
 
@@ -102,35 +100,35 @@ namespace Cinemachine
       Vector3 zero = Vector3.zero;
       float num1 = 0.0f;
       int num2 = 0;
-      for (int index = 0; index < this.m_Targets.Length; ++index)
+      for (int index = 0; index < m_Targets.Length; ++index)
       {
-        if ((UnityEngine.Object) this.m_Targets[index].target != (UnityEngine.Object) null && (double) this.m_Targets[index].weight > 9.9999997473787516E-05)
+        if ((UnityEngine.Object) m_Targets[index].target != (UnityEngine.Object) null && m_Targets[index].weight > 9.9999997473787516E-05)
         {
           ++num2;
-          num1 += this.m_Targets[index].weight;
-          zero += this.m_Targets[index].target.position * this.m_Targets[index].weight;
+          num1 += m_Targets[index].weight;
+          zero += m_Targets[index].target.position * m_Targets[index].weight;
         }
       }
-      if ((double) num1 > 9.9999997473787516E-05)
+      if (num1 > 9.9999997473787516E-05)
         zero /= num1;
       if (num2 == 0)
       {
         averageWeight = 0.0f;
         return this.transform.position;
       }
-      averageWeight = num1 / (float) num2;
+      averageWeight = num1 / num2;
       return zero;
     }
 
     private Quaternion CalculateAverageOrientation()
     {
       Quaternion q = Quaternion.identity;
-      for (int index = 0; index < this.m_Targets.Length; ++index)
+      for (int index = 0; index < m_Targets.Length; ++index)
       {
-        if ((UnityEngine.Object) this.m_Targets[index].target != (UnityEngine.Object) null)
+        if ((UnityEngine.Object) m_Targets[index].target != (UnityEngine.Object) null)
         {
-          float weight = this.m_Targets[index].weight;
-          Quaternion rotation = this.m_Targets[index].target.rotation;
+          float weight = m_Targets[index].weight;
+          Quaternion rotation = m_Targets[index].target.rotation;
           q = new Quaternion(q.x + rotation.x * weight, q.y + rotation.y * weight, q.z + rotation.z * weight, q.w + rotation.w * weight);
         }
       }
@@ -139,53 +137,53 @@ namespace Cinemachine
 
     private void OnValidate()
     {
-      for (int index = 0; index < this.m_Targets.Length; ++index)
+      for (int index = 0; index < m_Targets.Length; ++index)
       {
-        if ((double) this.m_Targets[index].weight < 0.0)
-          this.m_Targets[index].weight = 0.0f;
-        if ((double) this.m_Targets[index].radius < 0.0)
-          this.m_Targets[index].radius = 0.0f;
+        if (m_Targets[index].weight < 0.0)
+          m_Targets[index].weight = 0.0f;
+        if (m_Targets[index].radius < 0.0)
+          m_Targets[index].radius = 0.0f;
       }
     }
 
     private void FixedUpdate()
     {
-      if (this.m_UpdateMethod != CinemachineTargetGroup.UpdateMethod.FixedUpdate)
+      if (m_UpdateMethod != UpdateMethod.FixedUpdate)
         return;
-      this.UpdateTransform();
+      UpdateTransform();
     }
 
     private void Update()
     {
-      if (Application.isPlaying && this.m_UpdateMethod != CinemachineTargetGroup.UpdateMethod.Update)
+      if (Application.isPlaying && m_UpdateMethod != UpdateMethod.Update)
         return;
-      this.UpdateTransform();
+      UpdateTransform();
     }
 
     private void LateUpdate()
     {
-      if (this.m_UpdateMethod != CinemachineTargetGroup.UpdateMethod.LateUpdate)
+      if (m_UpdateMethod != UpdateMethod.LateUpdate)
         return;
-      this.UpdateTransform();
+      UpdateTransform();
     }
 
     private void UpdateTransform()
     {
-      if (this.IsEmpty)
+      if (IsEmpty)
         return;
-      switch (this.m_PositionMode)
+      switch (m_PositionMode)
       {
-        case CinemachineTargetGroup.PositionMode.GroupCenter:
-          this.transform.position = this.BoundingBox.center;
+        case PositionMode.GroupCenter:
+          this.transform.position = BoundingBox.center;
           break;
-        case CinemachineTargetGroup.PositionMode.GroupAverage:
-          this.transform.position = this.CalculateAveragePosition(out float _);
+        case PositionMode.GroupAverage:
+          this.transform.position = CalculateAveragePosition(out float _);
           break;
       }
-      switch (this.m_RotationMode)
+      switch (m_RotationMode)
       {
-        case CinemachineTargetGroup.RotationMode.GroupAverage:
-          this.transform.rotation = this.CalculateAverageOrientation();
+        case RotationMode.GroupAverage:
+          this.transform.rotation = CalculateAverageOrientation();
           break;
       }
     }

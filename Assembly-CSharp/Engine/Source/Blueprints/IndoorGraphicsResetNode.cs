@@ -10,14 +10,14 @@ namespace Engine.Source.Blueprints
     protected override void RegisterPorts()
     {
       base.RegisterPorts();
-      FlowOutput output = this.AddFlowOutput("Out");
-      this.AddFlowInput("In", (FlowHandler) (() =>
+      FlowOutput output = AddFlowOutput("Out");
+      AddFlowInput("In", () =>
       {
         PlayerIndoorCheck.ResetOverride();
         PlayerIsolatedIndoorCheck.ResetOverride();
         CutsceneIndoorCheck.Set(false);
         output.Call();
-      }));
+      });
     }
   }
 }

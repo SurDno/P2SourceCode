@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace Engine.Behaviours.Unity.Mecanim
+﻿namespace Engine.Behaviours.Unity.Mecanim
 {
   public class AnimatorBehaviorBase45_PrimaryIdle : StateMachineBehaviour
   {
@@ -9,7 +7,7 @@ namespace Engine.Behaviours.Unity.Mecanim
       AnimatorStateInfo stateInfo,
       int layerIndex)
     {
-      bool flag = (double) Random.value < (double) AnimatorState45.GetAnimatorState(animator).PrimaryIdleProbability;
+      bool flag = (double) Random.value < AnimatorState45.GetAnimatorState(animator).PrimaryIdleProbability;
       animator.SetBool("Movable.Idle.PrimaryIdle", flag);
     }
   }

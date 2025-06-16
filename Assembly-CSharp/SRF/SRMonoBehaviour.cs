@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using UnityEngine;
 
 namespace SRF
 {
@@ -14,9 +13,9 @@ namespace SRF
     {
       [DebuggerStepThrough, DebuggerNonUserCode] get
       {
-        if ((Object) this._transform == (Object) null)
-          this._transform = base.transform;
-        return this._transform;
+        if ((Object) _transform == (Object) null)
+          _transform = base.transform;
+        return _transform;
       }
     }
 
@@ -24,9 +23,9 @@ namespace SRF
     {
       [DebuggerStepThrough, DebuggerNonUserCode] get
       {
-        if ((Object) this._collider == (Object) null)
-          this._collider = this.GetComponent<Collider>();
-        return this._collider;
+        if ((Object) _collider == (Object) null)
+          _collider = this.GetComponent<Collider>();
+        return _collider;
       }
     }
 
@@ -34,9 +33,9 @@ namespace SRF
     {
       [DebuggerStepThrough, DebuggerNonUserCode] get
       {
-        if ((Object) this._rigidBody == (Object) null)
-          this._rigidBody = this.GetComponent<Rigidbody>();
-        return this._rigidBody;
+        if ((Object) _rigidBody == (Object) null)
+          _rigidBody = this.GetComponent<Rigidbody>();
+        return _rigidBody;
       }
     }
 
@@ -44,19 +43,19 @@ namespace SRF
     {
       [DebuggerStepThrough, DebuggerNonUserCode] get
       {
-        if ((Object) this._gameObject == (Object) null)
-          this._gameObject = base.gameObject;
-        return this._gameObject;
+        if ((Object) _gameObject == (Object) null)
+          _gameObject = base.gameObject;
+        return _gameObject;
       }
     }
 
-    public new Transform transform => this.CachedTransform;
+    public Transform transform => CachedTransform;
 
-    public Collider collider => this.CachedCollider;
+    public Collider collider => CachedCollider;
 
-    public Rigidbody rigidbody => this.CachedRigidBody;
+    public Rigidbody rigidbody => CachedRigidBody;
 
-    public new GameObject gameObject => this.CachedGameObject;
+    public GameObject gameObject => CachedGameObject;
 
     [DebuggerNonUserCode]
     [DebuggerStepThrough]
@@ -77,7 +76,7 @@ namespace SRF
     [DebuggerStepThrough]
     protected void EditorAssertNotNull(object value, string fieldName = null)
     {
-      this.AssertNotNull(value, fieldName);
+      AssertNotNull(value, fieldName);
     }
 
     [Conditional("UNITY_EDITOR")]
@@ -85,7 +84,7 @@ namespace SRF
     [DebuggerStepThrough]
     protected void EditorAssert(bool condition, string message = null)
     {
-      this.Assert(condition, message);
+      Assert(condition, message);
     }
   }
 }

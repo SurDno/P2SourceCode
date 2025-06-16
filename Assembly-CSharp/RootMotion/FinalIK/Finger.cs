@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEngine;
 
 namespace RootMotion.FinalIK
 {
@@ -13,7 +12,7 @@ namespace RootMotion.FinalIK
     [Range(0.0f, 1f)]
     public float rotationWeight = 1f;
     [Tooltip("Rotational degrees of freedom. When set to 'One' the fingers will be able to be rotated only around a single axis. When 3, all 3 axes are free to rotate around.")]
-    public Finger.DOF rotationDOF;
+    public DOF rotationDOF;
     [Tooltip("The first bone of the finger.")]
     public Transform bone1;
     [Tooltip("The second bone of the finger.")]
@@ -35,19 +34,19 @@ namespace RootMotion.FinalIK
 
     public Vector3 IKPosition
     {
-      get => this.solver.IKPosition;
-      set => this.solver.IKPosition = value;
+      get => solver.IKPosition;
+      set => solver.IKPosition = value;
     }
 
     public Quaternion IKRotation
     {
-      get => this.solver.IKRotation;
-      set => this.solver.IKRotation = value;
+      get => solver.IKRotation;
+      set => solver.IKRotation = value;
     }
 
     public bool IsValid(ref string errorMessage)
     {
-      if (!((UnityEngine.Object) this.bone1 == (UnityEngine.Object) null) && !((UnityEngine.Object) this.bone2 == (UnityEngine.Object) null) && !((UnityEngine.Object) this.tip == (UnityEngine.Object) null))
+      if (!((UnityEngine.Object) bone1 == (UnityEngine.Object) null) && !((UnityEngine.Object) bone2 == (UnityEngine.Object) null) && !((UnityEngine.Object) tip == (UnityEngine.Object) null))
         return true;
       errorMessage = "One of the bones in the Finger Rig is null, can not initiate solvers.";
       return false;
@@ -55,67 +54,67 @@ namespace RootMotion.FinalIK
 
     public void Initiate(Transform hand, int index)
     {
-      this.initiated = false;
+      initiated = false;
       string empty = string.Empty;
-      if (!this.IsValid(ref empty))
+      if (!IsValid(ref empty))
       {
         Warning.Log(empty, hand);
       }
       else
       {
-        this.solver = new IKSolverLimb();
-        this.solver.IKPositionWeight = this.weight;
-        this.solver.bendModifier = IKSolverLimb.BendModifier.Target;
-        this.solver.bendModifierWeight = 1f;
-        Vector3 vector3 = Vector3.Cross(this.bone2.position - this.bone1.position, this.tip.position - this.bone1.position);
-        this.bone1Axis = Quaternion.Inverse(this.bone1.rotation) * vector3;
-        this.tipAxis = Quaternion.Inverse(this.tip.rotation) * vector3;
-        this.IKPosition = this.tip.position;
-        this.IKRotation = this.tip.rotation;
-        if ((UnityEngine.Object) this.bone3 != (UnityEngine.Object) null)
+        solver = new IKSolverLimb();
+        solver.IKPositionWeight = weight;
+        solver.bendModifier = IKSolverLimb.BendModifier.Target;
+        solver.bendModifierWeight = 1f;
+        Vector3 vector3 = Vector3.Cross(bone2.position - bone1.position, tip.position - bone1.position);
+        bone1Axis = Quaternion.Inverse(bone1.rotation) * vector3;
+        tipAxis = Quaternion.Inverse(tip.rotation) * vector3;
+        IKPosition = tip.position;
+        IKRotation = tip.rotation;
+        if ((UnityEngine.Object) bone3 != (UnityEngine.Object) null)
         {
-          this.bone3RelativeToTarget = Quaternion.Inverse(this.IKRotation) * this.bone3.rotation;
-          this.bone3DefaultLocalPosition = this.bone3.localPosition;
-          this.bone3DefaultLocalRotation = this.bone3.localRotation;
+          bone3RelativeToTarget = Quaternion.Inverse(IKRotation) * bone3.rotation;
+          bone3DefaultLocalPosition = bone3.localPosition;
+          bone3DefaultLocalRotation = bone3.localRotation;
         }
-        this.solver.SetChain(this.bone1, this.bone2, this.tip, hand);
-        this.solver.Initiate(hand);
-        this.initiated = true;
+        solver.SetChain(bone1, bone2, tip, hand);
+        solver.Initiate(hand);
+        initiated = true;
       }
     }
 
     public void FixTransforms()
     {
-      if (!this.initiated)
+      if (!initiated)
         return;
-      this.solver.FixTransforms();
-      if (!((UnityEngine.Object) this.bone3 != (UnityEngine.Object) null))
+      solver.FixTransforms();
+      if (!((UnityEngine.Object) bone3 != (UnityEngine.Object) null))
         return;
-      this.bone3.localPosition = this.bone3DefaultLocalPosition;
-      this.bone3.localRotation = this.bone3DefaultLocalRotation;
+      bone3.localPosition = bone3DefaultLocalPosition;
+      bone3.localRotation = bone3DefaultLocalRotation;
     }
 
     public void Update(float masterWeight)
     {
-      if (!this.initiated)
+      if (!initiated)
         return;
-      float num = this.weight * masterWeight;
-      if ((double) num <= 0.0)
+      float num = weight * masterWeight;
+      if (num <= 0.0)
         return;
-      this.solver.target = this.target;
-      if ((UnityEngine.Object) this.target != (UnityEngine.Object) null)
+      solver.target = target;
+      if ((UnityEngine.Object) target != (UnityEngine.Object) null)
       {
-        this.IKPosition = this.target.position;
-        this.IKRotation = this.target.rotation;
+        IKPosition = target.position;
+        IKRotation = target.rotation;
       }
-      if (this.rotationDOF == Finger.DOF.One)
-        this.IKRotation = Quaternion.FromToRotation(this.IKRotation * this.tipAxis, this.bone1.rotation * this.bone1Axis) * this.IKRotation;
-      if ((UnityEngine.Object) this.bone3 != (UnityEngine.Object) null)
-        this.bone3.rotation = (double) num * (double) this.rotationWeight < 1.0 ? Quaternion.Lerp(this.bone3.rotation, this.IKRotation * this.bone3RelativeToTarget, num * this.rotationWeight) : this.IKRotation * this.bone3RelativeToTarget;
-      this.solver.IKPositionWeight = num;
-      this.solver.IKRotationWeight = this.rotationWeight;
-      this.solver.bendModifierWeight = this.rotationWeight;
-      this.solver.Update();
+      if (rotationDOF == DOF.One)
+        IKRotation = Quaternion.FromToRotation(IKRotation * tipAxis, bone1.rotation * bone1Axis) * IKRotation;
+      if ((UnityEngine.Object) bone3 != (UnityEngine.Object) null)
+        bone3.rotation = num * (double) rotationWeight < 1.0 ? Quaternion.Lerp(bone3.rotation, IKRotation * bone3RelativeToTarget, num * rotationWeight) : IKRotation * bone3RelativeToTarget;
+      solver.IKPositionWeight = num;
+      solver.IKRotationWeight = rotationWeight;
+      solver.bendModifierWeight = rotationWeight;
+      solver.Update();
     }
 
     [Serializable]

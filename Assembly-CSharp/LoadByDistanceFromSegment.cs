@@ -5,8 +5,6 @@ using Engine.Source.Components;
 using Engine.Source.Services;
 using Inspectors;
 using Scripts.Behaviours.LoadControllers;
-using System;
-using UnityEngine;
 
 public class LoadByDistanceFromSegment : BaseLoadByDistance, IEntityAttachable, IUpdatable
 {
@@ -27,84 +25,84 @@ public class LoadByDistanceFromSegment : BaseLoadByDistance, IEntityAttachable, 
   [Inspected]
   private bool insideIndoor;
 
-  public override float LoadDistance => this.loadDistance;
+  public override float LoadDistance => loadDistance;
 
-  public override float UnloadDistance => this.unloadDistance;
+  public override float UnloadDistance => unloadDistance;
 
-  public float LoadIndoorDistance => this.loadDistance;
+  public float LoadIndoorDistance => loadDistance;
 
   private bool IsLoadCondition(Vector3 position)
   {
-    return (double) this.DistanceToSegment(position - this.transform.position, this.segmentStart, this.segmentEnd) < (this.insideIndoor ? (double) this.loadIndoorDistance : (double) this.loadDistance);
+    return DistanceToSegment(position - this.transform.position, segmentStart, segmentEnd) < (insideIndoor ? loadIndoorDistance : (double) loadDistance);
   }
 
   private bool IsUnloadCondition(Vector3 position)
   {
-    return (double) this.DistanceToSegment(position - this.transform.position, this.segmentStart, this.segmentEnd) > (double) this.unloadDistance;
+    return DistanceToSegment(position - this.transform.position, segmentStart, segmentEnd) > (double) unloadDistance;
   }
 
   private void CheckAndFix()
   {
-    if ((double) this.loadIndoorDistance > (double) this.loadDistance)
+    if (loadIndoorDistance > (double) loadDistance)
     {
       Debug.LogError((object) "loadIndoorDistance > loadDistance", (UnityEngine.Object) this.gameObject);
-      this.loadIndoorDistance = this.loadDistance;
+      loadIndoorDistance = loadDistance;
     }
-    if ((double) this.loadDistance <= (double) this.unloadDistance)
+    if (loadDistance <= (double) unloadDistance)
       return;
     Debug.LogError((object) "loadDistance > unloadDistance", (UnityEngine.Object) this.gameObject);
-    this.unloadDistance = this.loadDistance + 5f;
+    unloadDistance = loadDistance + 5f;
   }
 
   public void Attach(IEntity owner)
   {
-    this.CheckAndFix();
-    this.model = owner.GetComponent<StaticModelComponent>();
-    if (this.model != null)
-      this.model.NeedLoad = this.on;
-    ServiceLocator.GetService<InsideIndoorListener>().OnInsideIndoorChanged += new Action<bool>(this.OnInsideIndoorChanged);
-    this.OnInsideIndoorChanged(false);
-    InstanceByRequest<UpdateService>.Instance.RegionDistanceUpdater.AddUpdatable((IUpdatable) this);
+    CheckAndFix();
+    model = owner.GetComponent<StaticModelComponent>();
+    if (model != null)
+      model.NeedLoad = on;
+    ServiceLocator.GetService<InsideIndoorListener>().OnInsideIndoorChanged += OnInsideIndoorChanged;
+    OnInsideIndoorChanged(false);
+    InstanceByRequest<UpdateService>.Instance.RegionDistanceUpdater.AddUpdatable(this);
   }
 
   public void Detach()
   {
-    InstanceByRequest<UpdateService>.Instance.RegionDistanceUpdater.RemoveUpdatable((IUpdatable) this);
-    this.model = (StaticModelComponent) null;
-    ServiceLocator.GetService<InsideIndoorListener>().OnInsideIndoorChanged -= new Action<bool>(this.OnInsideIndoorChanged);
+    InstanceByRequest<UpdateService>.Instance.RegionDistanceUpdater.RemoveUpdatable(this);
+    model = null;
+    ServiceLocator.GetService<InsideIndoorListener>().OnInsideIndoorChanged -= OnInsideIndoorChanged;
   }
 
   public void ComputeUpdate()
   {
-    if (this.model == null)
+    if (model == null)
       return;
     IEntity player = ServiceLocator.GetService<ISimulation>().Player;
     if (player == null || !player.IsEnabledInHierarchy || player.GetComponent<NavigationComponent>().WaitTeleport)
       return;
     Vector3 position = ((IEntityView) player).Position;
-    bool flag = this.on;
-    if (this.on)
+    bool flag = on;
+    if (on)
     {
-      if (this.IsUnloadCondition(position))
+      if (IsUnloadCondition(position))
         flag = false;
     }
-    else if (this.IsLoadCondition(position))
+    else if (IsLoadCondition(position))
       flag = true;
-    if (flag == this.on)
+    if (flag == on)
       return;
-    this.on = flag;
-    this.model.NeedLoad = this.on;
+    on = flag;
+    model.NeedLoad = on;
   }
 
   private void OnInsideIndoorChanged(bool inside)
   {
-    this.insideIndoor = false;
+    insideIndoor = false;
     IEntity player = ServiceLocator.GetService<ISimulation>().Player;
     if (player == null)
       return;
     LocationItemComponent component = player.GetComponent<LocationItemComponent>();
     if (component != null)
-      this.insideIndoor = component.IsIndoor;
+      insideIndoor = component.IsIndoor;
     else
       Debug.LogError((object) ("LocationItemComponent not found, owner : " + player.GetInfo()));
   }
@@ -114,7 +112,7 @@ public class LoadByDistanceFromSegment : BaseLoadByDistance, IEntityAttachable, 
     Vector3 vector3 = s1 - s0;
     float num1 = Vector3.SqrMagnitude(vector3);
     float num2 = 0.0f;
-    if ((double) num1 > 1.0 / 1000.0)
+    if (num1 > 1.0 / 1000.0)
       num2 = Mathf.Clamp01(Vector3.Dot(p - s0, vector3) / num1);
     return (s0 + (s1 - s0) * num2 - p).magnitude;
   }
@@ -122,30 +120,30 @@ public class LoadByDistanceFromSegment : BaseLoadByDistance, IEntityAttachable, 
   private void OnDrawGizmosSelected()
   {
     Gizmos.color = Color.white;
-    Gizmos.DrawLine(this.transform.position + this.segmentStart, this.transform.position + this.segmentEnd);
+    Gizmos.DrawLine(this.transform.position + segmentStart, this.transform.position + segmentEnd);
     Gizmos.color = Color.red;
-    this.DrawGizmoCapsule(this.loadDistance);
+    DrawGizmoCapsule(loadDistance);
     Gizmos.color = Color.gray;
-    this.DrawGizmoCapsule(this.loadIndoorDistance);
+    DrawGizmoCapsule(loadIndoorDistance);
     Gizmos.color = Color.blue;
-    this.DrawGizmoCapsule(this.unloadDistance);
+    DrawGizmoCapsule(unloadDistance);
   }
 
   private void DrawGizmoCapsule(float radius)
   {
-    Vector3 normalized = (this.segmentEnd - this.segmentStart).normalized;
+    Vector3 normalized = (segmentEnd - segmentStart).normalized;
     Vector3 vector3_1 = Vector3.Cross(Vector3.up, normalized);
     Vector3 position = this.transform.position;
     for (int index = 0; index < 20; ++index)
     {
-      float f1 = 0.157079637f * (float) index;
-      float f2 = 0.157079637f * (float) (index + 1);
+      float f1 = 0.157079637f * index;
+      float f2 = 0.157079637f * (index + 1);
       Vector3 vector3_2 = radius * (vector3_1 * Mathf.Cos(f1) + normalized * Mathf.Sin(f1));
       Vector3 vector3_3 = radius * (vector3_1 * Mathf.Cos(f2) + normalized * Mathf.Sin(f2));
-      Gizmos.DrawLine(position + this.segmentStart - vector3_2, position + this.segmentStart - vector3_3);
-      Gizmos.DrawLine(position + this.segmentEnd + vector3_2, position + this.segmentEnd + vector3_3);
+      Gizmos.DrawLine(position + segmentStart - vector3_2, position + segmentStart - vector3_3);
+      Gizmos.DrawLine(position + segmentEnd + vector3_2, position + segmentEnd + vector3_3);
     }
-    Gizmos.DrawLine(position + this.segmentStart + vector3_1 * radius, position + this.segmentEnd + vector3_1 * radius);
-    Gizmos.DrawLine(position + this.segmentStart - vector3_1 * radius, position + this.segmentEnd - vector3_1 * radius);
+    Gizmos.DrawLine(position + segmentStart + vector3_1 * radius, position + segmentEnd + vector3_1 * radius);
+    Gizmos.DrawLine(position + segmentStart - vector3_1 * radius, position + segmentEnd - vector3_1 * radius);
   }
 }

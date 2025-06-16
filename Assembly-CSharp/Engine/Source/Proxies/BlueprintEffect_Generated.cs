@@ -1,12 +1,11 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons.Cloneable;
 using Engine.Common.Commons.Converters;
 using Engine.Source.Commons.Effects;
 using Engine.Source.Effects;
 using Scripts.Tools.Serializations.Converters;
-using System;
-using UnityEngine;
 
 namespace Engine.Source.Proxies
 {
@@ -21,30 +20,30 @@ namespace Engine.Source.Proxies
     public object Clone()
     {
       BlueprintEffect_Generated instance = Activator.CreateInstance<BlueprintEffect_Generated>();
-      this.CopyTo((object) instance);
-      return (object) instance;
+      CopyTo(instance);
+      return instance;
     }
 
     public void CopyTo(object target2)
     {
       BlueprintEffect_Generated blueprintEffectGenerated = (BlueprintEffect_Generated) target2;
-      blueprintEffectGenerated.name = this.name;
-      blueprintEffectGenerated.queue = this.queue;
-      blueprintEffectGenerated.blueprint = this.blueprint;
+      blueprintEffectGenerated.name = name;
+      blueprintEffectGenerated.queue = queue;
+      blueprintEffectGenerated.blueprint = blueprint;
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.Write(writer, "Name", this.name);
-      DefaultDataWriteUtility.WriteEnum<ParameterEffectQueueEnum>(writer, "Queue", this.queue);
-      UnityDataWriteUtility.Write<GameObject>(writer, "Blueprint", this.blueprint);
+      DefaultDataWriteUtility.Write(writer, "Name", name);
+      DefaultDataWriteUtility.WriteEnum(writer, "Queue", queue);
+      UnityDataWriteUtility.Write(writer, "Blueprint", blueprint);
     }
 
-    public void DataRead(IDataReader reader, System.Type type)
+    public void DataRead(IDataReader reader, Type type)
     {
-      this.name = DefaultDataReadUtility.Read(reader, "Name", this.name);
-      this.queue = DefaultDataReadUtility.ReadEnum<ParameterEffectQueueEnum>(reader, "Queue");
-      this.blueprint = UnityDataReadUtility.Read<GameObject>(reader, "Blueprint", this.blueprint);
+      name = DefaultDataReadUtility.Read(reader, "Name", name);
+      queue = DefaultDataReadUtility.ReadEnum<ParameterEffectQueueEnum>(reader, "Queue");
+      blueprint = UnityDataReadUtility.Read(reader, "Blueprint", blueprint);
     }
   }
 }

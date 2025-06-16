@@ -1,4 +1,7 @@
-﻿using Cofe.Loggers;
+﻿using System;
+using System.Collections.Generic;
+using System.Xml;
+using Cofe.Loggers;
 using Cofe.Serializations.Data;
 using Engine.Common.Services;
 using PLVirtualMachine.Base;
@@ -9,9 +12,6 @@ using PLVirtualMachine.Common.EngineAPI.VMECS;
 using PLVirtualMachine.Dynamic;
 using PLVirtualMachine.GameLogic;
 using PLVirtualMachine.Objects;
-using System;
-using System.Collections.Generic;
-using System.Xml;
 
 namespace PLVirtualMachine.Time
 {
@@ -19,182 +19,182 @@ namespace PLVirtualMachine.Time
   {
     private static Dictionary<string, GameTimeContext> gameTimeContexts = new Dictionary<string, GameTimeContext>();
     private static GameTimeContext currentContext;
-    private static bool isGameEventsInited = false;
-    private static VMCharacter mainContextPlayingCharacter = (VMCharacter) null;
+    private static bool isGameEventsInited;
+    private static VMCharacter mainContextPlayingCharacter;
     private static VMEntity currentPlayCharacterEntity;
 
     public static void Init()
     {
-      GameTimeManager.currentContext = new GameTimeContext();
-      GameTimeManager.AddGameTimeContext(GameTimeManager.currentContext);
+      currentContext = new GameTimeContext();
+      AddGameTimeContext(currentContext);
     }
 
     public static void Start()
     {
-      foreach (KeyValuePair<string, GameTimeContext> gameTimeContext in GameTimeManager.gameTimeContexts)
+      foreach (KeyValuePair<string, GameTimeContext> gameTimeContext in gameTimeContexts)
       {
         if (gameTimeContext.Value.IsMain)
-          GameTimeManager.SetCurrentGameTimeContext(gameTimeContext.Key);
+          SetCurrentGameTimeContext(gameTimeContext.Key);
       }
     }
 
     public static void Update(TimeSpan delta)
     {
-      if (!GameTimeManager.isGameEventsInited)
-        GameTimeManager.InitGameEvents();
-      if (GameTimeManager.currentContext == null)
+      if (!isGameEventsInited)
+        InitGameEvents();
+      if (currentContext == null)
       {
-        Logger.AddError(string.Format("Current game time context not defined!!!"));
-        GameTimeManager.SetDefaultContext();
+        Logger.AddError("Current game time context not defined!!!");
+        SetDefaultContext();
       }
-      if (GameTimeManager.currentContext == null)
+      if (currentContext == null)
         return;
       double totalSeconds = delta.TotalSeconds;
       if (totalSeconds < 0.0)
       {
-        Logger.AddError(string.Format("Negative timespan interval {0} received at update from engine", (object) delta));
+        Logger.AddError(string.Format("Negative timespan interval {0} received at update from engine", delta));
       }
       else
       {
         GameTimeContext.UpdateMode = true;
-        GameTimeManager.currentContext.Update(totalSeconds);
+        currentContext.Update(totalSeconds);
         GameTimeContext.UpdateMode = false;
-        GameTimeManager.UpdateGameTime();
+        UpdateGameTime();
       }
     }
 
     public static void ClearContexts()
     {
-      foreach (KeyValuePair<string, GameTimeContext> gameTimeContext in GameTimeManager.gameTimeContexts)
+      foreach (KeyValuePair<string, GameTimeContext> gameTimeContext in gameTimeContexts)
         gameTimeContext.Value.Clear();
-      GameTimeManager.currentContext = (GameTimeContext) null;
+      currentContext = null;
     }
 
     public static void Clear()
     {
-      GameTimeManager.ClearContexts();
-      GameTimeManager.gameTimeContexts.Clear();
-      GameTimeManager.isGameEventsInited = false;
-      GameTimeManager.mainContextPlayingCharacter = (VMCharacter) null;
-      GameTimeManager.currentPlayCharacterEntity = (VMEntity) null;
+      ClearContexts();
+      gameTimeContexts.Clear();
+      isGameEventsInited = false;
+      mainContextPlayingCharacter = null;
+      currentPlayCharacterEntity = null;
       GameTimer.CurrTimerSerialNumber = 0;
     }
 
     public static VMCharacter MainContextPlayingCharacter
     {
-      get => GameTimeManager.mainContextPlayingCharacter;
+      get => mainContextPlayingCharacter;
     }
 
     public static Dictionary<string, GameTimeContext> GameTimeContexts
     {
-      get => GameTimeManager.gameTimeContexts;
+      get => gameTimeContexts;
     }
 
-    public static GameTimeContext CurrentGameTimeContext => GameTimeManager.currentContext;
+    public static GameTimeContext CurrentGameTimeContext => currentContext;
 
     public static void SetCurrentGameTimeContext(string sContextName)
     {
-      if (!GameTimeManager.gameTimeContexts.ContainsKey(sContextName))
+      if (!gameTimeContexts.ContainsKey(sContextName))
       {
-        Logger.AddError(string.Format("Game time context with name {0} not found", (object) sContextName));
+        Logger.AddError(string.Format("Game time context with name {0} not found", sContextName));
       }
       else
       {
-        GameTimeManager.SynhronizeSolarTime();
-        GameTimeManager.currentContext = GameTimeManager.gameTimeContexts[sContextName];
-        VMEntity playCharacterEntity = GameTimeManager.GetContextPlayCharacterEntity(GameTimeManager.currentContext);
+        SynhronizeSolarTime();
+        currentContext = gameTimeContexts[sContextName];
+        VMEntity playCharacterEntity = GetContextPlayCharacterEntity(currentContext);
         if (playCharacterEntity != null)
-          GameTimeManager.MakePlayCharacterEntity(playCharacterEntity);
+          MakePlayCharacterEntity(playCharacterEntity);
         else
-          Logger.AddWarning(string.Format("Play character entity for game context {0} not defined", (object) sContextName));
-        GameTimeManager.SetEngineSolarTime();
-        GameTimeManager.SetEngineGameTime();
+          Logger.AddWarning(string.Format("Play character entity for game context {0} not defined", sContextName));
+        SetEngineSolarTime();
+        SetEngineGameTime();
         VMGameComponent.Instance.OnGameModeChange();
       }
     }
 
     public static void SetCurrentGameTime(GameTime newTime, bool bForceEvents = true)
     {
-      GameTimeManager.DoSetCurrentGameTime(newTime, bForceEvents);
-      GameTimeManager.SetEngineGameTime();
+      DoSetCurrentGameTime(newTime, bForceEvents);
+      SetEngineGameTime();
     }
 
     public static void AddTime(GameTime addingTime)
     {
-      GameTimeManager.DoAddGameTime(addingTime);
+      DoAddGameTime(addingTime);
       GameTime gameTime = new GameTime((ulong) Math.Round(ServiceLocator.GetService<ITimeService>().SolarTime.TotalSeconds));
-      GameTimeManager.currentContext.SolarTime = new GameTime(gameTime.TotalSeconds + addingTime.TotalSeconds);
-      GameTimeManager.SetEngineGameTime();
-      GameTimeManager.SetEngineSolarTime();
+      currentContext.SolarTime = new GameTime(gameTime.TotalSeconds + addingTime.TotalSeconds);
+      SetEngineGameTime();
+      SetEngineSolarTime();
     }
 
     public static GameTime GetCurrentGameTime()
     {
-      if (GameTimeManager.currentContext == null)
+      if (currentContext == null)
       {
-        Logger.AddError(string.Format("Cannot get current game time at {0}: Current game time context not defined!!!", (object) DynamicFSM.CurrentStateInfo));
-        GameTimeManager.SetDefaultContext();
+        Logger.AddError(string.Format("Cannot get current game time at {0}: Current game time context not defined!!!", DynamicFSM.CurrentStateInfo));
+        SetDefaultContext();
       }
-      return GameTimeManager.currentContext != null ? GameTimeManager.currentContext.GameTime : new GameTime();
+      return currentContext != null ? currentContext.GameTime : new GameTime();
     }
 
     public static GameTime GetCurrentGameDayTime()
     {
-      if (GameTimeManager.currentContext == null)
+      if (currentContext == null)
       {
-        Logger.AddError(string.Format("Cannot get current game time at {0}: Current game time context not defined!!!", (object) DynamicFSM.CurrentStateInfo));
-        GameTimeManager.SetDefaultContext();
+        Logger.AddError(string.Format("Cannot get current game time at {0}: Current game time context not defined!!!", DynamicFSM.CurrentStateInfo));
+        SetDefaultContext();
       }
-      return GameTimeManager.currentContext != null ? GameTimeManager.currentContext.GameDayTime : new GameTime();
+      return currentContext != null ? currentContext.GameDayTime : new GameTime();
     }
 
     public static void SetCurrentGameTimeSpeed(float fTimeSpeedFactor)
     {
-      if (GameTimeManager.currentContext == null)
+      if (currentContext == null)
       {
-        Logger.AddError(string.Format("Cannot set current game time speed at {0}: Current game time context not defined!!!", (object) DynamicFSM.CurrentStateInfo));
-        GameTimeManager.SetDefaultContext();
+        Logger.AddError(string.Format("Cannot set current game time speed at {0}: Current game time context not defined!!!", DynamicFSM.CurrentStateInfo));
+        SetDefaultContext();
       }
-      GameTimeManager.currentContext.GameTimeSpeed = fTimeSpeedFactor;
-      GameTimeManager.SetEngineGameTime();
+      currentContext.GameTimeSpeed = fTimeSpeedFactor;
+      SetEngineGameTime();
     }
 
     public static void SetCurrentSolarTime(GameTime solarTime)
     {
-      if (GameTimeManager.currentContext == null)
+      if (currentContext == null)
       {
-        Logger.AddError(string.Format("Cannot set current solar time at {0}: Current game time context not defined!!!", (object) DynamicFSM.CurrentStateInfo));
-        GameTimeManager.SetDefaultContext();
+        Logger.AddError(string.Format("Cannot set current solar time at {0}: Current game time context not defined!!!", DynamicFSM.CurrentStateInfo));
+        SetDefaultContext();
       }
-      GameTimeManager.currentContext.SolarTime = solarTime;
-      GameTimeManager.SetEngineSolarTime();
+      currentContext.SolarTime = solarTime;
+      SetEngineSolarTime();
     }
 
     public static void SetCurrentSolarTimeSpeed(float fTimeSpeedFactor)
     {
-      if (GameTimeManager.currentContext == null)
+      if (currentContext == null)
       {
-        Logger.AddError(string.Format("Cannot set current solar time speed at {0}: Current game time context not defined!!!", (object) DynamicFSM.CurrentStateInfo));
-        GameTimeManager.SetDefaultContext();
+        Logger.AddError(string.Format("Cannot set current solar time speed at {0}: Current game time context not defined!!!", DynamicFSM.CurrentStateInfo));
+        SetDefaultContext();
       }
-      GameTimeManager.SynhronizeSolarTime();
-      GameTimeManager.currentContext.SolarTimeSpeed = fTimeSpeedFactor;
-      GameTimeManager.SetEngineSolarTime();
+      SynhronizeSolarTime();
+      currentContext.SolarTimeSpeed = fTimeSpeedFactor;
+      SetEngineSolarTime();
     }
 
     public static void MakePlayCharacterEntity(VMEntity playCharacterEntity)
     {
-      if (GameTimeManager.currentPlayCharacterEntity != null)
+      if (currentPlayCharacterEntity != null)
       {
-        if (playCharacterEntity == GameTimeManager.currentPlayCharacterEntity)
+        if (playCharacterEntity == currentPlayCharacterEntity)
           return;
-        GameTimeManager.currentPlayCharacterEntity.Enabled = false;
+        currentPlayCharacterEntity.Enabled = false;
       }
-      GameTimeManager.currentPlayCharacterEntity = playCharacterEntity;
-      GameTimeManager.currentPlayCharacterEntity.Enabled = true;
+      currentPlayCharacterEntity = playCharacterEntity;
+      currentPlayCharacterEntity.Enabled = true;
     }
 
-    public static VMEntity CurrentPlayCharacterEntity => GameTimeManager.currentPlayCharacterEntity;
+    public static VMEntity CurrentPlayCharacterEntity => currentPlayCharacterEntity;
 
     public static void CreateGameTimeContext(IGameMode gameMode)
     {
@@ -204,7 +204,7 @@ namespace PLVirtualMachine.Time
         if (gameMode.PlayCharacterVariable != null)
         {
           CommonVariable characterVariable = gameMode.PlayCharacterVariable;
-          characterVariable.Bind((IContext) IStaticDataContainer.StaticDataContainer.GameRoot, new VMType(typeof (IObjRef)));
+          characterVariable.Bind(IStaticDataContainer.StaticDataContainer.GameRoot, new VMType(typeof (IObjRef)));
           if (characterVariable.IsBinded)
           {
             if (characterVariable.Variable != null && typeof (IObjRef).IsAssignableFrom(characterVariable.Variable.GetType()))
@@ -215,24 +215,24 @@ namespace PLVirtualMachine.Time
                 if (variable.Object != null)
                 {
                   if (typeof (VMCharacter) == variable.Object.GetType())
-                    GameTimeManager.mainContextPlayingCharacter = (VMCharacter) variable.Object;
+                    mainContextPlayingCharacter = (VMCharacter) variable.Object;
                   else
-                    Logger.AddError(string.Format("Main game context play character must be static character object !!!"));
+                    Logger.AddError("Main game context play character must be static character object !!!");
                 }
                 else
-                  Logger.AddError(string.Format("Main game context play character must be static character object !!!"));
+                  Logger.AddError("Main game context play character must be static character object !!!");
               }
               else
-                Logger.AddError(string.Format("Main game context play character must be static character object !!!"));
+                Logger.AddError("Main game context play character must be static character object !!!");
             }
           }
           else
-            Logger.AddError(string.Format("Main game context play character must be static character object !!!"));
+            Logger.AddError("Main game context play character must be static character object !!!");
         }
         else
-          Logger.AddError(string.Format("Main game context play character not defined!!!"));
+          Logger.AddError("Main game context play character not defined!!!");
       }
-      GameTimeManager.AddGameTimeContext(context);
+      AddGameTimeContext(context);
     }
 
     public static GameTimer StartTimer(
@@ -245,51 +245,51 @@ namespace PLVirtualMachine.Time
     {
       if (sContextName == "")
       {
-        if (GameTimeManager.currentContext != null)
-          return GameTimeManager.currentContext.StartTimer(timerType, initiatorFSMGuid, stateId, targetTime, bIsRepeat);
-        Logger.AddError(string.Format("Cannot create timer at {0}: Current game time context not defined!!!", (object) DynamicFSM.CurrentStateInfo));
-        GameTimeManager.SetDefaultContext();
-        return (GameTimer) null;
+        if (currentContext != null)
+          return currentContext.StartTimer(timerType, initiatorFSMGuid, stateId, targetTime, bIsRepeat);
+        Logger.AddError(string.Format("Cannot create timer at {0}: Current game time context not defined!!!", DynamicFSM.CurrentStateInfo));
+        SetDefaultContext();
+        return null;
       }
-      if (GameTimeManager.gameTimeContexts.ContainsKey(sContextName))
-        return GameTimeManager.gameTimeContexts[sContextName].StartTimer(timerType, initiatorFSMGuid, stateId, targetTime, bIsRepeat);
-      Logger.AddError(string.Format("Cannot create timer at {0}: Game time context with name {1} not found", (object) DynamicFSM.CurrentStateInfo, (object) sContextName));
-      return GameTimeManager.StartTimer(timerType, initiatorFSMGuid, stateId, targetTime, bIsRepeat, "");
+      if (gameTimeContexts.ContainsKey(sContextName))
+        return gameTimeContexts[sContextName].StartTimer(timerType, initiatorFSMGuid, stateId, targetTime, bIsRepeat);
+      Logger.AddError(string.Format("Cannot create timer at {0}: Game time context with name {1} not found", DynamicFSM.CurrentStateInfo, sContextName));
+      return StartTimer(timerType, initiatorFSMGuid, stateId, targetTime, bIsRepeat, "");
     }
 
     public static void StopTimer(ulong timerId, string sContextName)
     {
       if (sContextName == "")
       {
-        if (GameTimeManager.currentContext == null)
-          Logger.AddError(string.Format("Cannot create timer at {0}: Current game time context not defined!!!", (object) DynamicFSM.CurrentStateInfo));
+        if (currentContext == null)
+          Logger.AddError(string.Format("Cannot create timer at {0}: Current game time context not defined!!!", DynamicFSM.CurrentStateInfo));
         else
-          GameTimeManager.currentContext.StopTimer(timerId);
+          currentContext.StopTimer(timerId);
       }
-      else if (GameTimeManager.gameTimeContexts.ContainsKey(sContextName))
-        GameTimeManager.gameTimeContexts[sContextName].StopTimer(timerId);
+      else if (gameTimeContexts.ContainsKey(sContextName))
+        gameTimeContexts[sContextName].StopTimer(timerId);
       else
-        Logger.AddError(string.Format("Cannot stop timer at {0}: Game time context with name {1} not found", (object) DynamicFSM.CurrentStateInfo, (object) sContextName));
+        Logger.AddError(string.Format("Cannot stop timer at {0}: Game time context with name {1} not found", DynamicFSM.CurrentStateInfo, sContextName));
     }
 
     public static void StateSave(IDataWriter writer)
     {
-      writer.Begin(nameof (GameTimeManager), (Type) null, true);
+      writer.Begin(nameof (GameTimeManager), null, true);
       string str = "";
-      if (GameTimeManager.currentContext != null)
+      if (currentContext != null)
       {
-        GameTimeManager.SynhronizeSolarTime();
-        str = GameTimeManager.currentContext.Name;
+        SynhronizeSolarTime();
+        str = currentContext.Name;
       }
       SaveManagerUtility.Save(writer, "CurrentContextName", str);
-      SaveManagerUtility.SaveDynamicSerializableList<GameTimeContext>(writer, "GameTimeContextList", (IEnumerable<GameTimeContext>) GameTimeManager.gameTimeContexts.Values);
+      SaveManagerUtility.SaveDynamicSerializableList(writer, "GameTimeContextList", gameTimeContexts.Values);
       writer.End(nameof (GameTimeManager), true);
     }
 
     public static void LoadFromXML(XmlElement xmlNode)
     {
-      GameTimeManager.currentContext = (GameTimeContext) null;
-      GameTimeManager.currentPlayCharacterEntity = (VMEntity) null;
+      currentContext = null;
+      currentPlayCharacterEntity = null;
       string str = "";
       for (int i1 = 0; i1 < xmlNode.ChildNodes.Count; ++i1)
       {
@@ -302,160 +302,160 @@ namespace PLVirtualMachine.Time
           {
             XmlElement childNode2 = (XmlElement) childNode1.ChildNodes[i2];
             string innerText = childNode2.FirstChild.InnerText;
-            if (GameTimeManager.gameTimeContexts.ContainsKey(innerText))
+            if (gameTimeContexts.ContainsKey(innerText))
             {
-              GameTimeManager.gameTimeContexts[innerText].LoadFromXML(childNode2);
+              gameTimeContexts[innerText].LoadFromXML(childNode2);
             }
             else
             {
-              Logger.AddError(string.Format("SaveLoad warning: Unknown game time context with name {0} loaded", (object) innerText));
-              GameTimeManager.gameTimeContexts.Add(innerText, new GameTimeContext());
-              GameTimeManager.gameTimeContexts[innerText].LoadFromXML(childNode1);
+              Logger.AddError(string.Format("SaveLoad warning: Unknown game time context with name {0} loaded", innerText));
+              gameTimeContexts.Add(innerText, new GameTimeContext());
+              gameTimeContexts[innerText].LoadFromXML(childNode1);
             }
           }
         }
       }
       if ("" != str)
       {
-        if (GameTimeManager.gameTimeContexts.ContainsKey(str))
-          GameTimeManager.SetCurrentGameTimeContext(str);
+        if (gameTimeContexts.ContainsKey(str))
+          SetCurrentGameTimeContext(str);
         else
-          Logger.AddError(string.Format("SaveLoad error: loading current game time context name {0} not registered", (object) str));
+          Logger.AddError(string.Format("SaveLoad error: loading current game time context name {0} not registered", str));
       }
       else
-        Logger.AddError(string.Format("SaveLoad error: current game time context name not loaded"));
-      if (GameTimeManager.currentContext != null)
+        Logger.AddError("SaveLoad error: current game time context name not loaded");
+      if (currentContext != null)
         return;
-      GameTimeManager.SetDefaultContext();
+      SetDefaultContext();
     }
 
     private static void AddGameTimeContext(GameTimeContext context)
     {
-      if (GameTimeManager.gameTimeContexts.ContainsKey(context.Name) && GameTimeManager.currentContext != null && GameTimeManager.currentContext.Name == context.Name)
-        GameTimeManager.currentContext = context;
-      GameTimeManager.gameTimeContexts[context.Name] = context;
+      if (gameTimeContexts.ContainsKey(context.Name) && currentContext != null && currentContext.Name == context.Name)
+        currentContext = context;
+      gameTimeContexts[context.Name] = context;
     }
 
     private static void SetDefaultContext()
     {
-      foreach (KeyValuePair<string, GameTimeContext> gameTimeContext in GameTimeManager.gameTimeContexts)
+      foreach (KeyValuePair<string, GameTimeContext> gameTimeContext in gameTimeContexts)
       {
         if (gameTimeContext.Value.IsMain)
         {
-          GameTimeManager.currentContext = gameTimeContext.Value;
+          currentContext = gameTimeContext.Value;
           return;
         }
       }
-      Logger.AddError(string.Format("Fatal game time context system error: main game time context not found!!!"));
+      Logger.AddError("Fatal game time context system error: main game time context not found!!!");
     }
 
     private static void DoSetCurrentGameTime(GameTime newTime, bool bForceEvents)
     {
-      if (GameTimeManager.currentContext == null)
+      if (currentContext == null)
       {
-        Logger.AddError(string.Format("Cannot create timer at {0}: Current game time context not defined!!!", (object) DynamicFSM.CurrentStateInfo));
-        GameTimeManager.SetDefaultContext();
+        Logger.AddError(string.Format("Cannot create timer at {0}: Current game time context not defined!!!", DynamicFSM.CurrentStateInfo));
+        SetDefaultContext();
       }
-      if (GameTimeManager.currentContext == null)
+      if (currentContext == null)
         return;
-      double fDtime = newTime.TotalValue - GameTimeManager.currentContext.GameTime.TotalValue;
+      double fDtime = newTime.TotalValue - currentContext.GameTime.TotalValue;
       if (fDtime > 0.0)
       {
-        GameTimeManager.currentContext.Update(fDtime, bForceEvents);
+        currentContext.Update(fDtime, bForceEvents);
       }
       else
       {
-        GameTimeManager.currentContext.RevertEventsCutTime(newTime);
-        GameTimeManager.currentContext.GameTime = newTime;
+        currentContext.RevertEventsCutTime(newTime);
+        currentContext.GameTime = newTime;
       }
     }
 
     private static void DoAddGameTime(GameTime addingTime)
     {
-      if (GameTimeManager.currentContext == null)
+      if (currentContext == null)
       {
-        Logger.AddError(string.Format("Cannot create timer at {0}: Current game time context not defined!!!", (object) DynamicFSM.CurrentStateInfo));
-        GameTimeManager.SetDefaultContext();
+        Logger.AddError(string.Format("Cannot create timer at {0}: Current game time context not defined!!!", DynamicFSM.CurrentStateInfo));
+        SetDefaultContext();
       }
-      if (GameTimeManager.currentContext == null)
+      if (currentContext == null)
         return;
       double totalValue = addingTime.TotalValue;
       if (totalValue <= 0.0)
         return;
-      GameTimeManager.currentContext.Update(totalValue);
+      currentContext.Update(totalValue);
     }
 
     private static void UpdateGameTime()
     {
-      TimeSpan timeSpan = new TimeSpan((int) GameTimeManager.currentContext.GameTime.Days, (int) (ushort) GameTimeManager.currentContext.GameTime.Hours, (int) (ushort) GameTimeManager.currentContext.GameTime.Minutes, (int) (ushort) GameTimeManager.currentContext.GameTime.Seconds);
-      if (GameTimeManager.currentContext == null)
+      TimeSpan timeSpan = new TimeSpan(currentContext.GameTime.Days, currentContext.GameTime.Hours, currentContext.GameTime.Minutes, currentContext.GameTime.Seconds);
+      if (currentContext == null)
         return;
       ServiceLocator.GetService<ITimeService>().GameTime = timeSpan;
     }
 
     private static void SetEngineSolarTime()
     {
-      if (GameTimeManager.currentContext == null)
+      if (currentContext == null)
         return;
       ITimeService service = ServiceLocator.GetService<ITimeService>();
-      service.SolarTime = new TimeSpan((int) GameTimeManager.currentContext.SolarTime.Days, (int) GameTimeManager.currentContext.SolarTime.Hours, (int) GameTimeManager.currentContext.SolarTime.Minutes, (int) GameTimeManager.currentContext.SolarTime.Seconds);
-      service.SolarTimeFactor = GameTimeManager.currentContext.SolarTimeSpeed;
+      service.SolarTime = new TimeSpan(currentContext.SolarTime.Days, currentContext.SolarTime.Hours, currentContext.SolarTime.Minutes, currentContext.SolarTime.Seconds);
+      service.SolarTimeFactor = currentContext.SolarTimeSpeed;
     }
 
     private static void SetEngineGameTime()
     {
-      if (GameTimeManager.currentContext == null)
+      if (currentContext == null)
         return;
-      TimeSpan timeSpan = new TimeSpan((int) GameTimeManager.currentContext.GameTime.Days, (int) (ushort) GameTimeManager.currentContext.GameTime.Hours, (int) (ushort) GameTimeManager.currentContext.GameTime.Minutes, (int) (ushort) GameTimeManager.currentContext.GameTime.Seconds);
+      TimeSpan timeSpan = new TimeSpan(currentContext.GameTime.Days, currentContext.GameTime.Hours, currentContext.GameTime.Minutes, currentContext.GameTime.Seconds);
       ITimeService service = ServiceLocator.GetService<ITimeService>();
       service.GameTime = timeSpan;
-      service.GameTimeFactor = GameTimeManager.currentContext.GameTimeSpeed;
+      service.GameTimeFactor = currentContext.GameTimeSpeed;
     }
 
     private static void InitGameEvents()
     {
-      ServiceLocator.GetService<ITimeService>().GameTimeChangedEvent += new Action<TimeSpan>(GameTimeManager.OnChangeGameTime);
-      GameTimeManager.isGameEventsInited = true;
+      ServiceLocator.GetService<ITimeService>().GameTimeChangedEvent += OnChangeGameTime;
+      isGameEventsInited = true;
     }
 
     private static void OnChangeGameTime(TimeSpan newTime)
     {
       GameTime newTime1 = new GameTime((ulong) Math.Round(newTime.TotalSeconds));
-      GameTime currentGameTime = GameTimeManager.GetCurrentGameTime();
+      GameTime currentGameTime = GetCurrentGameTime();
       if (newTime1.TotalSeconds < currentGameTime.TotalSeconds)
         return;
-      GameTimeManager.DoSetCurrentGameTime(newTime1, true);
-      GameTimeManager.SetEngineGameTime();
-      GameTimeManager.SynhronizeSolarTime();
+      DoSetCurrentGameTime(newTime1, true);
+      SetEngineGameTime();
+      SynhronizeSolarTime();
     }
 
     private static void SynhronizeSolarTime()
     {
       ITimeService service = ServiceLocator.GetService<ITimeService>();
-      if (GameTimeManager.currentContext == null)
+      if (currentContext == null)
         return;
       GameTime gameTime = new GameTime((ulong) Math.Round(service.SolarTime.TotalSeconds));
-      GameTimeManager.currentContext.SolarTime = gameTime;
+      currentContext.SolarTime = gameTime;
     }
 
     private static VMEntity GetContextPlayCharacterEntity(GameTimeContext context)
     {
       CommonVariable characterVariable = context.StaticGameMode.PlayCharacterVariable;
       if (characterVariable == null)
-        return GameTimeManager.currentPlayCharacterEntity;
+        return currentPlayCharacterEntity;
       VMType vmType = new VMType(typeof (IObjRef));
-      characterVariable.Bind((IContext) IStaticDataContainer.StaticDataContainer.GameRoot, vmType);
+      characterVariable.Bind(IStaticDataContainer.StaticDataContainer.GameRoot, vmType);
       if (VirtualMachine.Instance.GameRootEntity != null)
       {
-        IDynamicGameObjectContext activeContext = (IDynamicGameObjectContext) VirtualMachine.Instance.GameRootEntity.GetFSM();
+        IDynamicGameObjectContext activeContext = VirtualMachine.Instance.GameRootEntity.GetFSM();
         if (VMEngineAPIManager.LastMethodExecInitiator != null)
           activeContext = VMEngineAPIManager.LastMethodExecInitiator;
         IObjRef dynamicVariableValue = (IObjRef) ((VMVariableService) IVariableService.Instance).GetDynamicVariableValue(characterVariable, vmType, activeContext);
         if (dynamicVariableValue != null)
           return dynamicVariableValue.EngineInstance != null ? (VMEntity) dynamicVariableValue.EngineInstance : WorldEntityUtility.GetDynamicObjectEntityByEngineGuid(dynamicVariableValue.EngineGuid);
-        Logger.AddError(string.Format("Cannot get game time context player entity: entity by variable {0} not found at {1}", (object) characterVariable.ToString(), (object) DynamicFSM.CurrentStateInfo));
+        Logger.AddError(string.Format("Cannot get game time context player entity: entity by variable {0} not found at {1}", characterVariable, DynamicFSM.CurrentStateInfo));
       }
-      return (VMEntity) null;
+      return null;
     }
   }
 }

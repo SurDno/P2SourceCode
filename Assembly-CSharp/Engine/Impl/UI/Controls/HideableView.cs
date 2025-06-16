@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEngine;
 
 namespace Engine.Impl.UI.Controls
 {
@@ -12,30 +11,30 @@ namespace Engine.Impl.UI.Controls
 
     public event Action OnSkipAnimationEvent;
 
-    public event HideableView.VisibilityChanged OnVisibilityChanged;
+    public event VisibilityChanged OnVisibilityChanged;
 
     public bool Visible
     {
-      get => this.visible;
+      get => visible;
       set
       {
-        if (this.visible == value)
+        if (visible == value)
           return;
-        this.visible = value;
-        this.ApplyVisibility();
-        Action onChangeEvent = this.OnChangeEvent;
+        visible = value;
+        ApplyVisibility();
+        Action onChangeEvent = OnChangeEvent;
         if (onChangeEvent != null)
           onChangeEvent();
-        HideableView.VisibilityChanged visibilityChanged = this.OnVisibilityChanged;
+        VisibilityChanged visibilityChanged = OnVisibilityChanged;
         if (visibilityChanged == null)
           return;
-        visibilityChanged(this.visible, this);
+        visibilityChanged(visible, this);
       }
     }
 
     public override void SkipAnimation()
     {
-      Action skipAnimationEvent = this.OnSkipAnimationEvent;
+      Action skipAnimationEvent = OnSkipAnimationEvent;
       if (skipAnimationEvent == null)
         return;
       skipAnimationEvent();
@@ -43,11 +42,11 @@ namespace Engine.Impl.UI.Controls
 
     public override float FloatValue
     {
-      get => Convert.ToSingle(this.Visible);
-      set => this.Visible = Convert.ToBoolean(value);
+      get => Convert.ToSingle(Visible);
+      set => Visible = Convert.ToBoolean(value);
     }
 
-    protected virtual void OnValidate() => this.ApplyVisibility();
+    protected virtual void OnValidate() => ApplyVisibility();
 
     protected abstract void ApplyVisibility();
 

@@ -12,14 +12,14 @@ namespace FlowCanvas.Nodes
 
     protected override void RegisterPorts()
     {
-      this.AddValueOutput<string>("Tag", (ValueHandler<string>) (() => this.value));
+      AddValueOutput("Tag", () => value);
     }
 
     public override void SetVariable(object o)
     {
       if (!(o is string))
         return;
-      this.value = (string) o;
+      value = (string) o;
     }
   }
 }

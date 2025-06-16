@@ -1,13 +1,11 @@
-﻿using Cofe.Utility;
+﻿using System;
+using System.Collections.Generic;
+using Cofe.Utility;
 using Engine.Common;
 using Engine.Source.Commons;
 using Engine.Source.Services.Inputs;
 using Engine.Source.Settings.External;
 using Inspectors;
-using System;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.EventSystems;
 
 namespace InputServices
 {
@@ -18,7 +16,7 @@ namespace InputServices
     private Dictionary<string, DateTime> buttons = new Dictionary<string, DateTime>();
     private HashSet<string> buttonsPressed = new HashSet<string>();
     private HashSet<string> holdButtonsPressed = new HashSet<string>();
-    private JoystickLayout layout = (JoystickLayout) null;
+    private JoystickLayout layout;
     private TimeSpan holdDelay;
     private string currentJoystick;
     private float delayTime = 2f;
@@ -29,12 +27,12 @@ namespace InputServices
     {
       get
       {
-        if (InputService.instance == null)
+        if (instance == null)
         {
-          InputService.instance = new InputService();
-          InputService.instance.Initialise();
+          instance = new InputService();
+          instance.Initialise();
         }
-        return InputService.instance;
+        return instance;
       }
     }
 
@@ -42,7 +40,7 @@ namespace InputServices
 
     public void ChangeGameSession()
     {
-      Action sessionStateChanged = this.OnSessionStateChanged;
+      Action sessionStateChanged = OnSessionStateChanged;
       if (sessionStateChanged == null)
         return;
       sessionStateChanged();
@@ -53,12 +51,12 @@ namespace InputServices
     [Inspected]
     public bool JoystickUsed
     {
-      get => this._joystickUsed;
+      get => _joystickUsed;
       set
       {
-        if (this._joystickUsed == value)
+        if (_joystickUsed == value)
           return;
-        this._joystickUsed = value;
+        _joystickUsed = value;
         ICursorController instance = CursorService.Instance;
         Vector2 position = instance.Position;
         Vector2 vector2 = (value ? Vector2.zero : new Vector2((float) Screen.width, (float) Screen.height) * 0.5f) - position;
@@ -67,14 +65,14 @@ namespace InputServices
         currentInputModule.DeactivateModule();
         currentInputModule.ActivateModule();
         instance.Visible = !value && instance.Free;
-        Action<bool> joystickUsedChanged = this.onJoystickUsedChanged;
+        Action<bool> joystickUsedChanged = onJoystickUsedChanged;
         if (joystickUsedChanged != null)
           joystickUsedChanged(value);
       }
     }
 
     [Inspected]
-    public bool JoystickPresent => this.GetJoystickName() != "";
+    public bool JoystickPresent => GetJoystickName() != "";
 
     private string GetJoystickName()
     {
@@ -87,20 +85,20 @@ namespace InputServices
     }
 
     [Inspected]
-    public JoystickLayout Layout => this.layout;
+    public JoystickLayout Layout => layout;
 
     public float GetAxis(string name)
     {
       AxisBind axisBind;
-      if (this.axes.TryGetValue(name, out axisBind))
+      if (axes.TryGetValue(name, out axisBind))
       {
         float num = Input.GetAxisRaw(axisBind.Axis);
         if (axisBind.Normalize)
-          num = (float) ((double) num * 0.5 + 0.5);
-        if ((double) num > (double) axisBind.Dead)
-          return (float) (((double) num - (double) axisBind.Dead) / (1.0 - (double) axisBind.Dead));
-        if ((double) num < -(double) axisBind.Dead)
-          return (float) (((double) num + (double) axisBind.Dead) / (1.0 - (double) axisBind.Dead));
+          num = (float) (num * 0.5 + 0.5);
+        if (num > (double) axisBind.Dead)
+          return (float) ((num - (double) axisBind.Dead) / (1.0 - axisBind.Dead));
+        if (num < -(double) axisBind.Dead)
+          return (float) ((num + (double) axisBind.Dead) / (1.0 - axisBind.Dead));
       }
       return 0.0f;
     }
@@ -108,100 +106,100 @@ namespace InputServices
     public bool GetButton(string name, bool hold)
     {
       DateTime dateTime;
-      if (!this.buttons.TryGetValue(name, out dateTime))
+      if (!buttons.TryGetValue(name, out dateTime))
         return false;
       return !hold || dateTime == DateTime.MinValue;
     }
 
     public bool GetButtonDown(string name, bool hold)
     {
-      return hold ? this.holdButtonsPressed.Contains(name) : this.buttonsPressed.Contains(name);
+      return hold ? holdButtonsPressed.Contains(name) : buttonsPressed.Contains(name);
     }
 
     public float GetHoldProgress(string name)
     {
       DateTime dateTime;
-      return this.buttons.TryGetValue(name, out dateTime) && dateTime > DateTime.MinValue ? (float) (DateTime.UtcNow - dateTime).TotalSeconds / (float) this.holdDelay.TotalSeconds : 0.0f;
+      return buttons.TryGetValue(name, out dateTime) && dateTime > DateTime.MinValue ? (float) (DateTime.UtcNow - dateTime).TotalSeconds / (float) holdDelay.TotalSeconds : 0.0f;
     }
 
     private void Initialise()
     {
-      this.holdDelay = TimeSpan.FromSeconds((double) ExternalSettingsInstance<ExternalInputSettings>.Instance.HoldDelay);
-      InstanceByRequest<UpdateService>.Instance.Updater.AddUpdatable((IUpdatable) this);
+      holdDelay = TimeSpan.FromSeconds(ExternalSettingsInstance<ExternalInputSettings>.Instance.HoldDelay);
+      InstanceByRequest<UpdateService>.Instance.Updater.AddUpdatable(this);
     }
 
     public void ComputeUpdate()
     {
       if (!ExternalSettingsInstance<ExternalInputSettings>.Instance.UseJoystick)
         return;
-      this.CheckJoystick();
-      if (this.layout == null)
+      CheckJoystick();
+      if (layout == null)
         return;
-      this.ComputeButtons();
-      this.ComputeHoldButtons();
+      ComputeButtons();
+      ComputeHoldButtons();
     }
 
     private void CheckJoystick()
     {
       float realtimeSinceStartup = Time.realtimeSinceStartup;
-      if ((double) this.currentTime + (double) this.delayTime > (double) realtimeSinceStartup)
+      if (currentTime + (double) delayTime > realtimeSinceStartup)
         return;
-      this.currentTime = realtimeSinceStartup;
-      string joystickName = this.GetJoystickName();
-      if (!(joystickName != this.currentJoystick))
+      currentTime = realtimeSinceStartup;
+      string joystickName = GetJoystickName();
+      if (!(joystickName != currentJoystick))
         return;
-      this.currentJoystick = joystickName;
-      this.InitialiseJoystick();
+      currentJoystick = joystickName;
+      InitialiseJoystick();
     }
 
     private void ComputeButtons()
     {
-      this.buttonsPressed.Clear();
+      buttonsPressed.Clear();
       bool flag = false;
-      foreach (AxisToButton axesToButton in this.layout.AxesToButtons)
+      foreach (AxisToButton axesToButton in layout.AxesToButtons)
       {
-        float axis = this.GetAxis(axesToButton.Axis);
+        float axis = GetAxis(axesToButton.Axis);
         if (axesToButton.Inverse)
           axis *= -1f;
-        if (this.buttons.ContainsKey(axesToButton.Name))
+        if (buttons.ContainsKey(axesToButton.Name))
         {
-          if ((double) axis < (double) axesToButton.Min)
+          if (axis < (double) axesToButton.Min)
           {
-            this.buttons.Remove(axesToButton.Name);
+            buttons.Remove(axesToButton.Name);
             flag = true;
           }
         }
-        else if ((double) axis > (double) axesToButton.Max)
+        else if (axis > (double) axesToButton.Max)
         {
-          this.buttons.Add(axesToButton.Name, DateTime.UtcNow);
-          this.buttonsPressed.Add(axesToButton.Name);
+          buttons.Add(axesToButton.Name, DateTime.UtcNow);
+          buttonsPressed.Add(axesToButton.Name);
           flag = true;
         }
       }
-      foreach (KeyToButton keysToButton in this.layout.KeysToButtons)
+      foreach (KeyToButton keysToButton in layout.KeysToButtons)
       {
         bool key = Input.GetKey((KeyCode) keysToButton.KeyCode);
-        if (this.buttons.ContainsKey(keysToButton.Name))
+        if (buttons.ContainsKey(keysToButton.Name))
         {
           if (!key)
           {
-            this.buttons.Remove(keysToButton.Name);
+            buttons.Remove(keysToButton.Name);
             flag = true;
           }
         }
         else if (key)
         {
-          this.buttons.Add(keysToButton.Name, DateTime.UtcNow);
-          this.buttonsPressed.Add(keysToButton.Name);
+          buttons.Add(keysToButton.Name, DateTime.UtcNow);
+          buttonsPressed.Add(keysToButton.Name);
           flag = true;
         }
       }
-      foreach (AxisBind ax in this.layout.Axes)
+      foreach (AxisBind ax in layout.Axes)
       {
         float num = Input.GetAxisRaw(ax.Axis);
         if (ax.Normalize)
-          num = (float) ((double) num * 0.5 + 0.5);
-        if ((double) num > (double) ax.Dead || (double) num < -(double) ax.Dead)
+          num = (float) (num * 0.5 + 0.5);
+        if (num > (double) ax.Dead || num < -(double) ax.Dead)
         {
           flag = true;
           break;
@@ -209,20 +207,20 @@ namespace InputServices
       }
       if (!flag)
         return;
-      this.JoystickUsed = true;
+      JoystickUsed = true;
     }
 
     private void ComputeHoldButtons()
     {
-      this.holdButtonsPressed.Clear();
+      holdButtonsPressed.Clear();
 label_1:
-      foreach (KeyValuePair<string, DateTime> button in this.buttons)
+      foreach (KeyValuePair<string, DateTime> button in buttons)
       {
         DateTime dateTime = button.Value;
-        if (!(dateTime == DateTime.MinValue) && DateTime.UtcNow - dateTime > this.holdDelay)
+        if (!(dateTime == DateTime.MinValue) && DateTime.UtcNow - dateTime > holdDelay)
         {
-          this.holdButtonsPressed.Add(button.Key);
-          this.buttons[button.Key] = DateTime.MinValue;
+          holdButtonsPressed.Add(button.Key);
+          buttons[button.Key] = DateTime.MinValue;
           goto label_1;
         }
       }
@@ -230,14 +228,14 @@ label_1:
 
     private void InitialiseJoystick()
     {
-      this.layout = (JoystickLayout) null;
-      this.axes.Clear();
+      layout = null;
+      axes.Clear();
       if (this.currentJoystick.IsNullOrEmpty())
         return;
       string currentJoystick = this.currentJoystick;
-      this.layout = currentJoystick.IndexOf("xbox", StringComparison.InvariantCultureIgnoreCase) == -1 ? (!(currentJoystick == "Wireless Controller") ? ExternalSettingsInstance<ExternalGameActionSettings>.Instance.Layouts[2] : ExternalSettingsInstance<ExternalGameActionSettings>.Instance.Layouts[1]) : ExternalSettingsInstance<ExternalGameActionSettings>.Instance.Layouts[0];
-      foreach (AxisBind ax in this.layout.Axes)
-        this.axes[ax.Name] = ax;
+      layout = currentJoystick.IndexOf("xbox", StringComparison.InvariantCultureIgnoreCase) == -1 ? (!(currentJoystick == "Wireless Controller") ? ExternalSettingsInstance<ExternalGameActionSettings>.Instance.Layouts[2] : ExternalSettingsInstance<ExternalGameActionSettings>.Instance.Layouts[1]) : ExternalSettingsInstance<ExternalGameActionSettings>.Instance.Layouts[0];
+      foreach (AxisBind ax in layout.Axes)
+        axes[ax.Name] = ax;
     }
   }
 }

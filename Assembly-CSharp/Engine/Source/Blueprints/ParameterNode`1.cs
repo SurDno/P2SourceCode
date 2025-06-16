@@ -15,10 +15,10 @@ namespace Engine.Source.Blueprints
     [Port("Value")]
     private T Value()
     {
-      ParametersComponent parametersComponent = this.parametersInput.value;
+      ParametersComponent parametersComponent = parametersInput.value;
       if (parametersComponent != null)
       {
-        IParameter<T> byName = parametersComponent.GetByName<T>(this.nameInput.value);
+        IParameter<T> byName = parametersComponent.GetByName<T>(nameInput.value);
         if (byName != null)
           return byName.Value;
       }

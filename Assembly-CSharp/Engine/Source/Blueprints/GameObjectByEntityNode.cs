@@ -3,7 +3,6 @@ using Engine.Source.Commons;
 using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
-using UnityEngine;
 
 namespace Engine.Source.Blueprints
 {
@@ -15,8 +14,8 @@ namespace Engine.Source.Blueprints
     protected override void RegisterPorts()
     {
       base.RegisterPorts();
-      this.entityInput = this.AddValueInput<IEntity>("Entity");
-      this.AddValueOutput<GameObject>("GameObject", (ValueHandler<GameObject>) (() => ((IEntityView) this.entityInput.value)?.GameObject));
+      entityInput = AddValueInput<IEntity>("Entity");
+      AddValueOutput("GameObject", (ValueHandler<GameObject>) (() => ((IEntityView) entityInput.value)?.GameObject));
     }
   }
 }

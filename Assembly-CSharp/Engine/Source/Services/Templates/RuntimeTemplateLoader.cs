@@ -1,13 +1,12 @@
-﻿using AssetDatabases;
-using Engine.Common;
-using Engine.Common.Services;
-using Engine.Source.Commons;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using UnityEngine;
+using AssetDatabases;
+using Engine.Common;
+using Engine.Common.Services;
+using Engine.Source.Commons;
 
 namespace Engine.Source.Services.Templates
 {
@@ -28,13 +27,13 @@ namespace Engine.Source.Services.Templates
       foreach (string asset in assets)
       {
         ++progressService.Progress;
-        if ((double) time + (double) delay < (double) Time.realtimeSinceStartup)
+        if (time + (double) delay < (double) Time.realtimeSinceStartup)
         {
           time = Time.realtimeSinceStartup;
           progressService.Update(nameof (RuntimeTemplateLoader), asset);
-          yield return (object) null;
+          yield return null;
         }
-        IObject obj = (IObject) null;
+        IObject obj = null;
         if (asset.EndsWith(".bytes"))
           obj = TemplateLoaderUtility.LoadObject(asset);
         else if (asset.EndsWith("_AI.asset"))
@@ -42,7 +41,7 @@ namespace Engine.Source.Services.Templates
           Guid id = AssetDatabaseService.Instance.GetId(asset);
           if (!(id == Guid.Empty))
           {
-            obj = (IObject) factory.Create<BehaviorObject>(id);
+            obj = factory.Create<BehaviorObject>(id);
             ++created;
             id = new Guid();
           }
@@ -54,7 +53,7 @@ namespace Engine.Source.Services.Templates
           Guid id = AssetDatabaseService.Instance.GetId(asset);
           if (!(id == Guid.Empty))
           {
-            obj = (IObject) factory.Create<BlueprintObject>(id);
+            obj = factory.Create<BlueprintObject>(id);
             ++created;
             id = new Guid();
           }
@@ -65,10 +64,10 @@ namespace Engine.Source.Services.Templates
           continue;
         obj.Name = Path.GetFileNameWithoutExtension(asset);
         TemplateLoaderUtility.AddTemplateImpl(obj, asset, items, names);
-        obj = (IObject) null;
+        obj = null;
       }
       sw.Stop();
-      UnityEngine.Debug.Log((object) ObjectInfoUtility.GetStream().Append(nameof (RuntimeTemplateLoader)).Append(" : ").Append(nameof (Load)).Append(" , elapsed : ").Append((object) sw.Elapsed).Append(" , created : ").Append(created));
+      UnityEngine.Debug.Log((object) ObjectInfoUtility.GetStream().Append(nameof (RuntimeTemplateLoader)).Append(" : ").Append(nameof (Load)).Append(" , elapsed : ").Append(sw.Elapsed).Append(" , created : ").Append(created));
     }
   }
 }

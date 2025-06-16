@@ -9,8 +9,6 @@ using Engine.Source.Components.Regions;
 using Engine.Source.Services.Notifications;
 using Inspectors;
 using RegionReputation;
-using UnityEngine;
-using UnityEngine.Audio;
 
 namespace Engine.Impl.UI.Controls
 {
@@ -45,39 +43,39 @@ namespace Engine.Impl.UI.Controls
 
     private void Update()
     {
-      if (!(this.ui.Active is HudWindow))
+      if (!(ui.Active is HudWindow))
         return;
-      if (!this.play)
+      if (!play)
       {
-        this.Play();
-        this.play = true;
+        Play();
+        play = true;
       }
-      this.progress += Time.deltaTime;
-      if ((double) this.progress > (double) this.time)
-        this.Complete = true;
+      progress += Time.deltaTime;
+      if (progress > (double) time)
+        Complete = true;
       else
-        this.SetAlpha(SoundUtility.ComputeFade(this.progress, this.time, this.fade));
+        SetAlpha(SoundUtility.ComputeFade(progress, time, fade));
     }
 
     private void Play()
     {
-      if ((Object) this.clip == (Object) null || (Object) this.mixer == (Object) null)
+      if ((Object) clip == (Object) null || (Object) mixer == (Object) null)
         return;
-      SoundUtility.PlayAudioClip2D(this.clip, this.mixer, 1f, 0.0f, context: this.gameObject.GetFullName());
+      SoundUtility.PlayAudioClip2D(clip, mixer, 1f, 0.0f, context: this.gameObject.GetFullName());
     }
 
     protected override void Awake()
     {
       base.Awake();
-      this.ui = ServiceLocator.GetService<UIService>();
-      this.SetAlpha(0.0f);
+      ui = ServiceLocator.GetService<UIService>();
+      SetAlpha(0.0f);
     }
 
     public void Initialise(NotificationEnum type, object[] values)
     {
-      this.Type = type;
-      IRegionComponent result = (IRegionComponent) null;
-      this.ApplyValue<IRegionComponent>(ref result, values, 0);
+      Type = type;
+      IRegionComponent result = null;
+      ApplyValue(ref result, values, 0);
       if (result == null)
       {
         Debug.LogError((object) "Notifications : Region : No region parameter");
@@ -85,8 +83,8 @@ namespace Engine.Impl.UI.Controls
       else
       {
         float reputation = result.Reputation.Value;
-        this.textRegion.Signature = RegionUtility.GetRegionTitle(result);
-        this.textReputation.Signature = this.regionReputationNames.GetReputationName(result.Region, reputation);
+        textRegion.Signature = RegionUtility.GetRegionTitle(result);
+        textReputation.Signature = regionReputationNames.GetReputationName(result.Region, reputation);
       }
     }
 
@@ -94,10 +92,10 @@ namespace Engine.Impl.UI.Controls
 
     private void SetAlpha(float value)
     {
-      if ((double) this.alpha == (double) value)
+      if (alpha == (double) value)
         return;
-      this.alpha = value;
-      this.canvasGroup.alpha = this.alpha;
+      alpha = value;
+      canvasGroup.alpha = alpha;
     }
 
     private void ApplyValue<T>(ref T result, object[] values, int index)

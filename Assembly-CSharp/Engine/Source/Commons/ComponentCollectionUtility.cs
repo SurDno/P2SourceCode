@@ -1,5 +1,5 @@
-﻿using Engine.Common.Commons.Cloneable;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Engine.Common.Commons.Cloneable;
 
 namespace Engine.Source.Commons
 {
@@ -11,7 +11,7 @@ namespace Engine.Source.Commons
       target.Capacity = source.Count;
       foreach (T source1 in source)
       {
-        T obj = CloneableObjectUtility.Clone<T>(source1);
+        T obj = CloneableObjectUtility.Clone(source1);
         target.Add(obj);
       }
     }

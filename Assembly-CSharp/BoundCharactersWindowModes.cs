@@ -1,10 +1,8 @@
-﻿using Engine.Common.Services;
+﻿using System.Collections.Generic;
+using Engine.Common.Services;
 using Engine.Impl.UI.Controls;
 using Engine.Source.Components.BoundCharacters;
 using Engine.Source.Services;
-using System;
-using System.Collections.Generic;
-using UnityEngine;
 
 public class BoundCharactersWindowModes : MonoBehaviour
 {
@@ -27,27 +25,27 @@ public class BoundCharactersWindowModes : MonoBehaviour
     }
     if (flag)
     {
-      this.changedCharactersView.FinishedEvent += new Action(this.OnChangedCharacterViewFinished);
-      this.changedCharactersView.Show();
+      changedCharactersView.FinishedEvent += OnChangedCharacterViewFinished;
+      changedCharactersView.Show();
     }
     else
     {
-      this.allCharactersView.Visible = true;
-      this.allCharactersView.SkipAnimation();
+      allCharactersView.Visible = true;
+      allCharactersView.SkipAnimation();
     }
   }
 
   private void OnDisable()
   {
-    this.changedCharactersView.FinishedEvent -= new Action(this.OnChangedCharacterViewFinished);
-    this.changedCharactersView.FinishAll();
-    this.allCharactersView.Visible = false;
-    this.allCharactersView.SkipAnimation();
+    changedCharactersView.FinishedEvent -= OnChangedCharacterViewFinished;
+    changedCharactersView.FinishAll();
+    allCharactersView.Visible = false;
+    allCharactersView.SkipAnimation();
   }
 
   private void OnChangedCharacterViewFinished()
   {
-    this.changedCharactersView.FinishedEvent -= new Action(this.OnChangedCharacterViewFinished);
-    this.allCharactersView.Visible = true;
+    changedCharactersView.FinishedEvent -= OnChangedCharacterViewFinished;
+    allCharactersView.Visible = true;
   }
 }

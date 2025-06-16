@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace Engine.Impl.UI.Controls
+﻿namespace Engine.Impl.UI.Controls
 {
   public abstract class BinaryColorView : MonoBehaviour, IValueView<Color>
   {
@@ -9,23 +7,23 @@ namespace Engine.Impl.UI.Controls
     [SerializeField]
     private Color valueB = Color.white;
 
-    public Color GetValue(int id) => id <= 0 ? this.valueA : this.valueB;
+    public Color GetValue(int id) => id <= 0 ? valueA : valueB;
 
     public void SetValue(int id, Color value, bool instant)
     {
       if (id <= 0)
       {
-        if (!instant && this.valueA == value)
+        if (!instant && valueA == value)
           return;
-        this.valueA = value;
-        this.ApplyValues(instant);
+        valueA = value;
+        ApplyValues(instant);
       }
       else
       {
-        if (!instant && this.valueB == value)
+        if (!instant && valueB == value)
           return;
-        this.valueB = value;
-        this.ApplyValues(instant);
+        valueB = value;
+        ApplyValues(instant);
       }
     }
 

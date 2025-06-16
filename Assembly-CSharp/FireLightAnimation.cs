@@ -1,6 +1,5 @@
 ﻿using Engine.Source.Commons;
 using Engine.Source.Settings;
-using UnityEngine;
 
 public class FireLightAnimation : MonoBehaviour
 {
@@ -19,13 +18,13 @@ public class FireLightAnimation : MonoBehaviour
   {
     Transform transform = this.transform;
     bool flag = InstanceByRequest<GraphicsGameSettings>.Instance.Antialiasing.Value;
-    transform.localPosition = this.basePosition + this.Animate(flag ? this.positionAmplitude * 2.5f : this.positionAmplitude, this.positionRate);
-    transform.localEulerAngles = this.baseRotation + this.Animate(flag ? this.rotationAmplitude * 2.5f : this.rotationAmplitude, this.rotationRate);
+    transform.localPosition = basePosition + Animate(flag ? positionAmplitude * 2.5f : positionAmplitude, positionRate);
+    transform.localEulerAngles = baseRotation + Animate(flag ? rotationAmplitude * 2.5f : rotationAmplitude, rotationRate);
   }
 
   private float Animate(float amplitude, float rate)
   {
-    return Mathf.Sin((float) ((double) Time.time * (double) rate * 2.0 * 3.1415927410125732)) * amplitude;
+    return Mathf.Sin((float) ((double) Time.time * rate * 2.0 * 3.1415927410125732)) * amplitude;
   }
 
   private Vector3 Animate(Vector3 amplitude, Vector3 rate)
@@ -36,17 +35,17 @@ public class FireLightAnimation : MonoBehaviour
   private void OnDisable()
   {
     Transform transform = this.transform;
-    transform.localPosition = this.basePosition;
-    transform.localEulerAngles = this.baseRotation;
+    transform.localPosition = basePosition;
+    transform.localEulerAngles = baseRotation;
   }
 
   private void OnEnable()
   {
     Transform transform = this.transform;
-    this.basePosition = transform.localPosition;
-    this.baseRotation = transform.localEulerAngles;
-    this.Animate();
+    basePosition = transform.localPosition;
+    baseRotation = transform.localEulerAngles;
+    Animate();
   }
 
-  private void Update() => this.Animate();
+  private void Update() => Animate();
 }

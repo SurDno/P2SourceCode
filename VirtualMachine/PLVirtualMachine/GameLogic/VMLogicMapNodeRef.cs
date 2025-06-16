@@ -1,4 +1,5 @@
-﻿using PLVirtualMachine.Common;
+﻿using System;
+using PLVirtualMachine.Common;
 using PLVirtualMachine.Common.Data;
 using PLVirtualMachine.Common.EngineAPI;
 
@@ -14,7 +15,7 @@ namespace PLVirtualMachine.GameLogic
     INamed,
     IVMStringSerializable
   {
-    public void Initialize(IGraphObject lmNode) => this.LoadStaticInstance((IObject) lmNode);
+    public void Initialize(IGraphObject lmNode) => LoadStaticInstance(lmNode);
 
     public override EContextVariableCategory Category
     {
@@ -25,16 +26,16 @@ namespace PLVirtualMachine.GameLogic
     {
       get
       {
-        if (this.StaticInstance == null && this.BaseGuid > 0UL)
-          this.LoadStaticInstance(IStaticDataContainer.StaticDataContainer.GetObjectByGuid(this.BaseGuid));
-        return (IGraphObject) this.StaticInstance;
+        if (StaticInstance == null && BaseGuid > 0UL)
+          LoadStaticInstance(IStaticDataContainer.StaticDataContainer.GetObjectByGuid(BaseGuid));
+        return (IGraphObject) StaticInstance;
       }
     }
 
-    public override VMType Type => VMType.CreateStateSpecialType(this.LogicMapNode);
+    public override VMType Type => VMType.CreateStateSpecialType(LogicMapNode);
 
-    public override bool Empty => this.LogicMapNode == null && base.Empty;
+    public override bool Empty => LogicMapNode == null && base.Empty;
 
-    protected override System.Type NeedInstanceType => typeof (IGraphObject);
+    protected override Type NeedInstanceType => typeof (IGraphObject);
   }
 }

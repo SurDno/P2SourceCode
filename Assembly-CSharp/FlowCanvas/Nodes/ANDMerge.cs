@@ -1,6 +1,5 @@
-﻿using ParadoxNotion.Design;
-using System.Collections;
-using UnityEngine;
+﻿using System.Collections;
+using ParadoxNotion.Design;
 
 namespace FlowCanvas.Nodes
 {
@@ -16,41 +15,41 @@ namespace FlowCanvas.Nodes
 
     public int portCount
     {
-      get => this._portCount;
-      set => this._portCount = value;
+      get => _portCount;
+      set => _portCount = value;
     }
 
     protected override void RegisterPorts()
     {
-      this.calls = new bool[this.portCount];
-      this.fOut = this.AddFlowOutput("Out");
-      for (int index = 0; index < this.portCount; ++index)
+      calls = new bool[portCount];
+      fOut = AddFlowOutput("Out");
+      for (int index = 0; index < portCount; ++index)
       {
         int i = index;
-        this.AddFlowInput(i.ToString(), (FlowHandler) (() =>
+        AddFlowInput(i.ToString(), () =>
         {
-          this.calls[i] = true;
-          this.Check();
-        }));
+          calls[i] = true;
+          Check();
+        });
       }
     }
 
     private void Check()
     {
-      this.StartCoroutine(this.Reset());
-      for (int index = 0; index < this.calls.Length; ++index)
+      StartCoroutine(Reset());
+      for (int index = 0; index < calls.Length; ++index)
       {
-        if (!this.calls[index])
+        if (!calls[index])
           return;
       }
-      this.fOut.Call();
+      fOut.Call();
     }
 
     private IEnumerator Reset()
     {
-      yield return (object) null;
-      for (int i = 0; i < this.calls.Length; ++i)
-        this.calls[i] = false;
+      yield return null;
+      for (int i = 0; i < calls.Length; ++i)
+        calls[i] = false;
     }
   }
 }

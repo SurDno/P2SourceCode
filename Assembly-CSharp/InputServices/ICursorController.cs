@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace InputServices
+﻿namespace InputServices
 {
   public interface ICursorController
   {

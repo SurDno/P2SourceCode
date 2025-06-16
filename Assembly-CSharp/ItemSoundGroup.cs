@@ -1,25 +1,24 @@
 ﻿using System;
-using UnityEngine;
 
 [CreateAssetMenu(menuName = "Data/Item Sound Group")]
 public class ItemSoundGroup : ScriptableObject
 {
   [SerializeField]
-  private ItemSoundGroup.ClipSource put;
+  private ClipSource put;
   [SerializeField]
-  private ItemSoundGroup.ClipSource take;
+  private ClipSource take;
   [SerializeField]
-  private ItemSoundGroup.ClipSource use;
+  private ClipSource use;
   [SerializeField]
-  private ItemSoundGroup.ClipSource pourOut;
+  private ClipSource pourOut;
 
-  public AudioClip GetPutClip() => this.put.GetClip();
+  public AudioClip GetPutClip() => put.GetClip();
 
-  public AudioClip GetTakeClip() => this.take.GetClip();
+  public AudioClip GetTakeClip() => take.GetClip();
 
-  public AudioClip GetUseClip() => this.use.GetClip();
+  public AudioClip GetUseClip() => use.GetClip();
 
-  public AudioClip GetPourOutClip() => this.pourOut.GetClip();
+  public AudioClip GetPourOutClip() => pourOut.GetClip();
 
   [Serializable]
   private struct ClipSource
@@ -31,9 +30,9 @@ public class ItemSoundGroup : ScriptableObject
 
     public AudioClip GetClip()
     {
-      if ((UnityEngine.Object) this.clip != (UnityEngine.Object) null)
-        return this.clip;
-      return (UnityEngine.Object) this.collection != (UnityEngine.Object) null ? this.collection.GetClip() : (AudioClip) null;
+      if ((UnityEngine.Object) clip != (UnityEngine.Object) null)
+        return clip;
+      return (UnityEngine.Object) collection != (UnityEngine.Object) null ? collection.GetClip() : (AudioClip) null;
     }
   }
 }

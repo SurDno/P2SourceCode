@@ -1,17 +1,17 @@
-﻿using Cofe.Loggers;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using Cofe.Loggers;
 using Engine.Common.Comparers;
 using PLVirtualMachine.Base;
 using PLVirtualMachine.Dynamic.Components;
 using PLVirtualMachine.Objects;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 
 namespace PLVirtualMachine.Dynamic
 {
   public class QuestFSM : DynamicFSM
   {
-    private Dictionary<Guid, LockedFSMInfo> lockedObjects = new Dictionary<Guid, LockedFSMInfo>((IEqualityComparer<Guid>) GuidComparer.Instance);
+    private Dictionary<Guid, LockedFSMInfo> lockedObjects = new Dictionary<Guid, LockedFSMInfo>(GuidComparer.Instance);
 
     public QuestFSM(VMEntity entity, VMLogicObject templateObj)
       : base(entity, templateObj)
@@ -22,9 +22,9 @@ namespace PLVirtualMachine.Dynamic
     {
       long timestamp = Stopwatch.GetTimestamp();
       base.Think();
-      if (this.Active)
+      if (Active)
       {
-        foreach (KeyValuePair<Guid, LockedFSMInfo> lockedObject in this.lockedObjects)
+        foreach (KeyValuePair<Guid, LockedFSMInfo> lockedObject in lockedObjects)
         {
           LockedFSMInfo lockedFsmInfo = lockedObject.Value;
           if (lockedFsmInfo.NeedRestoreAction)
@@ -34,54 +34,54 @@ namespace PLVirtualMachine.Dynamic
           }
         }
       }
-      double num = ((double) Stopwatch.GetTimestamp() - (double) timestamp) / (double) Stopwatch.Frequency;
+      double num = (Stopwatch.GetTimestamp() - (double) timestamp) / Stopwatch.Frequency;
     }
 
     public bool LockObject(DynamicFSM lockObjFSM)
     {
-      int num = lockObjFSM.Lock((DynamicFSM) this) ? 1 : 0;
+      int num = lockObjFSM.Lock(this) ? 1 : 0;
       if (num == 0)
         return num != 0;
-      this.lockedObjects.Add(lockObjFSM.Entity.EngineGuid, new LockedFSMInfo(lockObjFSM));
+      lockedObjects.Add(lockObjFSM.Entity.EngineGuid, new LockedFSMInfo(lockObjFSM));
       return num != 0;
     }
 
     public bool UnLockObject(DynamicFSM lockObjFSM)
     {
-      int num = lockObjFSM.UnLock((DynamicFSM) this) ? 1 : 0;
+      int num = lockObjFSM.UnLock(this) ? 1 : 0;
       if (num == 0)
         return num != 0;
-      this.lockedObjects.Remove(lockObjFSM.Entity.EngineGuid);
+      lockedObjects.Remove(lockObjFSM.Entity.EngineGuid);
       return num != 0;
     }
 
     public void StartQuest()
     {
-      if (this.Entity == null)
+      if (Entity == null)
         return;
-      ((QuestComponent) this.Entity.GetComponentByName("QuestComponent"))?.StartQuest(this);
+      ((QuestComponent) Entity.GetComponentByName("QuestComponent"))?.StartQuest(this);
     }
 
     public void EndQuest()
     {
-      this.Active = false;
-      foreach (KeyValuePair<Guid, LockedFSMInfo> lockedObject in this.lockedObjects)
-        lockedObject.Value.LockedFSM.UnLock((DynamicFSM) this);
-      this.lockedObjects.Clear();
+      Active = false;
+      foreach (KeyValuePair<Guid, LockedFSMInfo> lockedObject in lockedObjects)
+        lockedObject.Value.LockedFSM.UnLock(this);
+      lockedObjects.Clear();
     }
 
     public override void OnStart()
     {
       base.OnStart();
-      this.StartQuest();
+      StartQuest();
     }
 
     public override void SetLockedObjectNeedRestoreAction(DynamicFSM lockedFSM)
     {
-      if (this.lockedObjects.ContainsKey(lockedFSM.Entity.EngineGuid))
-        this.lockedObjects[lockedFSM.Entity.EngineGuid].NeedRestoreAction = true;
+      if (lockedObjects.ContainsKey(lockedFSM.Entity.EngineGuid))
+        lockedObjects[lockedFSM.Entity.EngineGuid].NeedRestoreAction = true;
       else
-        Logger.AddError(string.Format("Lock object restore action error: locked object with guid {0} not found", (object) lockedFSM.Entity.EngineGuid));
+        Logger.AddError(string.Format("Lock object restore action error: locked object with guid {0} not found", lockedFSM.Entity.EngineGuid));
     }
 
     public override void OnAddChildDynamicObject(DynamicFSM childDynFSM)
@@ -90,17 +90,17 @@ namespace PLVirtualMachine.Dynamic
 
     public override void OnRemoveChildDynamicObject(DynamicFSM childDynFSM)
     {
-      if (childDynFSM == null || childDynFSM.LockingFSM == null || !(this.EngineGuid == childDynFSM.EngineGuid))
+      if (childDynFSM == null || childDynFSM.LockingFSM == null || !(EngineGuid == childDynFSM.EngineGuid))
         return;
-      this.UnLockObject(childDynFSM);
+      UnLockObject(childDynFSM);
     }
 
     protected override void RememberMetodExecData(EntityMethodExecuteData lastMethodExecData)
     {
       Guid targetEntityGuid = lastMethodExecData.TargetEntityGuid;
-      if (!this.lockedObjects.ContainsKey(targetEntityGuid))
+      if (!lockedObjects.ContainsKey(targetEntityGuid))
         return;
-      this.lockedObjects[targetEntityGuid].SetLastActionMethodExecData(lastMethodExecData);
+      lockedObjects[targetEntityGuid].SetLastActionMethodExecData(lastMethodExecData);
     }
   }
 }

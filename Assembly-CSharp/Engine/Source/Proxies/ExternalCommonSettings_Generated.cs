@@ -1,9 +1,9 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons.Cloneable;
 using Engine.Common.Commons.Converters;
 using Engine.Source.Settings.External;
-using System;
 
 namespace Engine.Source.Proxies
 {
@@ -18,69 +18,69 @@ namespace Engine.Source.Proxies
     public object Clone()
     {
       ExternalCommonSettings_Generated instance = Activator.CreateInstance<ExternalCommonSettings_Generated>();
-      this.CopyTo((object) instance);
-      return (object) instance;
+      CopyTo(instance);
+      return instance;
     }
 
     public void CopyTo(object target2)
     {
       ExternalCommonSettings_Generated settingsGenerated = (ExternalCommonSettings_Generated) target2;
-      settingsGenerated.Version = this.Version;
-      settingsGenerated.DropBagSearchRadius = this.DropBagSearchRadius;
-      settingsGenerated.DropBagOffset = this.DropBagOffset;
-      settingsGenerated.ChildGunJam = this.ChildGunJam;
-      settingsGenerated.StepsDistance = this.StepsDistance;
-      settingsGenerated.InteractionDistance = this.InteractionDistance;
-      settingsGenerated.AwayDistance = this.AwayDistance;
-      settingsGenerated.DangerDistance = this.DangerDistance;
-      settingsGenerated.DoorSpeed = this.DoorSpeed;
-      settingsGenerated.IdleReplicsFrequencyMin = this.IdleReplicsFrequencyMin;
-      settingsGenerated.IdleReplicsFrequencyMax = this.IdleReplicsFrequencyMax;
-      settingsGenerated.IdleReplicsMaxRangeToPlayer = this.IdleReplicsMaxRangeToPlayer;
-      settingsGenerated.IdleReplicsDistanceMin = this.IdleReplicsDistanceMin;
-      settingsGenerated.IdleReplicsDistanceMax = this.IdleReplicsDistanceMax;
-      settingsGenerated.EntitySubtitlesDistanceMax = this.EntitySubtitlesDistanceMax;
-      settingsGenerated.BleuprintSubtitlesDistanceMax = this.BleuprintSubtitlesDistanceMax;
+      settingsGenerated.Version = Version;
+      settingsGenerated.DropBagSearchRadius = DropBagSearchRadius;
+      settingsGenerated.DropBagOffset = DropBagOffset;
+      settingsGenerated.ChildGunJam = ChildGunJam;
+      settingsGenerated.StepsDistance = StepsDistance;
+      settingsGenerated.InteractionDistance = InteractionDistance;
+      settingsGenerated.AwayDistance = AwayDistance;
+      settingsGenerated.DangerDistance = DangerDistance;
+      settingsGenerated.DoorSpeed = DoorSpeed;
+      settingsGenerated.IdleReplicsFrequencyMin = IdleReplicsFrequencyMin;
+      settingsGenerated.IdleReplicsFrequencyMax = IdleReplicsFrequencyMax;
+      settingsGenerated.IdleReplicsMaxRangeToPlayer = IdleReplicsMaxRangeToPlayer;
+      settingsGenerated.IdleReplicsDistanceMin = IdleReplicsDistanceMin;
+      settingsGenerated.IdleReplicsDistanceMax = IdleReplicsDistanceMax;
+      settingsGenerated.EntitySubtitlesDistanceMax = EntitySubtitlesDistanceMax;
+      settingsGenerated.BleuprintSubtitlesDistanceMax = BleuprintSubtitlesDistanceMax;
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.Write(writer, "Version", this.Version);
-      DefaultDataWriteUtility.Write(writer, "DropBagSearchRadius", this.DropBagSearchRadius);
-      DefaultDataWriteUtility.Write(writer, "DropBagOffset", this.DropBagOffset);
-      DefaultDataWriteUtility.Write(writer, "ChildGunJam", this.ChildGunJam);
-      DefaultDataWriteUtility.Write(writer, "StepsDistance", this.StepsDistance);
-      DefaultDataWriteUtility.Write(writer, "InteractionDistance", this.InteractionDistance);
-      DefaultDataWriteUtility.Write(writer, "AwayDistance", this.AwayDistance);
-      DefaultDataWriteUtility.Write(writer, "DangerDistance", this.DangerDistance);
-      DefaultDataWriteUtility.Write(writer, "DoorSpeed", this.DoorSpeed);
-      DefaultDataWriteUtility.Write(writer, "IdleReplicsFrequencyMin", this.IdleReplicsFrequencyMin);
-      DefaultDataWriteUtility.Write(writer, "IdleReplicsFrequencyMax", this.IdleReplicsFrequencyMax);
-      DefaultDataWriteUtility.Write(writer, "IdleReplicsMaxRangeToPlayer", this.IdleReplicsMaxRangeToPlayer);
-      DefaultDataWriteUtility.Write(writer, "IdleReplicsDistanceMin", this.IdleReplicsDistanceMin);
-      DefaultDataWriteUtility.Write(writer, "IdleReplicsDistanceMax", this.IdleReplicsDistanceMax);
-      DefaultDataWriteUtility.Write(writer, "EntitySubtitlesDistanceMax", this.EntitySubtitlesDistanceMax);
-      DefaultDataWriteUtility.Write(writer, "BleuprintSubtitlesDistanceMax", this.BleuprintSubtitlesDistanceMax);
+      DefaultDataWriteUtility.Write(writer, "Version", Version);
+      DefaultDataWriteUtility.Write(writer, "DropBagSearchRadius", DropBagSearchRadius);
+      DefaultDataWriteUtility.Write(writer, "DropBagOffset", DropBagOffset);
+      DefaultDataWriteUtility.Write(writer, "ChildGunJam", ChildGunJam);
+      DefaultDataWriteUtility.Write(writer, "StepsDistance", StepsDistance);
+      DefaultDataWriteUtility.Write(writer, "InteractionDistance", InteractionDistance);
+      DefaultDataWriteUtility.Write(writer, "AwayDistance", AwayDistance);
+      DefaultDataWriteUtility.Write(writer, "DangerDistance", DangerDistance);
+      DefaultDataWriteUtility.Write(writer, "DoorSpeed", DoorSpeed);
+      DefaultDataWriteUtility.Write(writer, "IdleReplicsFrequencyMin", IdleReplicsFrequencyMin);
+      DefaultDataWriteUtility.Write(writer, "IdleReplicsFrequencyMax", IdleReplicsFrequencyMax);
+      DefaultDataWriteUtility.Write(writer, "IdleReplicsMaxRangeToPlayer", IdleReplicsMaxRangeToPlayer);
+      DefaultDataWriteUtility.Write(writer, "IdleReplicsDistanceMin", IdleReplicsDistanceMin);
+      DefaultDataWriteUtility.Write(writer, "IdleReplicsDistanceMax", IdleReplicsDistanceMax);
+      DefaultDataWriteUtility.Write(writer, "EntitySubtitlesDistanceMax", EntitySubtitlesDistanceMax);
+      DefaultDataWriteUtility.Write(writer, "BleuprintSubtitlesDistanceMax", BleuprintSubtitlesDistanceMax);
     }
 
     public void DataRead(IDataReader reader, Type type)
     {
-      this.Version = DefaultDataReadUtility.Read(reader, "Version", this.Version);
-      this.DropBagSearchRadius = DefaultDataReadUtility.Read(reader, "DropBagSearchRadius", this.DropBagSearchRadius);
-      this.DropBagOffset = DefaultDataReadUtility.Read(reader, "DropBagOffset", this.DropBagOffset);
-      this.ChildGunJam = DefaultDataReadUtility.Read(reader, "ChildGunJam", this.ChildGunJam);
-      this.StepsDistance = DefaultDataReadUtility.Read(reader, "StepsDistance", this.StepsDistance);
-      this.InteractionDistance = DefaultDataReadUtility.Read(reader, "InteractionDistance", this.InteractionDistance);
-      this.AwayDistance = DefaultDataReadUtility.Read(reader, "AwayDistance", this.AwayDistance);
-      this.DangerDistance = DefaultDataReadUtility.Read(reader, "DangerDistance", this.DangerDistance);
-      this.DoorSpeed = DefaultDataReadUtility.Read(reader, "DoorSpeed", this.DoorSpeed);
-      this.IdleReplicsFrequencyMin = DefaultDataReadUtility.Read(reader, "IdleReplicsFrequencyMin", this.IdleReplicsFrequencyMin);
-      this.IdleReplicsFrequencyMax = DefaultDataReadUtility.Read(reader, "IdleReplicsFrequencyMax", this.IdleReplicsFrequencyMax);
-      this.IdleReplicsMaxRangeToPlayer = DefaultDataReadUtility.Read(reader, "IdleReplicsMaxRangeToPlayer", this.IdleReplicsMaxRangeToPlayer);
-      this.IdleReplicsDistanceMin = DefaultDataReadUtility.Read(reader, "IdleReplicsDistanceMin", this.IdleReplicsDistanceMin);
-      this.IdleReplicsDistanceMax = DefaultDataReadUtility.Read(reader, "IdleReplicsDistanceMax", this.IdleReplicsDistanceMax);
-      this.EntitySubtitlesDistanceMax = DefaultDataReadUtility.Read(reader, "EntitySubtitlesDistanceMax", this.EntitySubtitlesDistanceMax);
-      this.BleuprintSubtitlesDistanceMax = DefaultDataReadUtility.Read(reader, "BleuprintSubtitlesDistanceMax", this.BleuprintSubtitlesDistanceMax);
+      Version = DefaultDataReadUtility.Read(reader, "Version", Version);
+      DropBagSearchRadius = DefaultDataReadUtility.Read(reader, "DropBagSearchRadius", DropBagSearchRadius);
+      DropBagOffset = DefaultDataReadUtility.Read(reader, "DropBagOffset", DropBagOffset);
+      ChildGunJam = DefaultDataReadUtility.Read(reader, "ChildGunJam", ChildGunJam);
+      StepsDistance = DefaultDataReadUtility.Read(reader, "StepsDistance", StepsDistance);
+      InteractionDistance = DefaultDataReadUtility.Read(reader, "InteractionDistance", InteractionDistance);
+      AwayDistance = DefaultDataReadUtility.Read(reader, "AwayDistance", AwayDistance);
+      DangerDistance = DefaultDataReadUtility.Read(reader, "DangerDistance", DangerDistance);
+      DoorSpeed = DefaultDataReadUtility.Read(reader, "DoorSpeed", DoorSpeed);
+      IdleReplicsFrequencyMin = DefaultDataReadUtility.Read(reader, "IdleReplicsFrequencyMin", IdleReplicsFrequencyMin);
+      IdleReplicsFrequencyMax = DefaultDataReadUtility.Read(reader, "IdleReplicsFrequencyMax", IdleReplicsFrequencyMax);
+      IdleReplicsMaxRangeToPlayer = DefaultDataReadUtility.Read(reader, "IdleReplicsMaxRangeToPlayer", IdleReplicsMaxRangeToPlayer);
+      IdleReplicsDistanceMin = DefaultDataReadUtility.Read(reader, "IdleReplicsDistanceMin", IdleReplicsDistanceMin);
+      IdleReplicsDistanceMax = DefaultDataReadUtility.Read(reader, "IdleReplicsDistanceMax", IdleReplicsDistanceMax);
+      EntitySubtitlesDistanceMax = DefaultDataReadUtility.Read(reader, "EntitySubtitlesDistanceMax", EntitySubtitlesDistanceMax);
+      BleuprintSubtitlesDistanceMax = DefaultDataReadUtility.Read(reader, "BleuprintSubtitlesDistanceMax", BleuprintSubtitlesDistanceMax);
     }
   }
 }

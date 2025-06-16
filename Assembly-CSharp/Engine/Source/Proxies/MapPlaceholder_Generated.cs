@@ -1,12 +1,11 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons.Cloneable;
 using Engine.Common.Commons.Converters;
 using Engine.Common.Services;
 using Engine.Source.Components.Maps;
 using Scripts.Tools.Serializations.Converters;
-using System;
-using UnityEngine;
 
 namespace Engine.Source.Proxies
 {
@@ -20,44 +19,44 @@ namespace Engine.Source.Proxies
   {
     public object Clone()
     {
-      return (object) ServiceCache.Factory.Instantiate<MapPlaceholder_Generated>(this);
+      return ServiceCache.Factory.Instantiate(this);
     }
 
     public void CopyTo(object target2)
     {
       MapPlaceholder_Generated placeholderGenerated = (MapPlaceholder_Generated) target2;
-      placeholderGenerated.name = this.name;
-      placeholderGenerated.kind = this.kind;
-      placeholderGenerated.mainSprite = this.mainSprite;
-      placeholderGenerated.hoverSprite = this.hoverSprite;
-      placeholderGenerated.normalSprite = this.normalSprite;
-      placeholderGenerated.shadowSprite = this.shadowSprite;
-      placeholderGenerated.alphaRaycast = this.alphaRaycast;
-      placeholderGenerated.npcSprite = this.npcSprite;
+      placeholderGenerated.name = name;
+      placeholderGenerated.kind = kind;
+      placeholderGenerated.mainSprite = mainSprite;
+      placeholderGenerated.hoverSprite = hoverSprite;
+      placeholderGenerated.normalSprite = normalSprite;
+      placeholderGenerated.shadowSprite = shadowSprite;
+      placeholderGenerated.alphaRaycast = alphaRaycast;
+      placeholderGenerated.npcSprite = npcSprite;
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.Write(writer, "Id", this.id);
-      DefaultDataWriteUtility.WriteEnum<MapPlaceholderKind>(writer, "Kind", this.kind);
-      UnityDataWriteUtility.Write<Sprite>(writer, "MainSprite", this.mainSprite);
-      UnityDataWriteUtility.Write<Sprite>(writer, "HoverSprite", this.hoverSprite);
-      UnityDataWriteUtility.Write<Sprite>(writer, "NormalSprite", this.normalSprite);
-      UnityDataWriteUtility.Write<Sprite>(writer, "ShadowSprite", this.shadowSprite);
-      DefaultDataWriteUtility.Write(writer, "AlphaRaycast", this.alphaRaycast);
-      UnityDataWriteUtility.Write<Sprite>(writer, "NPCSprite", this.npcSprite);
+      DefaultDataWriteUtility.Write(writer, "Id", id);
+      DefaultDataWriteUtility.WriteEnum(writer, "Kind", kind);
+      UnityDataWriteUtility.Write(writer, "MainSprite", mainSprite);
+      UnityDataWriteUtility.Write(writer, "HoverSprite", hoverSprite);
+      UnityDataWriteUtility.Write(writer, "NormalSprite", normalSprite);
+      UnityDataWriteUtility.Write(writer, "ShadowSprite", shadowSprite);
+      DefaultDataWriteUtility.Write(writer, "AlphaRaycast", alphaRaycast);
+      UnityDataWriteUtility.Write(writer, "NPCSprite", npcSprite);
     }
 
-    public void DataRead(IDataReader reader, System.Type type)
+    public void DataRead(IDataReader reader, Type type)
     {
-      this.id = DefaultDataReadUtility.Read(reader, "Id", this.id);
-      this.kind = DefaultDataReadUtility.ReadEnum<MapPlaceholderKind>(reader, "Kind");
-      this.mainSprite = UnityDataReadUtility.Read<Sprite>(reader, "MainSprite", this.mainSprite);
-      this.hoverSprite = UnityDataReadUtility.Read<Sprite>(reader, "HoverSprite", this.hoverSprite);
-      this.normalSprite = UnityDataReadUtility.Read<Sprite>(reader, "NormalSprite", this.normalSprite);
-      this.shadowSprite = UnityDataReadUtility.Read<Sprite>(reader, "ShadowSprite", this.shadowSprite);
-      this.alphaRaycast = DefaultDataReadUtility.Read(reader, "AlphaRaycast", this.alphaRaycast);
-      this.npcSprite = UnityDataReadUtility.Read<Sprite>(reader, "NPCSprite", this.npcSprite);
+      id = DefaultDataReadUtility.Read(reader, "Id", id);
+      kind = DefaultDataReadUtility.ReadEnum<MapPlaceholderKind>(reader, "Kind");
+      mainSprite = UnityDataReadUtility.Read(reader, "MainSprite", mainSprite);
+      hoverSprite = UnityDataReadUtility.Read(reader, "HoverSprite", hoverSprite);
+      normalSprite = UnityDataReadUtility.Read(reader, "NormalSprite", normalSprite);
+      shadowSprite = UnityDataReadUtility.Read(reader, "ShadowSprite", shadowSprite);
+      alphaRaycast = DefaultDataReadUtility.Read(reader, "AlphaRaycast", alphaRaycast);
+      npcSprite = UnityDataReadUtility.Read(reader, "NPCSprite", npcSprite);
     }
   }
 }

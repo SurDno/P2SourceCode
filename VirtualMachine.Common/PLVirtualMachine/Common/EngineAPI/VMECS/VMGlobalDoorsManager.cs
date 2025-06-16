@@ -4,7 +4,7 @@ using PLVirtualMachine.Common.EngineAPI.VMECS.VMAttributes;
 
 namespace PLVirtualMachine.Common.EngineAPI.VMECS
 {
-  [Info("GlobalDoorsManager", null)]
+  [Info("GlobalDoorsManager")]
   public class VMGlobalDoorsManager : VMComponent
   {
     public const string ComponentName = "GlobalDoorsManager";

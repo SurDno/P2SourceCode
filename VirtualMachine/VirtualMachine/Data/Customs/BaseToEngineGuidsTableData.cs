@@ -1,8 +1,8 @@
-﻿using Cofe.Serializations.Converters;
-using Engine.Common.Comparers;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Xml;
+using Cofe.Serializations.Converters;
+using Engine.Common.Comparers;
 using VirtualMachine.Common.Data;
 
 namespace VirtualMachine.Data.Customs
@@ -20,8 +20,8 @@ namespace VirtualMachine.Data.Customs
         xml.MoveToAttribute("count");
         capacity = DefaultConverter.ParseInt(xml.Value);
       }
-      this.idToGuid = new Dictionary<ulong, Guid>(capacity, (IEqualityComparer<ulong>) UlongComparer.Instance);
-      this.guidToId = new Dictionary<Guid, ulong>(capacity, (IEqualityComparer<Guid>) GuidComparer.Instance);
+      idToGuid = new Dictionary<ulong, Guid>(capacity, UlongComparer.Instance);
+      guidToId = new Dictionary<Guid, ulong>(capacity, GuidComparer.Instance);
       if (xml.IsEmptyElement)
         return;
       while (xml.Read())
@@ -31,8 +31,8 @@ namespace VirtualMachine.Data.Customs
           xml.MoveToAttribute("key");
           ulong key = DefaultConverter.ParseUlong(xml.Value);
           Guid guid = DefaultConverter.ParseGuid(XmlReaderUtility.ReadContent(xml));
-          this.idToGuid.Add(key, guid);
-          this.guidToId.Add(guid, key);
+          idToGuid.Add(key, guid);
+          guidToId.Add(guid, key);
         }
         else if (xml.NodeType == XmlNodeType.EndElement)
           break;
@@ -42,14 +42,14 @@ namespace VirtualMachine.Data.Customs
     public ulong GetBaseGuidByEngineTemplateGuid(Guid guid)
     {
       ulong engineTemplateGuid = 0;
-      this.guidToId.TryGetValue(guid, out engineTemplateGuid);
+      guidToId.TryGetValue(guid, out engineTemplateGuid);
       return engineTemplateGuid;
     }
 
     public Guid GetEngineTemplateGuidByBaseGuid(ulong id)
     {
       Guid templateGuidByBaseGuid;
-      this.idToGuid.TryGetValue(id, out templateGuidByBaseGuid);
+      idToGuid.TryGetValue(id, out templateGuidByBaseGuid);
       return templateGuidByBaseGuid;
     }
   }

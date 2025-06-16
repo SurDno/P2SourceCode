@@ -11,6 +11,6 @@ namespace Engine.Source.Services
     public List<CombatServiceEscapedCharacterInfo> EscapedCharacters;
     public int Id;
 
-    public CombatServiceCombatInfo() => this.Id = CombatServiceCombatInfo.lastId++;
+    public CombatServiceCombatInfo() => Id = lastId++;
   }
 }

@@ -6,12 +6,12 @@ using Engine.Source.Components;
 using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
-using UnityEngine;
+using IUpdatable = NodeCanvas.Framework.IUpdatable;
 
 namespace Assets.Engine.Source.Blueprints
 {
   [Category("Engine")]
-  public class EveryHourNode : FlowControlNode, NodeCanvas.Framework.IUpdatable
+  public class EveryHourNode : FlowControlNode, IUpdatable
   {
     private const int distanceMinutes = 5;
     private const float updateTime = 2f;
@@ -22,10 +22,10 @@ namespace Assets.Engine.Source.Blueprints
 
     public void Update()
     {
-      this.accomulate += Time.deltaTime;
-      if ((double) this.accomulate < 2.0)
+      accomulate += Time.deltaTime;
+      if (accomulate < 2.0)
         return;
-      this.accomulate = 0.0f;
+      accomulate = 0.0f;
       if (EngineApplication.Sleep)
         return;
       IEntity player = ServiceLocator.GetService<ISimulation>().Player;
@@ -39,14 +39,14 @@ namespace Assets.Engine.Source.Blueprints
         return;
       if (ServiceLocator.GetService<ITimeService>().SolarTime.Minutes > 5)
       {
-        this.activate = false;
+        activate = false;
       }
       else
       {
-        if (this.activate)
+        if (activate)
           return;
-        this.activate = true;
-        this.output.Call();
+        activate = true;
+        output.Call();
       }
     }
   }

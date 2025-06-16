@@ -1,8 +1,5 @@
 ﻿using Engine.Common.MindMap;
 using Engine.Source.UI.Menu.Protagonist.MindMap;
-using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.UI;
 
 public class MapNodeView : 
   MonoBehaviour,
@@ -20,48 +17,48 @@ public class MapNodeView :
 
   private void OnEnable()
   {
-    if ((Object) this.nodeImage == (Object) null)
-      this.nodeImage = this.GetComponent<RawImage>();
-    if ((Object) this.nodeImage != (Object) null)
-      this.baseColor = this.nodeImage.color.ToRGBHex();
-    this.rectTransform = this.GetComponent<RectTransform>();
+    if ((Object) nodeImage == (Object) null)
+      nodeImage = this.GetComponent<RawImage>();
+    if ((Object) nodeImage != (Object) null)
+      baseColor = nodeImage.color.ToRGBHex();
+    rectTransform = this.GetComponent<RectTransform>();
   }
 
   public Rect GetSpriteRect()
   {
-    return (Object) this.rectTransform != (Object) null ? this.rectTransform.rect : Rect.zero;
+    return (Object) rectTransform != (Object) null ? rectTransform.rect : Rect.zero;
   }
 
   public void SetActive(bool active)
   {
     Color color;
-    if (!UnityEngine.ColorUtility.TryParseHtmlString(active ? this.highlightedColor : this.baseColor, out color) || !((Object) this.nodeImage != (Object) null))
+    if (!UnityEngine.ColorUtility.TryParseHtmlString(active ? highlightedColor : baseColor, out color) || !((Object) nodeImage != (Object) null))
       return;
-    this.nodeImage.color = color;
+    nodeImage.color = color;
   }
 
   public void SetMapView(MapWindow mapView) => this.mapView = mapView;
 
   public void SetNode(MMTooltip tooltip) => this.tooltip = tooltip;
 
-  public IMMNode GetNode() => this.tooltip.node;
+  public IMMNode GetNode() => tooltip.node;
 
   public void OnPointerClick(PointerEventData eventData)
   {
-    if (this.tooltip.node == null)
+    if (tooltip.node == null)
       return;
-    this.mapView.CallMindMap(this.tooltip.node);
+    mapView.CallMindMap(tooltip.node);
   }
 
   public void OnPointerEnter(PointerEventData eventData)
   {
-    this.SetActive(true);
-    this.mapView.ShowMapNodeInfo(this, this.tooltip);
+    SetActive(true);
+    mapView.ShowMapNodeInfo(this, tooltip);
   }
 
   public void OnPointerExit(PointerEventData eventData)
   {
-    this.SetActive(false);
-    this.mapView.HideMapNodeInfo();
+    SetActive(false);
+    mapView.HideMapNodeInfo();
   }
 }

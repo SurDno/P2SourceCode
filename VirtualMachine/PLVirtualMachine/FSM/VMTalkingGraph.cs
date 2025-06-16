@@ -1,4 +1,6 @@
-﻿using Cofe.Loggers;
+﻿using System.Collections.Generic;
+using System.Xml;
+using Cofe.Loggers;
 using Engine.Common.Commons;
 using PLVirtualMachine.Base;
 using PLVirtualMachine.Common;
@@ -6,12 +8,9 @@ using PLVirtualMachine.Common.Data;
 using PLVirtualMachine.Data;
 using PLVirtualMachine.GameLogic;
 using PLVirtualMachine.Objects;
-using System.Collections.Generic;
-using System.Xml;
 using VirtualMachine.Common;
 using VirtualMachine.Common.Data;
 using VirtualMachine.Data;
-using VirtualMachine.Data.Customs;
 
 namespace PLVirtualMachine.FSM
 {
@@ -38,50 +37,49 @@ namespace PLVirtualMachine.FSM
 
     public override void EditorDataRead(XmlReader xml, IDataCreator creator, string typeContext)
     {
-      while (xml.Read())
-      {
+      while (xml.Read()) {
         if (xml.NodeType == XmlNodeType.Element)
         {
           switch (xml.Name)
           {
             case "EntryPoints":
-              this.entryPoints = EditorDataReadUtility.ReadReferenceList<IEntryPoint>(xml, creator, this.entryPoints);
+              entryPoints = EditorDataReadUtility.ReadReferenceList(xml, creator, entryPoints);
               continue;
             case "EventLinks":
-              this.eventLinks = EditorDataReadUtility.ReadReferenceList<ILink>(xml, creator, this.eventLinks);
+              eventLinks = EditorDataReadUtility.ReadReferenceList(xml, creator, eventLinks);
               continue;
             case "GraphType":
-              this.graphType = EditorDataReadUtility.ReadEnum<EGraphType>(xml);
+              graphType = EditorDataReadUtility.ReadEnum<EGraphType>(xml);
               continue;
             case "IgnoreBlock":
-              this.ignoreBlock = EditorDataReadUtility.ReadValue(xml, this.ignoreBlock);
+              ignoreBlock = EditorDataReadUtility.ReadValue(xml, ignoreBlock);
               continue;
             case "Initial":
-              this.initial = EditorDataReadUtility.ReadValue(xml, this.initial);
+              initial = EditorDataReadUtility.ReadValue(xml, initial);
               continue;
             case "InputLinks":
-              this.inputLinks = EditorDataReadUtility.ReadReferenceList<VMEventLink>(xml, creator, this.inputLinks);
+              inputLinks = EditorDataReadUtility.ReadReferenceList(xml, creator, inputLinks);
               continue;
             case "InputParamsInfo":
-              this.inputParamsInfo = EditorDataReadUtility.ReadEditorDataSerializableList<NameTypeData>(xml, creator, this.inputParamsInfo);
+              inputParamsInfo = EditorDataReadUtility.ReadEditorDataSerializableList(xml, creator, inputParamsInfo);
               continue;
             case "Name":
-              this.name = EditorDataReadUtility.ReadValue(xml, this.name);
+              name = EditorDataReadUtility.ReadValue(xml, name);
               continue;
             case "OutputLinks":
-              this.outputLinks = EditorDataReadUtility.ReadReferenceList<ILink>(xml, creator, this.outputLinks);
+              outputLinks = EditorDataReadUtility.ReadReferenceList(xml, creator, outputLinks);
               continue;
             case "Owner":
-              this.owner = EditorDataReadUtility.ReadReference<IContainer>(xml, creator);
+              owner = EditorDataReadUtility.ReadReference<IContainer>(xml, creator);
               continue;
             case "Parent":
-              this.parent = EditorDataReadUtility.ReadReference<IContainer>(xml, creator);
+              parent = EditorDataReadUtility.ReadReference<IContainer>(xml, creator);
               continue;
             case "States":
-              this.states = EditorDataReadUtility.ReadReferenceList<IState>(xml, creator, this.states);
+              states = EditorDataReadUtility.ReadReferenceList(xml, creator, states);
               continue;
             case "SubstituteGraph":
-              this.substituteGraph = EditorDataReadUtility.ReadReference<IFiniteStateMachine>(xml, creator);
+              substituteGraph = EditorDataReadUtility.ReadReference<IFiniteStateMachine>(xml, creator);
               continue;
             default:
               if (XMLDataLoader.Logs.Add(typeContext + " : " + xml.Name))
@@ -90,7 +88,8 @@ namespace PLVirtualMachine.FSM
               continue;
           }
         }
-        else if (xml.NodeType == XmlNodeType.EndElement)
+
+        if (xml.NodeType == XmlNodeType.EndElement)
           break;
       }
     }
@@ -102,20 +101,20 @@ namespace PLVirtualMachine.FSM
 
     public override bool IgnoreBlock => true;
 
-    public bool OnlyOnce => this.ignoreBlock;
+    public bool OnlyOnce => ignoreBlock;
 
     public IVariable GetSpeechAuthorInfo(ulong id)
     {
-      if (this.talkingContext == null)
+      if (talkingContext == null)
       {
         Logger.AddError("Cannot load authors list: talking context not defined");
-        return (IVariable) null;
+        return null;
       }
-      if (((VMLogicObject) this.talkingContext).IsFunctionalSupport("Speaking"))
-        return (long) this.talkingContext.BaseGuid == (long) id ? ((VMLogicObject) this.talkingContext).GetSelf() : (IVariable) null;
-      if (this.talkingContext.GetCategory() == EObjectCategory.OBJECT_CATEGORY_CLASS && ((VMLogicObject) this.talkingContext).IsFunctionalSupport("Speaking"))
-        return (long) this.talkingContext.BaseGuid == (long) id ? ((VMLogicObject) this.talkingContext).GetSelf() : (IVariable) null;
-      List<IObjRef> staticObjects1 = ((VMLogicObject) this.talkingContext).GetStaticObjects();
+      if (((VMLogicObject) talkingContext).IsFunctionalSupport("Speaking"))
+        return (long) talkingContext.BaseGuid == (long) id ? ((VMLogicObject) talkingContext).GetSelf() : null;
+      if (talkingContext.GetCategory() == EObjectCategory.OBJECT_CATEGORY_CLASS && ((VMLogicObject) talkingContext).IsFunctionalSupport("Speaking"))
+        return (long) talkingContext.BaseGuid == (long) id ? ((VMLogicObject) talkingContext).GetSelf() : null;
+      List<IObjRef> staticObjects1 = ((VMLogicObject) talkingContext).GetStaticObjects();
       if (staticObjects1 != null)
       {
         for (int index = 0; index < staticObjects1.Count; ++index)
@@ -124,7 +123,7 @@ namespace PLVirtualMachine.FSM
             return ((VMLogicObject) staticObjects1[index].Object).GetSelf();
         }
       }
-      foreach (IVariable contextVariable in ((VMLogicObject) this.talkingContext).GetContextVariables(EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_PARAM))
+      foreach (IVariable contextVariable in ((VMLogicObject) talkingContext).GetContextVariables(EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_PARAM))
       {
         if (typeof (IObjRef).IsAssignableFrom(contextVariable.Type.BaseType))
         {
@@ -133,7 +132,7 @@ namespace PLVirtualMachine.FSM
           {
             IObjRef objRef = (IObjRef) ((VMParameter) contextVariable).Value;
             if (objRef.Object != null && !((VMLogicObject) objRef.Object).Static && (long) speechAuthorInfo.BaseGuid == (long) id)
-              return (IVariable) speechAuthorInfo;
+              return speechAuthorInfo;
           }
         }
       }
@@ -147,21 +146,21 @@ namespace PLVirtualMachine.FSM
         }
       }
       Logger.AddError("В контексте диалога нет ни одного персонажа. Диалог не имеет авторов!");
-      return (IVariable) null;
+      return null;
     }
 
     public override void OnAfterLoad()
     {
-      if (this.IsAfterLoaded)
+      if (IsAfterLoaded)
         return;
-      this.talkingContext = (IGameObjectContext) ((VMBaseObject) this.Parent).Owner;
+      talkingContext = (IGameObjectContext) ((VMBaseObject) Parent).Owner;
       base.OnAfterLoad();
     }
 
     public override void Clear()
     {
       base.Clear();
-      this.talkingContext = (IGameObjectContext) null;
+      talkingContext = null;
     }
   }
 }

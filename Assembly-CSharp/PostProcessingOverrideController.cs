@@ -1,5 +1,4 @@
-﻿using UnityEngine;
-using UnityEngine.PostProcessing;
+﻿using UnityEngine.PostProcessing;
 
 [ExecuteInEditMode]
 [RequireComponent(typeof (PostProcessingBehaviour))]
@@ -14,47 +13,47 @@ public class PostProcessingOverrideController : MonoBehaviour
 
   public PostProcessingStackOverride StackOverride
   {
-    get => this.stackOverride;
-    set => this.stackOverride = value;
+    get => stackOverride;
+    set => stackOverride = value;
   }
 
   private void ApplyTo(PostProcessingProfile source, PostProcessingProfile target)
   {
-    PostProcessingOverrideController.ResetTargetProfile(source, target);
-    if (!((Object) this.stackOverride != (Object) null))
+    ResetTargetProfile(source, target);
+    if (!((Object) stackOverride != (Object) null))
       return;
-    this.stackOverride.ApplyTo(source, target);
+    stackOverride.ApplyTo(source, target);
   }
 
   private void LateUpdate()
   {
-    if ((Object) this.overrideProfile == (Object) null)
+    if ((Object) overrideProfile == (Object) null)
       return;
-    this.ApplyTo(this.baseProfile, this.overrideProfile);
+    ApplyTo(baseProfile, overrideProfile);
   }
 
   private void OnDisable()
   {
-    if ((Object) this.overrideProfile == (Object) null)
+    if ((Object) overrideProfile == (Object) null)
       return;
-    this.postProcessingBehaviour.profile = this.baseProfile;
+    postProcessingBehaviour.profile = baseProfile;
     if (Application.isPlaying)
-      Object.Destroy((Object) this.overrideProfile);
+      Object.Destroy((Object) overrideProfile);
     else
-      Object.DestroyImmediate((Object) this.overrideProfile);
-    this.overrideProfile = (PostProcessingProfile) null;
+      Object.DestroyImmediate((Object) overrideProfile);
+    overrideProfile = null;
   }
 
   private void OnEnable()
   {
-    this.postProcessingBehaviour = this.GetComponent<PostProcessingBehaviour>();
-    if ((Object) this.postProcessingBehaviour == (Object) null || (Object) this.baseProfile == (Object) null)
+    postProcessingBehaviour = this.GetComponent<PostProcessingBehaviour>();
+    if ((Object) postProcessingBehaviour == (Object) null || (Object) baseProfile == (Object) null)
       return;
-    this.overrideProfile = Object.Instantiate<PostProcessingProfile>(this.baseProfile);
-    this.overrideProfile.name = this.baseProfile.name + "_Override";
-    this.overrideProfile.hideFlags = HideFlags.HideAndDontSave;
-    this.postProcessingBehaviour.profile = this.overrideProfile;
-    this.ApplyTo(this.baseProfile, this.overrideProfile);
+    overrideProfile = Object.Instantiate<PostProcessingProfile>(baseProfile);
+    overrideProfile.name = baseProfile.name + "_Override";
+    overrideProfile.hideFlags = HideFlags.HideAndDontSave;
+    postProcessingBehaviour.profile = overrideProfile;
+    ApplyTo(baseProfile, overrideProfile);
   }
 
   private static void ResetTargetProfile(PostProcessingProfile source, PostProcessingProfile target)

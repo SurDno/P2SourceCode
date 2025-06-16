@@ -1,5 +1,4 @@
 ﻿using Engine.Source.UI.Menu.Main;
-using UnityEngine;
 
 public class UIRoot : MonoBehaviour
 {
@@ -13,18 +12,18 @@ public class UIRoot : MonoBehaviour
   [SerializeField]
   private GameObject virtualCursor;
 
-  public SmallLoading SmallLoading => this.smallLoading;
+  public SmallLoading SmallLoading => smallLoading;
 
-  public GameObject VirtualCursor => this.virtualCursor;
+  public GameObject VirtualCursor => virtualCursor;
 
-  public GameObject Root => this.root;
+  public GameObject Root => root;
 
   public void Initialize()
   {
-    Transform transform = this.root?.transform;
+    Transform transform = root?.transform;
     if ((Object) transform == (Object) null)
       transform = this.transform;
-    foreach (GameObject prefab in this.prefabs)
+    foreach (GameObject prefab in prefabs)
     {
       if (!((Object) prefab == (Object) null))
       {

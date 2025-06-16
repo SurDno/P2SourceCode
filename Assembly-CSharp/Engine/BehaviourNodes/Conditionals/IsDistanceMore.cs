@@ -1,4 +1,5 @@
-﻿using BehaviorDesigner.Runtime;
+﻿using System;
+using BehaviorDesigner.Runtime;
 using BehaviorDesigner.Runtime.Tasks;
 using Cofe.Proxies;
 using Cofe.Serializations.Data;
@@ -7,7 +8,6 @@ using Engine.Common.Commons.Converters;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Scripts.Tools.Serializations.Converters;
-using UnityEngine;
 
 namespace Engine.BehaviourNodes.Conditionals
 {
@@ -18,42 +18,42 @@ namespace Engine.BehaviourNodes.Conditionals
   [FactoryProxy(typeof (IsDistanceMore))]
   public class IsDistanceMore : Conditional, IStub, ISerializeDataWrite, ISerializeDataRead
   {
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [SerializeField]
     public SharedTransform Target;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy()]
     [SerializeField]
     public float Distance;
 
     public override TaskStatus OnUpdate()
     {
-      return this.Target == null || (UnityEngine.Object) this.Target.Value == (UnityEngine.Object) null ? TaskStatus.Failure : ((double) (this.Target.Value.transform.position - this.gameObject.transform.position).magnitude > (double) this.Distance ? TaskStatus.Success : TaskStatus.Failure);
+      return Target == null || (UnityEngine.Object) Target.Value == (UnityEngine.Object) null ? TaskStatus.Failure : ((double) (Target.Value.transform.position - gameObject.transform.position).magnitude > Distance ? TaskStatus.Success : TaskStatus.Failure);
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.WriteSerialize<NodeData>(writer, "NodeData", this.nodeData);
-      DefaultDataWriteUtility.Write(writer, "Id", this.id);
-      DefaultDataWriteUtility.Write(writer, "FriendlyName", this.friendlyName);
-      DefaultDataWriteUtility.Write(writer, "Instant", this.instant);
-      DefaultDataWriteUtility.Write(writer, "Disabled", this.disabled);
-      BehaviorTreeDataWriteUtility.WriteShared<SharedTransform>(writer, "Target", this.Target);
-      DefaultDataWriteUtility.Write(writer, "Distance", this.Distance);
+      DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
+      DefaultDataWriteUtility.Write(writer, "Id", id);
+      DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
+      DefaultDataWriteUtility.Write(writer, "Instant", instant);
+      DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
+      BehaviorTreeDataWriteUtility.WriteShared(writer, "Target", Target);
+      DefaultDataWriteUtility.Write(writer, "Distance", Distance);
     }
 
-    public void DataRead(IDataReader reader, System.Type type)
+    public void DataRead(IDataReader reader, Type type)
     {
-      this.nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
-      this.id = DefaultDataReadUtility.Read(reader, "Id", this.id);
-      this.friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", this.friendlyName);
-      this.instant = DefaultDataReadUtility.Read(reader, "Instant", this.instant);
-      this.disabled = DefaultDataReadUtility.Read(reader, "Disabled", this.disabled);
-      this.Target = BehaviorTreeDataReadUtility.ReadShared<SharedTransform>(reader, "Target", this.Target);
-      this.Distance = DefaultDataReadUtility.Read(reader, "Distance", this.Distance);
+      nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
+      id = DefaultDataReadUtility.Read(reader, "Id", id);
+      friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
+      instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
+      disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
+      Target = BehaviorTreeDataReadUtility.ReadShared(reader, "Target", Target);
+      Distance = DefaultDataReadUtility.Read(reader, "Distance", Distance);
     }
   }
 }

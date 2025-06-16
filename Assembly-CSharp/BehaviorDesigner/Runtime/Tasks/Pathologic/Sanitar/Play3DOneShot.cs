@@ -1,4 +1,6 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using System.Reflection;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Behaviours.Components;
 using Engine.Common;
@@ -11,9 +13,6 @@ using Engine.Impl.Services.Factories;
 using Engine.Source.Audio;
 using Engine.Source.Components;
 using Scripts.Tools.Serializations.Converters;
-using System.Reflection;
-using UnityEngine;
-using UnityEngine.Audio;
 
 namespace BehaviorDesigner.Runtime.Tasks.Pathologic.Sanitar
 {
@@ -23,52 +22,52 @@ namespace BehaviorDesigner.Runtime.Tasks.Pathologic.Sanitar
   [Factory]
   [GeneratePartial(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
   [FactoryProxy(typeof (Play3DOneShot))]
-  public class Play3DOneShot : BehaviorDesigner.Runtime.Tasks.Action, IStub, ISerializeDataWrite, ISerializeDataRead
+  public class Play3DOneShot : Action, IStub, ISerializeDataWrite, ISerializeDataRead
   {
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [SerializeField]
     public AudioMixerGroup AudioMixerGroup;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [SerializeField]
     public AudioClip Sound;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [SerializeField]
     public AudioRolloffMode RolloffMode = AudioRolloffMode.Linear;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [SerializeField]
-    public SharedFloat Volume = (SharedFloat) 1f;
-    [BehaviorDesigner.Runtime.Tasks.Tooltip("0 for 2D sound, 1 for 3D sound")]
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    public SharedFloat Volume = 1f;
+    [Tooltip("0 for 2D sound, 1 for 3D sound")]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [SerializeField]
-    public SharedFloat SpatialBlend = (SharedFloat) 1f;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    public SharedFloat SpatialBlend = 1f;
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [SerializeField]
-    public SharedFloat MinDistance = (SharedFloat) 1f;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    public SharedFloat MinDistance = 1f;
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [SerializeField]
-    public SharedFloat MaxDistance = (SharedFloat) 10f;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    public SharedFloat MaxDistance = 10f;
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [SerializeField]
     public DetectType DetectType = DetectType.Casual;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy()]
     [SerializeField]
     public Pivot.AimWeaponType BodyPart = Pivot.AimWeaponType.Head;
     protected DetectableComponent detectable;
@@ -77,73 +76,73 @@ namespace BehaviorDesigner.Runtime.Tasks.Pathologic.Sanitar
 
     private void PlayAudioClip()
     {
-      SoundUtility.PlayAudioClip3D(this.gameObject.transform, this.Sound, this.AudioMixerGroup, this.Volume.Value, this.MinDistance.Value, this.MaxDistance.Value, true, 0.0f);
+      SoundUtility.PlayAudioClip3D(gameObject.transform, Sound, AudioMixerGroup, Volume.Value, MinDistance.Value, MaxDistance.Value, true, 0.0f);
     }
 
     public override TaskStatus OnUpdate()
     {
-      if ((UnityEngine.Object) this.Sound == (UnityEngine.Object) null)
+      if ((UnityEngine.Object) Sound == (UnityEngine.Object) null)
         return TaskStatus.Failure;
-      this.entity = EntityUtility.GetEntity(this.gameObject);
-      if (this.entity == null)
+      entity = EntityUtility.GetEntity(gameObject);
+      if (entity == null)
       {
-        Debug.LogWarning((object) (this.gameObject.name + " : entity not found, method : " + this.GetType().Name + ":" + MethodBase.GetCurrentMethod().Name), (UnityEngine.Object) this.gameObject);
+        Debug.LogWarning((object) (gameObject.name + " : entity not found, method : " + GetType().Name + ":" + MethodBase.GetCurrentMethod().Name), (UnityEngine.Object) gameObject);
         return TaskStatus.Failure;
       }
-      this.detectable = (DetectableComponent) this.entity.GetComponent<IDetectableComponent>();
-      if (this.detectable == null)
-        Debug.LogWarning((object) (this.gameObject.name + ": doesn't contain " + typeof (IDetectableComponent).Name + " engine component (this is not critical"), (UnityEngine.Object) this.gameObject);
-      if ((UnityEngine.Object) this.Sound == (UnityEngine.Object) null)
+      detectable = (DetectableComponent) entity.GetComponent<IDetectableComponent>();
+      if (detectable == null)
+        Debug.LogWarning((object) (gameObject.name + ": doesn't contain " + typeof (IDetectableComponent).Name + " engine component (this is not critical"), (UnityEngine.Object) gameObject);
+      if ((UnityEngine.Object) Sound == (UnityEngine.Object) null)
       {
-        Debug.LogWarning((object) (this.gameObject.name + ": doesn't contain " + typeof (IDetectableComponent).Name + " engine component"), (UnityEngine.Object) this.gameObject);
+        Debug.LogWarning((object) (gameObject.name + ": doesn't contain " + typeof (IDetectableComponent).Name + " engine component"), (UnityEngine.Object) gameObject);
         return TaskStatus.Failure;
       }
-      this.pivot = this.gameObject.GetComponent<Pivot>();
-      if ((UnityEngine.Object) this.pivot == (UnityEngine.Object) null)
+      pivot = gameObject.GetComponent<Pivot>();
+      if ((UnityEngine.Object) pivot == (UnityEngine.Object) null)
       {
-        Debug.LogErrorFormat(this.gameObject.name + " doesnt' contain " + typeof (Pivot).Name + " unity component", (object) this.gameObject);
+        Debug.LogErrorFormat(gameObject.name + " doesnt' contain " + typeof (Pivot).Name + " unity component", (object) gameObject);
         return TaskStatus.Failure;
       }
-      if (this.detectable == null)
+      if (detectable == null)
         ;
-      this.PlayAudioClip();
+      PlayAudioClip();
       return TaskStatus.Success;
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.WriteSerialize<NodeData>(writer, "NodeData", this.nodeData);
-      DefaultDataWriteUtility.Write(writer, "Id", this.id);
-      DefaultDataWriteUtility.Write(writer, "FriendlyName", this.friendlyName);
-      DefaultDataWriteUtility.Write(writer, "Instant", this.instant);
-      DefaultDataWriteUtility.Write(writer, "Disabled", this.disabled);
-      BehaviorTreeDataWriteUtility.WriteUnity<AudioMixerGroup>(writer, "AudioMixerGroup", this.AudioMixerGroup);
-      BehaviorTreeDataWriteUtility.WriteUnity<AudioClip>(writer, "Sound", this.Sound);
-      DefaultDataWriteUtility.WriteEnum<AudioRolloffMode>(writer, "RolloffMode", this.RolloffMode);
-      BehaviorTreeDataWriteUtility.WriteShared<SharedFloat>(writer, "Volume", this.Volume);
-      BehaviorTreeDataWriteUtility.WriteShared<SharedFloat>(writer, "SpatialBlend", this.SpatialBlend);
-      BehaviorTreeDataWriteUtility.WriteShared<SharedFloat>(writer, "MinDistance", this.MinDistance);
-      BehaviorTreeDataWriteUtility.WriteShared<SharedFloat>(writer, "MaxDistance", this.MaxDistance);
-      DefaultDataWriteUtility.WriteEnum<DetectType>(writer, "DetectType", this.DetectType);
-      DefaultDataWriteUtility.WriteEnum<Pivot.AimWeaponType>(writer, "BodyPart", this.BodyPart);
+      DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
+      DefaultDataWriteUtility.Write(writer, "Id", id);
+      DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
+      DefaultDataWriteUtility.Write(writer, "Instant", instant);
+      DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
+      BehaviorTreeDataWriteUtility.WriteUnity<AudioMixerGroup>(writer, "AudioMixerGroup", AudioMixerGroup);
+      BehaviorTreeDataWriteUtility.WriteUnity<AudioClip>(writer, "Sound", Sound);
+      DefaultDataWriteUtility.WriteEnum<AudioRolloffMode>(writer, "RolloffMode", RolloffMode);
+      BehaviorTreeDataWriteUtility.WriteShared(writer, "Volume", Volume);
+      BehaviorTreeDataWriteUtility.WriteShared(writer, "SpatialBlend", SpatialBlend);
+      BehaviorTreeDataWriteUtility.WriteShared(writer, "MinDistance", MinDistance);
+      BehaviorTreeDataWriteUtility.WriteShared(writer, "MaxDistance", MaxDistance);
+      DefaultDataWriteUtility.WriteEnum(writer, "DetectType", DetectType);
+      DefaultDataWriteUtility.WriteEnum(writer, "BodyPart", BodyPart);
     }
 
-    public void DataRead(IDataReader reader, System.Type type)
+    public void DataRead(IDataReader reader, Type type)
     {
-      this.nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
-      this.id = DefaultDataReadUtility.Read(reader, "Id", this.id);
-      this.friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", this.friendlyName);
-      this.instant = DefaultDataReadUtility.Read(reader, "Instant", this.instant);
-      this.disabled = DefaultDataReadUtility.Read(reader, "Disabled", this.disabled);
-      this.AudioMixerGroup = BehaviorTreeDataReadUtility.ReadUnity<AudioMixerGroup>(reader, "AudioMixerGroup", this.AudioMixerGroup);
-      this.Sound = BehaviorTreeDataReadUtility.ReadUnity<AudioClip>(reader, "Sound", this.Sound);
-      this.RolloffMode = DefaultDataReadUtility.ReadEnum<AudioRolloffMode>(reader, "RolloffMode");
-      this.Volume = BehaviorTreeDataReadUtility.ReadShared<SharedFloat>(reader, "Volume", this.Volume);
-      this.SpatialBlend = BehaviorTreeDataReadUtility.ReadShared<SharedFloat>(reader, "SpatialBlend", this.SpatialBlend);
-      this.MinDistance = BehaviorTreeDataReadUtility.ReadShared<SharedFloat>(reader, "MinDistance", this.MinDistance);
-      this.MaxDistance = BehaviorTreeDataReadUtility.ReadShared<SharedFloat>(reader, "MaxDistance", this.MaxDistance);
-      this.DetectType = DefaultDataReadUtility.ReadEnum<DetectType>(reader, "DetectType");
-      this.BodyPart = DefaultDataReadUtility.ReadEnum<Pivot.AimWeaponType>(reader, "BodyPart");
+      nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
+      id = DefaultDataReadUtility.Read(reader, "Id", id);
+      friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
+      instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
+      disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
+      AudioMixerGroup = BehaviorTreeDataReadUtility.ReadUnity<AudioMixerGroup>(reader, "AudioMixerGroup", AudioMixerGroup);
+      Sound = BehaviorTreeDataReadUtility.ReadUnity<AudioClip>(reader, "Sound", Sound);
+      RolloffMode = DefaultDataReadUtility.ReadEnum<AudioRolloffMode>(reader, "RolloffMode");
+      Volume = BehaviorTreeDataReadUtility.ReadShared(reader, "Volume", Volume);
+      SpatialBlend = BehaviorTreeDataReadUtility.ReadShared(reader, "SpatialBlend", SpatialBlend);
+      MinDistance = BehaviorTreeDataReadUtility.ReadShared(reader, "MinDistance", MinDistance);
+      MaxDistance = BehaviorTreeDataReadUtility.ReadShared(reader, "MaxDistance", MaxDistance);
+      DetectType = DefaultDataReadUtility.ReadEnum<DetectType>(reader, "DetectType");
+      BodyPart = DefaultDataReadUtility.ReadEnum<Pivot.AimWeaponType>(reader, "BodyPart");
     }
   }
 }

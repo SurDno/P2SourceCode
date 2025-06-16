@@ -1,8 +1,6 @@
 ﻿using Engine.Behaviours.Components;
 using Engine.Behaviours.Unity.Mecanim;
 using Inspectors;
-using UnityEngine;
-using UnityEngine.AI;
 
 public class NpcStateInFire : INpcState
 {
@@ -24,41 +22,41 @@ public class NpcStateInFire : INpcState
 
   private bool TryInit()
   {
-    if (this.inited)
+    if (inited)
       return true;
-    this.behavior = this.pivot.GetBehavior();
-    this.agent = this.pivot.GetAgent();
-    this.animator = this.pivot.GetAnimator();
-    if ((Object) this.animator == (Object) null)
+    behavior = pivot.GetBehavior();
+    agent = pivot.GetAgent();
+    animator = pivot.GetAnimator();
+    if ((Object) animator == (Object) null)
     {
-      Debug.LogError((object) ("Null animator " + this.GameObject.name), (Object) this.GameObject);
-      Debug.LogError((object) ("Null animator " + this.GameObject.GetFullName()));
-      this.failed = true;
+      Debug.LogError((object) ("Null animator " + GameObject.name), (Object) GameObject);
+      Debug.LogError((object) ("Null animator " + GameObject.GetFullName()));
+      failed = true;
       return false;
     }
-    this.animatorState = AnimatorState45.GetAnimatorState(this.animator);
-    this.failed = false;
-    this.inited = true;
+    animatorState = AnimatorState45.GetAnimatorState(animator);
+    failed = false;
+    inited = true;
     return true;
   }
 
   public NpcStateInFire(NpcState npcState, Pivot pivot)
   {
-    this.GameObject = npcState.gameObject;
+    GameObject = npcState.gameObject;
     this.pivot = pivot;
     this.npcState = npcState;
   }
 
   public void Activate()
   {
-    if (!this.TryInit())
+    if (!TryInit())
       return;
-    this.animatorState.ResetAllTriggers();
-    this.animatorState.SetTrigger("Fight.Triggers/CancelAttack");
-    this.fireLayerIndex = this.animator.GetLayerIndex("Fight Fire Layer");
-    this.fireLayerWeight = this.animator.GetLayerWeight(this.fireLayerIndex);
-    this.agent.enabled = true;
-    Pivot component = this.GameObject.GetComponent<Pivot>();
+    animatorState.ResetAllTriggers();
+    animatorState.SetTrigger("Fight.Triggers/CancelAttack");
+    fireLayerIndex = animator.GetLayerIndex("Fight Fire Layer");
+    fireLayerWeight = animator.GetLayerWeight(fireLayerIndex);
+    agent.enabled = true;
+    Pivot component = GameObject.GetComponent<Pivot>();
     if (!((Object) component != (Object) null) || !((Object) component.HidingOuterWeapon != (Object) null))
       return;
     component.HidingOuterWeapon.SetActive(false);
@@ -66,29 +64,29 @@ public class NpcStateInFire : INpcState
 
   public void Shutdown()
   {
-    if (!this.failed)
+    if (!failed)
       ;
   }
 
   public void OnAnimatorMove()
   {
-    if (this.failed)
+    if (failed)
       return;
-    this.behavior.OnExternalAnimatorMove();
+    behavior.OnExternalAnimatorMove();
   }
 
   public void OnAnimatorEventEvent(string obj)
   {
-    if (!this.failed)
+    if (!failed)
       ;
   }
 
   public void Update()
   {
-    if (this.failed)
+    if (failed)
       return;
-    this.fireLayerWeight = Mathf.MoveTowards(this.fireLayerWeight, 1f, Time.deltaTime / 0.5f);
-    this.animator.SetLayerWeight(this.fireLayerIndex, this.fireLayerWeight);
+    fireLayerWeight = Mathf.MoveTowards(fireLayerWeight, 1f, Time.deltaTime / 0.5f);
+    animator.SetLayerWeight(fireLayerIndex, fireLayerWeight);
   }
 
   public void OnLodStateChanged(bool enabled)

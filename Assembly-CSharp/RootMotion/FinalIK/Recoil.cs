@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEngine;
 
 namespace RootMotion.FinalIK
 {
@@ -10,7 +9,7 @@ namespace RootMotion.FinalIK
     [Tooltip("Set this true if you are using IKExecutionOrder.cs or a custom script to force AimIK solve after FBBIK.")]
     public bool aimIKSolvedLast;
     [Tooltip("Which hand is holding the weapon?")]
-    public Recoil.Handedness handedness;
+    public Handedness handedness;
     [Tooltip("Check for 2-handed weapons.")]
     public bool twoHanded = true;
     [Tooltip("Weight curve for the recoil offsets. Recoil procedure is as long as this curve.")]
@@ -25,7 +24,7 @@ namespace RootMotion.FinalIK
     public float blendTime;
     [Space(10f)]
     [Tooltip("FBBIK effector position offsets for the recoil (in aiming direction space).")]
-    public Recoil.RecoilOffset[] offsets;
+    public RecoilOffset[] offsets;
     [HideInInspector]
     public Quaternion rotationOffset = Quaternion.identity;
     private float magnitudeMlp = 1f;
@@ -41,93 +40,93 @@ namespace RootMotion.FinalIK
     private bool handRotationsSet;
     private Vector3 aimIKAxis;
 
-    public bool isFinished => (double) Time.time > (double) this.endTime;
+    public bool isFinished => (double) Time.time > endTime;
 
     public void SetHandRotations(Quaternion leftHandRotation, Quaternion rightHandRotation)
     {
-      this.primaryHandRotation = this.handedness != Recoil.Handedness.Left ? rightHandRotation : leftHandRotation;
-      this.handRotationsSet = true;
+      primaryHandRotation = handedness != Handedness.Left ? rightHandRotation : leftHandRotation;
+      handRotationsSet = true;
     }
 
     public void Fire(float magnitude)
     {
-      float num = magnitude * UnityEngine.Random.value * this.magnitudeRandom;
-      this.magnitudeMlp = magnitude + num;
-      this.randomRotation = Quaternion.Euler(this.rotationRandom * UnityEngine.Random.value);
-      foreach (Recoil.RecoilOffset offset in this.offsets)
+      float num = magnitude * UnityEngine.Random.value * magnitudeRandom;
+      magnitudeMlp = magnitude + num;
+      randomRotation = Quaternion.Euler(rotationRandom * UnityEngine.Random.value);
+      foreach (RecoilOffset offset in offsets)
         offset.Start();
-      this.blendWeight = (double) Time.time >= (double) this.endTime ? 1f : 0.0f;
-      Keyframe[] keys = this.recoilWeight.keys;
-      this.length = keys[keys.Length - 1].time;
-      this.endTime = Time.time + this.length;
+      blendWeight = (double) Time.time >= endTime ? 1f : 0.0f;
+      Keyframe[] keys = recoilWeight.keys;
+      length = keys[keys.Length - 1].time;
+      endTime = Time.time + length;
     }
 
     protected override void OnModifyOffset()
     {
-      if ((UnityEngine.Object) this.aimIK != (UnityEngine.Object) null)
-        this.aimIKAxis = this.aimIK.solver.axis;
-      if ((double) Time.time >= (double) this.endTime)
+      if ((UnityEngine.Object) aimIK != (UnityEngine.Object) null)
+        aimIKAxis = aimIK.solver.axis;
+      if ((double) Time.time >= endTime)
       {
-        this.rotationOffset = Quaternion.identity;
+        rotationOffset = Quaternion.identity;
       }
       else
       {
-        if (!this.initiated && (UnityEngine.Object) this.ik != (UnityEngine.Object) null)
+        if (!initiated && (UnityEngine.Object) ik != (UnityEngine.Object) null)
         {
-          this.initiated = true;
-          IKSolverFullBodyBiped solver1 = this.ik.solver;
-          solver1.OnPostUpdate = solver1.OnPostUpdate + new IKSolver.UpdateDelegate(this.AfterFBBIK);
-          if ((UnityEngine.Object) this.aimIK != (UnityEngine.Object) null)
+          initiated = true;
+          IKSolverFullBodyBiped solver1 = ik.solver;
+          solver1.OnPostUpdate = solver1.OnPostUpdate + AfterFBBIK;
+          if ((UnityEngine.Object) aimIK != (UnityEngine.Object) null)
           {
-            IKSolverAim solver2 = this.aimIK.solver;
-            solver2.OnPostUpdate = solver2.OnPostUpdate + new IKSolver.UpdateDelegate(this.AfterAimIK);
+            IKSolverAim solver2 = aimIK.solver;
+            solver2.OnPostUpdate = solver2.OnPostUpdate + AfterAimIK;
           }
         }
-        this.blendTime = Mathf.Max(this.blendTime, 0.0f);
-        this.blendWeight = (double) this.blendTime <= 0.0 ? 1f : Mathf.Min(this.blendWeight + Time.deltaTime * (1f / this.blendTime), 1f);
-        this.w = Mathf.Lerp(this.w, this.recoilWeight.Evaluate(this.length - (this.endTime - Time.time)) * this.magnitudeMlp, this.blendWeight);
-        Quaternion rotation = this.randomRotation * (!((UnityEngine.Object) this.aimIK != (UnityEngine.Object) null) || !((UnityEngine.Object) this.aimIK.solver.transform != (UnityEngine.Object) null) || this.aimIKSolvedLast ? this.ik.references.root.rotation : Quaternion.LookRotation(this.aimIK.solver.IKPosition - this.aimIK.solver.transform.position, this.ik.references.root.up));
-        foreach (Recoil.RecoilOffset offset in this.offsets)
-          offset.Apply(this.ik.solver, rotation, this.w, this.length, this.endTime - Time.time);
-        if (!this.handRotationsSet)
-          this.primaryHandRotation = this.primaryHand.rotation;
-        this.handRotationsSet = false;
-        this.rotationOffset = Quaternion.Lerp(Quaternion.identity, Quaternion.Euler(this.randomRotation * this.primaryHandRotation * this.handRotationOffset), this.w);
-        this.handRotation = this.rotationOffset * this.primaryHandRotation;
-        if (this.twoHanded)
+        blendTime = Mathf.Max(blendTime, 0.0f);
+        blendWeight = blendTime <= 0.0 ? 1f : Mathf.Min(blendWeight + Time.deltaTime * (1f / blendTime), 1f);
+        w = Mathf.Lerp(w, recoilWeight.Evaluate(length - (endTime - Time.time)) * magnitudeMlp, blendWeight);
+        Quaternion rotation = randomRotation * (!((UnityEngine.Object) aimIK != (UnityEngine.Object) null) || !((UnityEngine.Object) aimIK.solver.transform != (UnityEngine.Object) null) || aimIKSolvedLast ? ik.references.root.rotation : Quaternion.LookRotation(aimIK.solver.IKPosition - aimIK.solver.transform.position, ik.references.root.up));
+        foreach (RecoilOffset offset in offsets)
+          offset.Apply(ik.solver, rotation, w, length, endTime - Time.time);
+        if (!handRotationsSet)
+          primaryHandRotation = primaryHand.rotation;
+        handRotationsSet = false;
+        rotationOffset = Quaternion.Lerp(Quaternion.identity, Quaternion.Euler(randomRotation * primaryHandRotation * handRotationOffset), w);
+        handRotation = rotationOffset * primaryHandRotation;
+        if (twoHanded)
         {
-          Vector3 vector3 = Quaternion.Inverse(this.primaryHand.rotation) * (this.secondaryHand.position - this.primaryHand.position);
-          this.secondaryHandRelativeRotation = Quaternion.Inverse(this.primaryHand.rotation) * this.secondaryHand.rotation;
-          this.secondaryHandEffector.positionOffset += this.primaryHand.position + this.primaryHandEffector.positionOffset + this.handRotation * vector3 - (this.secondaryHand.position + this.secondaryHandEffector.positionOffset);
+          Vector3 vector3 = Quaternion.Inverse(primaryHand.rotation) * (secondaryHand.position - primaryHand.position);
+          secondaryHandRelativeRotation = Quaternion.Inverse(primaryHand.rotation) * secondaryHand.rotation;
+          secondaryHandEffector.positionOffset += primaryHand.position + primaryHandEffector.positionOffset + handRotation * vector3 - (secondaryHand.position + secondaryHandEffector.positionOffset);
         }
-        if (!((UnityEngine.Object) this.aimIK != (UnityEngine.Object) null) || !this.aimIKSolvedLast)
+        if (!((UnityEngine.Object) aimIK != (UnityEngine.Object) null) || !aimIKSolvedLast)
           return;
-        this.aimIK.solver.axis = Quaternion.Inverse(this.ik.references.root.rotation) * Quaternion.Inverse(this.rotationOffset) * this.aimIKAxis;
+        aimIK.solver.axis = Quaternion.Inverse(ik.references.root.rotation) * Quaternion.Inverse(rotationOffset) * aimIKAxis;
       }
     }
 
     private void AfterFBBIK()
     {
-      if ((double) Time.time >= (double) this.endTime)
+      if ((double) Time.time >= endTime)
         return;
-      this.primaryHand.rotation = this.handRotation;
-      if (!this.twoHanded)
+      primaryHand.rotation = handRotation;
+      if (!twoHanded)
         return;
-      this.secondaryHand.rotation = this.primaryHand.rotation * this.secondaryHandRelativeRotation;
+      secondaryHand.rotation = primaryHand.rotation * secondaryHandRelativeRotation;
     }
 
     private void AfterAimIK()
     {
-      if (!this.aimIKSolvedLast)
+      if (!aimIKSolvedLast)
         return;
-      this.aimIK.solver.axis = this.aimIKAxis;
+      aimIK.solver.axis = aimIKAxis;
     }
 
     private IKEffector primaryHandEffector
     {
       get
       {
-        return this.handedness == Recoil.Handedness.Right ? this.ik.solver.rightHandEffector : this.ik.solver.leftHandEffector;
+        return handedness == Handedness.Right ? ik.solver.rightHandEffector : ik.solver.leftHandEffector;
       }
     }
 
@@ -135,25 +134,25 @@ namespace RootMotion.FinalIK
     {
       get
       {
-        return this.handedness == Recoil.Handedness.Right ? this.ik.solver.leftHandEffector : this.ik.solver.rightHandEffector;
+        return handedness == Handedness.Right ? ik.solver.leftHandEffector : ik.solver.rightHandEffector;
       }
     }
 
-    private Transform primaryHand => this.primaryHandEffector.bone;
+    private Transform primaryHand => primaryHandEffector.bone;
 
-    private Transform secondaryHand => this.secondaryHandEffector.bone;
+    private Transform secondaryHand => secondaryHandEffector.bone;
 
     protected override void OnDestroy()
     {
       base.OnDestroy();
-      if (!((UnityEngine.Object) this.ik != (UnityEngine.Object) null) || !this.initiated)
+      if (!((UnityEngine.Object) ik != (UnityEngine.Object) null) || !initiated)
         return;
-      IKSolverFullBodyBiped solver1 = this.ik.solver;
-      solver1.OnPostUpdate = solver1.OnPostUpdate - new IKSolver.UpdateDelegate(this.AfterFBBIK);
-      if ((UnityEngine.Object) this.aimIK != (UnityEngine.Object) null)
+      IKSolverFullBodyBiped solver1 = ik.solver;
+      solver1.OnPostUpdate = solver1.OnPostUpdate - AfterFBBIK;
+      if ((UnityEngine.Object) aimIK != (UnityEngine.Object) null)
       {
-        IKSolverAim solver2 = this.aimIK.solver;
-        solver2.OnPostUpdate = solver2.OnPostUpdate - new IKSolver.UpdateDelegate(this.AfterAimIK);
+        IKSolverAim solver2 = aimIK.solver;
+        solver2.OnPostUpdate = solver2.OnPostUpdate - AfterAimIK;
       }
     }
 
@@ -168,15 +167,15 @@ namespace RootMotion.FinalIK
       [Tooltip("Max additive recoil for automatic fire.")]
       public float maxAdditiveOffsetMag = 0.2f;
       [Tooltip("Linking this recoil offset to FBBIK effectors.")]
-      public Recoil.RecoilOffset.EffectorLink[] effectorLinks;
+      public EffectorLink[] effectorLinks;
       private Vector3 additiveOffset;
       private Vector3 lastOffset;
 
       public void Start()
       {
-        if ((double) this.additivity <= 0.0)
+        if (additivity <= 0.0)
           return;
-        this.additiveOffset = Vector3.ClampMagnitude(this.lastOffset * this.additivity, this.maxAdditiveOffsetMag);
+        additiveOffset = Vector3.ClampMagnitude(lastOffset * additivity, maxAdditiveOffsetMag);
       }
 
       public void Apply(
@@ -186,10 +185,10 @@ namespace RootMotion.FinalIK
         float length,
         float timeLeft)
       {
-        this.additiveOffset = Vector3.Lerp(Vector3.zero, this.additiveOffset, timeLeft / length);
-        this.lastOffset = rotation * (this.offset * masterWeight) + rotation * this.additiveOffset;
-        foreach (Recoil.RecoilOffset.EffectorLink effectorLink in this.effectorLinks)
-          solver.GetEffector(effectorLink.effector).positionOffset += this.lastOffset * effectorLink.weight;
+        additiveOffset = Vector3.Lerp(Vector3.zero, additiveOffset, timeLeft / length);
+        lastOffset = rotation * (offset * masterWeight) + rotation * additiveOffset;
+        foreach (EffectorLink effectorLink in effectorLinks)
+          solver.GetEffector(effectorLink.effector).positionOffset += lastOffset * effectorLink.weight;
       }
 
       [Serializable]

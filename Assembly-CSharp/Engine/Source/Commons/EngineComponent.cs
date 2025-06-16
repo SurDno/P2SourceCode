@@ -9,10 +9,10 @@ namespace Engine.Source.Commons
   public abstract class EngineComponent : IComponent, IInjectable, IEngineComponent
   {
     [Inspected(Header = true)]
-    private string OwnerHierarchyPath => this.Owner.GetHierarchyPath();
+    private string OwnerHierarchyPath => Owner.GetHierarchyPath();
 
     [Inspected]
-    public bool IsDisposed => this.Owner == null || this.Owner.IsDisposed;
+    public bool IsDisposed => Owner == null || Owner.IsDisposed;
 
     [Inspected]
     public IEntity Owner { get; set; }
@@ -23,8 +23,8 @@ namespace Engine.Source.Commons
 
     public virtual void PrepareAdded()
     {
-      MetaService.Compute((object) this, FromThisAttribute.Id, (object) this);
-      MetaService.Compute((object) this, FromLocatorAttribute.Id, (object) this);
+      MetaService.Compute(this, FromThisAttribute.Id, this);
+      MetaService.Compute(this, FromLocatorAttribute.Id, this);
     }
 
     public virtual void OnAdded()
@@ -37,7 +37,7 @@ namespace Engine.Source.Commons
 
     public virtual void PostRemoved()
     {
-      MetaService.Compute((object) this, FromThisAttribute.ClearId, (object) this);
+      MetaService.Compute(this, FromThisAttribute.ClearId, this);
     }
   }
 }

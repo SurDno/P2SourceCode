@@ -1,9 +1,8 @@
-﻿using Cofe.Utility;
+﻿using System;
+using System.Collections.Generic;
+using Cofe.Utility;
 using Engine.Common;
 using Inspectors;
-using System;
-using System.Collections.Generic;
-using UnityEngine.Profiling;
 
 namespace Engine.Source.Commons
 {
@@ -16,32 +15,32 @@ namespace Engine.Source.Commons
 
     public SmoothUpdater(float delay)
     {
-      this.updater = new ReduceUpdateProxy<IUpdatable>(this.updatable, (IUpdateItem<IUpdatable>) this, delay);
+      updater = new ReduceUpdateProxy<IUpdatable>(updatable, this, delay);
     }
 
-    public void AddUpdatable(IUpdatable up) => this.updatable.Add(up);
+    public void AddUpdatable(IUpdatable up) => updatable.Add(up);
 
     public void RemoveUpdatable(IUpdatable up)
     {
-      int updatableIndex = this.GetUpdatableIndex(up);
+      int updatableIndex = GetUpdatableIndex(up);
       if (updatableIndex == -1)
         throw new Exception();
-      this.updatable[updatableIndex] = (IUpdatable) null;
+      updatable[updatableIndex] = null;
     }
 
     private int GetUpdatableIndex(IUpdatable up)
     {
       if (up == null)
         throw new Exception();
-      for (int index = 0; index < this.updatable.Count; ++index)
+      for (int index = 0; index < updatable.Count; ++index)
       {
-        if (this.updatable[index] == up)
+        if (updatable[index] == up)
           return index;
       }
       return -1;
     }
 
-    public void ComputeUpdate() => this.updater.Update();
+    public void ComputeUpdate() => updater.Update();
 
     public void ComputeUpdateItem(IUpdatable item)
     {

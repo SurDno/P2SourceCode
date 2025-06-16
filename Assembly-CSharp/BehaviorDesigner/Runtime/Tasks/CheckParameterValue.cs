@@ -1,4 +1,5 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common;
 using Engine.Common.Commons;
@@ -8,7 +9,6 @@ using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Engine.Source.Components;
 using Scripts.Tools.Serializations.Converters;
-using UnityEngine;
 
 namespace BehaviorDesigner.Runtime.Tasks
 {
@@ -19,86 +19,86 @@ namespace BehaviorDesigner.Runtime.Tasks
   [FactoryProxy(typeof (CheckParameterValue))]
   public class CheckParameterValue : Conditional, IStub, ISerializeDataWrite, ISerializeDataRead
   {
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [SerializeField]
     public SharedTransform Target;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [SerializeField]
-    public SharedFloat ValueThreshold = (SharedFloat) 0.0f;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    public SharedFloat ValueThreshold = 0.0f;
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [SerializeField]
     public ParameterNameEnum parName;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [SerializeField]
-    public CheckParameterValue.CompareEnum compareType;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    public CompareEnum compareType;
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy()]
     [SerializeField]
-    public SharedBool PercentToMax = (SharedBool) false;
+    public SharedBool PercentToMax = false;
     private IParameter<float> parameter;
     private IEntity entity;
 
     public override TaskStatus OnUpdate()
     {
-      this.entity = this.Target != null && !((UnityEngine.Object) this.Target.Value == (UnityEngine.Object) null) && !((UnityEngine.Object) this.Target.Value.gameObject == (UnityEngine.Object) null) ? EntityUtility.GetEntity(this.Target.Value.gameObject) : EntityUtility.GetEntity(this.gameObject);
-      if (this.entity == null)
+      entity = Target != null && !((UnityEngine.Object) Target.Value == (UnityEngine.Object) null) && !((UnityEngine.Object) Target.Value.gameObject == (UnityEngine.Object) null) ? EntityUtility.GetEntity(Target.Value.gameObject) : EntityUtility.GetEntity(gameObject);
+      if (entity == null)
         return TaskStatus.Failure;
-      ParametersComponent component = this.entity.GetComponent<ParametersComponent>();
+      ParametersComponent component = entity.GetComponent<ParametersComponent>();
       if (component != null)
-        this.parameter = component.GetByName<float>(this.parName);
-      if (this.parameter == null)
+        parameter = component.GetByName<float>(parName);
+      if (parameter == null)
         return TaskStatus.Failure;
-      if (this.compareType == CheckParameterValue.CompareEnum.More)
-        return (double) this.GetParameterValue() > (double) this.ValueThreshold.Value ? TaskStatus.Success : TaskStatus.Failure;
-      if (this.compareType == CheckParameterValue.CompareEnum.MoreOrEqual)
-        return (double) this.GetParameterValue() >= (double) this.ValueThreshold.Value ? TaskStatus.Success : TaskStatus.Failure;
-      if (this.compareType == CheckParameterValue.CompareEnum.Less)
-        return (double) this.GetParameterValue() < (double) this.ValueThreshold.Value ? TaskStatus.Success : TaskStatus.Failure;
-      if (this.compareType == CheckParameterValue.CompareEnum.LessOrEqual)
-        return (double) this.GetParameterValue() <= (double) this.ValueThreshold.Value ? TaskStatus.Success : TaskStatus.Failure;
-      return this.compareType == CheckParameterValue.CompareEnum.Equal ? ((double) this.GetParameterValue() == (double) this.ValueThreshold.Value ? TaskStatus.Success : TaskStatus.Failure) : TaskStatus.Failure;
+      if (compareType == CompareEnum.More)
+        return GetParameterValue() > (double) ValueThreshold.Value ? TaskStatus.Success : TaskStatus.Failure;
+      if (compareType == CompareEnum.MoreOrEqual)
+        return GetParameterValue() >= (double) ValueThreshold.Value ? TaskStatus.Success : TaskStatus.Failure;
+      if (compareType == CompareEnum.Less)
+        return GetParameterValue() < (double) ValueThreshold.Value ? TaskStatus.Success : TaskStatus.Failure;
+      if (compareType == CompareEnum.LessOrEqual)
+        return GetParameterValue() <= (double) ValueThreshold.Value ? TaskStatus.Success : TaskStatus.Failure;
+      return compareType == CompareEnum.Equal ? (GetParameterValue() == (double) ValueThreshold.Value ? TaskStatus.Success : TaskStatus.Failure) : TaskStatus.Failure;
     }
 
     private float GetParameterValue()
     {
-      return this.PercentToMax.Value ? this.parameter.Value / this.parameter.MaxValue : this.parameter.Value;
+      return PercentToMax.Value ? parameter.Value / parameter.MaxValue : parameter.Value;
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.WriteSerialize<NodeData>(writer, "NodeData", this.nodeData);
-      DefaultDataWriteUtility.Write(writer, "Id", this.id);
-      DefaultDataWriteUtility.Write(writer, "FriendlyName", this.friendlyName);
-      DefaultDataWriteUtility.Write(writer, "Instant", this.instant);
-      DefaultDataWriteUtility.Write(writer, "Disabled", this.disabled);
-      BehaviorTreeDataWriteUtility.WriteShared<SharedTransform>(writer, "Target", this.Target);
-      BehaviorTreeDataWriteUtility.WriteShared<SharedFloat>(writer, "ValueThreshold", this.ValueThreshold);
-      DefaultDataWriteUtility.WriteEnum<ParameterNameEnum>(writer, "ParName", this.parName);
-      DefaultDataWriteUtility.WriteEnum<CheckParameterValue.CompareEnum>(writer, "CompareType", this.compareType);
-      BehaviorTreeDataWriteUtility.WriteShared<SharedBool>(writer, "PercentToMax", this.PercentToMax);
+      DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
+      DefaultDataWriteUtility.Write(writer, "Id", id);
+      DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
+      DefaultDataWriteUtility.Write(writer, "Instant", instant);
+      DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
+      BehaviorTreeDataWriteUtility.WriteShared(writer, "Target", Target);
+      BehaviorTreeDataWriteUtility.WriteShared(writer, "ValueThreshold", ValueThreshold);
+      DefaultDataWriteUtility.WriteEnum(writer, "ParName", parName);
+      DefaultDataWriteUtility.WriteEnum(writer, "CompareType", compareType);
+      BehaviorTreeDataWriteUtility.WriteShared(writer, "PercentToMax", PercentToMax);
     }
 
-    public void DataRead(IDataReader reader, System.Type type)
+    public void DataRead(IDataReader reader, Type type)
     {
-      this.nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
-      this.id = DefaultDataReadUtility.Read(reader, "Id", this.id);
-      this.friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", this.friendlyName);
-      this.instant = DefaultDataReadUtility.Read(reader, "Instant", this.instant);
-      this.disabled = DefaultDataReadUtility.Read(reader, "Disabled", this.disabled);
-      this.Target = BehaviorTreeDataReadUtility.ReadShared<SharedTransform>(reader, "Target", this.Target);
-      this.ValueThreshold = BehaviorTreeDataReadUtility.ReadShared<SharedFloat>(reader, "ValueThreshold", this.ValueThreshold);
-      this.parName = DefaultDataReadUtility.ReadEnum<ParameterNameEnum>(reader, "ParName");
-      this.compareType = DefaultDataReadUtility.ReadEnum<CheckParameterValue.CompareEnum>(reader, "CompareType");
-      this.PercentToMax = BehaviorTreeDataReadUtility.ReadShared<SharedBool>(reader, "PercentToMax", this.PercentToMax);
+      nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
+      id = DefaultDataReadUtility.Read(reader, "Id", id);
+      friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
+      instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
+      disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
+      Target = BehaviorTreeDataReadUtility.ReadShared(reader, "Target", Target);
+      ValueThreshold = BehaviorTreeDataReadUtility.ReadShared(reader, "ValueThreshold", ValueThreshold);
+      parName = DefaultDataReadUtility.ReadEnum<ParameterNameEnum>(reader, "ParName");
+      compareType = DefaultDataReadUtility.ReadEnum<CompareEnum>(reader, "CompareType");
+      PercentToMax = BehaviorTreeDataReadUtility.ReadShared(reader, "PercentToMax", PercentToMax);
     }
 
     public enum CompareEnum

@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace Engine.Impl.UI.Controls
+﻿namespace Engine.Impl.UI.Controls
 {
   public class HideableColor : HideableView, IValueView<Color>
   {
@@ -11,32 +9,32 @@ namespace Engine.Impl.UI.Controls
     [SerializeField]
     private Color trueColor;
 
-    public override void SkipAnimation() => this.ApplyVisibility(true);
+    public override void SkipAnimation() => ApplyVisibility(true);
 
-    protected override void ApplyVisibility() => this.ApplyVisibility(false);
+    protected override void ApplyVisibility() => ApplyVisibility(false);
 
     private void ApplyVisibility(bool instant)
     {
-      this.view.SetValue(this.Visible ? this.trueColor : this.falseColor, instant);
+      view.SetValue(Visible ? trueColor : falseColor, instant);
     }
 
-    Color IValueView<Color>.GetValue(int id) => id <= 0 ? this.falseColor : this.trueColor;
+    Color IValueView<Color>.GetValue(int id) => id <= 0 ? falseColor : trueColor;
 
     void IValueView<Color>.SetValue(int id, Color value, bool instant)
     {
       if (id <= 0)
       {
-        if (!instant && this.falseColor == value)
+        if (!instant && falseColor == value)
           return;
-        this.falseColor = value;
-        this.ApplyVisibility(instant);
+        falseColor = value;
+        ApplyVisibility(instant);
       }
       else
       {
-        if (!instant && this.trueColor == value)
+        if (!instant && trueColor == value)
           return;
-        this.trueColor = value;
-        this.ApplyVisibility(instant);
+        trueColor = value;
+        ApplyVisibility(instant);
       }
     }
   }

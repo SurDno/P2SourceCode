@@ -13,9 +13,9 @@ namespace Engine.Source.Blueprints
     protected override void RegisterPorts()
     {
       base.RegisterPorts();
-      this.AddFlowOutput("Out");
-      this.AddFlowInput("In", (FlowHandler) (() => LoadWindow.Instance.Show = this.visibleInput.value));
-      this.visibleInput = this.AddValueInput<bool>("Visible");
+      AddFlowOutput("Out");
+      AddFlowInput("In", () => LoadWindow.Instance.Show = visibleInput.value);
+      visibleInput = AddValueInput<bool>("Visible");
     }
   }
 }

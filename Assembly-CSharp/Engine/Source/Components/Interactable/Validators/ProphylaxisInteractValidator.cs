@@ -25,7 +25,7 @@ namespace Engine.Source.Components.Interactable.Validators
       if (byName3 == null)
         return new ValidateResult(false, "BoundHealthState not found");
       if (byName3.Value != BoundHealthStateEnum.Danger)
-        return new ValidateResult(false, "BoundHealthState " + (object) byName3.Value);
+        return new ValidateResult(false, "BoundHealthState " + byName3.Value);
       IParameter<bool> byName4 = component.GetByName<bool>(ParameterNameEnum.ImmuneBoostAttempted);
       return byName4 != null && byName4.Value ? new ValidateResult(false, "ImmuneBoostAttempted is true") : new ValidateResult(true);
     }

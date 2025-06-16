@@ -1,4 +1,9 @@
-﻿using Cofe.Utility;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using Cofe.Serializations.Data;
+using Cofe.Utility;
 using Engine.Common;
 using Engine.Common.Commons;
 using Engine.Common.Components;
@@ -10,12 +15,6 @@ using Engine.Source.Commons;
 using Engine.Source.Connections;
 using Engine.Source.Settings.External;
 using Inspectors;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
-using UnityEngine.Profiling;
 
 namespace Engine.Source.Components
 {
@@ -29,24 +28,24 @@ namespace Engine.Source.Components
     INeedSave,
     IUpdatable
   {
-    [StateSaveProxy(MemberEnum.None)]
-    [StateLoadProxy(MemberEnum.None)]
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
+    [StateSaveProxy]
+    [StateLoadProxy]
+    [DataReadProxy]
+    [DataWriteProxy]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    [CopyableProxy(MemberEnum.None)]
+    [CopyableProxy]
     protected bool isEnabled = true;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [StateSaveProxy(MemberEnum.None)]
-    [StateLoadProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [StateSaveProxy]
+    [StateLoadProxy]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    [CopyableProxy(MemberEnum.None)]
+    [CopyableProxy]
     protected Typed<IModel> model;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    [CopyableProxy(MemberEnum.None)]
+    [CopyableProxy()]
     protected List<Typed<IModel>> models = new List<Typed<IModel>>();
     private PrefabAsset prefabAsset;
     private string group;
@@ -64,22 +63,22 @@ namespace Engine.Source.Components
     [Inspected(Mutable = true)]
     public bool IsEnabled
     {
-      get => this.isEnabled;
+      get => isEnabled;
       set
       {
-        this.isEnabled = value;
-        this.OnChangeEnabled();
+        isEnabled = value;
+        OnChangeEnabled();
       }
     }
 
     [Inspected]
     public IModel Model
     {
-      get => this.model.Value;
+      get => model.Value;
       set
       {
-        this.model.Value = value;
-        this.modelInvalidate = true;
+        model.Value = value;
+        modelInvalidate = true;
       }
     }
 
@@ -88,7 +87,7 @@ namespace Engine.Source.Components
     {
       get
       {
-        return this.models.Select<Typed<IModel>, IModel>((Func<Typed<IModel>, IModel>) (o => o.Value)).Where<IModel>((Func<IModel, bool>) (o => o != null));
+        return models.Select(o => o.Value).Where(o => o != null);
       }
     }
 
@@ -97,27 +96,27 @@ namespace Engine.Source.Components
     public override void PrepareAdded()
     {
       base.PrepareAdded();
-      this.group = DynamicModelComponent.GroupContext;
-      if (this.group.IsNullOrEmpty())
-        this.group = "[Dynamics]";
-      DynamicModelComponent.GroupContext = (string) null;
+      group = GroupContext;
+      if (group.IsNullOrEmpty())
+        group = "[Dynamics]";
+      GroupContext = null;
     }
 
     public override void OnAdded()
     {
       base.OnAdded();
-      this.locationItem.OnHibernationChanged += new Action<ILocationItemComponent>(this.OnChangeHibernation);
-      InstanceByRequest<EngineApplication>.Instance.OnViewEnabledEvent += new Action<bool>(this.OnViewEnabledEvent);
-      this.modelInvalidate = true;
-      InstanceByRequest<UpdateService>.Instance.Updater.AddUpdatable((IUpdatable) this);
+      locationItem.OnHibernationChanged += OnChangeHibernation;
+      InstanceByRequest<EngineApplication>.Instance.OnViewEnabledEvent += OnViewEnabledEvent;
+      modelInvalidate = true;
+      InstanceByRequest<UpdateService>.Instance.Updater.AddUpdatable(this);
     }
 
     public override void OnRemoved()
     {
-      InstanceByRequest<UpdateService>.Instance.Updater.RemoveUpdatable((IUpdatable) this);
-      InstanceByRequest<EngineApplication>.Instance.OnViewEnabledEvent -= new Action<bool>(this.OnViewEnabledEvent);
-      this.locationItem.OnHibernationChanged -= new Action<ILocationItemComponent>(this.OnChangeHibernation);
-      this.Clear("On remove");
+      InstanceByRequest<UpdateService>.Instance.Updater.RemoveUpdatable(this);
+      InstanceByRequest<EngineApplication>.Instance.OnViewEnabledEvent -= OnViewEnabledEvent;
+      locationItem.OnHibernationChanged -= OnChangeHibernation;
+      Clear("On remove");
       base.OnRemoved();
     }
 
@@ -127,29 +126,29 @@ namespace Engine.Source.Components
 
     private void Clear(string reason)
     {
-      this.DestroyCurrentGameObject();
-      if (this.prefabAsset == null)
+      DestroyCurrentGameObject();
+      if (prefabAsset == null)
         return;
-      this.assetLoader.DisposeAsset((IAsset) this.prefabAsset, new Action(this.OnDispose), reason);
-      this.prefabAsset = (PrefabAsset) null;
+      assetLoader.DisposeAsset(prefabAsset, OnDispose, reason);
+      prefabAsset = null;
     }
 
-    private void OnChangeHibernation(ILocationItemComponent sender) => this.UpdateEnabled();
+    private void OnChangeHibernation(ILocationItemComponent sender) => UpdateEnabled();
 
     private void UpdateModel()
     {
-      this.Clear("Change model");
-      if (!(this.Model is Engine.Source.Commons.Model model))
+      Clear("Change model");
+      if (!(Model is Model model))
         return;
-      this.prefabAsset = this.assetLoader.CreatePrefabAsset(model.Connection, new Func<bool, IEnumerator>(this.OnLoad));
+      prefabAsset = assetLoader.CreatePrefabAsset(model.Connection, OnLoad);
     }
 
     private void UpdateEnabled()
     {
-      if (this.locationItem == null || !((IEntityView) this.Owner).IsAttached)
+      if (locationItem == null || !((IEntityView) Owner).IsAttached)
         return;
-      bool flag = !this.locationItem.IsHibernation && this.Owner.IsEnabledInHierarchy && this.IsEnabled && InstanceByRequest<EngineApplication>.Instance.ViewEnabled;
-      GameObject gameObject = ((IEntityView) this.Owner).GameObject;
+      bool flag = !locationItem.IsHibernation && Owner.IsEnabledInHierarchy && IsEnabled && InstanceByRequest<EngineApplication>.Instance.ViewEnabled;
+      GameObject gameObject = ((IEntityView) Owner).GameObject;
       if ((UnityEngine.Object) gameObject == (UnityEngine.Object) null)
       {
         Debug.LogError((object) "go == null");
@@ -168,111 +167,111 @@ namespace Engine.Source.Components
     public override void OnChangeEnabled()
     {
       base.OnChangeEnabled();
-      this.UpdateEnabled();
+      UpdateEnabled();
     }
 
     private IEnumerator OnLoad(bool success)
     {
       if (!success)
       {
-        this.Clear("Error load");
+        Clear("Error load");
       }
       else
       {
-        this.DestroyCurrentGameObject();
-        if (this.prefabAsset == null)
-          throw new Exception(this.Owner.GetInfo());
-        if (!this.prefabAsset.IsValid)
-          throw new Exception(this.Owner.GetInfo());
-        this.CreateGameObject();
+        DestroyCurrentGameObject();
+        if (prefabAsset == null)
+          throw new Exception(Owner.GetInfo());
+        if (!prefabAsset.IsValid)
+          throw new Exception(Owner.GetInfo());
+        CreateGameObject();
         yield break;
       }
     }
 
     private void CreateGameObject()
     {
-      GameObject prefab = this.prefabAsset.Prefab;
+      GameObject prefab = prefabAsset.Prefab;
       if (Profiler.enabled)
         Profiler.BeginSample("Instantiate : " + prefab.name);
-      GameObject gameObject = UnityFactory.Instantiate(prefab, this.group);
+      GameObject gameObject = UnityFactory.Instantiate(prefab, group);
       if (Profiler.enabled)
         Profiler.EndSample();
-      this.delaySetInstance = true;
-      this.delayInstance = gameObject;
-      this.delayInstanceName = this.model.Value.Name;
+      delaySetInstance = true;
+      delayInstance = gameObject;
+      delayInstanceName = model.Value.Name;
     }
 
     private void DestroyCurrentGameObject()
     {
-      if (this.delaySetInstance)
+      if (delaySetInstance)
       {
-        this.delaySetInstance = false;
+        delaySetInstance = false;
         GameObject delayInstance = this.delayInstance;
         string delayInstanceName = this.delayInstanceName;
         this.delayInstance = (GameObject) null;
-        this.delayInstanceName = (string) null;
+        this.delayInstanceName = null;
         UnityEngine.Object.Destroy((UnityEngine.Object) delayInstance);
       }
-      if (!((IEntityView) this.Owner).IsAttached)
+      if (!((IEntityView) Owner).IsAttached)
         return;
-      GameObject gameObject = ((IEntityView) this.Owner).GameObject;
-      ((IEntityViewSetter) this.Owner).GameObject = (GameObject) null;
+      GameObject gameObject = ((IEntityView) Owner).GameObject;
+      ((IEntityViewSetter) Owner).GameObject = (GameObject) null;
       UnityEngine.Object.Destroy((UnityEngine.Object) gameObject);
     }
 
     private void SetGameObject(GameObject go, string name)
     {
-      go.name = this.Owner.Name + " : (" + name + ")";
+      go.name = Owner.Name + " : (" + name + ")";
       if ((UnityEngine.Object) go.GetComponent<EngineGameObject>() == (UnityEngine.Object) null)
         go.AddComponent<EngineGameObject>();
       if (Profiler.enabled)
         Profiler.BeginSample("Set GameObject : " + go.name);
-      ((IEntityViewSetter) this.Owner).GameObject = go;
+      ((IEntityViewSetter) Owner).GameObject = go;
       if (Profiler.enabled)
         Profiler.EndSample();
-      EntityViewUtility.SetTransformAndData(this.Owner, ((IEntityView) this.Owner).Position, ((IEntityView) this.Owner).Rotation, ((Entity) this.Owner).IsPlayer);
-      this.UpdateEnabled();
+      EntityViewUtility.SetTransformAndData(Owner, ((IEntityView) Owner).Position, ((IEntityView) Owner).Rotation, ((Entity) Owner).IsPlayer);
+      UpdateEnabled();
     }
 
     private void OnViewEnabledEvent(bool enabled)
     {
-      if (this.IsDisposed)
+      if (IsDisposed)
         return;
-      this.UpdateEnabled();
+      UpdateEnabled();
     }
 
-    [Cofe.Serializations.Data.OnLoaded]
-    private void OnLoaded() => this.UpdateEnabled();
+    [OnLoaded]
+    private void OnLoaded() => UpdateEnabled();
 
     public void ComputeUpdate()
     {
-      bool flag = !this.locationItem.IsHibernation && this.Owner.IsEnabledInHierarchy && this.IsEnabled && InstanceByRequest<EngineApplication>.Instance.ViewEnabled;
-      if (this.modelInvalidate && (flag || ExternalSettingsInstance<ExternalOptimizationSettings>.Instance.CreateDisabledPrefabs))
+      bool flag = !locationItem.IsHibernation && Owner.IsEnabledInHierarchy && IsEnabled && InstanceByRequest<EngineApplication>.Instance.ViewEnabled;
+      if (modelInvalidate && (flag || ExternalSettingsInstance<ExternalOptimizationSettings>.Instance.CreateDisabledPrefabs))
       {
-        this.modelInvalidate = false;
-        this.UpdateModel();
+        modelInvalidate = false;
+        UpdateModel();
       }
-      if (!flag && ExternalSettingsInstance<ExternalOptimizationSettings>.Instance.DestroyDisabledPrefabs && ((IEntityView) this.Owner).IsAttached && !ServiceCache.OptimizationService.FrameHasSpike)
+      if (!flag && ExternalSettingsInstance<ExternalOptimizationSettings>.Instance.DestroyDisabledPrefabs && ((IEntityView) Owner).IsAttached && !ServiceCache.OptimizationService.FrameHasSpike)
       {
         ServiceCache.OptimizationService.FrameHasSpike = true;
-        GameObject gameObject = ((IEntityView) this.Owner).GameObject;
-        ((IEntityViewSetter) this.Owner).GameObject = (GameObject) null;
+        GameObject gameObject = ((IEntityView) Owner).GameObject;
+        ((IEntityViewSetter) Owner).GameObject = (GameObject) null;
         UnityEngine.Object.Destroy((UnityEngine.Object) gameObject);
-        this.modelInvalidate = true;
+        modelInvalidate = true;
       }
-      if (this.delaySetInstance && !ServiceCache.OptimizationService.FrameHasSpike)
+      if (delaySetInstance && !ServiceCache.OptimizationService.FrameHasSpike)
       {
         ServiceCache.OptimizationService.FrameHasSpike = true;
-        this.delaySetInstance = false;
+        delaySetInstance = false;
         GameObject delayInstance = this.delayInstance;
         string delayInstanceName = this.delayInstanceName;
         this.delayInstance = (GameObject) null;
-        this.delayInstanceName = (string) null;
-        this.SetGameObject(delayInstance, delayInstanceName);
+        this.delayInstanceName = null;
+        SetGameObject(delayInstance, delayInstanceName);
       }
-      if (!flag || !((IEntityView) this.Owner).IsAttached)
+      if (!flag || !((IEntityView) Owner).IsAttached)
         return;
-      EntityViewUtility.FromTransformToData(this.Owner);
+      EntityViewUtility.FromTransformToData(Owner);
     }
   }
 }

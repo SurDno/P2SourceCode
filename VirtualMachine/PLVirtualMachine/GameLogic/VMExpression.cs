@@ -1,11 +1,11 @@
-﻿using Cofe.Loggers;
+﻿using System.Collections.Generic;
+using System.Xml;
+using Cofe.Loggers;
 using Engine.Common.Commons;
 using PLVirtualMachine.Common;
 using PLVirtualMachine.Common.Data;
 using PLVirtualMachine.Common.EngineAPI;
 using PLVirtualMachine.Data;
-using System.Collections.Generic;
-using System.Xml;
 using VirtualMachine.Common;
 using VirtualMachine.Common.Data;
 using VirtualMachine.Data;
@@ -24,9 +24,9 @@ namespace PLVirtualMachine.GameLogic
     IStaticUpdateable
   {
     private ulong guid;
-    [FieldData("ExpressionType", DataFieldType.None)]
+    [FieldData("ExpressionType")]
     private ExpressionType expressionType;
-    [FieldData("TargetFunctionName", DataFieldType.None)]
+    [FieldData("TargetFunctionName")]
     private string targetFunctionName;
     [FieldData("Const", DataFieldType.Reference)]
     private VMParameter constInstance;
@@ -34,15 +34,15 @@ namespace PLVirtualMachine.GameLogic
     private ILocalContext localContext;
     [FieldData("FormulaChilds", DataFieldType.Reference)]
     private List<IExpression> formulaChilds;
-    [FieldData("FormulaOperations", DataFieldType.None)]
+    [FieldData("FormulaOperations")]
     private List<FormulaOperation> formulaOperations;
-    [FieldData("Inversion", DataFieldType.None)]
+    [FieldData("Inversion")]
     private bool inversion;
-    [FieldData("TargetObject", DataFieldType.None)]
+    [FieldData("TargetObject")]
     private CommonVariable targetObject;
-    [FieldData("TargetParam", DataFieldType.None)]
+    [FieldData("TargetParam")]
     private CommonVariable targetParam;
-    [FieldData("SourceParams", DataFieldType.None)]
+    [FieldData("SourceParams")]
     private List<CommonVariable> sourceParams = new List<CommonVariable>();
     private BaseFunction functionInstance;
     private bool isValid;
@@ -50,41 +50,40 @@ namespace PLVirtualMachine.GameLogic
 
     public virtual void EditorDataRead(XmlReader xml, IDataCreator creator, string typeContext)
     {
-      while (xml.Read())
-      {
+      while (xml.Read()) {
         if (xml.NodeType == XmlNodeType.Element)
         {
           switch (xml.Name)
           {
             case "Const":
-              this.constInstance = EditorDataReadUtility.ReadReference<VMParameter>(xml, creator);
+              constInstance = EditorDataReadUtility.ReadReference<VMParameter>(xml, creator);
               continue;
             case "ExpressionType":
-              this.expressionType = EditorDataReadUtility.ReadEnum<ExpressionType>(xml);
+              expressionType = EditorDataReadUtility.ReadEnum<ExpressionType>(xml);
               continue;
             case "FormulaChilds":
-              this.formulaChilds = EditorDataReadUtility.ReadReferenceList<IExpression>(xml, creator, this.formulaChilds);
+              formulaChilds = EditorDataReadUtility.ReadReferenceList(xml, creator, formulaChilds);
               continue;
             case "FormulaOperations":
-              this.formulaOperations = EditorDataReadUtility.ReadEnumList<FormulaOperation>(xml, this.formulaOperations);
+              formulaOperations = EditorDataReadUtility.ReadEnumList(xml, formulaOperations);
               continue;
             case "Inversion":
-              this.inversion = EditorDataReadUtility.ReadValue(xml, this.inversion);
+              inversion = EditorDataReadUtility.ReadValue(xml, inversion);
               continue;
             case "LocalContext":
-              this.localContext = EditorDataReadUtility.ReadReference<ILocalContext>(xml, creator);
+              localContext = EditorDataReadUtility.ReadReference<ILocalContext>(xml, creator);
               continue;
             case "SourceParams":
-              this.sourceParams = EditorDataReadUtility.ReadSerializableList<CommonVariable>(xml, this.sourceParams);
+              sourceParams = EditorDataReadUtility.ReadSerializableList(xml, sourceParams);
               continue;
             case "TargetFunctionName":
-              this.targetFunctionName = EditorDataReadUtility.ReadValue(xml, this.targetFunctionName);
+              targetFunctionName = EditorDataReadUtility.ReadValue(xml, targetFunctionName);
               continue;
             case "TargetObject":
-              this.targetObject = EditorDataReadUtility.ReadSerializable<CommonVariable>(xml);
+              targetObject = EditorDataReadUtility.ReadSerializable<CommonVariable>(xml);
               continue;
             case "TargetParam":
-              this.targetParam = EditorDataReadUtility.ReadSerializable<CommonVariable>(xml);
+              targetParam = EditorDataReadUtility.ReadSerializable<CommonVariable>(xml);
               continue;
             default:
               if (XMLDataLoader.Logs.Add(typeContext + " : " + xml.Name))
@@ -93,164 +92,165 @@ namespace PLVirtualMachine.GameLogic
               continue;
           }
         }
-        else if (xml.NodeType == XmlNodeType.EndElement)
+
+        if (xml.NodeType == XmlNodeType.EndElement)
           break;
       }
     }
 
     public VMExpression(ulong guid) => this.guid = guid;
 
-    public ulong BaseGuid => this.guid;
+    public ulong BaseGuid => guid;
 
-    public ILocalContext LocalContext => this.localContext;
+    public ILocalContext LocalContext => localContext;
 
-    public bool IsValid => this.isValid;
+    public bool IsValid => isValid;
 
-    public ExpressionType Type => this.expressionType;
+    public ExpressionType Type => expressionType;
 
-    public bool Inversion => this.inversion;
+    public bool Inversion => inversion;
 
     public VMType ResultType
     {
       get
       {
-        if (!this.IsUpdated)
-          this.Update();
-        if (this.expressionType == ExpressionType.EXPRESSION_SRC_PARAM)
-          return this.targetParam == null ? VMType.Empty : this.targetParam.Type;
-        if (this.expressionType == ExpressionType.EXPRESSION_SRC_FUNCTION)
-          return this.functionInstance == null || this.functionInstance.OutputParam == null ? VMType.Empty : this.functionInstance.OutputParam.Type;
-        if (this.expressionType == ExpressionType.EXPRESSION_SRC_COMPLEX)
+        if (!IsUpdated)
+          Update();
+        if (expressionType == ExpressionType.EXPRESSION_SRC_PARAM)
+          return targetParam == null ? VMType.Empty : targetParam.Type;
+        if (expressionType == ExpressionType.EXPRESSION_SRC_FUNCTION)
+          return functionInstance == null || functionInstance.OutputParam == null ? VMType.Empty : functionInstance.OutputParam.Type;
+        if (expressionType == ExpressionType.EXPRESSION_SRC_COMPLEX)
         {
-          if (this.formulaChilds.Count >= 1)
+          if (formulaChilds.Count >= 1)
           {
-            VMType resultType = this.formulaChilds[0].ResultType;
-            for (int index = 1; index < this.formulaChilds.Count; ++index)
+            VMType resultType = formulaChilds[0].ResultType;
+            for (int index = 1; index < formulaChilds.Count; ++index)
             {
-              if (this.formulaChilds[index].ResultType.BaseType == typeof (float) && resultType.IsIntegerNumber)
-                resultType = this.formulaChilds[index].ResultType;
-              else if (this.formulaChilds[index].ResultType.BaseType == typeof (double) && resultType.BaseType != typeof (double))
-                resultType = this.formulaChilds[index].ResultType;
+              if (formulaChilds[index].ResultType.BaseType == typeof (float) && resultType.IsIntegerNumber)
+                resultType = formulaChilds[index].ResultType;
+              else if (formulaChilds[index].ResultType.BaseType == typeof (double) && resultType.BaseType != typeof (double))
+                resultType = formulaChilds[index].ResultType;
             }
             return resultType;
           }
-          Logger.AddError(string.Format("Invalid complex expression {0}: no child expressions found", (object) this.BaseGuid));
+          Logger.AddError(string.Format("Invalid complex expression {0}: no child expressions found", BaseGuid));
           return VMType.Empty;
         }
-        return this.expressionType == ExpressionType.EXPRESSION_SRC_CONST && this.constInstance != null ? this.constInstance.Type : VMType.Empty;
+        return expressionType == ExpressionType.EXPRESSION_SRC_CONST && constInstance != null ? constInstance.Type : VMType.Empty;
       }
     }
 
     public string TargetFunction
     {
-      get => this.targetFunctionName == null ? string.Empty : this.targetFunctionName;
+      get => targetFunctionName == null ? string.Empty : targetFunctionName;
     }
 
-    public BaseFunction TargetFunctionInstance => this.functionInstance;
+    public BaseFunction TargetFunctionInstance => functionInstance;
 
-    public IParam TargetConstant => (IParam) this.constInstance;
+    public IParam TargetConstant => constInstance;
 
-    public CommonVariable TargetObject => this.targetObject;
+    public CommonVariable TargetObject => targetObject;
 
-    public CommonVariable TargetParam => this.targetParam;
+    public CommonVariable TargetParam => targetParam;
 
-    public List<CommonVariable> SourceParams => this.sourceParams;
+    public List<CommonVariable> SourceParams => sourceParams;
 
     public int ChildExpressionsCount
     {
-      get => this.Type != ExpressionType.EXPRESSION_SRC_COMPLEX ? 0 : this.formulaChilds.Count;
+      get => Type != ExpressionType.EXPRESSION_SRC_COMPLEX ? 0 : formulaChilds.Count;
     }
 
     public IExpression GetChildExpression(int childIndex)
     {
-      if (this.Type != ExpressionType.EXPRESSION_SRC_COMPLEX)
+      if (Type != ExpressionType.EXPRESSION_SRC_COMPLEX)
       {
-        Logger.AddError(string.Format("Cannot get child from non-complex expression guid={0}", (object) this.BaseGuid));
-        return (IExpression) null;
+        Logger.AddError(string.Format("Cannot get child from non-complex expression guid={0}", BaseGuid));
+        return null;
       }
-      if (childIndex >= 0 && childIndex < this.formulaOperations.Count)
-        return this.formulaChilds[childIndex];
-      Logger.AddError(string.Format("Invalid formula child index", (object) this.BaseGuid));
-      return (IExpression) null;
+      if (childIndex >= 0 && childIndex < formulaOperations.Count)
+        return formulaChilds[childIndex];
+      Logger.AddError(string.Format("Invalid formula child index", BaseGuid));
+      return null;
     }
 
     public FormulaOperation GetChildOperations(int childIndex)
     {
-      if (this.Type != ExpressionType.EXPRESSION_SRC_COMPLEX)
+      if (Type != ExpressionType.EXPRESSION_SRC_COMPLEX)
       {
-        Logger.AddError(string.Format("Cannot get child from non-complex expression guid={0}", (object) this.BaseGuid));
+        Logger.AddError(string.Format("Cannot get child from non-complex expression guid={0}", BaseGuid));
         return FormulaOperation.FORMULA_OP_NONE;
       }
-      if (childIndex >= 0 && childIndex < this.formulaOperations.Count)
-        return this.formulaOperations[childIndex];
-      Logger.AddError(string.Format("Invalid formula child index", (object) this.BaseGuid));
+      if (childIndex >= 0 && childIndex < formulaOperations.Count)
+        return formulaOperations[childIndex];
+      Logger.AddError(string.Format("Invalid formula child index", BaseGuid));
       return FormulaOperation.FORMULA_OP_NONE;
     }
 
     public void Update()
     {
-      long baseGuid = (long) this.BaseGuid;
-      if (this.isUpdated && this.isValid)
+      long baseGuid = (long) BaseGuid;
+      if (isUpdated && isValid)
         return;
-      if (this.expressionType == ExpressionType.EXPRESSION_SRC_COMPLEX)
+      if (expressionType == ExpressionType.EXPRESSION_SRC_COMPLEX)
       {
-        int expressionsCount = this.ChildExpressionsCount;
-        this.isValid = true;
+        int expressionsCount = ChildExpressionsCount;
+        isValid = true;
         for (int childIndex = 0; childIndex < expressionsCount; ++childIndex)
         {
-          IExpression childExpression = this.GetChildExpression(childIndex);
+          IExpression childExpression = GetChildExpression(childIndex);
           childExpression.Update();
           if (childExpression == null)
           {
-            Logger.AddError(string.Format("Child expression with index {0} not defined!", (object) childIndex));
-            this.isValid = false;
+            Logger.AddError(string.Format("Child expression with index {0} not defined!", childIndex));
+            isValid = false;
             break;
           }
         }
       }
-      else if (this.expressionType == ExpressionType.EXPRESSION_SRC_CONST)
+      else if (expressionType == ExpressionType.EXPRESSION_SRC_CONST)
       {
-        this.isValid = this.constInstance != null;
+        isValid = constInstance != null;
       }
       else
       {
-        IContext ownerContext1 = (IContext) null;
-        if (this.LocalContext.Owner != null && typeof (IContext).IsAssignableFrom(this.LocalContext.Owner.GetType()))
-          ownerContext1 = (IContext) this.LocalContext.Owner;
-        this.targetObject.Bind(ownerContext1, new VMType(typeof (IObjRef)), this.LocalContext);
-        if (!this.targetObject.IsBinded)
+        IContext ownerContext1 = null;
+        if (LocalContext.Owner != null && typeof (IContext).IsAssignableFrom(LocalContext.Owner.GetType()))
+          ownerContext1 = (IContext) LocalContext.Owner;
+        targetObject.Bind(ownerContext1, new VMType(typeof (IObjRef)), LocalContext);
+        if (!targetObject.IsBinded)
         {
-          Logger.AddError(string.Format("Expression {0} target object variable {1} not binded", (object) this.BaseGuid, (object) this.targetObject.ToString()));
-          this.isValid = false;
+          Logger.AddError(string.Format("Expression {0} target object variable {1} not binded", BaseGuid, targetObject));
+          isValid = false;
           return;
         }
-        this.functionInstance = (BaseFunction) null;
+        functionInstance = null;
         List<VMType> vmTypeList = new List<VMType>();
-        if (this.expressionType == ExpressionType.EXPRESSION_SRC_FUNCTION)
+        if (expressionType == ExpressionType.EXPRESSION_SRC_FUNCTION)
         {
-          IVariable contextVariable = this.targetObject.GetContextVariable(this.TargetFunction);
+          IVariable contextVariable = targetObject.GetContextVariable(TargetFunction);
           if (contextVariable != null)
-            this.functionInstance = (BaseFunction) contextVariable;
-          if (this.functionInstance == null)
+            functionInstance = (BaseFunction) contextVariable;
+          if (functionInstance == null)
           {
-            this.isValid = false;
+            isValid = false;
             return;
           }
-          for (int index = 0; index < this.functionInstance.InputParams.Count; ++index)
-            vmTypeList.Add(this.functionInstance.InputParams[index].Type);
+          for (int index = 0; index < functionInstance.InputParams.Count; ++index)
+            vmTypeList.Add(functionInstance.InputParams[index].Type);
         }
-        else if (this.expressionType == ExpressionType.EXPRESSION_SRC_PARAM)
+        else if (expressionType == ExpressionType.EXPRESSION_SRC_PARAM)
         {
-          IContext ownerContext2 = (IContext) null;
-          if (this.LocalContext.Owner != null && typeof (IContext).IsAssignableFrom(this.LocalContext.Owner.GetType()))
-            ownerContext2 = (IContext) this.LocalContext.Owner;
-          if (this.targetObject != null && this.targetObject.VariableContext != null)
-            ownerContext2 = this.targetObject.VariableContext;
-          this.targetParam.Bind(ownerContext2, localContext: this.LocalContext);
-          if (!this.targetParam.IsBinded)
+          IContext ownerContext2 = null;
+          if (LocalContext.Owner != null && typeof (IContext).IsAssignableFrom(LocalContext.Owner.GetType()))
+            ownerContext2 = (IContext) LocalContext.Owner;
+          if (targetObject != null && targetObject.VariableContext != null)
+            ownerContext2 = targetObject.VariableContext;
+          targetParam.Bind(ownerContext2, localContext: LocalContext);
+          if (!targetParam.IsBinded)
           {
-            this.targetParam.Bind(ownerContext2, localContext: this.LocalContext);
-            this.isValid = false;
+            targetParam.Bind(ownerContext2, localContext: LocalContext);
+            isValid = false;
             return;
           }
         }
@@ -258,72 +258,72 @@ namespace PLVirtualMachine.GameLogic
         {
           for (int index = 0; index < vmTypeList.Count; ++index)
           {
-            if (index >= this.SourceParams.Count)
+            if (index >= SourceParams.Count)
             {
-              this.isValid = false;
+              isValid = false;
               return;
             }
-            CommonVariable sourceParam = this.sourceParams[index];
-            sourceParam.Bind(ownerContext1, vmTypeList[index], this.LocalContext);
+            CommonVariable sourceParam = sourceParams[index];
+            sourceParam.Bind(ownerContext1, vmTypeList[index], LocalContext);
             if (!sourceParam.IsBinded)
             {
-              this.isValid = false;
+              isValid = false;
               return;
             }
           }
         }
-        this.isValid = true;
+        isValid = true;
       }
-      this.isUpdated = this.isValid;
+      isUpdated = isValid;
     }
 
-    public bool IsUpdated => this.isUpdated;
+    public bool IsUpdated => isUpdated;
 
     public bool IsEqual(IObject other)
     {
-      return other != null && typeof (VMExpression) == other.GetType() && (long) this.BaseGuid == (long) ((VMExpression) other).BaseGuid;
+      return other != null && typeof (VMExpression) == other.GetType() && (long) BaseGuid == (long) ((VMExpression) other).BaseGuid;
     }
 
-    public string GuidStr => this.guid.ToString();
+    public string GuidStr => guid.ToString();
 
     public void Clear()
     {
-      if (this.constInstance != null)
+      if (constInstance != null)
       {
-        this.constInstance.Clear();
-        this.constInstance = (VMParameter) null;
+        constInstance.Clear();
+        constInstance = null;
       }
-      this.localContext = (ILocalContext) null;
-      if (this.formulaChilds != null)
+      localContext = null;
+      if (formulaChilds != null)
       {
-        foreach (VMExpression formulaChild in this.formulaChilds)
+        foreach (VMExpression formulaChild in formulaChilds)
           formulaChild.Clear();
-        this.formulaChilds.Clear();
-        this.formulaChilds = (List<IExpression>) null;
+        formulaChilds.Clear();
+        formulaChilds = null;
       }
-      if (this.formulaOperations != null)
+      if (formulaOperations != null)
       {
-        this.formulaOperations.Clear();
-        this.formulaOperations = (List<FormulaOperation>) null;
+        formulaOperations.Clear();
+        formulaOperations = null;
       }
-      if (this.targetObject != null)
+      if (targetObject != null)
       {
-        this.targetObject.Clear();
-        this.targetObject = (CommonVariable) null;
+        targetObject.Clear();
+        targetObject = null;
       }
-      if (this.targetParam != null)
+      if (targetParam != null)
       {
-        this.targetParam.Clear();
-        this.targetParam = (CommonVariable) null;
+        targetParam.Clear();
+        targetParam = null;
       }
-      if (this.sourceParams != null)
+      if (sourceParams != null)
       {
-        foreach (ContextVariable sourceParam in this.sourceParams)
+        foreach (ContextVariable sourceParam in sourceParams)
           sourceParam.Clear();
-        this.sourceParams.Clear();
-        this.sourceParams = (List<CommonVariable>) null;
+        sourceParams.Clear();
+        sourceParams = null;
       }
-      this.functionInstance = (BaseFunction) null;
+      functionInstance = null;
     }
   }
 }

@@ -1,7 +1,4 @@
-﻿using UnityEngine;
-using UnityEngine.UI;
-
-public class TradePriceItem : MonoBehaviour
+﻿public class TradePriceItem : MonoBehaviour
 {
   [SerializeField]
   private Image coinImage;
@@ -16,15 +13,15 @@ public class TradePriceItem : MonoBehaviour
 
   public void SetCount(int count, int change)
   {
-    if ((Object) this.coinsCountText != (Object) null)
-      this.coinsCountText.text = count.ToString();
-    if (!((Object) this.coinsChangeText != (Object) null))
+    if ((Object) coinsCountText != (Object) null)
+      coinsCountText.text = count.ToString();
+    if (!((Object) coinsChangeText != (Object) null))
       return;
-    this.coinsChangeText.gameObject.SetActive(change != 0);
+    coinsChangeText.gameObject.SetActive(change != 0);
     if (change != 0)
     {
-      this.coinsChangeText.text = change < 0 ? change.ToString() : "+" + change.ToString();
-      this.coinsChangeText.color = change > 0 ? this.changePlusColor : this.changeMinusColor;
+      coinsChangeText.text = change < 0 ? change.ToString() : "+" + change;
+      coinsChangeText.color = change > 0 ? changePlusColor : changeMinusColor;
     }
   }
 }

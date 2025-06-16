@@ -1,11 +1,10 @@
-﻿using Engine.Source.VisualEffects;
+﻿using System.Collections.Generic;
+using Engine.Source.VisualEffects;
 using Inspectors;
-using System;
-using System.Collections.Generic;
 
 namespace Engine.Source.Services
 {
-  [RuntimeService(new Type[] {typeof (EffectsService)})]
+  [RuntimeService(typeof (EffectsService))]
   public class EffectsService
   {
     [Inspected]
@@ -15,7 +14,7 @@ namespace Engine.Source.Services
     {
       result.Clear();
       List<IParameter> parameterList;
-      if (!this.parameters.TryGetValue(name, out parameterList))
+      if (!parameters.TryGetValue(name, out parameterList))
         return;
       foreach (IParameter parameter1 in parameterList)
       {
@@ -27,13 +26,13 @@ namespace Engine.Source.Services
     public IEnumerable<IParameter<T>> GetParameters<T>(string name) where T : struct
     {
       List<IParameter> result;
-      if (this.parameters.TryGetValue(name, out result))
+      if (parameters.TryGetValue(name, out result))
       {
         foreach (IParameter parameter in result)
         {
           if (parameter is IParameter<T> item)
             yield return item;
-          item = (IParameter<T>) null;
+          item = null;
         }
       }
     }
@@ -41,10 +40,10 @@ namespace Engine.Source.Services
     public void AddParameter(string name, IParameter parameter)
     {
       List<IParameter> parameterList;
-      if (!this.parameters.TryGetValue(name, out parameterList))
+      if (!parameters.TryGetValue(name, out parameterList))
       {
         parameterList = new List<IParameter>();
-        this.parameters.Add(name, parameterList);
+        parameters.Add(name, parameterList);
       }
       parameterList.Add(parameter);
     }
@@ -52,10 +51,10 @@ namespace Engine.Source.Services
     public void RemoveParameter(string name, IParameter parameter)
     {
       List<IParameter> parameterList;
-      if (!this.parameters.TryGetValue(name, out parameterList))
+      if (!parameters.TryGetValue(name, out parameterList))
       {
         parameterList = new List<IParameter>();
-        this.parameters.Add(name, parameterList);
+        parameters.Add(name, parameterList);
       }
       parameterList.Remove(parameter);
     }

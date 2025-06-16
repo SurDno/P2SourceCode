@@ -1,5 +1,4 @@
-﻿using Engine.Common;
-using Engine.Common.Commons;
+﻿using System;
 using Engine.Common.Services;
 using Engine.Source.Audio;
 using Engine.Source.Commons;
@@ -11,9 +10,6 @@ using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
 using SoundPropagation;
-using System;
-using UnityEngine;
-using UnityEngine.Audio;
 
 namespace Engine.Source.Blueprints
 {
@@ -26,9 +22,9 @@ namespace Engine.Source.Blueprints
     private ValueInput<AudioMixerGroup> mixerInput;
     [Port("Prefab")]
     private ValueInput<GameObject> prefabInput;
-    [Port("Volume", new object[] {1f})]
+    [Port("Volume", 1f)]
     private ValueInput<float> volumeInput;
-    [Port("Fade", new object[] {0.0f})]
+    [Port("Fade", 0.0f)]
     private ValueInput<float> fadeTimeInput;
     [Port("Target")]
     private ValueInput<Transform> targetInput;
@@ -40,38 +36,38 @@ namespace Engine.Source.Blueprints
     protected override void RegisterPorts()
     {
       base.RegisterPorts();
-      FlowOutput output = this.AddFlowOutput("Out");
-      this.AddFlowInput("In", (FlowHandler) (() =>
+      FlowOutput output = AddFlowOutput("Out");
+      AddFlowInput("In", () =>
       {
-        LipSyncObject lipSync = this.lipSyncInput.value.Value;
+        LipSyncObject lipSync = lipSyncInput.value.Value;
         if (lipSync == null)
         {
           output.Call();
         }
         else
         {
-          Transform target = this.targetInput.value;
+          Transform target = targetInput.value;
           if ((UnityEngine.Object) target == (UnityEngine.Object) null)
           {
             output.Call();
           }
           else
           {
-            GameObject prefab = this.prefabInput.value;
+            GameObject prefab = prefabInput.value;
             if ((UnityEngine.Object) prefab == (UnityEngine.Object) null)
             {
               output.Call();
             }
             else
             {
-              AudioMixerGroup mixer = this.mixerInput.value;
+              AudioMixerGroup mixer = mixerInput.value;
               if ((UnityEngine.Object) mixer == (UnityEngine.Object) null)
               {
                 output.Call();
               }
               else
               {
-                LipSyncInfo lipSyncInfo = LipSyncUtility.GetLipSyncInfo((ILipSyncObject) lipSync);
+                LipSyncInfo lipSyncInfo = LipSyncUtility.GetLipSyncInfo(lipSync);
                 if (lipSyncInfo == null)
                 {
                   output.Call();
@@ -85,17 +81,17 @@ namespace Engine.Source.Blueprints
                   }
                   else
                   {
-                    AudioState state = SoundUtility.PlayAudioClip(prefab, target, clip, mixer, this.volumeInput.value, this.fadeTimeInput.value, true, "(blueprint) " + this.graph.agent.name, (Action) (() => output.Call()));
-                    if (this.propagationInput.value)
+                    AudioState state = SoundUtility.PlayAudioClip(prefab, target, clip, mixer, volumeInput.value, fadeTimeInput.value, true, "(blueprint) " + graph.agent.name, (Action) (() => output.Call()));
+                    if (propagationInput.value)
                       state.AudioSource.gameObject.AddComponent<SPAudioSource>().Origin = target;
-                    this.AddSubtitles(lipSyncInfo.Tag, state, target);
+                    AddSubtitles(lipSyncInfo.Tag, state, target);
                   }
                 }
               }
             }
           }
         }
-      }));
+      });
     }
 
     private void AddSubtitles(string tag, AudioState state, Transform target)
@@ -105,9 +101,9 @@ namespace Engine.Source.Blueprints
         y = 0.0f
       };
       Vector3 position = target.position with { y = 0.0f };
-      if (!this.forcedSubtitles.value && (double) (playerPosition - position).magnitude > (double) ExternalSettingsInstance<ExternalCommonSettings>.Instance.BleuprintSubtitlesDistanceMax)
+      if (!forcedSubtitles.value && (double) (playerPosition - position).magnitude > ExternalSettingsInstance<ExternalCommonSettings>.Instance.BleuprintSubtitlesDistanceMax)
         return;
-      ServiceLocator.GetService<SubtitlesService>().AddSubtitles((IEntity) null, tag, state, (UnityEngine.Object) this.graphAgent);
+      ServiceLocator.GetService<SubtitlesService>().AddSubtitles(null, tag, state, (UnityEngine.Object) graphAgent);
     }
   }
 }

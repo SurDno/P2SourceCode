@@ -1,10 +1,10 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons;
 using Engine.Common.Commons.Cloneable;
 using Engine.Common.Commons.Converters;
 using Expressions;
-using System;
 
 namespace Engine.Source.Proxies
 {
@@ -19,30 +19,30 @@ namespace Engine.Source.Proxies
     public object Clone()
     {
       ConditionStammKindOperation_Generated instance = Activator.CreateInstance<ConditionStammKindOperation_Generated>();
-      this.CopyTo((object) instance);
-      return (object) instance;
+      CopyTo(instance);
+      return instance;
     }
 
     public void CopyTo(object target2)
     {
       ConditionStammKindOperation_Generated operationGenerated = (ConditionStammKindOperation_Generated) target2;
-      operationGenerated.condition = CloneableObjectUtility.Clone<IValue<bool>>(this.condition);
-      operationGenerated.trueResult = CloneableObjectUtility.Clone<IValue<StammKind>>(this.trueResult);
-      operationGenerated.falseResult = CloneableObjectUtility.Clone<IValue<StammKind>>(this.falseResult);
+      operationGenerated.condition = CloneableObjectUtility.Clone(condition);
+      operationGenerated.trueResult = CloneableObjectUtility.Clone(trueResult);
+      operationGenerated.falseResult = CloneableObjectUtility.Clone(falseResult);
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.WriteSerialize<IValue<bool>>(writer, "Condition", this.condition);
-      DefaultDataWriteUtility.WriteSerialize<IValue<StammKind>>(writer, "True", this.trueResult);
-      DefaultDataWriteUtility.WriteSerialize<IValue<StammKind>>(writer, "False", this.falseResult);
+      DefaultDataWriteUtility.WriteSerialize(writer, "Condition", condition);
+      DefaultDataWriteUtility.WriteSerialize(writer, "True", trueResult);
+      DefaultDataWriteUtility.WriteSerialize(writer, "False", falseResult);
     }
 
     public void DataRead(IDataReader reader, Type type)
     {
-      this.condition = DefaultDataReadUtility.ReadSerialize<IValue<bool>>(reader, "Condition");
-      this.trueResult = DefaultDataReadUtility.ReadSerialize<IValue<StammKind>>(reader, "True");
-      this.falseResult = DefaultDataReadUtility.ReadSerialize<IValue<StammKind>>(reader, "False");
+      condition = DefaultDataReadUtility.ReadSerialize<IValue<bool>>(reader, "Condition");
+      trueResult = DefaultDataReadUtility.ReadSerialize<IValue<StammKind>>(reader, "True");
+      falseResult = DefaultDataReadUtility.ReadSerialize<IValue<StammKind>>(reader, "False");
     }
   }
 }

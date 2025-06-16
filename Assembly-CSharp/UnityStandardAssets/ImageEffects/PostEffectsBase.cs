@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using UnityEngine;
 
 namespace UnityStandardAssets.ImageEffects
 {
@@ -9,7 +8,7 @@ namespace UnityStandardAssets.ImageEffects
   {
     protected bool supportHDRTextures = true;
     protected bool supportDepthTextures = true;
-    protected bool supportDX11 = false;
+    protected bool supportDX11;
     protected bool isSupported = true;
     private List<Material> createdMaterials = new List<Material>();
 
@@ -17,7 +16,7 @@ namespace UnityStandardAssets.ImageEffects
     {
       if (!(bool) (Object) shader)
       {
-        Debug.Log((object) ("Missing shader in " + ((object) this).ToString()));
+        Debug.Log((object) ("Missing shader in " + ToString()));
         this.enabled = false;
         return (Material) null;
       }
@@ -25,12 +24,12 @@ namespace UnityStandardAssets.ImageEffects
         return m2Create;
       if (!shader.isSupported)
       {
-        this.NotSupported();
-        Debug.Log((object) ("The shader " + ((object) shader).ToString() + " on effect " + ((object) this).ToString() + " is not supported on this platform!"));
+        NotSupported();
+        Debug.Log((object) ("The shader " + ((object) shader) + " on effect " + ToString() + " is not supported on this platform!"));
         return (Material) null;
       }
       m2Create = new Material(shader);
-      this.createdMaterials.Add(m2Create);
+      createdMaterials.Add(m2Create);
       m2Create.hideFlags = HideFlags.DontSave;
       return m2Create;
     }
@@ -39,7 +38,7 @@ namespace UnityStandardAssets.ImageEffects
     {
       if (!(bool) (Object) shader)
       {
-        Debug.Log((object) ("Missing shader in " + ((object) this).ToString()));
+        Debug.Log((object) ("Missing shader in " + ToString()));
         return (Material) null;
       }
       if ((bool) (Object) m2Create && (Object) m2Create.shader == (Object) shader && shader.isSupported)
@@ -47,52 +46,52 @@ namespace UnityStandardAssets.ImageEffects
       if (!shader.isSupported)
         return (Material) null;
       m2Create = new Material(shader);
-      this.createdMaterials.Add(m2Create);
+      createdMaterials.Add(m2Create);
       m2Create.hideFlags = HideFlags.DontSave;
       return m2Create;
     }
 
-    private void OnEnable() => this.isSupported = true;
+    private void OnEnable() => isSupported = true;
 
-    private void OnDestroy() => this.RemoveCreatedMaterials();
+    private void OnDestroy() => RemoveCreatedMaterials();
 
     private void RemoveCreatedMaterials()
     {
-      while (this.createdMaterials.Count > 0)
+      while (createdMaterials.Count > 0)
       {
-        Material createdMaterial = this.createdMaterials[0];
-        this.createdMaterials.RemoveAt(0);
+        Material createdMaterial = createdMaterials[0];
+        createdMaterials.RemoveAt(0);
         Object.Destroy((Object) createdMaterial);
       }
     }
 
-    protected bool CheckSupport() => this.CheckSupport(false);
+    protected bool CheckSupport() => CheckSupport(false);
 
     public virtual bool CheckResources()
     {
-      Debug.LogWarning((object) ("CheckResources () for " + ((object) this).ToString() + " should be overwritten."));
-      return this.isSupported;
+      Debug.LogWarning((object) ("CheckResources () for " + ToString() + " should be overwritten."));
+      return isSupported;
     }
 
     protected void Start()
     {
-      this.supportHDRTextures = SystemInfo.SupportsRenderTextureFormat(RenderTextureFormat.ARGBHalf);
-      this.supportDepthTextures = SystemInfo.SupportsRenderTextureFormat(RenderTextureFormat.Depth);
-      this.CheckResources();
+      supportHDRTextures = SystemInfo.SupportsRenderTextureFormat(RenderTextureFormat.ARGBHalf);
+      supportDepthTextures = SystemInfo.SupportsRenderTextureFormat(RenderTextureFormat.Depth);
+      CheckResources();
     }
 
     protected bool CheckSupport(bool needDepth)
     {
-      this.isSupported = true;
-      this.supportDX11 = SystemInfo.graphicsShaderLevel >= 50 && SystemInfo.supportsComputeShaders;
+      isSupported = true;
+      supportDX11 = SystemInfo.graphicsShaderLevel >= 50 && SystemInfo.supportsComputeShaders;
       if (!SystemInfo.supportsImageEffects || !SystemInfo.supportsRenderTextures)
       {
-        this.NotSupported();
+        NotSupported();
         return false;
       }
-      if (needDepth && !this.supportDepthTextures)
+      if (needDepth && !supportDepthTextures)
       {
-        this.NotSupported();
+        NotSupported();
         return false;
       }
       if (needDepth)
@@ -102,34 +101,34 @@ namespace UnityStandardAssets.ImageEffects
 
     protected bool CheckSupport(bool needDepth, bool needHdr)
     {
-      if (!this.CheckSupport(needDepth))
+      if (!CheckSupport(needDepth))
         return false;
-      if (!needHdr || this.supportHDRTextures)
+      if (!needHdr || supportHDRTextures)
         return true;
-      this.NotSupported();
+      NotSupported();
       return false;
     }
 
-    public bool Dx11Support() => this.supportDX11;
+    public bool Dx11Support() => supportDX11;
 
     protected void ReportAutoDisable()
     {
-      Debug.LogWarning((object) ("The image effect " + ((object) this).ToString() + " has been disabled as it's not supported on the current platform."));
+      Debug.LogWarning((object) ("The image effect " + ToString() + " has been disabled as it's not supported on the current platform."));
     }
 
     private bool CheckShader(Shader shader)
     {
-      Debug.Log((object) ("The shader " + ((object) shader).ToString() + " on effect " + ((object) this).ToString() + " is not part of the Unity 3.2+ effects suite anymore. For best performance and quality, please ensure you are using the latest Standard Assets Image Effects (Pro only) package."));
+      Debug.Log((object) ("The shader " + ((object) shader) + " on effect " + ToString() + " is not part of the Unity 3.2+ effects suite anymore. For best performance and quality, please ensure you are using the latest Standard Assets Image Effects (Pro only) package."));
       if (shader.isSupported)
         return false;
-      this.NotSupported();
+      NotSupported();
       return false;
     }
 
     protected void NotSupported()
     {
       this.enabled = false;
-      this.isSupported = false;
+      isSupported = false;
     }
 
     protected void DrawBorder(RenderTexture dest, Material material)

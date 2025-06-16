@@ -6,58 +6,58 @@ namespace TriangleNet.Tools
 {
   public class QualityMeasure
   {
-    private QualityMeasure.AlphaMeasure alphaMeasure;
-    private QualityMeasure.AreaMeasure areaMeasure;
+    private AlphaMeasure alphaMeasure;
+    private AreaMeasure areaMeasure;
     private Mesh mesh;
-    private QualityMeasure.Q_Measure qMeasure;
+    private Q_Measure qMeasure;
 
-    public double AreaMinimum => this.areaMeasure.area_min;
+    public double AreaMinimum => areaMeasure.area_min;
 
-    public double AreaMaximum => this.areaMeasure.area_max;
+    public double AreaMaximum => areaMeasure.area_max;
 
-    public double AreaRatio => this.areaMeasure.area_max / this.areaMeasure.area_min;
+    public double AreaRatio => areaMeasure.area_max / areaMeasure.area_min;
 
-    public double AlphaMinimum => this.alphaMeasure.alpha_min;
+    public double AlphaMinimum => alphaMeasure.alpha_min;
 
-    public double AlphaMaximum => this.alphaMeasure.alpha_max;
+    public double AlphaMaximum => alphaMeasure.alpha_max;
 
-    public double AlphaAverage => this.alphaMeasure.alpha_ave;
+    public double AlphaAverage => alphaMeasure.alpha_ave;
 
-    public double AlphaArea => this.alphaMeasure.alpha_area;
+    public double AlphaArea => alphaMeasure.alpha_area;
 
-    public double Q_Minimum => this.qMeasure.q_min;
+    public double Q_Minimum => qMeasure.q_min;
 
-    public double Q_Maximum => this.qMeasure.q_max;
+    public double Q_Maximum => qMeasure.q_max;
 
-    public double Q_Average => this.qMeasure.q_ave;
+    public double Q_Average => qMeasure.q_ave;
 
-    public double Q_Area => this.qMeasure.q_area;
+    public double Q_Area => qMeasure.q_area;
 
     public QualityMeasure()
     {
-      this.areaMeasure = new QualityMeasure.AreaMeasure();
-      this.alphaMeasure = new QualityMeasure.AlphaMeasure();
-      this.qMeasure = new QualityMeasure.Q_Measure();
+      areaMeasure = new AreaMeasure();
+      alphaMeasure = new AlphaMeasure();
+      qMeasure = new Q_Measure();
     }
 
     public void Update(Mesh mesh)
     {
       this.mesh = mesh;
-      this.areaMeasure.Reset();
-      this.alphaMeasure.Reset();
-      this.qMeasure.Reset();
-      this.Compute();
+      areaMeasure.Reset();
+      alphaMeasure.Reset();
+      qMeasure.Reset();
+      Compute();
     }
 
     private void Compute()
     {
       int n = 0;
-      foreach (Triangle triangle in this.mesh.triangles.Values)
+      foreach (Triangle triangle in mesh.triangles.Values)
       {
         ++n;
-        Point vertex1 = (Point) triangle.vertices[0];
-        Point vertex2 = (Point) triangle.vertices[1];
-        Point vertex3 = (Point) triangle.vertices[2];
+        Point vertex1 = triangle.vertices[0];
+        Point vertex2 = triangle.vertices[1];
+        Point vertex3 = triangle.vertices[2];
         double num1 = vertex1.x - vertex2.x;
         double num2 = vertex1.y - vertex2.y;
         double ab = Math.Sqrt(num1 * num1 + num2 * num2);
@@ -67,21 +67,21 @@ namespace TriangleNet.Tools
         double num5 = vertex3.x - vertex1.x;
         double num6 = vertex3.y - vertex1.y;
         double ca = Math.Sqrt(num5 * num5 + num6 * num6);
-        double area = this.areaMeasure.Measure(vertex1, vertex2, vertex3);
-        this.alphaMeasure.Measure(ab, bc, ca, area);
-        this.qMeasure.Measure(ab, bc, ca, area);
+        double area = areaMeasure.Measure(vertex1, vertex2, vertex3);
+        alphaMeasure.Measure(ab, bc, ca, area);
+        qMeasure.Measure(ab, bc, ca, area);
       }
-      this.alphaMeasure.Normalize(n, this.areaMeasure.area_total);
-      this.qMeasure.Normalize(n, this.areaMeasure.area_total);
+      alphaMeasure.Normalize(n, areaMeasure.area_total);
+      qMeasure.Normalize(n, areaMeasure.area_total);
     }
 
     public int Bandwidth()
     {
-      if (this.mesh == null)
+      if (mesh == null)
         return 0;
       int val1_1 = 0;
       int val1_2 = 0;
-      foreach (Triangle triangle in this.mesh.triangles.Values)
+      foreach (Triangle triangle in mesh.triangles.Values)
       {
         for (int index1 = 0; index1 < 3; ++index1)
         {
@@ -106,20 +106,20 @@ namespace TriangleNet.Tools
 
       public void Reset()
       {
-        this.area_min = double.MaxValue;
-        this.area_max = double.MinValue;
-        this.area_total = 0.0;
-        this.area_zero = 0;
+        area_min = double.MaxValue;
+        area_max = double.MinValue;
+        area_total = 0.0;
+        area_zero = 0;
       }
 
       public double Measure(Point a, Point b, Point c)
       {
         double val2 = 0.5 * Math.Abs(a.x * (b.y - c.y) + b.x * (c.y - a.y) + c.x * (a.y - b.y));
-        this.area_min = Math.Min(this.area_min, val2);
-        this.area_max = Math.Max(this.area_max, val2);
-        this.area_total += val2;
+        area_min = Math.Min(area_min, val2);
+        area_max = Math.Max(area_max, val2);
+        area_total += val2;
         if (val2 == 0.0)
-          ++this.area_zero;
+          ++area_zero;
         return val2;
       }
     }
@@ -133,10 +133,10 @@ namespace TriangleNet.Tools
 
       public void Reset()
       {
-        this.alpha_min = double.MaxValue;
-        this.alpha_max = double.MinValue;
-        this.alpha_ave = 0.0;
-        this.alpha_area = 0.0;
+        alpha_min = double.MaxValue;
+        alpha_max = double.MinValue;
+        alpha_ave = 0.0;
+        alpha_area = 0.0;
       }
 
       private double acos(double c)
@@ -163,28 +163,28 @@ namespace TriangleNet.Tools
         }
         else
         {
-          val2_1 = ca != 0.0 && ab != 0.0 ? this.acos((num3 + num1 - num2) / (2.0 * ca * ab)) : Math.PI;
-          val2_2 = ab != 0.0 && bc != 0.0 ? this.acos((num1 + num2 - num3) / (2.0 * ab * bc)) : Math.PI;
-          val2_3 = bc != 0.0 && ca != 0.0 ? this.acos((num2 + num3 - num1) / (2.0 * bc * ca)) : Math.PI;
+          val2_1 = ca != 0.0 && ab != 0.0 ? acos((num3 + num1 - num2) / (2.0 * ca * ab)) : Math.PI;
+          val2_2 = ab != 0.0 && bc != 0.0 ? acos((num1 + num2 - num3) / (2.0 * ab * bc)) : Math.PI;
+          val2_3 = bc != 0.0 && ca != 0.0 ? acos((num2 + num3 - num1) / (2.0 * bc * ca)) : Math.PI;
         }
         double val1 = Math.Min(Math.Min(Math.Min(maxValue, val2_1), val2_2), val2_3) * 3.0 / Math.PI;
-        this.alpha_ave += val1;
-        this.alpha_area += area * val1;
-        this.alpha_min = Math.Min(val1, this.alpha_min);
-        this.alpha_max = Math.Max(val1, this.alpha_max);
+        alpha_ave += val1;
+        alpha_area += area * val1;
+        alpha_min = Math.Min(val1, alpha_min);
+        alpha_max = Math.Max(val1, alpha_max);
         return val1;
       }
 
       public void Normalize(int n, double area_total)
       {
         if (n > 0)
-          this.alpha_ave /= (double) n;
+          alpha_ave /= n;
         else
-          this.alpha_ave = 0.0;
+          alpha_ave = 0.0;
         if (0.0 < area_total)
-          this.alpha_area /= area_total;
+          alpha_area /= area_total;
         else
-          this.alpha_area = 0.0;
+          alpha_area = 0.0;
       }
     }
 
@@ -197,32 +197,32 @@ namespace TriangleNet.Tools
 
       public void Reset()
       {
-        this.q_min = double.MaxValue;
-        this.q_max = double.MinValue;
-        this.q_ave = 0.0;
-        this.q_area = 0.0;
+        q_min = double.MaxValue;
+        q_max = double.MinValue;
+        q_ave = 0.0;
+        q_area = 0.0;
       }
 
       public double Measure(double ab, double bc, double ca, double area)
       {
         double val2 = (bc + ca - ab) * (ca + ab - bc) * (ab + bc - ca) / (ab * bc * ca);
-        this.q_min = Math.Min(this.q_min, val2);
-        this.q_max = Math.Max(this.q_max, val2);
-        this.q_ave += val2;
-        this.q_area += val2 * area;
+        q_min = Math.Min(q_min, val2);
+        q_max = Math.Max(q_max, val2);
+        q_ave += val2;
+        q_area += val2 * area;
         return val2;
       }
 
       public void Normalize(int n, double area_total)
       {
         if (n > 0)
-          this.q_ave /= (double) n;
+          q_ave /= n;
         else
-          this.q_ave = 0.0;
+          q_ave = 0.0;
         if (area_total > 0.0)
-          this.q_area /= area_total;
+          q_area /= area_total;
         else
-          this.q_area = 0.0;
+          q_area = 0.0;
       }
     }
   }

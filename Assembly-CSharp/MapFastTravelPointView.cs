@@ -1,7 +1,4 @@
-﻿using UnityEngine;
-using UnityEngine.EventSystems;
-
-public class MapFastTravelPointView : 
+﻿public class MapFastTravelPointView : 
   MonoBehaviour,
   IPointerEnterHandler,
   IEventSystemHandler,
@@ -14,13 +11,13 @@ public class MapFastTravelPointView :
 
   public void OnPointerClick(PointerEventData eventData)
   {
-    this.MapView.CallSelectedFastTravelPoint();
+    MapView.CallSelectedFastTravelPoint();
   }
 
   public void OnPointerEnter(PointerEventData eventData)
   {
-    this.MapView.ShowFastTravelPointInfo(this);
+    MapView.ShowFastTravelPointInfo(this);
   }
 
-  public void OnPointerExit(PointerEventData eventData) => this.MapView.HideFastTravelPointInfo();
+  public void OnPointerExit(PointerEventData eventData) => MapView.HideFastTravelPointInfo();
 }

@@ -14,30 +14,30 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
     [Property("Header", "", true)]
     public ITextRef Header
     {
-      get => this.header;
+      get => header;
       set
       {
-        this.header = value;
-        this.Component.Header = EngineAPIManager.CreateEngineTextInstance(this.header);
+        header = value;
+        Component.Header = EngineAPIManager.CreateEngineTextInstance(header);
       }
     }
 
     [Property("Text", "", true)]
     public ITextRef Text
     {
-      get => this.text;
+      get => text;
       set
       {
-        this.text = value;
-        this.Component.Text = EngineAPIManager.CreateEngineTextInstance(this.text);
+        text = value;
+        Component.Text = EngineAPIManager.CreateEngineTextInstance(text);
       }
     }
 
     [Property("State", "", true)]
     public MailStateEnum State
     {
-      get => this.Component.State;
-      set => this.Component.State = value;
+      get => Component.State;
+      set => Component.State = value;
     }
   }
 }

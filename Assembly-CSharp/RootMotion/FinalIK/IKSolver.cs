@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEngine;
 
 namespace RootMotion.FinalIK
 {
@@ -11,10 +10,10 @@ namespace RootMotion.FinalIK
     [Tooltip("The positional or the master weight of the solver.")]
     [Range(0.0f, 1f)]
     public float IKPositionWeight = 1f;
-    public IKSolver.UpdateDelegate OnPreInitiate;
-    public IKSolver.UpdateDelegate OnPostInitiate;
-    public IKSolver.UpdateDelegate OnPreUpdate;
-    public IKSolver.UpdateDelegate OnPostUpdate;
+    public UpdateDelegate OnPreInitiate;
+    public UpdateDelegate OnPostInitiate;
+    public UpdateDelegate OnPreUpdate;
+    public UpdateDelegate OnPostUpdate;
     protected bool firstInitiation = true;
     [SerializeField]
     [HideInInspector]
@@ -23,68 +22,68 @@ namespace RootMotion.FinalIK
     public bool IsValid()
     {
       string empty = string.Empty;
-      return this.IsValid(ref empty);
+      return IsValid(ref empty);
     }
 
     public abstract bool IsValid(ref string message);
 
     public void Initiate(Transform root)
     {
-      if (this.OnPreInitiate != null)
-        this.OnPreInitiate();
+      if (OnPreInitiate != null)
+        OnPreInitiate();
       if ((UnityEngine.Object) root == (UnityEngine.Object) null)
         Debug.LogError((object) "Initiating IKSolver with null root Transform.");
       this.root = root;
-      this.initiated = false;
+      initiated = false;
       string empty = string.Empty;
-      if (!this.IsValid(ref empty))
+      if (!IsValid(ref empty))
       {
         Warning.Log(empty, root);
       }
       else
       {
-        this.OnInitiate();
-        this.StoreDefaultLocalState();
-        this.initiated = true;
-        this.firstInitiation = false;
-        if (this.OnPostInitiate == null)
+        OnInitiate();
+        StoreDefaultLocalState();
+        initiated = true;
+        firstInitiation = false;
+        if (OnPostInitiate == null)
           return;
-        this.OnPostInitiate();
+        OnPostInitiate();
       }
     }
 
     public void Update()
     {
-      if (this.OnPreUpdate != null)
-        this.OnPreUpdate();
-      if (this.firstInitiation)
-        this.Initiate(this.root);
-      if (!this.initiated)
+      if (OnPreUpdate != null)
+        OnPreUpdate();
+      if (firstInitiation)
+        Initiate(root);
+      if (!initiated)
         return;
-      this.OnUpdate();
-      if (this.OnPostUpdate == null)
+      OnUpdate();
+      if (OnPostUpdate == null)
         return;
-      this.OnPostUpdate();
+      OnPostUpdate();
     }
 
-    public virtual Vector3 GetIKPosition() => this.IKPosition;
+    public virtual Vector3 GetIKPosition() => IKPosition;
 
-    public void SetIKPosition(Vector3 position) => this.IKPosition = position;
+    public void SetIKPosition(Vector3 position) => IKPosition = position;
 
-    public float GetIKPositionWeight() => this.IKPositionWeight;
+    public float GetIKPositionWeight() => IKPositionWeight;
 
     public void SetIKPositionWeight(float weight)
     {
-      this.IKPositionWeight = Mathf.Clamp(weight, 0.0f, 1f);
+      IKPositionWeight = Mathf.Clamp(weight, 0.0f, 1f);
     }
 
-    public Transform GetRoot() => this.root;
+    public Transform GetRoot() => root;
 
     public bool initiated { get; private set; }
 
-    public abstract IKSolver.Point[] GetPoints();
+    public abstract Point[] GetPoints();
 
-    public abstract IKSolver.Point GetPoint(Transform transform);
+    public abstract Point GetPoint(Transform transform);
 
     public abstract void FixTransforms();
 
@@ -94,9 +93,9 @@ namespace RootMotion.FinalIK
 
     protected abstract void OnUpdate();
 
-    protected void LogWarning(string message) => Warning.Log(message, this.root, true);
+    protected void LogWarning(string message) => Warning.Log(message, root, true);
 
-    public static Transform ContainsDuplicateBone(IKSolver.Bone[] bones)
+    public static Transform ContainsDuplicateBone(Bone[] bones)
     {
       for (int index1 = 0; index1 < bones.Length; ++index1)
       {
@@ -109,7 +108,7 @@ namespace RootMotion.FinalIK
       return (Transform) null;
     }
 
-    public static bool HierarchyIsValid(IKSolver.Bone[] bones)
+    public static bool HierarchyIsValid(Bone[] bones)
     {
       for (int index = 1; index < bones.Length; ++index)
       {
@@ -119,7 +118,7 @@ namespace RootMotion.FinalIK
       return true;
     }
 
-    protected static float PreSolveBones(ref IKSolver.Bone[] bones)
+    protected static float PreSolveBones(ref Bone[] bones)
     {
       float num = 0.0f;
       for (int index = 0; index < bones.Length; ++index)
@@ -158,38 +157,38 @@ namespace RootMotion.FinalIK
 
       public void StoreDefaultLocalState()
       {
-        this.defaultLocalPosition = this.transform.localPosition;
-        this.defaultLocalRotation = this.transform.localRotation;
+        defaultLocalPosition = transform.localPosition;
+        defaultLocalRotation = transform.localRotation;
       }
 
       public void FixTransform()
       {
-        if (this.transform.localPosition != this.defaultLocalPosition)
-          this.transform.localPosition = this.defaultLocalPosition;
-        if (!(this.transform.localRotation != this.defaultLocalRotation))
+        if (transform.localPosition != defaultLocalPosition)
+          transform.localPosition = defaultLocalPosition;
+        if (!(transform.localRotation != defaultLocalRotation))
           return;
-        this.transform.localRotation = this.defaultLocalRotation;
+        transform.localRotation = defaultLocalRotation;
       }
 
-      public void UpdateSolverPosition() => this.solverPosition = this.transform.position;
+      public void UpdateSolverPosition() => solverPosition = transform.position;
 
-      public void UpdateSolverLocalPosition() => this.solverPosition = this.transform.localPosition;
+      public void UpdateSolverLocalPosition() => solverPosition = transform.localPosition;
 
       public void UpdateSolverState()
       {
-        this.solverPosition = this.transform.position;
-        this.solverRotation = this.transform.rotation;
+        solverPosition = transform.position;
+        solverRotation = transform.rotation;
       }
 
       public void UpdateSolverLocalState()
       {
-        this.solverPosition = this.transform.localPosition;
-        this.solverRotation = this.transform.localRotation;
+        solverPosition = transform.localPosition;
+        solverRotation = transform.localRotation;
       }
     }
 
     [Serializable]
-    public class Bone : IKSolver.Point
+    public class Bone : Point
     {
       public float length;
       public float sqrMag;
@@ -201,41 +200,41 @@ namespace RootMotion.FinalIK
       {
         get
         {
-          if (!this.isLimited)
-            return (RotationLimit) null;
-          if ((UnityEngine.Object) this._rotationLimit == (UnityEngine.Object) null)
-            this._rotationLimit = this.transform.GetComponent<RotationLimit>();
-          this.isLimited = (UnityEngine.Object) this._rotationLimit != (UnityEngine.Object) null;
-          return this._rotationLimit;
+          if (!isLimited)
+            return null;
+          if ((UnityEngine.Object) _rotationLimit == (UnityEngine.Object) null)
+            _rotationLimit = transform.GetComponent<RotationLimit>();
+          isLimited = (UnityEngine.Object) _rotationLimit != (UnityEngine.Object) null;
+          return _rotationLimit;
         }
         set
         {
-          this._rotationLimit = value;
-          this.isLimited = (UnityEngine.Object) value != (UnityEngine.Object) null;
+          _rotationLimit = value;
+          isLimited = (UnityEngine.Object) value != (UnityEngine.Object) null;
         }
       }
 
       public void Swing(Vector3 swingTarget, float weight = 1f)
       {
-        if ((double) weight <= 0.0)
+        if (weight <= 0.0)
           return;
-        Quaternion rotation = Quaternion.FromToRotation(this.transform.rotation * this.axis, swingTarget - this.transform.position);
-        if ((double) weight >= 1.0)
-          this.transform.rotation = rotation * this.transform.rotation;
+        Quaternion rotation = Quaternion.FromToRotation(transform.rotation * axis, swingTarget - transform.position);
+        if (weight >= 1.0)
+          transform.rotation = rotation * transform.rotation;
         else
-          this.transform.rotation = Quaternion.Lerp(Quaternion.identity, rotation, weight) * this.transform.rotation;
+          transform.rotation = Quaternion.Lerp(Quaternion.identity, rotation, weight) * transform.rotation;
       }
 
       public static void SolverSwing(
-        IKSolver.Bone[] bones,
+        Bone[] bones,
         int index,
         Vector3 swingTarget,
         float weight = 1f)
       {
-        if ((double) weight <= 0.0)
+        if (weight <= 0.0)
           return;
         Quaternion rotation = Quaternion.FromToRotation(bones[index].solverRotation * bones[index].axis, swingTarget - bones[index].solverPosition);
-        if ((double) weight >= 1.0)
+        if (weight >= 1.0)
         {
           for (int index1 = index; index1 < bones.Length; ++index1)
             bones[index1].solverRotation = rotation * bones[index1].solverRotation;
@@ -249,14 +248,14 @@ namespace RootMotion.FinalIK
 
       public void Swing2D(Vector3 swingTarget, float weight = 1f)
       {
-        if ((double) weight <= 0.0)
+        if (weight <= 0.0)
           return;
-        Vector3 vector3_1 = this.transform.rotation * this.axis;
-        Vector3 vector3_2 = swingTarget - this.transform.position;
-        this.transform.rotation = Quaternion.AngleAxis(Mathf.DeltaAngle(Mathf.Atan2(vector3_1.x, vector3_1.y) * 57.29578f, Mathf.Atan2(vector3_2.x, vector3_2.y) * 57.29578f) * weight, Vector3.back) * this.transform.rotation;
+        Vector3 vector3_1 = transform.rotation * axis;
+        Vector3 vector3_2 = swingTarget - transform.position;
+        transform.rotation = Quaternion.AngleAxis(Mathf.DeltaAngle(Mathf.Atan2(vector3_1.x, vector3_1.y) * 57.29578f, Mathf.Atan2(vector3_2.x, vector3_2.y) * 57.29578f) * weight, Vector3.back) * transform.rotation;
       }
 
-      public void SetToSolverPosition() => this.transform.position = this.solverPosition;
+      public void SetToSolverPosition() => transform.position = solverPosition;
 
       public Bone()
       {
@@ -272,7 +271,7 @@ namespace RootMotion.FinalIK
     }
 
     [Serializable]
-    public class Node : IKSolver.Point
+    public class Node : Point
     {
       public float length;
       public float effectorPositionWeight;

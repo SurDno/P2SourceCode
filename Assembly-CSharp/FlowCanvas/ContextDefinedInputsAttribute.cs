@@ -2,7 +2,7 @@
 
 namespace FlowCanvas
 {
-  [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
+  [AttributeUsage(AttributeTargets.Class, Inherited = false)]
   public class ContextDefinedInputsAttribute : Attribute
   {
     public Type[] types;

@@ -1,5 +1,5 @@
-﻿using PLVirtualMachine.Common;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using PLVirtualMachine.Common;
 
 namespace VirtualMachine.Common.Utility
 {
@@ -9,21 +9,21 @@ namespace VirtualMachine.Common.Utility
 
     public void Add(T value)
     {
-      if (this.items == null)
-        this.items = new List<T>();
-      foreach (T obj in this.items)
+      if (items == null)
+        items = new List<T>();
+      foreach (T obj in items)
       {
         if (obj.Name == value.Name)
           return;
       }
-      this.items.Add(value);
+      items.Add(value);
     }
 
     public bool TryGetValue(string name, out T result)
     {
-      if (this.items != null)
+      if (items != null)
       {
-        foreach (T obj in this.items)
+        foreach (T obj in items)
         {
           if (obj.Name == name)
           {
@@ -38,22 +38,22 @@ namespace VirtualMachine.Common.Utility
 
     public void Clear()
     {
-      if (this.items == null)
+      if (items == null)
         return;
-      this.items.Clear();
+      items.Clear();
     }
 
     public void Reserve(int capacity)
     {
-      if (this.items == null)
+      if (items == null)
       {
-        this.items = new List<T>(capacity);
+        items = new List<T>(capacity);
       }
       else
       {
-        if (this.items.Count >= capacity)
+        if (items.Count >= capacity)
           return;
-        this.items.Capacity = capacity;
+        items.Capacity = capacity;
       }
     }
   }

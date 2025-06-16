@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using UnityEngine;
 
 public class BlendRigger : MonoBehaviour
 {
@@ -11,27 +10,27 @@ public class BlendRigger : MonoBehaviour
   public VisemeBlendDefine[] Poses;
   [HideInInspector]
   public string editorSelected;
-  private AnnoBlendDeformer rtBlendDeformer = (AnnoBlendDeformer) null;
+  private AnnoBlendDeformer rtBlendDeformer = null;
 
-  private void Start() => this.InitializeRuntimeDeformer();
+  private void Start() => InitializeRuntimeDeformer();
 
   private void InitializeRuntimeDeformer()
   {
-    if (this.rtBlendDeformer != null || this.Poses == null)
+    if (rtBlendDeformer != null || Poses == null)
       return;
-    if ((Object) this.skinnedMesh == (Object) null)
-      this.skinnedMesh = this.GetComponent<SkinnedMeshRenderer>();
-    MouthRiggerBlends.UpdateBlendIndices(this.skinnedMesh, this.Poses);
-    this.rtBlendDeformer = new AnnoBlendDeformer(this.Poses, MouthRiggerBlends.GetActiveBlendIndices(this.skinnedMesh, this.Poses), this.skinnedMesh);
+    if ((Object) skinnedMesh == (Object) null)
+      skinnedMesh = this.GetComponent<SkinnedMeshRenderer>();
+    MouthRiggerBlends.UpdateBlendIndices(skinnedMesh, Poses);
+    rtBlendDeformer = new AnnoBlendDeformer(Poses, MouthRiggerBlends.GetActiveBlendIndices(skinnedMesh, Poses), skinnedMesh);
   }
 
   public IAnnoDeformer BoneDeformer
   {
     get
     {
-      if (this.rtBlendDeformer == null)
-        this.InitializeRuntimeDeformer();
-      return (IAnnoDeformer) this.rtBlendDeformer;
+      if (rtBlendDeformer == null)
+        InitializeRuntimeDeformer();
+      return rtBlendDeformer;
     }
   }
 
@@ -39,78 +38,78 @@ public class BlendRigger : MonoBehaviour
   {
     get
     {
-      if (this.editorSelected == null || this.editorSelected.Length == 0)
-        this.editorSelected = this.basePose;
-      if ((this.editorSelected == null || this.editorSelected.Length == 0) && this.poseNames != null && this.poseNames.Length != 0)
-        this.editorSelected = this.poseNames[0];
-      return this.editorSelected;
+      if (editorSelected == null || editorSelected.Length == 0)
+        editorSelected = basePose;
+      if ((editorSelected == null || editorSelected.Length == 0) && poseNames != null && poseNames.Length != 0)
+        editorSelected = poseNames[0];
+      return editorSelected;
     }
-    set => this.editorSelected = value;
+    set => editorSelected = value;
   }
 
   public int SelectedIndex
   {
     get
     {
-      string selected = this.Selected;
-      for (int selectedIndex = 0; this.poseNames != null && selectedIndex < this.poseNames.Length; ++selectedIndex)
+      string selected = Selected;
+      for (int selectedIndex = 0; poseNames != null && selectedIndex < poseNames.Length; ++selectedIndex)
       {
-        if (this.poseNames[selectedIndex] == selected)
+        if (poseNames[selectedIndex] == selected)
           return selectedIndex;
       }
       return -1;
     }
     set
     {
-      if (value < 0 || value >= this.poseNames.Length)
+      if (value < 0 || value >= poseNames.Length)
         return;
-      this.Selected = this.poseNames[value];
+      Selected = poseNames[value];
     }
   }
 
   public void RefreshPoseList()
   {
-    VisemeBlendDefine[] visemeBlendDefineArray = new VisemeBlendDefine[this.poseNames.Length];
-    for (int index = 0; index < this.poseNames.Length; ++index)
+    VisemeBlendDefine[] visemeBlendDefineArray = new VisemeBlendDefine[poseNames.Length];
+    for (int index = 0; index < poseNames.Length; ++index)
     {
-      VisemeBlendDefine visemeBlendDefine = this.GetPose(this.poseNames[index]) ?? new VisemeBlendDefine(this.poseNames[index]);
+      VisemeBlendDefine visemeBlendDefine = GetPose(poseNames[index]) ?? new VisemeBlendDefine(poseNames[index]);
       visemeBlendDefineArray[index] = visemeBlendDefine;
     }
-    this.Poses = visemeBlendDefineArray;
+    Poses = visemeBlendDefineArray;
   }
 
   public VisemeBlendDefine GetPose(string which)
   {
-    if (this.Poses == null)
+    if (Poses == null)
     {
       Debug.Log((object) "GetPose problem: no poses?");
-      return (VisemeBlendDefine) null;
+      return null;
     }
-    foreach (VisemeBlendDefine pose in this.Poses)
+    foreach (VisemeBlendDefine pose in Poses)
     {
       if (pose != null && pose.Label == which)
         return pose;
     }
-    return (VisemeBlendDefine) null;
+    return null;
   }
 
   public void CommitSelected()
   {
-    MouthRiggerBlends.SaveGUIToBlendDefine(this.skinnedMesh, this.GetPose(this.Selected));
+    MouthRiggerBlends.SaveGUIToBlendDefine(skinnedMesh, GetPose(Selected));
   }
 
   public void ShowSelected()
   {
-    VisemeBlendDefine pose = this.GetPose(this.Selected);
-    foreach (KeyValuePair<int, float> activeBlendIndex in MouthRiggerBlends.GetActiveBlendIndices(this.skinnedMesh, this.Poses))
-      this.skinnedMesh.SetBlendShapeWeight(activeBlendIndex.Key, 0.0f);
+    VisemeBlendDefine pose = GetPose(Selected);
+    foreach (KeyValuePair<int, float> activeBlendIndex in MouthRiggerBlends.GetActiveBlendIndices(skinnedMesh, Poses))
+      skinnedMesh.SetBlendShapeWeight(activeBlendIndex.Key, 0.0f);
     foreach (WeightedBlendShape theBlend in pose.theBlends)
-      this.skinnedMesh.SetBlendShapeWeight(theBlend.blendIdx, theBlend.weight);
+      skinnedMesh.SetBlendShapeWeight(theBlend.blendIdx, theBlend.weight);
   }
 
   public bool HasBonedPose(string which)
   {
-    VisemeBlendDefine pose = this.GetPose(which);
+    VisemeBlendDefine pose = GetPose(which);
     return pose != null && pose != null && pose.HasPose;
   }
 

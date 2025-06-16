@@ -1,7 +1,4 @@
-﻿using UnityEngine;
-using UnityEngine.Serialization;
-
-namespace Cinemachine
+﻿namespace Cinemachine
 {
   [DocumentationSorting(8f, DocumentationSortingAttribute.Level.UserRef)]
   [AddComponentMenu("")]
@@ -17,31 +14,31 @@ namespace Cinemachine
     public float m_AmplitudeGain = 1f;
     [Tooltip("Scale factor to apply to the frequencies defined in the NoiseSettings asset.  1 is normal.  Larger magnitudes will make the noise shake more rapidly.")]
     public float m_FrequencyGain = 1f;
-    private bool mInitialized = false;
-    private float mNoiseTime = 0.0f;
+    private bool mInitialized;
+    private float mNoiseTime;
     private Vector3 mNoiseOffsets = Vector3.zero;
 
-    public override bool IsValid => this.enabled && (Object) this.m_NoiseProfile != (Object) null;
+    public override bool IsValid => this.enabled && (Object) m_NoiseProfile != (Object) null;
 
     public override CinemachineCore.Stage Stage => CinemachineCore.Stage.Noise;
 
     public override void MutateCameraState(ref CameraState curState, float deltaTime)
     {
-      if (!this.IsValid || (double) deltaTime < 0.0)
+      if (!IsValid || deltaTime < 0.0)
         return;
-      if (!this.mInitialized)
-        this.Initialize();
-      this.mNoiseTime += deltaTime * this.m_FrequencyGain;
-      curState.PositionCorrection += curState.CorrectedOrientation * CinemachineBasicMultiChannelPerlin.GetCombinedFilterResults(this.m_NoiseProfile.PositionNoise, this.mNoiseTime, this.mNoiseOffsets) * this.m_AmplitudeGain;
-      Quaternion quaternion = Quaternion.Euler(CinemachineBasicMultiChannelPerlin.GetCombinedFilterResults(this.m_NoiseProfile.OrientationNoise, this.mNoiseTime, this.mNoiseOffsets) * this.m_AmplitudeGain);
+      if (!mInitialized)
+        Initialize();
+      mNoiseTime += deltaTime * m_FrequencyGain;
+      curState.PositionCorrection += curState.CorrectedOrientation * GetCombinedFilterResults(m_NoiseProfile.PositionNoise, mNoiseTime, mNoiseOffsets) * m_AmplitudeGain;
+      Quaternion quaternion = Quaternion.Euler(GetCombinedFilterResults(m_NoiseProfile.OrientationNoise, mNoiseTime, mNoiseOffsets) * m_AmplitudeGain);
       curState.OrientationCorrection *= quaternion;
     }
 
     private void Initialize()
     {
-      this.mInitialized = true;
-      this.mNoiseTime = 0.0f;
-      this.mNoiseOffsets = new Vector3(Random.Range(-10000f, 10000f), Random.Range(-10000f, 10000f), Random.Range(-10000f, 10000f));
+      mInitialized = true;
+      mNoiseTime = 0.0f;
+      mNoiseOffsets = new Vector3(Random.Range(-10000f, 10000f), Random.Range(-10000f, 10000f), Random.Range(-10000f, 10000f));
     }
 
     private static Vector3 GetCombinedFilterResults(

@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace Engine.Impl.UI.Controls
+﻿namespace Engine.Impl.UI.Controls
 {
   public class ProgressRemapped : ProgressView
   {
@@ -11,28 +9,28 @@ namespace Engine.Impl.UI.Controls
 
     protected override void ApplyProgress()
     {
-      if (!((Object) this.nestedView != (Object) null))
+      if (!((Object) nestedView != (Object) null))
         return;
-      this.nestedView.Progress = Mathf.Lerp(this.targetRange.x, this.targetRange.y, this.Progress);
+      nestedView.Progress = Mathf.Lerp(targetRange.x, targetRange.y, Progress);
     }
 
     public void SetMin(float min)
     {
-      this.targetRange.x = min;
-      this.ApplyProgress();
+      targetRange.x = min;
+      ApplyProgress();
     }
 
     public void SetMax(float max)
     {
-      this.targetRange.y = max;
-      this.ApplyProgress();
+      targetRange.y = max;
+      ApplyProgress();
     }
 
     public override void SkipAnimation()
     {
-      if (!((Object) this.nestedView != (Object) null))
+      if (!((Object) nestedView != (Object) null))
         return;
-      this.nestedView.SkipAnimation();
+      nestedView.SkipAnimation();
     }
   }
 }

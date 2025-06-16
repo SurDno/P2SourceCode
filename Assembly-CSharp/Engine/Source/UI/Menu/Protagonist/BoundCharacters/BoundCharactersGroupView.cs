@@ -1,7 +1,6 @@
 ﻿using Engine.Common.BoundCharacters;
 using Engine.Impl.UI.Controls;
 using Engine.Source.Components.BoundCharacters;
-using UnityEngine;
 
 namespace Engine.Source.UI.Menu.Protagonist.BoundCharacters
 {
@@ -18,16 +17,16 @@ namespace Engine.Source.UI.Menu.Protagonist.BoundCharacters
     {
       if (group != 0)
       {
-        this.nameView.StringValue = "{UI.Menu.Protagonist.BoundCharacterGroup." + group.ToString() + "}";
-        this.nameView.gameObject.SetActive(true);
+        nameView.StringValue = "{UI.Menu.Protagonist.BoundCharacterGroup." + group + "}";
+        nameView.gameObject.SetActive(true);
       }
       else
-        this.nameView.gameObject.SetActive(false);
+        nameView.gameObject.SetActive(false);
     }
 
     public BoundCharacterView AddCharacter(BoundCharacterComponent character)
     {
-      BoundCharacterView boundCharacterView = Object.Instantiate<BoundCharacterView>(this.characterViewPrefab, (Transform) this.layout, false);
+      BoundCharacterView boundCharacterView = Object.Instantiate<BoundCharacterView>(characterViewPrefab, (Transform) layout, false);
       boundCharacterView.SetCharacter(character);
       return boundCharacterView;
     }

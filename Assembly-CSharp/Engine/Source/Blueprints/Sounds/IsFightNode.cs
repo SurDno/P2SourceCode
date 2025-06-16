@@ -14,7 +14,7 @@ namespace Engine.Source.Blueprints.Sounds
     [Port("Value")]
     private bool Value()
     {
-      if (this.simulation.Player != null)
+      if (simulation.Player != null)
       {
         CombatService service = ServiceLocator.GetService<CombatService>();
         if (service != null)

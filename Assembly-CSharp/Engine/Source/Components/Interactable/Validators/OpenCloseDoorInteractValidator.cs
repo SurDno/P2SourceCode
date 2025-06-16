@@ -15,12 +15,12 @@ namespace Engine.Source.Components.Interactable.Validators
       if (component == null)
         return new ValidateResult(false, "IDoorComponent not found");
       if (component.Bolted.Value)
-        return new ValidateResult(false, "Bolted " + component.Bolted.Value.ToString());
+        return new ValidateResult(false, "Bolted " + component.Bolted.Value);
       if (component.LockState.Value != 0)
-        return new ValidateResult(false, "LockState " + (object) component.LockState.Value);
+        return new ValidateResult(false, "LockState " + component.LockState.Value);
       if (component.Opened.Value != (item.Type == InteractType.OpenDoor))
         return new ValidateResult(true);
-      return new ValidateResult(false, "Opened " + component.Opened.Value.ToString() + " != Type " + (object) item.Type);
+      return new ValidateResult(false, "Opened " + component.Opened.Value + " != Type " + item.Type);
     }
   }
 }

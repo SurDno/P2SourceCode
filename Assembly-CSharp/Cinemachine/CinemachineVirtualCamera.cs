@@ -1,8 +1,5 @@
-﻿using Cinemachine.Utility;
-using System;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.Serialization;
+﻿using System.Collections.Generic;
+using Cinemachine.Utility;
 
 namespace Cinemachine
 {
@@ -23,66 +20,66 @@ namespace Cinemachine
     [LensSettingsProperty]
     public LensSettings m_Lens = LensSettings.Default;
     public const string PipelineName = "cm";
-    public static CinemachineVirtualCamera.CreatePipelineDelegate CreatePipelineOverride;
-    public static CinemachineVirtualCamera.DestroyPipelineDelegate DestroyPipelineOverride;
+    public static CreatePipelineDelegate CreatePipelineOverride;
+    public static DestroyPipelineDelegate DestroyPipelineOverride;
     private CameraState m_State = CameraState.Default;
-    private CinemachineComponentBase[] m_ComponentPipeline = (CinemachineComponentBase[]) null;
+    private CinemachineComponentBase[] m_ComponentPipeline = null;
     [SerializeField]
     [HideInInspector]
     private Transform m_ComponentOwner = (Transform) null;
 
-    public override CameraState State => this.m_State;
+    public override CameraState State => m_State;
 
     public override Transform LookAt
     {
-      get => this.ResolveLookAt(this.m_LookAt);
-      set => this.m_LookAt = value;
+      get => ResolveLookAt(m_LookAt);
+      set => m_LookAt = value;
     }
 
     public override Transform Follow
     {
-      get => this.ResolveFollow(this.m_Follow);
-      set => this.m_Follow = value;
+      get => ResolveFollow(m_Follow);
+      set => m_Follow = value;
     }
 
     public override void UpdateCameraState(Vector3 worldUp, float deltaTime)
     {
-      if (!this.PreviousStateIsValid)
+      if (!PreviousStateIsValid)
         deltaTime = -1f;
-      if ((double) deltaTime < 0.0)
-        this.m_State = this.PullStateFromVirtualCamera(worldUp);
-      this.m_State = this.CalculateNewState(worldUp, deltaTime);
-      if (!this.UserIsDragging)
+      if (deltaTime < 0.0)
+        m_State = PullStateFromVirtualCamera(worldUp);
+      m_State = CalculateNewState(worldUp, deltaTime);
+      if (!UserIsDragging)
       {
         CameraState state;
-        if ((UnityEngine.Object) this.Follow != (UnityEngine.Object) null)
+        if ((UnityEngine.Object) Follow != (UnityEngine.Object) null)
         {
           Transform transform = this.transform;
-          state = this.State;
+          state = State;
           Vector3 rawPosition = state.RawPosition;
           transform.position = rawPosition;
         }
-        if ((UnityEngine.Object) this.LookAt != (UnityEngine.Object) null)
+        if ((UnityEngine.Object) LookAt != (UnityEngine.Object) null)
         {
           Transform transform = this.transform;
-          state = this.State;
+          state = State;
           Quaternion rawOrientation = state.RawOrientation;
           transform.rotation = rawOrientation;
         }
       }
-      this.PreviousStateIsValid = true;
+      PreviousStateIsValid = true;
     }
 
     protected override void OnEnable()
     {
       base.OnEnable();
-      this.InvalidateComponentPipeline();
-      if (this.ValidatingStreamVersion >= 20170927)
+      InvalidateComponentPipeline();
+      if (ValidatingStreamVersion >= 20170927)
         return;
-      if ((UnityEngine.Object) this.Follow != (UnityEngine.Object) null && (UnityEngine.Object) this.GetCinemachineComponent(CinemachineCore.Stage.Body) == (UnityEngine.Object) null)
-        this.AddCinemachineComponent<CinemachineHardLockToTarget>();
-      if ((UnityEngine.Object) this.LookAt != (UnityEngine.Object) null && (UnityEngine.Object) this.GetCinemachineComponent(CinemachineCore.Stage.Aim) == (UnityEngine.Object) null)
-        this.AddCinemachineComponent<CinemachineHardLookAt>();
+      if ((UnityEngine.Object) Follow != (UnityEngine.Object) null && (UnityEngine.Object) GetCinemachineComponent(CinemachineCore.Stage.Body) == (UnityEngine.Object) null)
+        AddCinemachineComponent<CinemachineHardLockToTarget>();
+      if ((UnityEngine.Object) LookAt != (UnityEngine.Object) null && (UnityEngine.Object) GetCinemachineComponent(CinemachineCore.Stage.Aim) == (UnityEngine.Object) null)
+        AddCinemachineComponent<CinemachineHardLookAt>();
     }
 
     protected override void OnDestroy()
@@ -98,12 +95,12 @@ namespace Cinemachine
     protected override void OnValidate()
     {
       base.OnValidate();
-      this.m_Lens.Validate();
+      m_Lens.Validate();
     }
 
-    private void OnTransformChildrenChanged() => this.InvalidateComponentPipeline();
+    private void OnTransformChildrenChanged() => InvalidateComponentPipeline();
 
-    private void Reset() => this.DestroyPipeline();
+    private void Reset() => DestroyPipeline();
 
     private void DestroyPipeline()
     {
@@ -115,27 +112,27 @@ namespace Cinemachine
       }
       foreach (Transform transform in transformList)
       {
-        if (CinemachineVirtualCamera.DestroyPipelineOverride != null)
-          CinemachineVirtualCamera.DestroyPipelineOverride(transform.gameObject);
+        if (DestroyPipelineOverride != null)
+          DestroyPipelineOverride(transform.gameObject);
         else
           UnityEngine.Object.Destroy((UnityEngine.Object) transform.gameObject);
       }
-      this.m_ComponentOwner = (Transform) null;
-      this.PreviousStateIsValid = false;
+      m_ComponentOwner = (Transform) null;
+      PreviousStateIsValid = false;
     }
 
     private Transform CreatePipeline(CinemachineVirtualCamera copyFrom)
     {
-      CinemachineComponentBase[] copyFrom1 = (CinemachineComponentBase[]) null;
+      CinemachineComponentBase[] copyFrom1 = null;
       if ((UnityEngine.Object) copyFrom != (UnityEngine.Object) null)
       {
         copyFrom.InvalidateComponentPipeline();
         copyFrom1 = copyFrom.GetComponentPipeline();
       }
       Transform pipeline;
-      if (CinemachineVirtualCamera.CreatePipelineOverride != null)
+      if (CreatePipelineOverride != null)
       {
-        pipeline = CinemachineVirtualCamera.CreatePipelineOverride(this, "cm", copyFrom1);
+        pipeline = CreatePipelineOverride(this, "cm", copyFrom1);
       }
       else
       {
@@ -149,30 +146,30 @@ namespace Cinemachine
             ReflectionHelpers.CopyFields((object) src, (object) gameObject.AddComponent(((object) src).GetType()));
         }
       }
-      this.PreviousStateIsValid = false;
+      PreviousStateIsValid = false;
       return pipeline;
     }
 
     public void InvalidateComponentPipeline()
     {
-      this.m_ComponentPipeline = (CinemachineComponentBase[]) null;
+      m_ComponentPipeline = null;
     }
 
     public Transform GetComponentOwner()
     {
-      this.UpdateComponentPipeline();
-      return this.m_ComponentOwner;
+      UpdateComponentPipeline();
+      return m_ComponentOwner;
     }
 
     public CinemachineComponentBase[] GetComponentPipeline()
     {
-      this.UpdateComponentPipeline();
-      return this.m_ComponentPipeline;
+      UpdateComponentPipeline();
+      return m_ComponentPipeline;
     }
 
     public CinemachineComponentBase GetCinemachineComponent(CinemachineCore.Stage stage)
     {
-      CinemachineComponentBase[] componentPipeline = this.GetComponentPipeline();
+      CinemachineComponentBase[] componentPipeline = GetComponentPipeline();
       if (componentPipeline != null)
       {
         foreach (CinemachineComponentBase cinemachineComponent in componentPipeline)
@@ -181,12 +178,12 @@ namespace Cinemachine
             return cinemachineComponent;
         }
       }
-      return (CinemachineComponentBase) null;
+      return null;
     }
 
     public T GetCinemachineComponent<T>() where T : CinemachineComponentBase
     {
-      CinemachineComponentBase[] componentPipeline = this.GetComponentPipeline();
+      CinemachineComponentBase[] componentPipeline = GetComponentPipeline();
       if (componentPipeline != null)
       {
         foreach (CinemachineComponentBase cinemachineComponent in componentPipeline)
@@ -200,7 +197,7 @@ namespace Cinemachine
 
     public T AddCinemachineComponent<T>() where T : CinemachineComponentBase
     {
-      Transform componentOwner = this.GetComponentOwner();
+      Transform componentOwner = GetComponentOwner();
       CinemachineComponentBase[] components = componentOwner.GetComponents<CinemachineComponentBase>();
       T obj = componentOwner.gameObject.AddComponent<T>();
       if ((UnityEngine.Object) obj != (UnityEngine.Object) null && components != null)
@@ -215,13 +212,13 @@ namespace Cinemachine
           }
         }
       }
-      this.InvalidateComponentPipeline();
+      InvalidateComponentPipeline();
       return obj;
     }
 
     public void DestroyCinemachineComponent<T>() where T : CinemachineComponentBase
     {
-      CinemachineComponentBase[] componentPipeline = this.GetComponentPipeline();
+      CinemachineComponentBase[] componentPipeline = GetComponentPipeline();
       if (componentPipeline == null)
         return;
       foreach (CinemachineComponentBase cinemachineComponentBase in componentPipeline)
@@ -230,7 +227,7 @@ namespace Cinemachine
         {
           cinemachineComponentBase.enabled = false;
           UnityEngine.Object.DestroyImmediate((UnityEngine.Object) cinemachineComponentBase);
-          this.InvalidateComponentPipeline();
+          InvalidateComponentPipeline();
         }
       }
     }
@@ -239,7 +236,7 @@ namespace Cinemachine
 
     public void OnPositionDragged(Vector3 delta)
     {
-      CinemachineComponentBase[] componentPipeline = this.GetComponentPipeline();
+      CinemachineComponentBase[] componentPipeline = GetComponentPipeline();
       if (componentPipeline == null)
         return;
       for (int index = 0; index < componentPipeline.Length; ++index)
@@ -248,54 +245,54 @@ namespace Cinemachine
 
     private void UpdateComponentPipeline()
     {
-      if ((UnityEngine.Object) this.m_ComponentOwner != (UnityEngine.Object) null && (UnityEngine.Object) this.m_ComponentOwner.parent != (UnityEngine.Object) this.transform)
+      if ((UnityEngine.Object) m_ComponentOwner != (UnityEngine.Object) null && (UnityEngine.Object) m_ComponentOwner.parent != (UnityEngine.Object) this.transform)
       {
-        CinemachineVirtualCamera component = (UnityEngine.Object) this.m_ComponentOwner.parent != (UnityEngine.Object) null ? this.m_ComponentOwner.parent.gameObject.GetComponent<CinemachineVirtualCamera>() : (CinemachineVirtualCamera) null;
-        this.DestroyPipeline();
-        this.m_ComponentOwner = this.CreatePipeline(component);
+        CinemachineVirtualCamera component = (UnityEngine.Object) m_ComponentOwner.parent != (UnityEngine.Object) null ? m_ComponentOwner.parent.gameObject.GetComponent<CinemachineVirtualCamera>() : (CinemachineVirtualCamera) null;
+        DestroyPipeline();
+        m_ComponentOwner = CreatePipeline(component);
       }
-      if ((UnityEngine.Object) this.m_ComponentOwner != (UnityEngine.Object) null && this.m_ComponentPipeline != null)
+      if ((UnityEngine.Object) m_ComponentOwner != (UnityEngine.Object) null && m_ComponentPipeline != null)
         return;
-      this.m_ComponentOwner = (Transform) null;
+      m_ComponentOwner = (Transform) null;
       List<CinemachineComponentBase> cinemachineComponentBaseList = new List<CinemachineComponentBase>();
       foreach (Transform transform in this.transform)
       {
         if ((UnityEngine.Object) transform.GetComponent<CinemachinePipeline>() != (UnityEngine.Object) null)
         {
-          this.m_ComponentOwner = transform;
+          m_ComponentOwner = transform;
           foreach (CinemachineComponentBase component in transform.GetComponents<CinemachineComponentBase>())
             cinemachineComponentBaseList.Add(component);
         }
       }
-      if ((UnityEngine.Object) this.m_ComponentOwner == (UnityEngine.Object) null)
-        this.m_ComponentOwner = this.CreatePipeline((CinemachineVirtualCamera) null);
+      if ((UnityEngine.Object) m_ComponentOwner == (UnityEngine.Object) null)
+        m_ComponentOwner = CreatePipeline(null);
       if (CinemachineCore.sShowHiddenObjects)
-        this.m_ComponentOwner.gameObject.hideFlags &= ~(HideFlags.HideInHierarchy | HideFlags.HideInInspector);
+        m_ComponentOwner.gameObject.hideFlags &= ~(HideFlags.HideInHierarchy | HideFlags.HideInInspector);
       else
-        this.m_ComponentOwner.gameObject.hideFlags |= HideFlags.HideInHierarchy | HideFlags.HideInInspector;
-      cinemachineComponentBaseList.Sort((Comparison<CinemachineComponentBase>) ((c1, c2) => c1.Stage - c2.Stage));
-      this.m_ComponentPipeline = cinemachineComponentBaseList.ToArray();
+        m_ComponentOwner.gameObject.hideFlags |= HideFlags.HideInHierarchy | HideFlags.HideInInspector;
+      cinemachineComponentBaseList.Sort((c1, c2) => c1.Stage - c2.Stage);
+      m_ComponentPipeline = cinemachineComponentBaseList.ToArray();
     }
 
     private CameraState CalculateNewState(Vector3 worldUp, float deltaTime)
     {
-      CameraState newState = this.PullStateFromVirtualCamera(worldUp);
-      if ((UnityEngine.Object) this.LookAt != (UnityEngine.Object) null)
-        newState.ReferenceLookAt = this.LookAt.position;
+      CameraState newState = PullStateFromVirtualCamera(worldUp);
+      if ((UnityEngine.Object) LookAt != (UnityEngine.Object) null)
+        newState.ReferenceLookAt = LookAt.position;
       CinemachineCore.Stage curStage = CinemachineCore.Stage.Body;
-      this.UpdateComponentPipeline();
-      if (this.m_ComponentPipeline != null)
+      UpdateComponentPipeline();
+      if (m_ComponentPipeline != null)
       {
-        for (int index = 0; index < this.m_ComponentPipeline.Length; ++index)
-          this.m_ComponentPipeline[index].PrePipelineMutateCameraState(ref newState);
-        for (int index = 0; index < this.m_ComponentPipeline.Length; ++index)
+        for (int index = 0; index < m_ComponentPipeline.Length; ++index)
+          m_ComponentPipeline[index].PrePipelineMutateCameraState(ref newState);
+        for (int index = 0; index < m_ComponentPipeline.Length; ++index)
         {
-          curStage = this.AdvancePipelineStage(ref newState, deltaTime, curStage, (int) this.m_ComponentPipeline[index].Stage);
-          this.m_ComponentPipeline[index].MutateCameraState(ref newState, deltaTime);
+          curStage = AdvancePipelineStage(ref newState, deltaTime, curStage, (int) m_ComponentPipeline[index].Stage);
+          m_ComponentPipeline[index].MutateCameraState(ref newState, deltaTime);
         }
       }
       int maxStage = 3;
-      int num = (int) this.AdvancePipelineStage(ref newState, deltaTime, curStage, maxStage);
+      int num = (int) AdvancePipelineStage(ref newState, deltaTime, curStage, maxStage);
       return newState;
     }
 
@@ -306,7 +303,7 @@ namespace Cinemachine
       int maxStage)
     {
       for (; curStage < (CinemachineCore.Stage) maxStage; ++curStage)
-        this.InvokePostPipelineStageCallback((CinemachineVirtualCameraBase) this, curStage, ref state, deltaTime);
+        InvokePostPipelineStageCallback(this, curStage, ref state, deltaTime);
       return curStage;
     }
 
@@ -318,14 +315,14 @@ namespace Cinemachine
         RawOrientation = this.transform.rotation,
         ReferenceUp = worldUp
       };
-      CinemachineBrain potentialTargetBrain = CinemachineCore.Instance.FindPotentialTargetBrain((ICinemachineCamera) this);
-      this.m_Lens.Aspect = (UnityEngine.Object) potentialTargetBrain != (UnityEngine.Object) null ? potentialTargetBrain.OutputCamera.aspect : 1f;
-      this.m_Lens.Orthographic = (UnityEngine.Object) potentialTargetBrain != (UnityEngine.Object) null && potentialTargetBrain.OutputCamera.orthographic;
-      cameraState.Lens = this.m_Lens;
+      CinemachineBrain potentialTargetBrain = CinemachineCore.Instance.FindPotentialTargetBrain(this);
+      m_Lens.Aspect = (UnityEngine.Object) potentialTargetBrain != (UnityEngine.Object) null ? potentialTargetBrain.OutputCamera.aspect : 1f;
+      m_Lens.Orthographic = (UnityEngine.Object) potentialTargetBrain != (UnityEngine.Object) null && potentialTargetBrain.OutputCamera.orthographic;
+      cameraState.Lens = m_Lens;
       return cameraState;
     }
 
-    internal void SetStateRawPosition(Vector3 pos) => this.m_State.RawPosition = pos;
+    internal void SetStateRawPosition(Vector3 pos) => m_State.RawPosition = pos;
 
     public delegate Transform CreatePipelineDelegate(
       CinemachineVirtualCamera vcam,

@@ -1,4 +1,8 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Cofe.Proxies;
+using Cofe.Serializations.Data;
 using Engine.Common;
 using Engine.Common.Commons;
 using Engine.Common.Components;
@@ -13,10 +17,6 @@ using Engine.Source.Components.Saves;
 using Engine.Source.Connections;
 using Engine.Source.Inventory;
 using Inspectors;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
 
 namespace Engine.Source.Components
 {
@@ -24,33 +24,33 @@ namespace Engine.Source.Components
   [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite | TypeEnum.StateSave | TypeEnum.StateLoad)]
   public class StorableComponent : EngineComponent, IStorableComponent, IComponent, INeedSave
   {
-    [StateSaveProxy(MemberEnum.None)]
-    [StateLoadProxy(MemberEnum.None)]
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [StateSaveProxy]
+    [StateLoadProxy]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected bool isEnabled = true;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected Typed<IInventoryPlaceholder> placeholder;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected List<StorableGroup> groups = new List<StorableGroup>();
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected List<IStorableTooltipComponent> tooltips = new List<IStorableTooltipComponent>();
-    [StateSaveProxy(MemberEnum.None)]
-    [StateLoadProxy(MemberEnum.None)]
+    [StateSaveProxy]
+    [StateLoadProxy]
     protected int count = 1;
-    [StateSaveProxy(MemberEnum.None)]
-    [StateLoadProxy(MemberEnum.None)]
+    [StateSaveProxy]
+    [StateLoadProxy()]
     protected int max = 1;
     private IStorageComponent storage;
     [FromThis]
@@ -59,11 +59,11 @@ namespace Engine.Source.Components
     [Inspected(Mutable = true)]
     public bool IsEnabled
     {
-      get => this.isEnabled;
+      get => isEnabled;
       set
       {
-        this.isEnabled = value;
-        this.OnChangeEnabled();
+        isEnabled = value;
+        OnChangeEnabled();
       }
     }
 
@@ -72,119 +72,119 @@ namespace Engine.Source.Components
     public event Action<IStorableComponent> UseEvent;
 
     [Inspected]
-    public IParameterValue<float> Durability { get; } = (IParameterValue<float>) new ParameterValue<float>();
+    public IParameterValue<float> Durability { get; } = new ParameterValue<float>();
 
     [Inspected]
-    public Typed<IInventoryPlaceholder> TypedPlaceholder => this.placeholder;
+    public Typed<IInventoryPlaceholder> TypedPlaceholder => placeholder;
 
     [Inspected]
     public int Count
     {
-      get => this.count;
+      get => count;
       set
       {
-        this.count = value;
-        this.CheckValue();
+        count = value;
+        CheckValue();
       }
     }
 
     [Inspected]
-    public IEnumerable<StorableGroup> Groups => (IEnumerable<StorableGroup>) this.groups;
+    public IEnumerable<StorableGroup> Groups => groups;
 
     [Inspected]
     public int Max
     {
-      get => this.max;
+      get => max;
       set
       {
-        this.max = value;
-        this.CheckValue();
+        max = value;
+        CheckValue();
       }
     }
 
     [Inspected]
     public IStorageComponent Storage
     {
-      get => this.storage;
+      get => storage;
       set
       {
-        this.storage = value;
-        ((Entity) this.Owner).DontSave = this.storage != null && ((Entity) this.storage.Owner).DontSave;
-        Action<IStorableComponent> changeStorageEvent = this.ChangeStorageEvent;
+        storage = value;
+        ((Entity) Owner).DontSave = storage != null && ((Entity) storage.Owner).DontSave;
+        Action<IStorableComponent> changeStorageEvent = ChangeStorageEvent;
         if (changeStorageEvent == null)
           return;
-        changeStorageEvent((IStorableComponent) this);
+        changeStorageEvent(this);
       }
     }
 
     [Inspected]
     public IInventoryComponent Container { get; set; }
 
-    [StateSaveProxy(MemberEnum.None)]
-    [StateLoadProxy(MemberEnum.None)]
+    [StateSaveProxy]
+    [StateLoadProxy]
     [Inspected]
     public Cell Cell { get; set; }
 
     [Inspected]
     public Invoice Invoice { get; set; }
 
-    [StateSaveProxy(MemberEnum.None)]
-    [StateLoadProxy(MemberEnum.None)]
+    [StateSaveProxy]
+    [StateLoadProxy]
     [Inspected]
     public LocalizedText Title { get; set; }
 
-    [StateSaveProxy(MemberEnum.None)]
-    [StateLoadProxy(MemberEnum.None)]
+    [StateSaveProxy]
+    [StateLoadProxy]
     [Inspected]
     public LocalizedText Tooltip { get; set; }
 
-    [StateSaveProxy(MemberEnum.None)]
-    [StateLoadProxy(MemberEnum.None)]
+    [StateSaveProxy]
+    [StateLoadProxy]
     [Inspected]
     public LocalizedText Description { get; set; }
 
-    [StateSaveProxy(MemberEnum.None)]
-    [StateLoadProxy(MemberEnum.None)]
+    [StateSaveProxy]
+    [StateLoadProxy]
     [Inspected]
     public LocalizedText SpecialDescription { get; set; }
 
-    public InventoryPlaceholder Placeholder => (InventoryPlaceholder) this.placeholder.Value;
+    public InventoryPlaceholder Placeholder => (InventoryPlaceholder) placeholder.Value;
 
-    public List<IStorableTooltipComponent> Tooltips => this.tooltips;
+    public List<IStorableTooltipComponent> Tooltips => tooltips;
 
-    [StateSaveProxy(MemberEnum.None)]
-    [StateLoadProxy(MemberEnum.None)]
+    [StateSaveProxy]
+    [StateLoadProxy]
     protected StorableData StorableData
     {
       get
       {
-        if (this.Storage == null)
+        if (Storage == null)
         {
-          Debug.LogError((object) ("Storage not found, owner : " + this.Owner.GetInfo()));
-          return (StorableData) null;
+          Debug.LogError((object) ("Storage not found, owner : " + Owner.GetInfo()));
+          return null;
         }
-        if (this.Container == null)
+        if (Container == null)
         {
-          Debug.LogError((object) ("Container not found, owner : " + this.Owner.GetInfo()));
-          return (StorableData) null;
+          Debug.LogError((object) ("Container not found, owner : " + Owner.GetInfo()));
+          return null;
         }
         StorableData storableData = ProxyFactory.Create<StorableData>();
-        storableData.Storage = this.Storage;
-        storableData.TemplateId = this.Container.Owner.TemplateId;
+        storableData.Storage = Storage;
+        storableData.TemplateId = Container.Owner.TemplateId;
         return storableData;
       }
       set
       {
         if (value == null)
-          Debug.LogError((object) ("StorableData is null, owner : " + this.Owner.GetInfo()));
+          Debug.LogError((object) ("StorableData is null, owner : " + Owner.GetInfo()));
         else if (value.Storage == null)
         {
-          Debug.LogError((object) ("Storage not found, owner : " + this.Owner.GetInfo()));
+          Debug.LogError((object) ("Storage not found, owner : " + Owner.GetInfo()));
         }
         else
         {
-          this.storage = value.Storage;
-          this.Container = value.Storage.Containers.FirstOrDefault<IInventoryComponent>((Func<IInventoryComponent, bool>) (o => o.Owner.TemplateId == value.TemplateId));
+          storage = value.Storage;
+          Container = value.Storage.Containers.FirstOrDefault(o => o.Owner.TemplateId == value.TemplateId);
         }
       }
     }
@@ -193,44 +193,44 @@ namespace Engine.Source.Components
 
     public void Use()
     {
-      Action<IStorableComponent> useEvent = this.UseEvent;
+      Action<IStorableComponent> useEvent = UseEvent;
       if (useEvent == null)
         return;
-      useEvent((IStorableComponent) this);
+      useEvent(this);
     }
 
     public override void OnAdded()
     {
       base.OnAdded();
-      this.Durability.Set<float>(this.parameters?.GetByName<float>(ParameterNameEnum.Durability));
-      this.CheckValue();
+      Durability.Set(parameters?.GetByName<float>(ParameterNameEnum.Durability));
+      CheckValue();
     }
 
     public override void OnRemoved()
     {
-      if (this.storage != null)
+      if (storage != null)
       {
-        this.storage.RemoveItem((IStorableComponent) this);
-        this.storage = (IStorageComponent) null;
+        storage.RemoveItem(this);
+        storage = null;
       }
-      this.Durability.Set<float>((IParameter<float>) null);
+      Durability.Set(null);
       base.OnRemoved();
     }
 
     private void CheckValue()
     {
-      if (this.count <= this.max)
+      if (count <= max)
         return;
-      Debug.LogError((object) ("Count : " + (object) this.count + " , max : " + (object) this.max + " , owner : " + this.Owner.GetInfo()));
+      Debug.LogError((object) ("Count : " + count + " , max : " + max + " , owner : " + Owner.GetInfo()));
     }
 
-    [Cofe.Serializations.Data.OnLoaded]
+    [OnLoaded]
     private void OnLoaded()
     {
-      Action<IStorableComponent> changeStorageEvent = this.ChangeStorageEvent;
+      Action<IStorableComponent> changeStorageEvent = ChangeStorageEvent;
       if (changeStorageEvent == null)
         return;
-      changeStorageEvent((IStorableComponent) this);
+      changeStorageEvent(this);
     }
   }
 }

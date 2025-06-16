@@ -17,126 +17,126 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
     [Property("IsFree", "")]
     public bool IsFree
     {
-      get => this.Component.IsFree.Value;
-      set => this.Component.IsFree.SetValue(this.defaultPriority, value);
+      get => Component.IsFree.Value;
+      set => Component.IsFree.SetValue(defaultPriority, value);
     }
 
     [Method("Set IsFree value", "Priority,Value", "")]
     public void SetIsFreeValue(PriorityParameterEnum priority, bool value)
     {
-      this.Component.IsFree.SetValue(priority, value);
+      Component.IsFree.SetValue(priority, value);
     }
 
     [Method("Reset IsFree value", "Priority", "")]
     public void ResetIsFreeValue(PriorityParameterEnum priority)
     {
-      this.Component.IsFree.ResetValue(priority);
+      Component.IsFree.ResetValue(priority);
     }
 
     [Property("Bolted", "")]
     public bool Bolted
     {
-      get => this.Component.Bolted.Value;
-      set => this.Component.Bolted.SetValue(this.defaultPriority, value);
+      get => Component.Bolted.Value;
+      set => Component.Bolted.SetValue(defaultPriority, value);
     }
 
     [Method("Set Bolted value", "Priority,Value", "")]
     public void SetBoltedValue(PriorityParameterEnum priority, bool value)
     {
-      this.Component.Bolted.SetValue(priority, value);
+      Component.Bolted.SetValue(priority, value);
     }
 
     [Method("Reset Bolted value", "Priority", "")]
     public void ResetBoltedValue(PriorityParameterEnum priority)
     {
-      this.Component.Bolted.ResetValue(priority);
+      Component.Bolted.ResetValue(priority);
     }
 
     [Property("Marked", "")]
     public bool Marked
     {
-      get => this.Component.Marked.Value;
-      set => this.Component.Marked.SetValue(this.defaultPriority, value);
+      get => Component.Marked.Value;
+      set => Component.Marked.SetValue(defaultPriority, value);
     }
 
     [Property("CanBeMarked", "")]
     public bool CanBeMarked
     {
-      get => this.Component.CanBeMarked.Value;
-      set => this.Component.CanBeMarked.Value = value;
+      get => Component.CanBeMarked.Value;
+      set => Component.CanBeMarked.Value = value;
     }
 
     [Property("Knockable", "")]
     public bool Knockable
     {
-      get => this.Component.Knockable.Value;
-      set => this.Component.Knockable.Value = value;
+      get => Component.Knockable.Value;
+      set => Component.Knockable.Value = value;
     }
 
     [Property("Pickable", "")]
     public bool Pickable
     {
-      get => this.Component.Pickable.Value;
-      set => this.Component.Pickable.Value = value;
+      get => Component.Pickable.Value;
+      set => Component.Pickable.Value = value;
     }
 
     [Property("Difficulty", "")]
     public int Difficulty
     {
-      get => this.Component.Difficulty.Value;
-      set => this.Component.Difficulty.Value = value;
+      get => Component.Difficulty.Value;
+      set => Component.Difficulty.Value = value;
     }
 
     [Method("Set Marked value", "Priority,Value", "")]
     public void SetMarkedValue(PriorityParameterEnum priority, bool value)
     {
-      this.Component.Marked.SetValue(priority, value);
+      Component.Marked.SetValue(priority, value);
     }
 
     [Method("Reset Marked value", "Priority", "")]
     public void ResetMarkedValue(PriorityParameterEnum priority)
     {
-      this.Component.Marked.ResetValue(priority);
+      Component.Marked.ResetValue(priority);
     }
 
     [Property("Opened", "")]
     public bool Opened
     {
-      get => this.Component.Opened.Value;
-      set => this.Component.Opened.SetValue(this.defaultPriority, value);
+      get => Component.Opened.Value;
+      set => Component.Opened.SetValue(defaultPriority, value);
     }
 
     [Method("Set Opened value", "Priority,Value", "")]
     public void SetOpenedValue(PriorityParameterEnum priority, bool value)
     {
-      this.Component.Opened.SetValue(priority, value);
+      Component.Opened.SetValue(priority, value);
     }
 
     [Method("Set Opened value by type", "Priority,Value,is outdoor", "")]
     public void SetOpenedValueByType(PriorityParameterEnum priority, bool value, bool isOutdoor)
     {
-      if (this.Component.IsOutdoor != isOutdoor)
+      if (Component.IsOutdoor != isOutdoor)
         return;
-      this.Component.Opened.SetValue(priority, value);
+      Component.Opened.SetValue(priority, value);
     }
 
     [Method("Reset Opened value", "Priority", "")]
     public void ResetOpenedValue(PriorityParameterEnum priority)
     {
-      this.Component.Opened.ResetValue(priority);
+      Component.Opened.ResetValue(priority);
     }
 
     [Property("Lock State", "")]
     public LockState LockState
     {
-      get => this.Component.LockState.Value;
-      set => this.Component.LockState.Value = value;
+      get => Component.LockState.Value;
+      set => Component.LockState.Value = value;
     }
 
     [Method("Set LockState value", "Priority,Value", "")]
     public void SetLockStateValue(PriorityParameterEnum priority, LockState value)
     {
-      this.Component.LockState.SetValue(priority, value);
+      Component.LockState.SetValue(priority, value);
     }
 
     [Method("Set LockState value by type", "Priority,Value,is outdoor", "")]
@@ -145,100 +145,100 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
       LockState value,
       bool isOutdoor)
     {
-      if (this.Component.IsOutdoor != isOutdoor)
+      if (Component.IsOutdoor != isOutdoor)
         return;
-      this.Component.LockState.SetValue(priority, value);
+      Component.LockState.SetValue(priority, value);
     }
 
     [Method("Reset LockState value", "Priority", "")]
     public void ResetLockStateValue(PriorityParameterEnum priority)
     {
-      this.Component.LockState.ResetValue(priority);
+      Component.LockState.ResetValue(priority);
     }
 
     [Property("Min Reputation", "")]
     public float MinReputation
     {
-      get => this.Component.MinReputation;
-      set => this.Component.MinReputation = value;
+      get => Component.MinReputation;
+      set => Component.MinReputation = value;
     }
 
     [Property("Max Reputation", "")]
     public float MaxReputation
     {
-      get => this.Component.MaxReputation;
-      set => this.Component.MaxReputation = value;
+      get => Component.MaxReputation;
+      set => Component.MaxReputation = value;
     }
 
     [Property("Is Outdoor", "")]
-    public bool IsOutdoor => this.Component.IsOutdoor;
+    public bool IsOutdoor => Component.IsOutdoor;
 
     [Method("Add lock pick", "Storable", "")]
     public void AddPicklock([Template] IEntity storable)
     {
       if (storable == null)
-        Logger.AddError(string.Format("Storable template for Picklock adding not defined at {0} !", (object) EngineAPIManager.Instance.CurrentFSMStateInfo));
+        Logger.AddError(string.Format("Storable template for Picklock adding not defined at {0} !", EngineAPIManager.Instance.CurrentFSMStateInfo));
       else
-        this.Component.AddPicklock(storable);
+        Component.AddPicklock(storable);
     }
 
     [Method("Remove lock pick", "Storable", "")]
     public void RemoveLockPick([Template] IEntity storable)
     {
       if (storable == null)
-        Logger.AddError(string.Format("Storable template for Picklock removing not defined at {0} !", (object) EngineAPIManager.Instance.CurrentFSMStateInfo));
+        Logger.AddError(string.Format("Storable template for Picklock removing not defined at {0} !", EngineAPIManager.Instance.CurrentFSMStateInfo));
       else
-        this.Component.RemovePicklock(storable);
+        Component.RemovePicklock(storable);
     }
 
     [Method("Add picklock", "Priority,Storable", "")]
     public void AddPicklock_v1(PriorityParameterEnum priority, [Template] IEntity storable)
     {
       if (storable == null)
-        Logger.AddError(string.Format("Storable template for Picklock adding not defined at {0} !", (object) EngineAPIManager.Instance.CurrentFSMStateInfo));
+        Logger.AddError(string.Format("Storable template for Picklock adding not defined at {0} !", EngineAPIManager.Instance.CurrentFSMStateInfo));
       else
-        this.Component.AddPicklock(priority, storable);
+        Component.AddPicklock(priority, storable);
     }
 
     [Method("Remove picklock", "Priority,Storable", "")]
     public void RemovePicklock(PriorityParameterEnum priority, [Template] IEntity storable)
     {
       if (storable == null)
-        Logger.AddError(string.Format("Storable template for Picklock removing not defined at {0} !", (object) EngineAPIManager.Instance.CurrentFSMStateInfo));
+        Logger.AddError(string.Format("Storable template for Picklock removing not defined at {0} !", EngineAPIManager.Instance.CurrentFSMStateInfo));
       else
-        this.Component.RemovePicklock(priority, storable);
+        Component.RemovePicklock(priority, storable);
     }
 
     [Method("Reset picklocks", "Priority", "")]
     public void ResetPicklocks(PriorityParameterEnum priority)
     {
-      this.Component.ResetPicklocks(priority);
+      Component.ResetPicklocks(priority);
     }
 
     [Method("Add key", "Storable", "")]
-    public void AddKey([Template] IEntity storable) => this.Component.AddKey(storable);
+    public void AddKey([Template] IEntity storable) => Component.AddKey(storable);
 
     [Method("Remove key", "Storable", "")]
-    public void RemoveKey([Template] IEntity storable) => this.Component.RemoveKey(storable);
+    public void RemoveKey([Template] IEntity storable) => Component.RemoveKey(storable);
 
     [Method("Add key", "Priority,Storable", "")]
     public void AddKey_v1(PriorityParameterEnum priority, [Template] IEntity storable)
     {
-      this.Component.AddKey(priority, storable);
+      Component.AddKey(priority, storable);
     }
 
     [Method("Remove key", "Priority,Storable", "")]
     public void RemoveKey_v1(PriorityParameterEnum priority, [Template] IEntity storable)
     {
-      this.Component.RemoveKey(priority, storable);
+      Component.RemoveKey(priority, storable);
     }
 
     [Method("Reset keys", "Priority", "")]
-    public void ResetKeys(PriorityParameterEnum priority) => this.Component.ResetKeys(priority);
+    public void ResetKeys(PriorityParameterEnum priority) => Component.ResetKeys(priority);
 
     public void SetDefaultPriority(PriorityParameterEnum defPriority)
     {
-      this.defaultPriority = defPriority;
+      defaultPriority = defPriority;
     }
   }
 }

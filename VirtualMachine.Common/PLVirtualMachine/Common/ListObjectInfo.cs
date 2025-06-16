@@ -1,10 +1,9 @@
-﻿using Cofe.Loggers;
+﻿using System.Xml;
+using Cofe.Loggers;
 using Cofe.Serializations.Data;
 using PLVirtualMachine.Common.Data;
 using PLVirtualMachine.Common.EngineAPI;
 using PLVirtualMachine.Common.Serialization;
-using System;
-using System.Xml;
 
 namespace PLVirtualMachine.Common
 {
@@ -16,43 +15,43 @@ namespace PLVirtualMachine.Common
 
     public ListObjectInfo()
     {
-      this.ObjectInfoStr = "";
-      this.ObjectValue = (object) null;
-      this.ObjectType = (VMType) null;
+      ObjectInfoStr = "";
+      ObjectValue = null;
+      ObjectType = null;
     }
 
     public ListObjectInfo(ListObjectInfo listObjInfo)
     {
-      this.ObjectInfoStr = listObjInfo.ObjectInfoStr;
-      this.ObjectValue = listObjInfo.ObjectValue;
-      this.ObjectType = listObjInfo.ObjectType;
+      ObjectInfoStr = listObjInfo.ObjectInfoStr;
+      ObjectValue = listObjInfo.ObjectValue;
+      ObjectType = listObjInfo.ObjectType;
     }
 
     public ListObjectInfo(object obj)
     {
       if (obj is CommonVariable)
       {
-        this.ObjectInfoStr = ((CommonVariable) obj).Write();
-        this.ObjectValue = (object) null;
-        this.ObjectType = (VMType) null;
+        ObjectInfoStr = ((CommonVariable) obj).Write();
+        ObjectValue = null;
+        ObjectType = null;
       }
       else
       {
-        this.ObjectValue = obj;
-        if (typeof (IRef).IsAssignableFrom(this.ObjectValue.GetType()))
-          this.ObjectType = ((IVariable) obj).Type;
-        else if (typeof (IVariable).IsAssignableFrom(this.ObjectValue.GetType()))
-          this.ObjectType = ((IVariable) this.ObjectValue).Type;
+        ObjectValue = obj;
+        if (typeof (IRef).IsAssignableFrom(ObjectValue.GetType()))
+          ObjectType = ((IVariable) obj).Type;
+        else if (typeof (IVariable).IsAssignableFrom(ObjectValue.GetType()))
+          ObjectType = ((IVariable) ObjectValue).Type;
         else
-          this.ObjectType = new VMType(this.ObjectValue.GetType());
+          ObjectType = new VMType(ObjectValue.GetType());
       }
     }
 
     public ListObjectInfo(object obj, VMType type)
     {
-      this.ObjectInfoStr = "";
-      this.ObjectValue = obj;
-      this.ObjectType = type;
+      ObjectInfoStr = "";
+      ObjectValue = obj;
+      ObjectType = type;
     }
 
     public void Read(string data)
@@ -63,19 +62,19 @@ namespace PLVirtualMachine.Common
         if (strArray.Length != 4)
           return;
         if (strArray[3] != "")
-          this.ObjectType = VMTypePool.GetType(strArray[3]);
-        if ((Type) null != this.ObjectType.BaseType)
+          ObjectType = VMTypePool.GetType(strArray[3]);
+        if (null != ObjectType.BaseType)
         {
-          this.ObjectValue = PLVirtualMachine.Common.Data.StringSerializer.ReadValue(strArray[1], this.ObjectType.BaseType);
+          ObjectValue = StringSerializer.ReadValue(strArray[1], ObjectType.BaseType);
         }
         else
         {
-          this.ObjectType = new VMType(typeof (object));
-          this.ObjectValue = (object) null;
+          ObjectType = new VMType(typeof (object));
+          ObjectValue = null;
         }
       }
       else
-        this.ObjectInfoStr = data;
+        ObjectInfoStr = data;
     }
 
     public string Write()
@@ -86,36 +85,36 @@ namespace PLVirtualMachine.Common
 
     public void StateSave(IDataWriter writer)
     {
-      SaveManagerUtility.Save(writer, "ObjectInfoStr", this.ObjectInfoStr);
-      SaveManagerUtility.SaveSerializable(writer, "ObjectType", (IVMStringSerializable) this.ObjectType);
-      SaveManagerUtility.SaveCommon(writer, "ObjectValue", this.ObjectValue);
+      SaveManagerUtility.Save(writer, "ObjectInfoStr", ObjectInfoStr);
+      SaveManagerUtility.SaveSerializable(writer, "ObjectType", ObjectType);
+      SaveManagerUtility.SaveCommon(writer, "ObjectValue", ObjectValue);
     }
 
     public void LoadFromXML(XmlElement xmlNode)
     {
-      XmlNode xmlNode1 = (XmlNode) null;
+      XmlNode xmlNode1 = null;
       foreach (XmlElement childNode in xmlNode.ChildNodes)
       {
         if (childNode.Name == "ObjectInfoStr")
-          this.ObjectInfoStr = childNode.InnerText;
+          ObjectInfoStr = childNode.InnerText;
         else if (childNode.Name == "ObjectType")
-          this.ObjectType = VMTypePool.GetType(childNode.InnerText);
+          ObjectType = VMTypePool.GetType(childNode.InnerText);
         else if (childNode.Name == "ObjectValue")
-          xmlNode1 = (XmlNode) childNode;
+          xmlNode1 = childNode;
       }
       if (xmlNode1 == null)
         return;
-      if ((Type) null != this.ObjectType.BaseType)
+      if (null != ObjectType.BaseType)
       {
-        this.ObjectValue = PLVirtualMachine.Common.Data.StringSerializer.ReadValue(xmlNode1.InnerText, this.ObjectType.BaseType);
+        ObjectValue = StringSerializer.ReadValue(xmlNode1.InnerText, ObjectType.BaseType);
       }
       else
       {
-        this.ObjectType = new VMType(typeof (object));
-        this.ObjectValue = (object) null;
+        ObjectType = new VMType(typeof (object));
+        ObjectValue = null;
       }
     }
 
-    public bool IsLoaded => this.ObjectValue != null || this.ObjectType != null;
+    public bool IsLoaded => ObjectValue != null || ObjectType != null;
   }
 }

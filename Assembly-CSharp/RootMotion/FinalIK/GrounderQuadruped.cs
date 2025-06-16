@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace RootMotion.FinalIK
+﻿namespace RootMotion.FinalIK
 {
   [HelpURL("http://www.root-motion.com/finalikdox/html/page11.html")]
   [AddComponentMenu("Scripts/RootMotion.FinalIK/Grounder/Grounder Quadruped")]
@@ -38,7 +36,7 @@ namespace RootMotion.FinalIK
     public IK[] forelegs;
     [HideInInspector]
     public Vector3 gravity = Vector3.down;
-    private GrounderQuadruped.Foot[] feet = new GrounderQuadruped.Foot[0];
+    private Foot[] feet = new Foot[0];
     private Vector3 animatedPelvisLocalPosition;
     private Quaternion animatedPelvisLocalRotation;
     private Quaternion animatedHeadLocalRotation;
@@ -66,13 +64,13 @@ namespace RootMotion.FinalIK
 
     public override void ResetPosition()
     {
-      this.solver.Reset();
-      this.forelegSolver.Reset();
+      solver.Reset();
+      forelegSolver.Reset();
     }
 
     private bool IsReadyToInitiate()
     {
-      return !((Object) this.pelvis == (Object) null) && !((Object) this.lastSpineBone == (Object) null) && this.legs.Length != 0 && this.forelegs.Length != 0 && !((Object) this.characterRoot == (Object) null) && this.IsReadyToInitiateLegs(this.legs) && this.IsReadyToInitiateLegs(this.forelegs);
+      return !((Object) pelvis == (Object) null) && !((Object) lastSpineBone == (Object) null) && legs.Length != 0 && forelegs.Length != 0 && !((Object) characterRoot == (Object) null) && IsReadyToInitiateLegs(legs) && IsReadyToInitiateLegs(forelegs);
     }
 
     private bool IsReadyToInitiateLegs(IK[] ikComponents)
@@ -84,13 +82,13 @@ namespace RootMotion.FinalIK
         switch (ikComponent)
         {
           case FullBodyBipedIK _:
-            this.LogWarning("GrounderIK does not support FullBodyBipedIK, use CCDIK, FABRIK, LimbIK or TrigonometricIK instead. If you want to use FullBodyBipedIK, use the GrounderFBBIK component.");
+            LogWarning("GrounderIK does not support FullBodyBipedIK, use CCDIK, FABRIK, LimbIK or TrigonometricIK instead. If you want to use FullBodyBipedIK, use the GrounderFBBIK component.");
             return false;
           case FABRIKRoot _:
-            this.LogWarning("GrounderIK does not support FABRIKRoot, use CCDIK, FABRIK, LimbIK or TrigonometricIK instead.");
+            LogWarning("GrounderIK does not support FABRIKRoot, use CCDIK, FABRIK, LimbIK or TrigonometricIK instead.");
             return false;
           case AimIK _:
-            this.LogWarning("GrounderIK does not support AimIK, use CCDIK, FABRIK, LimbIK or TrigonometricIK instead.");
+            LogWarning("GrounderIK does not support AimIK, use CCDIK, FABRIK, LimbIK or TrigonometricIK instead.");
             return false;
           default:
             continue;
@@ -101,185 +99,185 @@ namespace RootMotion.FinalIK
 
     private void OnDisable()
     {
-      if (!this.initiated)
+      if (!initiated)
         return;
-      for (int index = 0; index < this.feet.Length; ++index)
+      for (int index = 0; index < feet.Length; ++index)
       {
-        if (this.feet[index].solver != null)
-          this.feet[index].solver.IKPositionWeight = 0.0f;
+        if (feet[index].solver != null)
+          feet[index].solver.IKPositionWeight = 0.0f;
       }
     }
 
     private void Update()
     {
-      this.weight = Mathf.Clamp(this.weight, 0.0f, 1f);
-      if ((double) this.weight <= 0.0)
+      weight = Mathf.Clamp(weight, 0.0f, 1f);
+      if (weight <= 0.0)
         return;
-      this.solved = false;
-      if (this.initiated || !this.IsReadyToInitiate())
+      solved = false;
+      if (initiated || !IsReadyToInitiate())
         return;
-      this.Initiate();
+      Initiate();
     }
 
     private void Initiate()
     {
-      this.feet = new GrounderQuadruped.Foot[this.legs.Length + this.forelegs.Length];
-      Transform[] feet1 = this.InitiateFeet(this.legs, ref this.feet, 0);
-      Transform[] feet2 = this.InitiateFeet(this.forelegs, ref this.feet, this.legs.Length);
-      this.animatedPelvisLocalPosition = this.pelvis.localPosition;
-      this.animatedPelvisLocalRotation = this.pelvis.localRotation;
-      if ((Object) this.head != (Object) null)
-        this.animatedHeadLocalRotation = this.head.localRotation;
-      this.forefeetRoot = new GameObject().transform;
-      this.forefeetRoot.parent = this.transform;
-      this.forefeetRoot.name = "Forefeet Root";
-      this.solver.Initiate(this.transform, feet1);
-      this.forelegSolver.Initiate(this.forefeetRoot, feet2);
+      feet = new Foot[legs.Length + forelegs.Length];
+      Transform[] feet1 = InitiateFeet(legs, ref feet, 0);
+      Transform[] feet2 = InitiateFeet(forelegs, ref feet, legs.Length);
+      animatedPelvisLocalPosition = pelvis.localPosition;
+      animatedPelvisLocalRotation = pelvis.localRotation;
+      if ((Object) head != (Object) null)
+        animatedHeadLocalRotation = head.localRotation;
+      forefeetRoot = new GameObject().transform;
+      forefeetRoot.parent = this.transform;
+      forefeetRoot.name = "Forefeet Root";
+      solver.Initiate(this.transform, feet1);
+      forelegSolver.Initiate(forefeetRoot, feet2);
       for (int index = 0; index < feet1.Length; ++index)
-        this.feet[index].leg = this.solver.legs[index];
+        feet[index].leg = solver.legs[index];
       for (int index = 0; index < feet2.Length; ++index)
-        this.feet[index + this.legs.Length].leg = this.forelegSolver.legs[index];
-      this.initiated = true;
+        feet[index + legs.Length].leg = forelegSolver.legs[index];
+      initiated = true;
     }
 
     private Transform[] InitiateFeet(
       IK[] ikComponents,
-      ref GrounderQuadruped.Foot[] f,
+      ref Foot[] f,
       int indexOffset)
     {
       Transform[] transformArray = new Transform[ikComponents.Length];
       for (int index = 0; index < ikComponents.Length; ++index)
       {
         IKSolver.Point[] points = ikComponents[index].GetIKSolver().GetPoints();
-        f[index + indexOffset] = new GrounderQuadruped.Foot(ikComponents[index].GetIKSolver(), points[points.Length - 1].transform);
+        f[index + indexOffset] = new Foot(ikComponents[index].GetIKSolver(), points[points.Length - 1].transform);
         transformArray[index] = f[index + indexOffset].transform;
-        f[index + indexOffset].solver.OnPreUpdate += new IKSolver.UpdateDelegate(this.OnSolverUpdate);
-        f[index + indexOffset].solver.OnPostUpdate += new IKSolver.UpdateDelegate(this.OnPostSolverUpdate);
+        f[index + indexOffset].solver.OnPreUpdate += OnSolverUpdate;
+        f[index + indexOffset].solver.OnPostUpdate += OnPostSolverUpdate;
       }
       return transformArray;
     }
 
     private void LateUpdate()
     {
-      if ((double) this.weight <= 0.0)
+      if (weight <= 0.0)
         return;
-      this.rootRotationWeight = Mathf.Clamp(this.rootRotationWeight, 0.0f, 1f);
-      this.minRootRotation = Mathf.Clamp(this.minRootRotation, -90f, this.maxRootRotation);
-      this.maxRootRotation = Mathf.Clamp(this.maxRootRotation, this.minRootRotation, 90f);
-      this.rootRotationSpeed = Mathf.Clamp(this.rootRotationSpeed, 0.0f, this.rootRotationSpeed);
-      this.maxLegOffset = Mathf.Clamp(this.maxLegOffset, 0.0f, this.maxLegOffset);
-      this.maxForeLegOffset = Mathf.Clamp(this.maxForeLegOffset, 0.0f, this.maxForeLegOffset);
-      this.maintainHeadRotationWeight = Mathf.Clamp(this.maintainHeadRotationWeight, 0.0f, 1f);
-      this.RootRotation();
+      rootRotationWeight = Mathf.Clamp(rootRotationWeight, 0.0f, 1f);
+      minRootRotation = Mathf.Clamp(minRootRotation, -90f, maxRootRotation);
+      maxRootRotation = Mathf.Clamp(maxRootRotation, minRootRotation, 90f);
+      rootRotationSpeed = Mathf.Clamp(rootRotationSpeed, 0.0f, rootRotationSpeed);
+      maxLegOffset = Mathf.Clamp(maxLegOffset, 0.0f, maxLegOffset);
+      maxForeLegOffset = Mathf.Clamp(maxForeLegOffset, 0.0f, maxForeLegOffset);
+      maintainHeadRotationWeight = Mathf.Clamp(maintainHeadRotationWeight, 0.0f, 1f);
+      RootRotation();
     }
 
     private void RootRotation()
     {
-      if ((double) this.rootRotationWeight <= 0.0 || (double) this.rootRotationSpeed <= 0.0)
+      if (rootRotationWeight <= 0.0 || rootRotationSpeed <= 0.0)
         return;
-      this.solver.rotateSolver = true;
-      this.forelegSolver.rotateSolver = true;
-      Vector3 forward = this.characterRoot.forward;
-      Vector3 normal = -this.gravity;
+      solver.rotateSolver = true;
+      forelegSolver.rotateSolver = true;
+      Vector3 forward = characterRoot.forward;
+      Vector3 normal = -gravity;
       Vector3.OrthoNormalize(ref normal, ref forward);
-      Quaternion rotation = Quaternion.LookRotation(forward, -this.gravity);
-      Vector3 vector3_1 = this.forelegSolver.rootHit.point - this.solver.rootHit.point;
+      Quaternion rotation = Quaternion.LookRotation(forward, -gravity);
+      Vector3 vector3_1 = forelegSolver.rootHit.point - solver.rootHit.point;
       Vector3 vector3_2 = Quaternion.Inverse(rotation) * vector3_1;
-      this.angle = Mathf.Lerp(this.angle, Mathf.Clamp(Mathf.Atan2(vector3_2.y, vector3_2.z) * 57.29578f * this.rootRotationWeight, this.minRootRotation, this.maxRootRotation), Time.deltaTime * this.rootRotationSpeed);
-      this.characterRoot.rotation = Quaternion.Slerp(this.characterRoot.rotation, Quaternion.AngleAxis(-this.angle, this.characterRoot.right) * rotation, this.weight);
+      angle = Mathf.Lerp(angle, Mathf.Clamp(Mathf.Atan2(vector3_2.y, vector3_2.z) * 57.29578f * rootRotationWeight, minRootRotation, maxRootRotation), Time.deltaTime * rootRotationSpeed);
+      characterRoot.rotation = Quaternion.Slerp(characterRoot.rotation, Quaternion.AngleAxis(-angle, characterRoot.right) * rotation, weight);
     }
 
     private void OnSolverUpdate()
     {
       if (!this.enabled)
         return;
-      if ((double) this.weight <= 0.0)
+      if (weight <= 0.0)
       {
-        if ((double) this.lastWeight <= 0.0)
+        if (lastWeight <= 0.0)
           return;
-        this.OnDisable();
+        OnDisable();
       }
-      this.lastWeight = this.weight;
-      if (this.solved)
+      lastWeight = weight;
+      if (solved)
         return;
-      if (this.OnPreGrounder != null)
-        this.OnPreGrounder();
-      if (this.pelvis.localPosition != this.solvedPelvisLocalPosition)
-        this.animatedPelvisLocalPosition = this.pelvis.localPosition;
+      if (OnPreGrounder != null)
+        OnPreGrounder();
+      if (pelvis.localPosition != solvedPelvisLocalPosition)
+        animatedPelvisLocalPosition = pelvis.localPosition;
       else
-        this.pelvis.localPosition = this.animatedPelvisLocalPosition;
-      if (this.pelvis.localRotation != this.solvedPelvisLocalRotation)
-        this.animatedPelvisLocalRotation = this.pelvis.localRotation;
+        pelvis.localPosition = animatedPelvisLocalPosition;
+      if (pelvis.localRotation != solvedPelvisLocalRotation)
+        animatedPelvisLocalRotation = pelvis.localRotation;
       else
-        this.pelvis.localRotation = this.animatedPelvisLocalRotation;
-      if ((Object) this.head != (Object) null)
+        pelvis.localRotation = animatedPelvisLocalRotation;
+      if ((Object) head != (Object) null)
       {
-        if (this.head.localRotation != this.solvedHeadLocalRotation)
-          this.animatedHeadLocalRotation = this.head.localRotation;
+        if (head.localRotation != solvedHeadLocalRotation)
+          animatedHeadLocalRotation = head.localRotation;
         else
-          this.head.localRotation = this.animatedHeadLocalRotation;
+          head.localRotation = animatedHeadLocalRotation;
       }
-      for (int index = 0; index < this.feet.Length; ++index)
-        this.feet[index].rotation = this.feet[index].transform.rotation;
-      if ((Object) this.head != (Object) null)
-        this.headRotation = this.head.rotation;
-      this.UpdateForefeetRoot();
-      this.solver.Update();
-      this.forelegSolver.Update();
-      this.pelvis.position += this.solver.pelvis.IKOffset * this.weight;
-      this.pelvis.rotation = Quaternion.Slerp(Quaternion.identity, Quaternion.FromToRotation(this.lastSpineBone.position - this.pelvis.position, this.lastSpineBone.position + this.forelegSolver.root.up * Mathf.Clamp(this.forelegSolver.pelvis.heightOffset, float.NegativeInfinity, 0.0f) - this.solver.root.up * this.solver.pelvis.heightOffset - this.pelvis.position), this.weight) * this.pelvis.rotation;
-      for (int index = 0; index < this.feet.Length; ++index)
-        this.SetFootIK(this.feet[index], index < 2 ? this.maxLegOffset : this.maxForeLegOffset);
-      this.solved = true;
-      this.solvedFeet = 0;
-      if (this.OnPostGrounder == null)
+      for (int index = 0; index < feet.Length; ++index)
+        feet[index].rotation = feet[index].transform.rotation;
+      if ((Object) head != (Object) null)
+        headRotation = head.rotation;
+      UpdateForefeetRoot();
+      solver.Update();
+      forelegSolver.Update();
+      pelvis.position += solver.pelvis.IKOffset * weight;
+      pelvis.rotation = Quaternion.Slerp(Quaternion.identity, Quaternion.FromToRotation(lastSpineBone.position - pelvis.position, lastSpineBone.position + forelegSolver.root.up * Mathf.Clamp(forelegSolver.pelvis.heightOffset, float.NegativeInfinity, 0.0f) - solver.root.up * solver.pelvis.heightOffset - pelvis.position), weight) * pelvis.rotation;
+      for (int index = 0; index < feet.Length; ++index)
+        SetFootIK(feet[index], index < 2 ? maxLegOffset : maxForeLegOffset);
+      solved = true;
+      solvedFeet = 0;
+      if (OnPostGrounder == null)
         return;
-      this.OnPostGrounder();
+      OnPostGrounder();
     }
 
     private void UpdateForefeetRoot()
     {
       Vector3 zero = Vector3.zero;
-      for (int index = 0; index < this.forelegSolver.legs.Length; ++index)
-        zero += this.forelegSolver.legs[index].transform.position;
-      Vector3 vector3 = zero / (float) this.forelegs.Length - this.transform.position;
+      for (int index = 0; index < forelegSolver.legs.Length; ++index)
+        zero += forelegSolver.legs[index].transform.position;
+      Vector3 vector3 = zero / (float) forelegs.Length - this.transform.position;
       Vector3 up = this.transform.up;
       Vector3 tangent = vector3;
       Vector3.OrthoNormalize(ref up, ref tangent);
-      this.forefeetRoot.position = this.transform.position + tangent.normalized * vector3.magnitude;
+      forefeetRoot.position = this.transform.position + tangent.normalized * vector3.magnitude;
     }
 
-    private void SetFootIK(GrounderQuadruped.Foot foot, float maxOffset)
+    private void SetFootIK(Foot foot, float maxOffset)
     {
       Vector3 vector = foot.leg.IKPosition - foot.transform.position;
       foot.solver.IKPosition = foot.transform.position + Vector3.ClampMagnitude(vector, maxOffset);
-      foot.solver.IKPositionWeight = this.weight;
+      foot.solver.IKPositionWeight = weight;
     }
 
     private void OnPostSolverUpdate()
     {
-      if ((double) this.weight <= 0.0 || !this.enabled)
+      if (weight <= 0.0 || !this.enabled)
         return;
-      ++this.solvedFeet;
-      if (this.solvedFeet < this.feet.Length)
+      ++solvedFeet;
+      if (solvedFeet < feet.Length)
         return;
-      for (int index = 0; index < this.feet.Length; ++index)
-        this.feet[index].transform.rotation = Quaternion.Slerp(Quaternion.identity, this.feet[index].leg.rotationOffset, this.weight) * this.feet[index].rotation;
-      if ((Object) this.head != (Object) null)
-        this.head.rotation = Quaternion.Lerp(this.head.rotation, this.headRotation, this.maintainHeadRotationWeight * this.weight);
-      this.solvedPelvisLocalPosition = this.pelvis.localPosition;
-      this.solvedPelvisLocalRotation = this.pelvis.localRotation;
-      if (!((Object) this.head != (Object) null))
+      for (int index = 0; index < feet.Length; ++index)
+        feet[index].transform.rotation = Quaternion.Slerp(Quaternion.identity, feet[index].leg.rotationOffset, weight) * feet[index].rotation;
+      if ((Object) head != (Object) null)
+        head.rotation = Quaternion.Lerp(head.rotation, headRotation, maintainHeadRotationWeight * weight);
+      solvedPelvisLocalPosition = pelvis.localPosition;
+      solvedPelvisLocalRotation = pelvis.localRotation;
+      if (!((Object) head != (Object) null))
         return;
-      this.solvedHeadLocalRotation = this.head.localRotation;
+      solvedHeadLocalRotation = head.localRotation;
     }
 
     private void OnDestroy()
     {
-      if (!this.initiated)
+      if (!initiated)
         return;
-      this.DestroyLegs(this.legs);
-      this.DestroyLegs(this.forelegs);
+      DestroyLegs(legs);
+      DestroyLegs(forelegs);
     }
 
     private void DestroyLegs(IK[] ikComponents)
@@ -288,8 +286,8 @@ namespace RootMotion.FinalIK
       {
         if ((Object) ikComponent != (Object) null)
         {
-          ikComponent.GetIKSolver().OnPreUpdate -= new IKSolver.UpdateDelegate(this.OnSolverUpdate);
-          ikComponent.GetIKSolver().OnPostUpdate -= new IKSolver.UpdateDelegate(this.OnPostSolverUpdate);
+          ikComponent.GetIKSolver().OnPreUpdate -= OnSolverUpdate;
+          ikComponent.GetIKSolver().OnPostUpdate -= OnPostSolverUpdate;
         }
       }
     }
@@ -305,8 +303,8 @@ namespace RootMotion.FinalIK
       {
         this.solver = solver;
         this.transform = transform;
-        this.leg = (Grounding.Leg) null;
-        this.rotation = transform.rotation;
+        leg = null;
+        rotation = transform.rotation;
       }
     }
   }

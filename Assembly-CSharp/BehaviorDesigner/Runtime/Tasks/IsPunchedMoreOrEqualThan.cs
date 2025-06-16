@@ -1,11 +1,11 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons;
 using Engine.Common.Commons.Converters;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Scripts.Tools.Serializations.Converters;
-using UnityEngine;
 
 namespace BehaviorDesigner.Runtime.Tasks
 {
@@ -16,45 +16,45 @@ namespace BehaviorDesigner.Runtime.Tasks
   [FactoryProxy(typeof (IsPunchedMoreOrEqualThan))]
   public class IsPunchedMoreOrEqualThan : Conditional, IStub, ISerializeDataWrite, ISerializeDataRead
   {
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [SerializeField]
-    public SharedInt PunchedMoreOrEqualThan = (SharedInt) 3;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    public SharedInt PunchedMoreOrEqualThan = 3;
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy()]
     [SerializeField]
-    public SharedFloat CalculationTime = (SharedFloat) 5f;
+    public SharedFloat CalculationTime = 5f;
     private NPCEnemy owner;
 
-    public override void OnAwake() => this.owner = this.gameObject.GetComponent<NPCEnemy>();
+    public override void OnAwake() => owner = gameObject.GetComponent<NPCEnemy>();
 
     public override TaskStatus OnUpdate()
     {
-      return (UnityEngine.Object) this.owner == (UnityEngine.Object) null ? TaskStatus.Success : (this.owner.GetPunchesCount(this.CalculationTime.Value) >= this.PunchedMoreOrEqualThan.Value ? TaskStatus.Success : TaskStatus.Failure);
+      return (UnityEngine.Object) owner == (UnityEngine.Object) null ? TaskStatus.Success : (owner.GetPunchesCount(CalculationTime.Value) >= PunchedMoreOrEqualThan.Value ? TaskStatus.Success : TaskStatus.Failure);
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.WriteSerialize<NodeData>(writer, "NodeData", this.nodeData);
-      DefaultDataWriteUtility.Write(writer, "Id", this.id);
-      DefaultDataWriteUtility.Write(writer, "FriendlyName", this.friendlyName);
-      DefaultDataWriteUtility.Write(writer, "Instant", this.instant);
-      DefaultDataWriteUtility.Write(writer, "Disabled", this.disabled);
-      BehaviorTreeDataWriteUtility.WriteShared<SharedInt>(writer, "PunchedMoreOrEqualThan", this.PunchedMoreOrEqualThan);
-      BehaviorTreeDataWriteUtility.WriteShared<SharedFloat>(writer, "CalculationTime", this.CalculationTime);
+      DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
+      DefaultDataWriteUtility.Write(writer, "Id", id);
+      DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
+      DefaultDataWriteUtility.Write(writer, "Instant", instant);
+      DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
+      BehaviorTreeDataWriteUtility.WriteShared(writer, "PunchedMoreOrEqualThan", PunchedMoreOrEqualThan);
+      BehaviorTreeDataWriteUtility.WriteShared(writer, "CalculationTime", CalculationTime);
     }
 
-    public void DataRead(IDataReader reader, System.Type type)
+    public void DataRead(IDataReader reader, Type type)
     {
-      this.nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
-      this.id = DefaultDataReadUtility.Read(reader, "Id", this.id);
-      this.friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", this.friendlyName);
-      this.instant = DefaultDataReadUtility.Read(reader, "Instant", this.instant);
-      this.disabled = DefaultDataReadUtility.Read(reader, "Disabled", this.disabled);
-      this.PunchedMoreOrEqualThan = BehaviorTreeDataReadUtility.ReadShared<SharedInt>(reader, "PunchedMoreOrEqualThan", this.PunchedMoreOrEqualThan);
-      this.CalculationTime = BehaviorTreeDataReadUtility.ReadShared<SharedFloat>(reader, "CalculationTime", this.CalculationTime);
+      nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
+      id = DefaultDataReadUtility.Read(reader, "Id", id);
+      friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
+      instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
+      disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
+      PunchedMoreOrEqualThan = BehaviorTreeDataReadUtility.ReadShared(reader, "PunchedMoreOrEqualThan", PunchedMoreOrEqualThan);
+      CalculationTime = BehaviorTreeDataReadUtility.ReadShared(reader, "CalculationTime", CalculationTime);
     }
   }
 }

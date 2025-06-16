@@ -4,7 +4,6 @@ using Engine.Source.Commons;
 using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
-using UnityEngine;
 
 namespace Engine.Source.Blueprints
 {
@@ -16,10 +15,10 @@ namespace Engine.Source.Blueprints
     protected override void RegisterPorts()
     {
       base.RegisterPorts();
-      FlowOutput output = this.AddFlowOutput("Out");
-      this.AddFlowInput("In", (FlowHandler) (() =>
+      FlowOutput output = AddFlowOutput("Out");
+      AddFlowInput("In", () =>
       {
-        Transform transform = this.targetValue.value;
+        Transform transform = targetValue.value;
         if ((Object) transform != (Object) null)
         {
           IEntity player = ServiceLocator.GetService<ISimulation>().Player;
@@ -35,8 +34,8 @@ namespace Engine.Source.Blueprints
           }
         }
         output.Call();
-      }));
-      this.targetValue = this.AddValueInput<Transform>("Target");
+      });
+      targetValue = AddValueInput<Transform>("Target");
     }
   }
 }

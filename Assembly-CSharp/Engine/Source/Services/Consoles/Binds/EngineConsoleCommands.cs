@@ -1,8 +1,8 @@
-﻿using Cofe.Meta;
+﻿using System;
+using Cofe.Meta;
 using Cofe.Serializations.Converters;
 using Engine.Common.Services;
 using Engine.Source.Services.CameraServices;
-using System;
 
 namespace Engine.Source.Services.Consoles.Binds
 {
@@ -25,7 +25,7 @@ namespace Engine.Source.Services.Consoles.Binds
       }
       CameraKindEnum cameraKindEnum = DefaultConverter.ParseEnum<CameraKindEnum>(parameters[0].Value);
       ServiceLocator.GetService<CameraService>().Kind = cameraKindEnum;
-      return "Set Camera : " + (object) cameraKindEnum;
+      return "Set Camera : " + cameraKindEnum;
     }
 
     [ConsoleCommand("event")]

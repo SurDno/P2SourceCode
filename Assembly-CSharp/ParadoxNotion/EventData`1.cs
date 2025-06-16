@@ -4,7 +4,7 @@
   {
     public T value { get; private set; }
 
-    protected override object GetValue() => (object) this.value;
+    protected override object GetValue() => value;
 
     public EventData(string name, T value)
       : base(name)

@@ -1,13 +1,12 @@
-﻿using Cofe.Meta;
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.Diagnostics;
+using Cofe.Meta;
 using Engine.Common;
 using Engine.Common.Services;
 using Engine.Source.Connections;
 using Engine.Source.Services.Templates;
 using Engine.Source.Test;
-using System.Collections;
-using System.Collections.Generic;
-using System.Diagnostics;
-using UnityEngine;
 
 public class CreateObjects : MonoBehaviour
 {
@@ -20,7 +19,7 @@ public class CreateObjects : MonoBehaviour
   private IEnumerator Start()
   {
     yield return (object) new WaitForSeconds(1f);
-    this.Test();
+    Test();
     yield return (object) new WaitForSeconds(1f);
   }
 
@@ -31,21 +30,21 @@ public class CreateObjects : MonoBehaviour
     IEntity template = this.template.Value;
     if (template == null)
     {
-      UnityEngine.Debug.LogError((object) ("Template not found, id : " + (object) this.template.Id));
+      UnityEngine.Debug.LogError((object) ("Template not found, id : " + this.template.Id));
     }
     else
     {
-      this.instances = new List<IEntity>(this.count);
+      instances = new List<IEntity>(count);
       Stopwatch stopwatch = new Stopwatch();
       stopwatch.Restart();
-      for (int index = 0; index < this.count; ++index)
+      for (int index = 0; index < count; ++index)
       {
-        IEntity target = service.Instantiate<IEntity>(template);
-        MetaService.GetContainer(target.GetType()).GetHandler(TestAttribute.Id).Compute((object) target, (object) null);
-        this.instances.Add(target);
+        IEntity target = service.Instantiate(template);
+        MetaService.GetContainer(target.GetType()).GetHandler(TestAttribute.Id).Compute(target, null);
+        instances.Add(target);
       }
       stopwatch.Stop();
-      UnityEngine.Debug.LogError((object) ("Complete, count : " + (object) this.count + " , elapsed : " + (object) stopwatch.Elapsed));
+      UnityEngine.Debug.LogError((object) ("Complete, count : " + count + " , elapsed : " + stopwatch.Elapsed));
     }
   }
 }

@@ -1,7 +1,5 @@
 ﻿using Engine.Source.Utility;
 using InputServices;
-using System;
-using UnityEngine;
 
 namespace Engine.Impl.UI.Controls
 {
@@ -14,25 +12,25 @@ namespace Engine.Impl.UI.Controls
 
     private void OnEnable()
     {
-      InputService.Instance.onJoystickUsedChanged += new Action<bool>(this.SetCodeView);
-      this.ApplyValue(true);
+      InputService.Instance.onJoystickUsedChanged += SetCodeView;
+      ApplyValue(true);
     }
 
     private void OnDisable()
     {
-      InputService.Instance.onJoystickUsedChanged -= new Action<bool>(this.SetCodeView);
+      InputService.Instance.onJoystickUsedChanged -= SetCodeView;
     }
 
     protected override void ApplyValue(bool instant)
     {
-      this.SetCodeView(InputService.Instance.JoystickUsed);
+      SetCodeView(InputService.Instance.JoystickUsed);
     }
 
     private void SetCodeView(bool joystick)
     {
       bool hold;
-      this.keyCodeStringView.StringValue = InputUtility.GetHotKeyByAction(this.GetValue(), joystick, out hold);
-      this.holdObject.SetActive(hold);
+      keyCodeStringView.StringValue = InputUtility.GetHotKeyByAction(GetValue(), joystick, out hold);
+      holdObject.SetActive(hold);
     }
   }
 }

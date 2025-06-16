@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEngine;
 
 namespace RootMotion.FinalIK
 {
@@ -17,7 +16,7 @@ namespace RootMotion.FinalIK
     public float clampWeight = 0.1f;
     [Range(0.0f, 2f)]
     public int clampSmoothing = 2;
-    public IKSolver.IterationDelegate OnPreIteration;
+    public IterationDelegate OnPreIteration;
     private float step;
     private Vector3 clampedIKPosition;
     private RotationLimit transformLimit;
@@ -25,85 +24,85 @@ namespace RootMotion.FinalIK
 
     public float GetAngle()
     {
-      return Vector3.Angle(this.transformAxis, this.IKPosition - this.transform.position);
+      return Vector3.Angle(transformAxis, IKPosition - transform.position);
     }
 
-    public Vector3 transformAxis => this.transform.rotation * this.axis;
+    public Vector3 transformAxis => transform.rotation * axis;
 
-    public Vector3 transformPoleAxis => this.transform.rotation * this.poleAxis;
+    public Vector3 transformPoleAxis => transform.rotation * poleAxis;
 
     protected override void OnInitiate()
     {
-      if ((this.firstInitiation || !Application.isPlaying) && (UnityEngine.Object) this.transform != (UnityEngine.Object) null)
+      if ((firstInitiation || !Application.isPlaying) && (UnityEngine.Object) transform != (UnityEngine.Object) null)
       {
-        this.IKPosition = this.transform.position + this.transformAxis * 3f;
-        this.polePosition = this.transform.position + this.transformPoleAxis * 3f;
+        IKPosition = transform.position + transformAxis * 3f;
+        polePosition = transform.position + transformPoleAxis * 3f;
       }
-      for (int index = 0; index < this.bones.Length; ++index)
+      for (int index = 0; index < bones.Length; ++index)
       {
-        if ((UnityEngine.Object) this.bones[index].rotationLimit != (UnityEngine.Object) null)
-          this.bones[index].rotationLimit.Disable();
+        if ((UnityEngine.Object) bones[index].rotationLimit != (UnityEngine.Object) null)
+          bones[index].rotationLimit.Disable();
       }
-      this.step = 1f / (float) this.bones.Length;
+      step = 1f / bones.Length;
       if (!Application.isPlaying)
         return;
-      this.axis = this.axis.normalized;
+      axis = axis.normalized;
     }
 
     protected override void OnUpdate()
     {
-      if (this.axis == Vector3.zero)
+      if (axis == Vector3.zero)
       {
         if (Warning.logged)
           return;
-        this.LogWarning("IKSolverAim axis is Vector3.zero.");
+        LogWarning("IKSolverAim axis is Vector3.zero.");
       }
-      else if (this.poleAxis == Vector3.zero && (double) this.poleWeight > 0.0)
+      else if (poleAxis == Vector3.zero && poleWeight > 0.0)
       {
         if (Warning.logged)
           return;
-        this.LogWarning("IKSolverAim poleAxis is Vector3.zero.");
+        LogWarning("IKSolverAim poleAxis is Vector3.zero.");
       }
       else
       {
-        if ((UnityEngine.Object) this.target != (UnityEngine.Object) null)
-          this.IKPosition = this.target.position;
-        if ((UnityEngine.Object) this.poleTarget != (UnityEngine.Object) null)
-          this.polePosition = this.poleTarget.position;
-        if (this.XY)
-          this.IKPosition.z = this.bones[0].transform.position.z;
-        if ((double) this.IKPositionWeight <= 0.0)
+        if ((UnityEngine.Object) target != (UnityEngine.Object) null)
+          IKPosition = target.position;
+        if ((UnityEngine.Object) poleTarget != (UnityEngine.Object) null)
+          polePosition = poleTarget.position;
+        if (XY)
+          IKPosition.z = bones[0].transform.position.z;
+        if (IKPositionWeight <= 0.0)
           return;
-        this.IKPositionWeight = Mathf.Clamp(this.IKPositionWeight, 0.0f, 1f);
-        if ((UnityEngine.Object) this.transform != (UnityEngine.Object) this.lastTransform)
+        IKPositionWeight = Mathf.Clamp(IKPositionWeight, 0.0f, 1f);
+        if ((UnityEngine.Object) transform != (UnityEngine.Object) lastTransform)
         {
-          this.transformLimit = this.transform.GetComponent<RotationLimit>();
-          if ((UnityEngine.Object) this.transformLimit != (UnityEngine.Object) null)
-            this.transformLimit.enabled = false;
-          this.lastTransform = this.transform;
+          transformLimit = transform.GetComponent<RotationLimit>();
+          if ((UnityEngine.Object) transformLimit != (UnityEngine.Object) null)
+            transformLimit.enabled = false;
+          lastTransform = transform;
         }
-        if ((UnityEngine.Object) this.transformLimit != (UnityEngine.Object) null)
-          this.transformLimit.Apply();
-        if ((UnityEngine.Object) this.transform == (UnityEngine.Object) null)
+        if ((UnityEngine.Object) transformLimit != (UnityEngine.Object) null)
+          transformLimit.Apply();
+        if ((UnityEngine.Object) transform == (UnityEngine.Object) null)
         {
           if (Warning.logged)
             return;
-          this.LogWarning("Aim Transform unassigned in Aim IK solver. Please Assign a Transform (lineal descendant to the last bone in the spine) that you want to be aimed at IKPosition");
+          LogWarning("Aim Transform unassigned in Aim IK solver. Please Assign a Transform (lineal descendant to the last bone in the spine) that you want to be aimed at IKPosition");
         }
         else
         {
-          this.clampWeight = Mathf.Clamp(this.clampWeight, 0.0f, 1f);
-          this.clampedIKPosition = this.GetClampedIKPosition();
-          Vector3 b = this.clampedIKPosition - this.transform.position;
-          this.clampedIKPosition = this.transform.position + Vector3.Slerp(this.transformAxis * b.magnitude, b, this.IKPositionWeight);
-          for (int i = 0; i < this.maxIterations && (i < 1 || (double) this.tolerance <= 0.0 || (double) this.GetAngle() >= (double) this.tolerance); ++i)
+          clampWeight = Mathf.Clamp(clampWeight, 0.0f, 1f);
+          clampedIKPosition = GetClampedIKPosition();
+          Vector3 b = clampedIKPosition - transform.position;
+          clampedIKPosition = transform.position + Vector3.Slerp(transformAxis * b.magnitude, b, IKPositionWeight);
+          for (int i = 0; i < maxIterations && (i < 1 || tolerance <= 0.0 || GetAngle() >= (double) tolerance); ++i)
           {
-            this.lastLocalDirection = this.localDirection;
-            if (this.OnPreIteration != null)
-              this.OnPreIteration(i);
-            this.Solve();
+            lastLocalDirection = localDirection;
+            if (OnPreIteration != null)
+              OnPreIteration(i);
+            Solve();
           }
-          this.lastLocalDirection = this.localDirection;
+          lastLocalDirection = localDirection;
         }
       }
     }
@@ -112,33 +111,33 @@ namespace RootMotion.FinalIK
 
     private void Solve()
     {
-      for (int index = 0; index < this.bones.Length - 1; ++index)
-        this.RotateToTarget(this.clampedIKPosition, this.bones[index], this.step * (float) (index + 1) * this.IKPositionWeight * this.bones[index].weight);
-      this.RotateToTarget(this.clampedIKPosition, this.bones[this.bones.Length - 1], this.IKPositionWeight * this.bones[this.bones.Length - 1].weight);
+      for (int index = 0; index < bones.Length - 1; ++index)
+        RotateToTarget(clampedIKPosition, bones[index], step * (index + 1) * IKPositionWeight * bones[index].weight);
+      RotateToTarget(clampedIKPosition, bones[bones.Length - 1], IKPositionWeight * bones[bones.Length - 1].weight);
     }
 
     private Vector3 GetClampedIKPosition()
     {
-      if ((double) this.clampWeight <= 0.0)
-        return this.IKPosition;
-      if ((double) this.clampWeight >= 1.0)
-        return this.transform.position + this.transformAxis * (this.IKPosition - this.transform.position).magnitude;
-      float num1 = (float) (1.0 - (double) Vector3.Angle(this.transformAxis, this.IKPosition - this.transform.position) / 180.0);
-      float num2 = (double) this.clampWeight > 0.0 ? Mathf.Clamp((float) (1.0 - ((double) this.clampWeight - (double) num1) / (1.0 - (double) num1)), 0.0f, 1f) : 1f;
-      float num3 = (double) this.clampWeight > 0.0 ? Mathf.Clamp(num1 / this.clampWeight, 0.0f, 1f) : 1f;
-      for (int index = 0; index < this.clampSmoothing; ++index)
-        num3 = Mathf.Sin((float) ((double) num3 * 3.1415927410125732 * 0.5));
-      return this.transform.position + Vector3.Slerp(this.transformAxis * 10f, this.IKPosition - this.transform.position, num3 * num2);
+      if (clampWeight <= 0.0)
+        return IKPosition;
+      if (clampWeight >= 1.0)
+        return transform.position + transformAxis * (IKPosition - transform.position).magnitude;
+      float num1 = (float) (1.0 - (double) Vector3.Angle(transformAxis, IKPosition - transform.position) / 180.0);
+      float num2 = clampWeight > 0.0 ? Mathf.Clamp((float) (1.0 - (clampWeight - (double) num1) / (1.0 - num1)), 0.0f, 1f) : 1f;
+      float num3 = clampWeight > 0.0 ? Mathf.Clamp(num1 / clampWeight, 0.0f, 1f) : 1f;
+      for (int index = 0; index < clampSmoothing; ++index)
+        num3 = Mathf.Sin((float) (num3 * 3.1415927410125732 * 0.5));
+      return transform.position + Vector3.Slerp(transformAxis * 10f, IKPosition - transform.position, num3 * num2);
     }
 
-    private void RotateToTarget(Vector3 targetPosition, IKSolver.Bone bone, float weight)
+    private void RotateToTarget(Vector3 targetPosition, Bone bone, float weight)
     {
-      if (this.XY)
+      if (XY)
       {
-        if ((double) weight >= 0.0)
+        if (weight >= 0.0)
         {
           Vector3 transformAxis = this.transformAxis;
-          Vector3 vector3 = targetPosition - this.transform.position;
+          Vector3 vector3 = targetPosition - transform.position;
           float current = Mathf.Atan2(transformAxis.x, transformAxis.y) * 57.29578f;
           float target = Mathf.Atan2(vector3.x, vector3.y) * 57.29578f;
           bone.transform.rotation = Quaternion.AngleAxis(Mathf.DeltaAngle(current, target), Vector3.back) * bone.transform.rotation;
@@ -146,24 +145,24 @@ namespace RootMotion.FinalIK
       }
       else
       {
-        if ((double) weight >= 0.0)
+        if (weight >= 0.0)
         {
-          Quaternion rotation = Quaternion.FromToRotation(this.transformAxis, targetPosition - this.transform.position);
-          if ((double) weight >= 1.0)
+          Quaternion rotation = Quaternion.FromToRotation(transformAxis, targetPosition - transform.position);
+          if (weight >= 1.0)
             bone.transform.rotation = rotation * bone.transform.rotation;
           else
             bone.transform.rotation = Quaternion.Lerp(Quaternion.identity, rotation, weight) * bone.transform.rotation;
         }
-        if ((double) this.poleWeight > 0.0)
+        if (poleWeight > 0.0)
         {
-          Vector3 tangent = this.polePosition - this.transform.position;
+          Vector3 tangent = polePosition - transform.position;
           Vector3 transformAxis = this.transformAxis;
           Vector3.OrthoNormalize(ref transformAxis, ref tangent);
-          Quaternion rotation = Quaternion.FromToRotation(this.transformPoleAxis, tangent);
-          bone.transform.rotation = Quaternion.Lerp(Quaternion.identity, rotation, weight * this.poleWeight) * bone.transform.rotation;
+          Quaternion rotation = Quaternion.FromToRotation(transformPoleAxis, tangent);
+          bone.transform.rotation = Quaternion.Lerp(Quaternion.identity, rotation, weight * poleWeight) * bone.transform.rotation;
         }
       }
-      if (!this.useRotationLimits || !((UnityEngine.Object) bone.rotationLimit != (UnityEngine.Object) null))
+      if (!useRotationLimits || !((UnityEngine.Object) bone.rotationLimit != (UnityEngine.Object) null))
         return;
       bone.rotationLimit.Apply();
     }
@@ -172,7 +171,7 @@ namespace RootMotion.FinalIK
     {
       get
       {
-        return this.bones[0].transform.InverseTransformDirection(this.bones[this.bones.Length - 1].transform.forward);
+        return bones[0].transform.InverseTransformDirection(bones[bones.Length - 1].transform.forward);
       }
     }
   }

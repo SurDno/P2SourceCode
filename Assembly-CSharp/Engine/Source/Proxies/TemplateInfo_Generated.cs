@@ -1,11 +1,10 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
-using Engine.Common;
 using Engine.Common.Commons.Cloneable;
 using Engine.Common.Commons.Converters;
 using Engine.Source.Components;
 using Scripts.Tools.Serializations.Converters;
-using System;
 
 namespace Engine.Source.Proxies
 {
@@ -20,27 +19,27 @@ namespace Engine.Source.Proxies
     public object Clone()
     {
       TemplateInfo_Generated instance = Activator.CreateInstance<TemplateInfo_Generated>();
-      this.CopyTo((object) instance);
-      return (object) instance;
+      CopyTo(instance);
+      return instance;
     }
 
     public void CopyTo(object target2)
     {
       TemplateInfo_Generated templateInfoGenerated = (TemplateInfo_Generated) target2;
-      templateInfoGenerated.Id = this.Id;
-      templateInfoGenerated.InventoryTemplate = this.InventoryTemplate;
+      templateInfoGenerated.Id = Id;
+      templateInfoGenerated.InventoryTemplate = InventoryTemplate;
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.Write(writer, "Id", this.Id);
-      UnityDataWriteUtility.Write<IEntity>(writer, "InventoryTemplate", this.InventoryTemplate);
+      DefaultDataWriteUtility.Write(writer, "Id", Id);
+      UnityDataWriteUtility.Write(writer, "InventoryTemplate", InventoryTemplate);
     }
 
     public void DataRead(IDataReader reader, Type type)
     {
-      this.Id = DefaultDataReadUtility.Read(reader, "Id", this.Id);
-      this.InventoryTemplate = UnityDataReadUtility.Read<IEntity>(reader, "InventoryTemplate", this.InventoryTemplate);
+      Id = DefaultDataReadUtility.Read(reader, "Id", Id);
+      InventoryTemplate = UnityDataReadUtility.Read(reader, "InventoryTemplate", InventoryTemplate);
     }
   }
 }

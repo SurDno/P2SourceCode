@@ -1,22 +1,22 @@
-﻿using Engine.Common.Components.Movable;
+﻿using System.Collections.Generic;
+using Engine.Common.Components.Movable;
 using Engine.Common.Generator;
 using Inspectors;
-using System.Collections.Generic;
 
 namespace Engine.Source.Components.Crowds
 {
   [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
   public class CrowdAreaInfo
   {
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     public AreaEnum Area;
-    [DataReadProxy(MemberEnum.None, Name = "Templates")]
-    [DataWriteProxy(MemberEnum.None, Name = "Templates")]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy(Name = "Templates")]
+    [DataWriteProxy(Name = "Templates")]
+    [CopyableProxy()]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     public List<CrowdTemplateInfo> TemplateInfos = new List<CrowdTemplateInfo>();

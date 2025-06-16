@@ -1,9 +1,9 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons.Cloneable;
 using Engine.Common.Commons.Converters;
 using Engine.Source.Difficulties;
-using System;
 
 namespace Engine.Source.Proxies
 {
@@ -18,27 +18,27 @@ namespace Engine.Source.Proxies
     public object Clone()
     {
       DifficultyPresetItemData_Generated instance = Activator.CreateInstance<DifficultyPresetItemData_Generated>();
-      this.CopyTo((object) instance);
-      return (object) instance;
+      CopyTo(instance);
+      return instance;
     }
 
     public void CopyTo(object target2)
     {
       DifficultyPresetItemData_Generated itemDataGenerated = (DifficultyPresetItemData_Generated) target2;
-      itemDataGenerated.Name = this.Name;
-      itemDataGenerated.Value = this.Value;
+      itemDataGenerated.Name = Name;
+      itemDataGenerated.Value = Value;
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.Write(writer, "Name", this.Name);
-      DefaultDataWriteUtility.Write(writer, "Value", this.Value);
+      DefaultDataWriteUtility.Write(writer, "Name", Name);
+      DefaultDataWriteUtility.Write(writer, "Value", Value);
     }
 
     public void DataRead(IDataReader reader, Type type)
     {
-      this.Name = DefaultDataReadUtility.Read(reader, "Name", this.Name);
-      this.Value = DefaultDataReadUtility.Read(reader, "Value", this.Value);
+      Name = DefaultDataReadUtility.Read(reader, "Name", Name);
+      Value = DefaultDataReadUtility.Read(reader, "Value", Value);
     }
   }
 }

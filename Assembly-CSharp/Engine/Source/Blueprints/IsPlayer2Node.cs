@@ -19,11 +19,11 @@ namespace Engine.Source.Blueprints
     [Port("In")]
     private void In()
     {
-      IEntity entity = this.inputValue.value;
+      IEntity entity = inputValue.value;
       if (entity != null && entity == ServiceLocator.GetService<ISimulation>().Player)
-        this.trueOutput.Call();
+        trueOutput.Call();
       else
-        this.falseOutput.Call();
+        falseOutput.Call();
     }
   }
 }

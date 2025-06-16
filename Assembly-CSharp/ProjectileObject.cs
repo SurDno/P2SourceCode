@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEngine;
 
 public class ProjectileObject : MonoBehaviour
 {
@@ -12,10 +11,10 @@ public class ProjectileObject : MonoBehaviour
 
   private void OnCollisionEnter(Collision collision)
   {
-    if ((UnityEngine.Object) this.owner == (UnityEngine.Object) null || collision.transform.IsChildOf(this.owner.transform) || this.wasCollision)
+    if ((UnityEngine.Object) owner == (UnityEngine.Object) null || collision.transform.IsChildOf(owner.transform) || wasCollision)
       return;
-    this.wasCollision = true;
-    Action<Transform> onProjectileHit = this.OnProjectileHit;
+    wasCollision = true;
+    Action<Transform> onProjectileHit = OnProjectileHit;
     if (onProjectileHit == null)
       return;
     onProjectileHit(this.transform);

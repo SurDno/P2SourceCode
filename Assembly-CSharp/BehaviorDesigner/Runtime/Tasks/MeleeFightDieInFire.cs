@@ -1,11 +1,11 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons;
 using Engine.Common.Commons.Converters;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Scripts.Tools.Serializations.Converters;
-using UnityEngine;
 
 namespace BehaviorDesigner.Runtime.Tasks
 {
@@ -18,106 +18,106 @@ namespace BehaviorDesigner.Runtime.Tasks
   public class MeleeFightDieInFire : Action, IStub, ISerializeDataWrite, ISerializeDataRead
   {
     [Tooltip("The amount of time to wait. Use 0 for infinite idle.")]
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [SerializeField]
-    public SharedFloat runTime = (SharedFloat) 1f;
+    public SharedFloat runTime = 1f;
     [Tooltip("Should the wait be randomized?")]
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [SerializeField]
-    public SharedBool randomRunTime = (SharedBool) false;
+    public SharedBool randomRunTime = false;
     [Tooltip("The minimum wait time if random wait is enabled")]
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [SerializeField]
-    public SharedFloat randomRunTimeMin = (SharedFloat) 1f;
+    public SharedFloat randomRunTimeMin = 1f;
     [Tooltip("The maximum wait time if random wait is enabled")]
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy()]
     [SerializeField]
-    public SharedFloat randomRunTimeMax = (SharedFloat) 1f;
+    public SharedFloat randomRunTimeMax = 1f;
     private float waitDuration;
     private float startTime;
     private float pauseTime;
-    private bool infinite = false;
+    private bool infinite;
     private NpcState npcState;
 
     public override void OnAwake()
     {
-      this.npcState = this.gameObject.GetComponent<NpcState>();
-      if (!((UnityEngine.Object) this.npcState == (UnityEngine.Object) null))
+      npcState = gameObject.GetComponent<NpcState>();
+      if (!((UnityEngine.Object) npcState == (UnityEngine.Object) null))
         return;
-      Debug.LogWarning((object) (this.gameObject.name + ": doesn't contain " + typeof (NpcState).Name + " engine component"));
+      Debug.LogWarning((object) (gameObject.name + ": doesn't contain " + typeof (NpcState).Name + " engine component"));
     }
 
     public override void OnStart()
     {
-      if ((UnityEngine.Object) this.npcState == (UnityEngine.Object) null)
+      if ((UnityEngine.Object) npcState == (UnityEngine.Object) null)
         return;
-      this.infinite = (double) this.runTime.Value == 0.0 && !this.randomRunTime.Value;
-      this.npcState.InFire();
-      this.startTime = Time.time;
-      if (this.randomRunTime.Value)
-        this.waitDuration = UnityEngine.Random.Range(this.randomRunTimeMin.Value, this.randomRunTimeMax.Value);
+      infinite = runTime.Value == 0.0 && !randomRunTime.Value;
+      npcState.InFire();
+      startTime = Time.time;
+      if (randomRunTime.Value)
+        waitDuration = UnityEngine.Random.Range(randomRunTimeMin.Value, randomRunTimeMax.Value);
       else
-        this.waitDuration = this.runTime.Value;
+        waitDuration = runTime.Value;
     }
 
     public override TaskStatus OnUpdate()
     {
-      if ((UnityEngine.Object) this.npcState == (UnityEngine.Object) null)
+      if ((UnityEngine.Object) npcState == (UnityEngine.Object) null)
         return TaskStatus.Failure;
-      if (this.infinite || (double) this.startTime + (double) this.waitDuration >= (double) Time.time)
+      if (infinite || startTime + (double) waitDuration >= (double) Time.time)
         return TaskStatus.Running;
-      this.npcState.Ragdoll(true);
+      npcState.Ragdoll(true);
       return TaskStatus.Success;
     }
 
     public override void OnPause(bool paused)
     {
       if (paused)
-        this.pauseTime = Time.time;
+        pauseTime = Time.time;
       else
-        this.startTime += Time.time - this.pauseTime;
+        startTime += Time.time - pauseTime;
     }
 
     public override void OnReset()
     {
-      this.runTime = (SharedFloat) 5f;
-      this.randomRunTime = (SharedBool) false;
-      this.randomRunTimeMin = (SharedFloat) 1f;
-      this.randomRunTimeMax = (SharedFloat) 1f;
+      runTime = 5f;
+      randomRunTime = false;
+      randomRunTimeMin = 1f;
+      randomRunTimeMax = 1f;
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.WriteSerialize<NodeData>(writer, "NodeData", this.nodeData);
-      DefaultDataWriteUtility.Write(writer, "Id", this.id);
-      DefaultDataWriteUtility.Write(writer, "FriendlyName", this.friendlyName);
-      DefaultDataWriteUtility.Write(writer, "Instant", this.instant);
-      DefaultDataWriteUtility.Write(writer, "Disabled", this.disabled);
-      BehaviorTreeDataWriteUtility.WriteShared<SharedFloat>(writer, "RunTime", this.runTime);
-      BehaviorTreeDataWriteUtility.WriteShared<SharedBool>(writer, "RandomRunTime", this.randomRunTime);
-      BehaviorTreeDataWriteUtility.WriteShared<SharedFloat>(writer, "RandomRunTimeMin", this.randomRunTimeMin);
-      BehaviorTreeDataWriteUtility.WriteShared<SharedFloat>(writer, "RandomRunTimeMax", this.randomRunTimeMax);
+      DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
+      DefaultDataWriteUtility.Write(writer, "Id", id);
+      DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
+      DefaultDataWriteUtility.Write(writer, "Instant", instant);
+      DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
+      BehaviorTreeDataWriteUtility.WriteShared(writer, "RunTime", runTime);
+      BehaviorTreeDataWriteUtility.WriteShared(writer, "RandomRunTime", randomRunTime);
+      BehaviorTreeDataWriteUtility.WriteShared(writer, "RandomRunTimeMin", randomRunTimeMin);
+      BehaviorTreeDataWriteUtility.WriteShared(writer, "RandomRunTimeMax", randomRunTimeMax);
     }
 
-    public void DataRead(IDataReader reader, System.Type type)
+    public void DataRead(IDataReader reader, Type type)
     {
-      this.nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
-      this.id = DefaultDataReadUtility.Read(reader, "Id", this.id);
-      this.friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", this.friendlyName);
-      this.instant = DefaultDataReadUtility.Read(reader, "Instant", this.instant);
-      this.disabled = DefaultDataReadUtility.Read(reader, "Disabled", this.disabled);
-      this.runTime = BehaviorTreeDataReadUtility.ReadShared<SharedFloat>(reader, "RunTime", this.runTime);
-      this.randomRunTime = BehaviorTreeDataReadUtility.ReadShared<SharedBool>(reader, "RandomRunTime", this.randomRunTime);
-      this.randomRunTimeMin = BehaviorTreeDataReadUtility.ReadShared<SharedFloat>(reader, "RandomRunTimeMin", this.randomRunTimeMin);
-      this.randomRunTimeMax = BehaviorTreeDataReadUtility.ReadShared<SharedFloat>(reader, "RandomRunTimeMax", this.randomRunTimeMax);
+      nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
+      id = DefaultDataReadUtility.Read(reader, "Id", id);
+      friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
+      instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
+      disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
+      runTime = BehaviorTreeDataReadUtility.ReadShared(reader, "RunTime", runTime);
+      randomRunTime = BehaviorTreeDataReadUtility.ReadShared(reader, "RandomRunTime", randomRunTime);
+      randomRunTimeMin = BehaviorTreeDataReadUtility.ReadShared(reader, "RandomRunTimeMin", randomRunTimeMin);
+      randomRunTimeMax = BehaviorTreeDataReadUtility.ReadShared(reader, "RandomRunTimeMax", randomRunTimeMax);
     }
   }
 }

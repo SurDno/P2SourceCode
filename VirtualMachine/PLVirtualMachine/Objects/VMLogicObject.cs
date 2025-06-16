@@ -1,4 +1,5 @@
-﻿using Cofe.Loggers;
+﻿using System.Collections.Generic;
+using Cofe.Loggers;
 using Engine.Common.Types;
 using PLVirtualMachine.Base;
 using PLVirtualMachine.Common;
@@ -8,7 +9,6 @@ using PLVirtualMachine.Common.EngineAPI.VMECS;
 using PLVirtualMachine.Common.VMSpecialAttributes;
 using PLVirtualMachine.FSM;
 using PLVirtualMachine.GameLogic;
-using System.Collections.Generic;
 
 namespace PLVirtualMachine.Objects
 {
@@ -18,9 +18,9 @@ namespace PLVirtualMachine.Objects
     protected List<IContainer> gameObjects;
     [FieldData("Events", DataFieldType.Reference)]
     protected List<IEvent> customEventsList;
-    [FieldData("CustomParams", DataFieldType.None)]
+    [FieldData("CustomParams")]
     protected Dictionary<string, IParam> customParamsDict;
-    [FieldData("StandartParams", DataFieldType.None)]
+    [FieldData("StandartParams")]
     protected Dictionary<string, IParam> standartParamsDict;
     [FieldData("EventGraph", DataFieldType.Reference)]
     protected IFiniteStateMachine stateGraph;
@@ -50,7 +50,7 @@ namespace PLVirtualMachine.Objects
 
     public override EObjectCategory GetCategory()
     {
-      switch ((EDataType) GuidUtility.GetTypeId(this.BaseGuid))
+      switch ((EDataType) GuidUtility.GetTypeId(BaseGuid))
       {
         case EDataType.TGame:
           return EObjectCategory.OBJECT_CATEGORY_GAME;
@@ -73,10 +73,10 @@ namespace PLVirtualMachine.Objects
 
     public virtual bool IsDerivedFrom(ulong iBlueprintGuid, bool bWithSelf = false)
     {
-      return bWithSelf && iBlueprintGuid != 0UL && (long) this.BaseGuid == (long) iBlueprintGuid;
+      return bWithSelf && iBlueprintGuid != 0UL && (long) BaseGuid == (long) iBlueprintGuid;
     }
 
-    public virtual IFiniteStateMachine StateGraph => this.stateGraph;
+    public virtual IFiniteStateMachine StateGraph => stateGraph;
 
     public virtual bool Static => false;
 
@@ -84,33 +84,33 @@ namespace PLVirtualMachine.Objects
     {
       get
       {
-        return this.gameTimeContext == null ? ((VMGameRoot) IStaticDataContainer.StaticDataContainer.GameRoot).MainGameMode : this.gameTimeContext;
+        return gameTimeContext == null ? ((VMGameRoot) IStaticDataContainer.StaticDataContainer.GameRoot).MainGameMode : gameTimeContext;
       }
     }
 
-    public List<IObjRef> GetStaticObjects() => this.staticObjects;
+    public List<IObjRef> GetStaticObjects() => staticObjects;
 
     public List<IBlueprintRef> GetBlueprints()
     {
-      if (this.blueprints == null || this.blueprints.Count == 0)
-        this.PreloadBlueprints();
-      return this.blueprints;
+      if (blueprints == null || blueprints.Count == 0)
+        PreloadBlueprints();
+      return blueprints;
     }
 
-    public List<BaseFunction> Functions => this.functions;
+    public List<BaseFunction> Functions => functions;
 
-    public List<IEvent> Events => this.events;
+    public List<IEvent> Events => events;
 
-    public virtual List<IEvent> CustomEvents => this.customEventsList;
+    public virtual List<IEvent> CustomEvents => customEventsList;
 
     public bool IsFunctionalSupport(string sEngComponentName)
     {
-      return this.FunctionalComponents.ContainsKey(sEngComponentName);
+      return FunctionalComponents.ContainsKey(sEngComponentName);
     }
 
     public bool IsFunctionalSupport(IEnumerable<string> functionalsList)
     {
-      Dictionary<string, IFunctionalComponent> functionalComponents = this.FunctionalComponents;
+      Dictionary<string, IFunctionalComponent> functionalComponents = FunctionalComponents;
       foreach (string functionals in functionalsList)
       {
         if (!functionalComponents.ContainsKey(functionals))
@@ -125,60 +125,60 @@ namespace PLVirtualMachine.Objects
 
     public int StandartParamsCount
     {
-      get => this.standartParamsDict != null ? this.standartParamsDict.Count : 0;
+      get => standartParamsDict != null ? standartParamsDict.Count : 0;
     }
 
-    public int CustomParamsCount => this.customParamsDict != null ? this.customParamsDict.Count : 0;
+    public int CustomParamsCount => customParamsDict != null ? customParamsDict.Count : 0;
 
     public IEnumerable<string> GetComponentNames()
     {
-      foreach (KeyValuePair<string, IFunctionalComponent> functionalComponent in this.FunctionalComponents)
+      foreach (KeyValuePair<string, IFunctionalComponent> functionalComponent in FunctionalComponents)
         yield return functionalComponent.Key;
     }
 
     public virtual IEnumerable<IVariable> GetContextVariables(
       EContextVariableCategory contextVarCategory)
     {
-      if (!this.IsUpdated)
-        this.Update();
+      if (!IsUpdated)
+        Update();
       switch (contextVarCategory)
       {
         case EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_GAME:
           VMObjRef contextVariable1 = new VMObjRef();
           contextVariable1.Initialize((IBlueprint) IStaticDataContainer.StaticDataContainer.GameRoot);
-          yield return (IVariable) contextVariable1;
+          yield return contextVariable1;
           break;
         case EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_OBJECT:
           foreach (IVariable staticObject in ((VMLogicObject) IStaticDataContainer.StaticDataContainer.GameRoot).GetStaticObjects())
             yield return staticObject;
-          yield return this.GetSelf();
+          yield return GetSelf();
           break;
         case EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_EVENT:
-          if (this.events == null)
+          if (events == null)
             break;
-          for (int i = 0; i < this.events.Count; ++i)
+          for (int i = 0; i < events.Count; ++i)
           {
             VMEventRef contextVariable2 = new VMEventRef();
-            contextVariable2.Initialize(this.events[i]);
-            yield return (IVariable) contextVariable2;
+            contextVariable2.Initialize(events[i]);
+            yield return contextVariable2;
           }
           break;
         case EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_APIFUNCTION:
-          if (this.functions == null)
+          if (functions == null)
             break;
-          for (int i = 0; i < this.functions.Count; ++i)
-            yield return (IVariable) this.functions[i];
+          for (int i = 0; i < functions.Count; ++i)
+            yield return functions[i];
           break;
         case EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_PARAM:
-          if (this.customParamsDict != null)
+          if (customParamsDict != null)
           {
-            foreach (KeyValuePair<string, IParam> keyValuePair in this.customParamsDict)
-              yield return (IVariable) keyValuePair.Value;
+            foreach (KeyValuePair<string, IParam> keyValuePair in customParamsDict)
+              yield return keyValuePair.Value;
           }
-          if (this.standartParamsDict == null)
+          if (standartParamsDict == null)
             break;
-          foreach (KeyValuePair<string, IParam> keyValuePair in this.standartParamsDict)
-            yield return (IVariable) keyValuePair.Value;
+          foreach (KeyValuePair<string, IParam> keyValuePair in standartParamsDict)
+            yield return keyValuePair.Value;
           break;
         case EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_BLUEPRINT:
           foreach (IVariable blueprint in ((VMLogicObject) IStaticDataContainer.StaticDataContainer.GameRoot).GetBlueprints())
@@ -190,40 +190,40 @@ namespace PLVirtualMachine.Objects
           {
             VMSampleRef contextVariable3 = new VMSampleRef();
             contextVariable3.Initialize(samples[i]);
-            yield return (IVariable) contextVariable3;
+            yield return contextVariable3;
           }
-          samples = (List<ISample>) null;
+          samples = null;
           break;
       }
     }
 
     public IVariable GetContextVariable(string variableName)
     {
-      IVariable contextVariable = (IVariable) null;
-      if (this.contextVariablesTotalCache != null)
-        this.contextVariablesTotalCache.TryGetValue(variableName, out contextVariable);
-      if (contextVariable == null && this.CanReloadVariablesTotalCache())
+      IVariable contextVariable = null;
+      if (contextVariablesTotalCache != null)
+        contextVariablesTotalCache.TryGetValue(variableName, out contextVariable);
+      if (contextVariable == null && CanReloadVariablesTotalCache())
       {
-        this.UpdateContextVariablesTotalCache();
-        if (this.contextVariablesTotalCache != null)
-          this.contextVariablesTotalCache.TryGetValue(variableName, out contextVariable);
+        UpdateContextVariablesTotalCache();
+        if (contextVariablesTotalCache != null)
+          contextVariablesTotalCache.TryGetValue(variableName, out contextVariable);
       }
-      if (contextVariable == null && this.IsVariableState(variableName))
-        contextVariable = this.GetStateVariable(variableName);
+      if (contextVariable == null && IsVariableState(variableName))
+        contextVariable = GetStateVariable(variableName);
       return contextVariable;
     }
 
     private IVariable GetStateVariable(string variableName)
     {
-      if (this.statesVariablesTotalCache == null)
-        this.UpdateStatesVaribalesTotalCache();
-      if (this.statesVariablesTotalCache != null)
+      if (statesVariablesTotalCache == null)
+        UpdateStatesVaribalesTotalCache();
+      if (statesVariablesTotalCache != null)
       {
-        IVariable stateVariable = (IVariable) null;
-        if (this.statesVariablesTotalCache.TryGetValue(variableName, out stateVariable))
+        IVariable stateVariable = null;
+        if (statesVariablesTotalCache.TryGetValue(variableName, out stateVariable))
           return stateVariable;
       }
-      return (IVariable) null;
+      return null;
     }
 
     private bool IsVariableState(string variableName)
@@ -246,9 +246,9 @@ namespace PLVirtualMachine.Objects
 
     public virtual IEnumerable<IStateRef> GetObjectStates()
     {
-      if (this.stateGraph != null)
+      if (stateGraph != null)
       {
-        foreach (IStateRef allState in ((FiniteStateMachine) this.stateGraph).AllStates)
+        foreach (IStateRef allState in ((FiniteStateMachine) stateGraph).AllStates)
           yield return allState;
       }
     }
@@ -256,11 +256,11 @@ namespace PLVirtualMachine.Objects
     public IEnumerable<VMLogicObject> GetAllLogicObjects()
     {
       yield return this;
-      if (this.gameObjects != null)
+      if (gameObjects != null)
       {
-        for (int index = 0; index < this.gameObjects.Count; ++index)
+        for (int index = 0; index < gameObjects.Count; ++index)
         {
-          if (this.gameObjects[index] is VMLogicObject gameObject)
+          if (gameObjects[index] is VMLogicObject gameObject)
           {
             foreach (VMLogicObject allLogicObject in gameObject.GetAllLogicObjects())
               yield return allLogicObject;
@@ -269,216 +269,216 @@ namespace PLVirtualMachine.Objects
       }
     }
 
-    public IEvent GetStartEvent() => this.startEvent;
+    public IEvent GetStartEvent() => startEvent;
 
     public string GetStartEventFuncName()
     {
-      return this.startEvent != null ? this.startEvent.FunctionalName : string.Empty;
+      return startEvent != null ? startEvent.FunctionalName : string.Empty;
     }
 
-    public virtual VMParameter GetTemplateStateParam() => this.GetStateParam();
+    public virtual VMParameter GetTemplateStateParam() => GetStateParam();
 
     public IVariable GetSelf()
     {
-      if (this.selfRef == null)
+      if (selfRef == null)
       {
-        this.selfRef = new VMObjRef();
-        this.selfRef.Initialize((IBlueprint) this);
+        selfRef = new VMObjRef();
+        selfRef.Initialize((IBlueprint) this);
       }
-      return (IVariable) this.selfRef;
+      return selfRef;
     }
 
     public VMParameter GetStateParam()
     {
-      if (!this.IsUpdated)
-        this.Update();
-      if (this.stateParam == null)
-        this.UpdateStateParam();
-      return this.stateParam;
+      if (!IsUpdated)
+        Update();
+      if (stateParam == null)
+        UpdateStateParam();
+      return stateParam;
     }
 
     public virtual void OnAfterLoad()
     {
-      this.LoadFunctionals();
-      this.PreLoadChildObjects();
-      if (this.customParamsDict != null)
+      LoadFunctionals();
+      PreLoadChildObjects();
+      if (customParamsDict != null)
       {
-        foreach (KeyValuePair<string, IParam> keyValuePair in this.customParamsDict)
+        foreach (KeyValuePair<string, IParam> keyValuePair in customParamsDict)
         {
           if (keyValuePair.Value is VMParameter vmParameter)
             vmParameter.OnAfterLoad();
         }
       }
-      if (this.standartParamsDict != null)
+      if (standartParamsDict != null)
       {
-        foreach (KeyValuePair<string, IParam> keyValuePair in this.standartParamsDict)
+        foreach (KeyValuePair<string, IParam> keyValuePair in standartParamsDict)
         {
           if (keyValuePair.Value is VMParameter vmParameter)
             vmParameter.OnAfterLoad();
         }
       }
-      if (this.customEventsList != null)
+      if (customEventsList != null)
       {
-        for (int index = 0; index < this.customEventsList.Count; ++index)
-          ((VMEvent) this.customEventsList[index]).OnAfterLoad();
+        for (int index = 0; index < customEventsList.Count; ++index)
+          ((VMEvent) customEventsList[index]).OnAfterLoad();
       }
-      if (this.StateGraph == null)
+      if (StateGraph == null)
         return;
-      this.startEvent = (IEvent) null;
+      startEvent = null;
       ulong num = 0;
-      if (this.events != null)
+      if (events != null)
       {
-        for (int index = 0; index < this.events.Count; ++index)
+        for (int index = 0; index < events.Count; ++index)
         {
-          if (!this.events[index].IsManual)
+          if (!events[index].IsManual)
           {
-            VMFunctionalComponent parent = (VMFunctionalComponent) this.events[index].Parent;
-            if (parent.Main && (this.startEvent == null || parent.BaseGuid <= num) && this.events[index].Name == EngineAPIManager.GetSpecialEventName(ESpecialEventName.SEN_START_OBJECT_FSM, typeof (VMCommon)) && this.startEvent == null)
+            VMFunctionalComponent parent = (VMFunctionalComponent) events[index].Parent;
+            if (parent.Main && (startEvent == null || parent.BaseGuid <= num) && events[index].Name == EngineAPIManager.GetSpecialEventName(ESpecialEventName.SEN_START_OBJECT_FSM, typeof (VMCommon)) && startEvent == null)
             {
-              this.startEvent = this.events[index];
+              startEvent = events[index];
               num = parent.BaseGuid;
             }
           }
         }
       }
-      if (this.startEvent == null)
-        Logger.AddError(string.Format("OnStart event not found in object {0}", (object) this.Name));
-      if (this.stateGraph != null)
-        ((VMState) this.stateGraph).OnAfterLoad();
-      this.afterLoaded = true;
+      if (startEvent == null)
+        Logger.AddError(string.Format("OnStart event not found in object {0}", Name));
+      if (stateGraph != null)
+        ((VMState) stateGraph).OnAfterLoad();
+      afterLoaded = true;
     }
 
     public override void OnPostLoad()
     {
-      if (this.stateGraph == null)
+      if (stateGraph == null)
         return;
-      ((VMBaseObject) this.stateGraph).OnPostLoad();
+      ((VMBaseObject) stateGraph).OnPostLoad();
     }
 
     public bool TryGetProperty(string name, out IParam param)
     {
-      if (this.standartParamsDict != null)
-        return this.standartParamsDict.TryGetValue(name, out param);
-      param = (IParam) null;
+      if (standartParamsDict != null)
+        return standartParamsDict.TryGetValue(name, out param);
+      param = null;
       return false;
     }
 
     public IParam GetProperty(string componentName, string propertyName)
     {
       string key = componentName + "." + propertyName;
-      if (this.standartParamsDict != null && this.standartParamsDict.ContainsKey(key))
-        return this.standartParamsDict[key];
-      Logger.AddError(string.Format("Property with name {0} for component {1} not found", (object) propertyName, (object) componentName));
-      return (IParam) null;
+      if (standartParamsDict != null && standartParamsDict.ContainsKey(key))
+        return standartParamsDict[key];
+      Logger.AddError(string.Format("Property with name {0} for component {1} not found", propertyName, componentName));
+      return null;
     }
 
-    public bool IsAfterLoaded => this.afterLoaded;
+    public bool IsAfterLoaded => afterLoaded;
 
     public override void Clear()
     {
       base.Clear();
-      if (this.gameObjects != null)
+      if (gameObjects != null)
       {
-        foreach (IContainer gameObject in this.gameObjects)
+        foreach (IContainer gameObject in gameObjects)
           gameObject.Clear();
-        this.gameObjects.Clear();
-        this.gameObjects = (List<IContainer>) null;
+        gameObjects.Clear();
+        gameObjects = null;
       }
-      if (this.customEventsList != null)
+      if (customEventsList != null)
       {
-        foreach (IContainer customEvents in this.customEventsList)
+        foreach (IContainer customEvents in customEventsList)
           customEvents.Clear();
-        this.customEventsList.Clear();
-        this.customEventsList = (List<IEvent>) null;
+        customEventsList.Clear();
+        customEventsList = null;
       }
-      if (this.customParamsDict != null)
+      if (customParamsDict != null)
       {
-        foreach (KeyValuePair<string, IParam> keyValuePair in this.customParamsDict)
+        foreach (KeyValuePair<string, IParam> keyValuePair in customParamsDict)
         {
           if (typeof (VMParameter) == keyValuePair.Value.GetType())
             ((VMParameter) keyValuePair.Value).Clear();
         }
-        this.customParamsDict.Clear();
-        this.customParamsDict = (Dictionary<string, IParam>) null;
+        customParamsDict.Clear();
+        customParamsDict = null;
       }
-      if (this.standartParamsDict != null)
+      if (standartParamsDict != null)
       {
-        foreach (KeyValuePair<string, IParam> keyValuePair in this.standartParamsDict)
+        foreach (KeyValuePair<string, IParam> keyValuePair in standartParamsDict)
         {
           if (typeof (VMParameter) == keyValuePair.Value.GetType())
             ((VMParameter) keyValuePair.Value).Clear();
         }
-        this.standartParamsDict.Clear();
-        this.standartParamsDict = (Dictionary<string, IParam>) null;
+        standartParamsDict.Clear();
+        standartParamsDict = null;
       }
-      if (this.stateGraph != null)
+      if (stateGraph != null)
       {
-        this.stateGraph.Clear();
-        this.stateGraph = (IFiniteStateMachine) null;
+        stateGraph.Clear();
+        stateGraph = null;
       }
-      if (this.functionalComponents != null)
+      if (functionalComponents != null)
       {
-        foreach (IContainer functionalComponent in this.functionalComponents)
+        foreach (IContainer functionalComponent in functionalComponents)
           functionalComponent.Clear();
-        this.functionalComponents.Clear();
-        this.functionalComponents = (List<IFunctionalComponent>) null;
+        functionalComponents.Clear();
+        functionalComponents = null;
       }
-      this.gameTimeContext = (IGameMode) null;
-      if (this.blueprints != null)
+      gameTimeContext = null;
+      if (blueprints != null)
       {
-        this.blueprints.Clear();
-        this.blueprints = (List<IBlueprintRef>) null;
+        blueprints.Clear();
+        blueprints = null;
       }
-      if (this.staticObjects != null)
+      if (staticObjects != null)
       {
-        this.staticObjects.Clear();
-        this.staticObjects = (List<IObjRef>) null;
+        staticObjects.Clear();
+        staticObjects = null;
       }
-      if (this.events != null)
+      if (events != null)
       {
-        foreach (IContainer container in this.events)
+        foreach (IContainer container in events)
           container.Clear();
-        this.events.Clear();
-        this.events = (List<IEvent>) null;
+        events.Clear();
+        events = null;
       }
-      if (this.functions != null)
+      if (functions != null)
       {
-        foreach (BaseFunction function in this.functions)
+        foreach (BaseFunction function in functions)
           function.Clear();
-        this.functions.Clear();
-        this.functions = (List<BaseFunction>) null;
+        functions.Clear();
+        functions = null;
       }
-      if (this.contextVariablesTotalCache != null)
+      if (contextVariablesTotalCache != null)
       {
-        this.contextVariablesTotalCache.Clear();
-        this.contextVariablesTotalCache = (Dictionary<string, IVariable>) null;
+        contextVariablesTotalCache.Clear();
+        contextVariablesTotalCache = null;
       }
-      if (this.statesVariablesTotalCache != null)
+      if (statesVariablesTotalCache != null)
       {
-        this.statesVariablesTotalCache.Clear();
-        this.statesVariablesTotalCache = (Dictionary<string, IVariable>) null;
+        statesVariablesTotalCache.Clear();
+        statesVariablesTotalCache = null;
       }
-      if (this.stateParam != null)
+      if (stateParam != null)
       {
-        this.stateParam.Clear();
-        this.stateParam = (VMParameter) null;
+        stateParam.Clear();
+        stateParam = null;
       }
-      this.startEvent = (IEvent) null;
-      this.selfRef = (VMObjRef) null;
+      startEvent = null;
+      selfRef = null;
     }
 
     private void UpdateStateParam()
     {
-      if (this.customParamsDict == null)
+      if (customParamsDict == null)
         return;
-      foreach (KeyValuePair<string, IParam> keyValuePair in this.customParamsDict)
+      foreach (KeyValuePair<string, IParam> keyValuePair in customParamsDict)
       {
         if (keyValuePair.Key.EndsWith("_state"))
         {
           VMParameter vmParameter = (VMParameter) keyValuePair.Value;
           if (vmParameter.Implicit)
           {
-            this.stateParam = vmParameter;
+            stateParam = vmParameter;
             break;
           }
         }
@@ -489,129 +489,129 @@ namespace PLVirtualMachine.Objects
 
     protected void PreLoadChildObjects()
     {
-      if (!this.customEventsLoaded)
-        this.PreloadCustomEvents();
-      this.PreloadChildWorldObjects();
+      if (!customEventsLoaded)
+        PreloadCustomEvents();
+      PreloadChildWorldObjects();
     }
 
     protected void PreloadCustomEvents()
     {
-      List<IEvent> customEvents = this.CustomEvents;
+      List<IEvent> customEvents = CustomEvents;
       if (customEvents != null)
       {
         for (int index = 0; index < customEvents.Count; ++index)
         {
-          if (this.events == null)
-            this.events = new List<IEvent>();
-          this.events.Add(customEvents[index]);
+          if (events == null)
+            events = new List<IEvent>();
+          events.Add(customEvents[index]);
         }
       }
-      this.customEventsLoaded = true;
+      customEventsLoaded = true;
     }
 
-    protected virtual void PreloadChildWorldObjects() => this.PreloadStaticObjects();
+    protected virtual void PreloadChildWorldObjects() => PreloadStaticObjects();
 
     protected virtual void UpdateContextVariablesTotalCache()
     {
-      if (this.contextVariablesTotalCache != null)
-        this.contextVariablesTotalCache.Clear();
-      if (this.events != null)
+      if (contextVariablesTotalCache != null)
+        contextVariablesTotalCache.Clear();
+      if (events != null)
       {
-        for (int index = 0; index < this.events.Count; ++index)
+        for (int index = 0; index < events.Count; ++index)
         {
           VMEventRef vmEventRef = new VMEventRef();
-          vmEventRef.Initialize(this.events[index]);
-          this.LoadContextVaraiblesTotalCache((IVariable) vmEventRef);
+          vmEventRef.Initialize(events[index]);
+          LoadContextVaraiblesTotalCache(vmEventRef);
         }
       }
-      if (this.functions != null)
+      if (functions != null)
       {
-        for (int index = 0; index < this.functions.Count; ++index)
-          this.LoadContextVaraiblesTotalCache((IVariable) this.functions[index]);
+        for (int index = 0; index < functions.Count; ++index)
+          LoadContextVaraiblesTotalCache(functions[index]);
       }
-      if (this.customParamsDict != null)
+      if (customParamsDict != null)
       {
-        foreach (KeyValuePair<string, IParam> keyValuePair in this.customParamsDict)
-          this.LoadContextVaraiblesTotalCache((IVariable) keyValuePair.Value);
+        foreach (KeyValuePair<string, IParam> keyValuePair in customParamsDict)
+          LoadContextVaraiblesTotalCache(keyValuePair.Value);
       }
-      if (this.standartParamsDict != null)
+      if (standartParamsDict != null)
       {
-        foreach (KeyValuePair<string, IParam> keyValuePair in this.standartParamsDict)
-          this.LoadContextVaraiblesTotalCache((IVariable) keyValuePair.Value);
+        foreach (KeyValuePair<string, IParam> keyValuePair in standartParamsDict)
+          LoadContextVaraiblesTotalCache(keyValuePair.Value);
       }
-      if (this.contextVariablesTotalCache == null || !this.afterLoaded || this.contextVariablesTotalCache.Count <= 0)
+      if (contextVariablesTotalCache == null || !afterLoaded || contextVariablesTotalCache.Count <= 0)
         return;
-      this.variablesTotalCacheLoaded = true;
+      variablesTotalCacheLoaded = true;
     }
 
     protected void UpdateStatesVaribalesTotalCache()
     {
-      if (this.IsVirtual || this.StateGraph == null)
+      if (IsVirtual || StateGraph == null)
         return;
-      if (this.statesVariablesTotalCache == null)
-        this.statesVariablesTotalCache = new Dictionary<string, IVariable>();
+      if (statesVariablesTotalCache == null)
+        statesVariablesTotalCache = new Dictionary<string, IVariable>();
       else
-        this.statesVariablesTotalCache.Clear();
-      foreach (IStateRef objectState in this.GetObjectStates())
-        this.statesVariablesTotalCache[objectState.Name] = (IVariable) objectState;
+        statesVariablesTotalCache.Clear();
+      foreach (IStateRef objectState in GetObjectStates())
+        statesVariablesTotalCache[objectState.Name] = objectState;
     }
 
     protected void LoadContextVaraiblesTotalCache(IVariable variable)
     {
-      if (this.contextVariablesTotalCache == null)
-        this.contextVariablesTotalCache = new Dictionary<string, IVariable>();
-      this.contextVariablesTotalCache[variable.Name] = variable;
+      if (contextVariablesTotalCache == null)
+        contextVariablesTotalCache = new Dictionary<string, IVariable>();
+      contextVariablesTotalCache[variable.Name] = variable;
       switch (variable)
       {
         case IObject @object:
-          this.contextVariablesTotalCache[@object.GuidStr] = variable;
+          contextVariablesTotalCache[@object.GuidStr] = variable;
           break;
         case IRef @ref:
           if (variable.Category != EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_SAMPLE)
             break;
-          this.contextVariablesTotalCache[@ref.StaticInstance.GuidStr] = variable;
+          contextVariablesTotalCache[@ref.StaticInstance.GuidStr] = variable;
           break;
       }
     }
 
-    protected virtual bool CanReloadVariablesTotalCache() => !this.variablesTotalCacheLoaded;
+    protected virtual bool CanReloadVariablesTotalCache() => !variablesTotalCacheLoaded;
 
     protected virtual void PreloadStaticObjects()
     {
-      if (this.staticObjects != null)
-        this.staticObjects.Clear();
-      this.LoadStaticObjects(EObjectCategory.OBJECT_CATEGORY_WORLD_GROUP);
-      this.LoadStaticObjects(EObjectCategory.OBJECT_CATEGORY_GEOM);
-      this.LoadStaticObjects(EObjectCategory.OBJECT_CATEGORY_OTHERS);
-      this.LoadStaticObjects(EObjectCategory.OBJECT_CATEGORY_ITEM);
-      this.LoadStaticObjects(EObjectCategory.OBJECT_CATEGORY_CHARACTER);
-      this.LoadStaticObjects(EObjectCategory.OBJECT_CATEGORY_QUEST);
+      if (staticObjects != null)
+        staticObjects.Clear();
+      LoadStaticObjects(EObjectCategory.OBJECT_CATEGORY_WORLD_GROUP);
+      LoadStaticObjects(EObjectCategory.OBJECT_CATEGORY_GEOM);
+      LoadStaticObjects(EObjectCategory.OBJECT_CATEGORY_OTHERS);
+      LoadStaticObjects(EObjectCategory.OBJECT_CATEGORY_ITEM);
+      LoadStaticObjects(EObjectCategory.OBJECT_CATEGORY_CHARACTER);
+      LoadStaticObjects(EObjectCategory.OBJECT_CATEGORY_QUEST);
     }
 
     private void LoadStaticObjects(EObjectCategory eLoadObjCategory)
     {
-      if (this.gameObjects == null)
+      if (gameObjects == null)
         return;
-      for (int index = 0; index < this.gameObjects.Count; ++index)
+      for (int index = 0; index < gameObjects.Count; ++index)
       {
-        IContainer gameObject = this.gameObjects[index];
+        IContainer gameObject = gameObjects[index];
         if (gameObject.GetCategory() == eLoadObjCategory)
         {
           VMBlueprint vmBlueprint = (VMBlueprint) gameObject;
           if (vmBlueprint.Static)
           {
             VMObjRef vmObjRef = new VMObjRef();
-            vmObjRef.Initialize((IBlueprint) vmBlueprint);
+            vmObjRef.Initialize(vmBlueprint);
             if (this.staticObjects == null)
               this.staticObjects = new List<IObjRef>();
-            this.staticObjects.Add((IObjRef) vmObjRef);
+            this.staticObjects.Add(vmObjRef);
           }
           List<IObjRef> staticObjects = vmBlueprint.GetStaticObjects();
           if (staticObjects != null)
           {
             if (this.staticObjects == null)
               this.staticObjects = new List<IObjRef>();
-            this.staticObjects.AddRange((IEnumerable<IObjRef>) staticObjects);
+            this.staticObjects.AddRange(staticObjects);
           }
         }
       }
@@ -619,23 +619,23 @@ namespace PLVirtualMachine.Objects
 
     protected void PreloadBlueprints()
     {
-      if (this.gameObjects == null || this.gameObjects.Count == 0)
+      if (gameObjects == null || gameObjects.Count == 0)
         return;
       if (this.blueprints == null)
         this.blueprints = new List<IBlueprintRef>();
       this.blueprints.Clear();
-      this.blueprints.Capacity = this.gameObjects.Count * 2;
-      for (int index1 = 0; index1 < this.gameObjects.Count; ++index1)
+      this.blueprints.Capacity = gameObjects.Count * 2;
+      for (int index1 = 0; index1 < gameObjects.Count; ++index1)
       {
-        IContainer gameObject = this.gameObjects[index1];
+        IContainer gameObject = gameObjects[index1];
         if (gameObject.GetCategory() == EObjectCategory.OBJECT_CATEGORY_CLASS || gameObject.GetCategory() == EObjectCategory.OBJECT_CATEGORY_QUEST || gameObject.GetCategory() == EObjectCategory.OBJECT_CATEGORY_CHARACTER || gameObject.GetCategory() == EObjectCategory.OBJECT_CATEGORY_ITEM || gameObject.GetCategory() == EObjectCategory.OBJECT_CATEGORY_GEOM || gameObject.GetCategory() == EObjectCategory.OBJECT_CATEGORY_WORLD_GROUP || gameObject.GetCategory() == EObjectCategory.OBJECT_CATEGORY_OTHERS)
         {
           VMBlueprint vmBlueprint = (VMBlueprint) gameObject;
           if (!vmBlueprint.Static || gameObject.GetCategory() == EObjectCategory.OBJECT_CATEGORY_CLASS)
           {
             VMBlueprintRef vmBlueprintRef = new VMBlueprintRef();
-            vmBlueprintRef.Initialize((IBlueprint) vmBlueprint);
-            this.blueprints.Add((IBlueprintRef) vmBlueprintRef);
+            vmBlueprintRef.Initialize(vmBlueprint);
+            this.blueprints.Add(vmBlueprintRef);
           }
           List<IBlueprintRef> blueprints = vmBlueprint.GetBlueprints();
           if (blueprints != null)
@@ -649,16 +649,16 @@ namespace PLVirtualMachine.Objects
 
     private void LoadFunctionals()
     {
-      if (this.functionalsLoaded)
+      if (functionalsLoaded)
         return;
       for (int index = 0; index < this.functionalComponents.Count; ++index)
         ((VMFunctionalComponent) this.functionalComponents[index]).OnAfterLoad();
-      if (this.events != null)
-        this.events.Clear();
-      if (this.functions != null)
-        this.functions.Clear();
-      Dictionary<string, IFunctionalComponent> functionalComponents = this.FunctionalComponents;
-      VMLogicObject.funcHashSet.Clear();
+      if (events != null)
+        events.Clear();
+      if (functions != null)
+        functions.Clear();
+      Dictionary<string, IFunctionalComponent> functionalComponents = FunctionalComponents;
+      funcHashSet.Clear();
       foreach (KeyValuePair<string, IFunctionalComponent> keyValuePair in functionalComponents)
       {
         VMFunctionalComponent functionalComponent = (VMFunctionalComponent) keyValuePair.Value;
@@ -668,26 +668,26 @@ namespace PLVirtualMachine.Objects
         for (int index = 0; index < engineEvents.Count; ++index)
         {
           IEvent @event = engineEvents[index];
-          if (this.events == null)
-            this.events = new List<IEvent>();
-          this.events.Add(@event);
+          if (events == null)
+            events = new List<IEvent>();
+          events.Add(@event);
         }
         List<BaseFunction> engineFunctions = functionalComponent.EngineFunctions;
         for (int index = 0; index < engineFunctions.Count; ++index)
         {
           BaseFunction baseFunction = engineFunctions[index];
-          if (this.functions == null)
-            this.functions = new List<BaseFunction>();
-          if (VMLogicObject.funcHashSet.Contains(baseFunction.Name))
-            Logger.AddError(string.Format("Function name {0} dublicated at {1}", (object) baseFunction.Name, (object) this.Name));
+          if (functions == null)
+            functions = new List<BaseFunction>();
+          if (funcHashSet.Contains(baseFunction.Name))
+            Logger.AddError(string.Format("Function name {0} dublicated at {1}", baseFunction.Name, Name));
           else
-            VMLogicObject.funcHashSet.Add(baseFunction.Name);
-          this.functions.Add(baseFunction);
+            funcHashSet.Add(baseFunction.Name);
+          functions.Add(baseFunction);
         }
       }
       if (functionalComponents.Count <= 0)
         return;
-      this.functionalsLoaded = true;
+      functionalsLoaded = true;
     }
   }
 }

@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace Engine.Impl.UI.Controls
+﻿namespace Engine.Impl.UI.Controls
 {
   public class SetHideableEventView : EventView
   {
@@ -11,9 +9,9 @@ namespace Engine.Impl.UI.Controls
 
     public override void Invoke()
     {
-      if (!((Object) this.view != (Object) null))
+      if (!((Object) view != (Object) null))
         return;
-      this.view.Visible = this.value;
+      view.Visible = value;
     }
   }
 }

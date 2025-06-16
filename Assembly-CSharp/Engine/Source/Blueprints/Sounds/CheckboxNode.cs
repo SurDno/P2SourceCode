@@ -11,6 +11,6 @@ namespace Engine.Source.Blueprints.Sounds
     private ValueInput<bool> valueInput;
 
     [Port("Value")]
-    private float Value() => this.valueInput.value ? 1f : 0.0f;
+    private float Value() => valueInput.value ? 1f : 0.0f;
   }
 }

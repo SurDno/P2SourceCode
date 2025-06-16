@@ -1,5 +1,5 @@
-﻿using ParadoxNotion.Design;
-using UnityEngine;
+﻿using System;
+using ParadoxNotion.Design;
 
 namespace FlowCanvas
 {
@@ -27,9 +27,9 @@ namespace FlowCanvas
 
     public int connections { get; set; }
 
-    public bool isConnected => this.connections > 0;
+    public bool isConnected => connections > 0;
 
-    public abstract System.Type type { get; }
+    public abstract Type type { get; }
 
     public bool CanAcceptConnections()
     {
@@ -40,7 +40,7 @@ namespace FlowCanvas
           num1 = 1;
           break;
         case FlowOutput _:
-          num1 = !this.isConnected ? 1 : 0;
+          num1 = !isConnected ? 1 : 0;
           break;
         default:
           num1 = 0;
@@ -55,7 +55,7 @@ namespace FlowCanvas
           num2 = 1;
           break;
         case ValueInput _:
-          num2 = !this.isConnected ? 1 : 0;
+          num2 = !isConnected ? 1 : 0;
           break;
         default:
           num2 = 0;

@@ -16,11 +16,11 @@
             Debug.Log((object) "ComputeAffinity , try disable ht");
             int numberOfCores = SystemInfoUtility.NumberOfCores;
             int logicalProcessors1 = SystemInfoUtility.NumberOfLogicalProcessors;
-            Debug.Log((object) ("ComputeAffinity , NumberOfCores : " + (object) numberOfCores));
-            Debug.Log((object) ("ComputeAffinity , NumberOfLogicalProcessors : " + (object) logicalProcessors1));
+            Debug.Log((object) ("ComputeAffinity , NumberOfCores : " + numberOfCores));
+            Debug.Log((object) ("ComputeAffinity , NumberOfLogicalProcessors : " + logicalProcessors1));
             if (ExternalSettingsInstance<ExternalOptimizationSettings>.Instance.MinAffinityCount > logicalProcessors1)
             {
-              Debug.Log((object) ("ComputeAffinity , min : " + (object) ExternalSettingsInstance<ExternalOptimizationSettings>.Instance.MinAffinityCount + " > current : " + (object) logicalProcessors1));
+              Debug.Log((object) ("ComputeAffinity , min : " + (object) ExternalSettingsInstance<ExternalOptimizationSettings>.Instance.MinAffinityCount + " > current : " + logicalProcessors1));
               break;
             }
             long num1 = 0;
@@ -38,10 +38,10 @@
             if (numberOfCores * 2 == logicalProcessors1)
             {
               Debug.Log((object) "ComputeAffinity , try compute x2");
-              for (long index = 0; index < (long) numberOfCores; ++index)
+              for (long index = 0; index < numberOfCores; ++index)
               {
                 long num2 = index * 2L + 1L;
-                num1 &= (long) ~(1 << (int) num2);
+                num1 &= ~(1 << (int) num2);
               }
               if (!AffinityUtility.SetAffinity(num1))
               {
@@ -61,7 +61,7 @@
           default:
             if (affinity > 0)
             {
-              Debug.Log((object) ("ComputeAffinity , try set value : " + (object) affinity));
+              Debug.Log((object) ("ComputeAffinity , try set value : " + affinity));
               int logicalProcessors2 = SystemInfoUtility.NumberOfLogicalProcessors;
               long num3 = 0;
               if (!AffinityUtility.GetAffinity(ref num3))
@@ -70,7 +70,7 @@
                 break;
               }
               Debug.Log((object) ("ComputeAffinity , current value : " + AffinityUtility.ToBinary(num3, logicalProcessors2)));
-              long num4 = (long) affinity;
+              long num4 = affinity;
               if (!AffinityUtility.SetAffinity(num4))
               {
                 Debug.LogError((object) "ComputeAffinity , Error invoke : SetAffinity");

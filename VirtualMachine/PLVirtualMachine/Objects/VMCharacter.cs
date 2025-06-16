@@ -1,9 +1,9 @@
-﻿using Cofe.Loggers;
+﻿using System.Xml;
+using Cofe.Loggers;
 using Engine.Common.Commons;
 using PLVirtualMachine.Common;
 using PLVirtualMachine.Common.Data;
 using PLVirtualMachine.Data;
-using System.Xml;
 using VirtualMachine.Common;
 using VirtualMachine.Common.Data;
 using VirtualMachine.Data;
@@ -16,56 +16,55 @@ namespace PLVirtualMachine.Objects
   {
     public override void EditorDataRead(XmlReader xml, IDataCreator creator, string typeContext)
     {
-      while (xml.Read())
-      {
+      while (xml.Read()) {
         if (xml.NodeType == XmlNodeType.Element)
         {
           switch (xml.Name)
           {
             case "ChildObjects":
-              this.gameObjects = EditorDataReadUtility.ReadReferenceList<IContainer>(xml, creator, this.gameObjects);
+              gameObjects = EditorDataReadUtility.ReadReferenceList(xml, creator, gameObjects);
               continue;
             case "CustomParams":
-              this.customParamsDict = EditorDataReadUtility.ReadStringReferenceDictionary<IParam>(xml, creator, this.customParamsDict);
+              customParamsDict = EditorDataReadUtility.ReadStringReferenceDictionary(xml, creator, customParamsDict);
               continue;
             case "EngineBaseTemplateID":
-              this.engineBaseTemplateID = EditorDataReadUtility.ReadValue(xml, this.engineBaseTemplateID);
+              engineBaseTemplateID = EditorDataReadUtility.ReadValue(xml, engineBaseTemplateID);
               continue;
             case "EngineTemplateID":
-              this.engineTemplateID = EditorDataReadUtility.ReadValue(xml, this.engineTemplateID);
+              engineTemplateID = EditorDataReadUtility.ReadValue(xml, engineTemplateID);
               continue;
             case "EventGraph":
-              this.stateGraph = EditorDataReadUtility.ReadReference<IFiniteStateMachine>(xml, creator);
+              stateGraph = EditorDataReadUtility.ReadReference<IFiniteStateMachine>(xml, creator);
               continue;
             case "Events":
-              this.customEventsList = EditorDataReadUtility.ReadReferenceList<IEvent>(xml, creator, this.customEventsList);
+              customEventsList = EditorDataReadUtility.ReadReferenceList(xml, creator, customEventsList);
               continue;
             case "FunctionalComponents":
-              this.functionalComponents = EditorDataReadUtility.ReadReferenceList<IFunctionalComponent>(xml, creator, this.functionalComponents);
+              functionalComponents = EditorDataReadUtility.ReadReferenceList(xml, creator, functionalComponents);
               continue;
             case "GameTimeContext":
-              this.gameTimeContext = EditorDataReadUtility.ReadReference<IGameMode>(xml, creator);
+              gameTimeContext = EditorDataReadUtility.ReadReference<IGameMode>(xml, creator);
               continue;
             case "InheritanceInfo":
-              this.baseBlueprints = EditorDataReadUtility.ReadReferenceList<IBlueprint>(xml, creator, this.baseBlueprints);
+              baseBlueprints = EditorDataReadUtility.ReadReferenceList(xml, creator, baseBlueprints);
               continue;
             case "Instantiated":
-              this.isInstantiated = EditorDataReadUtility.ReadValue(xml, this.isInstantiated);
+              isInstantiated = EditorDataReadUtility.ReadValue(xml, isInstantiated);
               continue;
             case "Name":
-              this.name = EditorDataReadUtility.ReadValue(xml, this.name);
+              name = EditorDataReadUtility.ReadValue(xml, name);
               continue;
             case "Parent":
-              this.parent = EditorDataReadUtility.ReadReference<IContainer>(xml, creator);
+              parent = EditorDataReadUtility.ReadReference<IContainer>(xml, creator);
               continue;
             case "StandartParams":
-              this.standartParamsDict = EditorDataReadUtility.ReadStringReferenceDictionary<IParam>(xml, creator, this.standartParamsDict);
+              standartParamsDict = EditorDataReadUtility.ReadStringReferenceDictionary(xml, creator, standartParamsDict);
               continue;
             case "Static":
-              this.isStatic = EditorDataReadUtility.ReadValue(xml, this.isStatic);
+              isStatic = EditorDataReadUtility.ReadValue(xml, isStatic);
               continue;
             case "WorldPositionGuid":
-              this.worldPositionGuid = EditorDataReadUtility.ReadValue(xml, this.worldPositionGuid);
+              worldPositionGuid = EditorDataReadUtility.ReadValue(xml, worldPositionGuid);
               continue;
             default:
               if (XMLDataLoader.Logs.Add(typeContext + " : " + xml.Name))
@@ -74,7 +73,8 @@ namespace PLVirtualMachine.Objects
               continue;
           }
         }
-        else if (xml.NodeType == XmlNodeType.EndElement)
+
+        if (xml.NodeType == XmlNodeType.EndElement)
           break;
       }
     }

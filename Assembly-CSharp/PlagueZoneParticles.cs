@@ -1,7 +1,6 @@
 ﻿using Engine.Common;
 using Engine.Common.Services;
 using Engine.Source.Commons;
-using UnityEngine;
 
 public class PlagueZoneParticles : MonoBehaviour, IUpdatable
 {
@@ -15,12 +14,12 @@ public class PlagueZoneParticles : MonoBehaviour, IUpdatable
 
   private void Awake()
   {
-    InstanceByRequest<UpdateService>.Instance.PlagueZoneUpdater.AddUpdatable((IUpdatable) this);
+    InstanceByRequest<UpdateService>.Instance.PlagueZoneUpdater.AddUpdatable(this);
   }
 
   private void OnDestroy()
   {
-    InstanceByRequest<UpdateService>.Instance.PlagueZoneUpdater.RemoveUpdatable((IUpdatable) this);
+    InstanceByRequest<UpdateService>.Instance.PlagueZoneUpdater.RemoveUpdatable(this);
   }
 
   public void ComputeUpdate()
@@ -28,12 +27,12 @@ public class PlagueZoneParticles : MonoBehaviour, IUpdatable
     float num = 0.0f;
     Vector3 position = this.transform.position;
     position.y += 100f;
-    if (!Physics.Raycast(position, Vector3.down, 100f, (int) this.collisionLayers, QueryTriggerInteraction.Ignore))
+    if (!Physics.Raycast(position, Vector3.down, 100f, (int) collisionLayers, QueryTriggerInteraction.Ignore))
       num = PlagueZone.GetLevel(new Vector2(this.transform.position.x, this.transform.position.z));
-    if ((double) this.prevLevel == (double) num)
+    if (prevLevel == (double) num)
       return;
-    this.prevLevel = num;
-    this.particleSystem2.emission.rateOverTime = new ParticleSystem.MinMaxCurve(this.maxRate * num);
+    prevLevel = num;
+    particleSystem2.emission.rateOverTime = new ParticleSystem.MinMaxCurve(maxRate * num);
     ServiceCache.OptimizationService.FrameHasSpike = true;
   }
 }

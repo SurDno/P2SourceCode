@@ -1,15 +1,15 @@
-﻿using Cofe.Loggers;
-using Cofe.Serializations.Data;
-using PLVirtualMachine.Common.Serialization;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Xml;
+using Cofe.Loggers;
+using Cofe.Serializations.Data;
+using PLVirtualMachine.Common.Serialization;
 
 namespace PLVirtualMachine.Dynamic
 {
   public class RaisedEventInfo : ISerializeStateSave, IDynamicLoadSerializable
   {
-    private HashSet<OwnHashInfo> hashHistory = new HashSet<OwnHashInfo>((IEqualityComparer<OwnHashInfo>) OwnHashInfoEqualityComparer.Instance);
+    private HashSet<OwnHashInfo> hashHistory = new HashSet<OwnHashInfo>(OwnHashInfoEqualityComparer.Instance);
     private int historyIteration;
     private DynamicEvent eventInstance;
     private List<EventMessage> messagesList = new List<EventMessage>();
@@ -22,32 +22,32 @@ namespace PLVirtualMachine.Dynamic
 
     public RaisedEventInfo(DynamicEvent evnt, List<EventMessage> messages, Guid sendingFsmGuid)
     {
-      this.eventInstance = evnt;
+      eventInstance = evnt;
       for (int index = 0; index < messages.Count; ++index)
       {
         EventMessage eventMessage = new EventMessage();
         eventMessage.Copy(messages[index]);
-        this.messagesList.Add(eventMessage);
+        messagesList.Add(eventMessage);
       }
-      this.sendingFSMGuid = sendingFsmGuid;
+      sendingFSMGuid = sendingFsmGuid;
     }
 
     public RaisedEventInfo(DynamicEvent evnt)
     {
-      this.eventInstance = evnt;
-      this.sendingFSMGuid = Guid.Empty;
+      eventInstance = evnt;
+      sendingFSMGuid = Guid.Empty;
     }
 
     public DynamicFSM OwnerFSM
     {
-      get => this.eventInstance != null ? this.eventInstance.OwnerFSM : (DynamicFSM) null;
+      get => eventInstance != null ? eventInstance.OwnerFSM : null;
     }
 
-    public DynamicEvent Instance => this.eventInstance;
+    public DynamicEvent Instance => eventInstance;
 
-    public List<EventMessage> Messages => this.messagesList;
+    public List<EventMessage> Messages => messagesList;
 
-    public Guid SendingFSMGuid => this.sendingFSMGuid;
+    public Guid SendingFSMGuid => sendingFSMGuid;
 
     public void StateSave(IDataWriter writer)
     {
@@ -61,37 +61,37 @@ namespace PLVirtualMachine.Dynamic
     {
       if (parentEventInfo != null)
       {
-        this.hashHistory.Clear();
+        hashHistory.Clear();
         foreach (OwnHashInfo ownHashInfo in parentEventInfo.GetHashHistory())
-          this.hashHistory.Add(ownHashInfo);
-        this.historyIteration = parentEventInfo.GetHistoryIteration();
+          hashHistory.Add(ownHashInfo);
+        historyIteration = parentEventInfo.GetHistoryIteration();
       }
-      if (!this.hashHistory.Add(this.GetOwnHash()) && this.historyIteration > RaisedEventInfo.EVENTS_CIRCULATION_ITERATIONS_COUNT_MAX)
+      if (!hashHistory.Add(GetOwnHash()) && historyIteration > EVENTS_CIRCULATION_ITERATIONS_COUNT_MAX)
       {
-        Logger.AddError(string.Format("Events sequence circulation detected! Event {0} at {1}", (object) this.eventInstance.Name, (object) DynamicFSM.CurrentStateInfo));
+        Logger.AddError(string.Format("Events sequence circulation detected! Event {0} at {1}", eventInstance.Name, DynamicFSM.CurrentStateInfo));
         return false;
       }
-      ++this.historyIteration;
+      ++historyIteration;
       return true;
     }
 
-    public HashSet<OwnHashInfo> GetHashHistory() => this.hashHistory;
+    public HashSet<OwnHashInfo> GetHashHistory() => hashHistory;
 
-    public int GetHistoryIteration() => this.historyIteration;
+    public int GetHistoryIteration() => historyIteration;
 
     private OwnHashInfo GetOwnHash()
     {
-      if (this.eventInstance == null)
+      if (eventInstance == null)
       {
-        Logger.AddError(string.Format("Invalid event info raising at {0}!", (object) DynamicFSM.CurrentStateInfo));
+        Logger.AddError(string.Format("Invalid event info raising at {0}!", DynamicFSM.CurrentStateInfo));
         return OwnHashInfo.Empty;
       }
-      Guid dynamicGuid = this.eventInstance.OwnerFSM.DynamicGuid;
+      Guid dynamicGuid = eventInstance.OwnerFSM.DynamicGuid;
       ulong num = 0;
-      if (this.eventInstance.StaticEvent != null)
-        num = this.eventInstance.StaticEvent.BaseGuid;
+      if (eventInstance.StaticEvent != null)
+        num = eventInstance.StaticEvent.BaseGuid;
       long eventId = (long) num;
-      Guid sendingFsmGuid = this.sendingFSMGuid;
+      Guid sendingFsmGuid = sendingFSMGuid;
       return new OwnHashInfo(dynamicGuid, (ulong) eventId, sendingFsmGuid);
     }
   }

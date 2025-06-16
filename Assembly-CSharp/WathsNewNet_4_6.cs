@@ -4,18 +4,18 @@ public class WathsNewNet_4_6
 {
   private bool TestProperty { get; set; } = true;
 
-  private void StringFormat() => string.Format("Строка с захватом переменных {0}", (object) 1);
+  private void StringFormat() => string.Format("Строка с захватом переменных {0}", 1);
 
   private event Action Event;
 
   private void NullOperator()
   {
-    if (this.Event != null)
-      this.Event();
-    Action action = this.Event;
+    if (Event != null)
+      Event();
+    Action action = Event;
     if (action != null)
       action();
-    WathsNewNet_4_6.TestClass testClass = (WathsNewNet_4_6.TestClass) null;
+    TestClass testClass = null;
     object obj = testClass?.Value;
     obj = testClass?.Value;
   }

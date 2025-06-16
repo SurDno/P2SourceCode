@@ -2,7 +2,7 @@
 
 namespace PLVirtualMachine.Common.EngineAPI.VMECS.VMAttributes
 {
-  [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
+  [AttributeUsage(AttributeTargets.Method, Inherited = false)]
   public class MethodAttribute : Attribute
   {
     public readonly string Name;
@@ -11,9 +11,9 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS.VMAttributes
 
     public MethodAttribute(string name, string inputSpecialInfo, string outputSpecialInfo)
     {
-      this.Name = name;
-      this.InputTypesSpecialInfo = inputSpecialInfo;
-      this.OutputTypesSpecialInfo = outputSpecialInfo;
+      Name = name;
+      InputTypesSpecialInfo = inputSpecialInfo;
+      OutputTypesSpecialInfo = outputSpecialInfo;
     }
   }
 }

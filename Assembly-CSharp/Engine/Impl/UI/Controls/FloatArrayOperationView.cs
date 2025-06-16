@@ -1,13 +1,11 @@
-﻿using UnityEngine;
-
-namespace Engine.Impl.UI.Controls
+﻿namespace Engine.Impl.UI.Controls
 {
   public class FloatArrayOperationView : FloatArrayView
   {
     [SerializeField]
     private float a;
     [SerializeField]
-    private FloatArrayOperationView.OperationEnum operation;
+    private OperationEnum operation;
     [SerializeField]
     private float b;
     [SerializeField]
@@ -18,10 +16,10 @@ namespace Engine.Impl.UI.Controls
       switch (index)
       {
         case 0:
-          value = this.a;
+          value = a;
           break;
         case 1:
-          value = this.b;
+          value = b;
           break;
         default:
           value = 0.0f;
@@ -34,44 +32,43 @@ namespace Engine.Impl.UI.Controls
       switch (index)
       {
         case 0:
-          this.SetValue(ref this.a, value);
+          SetValue(ref a, value);
           break;
         case 1:
-          this.SetValue(ref this.b, value);
+          SetValue(ref b, value);
           break;
       }
     }
 
-    private void OnValidate() => this.ApplyValues();
+    private void OnValidate() => ApplyValues();
 
     private void SetValue(ref float field, float value)
     {
-      if ((double) field == (double) value)
+      if (field == (double) value)
         return;
       field = value;
-      this.ApplyValues();
+      ApplyValues();
     }
 
     private void ApplyValues()
     {
-      if (!((Object) this.resultView != (Object) null))
+      if (!((Object) resultView != (Object) null))
         return;
-      switch (this.operation)
+      switch (operation)
       {
-        case FloatArrayOperationView.OperationEnum.Add:
-          this.resultView.FloatValue = this.a + this.b;
+        case OperationEnum.Add:
+          resultView.FloatValue = a + b;
           break;
-        case FloatArrayOperationView.OperationEnum.Subtract:
-          this.resultView.FloatValue = this.a - this.b;
+        case OperationEnum.Subtract:
+          resultView.FloatValue = a - b;
           break;
-        case FloatArrayOperationView.OperationEnum.Multiply:
-          this.resultView.FloatValue = this.a * this.b;
+        case OperationEnum.Multiply:
+          resultView.FloatValue = a * b;
           break;
-        case FloatArrayOperationView.OperationEnum.Divide:
-          if ((double) this.b != 0.0)
+        case OperationEnum.Divide:
+          if (b != 0.0)
           {
-            this.resultView.FloatValue = this.a / this.b;
-            break;
+            resultView.FloatValue = a / b;
           }
           break;
       }
@@ -79,9 +76,9 @@ namespace Engine.Impl.UI.Controls
 
     public override void SkipAnimation()
     {
-      if (!((Object) this.resultView != (Object) null))
+      if (!((Object) resultView != (Object) null))
         return;
-      this.resultView.SkipAnimation();
+      resultView.SkipAnimation();
     }
 
     private enum OperationEnum

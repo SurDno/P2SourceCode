@@ -1,11 +1,10 @@
-﻿using Engine.Common.Services;
+﻿using System.Collections;
+using Engine.Common.Services;
 using Engine.Source.Services;
 using Engine.Source.Services.Saves;
 using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
-using System.Collections;
-using UnityEngine;
 
 namespace Engine.Source.Blueprints
 {
@@ -16,7 +15,7 @@ namespace Engine.Source.Blueprints
     private FlowOutput output;
 
     [Port("In")]
-    private void In() => CoroutineService.Instance.Route(this.Save(this.output));
+    private void In() => CoroutineService.Instance.Route(Save(output));
 
     private IEnumerator Save(FlowOutput output)
     {

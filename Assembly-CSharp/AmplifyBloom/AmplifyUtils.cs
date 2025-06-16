@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using UnityEngine;
 
 namespace AmplifyBloom
 {
@@ -41,14 +40,14 @@ namespace AmplifyBloom
     public static FilterMode CurrentFilterMode = FilterMode.Bilinear;
     public static TextureWrapMode CurrentWrapMode = TextureWrapMode.Clamp;
     public static RenderTextureReadWrite CurrentReadWriteMode = RenderTextureReadWrite.sRGB;
-    public static bool IsInitialized = false;
+    public static bool IsInitialized;
     private static List<RenderTexture> _allocatedRT = new List<RenderTexture>();
 
     public static void InitializeIds()
     {
-      AmplifyUtils.IsInitialized = true;
-      AmplifyUtils.MaskTextureId = Shader.PropertyToID("_MaskTex");
-      AmplifyUtils.MipResultsRTS = new int[6]
+      IsInitialized = true;
+      MaskTextureId = Shader.PropertyToID("_MaskTex");
+      MipResultsRTS = new int[6]
       {
         Shader.PropertyToID("_MipResultsRTS0"),
         Shader.PropertyToID("_MipResultsRTS1"),
@@ -57,7 +56,7 @@ namespace AmplifyBloom
         Shader.PropertyToID("_MipResultsRTS4"),
         Shader.PropertyToID("_MipResultsRTS5")
       };
-      AmplifyUtils.AnamorphicRTS = new int[8]
+      AnamorphicRTS = new int[8]
       {
         Shader.PropertyToID("_AnamorphicRTS0"),
         Shader.PropertyToID("_AnamorphicRTS1"),
@@ -68,21 +67,21 @@ namespace AmplifyBloom
         Shader.PropertyToID("_AnamorphicRTS6"),
         Shader.PropertyToID("_AnamorphicRTS7")
       };
-      AmplifyUtils.AnamorphicGlareWeightsMatStr = new int[4]
+      AnamorphicGlareWeightsMatStr = new int[4]
       {
         Shader.PropertyToID("_AnamorphicGlareWeightsMat0"),
         Shader.PropertyToID("_AnamorphicGlareWeightsMat1"),
         Shader.PropertyToID("_AnamorphicGlareWeightsMat2"),
         Shader.PropertyToID("_AnamorphicGlareWeightsMat3")
       };
-      AmplifyUtils.AnamorphicGlareOffsetsMatStr = new int[4]
+      AnamorphicGlareOffsetsMatStr = new int[4]
       {
         Shader.PropertyToID("_AnamorphicGlareOffsetsMat0"),
         Shader.PropertyToID("_AnamorphicGlareOffsetsMat1"),
         Shader.PropertyToID("_AnamorphicGlareOffsetsMat2"),
         Shader.PropertyToID("_AnamorphicGlareOffsetsMat3")
       };
-      AmplifyUtils.AnamorphicGlareWeightsStr = new int[16]
+      AnamorphicGlareWeightsStr = new int[16]
       {
         Shader.PropertyToID("_AnamorphicGlareWeights0"),
         Shader.PropertyToID("_AnamorphicGlareWeights1"),
@@ -101,7 +100,7 @@ namespace AmplifyBloom
         Shader.PropertyToID("_AnamorphicGlareWeights14"),
         Shader.PropertyToID("_AnamorphicGlareWeights15")
       };
-      AmplifyUtils.UpscaleWeightsStr = new int[8]
+      UpscaleWeightsStr = new int[8]
       {
         Shader.PropertyToID("_UpscaleWeights0"),
         Shader.PropertyToID("_UpscaleWeights1"),
@@ -112,7 +111,7 @@ namespace AmplifyBloom
         Shader.PropertyToID("_UpscaleWeights6"),
         Shader.PropertyToID("_UpscaleWeights7")
       };
-      AmplifyUtils.LensDirtWeightsStr = new int[8]
+      LensDirtWeightsStr = new int[8]
       {
         Shader.PropertyToID("_LensDirtWeights0"),
         Shader.PropertyToID("_LensDirtWeights1"),
@@ -123,7 +122,7 @@ namespace AmplifyBloom
         Shader.PropertyToID("_LensDirtWeights6"),
         Shader.PropertyToID("_LensDirtWeights7")
       };
-      AmplifyUtils.LensStarburstWeightsStr = new int[8]
+      LensStarburstWeightsStr = new int[8]
       {
         Shader.PropertyToID("_LensStarburstWeights0"),
         Shader.PropertyToID("_LensStarburstWeights1"),
@@ -134,25 +133,25 @@ namespace AmplifyBloom
         Shader.PropertyToID("_LensStarburstWeights6"),
         Shader.PropertyToID("_LensStarburstWeights7")
       };
-      AmplifyUtils.BloomRangeId = Shader.PropertyToID("_BloomRange");
-      AmplifyUtils.LensDirtStrengthId = Shader.PropertyToID("_LensDirtStrength");
-      AmplifyUtils.BloomParamsId = Shader.PropertyToID("_BloomParams");
-      AmplifyUtils.TempFilterValueId = Shader.PropertyToID("_TempFilterValue");
-      AmplifyUtils.LensFlareStarMatrixId = Shader.PropertyToID("_LensFlareStarMatrix");
-      AmplifyUtils.LensFlareStarburstStrengthId = Shader.PropertyToID("_LensFlareStarburstStrength");
-      AmplifyUtils.LensFlareGhostsParamsId = Shader.PropertyToID("_LensFlareGhostsParams");
-      AmplifyUtils.LensFlareLUTId = Shader.PropertyToID("_LensFlareLUT");
-      AmplifyUtils.LensFlareHaloParamsId = Shader.PropertyToID("_LensFlareHaloParams");
-      AmplifyUtils.LensFlareGhostChrDistortionId = Shader.PropertyToID("_LensFlareGhostChrDistortion");
-      AmplifyUtils.LensFlareHaloChrDistortionId = Shader.PropertyToID("_LensFlareHaloChrDistortion");
-      AmplifyUtils.BokehParamsId = Shader.PropertyToID("_BokehParams");
-      AmplifyUtils.BlurRadiusId = Shader.PropertyToID("_BlurRadius");
-      AmplifyUtils.LensStarburstRTId = Shader.PropertyToID("_LensStarburst");
-      AmplifyUtils.LensDirtRTId = Shader.PropertyToID("_LensDirt");
-      AmplifyUtils.LensFlareRTId = Shader.PropertyToID("_LensFlare");
-      AmplifyUtils.LensGlareRTId = Shader.PropertyToID("_LensGlare");
-      AmplifyUtils.SourceContributionId = Shader.PropertyToID("_SourceContribution");
-      AmplifyUtils.UpscaleContributionId = Shader.PropertyToID("_UpscaleContribution");
+      BloomRangeId = Shader.PropertyToID("_BloomRange");
+      LensDirtStrengthId = Shader.PropertyToID("_LensDirtStrength");
+      BloomParamsId = Shader.PropertyToID("_BloomParams");
+      TempFilterValueId = Shader.PropertyToID("_TempFilterValue");
+      LensFlareStarMatrixId = Shader.PropertyToID("_LensFlareStarMatrix");
+      LensFlareStarburstStrengthId = Shader.PropertyToID("_LensFlareStarburstStrength");
+      LensFlareGhostsParamsId = Shader.PropertyToID("_LensFlareGhostsParams");
+      LensFlareLUTId = Shader.PropertyToID("_LensFlareLUT");
+      LensFlareHaloParamsId = Shader.PropertyToID("_LensFlareHaloParams");
+      LensFlareGhostChrDistortionId = Shader.PropertyToID("_LensFlareGhostChrDistortion");
+      LensFlareHaloChrDistortionId = Shader.PropertyToID("_LensFlareHaloChrDistortion");
+      BokehParamsId = Shader.PropertyToID("_BokehParams");
+      BlurRadiusId = Shader.PropertyToID("_BlurRadius");
+      LensStarburstRTId = Shader.PropertyToID("_LensStarburst");
+      LensDirtRTId = Shader.PropertyToID("_LensDirt");
+      LensFlareRTId = Shader.PropertyToID("_LensFlare");
+      LensGlareRTId = Shader.PropertyToID("_LensGlare");
+      SourceContributionId = Shader.PropertyToID("_SourceContribution");
+      UpscaleContributionId = Shader.PropertyToID("_UpscaleContribution");
     }
 
     public static void DebugLog(string value, LogType type)
@@ -160,29 +159,29 @@ namespace AmplifyBloom
       switch (type)
       {
         case LogType.Normal:
-          Debug.Log((object) (AmplifyUtils.DebugStr + value));
+          Debug.Log((object) (DebugStr + value));
           break;
         case LogType.Warning:
-          Debug.LogWarning((object) (AmplifyUtils.DebugStr + value));
+          Debug.LogWarning((object) (DebugStr + value));
           break;
         case LogType.Error:
-          Debug.LogError((object) (AmplifyUtils.DebugStr + value));
+          Debug.LogError((object) (DebugStr + value));
           break;
       }
     }
 
     public static RenderTexture GetTempRenderTarget(int width, int height)
     {
-      RenderTexture temporary = RenderTexture.GetTemporary(width, height, 0, AmplifyUtils.CurrentRTFormat, AmplifyUtils.CurrentReadWriteMode);
-      temporary.filterMode = AmplifyUtils.CurrentFilterMode;
-      temporary.wrapMode = AmplifyUtils.CurrentWrapMode;
-      AmplifyUtils._allocatedRT.Add(temporary);
+      RenderTexture temporary = RenderTexture.GetTemporary(width, height, 0, CurrentRTFormat, CurrentReadWriteMode);
+      temporary.filterMode = CurrentFilterMode;
+      temporary.wrapMode = CurrentWrapMode;
+      _allocatedRT.Add(temporary);
       return temporary;
     }
 
     public static void ReleaseTempRenderTarget(RenderTexture renderTarget)
     {
-      if (!((Object) renderTarget != (Object) null) || !AmplifyUtils._allocatedRT.Remove(renderTarget))
+      if (!((Object) renderTarget != (Object) null) || !_allocatedRT.Remove(renderTarget))
         return;
       renderTarget.DiscardContents();
       RenderTexture.ReleaseTemporary(renderTarget);
@@ -190,12 +189,12 @@ namespace AmplifyBloom
 
     public static void ReleaseAllRT()
     {
-      for (int index = 0; index < AmplifyUtils._allocatedRT.Count; ++index)
+      for (int index = 0; index < _allocatedRT.Count; ++index)
       {
-        AmplifyUtils._allocatedRT[index].DiscardContents();
-        RenderTexture.ReleaseTemporary(AmplifyUtils._allocatedRT[index]);
+        _allocatedRT[index].DiscardContents();
+        RenderTexture.ReleaseTemporary(_allocatedRT[index]);
       }
-      AmplifyUtils._allocatedRT.Clear();
+      _allocatedRT.Clear();
     }
 
     public static void EnsureKeywordEnabled(Material mat, string keyword, bool state)

@@ -14,26 +14,26 @@ namespace PLVirtualMachine.Dynamic.Components
     {
       IParam obj1;
       if (((IBlueprint) templateObject).TryGetProperty("Storable.StorableClass", out obj1))
-        this.StorableClass = (string) obj1.Value;
+        StorableClass = (string) obj1.Value;
       IParam obj2;
       if (((IBlueprint) templateObject).TryGetProperty("Storable.StoreTag", out obj2))
-        this.StoreTag = (string) obj2.Value;
+        StoreTag = (string) obj2.Value;
       IParam obj3;
       if (((IBlueprint) templateObject).TryGetProperty("Storable.DefaultStackCount", out obj3))
-        this.DefaultStackCount = (int) obj3.Value;
+        DefaultStackCount = (int) obj3.Value;
       IParam obj4;
       if (((IBlueprint) templateObject).TryGetProperty("Storable.Title", out obj4))
-        this.Title = (ITextRef) obj4.Value;
+        Title = (ITextRef) obj4.Value;
       IParam obj5;
       if (((IBlueprint) templateObject).TryGetProperty("Storable.Tooltip", out obj5))
-        this.Tooltip = (ITextRef) obj5.Value;
+        Tooltip = (ITextRef) obj5.Value;
       IParam obj6;
       if (((IBlueprint) templateObject).TryGetProperty("Storable.Description", out obj6))
-        this.Description = (ITextRef) obj6.Value;
+        Description = (ITextRef) obj6.Value;
       IParam obj7;
       if (!((IBlueprint) templateObject).TryGetProperty("Storable.SpecialDescription", out obj7))
         return;
-      this.SpecialDescription = (ITextRef) obj7.Value;
+      SpecialDescription = (ITextRef) obj7.Value;
     }
 
     public void InitialiseEvent(DynamicEvent target)

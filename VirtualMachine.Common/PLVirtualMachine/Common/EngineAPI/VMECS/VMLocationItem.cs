@@ -1,8 +1,8 @@
-﻿using Cofe.Loggers;
+﻿using System;
+using Cofe.Loggers;
 using Engine.Common;
 using Engine.Common.Components;
 using PLVirtualMachine.Common.EngineAPI.VMECS.VMAttributes;
-using System;
 
 namespace PLVirtualMachine.Common.EngineAPI.VMECS
 {
@@ -22,9 +22,9 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
     {
       get
       {
-        if (this.Component != null)
-          return this.Component.IsHibernation;
-        Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", (object) this.Name, (object) this.Parent.Name));
+        if (Component != null)
+          return Component.IsHibernation;
+        Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", Name, Parent.Name));
         return false;
       }
     }
@@ -34,9 +34,9 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
     {
       get
       {
-        if (this.Component != null)
-          return this.Component.IsIndoor;
-        Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", (object) this.Name, (object) this.Parent.Name));
+        if (Component != null)
+          return Component.IsIndoor;
+        Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", Name, Parent.Name));
         return false;
       }
     }
@@ -46,35 +46,35 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
     {
       get
       {
-        if (this.Component == null)
+        if (Component == null)
         {
-          Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", (object) this.Name, (object) this.Parent.Name));
-          return (IEntity) null;
+          Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", Name, Parent.Name));
+          return null;
         }
-        return this.Component.LogicLocation == null ? (IEntity) null : this.Component.LogicLocation.Owner;
+        return Component.LogicLocation == null ? null : Component.LogicLocation.Owner;
       }
     }
 
     public override void Clear()
     {
-      if (!this.InstanceValid)
+      if (!InstanceValid)
         return;
-      this.Component.OnHibernationChanged -= new Action<ILocationItemComponent>(this.FireHibernationChanged);
-      this.Component.OnChangeLocation -= new Action<ILocationItemComponent, ILocationComponent>(this.FireChangeLocation);
+      Component.OnHibernationChanged -= FireHibernationChanged;
+      Component.OnChangeLocation -= FireChangeLocation;
       base.Clear();
     }
 
     protected override void Init()
     {
-      if (this.IsTemplate)
+      if (IsTemplate)
         return;
-      this.Component.OnHibernationChanged += new Action<ILocationItemComponent>(this.FireHibernationChanged);
-      this.Component.OnChangeLocation += new Action<ILocationItemComponent, ILocationComponent>(this.FireChangeLocation);
+      Component.OnHibernationChanged += FireHibernationChanged;
+      Component.OnChangeLocation += FireChangeLocation;
     }
 
     private void FireHibernationChanged(ILocationItemComponent sender)
     {
-      Action changeHibernation = this.OnChangeHibernation;
+      Action changeHibernation = OnChangeHibernation;
       if (changeHibernation == null)
         return;
       changeHibernation();
@@ -82,7 +82,7 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
 
     private void FireChangeLocation(ILocationItemComponent sender, ILocationComponent location)
     {
-      Action<IEntity> onChangeLocation = this.OnChangeLocation;
+      Action<IEntity> onChangeLocation = OnChangeLocation;
       if (onChangeLocation == null)
         return;
       onChangeLocation(location?.Owner);

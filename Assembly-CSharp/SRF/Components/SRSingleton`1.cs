@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using UnityEngine;
 
 namespace SRF.Components
 {
@@ -12,38 +11,38 @@ namespace SRF.Components
     {
       [DebuggerStepThrough] get
       {
-        return !((UnityEngine.Object) SRSingleton<T>._instance == (UnityEngine.Object) null) ? SRSingleton<T>._instance : throw new InvalidOperationException("No instance of {0} present in scene".Fmt((object) typeof (T).Name));
+        return !((UnityEngine.Object) _instance == (UnityEngine.Object) null) ? _instance : throw new InvalidOperationException("No instance of {0} present in scene".Fmt(typeof (T).Name));
       }
     }
 
     public static bool HasInstance
     {
-      [DebuggerStepThrough] get => (UnityEngine.Object) SRSingleton<T>._instance != (UnityEngine.Object) null;
+      [DebuggerStepThrough] get => (UnityEngine.Object) _instance != (UnityEngine.Object) null;
     }
 
     private void Register()
     {
-      if ((UnityEngine.Object) SRSingleton<T>._instance != (UnityEngine.Object) null)
+      if ((UnityEngine.Object) _instance != (UnityEngine.Object) null)
       {
-        UnityEngine.Debug.LogWarning((object) "More than one singleton object of type {0} exists.".Fmt((object) typeof (T).Name));
+        UnityEngine.Debug.LogWarning((object) "More than one singleton object of type {0} exists.".Fmt(typeof (T).Name));
         if (this.GetComponents<Component>().Length == 2)
-          UnityEngine.Object.Destroy((UnityEngine.Object) this.gameObject);
+          UnityEngine.Object.Destroy((UnityEngine.Object) gameObject);
         else
           UnityEngine.Object.Destroy((UnityEngine.Object) this);
       }
       else
-        SRSingleton<T>._instance = (T) this;
+        _instance = (T) this;
     }
 
-    protected virtual void Awake() => this.Register();
+    protected virtual void Awake() => Register();
 
     protected virtual void OnEnable()
     {
-      if (!((UnityEngine.Object) SRSingleton<T>._instance == (UnityEngine.Object) null))
+      if (!((UnityEngine.Object) _instance == (UnityEngine.Object) null))
         return;
-      this.Register();
+      Register();
     }
 
-    private void OnApplicationQuit() => SRSingleton<T>._instance = default (T);
+    private void OnApplicationQuit() => _instance = default (T);
   }
 }

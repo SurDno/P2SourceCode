@@ -1,6 +1,6 @@
-﻿using Cofe.Utility;
+﻿using System;
+using Cofe.Utility;
 using Inspectors;
-using System;
 
 namespace Engine.Source.Connections
 {
@@ -10,10 +10,10 @@ namespace Engine.Source.Connections
     private string name;
 
     [Inspected]
-    public Guid Id => this.id;
+    public Guid Id => id;
 
     [Inspected]
-    public string Name => this.name;
+    public string Name => name;
 
     public UnitySubAsset(Guid id, string name)
     {
@@ -21,13 +21,13 @@ namespace Engine.Source.Connections
       this.name = name;
     }
 
-    public T Value => UnityAssetUtility.GetValue<T>(this.id, this.name);
+    public T Value => UnityAssetUtility.GetValue<T>(id, name);
 
     public override int GetHashCode()
     {
-      int hashCode = this.id.GetHashCode();
-      if (!this.name.IsNullOrEmpty())
-        hashCode ^= this.name.GetHashCode();
+      int hashCode = id.GetHashCode();
+      if (!name.IsNullOrEmpty())
+        hashCode ^= name.GetHashCode();
       return hashCode;
     }
 

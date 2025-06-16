@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-[ExecuteInEditMode]
+﻿[ExecuteInEditMode]
 [RequireComponent(typeof (Camera))]
 [AddComponentMenu("Time of Day/Camera Atmospheric Scattering")]
 public class TOD_Scattering : TOD_ImageEffect
@@ -19,52 +17,52 @@ public class TOD_Scattering : TOD_ImageEffect
 
   protected void OnEnable()
   {
-    if (!(bool) (Object) this.ScatteringShader)
-      this.ScatteringShader = Shader.Find("Hidden/Time of Day/Scattering");
-    this.scatteringMaterial = this.CreateMaterial(this.ScatteringShader);
+    if (!(bool) (Object) ScatteringShader)
+      ScatteringShader = Shader.Find("Hidden/Time of Day/Scattering");
+    scatteringMaterial = CreateMaterial(ScatteringShader);
   }
 
   protected void OnDisable()
   {
-    if (!(bool) (Object) this.scatteringMaterial)
+    if (!(bool) (Object) scatteringMaterial)
       return;
-    Object.DestroyImmediate((Object) this.scatteringMaterial);
+    Object.DestroyImmediate((Object) scatteringMaterial);
   }
 
   protected void OnPreCull()
   {
-    if (!(bool) (Object) this.sky || !this.sky.Initialized)
+    if (!(bool) (Object) sky || !sky.Initialized)
       return;
-    this.sky.Components.AtmosphereRenderer.enabled = false;
+    sky.Components.AtmosphereRenderer.enabled = false;
   }
 
   protected void OnPostRender()
   {
-    if (!(bool) (Object) this.sky || !this.sky.Initialized)
+    if (!(bool) (Object) sky || !sky.Initialized)
       return;
-    this.sky.Components.AtmosphereRenderer.enabled = true;
+    sky.Components.AtmosphereRenderer.enabled = true;
   }
 
   [ImageEffectOpaque]
   protected void OnRenderImage(RenderTexture source, RenderTexture destination)
   {
-    if (!this.CheckSupport(true))
+    if (!CheckSupport(true))
     {
       Graphics.Blit((Texture) source, destination);
     }
     else
     {
-      this.sky.Components.Scattering = this;
-      float heightFalloff = this.HeightFalloff;
-      float y = Mathf.Exp((float) (-(double) heightFalloff * ((double) this.cam.transform.position.y - (double) this.ZeroLevel)));
-      float globalDensity = this.GlobalDensity;
+      sky.Components.Scattering = this;
+      float heightFalloff = HeightFalloff;
+      float y = Mathf.Exp((float) (-(double) heightFalloff * ((double) cam.transform.position.y - ZeroLevel)));
+      float globalDensity = GlobalDensity;
       RenderSettings.fog = true;
       RenderSettings.fogMode = FogMode.Exponential;
-      RenderSettings.fogDensity = globalDensity * this.TransparentDensityMultiplier;
-      this.scatteringMaterial.SetMatrix("_FrustumCornersWS", this.FrustumCorners());
-      this.scatteringMaterial.SetTexture("_DitheringTexture", (Texture) this.DitheringTexture);
-      this.scatteringMaterial.SetVector("_Density", new Vector4(heightFalloff, y, globalDensity, this.StartDistance));
-      this.CustomBlit(source, destination, this.scatteringMaterial);
+      RenderSettings.fogDensity = globalDensity * TransparentDensityMultiplier;
+      scatteringMaterial.SetMatrix("_FrustumCornersWS", FrustumCorners());
+      scatteringMaterial.SetTexture("_DitheringTexture", (Texture) DitheringTexture);
+      scatteringMaterial.SetVector("_Density", new Vector4(heightFalloff, y, globalDensity, StartDistance));
+      CustomBlit(source, destination, scatteringMaterial);
     }
   }
 }

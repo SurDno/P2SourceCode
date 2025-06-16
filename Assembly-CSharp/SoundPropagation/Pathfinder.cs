@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Text;
-using UnityEngine;
 
 namespace SoundPropagation
 {
@@ -9,7 +8,7 @@ namespace SoundPropagation
     private static Pathfinder main;
     public float MaxTurnPerDistance = 2f;
     public float LossPerTurn = 0.5f;
-    private List<Pathfinder.Node> pool;
+    private List<Node> pool;
     private int poolUsage;
     private Dictionary<SPPortal, int> dictionary;
     private int destinationIndex;
@@ -24,28 +23,28 @@ namespace SoundPropagation
     {
       get
       {
-        if (Pathfinder.main == null)
-          Pathfinder.main = new Pathfinder();
-        return Pathfinder.main;
+        if (main == null)
+          main = new Pathfinder();
+        return main;
       }
-      set => Pathfinder.main = value;
+      set => main = value;
     }
 
-    private Pathfinder.Node Dequeue(out int indexInPool)
+    private Node Dequeue(out int indexInPool)
     {
-      int index = this.frontier.Count - 1;
-      indexInPool = this.frontier[index];
-      Pathfinder.Node node = this.pool[indexInPool];
-      this.frontier.RemoveAt(index);
+      int index = frontier.Count - 1;
+      indexInPool = frontier[index];
+      Node node = pool[indexInPool];
+      frontier.RemoveAt(index);
       node.IndexInFrontier = -1;
-      if (this.log)
+      if (log)
       {
-        this.logBuilder.Append("- Dequeue: " + (object) node.Estimation);
-        this.logBuilder.Append(", " + (object) node.Cell);
-        this.logBuilder.Append(", " + (object) node.Portal);
-        this.logBuilder.Append(", " + (object) node.Distance);
-        this.logBuilder.Append(", " + (object) node.Loss);
-        this.logBuilder.AppendLine();
+        logBuilder.Append("- Dequeue: " + node.Estimation);
+        logBuilder.Append(", " + node.Cell);
+        logBuilder.Append(", " + node.Portal);
+        logBuilder.Append(", " + node.Distance);
+        logBuilder.Append(", " + node.Loss);
+        logBuilder.AppendLine();
       }
       return node;
     }
@@ -60,30 +59,30 @@ namespace SoundPropagation
       float estimation,
       int previousNodeIndex)
     {
-      if ((double) distance > (double) this.maxDistance)
+      if (distance > (double) maxDistance)
         return;
       int index;
       if ((Object) portal == (Object) null)
-        index = this.destinationIndex;
-      else if (!this.dictionary.TryGetValue(portal, out index))
+        index = destinationIndex;
+      else if (!dictionary.TryGetValue(portal, out index))
         index = -1;
-      Pathfinder.Node freeNode;
+      Node freeNode;
       if (index != -1)
       {
-        freeNode = this.pool[index];
-        if (freeNode.IndexInFrontier < 0 || (double) freeNode.Estimation <= (double) estimation)
+        freeNode = pool[index];
+        if (freeNode.IndexInFrontier < 0 || freeNode.Estimation <= (double) estimation)
           return;
       }
       else
       {
         int poolUsage = this.poolUsage;
-        freeNode = this.GetFreeNode();
+        freeNode = GetFreeNode();
         if ((Object) portal == (Object) null)
-          this.destinationIndex = poolUsage;
+          destinationIndex = poolUsage;
         else
-          this.dictionary.Add(portal, poolUsage);
-        freeNode.IndexInFrontier = this.frontier.Count;
-        this.frontier.Add(poolUsage);
+          dictionary.Add(portal, poolUsage);
+        freeNode.IndexInFrontier = frontier.Count;
+        frontier.Add(poolUsage);
       }
       freeNode.Portal = portal;
       freeNode.Cell = cell;
@@ -93,16 +92,16 @@ namespace SoundPropagation
       freeNode.Loss = loss;
       freeNode.Estimation = estimation;
       freeNode.PreviousNodeIndex = previousNodeIndex;
-      if (this.log)
+      if (log)
       {
-        this.logBuilder.Append("+ Enqueue: " + (object) freeNode.Estimation);
-        this.logBuilder.Append(", " + (object) freeNode.Cell);
-        this.logBuilder.Append(", " + (object) freeNode.Portal);
-        this.logBuilder.Append(", " + (object) freeNode.Distance);
-        this.logBuilder.Append(", " + (object) freeNode.Loss);
-        this.logBuilder.AppendLine();
+        logBuilder.Append("+ Enqueue: " + freeNode.Estimation);
+        logBuilder.Append(", " + freeNode.Cell);
+        logBuilder.Append(", " + freeNode.Portal);
+        logBuilder.Append(", " + freeNode.Distance);
+        logBuilder.Append(", " + freeNode.Loss);
+        logBuilder.AppendLine();
       }
-      this.SortInFrontier(freeNode.IndexInFrontier);
+      SortInFrontier(freeNode.IndexInFrontier);
     }
 
     private void Enqueue(
@@ -116,42 +115,42 @@ namespace SoundPropagation
     {
       Vector3 output;
       if ((Object) portal == (Object) null)
-        output = this.destPosition;
-      else if (!portal.ClosestPointToSegment(prevPosition, this.destPosition, out output))
+        output = destPosition;
+      else if (!portal.ClosestPointToSegment(prevPosition, destPosition, out output))
         return;
       Vector3 vector1 = output - prevPosition;
       float num1 = Math.Normalize(ref vector1);
       if (prevNodeIndex == -1)
         prevDirection = Math.DirectionalityToDirection(prevDirection, vector1);
-      vector1 = Vector3.MoveTowards(prevDirection, vector1, this.MaxTurnPerDistance * num1);
-      float num2 = Vector3.Distance(prevDirection, vector1) * this.LossPerTurn;
+      vector1 = Vector3.MoveTowards(prevDirection, vector1, MaxTurnPerDistance * num1);
+      float num2 = Vector3.Distance(prevDirection, vector1) * LossPerTurn;
       if ((Object) cell != (Object) null && (Object) cell.Profile != (Object) null)
         num2 += cell.LossPerMeter * num1;
       if ((Object) portal != (Object) null)
         num2 += portal.Loss;
       float loss = num2 + prevLoss;
       float distance = num1 + prevDistance;
-      Vector3 vector2 = this.destPosition - output;
+      Vector3 vector2 = destPosition - output;
       float num3 = Math.Normalize(ref vector2);
-      Vector3 vector3 = Vector3.MoveTowards(vector1, vector2, num3 * this.MaxTurnPerDistance);
-      float num4 = Vector3.Distance(vector1, vector3) * this.LossPerTurn;
-      Vector3 direction = Math.DirectionalityToDirection(this.destDirectionality, vector3);
-      float num5 = num4 + Vector3.Distance(vector3, direction) * this.LossPerTurn;
+      Vector3 vector3 = Vector3.MoveTowards(vector1, vector2, num3 * MaxTurnPerDistance);
+      float num4 = Vector3.Distance(vector1, vector3) * LossPerTurn;
+      Vector3 direction = Math.DirectionalityToDirection(destDirectionality, vector3);
+      float num5 = num4 + Vector3.Distance(vector3, direction) * LossPerTurn;
       float estimation = (num3 + distance) * Mathf.Pow(2f, num5 + loss);
-      this.Enqueue(portal, cell, output, vector1, distance, loss, estimation, prevNodeIndex);
+      Enqueue(portal, cell, output, vector1, distance, loss, estimation, prevNodeIndex);
     }
 
     private void FillPath(
       SPCell originCell,
       Vector3 originPosition,
       Vector3 originDirectionality,
-      Pathfinder.Node node,
+      Node node,
       List<PathPoint> output)
     {
       PathPoint pathPoint1;
       while (true)
       {
-        Pathfinder.Node node1 = node.PreviousNodeIndex != -1 ? this.pool[node.PreviousNodeIndex] : (Pathfinder.Node) null;
+        Node node1 = node.PreviousNodeIndex != -1 ? pool[node.PreviousNodeIndex] : null;
         if (output.Count > 0)
         {
           Vector3 pointB = node1 != null ? node1.Position : originPosition;
@@ -173,7 +172,7 @@ namespace SoundPropagation
       }
       pathPoint1 = new PathPoint();
       pathPoint1.Cell = originCell;
-      pathPoint1.Portal = (SPPortal) null;
+      pathPoint1.Portal = null;
       pathPoint1.Position = originPosition;
       pathPoint1.Direction = (output[output.Count - 1].Position - originPosition).normalized;
       pathPoint1.StepLength = 0.0f;
@@ -185,7 +184,7 @@ namespace SoundPropagation
         PathPoint pathPoint4 = output[index];
         pathPoint4.Direction = pathPoint4.Position - pathPoint3.Position;
         pathPoint4.StepLength = Math.Normalize(ref pathPoint4.Direction);
-        pathPoint4.Direction = Vector3.MoveTowards(pathPoint3.Direction, pathPoint4.Direction, pathPoint4.StepLength * this.MaxTurnPerDistance);
+        pathPoint4.Direction = Vector3.MoveTowards(pathPoint3.Direction, pathPoint4.Direction, pathPoint4.StepLength * MaxTurnPerDistance);
         output[index] = pathPoint4;
         pathPoint3 = pathPoint4;
       }
@@ -209,43 +208,43 @@ namespace SoundPropagation
       this.log = log;
       if (log)
       {
-        if (this.logBuilder == null)
-          this.logBuilder = new StringBuilder();
+        if (logBuilder == null)
+          logBuilder = new StringBuilder();
         else
-          this.logBuilder.Remove(0, this.logBuilder.Length);
+          logBuilder.Remove(0, logBuilder.Length);
       }
       if ((Object) originCell == (Object) destCell)
-        this.Enqueue(-1, originPosition, originDirectionality, 0.0f, 0.0f, originCell, (SPPortal) null);
+        Enqueue(-1, originPosition, originDirectionality, 0.0f, 0.0f, originCell, null);
       if ((Object) originCell != (Object) null)
       {
         foreach (SPPortal portal in originCell.Portals)
-          this.Enqueue(-1, originPosition, originDirectionality, 0.0f, 0.0f, originCell, portal);
+          Enqueue(-1, originPosition, originDirectionality, 0.0f, 0.0f, originCell, portal);
       }
       else if ((Object) destCell != (Object) null && (Object) destCell.Group != (Object) null)
       {
         foreach (SPPortal outerPortal in destCell.Group.OuterPortals)
-          this.Enqueue(-1, originPosition, originDirectionality, 0.0f, 0.0f, originCell, outerPortal);
+          Enqueue(-1, originPosition, originDirectionality, 0.0f, 0.0f, originCell, outerPortal);
       }
-      while (this.frontier.Count > 0)
+      while (frontier.Count > 0)
       {
         int indexInPool;
-        Pathfinder.Node node = this.Dequeue(out indexInPool);
+        Node node = Dequeue(out indexInPool);
         if ((Object) node.Portal == (Object) null)
         {
-          this.FillPath(originCell, originPosition, originDirectionality, node, output);
-          this.Reset();
+          FillPath(originCell, originPosition, originDirectionality, node, output);
+          Reset();
           return true;
         }
-        SPCell nextCell = this.GetNextCell(node.Cell, node.Portal);
+        SPCell nextCell = GetNextCell(node.Cell, node.Portal);
         if ((Object) nextCell == (Object) destCell)
-          this.Enqueue(indexInPool, node.Position, node.Direction, node.Distance, node.Loss, nextCell, (SPPortal) null);
+          Enqueue(indexInPool, node.Position, node.Direction, node.Distance, node.Loss, nextCell, null);
         if ((Object) nextCell != (Object) null)
         {
           SPPortal[] portals = nextCell.Portals;
           for (int index = 0; index < portals.Length; ++index)
           {
             if ((Object) portals[index] != (Object) node.Portal)
-              this.Enqueue(indexInPool, node.Position, node.Direction, node.Distance, node.Loss, nextCell, portals[index]);
+              Enqueue(indexInPool, node.Position, node.Direction, node.Distance, node.Loss, nextCell, portals[index]);
           }
         }
         else if ((Object) destCell != (Object) null && (Object) destCell.Group != (Object) null)
@@ -254,11 +253,11 @@ namespace SoundPropagation
           for (int index = 0; index < outerPortals.Length; ++index)
           {
             if ((Object) outerPortals[index] != (Object) node.Portal)
-              this.Enqueue(indexInPool, node.Position, node.Direction, node.Distance, node.Loss, nextCell, outerPortals[index]);
+              Enqueue(indexInPool, node.Position, node.Direction, node.Distance, node.Loss, nextCell, outerPortals[index]);
           }
         }
       }
-      this.Reset();
+      Reset();
       return false;
     }
 
@@ -267,58 +266,58 @@ namespace SoundPropagation
       return (Object) portal.CellA == (Object) cell ? portal.CellB : portal.CellA;
     }
 
-    private Pathfinder.Node GetFreeNode()
+    private Node GetFreeNode()
     {
-      Pathfinder.Node freeNode;
-      if (this.pool.Count > this.poolUsage)
+      Node freeNode;
+      if (pool.Count > poolUsage)
       {
-        freeNode = this.pool[this.poolUsage];
+        freeNode = pool[poolUsage];
       }
       else
       {
-        freeNode = new Pathfinder.Node();
-        this.pool.Add(freeNode);
+        freeNode = new Node();
+        pool.Add(freeNode);
       }
-      ++this.poolUsage;
+      ++poolUsage;
       return freeNode;
     }
 
-    public string Log => this.logBuilder != null ? this.logBuilder.ToString() : string.Empty;
+    public string Log => logBuilder != null ? logBuilder.ToString() : string.Empty;
 
     private void Reset()
     {
-      this.dictionary.Clear();
-      for (int index = 0; index < this.poolUsage; ++index)
-        this.pool[index].ClearReferences();
-      this.frontier.Clear();
-      this.poolUsage = 0;
-      this.destinationIndex = -1;
+      dictionary.Clear();
+      for (int index = 0; index < poolUsage; ++index)
+        pool[index].ClearReferences();
+      frontier.Clear();
+      poolUsage = 0;
+      destinationIndex = -1;
     }
 
     private void SortInFrontier(int frontierIndex)
     {
-      for (; frontierIndex > 0 && (double) this.pool[this.frontier[frontierIndex]].Estimation > (double) this.pool[this.frontier[frontierIndex - 1]].Estimation; --frontierIndex)
-        this.SwapInFrontier(frontierIndex, frontierIndex - 1);
-      for (; frontierIndex < this.frontier.Count - 1 && (double) this.pool[this.frontier[frontierIndex]].Estimation < (double) this.pool[this.frontier[frontierIndex + 1]].Estimation; ++frontierIndex)
-        this.SwapInFrontier(frontierIndex, frontierIndex + 1);
+      for (; frontierIndex > 0 && pool[frontier[frontierIndex]].Estimation > (double) pool[frontier[frontierIndex - 1]].Estimation; --frontierIndex)
+        SwapInFrontier(frontierIndex, frontierIndex - 1);
+      for (; frontierIndex < frontier.Count - 1 && pool[frontier[frontierIndex]].Estimation < (double) pool[frontier[frontierIndex + 1]].Estimation; ++frontierIndex)
+        SwapInFrontier(frontierIndex, frontierIndex + 1);
     }
 
     public Pathfinder()
     {
-      this.pool = new List<Pathfinder.Node>();
-      this.dictionary = new Dictionary<SPPortal, int>();
-      this.frontier = new List<int>();
-      this.poolUsage = 0;
-      this.destinationIndex = -1;
+      pool = new List<Node>();
+      dictionary = new Dictionary<SPPortal, int>();
+      frontier = new List<int>();
+      poolUsage = 0;
+      destinationIndex = -1;
     }
 
     private void SwapInFrontier(int indexA, int indexB)
     {
-      int num = this.frontier[indexA];
-      this.frontier[indexA] = this.frontier[indexB];
-      this.frontier[indexB] = num;
-      this.pool[this.frontier[indexA]].IndexInFrontier = indexA;
-      this.pool[this.frontier[indexB]].IndexInFrontier = indexB;
+      int num = frontier[indexA];
+      frontier[indexA] = frontier[indexB];
+      frontier[indexB] = num;
+      pool[frontier[indexA]].IndexInFrontier = indexA;
+      pool[frontier[indexB]].IndexInFrontier = indexB;
     }
 
     private class Node
@@ -335,8 +334,8 @@ namespace SoundPropagation
 
       public void ClearReferences()
       {
-        this.Portal = (SPPortal) null;
-        this.Cell = (SPCell) null;
+        Portal = null;
+        Cell = null;
       }
     }
   }

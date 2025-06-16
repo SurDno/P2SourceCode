@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-[RequireComponent(typeof (Camera))]
+﻿[RequireComponent(typeof (Camera))]
 public class ProtagonistShadersSettings : MonoBehaviourInstance<ProtagonistShadersSettings>
 {
   [Range(1f, 179f)]
@@ -15,33 +13,33 @@ public class ProtagonistShadersSettings : MonoBehaviourInstance<ProtagonistShade
   {
     get
     {
-      if ((Object) this.camera == (Object) null)
-        this.camera = this.GetComponent<Camera>();
-      return this.camera;
+      if ((Object) camera == (Object) null)
+        camera = this.GetComponent<Camera>();
+      return camera;
     }
   }
 
   private void OnDisable() => Shader.SetGlobalFloat("_ProtagonistFlatness", 0.0f);
 
-  private void OnPreCull() => this.UpdateShaders();
+  private void OnPreCull() => UpdateShaders();
 
   private Matrix4x4 ProtagonistProjection()
   {
-    return Matrix4x4.Perspective(this.fieldOfView, this.Camera.aspect, this.Camera.nearClipPlane, this.Camera.farClipPlane);
+    return Matrix4x4.Perspective(fieldOfView, Camera.aspect, Camera.nearClipPlane, Camera.farClipPlane);
   }
 
   public Vector3 ProtagonistToWorld(Vector3 position)
   {
-    Vector4 vector4_1 = this.Camera.worldToCameraMatrix * new Vector4(position.x, position.y, position.z, 1f);
-    Vector4 vector4_2 = this.ProtagonistProjection() * vector4_1;
-    vector4_2.z = Mathf.Lerp(vector4_2.z, -1f * vector4_2.w, this.flatness);
-    Vector4 vector4_3 = this.Camera.cameraToWorldMatrix * (this.Camera.nonJitteredProjectionMatrix.inverse * vector4_2);
+    Vector4 vector4_1 = Camera.worldToCameraMatrix * new Vector4(position.x, position.y, position.z, 1f);
+    Vector4 vector4_2 = ProtagonistProjection() * vector4_1;
+    vector4_2.z = Mathf.Lerp(vector4_2.z, -1f * vector4_2.w, flatness);
+    Vector4 vector4_3 = Camera.cameraToWorldMatrix * (Camera.nonJitteredProjectionMatrix.inverse * vector4_2);
     return (Vector3) (vector4_3 / vector4_3.w);
   }
 
   private void UpdateShaders()
   {
-    Shader.SetGlobalFloat("_ProtagonistFlatness", this.flatness);
-    Shader.SetGlobalMatrix("_ProtagonistMatrixVP", GL.GetGPUProjectionMatrix(this.ProtagonistProjection(), true) * this.Camera.worldToCameraMatrix);
+    Shader.SetGlobalFloat("_ProtagonistFlatness", flatness);
+    Shader.SetGlobalMatrix("_ProtagonistMatrixVP", GL.GetGPUProjectionMatrix(ProtagonistProjection(), true) * Camera.worldToCameraMatrix);
   }
 }

@@ -1,5 +1,4 @@
 ﻿using Engine.Impl.UI.Controls;
-using UnityEngine;
 
 namespace Engine.Source.UI.Controls.BoolViews
 {

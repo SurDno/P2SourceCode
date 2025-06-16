@@ -1,9 +1,8 @@
-﻿using Cofe.Serializations.Converters;
+﻿using System;
+using System.IO;
+using Cofe.Serializations.Converters;
 using Engine.Common.Weather;
 using Engine.Source.Inventory;
-using System;
-using System.IO;
-using UnityEngine;
 
 namespace Engine.Source.Connections
 {
@@ -15,19 +14,19 @@ namespace Engine.Source.Connections
 
     public Guid Id
     {
-      get => DefaultConverter.ParseGuid(this.id);
-      set => this.id = value != Guid.Empty ? value.ToString() : "";
+      get => DefaultConverter.ParseGuid(id);
+      set => id = value != Guid.Empty ? value.ToString() : "";
     }
 
-    public System.Type Type => typeof (IWeatherSnapshot);
+    public Type Type => typeof (IWeatherSnapshot);
 
     public IInventoryPlaceholder Value
     {
-      get => TemplateUtility.GetTemplate<IInventoryPlaceholder>(this.Id);
-      set => this.Id = value != null ? value.Id : Guid.Empty;
+      get => TemplateUtility.GetTemplate<IInventoryPlaceholder>(Id);
+      set => Id = value != null ? value.Id : Guid.Empty;
     }
 
-    public override int GetHashCode() => string.IsNullOrEmpty(this.id) ? 0 : this.id.GetHashCode();
+    public override int GetHashCode() => string.IsNullOrEmpty(id) ? 0 : id.GetHashCode();
 
     public override bool Equals(object a)
     {
@@ -50,7 +49,7 @@ namespace Engine.Source.Connections
 
     public override string ToString()
     {
-      IInventoryPlaceholder inventoryPlaceholder = this.Value;
+      IInventoryPlaceholder inventoryPlaceholder = Value;
       return inventoryPlaceholder != null ? Path.GetFileNameWithoutExtension(inventoryPlaceholder.Source) : "";
     }
   }

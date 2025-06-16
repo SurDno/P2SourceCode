@@ -4,7 +4,6 @@ using Engine.Impl.Services.Factories;
 using Engine.Source.Commons;
 using Engine.Source.Connections;
 using Inspectors;
-using UnityEngine;
 
 namespace Engine.Source.Inventory
 {
@@ -12,61 +11,61 @@ namespace Engine.Source.Inventory
   [GenerateProxy(TypeEnum.Copyable | TypeEnum.EngineCloneable | TypeEnum.DataRead | TypeEnum.DataWrite)]
   public class InventoryPlaceholder : EngineObject, IInventoryPlaceholder, IObject
   {
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected Typed<IInventoryGridLimited> grid;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected(Name = "Cell50", Mutable = true, Mode = ExecuteMode.Edit)]
     protected UnitySubAsset<Sprite> imageInventoryCell;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected(Name = "Slot80", Mutable = true, Mode = ExecuteMode.Edit)]
     protected UnitySubAsset<Sprite> imageInventorySlot;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected(Name = "Slot200", Mutable = true, Mode = ExecuteMode.Edit)]
     protected UnitySubAsset<Sprite> imageInventorySlotBig;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected(Name = "Info800", Mutable = true, Mode = ExecuteMode.Edit)]
     protected UnitySubAsset<Sprite> imageInformation;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected(Name = "Info350", Mutable = true, Mode = ExecuteMode.Edit)]
     protected UnitySubAsset<Sprite> imageInformationSpecial;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy()]
     [Inspected(Name = "Sound Group", Mutable = true, Mode = ExecuteMode.Edit)]
     protected UnitySubAsset<ItemSoundGroup> soundGroup;
 
-    public Typed<IInventoryGridLimited> TypedGrid => this.grid;
+    public Typed<IInventoryGridLimited> TypedGrid => grid;
 
     [Inspected]
-    public UnitySubAsset<Sprite> ImageInformation => this.imageInformation;
+    public UnitySubAsset<Sprite> ImageInformation => imageInformation;
 
     [Inspected]
-    public UnitySubAsset<Sprite> ImageInventoryCell => this.imageInventoryCell;
+    public UnitySubAsset<Sprite> ImageInventoryCell => imageInventoryCell;
 
     [Inspected]
-    public UnitySubAsset<Sprite> ImageInventorySlot => this.imageInventorySlot;
+    public UnitySubAsset<Sprite> ImageInventorySlot => imageInventorySlot;
 
     [Inspected]
-    public UnitySubAsset<Sprite> ImageInventorySlotBig => this.imageInventorySlotBig;
+    public UnitySubAsset<Sprite> ImageInventorySlotBig => imageInventorySlotBig;
 
     [Inspected]
-    public UnitySubAsset<Sprite> ImageInformationSpecial => this.imageInformationSpecial;
+    public UnitySubAsset<Sprite> ImageInformationSpecial => imageInformationSpecial;
 
-    public IInventoryGridLimited Grid => this.grid.Value;
+    public IInventoryGridLimited Grid => grid.Value;
 
-    public ItemSoundGroup SoundGroup => this.soundGroup.Value;
+    public ItemSoundGroup SoundGroup => soundGroup.Value;
   }
 }

@@ -2,5 +2,5 @@
 
 public class AOFieldsController : HideableView
 {
-  protected override void ApplyVisibility() => AOField.IsPlayerOutdoor = this.Visible;
+  protected override void ApplyVisibility() => AOField.IsPlayerOutdoor = Visible;
 }

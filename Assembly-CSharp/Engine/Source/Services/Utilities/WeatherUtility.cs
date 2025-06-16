@@ -1,6 +1,6 @@
-﻿using Engine.Common.Services;
+﻿using System;
+using Engine.Common.Services;
 using Engine.Common.Weather;
-using System;
 
 namespace Engine.Source.Services.Utilities
 {

@@ -1,16 +1,12 @@
-﻿using Engine.Common.Components;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Engine.Common.Components;
 using Engine.Common.Services;
 using Engine.Impl.UI.Menu.Protagonist.Inventory.Windows;
 using Engine.Source.Components;
 using Engine.Source.Services.Inputs;
 using Engine.Source.UI;
 using InputServices;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.UI;
 
 namespace Engine.Impl.UI.Menu.Protagonist.Inventory
 {
@@ -22,103 +18,103 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
     [SerializeField]
     protected ItemSelector[] ingredientSelectors;
     protected List<Button> SelectorButtons;
-    private SelectableInventoryWindow.SelectedSelector _currentSelector = SelectableInventoryWindow.SelectedSelector.None;
-    private SelectableInventoryWindow.SelectedSelector LastSelector = SelectableInventoryWindow.SelectedSelector.None;
-    private SelectableInventoryWindow.Modes _currentMode = SelectableInventoryWindow.Modes.None;
-    private SelectableInventoryWindow.Modes prevMode = SelectableInventoryWindow.Modes.None;
+    private SelectedSelector _currentSelector = SelectedSelector.None;
+    private SelectedSelector LastSelector = SelectedSelector.None;
+    private Modes _currentMode = Modes.None;
+    private Modes prevMode = Modes.None;
     protected List<StorableUI> selectedStorables = new List<StorableUI>();
 
-    protected SelectableInventoryWindow.SelectedSelector CurrentSelector
+    protected SelectedSelector CurrentSelector
     {
-      get => this._currentSelector;
+      get => _currentSelector;
       set
       {
-        if (this._currentSelector == value)
+        if (_currentSelector == value)
           return;
-        this._currentSelector = value;
+        _currentSelector = value;
         switch (value)
         {
-          case SelectableInventoryWindow.SelectedSelector.Top:
+          case SelectedSelector.Top:
             if (InputService.Instance.JoystickUsed)
             {
-              this.ingredientSelectors[0]?.SetSelection(true);
-              if (this.ingredientSelectors.Length > 1)
-                this.ingredientSelectors[1]?.SetSelection(false);
+              ingredientSelectors[0]?.SetSelection(true);
+              if (ingredientSelectors.Length > 1)
+                ingredientSelectors[1]?.SetSelection(false);
             }
-            this.SelectorButtons = new List<Button>((IEnumerable<Button>) this.ingredientSelectors[0]?.GetComponentsInChildren<Button>());
+            SelectorButtons = new List<Button>((IEnumerable<Button>) ingredientSelectors[0]?.GetComponentsInChildren<Button>());
             break;
-          case SelectableInventoryWindow.SelectedSelector.Bottom:
+          case SelectedSelector.Bottom:
             if (InputService.Instance.JoystickUsed)
             {
-              this.ingredientSelectors[0]?.SetSelection(false);
-              if (this.ingredientSelectors.Length > 1)
-                this.ingredientSelectors[1]?.SetSelection(true);
+              ingredientSelectors[0]?.SetSelection(false);
+              if (ingredientSelectors.Length > 1)
+                ingredientSelectors[1]?.SetSelection(true);
             }
-            this.SelectorButtons = new List<Button>((IEnumerable<Button>) this.ingredientSelectors[1]?.GetComponentsInChildren<Button>());
+            SelectorButtons = new List<Button>((IEnumerable<Button>) ingredientSelectors[1]?.GetComponentsInChildren<Button>());
             break;
           default:
-            this.ingredientSelectors[0]?.SetSelection(false);
-            if (this.ingredientSelectors.Length > 1)
-              this.ingredientSelectors[1]?.SetSelection(false);
-            this.SelectorButtons.Clear();
+            ingredientSelectors[0]?.SetSelection(false);
+            if (ingredientSelectors.Length > 1)
+              ingredientSelectors[1]?.SetSelection(false);
+            SelectorButtons.Clear();
             break;
         }
       }
     }
 
-    protected SelectableInventoryWindow.Modes PreviousMode
+    protected Modes PreviousMode
     {
-      get => this.prevMode;
-      set => this.prevMode = value;
+      get => prevMode;
+      set => prevMode = value;
     }
 
-    protected virtual SelectableInventoryWindow.Modes CurrentMode
+    protected virtual Modes CurrentMode
     {
-      get => this._currentMode;
+      get => _currentMode;
       set
       {
-        if (this._currentMode == value)
+        if (_currentMode == value)
           return;
-        this.HideInfoWindow();
-        this.HideContextMenu();
+        HideInfoWindow();
+        HideContextMenu();
         switch (value)
         {
-          case SelectableInventoryWindow.Modes.None:
-            this.UnsubscribeNavigation();
-            this.CraftWindowUnsubscribe();
-            this.CurrentSelector = SelectableInventoryWindow.SelectedSelector.None;
+          case Modes.None:
+            UnsubscribeNavigation();
+            CraftWindowUnsubscribe();
+            CurrentSelector = SelectedSelector.None;
             break;
-          case SelectableInventoryWindow.Modes.Inventory:
-            if (this._currentMode == SelectableInventoryWindow.Modes.Craft)
+          case Modes.Inventory:
+            if (_currentMode == Modes.Craft)
               return;
             break;
-          case SelectableInventoryWindow.Modes.Craft:
-            if ((this._currentMode == SelectableInventoryWindow.Modes.Inventory || this._currentMode == SelectableInventoryWindow.Modes.None) && (UnityEngine.Object) this.selectedStorable != (UnityEngine.Object) null)
+          case Modes.Craft:
+            if ((_currentMode == Modes.Inventory || _currentMode == Modes.None) && (UnityEngine.Object) selectedStorable != (UnityEngine.Object) null)
             {
-              this.selectedStorable.SetSelected(false);
-              this.selectedStorable = (StorableUI) null;
+              selectedStorable.SetSelected(false);
+              selectedStorable = null;
             }
-            this.CurrentSelector = SelectableInventoryWindow.SelectedSelector.Top;
+            CurrentSelector = SelectedSelector.Top;
             break;
         }
-        this._currentMode = value;
+        _currentMode = value;
       }
     }
 
     protected virtual void CraftWindowSubscribe()
     {
-      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.LStickLeft, new GameActionHandle(this.ConsoleController));
-      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.LStickRight, new GameActionHandle(this.ConsoleController));
-      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.LStickUp, new GameActionHandle(this.ConsoleController));
-      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.LStickDown, new GameActionHandle(this.ConsoleController));
+      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.LStickLeft, ConsoleController);
+      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.LStickRight, ConsoleController);
+      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.LStickUp, ConsoleController);
+      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.LStickDown, ConsoleController);
     }
 
     protected virtual void CraftWindowUnsubscribe()
     {
-      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.LStickLeft, new GameActionHandle(this.ConsoleController));
-      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.LStickRight, new GameActionHandle(this.ConsoleController));
-      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.LStickUp, new GameActionHandle(this.ConsoleController));
-      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.LStickDown, new GameActionHandle(this.ConsoleController));
+      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.LStickLeft, ConsoleController);
+      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.LStickRight, ConsoleController);
+      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.LStickUp, ConsoleController);
+      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.LStickDown, ConsoleController);
     }
 
     protected bool SwapModes(GameActionType type, bool down)
@@ -127,12 +123,12 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
         return false;
       if (type == GameActionType.BumperSelectionLeft & down)
       {
-        this.CurrentMode = SelectableInventoryWindow.Modes.Craft;
+        CurrentMode = Modes.Craft;
         return true;
       }
       if (!(type == GameActionType.BumperSelectionRight & down))
         return false;
-      this.CurrentMode = SelectableInventoryWindow.Modes.Inventory;
+      CurrentMode = Modes.Inventory;
       return true;
     }
 
@@ -143,25 +139,25 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
     {
       if (arg2 != null)
       {
-        StorableUI storableByComponent = this.GetStorableByComponent(arg2);
+        StorableUI storableByComponent = GetStorableByComponent(arg2);
         if ((UnityEngine.Object) storableByComponent != (UnityEngine.Object) null)
         {
           storableByComponent.HoldSelected(false);
-          if (this.selectedStorables.Contains(storableByComponent))
-            this.selectedStorables.Remove(storableByComponent);
+          if (selectedStorables.Contains(storableByComponent))
+            selectedStorables.Remove(storableByComponent);
         }
       }
       if (arg3 != null)
       {
-        this.SetStorableByComponent(arg3);
-        StorableUI storableByComponent = this.GetStorableByComponent(arg3);
+        SetStorableByComponent(arg3);
+        StorableUI storableByComponent = GetStorableByComponent(arg3);
         if ((UnityEngine.Object) storableByComponent != (UnityEngine.Object) null)
         {
           storableByComponent.HoldSelected(true);
-          this.selectedStorables.Add(storableByComponent);
+          selectedStorables.Add(storableByComponent);
         }
       }
-      this.HideInfoWindow();
+      HideInfoWindow();
     }
 
     protected virtual bool ConsoleController(GameActionType type, bool down)
@@ -170,72 +166,72 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
         return false;
       if (type == GameActionType.LStickLeft & down)
       {
-        ExecuteEvents.Execute<ISubmitHandler>(this.SelectorButtons[0].gameObject, (BaseEventData) new PointerEventData(EventSystem.current), ExecuteEvents.submitHandler);
-        this.OnInvalidate();
-        this.HideInfoWindow();
+        ExecuteEvents.Execute<ISubmitHandler>(SelectorButtons[0].gameObject, (BaseEventData) new PointerEventData(EventSystem.current), ExecuteEvents.submitHandler);
+        OnInvalidate();
+        HideInfoWindow();
         return true;
       }
       if (type == GameActionType.LStickRight & down)
       {
-        ExecuteEvents.Execute<ISubmitHandler>(this.SelectorButtons[1].gameObject, (BaseEventData) new PointerEventData(EventSystem.current), ExecuteEvents.submitHandler);
-        this.OnInvalidate();
-        this.HideInfoWindow();
+        ExecuteEvents.Execute<ISubmitHandler>(SelectorButtons[1].gameObject, (BaseEventData) new PointerEventData(EventSystem.current), ExecuteEvents.submitHandler);
+        OnInvalidate();
+        HideInfoWindow();
         return true;
       }
       if (type == GameActionType.LStickUp & down)
       {
-        this.CurrentSelector = SelectableInventoryWindow.SelectedSelector.Top;
+        CurrentSelector = SelectedSelector.Top;
         return true;
       }
       if (!(type == GameActionType.LStickDown & down))
         return false;
-      this.CurrentSelector = SelectableInventoryWindow.SelectedSelector.Bottom;
+      CurrentSelector = SelectedSelector.Bottom;
       return true;
     }
 
     protected override void OnJoystick(bool joystick)
     {
       base.OnJoystick(joystick);
-      if (this.CurrentSelector != SelectableInventoryWindow.SelectedSelector.None)
-        this.ingredientSelectors[(int) this.CurrentSelector]?.SetSelection(joystick);
-      foreach (StorableUI selectedStorable in this.selectedStorables)
+      if (CurrentSelector != SelectedSelector.None)
+        ingredientSelectors[(int) CurrentSelector]?.SetSelection(joystick);
+      foreach (StorableUI selectedStorable in selectedStorables)
         selectedStorable?.HoldSelected(joystick);
-      this.OnInvalidate();
+      OnInvalidate();
     }
 
     protected virtual bool ItemIsSelected(IStorableComponent storable) => false;
 
     protected virtual void OnItemAlternativeClick(IStorableComponent storable)
     {
-      this.OnItemClick(storable);
+      OnItemClick(storable);
     }
 
     public override void OnPointerDown(PointerEventData eventData)
     {
-      if ((UnityEngine.Object) this.windowContextMenu != (UnityEngine.Object) null)
+      if ((UnityEngine.Object) windowContextMenu != (UnityEngine.Object) null)
       {
-        this.HideContextMenu();
+        HideContextMenu();
       }
       else
       {
-        if (!this.intersect.IsIntersected)
+        if (!intersect.IsIntersected)
           return;
-        if (this.intersect.Storables == null)
+        if (intersect.Storables == null)
         {
           Debug.LogError((object) "intersect.Storables == null, Такого быть недолжно, воспроизвести, разобраться в чем дело и пофиксить нормально");
         }
         else
         {
-          StorableComponent storable = this.intersect.Storables.FirstOrDefault<StorableComponent>();
-          if (storable == null || !this.ItemIsInteresting((IStorableComponent) storable))
+          StorableComponent storable = intersect.Storables.FirstOrDefault();
+          if (storable == null || !ItemIsInteresting(storable))
             return;
           switch (eventData.button)
           {
             case PointerEventData.InputButton.Left:
-              this.OnItemClick((IStorableComponent) storable);
+              OnItemClick(storable);
               break;
             case PointerEventData.InputButton.Right:
-              this.OnItemAlternativeClick((IStorableComponent) storable);
+              OnItemAlternativeClick(storable);
               break;
           }
         }
@@ -245,18 +241,18 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
     protected override void OnInvalidate()
     {
       base.OnInvalidate();
-      foreach (KeyValuePair<IStorableComponent, StorableUI> storable in this.storables)
+      foreach (KeyValuePair<IStorableComponent, StorableUI> storable in storables)
       {
-        storable.Value.Enable(this.ItemIsInteresting(storable.Key));
-        storable.Value.SetSelected(this.ItemIsSelected(storable.Key));
-        storable.Value.HoldSelected(this.ItemIsSelected(storable.Key));
+        storable.Value.Enable(ItemIsInteresting(storable.Key));
+        storable.Value.SetSelected(ItemIsSelected(storable.Key));
+        storable.Value.HoldSelected(ItemIsSelected(storable.Key));
       }
       if (!InputService.Instance.JoystickUsed)
         return;
-      if (this.ingredientSelectors.Length > 1)
-        this.ingredientSelectors[this.CurrentSelector == SelectableInventoryWindow.SelectedSelector.Top ? 1 : 0].CheckButtonsForConsole();
+      if (ingredientSelectors.Length > 1)
+        ingredientSelectors[CurrentSelector == SelectedSelector.Top ? 1 : 0].CheckButtonsForConsole();
       else
-        this.ingredientSelectors[0].CheckButtonsForConsole();
+        ingredientSelectors[0].CheckButtonsForConsole();
     }
 
     protected virtual void OnItemClick(IStorableComponent storable)
@@ -267,7 +263,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       InfoWindowNew window,
       IStorableComponent storable)
     {
-      if (!this.ItemIsInteresting(storable) || InputService.Instance.JoystickUsed && this.CurrentMode != SelectableInventoryWindow.Modes.Inventory)
+      if (!ItemIsInteresting(storable) || InputService.Instance.JoystickUsed && CurrentMode != Modes.Inventory)
         return;
       window.AddActionTooltip(GameActionType.Submit, "{StorableTooltip.Select}");
     }
@@ -275,36 +271,36 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
     protected override void OnEnable()
     {
       base.OnEnable();
-      this.CanShowInfoWindows = false;
-      this.actors.Clear();
-      this.actors.Add(this.Actor);
-      this.Build2();
-      this.Unsubscribe();
-      this.UnsubscribeNavigation();
-      this.CraftWindowSubscribe();
+      CanShowInfoWindows = false;
+      actors.Clear();
+      actors.Add(Actor);
+      Build2();
+      Unsubscribe();
+      UnsubscribeNavigation();
+      CraftWindowSubscribe();
       ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Cancel, new GameActionHandle(((UIWindow) this).CancelListener));
-      this.CurrentMode = SelectableInventoryWindow.Modes.Craft;
-      foreach (ItemSelector ingredientSelector in this.ingredientSelectors)
-        ingredientSelector.ChangeItemEvent += new Action<ItemSelector, IStorableComponent, IStorableComponent>(this.OnSelectorItemChange);
-      if ((UnityEngine.Object) this.selectedStorable != (UnityEngine.Object) null)
+      CurrentMode = Modes.Craft;
+      foreach (ItemSelector ingredientSelector in ingredientSelectors)
+        ingredientSelector.ChangeItemEvent += OnSelectorItemChange;
+      if ((UnityEngine.Object) selectedStorable != (UnityEngine.Object) null)
       {
-        this.selectedStorable.SetSelected(false);
-        this.selectedStorable.HoldSelected(false);
-        this.selectedStorable = (StorableUI) null;
+        selectedStorable.SetSelected(false);
+        selectedStorable.HoldSelected(false);
+        selectedStorable = null;
       }
-      this.HideInfoWindow();
-      this.HideContextMenu();
+      HideInfoWindow();
+      HideContextMenu();
     }
 
     protected override void OnDisable()
     {
       ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Cancel, new GameActionHandle(((UIWindow) this).CancelListener));
-      this.CraftWindowUnsubscribe();
-      foreach (ItemSelector ingredientSelector in this.ingredientSelectors)
-        ingredientSelector.ChangeItemEvent -= new Action<ItemSelector, IStorableComponent, IStorableComponent>(this.OnSelectorItemChange);
-      this.CurrentMode = SelectableInventoryWindow.Modes.None;
-      this.CurrentSelector = SelectableInventoryWindow.SelectedSelector.None;
-      this.selectedStorables.Clear();
+      CraftWindowUnsubscribe();
+      foreach (ItemSelector ingredientSelector in ingredientSelectors)
+        ingredientSelector.ChangeItemEvent -= OnSelectorItemChange;
+      CurrentMode = Modes.None;
+      CurrentSelector = SelectedSelector.None;
+      selectedStorables.Clear();
       base.OnDisable();
     }
 

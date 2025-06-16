@@ -13,21 +13,21 @@ namespace Engine.Source.Effects
   [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
   public class ScareBirdsEffect : IEffect
   {
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy()]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected ParameterEffectQueueEnum queue = ParameterEffectQueueEnum.None;
 
-    public string Name => this.GetType().Name;
+    public string Name => GetType().Name;
 
     [Inspected]
     public AbilityItem AbilityItem { get; set; }
 
     public IEntity Target { get; set; }
 
-    public ParameterEffectQueueEnum Queue => this.queue;
+    public ParameterEffectQueueEnum Queue => queue;
 
     public bool Prepare(float currentRealTime, float currentGameTime) => true;
 

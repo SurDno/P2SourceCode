@@ -1,4 +1,8 @@
-﻿using Cofe.Serializations.Data;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Xml;
+using Cofe.Serializations.Data;
 using Engine.Common.MindMap;
 using Engine.Common.Services;
 using PLVirtualMachine.Common;
@@ -6,10 +10,6 @@ using PLVirtualMachine.Common.Data;
 using PLVirtualMachine.Common.Serialization;
 using PLVirtualMachine.Data.SaveLoad;
 using PLVirtualMachine.LogicMap;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Xml;
 
 namespace PLVirtualMachine.Dynamic
 {
@@ -29,51 +29,51 @@ namespace PLVirtualMachine.Dynamic
     {
       this.parentMindMap = parentMindMap;
       this.staticNode = staticNode;
-      this.dynamicGuid = DynamicMindMap.RegistrDynamicMMObject((IDynamicMindMapObject) this);
+      dynamicGuid = DynamicMindMap.RegistrDynamicMMObject(this);
       List<ILink> linksByDestNode = parentMindMap.GetLinksByDestNode(this);
-      linksByDestNode.AddRange((IEnumerable<ILink>) linksByDestNode);
+      linksByDestNode.AddRange(linksByDestNode);
       List<ILink> linksBySourceNode = parentMindMap.GetLinksBySourceNode(this);
-      linksBySourceNode.AddRange((IEnumerable<ILink>) linksBySourceNode);
-      this.LoadContent();
-      this.activeContent = (DynamicMindMapNodeContent) null;
+      linksBySourceNode.AddRange(linksBySourceNode);
+      LoadContent();
+      activeContent = null;
     }
 
-    public ulong StaticGuid => this.staticNode == null ? 0UL : this.staticNode.BaseGuid;
+    public ulong StaticGuid => staticNode == null ? 0UL : staticNode.BaseGuid;
 
-    public Guid DynamicGuid => this.dynamicGuid;
+    public Guid DynamicGuid => dynamicGuid;
 
-    public VMLogicMapNode StaticNode => this.staticNode;
+    public VMLogicMapNode StaticNode => staticNode;
 
     public IMMNode EngineNode { get; set; }
 
     public void Think()
     {
-      DynamicFSM.SetCurrentDebugState((IGraphObject) this.StaticNode);
-      for (int index = 0; index < this.nodeContentList.Count; ++index)
-        this.nodeContentList[index].Think();
-      DynamicFSM.SetCurrentDebugState((IGraphObject) null);
+      DynamicFSM.SetCurrentDebugState(StaticNode);
+      for (int index = 0; index < nodeContentList.Count; ++index)
+        nodeContentList[index].Think();
+      DynamicFSM.SetCurrentDebugState(null);
     }
 
     public void SetContentActive(DynamicMindMapNodeContent content, bool bActive)
     {
       content.Active = bActive;
-      this.MakeCurrentActiveContent();
+      MakeCurrentActiveContent();
     }
 
-    public IGameMode GameTimeContext => this.parentMindMap.GameTimeContext;
+    public IGameMode GameTimeContext => parentMindMap.GameTimeContext;
 
     public void Free()
     {
-      for (int index = 0; index < this.nodeContentList.Count; ++index)
-        this.nodeContentList[index].Free();
+      for (int index = 0; index < nodeContentList.Count; ++index)
+        nodeContentList[index].Free();
     }
 
     public void StateSave(IDataWriter writer)
     {
-      SaveManagerUtility.Save(writer, "StaticGuid", this.staticNode.BaseGuid);
-      SaveManagerUtility.Save(writer, "DynamicGuid", this.dynamicGuid);
-      SaveManagerUtility.Save(writer, "Undiscovered", this.EngineNode.Undiscovered);
-      SaveManagerUtility.SaveDynamicSerializableList<DynamicMindMapNodeContent>(writer, "MMNodeContentList", this.nodeContentList);
+      SaveManagerUtility.Save(writer, "StaticGuid", staticNode.BaseGuid);
+      SaveManagerUtility.Save(writer, "DynamicGuid", dynamicGuid);
+      SaveManagerUtility.Save(writer, "Undiscovered", EngineNode.Undiscovered);
+      SaveManagerUtility.SaveDynamicSerializableList(writer, "MMNodeContentList", nodeContentList);
     }
 
     public void LoadFromXML(XmlElement xmlNode)
@@ -83,17 +83,17 @@ namespace PLVirtualMachine.Dynamic
         XmlElement childNode1 = (XmlElement) xmlNode.ChildNodes[i];
         if (childNode1.Name == "DynamicGuid")
         {
-          this.dynamicGuid = VMSaveLoadManager.ReadGuid((XmlNode) childNode1);
-          this.EngineNode.Id = this.dynamicGuid;
+          dynamicGuid = VMSaveLoadManager.ReadGuid(childNode1);
+          EngineNode.Id = dynamicGuid;
         }
         else if (childNode1.Name == "Undiscovered")
-          this.undiscovered = VMSaveLoadManager.ReadBool((XmlNode) childNode1);
+          undiscovered = VMSaveLoadManager.ReadBool(childNode1);
         else if (childNode1.Name == "MMNodeContentList")
         {
           foreach (XmlElement childNode2 in childNode1.ChildNodes)
           {
             ulong num = VMSaveLoadManager.ReadUlong(childNode2.FirstChild);
-            if (num != 0UL && this.staticNode.GetContentByGuid(num) != null)
+            if (num != 0UL && staticNode.GetContentByGuid(num) != null)
               ((DynamicMindMapNodeContent) DynamicMindMap.GetDynamicMMObjectByStaticguid(num))?.LoadFromXML(childNode2);
           }
         }
@@ -102,17 +102,17 @@ namespace PLVirtualMachine.Dynamic
 
     public void AfterSaveLoading()
     {
-      for (int index = 0; index < this.nodeContentList.Count; ++index)
-        this.nodeContentList[index].AfterSaveLoading();
-      this.MakeCurrentActiveContent();
-      this.EngineNode.Undiscovered = this.undiscovered;
+      for (int index = 0; index < nodeContentList.Count; ++index)
+        nodeContentList[index].AfterSaveLoading();
+      MakeCurrentActiveContent();
+      EngineNode.Undiscovered = undiscovered;
     }
 
     public string Name
     {
       get
       {
-        return string.Format("{0}.{1}", (object) this.parentMindMap.Name, (object) this.staticNode.Name);
+        return string.Format("{0}.{1}", parentMindMap.Name, staticNode.Name);
       }
     }
 
@@ -124,25 +124,25 @@ namespace PLVirtualMachine.Dynamic
 
     private void MakeCurrentActiveContent()
     {
-      this.activeContent = (DynamicMindMapNodeContent) null;
-      for (int index = 0; index < this.nodeContentList.Count; ++index)
+      activeContent = null;
+      for (int index = 0; index < nodeContentList.Count; ++index)
       {
-        if (this.nodeContentList[index].Active)
-          this.activeContent = this.nodeContentList[index];
+        if (nodeContentList[index].Active)
+          activeContent = nodeContentList[index];
       }
       IMMService mindMapService = ServiceCache.MindMapService;
-      if (this.activeContent != null)
-        this.EngineNode.Content = mindMapService.Contents.FirstOrDefault<IMMContent>((Func<IMMContent, bool>) (o => o.Id == this.activeContent.DynamicGuid));
+      if (activeContent != null)
+        EngineNode.Content = mindMapService.Contents.FirstOrDefault(o => o.Id == activeContent.DynamicGuid);
       else
-        this.EngineNode.Content = (IMMContent) null;
+        EngineNode.Content = null;
     }
 
     private void LoadContent()
     {
-      if (this.staticNode == null)
+      if (staticNode == null)
         return;
-      for (int index = 0; index < this.staticNode.Contents.Count; ++index)
-        this.nodeContentList.Add(new DynamicMindMapNodeContent(this, this.staticNode.Contents[index]));
+      for (int index = 0; index < staticNode.Contents.Count; ++index)
+        nodeContentList.Add(new DynamicMindMapNodeContent(this, staticNode.Contents[index]));
     }
   }
 }

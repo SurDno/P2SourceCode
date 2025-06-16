@@ -1,6 +1,5 @@
 ﻿using Engine.Common.Services;
 using Engine.Source.Services.Inputs;
-using System;
 
 namespace Engine.Source.Achievements.Controllers
 {
@@ -12,19 +11,19 @@ namespace Engine.Source.Achievements.Controllers
     public void Initialise(string id)
     {
       this.id = id;
-      ServiceLocator.GetService<GameActionService>().OnGameAction += new Action<GameActionType>(this.OnGameAction);
+      ServiceLocator.GetService<GameActionService>().OnGameAction += OnGameAction;
     }
 
     private void OnGameAction(GameActionType action)
     {
       if (action != GameActionType.Jump)
         return;
-      ServiceLocator.GetService<AchievementService>().Unlock(this.id);
+      ServiceLocator.GetService<AchievementService>().Unlock(id);
     }
 
     public void Terminate()
     {
-      ServiceLocator.GetService<GameActionService>().OnGameAction -= new Action<GameActionType>(this.OnGameAction);
+      ServiceLocator.GetService<GameActionService>().OnGameAction -= OnGameAction;
     }
   }
 }

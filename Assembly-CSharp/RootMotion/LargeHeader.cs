@@ -1,9 +1,8 @@
 ﻿using System;
-using UnityEngine;
 
 namespace RootMotion
 {
-  [AttributeUsage(AttributeTargets.Field, AllowMultiple = false, Inherited = false)]
+  [AttributeUsage(AttributeTargets.Field)]
   public class LargeHeader : PropertyAttribute
   {
     public string name;
@@ -12,7 +11,7 @@ namespace RootMotion
     public LargeHeader(string name)
     {
       this.name = name;
-      this.color = "white";
+      color = "white";
     }
 
     public LargeHeader(string name, string color)

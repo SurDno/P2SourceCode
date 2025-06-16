@@ -1,7 +1,4 @@
-﻿using UnityEngine;
-using UnityEngine.UI;
-
-namespace Engine.Impl.UI.Menu.Protagonist.MindMap
+﻿namespace Engine.Impl.UI.Menu.Protagonist.MindMap
 {
   public class MapNodeInfoView : MonoBehaviour
   {
@@ -13,27 +10,27 @@ namespace Engine.Impl.UI.Menu.Protagonist.MindMap
 
     public void Hide()
     {
-      this.followedRect = (RectTransform) null;
+      followedRect = (RectTransform) null;
       this.gameObject.SetActive(false);
     }
 
     public void Show(RectTransform followedRect, string text, bool hasMindMapNode)
     {
       this.followedRect = followedRect;
-      this.textView.text = text;
-      this.mindMapCallTooltip.SetActive(hasMindMapNode);
+      textView.text = text;
+      mindMapCallTooltip.SetActive(hasMindMapNode);
       this.gameObject.SetActive(true);
-      this.UpdatePosition();
+      UpdatePosition();
     }
 
-    private void LateUpdate() => this.UpdatePosition();
+    private void LateUpdate() => UpdatePosition();
 
     private void UpdatePosition()
     {
       RectTransform transform1 = (RectTransform) this.transform;
       RectTransform transform2 = (RectTransform) this.GetComponentInParent<Canvas>().transform;
       Vector2 vector2 = new Vector2(transform2.sizeDelta.x, transform2.sizeDelta.y);
-      Vector2 position = (Vector2) this.followedRect.position;
+      Vector2 position = (Vector2) followedRect.position;
       position.x = Mathf.Round(position.x);
       position.y = Mathf.Round(position.y);
       position.x /= transform2.localScale.x;

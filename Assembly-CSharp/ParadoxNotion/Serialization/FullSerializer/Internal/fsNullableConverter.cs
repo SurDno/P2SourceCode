@@ -11,14 +11,14 @@ namespace ParadoxNotion.Serialization.FullSerializer.Internal
 
     public override fsResult TrySerialize(object instance, out fsData serialized, Type storageType)
     {
-      return this.Serializer.TrySerialize(Nullable.GetUnderlyingType(storageType), instance, out serialized);
+      return Serializer.TrySerialize(Nullable.GetUnderlyingType(storageType), instance, out serialized);
     }
 
     public override fsResult TryDeserialize(fsData data, ref object instance, Type storageType)
     {
-      return this.Serializer.TryDeserialize(data, Nullable.GetUnderlyingType(storageType), ref instance);
+      return Serializer.TryDeserialize(data, Nullable.GetUnderlyingType(storageType), ref instance);
     }
 
-    public override object CreateInstance(fsData data, Type storageType) => (object) storageType;
+    public override object CreateInstance(fsData data, Type storageType) => storageType;
   }
 }

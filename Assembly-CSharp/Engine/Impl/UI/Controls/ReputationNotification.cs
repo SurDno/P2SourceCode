@@ -11,9 +11,6 @@ using Engine.Source.Audio;
 using Engine.Source.Components;
 using Engine.Source.Services.Notifications;
 using Inspectors;
-using System;
-using UnityEngine;
-using UnityEngine.Audio;
 
 namespace Engine.Impl.UI.Controls
 {
@@ -57,71 +54,71 @@ namespace Engine.Impl.UI.Controls
 
     private void OnReputationChange(float newTarget)
     {
-      float progress1 = this.targetReputationView.Progress;
-      float progress2 = this.oldReputationView.Progress;
+      float progress1 = targetReputationView.Progress;
+      float progress2 = oldReputationView.Progress;
       if ((double) Mathf.Sign(newTarget - progress2) != (double) Mathf.Sign(progress1 - progress2))
-        this.StartChange(progress1, newTarget);
+        StartChange(progress1, newTarget);
       else
-        this.StartChange(progress2, newTarget);
-      this.progress = Mathf.Min(this.progress, Mathf.Min(this.time - this.progress, this.fade));
+        StartChange(progress2, newTarget);
+      progress = Mathf.Min(progress, Mathf.Min(time - progress, fade));
     }
 
     private void Update()
     {
-      if (this.Complete || !(this.ui.Active is HudWindow))
+      if (Complete || !(ui.Active is HudWindow))
         return;
-      if (!this.play)
+      if (!play)
       {
-        this.Play();
-        this.play = true;
+        Play();
+        play = true;
       }
-      this.progress += Time.deltaTime;
-      if ((double) this.progress > (double) this.time)
+      progress += Time.deltaTime;
+      if (progress > (double) time)
       {
-        this.Complete = true;
-        this.reputationParameter.ChangeValueEvent -= new Action<float>(this.OnReputationChange);
+        Complete = true;
+        reputationParameter.ChangeValueEvent -= OnReputationChange;
       }
       else
-        this.SetAlpha(SoundUtility.ComputeFade(this.progress, this.time, this.fade));
+        SetAlpha(SoundUtility.ComputeFade(progress, time, fade));
     }
 
     private void Play()
     {
-      if ((UnityEngine.Object) this.clip == (UnityEngine.Object) null || (UnityEngine.Object) this.mixer == (UnityEngine.Object) null)
+      if ((UnityEngine.Object) clip == (UnityEngine.Object) null || (UnityEngine.Object) mixer == (UnityEngine.Object) null)
         return;
-      SoundUtility.PlayAudioClip2D(this.clip, this.mixer, 1f, 0.0f, context: this.gameObject.GetFullName());
+      SoundUtility.PlayAudioClip2D(clip, mixer, 1f, 0.0f, context: this.gameObject.GetFullName());
     }
 
     protected override void Awake()
     {
       base.Awake();
-      this.ui = ServiceLocator.GetService<UIService>();
-      this.SetAlpha(0.0f);
+      ui = ServiceLocator.GetService<UIService>();
+      SetAlpha(0.0f);
     }
 
     public void Initialise(NotificationEnum type, object[] values)
     {
-      this.Type = type;
-      IRegionComponent result1 = (IRegionComponent) null;
+      Type = type;
+      IRegionComponent result1 = null;
       float result2 = 0.0f;
-      this.ApplyValue<IRegionComponent>(ref result1, values, 0);
-      this.ApplyValue<float>(ref result2, values, 1);
+      ApplyValue(ref result1, values, 0);
+      ApplyValue(ref result2, values, 1);
       if (result1 == null)
       {
         Debug.LogError((object) "Notifications : Reputation : No region parameter");
       }
       else
       {
-        this.textRegion.Signature = this.GetRegionName(result1);
+        textRegion.Signature = GetRegionName(result1);
         foreach (IRegionComponent nearRegion in ServiceLocator.GetService<ISimulation>().Player.GetComponent<PlayerControllerComponent>().GetNearRegions(result1))
         {
-          Localizer localizer = UnityEngine.Object.Instantiate<Localizer>(this.nearRegionText, this.nearRegionText.transform.parent, false);
-          localizer.Signature = this.GetRegionName(nearRegion);
+          Localizer localizer = UnityEngine.Object.Instantiate<Localizer>(nearRegionText, nearRegionText.transform.parent, false);
+          localizer.Signature = GetRegionName(nearRegion);
           localizer.gameObject.SetActive(true);
         }
-        this.reputationParameter = result1.Reputation;
-        this.reputationParameter.ChangeValueEvent += new Action<float>(this.OnReputationChange);
-        this.StartChange(result2, this.reputationParameter.Value);
+        reputationParameter = result1.Reputation;
+        reputationParameter.ChangeValueEvent += OnReputationChange;
+        StartChange(result2, reputationParameter.Value);
       }
     }
 
@@ -129,19 +126,19 @@ namespace Engine.Impl.UI.Controls
     {
       float f = newReputation - oldReputation;
       float num = Mathf.Sign(f);
-      if ((double) f * (double) num < (double) this.minStepAnimation)
-        oldReputation = newReputation - this.minStepAnimation * num;
-      this.oldReputationView.Progress = Mathf.Clamp01(oldReputation);
-      this.targetReputationView.Progress = newReputation;
-      this.downEffect.Visible = (double) num == -1.0;
-      this.upEffect.Visible = (double) num == 1.0;
+      if (f * (double) num < minStepAnimation)
+        oldReputation = newReputation - minStepAnimation * num;
+      oldReputationView.Progress = Mathf.Clamp01(oldReputation);
+      targetReputationView.Progress = newReputation;
+      downEffect.Visible = num == -1.0;
+      upEffect.Visible = num == 1.0;
     }
 
     private string GetRegionName(IRegionComponent region)
     {
       LocalizationService service = ServiceLocator.GetService<LocalizationService>();
       IMapItemComponent component = region.GetComponent<IMapItemComponent>();
-      string regionName = (string) null;
+      string regionName = null;
       if (component != null)
       {
         LocalizedText title = component.Title;
@@ -157,10 +154,10 @@ namespace Engine.Impl.UI.Controls
 
     private void SetAlpha(float value)
     {
-      if ((double) this.alpha == (double) value)
+      if (alpha == (double) value)
         return;
-      this.alpha = value;
-      this.canvasGroup.alpha = this.alpha;
+      alpha = value;
+      canvasGroup.alpha = alpha;
     }
 
     private void ApplyValue<T>(ref T result, object[] values, int index)

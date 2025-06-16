@@ -1,9 +1,6 @@
-﻿using Engine.Behaviours.Localization;
+﻿using System;
+using Engine.Behaviours.Localization;
 using Engine.Impl.UI.Controls;
-using System;
-using UnityEngine;
-using UnityEngine.Events;
-using UnityEngine.UI;
 
 public class SelectableSettingsItemView : MonoBehaviour, ISelectable
 {
@@ -19,43 +16,43 @@ public class SelectableSettingsItemView : MonoBehaviour, ISelectable
   private Button button;
   public Action<SelectableSettingsItemView> ClickEvent;
   private bool interactable = true;
-  private bool selected = false;
+  private bool selected;
 
   public bool Selected
   {
-    get => this.selected;
+    get => selected;
     set
     {
-      if (this.selected == value)
+      if (selected == value)
         return;
-      this.selected = value;
-      if (!((UnityEngine.Object) this.selectedView != (UnityEngine.Object) null))
+      selected = value;
+      if (!((UnityEngine.Object) selectedView != (UnityEngine.Object) null))
         return;
-      this.selectedView.Visible = value;
+      selectedView.Visible = value;
     }
   }
 
   public bool Interactable
   {
-    get => this.interactable;
+    get => interactable;
     set
     {
-      if (this.interactable == value)
+      if (interactable == value)
         return;
-      this.interactable = value;
-      if (!((UnityEngine.Object) this.interactableView != (UnityEngine.Object) null))
+      interactable = value;
+      if (!((UnityEngine.Object) interactableView != (UnityEngine.Object) null))
         return;
-      this.interactableView.Visible = this.interactable;
+      interactableView.Visible = interactable;
     }
   }
 
-  private void Awake() => this.button.onClick.AddListener(new UnityAction(this.OnClick));
+  private void Awake() => button.onClick.AddListener(new UnityAction(OnClick));
 
   private void OnClick()
   {
-    if (!this.interactable)
+    if (!interactable)
       return;
-    Action<SelectableSettingsItemView> clickEvent = this.ClickEvent;
+    Action<SelectableSettingsItemView> clickEvent = ClickEvent;
     if (clickEvent == null)
       return;
     clickEvent(this);
@@ -63,15 +60,15 @@ public class SelectableSettingsItemView : MonoBehaviour, ISelectable
 
   public void SetName(string value)
   {
-    if (!((UnityEngine.Object) this.nameText != (UnityEngine.Object) null))
+    if (!((UnityEngine.Object) nameText != (UnityEngine.Object) null))
       return;
-    this.nameText.Signature = value;
+    nameText.Signature = value;
   }
 
   public void SetValue(string value)
   {
-    if (!((UnityEngine.Object) this.valueText != (UnityEngine.Object) null))
+    if (!((UnityEngine.Object) valueText != (UnityEngine.Object) null))
       return;
-    this.valueText.Signature = value;
+    valueText.Signature = value;
   }
 }

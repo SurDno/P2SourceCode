@@ -1,7 +1,7 @@
-﻿using Engine.Common;
+﻿using System;
+using Engine.Common;
 using Engine.Common.Components;
 using PLVirtualMachine.Common.EngineAPI.VMECS.VMAttributes;
-using System;
 
 namespace PLVirtualMachine.Common.EngineAPI.VMECS
 {
@@ -12,26 +12,26 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
 
     public override void Clear()
     {
-      if (!this.InstanceValid)
+      if (!InstanceValid)
         return;
-      this.Component.OnSee -= new Action<IDetectableComponent>(this.FireOnSee);
-      this.Component.OnStopSee -= new Action<IDetectableComponent>(this.FireOnStopSee);
-      this.Component.OnHear -= new Action<IDetectableComponent>(this.FireHear);
+      Component.OnSee -= FireOnSee;
+      Component.OnStopSee -= FireOnStopSee;
+      Component.OnHear -= FireHear;
       base.Clear();
     }
 
     protected override void Init()
     {
-      if (this.IsTemplate)
+      if (IsTemplate)
         return;
-      this.Component.OnSee += new Action<IDetectableComponent>(this.FireOnSee);
-      this.Component.OnStopSee += new Action<IDetectableComponent>(this.FireOnStopSee);
-      this.Component.OnHear += new Action<IDetectableComponent>(this.FireHear);
+      Component.OnSee += FireOnSee;
+      Component.OnStopSee += FireOnStopSee;
+      Component.OnHear += FireHear;
     }
 
     private void FireOnSee(IDetectableComponent target)
     {
-      Action<IEntity> onSee = this.OnSee;
+      Action<IEntity> onSee = OnSee;
       if (onSee == null)
         return;
       onSee(target.Owner);
@@ -39,7 +39,7 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
 
     private void FireOnStopSee(IDetectableComponent target)
     {
-      Action<IEntity> onStopSee = this.OnStopSee;
+      Action<IEntity> onStopSee = OnStopSee;
       if (onStopSee == null)
         return;
       onStopSee(target.Owner);
@@ -47,7 +47,7 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
 
     private void FireHear(IDetectableComponent target)
     {
-      Action<IEntity> onHear = this.OnHear;
+      Action<IEntity> onHear = OnHear;
       if (onHear == null)
         return;
       onHear(target.Owner);
@@ -65,8 +65,8 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
     [Property("Enabled", "", false, true, false)]
     public bool DetectorEnabled
     {
-      get => this.Component.IsEnabled;
-      set => this.Component.IsEnabled = value;
+      get => Component.IsEnabled;
+      set => Component.IsEnabled = value;
     }
   }
 }

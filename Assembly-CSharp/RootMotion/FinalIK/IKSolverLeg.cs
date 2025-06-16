@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEngine;
 
 namespace RootMotion.FinalIK
 {
@@ -9,11 +8,11 @@ namespace RootMotion.FinalIK
     [Range(0.0f, 1f)]
     public float IKRotationWeight = 1f;
     public Quaternion IKRotation = Quaternion.identity;
-    public IKSolver.Point pelvis = new IKSolver.Point();
-    public IKSolver.Point thigh = new IKSolver.Point();
-    public IKSolver.Point calf = new IKSolver.Point();
-    public IKSolver.Point foot = new IKSolver.Point();
-    public IKSolver.Point toe = new IKSolver.Point();
+    public Point pelvis = new Point();
+    public Point thigh = new Point();
+    public Point calf = new Point();
+    public Point foot = new Point();
+    public Point toe = new Point();
     public IKSolverVR.Leg leg = new IKSolverVR.Leg();
     public Vector3 heelOffset;
     private Vector3[] positions = new Vector3[6];
@@ -21,18 +20,18 @@ namespace RootMotion.FinalIK
 
     public override bool IsValid(ref string message)
     {
-      if ((UnityEngine.Object) this.pelvis.transform == (UnityEngine.Object) null || (UnityEngine.Object) this.thigh.transform == (UnityEngine.Object) null || (UnityEngine.Object) this.calf.transform == (UnityEngine.Object) null || (UnityEngine.Object) this.foot.transform == (UnityEngine.Object) null || (UnityEngine.Object) this.toe.transform == (UnityEngine.Object) null)
+      if ((UnityEngine.Object) pelvis.transform == (UnityEngine.Object) null || (UnityEngine.Object) thigh.transform == (UnityEngine.Object) null || (UnityEngine.Object) calf.transform == (UnityEngine.Object) null || (UnityEngine.Object) foot.transform == (UnityEngine.Object) null || (UnityEngine.Object) toe.transform == (UnityEngine.Object) null)
       {
         message = "Please assign all bone slots of the Leg IK solver.";
         return false;
       }
       Transform transform = (Transform) Hierarchy.ContainsDuplicate((UnityEngine.Object[]) new Transform[5]
       {
-        this.pelvis.transform,
-        this.thigh.transform,
-        this.calf.transform,
-        this.foot.transform,
-        this.toe.transform
+        pelvis.transform,
+        thigh.transform,
+        calf.transform,
+        foot.transform,
+        toe.transform
       });
       if (!((UnityEngine.Object) transform != (UnityEngine.Object) null))
         return true;
@@ -53,104 +52,104 @@ namespace RootMotion.FinalIK
       this.calf.transform = calf;
       this.foot.transform = foot;
       this.toe.transform = toe;
-      this.Initiate(root);
-      return this.initiated;
+      Initiate(root);
+      return initiated;
     }
 
-    public override IKSolver.Point[] GetPoints()
+    public override Point[] GetPoints()
     {
-      return new IKSolver.Point[5]
+      return new Point[5]
       {
-        this.pelvis,
-        this.thigh,
-        this.calf,
-        this.foot,
-        this.toe
+        pelvis,
+        thigh,
+        calf,
+        foot,
+        toe
       };
     }
 
-    public override IKSolver.Point GetPoint(Transform transform)
+    public override Point GetPoint(Transform transform)
     {
-      if ((UnityEngine.Object) this.pelvis.transform == (UnityEngine.Object) transform)
-        return this.pelvis;
-      if ((UnityEngine.Object) this.thigh.transform == (UnityEngine.Object) transform)
-        return this.thigh;
-      if ((UnityEngine.Object) this.calf.transform == (UnityEngine.Object) transform)
-        return this.calf;
-      if ((UnityEngine.Object) this.foot.transform == (UnityEngine.Object) transform)
-        return this.foot;
-      return (UnityEngine.Object) this.toe.transform == (UnityEngine.Object) transform ? this.toe : (IKSolver.Point) null;
+      if ((UnityEngine.Object) pelvis.transform == (UnityEngine.Object) transform)
+        return pelvis;
+      if ((UnityEngine.Object) thigh.transform == (UnityEngine.Object) transform)
+        return thigh;
+      if ((UnityEngine.Object) calf.transform == (UnityEngine.Object) transform)
+        return calf;
+      if ((UnityEngine.Object) foot.transform == (UnityEngine.Object) transform)
+        return foot;
+      return (UnityEngine.Object) toe.transform == (UnityEngine.Object) transform ? toe : null;
     }
 
     public override void StoreDefaultLocalState()
     {
-      this.thigh.StoreDefaultLocalState();
-      this.calf.StoreDefaultLocalState();
-      this.foot.StoreDefaultLocalState();
-      this.toe.StoreDefaultLocalState();
+      thigh.StoreDefaultLocalState();
+      calf.StoreDefaultLocalState();
+      foot.StoreDefaultLocalState();
+      toe.StoreDefaultLocalState();
     }
 
     public override void FixTransforms()
     {
-      if (!this.initiated)
+      if (!initiated)
         return;
-      this.thigh.FixTransform();
-      this.calf.FixTransform();
-      this.foot.FixTransform();
-      this.toe.FixTransform();
+      thigh.FixTransform();
+      calf.FixTransform();
+      foot.FixTransform();
+      toe.FixTransform();
     }
 
     protected override void OnInitiate()
     {
-      this.IKPosition = this.toe.transform.position;
-      this.IKRotation = this.toe.transform.rotation;
-      this.Read();
+      IKPosition = toe.transform.position;
+      IKRotation = toe.transform.rotation;
+      Read();
     }
 
     protected override void OnUpdate()
     {
-      this.Read();
-      this.Solve();
-      this.Write();
+      Read();
+      Solve();
+      Write();
     }
 
     private void Solve()
     {
-      this.leg.heelPositionOffset += this.heelOffset;
-      this.leg.PreSolve();
-      this.leg.ApplyOffsets();
-      this.leg.Solve();
-      this.leg.ResetOffsets();
+      leg.heelPositionOffset += heelOffset;
+      leg.PreSolve();
+      leg.ApplyOffsets();
+      leg.Solve();
+      leg.ResetOffsets();
     }
 
     private void Read()
     {
-      this.leg.IKPosition = this.IKPosition;
-      this.leg.positionWeight = this.IKPositionWeight;
-      this.leg.IKRotation = this.IKRotation;
-      this.leg.rotationWeight = this.IKRotationWeight;
-      this.positions[0] = this.root.position;
-      this.positions[1] = this.pelvis.transform.position;
-      this.positions[2] = this.thigh.transform.position;
-      this.positions[3] = this.calf.transform.position;
-      this.positions[4] = this.foot.transform.position;
-      this.positions[5] = this.toe.transform.position;
-      this.rotations[0] = this.root.rotation;
-      this.rotations[1] = this.pelvis.transform.rotation;
-      this.rotations[2] = this.thigh.transform.rotation;
-      this.rotations[3] = this.calf.transform.rotation;
-      this.rotations[4] = this.foot.transform.rotation;
-      this.rotations[5] = this.toe.transform.rotation;
-      this.leg.Read(this.positions, this.rotations, false, false, false, true, 1, 2);
+      leg.IKPosition = IKPosition;
+      leg.positionWeight = IKPositionWeight;
+      leg.IKRotation = IKRotation;
+      leg.rotationWeight = IKRotationWeight;
+      positions[0] = root.position;
+      positions[1] = pelvis.transform.position;
+      positions[2] = thigh.transform.position;
+      positions[3] = calf.transform.position;
+      positions[4] = foot.transform.position;
+      positions[5] = toe.transform.position;
+      rotations[0] = root.rotation;
+      rotations[1] = pelvis.transform.rotation;
+      rotations[2] = thigh.transform.rotation;
+      rotations[3] = calf.transform.rotation;
+      rotations[4] = foot.transform.rotation;
+      rotations[5] = toe.transform.rotation;
+      leg.Read(positions, rotations, false, false, false, true, 1, 2);
     }
 
     private void Write()
     {
-      this.leg.Write(ref this.positions, ref this.rotations);
-      this.thigh.transform.rotation = this.rotations[2];
-      this.calf.transform.rotation = this.rotations[3];
-      this.foot.transform.rotation = this.rotations[4];
-      this.toe.transform.rotation = this.rotations[5];
+      leg.Write(ref positions, ref rotations);
+      thigh.transform.rotation = rotations[2];
+      calf.transform.rotation = rotations[3];
+      foot.transform.rotation = rotations[4];
+      toe.transform.rotation = rotations[5];
     }
   }
 }

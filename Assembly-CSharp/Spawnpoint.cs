@@ -1,8 +1,6 @@
 ﻿using Engine.Common.Components.MessangerStationary;
 using Engine.Common.Services;
 using Engine.Source.Services;
-using UnityEngine;
-using UnityEngine.Serialization;
 
 public class Spawnpoint : MonoBehaviour
 {
@@ -10,7 +8,7 @@ public class Spawnpoint : MonoBehaviour
   [FormerlySerializedAs("SpawnpointKind")]
   private SpawnpointKindEnum spawnpointKind;
 
-  public SpawnpointKindEnum SpawnpointKind => this.spawnpointKind;
+  public SpawnpointKindEnum SpawnpointKind => spawnpointKind;
 
   public bool Locked { get; set; }
 

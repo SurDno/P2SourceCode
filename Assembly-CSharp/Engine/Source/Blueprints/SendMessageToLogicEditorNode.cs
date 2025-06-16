@@ -17,10 +17,10 @@ namespace Engine.Source.Blueprints
     [Port("In")]
     private void In()
     {
-      string name = this.eventNameInput.value;
+      string name = eventNameInput.value;
       if (name != null)
         ServiceLocator.GetService<LogicEventService>().FireCommonEvent(name);
-      this.output.Call();
+      output.Call();
     }
   }
 }

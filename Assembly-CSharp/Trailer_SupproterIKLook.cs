@@ -1,5 +1,4 @@
 ﻿using RootMotion.FinalIK;
-using UnityEngine;
 
 public class Trailer_SupproterIKLook : MonoBehaviour
 {
@@ -9,39 +8,39 @@ public class Trailer_SupproterIKLook : MonoBehaviour
   public float BodyWeightMax = 0.5f;
   public float HeadWeightMax = 1f;
   public float EyesWeightMax = 1f;
-  private bool startToHeadLook = false;
+  private bool startToHeadLook;
 
   private void Start()
   {
-    this.lookComponent = this.GetComponent<LookAtIK>();
-    this.ResetWeight();
+    lookComponent = this.GetComponent<LookAtIK>();
+    ResetWeight();
   }
 
   private void ResetWeight()
   {
-    this.lookComponent.solver.bodyWeight = 0.0f;
-    this.lookComponent.solver.headWeight = 0.0f;
-    this.lookComponent.solver.eyesWeight = 0.0f;
+    lookComponent.solver.bodyWeight = 0.0f;
+    lookComponent.solver.headWeight = 0.0f;
+    lookComponent.solver.eyesWeight = 0.0f;
   }
 
   private void Update()
   {
     if (Input.GetKeyDown(KeyCode.L))
-      this.startToHeadLook = !this.startToHeadLook;
-    if (this.startToHeadLook)
+      startToHeadLook = !startToHeadLook;
+    if (startToHeadLook)
     {
-      this.lookComponent.solver.bodyWeight += Time.deltaTime / this.SpeedLowerBody;
-      this.lookComponent.solver.headWeight += Time.deltaTime / this.SpeedLowerHead;
-      this.lookComponent.solver.eyesWeight += Time.deltaTime / this.SpeedLowerHead;
-      if ((double) this.lookComponent.solver.bodyWeight >= (double) this.BodyWeightMax)
-        this.lookComponent.solver.bodyWeight = this.BodyWeightMax;
-      if ((double) this.lookComponent.solver.headWeight >= (double) this.HeadWeightMax)
-        this.lookComponent.solver.headWeight = this.HeadWeightMax;
-      if ((double) this.lookComponent.solver.eyesWeight >= (double) this.EyesWeightMax)
-        this.lookComponent.solver.eyesWeight = this.EyesWeightMax;
+      lookComponent.solver.bodyWeight += Time.deltaTime / SpeedLowerBody;
+      lookComponent.solver.headWeight += Time.deltaTime / SpeedLowerHead;
+      lookComponent.solver.eyesWeight += Time.deltaTime / SpeedLowerHead;
+      if (lookComponent.solver.bodyWeight >= (double) BodyWeightMax)
+        lookComponent.solver.bodyWeight = BodyWeightMax;
+      if (lookComponent.solver.headWeight >= (double) HeadWeightMax)
+        lookComponent.solver.headWeight = HeadWeightMax;
+      if (lookComponent.solver.eyesWeight >= (double) EyesWeightMax)
+        lookComponent.solver.eyesWeight = EyesWeightMax;
     }
-    if (this.startToHeadLook || (double) this.lookComponent.solver.headWeight <= 0.0)
+    if (startToHeadLook || lookComponent.solver.headWeight <= 0.0)
       return;
-    this.ResetWeight();
+    ResetWeight();
   }
 }

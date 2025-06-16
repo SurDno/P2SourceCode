@@ -16,12 +16,12 @@
     {
       get
       {
-        if ((Object) GraphicsUtils.s_WhiteTexture != (Object) null)
-          return GraphicsUtils.s_WhiteTexture;
-        GraphicsUtils.s_WhiteTexture = new Texture2D(1, 1, TextureFormat.ARGB32, false);
-        GraphicsUtils.s_WhiteTexture.SetPixel(0, 0, new Color(1f, 1f, 1f, 1f));
-        GraphicsUtils.s_WhiteTexture.Apply();
-        return GraphicsUtils.s_WhiteTexture;
+        if ((Object) s_WhiteTexture != (Object) null)
+          return s_WhiteTexture;
+        s_WhiteTexture = new Texture2D(1, 1, TextureFormat.ARGB32, false);
+        s_WhiteTexture.SetPixel(0, 0, new Color(1f, 1f, 1f, 1f));
+        s_WhiteTexture.Apply();
+        return s_WhiteTexture;
       }
     }
 
@@ -29,8 +29,8 @@
     {
       get
       {
-        if ((Object) GraphicsUtils.s_Quad != (Object) null)
-          return GraphicsUtils.s_Quad;
+        if ((Object) s_Quad != (Object) null)
+          return s_Quad;
         Vector3[] vector3Array = new Vector3[4]
         {
           new Vector3(-1f, -1f, 0.0f),
@@ -46,15 +46,14 @@
           new Vector2(0.0f, 1f)
         };
         int[] numArray = new int[6]{ 0, 1, 2, 1, 0, 3 };
-        GraphicsUtils.s_Quad = new Mesh()
-        {
+        s_Quad = new Mesh {
           vertices = vector3Array,
           uv = vector2Array,
           triangles = numArray
         };
-        GraphicsUtils.s_Quad.RecalculateNormals();
-        GraphicsUtils.s_Quad.RecalculateBounds();
-        return GraphicsUtils.s_Quad;
+        s_Quad.RecalculateNormals();
+        s_Quad.RecalculateBounds();
+        return s_Quad;
       }
     }
 
@@ -112,6 +111,6 @@
       Object.Destroy(obj);
     }
 
-    public static void Dispose() => GraphicsUtils.Destroy((Object) GraphicsUtils.s_Quad);
+    public static void Dispose() => Destroy((Object) s_Quad);
   }
 }

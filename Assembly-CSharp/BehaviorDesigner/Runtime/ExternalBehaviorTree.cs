@@ -1,7 +1,5 @@
-﻿using BehaviorDesigner.Runtime.Tasks;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.Serialization;
+﻿using System.Collections.Generic;
+using BehaviorDesigner.Runtime.Tasks;
 
 namespace BehaviorDesigner.Runtime
 {
@@ -13,8 +11,8 @@ namespace BehaviorDesigner.Runtime
 
     public BehaviorSource BehaviorSource
     {
-      get => this.behaviorSource;
-      set => this.behaviorSource = value;
+      get => behaviorSource;
+      set => behaviorSource = value;
     }
 
     public Object GetObject() => (Object) this;
@@ -23,19 +21,19 @@ namespace BehaviorDesigner.Runtime
 
     public SharedVariable GetVariable(string name)
     {
-      this.CheckForSerialization();
-      return this.behaviorSource.GetVariable(name);
+      CheckForSerialization();
+      return behaviorSource.GetVariable(name);
     }
 
     public void SetVariable(string name, SharedVariable item)
     {
-      this.CheckForSerialization();
-      this.behaviorSource.SetVariable(name, item);
+      CheckForSerialization();
+      behaviorSource.SetVariable(name, item);
     }
 
     public void SetVariableValue(string name, object value)
     {
-      this.GetVariable(name)?.SetValue(value);
+      GetVariable(name)?.SetValue(value);
     }
 
     private T FindTask<T>(Task task) where T : Task
@@ -48,7 +46,7 @@ namespace BehaviorDesigner.Runtime
         {
           T obj = default (T);
           T task1;
-          if ((object) (task1 = this.FindTask<T>(parentTask.Children[index])) != null)
+          if ((task1 = FindTask<T>(parentTask.Children[index])) != null)
             return task1;
         }
       }
@@ -62,13 +60,13 @@ namespace BehaviorDesigner.Runtime
       if (!(task is ParentTask parentTask) || parentTask.Children == null)
         return;
       for (int index = 0; index < parentTask.Children.Count; ++index)
-        this.FindTasks<T>(parentTask.Children[index], ref taskList);
+        FindTasks(parentTask.Children[index], ref taskList);
     }
 
     private void CheckForSerialization()
     {
-      this.behaviorSource.Owner = (IBehaviorTree) this;
-      this.behaviorSource.CheckForSerialization(false, (BehaviorSource) null, this.GetOwnerName());
+      behaviorSource.Owner = this;
+      behaviorSource.CheckForSerialization(false, null, GetOwnerName());
     }
 
     private Task FindTaskWithName(string taskName, Task task)
@@ -80,11 +78,11 @@ namespace BehaviorDesigner.Runtime
         for (int index = 0; index < parentTask.Children.Count; ++index)
         {
           Task taskWithName;
-          if ((taskWithName = this.FindTaskWithName(taskName, parentTask.Children[index])) != null)
+          if ((taskWithName = FindTaskWithName(taskName, parentTask.Children[index])) != null)
             return taskWithName;
         }
       }
-      return (Task) null;
+      return null;
     }
 
     private void FindTasksWithName(string taskName, Task task, ref List<Task> taskList)
@@ -94,7 +92,7 @@ namespace BehaviorDesigner.Runtime
       if (!(task is ParentTask parentTask) || parentTask.Children == null)
         return;
       for (int index = 0; index < parentTask.Children.Count; ++index)
-        this.FindTasksWithName(taskName, parentTask.Children[index], ref taskList);
+        FindTasksWithName(taskName, parentTask.Children[index], ref taskList);
     }
 
     int IBehaviorTree.GetInstanceID() => this.GetInstanceID();

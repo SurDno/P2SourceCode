@@ -2,7 +2,7 @@
 
 namespace PLVirtualMachine.Common.Serialization
 {
-  [AttributeUsage(AttributeTargets.Field, AllowMultiple = false, Inherited = false)]
+  [AttributeUsage(AttributeTargets.Field)]
   public class SerializableAttribute : Attribute
   {
     public bool IsGuid;

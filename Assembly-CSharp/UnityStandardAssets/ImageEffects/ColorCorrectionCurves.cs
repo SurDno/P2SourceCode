@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace UnityStandardAssets.ImageEffects
+﻿namespace UnityStandardAssets.ImageEffects
 {
   [ExecuteInEditMode]
   [AddComponentMenu("Image Effects/Color Adjustments/Color Correction (Curves, Saturation)")]
@@ -52,7 +50,7 @@ namespace UnityStandardAssets.ImageEffects
     public bool selectiveCc = false;
     public Color selectiveFromColor = Color.white;
     public Color selectiveToColor = Color.white;
-    public ColorCorrectionCurves.ColorCorrectionMode mode;
+    public ColorCorrectionMode mode;
     public bool updateTextures = true;
     public Shader colorCorrectionCurvesShader = (Shader) null;
     public Shader simpleColorCorrectionCurvesShader = (Shader) null;
@@ -62,7 +60,7 @@ namespace UnityStandardAssets.ImageEffects
     private new void Start()
     {
       base.Start();
-      this.updateTexturesOnStartup = true;
+      updateTexturesOnStartup = true;
     }
 
     private void Awake()
@@ -71,93 +69,93 @@ namespace UnityStandardAssets.ImageEffects
 
     public override bool CheckResources()
     {
-      this.CheckSupport(this.mode == ColorCorrectionCurves.ColorCorrectionMode.Advanced);
-      this.ccMaterial = this.CheckShaderAndCreateMaterial(this.simpleColorCorrectionCurvesShader, this.ccMaterial);
-      this.ccDepthMaterial = this.CheckShaderAndCreateMaterial(this.colorCorrectionCurvesShader, this.ccDepthMaterial);
-      this.selectiveCcMaterial = this.CheckShaderAndCreateMaterial(this.colorCorrectionSelectiveShader, this.selectiveCcMaterial);
-      if (!(bool) (Object) this.rgbChannelTex)
-        this.rgbChannelTex = new Texture2D(256, 4, TextureFormat.ARGB32, false, true);
-      if (!(bool) (Object) this.rgbDepthChannelTex)
-        this.rgbDepthChannelTex = new Texture2D(256, 4, TextureFormat.ARGB32, false, true);
-      if (!(bool) (Object) this.zCurveTex)
-        this.zCurveTex = new Texture2D(256, 1, TextureFormat.ARGB32, false, true);
-      this.rgbChannelTex.hideFlags = HideFlags.DontSave;
-      this.rgbDepthChannelTex.hideFlags = HideFlags.DontSave;
-      this.zCurveTex.hideFlags = HideFlags.DontSave;
-      this.rgbChannelTex.wrapMode = TextureWrapMode.Clamp;
-      this.rgbDepthChannelTex.wrapMode = TextureWrapMode.Clamp;
-      this.zCurveTex.wrapMode = TextureWrapMode.Clamp;
-      if (!this.isSupported)
-        this.ReportAutoDisable();
-      return this.isSupported;
+      CheckSupport(mode == ColorCorrectionMode.Advanced);
+      ccMaterial = CheckShaderAndCreateMaterial(simpleColorCorrectionCurvesShader, ccMaterial);
+      ccDepthMaterial = CheckShaderAndCreateMaterial(colorCorrectionCurvesShader, ccDepthMaterial);
+      selectiveCcMaterial = CheckShaderAndCreateMaterial(colorCorrectionSelectiveShader, selectiveCcMaterial);
+      if (!(bool) (Object) rgbChannelTex)
+        rgbChannelTex = new Texture2D(256, 4, TextureFormat.ARGB32, false, true);
+      if (!(bool) (Object) rgbDepthChannelTex)
+        rgbDepthChannelTex = new Texture2D(256, 4, TextureFormat.ARGB32, false, true);
+      if (!(bool) (Object) zCurveTex)
+        zCurveTex = new Texture2D(256, 1, TextureFormat.ARGB32, false, true);
+      rgbChannelTex.hideFlags = HideFlags.DontSave;
+      rgbDepthChannelTex.hideFlags = HideFlags.DontSave;
+      zCurveTex.hideFlags = HideFlags.DontSave;
+      rgbChannelTex.wrapMode = TextureWrapMode.Clamp;
+      rgbDepthChannelTex.wrapMode = TextureWrapMode.Clamp;
+      zCurveTex.wrapMode = TextureWrapMode.Clamp;
+      if (!isSupported)
+        ReportAutoDisable();
+      return isSupported;
     }
 
     public void UpdateParameters()
     {
-      this.CheckResources();
-      if (this.redChannel == null || this.greenChannel == null || this.blueChannel == null)
+      CheckResources();
+      if (redChannel == null || greenChannel == null || blueChannel == null)
         return;
-      for (float time = 0.0f; (double) time <= 1.0; time += 0.003921569f)
+      for (float time = 0.0f; time <= 1.0; time += 0.003921569f)
       {
-        float num1 = Mathf.Clamp(this.redChannel.Evaluate(time), 0.0f, 1f);
-        float num2 = Mathf.Clamp(this.greenChannel.Evaluate(time), 0.0f, 1f);
-        float num3 = Mathf.Clamp(this.blueChannel.Evaluate(time), 0.0f, 1f);
-        this.rgbChannelTex.SetPixel((int) Mathf.Floor(time * (float) byte.MaxValue), 0, new Color(num1, num1, num1));
-        this.rgbChannelTex.SetPixel((int) Mathf.Floor(time * (float) byte.MaxValue), 1, new Color(num2, num2, num2));
-        this.rgbChannelTex.SetPixel((int) Mathf.Floor(time * (float) byte.MaxValue), 2, new Color(num3, num3, num3));
-        float num4 = Mathf.Clamp(this.zCurve.Evaluate(time), 0.0f, 1f);
-        this.zCurveTex.SetPixel((int) Mathf.Floor(time * (float) byte.MaxValue), 0, new Color(num4, num4, num4));
-        float num5 = Mathf.Clamp(this.depthRedChannel.Evaluate(time), 0.0f, 1f);
-        float num6 = Mathf.Clamp(this.depthGreenChannel.Evaluate(time), 0.0f, 1f);
-        float num7 = Mathf.Clamp(this.depthBlueChannel.Evaluate(time), 0.0f, 1f);
-        this.rgbDepthChannelTex.SetPixel((int) Mathf.Floor(time * (float) byte.MaxValue), 0, new Color(num5, num5, num5));
-        this.rgbDepthChannelTex.SetPixel((int) Mathf.Floor(time * (float) byte.MaxValue), 1, new Color(num6, num6, num6));
-        this.rgbDepthChannelTex.SetPixel((int) Mathf.Floor(time * (float) byte.MaxValue), 2, new Color(num7, num7, num7));
+        float num1 = Mathf.Clamp(redChannel.Evaluate(time), 0.0f, 1f);
+        float num2 = Mathf.Clamp(greenChannel.Evaluate(time), 0.0f, 1f);
+        float num3 = Mathf.Clamp(blueChannel.Evaluate(time), 0.0f, 1f);
+        rgbChannelTex.SetPixel((int) Mathf.Floor(time * byte.MaxValue), 0, new Color(num1, num1, num1));
+        rgbChannelTex.SetPixel((int) Mathf.Floor(time * byte.MaxValue), 1, new Color(num2, num2, num2));
+        rgbChannelTex.SetPixel((int) Mathf.Floor(time * byte.MaxValue), 2, new Color(num3, num3, num3));
+        float num4 = Mathf.Clamp(zCurve.Evaluate(time), 0.0f, 1f);
+        zCurveTex.SetPixel((int) Mathf.Floor(time * byte.MaxValue), 0, new Color(num4, num4, num4));
+        float num5 = Mathf.Clamp(depthRedChannel.Evaluate(time), 0.0f, 1f);
+        float num6 = Mathf.Clamp(depthGreenChannel.Evaluate(time), 0.0f, 1f);
+        float num7 = Mathf.Clamp(depthBlueChannel.Evaluate(time), 0.0f, 1f);
+        rgbDepthChannelTex.SetPixel((int) Mathf.Floor(time * byte.MaxValue), 0, new Color(num5, num5, num5));
+        rgbDepthChannelTex.SetPixel((int) Mathf.Floor(time * byte.MaxValue), 1, new Color(num6, num6, num6));
+        rgbDepthChannelTex.SetPixel((int) Mathf.Floor(time * byte.MaxValue), 2, new Color(num7, num7, num7));
       }
-      this.rgbChannelTex.Apply();
-      this.rgbDepthChannelTex.Apply();
-      this.zCurveTex.Apply();
+      rgbChannelTex.Apply();
+      rgbDepthChannelTex.Apply();
+      zCurveTex.Apply();
     }
 
-    private void UpdateTextures() => this.UpdateParameters();
+    private void UpdateTextures() => UpdateParameters();
 
     private void OnRenderImage(RenderTexture source, RenderTexture destination)
     {
-      if (!this.CheckResources())
+      if (!CheckResources())
       {
         Graphics.Blit((Texture) source, destination);
       }
       else
       {
-        if (this.updateTexturesOnStartup)
+        if (updateTexturesOnStartup)
         {
-          this.UpdateParameters();
-          this.updateTexturesOnStartup = false;
+          UpdateParameters();
+          updateTexturesOnStartup = false;
         }
-        if (this.useDepthCorrection)
+        if (useDepthCorrection)
           this.GetComponent<Camera>().depthTextureMode |= DepthTextureMode.Depth;
         RenderTexture renderTexture = destination;
-        if (this.selectiveCc)
+        if (selectiveCc)
           renderTexture = RenderTexture.GetTemporary(source.width, source.height);
-        if (this.useDepthCorrection)
+        if (useDepthCorrection)
         {
-          this.ccDepthMaterial.SetTexture("_RgbTex", (Texture) this.rgbChannelTex);
-          this.ccDepthMaterial.SetTexture("_ZCurve", (Texture) this.zCurveTex);
-          this.ccDepthMaterial.SetTexture("_RgbDepthTex", (Texture) this.rgbDepthChannelTex);
-          this.ccDepthMaterial.SetFloat("_Saturation", this.saturation);
-          Graphics.Blit((Texture) source, renderTexture, this.ccDepthMaterial);
+          ccDepthMaterial.SetTexture("_RgbTex", (Texture) rgbChannelTex);
+          ccDepthMaterial.SetTexture("_ZCurve", (Texture) zCurveTex);
+          ccDepthMaterial.SetTexture("_RgbDepthTex", (Texture) rgbDepthChannelTex);
+          ccDepthMaterial.SetFloat("_Saturation", saturation);
+          Graphics.Blit((Texture) source, renderTexture, ccDepthMaterial);
         }
         else
         {
-          this.ccMaterial.SetTexture("_RgbTex", (Texture) this.rgbChannelTex);
-          this.ccMaterial.SetFloat("_Saturation", this.saturation);
-          Graphics.Blit((Texture) source, renderTexture, this.ccMaterial);
+          ccMaterial.SetTexture("_RgbTex", (Texture) rgbChannelTex);
+          ccMaterial.SetFloat("_Saturation", saturation);
+          Graphics.Blit((Texture) source, renderTexture, ccMaterial);
         }
-        if (!this.selectiveCc)
+        if (!selectiveCc)
           return;
-        this.selectiveCcMaterial.SetColor("selColor", this.selectiveFromColor);
-        this.selectiveCcMaterial.SetColor("targetColor", this.selectiveToColor);
-        Graphics.Blit((Texture) renderTexture, destination, this.selectiveCcMaterial);
+        selectiveCcMaterial.SetColor("selColor", selectiveFromColor);
+        selectiveCcMaterial.SetColor("targetColor", selectiveToColor);
+        Graphics.Blit((Texture) renderTexture, destination, selectiveCcMaterial);
         RenderTexture.ReleaseTemporary(renderTexture);
       }
     }

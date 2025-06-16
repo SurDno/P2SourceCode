@@ -1,6 +1,6 @@
-﻿using Facepunch.Steamworks;
-using System;
+﻿using System;
 using System.Runtime.InteropServices;
+using Facepunch.Steamworks;
 
 namespace SteamNative
 {
@@ -14,7 +14,7 @@ namespace SteamNative
 
     public static SteamAPICallCompleted_t FromPointer(IntPtr p)
     {
-      return Platform.PackSmall ? (SteamAPICallCompleted_t) (SteamAPICallCompleted_t.PackSmall) Marshal.PtrToStructure(p, typeof (SteamAPICallCompleted_t.PackSmall)) : (SteamAPICallCompleted_t) Marshal.PtrToStructure(p, typeof (SteamAPICallCompleted_t));
+      return Platform.PackSmall ? (PackSmall) Marshal.PtrToStructure(p, typeof (PackSmall)) : (SteamAPICallCompleted_t) Marshal.PtrToStructure(p, typeof (SteamAPICallCompleted_t));
     }
 
     public static void RegisterCallback(
@@ -25,54 +25,51 @@ namespace SteamNative
       handle.steamworks = steamworks;
       if (Config.UseThisCall)
       {
-        SteamNative.Callback.ThisCall.Result d1 = (SteamNative.Callback.ThisCall.Result) ((_, p) => CallbackFunction(SteamAPICallCompleted_t.FromPointer(p), false));
-        SteamNative.Callback.ThisCall.ResultWithInfo d2 = (SteamNative.Callback.ThisCall.ResultWithInfo) ((_, p, bIOFailure, hSteamAPICall) => CallbackFunction(SteamAPICallCompleted_t.FromPointer(p), bIOFailure));
-        SteamNative.Callback.ThisCall.GetSize d3 = (SteamNative.Callback.ThisCall.GetSize) (_ => Marshal.SizeOf(typeof (SteamAPICallCompleted_t)));
+        Callback.ThisCall.Result d1 = (_, p) => CallbackFunction(FromPointer(p), false);
+        Callback.ThisCall.ResultWithInfo d2 = (_, p, bIOFailure, hSteamAPICall) => CallbackFunction(FromPointer(p), bIOFailure);
+        Callback.ThisCall.GetSize d3 = _ => Marshal.SizeOf(typeof (SteamAPICallCompleted_t));
         if (Platform.PackSmall)
-          d3 = (SteamNative.Callback.ThisCall.GetSize) (_ => Marshal.SizeOf(typeof (SteamAPICallCompleted_t.PackSmall)));
-        handle.FuncA = GCHandle.Alloc((object) d1);
-        handle.FuncB = GCHandle.Alloc((object) d2);
-        handle.FuncC = GCHandle.Alloc((object) d3);
-        handle.vTablePtr = Marshal.AllocHGlobal(Marshal.SizeOf(typeof (SteamNative.Callback.VTable)));
-        SteamNative.Callback.VTable structure = new SteamNative.Callback.VTable()
-        {
-          ResultA = Marshal.GetFunctionPointerForDelegate<SteamNative.Callback.ThisCall.Result>(d1),
-          ResultB = Marshal.GetFunctionPointerForDelegate<SteamNative.Callback.ThisCall.ResultWithInfo>(d2),
-          GetSize = Marshal.GetFunctionPointerForDelegate<SteamNative.Callback.ThisCall.GetSize>(d3)
+          d3 = _ => Marshal.SizeOf(typeof (PackSmall));
+        handle.FuncA = GCHandle.Alloc(d1);
+        handle.FuncB = GCHandle.Alloc(d2);
+        handle.FuncC = GCHandle.Alloc(d3);
+        handle.vTablePtr = Marshal.AllocHGlobal(Marshal.SizeOf(typeof (Callback.VTable)));
+        Callback.VTable structure = new Callback.VTable {
+          ResultA = Marshal.GetFunctionPointerForDelegate(d1),
+          ResultB = Marshal.GetFunctionPointerForDelegate(d2),
+          GetSize = Marshal.GetFunctionPointerForDelegate(d3)
         };
         if (Platform.IsWindows)
         {
-          structure.ResultA = Marshal.GetFunctionPointerForDelegate<SteamNative.Callback.ThisCall.ResultWithInfo>(d2);
-          structure.ResultB = Marshal.GetFunctionPointerForDelegate<SteamNative.Callback.ThisCall.Result>(d1);
+          structure.ResultA = Marshal.GetFunctionPointerForDelegate(d2);
+          structure.ResultB = Marshal.GetFunctionPointerForDelegate(d1);
         }
-        Marshal.StructureToPtr<SteamNative.Callback.VTable>(structure, handle.vTablePtr, false);
+        Marshal.StructureToPtr(structure, handle.vTablePtr, false);
       }
       else
       {
-        SteamNative.Callback.StdCall.Result d4 = (SteamNative.Callback.StdCall.Result) (p => CallbackFunction(SteamAPICallCompleted_t.FromPointer(p), false));
-        SteamNative.Callback.StdCall.ResultWithInfo d5 = (SteamNative.Callback.StdCall.ResultWithInfo) ((p, bIOFailure, hSteamAPICall) => CallbackFunction(SteamAPICallCompleted_t.FromPointer(p), bIOFailure));
-        SteamNative.Callback.StdCall.GetSize d6 = (SteamNative.Callback.StdCall.GetSize) (() => Marshal.SizeOf(typeof (SteamAPICallCompleted_t)));
+        Callback.StdCall.Result d4 = p => CallbackFunction(FromPointer(p), false);
+        Callback.StdCall.ResultWithInfo d5 = (p, bIOFailure, hSteamAPICall) => CallbackFunction(FromPointer(p), bIOFailure);
+        Callback.StdCall.GetSize d6 = () => Marshal.SizeOf(typeof (SteamAPICallCompleted_t));
         if (Platform.PackSmall)
-          d6 = (SteamNative.Callback.StdCall.GetSize) (() => Marshal.SizeOf(typeof (SteamAPICallCompleted_t.PackSmall)));
-        handle.FuncA = GCHandle.Alloc((object) d4);
-        handle.FuncB = GCHandle.Alloc((object) d5);
-        handle.FuncC = GCHandle.Alloc((object) d6);
-        handle.vTablePtr = Marshal.AllocHGlobal(Marshal.SizeOf(typeof (SteamNative.Callback.VTable)));
-        SteamNative.Callback.VTable structure = new SteamNative.Callback.VTable()
-        {
-          ResultA = Marshal.GetFunctionPointerForDelegate<SteamNative.Callback.StdCall.Result>(d4),
-          ResultB = Marshal.GetFunctionPointerForDelegate<SteamNative.Callback.StdCall.ResultWithInfo>(d5),
-          GetSize = Marshal.GetFunctionPointerForDelegate<SteamNative.Callback.StdCall.GetSize>(d6)
+          d6 = () => Marshal.SizeOf(typeof (PackSmall));
+        handle.FuncA = GCHandle.Alloc(d4);
+        handle.FuncB = GCHandle.Alloc(d5);
+        handle.FuncC = GCHandle.Alloc(d6);
+        handle.vTablePtr = Marshal.AllocHGlobal(Marshal.SizeOf(typeof (Callback.VTable)));
+        Callback.VTable structure = new Callback.VTable {
+          ResultA = Marshal.GetFunctionPointerForDelegate(d4),
+          ResultB = Marshal.GetFunctionPointerForDelegate(d5),
+          GetSize = Marshal.GetFunctionPointerForDelegate(d6)
         };
         if (Platform.IsWindows)
         {
-          structure.ResultA = Marshal.GetFunctionPointerForDelegate<SteamNative.Callback.StdCall.ResultWithInfo>(d5);
-          structure.ResultB = Marshal.GetFunctionPointerForDelegate<SteamNative.Callback.StdCall.Result>(d4);
+          structure.ResultA = Marshal.GetFunctionPointerForDelegate(d5);
+          structure.ResultB = Marshal.GetFunctionPointerForDelegate(d4);
         }
-        Marshal.StructureToPtr<SteamNative.Callback.VTable>(structure, handle.vTablePtr, false);
+        Marshal.StructureToPtr(structure, handle.vTablePtr, false);
       }
-      handle.PinnedCallback = GCHandle.Alloc((object) new SteamNative.Callback()
-      {
+      handle.PinnedCallback = GCHandle.Alloc(new Callback {
         vTablePtr = handle.vTablePtr,
         CallbackFlags = (steamworks.IsGameServer ? (byte) 2 : (byte) 0),
         CallbackId = 703
@@ -88,10 +85,9 @@ namespace SteamNative
       public int Callback;
       public uint ParamCount;
 
-      public static implicit operator SteamAPICallCompleted_t(SteamAPICallCompleted_t.PackSmall d)
+      public static implicit operator SteamAPICallCompleted_t(PackSmall d)
       {
-        return new SteamAPICallCompleted_t()
-        {
+        return new SteamAPICallCompleted_t {
           AsyncCall = d.AsyncCall,
           Callback = d.Callback,
           ParamCount = d.ParamCount

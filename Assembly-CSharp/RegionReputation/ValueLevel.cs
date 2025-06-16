@@ -12,10 +12,10 @@ namespace RegionReputation
     {
       for (int index = 0; index < levels.Length; ++index)
       {
-        if (greater ? (double) value > (double) levels[index].Threshold : (double) value < (double) levels[index].Threshold)
+        if (greater ? value > (double) levels[index].Threshold : value < (double) levels[index].Threshold)
           return levels[index].Signature;
       }
-      return (string) null;
+      return null;
     }
   }
 }

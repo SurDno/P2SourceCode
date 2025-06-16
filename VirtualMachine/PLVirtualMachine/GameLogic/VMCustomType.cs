@@ -1,10 +1,10 @@
-﻿using Cofe.Loggers;
+﻿using System.Xml;
+using Cofe.Loggers;
 using Engine.Common.Commons;
 using PLVirtualMachine.Base;
 using PLVirtualMachine.Common;
 using PLVirtualMachine.Common.Data;
 using PLVirtualMachine.Data;
-using System.Xml;
 using VirtualMachine.Common;
 using VirtualMachine.Common.Data;
 using VirtualMachine.Data;
@@ -17,17 +17,16 @@ namespace PLVirtualMachine.GameLogic
   {
     public virtual void EditorDataRead(XmlReader xml, IDataCreator creator, string typeContext)
     {
-      while (xml.Read())
-      {
+      while (xml.Read()) {
         if (xml.NodeType == XmlNodeType.Element)
         {
           switch (xml.Name)
           {
             case "Name":
-              this.name = EditorDataReadUtility.ReadValue(xml, this.name);
+              name = EditorDataReadUtility.ReadValue(xml, name);
               continue;
             case "Parent":
-              this.parent = EditorDataReadUtility.ReadReference<IContainer>(xml, creator);
+              parent = EditorDataReadUtility.ReadReference<IContainer>(xml, creator);
               continue;
             default:
               if (XMLDataLoader.Logs.Add(typeContext + " : " + xml.Name))
@@ -36,7 +35,8 @@ namespace PLVirtualMachine.GameLogic
               continue;
           }
         }
-        else if (xml.NodeType == XmlNodeType.EndElement)
+
+        if (xml.NodeType == XmlNodeType.EndElement)
           break;
       }
     }

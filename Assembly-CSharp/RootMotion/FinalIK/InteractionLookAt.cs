@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEngine;
 
 namespace RootMotion.FinalIK
 {
@@ -21,61 +20,61 @@ namespace RootMotion.FinalIK
 
     public void Look(Transform target, float time)
     {
-      if ((UnityEngine.Object) this.ik == (UnityEngine.Object) null)
+      if ((UnityEngine.Object) ik == (UnityEngine.Object) null)
         return;
-      if ((double) this.ik.solver.IKPositionWeight <= 0.0)
-        this.ik.solver.IKPosition = this.ik.solver.GetRoot().position + this.ik.solver.GetRoot().forward * 3f;
-      this.lookAtTarget = target;
-      this.stopLookTime = time;
+      if (ik.solver.IKPositionWeight <= 0.0)
+        ik.solver.IKPosition = ik.solver.GetRoot().position + ik.solver.GetRoot().forward * 3f;
+      lookAtTarget = target;
+      stopLookTime = time;
     }
 
     public void OnFixTransforms()
     {
-      if ((UnityEngine.Object) this.ik == (UnityEngine.Object) null || !this.ik.fixTransforms)
+      if ((UnityEngine.Object) ik == (UnityEngine.Object) null || !ik.fixTransforms)
         return;
-      this.ik.solver.FixTransforms();
+      ik.solver.FixTransforms();
     }
 
     public void Update()
     {
-      if ((UnityEngine.Object) this.ik == (UnityEngine.Object) null)
+      if ((UnityEngine.Object) ik == (UnityEngine.Object) null)
         return;
-      if (this.ik.enabled)
-        this.ik.enabled = false;
-      if ((UnityEngine.Object) this.lookAtTarget == (UnityEngine.Object) null)
+      if (ik.enabled)
+        ik.enabled = false;
+      if ((UnityEngine.Object) lookAtTarget == (UnityEngine.Object) null)
         return;
-      if (this.isPaused)
-        this.stopLookTime += Time.deltaTime;
-      this.weight = Mathf.Clamp(this.weight + ((double) Time.time < (double) this.stopLookTime ? this.weightSpeed : -this.weightSpeed) * Time.deltaTime, 0.0f, 1f);
-      this.ik.solver.IKPositionWeight = Interp.Float(this.weight, InterpolationMode.InOutQuintic);
-      this.ik.solver.IKPosition = Vector3.Lerp(this.ik.solver.IKPosition, this.lookAtTarget.position, this.lerpSpeed * Time.deltaTime);
-      if ((double) this.weight <= 0.0)
-        this.lookAtTarget = (Transform) null;
-      this.firstFBBIKSolve = true;
+      if (isPaused)
+        stopLookTime += Time.deltaTime;
+      weight = Mathf.Clamp(weight + ((double) Time.time < stopLookTime ? weightSpeed : -weightSpeed) * Time.deltaTime, 0.0f, 1f);
+      ik.solver.IKPositionWeight = Interp.Float(weight, InterpolationMode.InOutQuintic);
+      ik.solver.IKPosition = Vector3.Lerp(ik.solver.IKPosition, lookAtTarget.position, lerpSpeed * Time.deltaTime);
+      if (weight <= 0.0)
+        lookAtTarget = (Transform) null;
+      firstFBBIKSolve = true;
     }
 
     public void SolveSpine()
     {
-      if ((UnityEngine.Object) this.ik == (UnityEngine.Object) null || !this.firstFBBIKSolve)
+      if ((UnityEngine.Object) ik == (UnityEngine.Object) null || !firstFBBIKSolve)
         return;
-      float headWeight = this.ik.solver.headWeight;
-      float eyesWeight = this.ik.solver.eyesWeight;
-      this.ik.solver.headWeight = 0.0f;
-      this.ik.solver.eyesWeight = 0.0f;
-      this.ik.solver.Update();
-      this.ik.solver.headWeight = headWeight;
-      this.ik.solver.eyesWeight = eyesWeight;
+      float headWeight = ik.solver.headWeight;
+      float eyesWeight = ik.solver.eyesWeight;
+      ik.solver.headWeight = 0.0f;
+      ik.solver.eyesWeight = 0.0f;
+      ik.solver.Update();
+      ik.solver.headWeight = headWeight;
+      ik.solver.eyesWeight = eyesWeight;
     }
 
     public void SolveHead()
     {
-      if ((UnityEngine.Object) this.ik == (UnityEngine.Object) null || !this.firstFBBIKSolve)
+      if ((UnityEngine.Object) ik == (UnityEngine.Object) null || !firstFBBIKSolve)
         return;
-      float bodyWeight = this.ik.solver.bodyWeight;
-      this.ik.solver.bodyWeight = 0.0f;
-      this.ik.solver.Update();
-      this.ik.solver.bodyWeight = bodyWeight;
-      this.firstFBBIKSolve = false;
+      float bodyWeight = ik.solver.bodyWeight;
+      ik.solver.bodyWeight = 0.0f;
+      ik.solver.Update();
+      ik.solver.bodyWeight = bodyWeight;
+      firstFBBIKSolve = false;
     }
   }
 }

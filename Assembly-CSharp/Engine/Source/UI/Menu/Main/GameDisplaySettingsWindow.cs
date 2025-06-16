@@ -10,7 +10,7 @@ namespace Engine.Source.UI.Menu.Main
   {
     protected override void RegisterLayer()
     {
-      this.RegisterLayer<IGameDisplaySettingsWindow>((IGameDisplaySettingsWindow) this);
+      RegisterLayer((IGameDisplaySettingsWindow) this);
     }
   }
 }

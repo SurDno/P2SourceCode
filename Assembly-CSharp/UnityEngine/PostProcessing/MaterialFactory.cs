@@ -7,29 +7,29 @@ namespace UnityEngine.PostProcessing
   {
     private Dictionary<string, Material> m_Materials;
 
-    public MaterialFactory() => this.m_Materials = new Dictionary<string, Material>();
+    public MaterialFactory() => m_Materials = new Dictionary<string, Material>();
 
     public Material Get(string shaderName)
     {
       Material material1;
-      if (!this.m_Materials.TryGetValue(shaderName, out material1))
+      if (!m_Materials.TryGetValue(shaderName, out material1))
       {
         Shader shader = Shader.Find(shaderName);
-        Material material2 = !((UnityEngine.Object) shader == (UnityEngine.Object) null) ? new Material(shader) : throw new ArgumentException(string.Format("Shader not found ({0})", (object) shaderName));
-        material2.name = string.Format("PostFX - {0}", (object) shaderName.Substring(shaderName.LastIndexOf("/") + 1));
+        Material material2 = !((UnityEngine.Object) shader == (UnityEngine.Object) null) ? new Material(shader) : throw new ArgumentException(string.Format("Shader not found ({0})", shaderName));
+        material2.name = string.Format("PostFX - {0}", shaderName.Substring(shaderName.LastIndexOf("/") + 1));
         material2.hideFlags = HideFlags.DontSave;
         material1 = material2;
-        this.m_Materials.Add(shaderName, material1);
+        m_Materials.Add(shaderName, material1);
       }
       return material1;
     }
 
     public void Dispose()
     {
-      Dictionary<string, Material>.Enumerator enumerator = this.m_Materials.GetEnumerator();
+      Dictionary<string, A>.Enumerator enumerator = m_Materials.GetEnumerator();
       while (enumerator.MoveNext())
         GraphicsUtils.Destroy((UnityEngine.Object) enumerator.Current.Value);
-      this.m_Materials.Clear();
+      m_Materials.Clear();
     }
   }
 }

@@ -1,5 +1,5 @@
-﻿using ParadoxNotion;
-using System;
+﻿using System;
+using ParadoxNotion;
 
 namespace FlowCanvas
 {
@@ -19,10 +19,10 @@ namespace FlowCanvas
       return (ValueInput) Activator.CreateInstance(typeof (ValueInput<>).RTMakeGenericType(new Type[1]
       {
         t
-      }), (object) parent, (object) name, (object) ID);
+      }), parent, name, ID);
     }
 
-    public object value => this.GetValue();
+    public object value => GetValue();
 
     public abstract void BindTo(ValueOutput target);
 

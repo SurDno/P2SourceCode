@@ -6,8 +6,7 @@
 
     public static implicit operator ClientUnifiedMessageHandle(ulong value)
     {
-      return new ClientUnifiedMessageHandle()
-      {
+      return new ClientUnifiedMessageHandle {
         Value = value
       };
     }

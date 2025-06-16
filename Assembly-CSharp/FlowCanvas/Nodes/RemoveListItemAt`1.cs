@@ -1,5 +1,5 @@
-﻿using ParadoxNotion.Design;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using ParadoxNotion.Design;
 
 namespace FlowCanvas.Nodes
 {
@@ -9,7 +9,7 @@ namespace FlowCanvas.Nodes
     public override IList<T> Invoke(List<T> list, int index)
     {
       list.RemoveAt(index);
-      return (IList<T>) list;
+      return list;
     }
   }
 }

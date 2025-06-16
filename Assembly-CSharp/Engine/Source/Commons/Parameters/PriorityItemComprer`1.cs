@@ -6,7 +6,7 @@ namespace Engine.Source.Commons.Parameters
   {
     public int Compare(PriorityItem<T> x, PriorityItem<T> y)
     {
-      return x.Priority.CompareTo((object) y.Priority);
+      return x.Priority.CompareTo(y.Priority);
     }
   }
 }

@@ -1,11 +1,10 @@
-﻿using Engine.Assets.Internal.Reference;
+﻿using System;
+using System.Collections.Generic;
+using Engine.Assets.Internal.Reference;
 using Engine.Common;
 using Engine.Common.Services;
 using Engine.Source.Components;
 using Inspectors;
-using System;
-using System.Collections.Generic;
-using UnityEngine;
 
 namespace Engine.Impl.Services.HierarchyServices
 {
@@ -20,12 +19,12 @@ namespace Engine.Impl.Services.HierarchyServices
     public HierarchyContainer Container { get; private set; }
 
     [Inspected]
-    public IEnumerable<HierarchyItem> Items => (IEnumerable<HierarchyItem>) this.items;
+    public IEnumerable<HierarchyItem> Items => items;
 
     [Inspected]
     public IEntity Template { get; private set; }
 
-    public HierarchyItem(HierarchyContainer container) => this.Container = container;
+    public HierarchyItem(HierarchyContainer container) => Container = container;
 
     public HierarchyItem(
       SceneObjectItem reference,
@@ -33,10 +32,10 @@ namespace Engine.Impl.Services.HierarchyServices
       Dictionary<IEntity, HierarchyItem> templates,
       Dictionary<Guid, HierarchyItem> hierarchyItems)
     {
-      this.Reference = reference;
-      foreach (SceneObjectItem reference1 in this.Reference.Items)
-        this.items.Add(new HierarchyItem(reference1, containers, templates, hierarchyItems));
-      this.ComputeItem(containers, templates, hierarchyItems);
+      Reference = reference;
+      foreach (SceneObjectItem reference1 in Reference.Items)
+        items.Add(new HierarchyItem(reference1, containers, templates, hierarchyItems));
+      ComputeItem(containers, templates, hierarchyItems);
     }
 
     private void ComputeItem(
@@ -44,17 +43,17 @@ namespace Engine.Impl.Services.HierarchyServices
       Dictionary<IEntity, HierarchyItem> templates,
       Dictionary<Guid, HierarchyItem> hierarchyItems)
     {
-      this.Template = HierarchyItem.GetTemplate(this.Reference);
-      if (this.Template == null)
+      Template = GetTemplate(Reference);
+      if (Template == null)
       {
-        Debug.LogWarning((object) ("Template not found : " + (object) this.Reference.Id));
+        Debug.LogWarning((object) ("Template not found : " + Reference.Id));
       }
       else
       {
-        hierarchyItems.Add(this.Template.Id, this);
-        if (!templates.ContainsKey(this.Template))
-          templates.Add(this.Template, this);
-        StaticModelComponent component = this.Template.GetComponent<StaticModelComponent>();
+        hierarchyItems.Add(Template.Id, this);
+        if (!templates.ContainsKey(Template))
+          templates.Add(Template, this);
+        StaticModelComponent component = Template.GetComponent<StaticModelComponent>();
         if (component == null)
           return;
         Guid id = component.Connection.Id;
@@ -63,15 +62,15 @@ namespace Engine.Impl.Services.HierarchyServices
           HierarchyContainer hierarchyContainer;
           if (containers.TryGetValue(id, out hierarchyContainer))
           {
-            this.Container = hierarchyContainer;
+            Container = hierarchyContainer;
           }
           else
           {
             IScene template = ServiceLocator.GetService<ITemplateService>().GetTemplate<IScene>(id);
             if (template != null)
-              this.Container = new HierarchyContainer(template, containers, templates);
+              Container = new HierarchyContainer(template, containers, templates);
             else
-              Debug.LogError((object) (typeof (SceneObject).Name + " not found, id : " + (object) id + " , item : " + this.Template.GetInfo()));
+              Debug.LogError((object) (typeof (SceneObject).Name + " not found, id : " + id + " , item : " + Template.GetInfo()));
           }
         }
       }

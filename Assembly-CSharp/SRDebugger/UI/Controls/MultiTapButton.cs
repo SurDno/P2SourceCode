@@ -1,8 +1,4 @@
-﻿using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.UI;
-
-namespace SRDebugger.UI.Controls
+﻿namespace SRDebugger.UI.Controls
 {
   public class MultiTapButton : Button
   {
@@ -13,14 +9,14 @@ namespace SRDebugger.UI.Controls
 
     public override void OnPointerClick(PointerEventData eventData)
     {
-      if ((double) Time.unscaledTime - (double) this._lastTap > (double) this.ResetTime)
-        this._tapCount = 0;
-      this._lastTap = Time.unscaledTime;
-      ++this._tapCount;
-      if (this._tapCount != this.RequiredTapCount)
+      if ((double) Time.unscaledTime - _lastTap > ResetTime)
+        _tapCount = 0;
+      _lastTap = Time.unscaledTime;
+      ++_tapCount;
+      if (_tapCount != RequiredTapCount)
         return;
       base.OnPointerClick(eventData);
-      this._tapCount = 0;
+      _tapCount = 0;
     }
   }
 }

@@ -1,7 +1,5 @@
-﻿using InputServices;
-using System.Text.RegularExpressions;
-using TMPro;
-using UnityEngine;
+﻿using System.Text.RegularExpressions;
+using InputServices;
 
 namespace Engine.Impl.UI.Controls
 {
@@ -18,15 +16,15 @@ namespace Engine.Impl.UI.Controls
 
     protected override void ApplyStringValue()
     {
-      if ((Object) this.textMeshProComponent == (Object) null)
-        this.textMeshProComponent = this.gameObject?.GetComponentInChildren<TextMeshProUGUI>();
-      if ((Object) this.textComponent == (Object) null)
-        this.textComponent = this.gameObject?.GetComponentInChildren<UnityEngine.UI.Text>();
-      if ((Object) this.textMeshProComponent != (Object) null)
+      if ((Object) textMeshProComponent == (Object) null)
+        textMeshProComponent = this.gameObject?.GetComponentInChildren<TextMeshProUGUI>();
+      if ((Object) textComponent == (Object) null)
+        textComponent = this.gameObject?.GetComponentInChildren<UnityEngine.UI.Text>();
+      if ((Object) textMeshProComponent != (Object) null)
       {
-        if ((Object) this.textComponent != (Object) null)
-          this.textComponent.gameObject?.SetActive(false);
-        string input = this.StringValue;
+        if ((Object) textComponent != (Object) null)
+          textComponent.gameObject?.SetActive(false);
+        string input = StringValue;
         Regex regex = new Regex("(?<tag>(<b><color(.*?)>)(?<value>((.*?)))(</color></b>))");
         if (!string.IsNullOrEmpty(input) && InputService.Instance.JoystickUsed && regex.IsMatch(input))
         {
@@ -36,17 +34,17 @@ namespace Engine.Impl.UI.Controls
             if (groups["tag"].Success)
               input = input.Replace(groups["tag"].Value, "{0}");
             if (groups["value"].Success)
-              input = input.Replace("{0}", string.Format("<sprite name=\"{0}\">", (object) groups["value"].Value));
+              input = input.Replace("{0}", string.Format("<sprite name=\"{0}\">", groups["value"].Value));
           }
         }
-        this.textMeshProComponent.text = input;
+        textMeshProComponent.text = input;
       }
       else
       {
-        if (!((Object) this.textComponent != (Object) null))
+        if (!((Object) textComponent != (Object) null))
           return;
-        this.textComponent.gameObject?.SetActive(true);
-        this.textComponent.text = this.StringValue;
+        textComponent.gameObject?.SetActive(true);
+        textComponent.text = StringValue;
       }
     }
   }

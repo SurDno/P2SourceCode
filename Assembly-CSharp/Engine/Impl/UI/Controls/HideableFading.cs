@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace Engine.Impl.UI.Controls
+﻿namespace Engine.Impl.UI.Controls
 {
   public class HideableFading : HideableView
   {
@@ -13,37 +11,37 @@ namespace Engine.Impl.UI.Controls
 
     private void Update()
     {
-      if ((Object) this.canvasGroup == (Object) null)
+      if ((Object) canvasGroup == (Object) null)
         return;
-      float alpha = this.canvasGroup.alpha;
-      float target = this.Visible ? 1f : 0.0f;
-      if ((double) alpha == (double) target)
+      float alpha = canvasGroup.alpha;
+      float target = Visible ? 1f : 0.0f;
+      if (alpha == (double) target)
         return;
-      float num = (double) alpha >= (double) target ? this.fadeOutTime : this.fadeInTime;
-      if ((double) num > 0.0)
-        this.canvasGroup.alpha = Mathf.MoveTowards(alpha, target, Time.deltaTime / num);
+      float num = alpha >= (double) target ? fadeOutTime : fadeInTime;
+      if (num > 0.0)
+        canvasGroup.alpha = Mathf.MoveTowards(alpha, target, Time.deltaTime / num);
       else
-        this.canvasGroup.alpha = target;
+        canvasGroup.alpha = target;
     }
 
-    private void OnDisable() => this.canvasGroup.alpha = this.Visible ? 1f : 0.0f;
+    private void OnDisable() => canvasGroup.alpha = Visible ? 1f : 0.0f;
 
     public override void SkipAnimation()
     {
       base.SkipAnimation();
-      if (!((Object) this.canvasGroup != (Object) null))
+      if (!((Object) canvasGroup != (Object) null))
         return;
-      this.canvasGroup.alpha = this.Visible ? 1f : 0.0f;
+      canvasGroup.alpha = Visible ? 1f : 0.0f;
     }
 
     protected override void ApplyVisibility()
     {
       if (!Application.isPlaying)
-        this.SkipAnimation();
-      if (!((Object) this.canvasGroup != (Object) null))
+        SkipAnimation();
+      if (!((Object) canvasGroup != (Object) null))
         return;
-      this.canvasGroup.interactable = this.Visible;
-      this.canvasGroup.blocksRaycasts = this.Visible;
+      canvasGroup.interactable = Visible;
+      canvasGroup.blocksRaycasts = Visible;
     }
   }
 }

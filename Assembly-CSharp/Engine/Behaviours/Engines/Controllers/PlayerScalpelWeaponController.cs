@@ -11,15 +11,15 @@ namespace Engine.Behaviours.Engines.Controllers
 
     protected override void ApplyVisibility()
     {
-      this.pivot.HandsGeometryVisible = this.geometryVisible;
-      this.pivot.ScalpelGeometryVisible = this.geometryVisible && this.weaponVisible;
-      this.ApplyLayerWeight(this.geometryVisible ? 1f : 0.0f);
+      pivot.HandsGeometryVisible = geometryVisible;
+      pivot.ScalpelGeometryVisible = geometryVisible && weaponVisible;
+      ApplyLayerWeight(geometryVisible ? 1f : 0.0f);
     }
 
     protected override void ApplyLayerWeight(float layerWeight)
     {
-      this.animatorState.ScalpelLayerWeight = layerWeight;
-      this.animatorState.ScalpelReactionLayerWeight = layerWeight;
+      animatorState.ScalpelLayerWeight = layerWeight;
+      animatorState.ScalpelReactionLayerWeight = layerWeight;
     }
 
     public override void SetItem(IEntity item)
@@ -34,7 +34,7 @@ namespace Engine.Behaviours.Engines.Controllers
         if (byName != null)
           kind = byName.Value;
       }
-      this.pivot.SetScalpelCustomGeometryVisible(kind);
+      pivot.SetScalpelCustomGeometryVisible(kind);
     }
 
     protected override WeaponKind WeaponKind => WeaponKind.Scalpel;

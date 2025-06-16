@@ -6,15 +6,15 @@ public class PlagueWebCell
   public List<PlagueWebPoint> Points = new List<PlagueWebPoint>();
   public PlagueWeb1 PlagueWeb;
 
-  public void AddPoint(PlagueWebPoint point) => this.Points.Add(point);
+  public void AddPoint(PlagueWebPoint point) => Points.Add(point);
 
-  public void PlacePoint(PlagueWebPoint point) => this.PlagueWeb.PlacePoint(point);
+  public void PlacePoint(PlagueWebPoint point) => PlagueWeb.PlacePoint(point);
 
   public void RemovePoint(PlagueWebPoint point)
   {
-    this.Points.Remove(point);
-    if (this.Points.Count != 0)
+    Points.Remove(point);
+    if (Points.Count != 0)
       return;
-    this.PlagueWeb.RemoveCell(this);
+    PlagueWeb.RemoveCell(this);
   }
 }

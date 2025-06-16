@@ -1,11 +1,10 @@
-﻿using Cofe.Serializations.Converters;
+﻿using System;
+using System.Collections.Generic;
+using Cofe.Serializations.Converters;
 using Cofe.Serializations.Data;
 using Engine.Common;
 using Engine.Common.Commons.Converters;
 using Engine.Source.Connections;
-using System;
-using System.Collections.Generic;
-using UnityEngine;
 
 namespace Scripts.Tools.Serializations.Converters
 {
@@ -38,8 +37,7 @@ namespace Scripts.Tools.Serializations.Converters
 
     public static LayerMask Read(IDataReader reader, string name, LayerMask value)
     {
-      return new LayerMask()
-      {
+      return new LayerMask {
         value = DefaultConverter.ParseInt(reader.ReadSimple(name))
       };
     }
@@ -80,7 +78,7 @@ namespace Scripts.Tools.Serializations.Converters
       value.Clear();
       foreach (IDataReader child in reader.GetChild(name).GetChilds())
       {
-        GradientAlphaKey gradientAlphaKey = UnityDataReadUtility.ReadGradientAlphaKey(child);
+        GradientAlphaKey gradientAlphaKey = ReadGradientAlphaKey(child);
         value.Add(gradientAlphaKey);
       }
       return value;
@@ -94,7 +92,7 @@ namespace Scripts.Tools.Serializations.Converters
       value.Clear();
       foreach (IDataReader child in reader.GetChild(name).GetChilds())
       {
-        GradientColorKey gradientColorKey = UnityDataReadUtility.ReadGradientColorKey(child);
+        GradientColorKey gradientColorKey = ReadGradientColorKey(child);
         value.Add(gradientColorKey);
       }
       return value;

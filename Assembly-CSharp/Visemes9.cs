@@ -1,11 +1,11 @@
 ﻿public class Visemes9
 {
-  public string[] visNames = (string[]) null;
-  public string[][] mapping = (string[][]) null;
+  public string[] visNames = null;
+  public string[][] mapping = null;
 
   public Visemes9()
   {
-    this.visNames = new string[9]
+    visNames = new string[9]
     {
       "x",
       "AA",
@@ -17,8 +17,8 @@
       "CH",
       "n"
     };
-    this.mapping = new string[this.visNames.Length][];
-    this.mapping[0] = new string[6]
+    mapping = new string[visNames.Length][];
+    mapping[0] = new string[6]
     {
       "x",
       "f",
@@ -27,8 +27,8 @@
       "b",
       "p"
     };
-    this.mapping[1] = new string[3]{ "AA", "AH", "h" };
-    this.mapping[2] = new string[6]
+    mapping[1] = new string[3]{ "AA", "AH", "h" };
+    mapping[2] = new string[6]
     {
       "AO",
       "AW",
@@ -37,17 +37,17 @@
       "UH",
       "UW"
     };
-    this.mapping[3] = new string[4]
+    mapping[3] = new string[4]
     {
       "EH",
       "AE",
       "IH",
       "AY"
     };
-    this.mapping[4] = new string[3]{ "y", "IY", "EY" };
-    this.mapping[5] = new string[2]{ "r", "ER" };
-    this.mapping[6] = new string[1]{ "l" };
-    this.mapping[7] = new string[5]
+    mapping[4] = new string[3]{ "y", "IY", "EY" };
+    mapping[5] = new string[2]{ "r", "ER" };
+    mapping[6] = new string[1]{ "l" };
+    mapping[7] = new string[5]
     {
       "w",
       "CH",
@@ -55,7 +55,7 @@
       "SH",
       "ZH"
     };
-    this.mapping[8] = new string[10]
+    mapping[8] = new string[10]
     {
       "n",
       "NG",

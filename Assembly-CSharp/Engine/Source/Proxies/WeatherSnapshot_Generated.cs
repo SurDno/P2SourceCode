@@ -1,4 +1,5 @@
-﻿using Cofe.Loggers;
+﻿using System;
+using Cofe.Loggers;
 using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Cofe.Utility;
@@ -7,7 +8,6 @@ using Engine.Common.Commons.Converters;
 using Engine.Common.Services;
 using Engine.Impl.Weather;
 using Engine.Impl.Weather.Element;
-using System;
 
 namespace Engine.Source.Proxies
 {
@@ -21,47 +21,47 @@ namespace Engine.Source.Proxies
   {
     public object Clone()
     {
-      return (object) ServiceCache.Factory.Instantiate<WeatherSnapshot_Generated>(this);
+      return ServiceCache.Factory.Instantiate(this);
     }
 
     public void CopyTo(object target2)
     {
       WeatherSnapshot_Generated snapshotGenerated = (WeatherSnapshot_Generated) target2;
-      snapshotGenerated.name = this.name;
-      ((ICopyable) this.clouds).CopyTo((object) snapshotGenerated.clouds);
-      ((ICopyable) this.day).CopyTo((object) snapshotGenerated.day);
-      ((ICopyable) this.fog).CopyTo((object) snapshotGenerated.fog);
-      ((ICopyable) this.location).CopyTo((object) snapshotGenerated.location);
-      ((ICopyable) this.moon).CopyTo((object) snapshotGenerated.moon);
-      ((ICopyable) this.night).CopyTo((object) snapshotGenerated.night);
-      ((ICopyable) this.stars).CopyTo((object) snapshotGenerated.stars);
-      ((ICopyable) this.sun).CopyTo((object) snapshotGenerated.sun);
-      ((ICopyable) this.thunderStorm).CopyTo((object) snapshotGenerated.thunderStorm);
-      ((ICopyable) this.wind).CopyTo((object) snapshotGenerated.wind);
-      ((ICopyable) this.rain).CopyTo((object) snapshotGenerated.rain);
-      ((ICopyable) this.fallingLeaves).CopyTo((object) snapshotGenerated.fallingLeaves);
+      snapshotGenerated.name = name;
+      ((ICopyable) clouds).CopyTo(snapshotGenerated.clouds);
+      ((ICopyable) day).CopyTo(snapshotGenerated.day);
+      ((ICopyable) fog).CopyTo(snapshotGenerated.fog);
+      ((ICopyable) location).CopyTo(snapshotGenerated.location);
+      ((ICopyable) moon).CopyTo(snapshotGenerated.moon);
+      ((ICopyable) night).CopyTo(snapshotGenerated.night);
+      ((ICopyable) stars).CopyTo(snapshotGenerated.stars);
+      ((ICopyable) sun).CopyTo(snapshotGenerated.sun);
+      ((ICopyable) thunderStorm).CopyTo(snapshotGenerated.thunderStorm);
+      ((ICopyable) wind).CopyTo(snapshotGenerated.wind);
+      ((ICopyable) rain).CopyTo((object) snapshotGenerated.rain);
+      ((ICopyable) fallingLeaves).CopyTo(snapshotGenerated.fallingLeaves);
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.Write(writer, "Id", this.id);
-      DefaultDataWriteUtility.WriteSerialize<Clouds>(writer, "Clouds", this.clouds);
-      DefaultDataWriteUtility.WriteSerialize<Day>(writer, "Day", this.day);
-      DefaultDataWriteUtility.WriteSerialize<Fog>(writer, "Fog", this.fog);
-      DefaultDataWriteUtility.WriteSerialize<Location>(writer, "Location", this.location);
-      DefaultDataWriteUtility.WriteSerialize<Moon>(writer, "Moon", this.moon);
-      DefaultDataWriteUtility.WriteSerialize<Night>(writer, "Night", this.night);
-      DefaultDataWriteUtility.WriteSerialize<Stars>(writer, "Stars", this.stars);
-      DefaultDataWriteUtility.WriteSerialize<Sun>(writer, "Sun", this.sun);
-      DefaultDataWriteUtility.WriteSerialize<ThunderStorm>(writer, "ThunderStorm", this.thunderStorm);
-      DefaultDataWriteUtility.WriteSerialize<Wind>(writer, "Wind", this.wind);
-      DefaultDataWriteUtility.WriteSerialize<Rain>(writer, "Rain", this.rain);
-      DefaultDataWriteUtility.WriteSerialize<FallingLeaves>(writer, "FallingLeaves", this.fallingLeaves);
+      DefaultDataWriteUtility.Write(writer, "Id", id);
+      DefaultDataWriteUtility.WriteSerialize(writer, "Clouds", clouds);
+      DefaultDataWriteUtility.WriteSerialize(writer, "Day", day);
+      DefaultDataWriteUtility.WriteSerialize(writer, "Fog", fog);
+      DefaultDataWriteUtility.WriteSerialize(writer, "Location", location);
+      DefaultDataWriteUtility.WriteSerialize(writer, "Moon", moon);
+      DefaultDataWriteUtility.WriteSerialize(writer, "Night", night);
+      DefaultDataWriteUtility.WriteSerialize(writer, "Stars", stars);
+      DefaultDataWriteUtility.WriteSerialize(writer, "Sun", sun);
+      DefaultDataWriteUtility.WriteSerialize(writer, "ThunderStorm", thunderStorm);
+      DefaultDataWriteUtility.WriteSerialize(writer, "Wind", wind);
+      DefaultDataWriteUtility.WriteSerialize(writer, "Rain", rain);
+      DefaultDataWriteUtility.WriteSerialize(writer, "FallingLeaves", fallingLeaves);
     }
 
     public void DataRead(IDataReader reader, Type type)
     {
-      this.id = DefaultDataReadUtility.Read(reader, "Id", this.id);
+      id = DefaultDataReadUtility.Read(reader, "Id", id);
       IDataReader child1 = reader.GetChild("Clouds");
       Clouds clouds = this.clouds;
       if (clouds is ISerializeDataRead serializeDataRead1)

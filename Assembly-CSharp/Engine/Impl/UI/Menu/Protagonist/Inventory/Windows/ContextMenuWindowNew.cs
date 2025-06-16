@@ -1,16 +1,12 @@
-﻿using Engine.Common.Components;
+﻿using System;
+using System.Collections;
+using Engine.Common.Components;
 using Engine.Common.Services;
 using Engine.Impl.Services;
 using Engine.Source.Components;
 using Engine.Source.Inventory;
 using Engine.Source.Services.Inputs;
 using InputServices;
-using System;
-using System.Collections;
-using UnityEngine;
-using UnityEngine.Events;
-using UnityEngine.EventSystems;
-using UnityEngine.UI;
 
 namespace Engine.Impl.UI.Menu.Protagonist.Inventory.Windows
 {
@@ -32,7 +28,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory.Windows
     [SerializeField]
     private Image selectedLine;
     private Button[] buttons;
-    private int curSelectedIndex = 0;
+    private int curSelectedIndex;
     [SerializeField]
     private Image unityImage = (Image) null;
     [SerializeField]
@@ -40,7 +36,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory.Windows
     [SerializeField]
     private bool useBigPicture = false;
     private IStorableComponent target;
-    private bool submitSubscribed = false;
+    private bool submitSubscribed;
 
     public event Action<IStorableComponent> OnButtonInvestigate;
 
@@ -58,48 +54,48 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory.Windows
 
     public IStorableComponent Target
     {
-      get => this.target;
+      get => target;
       set
       {
-        if (this.target == value)
+        if (target == value)
           return;
-        this.target = value;
-        this.Build();
+        target = value;
+        Build();
       }
     }
 
     private void Build()
     {
       Sprite sprite = (Sprite) null;
-      bool flag = (UnityEngine.Object) this.unityImage != (UnityEngine.Object) null;
+      bool flag = (UnityEngine.Object) unityImage != (UnityEngine.Object) null;
       if (this.target == null)
       {
-        this.buttonWear.gameObject.SetActive(false);
-        this.buttonUse.gameObject.SetActive(false);
-        this.buttonPourOut.gameObject.SetActive(false);
-        this.buttonSplit.gameObject.SetActive(false);
-        if ((UnityEngine.Object) this.unityName != (UnityEngine.Object) null)
-          this.unityName.text = (string) null;
+        buttonWear.gameObject.SetActive(false);
+        buttonUse.gameObject.SetActive(false);
+        buttonPourOut.gameObject.SetActive(false);
+        buttonSplit.gameObject.SetActive(false);
+        if ((UnityEngine.Object) unityName != (UnityEngine.Object) null)
+          unityName.text = (string) null;
       }
       else
       {
-        this.buttonWear.gameObject.SetActive(StorableComponentUtility.IsWearable(this.target));
-        this.buttonUse.gameObject.SetActive(StorableComponentUtility.IsUsable(this.target));
-        this.buttonPourOut.gameObject.SetActive(StorableComponentUtility.IsBottled(this.target));
-        this.buttonSplit.gameObject.SetActive(StorableComponentUtility.IsSplittable(this.target));
-        if ((UnityEngine.Object) this.unityName != (UnityEngine.Object) null)
-          this.unityName.text = ServiceLocator.GetService<LocalizationService>().GetText(this.target.Title);
+        buttonWear.gameObject.SetActive(StorableComponentUtility.IsWearable(this.target));
+        buttonUse.gameObject.SetActive(StorableComponentUtility.IsUsable(this.target));
+        buttonPourOut.gameObject.SetActive(StorableComponentUtility.IsBottled(this.target));
+        buttonSplit.gameObject.SetActive(StorableComponentUtility.IsSplittable(this.target));
+        if ((UnityEngine.Object) unityName != (UnityEngine.Object) null)
+          unityName.text = ServiceLocator.GetService<LocalizationService>().GetText(this.target.Title);
         if (flag)
         {
-          InventoryPlaceholder placeholder = this.target is StorableComponent target ? target.Placeholder : (InventoryPlaceholder) null;
+          InventoryPlaceholder placeholder = this.target is StorableComponent target ? target.Placeholder : null;
           if (placeholder != null)
-            sprite = this.useBigPicture ? placeholder.ImageInformation.Value : placeholder.ImageInventorySlotBig.Value;
+            sprite = useBigPicture ? placeholder.ImageInformation.Value : placeholder.ImageInventorySlotBig.Value;
         }
       }
       if (flag)
       {
-        this.unityImage.sprite = sprite;
-        this.unityImage.gameObject.SetActive((UnityEngine.Object) sprite != (UnityEngine.Object) null);
+        unityImage.sprite = sprite;
+        unityImage.gameObject.SetActive((UnityEngine.Object) sprite != (UnityEngine.Object) null);
       }
       LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform) this.transform);
     }
@@ -121,34 +117,34 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory.Windows
     public void OnEnable()
     {
       GameActionService service = ServiceLocator.GetService<GameActionService>();
-      if (this.buttons == null)
-        this.buttons = new Button[6]
+      if (buttons == null)
+        buttons = new Button[6]
         {
-          this.buttonWear,
-          this.buttonUse,
-          this.buttonInvestigate,
-          this.buttonPourOut,
-          this.buttonSplit,
-          this.buttonDrop
+          buttonWear,
+          buttonUse,
+          buttonInvestigate,
+          buttonPourOut,
+          buttonSplit,
+          buttonDrop
         };
-      service.AddListener(GameActionType.Cancel, new GameActionHandle(this.OnClosePress), true);
-      service.AddListener(GameActionType.LStickUp, new GameActionHandle(this.OnNavigate), true);
-      service.AddListener(GameActionType.LStickDown, new GameActionHandle(this.OnNavigate), true);
-      if ((UnityEngine.Object) this.selectedLine != (UnityEngine.Object) null)
-        this.selectedLine.gameObject.SetActive(false);
-      this.StartCoroutine(this.AfterEnabled());
+      service.AddListener(GameActionType.Cancel, OnClosePress, true);
+      service.AddListener(GameActionType.LStickUp, OnNavigate, true);
+      service.AddListener(GameActionType.LStickDown, OnNavigate, true);
+      if ((UnityEngine.Object) selectedLine != (UnityEngine.Object) null)
+        selectedLine.gameObject.SetActive(false);
+      this.StartCoroutine(AfterEnabled());
     }
 
     private IEnumerator AfterEnabled()
     {
       yield return (object) new WaitForEndOfFrame();
-      this.OnJoystick(InputService.Instance.JoystickUsed);
+      OnJoystick(InputService.Instance.JoystickUsed);
     }
 
     private bool OnClosePress(GameActionType type, bool down)
     {
-      if (down && this.OnClose != null)
-        this.OnClose();
+      if (down && OnClose != null)
+        OnClose();
       return true;
     }
 
@@ -156,43 +152,43 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory.Windows
     {
       if (joystick)
       {
-        if (!this.submitSubscribed)
+        if (!submitSubscribed)
         {
-          ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Submit, new GameActionHandle(this.OnSubmit), true);
-          this.submitSubscribed = true;
+          ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Submit, OnSubmit, true);
+          submitSubscribed = true;
         }
-        --this.curSelectedIndex;
-        this.OnNavigate(GameActionType.LStickDown, true);
-        if (!((UnityEngine.Object) this.selectedLine != (UnityEngine.Object) null))
+        --curSelectedIndex;
+        OnNavigate(GameActionType.LStickDown, true);
+        if (!((UnityEngine.Object) selectedLine != (UnityEngine.Object) null))
           return;
-        this.selectedLine.gameObject.SetActive(true);
-        this.selectedLine.transform.SetParent(this.buttons[this.curSelectedIndex].transform, false);
-        this.selectedLine.rectTransform.sizeDelta = this.selectedLine.rectTransform.sizeDelta with
+        selectedLine.gameObject.SetActive(true);
+        selectedLine.transform.SetParent(buttons[curSelectedIndex].transform, false);
+        selectedLine.rectTransform.sizeDelta = selectedLine.rectTransform.sizeDelta with
         {
-          x = this.buttons[this.curSelectedIndex].GetComponentInChildren<Text>().preferredWidth
+          x = buttons[curSelectedIndex].GetComponentInChildren<Text>().preferredWidth
         };
       }
       else
       {
-        if (this.submitSubscribed)
+        if (submitSubscribed)
         {
-          ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Submit, new GameActionHandle(this.OnSubmit));
-          this.submitSubscribed = false;
+          ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Submit, OnSubmit);
+          submitSubscribed = false;
         }
         EventSystem.current.SetSelectedGameObject((GameObject) null);
-        if ((UnityEngine.Object) this.selectedLine != (UnityEngine.Object) null)
-          this.selectedLine.gameObject.SetActive(false);
+        if ((UnityEngine.Object) selectedLine != (UnityEngine.Object) null)
+          selectedLine.gameObject.SetActive(false);
       }
     }
 
     public void OnDisable()
     {
       GameActionService service = ServiceLocator.GetService<GameActionService>();
-      if (this.submitSubscribed)
-        service.RemoveListener(GameActionType.Submit, new GameActionHandle(this.OnSubmit));
-      service.RemoveListener(GameActionType.Cancel, new GameActionHandle(this.OnClosePress));
-      service.RemoveListener(GameActionType.LStickUp, new GameActionHandle(this.OnNavigate));
-      service.RemoveListener(GameActionType.LStickDown, new GameActionHandle(this.OnNavigate));
+      if (submitSubscribed)
+        service.RemoveListener(GameActionType.Submit, OnSubmit);
+      service.RemoveListener(GameActionType.Cancel, OnClosePress);
+      service.RemoveListener(GameActionType.LStickUp, OnNavigate);
+      service.RemoveListener(GameActionType.LStickDown, OnNavigate);
     }
 
     private bool OnNavigate(GameActionType type, bool down)
@@ -201,21 +197,21 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory.Windows
         return false;
       do
       {
-        this.curSelectedIndex += type == GameActionType.LStickUp ? -1 : 1;
-        if (this.curSelectedIndex < 0)
-          this.curSelectedIndex = this.buttons.Length - 1;
-        if (this.curSelectedIndex >= this.buttons.Length)
-          this.curSelectedIndex = 0;
+        curSelectedIndex += type == GameActionType.LStickUp ? -1 : 1;
+        if (curSelectedIndex < 0)
+          curSelectedIndex = buttons.Length - 1;
+        if (curSelectedIndex >= buttons.Length)
+          curSelectedIndex = 0;
       }
-      while (!this.buttons[this.curSelectedIndex].gameObject.activeSelf);
-      EventSystem.current.SetSelectedGameObject(this.buttons[this.curSelectedIndex].gameObject);
-      if ((UnityEngine.Object) this.selectedLine != (UnityEngine.Object) null)
+      while (!buttons[curSelectedIndex].gameObject.activeSelf);
+      EventSystem.current.SetSelectedGameObject(buttons[curSelectedIndex].gameObject);
+      if ((UnityEngine.Object) selectedLine != (UnityEngine.Object) null)
       {
-        this.selectedLine.gameObject.SetActive(true);
-        this.selectedLine.transform.SetParent(this.buttons[this.curSelectedIndex].transform, false);
-        this.selectedLine.rectTransform.sizeDelta = this.selectedLine.rectTransform.sizeDelta with
+        selectedLine.gameObject.SetActive(true);
+        selectedLine.transform.SetParent(buttons[curSelectedIndex].transform, false);
+        selectedLine.rectTransform.sizeDelta = selectedLine.rectTransform.sizeDelta with
         {
-          x = this.buttons[this.curSelectedIndex].GetComponentInChildren<Text>().preferredWidth
+          x = buttons[curSelectedIndex].GetComponentInChildren<Text>().preferredWidth
         };
       }
       return true;
@@ -224,50 +220,50 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory.Windows
     private bool OnSubmit(GameActionType type, bool down)
     {
       if (down)
-        this.buttons[this.curSelectedIndex].onClick.Invoke();
+        buttons[curSelectedIndex].onClick.Invoke();
       return true;
     }
 
     public void Investigate()
     {
-      if (this.target == null || this.OnButtonInvestigate == null)
+      if (target == null || OnButtonInvestigate == null)
         return;
-      this.OnButtonInvestigate(this.target);
+      OnButtonInvestigate(target);
     }
 
     public void Drop()
     {
-      if (this.target == null || this.OnButtonDrop == null)
+      if (target == null || OnButtonDrop == null)
         return;
-      this.OnButtonDrop(this.target);
+      OnButtonDrop(target);
     }
 
     public void Wear()
     {
-      if (this.target == null || this.OnButtonWear == null || !StorableComponentUtility.IsWearable(this.target))
+      if (target == null || OnButtonWear == null || !StorableComponentUtility.IsWearable(target))
         return;
-      this.OnButtonWear(this.target);
+      OnButtonWear(target);
     }
 
     public void Use()
     {
-      if (this.target == null || this.OnButtonUse == null || !StorableComponentUtility.IsUsable(this.target))
+      if (target == null || OnButtonUse == null || !StorableComponentUtility.IsUsable(target))
         return;
-      this.OnButtonUse(this.target);
+      OnButtonUse(target);
     }
 
     public void PourOut()
     {
-      if (this.target == null || this.OnButtonPourOut == null || !StorableComponentUtility.IsBottled(this.target))
+      if (target == null || OnButtonPourOut == null || !StorableComponentUtility.IsBottled(target))
         return;
-      this.OnButtonPourOut(this.target);
+      OnButtonPourOut(target);
     }
 
     public void Split()
     {
-      if (this.target == null || this.OnButtonSplit == null || !StorableComponentUtility.IsSplittable(this.target))
+      if (target == null || OnButtonSplit == null || !StorableComponentUtility.IsSplittable(target))
         return;
-      this.OnButtonSplit(this.target);
+      OnButtonSplit(target);
     }
   }
 }

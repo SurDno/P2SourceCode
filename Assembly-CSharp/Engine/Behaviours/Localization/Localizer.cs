@@ -1,10 +1,6 @@
-﻿using Engine.Common.Services;
+﻿using System;
+using Engine.Common.Services;
 using Engine.Impl.Services;
-using System;
-using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.Serialization;
-using UnityEngine.UI;
 
 namespace Engine.Behaviours.Localization
 {
@@ -23,45 +19,45 @@ namespace Engine.Behaviours.Localization
 
     public string Signature
     {
-      get => this.signature;
+      get => signature;
       set
       {
-        this.signature = value;
+        signature = value;
         if (!this.isActiveAndEnabled)
           return;
-        this.Build();
+        Build();
       }
     }
 
     protected override void OnEnable()
     {
       base.OnEnable();
-      this.Build();
-      ServiceLocator.GetService<LocalizationService>().LocalizationChanged -= new Action(this.OnLocalizationChanged);
-      ServiceLocator.GetService<LocalizationService>().LocalizationChanged += new Action(this.OnLocalizationChanged);
+      Build();
+      ServiceLocator.GetService<LocalizationService>().LocalizationChanged -= OnLocalizationChanged;
+      ServiceLocator.GetService<LocalizationService>().LocalizationChanged += OnLocalizationChanged;
     }
 
     protected override void OnDisable()
     {
       base.OnDisable();
-      ServiceLocator.GetService<LocalizationService>().LocalizationChanged -= new Action(this.OnLocalizationChanged);
+      ServiceLocator.GetService<LocalizationService>().LocalizationChanged -= OnLocalizationChanged;
     }
 
     public void Build()
     {
-      if ((UnityEngine.Object) this.textField == (UnityEngine.Object) null)
+      if ((UnityEngine.Object) textField == (UnityEngine.Object) null)
       {
-        this.textField = this.gameObject.GetComponent<Text>();
-        this.textField.supportRichText = true;
+        textField = this.gameObject.GetComponent<Text>();
+        textField.supportRichText = true;
       }
-      if ((UnityEngine.Object) this.textField == (UnityEngine.Object) null)
+      if ((UnityEngine.Object) textField == (UnityEngine.Object) null)
         throw new Exception("Localization: GameObject " + this.gameObject.name + " don't have UnityEngine.UI.Text!");
-      if (this.signature != null)
-        this.textField.text = TextHelper.FormatString(this.signature, this.textField.fontSize, this.smallCaps, this.allCaps);
+      if (signature != null)
+        textField.text = TextHelper.FormatString(signature, textField.fontSize, smallCaps, allCaps);
       else
-        this.textField.text = (string) null;
+        textField.text = (string) null;
     }
 
-    private void OnLocalizationChanged() => this.Build();
+    private void OnLocalizationChanged() => Build();
   }
 }

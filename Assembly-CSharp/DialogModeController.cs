@@ -3,7 +3,6 @@ using Engine.Common;
 using Engine.Common.Services;
 using Engine.Source.Commons;
 using Engine.Source.Services.CameraServices;
-using UnityEngine;
 
 public struct DialogModeController
 {
@@ -17,16 +16,16 @@ public struct DialogModeController
 
   public void EnableCameraKind(IEntity target)
   {
-    this.lastCameraKind = ServiceLocator.GetService<CameraService>().Kind;
-    this.lastCameraTarget = ServiceLocator.GetService<CameraService>().Target;
-    ServiceLocator.GetService<CameraService>().Kind = this.TargetCameraKind;
+    lastCameraKind = ServiceLocator.GetService<CameraService>().Kind;
+    lastCameraTarget = ServiceLocator.GetService<CameraService>().Target;
+    ServiceLocator.GetService<CameraService>().Kind = TargetCameraKind;
     ServiceLocator.GetService<CameraService>().Target = target;
   }
 
   public void DisableCameraKind()
   {
-    ServiceLocator.GetService<CameraService>().Kind = this.lastCameraKind;
-    ServiceLocator.GetService<CameraService>().Target = this.lastCameraTarget;
+    ServiceLocator.GetService<CameraService>().Kind = lastCameraKind;
+    ServiceLocator.GetService<CameraService>().Target = lastCameraTarget;
   }
 
   public void SetDialogMode(IEntity target, bool enabled)
@@ -34,8 +33,8 @@ public struct DialogModeController
     GameObject gameObject = ((IEntityView) target)?.GameObject;
     if ((Object) gameObject == (Object) null)
       return;
-    this.SetDialogLayerWeight(gameObject, enabled);
-    this.SetKinematic(gameObject, enabled);
+    SetDialogLayerWeight(gameObject, enabled);
+    SetKinematic(gameObject, enabled);
   }
 
   private void SetDialogLayerWeight(GameObject target, bool enabled)
@@ -46,16 +45,16 @@ public struct DialogModeController
     animator.enabled = true;
     if (enabled)
     {
-      this.lastCullingMode = animator.cullingMode;
-      this.lastUpdateMode = animator.updateMode;
+      lastCullingMode = animator.cullingMode;
+      lastUpdateMode = animator.updateMode;
       animator.cullingMode = AnimatorCullingMode.AlwaysAnimate;
       animator.updateMode = AnimatorUpdateMode.Normal;
       animator.SetLayerWeight(animator.GetLayerIndex("Dialog Layer"), 1f);
     }
     else
     {
-      animator.cullingMode = this.lastCullingMode;
-      animator.updateMode = this.lastUpdateMode;
+      animator.cullingMode = lastCullingMode;
+      animator.updateMode = lastUpdateMode;
       animator.SetLayerWeight(animator.GetLayerIndex("Dialog Layer"), 0.0f);
     }
   }
@@ -67,10 +66,10 @@ public struct DialogModeController
       return;
     if (kinematic)
     {
-      this.wasKinematic = component.isKinematic;
+      wasKinematic = component.isKinematic;
       component.isKinematic = kinematic;
     }
     else
-      component.isKinematic = this.wasKinematic;
+      component.isKinematic = wasKinematic;
   }
 }

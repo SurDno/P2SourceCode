@@ -1,5 +1,5 @@
-﻿using ParadoxNotion.Design;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using ParadoxNotion.Design;
 
 namespace FlowCanvas.Nodes
 {
@@ -15,7 +15,7 @@ namespace FlowCanvas.Nodes
       }
       catch
       {
-        return (IList<T>) null;
+        return null;
       }
     }
   }

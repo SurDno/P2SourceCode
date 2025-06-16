@@ -1,12 +1,9 @@
-﻿using Engine.Common.Services;
+﻿using System.Collections;
+using Engine.Common.Services;
 using Engine.Source.Commons;
 using Engine.Source.Services.Inputs;
 using Engine.Source.Settings;
 using InputServices;
-using System;
-using System.Collections;
-using UnityEngine;
-using UnityEngine.UI;
 
 public class GammaSettingsView : MonoBehaviour
 {
@@ -17,7 +14,7 @@ public class GammaSettingsView : MonoBehaviour
   [SerializeField]
   private GameObject controllButtonHint;
   private Coroutine changingCoroutine;
-  private bool InputBlocked = false;
+  private bool InputBlocked;
 
   private void Awake()
   {
@@ -25,11 +22,11 @@ public class GammaSettingsView : MonoBehaviour
     this.view.SetName("{UI.Menu.Main.Settings.Graphics.Gamma}");
     this.view.SetMinValue(gamma.MinValue);
     this.view.SetMaxValue(gamma.MaxValue);
-    this.view.SetValueNameFunction(new Func<float, string>(SettingsViewUtility.GammaValueName));
+    this.view.SetValueNameFunction(SettingsViewUtility.GammaValueName);
     this.view.SetSetting(gamma);
-    this.view.SetValueValidationFunction(new Func<float, float>(SettingsViewUtility.GammaValueValidation), 0.025f);
+    this.view.SetValueValidationFunction(SettingsViewUtility.GammaValueValidation, 0.025f);
     FloatSettingsValueView view = this.view;
-    view.VisibleValueChangeEvent = view.VisibleValueChangeEvent + new Action<SettingsValueView<float>>(this.OnAutoValueChange<float>);
+    view.VisibleValueChangeEvent = view.VisibleValueChangeEvent + OnAutoValueChange;
   }
 
   private IEnumerator ChangingCoroutine(bool isDecrement)
@@ -38,28 +35,28 @@ public class GammaSettingsView : MonoBehaviour
     while (true)
     {
       if (isDecrement)
-        this.view?.DecrementValue();
+        view?.DecrementValue();
       else
-        this.view?.IncrementValue();
+        view?.IncrementValue();
       yield return (object) new WaitForSeconds(0.05f);
     }
   }
 
   private bool OnValueChange(GameActionType type, bool down)
   {
-    if (this.changingCoroutine != null)
-      this.StopCoroutine(this.changingCoroutine);
+    if (changingCoroutine != null)
+      this.StopCoroutine(changingCoroutine);
     if (down)
     {
       switch (type)
       {
         case GameActionType.LStickLeft:
-          this.view?.DecrementValue();
-          this.changingCoroutine = this.StartCoroutine(this.ChangingCoroutine(true));
+          view?.DecrementValue();
+          changingCoroutine = this.StartCoroutine(ChangingCoroutine(true));
           break;
         case GameActionType.LStickRight:
-          this.view?.IncrementValue();
-          this.changingCoroutine = this.StartCoroutine(this.ChangingCoroutine(false));
+          view?.IncrementValue();
+          changingCoroutine = this.StartCoroutine(ChangingCoroutine(false));
           break;
       }
     }
@@ -74,49 +71,49 @@ public class GammaSettingsView : MonoBehaviour
 
   private void OnEnable()
   {
-    this.view.RevertVisibleValue();
-    ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.LStickLeft, new GameActionHandle(this.OnValueChange), true);
-    ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.LStickRight, new GameActionHandle(this.OnValueChange), true);
-    InputService.Instance.onJoystickUsedChanged += new Action<bool>(this.OnJoystick);
-    this.OnJoystick(InputService.Instance.JoystickUsed);
+    view.RevertVisibleValue();
+    ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.LStickLeft, OnValueChange, true);
+    ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.LStickRight, OnValueChange, true);
+    InputService.Instance.onJoystickUsedChanged += OnJoystick;
+    OnJoystick(InputService.Instance.JoystickUsed);
   }
 
   private void OnDisable()
   {
-    ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.LStickLeft, new GameActionHandle(this.OnValueChange));
-    ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.LStickRight, new GameActionHandle(this.OnValueChange));
-    ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Submit, new GameActionHandle(this.OnSubmit));
-    InputService.Instance.onJoystickUsedChanged -= new Action<bool>(this.OnJoystick);
-    this.InputBlocked = false;
+    ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.LStickLeft, OnValueChange);
+    ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.LStickRight, OnValueChange);
+    ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Submit, OnSubmit);
+    InputService.Instance.onJoystickUsedChanged -= OnJoystick;
+    InputBlocked = false;
   }
 
   private void OnJoystick(bool joystick)
   {
-    this.pcButton.gameObject.SetActive(!joystick);
-    this.controllButtonHint.SetActive(joystick);
+    pcButton.gameObject.SetActive(!joystick);
+    controllButtonHint.SetActive(joystick);
     if (joystick)
     {
-      CoroutineService.Instance.WaitFrame(1, (Action) (() => this.InputBlocked = false));
-      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Submit, new GameActionHandle(this.OnSubmit), true);
+      CoroutineService.Instance.WaitFrame(1, () => InputBlocked = false);
+      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Submit, OnSubmit, true);
     }
     else
     {
-      this.InputBlocked = true;
-      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Submit, new GameActionHandle(this.OnSubmit));
+      InputBlocked = true;
+      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Submit, OnSubmit);
     }
   }
 
   private bool OnSubmit(GameActionType type, bool down)
   {
-    if (this.InputBlocked)
+    if (InputBlocked)
     {
-      this.InputBlocked = false;
+      InputBlocked = false;
       return false;
     }
     if (!InputService.Instance.JoystickUsed)
       return false;
     if (down)
-      this.controllButtonHint?.GetComponent<Button>()?.onClick.Invoke();
+      controllButtonHint?.GetComponent<Button>()?.onClick.Invoke();
     return down;
   }
 }

@@ -14,7 +14,7 @@ namespace SRF
 
     public static T RandomOrDefault<T>(this IList<T> list)
     {
-      return list.Count == 0 ? default (T) : list.Random<T>();
+      return list.Count == 0 ? default (T) : list.Random();
     }
 
     public static T PopLast<T>(this IList<T> list)

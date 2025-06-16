@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace SoundPropagation
+﻿namespace SoundPropagation
 {
   public class SPFieldPoint : MonoBehaviour
   {
@@ -11,17 +9,17 @@ namespace SoundPropagation
 
     private void OnEnable()
     {
-      if ((Object) this.sourcePrefab == (Object) null)
+      if ((Object) sourcePrefab == (Object) null)
         return;
-      this.Position = this.transform.position;
-      SPFieldSource.AddPoint(this.sourcePrefab, this);
+      Position = this.transform.position;
+      SPFieldSource.AddPoint(sourcePrefab, this);
     }
 
     private void OnDisable()
     {
-      if ((Object) this.sourcePrefab == (Object) null)
+      if ((Object) sourcePrefab == (Object) null)
         return;
-      SPFieldSource.RemovePoint(this.sourcePrefab, this);
+      SPFieldSource.RemovePoint(sourcePrefab, this);
     }
   }
 }

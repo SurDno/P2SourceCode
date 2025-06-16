@@ -15,17 +15,17 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
     {
       get
       {
-        if (this.Component != null)
-          return this.Component.Bullets.Value;
-        Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", (object) this.Name, (object) this.Parent.Name));
+        if (Component != null)
+          return Component.Bullets.Value;
+        Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", Name, Parent.Name));
         return 0;
       }
       set
       {
-        if (this.Component == null)
-          Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", (object) this.Name, (object) this.Parent.Name));
+        if (Component == null)
+          Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", Name, Parent.Name));
         else
-          this.Component.Bullets.Value = value;
+          Component.Bullets.Value = value;
       }
     }
 
@@ -34,17 +34,17 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
     {
       get
       {
-        if (this.Component != null)
-          return this.Component.Durability.Value;
-        Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", (object) this.Name, (object) this.Parent.Name));
+        if (Component != null)
+          return Component.Durability.Value;
+        Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", Name, Parent.Name));
         return 0.0f;
       }
       set
       {
-        if (this.Component == null)
-          Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", (object) this.Name, (object) this.Parent.Name));
+        if (Component == null)
+          Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", Name, Parent.Name));
         else
-          this.Component.Durability.Value = value;
+          Component.Durability.Value = value;
       }
     }
 
@@ -53,30 +53,30 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
     {
       get
       {
-        if (this.Component != null)
-          return this.Component.LiquidType.Value;
-        Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", (object) this.Name, (object) this.Parent.Name));
+        if (Component != null)
+          return Component.LiquidType.Value;
+        Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", Name, Parent.Name));
         return LiquidTypeEnum.None;
       }
       set
       {
-        if (this.Component == null)
-          Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", (object) this.Name, (object) this.Parent.Name));
+        if (Component == null)
+          Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", Name, Parent.Name));
         else
-          this.Component.LiquidType.Value = value;
+          Component.LiquidType.Value = value;
       }
     }
 
     public override void Clear()
     {
-      if (!this.InstanceValid)
+      if (!InstanceValid)
         return;
       base.Clear();
     }
 
     protected override void Init()
     {
-      int num = this.IsTemplate ? 1 : 0;
+      int num = IsTemplate ? 1 : 0;
     }
   }
 }

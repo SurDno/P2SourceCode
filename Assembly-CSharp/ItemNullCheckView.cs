@@ -1,6 +1,5 @@
 ﻿using Engine.Impl.UI.Controls;
 using Engine.Source.Components;
-using UnityEngine;
 
 public class ItemNullCheckView : ItemView
 {
@@ -10,17 +9,17 @@ public class ItemNullCheckView : ItemView
 
   public override StorableComponent Storable
   {
-    get => this.storable;
+    get => storable;
     set
     {
-      if (this.storable == value)
+      if (storable == value)
         return;
-      this.storable = value;
-      if (!((Object) this.hideableView != (Object) null))
+      storable = value;
+      if (!((Object) hideableView != (Object) null))
         return;
-      this.hideableView.Visible = this.storable != null;
+      hideableView.Visible = storable != null;
     }
   }
 
-  public override void SkipAnimation() => this.hideableView?.SkipAnimation();
+  public override void SkipAnimation() => hideableView?.SkipAnimation();
 }

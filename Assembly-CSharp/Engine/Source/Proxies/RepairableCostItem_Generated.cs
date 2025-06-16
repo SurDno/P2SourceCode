@@ -1,11 +1,10 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
-using Engine.Common;
 using Engine.Common.Commons.Cloneable;
 using Engine.Common.Commons.Converters;
 using Engine.Source.Components.Repairing;
 using Scripts.Tools.Serializations.Converters;
-using System;
 
 namespace Engine.Source.Proxies
 {
@@ -20,27 +19,27 @@ namespace Engine.Source.Proxies
     public object Clone()
     {
       RepairableCostItem_Generated instance = Activator.CreateInstance<RepairableCostItem_Generated>();
-      this.CopyTo((object) instance);
-      return (object) instance;
+      CopyTo(instance);
+      return instance;
     }
 
     public void CopyTo(object target2)
     {
       RepairableCostItem_Generated costItemGenerated = (RepairableCostItem_Generated) target2;
-      costItemGenerated.template = this.template;
-      costItemGenerated.count = this.count;
+      costItemGenerated.template = template;
+      costItemGenerated.count = count;
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      UnityDataWriteUtility.Write<IEntity>(writer, "Template", this.template);
-      DefaultDataWriteUtility.Write(writer, "Count", this.count);
+      UnityDataWriteUtility.Write(writer, "Template", template);
+      DefaultDataWriteUtility.Write(writer, "Count", count);
     }
 
     public void DataRead(IDataReader reader, Type type)
     {
-      this.template = UnityDataReadUtility.Read<IEntity>(reader, "Template", this.template);
-      this.count = DefaultDataReadUtility.Read(reader, "Count", this.count);
+      template = UnityDataReadUtility.Read(reader, "Template", template);
+      count = DefaultDataReadUtility.Read(reader, "Count", count);
     }
   }
 }

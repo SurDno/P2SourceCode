@@ -1,7 +1,5 @@
 ﻿using Engine.Common.Components.Parameters;
 using Engine.Source.Components;
-using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Engine.Impl.UI.Controls
 {
@@ -20,33 +18,33 @@ namespace Engine.Impl.UI.Controls
 
     protected override void ApplyValue()
     {
-      if (this.parameter != null)
-        this.parameter.RemoveListener((IChangeParameterListener) this);
-      this.parameter = this.Value?.GetComponent<ParametersComponent>()?.GetByName<float>(this.parameterName);
-      if (this.parameter != null)
-        this.parameter.AddListener((IChangeParameterListener) this);
-      this.ApplyParameter();
+      if (parameter != null)
+        parameter.RemoveListener(this);
+      parameter = Value?.GetComponent<ParametersComponent>()?.GetByName<float>(parameterName);
+      if (parameter != null)
+        parameter.AddListener(this);
+      ApplyParameter();
     }
 
     private void ApplyParameter()
     {
-      if (!((Object) this.valueView != (Object) null))
+      if (!((Object) valueView != (Object) null))
         return;
-      this.valueView.Progress = this.parameter == null ? this.defaultValue : (this.normalized ? this.parameter.Value / this.parameter.MaxValue : this.parameter.Value);
+      valueView.Progress = parameter == null ? defaultValue : (normalized ? parameter.Value / parameter.MaxValue : parameter.Value);
     }
 
     public override void SkipAnimation()
     {
-      if (!((Object) this.valueView != (Object) null))
+      if (!((Object) valueView != (Object) null))
         return;
-      this.valueView.SkipAnimation();
+      valueView.SkipAnimation();
     }
 
     public void OnParameterChanged(IParameter parameter)
     {
       if (parameter != this.parameter)
         return;
-      this.ApplyParameter();
+      ApplyParameter();
     }
   }
 }

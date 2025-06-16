@@ -5,9 +5,7 @@ using Engine.Common.Services;
 using Engine.Impl.Services.Factories;
 using Engine.Source.Components;
 using Engine.Source.Services;
-using Engine.Source.Services.Detectablies;
 using Inspectors;
-using System;
 
 namespace Engine.Source.Commons.Abilities.Projectiles
 {
@@ -15,36 +13,36 @@ namespace Engine.Source.Commons.Abilities.Projectiles
   [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
   public class RadiusAbilityProjectile : IAbilityProjectile
   {
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected(Mutable = true, Mode = ExecuteMode.EditAndRuntime)]
     protected float radius;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy()]
     [Inspected(Mutable = true, Mode = ExecuteMode.EditAndRuntime)]
     protected bool ignoreSelf;
 
-    public float Radius => this.radius;
+    public float Radius => radius;
 
     public void ComputeTargets(IEntity self, IEntity item, OutsideAbilityTargets targets)
     {
       IEntity selfEntity = self;
-      if (this.ignoreSelf)
+      if (ignoreSelf)
       {
         ParentComponent component = self.GetComponent<ParentComponent>();
         if (component != null)
           selfEntity = component.GetRootParent();
       }
       targets.Targets.Clear();
-      DetectorUtility.GetCandidats(ServiceLocator.GetService<DetectorService>().Detectablies, self.GetComponent<DetectorComponent>(), self.GetComponent<ILocationItemComponent>(), this.radius, (Action<DetectableCandidatInfo>) (target =>
+      DetectorUtility.GetCandidats(ServiceLocator.GetService<DetectorService>().Detectablies, self.GetComponent<DetectorComponent>(), self.GetComponent<ILocationItemComponent>(), radius, target =>
       {
         EffectsComponent component = target.Detectable.Owner.GetComponent<EffectsComponent>();
-        if (component == null || this.ignoreSelf && component.Owner == selfEntity)
+        if (component == null || ignoreSelf && component.Owner == selfEntity)
           return;
         targets.Targets.Add(component);
-      }));
+      });
     }
   }
 }

@@ -1,7 +1,7 @@
-﻿using Facepunch.Steamworks;
-using System;
+﻿using System;
 using System.Runtime.InteropServices;
 using System.Text;
+using Facepunch.Steamworks;
 
 namespace SteamNative
 {
@@ -14,31 +14,31 @@ namespace SteamNative
     {
       this.steamworks = steamworks;
       if (Platform.IsWindows64)
-        this.platform = (Platform.Interface) new Platform.Win64(pointer);
+        platform = (Platform.Interface) new Platform.Win64(pointer);
       else if (Platform.IsWindows32)
-        this.platform = (Platform.Interface) new Platform.Win32(pointer);
+        platform = (Platform.Interface) new Platform.Win32(pointer);
       else if (Platform.IsLinux32)
-        this.platform = (Platform.Interface) new Platform.Linux32(pointer);
+        platform = (Platform.Interface) new Platform.Linux32(pointer);
       else if (Platform.IsLinux64)
       {
-        this.platform = (Platform.Interface) new Platform.Linux64(pointer);
+        platform = (Platform.Interface) new Platform.Linux64(pointer);
       }
       else
       {
         if (!Platform.IsOsx)
           return;
-        this.platform = (Platform.Interface) new Platform.Mac(pointer);
+        platform = (Platform.Interface) new Platform.Mac(pointer);
       }
     }
 
-    public bool IsValid => this.platform != null && this.platform.IsValid;
+    public bool IsValid => platform != null && platform.IsValid;
 
     public virtual void Dispose()
     {
-      if (this.platform == null)
+      if (platform == null)
         return;
-      this.platform.Dispose();
-      this.platform = (Platform.Interface) null;
+      platform.Dispose();
+      platform = (Platform.Interface) null;
     }
 
     public int AddFavoriteGame(
@@ -49,27 +49,27 @@ namespace SteamNative
       uint unFlags,
       uint rTime32LastPlayedOnServer)
     {
-      return this.platform.ISteamMatchmaking_AddFavoriteGame(nAppID.Value, nIP, nConnPort, nQueryPort, unFlags, rTime32LastPlayedOnServer);
+      return platform.ISteamMatchmaking_AddFavoriteGame(nAppID.Value, nIP, nConnPort, nQueryPort, unFlags, rTime32LastPlayedOnServer);
     }
 
     public void AddRequestLobbyListCompatibleMembersFilter(CSteamID steamIDLobby)
     {
-      this.platform.ISteamMatchmaking_AddRequestLobbyListCompatibleMembersFilter(steamIDLobby.Value);
+      platform.ISteamMatchmaking_AddRequestLobbyListCompatibleMembersFilter(steamIDLobby.Value);
     }
 
     public void AddRequestLobbyListDistanceFilter(LobbyDistanceFilter eLobbyDistanceFilter)
     {
-      this.platform.ISteamMatchmaking_AddRequestLobbyListDistanceFilter(eLobbyDistanceFilter);
+      platform.ISteamMatchmaking_AddRequestLobbyListDistanceFilter(eLobbyDistanceFilter);
     }
 
     public void AddRequestLobbyListFilterSlotsAvailable(int nSlotsAvailable)
     {
-      this.platform.ISteamMatchmaking_AddRequestLobbyListFilterSlotsAvailable(nSlotsAvailable);
+      platform.ISteamMatchmaking_AddRequestLobbyListFilterSlotsAvailable(nSlotsAvailable);
     }
 
     public void AddRequestLobbyListNearValueFilter(string pchKeyToMatch, int nValueToBeCloseTo)
     {
-      this.platform.ISteamMatchmaking_AddRequestLobbyListNearValueFilter(pchKeyToMatch, nValueToBeCloseTo);
+      platform.ISteamMatchmaking_AddRequestLobbyListNearValueFilter(pchKeyToMatch, nValueToBeCloseTo);
     }
 
     public void AddRequestLobbyListNumericalFilter(
@@ -77,12 +77,12 @@ namespace SteamNative
       int nValueToMatch,
       LobbyComparison eComparisonType)
     {
-      this.platform.ISteamMatchmaking_AddRequestLobbyListNumericalFilter(pchKeyToMatch, nValueToMatch, eComparisonType);
+      platform.ISteamMatchmaking_AddRequestLobbyListNumericalFilter(pchKeyToMatch, nValueToMatch, eComparisonType);
     }
 
     public void AddRequestLobbyListResultCountFilter(int cMaxResults)
     {
-      this.platform.ISteamMatchmaking_AddRequestLobbyListResultCountFilter(cMaxResults);
+      platform.ISteamMatchmaking_AddRequestLobbyListResultCountFilter(cMaxResults);
     }
 
     public void AddRequestLobbyListStringFilter(
@@ -90,7 +90,7 @@ namespace SteamNative
       string pchValueToMatch,
       LobbyComparison eComparisonType)
     {
-      this.platform.ISteamMatchmaking_AddRequestLobbyListStringFilter(pchKeyToMatch, pchValueToMatch, eComparisonType);
+      platform.ISteamMatchmaking_AddRequestLobbyListStringFilter(pchKeyToMatch, pchValueToMatch, eComparisonType);
     }
 
     public CallbackHandle CreateLobby(
@@ -98,14 +98,14 @@ namespace SteamNative
       int cMaxMembers,
       Action<LobbyCreated_t, bool> CallbackFunction = null)
     {
-      SteamAPICall_t steamApiCallT = (SteamAPICall_t) 0UL;
-      SteamAPICall_t lobby = this.platform.ISteamMatchmaking_CreateLobby(eLobbyType, cMaxMembers);
-      return CallbackFunction == null ? (CallbackHandle) null : LobbyCreated_t.CallResult(this.steamworks, lobby, CallbackFunction);
+      SteamAPICall_t steamApiCallT = 0UL;
+      SteamAPICall_t lobby = platform.ISteamMatchmaking_CreateLobby(eLobbyType, cMaxMembers);
+      return CallbackFunction == null ? null : LobbyCreated_t.CallResult(steamworks, lobby, CallbackFunction);
     }
 
     public bool DeleteLobbyData(CSteamID steamIDLobby, string pchKey)
     {
-      return this.platform.ISteamMatchmaking_DeleteLobbyData(steamIDLobby.Value, pchKey);
+      return platform.ISteamMatchmaking_DeleteLobbyData(steamIDLobby.Value, pchKey);
     }
 
     public bool GetFavoriteGame(
@@ -117,14 +117,14 @@ namespace SteamNative
       out uint punFlags,
       out uint pRTime32LastPlayedOnServer)
     {
-      return this.platform.ISteamMatchmaking_GetFavoriteGame(iGame, ref pnAppID.Value, out pnIP, out pnConnPort, out pnQueryPort, out punFlags, out pRTime32LastPlayedOnServer);
+      return platform.ISteamMatchmaking_GetFavoriteGame(iGame, ref pnAppID.Value, out pnIP, out pnConnPort, out pnQueryPort, out punFlags, out pRTime32LastPlayedOnServer);
     }
 
-    public int GetFavoriteGameCount() => this.platform.ISteamMatchmaking_GetFavoriteGameCount();
+    public int GetFavoriteGameCount() => platform.ISteamMatchmaking_GetFavoriteGameCount();
 
     public ulong GetLobbyByIndex(int iLobby)
     {
-      return (ulong) this.platform.ISteamMatchmaking_GetLobbyByIndex(iLobby);
+      return (ulong) platform.ISteamMatchmaking_GetLobbyByIndex(iLobby);
     }
 
     public int GetLobbyChatEntry(
@@ -135,12 +135,12 @@ namespace SteamNative
       int cubData,
       out ChatEntryType peChatEntryType)
     {
-      return this.platform.ISteamMatchmaking_GetLobbyChatEntry(steamIDLobby.Value, iChatID, out pSteamIDUser.Value, pvData, cubData, out peChatEntryType);
+      return platform.ISteamMatchmaking_GetLobbyChatEntry(steamIDLobby.Value, iChatID, out pSteamIDUser.Value, pvData, cubData, out peChatEntryType);
     }
 
     public string GetLobbyData(CSteamID steamIDLobby, string pchKey)
     {
-      return Marshal.PtrToStringAnsi(this.platform.ISteamMatchmaking_GetLobbyData(steamIDLobby.Value, pchKey));
+      return Marshal.PtrToStringAnsi(platform.ISteamMatchmaking_GetLobbyData(steamIDLobby.Value, pchKey));
     }
 
     public bool GetLobbyDataByIndex(
@@ -155,7 +155,7 @@ namespace SteamNative
       pchValue = string.Empty;
       StringBuilder stringBuilder2 = Helpers.TakeStringBuilder();
       int cchValueBufferSize = 4096;
-      bool lobbyDataByIndex = this.platform.ISteamMatchmaking_GetLobbyDataByIndex(steamIDLobby.Value, iLobbyData, stringBuilder1, cchKeyBufferSize, stringBuilder2, cchValueBufferSize);
+      bool lobbyDataByIndex = platform.ISteamMatchmaking_GetLobbyDataByIndex(steamIDLobby.Value, iLobbyData, stringBuilder1, cchKeyBufferSize, stringBuilder2, cchValueBufferSize);
       if (!lobbyDataByIndex)
         return lobbyDataByIndex;
       pchValue = stringBuilder2.ToString();
@@ -167,7 +167,7 @@ namespace SteamNative
 
     public int GetLobbyDataCount(CSteamID steamIDLobby)
     {
-      return this.platform.ISteamMatchmaking_GetLobbyDataCount(steamIDLobby.Value);
+      return platform.ISteamMatchmaking_GetLobbyDataCount(steamIDLobby.Value);
     }
 
     public bool GetLobbyGameServer(
@@ -176,51 +176,51 @@ namespace SteamNative
       out ushort punGameServerPort,
       out CSteamID psteamIDGameServer)
     {
-      return this.platform.ISteamMatchmaking_GetLobbyGameServer(steamIDLobby.Value, out punGameServerIP, out punGameServerPort, out psteamIDGameServer.Value);
+      return platform.ISteamMatchmaking_GetLobbyGameServer(steamIDLobby.Value, out punGameServerIP, out punGameServerPort, out psteamIDGameServer.Value);
     }
 
     public ulong GetLobbyMemberByIndex(CSteamID steamIDLobby, int iMember)
     {
-      return (ulong) this.platform.ISteamMatchmaking_GetLobbyMemberByIndex(steamIDLobby.Value, iMember);
+      return (ulong) platform.ISteamMatchmaking_GetLobbyMemberByIndex(steamIDLobby.Value, iMember);
     }
 
     public string GetLobbyMemberData(CSteamID steamIDLobby, CSteamID steamIDUser, string pchKey)
     {
-      return Marshal.PtrToStringAnsi(this.platform.ISteamMatchmaking_GetLobbyMemberData(steamIDLobby.Value, steamIDUser.Value, pchKey));
+      return Marshal.PtrToStringAnsi(platform.ISteamMatchmaking_GetLobbyMemberData(steamIDLobby.Value, steamIDUser.Value, pchKey));
     }
 
     public int GetLobbyMemberLimit(CSteamID steamIDLobby)
     {
-      return this.platform.ISteamMatchmaking_GetLobbyMemberLimit(steamIDLobby.Value);
+      return platform.ISteamMatchmaking_GetLobbyMemberLimit(steamIDLobby.Value);
     }
 
     public ulong GetLobbyOwner(CSteamID steamIDLobby)
     {
-      return (ulong) this.platform.ISteamMatchmaking_GetLobbyOwner(steamIDLobby.Value);
+      return (ulong) platform.ISteamMatchmaking_GetLobbyOwner(steamIDLobby.Value);
     }
 
     public int GetNumLobbyMembers(CSteamID steamIDLobby)
     {
-      return this.platform.ISteamMatchmaking_GetNumLobbyMembers(steamIDLobby.Value);
+      return platform.ISteamMatchmaking_GetNumLobbyMembers(steamIDLobby.Value);
     }
 
     public bool InviteUserToLobby(CSteamID steamIDLobby, CSteamID steamIDInvitee)
     {
-      return this.platform.ISteamMatchmaking_InviteUserToLobby(steamIDLobby.Value, steamIDInvitee.Value);
+      return platform.ISteamMatchmaking_InviteUserToLobby(steamIDLobby.Value, steamIDInvitee.Value);
     }
 
     public CallbackHandle JoinLobby(
       CSteamID steamIDLobby,
       Action<LobbyEnter_t, bool> CallbackFunction = null)
     {
-      SteamAPICall_t steamApiCallT = (SteamAPICall_t) 0UL;
-      SteamAPICall_t call = this.platform.ISteamMatchmaking_JoinLobby(steamIDLobby.Value);
-      return CallbackFunction == null ? (CallbackHandle) null : LobbyEnter_t.CallResult(this.steamworks, call, CallbackFunction);
+      SteamAPICall_t steamApiCallT = 0UL;
+      SteamAPICall_t call = platform.ISteamMatchmaking_JoinLobby(steamIDLobby.Value);
+      return CallbackFunction == null ? null : LobbyEnter_t.CallResult(steamworks, call, CallbackFunction);
     }
 
     public void LeaveLobby(CSteamID steamIDLobby)
     {
-      this.platform.ISteamMatchmaking_LeaveLobby(steamIDLobby.Value);
+      platform.ISteamMatchmaking_LeaveLobby(steamIDLobby.Value);
     }
 
     public bool RemoveFavoriteGame(
@@ -230,34 +230,34 @@ namespace SteamNative
       ushort nQueryPort,
       uint unFlags)
     {
-      return this.platform.ISteamMatchmaking_RemoveFavoriteGame(nAppID.Value, nIP, nConnPort, nQueryPort, unFlags);
+      return platform.ISteamMatchmaking_RemoveFavoriteGame(nAppID.Value, nIP, nConnPort, nQueryPort, unFlags);
     }
 
     public bool RequestLobbyData(CSteamID steamIDLobby)
     {
-      return this.platform.ISteamMatchmaking_RequestLobbyData(steamIDLobby.Value);
+      return platform.ISteamMatchmaking_RequestLobbyData(steamIDLobby.Value);
     }
 
     public CallbackHandle RequestLobbyList(Action<LobbyMatchList_t, bool> CallbackFunction = null)
     {
-      SteamAPICall_t steamApiCallT = (SteamAPICall_t) 0UL;
-      SteamAPICall_t call = this.platform.ISteamMatchmaking_RequestLobbyList();
-      return CallbackFunction == null ? (CallbackHandle) null : LobbyMatchList_t.CallResult(this.steamworks, call, CallbackFunction);
+      SteamAPICall_t steamApiCallT = 0UL;
+      SteamAPICall_t call = platform.ISteamMatchmaking_RequestLobbyList();
+      return CallbackFunction == null ? null : LobbyMatchList_t.CallResult(steamworks, call, CallbackFunction);
     }
 
     public bool SendLobbyChatMsg(CSteamID steamIDLobby, IntPtr pvMsgBody, int cubMsgBody)
     {
-      return this.platform.ISteamMatchmaking_SendLobbyChatMsg(steamIDLobby.Value, pvMsgBody, cubMsgBody);
+      return platform.ISteamMatchmaking_SendLobbyChatMsg(steamIDLobby.Value, pvMsgBody, cubMsgBody);
     }
 
     public bool SetLinkedLobby(CSteamID steamIDLobby, CSteamID steamIDLobbyDependent)
     {
-      return this.platform.ISteamMatchmaking_SetLinkedLobby(steamIDLobby.Value, steamIDLobbyDependent.Value);
+      return platform.ISteamMatchmaking_SetLinkedLobby(steamIDLobby.Value, steamIDLobbyDependent.Value);
     }
 
     public bool SetLobbyData(CSteamID steamIDLobby, string pchKey, string pchValue)
     {
-      return this.platform.ISteamMatchmaking_SetLobbyData(steamIDLobby.Value, pchKey, pchValue);
+      return platform.ISteamMatchmaking_SetLobbyData(steamIDLobby.Value, pchKey, pchValue);
     }
 
     public void SetLobbyGameServer(
@@ -266,32 +266,32 @@ namespace SteamNative
       ushort unGameServerPort,
       CSteamID steamIDGameServer)
     {
-      this.platform.ISteamMatchmaking_SetLobbyGameServer(steamIDLobby.Value, unGameServerIP, unGameServerPort, steamIDGameServer.Value);
+      platform.ISteamMatchmaking_SetLobbyGameServer(steamIDLobby.Value, unGameServerIP, unGameServerPort, steamIDGameServer.Value);
     }
 
     public bool SetLobbyJoinable(CSteamID steamIDLobby, bool bLobbyJoinable)
     {
-      return this.platform.ISteamMatchmaking_SetLobbyJoinable(steamIDLobby.Value, bLobbyJoinable);
+      return platform.ISteamMatchmaking_SetLobbyJoinable(steamIDLobby.Value, bLobbyJoinable);
     }
 
     public void SetLobbyMemberData(CSteamID steamIDLobby, string pchKey, string pchValue)
     {
-      this.platform.ISteamMatchmaking_SetLobbyMemberData(steamIDLobby.Value, pchKey, pchValue);
+      platform.ISteamMatchmaking_SetLobbyMemberData(steamIDLobby.Value, pchKey, pchValue);
     }
 
     public bool SetLobbyMemberLimit(CSteamID steamIDLobby, int cMaxMembers)
     {
-      return this.platform.ISteamMatchmaking_SetLobbyMemberLimit(steamIDLobby.Value, cMaxMembers);
+      return platform.ISteamMatchmaking_SetLobbyMemberLimit(steamIDLobby.Value, cMaxMembers);
     }
 
     public bool SetLobbyOwner(CSteamID steamIDLobby, CSteamID steamIDNewOwner)
     {
-      return this.platform.ISteamMatchmaking_SetLobbyOwner(steamIDLobby.Value, steamIDNewOwner.Value);
+      return platform.ISteamMatchmaking_SetLobbyOwner(steamIDLobby.Value, steamIDNewOwner.Value);
     }
 
     public bool SetLobbyType(CSteamID steamIDLobby, LobbyType eLobbyType)
     {
-      return this.platform.ISteamMatchmaking_SetLobbyType(steamIDLobby.Value, eLobbyType);
+      return platform.ISteamMatchmaking_SetLobbyType(steamIDLobby.Value, eLobbyType);
     }
   }
 }

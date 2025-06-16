@@ -1,8 +1,7 @@
-﻿using FlowCanvas;
+﻿using System.Collections;
+using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
-using System.Collections;
-using UnityEngine;
 
 namespace Engine.Source.Blueprints
 {
@@ -15,30 +14,30 @@ namespace Engine.Source.Blueprints
     protected override void RegisterPorts()
     {
       base.RegisterPorts();
-      FlowOutput output = this.AddFlowOutput("Complete");
-      this.AddFlowInput("In", (FlowHandler) (() =>
+      FlowOutput output = AddFlowOutput("Complete");
+      AddFlowInput("In", () =>
       {
-        Animation animation = this.inputAnimation.value;
+        Animation animation = inputAnimation.value;
         if (!((Object) animation != (Object) null))
           return;
         animation.wrapMode = WrapMode.Once;
-        AnimationClip clip = this.inputAnimationClip.value;
+        AnimationClip clip = inputAnimationClip.value;
         if ((Object) clip != (Object) null)
         {
           animation.clip = clip;
           animation.AddClip(clip, clip.name);
           animation.Play();
-          this.StartCoroutine(this.WaitComplete(animation, clip, output));
+          StartCoroutine(WaitComplete(animation, clip, output));
         }
-      }));
-      this.inputAnimation = this.AddValueInput<Animation>("Animation");
-      this.inputAnimationClip = this.AddValueInput<AnimationClip>("Clip");
+      });
+      inputAnimation = AddValueInput<Animation>("Animation");
+      inputAnimationClip = AddValueInput<AnimationClip>("Clip");
     }
 
     private IEnumerator WaitComplete(Animation animation, AnimationClip clip, FlowOutput output)
     {
       while (animation.isPlaying)
-        yield return (object) null;
+        yield return null;
       animation.RemoveClip(clip);
       output.Call();
     }

@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEngine;
 
 namespace SRDebugger.Profiler
 {
@@ -9,7 +8,7 @@ namespace SRDebugger.Profiler
 
     private void LateUpdate()
     {
-      Action onLateUpdate = this.OnLateUpdate;
+      Action onLateUpdate = OnLateUpdate;
       if (onLateUpdate == null)
         return;
       onLateUpdate();

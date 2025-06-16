@@ -7,14 +7,14 @@
 
     public MouseButtonEventData eventData
     {
-      get => this.m_EventData;
-      set => this.m_EventData = value;
+      get => m_EventData;
+      set => m_EventData = value;
     }
 
     public PointerEventData.InputButton button
     {
-      get => this.m_Button;
-      set => this.m_Button = value;
+      get => m_Button;
+      set => m_Button = value;
     }
   }
 }

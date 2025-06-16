@@ -1,7 +1,4 @@
-﻿using UnityEngine;
-using UnityEngine.EventSystems;
-
-namespace Engine.Impl.UI.Controls
+﻿namespace Engine.Impl.UI.Controls
 {
   public class SelectWithPointer : 
     MonoBehaviour,

@@ -1,6 +1,4 @@
 ﻿using System;
-using UnityEngine;
-using UnityEngine.Profiling;
 
 public class AnimatorEventProxy : MonoBehaviour
 {
@@ -10,7 +8,7 @@ public class AnimatorEventProxy : MonoBehaviour
 
   private void OnAnimatorMove()
   {
-    Action animatorMoveEvent = this.AnimatorMoveEvent;
+    Action animatorMoveEvent = AnimatorMoveEvent;
     if (animatorMoveEvent == null)
       return;
     animatorMoveEvent();
@@ -20,7 +18,7 @@ public class AnimatorEventProxy : MonoBehaviour
   {
     if (Profiler.enabled)
       Profiler.BeginSample(name);
-    Action<string> animatorEventEvent = this.AnimatorEventEvent;
+    Action<string> animatorEventEvent = AnimatorEventEvent;
     if (animatorEventEvent != null)
       animatorEventEvent(name);
     if (!Profiler.enabled)

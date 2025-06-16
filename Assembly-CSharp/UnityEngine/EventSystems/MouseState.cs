@@ -8,9 +8,9 @@ namespace UnityEngine.EventSystems
 
     public bool AnyPressesThisFrame()
     {
-      for (int index = 0; index < this.m_TrackedButtons.Count; ++index)
+      for (int index = 0; index < m_TrackedButtons.Count; ++index)
       {
-        if (this.m_TrackedButtons[index].eventData.PressedThisFrame())
+        if (m_TrackedButtons[index].eventData.PressedThisFrame())
           return true;
       }
       return false;
@@ -18,9 +18,9 @@ namespace UnityEngine.EventSystems
 
     public bool AnyReleasesThisFrame()
     {
-      for (int index = 0; index < this.m_TrackedButtons.Count; ++index)
+      for (int index = 0; index < m_TrackedButtons.Count; ++index)
       {
-        if (this.m_TrackedButtons[index].eventData.ReleasedThisFrame())
+        if (m_TrackedButtons[index].eventData.ReleasedThisFrame())
           return true;
       }
       return false;
@@ -28,23 +28,22 @@ namespace UnityEngine.EventSystems
 
     public ButtonState GetButtonState(PointerEventData.InputButton button)
     {
-      ButtonState buttonState = (ButtonState) null;
-      for (int index = 0; index < this.m_TrackedButtons.Count; ++index)
+      ButtonState buttonState = null;
+      for (int index = 0; index < m_TrackedButtons.Count; ++index)
       {
-        if (this.m_TrackedButtons[index].button == button)
+        if (m_TrackedButtons[index].button == button)
         {
-          buttonState = this.m_TrackedButtons[index];
+          buttonState = m_TrackedButtons[index];
           break;
         }
       }
       if (buttonState == null)
       {
-        buttonState = new ButtonState()
-        {
+        buttonState = new ButtonState {
           button = button,
           eventData = new MouseButtonEventData()
         };
-        this.m_TrackedButtons.Add(buttonState);
+        m_TrackedButtons.Add(buttonState);
       }
       return buttonState;
     }
@@ -54,7 +53,7 @@ namespace UnityEngine.EventSystems
       PointerEventData.FramePressState stateForMouseButton,
       PointerEventData data)
     {
-      ButtonState buttonState = this.GetButtonState(button);
+      ButtonState buttonState = GetButtonState(button);
       buttonState.eventData.buttonState = stateForMouseButton;
       buttonState.eventData.buttonData = data;
     }

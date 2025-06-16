@@ -3,8 +3,6 @@ using Engine.Impl.MindMap;
 using Engine.Impl.UI.Controls;
 using Engine.Source.Commons;
 using Inspectors;
-using UnityEngine;
-using UnityEngine.UI;
 
 public class HUDQuestMarker : MonoBehaviour
 {
@@ -23,35 +21,35 @@ public class HUDQuestMarker : MonoBehaviour
 
   public IMapItem MapItem
   {
-    get => this.mapItem;
+    get => mapItem;
     set
     {
-      if (this.mapItem == value)
+      if (mapItem == value)
         return;
-      this.mapItem = value;
-      this.ApplyMapItem();
+      mapItem = value;
+      ApplyMapItem();
     }
   }
 
   private void OnEnable()
   {
-    this.ApplyMapItem();
-    this.ApplyPosition();
+    ApplyMapItem();
+    ApplyPosition();
   }
 
-  private void LateUpdate() => this.ApplyPosition();
+  private void LateUpdate() => ApplyPosition();
 
   private void ApplyMapItem()
   {
-    if (this.mapItem == null)
+    if (mapItem == null)
     {
-      this.image.texture = (Texture) null;
-      this.shadowImage.texture = (Texture) null;
+      image.texture = (Texture) null;
+      shadowImage.texture = (Texture) null;
     }
     else
     {
       Texture texture = (Texture) null;
-      foreach (IMMNode node in this.mapItem.Nodes)
+      foreach (IMMNode node in mapItem.Nodes)
       {
         if (node.Content?.Placeholder is MMPlaceholder placeholder)
         {
@@ -60,29 +58,29 @@ public class HUDQuestMarker : MonoBehaviour
         }
       }
       if ((Object) texture == (Object) null)
-        texture = this.mapItem.TooltipResource is MapTooltipResource tooltipResource ? tooltipResource.Image.Value : (Texture) null;
-      this.image.texture = texture;
-      this.shadowImage.texture = texture;
+        texture = mapItem.TooltipResource is MapTooltipResource tooltipResource ? tooltipResource.Image.Value : (Texture) null;
+      image.texture = texture;
+      shadowImage.texture = texture;
     }
   }
 
   private void ApplyPosition()
   {
-    if (this.mapItem == null)
+    if (mapItem == null)
       return;
     Transform cameraTransform = GameCamera.Instance?.CameraTransform;
     if ((Object) cameraTransform == (Object) null)
       return;
     Vector3 position = cameraTransform.position;
-    Vector2 vector2 = this.mapItem.WorldPosition - new Vector2(position.x, position.z);
+    Vector2 vector2 = mapItem.WorldPosition - new Vector2(position.x, position.z);
     float magnitude = vector2.magnitude;
     Vector2 lhs = vector2 / magnitude;
     Vector3 forward = cameraTransform.forward;
     Vector2 rhs1 = new Vector2(forward.x, forward.z);
     rhs1.Normalize();
-    this.forwardDotView.Progress = Mathf.Clamp01(Vector2.Dot(lhs, rhs1));
+    forwardDotView.Progress = Mathf.Clamp01(Vector2.Dot(lhs, rhs1));
     Vector2 rhs2 = new Vector2(rhs1.y, -rhs1.x);
-    this.rightDotView.Progress = (float) (((double) Vector2.Dot(lhs, rhs2) + 1.0) / 2.0);
-    this.distanceView.FloatValue = magnitude;
+    rightDotView.Progress = (float) (((double) Vector2.Dot(lhs, rhs2) + 1.0) / 2.0);
+    distanceView.FloatValue = magnitude;
   }
 }

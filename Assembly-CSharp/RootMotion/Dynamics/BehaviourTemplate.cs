@@ -1,18 +1,16 @@
-﻿using UnityEngine;
-
-namespace RootMotion.Dynamics
+﻿namespace RootMotion.Dynamics
 {
   [AddComponentMenu("Scripts/RootMotion.Dynamics/PuppetMaster/Behaviours/BehaviourTemplate")]
   public class BehaviourTemplate : BehaviourBase
   {
     public SubBehaviourCOM centerOfMass;
     public LayerMask groundLayers;
-    public BehaviourBase.PuppetEvent onLoseBalance;
+    public PuppetEvent onLoseBalance;
     public float loseBalanceAngle = 60f;
 
     protected override void OnInitiate()
     {
-      this.centerOfMass.Initiate((BehaviourBase) this, this.groundLayers);
+      centerOfMass.Initiate(this, groundLayers);
     }
 
     protected override void OnActivate()
@@ -29,9 +27,9 @@ namespace RootMotion.Dynamics
 
     protected override void OnFixedUpdate()
     {
-      if ((double) this.centerOfMass.angle <= (double) this.loseBalanceAngle)
+      if (centerOfMass.angle <= (double) loseBalanceAngle)
         return;
-      this.onLoseBalance.Trigger(this.puppetMaster);
+      onLoseBalance.Trigger(puppetMaster);
     }
 
     protected override void OnLateUpdate()

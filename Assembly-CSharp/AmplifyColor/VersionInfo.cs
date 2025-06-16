@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEngine;
 
 namespace AmplifyColor
 {
@@ -20,31 +19,31 @@ namespace AmplifyColor
 
     public static string StaticToString()
     {
-      return string.Format("{0}.{1}.{2}", (object) (byte) 1, (object) (byte) 6, (object) (byte) 1) + VersionInfo.StageSuffix + VersionInfo.TrialSuffix;
+      return string.Format("{0}.{1}.{2}", (byte) 1, (byte) 6, (byte) 1) + StageSuffix + TrialSuffix;
     }
 
     public override string ToString()
     {
-      return string.Format("{0}.{1}.{2}", (object) this.m_major, (object) this.m_minor, (object) this.m_release) + VersionInfo.StageSuffix + VersionInfo.TrialSuffix;
+      return string.Format("{0}.{1}.{2}", m_major, m_minor, m_release) + StageSuffix + TrialSuffix;
     }
 
-    public int Number => this.m_major * 100 + this.m_minor * 10 + this.m_release;
+    public int Number => m_major * 100 + m_minor * 10 + m_release;
 
     private VersionInfo()
     {
-      this.m_major = 1;
-      this.m_minor = 6;
-      this.m_release = 1;
+      m_major = 1;
+      m_minor = 6;
+      m_release = 1;
     }
 
     private VersionInfo(byte major, byte minor, byte release)
     {
-      this.m_major = (int) major;
-      this.m_minor = (int) minor;
-      this.m_release = (int) release;
+      m_major = major;
+      m_minor = minor;
+      m_release = release;
     }
 
-    public static VersionInfo Current() => new VersionInfo((byte) 1, (byte) 6, (byte) 1);
+    public static VersionInfo Current() => new VersionInfo(1, 6, 1);
 
     public static bool Matches(VersionInfo version)
     {

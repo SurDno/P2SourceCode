@@ -13,8 +13,8 @@ namespace Engine.Source.Blueprints
     protected override void RegisterPorts()
     {
       base.RegisterPorts();
-      this.AddFlowInput("In", (FlowHandler) (() => ServiceLocator.GetService<IAchievementService>().Unlock(this.nameInput.value)));
-      this.nameInput = this.AddValueInput<string>("Name");
+      AddFlowInput("In", () => ServiceLocator.GetService<IAchievementService>().Unlock(nameInput.value));
+      nameInput = AddValueInput<string>("Name");
     }
   }
 }

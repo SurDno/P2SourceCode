@@ -1,11 +1,11 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons;
 using Engine.Common.Commons.Converters;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Scripts.Tools.Serializations.Converters;
-using UnityEngine;
 
 namespace BehaviorDesigner.Runtime.Tasks.Basic.UnityVector3
 {
@@ -14,62 +14,62 @@ namespace BehaviorDesigner.Runtime.Tasks.Basic.UnityVector3
   [TaskDescription("Returns the distance between two Vector3s.")]
   [Factory]
   [GeneratePartial(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
-  public class Distance : BehaviorDesigner.Runtime.Tasks.Action, IStub, ISerializeDataWrite, ISerializeDataRead
+  public class Distance : Action, IStub, ISerializeDataWrite, ISerializeDataRead
   {
-    [BehaviorDesigner.Runtime.Tasks.Tooltip("The first Vector3")]
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [Tooltip("The first Vector3")]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [SerializeField]
     public SharedVector3 firstVector3;
-    [BehaviorDesigner.Runtime.Tasks.Tooltip("The second Vector3")]
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [Tooltip("The second Vector3")]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [SerializeField]
     public SharedVector3 secondVector3;
-    [BehaviorDesigner.Runtime.Tasks.Tooltip("The distance")]
+    [Tooltip("The distance")]
     [RequiredField]
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy()]
     [SerializeField]
     public SharedFloat storeResult;
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.WriteSerialize<NodeData>(writer, "NodeData", this.nodeData);
-      DefaultDataWriteUtility.Write(writer, "Id", this.id);
-      DefaultDataWriteUtility.Write(writer, "FriendlyName", this.friendlyName);
-      DefaultDataWriteUtility.Write(writer, "Instant", this.instant);
-      DefaultDataWriteUtility.Write(writer, "Disabled", this.disabled);
-      BehaviorTreeDataWriteUtility.WriteShared<SharedVector3>(writer, "FirstVector3", this.firstVector3);
-      BehaviorTreeDataWriteUtility.WriteShared<SharedVector3>(writer, "SecondVector3", this.secondVector3);
-      BehaviorTreeDataWriteUtility.WriteShared<SharedFloat>(writer, "StoreResult", this.storeResult);
+      DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
+      DefaultDataWriteUtility.Write(writer, "Id", id);
+      DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
+      DefaultDataWriteUtility.Write(writer, "Instant", instant);
+      DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
+      BehaviorTreeDataWriteUtility.WriteShared(writer, "FirstVector3", firstVector3);
+      BehaviorTreeDataWriteUtility.WriteShared(writer, "SecondVector3", secondVector3);
+      BehaviorTreeDataWriteUtility.WriteShared(writer, "StoreResult", storeResult);
     }
 
-    public void DataRead(IDataReader reader, System.Type type)
+    public void DataRead(IDataReader reader, Type type)
     {
-      this.nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
-      this.id = DefaultDataReadUtility.Read(reader, "Id", this.id);
-      this.friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", this.friendlyName);
-      this.instant = DefaultDataReadUtility.Read(reader, "Instant", this.instant);
-      this.disabled = DefaultDataReadUtility.Read(reader, "Disabled", this.disabled);
-      this.firstVector3 = BehaviorTreeDataReadUtility.ReadShared<SharedVector3>(reader, "FirstVector3", this.firstVector3);
-      this.secondVector3 = BehaviorTreeDataReadUtility.ReadShared<SharedVector3>(reader, "SecondVector3", this.secondVector3);
-      this.storeResult = BehaviorTreeDataReadUtility.ReadShared<SharedFloat>(reader, "StoreResult", this.storeResult);
+      nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
+      id = DefaultDataReadUtility.Read(reader, "Id", id);
+      friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
+      instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
+      disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
+      firstVector3 = BehaviorTreeDataReadUtility.ReadShared(reader, "FirstVector3", firstVector3);
+      secondVector3 = BehaviorTreeDataReadUtility.ReadShared(reader, "SecondVector3", secondVector3);
+      storeResult = BehaviorTreeDataReadUtility.ReadShared(reader, "StoreResult", storeResult);
     }
 
     public override TaskStatus OnUpdate()
     {
-      this.storeResult.Value = Vector3.Distance(this.firstVector3.Value, this.secondVector3.Value);
+      storeResult.Value = Vector3.Distance(firstVector3.Value, secondVector3.Value);
       return TaskStatus.Success;
     }
 
     public override void OnReset()
     {
-      this.firstVector3 = this.secondVector3 = (SharedVector3) Vector3.zero;
-      this.storeResult = (SharedFloat) 0.0f;
+      firstVector3 = secondVector3 = (SharedVector3) Vector3.zero;
+      storeResult = 0.0f;
     }
   }
 }

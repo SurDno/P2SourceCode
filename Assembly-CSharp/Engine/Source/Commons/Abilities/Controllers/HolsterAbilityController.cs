@@ -4,7 +4,6 @@ using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Engine.Source.Components;
 using Inspectors;
-using System;
 
 namespace Engine.Source.Commons.Abilities.Controllers
 {
@@ -12,9 +11,9 @@ namespace Engine.Source.Commons.Abilities.Controllers
   [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
   public class HolsterAbilityController : IAbilityController
   {
-    [DataReadProxy(MemberEnum.None, Name = "Weapon")]
-    [DataWriteProxy(MemberEnum.None, Name = "Weapon")]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy(Name = "Weapon")]
+    [DataWriteProxy(Name = "Weapon")]
+    [CopyableProxy()]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected WeaponKind weaponKind = WeaponKind.Unknown;
     private AbilityItem abilityItem;
@@ -24,59 +23,59 @@ namespace Engine.Source.Commons.Abilities.Controllers
     public void Initialise(AbilityItem abilityItem)
     {
       this.abilityItem = abilityItem;
-      this.storable = this.abilityItem.Ability.Owner.GetComponent<StorableComponent>();
-      if (this.storable == null)
+      storable = this.abilityItem.Ability.Owner.GetComponent<StorableComponent>();
+      if (storable == null)
         return;
-      this.storable.ChangeStorageEvent += new Action<IStorableComponent>(this.ChangeStorageEvent);
-      this.CheckItem();
+      storable.ChangeStorageEvent += ChangeStorageEvent;
+      CheckItem();
     }
 
     public void Shutdown()
     {
-      this.Cleanup();
-      if (this.storable != null)
+      Cleanup();
+      if (storable != null)
       {
-        this.storable.ChangeStorageEvent -= new Action<IStorableComponent>(this.ChangeStorageEvent);
-        this.abilityItem.Active = false;
+        storable.ChangeStorageEvent -= ChangeStorageEvent;
+        abilityItem.Active = false;
       }
-      this.abilityItem = (AbilityItem) null;
-      this.storable = (StorableComponent) null;
+      abilityItem = null;
+      storable = null;
     }
 
-    private void ChangeStorageEvent(IStorableComponent sender) => this.CheckItem();
+    private void ChangeStorageEvent(IStorableComponent sender) => CheckItem();
 
     private void CheckItem()
     {
-      this.Cleanup();
-      IStorageComponent storage = this.storable.Storage;
+      Cleanup();
+      IStorageComponent storage = storable.Storage;
       if (storage == null)
         return;
-      this.attacker = storage.Owner.GetComponent<IAttackerPlayerComponent>();
-      if (this.attacker != null)
+      attacker = storage.Owner.GetComponent<IAttackerPlayerComponent>();
+      if (attacker != null)
       {
-        this.attacker.WeaponHolsterStartEvent += new Action<WeaponKind>(this.WeaponHolsterStartEvent);
-        this.attacker.WeaponUnholsterEndEvent += new Action<WeaponKind>(this.WeaponUnholsterEndEvent);
-        this.UpdateAbility();
+        attacker.WeaponHolsterStartEvent += WeaponHolsterStartEvent;
+        attacker.WeaponUnholsterEndEvent += WeaponUnholsterEndEvent;
+        UpdateAbility();
       }
     }
 
     private void Cleanup()
     {
-      if (this.attacker == null)
+      if (attacker == null)
         return;
-      this.attacker.WeaponHolsterStartEvent -= new Action<WeaponKind>(this.WeaponHolsterStartEvent);
-      this.attacker.WeaponUnholsterEndEvent -= new Action<WeaponKind>(this.WeaponUnholsterEndEvent);
-      this.attacker = (IAttackerPlayerComponent) null;
-      this.UpdateAbility();
+      attacker.WeaponHolsterStartEvent -= WeaponHolsterStartEvent;
+      attacker.WeaponUnholsterEndEvent -= WeaponUnholsterEndEvent;
+      attacker = null;
+      UpdateAbility();
     }
 
-    private void WeaponHolsterStartEvent(WeaponKind weapon) => this.UpdateAbility();
+    private void WeaponHolsterStartEvent(WeaponKind weapon) => UpdateAbility();
 
-    private void WeaponUnholsterEndEvent(WeaponKind weapon) => this.UpdateAbility();
+    private void WeaponUnholsterEndEvent(WeaponKind weapon) => UpdateAbility();
 
     private void UpdateAbility()
     {
-      this.abilityItem.Active = this.attacker != null && this.attacker.CurrentWeapon == this.weaponKind;
+      abilityItem.Active = attacker != null && attacker.CurrentWeapon == weaponKind;
     }
   }
 }

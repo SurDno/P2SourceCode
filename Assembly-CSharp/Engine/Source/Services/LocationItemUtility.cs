@@ -2,7 +2,6 @@
 using Engine.Common.Components;
 using Engine.Common.Components.Locations;
 using Engine.Source.Components;
-using UnityEngine;
 
 namespace Engine.Source.Services
 {
@@ -19,7 +18,7 @@ namespace Engine.Source.Services
 
     public static LocationType GetLocationType(GameObject go)
     {
-      for (IEntity entity = LocationItemUtility.GetFirstEngineObject(go.transform); entity != null; entity = entity.Parent)
+      for (IEntity entity = GetFirstEngineObject(go.transform); entity != null; entity = entity.Parent)
       {
         LocationComponent component = entity.GetComponent<LocationComponent>();
         if (component != null)
@@ -42,7 +41,7 @@ namespace Engine.Source.Services
         trans = trans.parent;
       }
       while ((Object) trans != (Object) null);
-      return (IEntity) null;
+      return null;
     }
 
     public static T FindParentComponent<T>(IEntity entity) where T : class, IComponent
@@ -50,7 +49,7 @@ namespace Engine.Source.Services
       for (; entity != null; entity = entity.Parent)
       {
         T component = entity.GetComponent<T>();
-        if ((object) component != null)
+        if (component != null)
           return component;
       }
       return default (T);
@@ -58,8 +57,8 @@ namespace Engine.Source.Services
 
     public static ILocationComponent GetLocation(IEntity entity)
     {
-      LocationItemComponent parentComponent = LocationItemUtility.FindParentComponent<LocationItemComponent>(entity);
-      return parentComponent != null ? parentComponent.Location : (ILocationComponent) LocationItemUtility.FindParentComponent<LocationComponent>(entity);
+      LocationItemComponent parentComponent = FindParentComponent<LocationItemComponent>(entity);
+      return parentComponent != null ? parentComponent.Location : FindParentComponent<LocationComponent>(entity);
     }
   }
 }

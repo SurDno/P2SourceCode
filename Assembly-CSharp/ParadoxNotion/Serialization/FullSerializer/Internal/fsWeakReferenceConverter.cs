@@ -16,7 +16,7 @@ namespace ParadoxNotion.Serialization.FullSerializer.Internal
       fsResult success = fsResult.Success;
       serialized = fsData.CreateDictionary();
       fsData data;
-      if (weakReference.IsAlive && !(success += this.Serializer.TrySerialize<object>(weakReference.Target, out data)).Failed)
+      if (weakReference.IsAlive && !(success += Serializer.TrySerialize(weakReference.Target, out data)).Failed)
       {
         serialized.AsDictionary["Target"] = data;
         serialized.AsDictionary["TrackResurrection"] = new fsData(weakReference.TrackResurrection);
@@ -27,22 +27,22 @@ namespace ParadoxNotion.Serialization.FullSerializer.Internal
     public override fsResult TryDeserialize(fsData data, ref object instance, Type storageType)
     {
       fsResult fsResult;
-      if ((fsResult = fsResult.Success + this.CheckType(data, fsDataType.Object)).Failed || !data.AsDictionary.ContainsKey("Target"))
+      if ((fsResult = fsResult.Success + CheckType(data, fsDataType.Object)).Failed || !data.AsDictionary.ContainsKey("Target"))
         return fsResult;
       fsData data1 = data.AsDictionary["Target"];
-      object result = (object) null;
-      if ((fsResult += this.Serializer.TryDeserialize(data1, typeof (object), ref result)).Failed)
+      object result = null;
+      if ((fsResult += Serializer.TryDeserialize(data1, typeof (object), ref result)).Failed)
         return fsResult;
       bool trackResurrection = false;
       if (data.AsDictionary.ContainsKey("TrackResurrection") && data.AsDictionary["TrackResurrection"].IsBool)
         trackResurrection = data.AsDictionary["TrackResurrection"].AsBool;
-      instance = (object) new WeakReference(result, trackResurrection);
+      instance = new WeakReference(result, trackResurrection);
       return fsResult;
     }
 
     public override object CreateInstance(fsData data, Type storageType)
     {
-      return (object) new WeakReference((object) null);
+      return new WeakReference(null);
     }
   }
 }

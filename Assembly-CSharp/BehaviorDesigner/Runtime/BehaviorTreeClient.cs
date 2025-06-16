@@ -1,5 +1,5 @@
-﻿using BehaviorDesigner.Runtime.Tasks;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using BehaviorDesigner.Runtime.Tasks;
 
 namespace BehaviorDesigner.Runtime
 {
@@ -24,26 +24,26 @@ namespace BehaviorDesigner.Runtime
 
     public void Initialize(BehaviorTree b)
     {
-      this.behavior = b;
-      this.behaviorName = b.name;
-      for (int index = this.childrenIndex.Count - 1; index > -1; --index)
-        ObjectPool.Return<List<int>>(this.childrenIndex[index]);
-      for (int index = this.activeStack.Count - 1; index > -1; --index)
-        ObjectPool.Return<Stack<int>>(this.activeStack[index]);
-      for (int index = this.childConditionalIndex.Count - 1; index > -1; --index)
-        ObjectPool.Return<List<int>>(this.childConditionalIndex[index]);
-      this.taskList.Clear();
-      this.parentIndex.Clear();
-      this.childrenIndex.Clear();
-      this.relativeChildIndex.Clear();
-      this.activeStack.Clear();
-      this.nonInstantTaskStatus.Clear();
-      this.interruptionIndex.Clear();
-      this.conditionalReevaluate.Clear();
-      this.conditionalReevaluateMap.Clear();
-      this.parentReevaluate.Clear();
-      this.parentCompositeIndex.Clear();
-      this.childConditionalIndex.Clear();
+      behavior = b;
+      behaviorName = b.name;
+      for (int index = childrenIndex.Count - 1; index > -1; --index)
+        ObjectPool.Return(childrenIndex[index]);
+      for (int index = activeStack.Count - 1; index > -1; --index)
+        ObjectPool.Return(activeStack[index]);
+      for (int index = childConditionalIndex.Count - 1; index > -1; --index)
+        ObjectPool.Return(childConditionalIndex[index]);
+      taskList.Clear();
+      parentIndex.Clear();
+      childrenIndex.Clear();
+      relativeChildIndex.Clear();
+      activeStack.Clear();
+      nonInstantTaskStatus.Clear();
+      interruptionIndex.Clear();
+      conditionalReevaluate.Clear();
+      conditionalReevaluateMap.Clear();
+      parentReevaluate.Clear();
+      parentCompositeIndex.Clear();
+      childConditionalIndex.Clear();
     }
   }
 }

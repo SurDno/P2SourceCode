@@ -1,8 +1,8 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons.Converters;
 using Engine.Impl.Services;
-using System;
 
 namespace Engine.Source.Proxies
 {
@@ -11,14 +11,14 @@ namespace Engine.Source.Proxies
   {
     public void StateSave(IDataWriter writer)
     {
-      DefaultDataWriteUtility.Write(writer, "AbsoluteGameTime", this.AbsoluteGameTime);
-      DefaultDataWriteUtility.Write(writer, "RealTime", this.RealTime);
+      DefaultDataWriteUtility.Write(writer, "AbsoluteGameTime", AbsoluteGameTime);
+      DefaultDataWriteUtility.Write(writer, "RealTime", RealTime);
     }
 
     public void StateLoad(IDataReader reader, Type type)
     {
-      this.AbsoluteGameTime = DefaultDataReadUtility.Read(reader, "AbsoluteGameTime", this.AbsoluteGameTime);
-      this.RealTime = DefaultDataReadUtility.Read(reader, "RealTime", this.RealTime);
+      AbsoluteGameTime = DefaultDataReadUtility.Read(reader, "AbsoluteGameTime", AbsoluteGameTime);
+      RealTime = DefaultDataReadUtility.Read(reader, "RealTime", RealTime);
     }
   }
 }

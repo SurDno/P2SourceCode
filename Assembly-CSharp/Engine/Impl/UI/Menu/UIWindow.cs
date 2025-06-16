@@ -1,13 +1,12 @@
-﻿using Cofe.Utility;
+﻿using System;
+using System.Collections;
+using System.Reflection;
+using Cofe.Utility;
 using Engine.Common.Services;
 using Engine.Impl.Services;
 using Engine.Source.Services.Inputs;
 using Engine.Source.UI;
 using InputServices;
-using System;
-using System.Collections;
-using System.Reflection;
-using UnityEngine;
 
 namespace Engine.Impl.UI.Menu
 {
@@ -19,8 +18,8 @@ namespace Engine.Impl.UI.Menu
       set
       {
         if (this.gameObject.activeSelf == value)
-          Debug.LogError((object) ("Wrong Enabled : " + value.ToString() + " , info : " + ((object) this).GetType().Name + ":" + MethodBase.GetCurrentMethod().Name));
-        Debug.Log((object) ObjectInfoUtility.GetStream().Append("Enabled : ").Append(value).Append(" , info : ").Append(TypeUtility.GetTypeName(((object) this).GetType())).Append(":").Append(MethodBase.GetCurrentMethod().Name).Append("\n").GetStackTrace());
+          Debug.LogError((object) ("Wrong Enabled : " + value + " , info : " + this.GetType().Name + ":" + MethodBase.GetCurrentMethod().Name));
+        Debug.Log((object) ObjectInfoUtility.GetStream().Append("Enabled : ").Append(value).Append(" , info : ").Append(TypeUtility.GetTypeName(GetType())).Append(":").Append(MethodBase.GetCurrentMethod().Name).Append("\n").GetStackTrace());
         this.gameObject.SetActive(value);
       }
     }
@@ -29,7 +28,7 @@ namespace Engine.Impl.UI.Menu
 
     protected void RegisterLayer<T>(T layer) where T : class, IWindow
     {
-      ServiceLocator.GetService<UIService>().RegisterLayer<T>(layer);
+      ServiceLocator.GetService<UIService>().RegisterLayer(layer);
     }
 
     public virtual void Initialize()
@@ -38,7 +37,7 @@ namespace Engine.Impl.UI.Menu
 
     protected bool WithoutJoystickCancelListener(GameActionType type, bool down)
     {
-      return !InputService.Instance.JoystickUsed && this.CancelListener(type, down);
+      return !InputService.Instance.JoystickUsed && CancelListener(type, down);
     }
 
     protected bool CancelListener(GameActionType type, bool down)
@@ -48,7 +47,7 @@ namespace Engine.Impl.UI.Menu
       UIWindow active = ServiceLocator.GetService<UIService>().Active;
       if ((UnityEngine.Object) active != (UnityEngine.Object) this)
       {
-        Debug.LogError((object) ("Wrong state, active : " + ((UnityEngine.Object) active != (UnityEngine.Object) null ? ((object) active).GetType().Name : "null") + " , this : " + ((object) this).GetType().Name));
+        Debug.LogError((object) ("Wrong state, active : " + ((UnityEngine.Object) active != (UnityEngine.Object) null ? active.GetType().Name : "null") + " , this : " + this.GetType().Name));
         return false;
       }
       ServiceLocator.GetService<UIService>().Pop();
@@ -57,41 +56,41 @@ namespace Engine.Impl.UI.Menu
 
     protected virtual void OnEnable()
     {
-      Debug.Log((object) ObjectInfoUtility.GetStream().Append(TypeUtility.GetTypeName(((object) this).GetType())).Append(":").Append(MethodBase.GetCurrentMethod().Name).Append("\n").GetStackTrace());
-      InputService.Instance.onJoystickUsedChanged += new Action<bool>(this.OnJoystick);
-      this.StartCoroutine(this.AfterEnabled());
+      Debug.Log((object) ObjectInfoUtility.GetStream().Append(TypeUtility.GetTypeName(GetType())).Append(":").Append(MethodBase.GetCurrentMethod().Name).Append("\n").GetStackTrace());
+      InputService.Instance.onJoystickUsedChanged += OnJoystick;
+      this.StartCoroutine(AfterEnabled());
     }
 
     protected virtual void OnDisable()
     {
-      Debug.Log((object) ObjectInfoUtility.GetStream().Append(TypeUtility.GetTypeName(((object) this).GetType())).Append(":").Append(MethodBase.GetCurrentMethod().Name).Append("\n").GetStackTrace());
-      Action<IWindow> disableWindowEvent = this.DisableWindowEvent;
+      Debug.Log((object) ObjectInfoUtility.GetStream().Append(TypeUtility.GetTypeName(GetType())).Append(":").Append(MethodBase.GetCurrentMethod().Name).Append("\n").GetStackTrace());
+      Action<IWindow> disableWindowEvent = DisableWindowEvent;
       if (disableWindowEvent != null)
-        disableWindowEvent((IWindow) this);
-      InputService.Instance.onJoystickUsedChanged -= new Action<bool>(this.OnJoystick);
+        disableWindowEvent(this);
+      InputService.Instance.onJoystickUsedChanged -= OnJoystick;
     }
 
     protected virtual IEnumerator AfterEnabled()
     {
       yield return (object) new WaitForEndOfFrame();
-      this.OnJoystick(InputService.Instance.JoystickUsed);
+      OnJoystick(InputService.Instance.JoystickUsed);
     }
 
     protected virtual void OnJoystick(bool joystick)
     {
     }
 
-    public virtual System.Type GetWindowType() => typeof (UIWindow);
+    public virtual Type GetWindowType() => typeof (UIWindow);
 
     public virtual IEnumerator OnOpened()
     {
-      this.IsEnabled = true;
+      IsEnabled = true;
       yield break;
     }
 
     public virtual IEnumerator OnClosed()
     {
-      this.IsEnabled = false;
+      IsEnabled = false;
       yield break;
     }
 

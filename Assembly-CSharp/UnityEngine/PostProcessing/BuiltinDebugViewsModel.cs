@@ -6,25 +6,25 @@ namespace UnityEngine.PostProcessing
   public class BuiltinDebugViewsModel : PostProcessingModel
   {
     [SerializeField]
-    private BuiltinDebugViewsModel.Settings m_Settings = BuiltinDebugViewsModel.Settings.defaultSettings;
+    private Settings m_Settings = Settings.defaultSettings;
 
-    public BuiltinDebugViewsModel.Settings settings
+    public Settings settings
     {
-      get => this.m_Settings;
-      set => this.m_Settings = value;
+      get => m_Settings;
+      set => m_Settings = value;
     }
 
     public bool willInterrupt
     {
       get
       {
-        return !this.IsModeActive(BuiltinDebugViewsModel.Mode.None) && !this.IsModeActive(BuiltinDebugViewsModel.Mode.EyeAdaptation) && !this.IsModeActive(BuiltinDebugViewsModel.Mode.PreGradingLog) && !this.IsModeActive(BuiltinDebugViewsModel.Mode.LogLut) && !this.IsModeActive(BuiltinDebugViewsModel.Mode.UserLut);
+        return !IsModeActive(Mode.None) && !IsModeActive(Mode.EyeAdaptation) && !IsModeActive(Mode.PreGradingLog) && !IsModeActive(Mode.LogLut) && !IsModeActive(Mode.UserLut);
       }
     }
 
-    public override void Reset() => this.settings = BuiltinDebugViewsModel.Settings.defaultSettings;
+    public override void Reset() => settings = Settings.defaultSettings;
 
-    public bool IsModeActive(BuiltinDebugViewsModel.Mode mode) => this.m_Settings.mode == mode;
+    public bool IsModeActive(Mode mode) => m_Settings.mode == mode;
 
     [Serializable]
     public struct DepthSettings
@@ -33,12 +33,11 @@ namespace UnityEngine.PostProcessing
       [Tooltip("Scales the camera far plane before displaying the depth map.")]
       public float scale;
 
-      public static BuiltinDebugViewsModel.DepthSettings defaultSettings
+      public static DepthSettings defaultSettings
       {
         get
         {
-          return new BuiltinDebugViewsModel.DepthSettings()
-          {
+          return new DepthSettings {
             scale = 1f
           };
         }
@@ -67,12 +66,11 @@ namespace UnityEngine.PostProcessing
       [Tooltip("Tweaks the arrows length.")]
       public float motionVectorsAmplitude;
 
-      public static BuiltinDebugViewsModel.MotionVectorsSettings defaultSettings
+      public static MotionVectorsSettings defaultSettings
       {
         get
         {
-          return new BuiltinDebugViewsModel.MotionVectorsSettings()
-          {
+          return new MotionVectorsSettings {
             sourceOpacity = 1f,
             motionImageOpacity = 0.0f,
             motionImageAmplitude = 16f,
@@ -101,19 +99,18 @@ namespace UnityEngine.PostProcessing
     [Serializable]
     public struct Settings
     {
-      public BuiltinDebugViewsModel.Mode mode;
-      public BuiltinDebugViewsModel.DepthSettings depth;
-      public BuiltinDebugViewsModel.MotionVectorsSettings motionVectors;
+      public Mode mode;
+      public DepthSettings depth;
+      public MotionVectorsSettings motionVectors;
 
-      public static BuiltinDebugViewsModel.Settings defaultSettings
+      public static Settings defaultSettings
       {
         get
         {
-          return new BuiltinDebugViewsModel.Settings()
-          {
-            mode = BuiltinDebugViewsModel.Mode.None,
-            depth = BuiltinDebugViewsModel.DepthSettings.defaultSettings,
-            motionVectors = BuiltinDebugViewsModel.MotionVectorsSettings.defaultSettings
+          return new Settings {
+            mode = Mode.None,
+            depth = DepthSettings.defaultSettings,
+            motionVectors = MotionVectorsSettings.defaultSettings
           };
         }
       }

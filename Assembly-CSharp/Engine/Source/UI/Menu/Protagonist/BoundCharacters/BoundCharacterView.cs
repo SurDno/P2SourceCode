@@ -3,7 +3,6 @@ using Engine.Common.Services;
 using Engine.Impl.Services;
 using Engine.Impl.UI.Controls;
 using Engine.Source.Components.BoundCharacters;
-using UnityEngine;
 
 namespace Engine.Source.UI.Menu.Protagonist.BoundCharacters
 {
@@ -31,50 +30,50 @@ namespace Engine.Source.UI.Menu.Protagonist.BoundCharacters
 
     private void ApplySeenCharacterState(bool instant)
     {
-      if (this.character == null)
+      if (character == null)
         return;
-      BoundCharacterPlaceholder resource = (BoundCharacterPlaceholder) this.character.Resource;
-      this.nameView.StringValue = ServiceLocator.GetService<LocalizationService>().GetText(this.character.Name);
-      string str = BoundCharacterUtility.StateText(this.character, this.character.SeenBoundHealthState);
-      if (this.character.SeenBoundHealthState == BoundHealthStateEnum.Danger)
-        str = "<color=" + this.dangerColor.ToRGBHex() + ">" + str + "</color>";
-      else if (this.character.SeenBoundHealthState == BoundHealthStateEnum.Diseased)
-        str = "<color=" + this.diseasedColor.ToRGBHex() + ">" + str + "</color>";
-      else if (this.character.SeenBoundHealthState == BoundHealthStateEnum.Dead)
-        str = "<color=" + this.deadColor.ToRGBHex() + ">" + str + "</color>";
-      this.stateView.StringValue = str;
-      Sprite sprite = BoundCharacterUtility.StateSprite(this.character, this.character.SeenBoundHealthState);
+      BoundCharacterPlaceholder resource = (BoundCharacterPlaceholder) character.Resource;
+      nameView.StringValue = ServiceLocator.GetService<LocalizationService>().GetText(character.Name);
+      string str = BoundCharacterUtility.StateText(character, character.SeenBoundHealthState);
+      if (character.SeenBoundHealthState == BoundHealthStateEnum.Danger)
+        str = "<color=" + dangerColor.ToRGBHex() + ">" + str + "</color>";
+      else if (character.SeenBoundHealthState == BoundHealthStateEnum.Diseased)
+        str = "<color=" + diseasedColor.ToRGBHex() + ">" + str + "</color>";
+      else if (character.SeenBoundHealthState == BoundHealthStateEnum.Dead)
+        str = "<color=" + deadColor.ToRGBHex() + ">" + str + "</color>";
+      stateView.StringValue = str;
+      Sprite sprite = BoundCharacterUtility.StateSprite(character, character.SeenBoundHealthState);
       if ((Object) sprite == (Object) null)
-        sprite = this.fallbackSprite;
-      this.portrait.SetValue(sprite, instant);
-      this.medicatedView.Visible = BoundCharacterUtility.MedicineAttempted(this.character);
+        sprite = fallbackSprite;
+      portrait.SetValue(sprite, instant);
+      medicatedView.Visible = BoundCharacterUtility.MedicineAttempted(character);
     }
 
-    public bool IsGroupSeen() => this.character.SeenGroup == this.character.Group;
+    public bool IsGroupSeen() => character.SeenGroup == character.Group;
 
     public bool IsStateSeen()
     {
-      return BoundCharacterUtility.PerceivedHealth(this.character) == this.character.SeenBoundHealthState;
+      return BoundCharacterUtility.PerceivedHealth(character) == character.SeenBoundHealthState;
     }
 
     public void MakeGroupSeen()
     {
-      this.character.SeenGroup = this.character.Group;
-      this.groupSeenView.Visible = true;
+      character.SeenGroup = character.Group;
+      groupSeenView.Visible = true;
     }
 
     public void MakeStateSeen()
     {
-      this.character.SeenBoundHealthState = BoundCharacterUtility.PerceivedHealth(this.character);
-      this.ApplySeenCharacterState(false);
+      character.SeenBoundHealthState = BoundCharacterUtility.PerceivedHealth(character);
+      ApplySeenCharacterState(false);
     }
 
     public void SetCharacter(BoundCharacterComponent value)
     {
-      this.character = value;
-      this.ApplySeenCharacterState(true);
-      this.groupSeenView.Visible = this.IsGroupSeen();
-      this.groupSeenView.SkipAnimation();
+      character = value;
+      ApplySeenCharacterState(true);
+      groupSeenView.Visible = IsGroupSeen();
+      groupSeenView.SkipAnimation();
     }
   }
 }

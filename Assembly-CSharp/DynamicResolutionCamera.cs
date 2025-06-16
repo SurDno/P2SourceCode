@@ -1,22 +1,20 @@
-﻿using UnityEngine;
-
-[RequireComponent(typeof (Camera))]
+﻿[RequireComponent(typeof (Camera))]
 public class DynamicResolutionCamera : MonoBehaviour
 {
   private Camera camera;
 
-  private void Awake() => this.camera = this.GetComponent<Camera>();
+  private void Awake() => camera = this.GetComponent<Camera>();
 
   private void OnDisable()
   {
-    this.camera.targetTexture = (RenderTexture) null;
-    DynamicResolution.Instance.RemoveCamera(this.camera);
+    camera.targetTexture = (RenderTexture) null;
+    DynamicResolution.Instance.RemoveCamera(camera);
   }
 
-  private void OnEnable() => DynamicResolution.Instance.AddCamera(this.camera);
+  private void OnEnable() => DynamicResolution.Instance.AddCamera(camera);
 
   private void LateUpdate()
   {
-    this.camera.targetTexture = DynamicResolution.Instance.GetTargetTexture();
+    camera.targetTexture = DynamicResolution.Instance.GetTargetTexture();
   }
 }

@@ -16,31 +16,31 @@ namespace PLVirtualMachine.Common
 
     public HierarchySimpleChildInfo(IWorldBlueprint simpleChiTemplate)
     {
-      this.simpeChildTemplate = simpleChiTemplate;
+      simpeChildTemplate = simpleChiTemplate;
     }
 
     public ulong BaseGuid
     {
-      get => this.simpeChildTemplate != null ? this.simpeChildTemplate.BaseGuid : 0UL;
+      get => simpeChildTemplate != null ? simpeChildTemplate.BaseGuid : 0UL;
     }
 
-    public string Name => this.simpeChildTemplate.Name;
+    public string Name => simpeChildTemplate.Name;
 
-    public Guid EngineGuid => this.engineGuid;
+    public Guid EngineGuid => engineGuid;
 
-    public Guid EngineTemplateGuid => this.simpeChildTemplate.EngineTemplateGuid;
+    public Guid EngineTemplateGuid => simpeChildTemplate.EngineTemplateGuid;
 
-    public HierarchyGuid HierarchyGuid => this.hierarchyGuid;
+    public HierarchyGuid HierarchyGuid => hierarchyGuid;
 
-    public IBlueprint EditorTemplate => (IBlueprint) this.simpeChildTemplate;
+    public IBlueprint EditorTemplate => simpeChildTemplate;
 
     public void SetParent(IWorldHierarchyObject parent)
     {
-      this.hierarchyParent = parent;
-      this.hierarchyGuid = new HierarchyGuid(parent.HierarchyGuid, this.BaseGuid);
+      hierarchyParent = parent;
+      hierarchyGuid = new HierarchyGuid(parent.HierarchyGuid, BaseGuid);
     }
 
-    public void InitInstanceGuid(Guid instanceGuid) => this.engineGuid = instanceGuid;
+    public void InitInstanceGuid(Guid instanceGuid) => engineGuid = instanceGuid;
 
     public IEnumerable<IHierarchyObject> HierarchyChilds
     {
@@ -56,8 +56,8 @@ namespace PLVirtualMachine.Common
 
     public void ClearHierarchy()
     {
-      this.simpeChildTemplate = (IWorldBlueprint) null;
-      this.hierarchyParent = (IWorldHierarchyObject) null;
+      simpeChildTemplate = null;
+      hierarchyParent = null;
     }
   }
 }

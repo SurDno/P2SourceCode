@@ -3,32 +3,32 @@
   public sealed class DitheringComponent : PostProcessingComponentRenderTexture<DitheringModel>
   {
     private Texture2D[] noiseTextures;
-    private int textureIndex = 0;
+    private int textureIndex;
     private const int k_TextureCount = 64;
 
-    public override bool active => this.model.enabled && !this.context.interrupted;
+    public override bool active => model.enabled && !context.interrupted;
 
-    public override void OnDisable() => this.noiseTextures = (Texture2D[]) null;
+    public override void OnDisable() => noiseTextures = (Texture2D[]) null;
 
     private void LoadNoiseTextures()
     {
-      this.noiseTextures = new Texture2D[64];
+      noiseTextures = new Texture2D[64];
       for (int index = 0; index < 64; ++index)
-        this.noiseTextures[index] = Resources.Load<Texture2D>("Bluenoise64/LDR_LLL1_" + (object) index);
+        noiseTextures[index] = Resources.Load<Texture2D>("Bluenoise64/LDR_LLL1_" + index);
     }
 
     public override void Prepare(Material uberMaterial)
     {
-      if (++this.textureIndex >= 64)
-        this.textureIndex = 0;
+      if (++textureIndex >= 64)
+        textureIndex = 0;
       float z = Random.value;
       float w = Random.value;
-      if (this.noiseTextures == null)
-        this.LoadNoiseTextures();
-      Texture2D noiseTexture = this.noiseTextures[this.textureIndex];
+      if (noiseTextures == null)
+        LoadNoiseTextures();
+      Texture2D noiseTexture = noiseTextures[textureIndex];
       uberMaterial.EnableKeyword("DITHERING");
-      uberMaterial.SetTexture(DitheringComponent.Uniforms._DitheringTex, (Texture) noiseTexture);
-      uberMaterial.SetVector(DitheringComponent.Uniforms._DitheringCoords, new Vector4((float) this.context.width / (float) noiseTexture.width, (float) this.context.height / (float) noiseTexture.height, z, w));
+      uberMaterial.SetTexture(Uniforms._DitheringTex, (Texture) noiseTexture);
+      uberMaterial.SetVector(Uniforms._DitheringCoords, new Vector4(context.width / (float) noiseTexture.width, context.height / (float) noiseTexture.height, z, w));
     }
 
     private static class Uniforms

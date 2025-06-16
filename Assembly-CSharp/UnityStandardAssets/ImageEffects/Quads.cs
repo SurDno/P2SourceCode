@@ -1,17 +1,15 @@
-﻿using UnityEngine;
-
-namespace UnityStandardAssets.ImageEffects
+﻿namespace UnityStandardAssets.ImageEffects
 {
   internal class Quads
   {
     private static Mesh[] meshes;
-    private static int currentQuads = 0;
+    private static int currentQuads;
 
     private static bool HasMeshes()
     {
-      if (Quads.meshes == null)
+      if (meshes == null)
         return false;
-      foreach (Object mesh in Quads.meshes)
+      foreach (Object mesh in meshes)
       {
         if ((Object) null == mesh)
           return false;
@@ -21,35 +19,35 @@ namespace UnityStandardAssets.ImageEffects
 
     public static void Cleanup()
     {
-      if (Quads.meshes == null)
+      if (meshes == null)
         return;
-      for (int index = 0; index < Quads.meshes.Length; ++index)
+      for (int index = 0; index < meshes.Length; ++index)
       {
-        if ((Object) null != (Object) Quads.meshes[index])
+        if ((Object) null != (Object) meshes[index])
         {
-          Object.DestroyImmediate((Object) Quads.meshes[index]);
-          Quads.meshes[index] = (Mesh) null;
+          Object.DestroyImmediate((Object) meshes[index]);
+          meshes[index] = (Mesh) null;
         }
       }
-      Quads.meshes = (Mesh[]) null;
+      meshes = (Mesh[]) null;
     }
 
     public static Mesh[] GetMeshes(int totalWidth, int totalHeight)
     {
-      if (Quads.HasMeshes() && Quads.currentQuads == totalWidth * totalHeight)
-        return Quads.meshes;
+      if (HasMeshes() && currentQuads == totalWidth * totalHeight)
+        return meshes;
       int max = 10833;
       int num = totalWidth * totalHeight;
-      Quads.currentQuads = num;
-      Quads.meshes = new Mesh[Mathf.CeilToInt((float) (1.0 * (double) num / (1.0 * (double) max)))];
+      currentQuads = num;
+      meshes = new Mesh[Mathf.CeilToInt((float) (1.0 * num / (1.0 * max)))];
       int index = 0;
       for (int triOffset = 0; triOffset < num; triOffset += max)
       {
         int triCount = Mathf.FloorToInt((float) Mathf.Clamp(num - triOffset, 0, max));
-        Quads.meshes[index] = Quads.GetMesh(triCount, triOffset, totalWidth, totalHeight);
+        meshes[index] = GetMesh(triCount, triOffset, totalWidth, totalHeight);
         ++index;
       }
-      return Quads.meshes;
+      return meshes;
     }
 
     private static Mesh GetMesh(int triCount, int triOffset, int totalWidth, int totalHeight)
@@ -67,7 +65,7 @@ namespace UnityStandardAssets.ImageEffects
         int num = triOffset + index1;
         float x = Mathf.Floor((float) (num % totalWidth)) / (float) totalWidth;
         float y = Mathf.Floor((float) (num / totalWidth)) / (float) totalHeight;
-        Vector3 vector3 = new Vector3((float) ((double) x * 2.0 - 1.0), (float) ((double) y * 2.0 - 1.0), 1f);
+        Vector3 vector3 = new Vector3((float) (x * 2.0 - 1.0), (float) (y * 2.0 - 1.0), 1f);
         vector3Array[index2] = vector3;
         vector3Array[index2 + 1] = vector3;
         vector3Array[index2 + 2] = vector3;

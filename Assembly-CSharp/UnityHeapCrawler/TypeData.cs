@@ -14,21 +14,21 @@ namespace UnityHeapCrawler
 
     public List<FieldInfo> DynamicSizedFields { get; private set; }
 
-    public static void Clear() => TypeData.seenTypeData = (Dictionary<Type, TypeData>) null;
+    public static void Clear() => seenTypeData = null;
 
     public static void Start()
     {
-      TypeData.seenTypeData = new Dictionary<Type, TypeData>();
-      TypeData.seenTypeDataNested = new Dictionary<Type, TypeData>();
+      seenTypeData = new Dictionary<Type, TypeData>();
+      seenTypeDataNested = new Dictionary<Type, TypeData>();
     }
 
     public static TypeData Get(Type type)
     {
       TypeData typeData;
-      if (!TypeData.seenTypeData.TryGetValue(type, out typeData))
+      if (!seenTypeData.TryGetValue(type, out typeData))
       {
         typeData = new TypeData(type);
-        TypeData.seenTypeData[type] = typeData;
+        seenTypeData[type] = typeData;
       }
       return typeData;
     }
@@ -36,10 +36,10 @@ namespace UnityHeapCrawler
     public static TypeData GetNested(Type type)
     {
       TypeData nested;
-      if (!TypeData.seenTypeDataNested.TryGetValue(type, out nested))
+      if (!seenTypeDataNested.TryGetValue(type, out nested))
       {
         nested = new TypeData(type, true);
-        TypeData.seenTypeDataNested[type] = nested;
+        seenTypeDataNested[type] = nested;
       }
       return nested;
     }
@@ -47,57 +47,57 @@ namespace UnityHeapCrawler
     public TypeData(Type type, bool nested = false)
     {
       Type baseType = type.BaseType;
-      if (baseType != (Type) null && baseType != typeof (object) && baseType != typeof (ValueType) && baseType != typeof (Array) && baseType != typeof (Enum))
+      if (baseType != null && baseType != typeof (object) && baseType != typeof (ValueType) && baseType != typeof (Array) && baseType != typeof (Enum))
       {
-        TypeData nested1 = TypeData.GetNested(baseType);
-        this.Size += nested1.Size;
+        TypeData nested1 = GetNested(baseType);
+        Size += nested1.Size;
         if (nested1.DynamicSizedFields != null)
-          this.DynamicSizedFields = new List<FieldInfo>((IEnumerable<FieldInfo>) nested1.DynamicSizedFields);
+          DynamicSizedFields = new List<FieldInfo>(nested1.DynamicSizedFields);
       }
       if (type.IsPointer)
-        this.Size = IntPtr.Size;
+        Size = IntPtr.Size;
       else if (type.IsArray)
       {
         Type elementType = type.GetElementType();
-        this.Size = (elementType.IsValueType || elementType.IsPrimitive || elementType.IsEnum ? 3 : 4) * IntPtr.Size;
+        Size = (elementType.IsValueType || elementType.IsPrimitive || elementType.IsEnum ? 3 : 4) * IntPtr.Size;
       }
       else if (type.IsPrimitive)
-        this.Size = Marshal.SizeOf(type);
+        Size = Marshal.SizeOf(type);
       else if (type.IsEnum)
       {
-        this.Size = Marshal.SizeOf(Enum.GetUnderlyingType(type));
+        Size = Marshal.SizeOf(Enum.GetUnderlyingType(type));
       }
       else
       {
         if (!nested && type.IsClass)
-          this.Size = 2 * IntPtr.Size;
+          Size = 2 * IntPtr.Size;
         foreach (FieldInfo field in type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
-          this.ProcessField(field, field.FieldType);
+          ProcessField(field, field.FieldType);
         if (!nested && type.IsClass)
         {
-          this.Size = Math.Max(3 * IntPtr.Size, this.Size);
-          int num = this.Size % IntPtr.Size;
+          Size = Math.Max(3 * IntPtr.Size, Size);
+          int num = Size % IntPtr.Size;
           if (num != 0)
-            this.Size += IntPtr.Size - num;
+            Size += IntPtr.Size - num;
         }
       }
     }
 
     private void ProcessField(FieldInfo field, Type fieldType)
     {
-      if (TypeData.IsStaticallySized(fieldType))
+      if (IsStaticallySized(fieldType))
       {
-        this.Size += TypeData.GetStaticSize(fieldType);
+        Size += GetStaticSize(fieldType);
       }
       else
       {
         if (!fieldType.IsValueType && !fieldType.IsPrimitive && !fieldType.IsEnum)
-          this.Size += IntPtr.Size;
+          Size += IntPtr.Size;
         if (fieldType.IsPointer)
           return;
-        if (this.DynamicSizedFields == null)
-          this.DynamicSizedFields = new List<FieldInfo>();
-        this.DynamicSizedFields.Add(field);
+        if (DynamicSizedFields == null)
+          DynamicSizedFields = new List<FieldInfo>();
+        DynamicSizedFields.Add(field);
       }
     }
 
@@ -109,7 +109,7 @@ namespace UnityHeapCrawler
         return true;
       foreach (FieldInfo field in type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
       {
-        if (!TypeData.IsStaticallySized(field.FieldType))
+        if (!IsStaticallySized(field.FieldType))
           return false;
       }
       return true;
@@ -123,7 +123,7 @@ namespace UnityHeapCrawler
         return Marshal.SizeOf(Enum.GetUnderlyingType(type));
       int staticSize = 0;
       foreach (FieldInfo field in type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
-        staticSize += TypeData.GetStaticSize(field.FieldType);
+        staticSize += GetStaticSize(field.FieldType);
       return staticSize;
     }
   }

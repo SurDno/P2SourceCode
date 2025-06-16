@@ -3,7 +3,6 @@ using Engine.Common.Services;
 using Engine.Impl.Services;
 using Engine.Source.Commons;
 using Inspectors;
-using UnityEngine;
 
 namespace Pathologic.Prototype
 {
@@ -30,85 +29,85 @@ namespace Pathologic.Prototype
 
     private void Start()
     {
-      this.light = this.GetComponent<Light>();
-      if ((bool) (Object) this.BulbObject)
-        this.bulbRenderer = this.BulbObject.GetComponent<Renderer>();
-      if ((Object) this.light != (Object) null)
+      light = this.GetComponent<Light>();
+      if ((bool) (Object) BulbObject)
+        bulbRenderer = BulbObject.GetComponent<Renderer>();
+      if ((Object) light != (Object) null)
       {
-        this.enabled = this.light.enabled;
-        if (this.DisableShadowsInPlagueIntro)
+        this.enabled = light.enabled;
+        if (DisableShadowsInPlagueIntro)
         {
           VirtualMachineController service = ServiceLocator.GetService<VirtualMachineController>();
           if (service != null && service.ProjectName == "PathologicPlagueIntro")
-            this.light.shadows = LightShadows.None;
+            light.shadows = LightShadows.None;
         }
       }
-      this.EnableLight(this.enabled);
+      EnableLight(this.enabled);
     }
 
     private void Update()
     {
       if (!InstanceByRequest<EngineApplication>.Instance.IsInitialized)
         return;
-      this.current = ServiceLocator.GetService<ITimeService>().SolarTime.GetTimesOfDay();
-      if (this.current == TimesOfDay.Night)
+      current = ServiceLocator.GetService<ITimeService>().SolarTime.GetTimesOfDay();
+      if (current == TimesOfDay.Night)
       {
-        if (this.lightEnabled == TimesOfDayUtility.HasValue(this.timesOfDay, TimesOfDay.Night))
+        if (lightEnabled == TimesOfDayUtility.HasValue(timesOfDay, TimesOfDay.Night))
           return;
-        this.EnableLight(!this.lightEnabled);
+        EnableLight(!lightEnabled);
       }
-      else if (this.current == TimesOfDay.Morning)
+      else if (current == TimesOfDay.Morning)
       {
-        if (this.lightEnabled == TimesOfDayUtility.HasValue(this.timesOfDay, TimesOfDay.Morning))
+        if (lightEnabled == TimesOfDayUtility.HasValue(timesOfDay, TimesOfDay.Morning))
           return;
-        this.EnableLight(!this.lightEnabled);
+        EnableLight(!lightEnabled);
       }
-      else if (this.current == TimesOfDay.Day)
+      else if (current == TimesOfDay.Day)
       {
-        if (this.lightEnabled == TimesOfDayUtility.HasValue(this.timesOfDay, TimesOfDay.Day))
+        if (lightEnabled == TimesOfDayUtility.HasValue(timesOfDay, TimesOfDay.Day))
           return;
-        this.EnableLight(!this.lightEnabled);
+        EnableLight(!lightEnabled);
       }
       else
       {
-        if (this.current != TimesOfDay.Evening || this.lightEnabled == TimesOfDayUtility.HasValue(this.timesOfDay, TimesOfDay.Evening))
+        if (current != TimesOfDay.Evening || lightEnabled == TimesOfDayUtility.HasValue(timesOfDay, TimesOfDay.Evening))
           return;
-        this.EnableLight(!this.lightEnabled);
+        EnableLight(!lightEnabled);
       }
     }
 
     public void EnableLight(bool enable)
     {
-      if ((Object) this.light != (Object) null)
-        this.light.enabled = enable;
-      if ((Object) this.AdditionalLight != (Object) null)
-        this.AdditionalLight.enabled = enable;
+      if ((Object) light != (Object) null)
+        light.enabled = enable;
+      if ((Object) AdditionalLight != (Object) null)
+        AdditionalLight.enabled = enable;
       LightServiceObject component1 = this.GetComponent<LightServiceObject>();
       if ((Object) component1 != (Object) null)
         component1.enabled = enable;
       LightFlicker2 component2 = this.GetComponent<LightFlicker2>();
       if ((Object) component2 != (Object) null)
         component2.enabled = enable;
-      if ((Object) this.bulbRenderer != (Object) null)
+      if ((Object) bulbRenderer != (Object) null)
       {
         if (enable)
-          this.bulbRenderer.SetPropertyBlock((MaterialPropertyBlock) null);
+          bulbRenderer.SetPropertyBlock((MaterialPropertyBlock) null);
         else
-          this.bulbRenderer.SetPropertyBlock(LightManagable.MPB);
+          bulbRenderer.SetPropertyBlock(MPB);
       }
-      this.lightEnabled = enable;
+      lightEnabled = enable;
     }
 
     private static MaterialPropertyBlock MPB
     {
       get
       {
-        if (LightManagable.mpb == null)
+        if (mpb == null)
         {
-          LightManagable.mpb = new MaterialPropertyBlock();
-          LightManagable.mpb.SetColor("_EmissionColor", Color.black);
+          mpb = new MaterialPropertyBlock();
+          mpb.SetColor("_EmissionColor", Color.black);
         }
-        return LightManagable.mpb;
+        return mpb;
       }
     }
   }

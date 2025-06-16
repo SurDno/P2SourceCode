@@ -1,4 +1,5 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common;
 using Engine.Common.Commons;
@@ -7,7 +8,6 @@ using Engine.Common.Components;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Engine.Source.Components;
-using UnityEngine;
 
 namespace BehaviorDesigner.Runtime.Tasks.Pathologic
 {
@@ -17,20 +17,20 @@ namespace BehaviorDesigner.Runtime.Tasks.Pathologic
   [Factory]
   [GeneratePartial(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
   [FactoryProxy(typeof (FollowTeleportStop))]
-  public class FollowTeleportStop : BehaviorDesigner.Runtime.Tasks.Action, IStub, ISerializeDataWrite, ISerializeDataRead
+  public class FollowTeleportStop : Action, IStub, ISerializeDataWrite, ISerializeDataRead
   {
     public override TaskStatus OnUpdate()
     {
-      IEntity owner = this.Owner.GetComponent<EngineGameObject>().Owner;
+      IEntity owner = Owner.GetComponent<EngineGameObject>().Owner;
       if (owner == null)
       {
-        Debug.LogWarning((object) (this.gameObject.name + " has no entity"));
+        Debug.LogWarning((object) (gameObject.name + " has no entity"));
         return TaskStatus.Failure;
       }
       MessangerComponent component = (MessangerComponent) owner.GetComponent<IMessangerComponent>();
       if (component == null)
       {
-        Debug.LogWarning((object) (this.gameObject.name + " has no " + typeof (IMessangerComponent).Name));
+        Debug.LogWarning((object) (gameObject.name + " has no " + typeof (IMessangerComponent).Name));
         return TaskStatus.Failure;
       }
       component.StopTeleporting();
@@ -39,20 +39,20 @@ namespace BehaviorDesigner.Runtime.Tasks.Pathologic
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.WriteSerialize<NodeData>(writer, "NodeData", this.nodeData);
-      DefaultDataWriteUtility.Write(writer, "Id", this.id);
-      DefaultDataWriteUtility.Write(writer, "FriendlyName", this.friendlyName);
-      DefaultDataWriteUtility.Write(writer, "Instant", this.instant);
-      DefaultDataWriteUtility.Write(writer, "Disabled", this.disabled);
+      DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
+      DefaultDataWriteUtility.Write(writer, "Id", id);
+      DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
+      DefaultDataWriteUtility.Write(writer, "Instant", instant);
+      DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
     }
 
-    public void DataRead(IDataReader reader, System.Type type)
+    public void DataRead(IDataReader reader, Type type)
     {
-      this.nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
-      this.id = DefaultDataReadUtility.Read(reader, "Id", this.id);
-      this.friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", this.friendlyName);
-      this.instant = DefaultDataReadUtility.Read(reader, "Instant", this.instant);
-      this.disabled = DefaultDataReadUtility.Read(reader, "Disabled", this.disabled);
+      nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
+      id = DefaultDataReadUtility.Read(reader, "Id", id);
+      friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
+      instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
+      disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
     }
   }
 }

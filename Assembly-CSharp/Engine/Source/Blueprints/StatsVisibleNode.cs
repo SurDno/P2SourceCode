@@ -16,14 +16,14 @@ namespace Engine.Source.Blueprints
     protected override void RegisterPorts()
     {
       base.RegisterPorts();
-      FlowOutput output = this.AddFlowOutput("Out");
-      this.AddFlowInput("In", (FlowHandler) (() =>
+      FlowOutput output = AddFlowOutput("Out");
+      AddFlowInput("In", () =>
       {
-        ServiceLocator.GetService<UIService>().Get<IHudWindow>().SetVisibility(this.valueInput.value, this.ignoreTextNotifications.value);
+        ServiceLocator.GetService<UIService>().Get<IHudWindow>().SetVisibility(valueInput.value, ignoreTextNotifications.value);
         output.Call();
-      }));
-      this.valueInput = this.AddValueInput<bool>("Visible");
-      this.ignoreTextNotifications = this.AddValueInput<bool>("Ignore Text Notifications");
+      });
+      valueInput = AddValueInput<bool>("Visible");
+      ignoreTextNotifications = AddValueInput<bool>("Ignore Text Notifications");
     }
   }
 }

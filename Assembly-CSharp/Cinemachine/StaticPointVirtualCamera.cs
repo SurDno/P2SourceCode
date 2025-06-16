@@ -1,16 +1,14 @@
-﻿using UnityEngine;
-
-namespace Cinemachine
+﻿namespace Cinemachine
 {
   internal class StaticPointVirtualCamera : ICinemachineCamera
   {
     public StaticPointVirtualCamera(CameraState state, string name)
     {
-      this.State = state;
-      this.Name = name;
+      State = state;
+      Name = name;
     }
 
-    public void SetState(CameraState state) => this.State = state;
+    public void SetState(CameraState state) => State = state;
 
     public string Name { get; private set; }
 
@@ -26,9 +24,9 @@ namespace Cinemachine
 
     public GameObject VirtualCameraGameObject => (GameObject) null;
 
-    public ICinemachineCamera LiveChildOrSelf => (ICinemachineCamera) this;
+    public ICinemachineCamera LiveChildOrSelf => this;
 
-    public ICinemachineCamera ParentCamera => (ICinemachineCamera) null;
+    public ICinemachineCamera ParentCamera => null;
 
     public bool IsLiveChild(ICinemachineCamera vcam) => false;
 

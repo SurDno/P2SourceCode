@@ -6,7 +6,7 @@
 
     public static implicit operator SteamInventoryResult_t(int value)
     {
-      return new SteamInventoryResult_t() { Value = value };
+      return new SteamInventoryResult_t { Value = value };
     }
 
     public static implicit operator int(SteamInventoryResult_t value) => value.Value;

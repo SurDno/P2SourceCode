@@ -15,6 +15,6 @@ namespace Engine.Source.Blueprints.Effects
     private ValueInput<float> maxInput;
 
     [Port("Value")]
-    private float Value() => this.valueInput.value ? this.maxInput.value : this.minInput.value;
+    private float Value() => valueInput.value ? maxInput.value : minInput.value;
   }
 }

@@ -1,7 +1,9 @@
-﻿using Engine.Behaviours.Components;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Engine.Behaviours.Components;
 using Engine.Behaviours.Unity.Mecanim;
 using Engine.Common;
-using Engine.Common.Components;
 using Engine.Common.Components.AttackerPlayer;
 using Engine.Common.Components.Parameters;
 using Engine.Common.Components.Storable;
@@ -12,10 +14,6 @@ using Engine.Source.Components;
 using Engine.Source.Components.Utilities;
 using Engine.Source.Services.Inputs;
 using Engine.Source.Utility;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
 
 namespace Engine.Behaviours.Engines.Controllers
 {
@@ -38,12 +36,12 @@ namespace Engine.Behaviours.Engines.Controllers
     private List<StorableComponent> storageAmmo = new List<StorableComponent>();
     private IParameter<bool> lowStamina;
     private IParameter<bool> flashlightOn;
-    private float blockStance = 0.0f;
-    private float realBlockStance = 0.0f;
-    private float realStamina = 0.0f;
+    private float blockStance;
+    private float realBlockStance;
+    private float realStamina;
     private IParameter<TimeSpan> WorkEndTime;
     private IParameter<TimeSpan> WorkTime;
-    private float smoothedNormalizedSpeed = 0.0f;
+    private float smoothedNormalizedSpeed;
     private float layerWeight;
     private bool listenersAdded;
     private IEntity item;
@@ -60,59 +58,59 @@ namespace Engine.Behaviours.Engines.Controllers
     {
       set
       {
-        this.geometryVisible = value;
-        this.ApplyVisibility();
-        this.ApplyLayerWeight(this.geometryVisible ? 1f : 0.0f);
+        geometryVisible = value;
+        ApplyVisibility();
+        ApplyLayerWeight(geometryVisible ? 1f : 0.0f);
       }
-      get => this.geometryVisible;
+      get => geometryVisible;
     }
 
     private bool WeaponVisible
     {
       set
       {
-        this.weaponVisible = value;
-        this.ApplyVisibility();
+        weaponVisible = value;
+        ApplyVisibility();
       }
     }
 
     private void ApplyVisibility()
     {
-      this.pivot.HandsGeometryVisible = this.geometryVisible;
-      this.pivot.FlashlightGeometryVisible = this.geometryVisible && this.weaponVisible;
-      this.ApplyLayerWeight(this.geometryVisible ? 1f : 0.0f);
-      if (!this.geometryVisible)
-        this.flashlightOn.Value = false;
-      this.pivot.FlashlightFire.SetActive(this.geometryVisible);
-      if (!this.geometryVisible || !this.weaponVisible)
+      pivot.HandsGeometryVisible = geometryVisible;
+      pivot.FlashlightGeometryVisible = geometryVisible && weaponVisible;
+      ApplyLayerWeight(geometryVisible ? 1f : 0.0f);
+      if (!geometryVisible)
+        flashlightOn.Value = false;
+      pivot.FlashlightFire.SetActive(geometryVisible);
+      if (!geometryVisible || !weaponVisible)
         return;
-      this.TrySwitchOn();
+      TrySwitchOn();
     }
 
     public void OnEnable()
     {
-      this.ApplyVisibility();
-      this.animator.SetTrigger("Triggers/FlashlightRestore");
-      this.AddListeners();
+      ApplyVisibility();
+      animator.SetTrigger("Triggers/FlashlightRestore");
+      AddListeners();
     }
 
     public void OnDisable()
     {
-      this.SwitchLight(false);
-      this.RemoveListeners();
+      SwitchLight(false);
+      RemoveListeners();
     }
 
     private void ApplyLayerWeight(float weight)
     {
-      this.animatorState.FlashlightLayerWeight = weight;
-      this.animatorState.FlashlightReactionLayerWeight = weight;
+      animatorState.FlashlightLayerWeight = weight;
+      animatorState.FlashlightReactionLayerWeight = weight;
     }
 
     public void Initialise(IEntity entity, GameObject gameObject, Animator animator)
     {
       this.entity = entity;
-      this.pivot = gameObject.GetComponent<PivotPlayer>();
-      if ((UnityEngine.Object) this.pivot == (UnityEngine.Object) null)
+      pivot = gameObject.GetComponent<PivotPlayer>();
+      if ((UnityEngine.Object) pivot == (UnityEngine.Object) null)
       {
         Debug.LogErrorFormat("{0} has no {1} unity component", (object) gameObject.name, (object) typeof (PivotPlayer).Name);
       }
@@ -120,137 +118,137 @@ namespace Engine.Behaviours.Engines.Controllers
       {
         this.gameObject = gameObject;
         this.animator = animator;
-        this.playerEnemy = gameObject.GetComponent<PlayerEnemy>();
-        this.controllerComponent = entity.GetComponent<ControllerComponent>();
-        this.animatorState = PlayerAnimatorState.GetAnimatorState(animator);
+        playerEnemy = gameObject.GetComponent<PlayerEnemy>();
+        controllerComponent = entity.GetComponent<ControllerComponent>();
+        animatorState = PlayerAnimatorState.GetAnimatorState(animator);
         if (entity == null)
         {
           Debug.LogWarningFormat("{0} can't map entity", (object) gameObject.name);
         }
         else
         {
-          this.lowStamina = entity.GetComponent<ParametersComponent>().GetByName<bool>(ParameterNameEnum.LowStamina);
-          this.flashlightOn = entity.GetComponent<ParametersComponent>().GetByName<bool>(ParameterNameEnum.Flashlight);
-          this.storage = entity.GetComponent<StorageComponent>();
-          this.timeService = ServiceLocator.GetService<TimeService>();
+          lowStamina = entity.GetComponent<ParametersComponent>().GetByName<bool>(ParameterNameEnum.LowStamina);
+          flashlightOn = entity.GetComponent<ParametersComponent>().GetByName<bool>(ParameterNameEnum.Flashlight);
+          storage = entity.GetComponent<StorageComponent>();
+          timeService = ServiceLocator.GetService<TimeService>();
         }
       }
     }
 
-    public IEntity GetItem() => this.item;
+    public IEntity GetItem() => item;
 
     public void SetItem(IEntity item)
     {
       this.item = item;
-      this.TrySwitchOn();
+      TrySwitchOn();
     }
 
     private void TrySwitchOn()
     {
-      if (this.item == null)
+      if (item == null)
         return;
-      ParametersComponent component = this.item.GetComponent<ParametersComponent>();
+      ParametersComponent component = item.GetComponent<ParametersComponent>();
       if (component != null)
       {
-        this.WorkTime = component.GetByName<TimeSpan>(ParameterNameEnum.WorkTime);
-        this.WorkEndTime = component.GetByName<TimeSpan>(ParameterNameEnum.WorkEndTime);
-        this.IsOn = this.WorkEndTime.Value > this.timeService.GameTime;
-        this.SwitchLight(this.IsOn);
-        if (!this.IsOn)
+        WorkTime = component.GetByName<TimeSpan>(ParameterNameEnum.WorkTime);
+        WorkEndTime = component.GetByName<TimeSpan>(ParameterNameEnum.WorkEndTime);
+        IsOn = WorkEndTime.Value > timeService.GameTime;
+        SwitchLight(IsOn);
+        if (!IsOn)
         {
-          Action<IEntity, ShotType, ReactionType, ShotSubtypeEnum> weaponShootEvent = this.WeaponShootEvent;
+          Action<IEntity, ShotType, ReactionType, ShotSubtypeEnum> weaponShootEvent = WeaponShootEvent;
           if (weaponShootEvent != null)
-            weaponShootEvent(this.item, ShotType.None, ReactionType.Right, ShotSubtypeEnum.FireLamp);
+            weaponShootEvent(item, ShotType.None, ReactionType.Right, ShotSubtypeEnum.FireLamp);
         }
       }
     }
 
     public void Activate(bool geometryVisible)
     {
-      this.WeaponVisible = true;
-      this.pivot.FlashlightEffect.SetActive(true);
-      this.animatorState.FlashlightUnholster();
-      Action unholsterEndEvent = this.WeaponUnholsterEndEvent;
+      WeaponVisible = true;
+      pivot.FlashlightEffect.SetActive(true);
+      animatorState.FlashlightUnholster();
+      Action unholsterEndEvent = WeaponUnholsterEndEvent;
       if (unholsterEndEvent != null)
         unholsterEndEvent();
-      this.AddListeners();
-      this.RefreshStorageAmmo();
-      this.flashlightOn.Value = this.IsOn;
+      AddListeners();
+      RefreshStorageAmmo();
+      flashlightOn.Value = IsOn;
     }
 
     private void RefreshStorageAmmo()
     {
-      this.storageAmmo.Clear();
-      this.storageAmmo.AddRange(this.storage.Items.ToList<IStorableComponent>().FindAll((Predicate<IStorableComponent>) (x => x.Groups.Contains<StorableGroup>(StorableGroup.Fuel_Lamp) && x.Count > 0)).Cast<StorableComponent>());
+      storageAmmo.Clear();
+      storageAmmo.AddRange(storage.Items.ToList().FindAll(x => x.Groups.Contains(StorableGroup.Fuel_Lamp) && x.Count > 0).Cast<StorableComponent>());
     }
 
     private int StorageAmmoCount()
     {
       int num = 0;
-      foreach (StorableComponent storableComponent in this.storageAmmo)
+      foreach (StorableComponent storableComponent in storageAmmo)
         num += storableComponent.Count;
       return num;
     }
 
     private void RemoveAmmo()
     {
-      if (this.storageAmmo.Count > 0)
+      if (storageAmmo.Count > 0)
       {
-        --this.storageAmmo[0].Count;
-        if (this.storageAmmo[0].Count <= 0)
-          this.storageAmmo[0].Owner.Dispose();
+        --storageAmmo[0].Count;
+        if (storageAmmo[0].Count <= 0)
+          storageAmmo[0].Owner.Dispose();
       }
-      this.RefreshStorageAmmo();
+      RefreshStorageAmmo();
     }
 
     public void Shutdown()
     {
-      this.RemoveListeners();
-      this.pivot.FlashlightEffect.SetActive(false);
-      this.animatorState.FlashlightHolster();
-      Action holsterStartEvent = this.WeaponHolsterStartEvent;
+      RemoveListeners();
+      pivot.FlashlightEffect.SetActive(false);
+      animatorState.FlashlightHolster();
+      Action holsterStartEvent = WeaponHolsterStartEvent;
       if (holsterStartEvent != null)
         holsterStartEvent();
-      this.blockStance = 0.0f;
+      blockStance = 0.0f;
     }
 
     private void AddListeners()
     {
-      if (this.listenersAdded)
+      if (listenersAdded)
         return;
-      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Fire, new GameActionHandle(this.PunchListener));
-      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Block, new GameActionHandle(this.BlockListener));
-      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Flashlight, new GameActionHandle(this.LightListener));
-      this.listenersAdded = true;
+      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Fire, PunchListener);
+      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Block, BlockListener);
+      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Flashlight, LightListener);
+      listenersAdded = true;
     }
 
     private void RemoveListeners()
     {
-      if (!this.listenersAdded)
+      if (!listenersAdded)
         return;
-      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Fire, new GameActionHandle(this.PunchListener));
-      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Block, new GameActionHandle(this.BlockListener));
-      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Flashlight, new GameActionHandle(this.LightListener));
-      this.listenersAdded = false;
+      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Fire, PunchListener);
+      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Block, BlockListener);
+      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Flashlight, LightListener);
+      listenersAdded = false;
     }
 
-    public void Reset() => this.animatorState.ResetAnimator();
+    public void Reset() => animatorState.ResetAnimator();
 
     public bool Validate(GameObject gameObject, IEntity item) => true;
 
     public void Update(IEntity target)
     {
-      if (this.entity != ServiceLocator.GetService<ISimulation>().Player || !PlayerUtility.IsPlayerCanControlling)
+      if (entity != ServiceLocator.GetService<ISimulation>().Player || !PlayerUtility.IsPlayerCanControlling)
         return;
       float target1 = 0.0f;
-      bool flag = this.controllerComponent != null && this.controllerComponent.IsRun.Value;
-      if (this.controllerComponent.IsWalk.Value)
-        target1 = (flag ? 1f : 0.5f) * this.controllerComponent.WalkModifier.Value;
-      this.smoothedNormalizedSpeed = Mathf.MoveTowards(this.smoothedNormalizedSpeed, target1, Time.deltaTime / 1f);
-      this.animatorState.WalkSpeed = this.smoothedNormalizedSpeed;
-      if ((double) this.timeToLastPunch <= 0.0)
+      bool flag = controllerComponent != null && controllerComponent.IsRun.Value;
+      if (controllerComponent.IsWalk.Value)
+        target1 = (flag ? 1f : 0.5f) * controllerComponent.WalkModifier.Value;
+      smoothedNormalizedSpeed = Mathf.MoveTowards(smoothedNormalizedSpeed, target1, Time.deltaTime / 1f);
+      animatorState.WalkSpeed = smoothedNormalizedSpeed;
+      if (timeToLastPunch <= 0.0)
         return;
-      this.timeToLastPunch -= Time.deltaTime;
+      timeToLastPunch -= Time.deltaTime;
     }
 
     public void UpdateSilent(IEntity target)
@@ -265,57 +263,57 @@ namespace Engine.Behaviours.Engines.Controllers
 
     public void FixedUpdate(IEntity target)
     {
-      this.realBlockStance = Mathf.MoveTowards(this.realBlockStance, this.blockStance, Time.fixedDeltaTime / ScriptableObjectInstance<FightSettingsData>.Instance.Description.PlayerBlockStanceTime);
-      this.animatorState.BlockStance = SmoothUtility.Smooth12(this.realBlockStance);
-      this.realStamina = Mathf.MoveTowards(this.realStamina, this.lowStamina.Value ? 0.0f : 1f, Time.fixedDeltaTime / ScriptableObjectInstance<FightSettingsData>.Instance.Description.PlayerBlockStanceTime);
-      this.animatorState.Stamina = this.realStamina;
-      if ((UnityEngine.Object) this.playerEnemy != (UnityEngine.Object) null)
-        this.playerEnemy.BlockStance = (double) this.realBlockStance >= 0.5;
-      bool isOn = this.WorkEndTime.Value > this.timeService.GameTime;
-      if (isOn || !this.IsOn)
+      realBlockStance = Mathf.MoveTowards(realBlockStance, blockStance, Time.fixedDeltaTime / ScriptableObjectInstance<FightSettingsData>.Instance.Description.PlayerBlockStanceTime);
+      animatorState.BlockStance = SmoothUtility.Smooth12(realBlockStance);
+      realStamina = Mathf.MoveTowards(realStamina, lowStamina.Value ? 0.0f : 1f, Time.fixedDeltaTime / ScriptableObjectInstance<FightSettingsData>.Instance.Description.PlayerBlockStanceTime);
+      animatorState.Stamina = realStamina;
+      if ((UnityEngine.Object) playerEnemy != (UnityEngine.Object) null)
+        playerEnemy.BlockStance = realBlockStance >= 0.5;
+      bool isOn = WorkEndTime.Value > timeService.GameTime;
+      if (isOn || !IsOn)
         return;
-      this.SwitchLight(isOn);
+      SwitchLight(isOn);
     }
 
     private bool LightListener(GameActionType type, bool down)
     {
-      if (this.entity != ServiceLocator.GetService<ISimulation>().Player || !PlayerUtility.IsPlayerCanControlling || this.IsOn)
+      if (entity != ServiceLocator.GetService<ISimulation>().Player || !PlayerUtility.IsPlayerCanControlling || IsOn)
         return false;
       if (down)
       {
-        this.RefreshStorageAmmo();
-        if (this.StorageAmmoCount() <= 0)
+        RefreshStorageAmmo();
+        if (StorageAmmoCount() <= 0)
         {
-          Action<IEntity, ShotType, ReactionType, ShotSubtypeEnum> weaponShootEvent = this.WeaponShootEvent;
+          Action<IEntity, ShotType, ReactionType, ShotSubtypeEnum> weaponShootEvent = WeaponShootEvent;
           if (weaponShootEvent != null)
-            weaponShootEvent(this.item, ShotType.None, ReactionType.Right, ShotSubtypeEnum.NoMatches);
+            weaponShootEvent(item, ShotType.None, ReactionType.Right, ShotSubtypeEnum.NoMatches);
           return false;
         }
-        this.FireLamp();
+        FireLamp();
       }
       return true;
     }
 
     private void FireLamp()
     {
-      if (this.StorageAmmoCount() <= 0)
+      if (StorageAmmoCount() <= 0)
         return;
-      TimeSpan timeSpan = this.WorkTime.MinValue;
+      TimeSpan timeSpan = WorkTime.MinValue;
       double totalSeconds1 = timeSpan.TotalSeconds;
-      timeSpan = this.WorkTime.MaxValue;
+      timeSpan = WorkTime.MaxValue;
       double totalSeconds2 = timeSpan.TotalSeconds;
-      this.WorkEndTime.Value = this.timeService.GameTime + TimeSpan.FromSeconds((double) UnityEngine.Random.Range((float) totalSeconds1, (float) totalSeconds2));
-      this.SwitchLight(true);
-      this.RemoveAmmo();
-      Action<IEntity, ShotType, ReactionType, ShotSubtypeEnum> weaponShootEvent = this.WeaponShootEvent;
+      WorkEndTime.Value = timeService.GameTime + TimeSpan.FromSeconds((double) UnityEngine.Random.Range((float) totalSeconds1, (float) totalSeconds2));
+      SwitchLight(true);
+      RemoveAmmo();
+      Action<IEntity, ShotType, ReactionType, ShotSubtypeEnum> weaponShootEvent = WeaponShootEvent;
       if (weaponShootEvent != null)
-        weaponShootEvent(this.item, ShotType.Light, ReactionType.None, ShotSubtypeEnum.None);
+        weaponShootEvent(item, ShotType.Light, ReactionType.None, ShotSubtypeEnum.None);
     }
 
     private void SwitchLight(bool isOn)
     {
-      this.IsOn = isOn;
-      ParticleSystem componentInChildren = this.pivot.FlashlightEffect.GetComponentInChildren<ParticleSystem>();
+      IsOn = isOn;
+      ParticleSystem componentInChildren = pivot.FlashlightEffect.GetComponentInChildren<ParticleSystem>();
       if ((UnityEngine.Object) componentInChildren != (UnityEngine.Object) null)
       {
         if (isOn)
@@ -323,38 +321,38 @@ namespace Engine.Behaviours.Engines.Controllers
         else
           componentInChildren.Stop();
       }
-      this.pivot.FlashlightLight.SetActive(isOn);
-      this.flashlightOn.Value = this.IsOn;
+      pivot.FlashlightLight.SetActive(isOn);
+      flashlightOn.Value = IsOn;
     }
 
     private bool PunchListener(GameActionType type, bool down)
     {
-      if (this.entity != ServiceLocator.GetService<ISimulation>().Player || !PlayerUtility.IsPlayerCanControlling)
+      if (entity != ServiceLocator.GetService<ISimulation>().Player || !PlayerUtility.IsPlayerCanControlling)
         return false;
-      if (down && (double) this.timeToLastPunch <= 0.0)
+      if (down && timeToLastPunch <= 0.0)
       {
-        this.blockStance = 0.0f;
-        if (this.lowStamina.Value)
-          this.animatorState.FlashlightPunchLowStamina();
+        blockStance = 0.0f;
+        if (lowStamina.Value)
+          animatorState.FlashlightPunchLowStamina();
         else
-          this.animatorState.FlashlightPunch();
-        this.timeToLastPunch = ScriptableObjectInstance<FightSettingsData>.Instance.Description.PlayerPunchCooldownTime;
+          animatorState.FlashlightPunch();
+        timeToLastPunch = ScriptableObjectInstance<FightSettingsData>.Instance.Description.PlayerPunchCooldownTime;
         return true;
       }
-      if (!down && (double) this.timeToLastPunch <= 0.0)
+      if (!down && timeToLastPunch <= 0.0)
       {
-        this.blockStance = 0.0f;
-        this.realBlockStance = 0.0f;
-        this.animatorState.BlockStance = SmoothUtility.Smooth12(this.realBlockStance);
+        blockStance = 0.0f;
+        realBlockStance = 0.0f;
+        animatorState.BlockStance = SmoothUtility.Smooth12(realBlockStance);
       }
       return true;
     }
 
     private bool BlockListener(GameActionType type, bool down)
     {
-      if (this.entity != ServiceLocator.GetService<ISimulation>().Player || !PlayerUtility.IsPlayerCanControlling)
+      if (entity != ServiceLocator.GetService<ISimulation>().Player || !PlayerUtility.IsPlayerCanControlling)
         return false;
-      this.blockStance = down ? 1f : 0.0f;
+      blockStance = down ? 1f : 0.0f;
       return true;
     }
 
@@ -362,30 +360,30 @@ namespace Engine.Behaviours.Engines.Controllers
     {
       if (data.StartsWith("Flashlight.Punch"))
       {
-        Action<IEntity, ShotType, ReactionType, ShotSubtypeEnum> weaponShootEvent = this.WeaponShootEvent;
+        Action<IEntity, ShotType, ReactionType, ShotSubtypeEnum> weaponShootEvent = WeaponShootEvent;
         if (weaponShootEvent == null)
           return;
-        weaponShootEvent(this.item, ShotType.Moderate, ReactionType.Right, ShotSubtypeEnum.None);
+        weaponShootEvent(item, ShotType.Moderate, ReactionType.Right, ShotSubtypeEnum.None);
       }
       else if (data.StartsWith("Flashlight.LowStamina"))
       {
-        Action<IEntity, ShotType, ReactionType, ShotSubtypeEnum> weaponShootEvent = this.WeaponShootEvent;
+        Action<IEntity, ShotType, ReactionType, ShotSubtypeEnum> weaponShootEvent = WeaponShootEvent;
         if (weaponShootEvent == null)
           return;
-        weaponShootEvent(this.item, ShotType.LowStamina, ReactionType.Right, ShotSubtypeEnum.None);
+        weaponShootEvent(item, ShotType.LowStamina, ReactionType.Right, ShotSubtypeEnum.None);
       }
       else if (data.StartsWith("Flashlight.PrePunch"))
       {
-        Action<IEntity, ShotType, ReactionType, ShotSubtypeEnum> weaponShootEvent = this.WeaponShootEvent;
+        Action<IEntity, ShotType, ReactionType, ShotSubtypeEnum> weaponShootEvent = WeaponShootEvent;
         if (weaponShootEvent == null)
           return;
-        weaponShootEvent(this.item, ShotType.Prepunch, ReactionType.Right, ShotSubtypeEnum.None);
+        weaponShootEvent(item, ShotType.Prepunch, ReactionType.Right, ShotSubtypeEnum.None);
       }
       else
       {
         if (!data.StartsWith("Flashlight.Light"))
           return;
-        this.FireLamp();
+        FireLamp();
       }
     }
 

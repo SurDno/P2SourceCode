@@ -15,89 +15,87 @@ namespace Facepunch.Steamworks.Interop
 
     public ServerRules(ServerList.Server server, IPAddress address, int queryPort)
     {
-      this.Server = server;
-      this.InstallVTable();
-      this.Server.Client.native.servers.ServerRules(address.IpToInt32(), (ushort) queryPort, this.GetPtr());
+      Server = server;
+      InstallVTable();
+      Server.Client.native.servers.ServerRules(address.IpToInt32(), (ushort) queryPort, GetPtr());
     }
 
     public void Dispose()
     {
-      if (this.vTablePtr != IntPtr.Zero)
+      if (vTablePtr != IntPtr.Zero)
       {
-        Marshal.FreeHGlobal(this.vTablePtr);
-        this.vTablePtr = IntPtr.Zero;
+        Marshal.FreeHGlobal(vTablePtr);
+        vTablePtr = IntPtr.Zero;
       }
-      if (this.vTablePin.IsAllocated)
-        this.vTablePin.Free();
-      if (this.RulesRespondPin.IsAllocated)
-        this.RulesRespondPin.Free();
-      if (this.FailedRespondPin.IsAllocated)
-        this.FailedRespondPin.Free();
-      if (!this.CompletePin.IsAllocated)
+      if (vTablePin.IsAllocated)
+        vTablePin.Free();
+      if (RulesRespondPin.IsAllocated)
+        RulesRespondPin.Free();
+      if (FailedRespondPin.IsAllocated)
+        FailedRespondPin.Free();
+      if (!CompletePin.IsAllocated)
         return;
-      this.CompletePin.Free();
+      CompletePin.Free();
     }
 
     private void InstallVTable()
     {
       if (Config.UseThisCall)
       {
-        ServerRules.ThisVTable.InternalRulesResponded internalRulesResponded = (ServerRules.ThisVTable.InternalRulesResponded) ((_, k, v) => this.InternalOnRulesResponded(k, v));
-        ServerRules.ThisVTable.InternalRulesFailedToRespond rulesFailedToRespond = (ServerRules.ThisVTable.InternalRulesFailedToRespond) (_ => this.InternalOnRulesFailedToRespond());
-        ServerRules.ThisVTable.InternalRulesRefreshComplete rulesRefreshComplete = (ServerRules.ThisVTable.InternalRulesRefreshComplete) (_ => this.InternalOnRulesRefreshComplete());
-        this.RulesRespondPin = GCHandle.Alloc((object) internalRulesResponded);
-        this.FailedRespondPin = GCHandle.Alloc((object) rulesFailedToRespond);
-        this.CompletePin = GCHandle.Alloc((object) rulesRefreshComplete);
-        ServerRules.ThisVTable structure = new ServerRules.ThisVTable()
-        {
+        ThisVTable.InternalRulesResponded internalRulesResponded = (_, k, v) => InternalOnRulesResponded(k, v);
+        ThisVTable.InternalRulesFailedToRespond rulesFailedToRespond = _ => InternalOnRulesFailedToRespond();
+        ThisVTable.InternalRulesRefreshComplete rulesRefreshComplete = _ => InternalOnRulesRefreshComplete();
+        RulesRespondPin = GCHandle.Alloc(internalRulesResponded);
+        FailedRespondPin = GCHandle.Alloc(rulesFailedToRespond);
+        CompletePin = GCHandle.Alloc(rulesRefreshComplete);
+        ThisVTable structure = new ThisVTable {
           m_VTRulesResponded = internalRulesResponded,
           m_VTRulesFailedToRespond = rulesFailedToRespond,
           m_VTRulesRefreshComplete = rulesRefreshComplete
         };
-        this.vTablePtr = Marshal.AllocHGlobal(Marshal.SizeOf(typeof (ServerRules.ThisVTable)));
-        Marshal.StructureToPtr<ServerRules.ThisVTable>(structure, this.vTablePtr, false);
-        this.vTablePin = GCHandle.Alloc((object) this.vTablePtr, GCHandleType.Pinned);
+        vTablePtr = Marshal.AllocHGlobal(Marshal.SizeOf(typeof (ThisVTable)));
+        Marshal.StructureToPtr(structure, vTablePtr, false);
+        vTablePin = GCHandle.Alloc(vTablePtr, GCHandleType.Pinned);
       }
       else
       {
-        ServerRules.StdVTable.InternalRulesResponded internalRulesResponded = new ServerRules.StdVTable.InternalRulesResponded(this.InternalOnRulesResponded);
-        ServerRules.StdVTable.InternalRulesFailedToRespond rulesFailedToRespond = new ServerRules.StdVTable.InternalRulesFailedToRespond(this.InternalOnRulesFailedToRespond);
-        ServerRules.StdVTable.InternalRulesRefreshComplete rulesRefreshComplete = new ServerRules.StdVTable.InternalRulesRefreshComplete(this.InternalOnRulesRefreshComplete);
-        this.RulesRespondPin = GCHandle.Alloc((object) internalRulesResponded);
-        this.FailedRespondPin = GCHandle.Alloc((object) rulesFailedToRespond);
-        this.CompletePin = GCHandle.Alloc((object) rulesRefreshComplete);
-        ServerRules.StdVTable structure = new ServerRules.StdVTable()
-        {
+        StdVTable.InternalRulesResponded internalRulesResponded = InternalOnRulesResponded;
+        StdVTable.InternalRulesFailedToRespond rulesFailedToRespond = InternalOnRulesFailedToRespond;
+        StdVTable.InternalRulesRefreshComplete rulesRefreshComplete = InternalOnRulesRefreshComplete;
+        RulesRespondPin = GCHandle.Alloc(internalRulesResponded);
+        FailedRespondPin = GCHandle.Alloc(rulesFailedToRespond);
+        CompletePin = GCHandle.Alloc(rulesRefreshComplete);
+        StdVTable structure = new StdVTable {
           m_VTRulesResponded = internalRulesResponded,
           m_VTRulesFailedToRespond = rulesFailedToRespond,
           m_VTRulesRefreshComplete = rulesRefreshComplete
         };
-        this.vTablePtr = Marshal.AllocHGlobal(Marshal.SizeOf(typeof (ServerRules.StdVTable)));
-        Marshal.StructureToPtr<ServerRules.StdVTable>(structure, this.vTablePtr, false);
-        this.vTablePin = GCHandle.Alloc((object) this.vTablePtr, GCHandleType.Pinned);
+        vTablePtr = Marshal.AllocHGlobal(Marshal.SizeOf(typeof (StdVTable)));
+        Marshal.StructureToPtr(structure, vTablePtr, false);
+        vTablePin = GCHandle.Alloc(vTablePtr, GCHandleType.Pinned);
       }
     }
 
-    private void InternalOnRulesResponded(string k, string v) => this.Server.Rules.Add(k, v);
+    private void InternalOnRulesResponded(string k, string v) => Server.Rules.Add(k, v);
 
     private void InternalOnRulesFailedToRespond()
     {
-      this.Server.OnServerRulesReceiveFinished(false);
+      Server.OnServerRulesReceiveFinished(false);
     }
 
-    private void InternalOnRulesRefreshComplete() => this.Server.OnServerRulesReceiveFinished(true);
+    private void InternalOnRulesRefreshComplete() => Server.OnServerRulesReceiveFinished(true);
 
-    public IntPtr GetPtr() => this.vTablePin.AddrOfPinnedObject();
+    public IntPtr GetPtr() => vTablePin.AddrOfPinnedObject();
 
     [StructLayout(LayoutKind.Sequential)]
     private class StdVTable
     {
       [MarshalAs(UnmanagedType.FunctionPtr)]
-      public ServerRules.StdVTable.InternalRulesResponded m_VTRulesResponded;
+      public InternalRulesResponded m_VTRulesResponded;
       [MarshalAs(UnmanagedType.FunctionPtr)]
-      public ServerRules.StdVTable.InternalRulesFailedToRespond m_VTRulesFailedToRespond;
+      public InternalRulesFailedToRespond m_VTRulesFailedToRespond;
       [MarshalAs(UnmanagedType.FunctionPtr)]
-      public ServerRules.StdVTable.InternalRulesRefreshComplete m_VTRulesRefreshComplete;
+      public InternalRulesRefreshComplete m_VTRulesRefreshComplete;
 
       [UnmanagedFunctionPointer(CallingConvention.StdCall)]
       public delegate void InternalRulesResponded(string pchRule, string pchValue);
@@ -113,11 +111,11 @@ namespace Facepunch.Steamworks.Interop
     private class ThisVTable
     {
       [MarshalAs(UnmanagedType.FunctionPtr)]
-      public ServerRules.ThisVTable.InternalRulesResponded m_VTRulesResponded;
+      public InternalRulesResponded m_VTRulesResponded;
       [MarshalAs(UnmanagedType.FunctionPtr)]
-      public ServerRules.ThisVTable.InternalRulesFailedToRespond m_VTRulesFailedToRespond;
+      public InternalRulesFailedToRespond m_VTRulesFailedToRespond;
       [MarshalAs(UnmanagedType.FunctionPtr)]
-      public ServerRules.ThisVTable.InternalRulesRefreshComplete m_VTRulesRefreshComplete;
+      public InternalRulesRefreshComplete m_VTRulesRefreshComplete;
 
       [UnmanagedFunctionPointer(CallingConvention.ThisCall)]
       public delegate void InternalRulesResponded(IntPtr thisptr, string pchRule, string pchValue);

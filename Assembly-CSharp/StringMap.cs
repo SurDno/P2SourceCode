@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-[CreateAssetMenu(menuName = "Data/String Map")]
+﻿[CreateAssetMenu(menuName = "Data/String Map")]
 public class StringMap : ScriptableObject
 {
   [SerializeField]
@@ -8,11 +6,11 @@ public class StringMap : ScriptableObject
 
   public string GetValue(string key)
   {
-    for (int index = 0; index < this.map.Length; ++index)
+    for (int index = 0; index < map.Length; ++index)
     {
-      if (this.map[index].Key == key)
-        return this.map[index].Value;
+      if (map[index].Key == key)
+        return map[index].Value;
     }
-    return (string) null;
+    return null;
   }
 }

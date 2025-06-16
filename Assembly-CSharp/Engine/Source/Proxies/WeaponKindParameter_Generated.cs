@@ -1,4 +1,5 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons;
 using Engine.Common.Commons.Cloneable;
@@ -7,7 +8,6 @@ using Engine.Common.Components.AttackerPlayer;
 using Engine.Common.Components.Parameters;
 using Engine.Source.Commons;
 using Engine.Source.Commons.Parameters;
-using System;
 
 namespace Engine.Source.Proxies
 {
@@ -27,48 +27,48 @@ namespace Engine.Source.Proxies
 
     public void ComputeNeedSave(object target2)
     {
-      this.NeedSave = true;
+      NeedSave = true;
       WeaponKindParameter_Generated parameterGenerated = (WeaponKindParameter_Generated) target2;
-      if (parameterGenerated.name != this.name || parameterGenerated.value != this.value)
+      if (parameterGenerated.name != name || parameterGenerated.value != value)
         return;
-      this.NeedSave = false;
+      NeedSave = false;
     }
 
     public object Clone()
     {
       WeaponKindParameter_Generated instance = Activator.CreateInstance<WeaponKindParameter_Generated>();
-      this.CopyTo((object) instance);
-      return (object) instance;
+      CopyTo(instance);
+      return instance;
     }
 
     public void CopyTo(object target2)
     {
       WeaponKindParameter_Generated parameterGenerated = (WeaponKindParameter_Generated) target2;
-      parameterGenerated.name = this.name;
-      parameterGenerated.value = this.value;
+      parameterGenerated.name = name;
+      parameterGenerated.value = value;
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.WriteEnum<ParameterNameEnum>(writer, "Name", this.name);
-      DefaultDataWriteUtility.WriteEnum<WeaponKind>(writer, "Value", this.value);
+      DefaultDataWriteUtility.WriteEnum(writer, "Name", name);
+      DefaultDataWriteUtility.WriteEnum(writer, "Value", value);
     }
 
     public void DataRead(IDataReader reader, Type type)
     {
-      this.name = DefaultDataReadUtility.ReadEnum<ParameterNameEnum>(reader, "Name");
-      this.value = DefaultDataReadUtility.ReadEnum<WeaponKind>(reader, "Value");
+      name = DefaultDataReadUtility.ReadEnum<ParameterNameEnum>(reader, "Name");
+      value = DefaultDataReadUtility.ReadEnum<WeaponKind>(reader, "Value");
     }
 
     public void StateSave(IDataWriter writer)
     {
-      DefaultDataWriteUtility.WriteEnum<ParameterNameEnum>(writer, "Name", this.name);
-      DefaultDataWriteUtility.WriteEnum<WeaponKind>(writer, "Value", this.value);
+      DefaultDataWriteUtility.WriteEnum(writer, "Name", name);
+      DefaultDataWriteUtility.WriteEnum(writer, "Value", value);
     }
 
     public void StateLoad(IDataReader reader, Type type)
     {
-      this.value = DefaultDataReadUtility.ReadEnum<WeaponKind>(reader, "Value");
+      value = DefaultDataReadUtility.ReadEnum<WeaponKind>(reader, "Value");
     }
   }
 }

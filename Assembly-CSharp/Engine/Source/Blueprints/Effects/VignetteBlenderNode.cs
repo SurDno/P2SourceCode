@@ -1,9 +1,8 @@
-﻿using Engine.Source.VisualEffects;
+﻿using System.Collections.Generic;
+using Engine.Source.VisualEffects;
 using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
-using System.Collections.Generic;
-using UnityEngine;
 
 namespace Engine.Source.Blueprints.Effects
 {
@@ -19,19 +18,18 @@ namespace Engine.Source.Blueprints.Effects
       float num1 = 0.0f;
       float num2 = 0.0f;
       Color black = Color.black;
-      IList<IParameter<IntensityParameter<Color>>> parameterList = this.intensityParametersInput.value;
+      IList<IParameter<IntensityParameter<Color>>> parameterList = intensityParametersInput.value;
       if (parameterList != null)
       {
         for (int index = 0; index < parameterList.Count; ++index)
         {
           float intensity = parameterList[index].Value.Intensity;
-          if ((double) num1 < (double) intensity)
+          if (num1 < (double) intensity)
             num1 = intensity;
           num2 += intensity;
         }
-        if ((double) num2 == 0.0)
-          return new IntensityParameter<Color>()
-          {
+        if (num2 == 0.0)
+          return new IntensityParameter<Color> {
             Intensity = 0.0f,
             Value = black
           };
@@ -43,8 +41,7 @@ namespace Engine.Source.Blueprints.Effects
           black += color * intensity / num2;
         }
       }
-      return new IntensityParameter<Color>()
-      {
+      return new IntensityParameter<Color> {
         Intensity = num1,
         Value = black
       };

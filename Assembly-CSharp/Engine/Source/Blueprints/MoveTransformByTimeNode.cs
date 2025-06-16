@@ -1,8 +1,7 @@
-﻿using FlowCanvas;
+﻿using System.Collections;
+using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
-using System.Collections;
-using UnityEngine;
 
 namespace Engine.Source.Blueprints
 {
@@ -18,29 +17,29 @@ namespace Engine.Source.Blueprints
     protected override void RegisterPorts()
     {
       base.RegisterPorts();
-      FlowOutput output = this.AddFlowOutput("Out");
-      this.AddFlowInput("In", (FlowHandler) (() =>
+      FlowOutput output = AddFlowOutput("Out");
+      AddFlowInput("In", () =>
       {
-        Transform target = this.targetInput.value;
+        Transform target = targetInput.value;
         if (!((Object) target != (Object) null))
           return;
-        Transform from = this.fromInput.value;
+        Transform from = fromInput.value;
         if ((Object) from != (Object) null)
         {
-          Transform to = this.toInput.value;
+          Transform to = toInput.value;
           if ((Object) to != (Object) null)
           {
             target.position = from.position;
             target.rotation = from.rotation;
-            this.StartCoroutine(this.Move(target, from, to, this.timeInput.value, this.curveInput.value, output));
+            StartCoroutine(Move(target, from, to, timeInput.value, curveInput.value, output));
           }
         }
-      }));
-      this.fromInput = this.AddValueInput<Transform>("From");
-      this.toInput = this.AddValueInput<Transform>("To");
-      this.targetInput = this.AddValueInput<Transform>("Target");
-      this.timeInput = this.AddValueInput<float>("Time");
-      this.curveInput = this.AddValueInput<AnimationCurve>("Curve");
+      });
+      fromInput = AddValueInput<Transform>("From");
+      toInput = AddValueInput<Transform>("To");
+      targetInput = AddValueInput<Transform>("Target");
+      timeInput = AddValueInput<float>("Time");
+      curveInput = AddValueInput<AnimationCurve>("Curve");
     }
 
     private IEnumerator Move(
@@ -54,7 +53,7 @@ namespace Engine.Source.Blueprints
       float progress = 0.0f;
       while (true)
       {
-        yield return (object) null;
+        yield return null;
         if (!((Object) target == (Object) null))
         {
           if (!((Object) from == (Object) null))
@@ -62,7 +61,7 @@ namespace Engine.Source.Blueprints
             if (!((Object) to == (Object) null))
             {
               progress += Time.deltaTime;
-              if ((double) progress < (double) time)
+              if (progress < (double) time)
               {
                 float value = progress / time;
                 if (curve != null && curve.keys != null && curve.keys.Length > 1)

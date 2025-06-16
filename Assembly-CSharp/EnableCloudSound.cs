@@ -1,4 +1,5 @@
-﻿using BehaviorDesigner.Runtime;
+﻿using System;
+using BehaviorDesigner.Runtime;
 using BehaviorDesigner.Runtime.Tasks;
 using Cofe.Proxies;
 using Cofe.Serializations.Data;
@@ -8,7 +9,7 @@ using Engine.Common.Commons.Converters;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Scripts.Tools.Serializations.Converters;
-using UnityEngine;
+using Action = BehaviorDesigner.Runtime.Tasks.Action;
 
 [TaskDescription("Enable PlagueCloud sound.")]
 [TaskCategory("Pathologic/PlagueCloud")]
@@ -16,55 +17,55 @@ using UnityEngine;
 [Factory]
 [GeneratePartial(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
 [FactoryProxy(typeof (EnableCloudSound))]
-public class EnableCloudSound : BehaviorDesigner.Runtime.Tasks.Action, IStub, ISerializeDataWrite, ISerializeDataRead
+public class EnableCloudSound : Action, IStub, ISerializeDataWrite, ISerializeDataRead
 {
-  [DataReadProxy(MemberEnum.None)]
-  [DataWriteProxy(MemberEnum.None)]
-  [CopyableProxy(MemberEnum.None)]
+  [DataReadProxy]
+  [DataWriteProxy]
+  [CopyableProxy]
   [SerializeField]
   public SharedBool Enabled;
-  [DataReadProxy(MemberEnum.None)]
-  [DataWriteProxy(MemberEnum.None)]
-  [CopyableProxy(MemberEnum.None)]
+  [DataReadProxy]
+  [DataWriteProxy]
+  [CopyableProxy()]
   [SerializeField]
-  public SharedFloat MaxDistance = (SharedFloat) 50f;
+  public SharedFloat MaxDistance = 50f;
   private PivotCloud pivot;
 
   public override TaskStatus OnUpdate()
   {
-    if ((UnityEngine.Object) this.pivot == (UnityEngine.Object) null)
+    if ((UnityEngine.Object) pivot == (UnityEngine.Object) null)
     {
-      this.pivot = this.gameObject.GetComponent<PivotCloud>();
-      if ((UnityEngine.Object) this.pivot == (UnityEngine.Object) null)
+      pivot = gameObject.GetComponent<PivotCloud>();
+      if ((UnityEngine.Object) pivot == (UnityEngine.Object) null)
       {
-        Debug.LogWarning((object) (this.gameObject.name + ": doesn't contain " + typeof (PivotCloud).Name + " component"), (UnityEngine.Object) this.gameObject);
+        Debug.LogWarning((object) (gameObject.name + ": doesn't contain " + typeof (PivotCloud).Name + " component"), (UnityEngine.Object) gameObject);
         return TaskStatus.Failure;
       }
     }
-    this.pivot.EnableSound(this.Enabled.Value);
-    this.pivot.SetSoundMaxDistance(this.MaxDistance.Value);
+    pivot.EnableSound(Enabled.Value);
+    pivot.SetSoundMaxDistance(MaxDistance.Value);
     return TaskStatus.Success;
   }
 
   public void DataWrite(IDataWriter writer)
   {
-    DefaultDataWriteUtility.WriteSerialize<NodeData>(writer, "NodeData", this.nodeData);
-    DefaultDataWriteUtility.Write(writer, "Id", this.id);
-    DefaultDataWriteUtility.Write(writer, "FriendlyName", this.friendlyName);
-    DefaultDataWriteUtility.Write(writer, "Instant", this.instant);
-    DefaultDataWriteUtility.Write(writer, "Disabled", this.disabled);
-    BehaviorTreeDataWriteUtility.WriteShared<SharedBool>(writer, "Enabled", this.Enabled);
-    BehaviorTreeDataWriteUtility.WriteShared<SharedFloat>(writer, "MaxDistance", this.MaxDistance);
+    DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
+    DefaultDataWriteUtility.Write(writer, "Id", id);
+    DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
+    DefaultDataWriteUtility.Write(writer, "Instant", instant);
+    DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
+    BehaviorTreeDataWriteUtility.WriteShared(writer, "Enabled", Enabled);
+    BehaviorTreeDataWriteUtility.WriteShared(writer, "MaxDistance", MaxDistance);
   }
 
-  public void DataRead(IDataReader reader, System.Type type)
+  public void DataRead(IDataReader reader, Type type)
   {
-    this.nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
-    this.id = DefaultDataReadUtility.Read(reader, "Id", this.id);
-    this.friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", this.friendlyName);
-    this.instant = DefaultDataReadUtility.Read(reader, "Instant", this.instant);
-    this.disabled = DefaultDataReadUtility.Read(reader, "Disabled", this.disabled);
-    this.Enabled = BehaviorTreeDataReadUtility.ReadShared<SharedBool>(reader, "Enabled", this.Enabled);
-    this.MaxDistance = BehaviorTreeDataReadUtility.ReadShared<SharedFloat>(reader, "MaxDistance", this.MaxDistance);
+    nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
+    id = DefaultDataReadUtility.Read(reader, "Id", id);
+    friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
+    instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
+    disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
+    Enabled = BehaviorTreeDataReadUtility.ReadShared(reader, "Enabled", Enabled);
+    MaxDistance = BehaviorTreeDataReadUtility.ReadShared(reader, "MaxDistance", MaxDistance);
   }
 }

@@ -1,4 +1,6 @@
-﻿using BehaviorDesigner.Runtime;
+﻿using System;
+using System.Collections.Generic;
+using BehaviorDesigner.Runtime;
 using Engine.Behaviours.Components;
 using Engine.Common;
 using Engine.Common.Components;
@@ -7,17 +9,12 @@ using Engine.Common.Services;
 using Engine.Source.Commons;
 using Engine.Source.Components;
 using Inspectors;
-using System;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.AI;
-using UnityEngine.Profiling;
 
 [DisallowMultipleComponent]
 public class NpcState : MonoBehaviour, IEntityAttachable
 {
   private const int skipFramesBeforeDisablingAnimator = 1;
-  private Dictionary<NpcStateEnum, INpcState> states = new Dictionary<NpcStateEnum, INpcState>((IEqualityComparer<NpcStateEnum>) NpcStateEnumComparer.Instance);
+  private Dictionary<NpcStateEnum, INpcState> states = new Dictionary<NpcStateEnum, INpcState>(NpcStateEnumComparer.Instance);
   private Pivot pivot;
   private Animator animator;
   private WeaponEnum weapon;
@@ -48,7 +45,7 @@ public class NpcState : MonoBehaviour, IEntityAttachable
     get
     {
       INpcState npcState;
-      return this.states.TryGetValue(this.CurrentNpcState, out npcState) ? npcState : (INpcState) null;
+      return states.TryGetValue(CurrentNpcState, out npcState) ? npcState : null;
     }
   }
 
@@ -58,225 +55,225 @@ public class NpcState : MonoBehaviour, IEntityAttachable
   [Inspected]
   public bool AnimatorEnabled
   {
-    get => this.animatorEnabled;
+    get => animatorEnabled;
     set
     {
-      this.animatorEnabled = value;
-      if (this.frameCountFromStart <= 1 || !(bool) (UnityEngine.Object) this.animator)
+      animatorEnabled = value;
+      if (frameCountFromStart <= 1 || !(bool) (UnityEngine.Object) animator)
         return;
-      this.animator.enabled = this.animatorEnabled;
+      animator.enabled = animatorEnabled;
     }
   }
 
   [Inspected(Mode = ExecuteMode.EditAndRuntime, Mutable = true)]
   public WeaponEnum Weapon
   {
-    get => this.weapon;
+    get => weapon;
     set
     {
-      this.weapon = value;
-      Action<WeaponEnum> weaponChangeEvent = this.WeaponChangeEvent;
+      weapon = value;
+      Action<WeaponEnum> weaponChangeEvent = WeaponChangeEvent;
       if (weaponChangeEvent == null)
         return;
-      weaponChangeEvent(this.weapon);
+      weaponChangeEvent(weapon);
     }
   }
 
-  public NpcStateStatusEnum Status => this.states[this.CurrentNpcState].Status;
+  public NpcStateStatusEnum Status => states[CurrentNpcState].Status;
 
   public void OnLodStateChanged(bool inLodState)
   {
     this.inLodState = inLodState;
-    this.states[this.CurrentNpcState].OnLodStateChanged(inLodState);
+    states[CurrentNpcState].OnLodStateChanged(inLodState);
   }
 
   private void CheckState(NpcStateEnum state)
   {
-    if (this.states.ContainsKey(state))
+    if (states.ContainsKey(state))
       return;
-    this.states[state] = NpcStateFactory.Create(state, this, this.pivot);
+    states[state] = NpcStateFactory.Create(state, this, pivot);
   }
 
   public void Idle(float primaryIdleProbability = 0.7f, bool makeObstacle = false)
   {
-    if (this.inLodState)
-      this.states[this.CurrentNpcState].OnLodStateChanged(false);
-    this.states[this.CurrentNpcState].Shutdown();
-    this.CurrentNpcState = NpcStateEnum.Idle;
-    this.CheckState(this.CurrentNpcState);
-    (this.states[this.CurrentNpcState] as NpcStateIdle).Activate(primaryIdleProbability, makeObstacle);
-    if (!this.inLodState)
+    if (inLodState)
+      states[CurrentNpcState].OnLodStateChanged(false);
+    states[CurrentNpcState].Shutdown();
+    CurrentNpcState = NpcStateEnum.Idle;
+    CheckState(CurrentNpcState);
+    (states[CurrentNpcState] as NpcStateIdle).Activate(primaryIdleProbability, makeObstacle);
+    if (!inLodState)
       return;
-    this.states[this.CurrentNpcState].OnLodStateChanged(true);
+    states[CurrentNpcState].OnLodStateChanged(true);
   }
 
   public void IdleKinematic(float primaryIdleProbability = 0.7f, bool makeObstacle = false)
   {
-    if (this.inLodState)
-      this.states[this.CurrentNpcState].OnLodStateChanged(false);
-    this.states[this.CurrentNpcState].Shutdown();
-    this.CurrentNpcState = NpcStateEnum.IdleKinematic;
-    this.CheckState(this.CurrentNpcState);
-    (this.states[this.CurrentNpcState] as NpcStateIdleKinematic).Activate(primaryIdleProbability, makeObstacle);
-    if (!this.inLodState)
+    if (inLodState)
+      states[CurrentNpcState].OnLodStateChanged(false);
+    states[CurrentNpcState].Shutdown();
+    CurrentNpcState = NpcStateEnum.IdleKinematic;
+    CheckState(CurrentNpcState);
+    (states[CurrentNpcState] as NpcStateIdleKinematic).Activate(primaryIdleProbability, makeObstacle);
+    if (!inLodState)
       return;
-    this.states[this.CurrentNpcState].OnLodStateChanged(true);
+    states[CurrentNpcState].OnLodStateChanged(true);
   }
 
   public void IdlePlagueCloud()
   {
-    if (this.inLodState)
-      this.states[this.CurrentNpcState].OnLodStateChanged(false);
-    this.states[this.CurrentNpcState].Shutdown();
-    this.CurrentNpcState = NpcStateEnum.IdlePlagueCloud;
-    this.CheckState(this.CurrentNpcState);
-    (this.states[this.CurrentNpcState] as NpcStateIdlePlagueCloud).Activate();
-    if (!this.inLodState)
+    if (inLodState)
+      states[CurrentNpcState].OnLodStateChanged(false);
+    states[CurrentNpcState].Shutdown();
+    CurrentNpcState = NpcStateEnum.IdlePlagueCloud;
+    CheckState(CurrentNpcState);
+    (states[CurrentNpcState] as NpcStateIdlePlagueCloud).Activate();
+    if (!inLodState)
       return;
-    this.states[this.CurrentNpcState].OnLodStateChanged(true);
+    states[CurrentNpcState].OnLodStateChanged(true);
   }
 
   public void InFire()
   {
-    if (this.inLodState)
-      this.states[this.CurrentNpcState].OnLodStateChanged(false);
-    this.states[this.CurrentNpcState].Shutdown();
-    this.CurrentNpcState = NpcStateEnum.InFire;
-    this.CheckState(this.CurrentNpcState);
-    (this.states[this.CurrentNpcState] as NpcStateInFire).Activate();
-    if (!this.inLodState)
+    if (inLodState)
+      states[CurrentNpcState].OnLodStateChanged(false);
+    states[CurrentNpcState].Shutdown();
+    CurrentNpcState = NpcStateEnum.InFire;
+    CheckState(CurrentNpcState);
+    (states[CurrentNpcState] as NpcStateInFire).Activate();
+    if (!inLodState)
       return;
-    this.states[this.CurrentNpcState].OnLodStateChanged(true);
+    states[CurrentNpcState].OnLodStateChanged(true);
   }
 
   public void Rotate(Transform target)
   {
-    if (this.inLodState)
-      this.states[this.CurrentNpcState].OnLodStateChanged(false);
-    this.states[this.CurrentNpcState].Shutdown();
-    this.CurrentNpcState = NpcStateEnum.Rotate;
-    this.CheckState(this.CurrentNpcState);
-    (this.states[this.CurrentNpcState] as NpcStateRotate).Activate(target);
-    if (!this.inLodState)
+    if (inLodState)
+      states[CurrentNpcState].OnLodStateChanged(false);
+    states[CurrentNpcState].Shutdown();
+    CurrentNpcState = NpcStateEnum.Rotate;
+    CheckState(CurrentNpcState);
+    (states[CurrentNpcState] as NpcStateRotate).Activate(target);
+    if (!inLodState)
       return;
-    this.states[this.CurrentNpcState].OnLodStateChanged(true);
+    states[CurrentNpcState].OnLodStateChanged(true);
   }
 
   public void Rotate(Quaternion rotation)
   {
-    if (this.inLodState)
-      this.states[this.CurrentNpcState].OnLodStateChanged(false);
-    this.states[this.CurrentNpcState].Shutdown();
-    this.CurrentNpcState = NpcStateEnum.Rotate;
-    this.CheckState(this.CurrentNpcState);
-    (this.states[this.CurrentNpcState] as NpcStateRotate).Activate(rotation);
-    if (!this.inLodState)
+    if (inLodState)
+      states[CurrentNpcState].OnLodStateChanged(false);
+    states[CurrentNpcState].Shutdown();
+    CurrentNpcState = NpcStateEnum.Rotate;
+    CheckState(CurrentNpcState);
+    (states[CurrentNpcState] as NpcStateRotate).Activate(rotation);
+    if (!inLodState)
       return;
-    this.states[this.CurrentNpcState].OnLodStateChanged(true);
+    states[CurrentNpcState].OnLodStateChanged(true);
   }
 
   public void Move(Vector3 destination, bool failOnPartialPath = false)
   {
-    if (this.inLodState)
-      this.states[this.CurrentNpcState].OnLodStateChanged(false);
-    this.states[this.CurrentNpcState].Shutdown();
-    this.CurrentNpcState = NpcStateEnum.Move;
-    this.CheckState(this.CurrentNpcState);
-    (this.states[this.CurrentNpcState] as NpcStateMove).Activate(destination, failOnPartialPath);
-    if (!this.inLodState)
+    if (inLodState)
+      states[CurrentNpcState].OnLodStateChanged(false);
+    states[CurrentNpcState].Shutdown();
+    CurrentNpcState = NpcStateEnum.Move;
+    CheckState(CurrentNpcState);
+    (states[CurrentNpcState] as NpcStateMove).Activate(destination, failOnPartialPath);
+    if (!inLodState)
       return;
-    this.states[this.CurrentNpcState].OnLodStateChanged(true);
+    states[CurrentNpcState].OnLodStateChanged(true);
   }
 
   public void MoveCloud(Vector3 destination)
   {
-    if (this.inLodState)
-      this.states[this.CurrentNpcState].OnLodStateChanged(false);
-    this.states[this.CurrentNpcState].Shutdown();
-    this.CurrentNpcState = NpcStateEnum.MoveCloud;
-    this.CheckState(this.CurrentNpcState);
-    (this.states[this.CurrentNpcState] as NpcStateMoveCloud).Activate(destination);
-    if (!this.inLodState)
+    if (inLodState)
+      states[CurrentNpcState].OnLodStateChanged(false);
+    states[CurrentNpcState].Shutdown();
+    CurrentNpcState = NpcStateEnum.MoveCloud;
+    CheckState(CurrentNpcState);
+    (states[CurrentNpcState] as NpcStateMoveCloud).Activate(destination);
+    if (!inLodState)
       return;
-    this.states[this.CurrentNpcState].OnLodStateChanged(true);
+    states[CurrentNpcState].OnLodStateChanged(true);
   }
 
   public void MoveByPath(List<Vector3> path)
   {
-    if (this.inLodState)
-      this.states[this.CurrentNpcState].OnLodStateChanged(false);
-    this.states[this.CurrentNpcState].Shutdown();
-    this.CurrentNpcState = NpcStateEnum.MoveByPath;
-    this.CheckState(this.CurrentNpcState);
-    (this.states[this.CurrentNpcState] as NpcStateMoveByPath).Activate(path);
-    if (!this.inLodState)
+    if (inLodState)
+      states[CurrentNpcState].OnLodStateChanged(false);
+    states[CurrentNpcState].Shutdown();
+    CurrentNpcState = NpcStateEnum.MoveByPath;
+    CheckState(CurrentNpcState);
+    (states[CurrentNpcState] as NpcStateMoveByPath).Activate(path);
+    if (!inLodState)
       return;
-    this.states[this.CurrentNpcState].OnLodStateChanged(true);
+    states[CurrentNpcState].OnLodStateChanged(true);
   }
 
   public void MoveByPathCloud(List<Vector3> path)
   {
-    if (this.inLodState)
-      this.states[this.CurrentNpcState].OnLodStateChanged(false);
-    this.states[this.CurrentNpcState].Shutdown();
-    this.CurrentNpcState = NpcStateEnum.MoveByPathCloud;
-    this.CheckState(this.CurrentNpcState);
-    (this.states[this.CurrentNpcState] as NpcStateMoveByPathCloud).Activate(path);
-    if (!this.inLodState)
+    if (inLodState)
+      states[CurrentNpcState].OnLodStateChanged(false);
+    states[CurrentNpcState].Shutdown();
+    CurrentNpcState = NpcStateEnum.MoveByPathCloud;
+    CheckState(CurrentNpcState);
+    (states[CurrentNpcState] as NpcStateMoveByPathCloud).Activate(path);
+    if (!inLodState)
       return;
-    this.states[this.CurrentNpcState].OnLodStateChanged(true);
+    states[CurrentNpcState].OnLodStateChanged(true);
   }
 
   public void MoveRetreat(Transform target, float retreatDistance)
   {
-    if (this.inLodState)
-      this.states[this.CurrentNpcState].OnLodStateChanged(false);
-    this.states[this.CurrentNpcState].Shutdown();
-    this.CurrentNpcState = NpcStateEnum.MoveRetreat;
-    this.CheckState(this.CurrentNpcState);
-    (this.states[this.CurrentNpcState] as NpcStateMoveRetreat).Activate(target, retreatDistance);
-    if (!this.inLodState)
+    if (inLodState)
+      states[CurrentNpcState].OnLodStateChanged(false);
+    states[CurrentNpcState].Shutdown();
+    CurrentNpcState = NpcStateEnum.MoveRetreat;
+    CheckState(CurrentNpcState);
+    (states[CurrentNpcState] as NpcStateMoveRetreat).Activate(target, retreatDistance);
+    if (!inLodState)
       return;
-    this.states[this.CurrentNpcState].OnLodStateChanged(true);
+    states[CurrentNpcState].OnLodStateChanged(true);
   }
 
   public void MoveFollow(Transform target, float followDistance)
   {
-    if (this.inLodState)
-      this.states[this.CurrentNpcState].OnLodStateChanged(false);
-    this.states[this.CurrentNpcState].Shutdown();
-    this.CurrentNpcState = NpcStateEnum.MoveFollow;
-    this.CheckState(this.CurrentNpcState);
-    (this.states[this.CurrentNpcState] as NpcStateMoveFollow).Activate(target, followDistance);
-    if (!this.inLodState)
+    if (inLodState)
+      states[CurrentNpcState].OnLodStateChanged(false);
+    states[CurrentNpcState].Shutdown();
+    CurrentNpcState = NpcStateEnum.MoveFollow;
+    CheckState(CurrentNpcState);
+    (states[CurrentNpcState] as NpcStateMoveFollow).Activate(target, followDistance);
+    if (!inLodState)
       return;
-    this.states[this.CurrentNpcState].OnLodStateChanged(true);
+    states[CurrentNpcState].OnLodStateChanged(true);
   }
 
   public void MoveFollowTeleport(float followDistance, float trialTime, bool waitForTargetSeesMe)
   {
-    if (this.inLodState)
-      this.states[this.CurrentNpcState].OnLodStateChanged(false);
-    this.states[this.CurrentNpcState].Shutdown();
-    this.CurrentNpcState = NpcStateEnum.MoveFollowTeleport;
-    this.CheckState(this.CurrentNpcState);
-    (this.states[this.CurrentNpcState] as NpcStateMoveFollowTeleport).Activate(followDistance, trialTime, waitForTargetSeesMe);
-    if (!this.inLodState)
+    if (inLodState)
+      states[CurrentNpcState].OnLodStateChanged(false);
+    states[CurrentNpcState].Shutdown();
+    CurrentNpcState = NpcStateEnum.MoveFollowTeleport;
+    CheckState(CurrentNpcState);
+    (states[CurrentNpcState] as NpcStateMoveFollowTeleport).Activate(followDistance, trialTime, waitForTargetSeesMe);
+    if (!inLodState)
       return;
-    this.states[this.CurrentNpcState].OnLodStateChanged(true);
+    states[CurrentNpcState].OnLodStateChanged(true);
   }
 
   public void MoveFollowTeleportStationary(float trialTime, SpawnpointKindEnum spawnpointKindEnum)
   {
-    if (this.inLodState)
-      this.states[this.CurrentNpcState].OnLodStateChanged(false);
-    this.states[this.CurrentNpcState].Shutdown();
-    this.CurrentNpcState = NpcStateEnum.MoveFollowTeleportStationary;
-    this.CheckState(this.CurrentNpcState);
-    (this.states[this.CurrentNpcState] as NpcStateMoveFollowTeleportStationary).Activate(trialTime, spawnpointKindEnum);
-    if (!this.inLodState)
+    if (inLodState)
+      states[CurrentNpcState].OnLodStateChanged(false);
+    states[CurrentNpcState].Shutdown();
+    CurrentNpcState = NpcStateEnum.MoveFollowTeleportStationary;
+    CheckState(CurrentNpcState);
+    (states[CurrentNpcState] as NpcStateMoveFollowTeleportStationary).Activate(trialTime, spawnpointKindEnum);
+    if (!inLodState)
       return;
-    this.states[this.CurrentNpcState].OnLodStateChanged(true);
+    states[CurrentNpcState].OnLodStateChanged(true);
   }
 
   public void PointOfInterest(
@@ -286,94 +283,94 @@ public class NpcState : MonoBehaviour, IEntityAttachable
     int animationIndex,
     int animationsCount = 0)
   {
-    if (this.inLodState)
-      this.states[this.CurrentNpcState].OnLodStateChanged(false);
-    this.states[this.CurrentNpcState].Shutdown();
-    this.CurrentNpcState = NpcStateEnum.PointOfInterest;
-    this.CheckState(this.CurrentNpcState);
-    (this.states[this.CurrentNpcState] as NpcStatePointOfInterest).Activate(poiTime, poi, animation, animationIndex, animationsCount);
-    if (!this.inLodState)
+    if (inLodState)
+      states[CurrentNpcState].OnLodStateChanged(false);
+    states[CurrentNpcState].Shutdown();
+    CurrentNpcState = NpcStateEnum.PointOfInterest;
+    CheckState(CurrentNpcState);
+    (states[CurrentNpcState] as NpcStatePointOfInterest).Activate(poiTime, poi, animation, animationIndex, animationsCount);
+    if (!inLodState)
       return;
-    this.states[this.CurrentNpcState].OnLodStateChanged(true);
+    states[CurrentNpcState].OnLodStateChanged(true);
   }
 
   public void POIExtraExit(float time)
   {
-    if (this.inLodState)
-      this.states[this.CurrentNpcState].OnLodStateChanged(false);
-    INpcState state = this.states[this.CurrentNpcState];
-    this.states[this.CurrentNpcState].Shutdown();
-    this.CurrentNpcState = NpcStateEnum.POIExtraExit;
-    this.CheckState(this.CurrentNpcState);
-    (this.states[this.CurrentNpcState] as NPCStatePOIExtraExit).Activate(state, time);
-    if (!this.inLodState)
+    if (inLodState)
+      states[CurrentNpcState].OnLodStateChanged(false);
+    INpcState state = states[CurrentNpcState];
+    states[CurrentNpcState].Shutdown();
+    CurrentNpcState = NpcStateEnum.POIExtraExit;
+    CheckState(CurrentNpcState);
+    (states[CurrentNpcState] as NPCStatePOIExtraExit).Activate(state, time);
+    if (!inLodState)
       return;
-    this.states[this.CurrentNpcState].OnLodStateChanged(true);
+    states[CurrentNpcState].OnLodStateChanged(true);
   }
 
   public void Loot(float poiTime, GameObject target)
   {
-    if (this.inLodState)
-      this.states[this.CurrentNpcState].OnLodStateChanged(false);
-    this.states[this.CurrentNpcState].Shutdown();
-    this.CurrentNpcState = NpcStateEnum.PointOfInterest;
-    this.CheckState(this.CurrentNpcState);
-    (this.states[this.CurrentNpcState] as NpcStatePointOfInterest).ActivateLoot(poiTime, target);
-    if (!this.inLodState)
+    if (inLodState)
+      states[CurrentNpcState].OnLodStateChanged(false);
+    states[CurrentNpcState].Shutdown();
+    CurrentNpcState = NpcStateEnum.PointOfInterest;
+    CheckState(CurrentNpcState);
+    (states[CurrentNpcState] as NpcStatePointOfInterest).ActivateLoot(poiTime, target);
+    if (!inLodState)
       return;
-    this.states[this.CurrentNpcState].OnLodStateChanged(true);
+    states[CurrentNpcState].OnLodStateChanged(true);
   }
 
   public void PresetIdle()
   {
-    if (this.inLodState)
-      this.states[this.CurrentNpcState].OnLodStateChanged(false);
-    this.states[this.CurrentNpcState].Shutdown();
-    this.CurrentNpcState = NpcStateEnum.PresetIdle;
-    this.CheckState(this.CurrentNpcState);
-    (this.states[this.CurrentNpcState] as NpcStateIdlePreset).Activate();
-    if (!this.inLodState)
+    if (inLodState)
+      states[CurrentNpcState].OnLodStateChanged(false);
+    states[CurrentNpcState].Shutdown();
+    CurrentNpcState = NpcStateEnum.PresetIdle;
+    CheckState(CurrentNpcState);
+    (states[CurrentNpcState] as NpcStateIdlePreset).Activate();
+    if (!inLodState)
       return;
-    this.states[this.CurrentNpcState].OnLodStateChanged(true);
+    states[CurrentNpcState].OnLodStateChanged(true);
   }
 
   public void PresetIdleTest(IdlePresetObject target)
   {
-    if (this.inLodState)
-      this.states[this.CurrentNpcState].OnLodStateChanged(false);
-    this.states[this.CurrentNpcState].Shutdown();
-    this.CurrentNpcState = NpcStateEnum.PresetIdleTest;
-    this.CheckState(this.CurrentNpcState);
-    (this.states[this.CurrentNpcState] as NpcStateIdlePresetTest).Activate(target);
-    if (!this.inLodState)
+    if (inLodState)
+      states[CurrentNpcState].OnLodStateChanged(false);
+    states[CurrentNpcState].Shutdown();
+    CurrentNpcState = NpcStateEnum.PresetIdleTest;
+    CheckState(CurrentNpcState);
+    (states[CurrentNpcState] as NpcStateIdlePresetTest).Activate(target);
+    if (!inLodState)
       return;
-    this.states[this.CurrentNpcState].OnLodStateChanged(true);
+    states[CurrentNpcState].OnLodStateChanged(true);
   }
 
   public void DialogNpc(GameObject targetCharacter, float time, bool speaking)
   {
-    if (this.inLodState)
-      this.states[this.CurrentNpcState].OnLodStateChanged(false);
-    this.states[this.CurrentNpcState].Shutdown();
-    this.CurrentNpcState = NpcStateEnum.DialogNpc;
-    this.CheckState(this.CurrentNpcState);
-    (this.states[this.CurrentNpcState] as NpcStateDialogNpc).Activate(targetCharacter, time, speaking);
-    if (!this.inLodState)
+    if (inLodState)
+      states[CurrentNpcState].OnLodStateChanged(false);
+    states[CurrentNpcState].Shutdown();
+    CurrentNpcState = NpcStateEnum.DialogNpc;
+    CheckState(CurrentNpcState);
+    (states[CurrentNpcState] as NpcStateDialogNpc).Activate(targetCharacter, time, speaking);
+    if (!inLodState)
       return;
-    this.states[this.CurrentNpcState].OnLodStateChanged(true);
+    states[CurrentNpcState].OnLodStateChanged(true);
   }
 
   public void FightIdle(bool aim)
   {
-    if (this.inLodState)
-      this.states[this.CurrentNpcState].OnLodStateChanged(false);
-    this.states[this.CurrentNpcState].Shutdown();
-    this.CurrentNpcState = NpcStateEnum.FightIdle;
-    this.CheckState(this.CurrentNpcState);
-    (this.states[this.CurrentNpcState] as NpcStateFightIdle).Activate(aim);
-    if (!this.inLodState)
+    if (inLodState)
+      states[CurrentNpcState].OnLodStateChanged(false);
+    states[CurrentNpcState].Shutdown();
+    CurrentNpcState = NpcStateEnum.FightIdle;
+    CheckState(CurrentNpcState);
+    (states[CurrentNpcState] as NpcStateFightIdle).Activate(aim);
+    if (!inLodState)
       return;
-    this.states[this.CurrentNpcState].OnLodStateChanged(true);
+    states[CurrentNpcState].OnLodStateChanged(true);
   }
 
   public void FightFollow(
@@ -382,15 +379,15 @@ public class NpcState : MonoBehaviour, IEntityAttachable
     bool aim,
     float timeAfterHitToRun = 7f)
   {
-    if (this.inLodState)
-      this.states[this.CurrentNpcState].OnLodStateChanged(false);
-    this.states[this.CurrentNpcState].Shutdown();
-    this.CurrentNpcState = NpcStateEnum.FightFollow;
-    this.CheckState(this.CurrentNpcState);
-    (this.states[this.CurrentNpcState] as NpcStateFightFollow).Activate(stopDistance, runDistance, aim, timeAfterHitToRun);
-    if (!this.inLodState)
+    if (inLodState)
+      states[CurrentNpcState].OnLodStateChanged(false);
+    states[CurrentNpcState].Shutdown();
+    CurrentNpcState = NpcStateEnum.FightFollow;
+    CheckState(CurrentNpcState);
+    (states[CurrentNpcState] as NpcStateFightFollow).Activate(stopDistance, runDistance, aim, timeAfterHitToRun);
+    if (!inLodState)
       return;
-    this.states[this.CurrentNpcState].OnLodStateChanged(true);
+    states[CurrentNpcState].OnLodStateChanged(true);
   }
 
   public void FightFollowTarget(
@@ -400,130 +397,130 @@ public class NpcState : MonoBehaviour, IEntityAttachable
     Transform target,
     bool aim)
   {
-    if (this.inLodState)
-      this.states[this.CurrentNpcState].OnLodStateChanged(false);
-    this.states[this.CurrentNpcState].Shutdown();
-    this.CurrentNpcState = NpcStateEnum.FightFollowTarget;
-    this.CheckState(this.CurrentNpcState);
-    (this.states[this.CurrentNpcState] as NpcStateFightFollowTarget).Activate(stopDistance, runDistance, retreatDistance, target, aim);
-    if (!this.inLodState)
+    if (inLodState)
+      states[CurrentNpcState].OnLodStateChanged(false);
+    states[CurrentNpcState].Shutdown();
+    CurrentNpcState = NpcStateEnum.FightFollowTarget;
+    CheckState(CurrentNpcState);
+    (states[CurrentNpcState] as NpcStateFightFollowTarget).Activate(stopDistance, runDistance, retreatDistance, target, aim);
+    if (!inLodState)
       return;
-    this.states[this.CurrentNpcState].OnLodStateChanged(true);
+    states[CurrentNpcState].OnLodStateChanged(true);
   }
 
   public void FightKeepDistance(float keepDistance, bool strafe, bool aim)
   {
-    if (this.inLodState)
-      this.states[this.CurrentNpcState].OnLodStateChanged(false);
-    this.states[this.CurrentNpcState].Shutdown();
-    this.CurrentNpcState = NpcStateEnum.FightKeepDistance;
-    this.CheckState(this.CurrentNpcState);
-    (this.states[this.CurrentNpcState] as NpcStateFightKeepDistance).Activate(keepDistance, strafe, aim);
-    if (!this.inLodState)
+    if (inLodState)
+      states[CurrentNpcState].OnLodStateChanged(false);
+    states[CurrentNpcState].Shutdown();
+    CurrentNpcState = NpcStateEnum.FightKeepDistance;
+    CheckState(CurrentNpcState);
+    (states[CurrentNpcState] as NpcStateFightKeepDistance).Activate(keepDistance, strafe, aim);
+    if (!inLodState)
       return;
-    this.states[this.CurrentNpcState].OnLodStateChanged(true);
+    states[CurrentNpcState].OnLodStateChanged(true);
   }
 
   public void FightSurrender(float moveTime)
   {
-    if (this.inLodState)
-      this.states[this.CurrentNpcState].OnLodStateChanged(false);
-    this.states[this.CurrentNpcState].Shutdown();
-    this.CurrentNpcState = NpcStateEnum.FightSurrender;
-    this.CheckState(this.CurrentNpcState);
-    (this.states[this.CurrentNpcState] as NpcStateFightSurrender).Activate(moveTime);
-    if (!this.inLodState)
+    if (inLodState)
+      states[CurrentNpcState].OnLodStateChanged(false);
+    states[CurrentNpcState].Shutdown();
+    CurrentNpcState = NpcStateEnum.FightSurrender;
+    CheckState(CurrentNpcState);
+    (states[CurrentNpcState] as NpcStateFightSurrender).Activate(moveTime);
+    if (!inLodState)
       return;
-    this.states[this.CurrentNpcState].OnLodStateChanged(true);
+    states[CurrentNpcState].OnLodStateChanged(true);
   }
 
   public void FightEscape(float escapeDistance)
   {
-    if (this.inLodState)
-      this.states[this.CurrentNpcState].OnLodStateChanged(false);
-    this.states[this.CurrentNpcState].Shutdown();
-    this.CurrentNpcState = NpcStateEnum.FightEscape;
-    this.CheckState(this.CurrentNpcState);
-    (this.states[this.CurrentNpcState] as NpcStateFightEscape).Activate(escapeDistance);
-    if (!this.inLodState)
+    if (inLodState)
+      states[CurrentNpcState].OnLodStateChanged(false);
+    states[CurrentNpcState].Shutdown();
+    CurrentNpcState = NpcStateEnum.FightEscape;
+    CheckState(CurrentNpcState);
+    (states[CurrentNpcState] as NpcStateFightEscape).Activate(escapeDistance);
+    if (!inLodState)
       return;
-    this.states[this.CurrentNpcState].OnLodStateChanged(true);
+    states[CurrentNpcState].OnLodStateChanged(true);
   }
 
   public void FightSurrenderLoot(float lootTime)
   {
-    if (this.inLodState)
-      this.states[this.CurrentNpcState].OnLodStateChanged(false);
-    this.states[this.CurrentNpcState].Shutdown();
-    this.CurrentNpcState = NpcStateEnum.FightSurrenderLoot;
-    this.CheckState(this.CurrentNpcState);
-    (this.states[this.CurrentNpcState] as NpcStateFightSurrenderLoot).Activate(lootTime);
-    if (!this.inLodState)
+    if (inLodState)
+      states[CurrentNpcState].OnLodStateChanged(false);
+    states[CurrentNpcState].Shutdown();
+    CurrentNpcState = NpcStateEnum.FightSurrenderLoot;
+    CheckState(CurrentNpcState);
+    (states[CurrentNpcState] as NpcStateFightSurrenderLoot).Activate(lootTime);
+    if (!inLodState)
       return;
-    this.states[this.CurrentNpcState].OnLodStateChanged(true);
+    states[CurrentNpcState].OnLodStateChanged(true);
   }
 
   public void Ragdoll(bool internalCollisions)
   {
-    if (this.inLodState)
-      this.states[this.CurrentNpcState].OnLodStateChanged(false);
-    this.states[this.CurrentNpcState].Shutdown();
-    INpcState state = this.states[this.CurrentNpcState];
-    this.CurrentNpcState = NpcStateEnum.Ragdoll;
-    this.CheckState(this.CurrentNpcState);
-    (this.states[this.CurrentNpcState] as NpcStateRagdoll).Activate(internalCollisions, state);
-    if (!this.inLodState)
+    if (inLodState)
+      states[CurrentNpcState].OnLodStateChanged(false);
+    states[CurrentNpcState].Shutdown();
+    INpcState state = states[CurrentNpcState];
+    CurrentNpcState = NpcStateEnum.Ragdoll;
+    CheckState(CurrentNpcState);
+    (states[CurrentNpcState] as NpcStateRagdoll).Activate(internalCollisions, state);
+    if (!inLodState)
       return;
-    this.states[this.CurrentNpcState].OnLodStateChanged(true);
+    states[CurrentNpcState].OnLodStateChanged(true);
   }
 
   public void RagdollRessurect()
   {
-    if (this.inLodState)
-      this.states[this.CurrentNpcState].OnLodStateChanged(false);
-    this.states[this.CurrentNpcState].Shutdown();
-    this.CurrentNpcState = NpcStateEnum.RagdollRessurect;
-    this.CheckState(this.CurrentNpcState);
-    (this.states[this.CurrentNpcState] as NpcStateRagdollRessurect).Activate();
-    if (!this.inLodState)
+    if (inLodState)
+      states[CurrentNpcState].OnLodStateChanged(false);
+    states[CurrentNpcState].Shutdown();
+    CurrentNpcState = NpcStateEnum.RagdollRessurect;
+    CheckState(CurrentNpcState);
+    (states[CurrentNpcState] as NpcStateRagdollRessurect).Activate();
+    if (!inLodState)
       return;
-    this.states[this.CurrentNpcState].OnLodStateChanged(true);
+    states[CurrentNpcState].OnLodStateChanged(true);
   }
 
   private void Awake()
   {
-    this.RestartBehaviourAfterTeleport = true;
-    this.pivot = this.GetComponent<Pivot>();
-    if ((bool) (UnityEngine.Object) this.pivot)
+    RestartBehaviourAfterTeleport = true;
+    pivot = this.GetComponent<Pivot>();
+    if ((bool) (UnityEngine.Object) pivot)
     {
-      AnimatorEventProxy animatorEventProxy = this.pivot.GetAnimatorEventProxy();
+      AnimatorEventProxy animatorEventProxy = pivot.GetAnimatorEventProxy();
       if ((bool) (UnityEngine.Object) animatorEventProxy)
       {
-        animatorEventProxy.AnimatorMoveEvent += new Action(this.Proxy_AnimatorMoveEvent);
-        animatorEventProxy.AnimatorEventEvent += new Action<string>(this.Proxy_AnimatorEventEvent);
+        animatorEventProxy.AnimatorMoveEvent += Proxy_AnimatorMoveEvent;
+        animatorEventProxy.AnimatorEventEvent += Proxy_AnimatorEventEvent;
       }
-      NavMeshAgent agent = this.pivot.GetAgent();
+      NavMeshAgent agent = pivot.GetAgent();
       if ((bool) (UnityEngine.Object) agent)
         agent.enabled = false;
-      this.animator = this.pivot.GetAnimator();
-      if ((bool) (UnityEngine.Object) this.animator)
+      animator = pivot.GetAnimator();
+      if ((bool) (UnityEngine.Object) animator)
       {
-        this.animatorEnabled = this.animator.enabled;
-        this.initialAnimatorcullingMode = this.animator.cullingMode;
-        this.animator.cullingMode = AnimatorCullingMode.AlwaysAnimate;
+        animatorEnabled = animator.enabled;
+        initialAnimatorcullingMode = animator.cullingMode;
+        animator.cullingMode = AnimatorCullingMode.AlwaysAnimate;
       }
     }
-    this.CurrentNpcState = NpcStateEnum.Unknown;
-    this.CheckState(this.CurrentNpcState);
-    (this.states[this.CurrentNpcState] as NpcStateUnknown).Activate((INpcState) null);
+    CurrentNpcState = NpcStateEnum.Unknown;
+    CheckState(CurrentNpcState);
+    (states[CurrentNpcState] as NpcStateUnknown).Activate(null);
   }
 
   private void Proxy_AnimatorEventEvent(string obj)
   {
-    this.states[this.CurrentNpcState].OnAnimatorEventEvent(obj);
+    states[CurrentNpcState].OnAnimatorEventEvent(obj);
   }
 
-  private void Proxy_AnimatorMoveEvent() => this.states[this.CurrentNpcState].OnAnimatorMove();
+  private void Proxy_AnimatorMoveEvent() => states[CurrentNpcState].OnAnimatorMove();
 
   private void OnEnable()
   {
@@ -535,45 +532,45 @@ public class NpcState : MonoBehaviour, IEntityAttachable
   private void OnDisable()
   {
     ServiceLocator.GetService<LodService>().UnregisterLod(this);
-    this.states[this.CurrentNpcState].Shutdown();
-    INpcState state = this.states[this.CurrentNpcState];
-    this.CurrentNpcState = NpcStateEnum.Unknown;
-    this.CheckState(this.CurrentNpcState);
-    (this.states[this.CurrentNpcState] as NpcStateUnknown).Activate(state);
+    states[CurrentNpcState].Shutdown();
+    INpcState state = states[CurrentNpcState];
+    CurrentNpcState = NpcStateEnum.Unknown;
+    CheckState(CurrentNpcState);
+    (states[CurrentNpcState] as NpcStateUnknown).Activate(state);
   }
 
   void IEntityAttachable.Attach(IEntity owner)
   {
-    this.Owner = owner;
-    NavigationComponent component = this.Owner.GetComponent<NavigationComponent>();
+    Owner = owner;
+    NavigationComponent component = Owner.GetComponent<NavigationComponent>();
     if (component == null)
       return;
-    component.OnPreTeleport += new Action<INavigationComponent, IEntity>(this.NavigationComponent_OnPreTeleport);
-    component.OnTeleport += new Action<INavigationComponent, IEntity>(this.NavigationComponent_OnTeleport);
+    component.OnPreTeleport += NavigationComponent_OnPreTeleport;
+    component.OnTeleport += NavigationComponent_OnTeleport;
   }
 
   void IEntityAttachable.Detach()
   {
-    NavigationComponent component = this.Owner.GetComponent<NavigationComponent>();
+    NavigationComponent component = Owner.GetComponent<NavigationComponent>();
     if (component != null)
     {
-      component.OnPreTeleport -= new Action<INavigationComponent, IEntity>(this.NavigationComponent_OnPreTeleport);
-      component.OnTeleport -= new Action<INavigationComponent, IEntity>(this.NavigationComponent_OnTeleport);
+      component.OnPreTeleport -= NavigationComponent_OnPreTeleport;
+      component.OnTeleport -= NavigationComponent_OnTeleport;
     }
-    this.Owner = (IEntity) null;
+    Owner = null;
   }
 
   private void Update()
   {
     if (Profiler.enabled)
-      Profiler.BeginSample(NpcState.stateNames[(int) this.CurrentNpcState]);
-    if (this.frameCountFromStart == 1 && (bool) (UnityEngine.Object) this.animator)
+      Profiler.BeginSample(stateNames[(int) CurrentNpcState]);
+    if (frameCountFromStart == 1 && (bool) (UnityEngine.Object) animator)
     {
-      this.animator.enabled = this.animatorEnabled;
-      this.animator.cullingMode = this.initialAnimatorcullingMode;
+      animator.enabled = animatorEnabled;
+      animator.cullingMode = initialAnimatorcullingMode;
     }
-    ++this.frameCountFromStart;
-    this.states[this.CurrentNpcState].Update();
+    ++frameCountFromStart;
+    states[CurrentNpcState].Update();
     if (!Profiler.enabled)
       return;
     Profiler.EndSample();
@@ -581,26 +578,26 @@ public class NpcState : MonoBehaviour, IEntityAttachable
 
   private void NavigationComponent_OnPreTeleport(INavigationComponent arg1, IEntity arg2)
   {
-    if (this.RestartBehaviourAfterTeleport && this.enabled)
+    if (RestartBehaviourAfterTeleport && this.enabled)
     {
       foreach (BehaviorTree component in this.gameObject.GetComponents<BehaviorTree>())
         component.OnDisable();
     }
-    if (this.inLodState)
-      this.states[this.CurrentNpcState].OnLodStateChanged(false);
-    this.states[this.CurrentNpcState].Shutdown();
-    INpcState state = this.states[this.CurrentNpcState];
-    this.CurrentNpcState = NpcStateEnum.Unknown;
-    this.CheckState(this.CurrentNpcState);
-    (this.states[this.CurrentNpcState] as NpcStateUnknown).Activate(state);
-    if (!this.inLodState)
+    if (inLodState)
+      states[CurrentNpcState].OnLodStateChanged(false);
+    states[CurrentNpcState].Shutdown();
+    INpcState state = states[CurrentNpcState];
+    CurrentNpcState = NpcStateEnum.Unknown;
+    CheckState(CurrentNpcState);
+    (states[CurrentNpcState] as NpcStateUnknown).Activate(state);
+    if (!inLodState)
       return;
-    this.states[this.CurrentNpcState].OnLodStateChanged(true);
+    states[CurrentNpcState].OnLodStateChanged(true);
   }
 
   private void NavigationComponent_OnTeleport(INavigationComponent arg1, IEntity arg2)
   {
-    if (!this.RestartBehaviourAfterTeleport || !this.enabled)
+    if (!RestartBehaviourAfterTeleport || !this.enabled)
       return;
     foreach (BehaviorTree component in this.gameObject.GetComponents<BehaviorTree>())
       component.OnEnable();

@@ -19,106 +19,106 @@ namespace Engine.Impl.Weather
     IObject
   {
     [DataReadProxy(MemberEnum.OnlyCopy)]
-    [DataWriteProxy(MemberEnum.None)]
+    [DataWriteProxy]
     [CopyableProxy(MemberEnum.OnlyCopy)]
     [Inspected]
     protected Clouds clouds = ProxyFactory.Create<Clouds>();
     [DataReadProxy(MemberEnum.OnlyCopy)]
-    [DataWriteProxy(MemberEnum.None)]
+    [DataWriteProxy]
     [CopyableProxy(MemberEnum.OnlyCopy)]
     [Inspected]
     protected Day day = ProxyFactory.Create<Day>();
     [DataReadProxy(MemberEnum.OnlyCopy)]
-    [DataWriteProxy(MemberEnum.None)]
+    [DataWriteProxy]
     [CopyableProxy(MemberEnum.OnlyCopy)]
     [Inspected]
     protected Fog fog = ProxyFactory.Create<Fog>();
     [DataReadProxy(MemberEnum.OnlyCopy)]
-    [DataWriteProxy(MemberEnum.None)]
+    [DataWriteProxy]
     [CopyableProxy(MemberEnum.OnlyCopy)]
     [Inspected]
     protected Location location = ProxyFactory.Create<Location>();
     [DataReadProxy(MemberEnum.OnlyCopy)]
-    [DataWriteProxy(MemberEnum.None)]
+    [DataWriteProxy]
     [CopyableProxy(MemberEnum.OnlyCopy)]
     [Inspected]
     protected Moon moon = ProxyFactory.Create<Moon>();
     [DataReadProxy(MemberEnum.OnlyCopy)]
-    [DataWriteProxy(MemberEnum.None)]
+    [DataWriteProxy]
     [CopyableProxy(MemberEnum.OnlyCopy)]
     [Inspected]
     protected Night night = ProxyFactory.Create<Night>();
     [DataReadProxy(MemberEnum.OnlyCopy)]
-    [DataWriteProxy(MemberEnum.None)]
+    [DataWriteProxy]
     [CopyableProxy(MemberEnum.OnlyCopy)]
     [Inspected]
     protected Stars stars = ProxyFactory.Create<Stars>();
     [DataReadProxy(MemberEnum.OnlyCopy)]
-    [DataWriteProxy(MemberEnum.None)]
+    [DataWriteProxy]
     [CopyableProxy(MemberEnum.OnlyCopy)]
     [Inspected]
     protected Sun sun = ProxyFactory.Create<Sun>();
     [DataReadProxy(MemberEnum.OnlyCopy)]
-    [DataWriteProxy(MemberEnum.None)]
+    [DataWriteProxy]
     [CopyableProxy(MemberEnum.OnlyCopy)]
     [Inspected]
     protected ThunderStorm thunderStorm = ProxyFactory.Create<ThunderStorm>();
     [DataReadProxy(MemberEnum.OnlyCopy)]
-    [DataWriteProxy(MemberEnum.None)]
+    [DataWriteProxy]
     [CopyableProxy(MemberEnum.OnlyCopy)]
     [Inspected]
     protected Wind wind = ProxyFactory.Create<Wind>();
     [DataReadProxy(MemberEnum.OnlyCopy)]
-    [DataWriteProxy(MemberEnum.None)]
+    [DataWriteProxy]
     [CopyableProxy(MemberEnum.OnlyCopy)]
     [Inspected]
     protected Rain rain = ProxyFactory.Create<Rain>();
     [DataReadProxy(MemberEnum.OnlyCopy)]
-    [DataWriteProxy(MemberEnum.None)]
+    [DataWriteProxy()]
     [CopyableProxy(MemberEnum.OnlyCopy)]
     [Inspected]
     protected FallingLeaves fallingLeaves = ProxyFactory.Create<FallingLeaves>();
 
-    public Clouds Clouds => this.clouds;
+    public Clouds Clouds => clouds;
 
-    public Day Day => this.day;
+    public Day Day => day;
 
-    public Fog Fog => this.fog;
+    public Fog Fog => fog;
 
-    public Location Location => this.location;
+    public Location Location => location;
 
-    public Moon Moon => this.moon;
+    public Moon Moon => moon;
 
-    public Night Night => this.night;
+    public Night Night => night;
 
-    public Stars Stars => this.stars;
+    public Stars Stars => stars;
 
-    public Sun Sun => this.sun;
+    public Sun Sun => sun;
 
-    public ThunderStorm ThunderStorm => this.thunderStorm;
+    public ThunderStorm ThunderStorm => thunderStorm;
 
-    public Wind Wind => this.wind;
+    public Wind Wind => wind;
 
-    public Rain Rain => this.rain;
+    public Rain Rain => rain;
 
-    public FallingLeaves FallingLeaves => this.fallingLeaves;
+    public FallingLeaves FallingLeaves => fallingLeaves;
 
     public void Blend(IWeatherSnapshot aa, IWeatherSnapshot bb, IPureBlendOperation op)
     {
       WeatherSnapshot weatherSnapshot1 = (WeatherSnapshot) aa;
       WeatherSnapshot weatherSnapshot2 = (WeatherSnapshot) bb;
-      this.Clouds.Blend(weatherSnapshot1.Clouds, weatherSnapshot2.Clouds, op);
-      this.Day.Blend(weatherSnapshot1.Day, weatherSnapshot2.Day, op);
-      this.Fog.Blend(weatherSnapshot1.Fog, weatherSnapshot2.Fog, op);
-      this.Location.Blend(weatherSnapshot1.Location, weatherSnapshot2.Location, op);
-      this.Moon.Blend(weatherSnapshot1.Moon, weatherSnapshot2.Moon, op);
-      this.Night.Blend(weatherSnapshot1.Night, weatherSnapshot2.Night, op);
-      this.Stars.Blend(weatherSnapshot1.Stars, weatherSnapshot2.Stars, op);
-      this.Sun.Blend(weatherSnapshot1.Sun, weatherSnapshot2.Sun, op);
-      this.ThunderStorm.Blend(weatherSnapshot1.ThunderStorm, weatherSnapshot2.ThunderStorm, op);
-      this.Wind.Blend(weatherSnapshot1.Wind, weatherSnapshot2.Wind, op);
-      this.Rain.Blend(weatherSnapshot1.Rain, weatherSnapshot2.Rain, op);
-      this.FallingLeaves.Blend(weatherSnapshot1.FallingLeaves, weatherSnapshot2.FallingLeaves, op);
+      Clouds.Blend(weatherSnapshot1.Clouds, weatherSnapshot2.Clouds, op);
+      Day.Blend(weatherSnapshot1.Day, weatherSnapshot2.Day, op);
+      Fog.Blend(weatherSnapshot1.Fog, weatherSnapshot2.Fog, op);
+      Location.Blend(weatherSnapshot1.Location, weatherSnapshot2.Location, op);
+      Moon.Blend(weatherSnapshot1.Moon, weatherSnapshot2.Moon, op);
+      Night.Blend(weatherSnapshot1.Night, weatherSnapshot2.Night, op);
+      Stars.Blend(weatherSnapshot1.Stars, weatherSnapshot2.Stars, op);
+      Sun.Blend(weatherSnapshot1.Sun, weatherSnapshot2.Sun, op);
+      ThunderStorm.Blend(weatherSnapshot1.ThunderStorm, weatherSnapshot2.ThunderStorm, op);
+      Wind.Blend(weatherSnapshot1.Wind, weatherSnapshot2.Wind, op);
+      Rain.Blend(weatherSnapshot1.Rain, weatherSnapshot2.Rain, op);
+      FallingLeaves.Blend(weatherSnapshot1.FallingLeaves, weatherSnapshot2.FallingLeaves, op);
     }
   }
 }

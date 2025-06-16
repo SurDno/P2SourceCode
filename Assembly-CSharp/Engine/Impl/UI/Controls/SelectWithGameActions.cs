@@ -1,7 +1,5 @@
 ﻿using Engine.Common.Services;
 using Engine.Source.Services.Inputs;
-using UnityEngine;
-using UnityEngine.EventSystems;
 
 namespace Engine.Impl.UI.Controls
 {
@@ -25,9 +23,9 @@ namespace Engine.Impl.UI.Controls
       GameObject selectedGameObject = EventSystem.current.currentSelectedGameObject;
       if ((Object) selectedGameObject == (Object) null)
         return -1;
-      for (int index = 0; index < this.selectables.Length; ++index)
+      for (int index = 0; index < selectables.Length; ++index)
       {
-        if ((Object) selectedGameObject == (Object) this.selectables[index])
+        if ((Object) selectedGameObject == (Object) selectables[index])
           return index;
       }
       return -1;
@@ -37,24 +35,23 @@ namespace Engine.Impl.UI.Controls
     {
       if (!down)
         return false;
-      int index = this.Current();
+      int index = Current();
       switch (index)
       {
         case -1:
           index = 0;
           break;
         case 0:
-          if (this.wrap)
+          if (wrap)
           {
-            index = this.selectables.Length - 1;
-            break;
+            index = selectables.Length - 1;
           }
           break;
         default:
           --index;
           break;
       }
-      this.Select(index);
+      Select(index);
       return true;
     }
 
@@ -62,51 +59,51 @@ namespace Engine.Impl.UI.Controls
     {
       if (!down)
         return false;
-      int index = this.Current();
-      int num = this.selectables.Length - 1;
+      int index = Current();
+      int num = selectables.Length - 1;
       if (index == -1)
         index = num;
       else if (index == num)
       {
-        if (this.wrap)
+        if (wrap)
           index = 0;
       }
       else
         ++index;
-      this.Select(index);
+      Select(index);
       return true;
     }
 
     private void OnDisable()
     {
-      if (this.Current() != -1)
+      if (Current() != -1)
         EventSystem.current.SetSelectedGameObject((GameObject) null);
       GameActionService service = ServiceLocator.GetService<GameActionService>();
-      for (int index = 0; index < this.decreaseActions.Length; ++index)
-        service.RemoveListener(this.decreaseActions[index], this.onDecreaseAction);
-      for (int index = 0; index < this.increaseActions.Length; ++index)
-        service.RemoveListener(this.increaseActions[index], this.onIncreaseAction);
+      for (int index = 0; index < decreaseActions.Length; ++index)
+        service.RemoveListener(decreaseActions[index], onDecreaseAction);
+      for (int index = 0; index < increaseActions.Length; ++index)
+        service.RemoveListener(increaseActions[index], onIncreaseAction);
     }
 
     private void OnEnable()
     {
-      if (this.onDecreaseAction == null)
-        this.onDecreaseAction = new GameActionHandle(this.OnDecrease);
-      if (this.onIncreaseAction == null)
-        this.onIncreaseAction = new GameActionHandle(this.OnIncrease);
+      if (onDecreaseAction == null)
+        onDecreaseAction = OnDecrease;
+      if (onIncreaseAction == null)
+        onIncreaseAction = OnIncrease;
       GameActionService service = ServiceLocator.GetService<GameActionService>();
-      for (int index = 0; index < this.decreaseActions.Length; ++index)
-        service.AddListener(this.decreaseActions[index], this.onDecreaseAction);
-      for (int index = 0; index < this.increaseActions.Length; ++index)
-        service.AddListener(this.increaseActions[index], this.onIncreaseAction);
-      if (this.defaultSelected < 0 || this.defaultSelected >= this.selectables.Length)
+      for (int index = 0; index < decreaseActions.Length; ++index)
+        service.AddListener(decreaseActions[index], onDecreaseAction);
+      for (int index = 0; index < increaseActions.Length; ++index)
+        service.AddListener(increaseActions[index], onIncreaseAction);
+      if (defaultSelected < 0 || defaultSelected >= selectables.Length)
         return;
-      this.Select(this.defaultSelected);
+      Select(defaultSelected);
     }
 
     private void Select(int index)
     {
-      EventSystem.current.SetSelectedGameObject(this.selectables[index]);
+      EventSystem.current.SetSelectedGameObject(selectables[index]);
     }
   }
 }

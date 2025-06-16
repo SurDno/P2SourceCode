@@ -1,7 +1,6 @@
 ﻿using Engine.Common.Services;
 using Engine.Impl.UI.Controls;
 using Engine.Source.Services;
-using UnityEngine;
 
 public class GameWindowSelector : MonoBehaviour
 {
@@ -19,13 +18,13 @@ public class GameWindowSelector : MonoBehaviour
     InterfaceBlockingService service = ServiceLocator.GetService<InterfaceBlockingService>();
     if (service == null)
       return;
-    if ((Object) this.mapAvailableView != (Object) null)
-      this.mapAvailableView.Visible = !service.BlockMapInterface;
-    if ((Object) this.mindMapAvailableView != (Object) null)
-      this.mindMapAvailableView.Visible = !service.BlockMindMapInterface;
-    if ((Object) this.inventoryAvailableView != (Object) null)
-      this.inventoryAvailableView.Visible = !service.BlockInventoryInterface;
-    if ((Object) this.boundCharactersAvailableView != (Object) null)
-      this.boundCharactersAvailableView.Visible = !service.BlockBoundsInterface;
+    if ((Object) mapAvailableView != (Object) null)
+      mapAvailableView.Visible = !service.BlockMapInterface;
+    if ((Object) mindMapAvailableView != (Object) null)
+      mindMapAvailableView.Visible = !service.BlockMindMapInterface;
+    if ((Object) inventoryAvailableView != (Object) null)
+      inventoryAvailableView.Visible = !service.BlockInventoryInterface;
+    if ((Object) boundCharactersAvailableView != (Object) null)
+      boundCharactersAvailableView.Visible = !service.BlockBoundsInterface;
   }
 }

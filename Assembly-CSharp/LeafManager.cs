@@ -1,11 +1,10 @@
-﻿using Engine.Common;
+﻿using System;
+using System.Collections.Generic;
+using Engine.Common;
 using Engine.Common.Services;
 using Engine.Impl.Services;
 using Engine.Source.Commons;
 using Engine.Source.Settings.External;
-using System;
-using System.Collections.Generic;
-using UnityEngine;
 
 public class LeafManager : MonoBehaviourInstance<LeafManager>, IUpdatable
 {
@@ -45,10 +44,10 @@ public class LeafManager : MonoBehaviourInstance<LeafManager>, IUpdatable
 
   public void ReturnAnimator(LeafAnimator leafAnimator)
   {
-    if (this._pool.Count < this.poolCapacity)
+    if (_pool.Count < poolCapacity)
     {
       leafAnimator.gameObject.SetActive(false);
-      this._pool.Push(leafAnimator);
+      _pool.Push(leafAnimator);
     }
     else
       UnityEngine.Object.Destroy((UnityEngine.Object) leafAnimator.gameObject);
@@ -56,11 +55,11 @@ public class LeafManager : MonoBehaviourInstance<LeafManager>, IUpdatable
 
   private void Spawn()
   {
-    LeafAnimator leafAnimator = (LeafAnimator) null;
+    LeafAnimator leafAnimator = null;
     do
     {
-      if (this._pool.Count > 0)
-        leafAnimator = this._pool.Pop();
+      if (_pool.Count > 0)
+        leafAnimator = _pool.Pop();
       else
         goto label_4;
     }
@@ -69,43 +68,43 @@ public class LeafManager : MonoBehaviourInstance<LeafManager>, IUpdatable
 label_4:
     if ((UnityEngine.Object) leafAnimator == (UnityEngine.Object) null)
     {
-      GameObject gameObject1 = UnityEngine.Object.Instantiate<GameObject>(this.animatorPrefab);
+      GameObject gameObject1 = UnityEngine.Object.Instantiate<GameObject>(animatorPrefab);
       gameObject1.transform.SetParent(this.transform, false);
       leafAnimator = gameObject1.GetComponent<LeafAnimator>();
       leafAnimator.manager = this;
-      GameObject gameObject2 = UnityEngine.Object.Instantiate<GameObject>(this.leafPrefabs[UnityEngine.Random.Range(0, this.leafPrefabs.Length)]);
+      GameObject gameObject2 = UnityEngine.Object.Instantiate<GameObject>(leafPrefabs[UnityEngine.Random.Range(0, leafPrefabs.Length)]);
       gameObject2.transform.SetParent(leafAnimator.transform, false);
       leafAnimator.leafTransform = gameObject2.transform;
       leafAnimator.leafRenderer = gameObject2.GetComponent<Renderer>();
     }
     float t = UnityEngine.Random.value;
-    leafAnimator.flyFade = Mathf.Lerp(leafAnimator.flyFade, this.alternativeSettings.flyFade, t);
-    leafAnimator.layFade = Mathf.Lerp(leafAnimator.layFade, this.alternativeSettings.layFade, t);
-    leafAnimator.firstPeriod = Mathf.Lerp(leafAnimator.firstPeriod, this.alternativeSettings.firstPeriod, t);
-    leafAnimator.firstRadius = Mathf.Lerp(leafAnimator.firstRadius, this.alternativeSettings.firstRadius, t);
-    leafAnimator.flyTime = Mathf.Lerp(leafAnimator.flyTime, this.alternativeSettings.flyTime, t);
-    leafAnimator.landingBlend = Mathf.Lerp(leafAnimator.landingBlend, this.alternativeSettings.landingBlend, t);
-    leafAnimator.layTime = Mathf.Lerp(leafAnimator.layTime, this.alternativeSettings.layTime, t);
-    leafAnimator.secondPeriod = Mathf.Lerp(leafAnimator.secondPeriod, this.alternativeSettings.secondPeriod, t);
-    leafAnimator.secondRadius = Mathf.Lerp(leafAnimator.secondRadius, this.alternativeSettings.secondRadius, t);
-    leafAnimator.slope = Mathf.Lerp(leafAnimator.slope, this.alternativeSettings.slope, t);
-    leafAnimator.velocity = Vector3.Lerp(leafAnimator.velocity, this.alternativeSettings.velocity, t);
+    leafAnimator.flyFade = Mathf.Lerp(leafAnimator.flyFade, alternativeSettings.flyFade, t);
+    leafAnimator.layFade = Mathf.Lerp(leafAnimator.layFade, alternativeSettings.layFade, t);
+    leafAnimator.firstPeriod = Mathf.Lerp(leafAnimator.firstPeriod, alternativeSettings.firstPeriod, t);
+    leafAnimator.firstRadius = Mathf.Lerp(leafAnimator.firstRadius, alternativeSettings.firstRadius, t);
+    leafAnimator.flyTime = Mathf.Lerp(leafAnimator.flyTime, alternativeSettings.flyTime, t);
+    leafAnimator.landingBlend = Mathf.Lerp(leafAnimator.landingBlend, alternativeSettings.landingBlend, t);
+    leafAnimator.layTime = Mathf.Lerp(leafAnimator.layTime, alternativeSettings.layTime, t);
+    leafAnimator.secondPeriod = Mathf.Lerp(leafAnimator.secondPeriod, alternativeSettings.secondPeriod, t);
+    leafAnimator.secondRadius = Mathf.Lerp(leafAnimator.secondRadius, alternativeSettings.secondRadius, t);
+    leafAnimator.slope = Mathf.Lerp(leafAnimator.slope, alternativeSettings.slope, t);
+    leafAnimator.velocity = Vector3.Lerp(leafAnimator.velocity, alternativeSettings.velocity, t);
     leafAnimator.rotation = UnityEngine.Random.Range(0.0f, 360f);
-    Vector3 vector3_1 = this.playerPosition + this._halfPlayerVelocity * leafAnimator.flyTime;
+    Vector3 vector3_1 = playerPosition + _halfPlayerVelocity * leafAnimator.flyTime;
     Vector2 vector2_1 = UnityEngine.Random.insideUnitCircle * this.radius;
-    Vector3 vector3_2 = new Vector3(vector3_1.x + vector2_1.x, this.playerPosition.y, vector3_1.z + vector2_1.y);
-    Vector2 vector2_2 = UnityEngine.Random.insideUnitCircle * this.deviation + this.wind;
+    Vector3 vector3_2 = new Vector3(vector3_1.x + vector2_1.x, playerPosition.y, vector3_1.z + vector2_1.y);
+    Vector2 vector2_2 = UnityEngine.Random.insideUnitCircle * deviation + wind;
     Vector3 direction = new Vector3(vector2_2.x, -1f, vector2_2.y);
     float radius = leafAnimator.firstRadius + leafAnimator.secondRadius;
-    Vector3 origin1 = vector3_2 - direction * this.raycastOriginElevation;
+    Vector3 origin1 = vector3_2 - direction * raycastOriginElevation;
     RaycastHit hitInfo;
     Vector3 vector3_3;
-    if (Physics.SphereCast(origin1, radius, direction, out hitInfo, (float) ((double) this.raycastOriginElevation * (double) direction.magnitude * 2.0), (int) this.collideLayers, QueryTriggerInteraction.Ignore))
+    if (Physics.SphereCast(origin1, radius, direction, out hitInfo, (float) (raycastOriginElevation * (double) direction.magnitude * 2.0), (int) collideLayers, QueryTriggerInteraction.Ignore))
     {
       Vector3 origin2 = origin1 + direction.normalized * hitInfo.distance;
-      if (Physics.Raycast(origin2, direction, out hitInfo, (float) ((double) radius * (double) direction.magnitude * 1.5), (int) this.collideLayers, QueryTriggerInteraction.Ignore))
+      if (Physics.Raycast(origin2, direction, out hitInfo, (float) (radius * (double) direction.magnitude * 1.5), (int) collideLayers, QueryTriggerInteraction.Ignore))
       {
-        if ((double) hitInfo.normal.y > (double) this.minLandingNormalY)
+        if ((double) hitInfo.normal.y > minLandingNormalY)
         {
           leafAnimator.landing = true;
           leafAnimator.landingNormal = hitInfo.normal;
@@ -132,46 +131,46 @@ label_4:
 
   private void SampleVelocity()
   {
-    if ((double) this._velocitySampleTime == -1.0)
+    if (_velocitySampleTime == -1.0)
     {
-      this._velocitySampleTime = Time.time;
-      this._velocitySamplePos = this.playerPosition;
-      this._halfPlayerVelocity = Vector3.zero;
+      _velocitySampleTime = Time.time;
+      _velocitySamplePos = playerPosition;
+      _halfPlayerVelocity = Vector3.zero;
     }
     else
     {
-      float num = Time.time - this._velocitySampleTime;
-      if ((double) num >= 2.0)
+      float num = Time.time - _velocitySampleTime;
+      if (num >= 2.0)
       {
-        this._halfPlayerVelocity = (this.playerPosition - this._velocitySamplePos) / num;
-        float magnitude = this._halfPlayerVelocity.magnitude;
-        if ((double) magnitude > 10.0)
-          this._halfPlayerVelocity *= (float) (10.0 / (double) magnitude * 0.5);
-        this._velocitySamplePos = this.playerPosition;
-        this._velocitySampleTime = Time.time;
+        _halfPlayerVelocity = (playerPosition - _velocitySamplePos) / num;
+        float magnitude = _halfPlayerVelocity.magnitude;
+        if (magnitude > 10.0)
+          _halfPlayerVelocity *= (float) (10.0 / magnitude * 0.5);
+        _velocitySamplePos = playerPosition;
+        _velocitySampleTime = Time.time;
       }
     }
   }
 
   private void Start()
   {
-    this._pool = new Stack<LeafAnimator>(this.poolCapacity);
-    this.timeService = ServiceLocator.GetService<TimeService>();
-    this.prevTime = this.timeService.RealTime;
-    this.updater = InstanceByRequest<UpdateService>.Instance.LeafSpawner;
-    this.updater.AddUpdatable((IUpdatable) this);
+    _pool = new Stack<LeafAnimator>(poolCapacity);
+    timeService = ServiceLocator.GetService<TimeService>();
+    prevTime = timeService.RealTime;
+    updater = InstanceByRequest<UpdateService>.Instance.LeafSpawner;
+    updater.AddUpdatable(this);
   }
 
-  private void OnDestroy() => this.updater.RemoveUpdatable((IUpdatable) this);
+  private void OnDestroy() => updater.RemoveUpdatable(this);
 
   void IUpdatable.ComputeUpdate()
   {
     if (ExternalSettingsInstance<ExternalOptimizationSettings>.Instance.DisableLeaf || !this.gameObject.activeInHierarchy)
       return;
-    TimeSpan timeSpan = this.timeService.RealTime - this.prevTime;
-    this.prevTime = this.timeService.RealTime;
-    this.SampleVelocity();
-    for (this._spawnPhase += (float) timeSpan.TotalSeconds * this.rate; (double) this._spawnPhase >= 1.0; --this._spawnPhase)
-      this.Spawn();
+    TimeSpan timeSpan = timeService.RealTime - prevTime;
+    prevTime = timeService.RealTime;
+    SampleVelocity();
+    for (_spawnPhase += (float) timeSpan.TotalSeconds * rate; _spawnPhase >= 1.0; --_spawnPhase)
+      Spawn();
   }
 }

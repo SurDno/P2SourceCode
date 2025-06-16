@@ -6,8 +6,6 @@ using Engine.Impl.Tasks;
 using Engine.Source.Commons;
 using Engine.Source.Services;
 using Inspectors;
-using UnityEngine;
-using UnityEngine.AI;
 
 public class NpcStatePointOfInterest : INpcState, INpcStateNeedSyncBack
 {
@@ -36,7 +34,7 @@ public class NpcStatePointOfInterest : INpcState, INpcStateNeedSyncBack
   [Inspected]
   private GameObject poiTarget;
   [Inspected]
-  private NpcStatePointOfInterest.StateEnum state;
+  private StateEnum state;
   [Inspected]
   private float timeLeft;
   private Vector3 deltaPosition;
@@ -54,9 +52,9 @@ public class NpcStatePointOfInterest : INpcState, INpcStateNeedSyncBack
   private bool failed;
   private bool dialogActivityChecked;
   private Vector3 enterPoint;
-  private float timeToNextRandomAnimationSet = 0.0f;
+  private float timeToNextRandomAnimationSet;
   private float timeToNextRandomAnimationSetMax = 2f;
-  private bool syncBackInited = false;
+  private bool syncBackInited;
   private bool couldPlayReactionAnimation;
   private bool neededExtraExitPOI;
   private Vector3 poiBackPosition;
@@ -65,38 +63,38 @@ public class NpcStatePointOfInterest : INpcState, INpcStateNeedSyncBack
 
   private bool TryInit()
   {
-    if (this.inited)
+    if (inited)
       return true;
-    this.behavior = this.pivot.GetBehavior();
-    this.poiSetup = this.GameObject.GetComponent<POISetup>();
-    this.agent = this.pivot.GetAgent();
-    this.rigidbody = this.pivot.GetRigidbody();
-    this.weaponService = this.pivot.GetNpcWeaponService();
-    this.animator = this.pivot.GetAnimator();
-    this.enemy = this.pivot.GetNpcEnemy();
-    if ((Object) this.animator == (Object) null)
+    behavior = pivot.GetBehavior();
+    poiSetup = GameObject.GetComponent<POISetup>();
+    agent = pivot.GetAgent();
+    rigidbody = pivot.GetRigidbody();
+    weaponService = pivot.GetNpcWeaponService();
+    animator = pivot.GetAnimator();
+    enemy = pivot.GetNpcEnemy();
+    if ((Object) animator == (Object) null)
     {
-      Debug.LogError((object) ("Null animator " + this.GameObject.name), (Object) this.GameObject);
-      Debug.LogError((object) ("Null animator " + this.GameObject.GetFullName()));
-      this.failed = true;
+      Debug.LogError((object) ("Null animator " + GameObject.name), (Object) GameObject);
+      Debug.LogError((object) ("Null animator " + GameObject.GetFullName()));
+      failed = true;
       return false;
     }
-    this.animatorState = AnimatorState45.GetAnimatorState(this.animator);
-    this.fightAnimatorState = FightAnimatorBehavior.GetAnimatorState(this.animator);
-    this.syncBackInited = false;
-    if ((Object) this.poiSetup == (Object) null)
+    animatorState = AnimatorState45.GetAnimatorState(animator);
+    fightAnimatorState = FightAnimatorBehavior.GetAnimatorState(animator);
+    syncBackInited = false;
+    if ((Object) poiSetup == (Object) null)
     {
-      this.failed = true;
+      failed = true;
       return false;
     }
-    this.failed = false;
-    this.inited = true;
+    failed = false;
+    inited = true;
     return true;
   }
 
   public NpcStatePointOfInterest(NpcState npcState, Pivot pivot)
   {
-    this.GameObject = npcState.gameObject;
+    GameObject = npcState.gameObject;
     this.pivot = pivot;
     this.npcState = npcState;
   }
@@ -105,7 +103,7 @@ public class NpcStatePointOfInterest : INpcState, INpcStateNeedSyncBack
   {
     get
     {
-      return this.state == NpcStatePointOfInterest.StateEnum.End ? NpcStateStatusEnum.Success : NpcStateStatusEnum.Running;
+      return state == StateEnum.End ? NpcStateStatusEnum.Success : NpcStateStatusEnum.Running;
     }
   }
 
@@ -116,249 +114,249 @@ public class NpcStatePointOfInterest : INpcState, INpcStateNeedSyncBack
     int animationIndex,
     int animationsCount)
   {
-    if (!this.TryInit())
+    if (!TryInit())
       return;
-    this.poiStartPosition = this.GameObject.transform.position;
+    poiStartPosition = GameObject.transform.position;
     this.animation = animation;
     this.animationIndex = animationIndex;
     this.animationsCount = animationsCount;
-    if ((Object) this.enemy != (Object) null)
-      this.couldPlayReactionAnimation = this.enemy.CanPlayReactionAnimation;
-    this.neededExtraExitPOI = this.npcState.NeedExtraExitPOI;
-    if ((bool) (Object) this.rigidbody)
+    if ((Object) enemy != (Object) null)
+      couldPlayReactionAnimation = enemy.CanPlayReactionAnimation;
+    neededExtraExitPOI = npcState.NeedExtraExitPOI;
+    if ((bool) (Object) rigidbody)
     {
-      this.initiallyKinematic = this.rigidbody.isKinematic;
-      this.rigidbody.isKinematic = true;
+      initiallyKinematic = rigidbody.isKinematic;
+      rigidbody.isKinematic = true;
     }
-    this.animatorState.ControlMovableState = AnimatorState45.MovableState45.POI;
-    this.animatorState.ControlPOIAnimationIndex = animationIndex;
-    this.animatorState.ControlPOIMiddleAnimationsCount = animationsCount;
-    this.animatorState.ControlPOIStartFromMiddle = false;
-    this.animatorState.MovableStop = false;
-    this.npcState.NeedExtraExitPOI = false;
+    animatorState.ControlMovableState = AnimatorState45.MovableState45.POI;
+    animatorState.ControlPOIAnimationIndex = animationIndex;
+    animatorState.ControlPOIMiddleAnimationsCount = animationsCount;
+    animatorState.ControlPOIStartFromMiddle = false;
+    animatorState.MovableStop = false;
+    npcState.NeedExtraExitPOI = false;
     switch (animation)
     {
       case POIAnimationEnum.S_SitAtDesk:
-        this.animatorState.ControlPOIState = MecanimKinds.MovablePOIStateKind.S_SitAtDesk;
+        animatorState.ControlPOIState = MecanimKinds.MovablePOIStateKind.S_SitAtDesk;
         break;
       case POIAnimationEnum.S_SitOnBench:
-        this.animatorState.ControlPOIState = MecanimKinds.MovablePOIStateKind.S_SitOnBench;
-        if ((Object) this.enemy != (Object) null)
-          this.enemy.CanPlayReactionAnimation = false;
-        this.npcState.NeedExtraExitPOI = true;
+        animatorState.ControlPOIState = MecanimKinds.MovablePOIStateKind.S_SitOnBench;
+        if ((Object) enemy != (Object) null)
+          enemy.CanPlayReactionAnimation = false;
+        npcState.NeedExtraExitPOI = true;
         break;
       case POIAnimationEnum.S_LeanOnWall:
-        this.animatorState.ControlPOIState = MecanimKinds.MovablePOIStateKind.S_LeanOnWall;
+        animatorState.ControlPOIState = MecanimKinds.MovablePOIStateKind.S_LeanOnWall;
         break;
       case POIAnimationEnum.S_LeanOnTable:
-        this.animatorState.ControlPOIState = MecanimKinds.MovablePOIStateKind.S_LeanOnTable;
+        animatorState.ControlPOIState = MecanimKinds.MovablePOIStateKind.S_LeanOnTable;
         break;
       case POIAnimationEnum.S_SitNearWall:
-        this.animatorState.ControlPOIState = MecanimKinds.MovablePOIStateKind.S_SitNearWall;
-        if ((Object) this.enemy != (Object) null)
-          this.enemy.CanPlayReactionAnimation = false;
-        this.npcState.NeedExtraExitPOI = true;
+        animatorState.ControlPOIState = MecanimKinds.MovablePOIStateKind.S_SitNearWall;
+        if ((Object) enemy != (Object) null)
+          enemy.CanPlayReactionAnimation = false;
+        npcState.NeedExtraExitPOI = true;
         break;
       case POIAnimationEnum.S_LieOnBed:
-        this.animatorState.ControlPOIState = MecanimKinds.MovablePOIStateKind.S_LieOnBed;
+        animatorState.ControlPOIState = MecanimKinds.MovablePOIStateKind.S_LieOnBed;
         break;
       case POIAnimationEnum.S_NearFire:
-        this.animatorState.ControlPOIState = MecanimKinds.MovablePOIStateKind.S_NearFire;
+        animatorState.ControlPOIState = MecanimKinds.MovablePOIStateKind.S_NearFire;
         break;
       case POIAnimationEnum.Q_ViewPoster:
-        this.animatorState.ControlPOIState = MecanimKinds.MovablePOIStateKind.Q_ViewPoster;
+        animatorState.ControlPOIState = MecanimKinds.MovablePOIStateKind.Q_ViewPoster;
         break;
       case POIAnimationEnum.Q_LookOutOfTheWindow:
-        this.animatorState.ControlPOIState = MecanimKinds.MovablePOIStateKind.Q_LookOutOfTheWindow;
+        animatorState.ControlPOIState = MecanimKinds.MovablePOIStateKind.Q_LookOutOfTheWindow;
         break;
       case POIAnimationEnum.Q_LookUnder:
-        this.animatorState.ControlPOIState = MecanimKinds.MovablePOIStateKind.Q_LookUnder;
+        animatorState.ControlPOIState = MecanimKinds.MovablePOIStateKind.Q_LookUnder;
         break;
       case POIAnimationEnum.Q_LookIntoTheWindow:
-        this.animatorState.ControlPOIState = MecanimKinds.MovablePOIStateKind.Q_LookIntoTheWindow;
+        animatorState.ControlPOIState = MecanimKinds.MovablePOIStateKind.Q_LookIntoTheWindow;
         break;
       case POIAnimationEnum.Q_ActionWithWall:
-        this.animatorState.ControlPOIState = MecanimKinds.MovablePOIStateKind.Q_ActionWithWall;
+        animatorState.ControlPOIState = MecanimKinds.MovablePOIStateKind.Q_ActionWithWall;
         break;
       case POIAnimationEnum.Q_ActionWithTable:
-        this.animatorState.ControlPOIState = MecanimKinds.MovablePOIStateKind.Q_ActionWithTable;
+        animatorState.ControlPOIState = MecanimKinds.MovablePOIStateKind.Q_ActionWithTable;
         break;
       case POIAnimationEnum.Q_ActionWithWardrobe:
-        this.animatorState.ControlPOIState = MecanimKinds.MovablePOIStateKind.Q_ActionWithWardrobe;
+        animatorState.ControlPOIState = MecanimKinds.MovablePOIStateKind.Q_ActionWithWardrobe;
         break;
       case POIAnimationEnum.Q_ActionWithShelves:
-        this.animatorState.ControlPOIState = MecanimKinds.MovablePOIStateKind.Q_ActionWithShelves;
+        animatorState.ControlPOIState = MecanimKinds.MovablePOIStateKind.Q_ActionWithShelves;
         break;
       case POIAnimationEnum.Q_ActionWithNightstand:
-        this.animatorState.ControlPOIState = MecanimKinds.MovablePOIStateKind.Q_ActionWithNightstand;
+        animatorState.ControlPOIState = MecanimKinds.MovablePOIStateKind.Q_ActionWithNightstand;
         break;
       case POIAnimationEnum.Q_ActionOnFloor:
-        this.animatorState.ControlPOIState = MecanimKinds.MovablePOIStateKind.Q_ActionOnFloor;
+        animatorState.ControlPOIState = MecanimKinds.MovablePOIStateKind.Q_ActionOnFloor;
         break;
       case POIAnimationEnum.S_ActionOnFloor:
-        this.animatorState.ControlPOIState = MecanimKinds.MovablePOIStateKind.S_ActionOnFloor;
+        animatorState.ControlPOIState = MecanimKinds.MovablePOIStateKind.S_ActionOnFloor;
         break;
       case POIAnimationEnum.Q_Idle:
-        this.animatorState.ControlPOIState = MecanimKinds.MovablePOIStateKind.Q_Idle;
+        animatorState.ControlPOIState = MecanimKinds.MovablePOIStateKind.Q_Idle;
         break;
       case POIAnimationEnum.Q_NearFire:
-        this.animatorState.ControlPOIState = MecanimKinds.MovablePOIStateKind.Q_NearFire;
+        animatorState.ControlPOIState = MecanimKinds.MovablePOIStateKind.Q_NearFire;
         break;
       case POIAnimationEnum.S_Dialog:
-        this.animatorState.ControlPOIState = MecanimKinds.MovablePOIStateKind.S_Dialog;
+        animatorState.ControlPOIState = MecanimKinds.MovablePOIStateKind.S_Dialog;
         break;
       case POIAnimationEnum.S_Loot:
-        this.animatorState.ControlPOIState = MecanimKinds.MovablePOIStateKind.S_Loot;
+        animatorState.ControlPOIState = MecanimKinds.MovablePOIStateKind.S_Loot;
         break;
       case POIAnimationEnum.Q_PlaygroundPlay:
-        this.animatorState.ControlPOIState = MecanimKinds.MovablePOIStateKind.Q_PlaygroundPlay;
+        animatorState.ControlPOIState = MecanimKinds.MovablePOIStateKind.Q_PlaygroundPlay;
         break;
       case POIAnimationEnum.S_PlaygroundSandbox:
-        this.animatorState.ControlPOIState = MecanimKinds.MovablePOIStateKind.S_PlaygroundSandbox;
+        animatorState.ControlPOIState = MecanimKinds.MovablePOIStateKind.S_PlaygroundSandbox;
         break;
       case POIAnimationEnum.S_PlaygroundCooperative:
-        this.animatorState.ControlPOIState = MecanimKinds.MovablePOIStateKind.S_PlaygroundCooperative;
+        animatorState.ControlPOIState = MecanimKinds.MovablePOIStateKind.S_PlaygroundCooperative;
         break;
       case POIAnimationEnum.Q_PlaygroundCooperative:
-        this.animatorState.ControlPOIState = MecanimKinds.MovablePOIStateKind.Q_PlaygroundCooperative;
+        animatorState.ControlPOIState = MecanimKinds.MovablePOIStateKind.Q_PlaygroundCooperative;
         break;
       case POIAnimationEnum.S_SitAtDeskRight:
-        this.animatorState.ControlPOIState = MecanimKinds.MovablePOIStateKind.S_SitAtDeskRight;
+        animatorState.ControlPOIState = MecanimKinds.MovablePOIStateKind.S_SitAtDeskRight;
         break;
     }
-    this.timeLeft = !this.poiSetup.GetAnimationPlayOnce(animation, animationIndex) ? poiTime : 0.0f;
-    this.poiService = ServiceLocator.GetService<POIService>();
-    this.state = NpcStatePointOfInterest.StateEnum.Prepare;
-    this._poi = poi;
-    this.poiTarget = (GameObject) null;
-    this.dialogActivityChecked = false;
-    this.frozenForDialog = false;
-    this.animationIsQuick = this.poiSetup.AnimationIsQuick(animation);
-    if (this.poiSetup.GetNeedSynchronizeAnimation(animation, animationIndex))
-      this.SynchronizeAnimation();
-    this.SetRandomNextAnimation();
-    if (!((Object) this.weaponService != (Object) null))
+    timeLeft = !poiSetup.GetAnimationPlayOnce(animation, animationIndex) ? poiTime : 0.0f;
+    poiService = ServiceLocator.GetService<POIService>();
+    state = StateEnum.Prepare;
+    _poi = poi;
+    poiTarget = (GameObject) null;
+    dialogActivityChecked = false;
+    frozenForDialog = false;
+    animationIsQuick = poiSetup.AnimationIsQuick(animation);
+    if (poiSetup.GetNeedSynchronizeAnimation(animation, animationIndex))
+      SynchronizeAnimation();
+    SetRandomNextAnimation();
+    if (!((Object) weaponService != (Object) null))
       return;
-    this.weaponService.Weapon = WeaponEnum.Unknown;
+    weaponService.Weapon = WeaponEnum.Unknown;
   }
 
   public void ActivateLoot(float poiTime, GameObject target)
   {
-    if (!this.TryInit())
+    if (!TryInit())
       return;
-    this._poi = (POIBase) null;
-    this.poiTarget = target;
-    this.animation = POIAnimationEnum.S_Loot;
-    this.animationIndex = 0;
-    this.animationsCount = 1;
-    if ((bool) (Object) this.rigidbody)
+    _poi = null;
+    poiTarget = target;
+    animation = POIAnimationEnum.S_Loot;
+    animationIndex = 0;
+    animationsCount = 1;
+    if ((bool) (Object) rigidbody)
     {
-      this.initiallyKinematic = this.rigidbody.isKinematic;
-      this.rigidbody.isKinematic = true;
+      initiallyKinematic = rigidbody.isKinematic;
+      rigidbody.isKinematic = true;
     }
-    if (this.animatorState != null)
+    if (animatorState != null)
     {
-      this.animatorState.ControlMovableState = AnimatorState45.MovableState45.POI;
-      this.animatorState.ControlPOIAnimationIndex = this.animationIndex;
-      this.animatorState.ControlPOIMiddleAnimationsCount = this.animationsCount;
-      this.animatorState.ControlPOIStartFromMiddle = false;
-      this.animatorState.ControlPOIState = MecanimKinds.MovablePOIStateKind.S_Loot;
+      animatorState.ControlMovableState = AnimatorState45.MovableState45.POI;
+      animatorState.ControlPOIAnimationIndex = animationIndex;
+      animatorState.ControlPOIMiddleAnimationsCount = animationsCount;
+      animatorState.ControlPOIStartFromMiddle = false;
+      animatorState.ControlPOIState = MecanimKinds.MovablePOIStateKind.S_Loot;
     }
-    this.timeLeft = !this.poiSetup.GetAnimationPlayOnce(this.animation, this.animationIndex) ? poiTime : 0.0f;
-    this.state = NpcStatePointOfInterest.StateEnum.Prepare;
-    this.poiStartPosition = this.GameObject.transform.position;
-    this.SetRandomNextAnimation();
+    timeLeft = !poiSetup.GetAnimationPlayOnce(animation, animationIndex) ? poiTime : 0.0f;
+    state = StateEnum.Prepare;
+    poiStartPosition = GameObject.transform.position;
+    SetRandomNextAnimation();
   }
 
   public void Shutdown()
   {
-    if (this.failed)
+    if (failed)
       return;
-    if (this.Status != NpcStateStatusEnum.Success)
-      this.SetPOIDeltaParams(this.poiStartPosition - this.GameObject.transform.position, 0.0f, 0.3f, 0.0f);
-    this.deltaPosition = Vector3.zero;
-    if ((bool) (Object) this.rigidbody)
-      this.rigidbody.isKinematic = this.initiallyKinematic;
-    if (this.poiService != null)
-      this.poiService.RemoveCharacterAsDialogTarget(this.GameObject);
-    if ((Object) this.weaponService != (Object) null)
-      this.weaponService.Weapon = this.npcState.Weapon;
-    if ((Object) this.enemy != (Object) null)
-      this.enemy.CanPlayReactionAnimation = this.couldPlayReactionAnimation;
-    this.npcState.NeedExtraExitPOI = this.neededExtraExitPOI;
+    if (Status != NpcStateStatusEnum.Success)
+      SetPOIDeltaParams(poiStartPosition - GameObject.transform.position, 0.0f, 0.3f, 0.0f);
+    deltaPosition = Vector3.zero;
+    if ((bool) (Object) rigidbody)
+      rigidbody.isKinematic = initiallyKinematic;
+    if (poiService != null)
+      poiService.RemoveCharacterAsDialogTarget(GameObject);
+    if ((Object) weaponService != (Object) null)
+      weaponService.Weapon = npcState.Weapon;
+    if ((Object) enemy != (Object) null)
+      enemy.CanPlayReactionAnimation = couldPlayReactionAnimation;
+    npcState.NeedExtraExitPOI = neededExtraExitPOI;
   }
 
   public void OnAnimatorMove()
   {
-    if (this.failed)
+    if (failed)
       return;
-    float deltaTime = this.animator.updateMode == AnimatorUpdateMode.AnimatePhysics ? Time.fixedDeltaTime : Time.deltaTime;
-    if (this.animatorState.IsPOI)
+    float deltaTime = animator.updateMode == AnimatorUpdateMode.AnimatePhysics ? Time.fixedDeltaTime : Time.deltaTime;
+    if (animatorState.IsPOI)
     {
-      this.agent.nextPosition = this.animator.rootPosition;
-      this.GameObject.transform.position += this.animator.deltaPosition;
-      this.GameObject.transform.rotation *= this.animator.deltaRotation;
-      if (this._poiDeltaFinished)
+      agent.nextPosition = animator.rootPosition;
+      GameObject.transform.position += animator.deltaPosition;
+      GameObject.transform.rotation *= animator.deltaRotation;
+      if (_poiDeltaFinished)
         return;
-      this.AddPOIDelta(deltaTime);
+      AddPOIDelta(deltaTime);
     }
     else
     {
-      if (!this._poiDeltaFinished)
-        this.AddPOIDelta(deltaTime);
-      if (this.agent.isActiveAndEnabled && this.agent.isOnNavMesh)
+      if (!_poiDeltaFinished)
+        AddPOIDelta(deltaTime);
+      if (agent.isActiveAndEnabled && agent.isOnNavMesh)
       {
-        Vector3 vector3 = this.GameObject.transform.position + this.animator.deltaPosition;
-        vector3.y = Mathf.MoveTowards(vector3.y, this.agent.nextPosition.y, deltaTime * 0.1f);
-        this.agent.nextPosition = vector3;
-        this.GameObject.transform.position = this.agent.nextPosition;
+        Vector3 vector3 = GameObject.transform.position + animator.deltaPosition;
+        vector3.y = Mathf.MoveTowards(vector3.y, agent.nextPosition.y, deltaTime * 0.1f);
+        agent.nextPosition = vector3;
+        GameObject.transform.position = agent.nextPosition;
       }
-      this.GameObject.transform.rotation *= Quaternion.AngleAxis(57.29578f * this.animator.angularVelocity.y * deltaTime, Vector3.up);
+      GameObject.transform.rotation *= Quaternion.AngleAxis(57.29578f * animator.angularVelocity.y * deltaTime, Vector3.up);
     }
   }
 
   private void AddPOIDelta(float deltaTime)
   {
-    if ((double) this._poiSyncRotationTimeLeft > 0.0)
+    if (_poiSyncRotationTimeLeft > 0.0)
     {
-      this.GameObject.transform.rotation *= Quaternion.AngleAxis(this._poiDeltaAngle * Mathf.Min(this._poiSyncRotationTimeLeft, deltaTime), Vector3.up);
-      this._poiSyncRotationTimeLeft -= deltaTime;
+      GameObject.transform.rotation *= Quaternion.AngleAxis(_poiDeltaAngle * Mathf.Min(_poiSyncRotationTimeLeft, deltaTime), Vector3.up);
+      _poiSyncRotationTimeLeft -= deltaTime;
     }
-    if ((double) this._poiDeltaSyncDelay > 0.0)
-      this._poiDeltaSyncDelay -= deltaTime;
-    if ((double) this._poiDeltaSyncDelay <= 0.0 && (double) this._poiSyncPositionTimeLeft > 0.0)
+    if (_poiDeltaSyncDelay > 0.0)
+      _poiDeltaSyncDelay -= deltaTime;
+    if (_poiDeltaSyncDelay <= 0.0 && _poiSyncPositionTimeLeft > 0.0)
     {
-      float num = Mathf.Min(this._poiSyncPositionTimeLeft, deltaTime);
-      this.GameObject.transform.position += this._poiDeltaPos * num;
-      this._poiSyncPositionTimeLeft -= num;
+      float num = Mathf.Min(_poiSyncPositionTimeLeft, deltaTime);
+      GameObject.transform.position += _poiDeltaPos * num;
+      _poiSyncPositionTimeLeft -= num;
     }
-    if ((double) this._poiSyncRotationTimeLeft > 0.0 || (double) this._poiSyncPositionTimeLeft > 0.0)
+    if (_poiSyncRotationTimeLeft > 0.0 || _poiSyncPositionTimeLeft > 0.0)
       return;
-    this._poiDeltaFinished = true;
+    _poiDeltaFinished = true;
   }
 
   private void SynchronizeAnimation()
   {
     Vector3 closestTargetPosition;
     Quaternion closestTargetRotation;
-    if ((Object) this._poi != (Object) null)
+    if ((Object) _poi != (Object) null)
     {
-      this._poi.GetClosestTargetPoint(this.animation, this.animationIndex, this.poiSetup, this.GameObject.transform.position, out closestTargetPosition, out closestTargetRotation);
-      this.poiBackPosition = closestTargetPosition - this.poiSetup.GetAnimationOffset(this.animation, this.animationIndex);
+      _poi.GetClosestTargetPoint(animation, animationIndex, poiSetup, GameObject.transform.position, out closestTargetPosition, out closestTargetRotation);
+      poiBackPosition = closestTargetPosition - poiSetup.GetAnimationOffset(animation, animationIndex);
     }
     else
     {
-      closestTargetPosition = this.poiTarget.transform.position;
-      closestTargetRotation = this.poiTarget.transform.rotation;
-      this.poiBackPosition = closestTargetPosition;
+      closestTargetPosition = poiTarget.transform.position;
+      closestTargetRotation = poiTarget.transform.rotation;
+      poiBackPosition = closestTargetPosition;
     }
-    Vector3 deltaPos = closestTargetPosition - this.GameObject.transform.position;
-    Vector3 vector3 = this.GameObject.transform.InverseTransformVector(closestTargetRotation * Vector3.forward);
+    Vector3 deltaPos = closestTargetPosition - GameObject.transform.position;
+    Vector3 vector3 = GameObject.transform.InverseTransformVector(closestTargetRotation * Vector3.forward);
     float deltaAngle = Mathf.Atan2(vector3.x, vector3.z) * 57.29578f;
-    float animationSyncDelay = this.poiSetup.GetAnimationSyncDelay(this.animation, this.animationIndex);
-    this.deltaPosition = deltaPos;
+    float animationSyncDelay = poiSetup.GetAnimationSyncDelay(animation, animationIndex);
+    deltaPosition = deltaPos;
     float syncTime = 1f;
-    this.SetPOIDeltaParams(deltaPos, deltaAngle, syncTime, animationSyncDelay);
+    SetPOIDeltaParams(deltaPos, deltaAngle, syncTime, animationSyncDelay);
   }
 
   public void SetPOIDeltaParams(
@@ -367,96 +365,96 @@ public class NpcStatePointOfInterest : INpcState, INpcStateNeedSyncBack
     float syncTime,
     float syncDelay)
   {
-    this._poiDeltaPos = deltaPos / syncTime;
-    this._poiDeltaAngle = deltaAngle / syncTime;
-    this._poiDeltaPosPassed = Vector3.zero;
-    this._poiDeltaSyncDelay = syncDelay;
-    this._poiDeltaFinished = false;
-    this._poiSyncPositionTimeLeft = syncTime;
-    this._poiSyncRotationTimeLeft = syncTime;
+    _poiDeltaPos = deltaPos / syncTime;
+    _poiDeltaAngle = deltaAngle / syncTime;
+    _poiDeltaPosPassed = Vector3.zero;
+    _poiDeltaSyncDelay = syncDelay;
+    _poiDeltaFinished = false;
+    _poiSyncPositionTimeLeft = syncTime;
+    _poiSyncRotationTimeLeft = syncTime;
   }
 
   public void OnAnimatorEventEvent(string obj)
   {
-    if (!this.failed)
+    if (!failed)
       ;
   }
 
   public void Update()
   {
-    if (this.failed || InstanceByRequest<EngineApplication>.Instance.IsPaused || (Object) this.poiTarget == (Object) null && ((Object) this._poi == (Object) null || (Object) this._poi.gameObject == (Object) null))
+    if (failed || InstanceByRequest<EngineApplication>.Instance.IsPaused || (Object) poiTarget == (Object) null && ((Object) _poi == (Object) null || (Object) _poi.gameObject == (Object) null))
       return;
-    if (this.state == NpcStatePointOfInterest.StateEnum.Prepare)
+    if (state == StateEnum.Prepare)
     {
-      if (!this.animatorState.IsPOI)
+      if (!animatorState.IsPOI)
         return;
-      this.state = NpcStatePointOfInterest.StateEnum.POI;
+      state = StateEnum.POI;
     }
-    else if (this.state == NpcStatePointOfInterest.StateEnum.POI)
+    else if (state == StateEnum.POI)
     {
-      if (!this.dialogActivityChecked)
+      if (!dialogActivityChecked)
       {
-        this.dialogActivityChecked = true;
-        this.enterPoint = this.GameObject.transform.position;
-        if ((Object) this._poi != (Object) null && this._poi.SupportsDialog && this.poiService != null && (double) this.timeLeft > 0.0)
-          this.poiService.AddCharacterAsDialogTarget(this.GameObject, this);
+        dialogActivityChecked = true;
+        enterPoint = GameObject.transform.position;
+        if ((Object) _poi != (Object) null && _poi.SupportsDialog && poiService != null && timeLeft > 0.0)
+          poiService.AddCharacterAsDialogTarget(GameObject, this);
       }
-      if (!this.UpdateDuringPOI(this._poi))
+      if (!UpdateDuringPOI(_poi))
         return;
-      this.animatorState.MovableStop = true;
-      this.state = !this.animatorState.IsPOIExit ? (!this.animationIsQuick ? NpcStatePointOfInterest.StateEnum.WaitForPOIExitStart : NpcStatePointOfInterest.StateEnum.WaitForPOIEnd) : NpcStatePointOfInterest.StateEnum.WaitForPOIEnd;
+      animatorState.MovableStop = true;
+      state = !animatorState.IsPOIExit ? (!animationIsQuick ? StateEnum.WaitForPOIExitStart : StateEnum.WaitForPOIEnd) : StateEnum.WaitForPOIEnd;
     }
-    else if (this.state == NpcStatePointOfInterest.StateEnum.WaitForPOIExitStart)
+    else if (state == StateEnum.WaitForPOIExitStart)
     {
-      if (this.animatorState.IsPOIExit || !this.animatorState.IsPOI)
+      if (animatorState.IsPOIExit || !animatorState.IsPOI)
       {
-        this.state = NpcStatePointOfInterest.StateEnum.WaitForPOIEnd;
-        this.SetSyncBack();
+        state = StateEnum.WaitForPOIEnd;
+        SetSyncBack();
       }
     }
-    else if (this.state == NpcStatePointOfInterest.StateEnum.WaitForPOIEnd && this.UpdateWaitForPOIEnd())
-      this.state = NpcStatePointOfInterest.StateEnum.End;
-    if (this.fightAnimatorState == null || !this.fightAnimatorState.IsReaction || this.syncBackInited)
+    else if (state == StateEnum.WaitForPOIEnd && UpdateWaitForPOIEnd())
+      state = StateEnum.End;
+    if (fightAnimatorState == null || !fightAnimatorState.IsReaction || syncBackInited)
       return;
-    this.SetSyncBack();
-    this.animatorState.ControlMovableState = AnimatorState45.MovableState45.Idle;
-    if ((Object) this.weaponService != (Object) null)
-      this.weaponService.Weapon = this.npcState.Weapon;
+    SetSyncBack();
+    animatorState.ControlMovableState = AnimatorState45.MovableState45.Idle;
+    if ((Object) weaponService != (Object) null)
+      weaponService.Weapon = npcState.Weapon;
   }
 
-  private bool UpdatDuringeStopping() => this.animatorState.IsPOI;
+  private bool UpdatDuringeStopping() => animatorState.IsPOI;
 
   private bool UpdateDuringPOI(POIBase poi)
   {
-    this.timeToNextRandomAnimationSet -= Time.deltaTime;
-    if ((double) this.timeToNextRandomAnimationSet <= 0.0)
+    timeToNextRandomAnimationSet -= Time.deltaTime;
+    if (timeToNextRandomAnimationSet <= 0.0)
     {
-      this.timeToNextRandomAnimationSet = this.timeToNextRandomAnimationSetMax;
-      this.SetRandomNextAnimation();
+      timeToNextRandomAnimationSet = timeToNextRandomAnimationSetMax;
+      SetRandomNextAnimation();
     }
-    if (this.frozenForDialog)
+    if (frozenForDialog)
       return false;
-    this.timeLeft -= Time.deltaTime;
-    return (double) this.timeLeft < 0.0;
+    timeLeft -= Time.deltaTime;
+    return timeLeft < 0.0;
   }
 
-  private bool UpdateWaitForPOIEnd() => !this.animatorState.IsPOI;
+  private bool UpdateWaitForPOIEnd() => !animatorState.IsPOI;
 
   private void SetSyncBack()
   {
-    this.syncBackInited = true;
-    this.SetPOIDeltaParams(new Vector3(0.0f, -this.deltaPosition.y, 0.0f), 0.0f, 0.5f, 0.0f);
+    syncBackInited = true;
+    SetPOIDeltaParams(new Vector3(0.0f, -deltaPosition.y, 0.0f), 0.0f, 0.5f, 0.0f);
   }
 
-  public void SetDialogFreeze(bool freeze) => this.frozenForDialog = freeze;
+  public void SetDialogFreeze(bool freeze) => frozenForDialog = freeze;
 
-  public Vector3 GetEnterPoint() => this.enterPoint;
+  public Vector3 GetEnterPoint() => enterPoint;
 
-  public POIBase GetPOI() => this._poi;
+  public POIBase GetPOI() => _poi;
 
   public void LookAt(GameObject target)
   {
-    if ((Object) this.GameObject == (Object) null)
+    if ((Object) GameObject == (Object) null)
       return;
     if ((Object) target == (Object) null)
     {
@@ -464,7 +462,7 @@ public class NpcStatePointOfInterest : INpcState, INpcStateNeedSyncBack
     }
     else
     {
-      IKController component = this.GameObject.GetComponent<IKController>();
+      IKController component = GameObject.GetComponent<IKController>();
       if (!((Object) component != (Object) null))
         return;
       component.enabled = true;
@@ -476,12 +474,12 @@ public class NpcStatePointOfInterest : INpcState, INpcStateNeedSyncBack
 
   private void SetRandomNextAnimation()
   {
-    this.animator.SetInteger("Movable.POI.AnimationIndex2", Random.Range(0, this.animator.GetInteger("Movable.POI.MiddleAnimationsCount")));
+    animator.SetInteger("Movable.POI.AnimationIndex2", Random.Range(0, animator.GetInteger("Movable.POI.MiddleAnimationsCount")));
   }
 
-  public Vector3 GetSyncBackPosition() => this.poiBackPosition;
+  public Vector3 GetSyncBackPosition() => poiBackPosition;
 
-  public POIAnimationEnum GetPoiType() => this.animation;
+  public POIAnimationEnum GetPoiType() => animation;
 
   public void OnLodStateChanged(bool enabled)
   {

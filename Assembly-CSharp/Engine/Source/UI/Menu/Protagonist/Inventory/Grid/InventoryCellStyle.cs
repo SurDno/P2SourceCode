@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEngine;
 
 namespace Engine.Source.UI.Menu.Protagonist.Inventory.Grid
 {

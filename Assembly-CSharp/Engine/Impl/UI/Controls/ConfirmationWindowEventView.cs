@@ -1,7 +1,4 @@
-﻿using System;
-using UnityEngine;
-
-namespace Engine.Impl.UI.Controls
+﻿namespace Engine.Impl.UI.Controls
 {
   public class ConfirmationWindowEventView : EventView
   {
@@ -19,13 +16,13 @@ namespace Engine.Impl.UI.Controls
 
     public override void Invoke()
     {
-      if ((UnityEngine.Object) this.window == (UnityEngine.Object) null)
-        this.window = UnityEngine.Object.Instantiate<ConfirmationWindow>(this.prefab, (bool) (UnityEngine.Object) this.layout ? this.layout : this.transform, false);
-      this.window.Show(this.text, new Action(this.OnAccept), new Action(this.OnCancel));
+      if ((UnityEngine.Object) window == (UnityEngine.Object) null)
+        window = UnityEngine.Object.Instantiate<ConfirmationWindow>(prefab, (bool) (UnityEngine.Object) layout ? layout : this.transform, false);
+      window.Show(text, OnAccept, OnCancel);
     }
 
-    private void OnAccept() => this.acceptAction?.Invoke();
+    private void OnAccept() => acceptAction?.Invoke();
 
-    private void OnCancel() => this.cancelAction?.Invoke();
+    private void OnCancel() => cancelAction?.Invoke();
   }
 }

@@ -1,7 +1,5 @@
-﻿using InputServices;
-using System;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using System.Collections.Generic;
+using InputServices;
 
 namespace Engine.Impl.UI.Menu.Main
 {
@@ -12,23 +10,23 @@ namespace Engine.Impl.UI.Menu.Main
     [SerializeField]
     private List<GameObject> _consoleControls;
 
-    private void Awake() => this.OnJoystick(InputService.Instance.JoystickUsed);
+    private void Awake() => OnJoystick(InputService.Instance.JoystickUsed);
 
     private void OnEnable()
     {
-      InputService.Instance.onJoystickUsedChanged += new Action<bool>(this.OnJoystick);
-      this.OnJoystick(InputService.Instance.JoystickUsed);
+      InputService.Instance.onJoystickUsedChanged += OnJoystick;
+      OnJoystick(InputService.Instance.JoystickUsed);
     }
 
     private void OnDisable()
     {
-      InputService.Instance.onJoystickUsedChanged -= new Action<bool>(this.OnJoystick);
+      InputService.Instance.onJoystickUsedChanged -= OnJoystick;
     }
 
     public void OnJoystick(bool isUsed)
     {
-      ControlHelpSwitcher.SetActiveAllGameObjects(isUsed ? this._pcControls : this._consoleControls, false);
-      ControlHelpSwitcher.SetActiveAllGameObjects(isUsed ? this._consoleControls : this._pcControls, true);
+      SetActiveAllGameObjects(isUsed ? _pcControls : _consoleControls, false);
+      SetActiveAllGameObjects(isUsed ? _consoleControls : _pcControls, true);
     }
 
     private static void SetActiveAllGameObjects(List<GameObject> list, bool isActive)

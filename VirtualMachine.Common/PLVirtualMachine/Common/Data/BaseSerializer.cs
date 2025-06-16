@@ -1,6 +1,6 @@
-﻿using Cofe.Utility;
-using System;
+﻿using System;
 using System.Reflection;
+using Cofe.Utility;
 
 namespace PLVirtualMachine.Common.Data
 {
@@ -11,20 +11,20 @@ namespace PLVirtualMachine.Common.Data
       if (valueType.IsValueType)
         return TypeDefaultUtility.GetDefault(valueType);
       if (valueType == typeof (string))
-        return (object) "";
+        return "";
       if (valueType.IsInterface)
       {
-        valueType = BaseSerializer.GetRealRefType(valueType);
-        if ((Type) null != valueType)
+        valueType = GetRealRefType(valueType);
+        if (null != valueType)
           return Activator.CreateInstance(valueType);
       }
       else
       {
-        ConstructorInfo constructor = valueType.GetConstructor((Type[]) null);
-        if (constructor != (ConstructorInfo) null)
-          return constructor.Invoke((object[]) null);
+        ConstructorInfo constructor = valueType.GetConstructor(null);
+        if (constructor != null)
+          return constructor.Invoke(null);
       }
-      return (object) "";
+      return "";
     }
 
     public static Type GetRealRefType(Type type)

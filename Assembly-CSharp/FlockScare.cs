@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-public class FlockScare : MonoBehaviour
+﻿public class FlockScare : MonoBehaviour
 {
   public LandingSpotController[] landingSpotControllers;
   public float scareInterval = 0.1f;
@@ -13,44 +11,44 @@ public class FlockScare : MonoBehaviour
 
   private void CheckProximityToLandingSpots()
   {
-    this.IterateLandingSpots();
-    if (this.currentController._activeLandingSpots > 0 && this.CheckDistanceToLandingSpot(this.landingSpotControllers[this.lsc]))
-      this.landingSpotControllers[this.lsc].ScareAll();
-    this.Invoke(nameof (CheckProximityToLandingSpots), this.scareInterval);
+    IterateLandingSpots();
+    if (currentController._activeLandingSpots > 0 && CheckDistanceToLandingSpot(landingSpotControllers[lsc]))
+      landingSpotControllers[lsc].ScareAll();
+    this.Invoke(nameof (CheckProximityToLandingSpots), scareInterval);
   }
 
   private void IterateLandingSpots()
   {
-    this.ls += this.checkEveryNthLandingSpot;
-    this.currentController = this.landingSpotControllers[this.lsc];
-    int childCount = this.currentController.transform.childCount;
-    if (this.ls <= childCount - 1)
+    ls += checkEveryNthLandingSpot;
+    currentController = landingSpotControllers[lsc];
+    int childCount = currentController.transform.childCount;
+    if (ls <= childCount - 1)
       return;
-    this.ls -= childCount;
-    if (this.lsc < this.landingSpotControllers.Length - 1)
-      ++this.lsc;
+    ls -= childCount;
+    if (lsc < landingSpotControllers.Length - 1)
+      ++lsc;
     else
-      this.lsc = 0;
+      lsc = 0;
   }
 
   private bool CheckDistanceToLandingSpot(LandingSpotController lc)
   {
-    Transform child = lc.transform.GetChild(this.ls);
-    return (Object) child.GetComponent<LandingSpot>().landingChild != (Object) null && (double) (child.position - this.transform.position).sqrMagnitude < (double) this.distanceToScare * (double) this.distanceToScare;
+    Transform child = lc.transform.GetChild(ls);
+    return (Object) child.GetComponent<LandingSpot>().landingChild != (Object) null && (double) (child.position - this.transform.position).sqrMagnitude < distanceToScare * (double) distanceToScare;
   }
 
   private void Invoker()
   {
-    for (int index = 0; index < this.InvokeAmounts; ++index)
-      this.Invoke("CheckProximityToLandingSpots", this.scareInterval + this.scareInterval / (float) this.InvokeAmounts * (float) index);
+    for (int index = 0; index < InvokeAmounts; ++index)
+      this.Invoke("CheckProximityToLandingSpots", scareInterval + scareInterval / InvokeAmounts * index);
   }
 
   private void OnEnable()
   {
     this.CancelInvoke("CheckProximityToLandingSpots");
-    if (this.landingSpotControllers.Length == 0)
+    if (landingSpotControllers.Length == 0)
       return;
-    this.Invoker();
+    Invoker();
   }
 
   private void OnDisable() => this.CancelInvoke("CheckProximityToLandingSpots");

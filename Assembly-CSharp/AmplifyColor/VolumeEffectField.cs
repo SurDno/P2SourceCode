@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Reflection;
-using UnityEngine;
 
 namespace AmplifyColor
 {
@@ -25,7 +24,7 @@ namespace AmplifyColor
     public VolumeEffectField(FieldInfo pi, Component c)
       : this(pi.Name, pi.FieldType.FullName)
     {
-      this.UpdateValue(pi.GetValue((object) c));
+      UpdateValue(pi.GetValue((object) c));
     }
 
     public static bool IsValidType(string type)
@@ -36,25 +35,25 @@ namespace AmplifyColor
 
     public void UpdateValue(object val)
     {
-      switch (this.fieldType)
+      switch (fieldType)
       {
         case "System.Single":
-          this.valueSingle = (float) val;
+          valueSingle = (float) val;
           break;
         case "System.Boolean":
-          this.valueBoolean = (bool) val;
+          valueBoolean = (bool) val;
           break;
         case "UnityEngine.Color":
-          this.valueColor = (Color) val;
+          valueColor = (Color) val;
           break;
         case "UnityEngine.Vector2":
-          this.valueVector2 = (Vector2) val;
+          valueVector2 = (Vector2) val;
           break;
         case "UnityEngine.Vector3":
-          this.valueVector3 = (Vector3) val;
+          valueVector3 = (Vector3) val;
           break;
         case "UnityEngine.Vector4":
-          this.valueVector4 = (Vector4) val;
+          valueVector4 = (Vector4) val;
           break;
       }
     }

@@ -1,6 +1,5 @@
 ﻿using Engine.Common.Services;
 using Engine.Source.Services.Inputs;
-using UnityEngine;
 
 namespace Engine.Impl.UI.Controls
 {
@@ -11,16 +10,16 @@ namespace Engine.Impl.UI.Controls
 
     public override void SkipAnimation()
     {
-      if (!((Object) this.view != (Object) null))
+      if (!((Object) view != (Object) null))
         return;
-      this.view.SkipAnimation();
+      view.SkipAnimation();
     }
 
     protected override void ApplyStringValue()
     {
-      if (!((Object) this.view != (Object) null))
+      if (!((Object) view != (Object) null))
         return;
-      this.view.StringValue = ServiceLocator.GetService<GameActionService>() == null ? this.StringValue : TextHelper.ReplaceTags(this.StringValue, "<b><color=#e4b450>", "</color></b>");
+      view.StringValue = ServiceLocator.GetService<GameActionService>() == null ? StringValue : TextHelper.ReplaceTags(StringValue, "<b><color=#e4b450>", "</color></b>");
     }
   }
 }

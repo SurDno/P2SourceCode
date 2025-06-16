@@ -2,7 +2,7 @@
 
 namespace PLVirtualMachine.Common.EngineAPI.VMECS.VMAttributes
 {
-  [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Interface, AllowMultiple = false, Inherited = false)]
+  [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Interface, Inherited = false)]
   public class DependedAttribute : Attribute
   {
     public string Name;

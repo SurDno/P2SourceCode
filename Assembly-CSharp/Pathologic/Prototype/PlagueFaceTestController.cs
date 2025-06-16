@@ -1,7 +1,4 @@
-﻿using UnityEngine;
-using UnityEngine.UI;
-
-namespace Pathologic.Prototype
+﻿namespace Pathologic.Prototype
 {
   public class PlagueFaceTestController : MonoBehaviour
   {
@@ -12,28 +9,28 @@ namespace Pathologic.Prototype
     public Camera playerCamera;
     public Transform playerCenter;
 
-    private void Disable() => this.face.gameObject.SetActive(false);
+    private void Disable() => face.gameObject.SetActive(false);
 
     private void Enable()
     {
-      if (!this._isInitialized || this.face.gameObject.activeSelf)
+      if (!_isInitialized || face.gameObject.activeSelf)
       {
-        this.face.InitializeAt(this.graph.GetChild(Random.Range(0, this.graph.childCount)).GetComponent<PlagueFacePoint>());
-        this.face.navigation.playerCamera = this.playerCamera;
-        this._isInitialized = true;
+        face.InitializeAt(graph.GetChild(Random.Range(0, graph.childCount)).GetComponent<PlagueFacePoint>());
+        face.navigation.playerCamera = playerCamera;
+        _isInitialized = true;
       }
-      this.face.gameObject.SetActive(true);
+      face.gameObject.SetActive(true);
     }
 
     private void Update()
     {
-      this.face.playerPosition = this.playerCenter.position;
-      this.overlay.color = new Color(0.25f, 0.0f, 0.0f, this.face.attack * 0.9f);
+      face.playerPosition = playerCenter.position;
+      overlay.color = new Color(0.25f, 0.0f, 0.0f, face.attack * 0.9f);
       if (Input.GetKeyDown(KeyCode.E))
-        this.Enable();
+        Enable();
       if (!Input.GetKeyDown(KeyCode.Q))
         return;
-      this.Disable();
+      Disable();
     }
   }
 }

@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEngine;
 
 namespace FirstPersonController
 {
@@ -20,35 +19,35 @@ namespace FirstPersonController
 
     public void Init(Transform character, Transform camera)
     {
-      this.m_CharacterTargetRot = character.localRotation;
-      this.m_CameraTargetRot = camera.localRotation;
+      m_CharacterTargetRot = character.localRotation;
+      m_CameraTargetRot = camera.localRotation;
     }
 
     public void LookRotation(Transform character, Transform camera)
     {
-      float y = Input.GetAxis("MouseX") * this.XSensitivity;
-      float num = Input.GetAxis("MouseY") * this.YSensitivity;
-      this.m_CharacterTargetRot *= Quaternion.Euler(0.0f, y, 0.0f);
-      this.m_CameraTargetRot *= Quaternion.Euler(-num, 0.0f, 0.0f);
-      if (this.clampVerticalRotation)
-        this.m_CameraTargetRot = this.ClampRotationAroundXAxis(this.m_CameraTargetRot);
-      if (this.smooth)
+      float y = Input.GetAxis("MouseX") * XSensitivity;
+      float num = Input.GetAxis("MouseY") * YSensitivity;
+      m_CharacterTargetRot *= Quaternion.Euler(0.0f, y, 0.0f);
+      m_CameraTargetRot *= Quaternion.Euler(-num, 0.0f, 0.0f);
+      if (clampVerticalRotation)
+        m_CameraTargetRot = ClampRotationAroundXAxis(m_CameraTargetRot);
+      if (smooth)
       {
-        character.localRotation = Quaternion.Slerp(character.localRotation, this.m_CharacterTargetRot, this.smoothTime * Time.deltaTime);
-        camera.localRotation = Quaternion.Slerp(camera.localRotation, this.m_CameraTargetRot, this.smoothTime * Time.deltaTime);
+        character.localRotation = Quaternion.Slerp(character.localRotation, m_CharacterTargetRot, smoothTime * Time.deltaTime);
+        camera.localRotation = Quaternion.Slerp(camera.localRotation, m_CameraTargetRot, smoothTime * Time.deltaTime);
       }
       else
       {
-        character.localRotation = this.m_CharacterTargetRot;
-        camera.localRotation = this.m_CameraTargetRot;
+        character.localRotation = m_CharacterTargetRot;
+        camera.localRotation = m_CameraTargetRot;
       }
-      this.UpdateCursorLock();
+      UpdateCursorLock();
     }
 
     public void SetCursorLock(bool value)
     {
-      this.lockCursor = value;
-      if (this.lockCursor)
+      lockCursor = value;
+      if (lockCursor)
         return;
       Cursor.lockState = CursorLockMode.None;
       Cursor.visible = true;
@@ -56,25 +55,25 @@ namespace FirstPersonController
 
     public void UpdateCursorLock()
     {
-      if (!this.lockCursor)
+      if (!lockCursor)
         return;
-      this.InternalLockUpdate();
+      InternalLockUpdate();
     }
 
     private void InternalLockUpdate()
     {
       if (Input.GetKeyUp(KeyCode.Escape))
-        this.m_cursorIsLocked = false;
+        m_cursorIsLocked = false;
       else if (Input.GetMouseButtonUp(0))
-        this.m_cursorIsLocked = true;
-      if (this.m_cursorIsLocked)
+        m_cursorIsLocked = true;
+      if (m_cursorIsLocked)
       {
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
       }
       else
       {
-        if (this.m_cursorIsLocked)
+        if (m_cursorIsLocked)
           return;
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
@@ -87,7 +86,7 @@ namespace FirstPersonController
       q.y /= q.w;
       q.z /= q.w;
       q.w = 1f;
-      float num = Mathf.Clamp(114.59156f * Mathf.Atan(q.x), this.MinimumX, this.MaximumX);
+      float num = Mathf.Clamp(114.59156f * Mathf.Atan(q.x), MinimumX, MaximumX);
       q.x = Mathf.Tan((float) Math.PI / 360f * num);
       return q;
     }

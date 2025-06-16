@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace BehaviorDesigner.Runtime
+﻿namespace BehaviorDesigner.Runtime
 {
   public interface IBehaviorTree
   {

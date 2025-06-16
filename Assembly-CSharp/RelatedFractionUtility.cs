@@ -1,8 +1,8 @@
-﻿using Engine.Common;
+﻿using System.Collections.Generic;
+using Engine.Common;
 using Engine.Common.Commons;
 using Engine.Common.Components.Parameters;
 using Engine.Source.Components;
-using System.Collections.Generic;
 
 public static class RelatedFractionUtility
 {
@@ -16,17 +16,17 @@ public static class RelatedFractionUtility
         IParameter<FractionEnum> byName = component.GetByName<FractionEnum>(ParameterNameEnum.Fraction);
         if (byName != null)
         {
-          FractionSettings fractionSettings = RelatedFractionUtility.GetFractionSettings(byName);
+          FractionSettings fractionSettings = GetFractionSettings(byName);
           if (fractionSettings != null && fractionSettings.Relations != null)
           {
-            FractionRelationGroup fractionRelationGroup = RelatedFractionUtility.GetFractionRelationGroup(relation, fractionSettings);
+            FractionRelationGroup fractionRelationGroup = GetFractionRelationGroup(relation, fractionSettings);
             if (fractionRelationGroup != null)
               return fractionRelationGroup.Fractions;
           }
         }
       }
     }
-    return (List<FractionEnum>) null;
+    return null;
   }
 
   private static FractionRelationGroup GetFractionRelationGroup(
@@ -39,7 +39,7 @@ public static class RelatedFractionUtility
       if (relation1.Relation == relation)
         return relation1;
     }
-    return (FractionRelationGroup) null;
+    return null;
   }
 
   private static FractionSettings GetFractionSettings(IParameter<FractionEnum> fraction)
@@ -50,6 +50,6 @@ public static class RelatedFractionUtility
       if (fraction1.Name == fraction.Value)
         return fraction1;
     }
-    return (FractionSettings) null;
+    return null;
   }
 }

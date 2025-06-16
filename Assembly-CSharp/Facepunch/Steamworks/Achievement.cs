@@ -5,7 +5,7 @@ namespace Facepunch.Steamworks
   public class Achievement
   {
     private Client client;
-    private int refreshCount = 0;
+    private int refreshCount;
     private Image _icon;
 
     public string Id { get; private set; }
@@ -24,10 +24,10 @@ namespace Facepunch.Steamworks
     {
       get
       {
-        if (this.State)
+        if (State)
           return 1f;
         float pflPercent = 0.0f;
-        return !this.client.native.userstats.GetAchievementAchievedPercent(this.Id, out pflPercent) ? -1f : pflPercent;
+        return !client.native.userstats.GetAchievementAchievedPercent(Id, out pflPercent) ? -1f : pflPercent;
       }
     }
 
@@ -35,60 +35,60 @@ namespace Facepunch.Steamworks
     {
       get
       {
-        if (this.iconId <= 0)
-          return (Image) null;
-        if (this._icon == null)
+        if (iconId <= 0)
+          return null;
+        if (_icon == null)
         {
-          this._icon = new Image();
-          this._icon.Id = this.iconId;
+          _icon = new Image();
+          _icon.Id = iconId;
         }
-        return this._icon.IsLoaded || this._icon.TryLoad(this.client.native.utils) ? this._icon : (Image) null;
+        return _icon.IsLoaded || _icon.TryLoad(client.native.utils) ? _icon : null;
       }
     }
 
     public Achievement(Client client, int index)
     {
       this.client = client;
-      this.Id = client.native.userstats.GetAchievementName((uint) index);
-      this.Name = client.native.userstats.GetAchievementDisplayAttribute(this.Id, "name");
-      this.Description = client.native.userstats.GetAchievementDisplayAttribute(this.Id, "desc");
-      this.iconId = client.native.userstats.GetAchievementIcon(this.Id);
-      this.Refresh();
+      Id = client.native.userstats.GetAchievementName((uint) index);
+      Name = client.native.userstats.GetAchievementDisplayAttribute(Id, "name");
+      Description = client.native.userstats.GetAchievementDisplayAttribute(Id, "desc");
+      iconId = client.native.userstats.GetAchievementIcon(Id);
+      Refresh();
     }
 
     public bool Trigger(bool apply = true)
     {
-      if (this.State)
+      if (State)
         return false;
-      this.State = true;
-      this.UnlockTime = DateTime.Now;
-      bool flag = this.client.native.userstats.SetAchievement(this.Id);
+      State = true;
+      UnlockTime = DateTime.Now;
+      bool flag = client.native.userstats.SetAchievement(Id);
       if (apply)
-        this.client.Stats.StoreStats();
-      this.client.Achievements.OnUnlocked(this);
+        client.Stats.StoreStats();
+      client.Achievements.OnUnlocked(this);
       return flag;
     }
 
     public bool Reset()
     {
-      this.State = false;
-      this.UnlockTime = DateTime.Now;
-      return this.client.native.userstats.ClearAchievement(this.Id);
+      State = false;
+      UnlockTime = DateTime.Now;
+      return client.native.userstats.ClearAchievement(Id);
     }
 
     public bool Refresh()
     {
-      bool state = this.State;
+      bool state = State;
       bool pbAchieved = false;
-      this.State = false;
+      State = false;
       uint punUnlockTime;
-      if (this.client.native.userstats.GetAchievementAndUnlockTime(this.Id, ref pbAchieved, out punUnlockTime))
+      if (client.native.userstats.GetAchievementAndUnlockTime(Id, ref pbAchieved, out punUnlockTime))
       {
-        this.State = pbAchieved;
-        this.UnlockTime = Utility.Epoch.ToDateTime((Decimal) punUnlockTime);
+        State = pbAchieved;
+        UnlockTime = Utility.Epoch.ToDateTime(punUnlockTime);
       }
-      ++this.refreshCount;
-      return state != this.State && this.refreshCount > 1;
+      ++refreshCount;
+      return state != State && refreshCount > 1;
     }
   }
 }

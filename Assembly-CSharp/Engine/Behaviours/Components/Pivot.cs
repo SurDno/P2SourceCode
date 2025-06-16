@@ -1,4 +1,5 @@
-﻿using Engine.Behaviours.Engines.Controllers;
+﻿using System;
+using Engine.Behaviours.Engines.Controllers;
 using Engine.Behaviours.Unity.Mecanim;
 using Engine.Common;
 using Engine.Common.Commons;
@@ -8,18 +9,13 @@ using Engine.Source.Commons;
 using Engine.Source.Components;
 using Inspectors;
 using RootMotion.Dynamics;
-using System;
-using UnityEngine;
-using UnityEngine.AI;
-using UnityEngine.Audio;
-using UnityEngine.Serialization;
 
 namespace Engine.Behaviours.Components
 {
   [DisallowMultipleComponent]
   public class Pivot : MonoBehaviour, IEntityAttachable
   {
-    public Pivot.HierarhyStructureEnum HierarhyStructure = Pivot.HierarhyStructureEnum.Ordinary;
+    public HierarhyStructureEnum HierarhyStructure = HierarhyStructureEnum.Ordinary;
     public GameObject AnchorCameraFPS;
     [Tooltip("Camera прикрпленная к голове с правильно расположенными осями (z-вперед, y-вверх")]
     public GameObject AnchorCameraOnHead;
@@ -33,7 +29,7 @@ namespace Engine.Behaviours.Components
     public GameObject Foot;
     public GameObject Hands;
     [Header("Weapon Aim")]
-    public Pivot.AimWeaponType AimType = Pivot.AimWeaponType.Head;
+    public AimWeaponType AimType = AimWeaponType.Head;
     [Tooltip("Этим объектом происходит прицеливание")]
     public GameObject AimTransform;
     [Tooltip("из этого объекта расчитывается направление выстрела")]
@@ -136,42 +132,42 @@ namespace Engine.Behaviours.Components
 
     public event Action<bool> IndoorChangedEvent;
 
-    public Animator GetAnimator() => this.animator;
+    public Animator GetAnimator() => animator;
 
-    public AnimatorEventProxy GetAnimatorEventProxy() => this.animatorEventProxy;
+    public AnimatorEventProxy GetAnimatorEventProxy() => animatorEventProxy;
 
-    public PuppetMaster GetPuppet() => this.puppet;
+    public PuppetMaster GetPuppet() => puppet;
 
-    public NavMeshObstacle GetObstacle() => this.obstacle;
+    public NavMeshObstacle GetObstacle() => obstacle;
 
-    public NavMeshAgent GetAgent() => this.agent;
+    public NavMeshAgent GetAgent() => agent;
 
-    public Rigidbody GetRigidbody() => this.rigidbody;
+    public Rigidbody GetRigidbody() => rigidbody;
 
-    public NPCEnemy GetNpcEnemy() => this.npcEnemy;
+    public NPCEnemy GetNpcEnemy() => npcEnemy;
 
-    public NPCWeaponService GetNpcWeaponService() => this.npcWeaponService;
+    public NPCWeaponService GetNpcWeaponService() => npcWeaponService;
 
-    public EngineBehavior GetBehavior() => this.behavior;
+    public EngineBehavior GetBehavior() => behavior;
 
-    public NPCSoundBankDescription SoundBank => this.soundBank;
+    public NPCSoundBankDescription SoundBank => soundBank;
 
     private void Awake()
     {
-      if ((UnityEngine.Object) this.animator == (UnityEngine.Object) null)
+      if ((UnityEngine.Object) animator == (UnityEngine.Object) null)
         Debug.LogWarning((object) (this.gameObject.name + " doesn't contain " + typeof (Animator).Name + " unity component."));
-      if (!((UnityEngine.Object) this.agent == (UnityEngine.Object) null))
+      if (!((UnityEngine.Object) agent == (UnityEngine.Object) null))
         return;
       Debug.LogWarning((object) (this.gameObject.name + " doesn't contain " + typeof (NavMeshAgent).Name + " unity component."));
     }
 
     private void Start()
     {
-      this.RagdollWeight = 0.0f;
-      this.ActualRagdollWeight = 0.0f;
+      RagdollWeight = 0.0f;
+      ActualRagdollWeight = 0.0f;
     }
 
-    public void ResetMovable() => AnimatorState45.GetAnimatorState(this.animator).ResetMovable();
+    public void ResetMovable() => AnimatorState45.GetAnimatorState(animator).ResetMovable();
 
     private bool PlayRandomSound(
       AudioMixerGroup mixer,
@@ -183,16 +179,16 @@ namespace Engine.Behaviours.Components
       if (sounds == null || sounds.Length == 0 || (UnityEngine.Object) transform == (UnityEngine.Object) null)
         return false;
       AudioClip sound = sounds[UnityEngine.Random.Range(0, sounds.Length)];
-      if ((double) spatialBlend > 0.5)
-        SoundUtility.PlayAudioClip3D(this.Chest.transform, sound, mixer, volume, 1f, 2.5f, true, 0.0f, context: this.gameObject.GetFullName());
+      if (spatialBlend > 0.5)
+        SoundUtility.PlayAudioClip3D(Chest.transform, sound, mixer, volume, 1f, 2.5f, true, 0.0f, context: this.gameObject.GetFullName());
       else
         SoundUtility.PlayAudioClip2D(sound, mixer, volume, 0.0f, context: this.gameObject.GetFullName());
       return true;
     }
 
-    public void PlaySound(Pivot.SoundEnum soundEnum, float volumeScale = 1f, bool protagonist = false)
+    public void PlaySound(SoundEnum soundEnum, float volumeScale = 1f, bool protagonist = false)
     {
-      if ((UnityEngine.Object) this.soundBank == (UnityEngine.Object) null)
+      if ((UnityEngine.Object) soundBank == (UnityEngine.Object) null)
         return;
       AudioMixerGroup mixer;
       float spatialBlend;
@@ -203,68 +199,68 @@ namespace Engine.Behaviours.Components
       }
       else
       {
-        mixer = this.Indoor ? ScriptableObjectInstance<GameSettingsData>.Instance.NpcClothesIndoorMixer : ScriptableObjectInstance<GameSettingsData>.Instance.NpcClothesOutdoorMixer;
+        mixer = Indoor ? ScriptableObjectInstance<GameSettingsData>.Instance.NpcClothesIndoorMixer : ScriptableObjectInstance<GameSettingsData>.Instance.NpcClothesOutdoorMixer;
         spatialBlend = 1f;
       }
       switch (soundEnum)
       {
-        case Pivot.SoundEnum.RagdollFall:
-          this.PlayRandomSound(mixer, this.soundBank.RagdollFallSounds, this.Chest.transform, volumeScale, spatialBlend);
+        case SoundEnum.RagdollFall:
+          PlayRandomSound(mixer, soundBank.RagdollFallSounds, Chest.transform, volumeScale, spatialBlend);
           break;
-        case Pivot.SoundEnum.HittedVocal:
-          this.PlayRandomSound(mixer, this.soundBank.HittedVocalSounds, this.Head.transform, volumeScale, spatialBlend);
+        case SoundEnum.HittedVocal:
+          PlayRandomSound(mixer, soundBank.HittedVocalSounds, Head.transform, volumeScale, spatialBlend);
           break;
-        case Pivot.SoundEnum.HittedLowStaminaVocal:
-          this.PlayRandomSound(mixer, this.soundBank.HittedLowStaminaVocalSounds, this.Head.transform, volumeScale, spatialBlend);
+        case SoundEnum.HittedLowStaminaVocal:
+          PlayRandomSound(mixer, soundBank.HittedLowStaminaVocalSounds, Head.transform, volumeScale, spatialBlend);
           break;
-        case Pivot.SoundEnum.HittedDodgeVocal:
-          this.PlayRandomSound(mixer, this.soundBank.HittedDodgeVocalSounds, this.Head.transform, volumeScale, spatialBlend);
+        case SoundEnum.HittedDodgeVocal:
+          PlayRandomSound(mixer, soundBank.HittedDodgeVocalSounds, Head.transform, volumeScale, spatialBlend);
           break;
-        case Pivot.SoundEnum.StaggerVocal:
-          this.PlayRandomSound(mixer, this.soundBank.StaggerVocalSounds, this.Head.transform, volumeScale, spatialBlend);
+        case SoundEnum.StaggerVocal:
+          PlayRandomSound(mixer, soundBank.StaggerVocalSounds, Head.transform, volumeScale, spatialBlend);
           break;
-        case Pivot.SoundEnum.StaggerNonVocal:
-          this.PlayRandomSound(mixer, this.soundBank.StaggerNonVocalSounds, this.Head.transform, volumeScale, spatialBlend);
+        case SoundEnum.StaggerNonVocal:
+          PlayRandomSound(mixer, soundBank.StaggerNonVocalSounds, Head.transform, volumeScale, spatialBlend);
           break;
-        case Pivot.SoundEnum.StrafeLeft:
-          this.PlayRandomSound(mixer, this.soundBank.StrafeLeftSounds, this.Chest.transform, volumeScale, spatialBlend);
+        case SoundEnum.StrafeLeft:
+          PlayRandomSound(mixer, soundBank.StrafeLeftSounds, Chest.transform, volumeScale, spatialBlend);
           break;
-        case Pivot.SoundEnum.StrafeRight:
-          this.PlayRandomSound(mixer, this.soundBank.StrafeRightSounds, this.Chest.transform, volumeScale, spatialBlend);
+        case SoundEnum.StrafeRight:
+          PlayRandomSound(mixer, soundBank.StrafeRightSounds, Chest.transform, volumeScale, spatialBlend);
           break;
-        case Pivot.SoundEnum.StepBack:
-          this.PlayRandomSound(mixer, this.soundBank.StepBackSounds, this.Chest.transform, volumeScale, spatialBlend);
+        case SoundEnum.StepBack:
+          PlayRandomSound(mixer, soundBank.StepBackSounds, Chest.transform, volumeScale, spatialBlend);
           break;
-        case Pivot.SoundEnum.BlockHitted:
-          this.PlayRandomSound(mixer, this.soundBank.BlockHittedSounds, this.Chest.transform, volumeScale, spatialBlend);
+        case SoundEnum.BlockHitted:
+          PlayRandomSound(mixer, soundBank.BlockHittedSounds, Chest.transform, volumeScale, spatialBlend);
           break;
-        case Pivot.SoundEnum.FaceHitted:
-          this.PlayRandomSound(mixer, this.soundBank.FaceHittedSounds, this.Head.transform, volumeScale, spatialBlend);
+        case SoundEnum.FaceHitted:
+          PlayRandomSound(mixer, soundBank.FaceHittedSounds, Head.transform, volumeScale, spatialBlend);
           break;
-        case Pivot.SoundEnum.Stab:
-          this.PlayRandomSound(mixer, this.soundBank.StabSounds, this.Chest.transform, volumeScale, spatialBlend);
+        case SoundEnum.Stab:
+          PlayRandomSound(mixer, soundBank.StabSounds, Chest.transform, volumeScale, spatialBlend);
           break;
-        case Pivot.SoundEnum.StabBlock:
-          this.PlayRandomSound(mixer, this.soundBank.StabBlockSounds, this.Chest.transform, volumeScale, spatialBlend);
+        case SoundEnum.StabBlock:
+          PlayRandomSound(mixer, soundBank.StabBlockSounds, Chest.transform, volumeScale, spatialBlend);
           break;
-        case Pivot.SoundEnum.BulletHit:
-          this.PlayRandomSound(mixer, this.soundBank.BulletHitSounds, this.Chest.transform, volumeScale, spatialBlend);
+        case SoundEnum.BulletHit:
+          PlayRandomSound(mixer, soundBank.BulletHitSounds, Chest.transform, volumeScale, spatialBlend);
           break;
       }
     }
 
-    public Transform GetAimTransform(Pivot.AimWeaponType aimType)
+    public Transform GetAimTransform(AimWeaponType aimType)
     {
       switch (aimType)
       {
-        case Pivot.AimWeaponType.Head:
-          return (UnityEngine.Object) this.Head != (UnityEngine.Object) null ? this.Head.transform : (Transform) null;
-        case Pivot.AimWeaponType.Chest:
-          return (UnityEngine.Object) this.Chest != (UnityEngine.Object) null ? this.Chest.transform : (Transform) null;
-        case Pivot.AimWeaponType.Belly:
-          return (UnityEngine.Object) this.Belly != (UnityEngine.Object) null ? this.Belly.transform : (Transform) null;
-        case Pivot.AimWeaponType.Foot:
-          return (UnityEngine.Object) this.Foot == (UnityEngine.Object) null ? this.transform : this.Foot.transform;
+        case AimWeaponType.Head:
+          return (UnityEngine.Object) Head != (UnityEngine.Object) null ? Head.transform : (Transform) null;
+        case AimWeaponType.Chest:
+          return (UnityEngine.Object) Chest != (UnityEngine.Object) null ? Chest.transform : (Transform) null;
+        case AimWeaponType.Belly:
+          return (UnityEngine.Object) Belly != (UnityEngine.Object) null ? Belly.transform : (Transform) null;
+        case AimWeaponType.Foot:
+          return (UnityEngine.Object) Foot == (UnityEngine.Object) null ? this.transform : Foot.transform;
         default:
           throw new NotImplementedException();
       }
@@ -272,82 +268,82 @@ namespace Engine.Behaviours.Components
 
     public void RagdollApplyImpulseToHead(Vector3 impulseWorldSpace)
     {
-      this.headImpulseValue = impulseWorldSpace;
+      headImpulseValue = impulseWorldSpace;
     }
 
     public float RagdollWeight
     {
-      get => this.ragdollWeight;
-      set => this.ragdollWeight = value;
+      get => ragdollWeight;
+      set => ragdollWeight = value;
     }
 
     public float ActualRagdollWeight
     {
-      get => this.actualRagdollWeight;
+      get => actualRagdollWeight;
       set
       {
-        if ((double) this.actualRagdollWeight < 0.949999988079071 && (double) value >= 0.949999988079071)
-          this.PlaySound(Pivot.SoundEnum.RagdollFall);
-        this.actualRagdollWeight = value;
+        if (actualRagdollWeight < 0.949999988079071 && value >= 0.949999988079071)
+          PlaySound(SoundEnum.RagdollFall);
+        actualRagdollWeight = value;
         IKController component1 = this.GetComponent<IKController>();
         if ((UnityEngine.Object) component1 != (UnityEngine.Object) null)
-          component1.enabled = (double) value == 0.0;
-        if (this.HierarhyStructure == Pivot.HierarhyStructureEnum.Ordinary)
+          component1.enabled = value == 0.0;
+        if (HierarhyStructure == HierarhyStructureEnum.Ordinary)
         {
-          bool enable = (double) value > 0.0;
-          this.EnableRagdool(this.ragdollPelvis, enable);
-          this.EnableRagdool(this.ragdollLeftHips, enable);
-          this.EnableRagdool(this.ragdollRightHips, enable);
-          this.EnableRagdool(this.ragdollLeftKnee, enable);
-          this.EnableRagdool(this.ragdollRightKnee, enable);
-          this.EnableRagdool(this.ragdollLeftArm, enable);
-          this.EnableRagdool(this.ragdollRightArm, enable);
-          this.EnableRagdool(this.ragdollLeftElbow, enable);
-          this.EnableRagdool(this.ragdollRightElbow, enable);
-          this.EnableRagdool(this.ragdollMiddleSpine, enable);
-          this.EnableRagdool(this.ragdollHead, enable);
-          if ((UnityEngine.Object) this.ragdollHead != (UnityEngine.Object) null && enable && (double) this.headImpulseValue.sqrMagnitude > 0.10000000149011612)
+          bool enable = value > 0.0;
+          EnableRagdool(ragdollPelvis, enable);
+          EnableRagdool(ragdollLeftHips, enable);
+          EnableRagdool(ragdollRightHips, enable);
+          EnableRagdool(ragdollLeftKnee, enable);
+          EnableRagdool(ragdollRightKnee, enable);
+          EnableRagdool(ragdollLeftArm, enable);
+          EnableRagdool(ragdollRightArm, enable);
+          EnableRagdool(ragdollLeftElbow, enable);
+          EnableRagdool(ragdollRightElbow, enable);
+          EnableRagdool(ragdollMiddleSpine, enable);
+          EnableRagdool(ragdollHead, enable);
+          if ((UnityEngine.Object) ragdollHead != (UnityEngine.Object) null && enable && (double) headImpulseValue.sqrMagnitude > 0.10000000149011612)
           {
-            Rigidbody component2 = this.ragdollHead.GetComponent<Rigidbody>();
+            Rigidbody component2 = ragdollHead.GetComponent<Rigidbody>();
             if ((UnityEngine.Object) component2 != (UnityEngine.Object) null)
             {
-              component2.AddForceAtPosition(this.headImpulseValue, this.ragdollHead.transform.position, ForceMode.Impulse);
-              this.headImpulseValue = Vector3.zero;
+              component2.AddForceAtPosition(headImpulseValue, ragdollHead.transform.position, ForceMode.Impulse);
+              headImpulseValue = Vector3.zero;
             }
           }
-          this.EnableRagdool(this.ragdollWeapon, enable);
+          EnableRagdool(ragdollWeapon, enable);
         }
         else
         {
-          if (this.HierarhyStructure != Pivot.HierarhyStructureEnum.PuppetMaster || (UnityEngine.Object) this.puppet == (UnityEngine.Object) null)
+          if (HierarhyStructure != HierarhyStructureEnum.PuppetMaster || (UnityEngine.Object) puppet == (UnityEngine.Object) null)
             return;
           float a = 0.0f;
-          if ((double) value < 0.029999999329447746)
+          if (value < 0.029999999329447746)
           {
-            this.puppet.pinWeight = 1f;
-            this.puppet.muscleWeight = 1f;
-            this.puppet.mode = PuppetMaster.Mode.Kinematic;
-            this.puppet.state = PuppetMaster.State.Alive;
-            if (this.puppet.gameObject.activeSelf)
-              this.puppet.gameObject.SetActive(false);
+            puppet.pinWeight = 1f;
+            puppet.muscleWeight = 1f;
+            puppet.mode = PuppetMaster.Mode.Kinematic;
+            puppet.state = PuppetMaster.State.Alive;
+            if (puppet.gameObject.activeSelf)
+              puppet.gameObject.SetActive(false);
           }
-          else if ((double) value > 0.949999988079071)
+          else if (value > 0.949999988079071)
           {
-            if (!this.puppet.gameObject.activeSelf)
-              this.puppet.gameObject.SetActive(true);
-            this.puppet.pinWeight = 0.0f;
-            this.puppet.muscleWeight = a;
-            this.puppet.mode = PuppetMaster.Mode.Active;
-            this.puppet.state = PuppetMaster.State.Dead;
+            if (!puppet.gameObject.activeSelf)
+              puppet.gameObject.SetActive(true);
+            puppet.pinWeight = 0.0f;
+            puppet.muscleWeight = a;
+            puppet.mode = PuppetMaster.Mode.Active;
+            puppet.state = PuppetMaster.State.Dead;
           }
           else
           {
-            if (!this.puppet.gameObject.activeSelf)
-              this.puppet.gameObject.SetActive(true);
-            this.puppet.pinWeight = 1f - value;
-            this.puppet.muscleWeight = Mathf.Max(a, 1f - value);
-            this.puppet.mode = PuppetMaster.Mode.Active;
-            this.puppet.state = PuppetMaster.State.Alive;
+            if (!puppet.gameObject.activeSelf)
+              puppet.gameObject.SetActive(true);
+            puppet.pinWeight = 1f - value;
+            puppet.muscleWeight = Mathf.Max(a, 1f - value);
+            puppet.mode = PuppetMaster.Mode.Active;
+            puppet.state = PuppetMaster.State.Alive;
           }
         }
       }
@@ -355,13 +351,13 @@ namespace Engine.Behaviours.Components
 
     public bool RgdollInternalCollisions
     {
-      get => this.ragdollInternalCollisions;
+      get => ragdollInternalCollisions;
       set
       {
-        this.ragdollInternalCollisions = value;
-        if (this.HierarhyStructure != Pivot.HierarhyStructureEnum.PuppetMaster || !((UnityEngine.Object) this.puppet != (UnityEngine.Object) null))
+        ragdollInternalCollisions = value;
+        if (HierarhyStructure != HierarhyStructureEnum.PuppetMaster || !((UnityEngine.Object) puppet != (UnityEngine.Object) null))
           return;
-        this.puppet.internalCollisions = this.ragdollInternalCollisions;
+        puppet.internalCollisions = ragdollInternalCollisions;
       }
     }
 
@@ -383,41 +379,41 @@ namespace Engine.Behaviours.Components
 
     void IEntityAttachable.Attach(IEntity owner)
     {
-      this.Owner = owner;
-      NavigationComponent component = this.Owner.GetComponent<NavigationComponent>();
+      Owner = owner;
+      NavigationComponent component = Owner.GetComponent<NavigationComponent>();
       if (component == null)
         return;
-      component.OnTeleport += new Action<INavigationComponent, IEntity>(this.NavigationComponent_OnTeleport);
-      this.NavigationComponent_OnTeleport((INavigationComponent) null, (IEntity) null);
+      component.OnTeleport += NavigationComponent_OnTeleport;
+      NavigationComponent_OnTeleport(null, null);
     }
 
     void IEntityAttachable.Detach()
     {
-      NavigationComponent component = this.Owner.GetComponent<NavigationComponent>();
+      NavigationComponent component = Owner.GetComponent<NavigationComponent>();
       if (component != null)
-        component.OnTeleport -= new Action<INavigationComponent, IEntity>(this.NavigationComponent_OnTeleport);
-      this.Owner = (IEntity) null;
+        component.OnTeleport -= NavigationComponent_OnTeleport;
+      Owner = null;
     }
 
     private void NavigationComponent_OnTeleport(
       INavigationComponent navigationComponent,
       IEntity entity)
     {
-      LocationItemComponent component = this.Owner?.GetComponent<LocationItemComponent>();
-      this.Indoor = component != null && component.IsIndoor;
-      Action<bool> indoorChangedEvent = this.IndoorChangedEvent;
+      LocationItemComponent component = Owner?.GetComponent<LocationItemComponent>();
+      Indoor = component != null && component.IsIndoor;
+      Action<bool> indoorChangedEvent = IndoorChangedEvent;
       if (indoorChangedEvent == null)
         return;
-      indoorChangedEvent(this.Indoor);
+      indoorChangedEvent(Indoor);
     }
 
-    public bool HasFastPOIExit(POIAnimationEnum poiType) => this.supportsFastPOIExits;
+    public bool HasFastPOIExit(POIAnimationEnum poiType) => supportsFastPOIExits;
 
     private void Update()
     {
-      if (Mathf.Approximately(this.ActualRagdollWeight, this.RagdollWeight))
+      if (Mathf.Approximately(ActualRagdollWeight, RagdollWeight))
         return;
-      this.ActualRagdollWeight = this.RagdollWeight;
+      ActualRagdollWeight = RagdollWeight;
     }
 
     public enum HierarhyStructureEnum

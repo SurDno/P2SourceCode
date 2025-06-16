@@ -1,6 +1,4 @@
-﻿using Engine.Source.Audio;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using System.Collections.Generic;
 
 public class LipsyncMicRecorder : MonoBehaviour
 {
@@ -11,42 +9,42 @@ public class LipsyncMicRecorder : MonoBehaviour
   public int markerWindow = 125;
   private bool LipsyncAfterRecord = true;
   private int m_maxSeconds = 1;
-  private LipsyncMicRecorder.State state = LipsyncMicRecorder.State.off;
-  private int m_cursor = 0;
+  private State state = State.off;
+  private int m_cursor;
   private List<float[]> m_RecordBuffers = new List<float[]>();
-  private string deviceName = (string) null;
+  private string deviceName = null;
 
-  public event LipsyncMicRecorder.StateChanged StateChangeListeners;
+  public event StateChanged StateChangeListeners;
 
   private void Start()
   {
     foreach (string device in Microphone.devices)
       Debug.Log((object) ("Microphone " + device));
     if (Microphone.devices.Length != 0)
-      this.deviceName = Microphone.devices[0];
-    LipsyncPlugin.LoadSpeechHmm(this.Hmm);
+      deviceName = Microphone.devices[0];
+    LipsyncPlugin.LoadSpeechHmm(Hmm);
   }
 
-  private void OnDestroy() => this.StopPlugin(true);
+  private void OnDestroy() => StopPlugin(true);
 
   private void StopPlugin(bool bAudio)
   {
     LipsyncPlugin.LipRTStop();
     LipsyncPlugin.CancelLipsync();
-    this.src.Stop();
+    src.Stop();
   }
 
-  public LipsyncMicRecorder.State GetState => this.state;
+  public State GetState => state;
 
-  public bool isRealtime => this.state == LipsyncMicRecorder.State.rec_speech_realtime;
+  public bool isRealtime => state == State.rec_speech_realtime;
 
-  public string Anno => this.m_anno;
+  public string Anno => m_anno;
 
   public bool isRecording
   {
     get
     {
-      return this.state == LipsyncMicRecorder.State.rec_speech || this.state == LipsyncMicRecorder.State.rec_speech_realtime;
+      return state == State.rec_speech || state == State.rec_speech_realtime;
     }
   }
 
@@ -55,11 +53,11 @@ public class LipsyncMicRecorder : MonoBehaviour
     get
     {
       int length = 0;
-      foreach (float[] recordBuffer in this.m_RecordBuffers)
+      foreach (float[] recordBuffer in m_RecordBuffers)
         length += recordBuffer.Length;
       float[] pcm = new float[length];
       int num = 0;
-      foreach (float[] recordBuffer in this.m_RecordBuffers)
+      foreach (float[] recordBuffer in m_RecordBuffers)
       {
         for (int index = 0; index < recordBuffer.Length; ++index)
           pcm[index + num] = recordBuffer[index];
@@ -71,143 +69,143 @@ public class LipsyncMicRecorder : MonoBehaviour
 
   public int sampleRate
   {
-    get => (Object) this.src.clip == (Object) null ? 22050 : this.src.clip.frequency;
+    get => (Object) src.clip == (Object) null ? 22050 : src.clip.frequency;
   }
 
-  public int numChannels => (Object) this.src.clip == (Object) null ? 1 : this.src.clip.channels;
+  public int numChannels => (Object) src.clip == (Object) null ? 1 : src.clip.channels;
 
   public void StartRecording(bool bRealtime, bool bLipsyncWhenFinished)
   {
-    if (this.state == LipsyncMicRecorder.State.lipsync)
-      this.StopPlugin(true);
-    this.LipsyncAfterRecord = bLipsyncWhenFinished;
-    this.m_RecordBuffers.Clear();
-    this.src.mute = true;
-    this.src.clip = Microphone.Start(this.deviceName, true, this.m_maxSeconds, 44100);
-    if ((Object) this.src.clip == (Object) null)
+    if (state == State.lipsync)
+      StopPlugin(true);
+    LipsyncAfterRecord = bLipsyncWhenFinished;
+    m_RecordBuffers.Clear();
+    src.mute = true;
+    src.clip = Microphone.Start(deviceName, true, m_maxSeconds, 44100);
+    if ((Object) src.clip == (Object) null)
       return;
-    this.src.loop = true;
+    src.loop = true;
     do
       ;
-    while (Microphone.GetPosition(this.deviceName) <= 0);
-    this.src.PlayAndCheck();
-    if (bRealtime && (Object) this.src.clip != (Object) null)
+    while (Microphone.GetPosition(deviceName) <= 0);
+    src.PlayAndCheck();
+    if (bRealtime && (Object) src.clip != (Object) null)
     {
-      LipsyncPlugin.SetRtLatency(this.latency);
-      LipsyncPlugin.SetRtArticWindowMilli(this.markerWindow);
-      LipsyncPlugin.LipRTStart(this.src.clip.frequency, this.src.clip.channels);
+      LipsyncPlugin.SetRtLatency(latency);
+      LipsyncPlugin.SetRtArticWindowMilli(markerWindow);
+      LipsyncPlugin.LipRTStart(src.clip.frequency, src.clip.channels);
     }
     if (bRealtime)
-      this.ChangeStateTo(LipsyncMicRecorder.State.rec_speech_realtime);
+      ChangeStateTo(State.rec_speech_realtime);
     else
-      this.ChangeStateTo(LipsyncMicRecorder.State.rec_speech);
+      ChangeStateTo(State.rec_speech);
   }
 
   public void Stop(bool bRunLipsync)
   {
-    if (this.state == LipsyncMicRecorder.State.rec_speech || this.state == LipsyncMicRecorder.State.rec_speech_realtime)
+    if (state == State.rec_speech || state == State.rec_speech_realtime)
     {
-      Microphone.End(this.deviceName);
-      this.src.loop = false;
-      if (this.isRealtime)
+      Microphone.End(deviceName);
+      src.loop = false;
+      if (isRealtime)
         LipsyncPlugin.LipRTStop();
-      if (bRunLipsync && this.LipsyncAfterRecord)
+      if (bRunLipsync && LipsyncAfterRecord)
       {
-        this.CreateClipFromBuffers();
-        LipsyncPlugin.StartLipsyncFromBuffer(this.PCM, this.sampleRate, this.numChannels);
-        this.ChangeStateTo(LipsyncMicRecorder.State.lipsync);
+        CreateClipFromBuffers();
+        LipsyncPlugin.StartLipsyncFromBuffer(PCM, sampleRate, numChannels);
+        ChangeStateTo(State.lipsync);
       }
       else
-        this.ChangeStateTo(LipsyncMicRecorder.State.off);
+        ChangeStateTo(State.off);
     }
     else
     {
-      if (this.state != LipsyncMicRecorder.State.lipsync)
+      if (state != State.lipsync)
         return;
       LipsyncPlugin.CancelLipsync();
-      this.ChangeStateTo(LipsyncMicRecorder.State.cancel_lipsync);
+      ChangeStateTo(State.cancel_lipsync);
     }
   }
 
   public void LipsyncAudioClip(AudioClip theClip)
   {
-    this.Stop(false);
+    Stop(false);
     float[] numArray = new float[theClip.samples * theClip.channels];
     theClip.GetData(numArray, 0);
     LipsyncPlugin.StartLipsyncFromBuffer(numArray, theClip.frequency, theClip.channels);
-    this.ChangeStateTo(LipsyncMicRecorder.State.lipsync);
+    ChangeStateTo(State.lipsync);
   }
 
   private void CreateClipFromBuffers()
   {
-    if ((Object) this.src.clip == (Object) null)
+    if ((Object) src.clip == (Object) null)
       return;
-    float[] pcm = this.PCM;
-    this.src.clip = AudioClip.Create("Microphone", pcm.Length / this.src.clip.channels, this.src.clip.channels, this.src.clip.frequency, false, false);
-    this.src.clip.SetData(pcm, 0);
+    float[] pcm = PCM;
+    src.clip = AudioClip.Create("Microphone", pcm.Length / src.clip.channels, src.clip.channels, src.clip.frequency, false, false);
+    src.clip.SetData(pcm, 0);
   }
 
   private void Update()
   {
-    if (this.state == LipsyncMicRecorder.State.rec_speech || this.state == LipsyncMicRecorder.State.rec_speech_realtime)
+    if (state == State.rec_speech || state == State.rec_speech_realtime)
     {
-      int position = Microphone.GetPosition(this.deviceName);
-      if (position < this.m_cursor)
+      int position = Microphone.GetPosition(deviceName);
+      if (position < m_cursor)
       {
-        float[] audioBuffer1 = this.GetAudioBuffer(this.m_cursor, this.src.clip.samples);
-        float[] audioBuffer2 = this.GetAudioBuffer(0, position);
-        this.AddBuffer(audioBuffer1);
-        this.AddBuffer(audioBuffer2);
-        this.m_cursor = position;
+        float[] audioBuffer1 = GetAudioBuffer(m_cursor, src.clip.samples);
+        float[] audioBuffer2 = GetAudioBuffer(0, position);
+        AddBuffer(audioBuffer1);
+        AddBuffer(audioBuffer2);
+        m_cursor = position;
       }
       else
       {
-        if (position <= this.m_cursor)
+        if (position <= m_cursor)
           return;
-        this.AddBuffer(this.GetAudioBuffer(this.m_cursor, position));
-        this.m_cursor = position;
+        AddBuffer(GetAudioBuffer(m_cursor, position));
+        m_cursor = position;
       }
     }
-    else if (this.state == LipsyncMicRecorder.State.lipsync && !LipsyncPlugin.IsLipsyncing())
+    else if (state == State.lipsync && !LipsyncPlugin.IsLipsyncing())
     {
-      this.m_anno = LipsyncPlugin.GetLipsyncAnnoResult();
-      this.ChangeStateTo(LipsyncMicRecorder.State.off);
+      m_anno = LipsyncPlugin.GetLipsyncAnnoResult();
+      ChangeStateTo(State.off);
     }
     else
     {
-      if (this.state != LipsyncMicRecorder.State.cancel_lipsync || LipsyncPlugin.IsLipsyncing())
+      if (state != State.cancel_lipsync || LipsyncPlugin.IsLipsyncing())
         return;
-      this.m_anno = "";
-      this.ChangeStateTo(LipsyncMicRecorder.State.off);
+      m_anno = "";
+      ChangeStateTo(State.off);
     }
   }
 
   private float[] GetAudioBuffer(int startPos, int endPos)
   {
-    float[] data = new float[(endPos - startPos) * this.src.clip.channels];
-    this.src.clip.GetData(data, startPos);
+    float[] data = new float[(endPos - startPos) * src.clip.channels];
+    src.clip.GetData(data, startPos);
     return data;
   }
 
   private void AddBuffer(float[] buffer)
   {
-    if (this.LipsyncAfterRecord)
-      this.m_RecordBuffers.Add(buffer);
-    if (!this.isRealtime)
+    if (LipsyncAfterRecord)
+      m_RecordBuffers.Add(buffer);
+    if (!isRealtime)
       return;
     LipsyncPlugin.LipRTAddBuffer(buffer);
   }
 
-  private void ChangeStateTo(LipsyncMicRecorder.State newState)
+  private void ChangeStateTo(State newState)
   {
-    LipsyncMicRecorder.State state = this.state;
+    State state = this.state;
     this.state = newState;
-    if (this.StateChangeListeners == null)
+    if (StateChangeListeners == null)
       return;
-    this.StateChangeListeners(state, newState);
+    StateChangeListeners(state, newState);
   }
 
-  public delegate void StateChanged(LipsyncMicRecorder.State prev, LipsyncMicRecorder.State cur);
+  public delegate void StateChanged(State prev, State cur);
 
   public enum State
   {

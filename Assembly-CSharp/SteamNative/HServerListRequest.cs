@@ -8,7 +8,7 @@ namespace SteamNative
 
     public static implicit operator HServerListRequest(IntPtr value)
     {
-      return new HServerListRequest() { Value = value };
+      return new HServerListRequest { Value = value };
     }
 
     public static implicit operator IntPtr(HServerListRequest value) => value.Value;

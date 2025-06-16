@@ -1,4 +1,5 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common;
 using Engine.Common.Commons;
@@ -8,7 +9,6 @@ using Engine.Impl.Services.Factories;
 using Engine.Source.Commons;
 using Engine.Source.Components;
 using Scripts.Tools.Serializations.Converters;
-using UnityEngine;
 
 namespace BehaviorDesigner.Runtime.Tasks.Pathologic
 {
@@ -18,20 +18,20 @@ namespace BehaviorDesigner.Runtime.Tasks.Pathologic
   [Factory]
   [GeneratePartial(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
   [FactoryProxy(typeof (GetPathTransform))]
-  public class GetPathTransform : BehaviorDesigner.Runtime.Tasks.Action, IStub, ISerializeDataWrite, ISerializeDataRead
+  public class GetPathTransform : Action, IStub, ISerializeDataWrite, ISerializeDataRead
   {
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy()]
     [SerializeField]
     public SharedTransform Spawnpoint;
 
     public override void OnStart()
     {
-      IEntity owner = this.Owner.GetComponent<EngineGameObject>().Owner;
+      IEntity owner = Owner.GetComponent<EngineGameObject>().Owner;
       if (owner == null)
       {
-        Debug.LogWarningFormat("{0} has no entity", (object) this.gameObject.name);
+        Debug.LogWarningFormat("{0} has no entity", (object) gameObject.name);
       }
       else
       {
@@ -45,7 +45,7 @@ namespace BehaviorDesigner.Runtime.Tasks.Pathologic
             PathPart component3 = ((IEntityView) setupPoint).GameObject.GetComponent<PathPart>();
             if ((UnityEngine.Object) component2 != (UnityEngine.Object) null || (UnityEngine.Object) component3 != (UnityEngine.Object) null)
             {
-              this.Spawnpoint.Value = ((IEntityView) setupPoint).GameObject.transform;
+              Spawnpoint.Value = ((IEntityView) setupPoint).GameObject.transform;
               return;
             }
           }
@@ -63,7 +63,7 @@ namespace BehaviorDesigner.Runtime.Tasks.Pathologic
           PathPart component6 = gameObject.GetComponent<PathPart>();
           if (!((UnityEngine.Object) component5 != (UnityEngine.Object) null) && !((UnityEngine.Object) component6 != (UnityEngine.Object) null))
             return;
-          this.Spawnpoint.Value = gameObject.transform;
+          Spawnpoint.Value = gameObject.transform;
         }
         else
           Debug.LogError((object) (this.gameObject.name + " has no patrol path or path part!"));
@@ -72,27 +72,27 @@ namespace BehaviorDesigner.Runtime.Tasks.Pathologic
 
     public override TaskStatus OnUpdate()
     {
-      return !(bool) (UnityEngine.Object) this.Spawnpoint.Value ? TaskStatus.Failure : TaskStatus.Success;
+      return !(bool) (UnityEngine.Object) Spawnpoint.Value ? TaskStatus.Failure : TaskStatus.Success;
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.WriteSerialize<NodeData>(writer, "NodeData", this.nodeData);
-      DefaultDataWriteUtility.Write(writer, "Id", this.id);
-      DefaultDataWriteUtility.Write(writer, "FriendlyName", this.friendlyName);
-      DefaultDataWriteUtility.Write(writer, "Instant", this.instant);
-      DefaultDataWriteUtility.Write(writer, "Disabled", this.disabled);
-      BehaviorTreeDataWriteUtility.WriteShared<SharedTransform>(writer, "Spawnpoint", this.Spawnpoint);
+      DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
+      DefaultDataWriteUtility.Write(writer, "Id", id);
+      DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
+      DefaultDataWriteUtility.Write(writer, "Instant", instant);
+      DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
+      BehaviorTreeDataWriteUtility.WriteShared(writer, "Spawnpoint", Spawnpoint);
     }
 
-    public void DataRead(IDataReader reader, System.Type type)
+    public void DataRead(IDataReader reader, Type type)
     {
-      this.nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
-      this.id = DefaultDataReadUtility.Read(reader, "Id", this.id);
-      this.friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", this.friendlyName);
-      this.instant = DefaultDataReadUtility.Read(reader, "Instant", this.instant);
-      this.disabled = DefaultDataReadUtility.Read(reader, "Disabled", this.disabled);
-      this.Spawnpoint = BehaviorTreeDataReadUtility.ReadShared<SharedTransform>(reader, "Spawnpoint", this.Spawnpoint);
+      nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
+      id = DefaultDataReadUtility.Read(reader, "Id", id);
+      friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
+      instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
+      disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
+      Spawnpoint = BehaviorTreeDataReadUtility.ReadShared(reader, "Spawnpoint", Spawnpoint);
     }
   }
 }

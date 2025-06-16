@@ -1,12 +1,11 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons.Cloneable;
 using Engine.Common.Commons.Converters;
 using Engine.Source.Commons.Effects;
 using Engine.Source.Effects;
 using Scripts.Tools.Serializations.Converters;
-using System;
-using UnityEngine;
 
 namespace Engine.Source.Proxies
 {
@@ -21,30 +20,30 @@ namespace Engine.Source.Proxies
     public object Clone()
     {
       MoveProjectileEffect_Generated instance = Activator.CreateInstance<MoveProjectileEffect_Generated>();
-      this.CopyTo((object) instance);
-      return (object) instance;
+      CopyTo(instance);
+      return instance;
     }
 
     public void CopyTo(object target2)
     {
       MoveProjectileEffect_Generated projectileEffectGenerated = (MoveProjectileEffect_Generated) target2;
-      projectileEffectGenerated.queue = this.queue;
-      projectileEffectGenerated.throwPower = this.throwPower;
-      projectileEffectGenerated.projectilePrefab = this.projectilePrefab;
+      projectileEffectGenerated.queue = queue;
+      projectileEffectGenerated.throwPower = throwPower;
+      projectileEffectGenerated.projectilePrefab = projectilePrefab;
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.WriteEnum<ParameterEffectQueueEnum>(writer, "Queue", this.queue);
-      DefaultDataWriteUtility.Write(writer, "Power", this.throwPower);
-      UnityDataWriteUtility.Write<GameObject>(writer, "ProjectilePrefab", this.projectilePrefab);
+      DefaultDataWriteUtility.WriteEnum(writer, "Queue", queue);
+      DefaultDataWriteUtility.Write(writer, "Power", throwPower);
+      UnityDataWriteUtility.Write(writer, "ProjectilePrefab", projectilePrefab);
     }
 
-    public void DataRead(IDataReader reader, System.Type type)
+    public void DataRead(IDataReader reader, Type type)
     {
-      this.queue = DefaultDataReadUtility.ReadEnum<ParameterEffectQueueEnum>(reader, "Queue");
-      this.throwPower = DefaultDataReadUtility.Read(reader, "Power", this.throwPower);
-      this.projectilePrefab = UnityDataReadUtility.Read<GameObject>(reader, "ProjectilePrefab", this.projectilePrefab);
+      queue = DefaultDataReadUtility.ReadEnum<ParameterEffectQueueEnum>(reader, "Queue");
+      throwPower = DefaultDataReadUtility.Read(reader, "Power", throwPower);
+      projectilePrefab = UnityDataReadUtility.Read(reader, "ProjectilePrefab", projectilePrefab);
     }
   }
 }

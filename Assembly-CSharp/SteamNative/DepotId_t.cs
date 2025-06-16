@@ -6,7 +6,7 @@
 
     public static implicit operator DepotId_t(uint value)
     {
-      return new DepotId_t() { Value = value };
+      return new DepotId_t { Value = value };
     }
 
     public static implicit operator uint(DepotId_t value) => value.Value;

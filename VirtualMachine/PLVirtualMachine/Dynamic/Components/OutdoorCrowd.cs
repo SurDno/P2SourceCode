@@ -1,7 +1,5 @@
 ﻿using Cofe.Proxies;
-using Engine.Common;
 using PLVirtualMachine.Objects;
-using System;
 using VirtualMachine.Common.EngineAPI.VMECS.VMComponents;
 
 namespace PLVirtualMachine.Dynamic.Components
@@ -20,10 +18,10 @@ namespace PLVirtualMachine.Dynamic.Components
       switch (target.Name)
       {
         case "NeedCreateObjectEvent":
-          this.NeedCreateObjectEvent += (VMOutdoorCrowd.NeedCreateObjectEventType) (p1 => target.RaiseFromEngineImpl((object) p1));
+          NeedCreateObjectEvent += p1 => target.RaiseFromEngineImpl(p1);
           break;
         case "NeedDeleteObjectEvent":
-          this.NeedDeleteObjectEvent += (Action<IEntity>) (p1 => target.RaiseFromEngineImpl((object) p1));
+          NeedDeleteObjectEvent += p1 => target.RaiseFromEngineImpl(p1);
           break;
       }
     }

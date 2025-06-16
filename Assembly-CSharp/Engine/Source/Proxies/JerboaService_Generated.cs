@@ -1,9 +1,9 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons.Converters;
 using Engine.Common.Services;
 using Engine.Impl.Services;
-using System;
 
 namespace Engine.Source.Proxies
 {
@@ -12,14 +12,14 @@ namespace Engine.Source.Proxies
   {
     public void StateSave(IDataWriter writer)
     {
-      DefaultDataWriteUtility.Write(writer, "Amount", this.Amount);
-      DefaultDataWriteUtility.WriteEnum<JerboaColorEnum>(writer, "Color", this.Color);
+      DefaultDataWriteUtility.Write(writer, "Amount", Amount);
+      DefaultDataWriteUtility.WriteEnum(writer, "Color", Color);
     }
 
     public void StateLoad(IDataReader reader, Type type)
     {
-      this.Amount = DefaultDataReadUtility.Read(reader, "Amount", this.Amount);
-      this.Color = DefaultDataReadUtility.ReadEnum<JerboaColorEnum>(reader, "Color");
+      Amount = DefaultDataReadUtility.Read(reader, "Amount", Amount);
+      Color = DefaultDataReadUtility.ReadEnum<JerboaColorEnum>(reader, "Color");
     }
   }
 }

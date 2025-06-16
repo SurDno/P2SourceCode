@@ -1,4 +1,5 @@
-﻿using Engine.Common;
+﻿using System;
+using Engine.Common;
 using Engine.Common.Components.Parameters;
 using Engine.Common.Components.Regions;
 using Engine.Common.Generator;
@@ -6,7 +7,6 @@ using Engine.Impl.Services.Factories;
 using Engine.Source.Commons;
 using Engine.Source.Commons.Parameters;
 using Inspectors;
-using System;
 
 namespace Engine.Source.Components
 {
@@ -18,35 +18,35 @@ namespace Engine.Source.Components
     private ParametersComponent parameters;
 
     [Inspected]
-    public IParameterValue<bool> CanFastTravel { get; } = (IParameterValue<bool>) new ParameterValue<bool>();
+    public IParameterValue<bool> CanFastTravel { get; } = new ParameterValue<bool>();
 
     [Inspected]
-    public IParameterValue<FastTravelPointEnum> FastTravelPointIndex { get; } = (IParameterValue<FastTravelPointEnum>) new ParameterValue<FastTravelPointEnum>();
+    public IParameterValue<FastTravelPointEnum> FastTravelPointIndex { get; } = new ParameterValue<FastTravelPointEnum>();
 
     [Inspected]
-    public IParameterValue<int> FastTravelPrice { get; } = (IParameterValue<int>) new ParameterValue<int>();
+    public IParameterValue<int> FastTravelPrice { get; } = new ParameterValue<int>();
 
     public event Action<FastTravelPointEnum, TimeSpan> TravelToPoint;
 
     public override void OnAdded()
     {
       base.OnAdded();
-      this.CanFastTravel.Set<bool>(this.parameters.GetByName<bool>(ParameterNameEnum.CanFastTravel));
-      this.FastTravelPointIndex.Set<FastTravelPointEnum>(this.parameters.GetByName<FastTravelPointEnum>(ParameterNameEnum.FastTravelPointIndex));
-      this.FastTravelPrice.Set<int>(this.parameters.GetByName<int>(ParameterNameEnum.FastTravelPrice));
+      CanFastTravel.Set(parameters.GetByName<bool>(ParameterNameEnum.CanFastTravel));
+      FastTravelPointIndex.Set(parameters.GetByName<FastTravelPointEnum>(ParameterNameEnum.FastTravelPointIndex));
+      FastTravelPrice.Set(parameters.GetByName<int>(ParameterNameEnum.FastTravelPrice));
     }
 
     public override void OnRemoved()
     {
-      this.CanFastTravel.Set<bool>((IParameter<bool>) null);
-      this.FastTravelPointIndex.Set<FastTravelPointEnum>((IParameter<FastTravelPointEnum>) null);
-      this.FastTravelPrice.Set<int>((IParameter<int>) null);
+      CanFastTravel.Set(null);
+      FastTravelPointIndex.Set(null);
+      FastTravelPrice.Set(null);
       base.OnRemoved();
     }
 
     public void FireTravelToPoint(FastTravelPointEnum target, TimeSpan travelTime)
     {
-      Action<FastTravelPointEnum, TimeSpan> travelToPoint = this.TravelToPoint;
+      Action<FastTravelPointEnum, TimeSpan> travelToPoint = TravelToPoint;
       if (travelToPoint == null)
         return;
       travelToPoint(target, travelTime);

@@ -14,10 +14,10 @@ namespace Engine.Source.Blueprints.Effects
 
     public void Update()
     {
-      float num = this.valueInput.value;
-      if ((double) this.prevValue == (double) num)
+      float num = valueInput.value;
+      if (prevValue == (double) num)
         return;
-      this.prevValue = num;
+      prevValue = num;
       GameCamera.Instance.AdditionalFov = num;
     }
 

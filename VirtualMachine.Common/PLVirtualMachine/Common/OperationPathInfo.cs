@@ -1,8 +1,8 @@
-﻿using Cofe.Loggers;
+﻿using System;
+using System.Collections.Generic;
+using Cofe.Loggers;
 using PLVirtualMachine.Common.Data;
 using PLVirtualMachine.Common.EngineAPI;
-using System;
-using System.Collections.Generic;
 
 namespace PLVirtualMachine.Common
 {
@@ -11,16 +11,16 @@ namespace PLVirtualMachine.Common
     private List<CommonVariable> operationRootsList = new List<CommonVariable>();
     public const string OperationPathRootName = "Pathologic";
 
-    public OperationPathInfo(string data) => this.Read(data);
+    public OperationPathInfo(string data) => Read(data);
 
-    public List<CommonVariable> RootInfoList => this.operationRootsList;
+    public List<CommonVariable> RootInfoList => operationRootsList;
 
     public void Read(string data)
     {
       switch (data)
       {
         case null:
-          Logger.AddError(string.Format("Attempt to read null operation path info at {0}", (object) EngineAPIManager.Instance.CurrentFSMStateInfo));
+          Logger.AddError(string.Format("Attempt to read null operation path info at {0}", EngineAPIManager.Instance.CurrentFSMStateInfo));
           break;
         case "":
           break;
@@ -33,10 +33,10 @@ namespace PLVirtualMachine.Common
             {
               "&ROOT&PATH&VAR"
             };
-            this.ReadPathList(data.Split(separator, StringSplitOptions.RemoveEmptyEntries)[1]);
+            ReadPathList(data.Split(separator, StringSplitOptions.RemoveEmptyEntries)[1]);
             break;
           }
-          this.ReadPathList(data);
+          ReadPathList(data);
           break;
       }
     }
@@ -49,12 +49,12 @@ namespace PLVirtualMachine.Common
 
     private void ReadPathList(string data)
     {
-      this.operationRootsList.Clear();
+      operationRootsList.Clear();
       string[] separator = new string[1]{ "END&PATH" };
       foreach (string operationRootsListInfo in data.Split(separator, StringSplitOptions.RemoveEmptyEntries))
       {
         if ("" != operationRootsListInfo)
-          this.operationRootsList.Add(this.ReadContextParamValue(operationRootsListInfo));
+          operationRootsList.Add(ReadContextParamValue(operationRootsListInfo));
       }
     }
 
@@ -84,7 +84,7 @@ namespace PLVirtualMachine.Common
         str = operationRootsListInfo;
       CommonVariable rootVarInfo = new CommonVariable();
       rootVarInfo.Initialise(str, variableData);
-      if (!this.IsValidRootInfo(rootVarInfo) && str.Contains("/") && "" != IStaticDataContainer.StaticDataContainer.GameRoot.GetHierarchyGuidByHierarchyPath(str).Write())
+      if (!IsValidRootInfo(rootVarInfo) && str.Contains("/") && "" != IStaticDataContainer.StaticDataContainer.GameRoot.GetHierarchyGuidByHierarchyPath(str).Write())
       {
         rootVarInfo = new CommonVariable();
         rootVarInfo.Initialise(str, "");
@@ -94,7 +94,7 @@ namespace PLVirtualMachine.Common
 
     private bool IsValidRootInfo(CommonVariable rootVarInfo)
     {
-      IContext gameRoot = (IContext) IStaticDataContainer.StaticDataContainer.GameRoot;
+      IContext gameRoot = IStaticDataContainer.StaticDataContainer.GameRoot;
       rootVarInfo.Bind(gameRoot);
       return rootVarInfo.IsBinded && rootVarInfo.VariableContext != null;
     }

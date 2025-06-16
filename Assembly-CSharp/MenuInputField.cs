@@ -1,8 +1,5 @@
-﻿using Engine.Impl.UI.Controls;
-using System;
-using UnityEngine;
-using UnityEngine.Events;
-using UnityEngine.UI;
+﻿using System;
+using Engine.Impl.UI.Controls;
 
 public class MenuInputField : MonoBehaviour
 {
@@ -17,22 +14,22 @@ public class MenuInputField : MonoBehaviour
 
   private void Awake()
   {
-    this.inputField.onEndEdit.AddListener(new UnityAction<string>(this.OnEndEdit));
+    inputField.onEndEdit.AddListener(new UnityAction<string>(OnEndEdit));
   }
 
-  public void ClearValue() => this.inputField.text = string.Empty;
+  public void ClearValue() => inputField.text = string.Empty;
 
   private void OnEnable()
   {
-    this.ClearValue();
-    this.SetMessage(string.Empty);
+    ClearValue();
+    SetMessage(string.Empty);
   }
 
   private void OnEndEdit(string value)
   {
     if (!Input.GetKey(KeyCode.Return) && !Input.GetKey(KeyCode.KeypadEnter))
       return;
-    Action<string> sendEvent = this.SendEvent;
+    Action<string> sendEvent = SendEvent;
     if (sendEvent == null)
       return;
     sendEvent(value);
@@ -40,15 +37,15 @@ public class MenuInputField : MonoBehaviour
 
   public void SetPlaceholder(string value)
   {
-    if (!((UnityEngine.Object) this.placeholderView != (UnityEngine.Object) null))
+    if (!((UnityEngine.Object) placeholderView != (UnityEngine.Object) null))
       return;
-    this.placeholderView.StringValue = value;
+    placeholderView.StringValue = value;
   }
 
   public void SetMessage(string value)
   {
-    if (!((UnityEngine.Object) this.messageView != (UnityEngine.Object) null))
+    if (!((UnityEngine.Object) messageView != (UnityEngine.Object) null))
       return;
-    this.messageView.StringValue = value;
+    messageView.StringValue = value;
   }
 }

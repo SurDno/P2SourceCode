@@ -1,4 +1,6 @@
-﻿using BehaviorDesigner.Runtime;
+﻿using System;
+using System.Reflection;
+using BehaviorDesigner.Runtime;
 using BehaviorDesigner.Runtime.Tasks;
 using Cofe.Proxies;
 using Cofe.Serializations.Data;
@@ -12,8 +14,6 @@ using Engine.Impl.Services.Factories;
 using Engine.Source.Commons;
 using Engine.Source.Components;
 using Scripts.Tools.Serializations.Converters;
-using System.Reflection;
-using UnityEngine;
 
 [TaskDescription("Can hear NPC (with Behaviour and Info engine components)")]
 [TaskCategory("Pathologic")]
@@ -22,20 +22,20 @@ using UnityEngine;
 [FactoryProxy(typeof (CanHear))]
 public class CanHear : Conditional, IStub, ISerializeDataWrite, ISerializeDataRead
 {
-  [DataReadProxy(MemberEnum.None)]
-  [DataWriteProxy(MemberEnum.None)]
-  [CopyableProxy(MemberEnum.None)]
+  [DataReadProxy]
+  [DataWriteProxy]
+  [CopyableProxy]
   [SerializeField]
   public SharedTransform Result;
-  [DataReadProxy(MemberEnum.None)]
-  [DataWriteProxy(MemberEnum.None)]
-  [CopyableProxy(MemberEnum.None)]
+  [DataReadProxy]
+  [DataWriteProxy]
+  [CopyableProxy]
   [SerializeField]
   public SharedTransformList ResultList;
   [UnityEngine.Tooltip("Use None for any type of sound")]
-  [DataReadProxy(MemberEnum.None)]
-  [DataWriteProxy(MemberEnum.None)]
-  [CopyableProxy(MemberEnum.None)]
+  [DataReadProxy]
+  [DataWriteProxy]
+  [CopyableProxy()]
   [SerializeField]
   public DetectType DetectType = DetectType.None;
   protected DetectorComponent detector;
@@ -43,78 +43,78 @@ public class CanHear : Conditional, IStub, ISerializeDataWrite, ISerializeDataRe
 
   protected virtual bool Filter(DetectableComponent detectable)
   {
-    return this.DetectType == DetectType.None || detectable.NoiseDetectType == this.DetectType;
+    return DetectType == DetectType.None || detectable.NoiseDetectType == DetectType;
   }
 
   public override void OnAwake()
   {
-    this.entity = EntityUtility.GetEntity(this.gameObject);
-    if (this.entity == null)
+    entity = EntityUtility.GetEntity(gameObject);
+    if (entity == null)
     {
-      Debug.LogWarning((object) (this.gameObject.name + " : entity not found, method : " + this.GetType().Name + ":" + MethodBase.GetCurrentMethod().Name), (UnityEngine.Object) this.gameObject);
+      Debug.LogWarning((object) (gameObject.name + " : entity not found, method : " + GetType().Name + ":" + MethodBase.GetCurrentMethod().Name), (UnityEngine.Object) gameObject);
     }
     else
     {
-      this.detector = (DetectorComponent) this.entity.GetComponent<IDetectorComponent>();
-      if (this.detector != null)
+      detector = (DetectorComponent) entity.GetComponent<IDetectorComponent>();
+      if (detector != null)
         return;
-      Debug.LogWarningFormat("{0}: doesn't contain " + typeof (IDetectorComponent).Name + " engine component", (object) this.gameObject.name);
+      Debug.LogWarningFormat("{0}: doesn't contain " + typeof (IDetectorComponent).Name + " engine component", (object) gameObject.name);
     }
   }
 
   public override TaskStatus OnUpdate()
   {
-    if (this.entity == null || this.detector == null)
+    if (entity == null || detector == null)
       return TaskStatus.Failure;
-    if (this.ResultList.Value != null)
-      this.ResultList.Value.Clear();
-    foreach (IDetectableComponent detectableComponent in this.detector.Hearing)
+    if (ResultList.Value != null)
+      ResultList.Value.Clear();
+    foreach (IDetectableComponent detectableComponent in detector.Hearing)
     {
       if (detectableComponent != null && !detectableComponent.IsDisposed)
       {
         DetectableComponent detectable = (DetectableComponent) detectableComponent;
-        if (this.Filter(detectable))
+        if (Filter(detectable))
         {
           GameObject gameObject = ((IEntityView) detectable.Owner).GameObject;
           if (!((UnityEngine.Object) gameObject == (UnityEngine.Object) null))
           {
-            if (this.ResultList.Value == null)
+            if (ResultList.Value == null)
             {
-              this.Result.Value = gameObject.transform;
+              Result.Value = gameObject.transform;
               return TaskStatus.Success;
             }
-            this.ResultList.Value.Add(gameObject.transform);
+            ResultList.Value.Add(gameObject.transform);
           }
         }
       }
     }
-    if (this.ResultList.Value == null || this.ResultList.Value.Count == 0)
+    if (ResultList.Value == null || ResultList.Value.Count == 0)
       return TaskStatus.Failure;
-    this.Result.Value = this.ResultList.Value[0];
+    Result.Value = ResultList.Value[0];
     return TaskStatus.Success;
   }
 
   public void DataWrite(IDataWriter writer)
   {
-    DefaultDataWriteUtility.WriteSerialize<NodeData>(writer, "NodeData", this.nodeData);
-    DefaultDataWriteUtility.Write(writer, "Id", this.id);
-    DefaultDataWriteUtility.Write(writer, "FriendlyName", this.friendlyName);
-    DefaultDataWriteUtility.Write(writer, "Instant", this.instant);
-    DefaultDataWriteUtility.Write(writer, "Disabled", this.disabled);
-    BehaviorTreeDataWriteUtility.WriteShared<SharedTransform>(writer, "Result", this.Result);
-    BehaviorTreeDataWriteUtility.WriteShared<SharedTransformList>(writer, "ResultList", this.ResultList);
-    DefaultDataWriteUtility.WriteEnum<DetectType>(writer, "DetectType", this.DetectType);
+    DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
+    DefaultDataWriteUtility.Write(writer, "Id", id);
+    DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
+    DefaultDataWriteUtility.Write(writer, "Instant", instant);
+    DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
+    BehaviorTreeDataWriteUtility.WriteShared(writer, "Result", Result);
+    BehaviorTreeDataWriteUtility.WriteShared(writer, "ResultList", ResultList);
+    DefaultDataWriteUtility.WriteEnum(writer, "DetectType", DetectType);
   }
 
-  public void DataRead(IDataReader reader, System.Type type)
+  public void DataRead(IDataReader reader, Type type)
   {
-    this.nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
-    this.id = DefaultDataReadUtility.Read(reader, "Id", this.id);
-    this.friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", this.friendlyName);
-    this.instant = DefaultDataReadUtility.Read(reader, "Instant", this.instant);
-    this.disabled = DefaultDataReadUtility.Read(reader, "Disabled", this.disabled);
-    this.Result = BehaviorTreeDataReadUtility.ReadShared<SharedTransform>(reader, "Result", this.Result);
-    this.ResultList = BehaviorTreeDataReadUtility.ReadShared<SharedTransformList>(reader, "ResultList", this.ResultList);
-    this.DetectType = DefaultDataReadUtility.ReadEnum<DetectType>(reader, "DetectType");
+    nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
+    id = DefaultDataReadUtility.Read(reader, "Id", id);
+    friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
+    instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
+    disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
+    Result = BehaviorTreeDataReadUtility.ReadShared(reader, "Result", Result);
+    ResultList = BehaviorTreeDataReadUtility.ReadShared(reader, "ResultList", ResultList);
+    DetectType = DefaultDataReadUtility.ReadEnum<DetectType>(reader, "DetectType");
   }
 }

@@ -6,10 +6,10 @@
 
     public virtual void Init(PostProcessingContext pcontext, T pmodel)
     {
-      this.context = pcontext;
-      this.model = pmodel;
+      context = pcontext;
+      model = pmodel;
     }
 
-    public override PostProcessingModel GetModel() => (PostProcessingModel) this.model;
+    public override PostProcessingModel GetModel() => model;
   }
 }

@@ -9,18 +9,18 @@ namespace SteamNative
 
     public static StringBuilder TakeStringBuilder()
     {
-      if (Helpers.StringBuilderPool == null)
+      if (StringBuilderPool == null)
       {
-        Helpers.StringBuilderPool = new StringBuilder[8];
-        for (int index = 0; index < Helpers.StringBuilderPool.Length; ++index)
-          Helpers.StringBuilderPool[index] = new StringBuilder(4096);
+        StringBuilderPool = new StringBuilder[8];
+        for (int index = 0; index < StringBuilderPool.Length; ++index)
+          StringBuilderPool[index] = new StringBuilder(4096);
       }
-      ++Helpers.StringBuilderPoolIndex;
-      if (Helpers.StringBuilderPoolIndex >= Helpers.StringBuilderPool.Length)
-        Helpers.StringBuilderPoolIndex = 0;
-      Helpers.StringBuilderPool[Helpers.StringBuilderPoolIndex].Capacity = 4096;
-      Helpers.StringBuilderPool[Helpers.StringBuilderPoolIndex].Length = 0;
-      return Helpers.StringBuilderPool[Helpers.StringBuilderPoolIndex];
+      ++StringBuilderPoolIndex;
+      if (StringBuilderPoolIndex >= StringBuilderPool.Length)
+        StringBuilderPoolIndex = 0;
+      StringBuilderPool[StringBuilderPoolIndex].Capacity = 4096;
+      StringBuilderPool[StringBuilderPoolIndex].Length = 0;
+      return StringBuilderPool[StringBuilderPoolIndex];
     }
   }
 }

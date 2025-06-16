@@ -1,9 +1,8 @@
-﻿using Engine.Common;
+﻿using System;
+using System.Globalization;
+using Engine.Common;
 using Engine.Impl.UI.Controls;
 using Engine.Source.Audio;
-using System;
-using System.Globalization;
-using UnityEngine;
 
 [Serializable]
 public class SubtitlesItem
@@ -26,102 +25,102 @@ public class SubtitlesItem
 
   public void End()
   {
-    this.text = (string) null;
-    this.ReleaseView();
-    this.Actor = (IEntity) null;
-    this.Ended = true;
+    text = null;
+    ReleaseView();
+    Actor = null;
+    Ended = true;
   }
 
   private void ReleaseView()
   {
-    if (!((UnityEngine.Object) this.view != (UnityEngine.Object) null))
+    if (!((UnityEngine.Object) view != (UnityEngine.Object) null))
       return;
-    this.subtitlesView.ReleaseLineView(this.view);
-    this.view = (GameObject) null;
-    this.fadeView = (ProgressView) null;
+    subtitlesView.ReleaseLineView(view);
+    view = (GameObject) null;
+    fadeView = null;
   }
 
   private void ShowPart()
   {
-    this.ReleaseView();
+    ReleaseView();
     int num1 = int.MaxValue;
     float num2 = float.MaxValue;
-    int num3 = this.text.IndexOf("<split=", this.partIndex);
+    int num3 = text.IndexOf("<split=", partIndex);
     if (num3 != -1)
     {
       int startIndex = num3 + 7;
-      int num4 = this.text.IndexOf('>', startIndex);
+      int num4 = text.IndexOf('>', startIndex);
       if (num4 != -1)
       {
-        string s = this.text.Substring(startIndex, num4 - startIndex);
+        string s = text.Substring(startIndex, num4 - startIndex);
         float result = float.MaxValue;
-        if (float.TryParse(s, NumberStyles.Float, (IFormatProvider) NumberFormatInfo.InvariantInfo, out result))
+        if (float.TryParse(s, NumberStyles.Float, NumberFormatInfo.InvariantInfo, out result))
         {
           num1 = num4 + 1;
-          num2 = this.startTime + result;
+          num2 = startTime + result;
         }
       }
     }
     string str;
     if (num1 == int.MaxValue)
     {
-      str = this.partIndex == 0 ? this.text : this.text.Substring(this.partIndex);
-      num2 = this.endTime;
+      str = partIndex == 0 ? text : text.Substring(partIndex);
+      num2 = endTime;
     }
     else
-      str = this.text.Substring(this.partIndex, num3 - this.partIndex).Trim();
+      str = text.Substring(partIndex, num3 - partIndex).Trim();
     if (str.Length != 0)
     {
-      this.view = this.subtitlesView.CreateLineView();
-      this.view.GetComponent<StringView>().StringValue = str;
-      this.fadeView = this.view.GetComponent<ProgressView>();
+      view = subtitlesView.CreateLineView();
+      view.GetComponent<StringView>().StringValue = str;
+      fadeView = view.GetComponent<ProgressView>();
     }
-    this.partStartTime = this.partEndTime;
-    this.partIndex = num1;
-    this.partEndTime = num2;
+    partStartTime = partEndTime;
+    partIndex = num1;
+    partEndTime = num2;
   }
 
   public void Start(IEntity actor, string text, AudioState audioState, UnityEngine.Object context)
   {
     this.audioState = audioState;
     this.text = text;
-    this.Actor = actor;
+    Actor = actor;
     float length = audioState.AudioSource.clip.length;
-    this.progress = 0.0f;
-    this.startTime = 0.0f;
-    this.endTime = length;
-    this.partIndex = 0;
-    this.partStartTime = this.startTime;
-    this.partEndTime = this.startTime;
-    this.Ended = false;
+    progress = 0.0f;
+    startTime = 0.0f;
+    endTime = length;
+    partIndex = 0;
+    partStartTime = startTime;
+    partEndTime = startTime;
+    Ended = false;
   }
 
   public SubtitlesItem(SubtitlesView subtitlesView) => this.subtitlesView = subtitlesView;
 
   public void Update()
   {
-    if (this.Ended)
+    if (Ended)
       return;
-    if (this.audioState.Complete)
+    if (audioState.Complete)
     {
-      this.End();
+      End();
     }
     else
     {
-      this.progress = this.audioState.AudioSource.time;
-      if ((double) this.progress >= (double) this.endTime)
+      progress = audioState.AudioSource.time;
+      if (progress >= (double) endTime)
       {
-        this.End();
+        End();
       }
       else
       {
-        while ((double) this.progress >= (double) this.partEndTime)
-          this.ShowPart();
-        if ((UnityEngine.Object) this.view != (UnityEngine.Object) null && this.view.activeSelf == this.audioState.Pause)
-          this.view.SetActive(!this.audioState.Pause);
-        if (!((UnityEngine.Object) this.fadeView != (UnityEngine.Object) null))
+        while (progress >= (double) partEndTime)
+          ShowPart();
+        if ((UnityEngine.Object) view != (UnityEngine.Object) null && view.activeSelf == audioState.Pause)
+          view.SetActive(!audioState.Pause);
+        if (!((UnityEngine.Object) fadeView != (UnityEngine.Object) null))
           return;
-        this.fadeView.Progress = (double) this.subtitlesView.FadeTime > 0.0 ? Mathf.Clamp01(Mathf.Min(this.progress - this.partStartTime, this.partEndTime - this.progress) / this.subtitlesView.FadeTime) : 1f;
+        fadeView.Progress = subtitlesView.FadeTime > 0.0 ? Mathf.Clamp01(Mathf.Min(progress - partStartTime, partEndTime - progress) / subtitlesView.FadeTime) : 1f;
       }
     }
   }

@@ -2,19 +2,18 @@
 using Engine.Source.Commons;
 using Engine.Source.Services;
 using Engine.Source.Settings;
-using System;
 
 public class SubtitlesSettingsApplier : EngineDependent
 {
   protected override void OnConnectToEngine()
   {
-    this.Apply();
-    InstanceByRequest<SubtitlesGameSettings>.Instance.OnApply += new Action(this.Apply);
+    Apply();
+    InstanceByRequest<SubtitlesGameSettings>.Instance.OnApply += Apply;
   }
 
   protected override void OnDisconnectFromEngine()
   {
-    InstanceByRequest<SubtitlesGameSettings>.Instance.OnApply -= new Action(this.Apply);
+    InstanceByRequest<SubtitlesGameSettings>.Instance.OnApply -= Apply;
   }
 
   private void Apply()

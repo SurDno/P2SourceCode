@@ -1,6 +1,5 @@
-﻿using InputServices;
-using System;
-using UnityEngine;
+﻿using System;
+using InputServices;
 
 namespace Engine.Impl.UI.Controls
 {
@@ -12,18 +11,18 @@ namespace Engine.Impl.UI.Controls
 
     private void OnDisable()
     {
-      InputService.Instance.onJoystickUsedChanged -= this.onJoystickAction;
+      InputService.Instance.onJoystickUsedChanged -= onJoystickAction;
     }
 
     private void OnEnable()
     {
       InputService instance = InputService.Instance;
-      this.view.Visible = instance.JoystickUsed;
-      if (this.onJoystickAction == null)
-        this.onJoystickAction = new Action<bool>(this.OnJoystick);
-      instance.onJoystickUsedChanged += this.onJoystickAction;
+      view.Visible = instance.JoystickUsed;
+      if (onJoystickAction == null)
+        onJoystickAction = OnJoystick;
+      instance.onJoystickUsedChanged += onJoystickAction;
     }
 
-    private void OnJoystick(bool joystick) => this.view.Visible = joystick;
+    private void OnJoystick(bool joystick) => view.Visible = joystick;
   }
 }

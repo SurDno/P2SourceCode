@@ -1,5 +1,5 @@
-﻿using InputServices;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using InputServices;
 
 namespace UnityEngine.EventSystems
 {
@@ -13,13 +13,13 @@ namespace UnityEngine.EventSystems
 
     protected bool GetPointerData(int id, out PointerEventData data, bool create)
     {
-      if (!(!this.m_PointerData.TryGetValue(id, out data) & create))
+      if (!(!m_PointerData.TryGetValue(id, out data) & create))
         return false;
       data = new PointerEventData(this.eventSystem)
       {
         pointerId = id
       };
-      this.m_PointerData.Add(id, data);
+      m_PointerData.Add(id, data);
       return true;
     }
 
@@ -46,7 +46,7 @@ namespace UnityEngine.EventSystems
     protected virtual MouseState GetMousePointerEventData()
     {
       PointerEventData data1;
-      bool pointerData = this.GetPointerData(-1, out data1, true);
+      bool pointerData = GetPointerData(-1, out data1, true);
       data1.Reset();
       if (pointerData)
         data1.position = CursorService.Instance.Position;
@@ -60,23 +60,23 @@ namespace UnityEngine.EventSystems
       data1.pointerCurrentRaycast = firstRaycast;
       ((List<RaycastResult>) this.m_RaycastResultCache).Clear();
       PointerEventData data2;
-      this.GetPointerData(-2, out data2, true);
-      this.CopyFromTo(data1, data2);
+      GetPointerData(-2, out data2, true);
+      CopyFromTo(data1, data2);
       data2.button = PointerEventData.InputButton.Right;
       PointerEventData data3;
-      this.GetPointerData(-3, out data3, true);
-      this.CopyFromTo(data1, data3);
+      GetPointerData(-3, out data3, true);
+      CopyFromTo(data1, data3);
       data3.button = PointerEventData.InputButton.Middle;
-      this.m_MouseState.SetButtonState(PointerEventData.InputButton.Left, EnginePointerInputModule.StateForMouseButton(0), data1);
-      this.m_MouseState.SetButtonState(PointerEventData.InputButton.Right, EnginePointerInputModule.StateForMouseButton(1), data2);
-      this.m_MouseState.SetButtonState(PointerEventData.InputButton.Middle, EnginePointerInputModule.StateForMouseButton(2), data3);
-      return this.m_MouseState;
+      m_MouseState.SetButtonState(PointerEventData.InputButton.Left, StateForMouseButton(0), data1);
+      m_MouseState.SetButtonState(PointerEventData.InputButton.Right, StateForMouseButton(1), data2);
+      m_MouseState.SetButtonState(PointerEventData.InputButton.Middle, StateForMouseButton(2), data3);
+      return m_MouseState;
     }
 
     protected PointerEventData GetLastPointerEventData(int id)
     {
       PointerEventData data;
-      this.GetPointerData(id, out data, false);
+      GetPointerData(id, out data, false);
       return data;
     }
 
@@ -86,7 +86,7 @@ namespace UnityEngine.EventSystems
       float threshold,
       bool useDragThreshold)
     {
-      return !useDragThreshold || (double) (pressPos - currentPos).sqrMagnitude >= (double) threshold * (double) threshold;
+      return !useDragThreshold || (double) (pressPos - currentPos).sqrMagnitude >= threshold * (double) threshold;
     }
 
     protected virtual void ProcessMove(PointerEventData pointerEvent)
@@ -98,7 +98,7 @@ namespace UnityEngine.EventSystems
     protected virtual void ProcessDrag(PointerEventData pointerEvent)
     {
       bool flag = pointerEvent.IsPointerMoving();
-      if (flag && (Object) pointerEvent.pointerDrag != (Object) null && !pointerEvent.dragging && EnginePointerInputModule.ShouldStartDrag(pointerEvent.pressPosition, pointerEvent.position, (float) this.eventSystem.pixelDragThreshold, pointerEvent.useDragThreshold))
+      if (flag && (Object) pointerEvent.pointerDrag != (Object) null && !pointerEvent.dragging && ShouldStartDrag(pointerEvent.pressPosition, pointerEvent.position, (float) this.eventSystem.pixelDragThreshold, pointerEvent.useDragThreshold))
       {
         ExecuteEvents.Execute<IBeginDragHandler>(pointerEvent.pointerDrag, (BaseEventData) pointerEvent, ExecuteEvents.beginDragHandler);
         pointerEvent.dragging = true;
@@ -117,16 +117,16 @@ namespace UnityEngine.EventSystems
 
     public override bool IsPointerOverGameObject(int pointerId)
     {
-      PointerEventData pointerEventData = this.GetLastPointerEventData(pointerId);
+      PointerEventData pointerEventData = GetLastPointerEventData(pointerId);
       return pointerEventData != null && (Object) pointerEventData.pointerEnter != (Object) null;
     }
 
     protected void ClearSelection()
     {
       BaseEventData baseEventData = this.GetBaseEventData();
-      foreach (PointerEventData currentPointerData in this.m_PointerData.Values)
+      foreach (PointerEventData currentPointerData in m_PointerData.Values)
         this.HandlePointerExitAndEnter(currentPointerData, (GameObject) null);
-      this.m_PointerData.Clear();
+      m_PointerData.Clear();
       this.eventSystem.SetSelectedGameObject((GameObject) null, baseEventData);
     }
 

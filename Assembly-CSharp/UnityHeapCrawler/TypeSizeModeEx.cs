@@ -15,7 +15,7 @@ namespace UnityHeapCrawler
         case TypeSizeMode.Native:
           return typeStats.NativeSize;
         default:
-          throw new ArgumentOutOfRangeException(nameof (mode), (object) mode, (string) null);
+          throw new ArgumentOutOfRangeException(nameof (mode), mode, null);
       }
     }
   }

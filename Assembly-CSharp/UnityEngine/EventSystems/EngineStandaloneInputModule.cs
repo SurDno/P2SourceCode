@@ -27,16 +27,16 @@ namespace UnityEngine.EventSystems
     public override void DeactivateModule()
     {
       base.DeactivateModule();
-      this.ClearSelection();
+      ClearSelection();
     }
 
     public override void Process()
     {
-      bool selectedObject = this.SendUpdateEventToSelectedObject();
+      bool selectedObject = SendUpdateEventToSelectedObject();
       if (this.eventSystem.sendNavigationEvents && !selectedObject)
-        this.SendSubmitEventToSelectedObject();
-      this.ProcessMouseEvent();
-      this.ComputeJoystick();
+        SendSubmitEventToSelectedObject();
+      ProcessMouseEvent();
+      ComputeJoystick();
     }
 
     protected bool SendSubmitEventToSelectedObject()
@@ -55,20 +55,20 @@ namespace UnityEngine.EventSystems
 
     private void ProcessMouseEvent()
     {
-      MouseState pointerEventData = this.GetMousePointerEventData();
+      MouseState pointerEventData = GetMousePointerEventData();
       bool pressed = pointerEventData.AnyPressesThisFrame();
       bool released = pointerEventData.AnyReleasesThisFrame();
       MouseButtonEventData eventData = pointerEventData.GetButtonState(PointerEventData.InputButton.Left).eventData;
-      if (!EngineStandaloneInputModule.UseMouse(pressed, released, eventData.buttonData))
+      if (!UseMouse(pressed, released, eventData.buttonData))
         return;
       InputService.Instance.JoystickUsed = false;
-      this.ProcessMousePress(eventData);
-      this.ProcessMove(eventData.buttonData);
-      this.ProcessDrag(eventData.buttonData);
-      this.ProcessMousePress(pointerEventData.GetButtonState(PointerEventData.InputButton.Right).eventData);
-      this.ProcessDrag(pointerEventData.GetButtonState(PointerEventData.InputButton.Right).eventData.buttonData);
-      this.ProcessMousePress(pointerEventData.GetButtonState(PointerEventData.InputButton.Middle).eventData);
-      this.ProcessDrag(pointerEventData.GetButtonState(PointerEventData.InputButton.Middle).eventData.buttonData);
+      ProcessMousePress(eventData);
+      ProcessMove(eventData.buttonData);
+      ProcessDrag(eventData.buttonData);
+      ProcessMousePress(pointerEventData.GetButtonState(PointerEventData.InputButton.Right).eventData);
+      ProcessDrag(pointerEventData.GetButtonState(PointerEventData.InputButton.Right).eventData.buttonData);
+      ProcessMousePress(pointerEventData.GetButtonState(PointerEventData.InputButton.Middle).eventData);
+      ProcessDrag(pointerEventData.GetButtonState(PointerEventData.InputButton.Middle).eventData.buttonData);
       if (Mathf.Approximately(eventData.buttonData.scrollDelta.sqrMagnitude, 0.0f))
         return;
       ExecuteEvents.ExecuteHierarchy<IScrollHandler>(ExecuteEvents.GetEventHandler<IScrollHandler>(eventData.buttonData.pointerCurrentRaycast.gameObject), (BaseEventData) eventData.buttonData, ExecuteEvents.scrollHandler);
@@ -91,14 +91,14 @@ namespace UnityEngine.EventSystems
         buttonData.useDragThreshold = true;
         buttonData.pressPosition = buttonData.position;
         buttonData.pointerPressRaycast = buttonData.pointerCurrentRaycast;
-        this.DeselectIfSelectionChanged(gameObject1, (BaseEventData) buttonData);
+        DeselectIfSelectionChanged(gameObject1, (BaseEventData) buttonData);
         GameObject gameObject2 = ExecuteEvents.ExecuteHierarchy<IPointerDownHandler>(gameObject1, (BaseEventData) buttonData, ExecuteEvents.pointerDownHandler);
         if ((Object) gameObject2 == (Object) null)
           gameObject2 = ExecuteEvents.GetEventHandler<IPointerClickHandler>(gameObject1);
         float unscaledTime = Time.unscaledTime;
         if ((Object) gameObject2 == (Object) buttonData.lastPress)
         {
-          if ((double) (unscaledTime - buttonData.clickTime) < 0.30000001192092896)
+          if (unscaledTime - buttonData.clickTime < 0.30000001192092896)
             ++buttonData.clickCount;
           else
             buttonData.clickCount = 1;

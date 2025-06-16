@@ -1,42 +1,38 @@
-﻿using Engine.Source.Audio;
-using UnityEngine;
-using UnityEngine.Audio;
-
-public class RifleObject : MonoBehaviour
+﻿public class RifleObject : MonoBehaviour
 {
   public ParticleBurster ShotEffect;
   public AudioSource ShootAudio;
   public AudioSource ReloadAudio;
   private AudioMixerGroup mixer;
-  private bool needShot = false;
+  private bool needShot;
 
   public void SetIndoor(bool indoor)
   {
-    this.mixer = indoor ? ScriptableObjectInstance<GameSettingsData>.Instance.NpcWeaponIndoorMixer : ScriptableObjectInstance<GameSettingsData>.Instance.NpcWeaponOutdoorMixer;
-    if ((Object) this.ShootAudio != (Object) null)
-      this.ShootAudio.outputAudioMixerGroup = this.mixer;
-    if (!((Object) this.ReloadAudio != (Object) null))
+    mixer = indoor ? ScriptableObjectInstance<GameSettingsData>.Instance.NpcWeaponIndoorMixer : ScriptableObjectInstance<GameSettingsData>.Instance.NpcWeaponOutdoorMixer;
+    if ((Object) ShootAudio != (Object) null)
+      ShootAudio.outputAudioMixerGroup = mixer;
+    if (!((Object) ReloadAudio != (Object) null))
       return;
-    this.ReloadAudio.outputAudioMixerGroup = this.mixer;
+    ReloadAudio.outputAudioMixerGroup = mixer;
   }
 
-  public void Shoot() => this.needShot = true;
+  public void Shoot() => needShot = true;
 
   private void LateUpdate()
   {
-    if (!this.needShot)
+    if (!needShot)
       return;
-    this.needShot = false;
-    if ((Object) this.ShootAudio != (Object) null)
-      this.ShootAudio.PlayAndCheck();
-    if ((Object) this.ShotEffect != (Object) null)
-      this.ShotEffect.Fire(this.mixer);
+    needShot = false;
+    if ((Object) ShootAudio != (Object) null)
+      ShootAudio.PlayAndCheck();
+    if ((Object) ShotEffect != (Object) null)
+      ShotEffect.Fire(mixer);
   }
 
   public void Reload()
   {
-    if (!((Object) this.ReloadAudio != (Object) null))
+    if (!((Object) ReloadAudio != (Object) null))
       return;
-    this.ReloadAudio.PlayAndCheck();
+    ReloadAudio.PlayAndCheck();
   }
 }

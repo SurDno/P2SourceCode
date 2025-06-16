@@ -12,17 +12,17 @@ namespace Scripts.Data
       Dictionary<string, GameDataInfo> dictionary = new Dictionary<string, GameDataInfo>();
       foreach (GameDataInfo gameDataInfo in ScriptableObjectInstance<BuildSettings>.Instance.Data)
         dictionary[gameDataInfo.Name] = gameDataInfo;
-      return (IEnumerable<GameDataInfo>) dictionary.Values;
+      return dictionary.Values;
     }
 
     public static GameDataInfo GetGameData(string projectName)
     {
-      return BuildSettingsUtility.GetAllGameData().FirstOrDefault<GameDataInfo>((Func<GameDataInfo, bool>) (o => o.Name == projectName)) ?? throw new Exception("Game data name : " + projectName + " not found");
+      return GetAllGameData().FirstOrDefault(o => o.Name == projectName) ?? throw new Exception("Game data name : " + projectName + " not found");
     }
 
     public static GameDataInfo GetDefaultGameData()
     {
-      return BuildSettingsUtility.GetGameData(ScriptableObjectInstance<BuildSettings>.Instance.FirstDataName);
+      return GetGameData(ScriptableObjectInstance<BuildSettings>.Instance.FirstDataName);
     }
 
     public static bool IsDataExist(string projectName)

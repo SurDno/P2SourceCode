@@ -1,10 +1,9 @@
-﻿using Engine.Common.Components;
+﻿using System.Collections.Generic;
+using Engine.Common.Components;
 using Engine.Impl.UI.Menu.Protagonist.Inventory.Grid;
 using Engine.Source.Components;
 using Engine.Source.Inventory;
 using Inspectors;
-using System.Collections.Generic;
-using UnityEngine;
 
 namespace Engine.Impl.UI.Menu.Protagonist.Inventory
 {
@@ -29,18 +28,18 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
 
     public void Reset()
     {
-      this.IsEnabled = false;
-      this.Storable = (StorableComponent) null;
-      this.Storage = (IStorageComponent) null;
-      this.Container = (IInventoryComponent) null;
-      this.Cell = (Cell) null;
-      this.MouseOffset = Vector2.zero;
-      foreach (InventoryCellUI actionCell in this.ActionCells)
+      IsEnabled = false;
+      Storable = null;
+      Storage = null;
+      Container = null;
+      Cell = null;
+      MouseOffset = Vector2.zero;
+      foreach (InventoryCellUI actionCell in ActionCells)
         actionCell.State = CellState.Default;
-      this.ActionCells.Clear();
-      foreach (InventoryCellUI baseCell in this.BaseCells)
+      ActionCells.Clear();
+      foreach (InventoryCellUI baseCell in BaseCells)
         baseCell.State = CellState.Default;
-      this.BaseCells.Clear();
+      BaseCells.Clear();
     }
   }
 }

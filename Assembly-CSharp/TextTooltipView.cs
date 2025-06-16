@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-public abstract class TextTooltipView : MonoBehaviour
+﻿public abstract class TextTooltipView : MonoBehaviour
 {
   public static TextTooltipView Current { get; protected set; }
 

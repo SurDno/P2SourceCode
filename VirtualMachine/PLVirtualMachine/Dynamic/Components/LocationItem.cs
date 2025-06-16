@@ -1,8 +1,6 @@
 ﻿using Cofe.Proxies;
-using Engine.Common;
 using PLVirtualMachine.Common.EngineAPI.VMECS;
 using PLVirtualMachine.Objects;
-using System;
 
 namespace PLVirtualMachine.Dynamic.Components
 {
@@ -20,10 +18,10 @@ namespace PLVirtualMachine.Dynamic.Components
       switch (target.Name)
       {
         case "OnChangeHibernation":
-          this.OnChangeHibernation += (Action) (() => target.RaiseFromEngineImpl());
+          OnChangeHibernation += () => target.RaiseFromEngineImpl();
           break;
         case "OnChangeLocation":
-          this.OnChangeLocation += (Action<IEntity>) (p1 => target.RaiseFromEngineImpl((object) p1));
+          OnChangeLocation += p1 => target.RaiseFromEngineImpl(p1);
           break;
       }
     }

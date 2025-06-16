@@ -1,9 +1,9 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons.Cloneable;
 using Engine.Common.Commons.Converters;
 using Engine.Impl.Weather.Element;
-using System;
 
 namespace Engine.Source.Proxies
 {
@@ -18,30 +18,30 @@ namespace Engine.Source.Proxies
     public object Clone()
     {
       Location_Generated instance = Activator.CreateInstance<Location_Generated>();
-      this.CopyTo((object) instance);
-      return (object) instance;
+      CopyTo(instance);
+      return instance;
     }
 
     public void CopyTo(object target2)
     {
       Location_Generated locationGenerated = (Location_Generated) target2;
-      locationGenerated.latitude = this.latitude;
-      locationGenerated.longitude = this.longitude;
-      locationGenerated.utc = this.utc;
+      locationGenerated.latitude = latitude;
+      locationGenerated.longitude = longitude;
+      locationGenerated.utc = utc;
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.Write(writer, "Latitude", this.latitude);
-      DefaultDataWriteUtility.Write(writer, "Longitude", this.longitude);
-      DefaultDataWriteUtility.Write(writer, "Utc", this.utc);
+      DefaultDataWriteUtility.Write(writer, "Latitude", latitude);
+      DefaultDataWriteUtility.Write(writer, "Longitude", longitude);
+      DefaultDataWriteUtility.Write(writer, "Utc", utc);
     }
 
     public void DataRead(IDataReader reader, Type type)
     {
-      this.latitude = DefaultDataReadUtility.Read(reader, "Latitude", this.latitude);
-      this.longitude = DefaultDataReadUtility.Read(reader, "Longitude", this.longitude);
-      this.utc = DefaultDataReadUtility.Read(reader, "Utc", this.utc);
+      latitude = DefaultDataReadUtility.Read(reader, "Latitude", latitude);
+      longitude = DefaultDataReadUtility.Read(reader, "Longitude", longitude);
+      utc = DefaultDataReadUtility.Read(reader, "Utc", utc);
     }
   }
 }

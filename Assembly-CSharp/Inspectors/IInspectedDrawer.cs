@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEngine;
 
 namespace Inspectors
 {
@@ -37,7 +36,7 @@ namespace Inspectors
 
     Bounds BoundsField(string name, Bounds value);
 
-    UnityEngine.Object ObjectField(string name, UnityEngine.Object value, System.Type type);
+    UnityEngine.Object ObjectField(string name, UnityEngine.Object value, Type type);
 
     Enum EnumPopup(string name, Enum value, IExpandedProvider context);
 

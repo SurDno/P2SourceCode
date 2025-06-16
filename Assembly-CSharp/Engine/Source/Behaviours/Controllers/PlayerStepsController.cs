@@ -1,6 +1,4 @@
 ﻿using Engine.Source.Utility;
-using UnityEngine;
-using UnityEngine.Audio;
 
 namespace Engine.Source.Behaviours.Controllers
 {
@@ -26,32 +24,32 @@ namespace Engine.Source.Behaviours.Controllers
     protected override void Awake()
     {
       base.Awake();
-      this.characterController = this.GetComponent<CharacterController>();
+      characterController = this.GetComponent<CharacterController>();
     }
 
     private void FixedUpdate()
     {
       if (!PlayerUtility.IsPlayerCanControlling)
         return;
-      if ((Object) this.characterController == (Object) null)
+      if ((Object) characterController == (Object) null)
       {
         Debug.LogError((object) "{1} needs to have charackter controller if used as player");
       }
       else
       {
-        if (!this.characterController.isGrounded)
+        if (!characterController.isGrounded)
           return;
-        this.footDistance += this.characterController.velocity.magnitude * Time.deltaTime;
-        float num = Mathf.Sin(6.28318548f * this.footDistance / this.playerStepSize);
-        if ((double) num < 0.0 && !this.footLeft)
+        footDistance += characterController.velocity.magnitude * Time.deltaTime;
+        float num = Mathf.Sin(6.28318548f * footDistance / playerStepSize);
+        if (num < 0.0 && !footLeft)
         {
-          this.OnStep("Skeleton.Humanoid.Foot_Left", false);
-          this.footLeft = true;
+          OnStep("Skeleton.Humanoid.Foot_Left", false);
+          footLeft = true;
         }
-        else if ((double) num > 0.0 && this.footLeft)
+        else if (num > 0.0 && footLeft)
         {
-          this.OnStep("Skeleton.Humanoid.Foot_Right", false);
-          this.footLeft = false;
+          OnStep("Skeleton.Humanoid.Foot_Right", false);
+          footLeft = false;
         }
       }
     }

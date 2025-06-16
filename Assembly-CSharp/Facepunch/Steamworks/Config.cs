@@ -1,5 +1,4 @@
-﻿using SteamNative;
-using System;
+﻿using System;
 
 namespace Facepunch.Steamworks
 {
@@ -10,13 +9,13 @@ namespace Facepunch.Steamworks
       if (platform == "WindowsEditor" || platform == "WindowsPlayer")
       {
         if (IntPtr.Size == 4)
-          Config.UseThisCall = false;
-        Config.ForcePlatform(OperatingSystem.Windows, IntPtr.Size == 4 ? Architecture.x86 : Architecture.x64);
+          UseThisCall = false;
+        ForcePlatform(OperatingSystem.Windows, IntPtr.Size == 4 ? Architecture.x86 : Architecture.x64);
       }
       if (platform == "OSXEditor" || platform == "OSXPlayer" || platform == "OSXDashboardPlayer")
-        Config.ForcePlatform(OperatingSystem.Osx, IntPtr.Size == 4 ? Architecture.x86 : Architecture.x64);
+        ForcePlatform(OperatingSystem.Osx, IntPtr.Size == 4 ? Architecture.x86 : Architecture.x64);
       if (platform == "LinuxPlayer" || platform == "LinuxEditor")
-        Config.ForcePlatform(OperatingSystem.Linux, IntPtr.Size == 4 ? Architecture.x86 : Architecture.x64);
+        ForcePlatform(OperatingSystem.Linux, IntPtr.Size == 4 ? Architecture.x86 : Architecture.x64);
       Console.WriteLine("Facepunch.Steamworks Unity: " + platform);
       Console.WriteLine("Facepunch.Steamworks Os: " + (object) Platform.Os);
       Console.WriteLine("Facepunch.Steamworks Arch: " + (object) Platform.Arch);

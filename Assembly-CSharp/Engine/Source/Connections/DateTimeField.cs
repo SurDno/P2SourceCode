@@ -1,6 +1,5 @@
-﻿using Cofe.Serializations.Converters;
-using System;
-using UnityEngine;
+﻿using System;
+using Cofe.Serializations.Converters;
 
 namespace Engine.Source.Connections
 {
@@ -15,18 +14,18 @@ namespace Engine.Source.Connections
     public void OnAfterDeserialize()
     {
       DateTime result;
-      if (this.data != null && DefaultConverter.TryParseDateTime(this.data, out result))
-        this.Value = result;
+      if (data != null && DefaultConverter.TryParseDateTime(data, out result))
+        Value = result;
       else
-        this.Value = DateTime.MinValue;
+        Value = DateTime.MinValue;
     }
 
     public void OnBeforeSerialize()
     {
-      if (this.Value != DateTime.MinValue)
-        this.data = DefaultConverter.ToString(this.Value);
+      if (Value != DateTime.MinValue)
+        data = DefaultConverter.ToString(Value);
       else
-        this.data = "";
+        data = "";
     }
   }
 }

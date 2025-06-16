@@ -1,9 +1,6 @@
 ﻿using Cofe.Proxies;
-using Engine.Common.Components.Regions;
-using PLVirtualMachine.Common.EngineAPI;
 using PLVirtualMachine.Common.EngineAPI.VMECS;
 using PLVirtualMachine.Objects;
-using System;
 
 namespace PLVirtualMachine.Dynamic.Components
 {
@@ -20,7 +17,7 @@ namespace PLVirtualMachine.Dynamic.Components
     {
       if (!(target.Name == "TravelToPoint"))
         return;
-      this.TravelToPoint += (Action<FastTravelPointEnum, GameTime>) ((p1, p2) => target.RaiseFromEngineImpl((object) p1, (object) p2));
+      TravelToPoint += (p1, p2) => target.RaiseFromEngineImpl(p1, p2);
     }
   }
 }

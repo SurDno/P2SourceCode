@@ -1,6 +1,5 @@
-﻿using Cinemachine.Utility;
-using System;
-using UnityEngine;
+﻿using System;
+using Cinemachine.Utility;
 
 namespace Cinemachine
 {
@@ -13,7 +12,7 @@ namespace Cinemachine
   {
     [NoSaveDuringPlay]
     [HideInInspector]
-    public Action OnGUICallback = (Action) null;
+    public Action OnGUICallback = null;
     [Tooltip("Target offset from the target object's center in target-local space. Use this to fine-tune the tracking target position when the desired area is not the tracked object's center.")]
     public Vector3 m_TrackedObjectOffset = Vector3.zero;
     [Tooltip("This setting will instruct the composer to adjust its target offset based on the motion of the target.  The composer will look at a point where it estimates the target will be this many seconds into the future.  Note that this setting is sensitive to noisy animation, and can amplify the noise, resulting in undesirable camera jitter.  If the camera jitters unacceptably when the target is in motion, turn down this setting, or animate the target more smoothly.")]
@@ -50,17 +49,17 @@ namespace Cinemachine
     public float m_SoftZoneHeight = 0.8f;
     [Range(-0.5f, 0.5f)]
     [Tooltip("A non-zero bias will move the target position horizontally away from the center of the soft zone.")]
-    public float m_BiasX = 0.0f;
+    public float m_BiasX;
     [Range(-0.5f, 0.5f)]
     [Tooltip("A non-zero bias will move the target position vertically away from the center of the soft zone.")]
-    public float m_BiasY = 0.0f;
+    public float m_BiasY;
     private Vector3 m_CameraPosPrevFrame = Vector3.zero;
     private Vector3 m_LookAtPrevFrame = Vector3.zero;
     private Vector2 m_ScreenOffsetPrevFrame = Vector2.zero;
     private Quaternion m_CameraOrientationPrevFrame = Quaternion.identity;
     private PositionPredictor m_Predictor = new PositionPredictor();
 
-    public override bool IsValid => this.enabled && (UnityEngine.Object) this.LookAtTarget != (UnityEngine.Object) null;
+    public override bool IsValid => this.enabled && (UnityEngine.Object) LookAtTarget != (UnityEngine.Object) null;
 
     public override CinemachineCore.Stage Stage => CinemachineCore.Stage.Aim;
 
@@ -69,33 +68,33 @@ namespace Cinemachine
     protected virtual Vector3 GetLookAtPointAndSetTrackedPoint(Vector3 lookAt)
     {
       Vector3 pos = lookAt;
-      if ((UnityEngine.Object) this.LookAtTarget != (UnityEngine.Object) null)
-        pos += this.LookAtTarget.transform.rotation * this.m_TrackedObjectOffset;
-      this.m_Predictor.Smoothing = this.m_LookaheadSmoothing;
-      this.m_Predictor.AddPosition(pos);
-      this.TrackedPoint = (double) this.m_LookaheadTime > 0.0 ? this.m_Predictor.PredictPosition(this.m_LookaheadTime) : pos;
+      if ((UnityEngine.Object) LookAtTarget != (UnityEngine.Object) null)
+        pos += LookAtTarget.transform.rotation * m_TrackedObjectOffset;
+      m_Predictor.Smoothing = m_LookaheadSmoothing;
+      m_Predictor.AddPosition(pos);
+      TrackedPoint = m_LookaheadTime > 0.0 ? m_Predictor.PredictPosition(m_LookaheadTime) : pos;
       return pos;
     }
 
     public override void PrePipelineMutateCameraState(ref CameraState curState)
     {
-      if (!this.IsValid || !curState.HasLookAt)
+      if (!IsValid || !curState.HasLookAt)
         return;
-      curState.ReferenceLookAt = this.GetLookAtPointAndSetTrackedPoint(curState.ReferenceLookAt);
+      curState.ReferenceLookAt = GetLookAtPointAndSetTrackedPoint(curState.ReferenceLookAt);
     }
 
     public override void MutateCameraState(ref CameraState curState, float deltaTime)
     {
-      if ((double) deltaTime < 0.0)
-        this.m_Predictor.Reset();
-      if (!this.IsValid || !curState.HasLookAt)
+      if (deltaTime < 0.0)
+        m_Predictor.Reset();
+      if (!IsValid || !curState.HasLookAt)
         return;
-      float magnitude = (this.TrackedPoint - curState.CorrectedPosition).magnitude;
-      if ((double) magnitude < 9.9999997473787516E-05)
+      float magnitude = (TrackedPoint - curState.CorrectedPosition).magnitude;
+      if (magnitude < 9.9999997473787516E-05)
       {
-        if ((double) deltaTime < 0.0)
+        if (deltaTime < 0.0)
           return;
-        curState.RawOrientation = this.m_CameraOrientationPrevFrame;
+        curState.RawOrientation = m_CameraOrientationPrevFrame;
       }
       else
       {
@@ -111,38 +110,38 @@ namespace Cinemachine
         else
         {
           fov1 = curState.Lens.FieldOfView;
-          fovH1 = (float) (57.295780181884766 * (2.0 * Math.Atan(Math.Tan((double) fov1 * (Math.PI / 180.0) / 2.0) * (double) curState.Lens.Aspect)));
+          fovH1 = (float) (57.295780181884766 * (2.0 * Math.Atan(Math.Tan(fov1 * (Math.PI / 180.0) / 2.0) * curState.Lens.Aspect)));
         }
         Quaternion rigOrientation = curState.RawOrientation;
-        Rect softGuideRect = this.SoftGuideRect;
-        double fov2 = (double) fov1;
-        double fovH2 = (double) fovH1;
+        Rect softGuideRect = SoftGuideRect;
+        double fov2 = fov1;
+        double fovH2 = fovH1;
         lens = curState.Lens;
-        double aspect1 = (double) lens.Aspect;
-        Rect fov3 = this.ScreenToFOV(softGuideRect, (float) fov2, (float) fovH2, (float) aspect1);
-        if ((double) deltaTime < 0.0)
+        double aspect1 = lens.Aspect;
+        Rect fov3 = ScreenToFOV(softGuideRect, (float) fov2, (float) fovH2, (float) aspect1);
+        if (deltaTime < 0.0)
         {
           Rect screenRect = new Rect(fov3.center, Vector2.zero);
-          this.RotateToScreenBounds(ref curState, screenRect, ref rigOrientation, fov1, fovH1, -1f);
+          RotateToScreenBounds(ref curState, screenRect, ref rigOrientation, fov1, fovH1, -1f);
         }
         else
         {
-          Vector3 vector3 = this.m_LookAtPrevFrame - (this.m_CameraPosPrevFrame + curState.PositionDampingBypass);
-          rigOrientation = !vector3.AlmostZero() ? Quaternion.LookRotation(vector3, curState.ReferenceUp).ApplyCameraRotation(-this.m_ScreenOffsetPrevFrame, curState.ReferenceUp) : Quaternion.LookRotation(this.m_CameraOrientationPrevFrame * Vector3.forward, curState.ReferenceUp);
-          Rect hardGuideRect = this.HardGuideRect;
-          double fov4 = (double) fov1;
-          double fovH3 = (double) fovH1;
+          Vector3 vector3 = m_LookAtPrevFrame - (m_CameraPosPrevFrame + curState.PositionDampingBypass);
+          rigOrientation = !vector3.AlmostZero() ? Quaternion.LookRotation(vector3, curState.ReferenceUp).ApplyCameraRotation(-m_ScreenOffsetPrevFrame, curState.ReferenceUp) : Quaternion.LookRotation(m_CameraOrientationPrevFrame * Vector3.forward, curState.ReferenceUp);
+          Rect hardGuideRect = HardGuideRect;
+          double fov4 = fov1;
+          double fovH3 = fovH1;
           lens = curState.Lens;
-          double aspect2 = (double) lens.Aspect;
-          Rect fov5 = this.ScreenToFOV(hardGuideRect, (float) fov4, (float) fovH3, (float) aspect2);
-          if (!this.RotateToScreenBounds(ref curState, fov5, ref rigOrientation, fov1, fovH1, -1f))
-            this.RotateToScreenBounds(ref curState, fov3, ref rigOrientation, fov1, fovH1, deltaTime);
+          double aspect2 = lens.Aspect;
+          Rect fov5 = ScreenToFOV(hardGuideRect, (float) fov4, (float) fovH3, (float) aspect2);
+          if (!RotateToScreenBounds(ref curState, fov5, ref rigOrientation, fov1, fovH1, -1f))
+            RotateToScreenBounds(ref curState, fov3, ref rigOrientation, fov1, fovH1, deltaTime);
         }
-        this.m_CameraPosPrevFrame = curState.CorrectedPosition;
-        this.m_LookAtPrevFrame = this.TrackedPoint;
-        this.m_CameraOrientationPrevFrame = rigOrientation.Normalized();
-        this.m_ScreenOffsetPrevFrame = this.m_CameraOrientationPrevFrame.GetCameraRotationToTarget(this.m_LookAtPrevFrame - curState.CorrectedPosition, curState.ReferenceUp);
-        curState.RawOrientation = this.m_CameraOrientationPrevFrame;
+        m_CameraPosPrevFrame = curState.CorrectedPosition;
+        m_LookAtPrevFrame = TrackedPoint;
+        m_CameraOrientationPrevFrame = rigOrientation.Normalized();
+        m_ScreenOffsetPrevFrame = m_CameraOrientationPrevFrame.GetCameraRotationToTarget(m_LookAtPrevFrame - curState.CorrectedPosition, curState.ReferenceUp);
+        curState.RawOrientation = m_CameraOrientationPrevFrame;
       }
     }
 
@@ -150,16 +149,16 @@ namespace Cinemachine
     {
       get
       {
-        return new Rect(this.m_ScreenX - this.m_DeadZoneWidth / 2f, this.m_ScreenY - this.m_DeadZoneHeight / 2f, this.m_DeadZoneWidth, this.m_DeadZoneHeight);
+        return new Rect(m_ScreenX - m_DeadZoneWidth / 2f, m_ScreenY - m_DeadZoneHeight / 2f, m_DeadZoneWidth, m_DeadZoneHeight);
       }
       set
       {
-        this.m_DeadZoneWidth = Mathf.Clamp01(value.width);
-        this.m_DeadZoneHeight = Mathf.Clamp01(value.height);
-        this.m_ScreenX = Mathf.Clamp01(value.x + this.m_DeadZoneWidth / 2f);
-        this.m_ScreenY = Mathf.Clamp01(value.y + this.m_DeadZoneHeight / 2f);
-        this.m_SoftZoneWidth = Mathf.Max(this.m_SoftZoneWidth, this.m_DeadZoneWidth);
-        this.m_SoftZoneHeight = Mathf.Max(this.m_SoftZoneHeight, this.m_DeadZoneHeight);
+        m_DeadZoneWidth = Mathf.Clamp01(value.width);
+        m_DeadZoneHeight = Mathf.Clamp01(value.height);
+        m_ScreenX = Mathf.Clamp01(value.x + m_DeadZoneWidth / 2f);
+        m_ScreenY = Mathf.Clamp01(value.y + m_DeadZoneHeight / 2f);
+        m_SoftZoneWidth = Mathf.Max(m_SoftZoneWidth, m_DeadZoneWidth);
+        m_SoftZoneHeight = Mathf.Max(m_SoftZoneHeight, m_DeadZoneHeight);
       }
     }
 
@@ -167,21 +166,21 @@ namespace Cinemachine
     {
       get
       {
-        Rect hardGuideRect = new Rect(this.m_ScreenX - this.m_SoftZoneWidth / 2f, this.m_ScreenY - this.m_SoftZoneHeight / 2f, this.m_SoftZoneWidth, this.m_SoftZoneHeight);
-        hardGuideRect.position += new Vector2(this.m_BiasX * (this.m_SoftZoneWidth - this.m_DeadZoneWidth), this.m_BiasY * (this.m_SoftZoneHeight - this.m_DeadZoneHeight));
+        Rect hardGuideRect = new Rect(m_ScreenX - m_SoftZoneWidth / 2f, m_ScreenY - m_SoftZoneHeight / 2f, m_SoftZoneWidth, m_SoftZoneHeight);
+        hardGuideRect.position += new Vector2(m_BiasX * (m_SoftZoneWidth - m_DeadZoneWidth), m_BiasY * (m_SoftZoneHeight - m_DeadZoneHeight));
         return hardGuideRect;
       }
       set
       {
-        this.m_SoftZoneWidth = Mathf.Clamp(value.width, 0.0f, 2f);
-        this.m_SoftZoneHeight = Mathf.Clamp(value.height, 0.0f, 2f);
-        this.m_DeadZoneWidth = Mathf.Min(this.m_DeadZoneWidth, this.m_SoftZoneWidth);
-        this.m_DeadZoneHeight = Mathf.Min(this.m_DeadZoneHeight, this.m_SoftZoneHeight);
-        Vector2 vector2 = value.center - new Vector2(this.m_ScreenX, this.m_ScreenY);
-        float num1 = Mathf.Max(0.0f, this.m_SoftZoneWidth - this.m_DeadZoneWidth);
-        float num2 = Mathf.Max(0.0f, this.m_SoftZoneHeight - this.m_DeadZoneHeight);
-        this.m_BiasX = (double) num1 < 9.9999997473787516E-05 ? 0.0f : Mathf.Clamp(vector2.x / num1, -0.5f, 0.5f);
-        this.m_BiasY = (double) num2 < 9.9999997473787516E-05 ? 0.0f : Mathf.Clamp(vector2.y / num2, -0.5f, 0.5f);
+        m_SoftZoneWidth = Mathf.Clamp(value.width, 0.0f, 2f);
+        m_SoftZoneHeight = Mathf.Clamp(value.height, 0.0f, 2f);
+        m_DeadZoneWidth = Mathf.Min(m_DeadZoneWidth, m_SoftZoneWidth);
+        m_DeadZoneHeight = Mathf.Min(m_DeadZoneHeight, m_SoftZoneHeight);
+        Vector2 vector2 = value.center - new Vector2(m_ScreenX, m_ScreenY);
+        float num1 = Mathf.Max(0.0f, m_SoftZoneWidth - m_DeadZoneWidth);
+        float num2 = Mathf.Max(0.0f, m_SoftZoneHeight - m_DeadZoneHeight);
+        m_BiasX = num1 < 9.9999997473787516E-05 ? 0.0f : Mathf.Clamp(vector2.x / num1, -0.5f, 0.5f);
+        m_BiasY = num2 < 9.9999997473787516E-05 ? 0.0f : Mathf.Clamp(vector2.y / num2, -0.5f, 0.5f);
       }
     }
 
@@ -216,29 +215,29 @@ namespace Cinemachine
       float fovH,
       float deltaTime)
     {
-      Vector3 vector3 = this.TrackedPoint - state.CorrectedPosition;
+      Vector3 vector3 = TrackedPoint - state.CorrectedPosition;
       Vector2 rotationToTarget = rigOrientation.GetCameraRotationToTarget(vector3, state.ReferenceUp);
-      this.ClampVerticalBounds(ref screenRect, vector3, state.ReferenceUp, fov);
+      ClampVerticalBounds(ref screenRect, vector3, state.ReferenceUp, fov);
       float num1 = (screenRect.yMin - 0.5f) * fov;
       float num2 = (screenRect.yMax - 0.5f) * fov;
-      if ((double) rotationToTarget.x < (double) num1)
+      if ((double) rotationToTarget.x < num1)
         rotationToTarget.x -= num1;
-      else if ((double) rotationToTarget.x > (double) num2)
+      else if ((double) rotationToTarget.x > num2)
         rotationToTarget.x -= num2;
       else
         rotationToTarget.x = 0.0f;
       float num3 = (screenRect.xMin - 0.5f) * fovH;
       float num4 = (screenRect.xMax - 0.5f) * fovH;
-      if ((double) rotationToTarget.y < (double) num3)
+      if ((double) rotationToTarget.y < num3)
         rotationToTarget.y -= num3;
-      else if ((double) rotationToTarget.y > (double) num4)
+      else if ((double) rotationToTarget.y > num4)
         rotationToTarget.y -= num4;
       else
         rotationToTarget.y = 0.0f;
-      if ((double) deltaTime >= 0.0)
+      if (deltaTime >= 0.0)
       {
-        rotationToTarget.x = Damper.Damp(rotationToTarget.x, this.m_VerticalDamping, deltaTime);
-        rotationToTarget.y = Damper.Damp(rotationToTarget.y, this.m_HorizontalDamping, deltaTime);
+        rotationToTarget.x = Damper.Damp(rotationToTarget.x, m_VerticalDamping, deltaTime);
+        rotationToTarget.y = Damper.Damp(rotationToTarget.y, m_HorizontalDamping, deltaTime);
       }
       rigOrientation = rigOrientation.ApplyCameraRotation(rotationToTarget, state.ReferenceUp);
       return false;
@@ -247,21 +246,21 @@ namespace Cinemachine
     private bool ClampVerticalBounds(ref Rect r, Vector3 dir, Vector3 up, float fov)
     {
       float num1 = Vector3.Angle(dir, up);
-      float num2 = (float) ((double) fov / 2.0 + 1.0);
-      if ((double) num1 < (double) num2)
+      float num2 = (float) (fov / 2.0 + 1.0);
+      if (num1 < (double) num2)
       {
-        float b = (float) (1.0 - ((double) num2 - (double) num1) / (double) fov);
-        if ((double) r.yMax > (double) b)
+        float b = (float) (1.0 - (num2 - (double) num1) / fov);
+        if ((double) r.yMax > b)
         {
           r.yMin = Mathf.Min(r.yMin, b);
           r.yMax = Mathf.Min(r.yMax, b);
           return true;
         }
       }
-      if ((double) num1 > 180.0 - (double) num2)
+      if (num1 > 180.0 - num2)
       {
         float b = (num1 - (180f - num2)) / fov;
-        if ((double) b > (double) r.yMin)
+        if (b > (double) r.yMin)
         {
           r.yMin = Mathf.Max(r.yMin, b);
           r.yMax = Mathf.Max(r.yMax, b);

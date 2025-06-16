@@ -1,14 +1,11 @@
-﻿using Engine.Common;
+﻿using System.Collections.Generic;
+using System.Linq;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Engine.Source.Connections;
 using Engine.Source.Effects.Values;
 using Engine.Source.Services;
 using Inspectors;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
 
 namespace Engine.Source.Commons.Abilities
 {
@@ -16,27 +13,27 @@ namespace Engine.Source.Commons.Abilities
   [GenerateProxy(TypeEnum.Copyable | TypeEnum.EngineCloneable | TypeEnum.DataRead | TypeEnum.DataWrite)]
   public class TestAbilityValueContainer : EngineObject, IAbilityValueContainer
   {
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
     [Inspected(Mutable = true, Mode = ExecuteMode.EditAndRuntime)]
-    [CopyableProxy(MemberEnum.None)]
+    [CopyableProxy]
     protected List<AbilityValueInfo> values = new List<AbilityValueInfo>();
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
     [Inspected(Mutable = true, Mode = ExecuteMode.EditAndRuntime)]
-    [CopyableProxy(MemberEnum.None)]
+    [CopyableProxy()]
     protected UnityAsset<GameObject> blueprint;
 
     public IAbilityValue<T> GetAbilityValue<T>(AbilityValueNameEnum name) where T : struct
     {
-      AbilityValueInfo abilityValueInfo = this.values.FirstOrDefault<AbilityValueInfo>((Func<AbilityValueInfo, bool>) (o => o.Name == name));
-      return abilityValueInfo != null ? abilityValueInfo.Value as IAbilityValue<T> : (IAbilityValue<T>) null;
+      AbilityValueInfo abilityValueInfo = values.FirstOrDefault(o => o.Name == name);
+      return abilityValueInfo != null ? abilityValueInfo.Value as IAbilityValue<T> : null;
     }
 
     [Inspected]
     private void CreateEffect()
     {
-      BlueprintServiceUtility.Start(this.blueprint, (IAbilityValueContainer) this, (IEntity) null);
+      BlueprintServiceUtility.Start(blueprint, this, null);
     }
   }
 }

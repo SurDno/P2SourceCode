@@ -1,29 +1,28 @@
 ﻿using System;
-using UnityEngine;
 
 namespace RootMotion.FinalIK
 {
   public class AimPoser : MonoBehaviour
   {
     public float angleBuffer = 5f;
-    public AimPoser.Pose[] poses = new AimPoser.Pose[0];
+    public Pose[] poses = new Pose[0];
 
-    public AimPoser.Pose GetPose(Vector3 localDirection)
+    public Pose GetPose(Vector3 localDirection)
     {
-      if (this.poses.Length == 0)
-        return (AimPoser.Pose) null;
-      for (int index = 0; index < this.poses.Length - 1; ++index)
+      if (poses.Length == 0)
+        return null;
+      for (int index = 0; index < poses.Length - 1; ++index)
       {
-        if (this.poses[index].IsInDirection(localDirection))
-          return this.poses[index];
+        if (poses[index].IsInDirection(localDirection))
+          return poses[index];
       }
-      return this.poses[this.poses.Length - 1];
+      return poses[poses.Length - 1];
     }
 
-    public void SetPoseActive(AimPoser.Pose pose)
+    public void SetPoseActive(Pose pose)
     {
-      for (int index = 0; index < this.poses.Length; ++index)
-        this.poses[index].SetAngleBuffer(this.poses[index] == pose ? this.angleBuffer : 0.0f);
+      for (int index = 0; index < poses.Length; ++index)
+        poses[index].SetAngleBuffer(poses[index] == pose ? angleBuffer : 0.0f);
     }
 
     [Serializable]
@@ -38,23 +37,23 @@ namespace RootMotion.FinalIK
 
       public bool IsInDirection(Vector3 d)
       {
-        if (this.direction == Vector3.zero || (double) this.yaw <= 0.0 || (double) this.pitch <= 0.0)
+        if (direction == Vector3.zero || yaw <= 0.0 || pitch <= 0.0)
           return false;
-        if ((double) this.yaw < 180.0)
+        if (yaw < 180.0)
         {
-          Vector3 to = new Vector3(this.direction.x, 0.0f, this.direction.z);
+          Vector3 to = new Vector3(direction.x, 0.0f, direction.z);
           if (to == Vector3.zero)
             to = Vector3.forward;
-          if ((double) Vector3.Angle(new Vector3(d.x, 0.0f, d.z), to) > (double) this.yaw + (double) this.angleBuffer)
+          if ((double) Vector3.Angle(new Vector3(d.x, 0.0f, d.z), to) > yaw + (double) angleBuffer)
             return false;
         }
-        if ((double) this.pitch >= 180.0)
+        if (pitch >= 180.0)
           return true;
-        float num = Vector3.Angle(Vector3.up, this.direction);
-        return (double) Mathf.Abs(Vector3.Angle(Vector3.up, d) - num) < (double) this.pitch + (double) this.angleBuffer;
+        float num = Vector3.Angle(Vector3.up, direction);
+        return (double) Mathf.Abs(Vector3.Angle(Vector3.up, d) - num) < pitch + (double) angleBuffer;
       }
 
-      public void SetAngleBuffer(float value) => this.angleBuffer = value;
+      public void SetAngleBuffer(float value) => angleBuffer = value;
     }
   }
 }

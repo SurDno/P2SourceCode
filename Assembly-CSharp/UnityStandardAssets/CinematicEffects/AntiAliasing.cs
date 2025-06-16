@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace UnityStandardAssets.CinematicEffects
+﻿namespace UnityStandardAssets.CinematicEffects
 {
   [ExecuteInEditMode]
   [RequireComponent(typeof (Camera))]
@@ -14,54 +12,54 @@ namespace UnityStandardAssets.CinematicEffects
     private FXAA m_FXAA = new FXAA();
     [SerializeField]
     [HideInInspector]
-    private int m_Method = 0;
+    private int m_Method;
     private Camera m_Camera;
 
     public int method
     {
-      get => this.m_Method;
+      get => m_Method;
       set
       {
-        if (this.m_Method == value)
+        if (m_Method == value)
           return;
-        this.m_Method = value;
+        m_Method = value;
       }
     }
 
     public IAntiAliasing current
     {
-      get => this.method == 0 ? (IAntiAliasing) this.m_SMAA : (IAntiAliasing) this.m_FXAA;
+      get => method == 0 ? m_SMAA : m_FXAA;
     }
 
     public Camera cameraComponent
     {
       get
       {
-        if ((Object) this.m_Camera == (Object) null)
-          this.m_Camera = this.GetComponent<Camera>();
-        return this.m_Camera;
+        if ((Object) m_Camera == (Object) null)
+          m_Camera = this.GetComponent<Camera>();
+        return m_Camera;
       }
     }
 
     private void OnEnable()
     {
-      this.m_SMAA.OnEnable(this);
-      this.m_FXAA.OnEnable(this);
+      m_SMAA.OnEnable(this);
+      m_FXAA.OnEnable(this);
     }
 
     private void OnDisable()
     {
-      this.m_SMAA.OnDisable();
-      this.m_FXAA.OnDisable();
+      m_SMAA.OnDisable();
+      m_FXAA.OnDisable();
     }
 
-    private void OnPreCull() => this.current.OnPreCull(this.cameraComponent);
+    private void OnPreCull() => current.OnPreCull(cameraComponent);
 
-    private void OnPostRender() => this.current.OnPostRender(this.cameraComponent);
+    private void OnPostRender() => current.OnPostRender(cameraComponent);
 
     private void OnRenderImage(RenderTexture source, RenderTexture destination)
     {
-      this.current.OnRenderImage(this.cameraComponent, source, destination);
+      current.OnRenderImage(cameraComponent, source, destination);
     }
 
     public enum Method

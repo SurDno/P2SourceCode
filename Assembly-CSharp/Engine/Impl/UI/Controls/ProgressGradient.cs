@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace Engine.Impl.UI.Controls
+﻿namespace Engine.Impl.UI.Controls
 {
   public class ProgressGradient : ProgressView
   {
@@ -15,11 +13,11 @@ namespace Engine.Impl.UI.Controls
 
     protected override void ApplyProgress()
     {
-      if ((Object) this.endGradient != (Object) null)
-        this.endGradient.EndPosition = this.Progress;
-      if (!((Object) this.startGradient != (Object) null))
+      if ((Object) endGradient != (Object) null)
+        endGradient.EndPosition = Progress;
+      if (!((Object) startGradient != (Object) null))
         return;
-      this.startGradient.StartPosition = this.Progress;
+      startGradient.StartPosition = Progress;
     }
   }
 }

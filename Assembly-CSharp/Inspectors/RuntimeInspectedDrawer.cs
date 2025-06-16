@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
 
 namespace Inspectors
 {
@@ -10,7 +9,7 @@ namespace Inspectors
     public static readonly RuntimeInspectedDrawer Instance = new RuntimeInspectedDrawer();
     private const int indentSize = 16;
     private const int labelWidth = 300;
-    private List<RuntimeInspectedDrawer.ContextMenuItem> menuItems = new List<RuntimeInspectedDrawer.ContextMenuItem>();
+    private List<ContextMenuItem> menuItems = new List<ContextMenuItem>();
     private GUISkin skin;
     private GUIStyle foldout;
     private GUIStyle popup;
@@ -19,15 +18,15 @@ namespace Inspectors
     {
       get
       {
-        if ((UnityEngine.Object) this.skin == (UnityEngine.Object) null)
+        if ((UnityEngine.Object) skin == (UnityEngine.Object) null)
         {
-          this.skin = Resources.Load<GUISkin>("EditorSkin");
-          if ((UnityEngine.Object) this.skin == (UnityEngine.Object) null)
-            this.skin = GUI.skin;
-          this.foldout = ((IEnumerable<GUIStyle>) this.skin.customStyles).FirstOrDefault<GUIStyle>((Func<GUIStyle, bool>) (o => o.name == "Foldout"));
-          this.popup = ((IEnumerable<GUIStyle>) this.skin.customStyles).FirstOrDefault<GUIStyle>((Func<GUIStyle, bool>) (o => o.name == "MiniPopup"));
+          skin = Resources.Load<GUISkin>("EditorSkin");
+          if ((UnityEngine.Object) skin == (UnityEngine.Object) null)
+            skin = GUI.skin;
+          foldout = ((IEnumerable<GUIStyle>) skin.customStyles).FirstOrDefault((Func<GUIStyle, bool>) (o => o.name == "Foldout"));
+          popup = ((IEnumerable<GUIStyle>) skin.customStyles).FirstOrDefault((Func<GUIStyle, bool>) (o => o.name == "MiniPopup"));
         }
-        return this.skin;
+        return skin;
       }
     }
 
@@ -37,37 +36,37 @@ namespace Inspectors
 
     public bool BoolField(string name, bool value)
     {
-      int indentLevel = this.IndentLevel;
-      this.IndentLevel = 0;
+      int indentLevel = IndentLevel;
+      IndentLevel = 0;
       GUILayout.BeginHorizontal();
       GUILayout.Space((float) (indentLevel * 16));
       GUILayout.Label(name, GUILayout.Width(300f));
       value = GUILayout.Toggle(value, "");
       GUILayout.FlexibleSpace();
       GUILayout.EndHorizontal();
-      this.IndentLevel = indentLevel;
+      IndentLevel = indentLevel;
       return value;
     }
 
     public Enum EnumPopup(string name, Enum value, IExpandedProvider context)
     {
-      int indentLevel = this.IndentLevel;
-      this.IndentLevel = 0;
+      int indentLevel = IndentLevel;
+      IndentLevel = 0;
       GUILayout.BeginHorizontal();
       GUILayout.Space((float) (indentLevel * 16));
       GUILayout.Label(name, GUILayout.Width(300f));
       bool flag = context.GetExpanded(context.DeepName + name);
-      if (GUILayout.Button(value.ToString(), this.popup))
+      if (GUILayout.Button(value.ToString(), popup))
       {
         flag = !flag;
         context.SetExpanded(context.DeepName + name, flag);
       }
       GUILayout.EndHorizontal();
-      this.IndentLevel = indentLevel;
+      IndentLevel = indentLevel;
       if (flag)
       {
         Enum @enum = value;
-        value = this.DrawEnum(value);
+        value = DrawEnum(value);
         if (@enum != value)
           context.SetExpanded(context.DeepName + name, false);
       }
@@ -76,33 +75,33 @@ namespace Inspectors
 
     public Enum EnumSortedPopup(string name, Enum value, IExpandedProvider context)
     {
-      return this.EnumPopup(name, value, context);
+      return EnumPopup(name, value, context);
     }
 
     public Enum EnumMaskPopup(string name, Enum value, IExpandedProvider context)
     {
-      return this.EnumPopup(name, value, context);
+      return EnumPopup(name, value, context);
     }
 
     public string ListPopup(string name, string value, string[] values, IExpandedProvider context)
     {
-      int indentLevel = this.IndentLevel;
-      this.IndentLevel = 0;
+      int indentLevel = IndentLevel;
+      IndentLevel = 0;
       GUILayout.BeginHorizontal();
       GUILayout.Space((float) (indentLevel * 16));
       GUILayout.Label(name, GUILayout.Width(300f));
       bool flag = context.GetExpanded(context.DeepName + name);
-      if (GUILayout.Button(value.ToString(), this.popup))
+      if (GUILayout.Button(value, popup))
       {
         flag = !flag;
         context.SetExpanded(context.DeepName + name, flag);
       }
       GUILayout.EndHorizontal();
-      this.IndentLevel = indentLevel;
+      IndentLevel = indentLevel;
       if (flag)
       {
         string str = value;
-        value = this.DrawList(value, values);
+        value = DrawList(value, values);
         if (str != value)
           context.SetExpanded(context.DeepName + name, false);
       }
@@ -115,12 +114,12 @@ namespace Inspectors
       Array values = Enum.GetValues(value.GetType());
       if (names.Length != values.Length)
         return value;
-      int indentLevel = this.IndentLevel;
-      this.IndentLevel = 0;
+      int indentLevel = IndentLevel;
+      IndentLevel = 0;
       GUILayout.BeginHorizontal();
       GUILayout.Space((float) (indentLevel * 16));
       GUILayout.Space(316f);
-      GUILayout.BeginVertical(this.Skin.box);
+      GUILayout.BeginVertical(Skin.box);
       for (int index = 0; index < names.Length; ++index)
       {
         if (GUILayout.Button(names[index]))
@@ -128,18 +127,18 @@ namespace Inspectors
       }
       GUILayout.EndVertical();
       GUILayout.EndHorizontal();
-      this.IndentLevel = indentLevel;
+      IndentLevel = indentLevel;
       return value;
     }
 
     private string DrawList(string value, string[] values)
     {
-      int indentLevel = this.IndentLevel;
-      this.IndentLevel = 0;
+      int indentLevel = IndentLevel;
+      IndentLevel = 0;
       GUILayout.BeginHorizontal();
       GUILayout.Space((float) (indentLevel * 16));
       GUILayout.Space(316f);
-      GUILayout.BeginVertical(this.Skin.box);
+      GUILayout.BeginVertical(Skin.box);
       for (int index = 0; index < values.Length; ++index)
       {
         if (GUILayout.Button(values[index]))
@@ -147,14 +146,14 @@ namespace Inspectors
       }
       GUILayout.EndVertical();
       GUILayout.EndHorizontal();
-      this.IndentLevel = indentLevel;
+      IndentLevel = indentLevel;
       return value;
     }
 
     public float FloatField(string name, float value)
     {
       string str = value.ToString();
-      string s = this.TextField(name, str);
+      string s = TextField(name, str);
       if (str != s)
         float.TryParse(s, out value);
       return value;
@@ -162,13 +161,13 @@ namespace Inspectors
 
     public float SliderField(string name, float value, float min, float max)
     {
-      return this.FloatField(name, value);
+      return FloatField(name, value);
     }
 
     public double DoubleField(string name, double value)
     {
       string str = value.ToString();
-      string s = this.TextField(name, str);
+      string s = TextField(name, str);
       if (str != s)
         double.TryParse(s, out value);
       return value;
@@ -178,14 +177,14 @@ namespace Inspectors
     {
       bool enabled = GUI.enabled;
       GUI.enabled = true;
-      int indentLevel = this.IndentLevel;
-      this.IndentLevel = 0;
+      int indentLevel = IndentLevel;
+      IndentLevel = 0;
       GUILayout.BeginHorizontal();
       GUILayout.Space((float) (indentLevel * 16));
-      value = GUILayout.Toggle(value, name, this.foldout);
+      value = GUILayout.Toggle(value, name, foldout);
       GUILayout.FlexibleSpace();
       GUILayout.EndHorizontal();
-      this.IndentLevel = indentLevel;
+      IndentLevel = indentLevel;
       GUI.enabled = enabled;
       return value;
     }
@@ -193,7 +192,7 @@ namespace Inspectors
     public int IntField(string name, int value)
     {
       string str = value.ToString();
-      string s = this.TextField(name, str);
+      string s = TextField(name, str);
       if (str != s)
         int.TryParse(s, out value);
       return value;
@@ -202,85 +201,85 @@ namespace Inspectors
     public long LongField(string name, long value)
     {
       string str = value.ToString();
-      string s = this.TextField(name, str);
+      string s = TextField(name, str);
       if (str != s)
         long.TryParse(s, out value);
       return value;
     }
 
-    public UnityEngine.Object ObjectField(string name, UnityEngine.Object value, System.Type type)
+    public UnityEngine.Object ObjectField(string name, UnityEngine.Object value, Type type)
     {
-      this.TextField(name, value != (UnityEngine.Object) null ? ((object) value).ToString() : "null");
+      TextField(name, value != (UnityEngine.Object) null ? ((object) value).ToString() : "null");
       return value;
     }
 
     public Rect RectField(string name, Rect value)
     {
-      this.TextField(name, value.ToString());
+      TextField(name, value.ToString());
       return value;
     }
 
     public Bounds BoundsField(string name, Bounds value)
     {
-      this.TextField(name, value.ToString());
+      TextField(name, value.ToString());
       return value;
     }
 
-    public string MultiTextField(string name, string value) => this.TextField(name, value);
+    public string MultiTextField(string name, string value) => TextField(name, value);
 
     public string TextField(string name, string value)
     {
-      int indentLevel = this.IndentLevel;
-      this.IndentLevel = 0;
+      int indentLevel = IndentLevel;
+      IndentLevel = 0;
       GUILayout.BeginHorizontal();
       GUILayout.Space((float) (indentLevel * 16));
       GUILayout.Label(name, GUILayout.Width(300f));
       value = GUILayout.TextField(value ?? "");
       GUILayout.EndHorizontal();
-      this.IndentLevel = indentLevel;
+      IndentLevel = indentLevel;
       return value;
     }
 
     public Vector2 Vector2Field(string name, Vector2 value)
     {
-      this.TextField(name, value.ToString());
+      TextField(name, value.ToString());
       return value;
     }
 
     public Vector3 Vector3Field(string name, Vector3 value)
     {
-      this.TextField(name, value.ToString());
+      TextField(name, value.ToString());
       return value;
     }
 
     public Vector4 Vector4Field(string name, Vector4 value)
     {
-      this.TextField(name, value.ToString());
+      TextField(name, value.ToString());
       return value;
     }
 
     public Color ColorField(string name, Color value)
     {
-      this.TextField(name, value.ToString());
+      TextField(name, value.ToString());
       return value;
     }
 
     public bool ButtonField(string name)
     {
-      int indentLevel = this.IndentLevel;
-      this.IndentLevel = 0;
+      int indentLevel = IndentLevel;
+      IndentLevel = 0;
       GUILayout.BeginHorizontal();
       GUILayout.Space((float) (indentLevel * 16));
       bool flag = GUILayout.Button(name);
       GUILayout.EndHorizontal();
-      this.IndentLevel = indentLevel;
+      IndentLevel = indentLevel;
       return flag;
     }
 
     public IContextMenu CreateMenu()
     {
-      this.menuItems.Clear();
-      return (IContextMenu) this;
+      menuItems.Clear();
+      return this;
     }
 
     public bool MenuVisible { get; private set; }
@@ -288,29 +287,28 @@ namespace Inspectors
     public void DrawContextMenu()
     {
       GUILayout.BeginVertical();
-      for (int index = 0; index < this.menuItems.Count; ++index)
+      for (int index = 0; index < menuItems.Count; ++index)
       {
-        RuntimeInspectedDrawer.ContextMenuItem menuItem = this.menuItems[index];
+        ContextMenuItem menuItem = menuItems[index];
         if (menuItem.Separator)
           GUILayout.Space(10f);
-        else if (this.ButtonField(menuItem.Name))
+        else if (ButtonField(menuItem.Name))
         {
-          this.MenuVisible = false;
+          MenuVisible = false;
           Action action = menuItem.Action;
           if (action != null)
             action();
         }
       }
       GUILayout.Space(20f);
-      if (this.ButtonField("Close Menu"))
-        this.MenuVisible = false;
+      if (ButtonField("Close Menu"))
+        MenuVisible = false;
       GUILayout.EndVertical();
     }
 
     public void AddItem(string name, bool on, Action action)
     {
-      this.menuItems.Add(new RuntimeInspectedDrawer.ContextMenuItem()
-      {
+      menuItems.Add(new ContextMenuItem {
         Name = name,
         Separator = false,
         Action = action
@@ -319,15 +317,14 @@ namespace Inspectors
 
     public void AddSeparator(string name)
     {
-      this.menuItems.Add(new RuntimeInspectedDrawer.ContextMenuItem()
-      {
+      menuItems.Add(new ContextMenuItem {
         Name = name,
         Separator = true,
-        Action = (Action) null
+        Action = null
       });
     }
 
-    public void Show() => this.MenuVisible = true;
+    public void Show() => MenuVisible = true;
 
     public int BeginBox() => 0;
 

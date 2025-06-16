@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using System.Collections.Generic;
 
 namespace Engine.Impl.UI.Menu.Protagonist.Inventory
 {
@@ -14,29 +12,29 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
 
     public void HidePannel(string name)
     {
-      TipsPanel tipsPanel = this._panels.Find((Predicate<TipsPanel>) (p => p.Name.Equals(name)));
+      TipsPanel tipsPanel = _panels.Find(p => p.Name.Equals(name));
       if (tipsPanel == null)
         return;
-      if (this._currentPanel != null)
-        this._currentPanel.Panel.SetActive(false);
-      this._currentPanel = tipsPanel;
+      if (_currentPanel != null)
+        _currentPanel.Panel.SetActive(false);
+      _currentPanel = tipsPanel;
       tipsPanel.Panel.SetActive(false);
     }
 
     public void ShowPannel(string name)
     {
-      TipsPanel tipsPanel = this._panels.Find((Predicate<TipsPanel>) (p => p.Name.Equals(name)));
+      TipsPanel tipsPanel = _panels.Find(p => p.Name.Equals(name));
       if (tipsPanel == null)
         return;
-      if (this._currentPanel != null)
-        this._currentPanel.Panel.SetActive(false);
-      this._currentPanel = tipsPanel;
+      if (_currentPanel != null)
+        _currentPanel.Panel.SetActive(false);
+      _currentPanel = tipsPanel;
       tipsPanel.Panel.SetActive(true);
     }
 
     public void HideAllPanel()
     {
-      this._panels.ForEach((Action<TipsPanel>) (p => p.Panel.SetActive(false)));
+      _panels.ForEach(p => p.Panel.SetActive(false));
     }
   }
 }

@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace UnityStandardAssets.ImageEffects
+﻿namespace UnityStandardAssets.ImageEffects
 {
   [ExecuteInEditMode]
   [RequireComponent(typeof (Camera))]
@@ -23,24 +21,24 @@ namespace UnityStandardAssets.ImageEffects
 
     public override bool CheckResources()
     {
-      this.CheckSupport(true);
-      this.aoMaterial = this.CheckShaderAndCreateMaterial(this.aoShader, this.aoMaterial);
-      if (!this.isSupported)
-        this.ReportAutoDisable();
-      return this.isSupported;
+      CheckSupport(true);
+      aoMaterial = CheckShaderAndCreateMaterial(aoShader, aoMaterial);
+      if (!isSupported)
+        ReportAutoDisable();
+      return isSupported;
     }
 
     private void OnDisable()
     {
-      if ((bool) (Object) this.aoMaterial)
-        Object.DestroyImmediate((Object) this.aoMaterial);
-      this.aoMaterial = (Material) null;
+      if ((bool) (Object) aoMaterial)
+        Object.DestroyImmediate((Object) aoMaterial);
+      aoMaterial = (Material) null;
     }
 
     [ImageEffectOpaque]
     private void OnRenderImage(RenderTexture source, RenderTexture destination)
     {
-      if (!this.CheckResources())
+      if (!CheckResources())
       {
         Graphics.Blit((Texture) source, destination);
       }
@@ -48,37 +46,37 @@ namespace UnityStandardAssets.ImageEffects
       {
         Matrix4x4 projectionMatrix = this.GetComponent<Camera>().projectionMatrix;
         Matrix4x4 inverse = projectionMatrix.inverse;
-        this.aoMaterial.SetVector("_ProjInfo", new Vector4((float) (-2.0 / ((double) Screen.width * (double) projectionMatrix[0])), (float) (-2.0 / ((double) Screen.height * (double) projectionMatrix[5])), (1f - projectionMatrix[2]) / projectionMatrix[0], (1f + projectionMatrix[6]) / projectionMatrix[5]));
-        this.aoMaterial.SetMatrix("_ProjectionInv", inverse);
-        this.aoMaterial.SetTexture("_Rand", (Texture) this.rand);
-        this.aoMaterial.SetFloat("_Radius", this.radius);
-        this.aoMaterial.SetFloat("_Radius2", this.radius * this.radius);
-        this.aoMaterial.SetFloat("_Intensity", this.intensity);
-        this.aoMaterial.SetFloat("_BlurFilterDistance", this.blurFilterDistance);
+        aoMaterial.SetVector("_ProjInfo", new Vector4((float) (-2.0 / ((double) Screen.width * (double) projectionMatrix[0])), (float) (-2.0 / ((double) Screen.height * (double) projectionMatrix[5])), (1f - projectionMatrix[2]) / projectionMatrix[0], (1f + projectionMatrix[6]) / projectionMatrix[5]));
+        aoMaterial.SetMatrix("_ProjectionInv", inverse);
+        aoMaterial.SetTexture("_Rand", (Texture) rand);
+        aoMaterial.SetFloat("_Radius", radius);
+        aoMaterial.SetFloat("_Radius2", radius * radius);
+        aoMaterial.SetFloat("_Intensity", intensity);
+        aoMaterial.SetFloat("_BlurFilterDistance", blurFilterDistance);
         int width = source.width;
         int height = source.height;
-        RenderTexture renderTexture = RenderTexture.GetTemporary(width >> this.downsample, height >> this.downsample);
-        Graphics.Blit((Texture) source, renderTexture, this.aoMaterial, 0);
-        if (this.downsample > 0)
+        RenderTexture renderTexture = RenderTexture.GetTemporary(width >> downsample, height >> downsample);
+        Graphics.Blit((Texture) source, renderTexture, aoMaterial, 0);
+        if (downsample > 0)
         {
           RenderTexture temporary = RenderTexture.GetTemporary(width, height);
-          Graphics.Blit((Texture) renderTexture, temporary, this.aoMaterial, 4);
+          Graphics.Blit((Texture) renderTexture, temporary, aoMaterial, 4);
           RenderTexture.ReleaseTemporary(renderTexture);
           renderTexture = temporary;
         }
-        for (int index = 0; index < this.blurIterations; ++index)
+        for (int index = 0; index < blurIterations; ++index)
         {
-          this.aoMaterial.SetVector("_Axis", (Vector4) new Vector2(1f, 0.0f));
+          aoMaterial.SetVector("_Axis", (Vector4) new Vector2(1f, 0.0f));
           RenderTexture temporary = RenderTexture.GetTemporary(width, height);
-          Graphics.Blit((Texture) renderTexture, temporary, this.aoMaterial, 1);
+          Graphics.Blit((Texture) renderTexture, temporary, aoMaterial, 1);
           RenderTexture.ReleaseTemporary(renderTexture);
-          this.aoMaterial.SetVector("_Axis", (Vector4) new Vector2(0.0f, 1f));
+          aoMaterial.SetVector("_Axis", (Vector4) new Vector2(0.0f, 1f));
           renderTexture = RenderTexture.GetTemporary(width, height);
-          Graphics.Blit((Texture) temporary, renderTexture, this.aoMaterial, 1);
+          Graphics.Blit((Texture) temporary, renderTexture, aoMaterial, 1);
           RenderTexture.ReleaseTemporary(temporary);
         }
-        this.aoMaterial.SetTexture("_AOTex", (Texture) renderTexture);
-        Graphics.Blit((Texture) source, destination, this.aoMaterial, 2);
+        aoMaterial.SetTexture("_AOTex", (Texture) renderTexture);
+        Graphics.Blit((Texture) source, destination, aoMaterial, 2);
         RenderTexture.ReleaseTemporary(renderTexture);
       }
     }

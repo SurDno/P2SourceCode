@@ -1,4 +1,6 @@
-﻿using Engine.Behaviours.Components;
+﻿using System;
+using System.Collections.Generic;
+using Engine.Behaviours.Components;
 using Engine.Common;
 using Engine.Common.Components;
 using Engine.Common.Components.Parameters;
@@ -6,9 +8,6 @@ using Engine.Common.Services;
 using Engine.Source.Commons;
 using Engine.Source.Components;
 using Inspectors;
-using System;
-using System.Collections.Generic;
-using UnityEngine;
 
 namespace Pathologic.Prototype
 {
@@ -16,7 +15,7 @@ namespace Pathologic.Prototype
   {
     private IParameter<float> DamageParameter;
     private bool _isInitialized;
-    private bool initedRecently = false;
+    private bool initedRecently;
     private PlagueFacePoint startingPoint;
     private float _lastAttackValue;
     private Vector3 _lastPlayerPos;
@@ -36,9 +35,9 @@ namespace Pathologic.Prototype
     [Header("Hearing")]
     public float farHearingRadius = 10f;
     [Space]
-    public PlagueFace.Graphic graphic;
+    public Graphic graphic;
     public float maxPlayerVelocity = 1f;
-    public PlagueFace.Navigation navigation;
+    public Navigation navigation;
     public float nearHearingRadius = 5f;
     public float noiseAggessionIncrease = 0.2f;
     [Header("State")]
@@ -48,7 +47,7 @@ namespace Pathologic.Prototype
     [Header("Sight and Attack")]
     public float sightRadius = 10f;
     public int sightRaysPerTick = 5;
-    public PlagueFace.Sound sound;
+    public Sound sound;
     [Header("Init")]
     public GameObject StartingPoint;
     private bool canHearPlayer;
@@ -58,32 +57,32 @@ namespace Pathologic.Prototype
 
     void IEntityAttachable.Attach(IEntity owner)
     {
-      this.Owner = owner;
-      NavigationComponent component1 = this.Owner.GetComponent<NavigationComponent>();
+      Owner = owner;
+      NavigationComponent component1 = Owner.GetComponent<NavigationComponent>();
       if (component1 != null)
       {
-        this.NavigationComponent_OnTeleport((INavigationComponent) component1, this.Owner);
-        component1.OnTeleport += new Action<INavigationComponent, IEntity>(this.NavigationComponent_OnTeleport);
+        NavigationComponent_OnTeleport(component1, Owner);
+        component1.OnTeleport += NavigationComponent_OnTeleport;
       }
-      if (!this._isInitialized)
+      if (!_isInitialized)
       {
-        CrowdItemComponent component2 = this.Owner.GetComponent<CrowdItemComponent>();
+        CrowdItemComponent component2 = Owner.GetComponent<CrowdItemComponent>();
         if (component2 != null)
-          this.InitCrowdItem(component2);
+          InitCrowdItem(component2);
       }
-      ParametersComponent component3 = this.Owner.GetComponent<ParametersComponent>();
+      ParametersComponent component3 = Owner.GetComponent<ParametersComponent>();
       if (component3 == null)
         return;
-      this.DamageParameter = component3.GetByName<float>(ParameterNameEnum.InfectionDamage);
+      DamageParameter = component3.GetByName<float>(ParameterNameEnum.InfectionDamage);
     }
 
     void IEntityAttachable.Detach()
     {
-      NavigationComponent component = this.Owner.GetComponent<NavigationComponent>();
+      NavigationComponent component = Owner.GetComponent<NavigationComponent>();
       if (component != null)
-        component.OnTeleport -= new Action<INavigationComponent, IEntity>(this.NavigationComponent_OnTeleport);
-      this.Owner = (IEntity) null;
-      this.DamageParameter = (IParameter<float>) null;
+        component.OnTeleport -= NavigationComponent_OnTeleport;
+      Owner = null;
+      DamageParameter = null;
     }
 
     private void NavigationComponent_OnTeleport(
@@ -95,7 +94,7 @@ namespace Pathologic.Prototype
       IEntity setupPoint = ((NavigationComponent) navigationComponent).SetupPoint;
       if (setupPoint == null)
         return;
-      this.GetPathFromGameObject(((IEntityView) setupPoint).GameObject);
+      GetPathFromGameObject(((IEntityView) setupPoint).GameObject);
     }
 
     private void InitCrowdItem(CrowdItemComponent crowdItem)
@@ -103,7 +102,7 @@ namespace Pathologic.Prototype
       GameObject setupPointGo = (GameObject) null;
       if (crowdItem != null && crowdItem.Point != null)
         setupPointGo = crowdItem.Point.GameObject;
-      this.GetPathFromGameObject(setupPointGo);
+      GetPathFromGameObject(setupPointGo);
     }
 
     private void GetPathFromGameObject(GameObject setupPointGo)
@@ -113,10 +112,10 @@ namespace Pathologic.Prototype
       PlagueFacePoint componentInChildren = setupPointGo.GetComponentInChildren<PlagueFacePoint>();
       if ((UnityEngine.Object) componentInChildren == (UnityEngine.Object) null)
         return;
-      this.StartingPoint = componentInChildren.gameObject;
-      if ((UnityEngine.Object) this.StartingPoint == (UnityEngine.Object) null)
+      StartingPoint = componentInChildren.gameObject;
+      if ((UnityEngine.Object) StartingPoint == (UnityEngine.Object) null)
         return;
-      this.InitializeAt(this.StartingPoint.GetComponent<PlagueFacePoint>());
+      InitializeAt(StartingPoint.GetComponent<PlagueFacePoint>());
     }
 
     private static float VisibilityWeight(Transform point, Vector3 playerPosition)
@@ -125,7 +124,7 @@ namespace Pathologic.Prototype
       if ((double) Vector3.Dot(point.forward, rhs) <= 0.0)
         return 0.0f;
       float magnitude = rhs.magnitude;
-      return (double) magnitude == 0.0 ? float.PositiveInfinity : 1f / magnitude;
+      return magnitude == 0.0 ? float.PositiveInfinity : 1f / magnitude;
     }
 
     private void Awake()
@@ -145,32 +144,32 @@ namespace Pathologic.Prototype
         this.transform.position = startingPoint.transform.position;
         this.transform.rotation = startingPoint.transform.rotation;
         this.transform.localScale = Vector3.one;
-        this.aggresion = 0.0f;
-        this.attack = 0.0f;
-        this.navigation.Initialize(startingPoint);
-        this.sound.Initialize();
-        this.graphic.Initialize();
-        this._tilleNextPrototypeMessage = 1f / this.attackMessageFrequency;
-        this._isInitialized = true;
+        aggresion = 0.0f;
+        attack = 0.0f;
+        navigation.Initialize(startingPoint);
+        sound.Initialize();
+        graphic.Initialize();
+        _tilleNextPrototypeMessage = 1f / attackMessageFrequency;
+        _isInitialized = true;
         this.enabled = true;
-        this.initedRecently = true;
+        initedRecently = true;
       }
     }
 
     public void FixedUpdate()
     {
-      if (!this._isInitialized)
+      if (!_isInitialized)
       {
         Debug.LogWarning((object) "PlagueFace must not be enabled until InitializeAt(PlagueFacePoint) is called");
         this.enabled = false;
       }
       else
       {
-        if (this.initedRecently && (UnityEngine.Object) this.startingPoint != (UnityEngine.Object) null)
+        if (initedRecently && (UnityEngine.Object) startingPoint != (UnityEngine.Object) null)
         {
-          this.transform.position = this.startingPoint.transform.position;
-          this.transform.rotation = this.startingPoint.transform.rotation;
-          this.initedRecently = false;
+          this.transform.position = startingPoint.transform.position;
+          this.transform.rotation = startingPoint.transform.rotation;
+          initedRecently = false;
         }
         IEntity player = ServiceLocator.GetService<ISimulation>().Player;
         if (player == null)
@@ -179,100 +178,100 @@ namespace Pathologic.Prototype
         if ((UnityEngine.Object) gameObject == (UnityEngine.Object) null)
           return;
         Pivot component1 = gameObject.GetComponent<Pivot>();
-        DetectorComponent component2 = (DetectorComponent) this.Owner.GetComponent<IDetectorComponent>();
+        DetectorComponent component2 = (DetectorComponent) Owner.GetComponent<IDetectorComponent>();
         DetectableComponent component3 = player.GetComponent<DetectableComponent>();
         if (component2 != null && component3 != null)
-          this.canHearPlayer = component2.Hearing.Contains((IDetectableComponent) component3);
-        this.playerPosition = (UnityEngine.Object) component1 == (UnityEngine.Object) null ? gameObject.transform.position : component1.Chest.transform.position;
-        this._tilleNextPrototypeMessage -= Time.fixedDeltaTime;
-        if ((double) this._tilleNextPrototypeMessage < 0.0)
+          canHearPlayer = component2.Hearing.Contains(component3);
+        playerPosition = (UnityEngine.Object) component1 == (UnityEngine.Object) null ? gameObject.transform.position : component1.Chest.transform.position;
+        _tilleNextPrototypeMessage -= Time.fixedDeltaTime;
+        if (_tilleNextPrototypeMessage < 0.0)
         {
-          this._tilleNextPrototypeMessage += 1f / this.attackMessageFrequency;
-          if ((double) this.attack > (double) this.attackThreshold)
-            this._lastAttackValue = this.attack;
-          else if ((double) this._lastAttackValue != 0.0)
-            this._lastAttackValue = 0.0f;
+          _tilleNextPrototypeMessage += 1f / attackMessageFrequency;
+          if (attack > (double) attackThreshold)
+            _lastAttackValue = attack;
+          else if (_lastAttackValue != 0.0)
+            _lastAttackValue = 0.0f;
         }
-        bool isVisible = this.navigation.IsVisible(this.transform, this.playerPosition, false);
-        bool wasMoved = !isVisible && this.navigation.TryMove(this.transform, this.playerPosition);
-        this.PercieveAndAttack(isVisible);
-        this.graphic.Update(Time.fixedDeltaTime, isVisible, wasMoved);
-        this.sound.Update(this, Time.fixedDeltaTime);
-        this.navigation.Navigate(this, this.aggresion);
+        bool isVisible = navigation.IsVisible(this.transform, playerPosition, false);
+        bool wasMoved = !isVisible && navigation.TryMove(this.transform, playerPosition);
+        PercieveAndAttack(isVisible);
+        graphic.Update(Time.fixedDeltaTime, isVisible, wasMoved);
+        sound.Update(this, Time.fixedDeltaTime);
+        navigation.Navigate(this, aggresion);
       }
     }
 
-    private void OnDisable() => this.navigation.Disable();
+    private void OnDisable() => navigation.Disable();
 
     private void OnValidate()
     {
-      if ((double) this.nearHearingRadius < 0.0)
-        this.nearHearingRadius = 0.0f;
-      if ((double) this.farHearingRadius <= (double) this.nearHearingRadius)
+      if (nearHearingRadius < 0.0)
+        nearHearingRadius = 0.0f;
+      if (farHearingRadius <= (double) nearHearingRadius)
       {
-        this.farHearingRadius = (float) (((double) this.nearHearingRadius + (double) this.farHearingRadius) * 0.5 + 1.0 / 1000.0);
-        this.nearHearingRadius = this.farHearingRadius - 1f / 500f;
+        farHearingRadius = (float) ((nearHearingRadius + (double) farHearingRadius) * 0.5 + 1.0 / 1000.0);
+        nearHearingRadius = farHearingRadius - 1f / 500f;
       }
-      if ((double) this.maxPlayerVelocity < 0.0)
-        this.maxPlayerVelocity = 0.0f;
-      if ((double) this.aggessionDecrease < 0.0)
-        this.aggessionDecrease = 0.0f;
-      if ((double) this.noiseAggessionIncrease < 0.0)
-        this.noiseAggessionIncrease = 0.0f;
-      if ((double) this.sightRadius < 0.0)
-        this.sightRadius = 0.0f;
-      if ((double) this.playerSize < 0.0)
-        this.playerSize = 0.0f;
-      if ((double) this.eyeExtent < 0.0)
-        this.eyeExtent = 0.0f;
-      if ((double) this.eyeSize < 0.0)
-        this.eyeSize = 0.0f;
-      if (this.sightRaysPerTick < 0)
-        this.sightRaysPerTick = 0;
-      if ((double) this.attackIncreaseRate < 0.0)
-        this.attackIncreaseRate = 0.0f;
-      if ((double) this.attackDecreaseRate < 0.0)
-        this.attackDecreaseRate = 0.0f;
-      this.navigation.Validate();
+      if (maxPlayerVelocity < 0.0)
+        maxPlayerVelocity = 0.0f;
+      if (aggessionDecrease < 0.0)
+        aggessionDecrease = 0.0f;
+      if (noiseAggessionIncrease < 0.0)
+        noiseAggessionIncrease = 0.0f;
+      if (sightRadius < 0.0)
+        sightRadius = 0.0f;
+      if (playerSize < 0.0)
+        playerSize = 0.0f;
+      if (eyeExtent < 0.0)
+        eyeExtent = 0.0f;
+      if (eyeSize < 0.0)
+        eyeSize = 0.0f;
+      if (sightRaysPerTick < 0)
+        sightRaysPerTick = 0;
+      if (attackIncreaseRate < 0.0)
+        attackIncreaseRate = 0.0f;
+      if (attackDecreaseRate < 0.0)
+        attackDecreaseRate = 0.0f;
+      navigation.Validate();
     }
 
     private void PercieveAndAttack(bool isVisible)
     {
-      this.aggresion -= Time.fixedDeltaTime * this.aggessionDecrease;
-      this.attack -= Time.fixedDeltaTime * this.attackDecreaseRate;
-      Vector3 rhs = this.playerPosition - this.transform.position;
+      aggresion -= Time.fixedDeltaTime * aggessionDecrease;
+      attack -= Time.fixedDeltaTime * attackDecreaseRate;
+      Vector3 rhs = playerPosition - this.transform.position;
       float magnitude = rhs.magnitude;
-      if (this.canHearPlayer)
-        this.aggresion += (this.noiseAggessionIncrease + this.aggessionDecrease) * Time.fixedDeltaTime * Mathf.Min(Vector3.Distance(this.playerPosition, this._lastPlayerPos) / Time.fixedDeltaTime, this.maxPlayerVelocity) * Mathf.Min((float) (((double) this.farHearingRadius - (double) magnitude) / ((double) this.farHearingRadius - (double) this.nearHearingRadius)), 1f);
-      this._lastPlayerPos = this.playerPosition;
-      if ((double) magnitude < (double) this.sightRadius && (double) Vector3.Dot(this.transform.forward, rhs) > 0.0)
+      if (canHearPlayer)
+        aggresion += (noiseAggessionIncrease + aggessionDecrease) * Time.fixedDeltaTime * Mathf.Min(Vector3.Distance(playerPosition, _lastPlayerPos) / Time.fixedDeltaTime, maxPlayerVelocity) * Mathf.Min((float) ((farHearingRadius - (double) magnitude) / (farHearingRadius - (double) nearHearingRadius)), 1f);
+      _lastPlayerPos = playerPosition;
+      if (magnitude < (double) sightRadius && (double) Vector3.Dot(this.transform.forward, rhs) > 0.0)
       {
         int num1 = 0;
-        for (int index = 0; index < this.sightRaysPerTick; ++index)
+        for (int index = 0; index < sightRaysPerTick; ++index)
         {
-          Vector2 vector2 = UnityEngine.Random.insideUnitCircle * this.eyeSize;
-          Vector3 vector3 = this.transform.localToWorldMatrix.MultiplyPoint(new Vector3(vector2.x, vector2.y, this.eyeExtent));
-          Vector3 b = this.playerPosition + UnityEngine.Random.insideUnitSphere * this.playerSize;
-          if (!Physics.Raycast(vector3, b - vector3, out RaycastHit _, Vector3.Distance(vector3, b), (int) this.sightObstacles))
+          Vector2 vector2 = UnityEngine.Random.insideUnitCircle * eyeSize;
+          Vector3 vector3 = this.transform.localToWorldMatrix.MultiplyPoint(new Vector3(vector2.x, vector2.y, eyeExtent));
+          Vector3 b = playerPosition + UnityEngine.Random.insideUnitSphere * playerSize;
+          if (!Physics.Raycast(vector3, b - vector3, out RaycastHit _, Vector3.Distance(vector3, b), (int) sightObstacles))
             ++num1;
         }
-        float num2 = (float) num1 / (float) this.sightRaysPerTick;
+        float num2 = num1 / (float) sightRaysPerTick;
         if (num1 > 0)
         {
-          this.aggresion += num2 * Time.fixedDeltaTime;
+          aggresion += num2 * Time.fixedDeltaTime;
           if (isVisible)
             num2 = 0.0f;
-          if ((double) num2 > 0.5)
-            this.attack += (this.attackDecreaseRate + (float) ((double) num2 * 2.0 - 1.0) * this.attackIncreaseRate) * Time.fixedDeltaTime;
+          if (num2 > 0.5)
+            attack += (attackDecreaseRate + (float) (num2 * 2.0 - 1.0) * attackIncreaseRate) * Time.fixedDeltaTime;
           else
-            this.attack += (float) ((double) this.attackDecreaseRate * (double) num2 * 2.0) * Time.fixedDeltaTime;
+            attack += (float) (attackDecreaseRate * (double) num2 * 2.0) * Time.fixedDeltaTime;
         }
       }
-      this.attack = Mathf.Clamp01(this.attack);
-      this.aggresion = Mathf.Clamp01(this.aggresion);
-      if (this.DamageParameter == null)
+      attack = Mathf.Clamp01(attack);
+      aggresion = Mathf.Clamp01(aggresion);
+      if (DamageParameter == null)
         return;
-      this.DamageParameter.Value = this.attack;
+      DamageParameter.Value = attack;
     }
 
     [Serializable]
@@ -292,42 +291,42 @@ namespace Pathologic.Prototype
 
       public void Initialize()
       {
-        if (!((UnityEngine.Object) this.renderer != (UnityEngine.Object) null))
+        if (!((UnityEngine.Object) renderer != (UnityEngine.Object) null))
           return;
-        this._opacity = 1f;
-        this._properties = new MaterialPropertyBlock();
-        this._properties.SetFloat("_Opacity", this._opacity);
-        if (this.textures.Length != 0)
+        _opacity = 1f;
+        _properties = new MaterialPropertyBlock();
+        _properties.SetFloat("_Opacity", _opacity);
+        if (textures.Length != 0)
         {
-          this._textureIndex = UnityEngine.Random.Range(0, this.textures.Length);
-          this._properties.SetTexture("_MainTex", (Texture) this.textures[this._textureIndex]);
+          _textureIndex = UnityEngine.Random.Range(0, textures.Length);
+          _properties.SetTexture("_MainTex", (Texture) textures[_textureIndex]);
         }
-        this._lastChangeTime = Time.time;
-        this.renderer.SetPropertyBlock(this._properties);
+        _lastChangeTime = Time.time;
+        renderer.SetPropertyBlock(_properties);
       }
 
       public void Update(float deltaTime, bool isVisible, bool wasMoved)
       {
-        if (!((UnityEngine.Object) this.renderer != (UnityEngine.Object) null))
+        if (!((UnityEngine.Object) renderer != (UnityEngine.Object) null))
           return;
         if (isVisible)
         {
-          this._opacity = Mathf.MoveTowards(this._opacity, 0.0f, deltaTime / this.fadeOutTime);
+          _opacity = Mathf.MoveTowards(_opacity, 0.0f, deltaTime / fadeOutTime);
         }
         else
         {
-          this._opacity = Mathf.MoveTowards(this._opacity, 1f, deltaTime / this.fadeInTime);
-          if (wasMoved && this.textures.Length != 0 && (double) Time.time >= (double) this._lastChangeTime + (double) this.minChangeTime)
+          _opacity = Mathf.MoveTowards(_opacity, 1f, deltaTime / fadeInTime);
+          if (wasMoved && textures.Length != 0 && (double) Time.time >= _lastChangeTime + (double) minChangeTime)
           {
-            this._textureIndex = UnityEngine.Random.Range(0, this.textures.Length);
-            this._properties.SetTexture("_MainTex", (Texture) this.textures[this._textureIndex]);
-            this._lastChangeTime = Time.time;
+            _textureIndex = UnityEngine.Random.Range(0, textures.Length);
+            _properties.SetTexture("_MainTex", (Texture) textures[_textureIndex]);
+            _lastChangeTime = Time.time;
           }
         }
-        this._properties.SetColor("_Color", new Color(1f, 1f, 1f, 1f));
-        this._properties.SetFloat("_Opacity", Mathf.Lerp(this.lowOpacity, 1f, this._opacity));
-        this.renderer.SetPropertyBlock(this._properties);
-        this.renderer.GetPropertyBlock(this._properties);
+        _properties.SetColor("_Color", new Color(1f, 1f, 1f, 1f));
+        _properties.SetFloat("_Opacity", Mathf.Lerp(lowOpacity, 1f, _opacity));
+        renderer.SetPropertyBlock(_properties);
+        renderer.GetPropertyBlock(_properties);
       }
     }
 
@@ -347,7 +346,7 @@ namespace Pathologic.Prototype
       public Vector4[] boundingSpheres;
       [Range(0.0f, 1f)]
       public float chaseAggresion = 0.95f;
-      public bool manualDestination = false;
+      public bool manualDestination;
       public Camera playerCamera;
       [Range(0.0f, 1f)]
       public float roamAggresion = 0.5f;
@@ -379,57 +378,57 @@ namespace Pathologic.Prototype
 
       public void Disable()
       {
-        if (this._cullingGroup == null)
+        if (_cullingGroup == null)
           return;
-        this._cullingGroup.Dispose();
-        this._cullingGroup = (CullingGroup) null;
+        _cullingGroup.Dispose();
+        _cullingGroup = (CullingGroup) null;
       }
 
       public PlagueFacePoint[] GetNeighbors(PlagueFacePoint point) => point.neighbors;
 
       public void Initialize(PlagueFacePoint startingPoint)
       {
-        this.Disable();
-        if (this._isInitialized)
+        Disable();
+        if (_isInitialized)
         {
           bool flag = false;
-          for (int index = 0; index < this._points.Length; ++index)
+          for (int index = 0; index < _points.Length; ++index)
           {
-            if ((UnityEngine.Object) this._points[index] == (UnityEngine.Object) startingPoint)
+            if ((UnityEngine.Object) _points[index] == (UnityEngine.Object) startingPoint)
             {
               flag = true;
               break;
             }
           }
           if (!flag)
-            this._points = this.CollectPointFrom(startingPoint);
-          this._route.Clear();
+            _points = CollectPointFrom(startingPoint);
+          _route.Clear();
         }
         else
         {
-          this._points = this.CollectPointFrom(startingPoint);
-          this._route = new List<PlagueFacePoint>();
-          this._cullingSpheres = new BoundingSphere[this.boundingSpheres.Length * 2];
-          this._pathfinder = new PathfinderAStar<PlagueFacePoint, float>(new PathfinderAStar<PlagueFacePoint, float>.GetNeighbors(this.GetNeighbors), new PathfinderAStar<PlagueFacePoint, float>.Relation(this.TimeToJump), new PathfinderAStar<PlagueFacePoint, float>.Relation(this.TimeToJump), (PathfinderAStar<PlagueFacePoint, float>.Operation) ((x, y) => x + y), (PathfinderAStar<PlagueFacePoint, float>.Condition) ((x, y) => (double) x < (double) y), 0.0f);
-          this._isInitialized = true;
+          _points = CollectPointFrom(startingPoint);
+          _route = new List<PlagueFacePoint>();
+          _cullingSpheres = new BoundingSphere[boundingSpheres.Length * 2];
+          _pathfinder = new PathfinderAStar<PlagueFacePoint, float>(GetNeighbors, TimeToJump, TimeToJump, (x, y) => x + y, (x, y) => x < (double) y, 0.0f);
+          _isInitialized = true;
         }
-        this._currentPoint = startingPoint;
-        this._lastJumpTime = Time.time;
-        this._destinationQuality = 0.0f;
-        this._nextSearchPoint = 0;
+        _currentPoint = startingPoint;
+        _lastJumpTime = Time.time;
+        _destinationQuality = 0.0f;
+        _nextSearchPoint = 0;
       }
 
-      public bool IsMoving() => this._route.Count > 0;
+      public bool IsMoving() => _route.Count > 0;
 
       public bool IsVisible(Transform transform, Vector3 playerPosition, bool nextPoint)
       {
-        if ((double) PlagueFace.VisibilityWeight(transform, playerPosition) <= 0.0)
+        if (VisibilityWeight(transform, playerPosition) <= 0.0)
           return false;
-        if (this._cullingGroup == null)
+        if (_cullingGroup == null)
           return true;
-        for (int index = 0; index < this.boundingSpheres.Length; ++index)
+        for (int index = 0; index < boundingSpheres.Length; ++index)
         {
-          if (this._cullingGroup.IsVisible(nextPoint ? index + this.boundingSpheres.Length : index))
+          if (_cullingGroup.IsVisible(nextPoint ? index + boundingSpheres.Length : index))
             return true;
         }
         return false;
@@ -437,7 +436,7 @@ namespace Pathologic.Prototype
 
       private float TimeToJump(Transform from, Transform to)
       {
-        return Mathf.Max(Vector3.Distance(from.position, to.position) / this.speed, Quaternion.Angle(from.rotation, to.rotation) / this.rotationSpeed);
+        return Mathf.Max(Vector3.Distance(from.position, to.position) / speed, Quaternion.Angle(from.rotation, to.rotation) / rotationSpeed);
       }
 
       private float TimeToJump(PlagueFacePoint from, PlagueFacePoint to)
@@ -447,147 +446,147 @@ namespace Pathologic.Prototype
 
       public bool TryMove(Transform face, Vector3 playerPosition)
       {
-        if (this._route.Count <= 0 || (double) this.TimeToJump(face, this._route[this._route.Count - 1].transform) >= (double) Time.time - (double) this._lastJumpTime || this.IsVisible(this._route[this._route.Count - 1].transform, playerPosition, true))
+        if (_route.Count <= 0 || TimeToJump(face, _route[_route.Count - 1].transform) >= (double) Time.time - _lastJumpTime || IsVisible(_route[_route.Count - 1].transform, playerPosition, true))
           return false;
-        this._currentPoint = this._route[this._route.Count - 1];
-        this._route.RemoveAt(this._route.Count - 1);
-        face.SetParent(this._currentPoint.transform, false);
+        _currentPoint = _route[_route.Count - 1];
+        _route.RemoveAt(_route.Count - 1);
+        face.SetParent(_currentPoint.transform, false);
         face.localPosition = Vector3.zero;
         face.localRotation = Quaternion.identity;
         face.localScale = Vector3.one;
-        this._lastJumpTime = Time.time;
+        _lastJumpTime = Time.time;
         return true;
       }
 
       public void Navigate(PlagueFace face, float aggression)
       {
-        if (!this.manualDestination && (double) aggression >= (double) this.roamAggresion)
+        if (!manualDestination && aggression >= (double) roamAggresion)
         {
-          if ((double) aggression < (double) this.chaseAggresion)
+          if (aggression < (double) chaseAggresion)
           {
             Vector3 vector3;
-            if (this._route.Count == 0)
+            if (_route.Count == 0)
             {
-              Vector3 normalized1 = (face.playerPosition - this._currentPoint.transform.position).normalized;
-              int index1 = UnityEngine.Random.Range(0, this._currentPoint.neighbors.Length);
+              Vector3 normalized1 = (face.playerPosition - _currentPoint.transform.position).normalized;
+              int index1 = UnityEngine.Random.Range(0, _currentPoint.neighbors.Length);
               bool flag = false;
               float num1 = float.NegativeInfinity;
-              for (int index2 = 0; index2 < this._currentPoint.neighbors.Length; ++index2)
+              for (int index2 = 0; index2 < _currentPoint.neighbors.Length; ++index2)
               {
-                if (!flag || this._currentPoint.neighbors[index2].roamable)
+                if (!flag || _currentPoint.neighbors[index2].roamable)
                 {
-                  if (!flag && this._currentPoint.neighbors[index2].roamable)
+                  if (!flag && _currentPoint.neighbors[index2].roamable)
                     num1 = float.NegativeInfinity;
-                  vector3 = this._currentPoint.neighbors[index2].transform.position - this._currentPoint.transform.position;
+                  vector3 = _currentPoint.neighbors[index2].transform.position - _currentPoint.transform.position;
                   Vector3 normalized2 = vector3.normalized;
                   float num2 = Vector3.Dot(normalized1, normalized2) * UnityEngine.Random.value;
-                  if ((double) num2 > (double) num1)
+                  if (num2 > (double) num1)
                   {
                     index1 = index2;
-                    flag = this._currentPoint.neighbors[index2].roamable;
+                    flag = _currentPoint.neighbors[index2].roamable;
                     num1 = num2;
                   }
                 }
               }
-              this._route.Add(this._currentPoint.neighbors[index1]);
-              this._destinationQuality = 0.0f;
+              _route.Add(_currentPoint.neighbors[index1]);
+              _destinationQuality = 0.0f;
             }
-            if (this._route.Count < 2)
+            if (_route.Count < 2)
             {
-              vector3 = this._route[0].transform.position - this._currentPoint.transform.position;
+              vector3 = _route[0].transform.position - _currentPoint.transform.position;
               Vector3 normalized3 = vector3.normalized;
-              int index3 = UnityEngine.Random.Range(0, this._route[0].neighbors.Length);
+              int index3 = UnityEngine.Random.Range(0, _route[0].neighbors.Length);
               bool flag = false;
               float num3 = float.NegativeInfinity;
-              for (int index4 = 0; index4 < this._route[0].neighbors.Length; ++index4)
+              for (int index4 = 0; index4 < _route[0].neighbors.Length; ++index4)
               {
-                if (!flag || this._route[0].neighbors[index4].roamable)
+                if (!flag || _route[0].neighbors[index4].roamable)
                 {
-                  if (!flag && this._route[0].neighbors[index4].roamable)
+                  if (!flag && _route[0].neighbors[index4].roamable)
                     num3 = float.NegativeInfinity;
-                  vector3 = this._route[0].neighbors[index4].transform.position - this._route[0].transform.position;
+                  vector3 = _route[0].neighbors[index4].transform.position - _route[0].transform.position;
                   Vector3 normalized4 = vector3.normalized;
                   float num4 = Vector3.Dot(normalized3, normalized4) * UnityEngine.Random.value;
-                  if ((double) num4 > (double) num3)
+                  if (num4 > (double) num3)
                   {
                     index3 = index4;
-                    flag = this._route[0].neighbors[index4].roamable;
+                    flag = _route[0].neighbors[index4].roamable;
                     num3 = num4;
                   }
                 }
               }
-              this._route.Add(this._route[0]);
-              this._route[0] = this._route[0].neighbors[index3];
-              this._destinationQuality = 0.0f;
+              _route.Add(_route[0]);
+              _route[0] = _route[0].neighbors[index3];
+              _destinationQuality = 0.0f;
             }
           }
           else
           {
-            int num5 = Mathf.Max(this.searchPointsPerTick, this._points.Length);
+            int num5 = Mathf.Max(searchPointsPerTick, _points.Length);
             for (int searchRaysPerTick = this.searchRaysPerTick; num5 > 0 && searchRaysPerTick > 0; --num5)
             {
-              if (this._nextSearchPoint >= this._points.Length)
-                this._nextSearchPoint = 0;
-              float num6 = PlagueFace.VisibilityWeight(this._points[this._nextSearchPoint].transform, face.playerPosition);
-              if ((double) num6 > 0.0)
+              if (_nextSearchPoint >= _points.Length)
+                _nextSearchPoint = 0;
+              float num6 = VisibilityWeight(_points[_nextSearchPoint].transform, face.playerPosition);
+              if (num6 > 0.0)
               {
                 Vector2 vector2 = UnityEngine.Random.insideUnitCircle * face.eyeSize;
-                Vector3 vector3 = this._points[this._nextSearchPoint].transform.localToWorldMatrix.MultiplyPoint(new Vector3(vector2.x, vector2.y, face.eyeExtent));
+                Vector3 vector3 = _points[_nextSearchPoint].transform.localToWorldMatrix.MultiplyPoint(new Vector3(vector2.x, vector2.y, face.eyeExtent));
                 Vector3 b = face.playerPosition + UnityEngine.Random.insideUnitSphere * face.playerSize;
                 if (Physics.Raycast(vector3, b - vector3, out RaycastHit _, Vector3.Distance(vector3, b), (int) face.sightObstacles))
                   num6 = 0.0f;
                 --searchRaysPerTick;
               }
-              if (this._route.Count > 0 && (UnityEngine.Object) this._points[this._nextSearchPoint] == (UnityEngine.Object) this._route[0])
-                this._destinationQuality = num6;
-              else if ((double) num6 > (double) this._destinationQuality)
+              if (_route.Count > 0 && (UnityEngine.Object) _points[_nextSearchPoint] == (UnityEngine.Object) _route[0])
+                _destinationQuality = num6;
+              else if (num6 > (double) _destinationQuality)
               {
-                this.SetDestination(this._points[this._nextSearchPoint]);
-                this._destinationQuality = num6;
+                SetDestination(_points[_nextSearchPoint]);
+                _destinationQuality = num6;
               }
-              ++this._nextSearchPoint;
+              ++_nextSearchPoint;
             }
           }
         }
-        if (this._cullingGroup == null)
+        if (_cullingGroup == null)
         {
-          this._cullingGroup = new CullingGroup();
-          this._cullingGroup.SetBoundingSpheres(this._cullingSpheres);
+          _cullingGroup = new CullingGroup();
+          _cullingGroup.SetBoundingSpheres(_cullingSpheres);
         }
         if ((UnityEngine.Object) GameCamera.Instance.Camera != (UnityEngine.Object) null)
-          this._cullingGroup.targetCamera = GameCamera.Instance.Camera;
-        for (int index = 0; index < this.boundingSpheres.Length; ++index)
-          this._cullingSpheres[index] = new BoundingSphere(this._currentPoint.transform.TransformPoint((Vector3) this.boundingSpheres[index]), this.boundingSpheres[index].w);
-        if (this._route.Count > 0)
+          _cullingGroup.targetCamera = GameCamera.Instance.Camera;
+        for (int index = 0; index < boundingSpheres.Length; ++index)
+          _cullingSpheres[index] = new BoundingSphere(_currentPoint.transform.TransformPoint((Vector3) boundingSpheres[index]), boundingSpheres[index].w);
+        if (_route.Count > 0)
         {
-          for (int index = 0; index < this.boundingSpheres.Length; ++index)
-            this._cullingSpheres[index + this.boundingSpheres.Length] = new BoundingSphere(this._route[this._route.Count - 1].transform.TransformPoint((Vector3) this.boundingSpheres[index]), this.boundingSpheres[index].w);
-          this._cullingGroup.SetBoundingSphereCount(this._cullingSpheres.Length);
+          for (int index = 0; index < boundingSpheres.Length; ++index)
+            _cullingSpheres[index + boundingSpheres.Length] = new BoundingSphere(_route[_route.Count - 1].transform.TransformPoint((Vector3) boundingSpheres[index]), boundingSpheres[index].w);
+          _cullingGroup.SetBoundingSphereCount(_cullingSpheres.Length);
         }
         else
-          this._cullingGroup.SetBoundingSphereCount(this.boundingSpheres.Length);
+          _cullingGroup.SetBoundingSphereCount(boundingSpheres.Length);
       }
 
       public void SetDestination(PlagueFacePoint destination)
       {
-        this._route.Clear();
-        if ((UnityEngine.Object) destination == (UnityEngine.Object) this._currentPoint)
+        _route.Clear();
+        if ((UnityEngine.Object) destination == (UnityEngine.Object) _currentPoint)
           return;
-        this._pathfinder.AddReversedRoute(this._currentPoint, destination, this._route);
+        _pathfinder.AddReversedRoute(_currentPoint, destination, _route);
       }
 
       public void Validate()
       {
-        if ((double) this.speed < 0.0)
-          this.speed = 0.0f;
-        if (this.searchPointsPerTick < 1)
-          this.searchPointsPerTick = 1;
-        if (this.searchRaysPerTick < 1)
-          this.searchRaysPerTick = 1;
-        if ((double) this.chaseAggresion >= (double) this.roamAggresion)
+        if (speed < 0.0)
+          speed = 0.0f;
+        if (searchPointsPerTick < 1)
+          searchPointsPerTick = 1;
+        if (searchRaysPerTick < 1)
+          searchRaysPerTick = 1;
+        if (chaseAggresion >= (double) roamAggresion)
           return;
-        this.chaseAggresion = (float) (((double) this.chaseAggresion + (double) this.roamAggresion) * 0.5);
-        this.roamAggresion = this.chaseAggresion;
+        chaseAggresion = (float) ((chaseAggresion + (double) roamAggresion) * 0.5);
+        roamAggresion = chaseAggresion;
       }
     }
 
@@ -614,36 +613,36 @@ namespace Pathologic.Prototype
 
       public void Initialize()
       {
-        if ((UnityEngine.Object) this.transform != (UnityEngine.Object) null && (UnityEngine.Object) this.anchor != (UnityEngine.Object) null)
+        if ((UnityEngine.Object) transform != (UnityEngine.Object) null && (UnityEngine.Object) anchor != (UnityEngine.Object) null)
         {
-          this._worldPosition = this.anchor.position;
-          this.transform.position = this._worldPosition;
+          _worldPosition = anchor.position;
+          transform.position = _worldPosition;
         }
-        this._soundWeights = new Vector3(1f, 0.0f, 0.0f);
-        if ((UnityEngine.Object) this.sleepSource != (UnityEngine.Object) null)
-          this.sleepSource.volume = this.sleepMaxVolume;
-        if ((UnityEngine.Object) this.roamSource != (UnityEngine.Object) null)
-          this.roamSource.volume = 0.0f;
-        if (!((UnityEngine.Object) this.attackSource != (UnityEngine.Object) null))
+        _soundWeights = new Vector3(1f, 0.0f, 0.0f);
+        if ((UnityEngine.Object) sleepSource != (UnityEngine.Object) null)
+          sleepSource.volume = sleepMaxVolume;
+        if ((UnityEngine.Object) roamSource != (UnityEngine.Object) null)
+          roamSource.volume = 0.0f;
+        if (!((UnityEngine.Object) attackSource != (UnityEngine.Object) null))
           return;
-        this.attackSource.volume = 0.0f;
+        attackSource.volume = 0.0f;
       }
 
       public void Update(PlagueFace face, float deltaTime)
       {
-        if ((UnityEngine.Object) this.transform != (UnityEngine.Object) null && (UnityEngine.Object) this.anchor != (UnityEngine.Object) null)
+        if ((UnityEngine.Object) transform != (UnityEngine.Object) null && (UnityEngine.Object) anchor != (UnityEngine.Object) null)
         {
-          this._worldPosition = Vector3.SmoothDamp(this._worldPosition, this.anchor.position, ref this._velocity, this.moveSmoothness, float.PositiveInfinity, deltaTime);
-          this.transform.position = this._worldPosition;
+          _worldPosition = Vector3.SmoothDamp(_worldPosition, anchor.position, ref _velocity, moveSmoothness, float.PositiveInfinity, deltaTime);
+          transform.position = _worldPosition;
         }
-        this._soundWeights = Vector3.MoveTowards(this._soundWeights, (double) face.attack <= 0.0 ? ((double) face.aggresion < (double) face.navigation.roamAggresion ? new Vector3(1f, 0.0f, 0.0f) : new Vector3(0.0f, 1f, 0.0f)) : new Vector3(0.0f, 0.0f, 1f), deltaTime / this.fadeTime);
-        if ((UnityEngine.Object) this.sleepSource != (UnityEngine.Object) null)
-          this.sleepSource.volume = this._soundWeights.x * this.sleepMaxVolume;
-        if ((UnityEngine.Object) this.roamSource != (UnityEngine.Object) null)
-          this.roamSource.volume = this._soundWeights.y * this.roamMaxVolume;
-        if (!((UnityEngine.Object) this.attackSource != (UnityEngine.Object) null))
+        _soundWeights = Vector3.MoveTowards(_soundWeights, face.attack <= 0.0 ? (face.aggresion < (double) face.navigation.roamAggresion ? new Vector3(1f, 0.0f, 0.0f) : new Vector3(0.0f, 1f, 0.0f)) : new Vector3(0.0f, 0.0f, 1f), deltaTime / fadeTime);
+        if ((UnityEngine.Object) sleepSource != (UnityEngine.Object) null)
+          sleepSource.volume = _soundWeights.x * sleepMaxVolume;
+        if ((UnityEngine.Object) roamSource != (UnityEngine.Object) null)
+          roamSource.volume = _soundWeights.y * roamMaxVolume;
+        if (!((UnityEngine.Object) attackSource != (UnityEngine.Object) null))
           return;
-        this.attackSource.volume = this._soundWeights.z * this.attackMaxVolume;
+        attackSource.volume = _soundWeights.z * attackMaxVolume;
       }
     }
   }

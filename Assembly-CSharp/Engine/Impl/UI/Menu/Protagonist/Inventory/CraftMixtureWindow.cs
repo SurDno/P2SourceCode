@@ -1,4 +1,7 @@
-﻿using Engine.Common;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Engine.Common;
 using Engine.Common.Components;
 using Engine.Common.Components.Parameters;
 using Engine.Common.Components.Storable;
@@ -10,12 +13,6 @@ using Engine.Source.Services.Inputs;
 using Engine.Source.UI;
 using InputServices;
 using Inspectors;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
-using UnityEngine.Events;
-using UnityEngine.UI;
 
 namespace Engine.Impl.UI.Menu.Protagonist.Inventory
 {
@@ -34,7 +31,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
     [SerializeField]
     private GameObject craftButtonConsole;
     private Text craftBrewText;
-    private bool isCraftAvailable = false;
+    private bool isCraftAvailable;
 
     [Inspected]
     public IStorageComponent Target { get; set; }
@@ -54,18 +51,18 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
     protected override void OnEnable()
     {
       base.OnEnable();
-      this.craftBrewText = this.craftButton.GetComponentInChildren<Text>();
-      this.actors.Clear();
-      this.actors.Add(this.Actor);
-      this.Build2();
-      this.CreateContainers();
+      craftBrewText = craftButton.GetComponentInChildren<Text>();
+      actors.Clear();
+      actors.Add(Actor);
+      Build2();
+      CreateContainers();
     }
 
     protected override void OnDisable()
     {
-      this.DisableCraftButtons();
+      DisableCraftButtons();
       ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.CraftMixture, new GameActionHandle(((UIWindow) this).WithoutJoystickCancelListener));
-      this.CraftWindowUnsubscribe();
+      CraftWindowUnsubscribe();
       base.OnDisable();
     }
 
@@ -75,37 +72,37 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       if (!joystick)
       {
         ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.CraftMixture, new GameActionHandle(((UIWindow) this).WithoutJoystickCancelListener));
-        foreach (ItemSelector ingredientSelector in this.ingredientSelectors)
+        foreach (ItemSelector ingredientSelector in ingredientSelectors)
           ingredientSelector.SetSelection(false);
-        this.PredictCraftRecipe();
-        Text componentInChildren1 = this.ingredientSelectors[0].GetComponentInChildren<Text>();
+        PredictCraftRecipe();
+        Text componentInChildren1 = ingredientSelectors[0].GetComponentInChildren<Text>();
         componentInChildren1.transform.localPosition = new Vector3(componentInChildren1.transform.localPosition.x, 190f);
-        Text componentInChildren2 = this.ingredientSelectors[1].GetComponentInChildren<Text>();
+        Text componentInChildren2 = ingredientSelectors[1].GetComponentInChildren<Text>();
         componentInChildren2.transform.localPosition = new Vector3(componentInChildren2.transform.localPosition.x, -190f);
       }
       else
       {
         ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.CraftMixture, new GameActionHandle(((UIWindow) this).WithoutJoystickCancelListener));
-        this.PredictCraftRecipe();
-        Text componentInChildren3 = this.ingredientSelectors[0].GetComponentInChildren<Text>();
+        PredictCraftRecipe();
+        Text componentInChildren3 = ingredientSelectors[0].GetComponentInChildren<Text>();
         componentInChildren3.transform.localPosition = new Vector3(componentInChildren3.transform.localPosition.x, 0.0f);
-        Text componentInChildren4 = this.ingredientSelectors[1].GetComponentInChildren<Text>();
+        Text componentInChildren4 = ingredientSelectors[1].GetComponentInChildren<Text>();
         componentInChildren4.transform.localPosition = new Vector3(componentInChildren4.transform.localPosition.x, 0.0f);
       }
-      if (this.isCraftAvailable)
-        this.craftButtonConsole.SetActive(joystick);
+      if (isCraftAvailable)
+        craftButtonConsole.SetActive(joystick);
       else
-        this.craftButtonConsole.SetActive(false);
+        craftButtonConsole.SetActive(false);
     }
 
     protected override bool ConsoleController(GameActionType type, bool down)
     {
       if (!InputService.Instance.JoystickUsed)
         return false;
-      if (type == GameActionType.Submit & down && this.craftButton.gameObject.activeInHierarchy)
+      if (type == GameActionType.Submit & down && craftButton.gameObject.activeInHierarchy)
       {
-        this.craftButton.onClick.Invoke();
-        this.HideInfoWindow();
+        craftButton.onClick.Invoke();
+        HideInfoWindow();
         return true;
       }
       base.ConsoleController(type, down);
@@ -114,25 +111,25 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
 
     protected override void OnItemClick(IStorableComponent storable)
     {
-      if (storable.Storage == this.Actor)
+      if (storable.Storage == Actor)
       {
-        foreach (ItemSelector ingredientSelector in this.ingredientSelectors)
+        foreach (ItemSelector ingredientSelector in ingredientSelectors)
         {
           if (ingredientSelector.Item == storable)
           {
             if (ingredientSelector.AvoidNull)
               return;
-            ingredientSelector.Item = (IStorableComponent) null;
+            ingredientSelector.Item = null;
             return;
           }
         }
-        foreach (ItemSelector ingredientSelector in this.ingredientSelectors)
+        foreach (ItemSelector ingredientSelector in ingredientSelectors)
         {
           if (ingredientSelector.Item == null)
           {
             foreach (StorableGroup group in ingredientSelector.Groups)
             {
-              if (storable.Groups.Contains<StorableGroup>(group))
+              if (storable.Groups.Contains(group))
               {
                 ingredientSelector.Item = storable;
                 return;
@@ -140,11 +137,11 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
             }
           }
         }
-        foreach (ItemSelector ingredientSelector in this.ingredientSelectors)
+        foreach (ItemSelector ingredientSelector in ingredientSelectors)
         {
           foreach (StorableGroup group in ingredientSelector.Groups)
           {
-            if (storable.Groups.Contains<StorableGroup>(group))
+            if (storable.Groups.Contains(group))
             {
               ingredientSelector.Item = storable;
               return;
@@ -157,43 +154,43 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
         IParameter<TimeSpan> craftTimeParameter = CraftHelper.GetCraftTimeParameter(storable);
         if (craftTimeParameter != null && craftTimeParameter.Value >= TimeSpan.Zero)
           return;
-        this.MoveItem(storable, this.Actor);
+        MoveItem(storable, Actor);
         StorableComponentUtility.PlayTakeSound(storable);
-        this.OnInvalidate();
+        OnInvalidate();
       }
     }
 
     protected override void Clear()
     {
-      foreach (ItemSelector ingredientSelector in this.ingredientSelectors)
-        ingredientSelector.Storage = (IStorageComponent) null;
+      foreach (ItemSelector ingredientSelector in ingredientSelectors)
+        ingredientSelector.Storage = null;
       base.Clear();
     }
 
     protected override void OnInvalidate()
     {
       base.OnInvalidate();
-      this.PredictCraftRecipe();
+      PredictCraftRecipe();
       if (!InputService.Instance.JoystickUsed)
         return;
-      this.HideInfoWindow();
+      HideInfoWindow();
     }
 
-    private void ClearResultView() => this.resultView.Storable = (StorableComponent) null;
+    private void ClearResultView() => resultView.Storable = null;
 
     private void CreateContainers()
     {
-      foreach (ItemSelector ingredientSelector in this.ingredientSelectors)
-        ingredientSelector.Storage = this.Actor;
+      foreach (ItemSelector ingredientSelector in ingredientSelectors)
+        ingredientSelector.Storage = Actor;
     }
 
     private void Craft()
     {
-      this.DisableCraftButtons();
+      DisableCraftButtons();
       List<IStorableComponent> ingredients = new List<IStorableComponent>();
-      for (int index = 0; index < this.ingredientSelectors.Length; ++index)
+      for (int index = 0; index < ingredientSelectors.Length; ++index)
       {
-        IStorableComponent storableComponent = this.ingredientSelectors[index].Item;
+        IStorableComponent storableComponent = ingredientSelectors[index].Item;
         if (storableComponent != null)
           ingredients.Add(storableComponent);
       }
@@ -207,64 +204,64 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
           else
             storableComponent.Owner.Dispose();
         }
-        IEntity entity = ServiceLocator.GetService<IFactory>().Instantiate<IEntity>(craftResult.Owner);
+        IEntity entity = ServiceLocator.GetService<IFactory>().Instantiate(craftResult.Owner);
         ServiceLocator.GetService<ISimulation>().Add(entity, ServiceLocator.GetService<ISimulation>().Storables);
         IStorableComponent component = entity.GetComponent<IStorableComponent>();
-        this.Actor.AddItemOrDrop(component, (IInventoryComponent) null);
+        Actor.AddItemOrDrop(component, null);
         this.CancelInvoke("ClearResultView");
-        this.resultView.Storable = (StorableComponent) component;
-        this.Invoke("ClearResultView", this.resultShowTime);
-        if ((UnityEngine.Object) this.craftAudio != (UnityEngine.Object) null)
-          this.PlayAudio(this.craftAudio);
+        resultView.Storable = (StorableComponent) component;
+        this.Invoke("ClearResultView", resultShowTime);
+        if ((UnityEngine.Object) craftAudio != (UnityEngine.Object) null)
+          PlayAudio(craftAudio);
       }
-      this.OnInvalidate();
+      OnInvalidate();
     }
 
     private void PredictCraftRecipe()
     {
-      this.DisableCraftButtons();
-      this.craftButtonConsole.SetActive(false);
+      DisableCraftButtons();
+      craftButtonConsole.SetActive(false);
       List<IStorableComponent> ingredients = new List<IStorableComponent>();
-      for (int index = 0; index < this.ingredientSelectors.Length; ++index)
+      for (int index = 0; index < ingredientSelectors.Length; ++index)
       {
-        IStorableComponent storableComponent = this.ingredientSelectors[index].Item;
+        IStorableComponent storableComponent = ingredientSelectors[index].Item;
         if (storableComponent != null)
           ingredients.Add(storableComponent);
       }
       if (CraftHelper.GetCraftResult(ingredients, out CraftRecipe _) != null)
       {
-        this.isCraftAvailable = true;
+        isCraftAvailable = true;
         if (InputService.Instance.JoystickUsed)
-          this.craftButtonConsole.SetActive(true);
-        this.EnableCraftButtons();
+          craftButtonConsole.SetActive(true);
+        EnableCraftButtons();
       }
       else
-        this.isCraftAvailable = false;
+        isCraftAvailable = false;
     }
 
-    private void EnableCraftButtons() => this.craftButtonInteractable.Visible = true;
+    private void EnableCraftButtons() => craftButtonInteractable.Visible = true;
 
-    private void DisableCraftButtons() => this.craftButtonInteractable.Visible = false;
+    private void DisableCraftButtons() => craftButtonInteractable.Visible = false;
 
     public override void Initialize()
     {
-      this.RegisterLayer<ICraftMixtureWindow>((ICraftMixtureWindow) this);
-      foreach (ItemSelector ingredientSelector in this.ingredientSelectors)
+      RegisterLayer((ICraftMixtureWindow) this);
+      foreach (ItemSelector ingredientSelector in ingredientSelectors)
       {
-        ingredientSelector.ChangeItemEvent += new Action<ItemSelector, IStorableComponent, IStorableComponent>(this.OnIngredientChange);
-        ingredientSelector.ValidateItemEvent += new Func<ItemSelector, IStorableComponent, bool>(this.OnValidateIngredient);
+        ingredientSelector.ChangeItemEvent += OnIngredientChange;
+        ingredientSelector.ValidateItemEvent += OnValidateIngredient;
       }
-      this.craftButton.onClick.AddListener(new UnityAction(this.Craft));
+      craftButton.onClick.AddListener(new UnityAction(Craft));
       base.Initialize();
     }
 
-    public override System.Type GetWindowType() => typeof (ICraftMixtureWindow);
+    public override Type GetWindowType() => typeof (ICraftMixtureWindow);
 
     private bool OnValidateIngredient(ItemSelector itemSelector, IStorableComponent ingredient)
     {
-      for (int index = 0; index < this.ingredientSelectors.Length; ++index)
+      for (int index = 0; index < ingredientSelectors.Length; ++index)
       {
-        ItemSelector ingredientSelector = this.ingredientSelectors[index];
+        ItemSelector ingredientSelector = ingredientSelectors[index];
         IStorableComponent storableComponent = ingredientSelector.Item;
         if ((UnityEngine.Object) itemSelector == (UnityEngine.Object) ingredientSelector && ingredient == storableComponent)
           return true;
@@ -283,20 +280,20 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
         StorableComponentUtility.PlayPutSound(prevIngredient);
       if (newIngredient != null)
         StorableComponentUtility.PlayTakeSound(newIngredient);
-      this.OnInvalidate();
+      OnInvalidate();
     }
 
     protected override bool ItemIsInteresting(IStorableComponent item)
     {
       bool flag1 = false;
       bool flag2 = false;
-      foreach (ItemSelector ingredientSelector in this.ingredientSelectors)
+      foreach (ItemSelector ingredientSelector in ingredientSelectors)
       {
         if (item == ingredientSelector.Item)
           return !ingredientSelector.AvoidNull;
         foreach (StorableGroup group in ingredientSelector.Groups)
         {
-          if (item.Groups.Contains<StorableGroup>(group))
+          if (item.Groups.Contains(group))
             flag1 = true;
         }
         if (ingredientSelector.Item != null && StorageUtility.GetItemId(item.Owner) == StorageUtility.GetItemId(ingredientSelector.Item.Owner))
@@ -307,7 +304,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
 
     protected override bool ItemIsSelected(IStorableComponent storable)
     {
-      foreach (ItemSelector ingredientSelector in this.ingredientSelectors)
+      foreach (ItemSelector ingredientSelector in ingredientSelectors)
       {
         if (ingredientSelector.Item == storable)
           return true;

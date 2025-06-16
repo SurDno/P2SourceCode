@@ -10,25 +10,25 @@ namespace TriangleNet.Tools
 
     public int[] Renumber(Mesh mesh)
     {
-      this.node_num = mesh.vertices.Count;
+      node_num = mesh.vertices.Count;
       mesh.Renumber(NodeNumbering.Linear);
-      this.matrix = new AdjacencyMatrix(mesh);
-      int num1 = this.matrix.Bandwidth();
-      int[] rcm = this.GenerateRcm();
-      int[] perm_inv = this.PermInverse(this.node_num, rcm);
-      int num2 = this.PermBandwidth(rcm, perm_inv);
+      matrix = new AdjacencyMatrix(mesh);
+      int num1 = matrix.Bandwidth();
+      int[] rcm = GenerateRcm();
+      int[] perm_inv = PermInverse(node_num, rcm);
+      int num2 = PermBandwidth(rcm, perm_inv);
       if (Behavior.Verbose)
-        SimpleLog.Instance.Info(string.Format("Reverse Cuthill-McKee (Bandwidth: {0} > {1})", (object) num1, (object) num2));
+        SimpleLog.Instance.Info(string.Format("Reverse Cuthill-McKee (Bandwidth: {0} > {1})", num1, num2));
       return perm_inv;
     }
 
     private int PermBandwidth(int[] perm, int[] perm_inv)
     {
-      int[] adjacencyRow = this.matrix.AdjacencyRow;
-      int[] adjacency = this.matrix.Adjacency;
+      int[] adjacencyRow = matrix.AdjacencyRow;
+      int[] adjacency = matrix.Adjacency;
       int val1_1 = 0;
       int val1_2 = 0;
-      for (int index1 = 0; index1 < this.node_num; ++index1)
+      for (int index1 = 0; index1 < node_num; ++index1)
       {
         for (int index2 = adjacencyRow[perm[index1]]; index2 <= adjacencyRow[perm[index1] + 1] - 1; ++index2)
         {
@@ -42,23 +42,23 @@ namespace TriangleNet.Tools
 
     private int[] GenerateRcm()
     {
-      int[] rcm = new int[this.node_num];
+      int[] rcm = new int[node_num];
       int iccsze = 0;
       int level_num = 0;
-      int[] level_row = new int[this.node_num + 1];
-      int[] mask = new int[this.node_num];
-      for (int index = 0; index < this.node_num; ++index)
+      int[] level_row = new int[node_num + 1];
+      int[] mask = new int[node_num];
+      for (int index = 0; index < node_num; ++index)
         mask[index] = 1;
       int num = 1;
-      for (int index = 0; index < this.node_num; ++index)
+      for (int index = 0; index < node_num; ++index)
       {
         if (mask[index] != 0)
         {
           int root = index;
-          this.FindRoot(ref root, mask, ref level_num, level_row, rcm, num - 1);
-          this.Rcm(root, mask, rcm, num - 1, ref iccsze);
+          FindRoot(ref root, mask, ref level_num, level_row, rcm, num - 1);
+          Rcm(root, mask, rcm, num - 1, ref iccsze);
           num += iccsze;
-          if (this.node_num < num)
+          if (node_num < num)
             return rcm;
         }
       }
@@ -67,10 +67,10 @@ namespace TriangleNet.Tools
 
     private void Rcm(int root, int[] mask, int[] perm, int offset, ref int iccsze)
     {
-      int[] adjacencyRow = this.matrix.AdjacencyRow;
-      int[] adjacency = this.matrix.Adjacency;
-      int[] deg = new int[this.node_num];
-      this.Degree(root, mask, deg, ref iccsze, perm, offset);
+      int[] adjacencyRow = matrix.AdjacencyRow;
+      int[] adjacency = matrix.Adjacency;
+      int[] deg = new int[node_num];
+      Degree(root, mask, deg, ref iccsze, perm, offset);
       mask[root] = 0;
       if (iccsze <= 1)
         return;
@@ -117,7 +117,7 @@ namespace TriangleNet.Tools
           }
         }
       }
-      this.ReverseVector(perm, offset, iccsze);
+      ReverseVector(perm, offset, iccsze);
     }
 
     private void FindRoot(
@@ -128,10 +128,10 @@ namespace TriangleNet.Tools
       int[] level,
       int offset)
     {
-      int[] adjacencyRow = this.matrix.AdjacencyRow;
-      int[] adjacency = this.matrix.Adjacency;
+      int[] adjacencyRow = matrix.AdjacencyRow;
+      int[] adjacency = matrix.Adjacency;
       int level_num1 = 0;
-      this.GetLevelSet(ref root, mask, ref level_num, level_row, level, offset);
+      GetLevelSet(ref root, mask, ref level_num, level_row, level, offset);
       int num1 = level_row[level_num] - 1;
       if (level_num == 1 || level_num == num1)
         return;
@@ -161,7 +161,7 @@ namespace TriangleNet.Tools
             }
           }
         }
-        this.GetLevelSet(ref root, mask, ref level_num1, level_row, level, offset);
+        GetLevelSet(ref root, mask, ref level_num1, level_row, level, offset);
         if (level_num1 > level_num)
           level_num = level_num1;
         else
@@ -182,8 +182,8 @@ label_13:;
       int[] level,
       int offset)
     {
-      int[] adjacencyRow = this.matrix.AdjacencyRow;
-      int[] adjacency = this.matrix.Adjacency;
+      int[] adjacencyRow = matrix.AdjacencyRow;
+      int[] adjacency = matrix.Adjacency;
       mask[root] = 0;
       level[offset] = root;
       level_num = 0;
@@ -220,8 +220,8 @@ label_13:;
 
     private void Degree(int root, int[] mask, int[] deg, ref int iccsze, int[] ls, int offset)
     {
-      int[] adjacencyRow = this.matrix.AdjacencyRow;
-      int[] adjacency = this.matrix.Adjacency;
+      int[] adjacencyRow = matrix.AdjacencyRow;
+      int[] adjacency = matrix.Adjacency;
       int num1 = 1;
       ls[offset] = root;
       adjacencyRow[root] = -adjacencyRow[root];
@@ -263,7 +263,7 @@ label_13:;
 
     private int[] PermInverse(int n, int[] perm)
     {
-      int[] numArray = new int[this.node_num];
+      int[] numArray = new int[node_num];
       for (int index = 0; index < n; ++index)
         numArray[perm[index]] = index;
       return numArray;

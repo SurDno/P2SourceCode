@@ -1,7 +1,4 @@
-﻿using UnityEngine;
-using UnityEngine.SceneManagement;
-
-public class StartWithoutLoader : MonoBehaviour
+﻿public class StartWithoutLoader : MonoBehaviour
 {
   [SerializeField]
   private GameObject[] prefabs;
@@ -11,7 +8,7 @@ public class StartWithoutLoader : MonoBehaviour
     if (SceneManager.GetActiveScene() == this.gameObject.scene)
     {
       int siblingIndex = this.transform.GetSiblingIndex();
-      foreach (GameObject prefab in this.prefabs)
+      foreach (GameObject prefab in prefabs)
       {
         if (!((Object) prefab == (Object) null))
         {

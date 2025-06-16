@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 [Serializable]
 public class POIAnimationSetupAngle : POIAnimationSetupBase
@@ -18,22 +17,22 @@ public class POIAnimationSetupAngle : POIAnimationSetupBase
   {
     get
     {
-      if (!this.CheckElements())
+      if (!CheckElements())
       {
-        this.elements = new List<POIAnimationSetupElementBase>();
-        this.elements.Add((POIAnimationSetupElementBase) this.SetupLeft);
-        this.elements.Add((POIAnimationSetupElementBase) this.SetupMiddle);
-        this.elements.Add((POIAnimationSetupElementBase) this.SetupRight);
+        elements = new List<POIAnimationSetupElementBase>();
+        elements.Add(SetupLeft);
+        elements.Add(SetupMiddle);
+        elements.Add(SetupRight);
       }
-      return this.elements;
+      return elements;
     }
   }
 
   private bool CheckElements()
   {
-    if (this.elements == null || this.elements.Count == 0)
+    if (elements == null || elements.Count == 0)
       return false;
-    foreach (POIAnimationSetupElementBase element in this.elements)
+    foreach (POIAnimationSetupElementBase element in elements)
     {
       if (!(element is POIAnimationSetupElementSlow))
         return false;

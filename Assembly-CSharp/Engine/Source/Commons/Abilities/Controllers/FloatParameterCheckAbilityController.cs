@@ -10,19 +10,19 @@ namespace Engine.Source.Commons.Abilities.Controllers
   [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
   public class FloatParameterCheckAbilityController : IAbilityController, IChangeParameterListener
   {
-    [DataReadProxy(MemberEnum.None, Name = "Parameter")]
-    [DataWriteProxy(MemberEnum.None, Name = "Parameter")]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy(Name = "Parameter")]
+    [DataWriteProxy(Name = "Parameter")]
+    [CopyableProxy]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected ParameterNameEnum parameterName;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected float value;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy()]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected CompareEnum compare;
     private AbilityItem abilityItem;
@@ -32,42 +32,42 @@ namespace Engine.Source.Commons.Abilities.Controllers
     public void Initialise(AbilityItem abilityItem)
     {
       this.abilityItem = abilityItem;
-      this.parameters = this.abilityItem.Ability.Owner.GetComponent<ParametersComponent>();
-      this.parameter = this.parameters.GetByName<float>(this.parameterName);
-      if (this.parameter == null)
+      parameters = this.abilityItem.Ability.Owner.GetComponent<ParametersComponent>();
+      parameter = parameters.GetByName<float>(parameterName);
+      if (parameter == null)
         return;
-      this.parameter.AddListener((IChangeParameterListener) this);
-      this.CheckParameter();
+      parameter.AddListener(this);
+      CheckParameter();
     }
 
     public void Shutdown()
     {
-      if (this.parameter != null)
+      if (parameter != null)
       {
-        this.parameter.RemoveListener((IChangeParameterListener) this);
-        this.abilityItem.Active = false;
+        parameter.RemoveListener(this);
+        abilityItem.Active = false;
       }
-      this.abilityItem = (AbilityItem) null;
+      abilityItem = null;
     }
 
     private void CheckParameter()
     {
-      if (this.parameter == null)
+      if (parameter == null)
         return;
       bool flag = false;
-      if (this.compare == CompareEnum.Equal)
-        flag = (double) this.parameter.Value == (double) this.value;
-      else if (this.compare == CompareEnum.Less)
-        flag = (double) this.parameter.Value < (double) this.value;
-      else if (this.compare == CompareEnum.More)
-        flag = (double) this.parameter.Value > (double) this.value;
-      else if (this.compare == CompareEnum.LessEqual)
-        flag = (double) this.parameter.Value <= (double) this.value;
-      else if (this.compare == CompareEnum.MoreEqual)
-        flag = (double) this.parameter.Value >= (double) this.value;
-      this.abilityItem.Active = flag;
+      if (compare == CompareEnum.Equal)
+        flag = parameter.Value == (double) value;
+      else if (compare == CompareEnum.Less)
+        flag = parameter.Value < (double) value;
+      else if (compare == CompareEnum.More)
+        flag = parameter.Value > (double) value;
+      else if (compare == CompareEnum.LessEqual)
+        flag = parameter.Value <= (double) value;
+      else if (compare == CompareEnum.MoreEqual)
+        flag = parameter.Value >= (double) value;
+      abilityItem.Active = flag;
     }
 
-    public void OnParameterChanged(IParameter parameter) => this.CheckParameter();
+    public void OnParameterChanged(IParameter parameter) => CheckParameter();
   }
 }

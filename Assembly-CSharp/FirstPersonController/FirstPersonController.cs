@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace FirstPersonController
+﻿namespace FirstPersonController
 {
   [RequireComponent(typeof (CharacterController))]
   public class FirstPersonController : MonoBehaviour
@@ -49,89 +47,89 @@ namespace FirstPersonController
 
     private void Start()
     {
-      this.m_CharacterController = this.GetComponent<CharacterController>();
-      this.m_Camera = Camera.main;
-      this.m_OriginalCameraPosition = this.m_Camera.transform.localPosition;
-      this.m_FovKick.Setup(this.m_Camera);
-      this.m_HeadBob.Setup(this.m_Camera, this.m_StepInterval);
-      this.m_StepCycle = 0.0f;
-      this.m_NextStep = this.m_StepCycle / 2f;
-      this.m_Jumping = false;
-      this.m_MouseLook.Init(this.transform, this.m_Camera.transform);
+      m_CharacterController = this.GetComponent<CharacterController>();
+      m_Camera = Camera.main;
+      m_OriginalCameraPosition = m_Camera.transform.localPosition;
+      m_FovKick.Setup(m_Camera);
+      m_HeadBob.Setup(m_Camera, m_StepInterval);
+      m_StepCycle = 0.0f;
+      m_NextStep = m_StepCycle / 2f;
+      m_Jumping = false;
+      m_MouseLook.Init(this.transform, m_Camera.transform);
     }
 
     private void Update()
     {
-      this.RotateView();
-      if (!this.m_Jump)
-        this.m_Jump = Input.GetKeyDown(KeyCode.Space);
-      if (!this.m_PreviouslyGrounded && this.m_CharacterController.isGrounded)
+      RotateView();
+      if (!m_Jump)
+        m_Jump = Input.GetKeyDown(KeyCode.Space);
+      if (!m_PreviouslyGrounded && m_CharacterController.isGrounded)
       {
-        this.StartCoroutine(this.m_JumpBob.DoBobCycle());
-        this.m_MoveDir.y = 0.0f;
-        this.m_Jumping = false;
+        this.StartCoroutine(m_JumpBob.DoBobCycle());
+        m_MoveDir.y = 0.0f;
+        m_Jumping = false;
       }
-      if (!this.m_CharacterController.isGrounded && !this.m_Jumping && this.m_PreviouslyGrounded)
-        this.m_MoveDir.y = 0.0f;
-      this.m_PreviouslyGrounded = this.m_CharacterController.isGrounded;
+      if (!m_CharacterController.isGrounded && !m_Jumping && m_PreviouslyGrounded)
+        m_MoveDir.y = 0.0f;
+      m_PreviouslyGrounded = m_CharacterController.isGrounded;
     }
 
     private void FixedUpdate()
     {
       float speed;
-      this.GetInput(out speed);
-      Vector3 vector = this.transform.forward * this.m_Input.y + this.transform.right * this.m_Input.x;
+      GetInput(out speed);
+      Vector3 vector = this.transform.forward * m_Input.y + this.transform.right * m_Input.x;
       RaycastHit hitInfo;
-      Physics.SphereCast(this.transform.position, this.m_CharacterController.radius, Vector3.down, out hitInfo, this.m_CharacterController.height / 2f, -1, QueryTriggerInteraction.Ignore);
+      Physics.SphereCast(this.transform.position, m_CharacterController.radius, Vector3.down, out hitInfo, m_CharacterController.height / 2f, -1, QueryTriggerInteraction.Ignore);
       Vector3 normalized = Vector3.ProjectOnPlane(vector, hitInfo.normal).normalized;
-      this.m_MoveDir.x = normalized.x * speed;
-      this.m_MoveDir.z = normalized.z * speed;
-      if (this.m_CharacterController.isGrounded)
+      m_MoveDir.x = normalized.x * speed;
+      m_MoveDir.z = normalized.z * speed;
+      if (m_CharacterController.isGrounded)
       {
-        this.m_MoveDir.y = -this.m_StickToGroundForce;
-        if (this.m_Jump)
+        m_MoveDir.y = -m_StickToGroundForce;
+        if (m_Jump)
         {
-          this.m_MoveDir.y = this.m_JumpSpeed;
-          this.m_Jump = false;
-          this.m_Jumping = true;
+          m_MoveDir.y = m_JumpSpeed;
+          m_Jump = false;
+          m_Jumping = true;
         }
       }
       else
-        this.m_MoveDir += Physics.gravity * this.m_GravityMultiplier * Time.fixedDeltaTime;
-      this.m_CollisionFlags = this.m_CharacterController.Move(this.m_MoveDir * Time.fixedDeltaTime);
-      this.ProgressStepCycle(speed);
-      this.UpdateCameraPosition(speed);
-      this.m_MouseLook.UpdateCursorLock();
+        m_MoveDir += Physics.gravity * m_GravityMultiplier * Time.fixedDeltaTime;
+      m_CollisionFlags = m_CharacterController.Move(m_MoveDir * Time.fixedDeltaTime);
+      ProgressStepCycle(speed);
+      UpdateCameraPosition(speed);
+      m_MouseLook.UpdateCursorLock();
     }
 
     private void ProgressStepCycle(float speed)
     {
-      if ((double) this.m_CharacterController.velocity.sqrMagnitude > 0.0 && ((double) this.m_Input.x != 0.0 || (double) this.m_Input.y != 0.0))
-        this.m_StepCycle += (this.m_CharacterController.velocity.magnitude + speed * (this.m_IsWalking ? 1f : this.m_RunstepLenghten)) * Time.fixedDeltaTime;
-      if ((double) this.m_StepCycle <= (double) this.m_NextStep)
+      if ((double) m_CharacterController.velocity.sqrMagnitude > 0.0 && ((double) m_Input.x != 0.0 || (double) m_Input.y != 0.0))
+        m_StepCycle += (m_CharacterController.velocity.magnitude + speed * (m_IsWalking ? 1f : m_RunstepLenghten)) * Time.fixedDeltaTime;
+      if (m_StepCycle <= (double) m_NextStep)
         return;
-      this.m_NextStep = this.m_StepCycle + this.m_StepInterval;
+      m_NextStep = m_StepCycle + m_StepInterval;
     }
 
     private void UpdateCameraPosition(float speed)
     {
-      if (!this.m_UseHeadBob)
+      if (!m_UseHeadBob)
         return;
       Vector3 localPosition;
-      if ((double) this.m_CharacterController.velocity.magnitude > 0.0 && this.m_CharacterController.isGrounded)
+      if ((double) m_CharacterController.velocity.magnitude > 0.0 && m_CharacterController.isGrounded)
       {
-        this.m_Camera.transform.localPosition = this.m_HeadBob.DoHeadBob(this.m_CharacterController.velocity.magnitude + speed * (this.m_IsWalking ? 1f : this.m_RunstepLenghten));
-        localPosition = this.m_Camera.transform.localPosition with
+        m_Camera.transform.localPosition = m_HeadBob.DoHeadBob(m_CharacterController.velocity.magnitude + speed * (m_IsWalking ? 1f : m_RunstepLenghten));
+        localPosition = m_Camera.transform.localPosition with
         {
-          y = this.m_Camera.transform.localPosition.y - this.m_JumpBob.Offset()
+          y = m_Camera.transform.localPosition.y - m_JumpBob.Offset()
         };
       }
       else
-        localPosition = this.m_Camera.transform.localPosition with
+        localPosition = m_Camera.transform.localPosition with
         {
-          y = this.m_OriginalCameraPosition.y - this.m_JumpBob.Offset()
+          y = m_OriginalCameraPosition.y - m_JumpBob.Offset()
         };
-      this.m_Camera.transform.localPosition = localPosition;
+      m_Camera.transform.localPosition = localPosition;
     }
 
     private void GetInput(out float speed)
@@ -146,29 +144,29 @@ namespace FirstPersonController
         ++y;
       if (Input.GetKey(KeyCode.S))
         y += -1f;
-      bool isWalking = this.m_IsWalking;
-      this.m_IsWalking = !Input.GetKey(KeyCode.LeftShift);
-      speed = this.m_IsWalking ? this.m_WalkSpeed : this.m_RunSpeed;
-      this.m_Input = new Vector2(x, y);
-      if ((double) this.m_Input.sqrMagnitude > 1.0)
-        this.m_Input.Normalize();
-      if (this.m_IsWalking == isWalking || !this.m_UseFovKick || (double) this.m_CharacterController.velocity.sqrMagnitude <= 0.0)
+      bool isWalking = m_IsWalking;
+      m_IsWalking = !Input.GetKey(KeyCode.LeftShift);
+      speed = m_IsWalking ? m_WalkSpeed : m_RunSpeed;
+      m_Input = new Vector2(x, y);
+      if ((double) m_Input.sqrMagnitude > 1.0)
+        m_Input.Normalize();
+      if (m_IsWalking == isWalking || !m_UseFovKick || (double) m_CharacterController.velocity.sqrMagnitude <= 0.0)
         return;
       this.StopAllCoroutines();
-      this.StartCoroutine(!this.m_IsWalking ? this.m_FovKick.FOVKickUp() : this.m_FovKick.FOVKickDown());
+      this.StartCoroutine(!m_IsWalking ? m_FovKick.FOVKickUp() : m_FovKick.FOVKickDown());
     }
 
     private void RotateView()
     {
-      this.m_MouseLook.LookRotation(this.transform, this.m_Camera.transform);
+      m_MouseLook.LookRotation(this.transform, m_Camera.transform);
     }
 
     private void OnControllerColliderHit(ControllerColliderHit hit)
     {
       Rigidbody attachedRigidbody = hit.collider.attachedRigidbody;
-      if (this.m_CollisionFlags == CollisionFlags.Below || (Object) attachedRigidbody == (Object) null || attachedRigidbody.isKinematic)
+      if (m_CollisionFlags == CollisionFlags.Below || (Object) attachedRigidbody == (Object) null || attachedRigidbody.isKinematic)
         return;
-      attachedRigidbody.AddForceAtPosition(this.m_CharacterController.velocity * 0.1f, hit.point, ForceMode.Impulse);
+      attachedRigidbody.AddForceAtPosition(m_CharacterController.velocity * 0.1f, hit.point, ForceMode.Impulse);
     }
   }
 }

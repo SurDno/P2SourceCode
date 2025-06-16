@@ -1,10 +1,9 @@
-﻿using Engine.Common;
+﻿using System.Collections.Generic;
+using Engine.Common;
 using Engine.Common.Components.Movable;
 using Engine.Common.Components.Parameters;
 using Engine.Source.Commons;
 using Inspectors;
-using System.Collections.Generic;
-using UnityEngine;
 
 namespace Engine.Source.Components.Crowds
 {
@@ -31,7 +30,7 @@ namespace Engine.Source.Components.Crowds
     {
       get
       {
-        return this.EntityPoint != null ? ((IEntityView) this.EntityPoint).GameObject : (GameObject) null;
+        return EntityPoint != null ? ((IEntityView) EntityPoint).GameObject : (GameObject) null;
       }
     }
   }

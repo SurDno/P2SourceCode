@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using UnityEngine;
 
 namespace Engine.Impl.UI.Menu.Main
 {
@@ -13,8 +12,8 @@ namespace Engine.Impl.UI.Menu.Main
     private void Awake()
     {
       bool flag = true;
-      PlatformDependentObjectSwitcher.SetActiveAllGameObjects(!flag ? this._pcControls : this._consoleControls, false);
-      PlatformDependentObjectSwitcher.SetActiveAllGameObjects(!flag ? this._consoleControls : this._pcControls, true);
+      SetActiveAllGameObjects(!flag ? _pcControls : _consoleControls, false);
+      SetActiveAllGameObjects(!flag ? _consoleControls : _pcControls, true);
     }
 
     private static void SetActiveAllGameObjects(List<GameObject> list, bool isActive)

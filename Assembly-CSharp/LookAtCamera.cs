@@ -1,25 +1,23 @@
-﻿using UnityEngine;
-
-public class LookAtCamera : MonoBehaviour
+﻿public class LookAtCamera : MonoBehaviour
 {
   public Camera lookAtCamera;
   public bool lookOnlyOnAwake;
 
   public void Start()
   {
-    if ((Object) this.lookAtCamera == (Object) null)
-      this.lookAtCamera = Camera.main;
-    if (!this.lookOnlyOnAwake)
+    if ((Object) lookAtCamera == (Object) null)
+      lookAtCamera = Camera.main;
+    if (!lookOnlyOnAwake)
       return;
-    this.LookCam();
+    LookCam();
   }
 
   public void Update()
   {
-    if (this.lookOnlyOnAwake)
+    if (lookOnlyOnAwake)
       return;
-    this.LookCam();
+    LookCam();
   }
 
-  public void LookCam() => this.transform.LookAt(this.lookAtCamera.transform);
+  public void LookCam() => this.transform.LookAt(lookAtCamera.transform);
 }

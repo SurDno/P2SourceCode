@@ -1,76 +1,76 @@
-﻿using Engine.Common;
+﻿using System.Collections.Generic;
+using Engine.Common;
 using Engine.Source.Commons;
-using System.Collections.Generic;
 
 namespace Engine.Source.Services
 {
-  [RuntimeService(new System.Type[] {typeof (FlockService)})]
+  [RuntimeService(typeof (FlockService))]
   public class FlockService : IInitialisable, IUpdatable
   {
     private HashSet<FlockObject> flocks = new HashSet<FlockObject>();
     private HashSet<LandingSpotObject> zones = new HashSet<LandingSpotObject>();
-    private bool needUpdate = false;
+    private bool needUpdate;
 
     public void Initialise()
     {
-      InstanceByRequest<UpdateService>.Instance.Updater.AddUpdatable((IUpdatable) this);
+      InstanceByRequest<UpdateService>.Instance.Updater.AddUpdatable(this);
     }
 
     public void Terminate()
     {
-      InstanceByRequest<UpdateService>.Instance.Updater.RemoveUpdatable((IUpdatable) this);
+      InstanceByRequest<UpdateService>.Instance.Updater.RemoveUpdatable(this);
     }
 
     public void ComputeUpdate()
     {
-      if (!this.needUpdate)
+      if (!needUpdate)
         return;
-      this.DistributeLandingZones();
-      this.needUpdate = false;
+      DistributeLandingZones();
+      needUpdate = false;
     }
 
     public void ScareAll()
     {
-      foreach (LandingSpotObject zone in this.zones)
+      foreach (LandingSpotObject zone in zones)
         zone.Scare();
     }
 
     public void RegisterFlock(FlockObject flock)
     {
-      if (!this.flocks.Add(flock))
+      if (!flocks.Add(flock))
         return;
-      this.needUpdate = true;
+      needUpdate = true;
     }
 
     public void UnregisterFlock(FlockObject flock)
     {
-      if (!this.flocks.Remove(flock))
+      if (!flocks.Remove(flock))
         return;
-      this.needUpdate = true;
+      needUpdate = true;
     }
 
     public void RegisterLandingZone(LandingSpotObject zone)
     {
-      if (!this.zones.Add(zone))
+      if (!zones.Add(zone))
         return;
-      this.needUpdate = true;
+      needUpdate = true;
     }
 
     public void UnregisterLandingZone(LandingSpotObject zone)
     {
-      if (!this.zones.Remove(zone))
+      if (!zones.Remove(zone))
         return;
-      zone.Flock = (FlockObject) null;
-      this.needUpdate = true;
+      zone.Flock = null;
+      needUpdate = true;
     }
 
     private void DistributeLandingZones()
     {
-      foreach (LandingSpotObject zone in this.zones)
+      foreach (LandingSpotObject zone in zones)
       {
         if (!zone.Preseted && (UnityEngine.Object) zone.Flock == (UnityEngine.Object) null)
         {
-          FlockObject withMinimumZones = this.GetFlockWithMinimumZones(zone);
+          FlockObject withMinimumZones = GetFlockWithMinimumZones(zone);
           if ((UnityEngine.Object) withMinimumZones != (UnityEngine.Object) null)
             withMinimumZones.AddLandingZone(zone);
         }
@@ -80,8 +80,8 @@ namespace Engine.Source.Services
     private FlockObject GetFlockWithMinimumZones(LandingSpotObject zone)
     {
       int num = int.MaxValue;
-      FlockObject withMinimumZones = (FlockObject) null;
-      foreach (FlockObject flock in this.flocks)
+      FlockObject withMinimumZones = null;
+      foreach (FlockObject flock in flocks)
       {
         if (flock.GetZonesCount() < num && (zone.SupportedFlocks & flock.FlockType) != 0)
         {

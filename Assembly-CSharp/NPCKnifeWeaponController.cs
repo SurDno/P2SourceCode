@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-public class NPCKnifeWeaponController : NPCWeaponControllerBase
+﻿public class NPCKnifeWeaponController : NPCWeaponControllerBase
 {
   private GameObject knife;
 
@@ -8,9 +6,9 @@ public class NPCKnifeWeaponController : NPCWeaponControllerBase
   {
     if ((Object) service.KnifeParent != (Object) null)
     {
-      this.knife = Object.Instantiate<GameObject>(service.KnifePrefab, service.KnifeParent);
-      if ((Object) this.knife != (Object) null)
-        this.knife.SetActive(false);
+      knife = Object.Instantiate<GameObject>(service.KnifePrefab, service.KnifeParent);
+      if ((Object) knife != (Object) null)
+        knife.SetActive(false);
     }
     base.Initialise(service);
   }
@@ -18,33 +16,33 @@ public class NPCKnifeWeaponController : NPCWeaponControllerBase
   protected override void ShowWeapon(bool show)
   {
     base.ShowWeapon(show);
-    if ((Object) this.knife == (Object) null && (Object) this.service.KnifeParent != (Object) null)
-      this.knife = Object.Instantiate<GameObject>(this.service.KnifePrefab, this.service.KnifeParent);
-    if (!((Object) this.knife != (Object) null))
+    if ((Object) knife == (Object) null && (Object) service.KnifeParent != (Object) null)
+      knife = Object.Instantiate<GameObject>(service.KnifePrefab, service.KnifeParent);
+    if (!((Object) knife != (Object) null))
       return;
-    this.knife.SetActive(show);
+    knife.SetActive(show);
   }
 
   public override void Shutdown()
   {
-    if ((Object) this.knife != (Object) null)
-      Object.Destroy((Object) this.knife);
+    if ((Object) knife != (Object) null)
+      Object.Destroy((Object) knife);
     base.Shutdown();
   }
 
   protected override void GetLayersIndices()
   {
-    if (!((Object) this.animator != (Object) null))
+    if (!((Object) animator != (Object) null))
       return;
-    this.walkLayerIndex = this.animator.GetLayerIndex("Fight Knife Walk Layer");
-    this.attackLayerIndex = this.animator.GetLayerIndex("Fight Knife Attack Layer");
-    this.reactionLayerIndex = this.animator.GetLayerIndex("Fight Knife Reaction Layer");
+    walkLayerIndex = animator.GetLayerIndex("Fight Knife Walk Layer");
+    attackLayerIndex = animator.GetLayerIndex("Fight Knife Attack Layer");
+    reactionLayerIndex = animator.GetLayerIndex("Fight Knife Reaction Layer");
   }
 
   public override void OnAnimatorEvent(string data)
   {
     if (data.StartsWith("Knife.WeaponOn"))
-      this.ShowWeapon(true);
+      ShowWeapon(true);
     base.OnAnimatorEvent(data);
   }
 }

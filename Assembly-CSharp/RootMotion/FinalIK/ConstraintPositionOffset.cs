@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEngine;
 
 namespace RootMotion.FinalIK
 {
@@ -13,19 +12,19 @@ namespace RootMotion.FinalIK
 
     public override void UpdateConstraint()
     {
-      if ((double) this.weight <= 0.0 || !this.isValid)
+      if (weight <= 0.0 || !isValid)
         return;
-      if (!this.initiated)
+      if (!initiated)
       {
-        this.defaultLocalPosition = this.transform.localPosition;
-        this.lastLocalPosition = this.transform.localPosition;
-        this.initiated = true;
+        defaultLocalPosition = transform.localPosition;
+        lastLocalPosition = transform.localPosition;
+        initiated = true;
       }
-      if (this.positionChanged)
-        this.defaultLocalPosition = this.transform.localPosition;
-      this.transform.localPosition = this.defaultLocalPosition;
-      this.transform.position += this.offset * this.weight;
-      this.lastLocalPosition = this.transform.localPosition;
+      if (positionChanged)
+        defaultLocalPosition = transform.localPosition;
+      transform.localPosition = defaultLocalPosition;
+      transform.position += offset * weight;
+      lastLocalPosition = transform.localPosition;
     }
 
     public ConstraintPositionOffset()
@@ -34,6 +33,6 @@ namespace RootMotion.FinalIK
 
     public ConstraintPositionOffset(Transform transform) => this.transform = transform;
 
-    private bool positionChanged => this.transform.localPosition != this.lastLocalPosition;
+    private bool positionChanged => transform.localPosition != lastLocalPosition;
   }
 }

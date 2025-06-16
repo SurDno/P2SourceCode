@@ -1,10 +1,10 @@
-﻿using Cofe.Loggers;
+﻿using System;
+using System.Globalization;
+using System.Text;
+using Cofe.Loggers;
 using Engine.Common.Binders;
 using Engine.Common.Types;
 using PLVirtualMachine.Common.EngineAPI;
-using System;
-using System.Globalization;
-using System.Text;
 
 namespace PLVirtualMachine.Common.Data
 {
@@ -16,7 +16,7 @@ namespace PLVirtualMachine.Common.Data
     {
       Type type = Type.GetType(typeName);
       Type result;
-      if ((Type) null == type && EnumTypeAttribute.TryGetValue(typeName, out result))
+      if (null == type && EnumTypeAttribute.TryGetValue(typeName, out result))
         type = result;
       return type;
     }
@@ -31,7 +31,7 @@ namespace PLVirtualMachine.Common.Data
       {
         if (typeof (IVMStringSerializable).IsAssignableFrom(value.GetType()))
           return ((IVMStringSerializable) value).Write();
-        StringSerializer.LastError = "";
+        LastError = "";
         if (value.GetType() == typeof (Guid))
           return GuidUtility.GetGuidString((Guid) value);
         if (value.GetType() == typeof (HierarchyGuid))
@@ -39,50 +39,50 @@ namespace PLVirtualMachine.Common.Data
         if (value.GetType() == typeof (byte[]))
           return Encoding.UTF8.GetString((byte[]) value);
         if (value.GetType() == typeof (float))
-          return ((float) value).ToString((IFormatProvider) CultureInfo.InvariantCulture);
-        return value.GetType() == typeof (double) ? ((double) value).ToString((IFormatProvider) CultureInfo.InvariantCulture) : value.ToString();
+          return ((float) value).ToString(CultureInfo.InvariantCulture);
+        return value.GetType() == typeof (double) ? ((double) value).ToString(CultureInfo.InvariantCulture) : value.ToString();
       }
       catch (Exception ex)
       {
-        StringSerializer.LastError = string.Format("Cannot serialize value of type {0} to string: error {1} at {2}", (object) value.GetType(), (object) ex, (object) EngineAPIManager.Instance.CurrentFSMStateInfo);
-        Logger.AddError(StringSerializer.LastError);
+        LastError = string.Format("Cannot serialize value of type {0} to string: error {1} at {2}", value.GetType(), ex, EngineAPIManager.Instance.CurrentFSMStateInfo);
+        Logger.AddError(LastError);
         return "";
       }
     }
 
     public static object ReadValue(string data, Type valueType)
     {
-      StringSerializer.LastError = "";
-      if ((Type) null == valueType)
+      LastError = "";
+      if (null == valueType)
       {
-        StringSerializer.LastError = string.Format("value {0} conversion error: conversion type is null at {1}", (object) data, (object) EngineAPIManager.Instance.CurrentFSMStateInfo);
-        Logger.AddError(StringSerializer.LastError);
-        return (object) null;
+        LastError = string.Format("value {0} conversion error: conversion type is null at {1}", data, EngineAPIManager.Instance.CurrentFSMStateInfo);
+        Logger.AddError(LastError);
+        return null;
       }
       if (!typeof (IVMStringSerializable).IsAssignableFrom(valueType))
-        return StringSerializer.ReadStringValue(data, valueType);
+        return ReadStringValue(data, valueType);
       if (valueType.IsInterface)
       {
         valueType = BaseSerializer.GetRealRefType(valueType);
-        if ((Type) null == valueType)
+        if (null == valueType)
         {
-          StringSerializer.LastError = string.Format("Invalid data interface type {0} at {1}", (object) valueType.ToString(), (object) EngineAPIManager.Instance.CurrentFSMStateInfo);
-          Logger.AddError(StringSerializer.LastError);
-          return (object) null;
+          LastError = string.Format("Invalid data interface type {0} at {1}", valueType, EngineAPIManager.Instance.CurrentFSMStateInfo);
+          Logger.AddError(LastError);
+          return null;
         }
       }
       IVMStringSerializable instance = (IVMStringSerializable) Activator.CreateInstance(valueType);
       instance.Read(data);
-      return (object) instance;
+      return instance;
     }
 
     private static object ReadStringValue(string data, Type valueType)
     {
-      StringSerializer.LastError = "";
+      LastError = "";
       try
       {
         if (valueType == typeof (string))
-          return (object) data;
+          return data;
         if ((data == "0" || data == "") && valueType != typeof (object) && valueType != typeof (string) && (!valueType.IsValueType || valueType == typeof (bool)) || (data == "0" || data == "") && valueType.IsEnum)
           return BaseSerializer.GetDefaultValue(valueType);
         if (!valueType.IsEnum)
@@ -90,15 +90,15 @@ namespace PLVirtualMachine.Common.Data
         foreach (Enum @enum in Enum.GetValues(valueType))
         {
           if (@enum.ToString() == data)
-            return (object) @enum;
+            return @enum;
         }
-        StringSerializer.LastError = string.Format("Cannot convert value {0} to enum type {1} at {2}", (object) data, (object) valueType, (object) EngineAPIManager.Instance.CurrentFSMStateInfo);
-        Logger.AddError(StringSerializer.LastError);
+        LastError = string.Format("Cannot convert value {0} to enum type {1} at {2}", data, valueType, EngineAPIManager.Instance.CurrentFSMStateInfo);
+        Logger.AddError(LastError);
       }
       catch (Exception ex)
       {
-        StringSerializer.LastError = string.Format("value {0} conversion error: {1} at {2}", (object) data, (object) ex, (object) EngineAPIManager.Instance.CurrentFSMStateInfo);
-        Logger.AddError(StringSerializer.LastError);
+        LastError = string.Format("value {0} conversion error: {1} at {2}", data, ex, EngineAPIManager.Instance.CurrentFSMStateInfo);
+        Logger.AddError(LastError);
       }
       return BaseSerializer.GetDefaultValue(valueType);
     }

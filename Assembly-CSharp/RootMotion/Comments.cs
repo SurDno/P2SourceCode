@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace RootMotion
+﻿namespace RootMotion
 {
   public class Comments : MonoBehaviour
   {

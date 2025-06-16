@@ -1,8 +1,7 @@
-﻿using Cofe.Utility;
+﻿using System;
+using Cofe.Utility;
 using Engine.Common.Services;
 using Engine.Impl.Services;
-using System;
-using UnityEngine;
 
 namespace Engine.Source.Commons
 {
@@ -18,28 +17,28 @@ namespace Engine.Source.Commons
     {
       get
       {
-        if (this.label == null)
-          this.Invalidate();
-        return this.label;
+        if (label == null)
+          Invalidate();
+        return label;
       }
     }
 
     public void Invalidate()
     {
-      this.label = "";
+      label = "";
       if (ScriptableObjectInstance<BuildData>.Instance.Label == null)
         return;
-      this.projectName = "Unknown";
-      this.dataVersion = 0;
+      projectName = "Unknown";
+      dataVersion = 0;
       VirtualMachineController service = ServiceLocator.GetService<VirtualMachineController>();
       if (service != null)
       {
         if (!service.ProjectName.IsNullOrEmpty())
-          this.projectName = service.ProjectName;
-        this.dataVersion = service.DataVersion;
+          projectName = service.ProjectName;
+        dataVersion = service.DataVersion;
       }
-      this.label = ScriptableObjectInstance<BuildData>.Instance.Label.Replace("{Version}", Application.version).Replace("{Branch}", ScriptableObjectInstance<BuildData>.Instance.Branch).Replace("{ProjectName}", this.projectName).Replace("{DataVersion}", this.dataVersion.ToString());
-      Action onInvalidate = this.OnInvalidate;
+      label = ScriptableObjectInstance<BuildData>.Instance.Label.Replace("{Version}", Application.version).Replace("{Branch}", ScriptableObjectInstance<BuildData>.Instance.Branch).Replace("{ProjectName}", projectName).Replace("{DataVersion}", dataVersion.ToString());
+      Action onInvalidate = OnInvalidate;
       if (onInvalidate == null)
         return;
       onInvalidate();

@@ -49,47 +49,47 @@ namespace TriangleNet.Tools
     private int outTriangles;
     private int outVertices;
 
-    public double ShortestEdge => this.minEdge;
+    public double ShortestEdge => minEdge;
 
-    public double LongestEdge => this.maxEdge;
+    public double LongestEdge => maxEdge;
 
-    public double ShortestAltitude => this.minAspect;
+    public double ShortestAltitude => minAspect;
 
-    public double LargestAspectRatio => this.maxAspect;
+    public double LargestAspectRatio => maxAspect;
 
-    public double SmallestArea => this.minArea;
+    public double SmallestArea => minArea;
 
-    public double LargestArea => this.maxArea;
+    public double LargestArea => maxArea;
 
-    public double SmallestAngle => this.minAngle;
+    public double SmallestAngle => minAngle;
 
-    public double LargestAngle => this.maxAngle;
+    public double LargestAngle => maxAngle;
 
-    public int InputVertices => this.inVetrices;
+    public int InputVertices => inVetrices;
 
-    public int InputTriangles => this.inTriangles;
+    public int InputTriangles => inTriangles;
 
-    public int InputSegments => this.inSegments;
+    public int InputSegments => inSegments;
 
-    public int InputHoles => this.inHoles;
+    public int InputHoles => inHoles;
 
-    public int Vertices => this.outVertices;
+    public int Vertices => outVertices;
 
-    public int Triangles => this.outTriangles;
+    public int Triangles => outTriangles;
 
-    public int Edges => this.outEdges;
+    public int Edges => outEdges;
 
-    public int BoundaryEdges => this.boundaryEdges;
+    public int BoundaryEdges => boundaryEdges;
 
-    public int InteriorBoundaryEdges => this.intBoundaryEdges;
+    public int InteriorBoundaryEdges => intBoundaryEdges;
 
-    public int ConstrainedEdges => this.constrainedEdges;
+    public int ConstrainedEdges => constrainedEdges;
 
-    public int[] AngleHistogram => this.angleTable;
+    public int[] AngleHistogram => angleTable;
 
-    public int[] MinAngleHistogram => this.minAngles;
+    public int[] MinAngleHistogram => minAngles;
 
-    public int[] MaxAngleHistogram => this.maxAngles;
+    public int[] MaxAngleHistogram => maxAngles;
 
     private void GetAspectHistogram(Mesh mesh)
     {
@@ -128,8 +128,8 @@ namespace TriangleNet.Tools
         double num1 = 0.0;
         for (int index1 = 0; index1 < 3; ++index1)
         {
-          int index2 = Statistic.plus1Mod3[index1];
-          int index3 = Statistic.minus1Mod3[index1];
+          int index2 = plus1Mod3[index1];
+          int index3 = minus1Mod3[index1];
           numArray3[index1] = vertexArray[index2].x - vertexArray[index3].x;
           numArray4[index1] = vertexArray[index2].y - vertexArray[index3].y;
           numArray5[index1] = numArray3[index1] * numArray3[index1] + numArray4[index1] * numArray4[index1];
@@ -148,82 +148,82 @@ namespace TriangleNet.Tools
 
     public void Update(Mesh mesh, int sampleDegrees)
     {
-      this.inVetrices = mesh.invertices;
-      this.inTriangles = mesh.inelements;
-      this.inSegments = mesh.insegments;
-      this.inHoles = mesh.holes.Count;
-      this.outVertices = mesh.vertices.Count - mesh.undeads;
-      this.outTriangles = mesh.triangles.Count;
-      this.outEdges = mesh.edges;
-      this.boundaryEdges = mesh.hullsize;
-      this.intBoundaryEdges = mesh.subsegs.Count - mesh.hullsize;
-      this.constrainedEdges = mesh.subsegs.Count;
+      inVetrices = mesh.invertices;
+      inTriangles = mesh.inelements;
+      inSegments = mesh.insegments;
+      inHoles = mesh.holes.Count;
+      outVertices = mesh.vertices.Count - mesh.undeads;
+      outTriangles = mesh.triangles.Count;
+      outEdges = mesh.edges;
+      boundaryEdges = mesh.hullsize;
+      intBoundaryEdges = mesh.subsegs.Count - mesh.hullsize;
+      constrainedEdges = mesh.subsegs.Count;
       Point[] pointArray = new Point[3];
       sampleDegrees = 60;
       double[] numArray1 = new double[sampleDegrees / 2 - 1];
       double[] numArray2 = new double[3];
       double[] numArray3 = new double[3];
       double[] numArray4 = new double[3];
-      double num1 = Math.PI / (double) sampleDegrees;
+      double num1 = Math.PI / sampleDegrees;
       double num2 = 180.0 / Math.PI;
-      this.angleTable = new int[sampleDegrees];
-      this.minAngles = new int[sampleDegrees];
-      this.maxAngles = new int[sampleDegrees];
+      angleTable = new int[sampleDegrees];
+      minAngles = new int[sampleDegrees];
+      maxAngles = new int[sampleDegrees];
       for (int index = 0; index < sampleDegrees / 2 - 1; ++index)
       {
-        numArray1[index] = Math.Cos(num1 * (double) (index + 1));
+        numArray1[index] = Math.Cos(num1 * (index + 1));
         numArray1[index] = numArray1[index] * numArray1[index];
       }
       for (int index = 0; index < sampleDegrees; ++index)
-        this.angleTable[index] = 0;
-      this.minAspect = mesh.bounds.Width + mesh.bounds.Height;
-      this.minAspect *= this.minAspect;
-      this.maxAspect = 0.0;
-      this.minEdge = this.minAspect;
-      this.maxEdge = 0.0;
-      this.minArea = this.minAspect;
-      this.maxArea = 0.0;
-      this.minAngle = 0.0;
-      this.maxAngle = 2.0;
+        angleTable[index] = 0;
+      minAspect = mesh.bounds.Width + mesh.bounds.Height;
+      minAspect *= minAspect;
+      maxAspect = 0.0;
+      minEdge = minAspect;
+      maxEdge = 0.0;
+      minArea = minAspect;
+      maxArea = 0.0;
+      minAngle = 0.0;
+      maxAngle = 2.0;
       bool flag1 = true;
       bool flag2 = true;
       foreach (Triangle triangle in mesh.triangles.Values)
       {
         double num3 = 0.0;
         double num4 = 1.0;
-        pointArray[0] = (Point) triangle.vertices[0];
-        pointArray[1] = (Point) triangle.vertices[1];
-        pointArray[2] = (Point) triangle.vertices[2];
+        pointArray[0] = triangle.vertices[0];
+        pointArray[1] = triangle.vertices[1];
+        pointArray[2] = triangle.vertices[2];
         double num5 = 0.0;
         for (int index1 = 0; index1 < 3; ++index1)
         {
-          int index2 = Statistic.plus1Mod3[index1];
-          int index3 = Statistic.minus1Mod3[index1];
+          int index2 = plus1Mod3[index1];
+          int index3 = minus1Mod3[index1];
           numArray2[index1] = pointArray[index2].X - pointArray[index3].X;
           numArray3[index1] = pointArray[index2].Y - pointArray[index3].Y;
           numArray4[index1] = numArray2[index1] * numArray2[index1] + numArray3[index1] * numArray3[index1];
           if (numArray4[index1] > num5)
             num5 = numArray4[index1];
-          if (numArray4[index1] > this.maxEdge)
-            this.maxEdge = numArray4[index1];
-          if (numArray4[index1] < this.minEdge)
-            this.minEdge = numArray4[index1];
+          if (numArray4[index1] > maxEdge)
+            maxEdge = numArray4[index1];
+          if (numArray4[index1] < minEdge)
+            minEdge = numArray4[index1];
         }
         double num6 = Math.Abs((pointArray[2].X - pointArray[0].X) * (pointArray[1].Y - pointArray[0].Y) - (pointArray[1].X - pointArray[0].X) * (pointArray[2].Y - pointArray[0].Y));
-        if (num6 < this.minArea)
-          this.minArea = num6;
-        if (num6 > this.maxArea)
-          this.maxArea = num6;
+        if (num6 < minArea)
+          minArea = num6;
+        if (num6 > maxArea)
+          maxArea = num6;
         double num7 = num6 * num6 / num5;
-        if (num7 < this.minAspect)
-          this.minAspect = num7;
+        if (num7 < minAspect)
+          minAspect = num7;
         double num8 = num5 / num7;
-        if (num8 > this.maxAspect)
-          this.maxAspect = num8;
+        if (num8 > maxAspect)
+          maxAspect = num8;
         for (int index4 = 0; index4 < 3; ++index4)
         {
-          int index5 = Statistic.plus1Mod3[index4];
-          int index6 = Statistic.minus1Mod3[index4];
+          int index5 = plus1Mod3[index4];
+          int index6 = minus1Mod3[index4];
           double num9 = numArray2[index5] * numArray2[index6] + numArray3[index5] * numArray3[index6];
           double num10 = num9 * num9 / (numArray4[index5] * numArray4[index6]);
           int index7 = sampleDegrees / 2 - 1;
@@ -234,11 +234,11 @@ namespace TriangleNet.Tools
           }
           if (num9 <= 0.0)
           {
-            ++this.angleTable[index7];
-            if (num10 > this.minAngle)
-              this.minAngle = num10;
-            if (flag1 && num10 < this.maxAngle)
-              this.maxAngle = num10;
+            ++angleTable[index7];
+            if (num10 > minAngle)
+              minAngle = num10;
+            if (flag1 && num10 < maxAngle)
+              maxAngle = num10;
             if (num10 > num3)
               num3 = num10;
             if (flag2 && num10 < num4)
@@ -246,10 +246,10 @@ namespace TriangleNet.Tools
           }
           else
           {
-            ++this.angleTable[sampleDegrees - index7 - 1];
-            if (flag1 || num10 > this.maxAngle)
+            ++angleTable[sampleDegrees - index7 - 1];
+            if (flag1 || num10 > maxAngle)
             {
-              this.maxAngle = num10;
+              maxAngle = num10;
               flag1 = false;
             }
             if (flag2 || num10 > num4)
@@ -265,7 +265,7 @@ namespace TriangleNet.Tools
           if (num3 > numArray1[index10])
             index9 = index10;
         }
-        ++this.minAngles[index9];
+        ++minAngles[index9];
         int index11 = sampleDegrees / 2 - 1;
         for (int index12 = index11 - 1; index12 >= 0; --index12)
         {
@@ -273,22 +273,22 @@ namespace TriangleNet.Tools
             index11 = index12;
         }
         if (flag2)
-          ++this.maxAngles[index11];
+          ++maxAngles[index11];
         else
-          ++this.maxAngles[sampleDegrees - index11 - 1];
+          ++maxAngles[sampleDegrees - index11 - 1];
         flag2 = true;
       }
-      this.minEdge = Math.Sqrt(this.minEdge);
-      this.maxEdge = Math.Sqrt(this.maxEdge);
-      this.minAspect = Math.Sqrt(this.minAspect);
-      this.maxAspect = Math.Sqrt(this.maxAspect);
-      this.minArea *= 0.5;
-      this.maxArea *= 0.5;
-      this.minAngle = this.minAngle < 1.0 ? num2 * Math.Acos(Math.Sqrt(this.minAngle)) : 0.0;
-      if (this.maxAngle >= 1.0)
-        this.maxAngle = 180.0;
+      minEdge = Math.Sqrt(minEdge);
+      maxEdge = Math.Sqrt(maxEdge);
+      minAspect = Math.Sqrt(minAspect);
+      maxAspect = Math.Sqrt(maxAspect);
+      minArea *= 0.5;
+      maxArea *= 0.5;
+      minAngle = minAngle < 1.0 ? num2 * Math.Acos(Math.Sqrt(minAngle)) : 0.0;
+      if (maxAngle >= 1.0)
+        maxAngle = 180.0;
       else
-        this.maxAngle = !flag1 ? 180.0 - num2 * Math.Acos(Math.Sqrt(this.maxAngle)) : num2 * Math.Acos(Math.Sqrt(this.maxAngle));
+        maxAngle = !flag1 ? 180.0 - num2 * Math.Acos(Math.Sqrt(maxAngle)) : num2 * Math.Acos(Math.Sqrt(maxAngle));
     }
   }
 }

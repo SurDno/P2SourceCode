@@ -1,9 +1,8 @@
 ﻿using System;
-using UnityEngine;
 
 namespace Cinemachine
 {
-  [AttributeUsage(AttributeTargets.Field, AllowMultiple = false, Inherited = false)]
+  [AttributeUsage(AttributeTargets.Field)]
   public sealed class LensSettingsPropertyAttribute : PropertyAttribute
   {
   }

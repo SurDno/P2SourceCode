@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace RootMotion.FinalIK
+﻿namespace RootMotion.FinalIK
 {
   public abstract class RotationLimit : MonoBehaviour
   {
@@ -13,56 +11,56 @@ namespace RootMotion.FinalIK
 
     public void SetDefaultLocalRotation()
     {
-      this.defaultLocalRotation = this.transform.localRotation;
-      this.defaultLocalRotationSet = true;
+      defaultLocalRotation = this.transform.localRotation;
+      defaultLocalRotationSet = true;
     }
 
     public Quaternion GetLimitedLocalRotation(Quaternion localRotation, out bool changed)
     {
-      if (!this.initiated)
-        this.Awake();
-      Quaternion rotation = Quaternion.Inverse(this.defaultLocalRotation) * localRotation;
-      Quaternion quaternion = this.LimitRotation(rotation);
+      if (!initiated)
+        Awake();
+      Quaternion rotation = Quaternion.Inverse(defaultLocalRotation) * localRotation;
+      Quaternion quaternion = LimitRotation(rotation);
       changed = quaternion != rotation;
-      return !changed ? localRotation : this.defaultLocalRotation * quaternion;
+      return !changed ? localRotation : defaultLocalRotation * quaternion;
     }
 
     public bool Apply()
     {
       bool changed = false;
-      this.transform.localRotation = this.GetLimitedLocalRotation(this.transform.localRotation, out changed);
+      this.transform.localRotation = GetLimitedLocalRotation(this.transform.localRotation, out changed);
       return changed;
     }
 
     public void Disable()
     {
-      if (this.initiated)
+      if (initiated)
       {
         this.enabled = false;
       }
       else
       {
-        this.Awake();
+        Awake();
         this.enabled = false;
       }
     }
 
-    public Vector3 secondaryAxis => new Vector3(this.axis.y, this.axis.z, this.axis.x);
+    public Vector3 secondaryAxis => new Vector3(axis.y, axis.z, axis.x);
 
-    public Vector3 crossAxis => Vector3.Cross(this.axis, this.secondaryAxis);
+    public Vector3 crossAxis => Vector3.Cross(axis, secondaryAxis);
 
     protected abstract Quaternion LimitRotation(Quaternion rotation);
 
     private void Awake()
     {
-      if (!this.defaultLocalRotationSet)
-        this.SetDefaultLocalRotation();
-      if (this.axis == Vector3.zero)
+      if (!defaultLocalRotationSet)
+        SetDefaultLocalRotation();
+      if (axis == Vector3.zero)
         Debug.LogError((object) "Axis is Vector3.zero.");
-      this.initiated = true;
+      initiated = true;
     }
 
-    private void LateUpdate() => this.Apply();
+    private void LateUpdate() => Apply();
 
     public void LogWarning(string message) => Warning.Log(message, this.transform);
 
@@ -78,7 +76,7 @@ namespace RootMotion.FinalIK
       float twistLimit)
     {
       twistLimit = Mathf.Clamp(twistLimit, 0.0f, 180f);
-      if ((double) twistLimit >= 180.0)
+      if (twistLimit >= 180.0)
         return rotation;
       Vector3 normal = rotation * axis;
       Vector3 tangent1 = orthoAxis;
@@ -86,7 +84,7 @@ namespace RootMotion.FinalIK
       Vector3 tangent2 = rotation * orthoAxis;
       Vector3.OrthoNormalize(ref normal, ref tangent2);
       Quaternion from = Quaternion.FromToRotation(tangent2, tangent1) * rotation;
-      return (double) twistLimit <= 0.0 ? from : Quaternion.RotateTowards(from, rotation, twistLimit);
+      return twistLimit <= 0.0 ? from : Quaternion.RotateTowards(from, rotation, twistLimit);
     }
 
     protected static float GetOrthogonalAngle(Vector3 v1, Vector3 v2, Vector3 normal)

@@ -9,29 +9,29 @@
 
     public bool interrupted { get; private set; }
 
-    public void Interrupt() => this.interrupted = true;
+    public void Interrupt() => interrupted = true;
 
     public PostProcessingContext Reset()
     {
-      this.profile = (PostProcessingProfile) null;
-      this.camera = (Camera) null;
-      this.materialFactory = (MaterialFactory) null;
-      this.renderTextureFactory = (RenderTextureFactory) null;
-      this.interrupted = false;
+      profile = null;
+      camera = (Camera) null;
+      materialFactory = null;
+      renderTextureFactory = null;
+      interrupted = false;
       return this;
     }
 
     public bool isGBufferAvailable
     {
-      get => this.camera.actualRenderingPath == RenderingPath.DeferredShading;
+      get => camera.actualRenderingPath == RenderingPath.DeferredShading;
     }
 
-    public bool isHdr => this.camera.allowHDR;
+    public bool isHdr => camera.allowHDR;
 
-    public int width => this.camera.pixelWidth;
+    public int width => camera.pixelWidth;
 
-    public int height => this.camera.pixelHeight;
+    public int height => camera.pixelHeight;
 
-    public Rect viewport => this.camera.rect;
+    public Rect viewport => camera.rect;
   }
 }

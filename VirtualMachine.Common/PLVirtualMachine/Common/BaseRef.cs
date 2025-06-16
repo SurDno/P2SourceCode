@@ -1,26 +1,26 @@
-﻿using Engine.Common.Comparers;
+﻿using System;
+using System.Collections.Generic;
+using Engine.Common.Comparers;
 using PLVirtualMachine.Common.Data;
 using PLVirtualMachine.Common.EngineAPI;
-using System;
-using System.Collections.Generic;
 
 namespace PLVirtualMachine.Common
 {
   public abstract class BaseRef : IRef, IVariable, INamed, IVMStringSerializable
   {
-    private static HashSet<ulong> dublicate = new HashSet<ulong>((IEqualityComparer<ulong>) UlongComparer.Instance);
+    private static HashSet<ulong> dublicate = new HashSet<ulong>(UlongComparer.Instance);
     private ulong baseGuid;
     private IObject staticInstance;
 
-    public virtual bool IsEqual(IVariable other) => this.Name == other.Name;
+    public virtual bool IsEqual(IVariable other) => Name == other.Name;
 
     public virtual string Name
     {
       get
       {
-        if (this.staticInstance != null)
-          return this.staticInstance.GuidStr;
-        return this.baseGuid != 0UL ? this.baseGuid.ToString() : "";
+        if (staticInstance != null)
+          return staticInstance.GuidStr;
+        return baseGuid != 0UL ? baseGuid.ToString() : "";
       }
     }
 
@@ -28,20 +28,20 @@ namespace PLVirtualMachine.Common
 
     public ulong BaseGuid
     {
-      get => this.baseGuid;
-      protected set => this.baseGuid = value;
+      get => baseGuid;
+      protected set => baseGuid = value;
     }
 
-    public virtual bool Empty => this.baseGuid == 0UL;
+    public virtual bool Empty => baseGuid == 0UL;
 
-    public virtual bool Exist => !this.Empty;
+    public virtual bool Exist => !Empty;
 
     public virtual EContextVariableCategory Category
     {
       get => EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_OBJECT;
     }
 
-    public virtual string Write() => this.Name;
+    public virtual string Write() => Name;
 
     public virtual void Read(string data)
     {
@@ -49,31 +49,31 @@ namespace PLVirtualMachine.Common
         return;
       this.baseGuid = StringUtility.ToUInt64(data);
       long baseGuid = (long) this.baseGuid;
-      this.Load();
+      Load();
     }
 
-    public virtual IObject StaticInstance => this.staticInstance;
+    public virtual IObject StaticInstance => staticInstance;
 
     public virtual bool IsDynamic => false;
 
     protected virtual void Load()
     {
-      if (this.baseGuid == 0UL)
+      if (baseGuid == 0UL)
         return;
-      IObject objectByGuid = IStaticDataContainer.StaticDataContainer.GetObjectByGuid(this.baseGuid);
-      if (objectByGuid == null || !this.NeedInstanceType.IsAssignableFrom(objectByGuid.GetType()))
+      IObject objectByGuid = IStaticDataContainer.StaticDataContainer.GetObjectByGuid(baseGuid);
+      if (objectByGuid == null || !NeedInstanceType.IsAssignableFrom(objectByGuid.GetType()))
         return;
-      this.staticInstance = objectByGuid;
+      staticInstance = objectByGuid;
     }
 
-    protected abstract System.Type NeedInstanceType { get; }
+    protected abstract Type NeedInstanceType { get; }
 
     protected void LoadStaticInstance(IObject instance)
     {
-      this.staticInstance = instance;
-      if (this.staticInstance == null)
+      staticInstance = instance;
+      if (staticInstance == null)
         return;
-      this.baseGuid = this.staticInstance.BaseGuid;
+      baseGuid = staticInstance.BaseGuid;
     }
   }
 }

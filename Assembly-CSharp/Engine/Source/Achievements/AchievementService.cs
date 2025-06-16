@@ -1,16 +1,16 @@
-﻿using Engine.Common;
+﻿using System;
+using System.Collections.Generic;
+using Engine.Common;
 using Engine.Common.Services;
 using Engine.Impl.Services.Factories;
 using Engine.Source.Achievements.Controllers;
 using Engine.Source.Commons;
 using Engine.Source.Services;
 using Inspectors;
-using System;
-using System.Collections.Generic;
 
 namespace Engine.Source.Achievements
 {
-  [RuntimeService(new Type[] {typeof (AchievementService), typeof (IAchievementService)})]
+  [RuntimeService(typeof (AchievementService), typeof (IAchievementService))]
   public class AchievementService : IInitialisable, IUpdatable, IAchievementService
   {
     [Inspected]
@@ -20,75 +20,75 @@ namespace Engine.Source.Achievements
 
     public void Initialise()
     {
-      this.service = this.CreateService();
-      this.service.Initialise();
-      foreach (KeyValuePair<string, Type> keyValuePair in (IEnumerable<KeyValuePair<string, Type>>) AchievementControllerAttribute.Factory)
+      service = CreateService();
+      service.Initialise();
+      foreach (KeyValuePair<string, Type> keyValuePair in AchievementControllerAttribute.Factory)
       {
         string key = keyValuePair.Key;
-        if (!this.service.IsUnlocked(key))
-          this.CreateAddInitialise(key, keyValuePair.Value);
+        if (!service.IsUnlocked(key))
+          CreateAddInitialise(key, keyValuePair.Value);
       }
-      InstanceByRequest<UpdateService>.Instance.Updater.AddUpdatable((IUpdatable) this);
+      InstanceByRequest<UpdateService>.Instance.Updater.AddUpdatable(this);
     }
 
     public void Terminate()
     {
-      InstanceByRequest<UpdateService>.Instance.Updater.RemoveUpdatable((IUpdatable) this);
-      foreach (KeyValuePair<string, IAchievementController> controller in this.controllers)
+      InstanceByRequest<UpdateService>.Instance.Updater.RemoveUpdatable(this);
+      foreach (KeyValuePair<string, IAchievementController> controller in controllers)
         controller.Value.Terminate();
-      this.controllers.Clear();
-      this.service.Shutdown();
-      this.service = (IAchievementServiceImpl) null;
+      controllers.Clear();
+      service.Shutdown();
+      service = null;
     }
 
     public void Unlock(string id)
     {
-      if (this.service.IsUnlocked(id))
+      if (service.IsUnlocked(id))
         return;
-      this.service.Unlock(id);
+      service.Unlock(id);
       IAchievementController achievementController;
-      if (!this.controllers.TryGetValue(id, out achievementController))
+      if (!controllers.TryGetValue(id, out achievementController))
         return;
       achievementController.Terminate();
-      this.controllers.Remove(id);
+      controllers.Remove(id);
     }
 
     public void Reset(string id)
     {
-      if (!this.service.IsUnlocked(id))
+      if (!service.IsUnlocked(id))
         return;
-      this.service.Reset(id);
+      service.Reset(id);
       Type type;
       if (!AchievementControllerAttribute.Factory.TryGetValue(id, out type))
         return;
-      this.CreateAddInitialise(id, type);
+      CreateAddInitialise(id, type);
     }
 
     private IAchievementServiceImpl CreateService()
     {
-      return ScriptableObjectInstance<BuildData>.Instance.Steam && AchievementUtility.IsSteamAvailable ? (IAchievementServiceImpl) new AchievementServiceSteam() : (IAchievementServiceImpl) new AchievementServiceStub();
+      return ScriptableObjectInstance<BuildData>.Instance.Steam && AchievementUtility.IsSteamAvailable ? new AchievementServiceSteam() : new AchievementServiceStub();
     }
 
-    public void ComputeUpdate() => this.service.Update();
+    public void ComputeUpdate() => service.Update();
 
     [Inspected]
     public void UnlockAll()
     {
-      foreach (string id in this.service.Ids)
-        this.Unlock(id);
+      foreach (string id in service.Ids)
+        Unlock(id);
     }
 
     [Inspected]
     public void ResetAll()
     {
-      foreach (string id in this.service.Ids)
-        this.Reset(id);
+      foreach (string id in service.Ids)
+        Reset(id);
     }
 
     private void CreateAddInitialise(string id, Type type)
     {
       IAchievementController achievementController = (IAchievementController) ServiceLocator.GetService<Factory>().Create(type, Guid.Empty);
-      this.controllers[id] = achievementController;
+      controllers[id] = achievementController;
       achievementController.Initialise(id);
     }
   }

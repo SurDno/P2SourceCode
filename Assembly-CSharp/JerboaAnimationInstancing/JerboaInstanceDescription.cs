@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEngine;
 
 namespace JerboaAnimationInstancing
 {
@@ -26,57 +25,57 @@ namespace JerboaAnimationInstancing
     [NonSerialized]
     public int aniTextureIndex = -1;
     private int preAniTextureIndex = -1;
-    private float transitionDuration = 0.0f;
-    private bool isInTransition = false;
-    private float transitionTimer = 0.0f;
+    private float transitionDuration;
+    private bool isInTransition;
+    private float transitionTimer;
     [NonSerialized]
-    public float transitionProgress = 0.0f;
+    public float transitionProgress;
     private int eventIndex = -1;
     private WrapMode wrapMode;
     private float speedParameter = 1f;
     private float cacheParameter = 1f;
-    private AnimationEvent aniEvent = (AnimationEvent) null;
+    private AnimationEvent aniEvent;
 
     public WrapMode Mode
     {
-      get => this.wrapMode;
-      set => this.wrapMode = value;
+      get => wrapMode;
+      set => wrapMode = value;
     }
 
     public void Respawn()
     {
-      this.Group.SetRandomPosition(this);
-      this.Position = this.Group.GetWorldPosition(this);
+      Group.SetRandomPosition(this);
+      Position = Group.GetWorldPosition(this);
     }
 
-    public bool IsLoop() => this.Mode == WrapMode.Loop;
+    public bool IsLoop() => Mode == WrapMode.Loop;
 
-    public bool IsPause() => (double) this.speedParameter == 0.0;
+    public bool IsPause() => speedParameter == 0.0;
 
     public void PlayAnimation(string name)
     {
-      this.PlayAnimation(this.Source.FindAnimationInfo(name.GetHashCode()));
+      PlayAnimation(Source.FindAnimationInfo(name.GetHashCode()));
     }
 
     public void PlayAnimation(int animationIndex)
     {
-      if (this.Source.aniInfo == null || animationIndex == this.aniIndex && !this.IsPause())
+      if (Source.aniInfo == null || animationIndex == aniIndex && !IsPause())
         return;
-      this.transitionDuration = 0.0f;
-      this.transitionProgress = 1f;
-      this.isInTransition = false;
-      Debug.Assert(animationIndex < this.Source.aniInfo.Length);
-      if (0 <= animationIndex && animationIndex < this.Source.aniInfo.Length)
+      transitionDuration = 0.0f;
+      transitionProgress = 1f;
+      isInTransition = false;
+      Debug.Assert(animationIndex < Source.aniInfo.Length);
+      if (0 <= animationIndex && animationIndex < Source.aniInfo.Length)
       {
-        this.preAniIndex = this.aniIndex;
-        this.aniIndex = animationIndex;
-        this.preAniFrame = (float) (int) ((double) this.curFrame + 0.5);
-        this.curFrame = (float) UnityEngine.Random.Range(0, this.Source.aniInfo[this.aniIndex].totalFrame);
-        this.eventIndex = -1;
-        this.preAniTextureIndex = this.aniTextureIndex;
-        this.aniTextureIndex = this.Source.aniInfo[this.aniIndex].textureIndex;
-        this.wrapMode = this.Source.aniInfo[this.aniIndex].wrapMode;
-        this.speedParameter = 1f;
+        preAniIndex = aniIndex;
+        aniIndex = animationIndex;
+        preAniFrame = (int) (curFrame + 0.5);
+        curFrame = (float) UnityEngine.Random.Range(0, Source.aniInfo[aniIndex].totalFrame);
+        eventIndex = -1;
+        preAniTextureIndex = aniTextureIndex;
+        aniTextureIndex = Source.aniInfo[aniIndex].textureIndex;
+        wrapMode = Source.aniInfo[aniIndex].wrapMode;
+        speedParameter = 1f;
       }
       else
         Debug.LogWarning((object) "The requested animation index is out of the count.");
@@ -84,193 +83,190 @@ namespace JerboaAnimationInstancing
 
     public void CrossFade(string animationName, float duration)
     {
-      this.CrossFade(this.Source.FindAnimationInfo(animationName.GetHashCode()), duration);
+      CrossFade(Source.FindAnimationInfo(animationName.GetHashCode()), duration);
     }
 
     public void CrossFade(int animationIndex, float duration)
     {
-      this.PlayAnimation(animationIndex);
-      if ((double) duration > 0.0)
+      PlayAnimation(animationIndex);
+      if (duration > 0.0)
       {
-        this.isInTransition = true;
-        this.transitionTimer = 0.0f;
-        this.transitionProgress = 0.0f;
+        isInTransition = true;
+        transitionTimer = 0.0f;
+        transitionProgress = 0.0f;
       }
       else
-        this.transitionProgress = 1f;
-      this.transitionDuration = duration;
+        transitionProgress = 1f;
+      transitionDuration = duration;
     }
 
     public void UpdateAnimation()
     {
-      if (this.Source.aniInfo == null || this.IsPause())
+      if (Source.aniInfo == null || IsPause())
         return;
-      if (this.isInTransition)
+      if (isInTransition)
       {
-        this.transitionTimer += Time.deltaTime;
-        this.transitionProgress = Mathf.Min(this.transitionTimer / this.transitionDuration, 1f);
-        if ((double) this.transitionProgress >= 1.0)
+        transitionTimer += Time.deltaTime;
+        transitionProgress = Mathf.Min(transitionTimer / transitionDuration, 1f);
+        if (transitionProgress >= 1.0)
         {
-          this.isInTransition = false;
-          this.preAniIndex = -1;
-          this.preAniFrame = -1f;
+          isInTransition = false;
+          preAniIndex = -1;
+          preAniFrame = -1f;
         }
       }
-      this.curFrame += this.Source.playSpeed * this.speedParameter * Time.deltaTime * (float) this.Source.aniInfo[this.aniIndex].fps;
-      int totalFrame = this.Source.aniInfo[this.aniIndex].totalFrame;
-      switch (this.wrapMode)
+      curFrame += Source.playSpeed * speedParameter * Time.deltaTime * Source.aniInfo[aniIndex].fps;
+      int totalFrame = Source.aniInfo[aniIndex].totalFrame;
+      switch (wrapMode)
       {
         case WrapMode.Default:
         case WrapMode.Once:
-          if ((double) this.curFrame < 0.0 || (double) this.curFrame > (double) totalFrame - 1.0)
+          if (curFrame < 0.0 || curFrame > totalFrame - 1.0)
           {
-            this.Pause();
-            break;
+            Pause();
           }
           break;
         case WrapMode.Loop:
-          if ((double) this.curFrame < 0.0)
+          if (curFrame < 0.0)
           {
-            this.curFrame += (float) (totalFrame - 1);
+            curFrame += totalFrame - 1;
             break;
           }
-          if ((double) this.curFrame > (double) (totalFrame - 1))
+          if (curFrame > (double) (totalFrame - 1))
           {
-            this.curFrame -= (float) (totalFrame - 1);
-            break;
+            curFrame -= totalFrame - 1;
           }
           break;
         case WrapMode.PingPong:
-          if ((double) this.curFrame < 0.0)
+          if (curFrame < 0.0)
           {
-            this.speedParameter = Mathf.Abs(this.speedParameter);
-            this.curFrame = Mathf.Abs(this.curFrame);
+            speedParameter = Mathf.Abs(speedParameter);
+            curFrame = Mathf.Abs(curFrame);
             break;
           }
-          if ((double) this.curFrame > (double) (totalFrame - 1))
+          if (curFrame > (double) (totalFrame - 1))
           {
-            this.speedParameter = -Mathf.Abs(this.speedParameter);
-            this.curFrame = (float) (2 * (totalFrame - 1)) - this.curFrame;
-            break;
+            speedParameter = -Mathf.Abs(speedParameter);
+            curFrame = 2 * (totalFrame - 1) - curFrame;
           }
           break;
       }
-      this.curFrame = Mathf.Clamp(this.curFrame, 0.0f, (float) (totalFrame - 1));
-      this.UpdateAnimationEvent();
+      curFrame = Mathf.Clamp(curFrame, 0.0f, (float) (totalFrame - 1));
+      UpdateAnimationEvent();
     }
 
     public void Pause()
     {
-      this.cacheParameter = this.speedParameter;
-      this.speedParameter = 0.0f;
+      cacheParameter = speedParameter;
+      speedParameter = 0.0f;
     }
 
-    public void Resume() => this.speedParameter = this.cacheParameter;
+    public void Resume() => speedParameter = cacheParameter;
 
     public void Stop()
     {
-      this.aniIndex = -1;
-      this.preAniIndex = -1;
-      this.eventIndex = -1;
-      this.curFrame = 0.0f;
+      aniIndex = -1;
+      preAniIndex = -1;
+      eventIndex = -1;
+      curFrame = 0.0f;
     }
 
-    public bool IsPlaying() => this.aniIndex >= 0;
+    public bool IsPlaying() => aniIndex >= 0;
 
-    public bool IsReady() => this.Source.aniInfo != null;
+    public bool IsReady() => Source.aniInfo != null;
 
-    public AnimationInfo GetCurrentAnimationInfoUnsafe() => this.Source.aniInfo[this.aniIndex];
+    public AnimationInfo GetCurrentAnimationInfoUnsafe() => Source.aniInfo[aniIndex];
 
     public AnimationInfo GetCurrentAnimationInfo()
     {
-      return this.Source.aniInfo != null && 0 <= this.aniIndex && this.aniIndex < this.Source.aniInfo.Length ? this.Source.aniInfo[this.aniIndex] : (AnimationInfo) null;
+      return Source.aniInfo != null && 0 <= aniIndex && aniIndex < Source.aniInfo.Length ? Source.aniInfo[aniIndex] : null;
     }
 
     public AnimationInfo GetPreAnimationInfo()
     {
-      return this.Source.aniInfo != null && 0 <= this.preAniIndex && this.preAniIndex < this.Source.aniInfo.Length ? this.Source.aniInfo[this.preAniIndex] : (AnimationInfo) null;
+      return Source.aniInfo != null && 0 <= preAniIndex && preAniIndex < Source.aniInfo.Length ? Source.aniInfo[preAniIndex] : null;
     }
 
     public bool UpdateAnimationUnsafeNoEventsNoTransitions(float deltaTime)
     {
-      this.curFrame += this.Source.playSpeed * this.speedParameter * deltaTime * (float) this.Source.aniInfo[this.aniIndex].fps;
-      int totalFrame = this.Source.aniInfo[this.aniIndex].totalFrame;
-      if ((double) this.curFrame <= (double) (totalFrame - 1))
+      curFrame += Source.playSpeed * speedParameter * deltaTime * Source.aniInfo[aniIndex].fps;
+      int totalFrame = Source.aniInfo[aniIndex].totalFrame;
+      if (curFrame <= (double) (totalFrame - 1))
         return false;
-      this.curFrame -= (float) (totalFrame - 1);
+      curFrame -= totalFrame - 1;
       return true;
     }
 
     public void UpdateAnimationUnsafeNoEvents(float deltaTime)
     {
-      if (this.isInTransition)
+      if (isInTransition)
       {
-        this.transitionTimer += deltaTime;
-        this.transitionProgress = Mathf.Min(this.transitionTimer / this.transitionDuration, 1f);
-        if ((double) this.transitionProgress >= 1.0)
+        transitionTimer += deltaTime;
+        transitionProgress = Mathf.Min(transitionTimer / transitionDuration, 1f);
+        if (transitionProgress >= 1.0)
         {
-          this.isInTransition = false;
-          this.preAniIndex = -1;
-          this.preAniFrame = -1f;
+          isInTransition = false;
+          preAniIndex = -1;
+          preAniFrame = -1f;
         }
       }
-      this.curFrame += this.Source.playSpeed * this.speedParameter * deltaTime * (float) this.Source.aniInfo[this.aniIndex].fps;
-      int totalFrame = this.Source.aniInfo[this.aniIndex].totalFrame;
-      switch (this.wrapMode)
+      curFrame += Source.playSpeed * speedParameter * deltaTime * Source.aniInfo[aniIndex].fps;
+      int totalFrame = Source.aniInfo[aniIndex].totalFrame;
+      switch (wrapMode)
       {
         case WrapMode.Default:
         case WrapMode.Once:
-          if ((double) this.curFrame >= 0.0 && (double) this.curFrame <= (double) totalFrame - 1.0)
+          if (curFrame >= 0.0 && curFrame <= totalFrame - 1.0)
             break;
-          this.Pause();
+          Pause();
           break;
         case WrapMode.Loop:
-          if ((double) this.curFrame < 0.0)
+          if (curFrame < 0.0)
           {
-            this.curFrame += (float) (totalFrame - 1);
+            curFrame += totalFrame - 1;
             break;
           }
-          if ((double) this.curFrame <= (double) (totalFrame - 1))
+          if (curFrame <= (double) (totalFrame - 1))
             break;
-          this.curFrame -= (float) (totalFrame - 1);
+          curFrame -= totalFrame - 1;
           break;
         case WrapMode.PingPong:
-          if ((double) this.curFrame < 0.0)
+          if (curFrame < 0.0)
           {
-            this.speedParameter = Mathf.Abs(this.speedParameter);
-            this.curFrame = Mathf.Abs(this.curFrame);
+            speedParameter = Mathf.Abs(speedParameter);
+            curFrame = Mathf.Abs(curFrame);
             break;
           }
-          if ((double) this.curFrame <= (double) (totalFrame - 1))
+          if (curFrame <= (double) (totalFrame - 1))
             break;
-          this.speedParameter = -Mathf.Abs(this.speedParameter);
-          this.curFrame = (float) (2 * (totalFrame - 1)) - this.curFrame;
+          speedParameter = -Mathf.Abs(speedParameter);
+          curFrame = 2 * (totalFrame - 1) - curFrame;
           break;
       }
     }
 
     private void UpdateAnimationEvent()
     {
-      AnimationInfo currentAnimationInfo = this.GetCurrentAnimationInfo();
+      AnimationInfo currentAnimationInfo = GetCurrentAnimationInfo();
       if (currentAnimationInfo == null || currentAnimationInfo.eventList.Count == 0)
         return;
-      if (this.aniEvent == null)
+      if (aniEvent == null)
       {
-        float num = this.curFrame / (float) currentAnimationInfo.fps;
+        float num = curFrame / currentAnimationInfo.fps;
         for (int eventIndex = this.eventIndex >= 0 ? this.eventIndex : 0; eventIndex < currentAnimationInfo.eventList.Count; ++eventIndex)
         {
-          if ((double) currentAnimationInfo.eventList[eventIndex].time > (double) num)
+          if (currentAnimationInfo.eventList[eventIndex].time > (double) num)
           {
-            this.aniEvent = currentAnimationInfo.eventList[eventIndex];
+            aniEvent = currentAnimationInfo.eventList[eventIndex];
             this.eventIndex = eventIndex;
             break;
           }
         }
       }
-      if (this.aniEvent == null || (double) this.aniEvent.time > (double) (this.curFrame / (float) currentAnimationInfo.fps))
+      if (aniEvent == null || aniEvent.time > (double) (curFrame / currentAnimationInfo.fps))
         return;
-      this.Source.gameObject.SendMessage(this.aniEvent.function, (object) this.aniEvent);
-      this.aniEvent = (AnimationEvent) null;
+      Source.gameObject.SendMessage(aniEvent.function, (object) aniEvent);
+      aniEvent = null;
     }
   }
 }

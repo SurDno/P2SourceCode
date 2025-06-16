@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-[CreateAssetMenu(menuName = "Data/Shadow Settings")]
+﻿[CreateAssetMenu(menuName = "Data/Shadow Settings")]
 public class ShadowSettings : ScriptableObject
 {
   [SerializeField]
@@ -17,12 +15,12 @@ public class ShadowSettings : ScriptableObject
 
   public void Apply()
   {
-    QualitySettings.shadows = this.shadows;
-    QualitySettings.shadowResolution = this.shadowResolution;
+    QualitySettings.shadows = shadows;
+    QualitySettings.shadowResolution = shadowResolution;
     NGSS_Directional instance = MonoBehaviourInstance<NGSS_Directional>.Instance;
     if (!((Object) instance != (Object) null))
       return;
-    instance.NGSS_FILTER_SAMPLERS = this.NgssFilterSamplers;
-    instance.NGSS_TEST_SAMPLERS = this.NgssTestSamplers;
+    instance.NGSS_FILTER_SAMPLERS = NgssFilterSamplers;
+    instance.NGSS_TEST_SAMPLERS = NgssTestSamplers;
   }
 }

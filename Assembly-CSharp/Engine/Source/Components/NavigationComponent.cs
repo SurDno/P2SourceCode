@@ -1,4 +1,6 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
+using Cofe.Serializations.Data;
 using Engine.Common;
 using Engine.Common.Commons;
 using Engine.Common.Components;
@@ -12,9 +14,6 @@ using Engine.Source.Components.Regions;
 using Engine.Source.Components.Saves;
 using Engine.Source.Services;
 using Inspectors;
-using System;
-using UnityEngine;
-using UnityEngine.AI;
 
 namespace Engine.Source.Components
 {
@@ -28,11 +27,11 @@ namespace Engine.Source.Components
     IUpdatable,
     INeedSave
   {
-    [StateSaveProxy(MemberEnum.None)]
-    [StateLoadProxy(MemberEnum.None)]
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [StateSaveProxy]
+    [StateLoadProxy]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy()]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected bool isEnabled = true;
     private AreaEnum areaKind;
@@ -58,11 +57,11 @@ namespace Engine.Source.Components
     [Inspected(Mutable = true)]
     public bool IsEnabled
     {
-      get => this.isEnabled;
+      get => isEnabled;
       set
       {
-        this.isEnabled = value;
-        this.OnChangeEnabled();
+        isEnabled = value;
+        OnChangeEnabled();
       }
     }
 
@@ -86,7 +85,7 @@ namespace Engine.Source.Components
     public event Action<INavigationComponent, IEntity> OnTeleport;
 
     [Inspected]
-    public IEntity SetupPoint => this.setupPoint;
+    public IEntity SetupPoint => setupPoint;
 
     [Inspected]
     private IEntity TargetTeleport { get; set; }
@@ -97,30 +96,28 @@ namespace Engine.Source.Components
     [Inspected]
     public AreaEnum Area
     {
-      get => this.areaKind;
+      get => areaKind;
       private set
       {
-        if (this.areaKind == value)
+        if (areaKind == value)
           return;
-        EventArgument<IEntity, AreaEnum> eventArguments = new EventArgument<IEntity, AreaEnum>()
-        {
-          Actor = this.Owner
+        EventArgument<IEntity, AreaEnum> eventArguments = new EventArgument<IEntity, AreaEnum> {
+          Actor = Owner
         } with
         {
-          Target = this.areaKind
+          Target = areaKind
         };
-        AreaHandler exitAreaEvent = this.ExitAreaEvent;
+        AreaHandler exitAreaEvent = ExitAreaEvent;
         if (exitAreaEvent != null)
           exitAreaEvent(ref eventArguments);
-        this.areaKind = value;
-        eventArguments = new EventArgument<IEntity, AreaEnum>()
-        {
-          Actor = this.Owner
+        areaKind = value;
+        eventArguments = new EventArgument<IEntity, AreaEnum> {
+          Actor = Owner
         } with
         {
           Target = value
         };
-        AreaHandler enterAreaEvent = this.EnterAreaEvent;
+        AreaHandler enterAreaEvent = EnterAreaEvent;
         if (enterAreaEvent == null)
           return;
         enterAreaEvent(ref eventArguments);
@@ -130,10 +127,10 @@ namespace Engine.Source.Components
     [Inspected]
     public IRegionComponent Region
     {
-      get => this.region;
+      get => region;
       private set
       {
-        if (this.region == value)
+        if (region == value)
           return;
         if (value == null)
         {
@@ -144,35 +141,33 @@ namespace Engine.Source.Components
           ILocationComponent component = value.GetComponent<ILocationComponent>();
           if (component.IsHibernation)
             return;
-          if (this.region != null)
+          if (region != null)
           {
-            EventArgument<IEntity, IRegionComponent> eventArguments = new EventArgument<IEntity, IRegionComponent>()
-            {
-              Actor = this.Owner
+            EventArgument<IEntity, IRegionComponent> eventArguments = new EventArgument<IEntity, IRegionComponent> {
+              Actor = Owner
             } with
             {
-              Target = this.region
+              Target = region
             };
-            RegionHandler exitRegionEvent = this.ExitRegionEvent;
+            RegionHandler exitRegionEvent = ExitRegionEvent;
             if (exitRegionEvent != null)
               exitRegionEvent(ref eventArguments);
           }
-          this.region = value;
-          EventArgument<IEntity, IRegionComponent> eventArguments1 = new EventArgument<IEntity, IRegionComponent>()
-          {
-            Actor = this.Owner
+          region = value;
+          EventArgument<IEntity, IRegionComponent> eventArguments1 = new EventArgument<IEntity, IRegionComponent> {
+            Actor = Owner
           } with
           {
             Target = value
           };
-          RegionHandler enterRegionEvent = this.EnterRegionEvent;
+          RegionHandler enterRegionEvent = EnterRegionEvent;
           if (enterRegionEvent != null)
             enterRegionEvent(ref eventArguments1);
-          if (this.WaitTeleport)
+          if (WaitTeleport)
             return;
-          ILocationComponent logicLocation = this.locationItem.LogicLocation;
+          ILocationComponent logicLocation = locationItem.LogicLocation;
           if (logicLocation == null || ((LocationComponent) logicLocation).LocationType == LocationType.Region)
-            this.locationItem.Location = component;
+            locationItem.Location = component;
         }
       }
     }
@@ -180,35 +175,33 @@ namespace Engine.Source.Components
     [Inspected]
     public IBuildingComponent Building
     {
-      get => this.building;
+      get => building;
       private set
       {
-        if (this.building == value)
+        if (building == value)
           return;
-        if (this.building != null)
+        if (building != null)
         {
-          EventArgument<IEntity, IBuildingComponent> eventArguments = new EventArgument<IEntity, IBuildingComponent>()
-          {
-            Actor = this.Owner
+          EventArgument<IEntity, IBuildingComponent> eventArguments = new EventArgument<IEntity, IBuildingComponent> {
+            Actor = Owner
           } with
           {
-            Target = this.building
+            Target = building
           };
-          BuildingHandler exitBuildingEvent = this.ExitBuildingEvent;
+          BuildingHandler exitBuildingEvent = ExitBuildingEvent;
           if (exitBuildingEvent != null)
             exitBuildingEvent(ref eventArguments);
         }
-        this.building = value;
-        if (this.building == null)
+        building = value;
+        if (building == null)
           return;
-        EventArgument<IEntity, IBuildingComponent> eventArguments1 = new EventArgument<IEntity, IBuildingComponent>()
-        {
-          Actor = this.Owner
+        EventArgument<IEntity, IBuildingComponent> eventArguments1 = new EventArgument<IEntity, IBuildingComponent> {
+          Actor = Owner
         } with
         {
           Target = value
         };
-        BuildingHandler enterBuildingEvent = this.EnterBuildingEvent;
+        BuildingHandler enterBuildingEvent = EnterBuildingEvent;
         if (enterBuildingEvent != null)
           enterBuildingEvent(ref eventArguments1);
       }
@@ -216,201 +209,201 @@ namespace Engine.Source.Components
 
     public void TeleportTo(IEntity targetEntity)
     {
-      Debug.Log((object) ObjectInfoUtility.GetStream().Append("[Navigation]").Append("  teleport to entity, owner : ").GetInfo((object) this.Owner).Append(" , target : ").GetInfo((object) targetEntity));
+      Debug.Log((object) ObjectInfoUtility.GetStream().Append("[Navigation]").Append("  teleport to entity, owner : ").GetInfo(Owner).Append(" , target : ").GetInfo(targetEntity));
       if (targetEntity == null)
-        throw new Exception("targetEntity == null : " + this.Owner.GetInfo());
-      if (this.IsDisposed)
-        throw new Exception("IsDisposed : " + this.Owner.GetInfo());
-      if (!((Entity) this.Owner).IsAdded)
-        throw new Exception("!((Entity)Owner).IsAdded : " + this.Owner.GetInfo());
-      this.setupPoint = targetEntity;
-      this.forceInvalidate = true;
-      this.TargetTeleport = targetEntity;
-      this.targetPosition = ((IEntityView) targetEntity).Position;
-      this.targetRotation = ((IEntityView) targetEntity).Rotation;
-      this.WaitTeleport = true;
-      this.locationItem.Location = LocationItemUtility.GetLocation(targetEntity);
-      this.LocationItem_OnChangeHibernation((ILocationItemComponent) this.locationItem);
+        throw new Exception("targetEntity == null : " + Owner.GetInfo());
+      if (IsDisposed)
+        throw new Exception("IsDisposed : " + Owner.GetInfo());
+      if (!((Entity) Owner).IsAdded)
+        throw new Exception("!((Entity)Owner).IsAdded : " + Owner.GetInfo());
+      setupPoint = targetEntity;
+      forceInvalidate = true;
+      TargetTeleport = targetEntity;
+      targetPosition = ((IEntityView) targetEntity).Position;
+      targetRotation = ((IEntityView) targetEntity).Rotation;
+      WaitTeleport = true;
+      locationItem.Location = LocationItemUtility.GetLocation(targetEntity);
+      LocationItem_OnChangeHibernation(locationItem);
     }
 
     public void TeleportTo(ILocationComponent location, Vector3 position, Quaternion rotation)
     {
       if (location == null)
-        throw new Exception("ILocationComponent is null " + this.Owner.GetInfo());
-      if (this.IsDisposed)
-        throw new Exception("IsDisposed : " + this.Owner.GetInfo());
-      if (!((Entity) this.Owner).IsAdded)
-        throw new Exception("!((Entity)Owner).IsAdded : " + this.Owner.GetInfo());
-      Debug.Log((object) ObjectInfoUtility.GetStream().Append("[Navigation]").Append("  teleport to location, owner : ").GetInfo((object) this.Owner).Append(" , location : ").GetInfo((object) location.Owner).Append(" , position : ").Append((object) position));
-      this.setupPoint = location.Owner;
-      this.forceInvalidate = true;
-      this.TargetTeleport = (IEntity) null;
-      this.targetPosition = position;
-      this.targetRotation = rotation;
-      this.WaitTeleport = true;
-      this.locationItem.Location = location;
-      this.LocationItem_OnChangeHibernation((ILocationItemComponent) this.locationItem);
+        throw new Exception("ILocationComponent is null " + Owner.GetInfo());
+      if (IsDisposed)
+        throw new Exception("IsDisposed : " + Owner.GetInfo());
+      if (!((Entity) Owner).IsAdded)
+        throw new Exception("!((Entity)Owner).IsAdded : " + Owner.GetInfo());
+      Debug.Log((object) ObjectInfoUtility.GetStream().Append("[Navigation]").Append("  teleport to location, owner : ").GetInfo(Owner).Append(" , location : ").GetInfo(location.Owner).Append(" , position : ").Append((object) position));
+      setupPoint = location.Owner;
+      forceInvalidate = true;
+      TargetTeleport = null;
+      targetPosition = position;
+      targetRotation = rotation;
+      WaitTeleport = true;
+      locationItem.Location = location;
+      LocationItem_OnChangeHibernation(locationItem);
     }
 
     private void CalculateArea()
     {
       NavMeshHit hit;
-      if (NavMesh.SamplePosition(((IEntityView) this.Owner).Position, out hit, 2f, -1))
-        this.Area = AreaEnumUtility.ToArea(hit.mask);
+      if (NavMesh.SamplePosition(((IEntityView) Owner).Position, out hit, 2f, -1))
+        Area = AreaEnumUtility.ToArea(hit.mask);
       else
-        this.Area = AreaEnum.Unknown;
+        Area = AreaEnum.Unknown;
     }
 
     private void CalculateRegion()
     {
-      this.Region = (IRegionComponent) RegionUtility.GetRegionByPosition(((IEntityView) this.Owner).Position);
+      Region = RegionUtility.GetRegionByPosition(((IEntityView) Owner).Position);
     }
 
     public void ComputeUpdate()
     {
-      if (InstanceByRequest<EngineApplication>.Instance.IsPaused || this.locationItem.IsHibernation || !this.Owner.IsEnabledInHierarchy || !this.IsEnabled)
+      if (InstanceByRequest<EngineApplication>.Instance.IsPaused || locationItem.IsHibernation || !Owner.IsEnabledInHierarchy || !IsEnabled)
         return;
-      this.ComputePosition();
+      ComputePosition();
     }
 
     private void ComputePosition()
     {
-      Vector3 position = ((IEntityView) this.Owner).Position;
-      if (position == this.storedPosition && !this.forceInvalidate)
+      Vector3 position = ((IEntityView) Owner).Position;
+      if (position == storedPosition && !forceInvalidate)
         return;
-      this.forceInvalidate = false;
-      this.storedPosition = position;
-      this.CalculateArea();
-      this.CalculateRegion();
+      forceInvalidate = false;
+      storedPosition = position;
+      CalculateArea();
+      CalculateRegion();
     }
 
     public override void OnAdded()
     {
       base.OnAdded();
-      InstanceByRequest<UpdateService>.Instance.NavigationUpdater.AddUpdatable((IUpdatable) this);
-      this.forceInvalidate = true;
-      this.locationItem.OnHibernationChanged += new Action<ILocationItemComponent>(this.LocationItem_OnChangeHibernation);
-      this.locationItem.OnChangeLocation += new Action<ILocationItemComponent, ILocationComponent>(this.LocationItem_OnChangeLocation);
+      InstanceByRequest<UpdateService>.Instance.NavigationUpdater.AddUpdatable(this);
+      forceInvalidate = true;
+      locationItem.OnHibernationChanged += LocationItem_OnChangeHibernation;
+      locationItem.OnChangeLocation += LocationItem_OnChangeLocation;
     }
 
     public override void OnRemoved()
     {
-      this.locationItem.OnChangeLocation -= new Action<ILocationItemComponent, ILocationComponent>(this.LocationItem_OnChangeLocation);
-      this.locationItem.OnHibernationChanged -= new Action<ILocationItemComponent>(this.LocationItem_OnChangeHibernation);
-      this.locationItem = (LocationItemComponent) null;
-      InstanceByRequest<UpdateService>.Instance.NavigationUpdater.RemoveUpdatable((IUpdatable) this);
+      locationItem.OnChangeLocation -= LocationItem_OnChangeLocation;
+      locationItem.OnHibernationChanged -= LocationItem_OnChangeHibernation;
+      locationItem = null;
+      InstanceByRequest<UpdateService>.Instance.NavigationUpdater.RemoveUpdatable(this);
       base.OnRemoved();
     }
 
     private void LocationItem_OnChangeHibernation(ILocationItemComponent sender)
     {
-      if (this.locationItem.IsHibernation)
+      if (locationItem.IsHibernation)
         return;
-      if (this.WaitTeleport)
+      if (WaitTeleport)
       {
-        if (this.TargetTeleport != null)
+        if (TargetTeleport != null)
         {
-          IEntity targetTeleport = this.TargetTeleport;
-          this.TargetTeleport = (IEntity) null;
+          IEntity targetTeleport = TargetTeleport;
+          TargetTeleport = null;
           IEntityView entityView = (IEntityView) targetTeleport;
-          Debug.Log((object) ObjectInfoUtility.GetStream().Append("[Navigation]").Append("  teleport owner: ").GetInfo((object) this.Owner).Append(" , teleport point : ").GetInfo((object) targetTeleport).Append(" , position : ").Append((object) entityView));
-          Action<INavigationComponent, IEntity> onPreTeleport = this.OnPreTeleport;
+          Debug.Log((object) ObjectInfoUtility.GetStream().Append("[Navigation]").Append("  teleport owner: ").GetInfo(Owner).Append(" , teleport point : ").GetInfo(targetTeleport).Append(" , position : ").Append(entityView));
+          Action<INavigationComponent, IEntity> onPreTeleport = OnPreTeleport;
           if (onPreTeleport != null)
-            onPreTeleport((INavigationComponent) this, targetTeleport);
-          EntityViewUtility.SetTransformAndData(this.Owner, entityView.Position, entityView.Rotation, ((Entity) this.Owner).IsPlayer);
-          this.targetPosition = entityView.Position;
-          this.targetRotation = entityView.Rotation;
-          Action<INavigationComponent, IEntity> onTeleport = this.OnTeleport;
+            onPreTeleport(this, targetTeleport);
+          EntityViewUtility.SetTransformAndData(Owner, entityView.Position, entityView.Rotation, ((Entity) Owner).IsPlayer);
+          targetPosition = entityView.Position;
+          targetRotation = entityView.Rotation;
+          Action<INavigationComponent, IEntity> onTeleport = OnTeleport;
           if (onTeleport != null)
-            onTeleport((INavigationComponent) this, targetTeleport);
+            onTeleport(this, targetTeleport);
         }
         else
         {
-          Debug.Log((object) ObjectInfoUtility.GetStream().Append("[Navigation]").Append("  teleport owner: ").GetInfo((object) this.Owner).Append(" , position : ").Append((object) this.targetPosition));
-          Action<INavigationComponent, IEntity> onPreTeleport = this.OnPreTeleport;
+          Debug.Log((object) ObjectInfoUtility.GetStream().Append("[Navigation]").Append("  teleport owner: ").GetInfo(Owner).Append(" , position : ").Append((object) targetPosition));
+          Action<INavigationComponent, IEntity> onPreTeleport = OnPreTeleport;
           if (onPreTeleport != null)
-            onPreTeleport((INavigationComponent) this, (IEntity) null);
-          EntityViewUtility.SetTransformAndData(this.Owner, this.targetPosition, this.targetRotation, ((Entity) this.Owner).IsPlayer);
-          Action<INavigationComponent, IEntity> onTeleport = this.OnTeleport;
+            onPreTeleport(this, null);
+          EntityViewUtility.SetTransformAndData(Owner, targetPosition, targetRotation, ((Entity) Owner).IsPlayer);
+          Action<INavigationComponent, IEntity> onTeleport = OnTeleport;
           if (onTeleport != null)
-            onTeleport((INavigationComponent) this, (IEntity) null);
+            onTeleport(this, null);
         }
-        this.WaitTeleport = false;
-        this.HasPrevTeleport = true;
+        WaitTeleport = false;
+        HasPrevTeleport = true;
       }
-      this.forceInvalidate = true;
-      this.ComputePosition();
+      forceInvalidate = true;
+      ComputePosition();
     }
 
     private void LocationItem_OnChangeLocation(
       ILocationItemComponent sender,
       ILocationComponent location)
     {
-      ILocationComponent logicLocation = this.locationItem.LogicLocation;
+      ILocationComponent logicLocation = locationItem.LogicLocation;
       if (logicLocation != null)
       {
         IBuildingComponent component = logicLocation.GetComponent<IBuildingComponent>();
         if (component != null)
         {
-          this.Building = component;
+          Building = component;
           return;
         }
       }
-      this.Building = (IBuildingComponent) null;
+      Building = null;
     }
 
-    [StateSaveProxy(MemberEnum.None)]
-    [StateLoadProxy(MemberEnum.None)]
+    [StateSaveProxy]
+    [StateLoadProxy]
     protected TeleportData TeleportData
     {
       get
       {
-        if (this.TargetTeleport != null)
+        if (TargetTeleport != null)
         {
           TeleportData teleportData = ProxyFactory.Create<TeleportData>();
-          teleportData.Location = (ILocationComponent) null;
-          teleportData.Target = this.TargetTeleport;
-          teleportData.Position = this.targetPosition;
-          teleportData.Rotation = this.targetRotation;
+          teleportData.Location = null;
+          teleportData.Target = TargetTeleport;
+          teleportData.Position = targetPosition;
+          teleportData.Rotation = targetRotation;
           return teleportData;
         }
-        if (this.locationItem.Location != null)
+        if (locationItem.Location != null)
         {
-          Vector3 vector3 = this.WaitTeleport ? this.targetPosition : ((IEntityView) this.Owner).Position;
-          Quaternion quaternion = this.WaitTeleport ? this.targetRotation : ((IEntityView) this.Owner).Rotation;
+          Vector3 vector3 = WaitTeleport ? targetPosition : ((IEntityView) Owner).Position;
+          Quaternion quaternion = WaitTeleport ? targetRotation : ((IEntityView) Owner).Rotation;
           if (vector3 == Vector3.zero)
-            Debug.LogError((object) ("Position is zero, owner : " + this.Owner.GetInfo()));
+            Debug.LogError((object) ("Position is zero, owner : " + Owner.GetInfo()));
           TeleportData teleportData = ProxyFactory.Create<TeleportData>();
-          teleportData.Location = this.locationItem.Location;
-          teleportData.Target = (IEntity) null;
+          teleportData.Location = locationItem.Location;
+          teleportData.Target = null;
           teleportData.Position = vector3;
           teleportData.Rotation = quaternion;
           return teleportData;
         }
-        Debug.LogError((object) ("Target and Location not found, owner : " + this.Owner.GetInfo()));
+        Debug.LogError((object) ("Target and Location not found, owner : " + Owner.GetInfo()));
         return ProxyFactory.Create<TeleportData>();
       }
-      set => this.storedTeleportData = value;
+      set => storedTeleportData = value;
     }
 
-    [Cofe.Serializations.Data.OnLoaded]
+    [OnLoaded]
     protected void OnLoaded()
     {
-      if (this.IsDisposed)
+      if (IsDisposed)
         return;
       IEntity setupPoint = this.setupPoint;
       TeleportData storedTeleportData = this.storedTeleportData;
       if (storedTeleportData != null)
       {
         if (storedTeleportData.Target != null)
-          this.TeleportTo(storedTeleportData.Target);
+          TeleportTo(storedTeleportData.Target);
         else if (storedTeleportData.Location != null)
-          this.TeleportTo(storedTeleportData.Location, storedTeleportData.Position, storedTeleportData.Rotation);
+          TeleportTo(storedTeleportData.Location, storedTeleportData.Position, storedTeleportData.Rotation);
         else
-          Debug.LogError((object) ("Target and Location not found , owner" + this.Owner.GetInfo()));
+          Debug.LogError((object) ("Target and Location not found , owner" + Owner.GetInfo()));
       }
       else
-        Debug.LogError((object) ("StoredTeleportData == null , owner" + this.Owner.GetInfo()));
+        Debug.LogError((object) ("StoredTeleportData == null , owner" + Owner.GetInfo()));
       this.setupPoint = setupPoint;
     }
 

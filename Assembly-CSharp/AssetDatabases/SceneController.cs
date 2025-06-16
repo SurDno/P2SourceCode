@@ -1,23 +1,20 @@
-﻿using Engine.Source.Settings.External;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-using UnityEngine;
-using UnityEngine.Events;
-using UnityEngine.SceneManagement;
+using Engine.Source.Settings.External;
 
 namespace AssetDatabases
 {
   public static class SceneController
   {
-    private static List<SceneController.State> states = new List<SceneController.State>();
+    private static List<State> states = new List<State>();
     private static List<Scene> scenes = new List<Scene>();
 
     public static bool CanLoad
     {
       get
       {
-        return !SceneController.Disabled && (SceneController.states.Count == 0 || ExternalSettingsInstance<ExternalOptimizationSettings>.Instance.MultipleSceneLoader);
+        return !Disabled && (states.Count == 0 || ExternalSettingsInstance<ExternalOptimizationSettings>.Instance.MultipleSceneLoader);
       }
     }
 
@@ -25,30 +22,30 @@ namespace AssetDatabases
 
     static SceneController()
     {
-      SceneManager.sceneLoaded += new UnityAction<Scene, LoadSceneMode>(SceneController.OnSceneLoaded);
+      SceneManager.sceneLoaded += new UnityAction<Scene, LoadSceneMode>(OnSceneLoaded);
     }
 
     private static void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
       Debug.Log((object) ObjectInfoUtility.GetStream().Append(MethodBase.GetCurrentMethod().Name).Append(" , scene : ").Append(scene.name));
-      SceneController.scenes.Add(scene);
-      SceneController.UpdateScenes();
+      scenes.Add(scene);
+      UpdateScenes();
     }
 
     private static void UpdateScenes()
     {
-      for (int index1 = 0; index1 < SceneController.scenes.Count; ++index1)
+      for (int index1 = 0; index1 < scenes.Count; ++index1)
       {
-        Scene scene = SceneController.scenes[index1];
+        Scene scene = scenes[index1];
         string path = scene.path;
-        for (int index2 = 0; index2 < SceneController.states.Count; ++index2)
+        for (int index2 = 0; index2 < states.Count; ++index2)
         {
-          SceneController.State state = SceneController.states[index2];
+          State state = states[index2];
           if (state.Path == path)
           {
-            SceneController.states.RemoveAt(index2);
+            states.RemoveAt(index2);
             state.Action(scene);
-            SceneController.scenes.RemoveAt(index1);
+            scenes.RemoveAt(index1);
             return;
           }
         }
@@ -57,13 +54,12 @@ namespace AssetDatabases
 
     public static void AddHandler(string path, Action<Scene> action)
     {
-      SceneController.State state = new SceneController.State()
-      {
+      State state = new State {
         Path = path,
         Action = action
       };
-      SceneController.states.Add(state);
-      SceneController.UpdateScenes();
+      states.Add(state);
+      UpdateScenes();
     }
 
     public class State

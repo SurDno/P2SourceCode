@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-[ExecuteInEditMode]
+﻿[ExecuteInEditMode]
 [RequireComponent(typeof (Camera))]
 [AddComponentMenu("Time of Day/Camera Main Script")]
 public class TOD_Camera : MonoBehaviour
@@ -13,52 +11,52 @@ public class TOD_Camera : MonoBehaviour
   private Camera cameraComponent = (Camera) null;
   private Transform cameraTransform = (Transform) null;
 
-  public bool HDR => (bool) (Object) this.cameraComponent && this.cameraComponent.allowHDR;
+  public bool HDR => (bool) (Object) cameraComponent && cameraComponent.allowHDR;
 
   protected void OnValidate()
   {
-    this.DomeScaleFactor = Mathf.Clamp(this.DomeScaleFactor, 0.01f, 1f);
+    DomeScaleFactor = Mathf.Clamp(DomeScaleFactor, 0.01f, 1f);
   }
 
   protected void OnEnable()
   {
-    this.cameraComponent = this.GetComponent<Camera>();
-    this.cameraTransform = this.GetComponent<Transform>();
+    cameraComponent = this.GetComponent<Camera>();
+    cameraTransform = this.GetComponent<Transform>();
   }
 
   protected void Update()
   {
-    if (!(bool) (Object) this.sky)
-      this.sky = TOD_Sky.Instance;
-    if (!(bool) (Object) this.sky || !this.sky.Initialized)
+    if (!(bool) (Object) sky)
+      sky = TOD_Sky.Instance;
+    if (!(bool) (Object) sky || !sky.Initialized)
       return;
-    this.sky.Components.Camera = this;
-    if (this.cameraComponent.clearFlags != CameraClearFlags.Color)
-      this.cameraComponent.clearFlags = CameraClearFlags.Color;
-    if (this.cameraComponent.backgroundColor != Color.clear)
-      this.cameraComponent.backgroundColor = Color.clear;
-    RenderSettings.skybox = this.sky.Resources.Skybox;
+    sky.Components.Camera = this;
+    if (cameraComponent.clearFlags != CameraClearFlags.Color)
+      cameraComponent.clearFlags = CameraClearFlags.Color;
+    if (cameraComponent.backgroundColor != Color.clear)
+      cameraComponent.backgroundColor = Color.clear;
+    RenderSettings.skybox = sky.Resources.Skybox;
   }
 
   protected void OnPreCull()
   {
-    if (!(bool) (Object) this.sky || !this.sky.Initialized)
+    if (!(bool) (Object) sky || !sky.Initialized)
       return;
-    if (this.DomeScaleToFarClip)
-      this.DoDomeScaleToFarClip();
-    if (!this.DomePosToCamera)
+    if (DomeScaleToFarClip)
+      DoDomeScaleToFarClip();
+    if (!DomePosToCamera)
       return;
-    this.DoDomePosToCamera();
+    DoDomePosToCamera();
   }
 
   public void DoDomeScaleToFarClip()
   {
-    float num = this.DomeScaleFactor * this.cameraComponent.farClipPlane;
-    this.sky.Components.DomeTransform.localScale = new Vector3(num, num, num);
+    float num = DomeScaleFactor * cameraComponent.farClipPlane;
+    sky.Components.DomeTransform.localScale = new Vector3(num, num, num);
   }
 
   public void DoDomePosToCamera()
   {
-    this.sky.Components.DomeTransform.position = this.cameraTransform.position + this.cameraTransform.rotation * this.DomePosOffset;
+    sky.Components.DomeTransform.position = cameraTransform.position + cameraTransform.rotation * DomePosOffset;
   }
 }

@@ -1,4 +1,5 @@
-﻿using BehaviorDesigner.Runtime;
+﻿using System;
+using BehaviorDesigner.Runtime;
 using BehaviorDesigner.Runtime.Tasks;
 using Cofe.Proxies;
 using Cofe.Serializations.Data;
@@ -10,7 +11,6 @@ using Engine.Common.Services;
 using Engine.Impl.Services.Factories;
 using Engine.Source.Components;
 using Scripts.Tools.Serializations.Converters;
-using UnityEngine;
 
 [TaskDescription("Player is outdoor")]
 [TaskCategory("Pathologic")]
@@ -19,11 +19,11 @@ using UnityEngine;
 [FactoryProxy(typeof (PlayerIsOutdoor))]
 public class PlayerIsOutdoor : Conditional, IStub, ISerializeDataWrite, ISerializeDataRead
 {
-  [DataReadProxy(MemberEnum.None)]
-  [DataWriteProxy(MemberEnum.None)]
-  [CopyableProxy(MemberEnum.None)]
+  [DataReadProxy]
+  [DataWriteProxy]
+  [CopyableProxy()]
   [SerializeField]
-  public SharedBool Outdoor = (SharedBool) true;
+  public SharedBool Outdoor = true;
 
   public override TaskStatus OnUpdate()
   {
@@ -31,26 +31,26 @@ public class PlayerIsOutdoor : Conditional, IStub, ISerializeDataWrite, ISeriali
     if (player == null)
       return TaskStatus.Failure;
     LocationItemComponent component = player.GetComponent<LocationItemComponent>();
-    return player == null || component.Location == null || (!this.Outdoor.Value || component.IsIndoor) && (this.Outdoor.Value || !component.IsIndoor) ? TaskStatus.Failure : TaskStatus.Success;
+    return player == null || component.Location == null || (!Outdoor.Value || component.IsIndoor) && (Outdoor.Value || !component.IsIndoor) ? TaskStatus.Failure : TaskStatus.Success;
   }
 
   public void DataWrite(IDataWriter writer)
   {
-    DefaultDataWriteUtility.WriteSerialize<NodeData>(writer, "NodeData", this.nodeData);
-    DefaultDataWriteUtility.Write(writer, "Id", this.id);
-    DefaultDataWriteUtility.Write(writer, "FriendlyName", this.friendlyName);
-    DefaultDataWriteUtility.Write(writer, "Instant", this.instant);
-    DefaultDataWriteUtility.Write(writer, "Disabled", this.disabled);
-    BehaviorTreeDataWriteUtility.WriteShared<SharedBool>(writer, "Outdoor", this.Outdoor);
+    DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
+    DefaultDataWriteUtility.Write(writer, "Id", id);
+    DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
+    DefaultDataWriteUtility.Write(writer, "Instant", instant);
+    DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
+    BehaviorTreeDataWriteUtility.WriteShared(writer, "Outdoor", Outdoor);
   }
 
-  public void DataRead(IDataReader reader, System.Type type)
+  public void DataRead(IDataReader reader, Type type)
   {
-    this.nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
-    this.id = DefaultDataReadUtility.Read(reader, "Id", this.id);
-    this.friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", this.friendlyName);
-    this.instant = DefaultDataReadUtility.Read(reader, "Instant", this.instant);
-    this.disabled = DefaultDataReadUtility.Read(reader, "Disabled", this.disabled);
-    this.Outdoor = BehaviorTreeDataReadUtility.ReadShared<SharedBool>(reader, "Outdoor", this.Outdoor);
+    nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
+    id = DefaultDataReadUtility.Read(reader, "Id", id);
+    friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
+    instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
+    disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
+    Outdoor = BehaviorTreeDataReadUtility.ReadShared(reader, "Outdoor", Outdoor);
   }
 }

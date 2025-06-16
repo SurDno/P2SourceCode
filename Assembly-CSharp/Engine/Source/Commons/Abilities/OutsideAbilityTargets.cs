@@ -1,6 +1,6 @@
-﻿using Engine.Source.Components;
+﻿using System.Collections.Generic;
+using Engine.Source.Components;
 using Inspectors;
-using System.Collections.Generic;
 
 namespace Engine.Source.Commons.Abilities
 {

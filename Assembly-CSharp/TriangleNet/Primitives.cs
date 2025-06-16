@@ -15,23 +15,23 @@ namespace TriangleNet
     {
       bool flag = true;
       double num1 = 0.5;
-      Primitives.epsilon = 1.0;
-      Primitives.splitter = 1.0;
+      epsilon = 1.0;
+      splitter = 1.0;
       double num2 = 1.0;
       double num3;
       do
       {
         num3 = num2;
-        Primitives.epsilon *= num1;
+        epsilon *= num1;
         if (flag)
-          Primitives.splitter *= 2.0;
+          splitter *= 2.0;
         flag = !flag;
-        num2 = 1.0 + Primitives.epsilon;
+        num2 = 1.0 + epsilon;
       }
       while (num2 != 1.0 && num2 != num3);
-      ++Primitives.splitter;
-      Primitives.ccwerrboundA = (3.0 + 16.0 * Primitives.epsilon) * Primitives.epsilon;
-      Primitives.iccerrboundA = (10.0 + 96.0 * Primitives.epsilon) * Primitives.epsilon;
+      ++splitter;
+      ccwerrboundA = (3.0 + 16.0 * epsilon) * epsilon;
+      iccerrboundA = (10.0 + 96.0 * epsilon) * epsilon;
     }
 
     public static double CounterClockwise(Point pa, Point pb, Point pc)
@@ -55,8 +55,8 @@ namespace TriangleNet
           return num3;
         num4 = -num1 - num2;
       }
-      double num5 = Primitives.ccwerrboundA * num4;
-      return num3 >= num5 || -num3 >= num5 ? num3 : (double) Primitives.CounterClockwiseDecimal(pa, pb, pc);
+      double num5 = ccwerrboundA * num4;
+      return num3 >= num5 || -num3 >= num5 ? num3 : (double) CounterClockwiseDecimal(pa, pb, pc);
     }
 
     private static Decimal CounterClockwiseDecimal(Point pa, Point pb, Point pc)
@@ -99,8 +99,8 @@ namespace TriangleNet
       if (Behavior.NoExact)
         return num16;
       double num17 = (Math.Abs(num7) + Math.Abs(num8)) * num9 + (Math.Abs(num10) + Math.Abs(num11)) * num12 + (Math.Abs(num13) + Math.Abs(num14)) * num15;
-      double num18 = Primitives.iccerrboundA * num17;
-      return num16 > num18 || -num16 > num18 ? num16 : (double) Primitives.InCircleDecimal(pa, pb, pc, pd);
+      double num18 = iccerrboundA * num17;
+      return num16 > num18 || -num16 > num18 ? num16 : (double) InCircleDecimal(pa, pb, pc, pd);
     }
 
     private static Decimal InCircleDecimal(Point pa, Point pb, Point pc, Point pd)
@@ -126,7 +126,7 @@ namespace TriangleNet
 
     public static double NonRegular(Point pa, Point pb, Point pc, Point pd)
     {
-      return Primitives.InCircle(pa, pb, pc, pd);
+      return InCircle(pa, pb, pc, pd);
     }
 
     public static Point FindCircumcenter(
@@ -152,7 +152,7 @@ namespace TriangleNet
       }
       else
       {
-        num8 = 0.5 / Primitives.CounterClockwise(tdest, tapex, torg);
+        num8 = 0.5 / CounterClockwise(tdest, tapex, torg);
         --Statistic.CounterClockwiseCount;
       }
       double num9 = (num4 * num5 - num2 * num6) * num8;
@@ -219,7 +219,7 @@ namespace TriangleNet
       }
       else
       {
-        num7 = 0.5 / Primitives.CounterClockwise(tdest, tapex, torg);
+        num7 = 0.5 / CounterClockwise(tdest, tapex, torg);
         --Statistic.CounterClockwiseCount;
       }
       double num8 = (num4 * num5 - num2 * num6) * num7;

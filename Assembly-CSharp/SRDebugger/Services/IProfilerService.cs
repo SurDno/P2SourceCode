@@ -1,4 +1,6 @@
-﻿namespace SRDebugger.Services
+﻿using CircularBuffer;
+
+namespace SRDebugger.Services
 {
   public interface IProfilerService
   {
@@ -8,6 +10,6 @@
 
     void SetCustom(double value);
 
-    CircularBuffer.CircularBuffer<ProfilerFrame> FrameBuffer { get; }
+    CircularBuffer<ProfilerFrame> FrameBuffer { get; }
   }
 }

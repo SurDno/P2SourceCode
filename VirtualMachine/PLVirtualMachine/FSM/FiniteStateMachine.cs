@@ -1,4 +1,6 @@
-﻿using Cofe.Loggers;
+﻿using System.Collections.Generic;
+using System.Xml;
+using Cofe.Loggers;
 using Engine.Common.Commons;
 using Engine.Common.Comparers;
 using PLVirtualMachine.Base;
@@ -7,8 +9,6 @@ using PLVirtualMachine.Common.Data;
 using PLVirtualMachine.Data;
 using PLVirtualMachine.Dynamic;
 using PLVirtualMachine.GameLogic;
-using System.Collections.Generic;
-using System.Xml;
 using VirtualMachine.Common;
 using VirtualMachine.Common.Data;
 using VirtualMachine.Data;
@@ -40,66 +40,65 @@ namespace PLVirtualMachine.FSM
     protected List<ILink> eventLinks = new List<ILink>();
     [FieldData("SubstituteGraph", DataFieldType.Reference)]
     protected IFiniteStateMachine substituteGraph;
-    [FieldData("GraphType", DataFieldType.None)]
+    [FieldData("GraphType")]
     protected EGraphType graphType;
-    [FieldData("InputParamsInfo", DataFieldType.None)]
+    [FieldData("InputParamsInfo")]
     protected List<NameTypeData> inputParamsInfo;
     private EObjectCategory graphOwnerCategory;
     private List<IEventLink> enterLinks = new List<IEventLink>();
-    private Dictionary<ulong, List<IEventLink>> enterLinksByEventGuid = new Dictionary<ulong, List<IEventLink>>((IEqualityComparer<ulong>) UlongComparer.Instance);
+    private Dictionary<ulong, List<IEventLink>> enterLinksByEventGuid = new Dictionary<ulong, List<IEventLink>>(UlongComparer.Instance);
     private Dictionary<string, List<IEventLink>> enterLinksByEventName = new Dictionary<string, List<IEventLink>>();
     protected List<InputParam> inputParams = new List<InputParam>();
     private bool inputParamsLoaded;
     private List<IFiniteStateMachine> subGraphes = new List<IFiniteStateMachine>();
-    private Dictionary<ulong, IState> statesDict = new Dictionary<ulong, IState>((IEqualityComparer<ulong>) UlongComparer.Instance);
+    private Dictionary<ulong, IState> statesDict = new Dictionary<ulong, IState>(UlongComparer.Instance);
     private List<IStateRef> allStatesList = new List<IStateRef>();
 
     public override void EditorDataRead(XmlReader xml, IDataCreator creator, string typeContext)
     {
-      while (xml.Read())
-      {
+      while (xml.Read()) {
         if (xml.NodeType == XmlNodeType.Element)
         {
           switch (xml.Name)
           {
             case "EntryPoints":
-              this.entryPoints = EditorDataReadUtility.ReadReferenceList<IEntryPoint>(xml, creator, this.entryPoints);
+              entryPoints = EditorDataReadUtility.ReadReferenceList(xml, creator, entryPoints);
               continue;
             case "EventLinks":
-              this.eventLinks = EditorDataReadUtility.ReadReferenceList<ILink>(xml, creator, this.eventLinks);
+              eventLinks = EditorDataReadUtility.ReadReferenceList(xml, creator, eventLinks);
               continue;
             case "GraphType":
-              this.graphType = EditorDataReadUtility.ReadEnum<EGraphType>(xml);
+              graphType = EditorDataReadUtility.ReadEnum<EGraphType>(xml);
               continue;
             case "IgnoreBlock":
-              this.ignoreBlock = EditorDataReadUtility.ReadValue(xml, this.ignoreBlock);
+              ignoreBlock = EditorDataReadUtility.ReadValue(xml, ignoreBlock);
               continue;
             case "Initial":
-              this.initial = EditorDataReadUtility.ReadValue(xml, this.initial);
+              initial = EditorDataReadUtility.ReadValue(xml, initial);
               continue;
             case "InputLinks":
-              this.inputLinks = EditorDataReadUtility.ReadReferenceList<VMEventLink>(xml, creator, this.inputLinks);
+              inputLinks = EditorDataReadUtility.ReadReferenceList(xml, creator, inputLinks);
               continue;
             case "InputParamsInfo":
-              this.inputParamsInfo = EditorDataReadUtility.ReadEditorDataSerializableList<NameTypeData>(xml, creator, this.inputParamsInfo);
+              inputParamsInfo = EditorDataReadUtility.ReadEditorDataSerializableList(xml, creator, inputParamsInfo);
               continue;
             case "Name":
-              this.name = EditorDataReadUtility.ReadValue(xml, this.name);
+              name = EditorDataReadUtility.ReadValue(xml, name);
               continue;
             case "OutputLinks":
-              this.outputLinks = EditorDataReadUtility.ReadReferenceList<ILink>(xml, creator, this.outputLinks);
+              outputLinks = EditorDataReadUtility.ReadReferenceList(xml, creator, outputLinks);
               continue;
             case "Owner":
-              this.owner = EditorDataReadUtility.ReadReference<IContainer>(xml, creator);
+              owner = EditorDataReadUtility.ReadReference<IContainer>(xml, creator);
               continue;
             case "Parent":
-              this.parent = EditorDataReadUtility.ReadReference<IContainer>(xml, creator);
+              parent = EditorDataReadUtility.ReadReference<IContainer>(xml, creator);
               continue;
             case "States":
-              this.states = EditorDataReadUtility.ReadReferenceList<IState>(xml, creator, this.states);
+              states = EditorDataReadUtility.ReadReferenceList(xml, creator, states);
               continue;
             case "SubstituteGraph":
-              this.substituteGraph = EditorDataReadUtility.ReadReference<IFiniteStateMachine>(xml, creator);
+              substituteGraph = EditorDataReadUtility.ReadReference<IFiniteStateMachine>(xml, creator);
               continue;
             default:
               if (XMLDataLoader.Logs.Add(typeContext + " : " + xml.Name))
@@ -108,7 +107,8 @@ namespace PLVirtualMachine.FSM
               continue;
           }
         }
-        else if (xml.NodeType == XmlNodeType.EndElement)
+
+        if (xml.NodeType == XmlNodeType.EndElement)
           break;
       }
     }
@@ -121,58 +121,58 @@ namespace PLVirtualMachine.FSM
     public List<IEventLink> GetEnterLinksByEvent(DynamicEvent dynEvent)
     {
       List<IEventLink> eventLinkList;
-      return this.enterLinksByEventGuid.TryGetValue(dynEvent.BaseGuid, out eventLinkList) || this.enterLinksByEventName.TryGetValue(dynEvent.StaticEvent.FunctionalName, out eventLinkList) ? eventLinkList : (List<IEventLink>) null;
+      return enterLinksByEventGuid.TryGetValue(dynEvent.BaseGuid, out eventLinkList) || enterLinksByEventName.TryGetValue(dynEvent.StaticEvent.FunctionalName, out eventLinkList) ? eventLinkList : null;
     }
 
     public override EStateType StateType => EStateType.STATE_TYPE_GRAPH;
 
-    public override bool IgnoreBlock => this.InitState.IgnoreBlock;
+    public override bool IgnoreBlock => InitState.IgnoreBlock;
 
     public List<IEventLink> EnterLinks
     {
       get
       {
-        return this.substituteGraph != null ? ((FiniteStateMachine) this.substituteGraph).EnterLinks : this.enterLinks;
+        return substituteGraph != null ? ((FiniteStateMachine) substituteGraph).EnterLinks : enterLinks;
       }
     }
 
-    public bool Abstract => this.substituteGraph == null && this.states.Count == 0;
+    public bool Abstract => substituteGraph == null && states.Count == 0;
 
     public IState InitState
     {
       get
       {
-        if (this.substituteGraph != null)
-          return this.substituteGraph.InitState;
-        for (int index = 0; index < this.states.Count; ++index)
+        if (substituteGraph != null)
+          return substituteGraph.InitState;
+        for (int index = 0; index < states.Count; ++index)
         {
-          if (this.states[index].Initial)
-            return this.states[index];
+          if (states[index].Initial)
+            return states[index];
         }
-        Logger.AddError(string.Format("Init state not found in {0}", (object) this.Name));
-        return (IState) null;
+        Logger.AddError(string.Format("Init state not found in {0}", Name));
+        return null;
       }
     }
 
     public override EObjectCategory GetCategory()
     {
-      return this.substituteGraph != null ? this.substituteGraph.GetCategory() : EObjectCategory.OBJECT_CATEGORY_GRAPH;
+      return substituteGraph != null ? substituteGraph.GetCategory() : EObjectCategory.OBJECT_CATEGORY_GRAPH;
     }
 
     public virtual EGraphType GraphType
     {
-      get => this.substituteGraph != null ? this.substituteGraph.GraphType : this.graphType;
+      get => substituteGraph != null ? substituteGraph.GraphType : graphType;
     }
 
     public List<InputParam> InputParams
     {
       get
       {
-        if (this.substituteGraph != null)
-          return this.substituteGraph.InputParams;
-        if (!this.inputParamsLoaded)
-          this.LoadInputParams();
-        return this.inputParams;
+        if (substituteGraph != null)
+          return substituteGraph.InputParams;
+        if (!inputParamsLoaded)
+          LoadInputParams();
+        return inputParams;
       }
     }
 
@@ -185,27 +185,27 @@ namespace PLVirtualMachine.FSM
       }
       if (!typeof (IFiniteStateMachine).IsAssignableFrom(other.GetType()))
         return false;
-      return this.substituteGraph != null && this.substituteGraph.IsEqual(other) || base.IsEqual(other);
+      return substituteGraph != null && substituteGraph.IsEqual(other) || base.IsEqual(other);
     }
 
     public List<IState> States
     {
-      get => this.substituteGraph != null ? this.substituteGraph.States : this.states;
+      get => substituteGraph != null ? substituteGraph.States : states;
     }
 
     public List<ILink> Links
     {
-      get => this.substituteGraph != null ? this.substituteGraph.Links : this.eventLinks;
+      get => substituteGraph != null ? substituteGraph.Links : eventLinks;
     }
 
     public List<ILink> GetLinksByDestState(IGraphObject state)
     {
       List<ILink> linksByDestState = new List<ILink>();
-      for (int index = 0; index < this.eventLinks.Count; ++index)
+      for (int index = 0; index < eventLinks.Count; ++index)
       {
-        IEventLink eventLink = (IEventLink) this.eventLinks[index];
+        IEventLink eventLink = (IEventLink) eventLinks[index];
         if (eventLink.DestState != null && (long) eventLink.DestState.BaseGuid == (long) state.BaseGuid)
-          linksByDestState.Add((ILink) eventLink);
+          linksByDestState.Add(eventLink);
       }
       return linksByDestState;
     }
@@ -213,11 +213,11 @@ namespace PLVirtualMachine.FSM
     public List<ILink> GetLinksBySourceState(IGraphObject state)
     {
       List<ILink> linksBySourceState = new List<ILink>();
-      for (int index = 0; index < this.eventLinks.Count; ++index)
+      for (int index = 0; index < eventLinks.Count; ++index)
       {
-        IEventLink eventLink = (IEventLink) this.eventLinks[index];
+        IEventLink eventLink = (IEventLink) eventLinks[index];
         if (eventLink.SourceState != null && (long) eventLink.SourceState.BaseGuid == (long) state.BaseGuid)
-          linksBySourceState.Add((ILink) eventLink);
+          linksBySourceState.Add(eventLink);
       }
       return linksBySourceState;
     }
@@ -226,58 +226,58 @@ namespace PLVirtualMachine.FSM
     {
       get
       {
-        return this.substituteGraph != null ? ((FiniteStateMachine) this.substituteGraph).GraphOwnerCategory : this.graphOwnerCategory;
+        return substituteGraph != null ? ((FiniteStateMachine) substituteGraph).GraphOwnerCategory : graphOwnerCategory;
       }
     }
 
     public override List<IEntryPoint> EntryPoints
     {
-      get => this.substituteGraph != null ? this.substituteGraph.EntryPoints : base.EntryPoints;
+      get => substituteGraph != null ? substituteGraph.EntryPoints : base.EntryPoints;
     }
 
-    public bool IsSubGraph => this.Parent.GetCategory() == EObjectCategory.OBJECT_CATEGORY_GRAPH;
+    public bool IsSubGraph => Parent.GetCategory() == EObjectCategory.OBJECT_CATEGORY_GRAPH;
 
-    public override bool IsProcedure => this.GraphType == EGraphType.GRAPH_TYPE_PROCEDURE;
+    public override bool IsProcedure => GraphType == EGraphType.GRAPH_TYPE_PROCEDURE;
 
     public IState GetSubgraphExitState()
     {
-      if (this.substituteGraph != null)
-        return this.substituteGraph.GetSubgraphExitState();
-      for (int index = 0; index < this.OutputLinks.Count; ++index)
+      if (substituteGraph != null)
+        return substituteGraph.GetSubgraphExitState();
+      for (int index = 0; index < OutputLinks.Count; ++index)
       {
-        VMEventLink outputLink = (VMEventLink) this.OutputLinks[index];
+        VMEventLink outputLink = (VMEventLink) OutputLinks[index];
         if (outputLink != null && outputLink.Event == null)
           return outputLink.DestState != null ? outputLink.DestState : ((IFiniteStateMachine) outputLink.Parent).GetSubgraphExitState();
       }
-      return (IState) null;
+      return null;
     }
 
-    public IFiniteStateMachine SubstituteGraph => this.substituteGraph;
+    public IFiniteStateMachine SubstituteGraph => substituteGraph;
 
     public List<IFiniteStateMachine> GetSubGraphStructure(
       EGraphType graphType = EGraphType.GRAPH_TYPE_ALL,
       bool bWithBaseClasses = true)
     {
       List<IFiniteStateMachine> subGraphStructure1 = new List<IFiniteStateMachine>();
-      if ((this.GraphType == graphType || graphType == EGraphType.GRAPH_TYPE_ALL) && this.SubstituteGraph == null)
-        subGraphStructure1.Add((IFiniteStateMachine) this);
-      for (int index = 0; index < this.states.Count; ++index)
+      if ((GraphType == graphType || graphType == EGraphType.GRAPH_TYPE_ALL) && SubstituteGraph == null)
+        subGraphStructure1.Add(this);
+      for (int index = 0; index < states.Count; ++index)
       {
-        if (this.states[index].GetCategory() == EObjectCategory.OBJECT_CATEGORY_GRAPH)
+        if (states[index].GetCategory() == EObjectCategory.OBJECT_CATEGORY_GRAPH)
         {
-          List<IFiniteStateMachine> subGraphStructure2 = ((FiniteStateMachine) this.states[index]).GetSubGraphStructure(graphType, false);
-          subGraphStructure1.AddRange((IEnumerable<IFiniteStateMachine>) subGraphStructure2);
+          List<IFiniteStateMachine> subGraphStructure2 = ((FiniteStateMachine) states[index]).GetSubGraphStructure(graphType, false);
+          subGraphStructure1.AddRange(subGraphStructure2);
         }
       }
-      if (bWithBaseClasses && typeof (IBlueprint).IsAssignableFrom(this.Owner.GetType()))
+      if (bWithBaseClasses && typeof (IBlueprint).IsAssignableFrom(Owner.GetType()))
       {
-        List<IBlueprint> baseBlueprints = ((IBlueprint) this.Owner).BaseBlueprints;
+        List<IBlueprint> baseBlueprints = ((IBlueprint) Owner).BaseBlueprints;
         if (baseBlueprints != null)
         {
           for (int index = 0; index < baseBlueprints.Count; ++index)
           {
             List<IFiniteStateMachine> subGraphStructure3 = baseBlueprints[index].StateGraph.GetSubGraphStructure(graphType);
-            subGraphStructure1.AddRange((IEnumerable<IFiniteStateMachine>) subGraphStructure3);
+            subGraphStructure1.AddRange(subGraphStructure3);
           }
         }
       }
@@ -286,17 +286,17 @@ namespace PLVirtualMachine.FSM
 
     public IState GetStateByGuid(ulong stateId, bool withBaseClasses = true)
     {
-      if (this.statesDict.ContainsKey(stateId))
-        return this.statesDict[stateId];
-      for (int index = 0; index < this.subGraphes.Count; ++index)
+      if (statesDict.ContainsKey(stateId))
+        return statesDict[stateId];
+      for (int index = 0; index < subGraphes.Count; ++index)
       {
-        IState stateByGuid = this.subGraphes[index].GetStateByGuid(stateId, false);
+        IState stateByGuid = subGraphes[index].GetStateByGuid(stateId, false);
         if (stateByGuid != null)
           return stateByGuid;
       }
-      if (withBaseClasses && typeof (IBlueprint).IsAssignableFrom(this.Owner.GetType()))
+      if (withBaseClasses && typeof (IBlueprint).IsAssignableFrom(Owner.GetType()))
       {
-        List<IBlueprint> baseBlueprints = ((IBlueprint) this.Owner).BaseBlueprints;
+        List<IBlueprint> baseBlueprints = ((IBlueprint) Owner).BaseBlueprints;
         if (baseBlueprints != null)
         {
           for (int index = 0; index < baseBlueprints.Count; ++index)
@@ -310,163 +310,163 @@ namespace PLVirtualMachine.FSM
           }
         }
       }
-      return (IState) null;
+      return null;
     }
 
     public override void OnAfterLoad()
     {
-      this.Update();
-      if (this.owner == null)
+      Update();
+      if (owner == null)
       {
-        Logger.AddError(string.Format("Parent graph not defined at graph {0} !", (object) this.Name));
+        Logger.AddError(string.Format("Parent graph not defined at graph {0} !", Name));
       }
       else
       {
-        this.UpdateGraph();
-        this.graphOwnerCategory = this.Owner.GetCategory();
-        this.LoadEnterEventLinks();
-        this.LoadOutputEventLinks();
-        int count = this.states.Count;
-        for (int index = 0; index < this.states.Count; ++index)
+        UpdateGraph();
+        graphOwnerCategory = Owner.GetCategory();
+        LoadEnterEventLinks();
+        LoadOutputEventLinks();
+        int count = states.Count;
+        for (int index = 0; index < states.Count; ++index)
         {
-          ((VMState) this.states[index]).OnAfterLoad();
-          if (typeof (FiniteStateMachine).IsAssignableFrom(this.states[index].GetType()))
-            count += ((FiniteStateMachine) this.states[index]).AllStates.Count;
+          ((VMState) states[index]).OnAfterLoad();
+          if (typeof (FiniteStateMachine).IsAssignableFrom(states[index].GetType()))
+            count += ((FiniteStateMachine) states[index]).AllStates.Count;
         }
-        this.allStatesList.Capacity = count;
-        foreach (IState state in this.states)
+        allStatesList.Capacity = count;
+        foreach (IState state in states)
         {
           VMStateRef vmStateRef = new VMStateRef();
           vmStateRef.Initialize(state);
-          this.allStatesList.Add((IStateRef) vmStateRef);
+          allStatesList.Add(vmStateRef);
           if (typeof (FiniteStateMachine).IsAssignableFrom(state.GetType()))
-            this.allStatesList.AddRange((IEnumerable<IStateRef>) ((FiniteStateMachine) state).AllStates);
+            allStatesList.AddRange(((FiniteStateMachine) state).AllStates);
         }
       }
     }
 
     public override void OnPostLoad()
     {
-      for (int index = 0; index < this.states.Count; ++index)
-        ((VMBaseObject) this.states[index]).OnPostLoad();
+      for (int index = 0; index < states.Count; ++index)
+        ((VMBaseObject) states[index]).OnPostLoad();
     }
 
-    public List<IStateRef> AllStates => this.allStatesList;
+    public List<IStateRef> AllStates => allStatesList;
 
     public void UpdateGraph()
     {
-      this.subGraphes.Clear();
-      this.statesDict.Clear();
-      for (int index = 0; index < this.states.Count; ++index)
+      subGraphes.Clear();
+      statesDict.Clear();
+      for (int index = 0; index < states.Count; ++index)
       {
-        this.states[index].Update();
-        if (typeof (IFiniteStateMachine).IsAssignableFrom(this.states[index].GetType()))
-          this.subGraphes.Add((IFiniteStateMachine) this.states[index]);
-        this.statesDict.Add(this.states[index].BaseGuid, this.states[index]);
+        states[index].Update();
+        if (typeof (IFiniteStateMachine).IsAssignableFrom(states[index].GetType()))
+          subGraphes.Add((IFiniteStateMachine) states[index]);
+        statesDict.Add(states[index].BaseGuid, states[index]);
       }
-      for (int index = 0; index < this.eventLinks.Count; ++index)
-        this.eventLinks[index].Update();
+      for (int index = 0; index < eventLinks.Count; ++index)
+        eventLinks[index].Update();
     }
 
     public override void Clear()
     {
       base.Clear();
-      if (this.states != null)
+      if (states != null)
       {
-        foreach (IContainer state in this.states)
+        foreach (IContainer state in states)
           state.Clear();
-        this.states.Clear();
-        this.states = (List<IState>) null;
+        states.Clear();
+        states = null;
       }
-      if (this.eventLinks != null)
+      if (eventLinks != null)
       {
-        foreach (IContainer eventLink in this.eventLinks)
+        foreach (IContainer eventLink in eventLinks)
           eventLink.Clear();
-        this.eventLinks.Clear();
-        this.eventLinks = (List<ILink>) null;
+        eventLinks.Clear();
+        eventLinks = null;
       }
-      if (this.substituteGraph != null)
+      if (substituteGraph != null)
       {
-        this.substituteGraph.Clear();
-        this.substituteGraph = (IFiniteStateMachine) null;
+        substituteGraph.Clear();
+        substituteGraph = null;
       }
-      if (this.inputParamsInfo != null)
+      if (inputParamsInfo != null)
       {
-        this.inputParamsInfo.Clear();
-        this.inputParamsInfo = (List<NameTypeData>) null;
+        inputParamsInfo.Clear();
+        inputParamsInfo = null;
       }
-      if (this.enterLinks != null)
+      if (enterLinks != null)
       {
-        foreach (IContainer enterLink in this.enterLinks)
+        foreach (IContainer enterLink in enterLinks)
           enterLink.Clear();
-        this.enterLinks.Clear();
-        this.enterLinks = (List<IEventLink>) null;
+        enterLinks.Clear();
+        enterLinks = null;
       }
-      if (this.enterLinksByEventGuid != null)
+      if (enterLinksByEventGuid != null)
       {
-        foreach (KeyValuePair<ulong, List<IEventLink>> keyValuePair in this.enterLinksByEventGuid)
+        foreach (KeyValuePair<ulong, List<IEventLink>> keyValuePair in enterLinksByEventGuid)
           keyValuePair.Value.Clear();
-        this.enterLinksByEventGuid.Clear();
-        this.enterLinksByEventGuid = (Dictionary<ulong, List<IEventLink>>) null;
+        enterLinksByEventGuid.Clear();
+        enterLinksByEventGuid = null;
       }
-      if (this.enterLinksByEventName != null)
+      if (enterLinksByEventName != null)
       {
-        foreach (KeyValuePair<string, List<IEventLink>> keyValuePair in this.enterLinksByEventName)
+        foreach (KeyValuePair<string, List<IEventLink>> keyValuePair in enterLinksByEventName)
           keyValuePair.Value.Clear();
-        this.enterLinksByEventName.Clear();
-        this.enterLinksByEventName = (Dictionary<string, List<IEventLink>>) null;
+        enterLinksByEventName.Clear();
+        enterLinksByEventName = null;
       }
-      if (this.inputParams != null)
+      if (inputParams != null)
       {
-        foreach (ContextVariable inputParam in this.inputParams)
+        foreach (ContextVariable inputParam in inputParams)
           inputParam.Clear();
-        this.inputParams.Clear();
-        this.inputParams = (List<InputParam>) null;
+        inputParams.Clear();
+        inputParams = null;
       }
-      if (this.subGraphes != null)
+      if (subGraphes != null)
       {
-        foreach (IContainer subGraphe in this.subGraphes)
+        foreach (IContainer subGraphe in subGraphes)
           subGraphe.Clear();
-        this.subGraphes.Clear();
-        this.subGraphes = (List<IFiniteStateMachine>) null;
+        subGraphes.Clear();
+        subGraphes = null;
       }
-      if (this.statesDict != null)
+      if (statesDict != null)
       {
-        this.statesDict.Clear();
-        this.statesDict = (Dictionary<ulong, IState>) null;
+        statesDict.Clear();
+        statesDict = null;
       }
-      if (this.allStatesList == null)
+      if (allStatesList == null)
         return;
-      this.allStatesList.Clear();
-      this.allStatesList = (List<IStateRef>) null;
+      allStatesList.Clear();
+      allStatesList = null;
     }
 
     protected void LoadEnterEventLinks()
     {
-      this.enterLinks.Clear();
-      this.enterLinksByEventGuid.Clear();
-      this.enterLinksByEventName.Clear();
-      for (int index = 0; index < this.eventLinks.Count; ++index)
+      enterLinks.Clear();
+      enterLinksByEventGuid.Clear();
+      enterLinksByEventName.Clear();
+      for (int index = 0; index < eventLinks.Count; ++index)
       {
-        IEventLink eventLink = (IEventLink) this.eventLinks[index];
+        IEventLink eventLink = (IEventLink) eventLinks[index];
         if (eventLink.SourceState == null && ((VMEventLink) eventLink).GetParentGraphAssociatedLink() == null)
         {
-          this.enterLinks.Add(eventLink);
+          enterLinks.Add(eventLink);
           if (eventLink.Event != null && eventLink.Event.EventInstance != null && eventLink.Enabled)
           {
             ulong baseGuid = eventLink.Event.EventInstance.BaseGuid;
             List<IEventLink> eventLinkList;
-            if (!this.enterLinksByEventGuid.TryGetValue(baseGuid, out eventLinkList))
+            if (!enterLinksByEventGuid.TryGetValue(baseGuid, out eventLinkList))
             {
               eventLinkList = new List<IEventLink>();
-              this.enterLinksByEventGuid.Add(baseGuid, eventLinkList);
+              enterLinksByEventGuid.Add(baseGuid, eventLinkList);
             }
             eventLinkList.Add(eventLink);
             string functionalName = eventLink.Event.EventInstance.FunctionalName;
-            if (!this.enterLinksByEventName.TryGetValue(functionalName, out eventLinkList))
+            if (!enterLinksByEventName.TryGetValue(functionalName, out eventLinkList))
             {
               eventLinkList = new List<IEventLink>();
-              this.enterLinksByEventName.Add(functionalName, eventLinkList);
+              enterLinksByEventName.Add(functionalName, eventLinkList);
             }
             eventLinkList.Add(eventLink);
           }
@@ -476,19 +476,19 @@ namespace PLVirtualMachine.FSM
 
     private void LoadInputParams()
     {
-      int count = this.inputParams.Count;
-      this.inputParams.Clear();
-      if (this.inputParamsInfo != null)
+      int count = inputParams.Count;
+      inputParams.Clear();
+      if (inputParamsInfo != null)
       {
-        foreach (NameTypeData nameTypeData in this.inputParamsInfo)
+        foreach (NameTypeData nameTypeData in inputParamsInfo)
         {
           InputParam inputParam = new InputParam();
           inputParam.Initialize(nameTypeData.Name, nameTypeData.Type);
-          this.inputParams.Add(inputParam);
+          inputParams.Add(inputParam);
         }
-        this.inputParamsInfo = (List<NameTypeData>) null;
+        inputParamsInfo = null;
       }
-      this.inputParamsLoaded = true;
+      inputParamsLoaded = true;
     }
   }
 }

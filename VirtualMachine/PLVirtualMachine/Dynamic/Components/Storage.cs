@@ -1,4 +1,6 @@
-﻿using Cofe.Loggers;
+﻿using System;
+using System.Xml;
+using Cofe.Loggers;
 using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common;
@@ -11,8 +13,6 @@ using PLVirtualMachine.Common.EngineAPI.VMECS.VMAttributes;
 using PLVirtualMachine.Common.VMSpecialAttributes;
 using PLVirtualMachine.Data.SaveLoad;
 using PLVirtualMachine.Objects;
-using System;
-using System.Xml;
 
 namespace PLVirtualMachine.Dynamic.Components
 {
@@ -30,57 +30,57 @@ namespace PLVirtualMachine.Dynamic.Components
       switch (target.Name)
       {
         case "AddItemEvent":
-          this.AddItemEvent += (VMStorage.ItemInventoryActionEventType) ((p1, p2) => target.RaiseFromEngineImpl((object) p1, (object) p2));
+          AddItemEvent += (p1, p2) => target.RaiseFromEngineImpl(p1, p2);
           break;
         case "RemoveItemEvent":
-          this.RemoveItemEvent += (VMStorage.ItemInventoryActionEventType) ((p1, p2) => target.RaiseFromEngineImpl((object) p1, (object) p2));
+          RemoveItemEvent += (p1, p2) => target.RaiseFromEngineImpl(p1, p2);
           break;
         case "ChangeItemEvent":
-          this.ChangeItemEvent += (VMStorage.ItemInventoryActionEventType) ((p1, p2) => target.RaiseFromEngineImpl((object) p1, (object) p2));
+          ChangeItemEvent += (p1, p2) => target.RaiseFromEngineImpl(p1, p2);
           break;
       }
     }
 
     public override void Initialize(VMBaseEntity parent)
     {
-      if (Storage.CrowdStorageCommandProcessor == null)
+      if (CrowdStorageCommandProcessor == null)
       {
-        Storage.CrowdStorageCommandProcessor = new CrowdStorageCommandProcessor();
-        AssyncProcessManager.RegistrAssyncUpdateableObject((IAssyncUpdateable) Storage.CrowdStorageCommandProcessor);
+        CrowdStorageCommandProcessor = new CrowdStorageCommandProcessor();
+        AssyncProcessManager.RegistrAssyncUpdateableObject(CrowdStorageCommandProcessor);
       }
       base.Initialize(parent);
     }
 
     public override void Initialize(VMBaseEntity parent, IComponent engComponent)
     {
-      if (Storage.CrowdStorageCommandProcessor == null)
+      if (CrowdStorageCommandProcessor == null)
       {
-        Storage.CrowdStorageCommandProcessor = new CrowdStorageCommandProcessor();
-        AssyncProcessManager.RegistrAssyncUpdateableObject((IAssyncUpdateable) Storage.CrowdStorageCommandProcessor);
+        CrowdStorageCommandProcessor = new CrowdStorageCommandProcessor();
+        AssyncProcessManager.RegistrAssyncUpdateableObject(CrowdStorageCommandProcessor);
       }
       base.Initialize(parent, engComponent);
     }
 
     public static void ResetInstance()
     {
-      Storage.CrowdStorageCommandProcessor = (CrowdStorageCommandProcessor) null;
+      CrowdStorageCommandProcessor = null;
     }
 
     public override void PickUpCombination(IBlueprintRef combinationObject)
     {
-      this.DoPickUpCombinationByTemplate(combinationObject);
+      DoPickUpCombinationByTemplate(combinationObject);
     }
 
     public override void PickUpCombinationWithDrop(IBlueprintRef combinationObject, bool dropIfBusy)
     {
-      this.DoPickUpCombinationByTemplate(combinationObject, dropIfBusy);
+      DoPickUpCombinationByTemplate(combinationObject, dropIfBusy);
     }
 
     public override void PickUpCombinationToInentoryByTemplate(
       IBlueprintRef combinationObject,
       IBlueprintRef containerTemplate)
     {
-      this.DoPickUpCombinationToInventoryByTemplate(combinationObject, containerTemplate);
+      DoPickUpCombinationToInventoryByTemplate(combinationObject, containerTemplate);
     }
 
     public override void PickUpCombinationToInentoryByTemplateWithDrop(
@@ -88,7 +88,7 @@ namespace PLVirtualMachine.Dynamic.Components
       IBlueprintRef containerTemplate,
       bool dropIfBusy)
     {
-      this.DoPickUpCombinationToInventoryByTemplate(combinationObject, containerTemplate, dropIfBusy);
+      DoPickUpCombinationToInventoryByTemplate(combinationObject, containerTemplate, dropIfBusy);
     }
 
     public override void PickUpToInentoryByTemplate(
@@ -99,43 +99,43 @@ namespace PLVirtualMachine.Dynamic.Components
       try
       {
         if (template == null)
-          Logger.AddError(string.Format("PickUp thing entity is null !"));
+          Logger.AddError("PickUp thing entity is null !");
         else if (containerTemplate == null)
         {
-          Logger.AddError(string.Format("PickUp target container not defined !"));
+          Logger.AddError("PickUp target container not defined !");
         }
         else
         {
-          IInventoryComponent containerByTemplate = this.GetContainerByTemplate(containerTemplate);
+          IInventoryComponent containerByTemplate = GetContainerByTemplate(containerTemplate);
           if (containerByTemplate == null)
-            Logger.AddError(string.Format("PickUp target container name={0} id ={1} not found !", (object) containerTemplate.Name, (object) containerTemplate.Id));
-          else if (((VMEntity) this.Parent).IsCrowdItem)
+            Logger.AddError(string.Format("PickUp target container name={0} id ={1} not found !", containerTemplate.Name, containerTemplate.Id));
+          else if (((VMEntity) Parent).IsCrowdItem)
           {
             CrowdStorageCommand crowdStorageCommand = new CrowdStorageCommand();
-            crowdStorageCommand.Initialize(EStorageCommandType.StorageCommandTypeAddItem, (VMStorage) this, containerByTemplate.Owner, template, thingsCount);
-            Storage.CrowdStorageCommandProcessor.MakeStorageCommand((IStorageCommand) crowdStorageCommand, true);
+            crowdStorageCommand.Initialize(EStorageCommandType.StorageCommandTypeAddItem, this, containerByTemplate.Owner, template, thingsCount);
+            CrowdStorageCommandProcessor.MakeStorageCommand(crowdStorageCommand, true);
           }
           else
           {
-            VMStorage.TestSimplePickUpMode = true;
+            TestSimplePickUpMode = true;
             int num = 0;
             do
             {
               int iNeedCount = thingsCount - num;
-              int inventoryByTemplate = this.DoAddItemsToInventoryByTemplate(containerByTemplate.Owner, template, iNeedCount);
+              int inventoryByTemplate = DoAddItemsToInventoryByTemplate(containerByTemplate.Owner, template, iNeedCount);
               if (inventoryByTemplate != 0)
                 num += inventoryByTemplate;
               else
                 break;
             }
             while (num < thingsCount);
-            VMStorage.TestSimplePickUpMode = false;
+            TestSimplePickUpMode = false;
           }
         }
       }
       catch (Exception ex)
       {
-        Logger.AddError(string.Format("Cannot pick up items {0} to {1} storage: {2}", (object) template.Name, (object) this.Parent.Name, (object) ex));
+        Logger.AddError(string.Format("Cannot pick up items {0} to {1} storage: {2}", template.Name, Parent.Name, ex));
       }
     }
 
@@ -144,17 +144,17 @@ namespace PLVirtualMachine.Dynamic.Components
       IEntity template,
       int iNeedCount)
     {
-      IStorableComponent storableComponent = VMStorable.MakeStorableByTemplate(this.Parent, template);
+      IStorableComponent storableComponent = VMStorable.MakeStorableByTemplate(Parent, template);
       IEntity owner = storableComponent.Owner;
-      this.Parent.Instance.GetComponent<IStorageComponent>();
+      Parent.Instance.GetComponent<IStorageComponent>();
       IStorableComponent component = owner.GetComponent<IStorableComponent>();
       int inventoryByTemplate = component.Max;
       if (inventoryByTemplate > iNeedCount)
         inventoryByTemplate = iNeedCount;
       component.Count = inventoryByTemplate;
-      if (VMStorage.DoAddItemToStorage(this.Component, component, targetContainer.GetComponent<IInventoryComponent>(), true))
+      if (DoAddItemToStorage(Component, component, targetContainer.GetComponent<IInventoryComponent>(), true))
       {
-        this.OnModify();
+        OnModify();
         return inventoryByTemplate;
       }
       storableComponent.Owner.Dispose();
@@ -164,7 +164,7 @@ namespace PLVirtualMachine.Dynamic.Components
     public override void StateSave(IDataWriter writer)
     {
       base.StateSave(writer);
-      SaveManagerUtility.SaveList(writer, "InnerContainerTags", this.innerContainerTags);
+      SaveManagerUtility.SaveList(writer, "InnerContainerTags", innerContainerTags);
     }
 
     public override void LoadFromXML(XmlElement xmlNode)
@@ -173,7 +173,7 @@ namespace PLVirtualMachine.Dynamic.Components
       for (int i = 0; i < xmlNode.ChildNodes.Count; ++i)
       {
         if (xmlNode.ChildNodes[i].Name == "InnerContainerTags")
-          VMSaveLoadManager.LoadList((XmlElement) xmlNode.ChildNodes[i], this.innerContainerTags);
+          VMSaveLoadManager.LoadList((XmlElement) xmlNode.ChildNodes[i], innerContainerTags);
       }
     }
 
@@ -181,7 +181,7 @@ namespace PLVirtualMachine.Dynamic.Components
     {
       if (combinationObject == null)
       {
-        Logger.AddError(string.Format("Combination object for adding items to storage {0} not defined", (object) this.Parent.Name));
+        Logger.AddError(string.Format("Combination object for adding items to storage {0} not defined", Parent.Name));
       }
       else
       {
@@ -199,34 +199,34 @@ namespace PLVirtualMachine.Dynamic.Components
                 {
                   ObjectCombinationDataStruct combinationData = (ObjectCombinationDataStruct) property.Value;
                   if (combinationData.GetElementsCount() > 0)
-                    ((GlobalStorageManager) VMGlobalStorageManager.Instance).AddCombinationToStorage(combinationData, (VMStorage) this, (OperationTagsInfo) null, (OperationMultiTagsInfo) null, dropIfBusy);
-                  this.OnModify();
+                    ((GlobalStorageManager) VMGlobalStorageManager.Instance).AddCombinationToStorage(combinationData, this, null, null, dropIfBusy);
+                  OnModify();
                 }
                 else
-                  Logger.AddError(string.Format("Combination object {0} for adding items to storage {1} combination component ObjectCombinationDataStruct param value is invalid", (object) blueprint.Name, (object) this.Parent.Name));
+                  Logger.AddError(string.Format("Combination object {0} for adding items to storage {1} combination component ObjectCombinationDataStruct param value is invalid", blueprint.Name, Parent.Name));
               }
               else
-                Logger.AddError(string.Format("Combination object {0} for adding items to storage {1} combination component not contains ObjectCombinationDataStruct param value", (object) blueprint.Name, (object) this.Parent.Name));
+                Logger.AddError(string.Format("Combination object {0} for adding items to storage {1} combination component not contains ObjectCombinationDataStruct param value", blueprint.Name, Parent.Name));
             }
             else
-              Logger.AddError(string.Format("Combination object {0} for adding items to storage {1} combination component not contains ObjectCombinationDataStruct param", (object) blueprint.Name, (object) this.Parent.Name));
+              Logger.AddError(string.Format("Combination object {0} for adding items to storage {1} combination component not contains ObjectCombinationDataStruct param", blueprint.Name, Parent.Name));
           }
           else
-            Logger.AddError(string.Format("Combination object {0} for adding items to storage {1} not contains Combination component", (object) blueprint.Name, (object) this.Parent.Name));
+            Logger.AddError(string.Format("Combination object {0} for adding items to storage {1} not contains Combination component", blueprint.Name, Parent.Name));
         }
         else
-          Logger.AddError(string.Format("Combination object with guid={0} for adding items to storage {1} not found", (object) combinationObject.Name, (object) this.Parent.Name));
+          Logger.AddError(string.Format("Combination object with guid={0} for adding items to storage {1} not found", combinationObject.Name, Parent.Name));
       }
     }
 
     public override bool CheckExistCombinationElement(IBlueprintRef combinationTemplate)
     {
-      IBlueprint blueprint = (IBlueprint) null;
+      IBlueprint blueprint = null;
       if (combinationTemplate != null && combinationTemplate.Blueprint != null)
         blueprint = combinationTemplate.Blueprint;
       if (blueprint == null)
       {
-        Logger.AddError(string.Format("Combination for checking element containing in storage {0} not defined at {1} !", (object) this.Parent.Name, (object) DynamicFSM.CurrentStateInfo));
+        Logger.AddError(string.Format("Combination for checking element containing in storage {0} not defined at {1} !", Parent.Name, DynamicFSM.CurrentStateInfo));
         return false;
       }
       if (blueprint.IsFunctionalSupport("Combination"))
@@ -241,31 +241,31 @@ namespace PLVirtualMachine.Dynamic.Components
               ObjectCombinationDataStruct combinationDataStruct = (ObjectCombinationDataStruct) property.Value;
               if (combinationDataStruct.GetElementsCount() > 0)
               {
-                foreach (IStorableComponent storableComponent in this.Component.Items)
+                foreach (IStorableComponent storableComponent in Component.Items)
                 {
                   if (storableComponent != null && !storableComponent.IsDisposed)
                   {
                     Guid templateId = storableComponent.Owner.TemplateId;
                     IWorldBlueprint engineTemplateByGuid = ((VMGameRoot) IStaticDataContainer.StaticDataContainer.GameRoot).GetEngineTemplateByGuid(templateId);
                     if (engineTemplateByGuid == null)
-                      Logger.AddError(string.Format("Combination element checking in storage {0} error: template {1} id = {2} not registered in vm", (object) this.Parent.Name, (object) storableComponent.Owner.Name, (object) templateId));
-                    else if (combinationDataStruct.ContainsItem((IBlueprint) engineTemplateByGuid))
+                      Logger.AddError(string.Format("Combination element checking in storage {0} error: template {1} id = {2} not registered in vm", Parent.Name, storableComponent.Owner.Name, templateId));
+                    else if (combinationDataStruct.ContainsItem(engineTemplateByGuid))
                       return true;
                   }
                 }
               }
             }
             else
-              Logger.AddError(string.Format("Combination object {0} for checking element containing in storage {1}  not contains Combination data at", (object) blueprint.Name, (object) this.Parent.Name, (object) DynamicFSM.CurrentStateInfo));
+              Logger.AddError(string.Format("Combination object {0} for checking element containing in storage {1}  not contains Combination data at", blueprint.Name, Parent.Name, DynamicFSM.CurrentStateInfo));
           }
           else
-            Logger.AddError(string.Format("Combination object {0} for checking element containing in storage {1}  not contains Combination data at", (object) blueprint.Name, (object) this.Parent.Name, (object) DynamicFSM.CurrentStateInfo));
+            Logger.AddError(string.Format("Combination object {0} for checking element containing in storage {1}  not contains Combination data at", blueprint.Name, Parent.Name, DynamicFSM.CurrentStateInfo));
         }
         else
-          Logger.AddError(string.Format("Combination object {0} for checking element containing in storage {1}  not contains ObjectCombinationDataStruct param", (object) blueprint.Name, (object) this.Parent.Name, (object) DynamicFSM.CurrentStateInfo));
+          Logger.AddError(string.Format("Combination object {0} for checking element containing in storage {1}  not contains ObjectCombinationDataStruct param", blueprint.Name, Parent.Name, DynamicFSM.CurrentStateInfo));
       }
       else
-        Logger.AddError(string.Format("Combination object {0} for checking element containing in storage {1}  not contains Combination component at {2}", (object) blueprint.Name, (object) this.Parent.Name, (object) DynamicFSM.CurrentStateInfo));
+        Logger.AddError(string.Format("Combination object {0} for checking element containing in storage {1}  not contains Combination component at {2}", blueprint.Name, Parent.Name, DynamicFSM.CurrentStateInfo));
       return false;
     }
 
@@ -276,11 +276,11 @@ namespace PLVirtualMachine.Dynamic.Components
     {
       if (combinationObject == null)
       {
-        Logger.AddError(string.Format("Combination object for adding items to storage {0} not defined", (object) this.Parent.Name));
+        Logger.AddError(string.Format("Combination object for adding items to storage {0} not defined", Parent.Name));
       }
       else
       {
-        if (((VMEntity) this.Parent).IsCrowdItem)
+        if (((VMEntity) Parent).IsCrowdItem)
           GlobalStorageManager.AssyncStorageGroupCommandMode = true;
         IBlueprint blueprint = combinationObject.Blueprint;
         if (blueprint != null)
@@ -300,25 +300,25 @@ namespace PLVirtualMachine.Dynamic.Components
                     OperationTagsInfo containerTypes = new OperationTagsInfo();
                     if (containerTemplate != null && containerTemplate.Blueprint != null)
                       containerTypes.AddTag(containerTemplate.Blueprint.Name);
-                    ((GlobalStorageManager) VMGlobalStorageManager.Instance).AddCombinationToStorage(combinationData, (VMStorage) this, containerTypes, (OperationMultiTagsInfo) null, dropIfBusy);
-                    this.OnModify();
+                    ((GlobalStorageManager) VMGlobalStorageManager.Instance).AddCombinationToStorage(combinationData, this, containerTypes, null, dropIfBusy);
+                    OnModify();
                   }
                 }
                 else
-                  Logger.AddError(string.Format("Combination object {0} for adding items to storage {1} combination component ObjectCombinationDataStruct param value is invalid", (object) blueprint.Name, (object) this.Parent.Name));
+                  Logger.AddError(string.Format("Combination object {0} for adding items to storage {1} combination component ObjectCombinationDataStruct param value is invalid", blueprint.Name, Parent.Name));
               }
               else
-                Logger.AddError(string.Format("Combination object {0} for adding items to storage {1} combination component not contains ObjectCombinationDataStruct param value", (object) blueprint.Name, (object) this.Parent.Name));
+                Logger.AddError(string.Format("Combination object {0} for adding items to storage {1} combination component not contains ObjectCombinationDataStruct param value", blueprint.Name, Parent.Name));
             }
             else
-              Logger.AddError(string.Format("Combination object {0} for adding items to storage {1} combination component not contains ObjectCombinationDataStruct param", (object) blueprint.Name, (object) this.Parent.Name));
+              Logger.AddError(string.Format("Combination object {0} for adding items to storage {1} combination component not contains ObjectCombinationDataStruct param", blueprint.Name, Parent.Name));
           }
           else
-            Logger.AddError(string.Format("Combination object {0} for adding items to storage {1} not contains Combination component", (object) blueprint.Name, (object) this.Parent.Name));
+            Logger.AddError(string.Format("Combination object {0} for adding items to storage {1} not contains Combination component", blueprint.Name, Parent.Name));
         }
         else
-          Logger.AddError(string.Format("Combination object with guid={0} for adding items to storage {1} not found", (object) combinationObject.Name, (object) this.Parent.Name));
-        if (!((VMEntity) this.Parent).IsCrowdItem)
+          Logger.AddError(string.Format("Combination object with guid={0} for adding items to storage {1} not found", combinationObject.Name, Parent.Name));
+        if (!((VMEntity) Parent).IsCrowdItem)
           return;
         GlobalStorageManager.AssyncStorageGroupCommandMode = false;
       }

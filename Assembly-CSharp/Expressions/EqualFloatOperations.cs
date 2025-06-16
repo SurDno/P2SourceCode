@@ -7,7 +7,7 @@ namespace Expressions
   [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
   public class EqualFloatOperations : ComparisonOperation<float>
   {
-    protected override bool Compute(float left, float right) => (double) left == (double) right;
+    protected override bool Compute(float left, float right) => left == (double) right;
 
     protected override string OperatorView() => "==";
   }

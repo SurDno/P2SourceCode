@@ -6,17 +6,17 @@ namespace UnityEngine.PostProcessing
   public class AmbientOcclusionModel : PostProcessingModel
   {
     [SerializeField]
-    private AmbientOcclusionModel.Settings m_Settings = AmbientOcclusionModel.Settings.defaultSettings;
+    private Settings m_Settings = Settings.defaultSettings;
 
-    public AmbientOcclusionModel.Settings settings
+    public Settings settings
     {
-      get => this.m_Settings;
-      set => this.m_Settings = value;
+      get => m_Settings;
+      set => m_Settings = value;
     }
 
     public override void Reset()
     {
-      this.m_Settings = AmbientOcclusionModel.Settings.defaultSettings;
+      m_Settings = Settings.defaultSettings;
     }
 
     public enum SampleCount
@@ -37,7 +37,7 @@ namespace UnityEngine.PostProcessing
       [Tooltip("Radius of sample points, which affects extent of darkened areas.")]
       public float radius;
       [Tooltip("Number of sample points, which affects quality and performance.")]
-      public AmbientOcclusionModel.SampleCount sampleCount;
+      public SampleCount sampleCount;
       [Tooltip("Halves the resolution of the effect to increase performance at the cost of visual quality.")]
       public bool downsampling;
       [Tooltip("Forces compatibility with Forward rendered objects when working with the Deferred rendering path.")]
@@ -47,15 +47,14 @@ namespace UnityEngine.PostProcessing
       [Tooltip("Toggles the use of a higher precision depth texture with the forward rendering path (may impact performances). Has no effect with the deferred rendering path.")]
       public bool highPrecision;
 
-      public static AmbientOcclusionModel.Settings defaultSettings
+      public static Settings defaultSettings
       {
         get
         {
-          return new AmbientOcclusionModel.Settings()
-          {
+          return new Settings {
             intensity = 1f,
             radius = 0.3f,
-            sampleCount = AmbientOcclusionModel.SampleCount.Medium,
+            sampleCount = SampleCount.Medium,
             downsampling = true,
             forceForwardCompatibility = false,
             ambientOnly = false,

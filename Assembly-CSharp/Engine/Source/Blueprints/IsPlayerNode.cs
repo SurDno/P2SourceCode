@@ -2,7 +2,6 @@
 using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
-using UnityEngine;
 
 namespace Engine.Source.Blueprints
 {
@@ -17,18 +16,18 @@ namespace Engine.Source.Blueprints
     protected override void RegisterPorts()
     {
       base.RegisterPorts();
-      FlowOutput trueOut = this.AddFlowOutput("True");
-      FlowOutput falseOut = this.AddFlowOutput("False");
-      this.AddFlowInput("In", (FlowHandler) (() =>
+      FlowOutput trueOut = AddFlowOutput("True");
+      FlowOutput falseOut = AddFlowOutput("False");
+      AddFlowInput("In", () =>
       {
-        GameObject gameObject = this.inputValue.value;
+        GameObject gameObject = inputValue.value;
         if ((Object) gameObject == (Object) null)
           falseOut.Call();
         else if ((Object) gameObject.GetComponent<PivotPlayer>() == (Object) null)
           falseOut.Call();
         else
           trueOut.Call();
-      }));
+      });
     }
   }
 }

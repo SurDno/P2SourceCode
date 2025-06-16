@@ -6,8 +6,7 @@ namespace Engine.Source.Inventory
   {
     public static IntCell To(this Cell cell)
     {
-      return new IntCell()
-      {
+      return new IntCell {
         Column = cell.Column,
         Row = cell.Row
       };

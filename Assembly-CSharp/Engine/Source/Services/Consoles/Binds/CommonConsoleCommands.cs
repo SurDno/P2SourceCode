@@ -1,10 +1,8 @@
-﻿using Cofe.Meta;
+﻿using System.Collections;
+using System.IO;
+using Cofe.Meta;
 using Cofe.Serializations.Converters;
 using Engine.Common.Services;
-using System.Collections;
-using System.Collections.Generic;
-using System.IO;
-using UnityEngine;
 
 namespace Engine.Source.Services.Consoles.Binds
 {
@@ -54,7 +52,7 @@ namespace Engine.Source.Services.Consoles.Binds
           path = str1 + parameters[0].Value + str2;
         }
       }
-      CoroutineService.Instance.Route(CommonConsoleCommands.ExecuteCommands(File.ReadAllLines(path)));
+      CoroutineService.Instance.Route(ExecuteCommands(File.ReadAllLines(path)));
       return "";
     }
 
@@ -68,15 +66,15 @@ namespace Engine.Source.Services.Consoles.Binds
       {
         string line = lines[index];
         if (line == "")
-          yield return (object) null;
+          yield return null;
         else if (line.StartsWith("//"))
-          yield return (object) null;
+          yield return null;
         else if (line.StartsWith(":"))
-          yield return (object) null;
+          yield return null;
         else if (line.StartsWith(gotoTag))
         {
           string valueText = line.Substring(gotoTag.Length).Trim();
-          int num = ((IEnumerable<string>) lines).IndexOf<string>(labelTag + valueText);
+          int num = lines.IndexOf(labelTag + valueText);
           if (num == -1)
           {
             console.AddLine("error: label '" + valueText + "' not found");
@@ -84,7 +82,7 @@ namespace Engine.Source.Services.Consoles.Binds
           }
           index = num - 1;
           console.AddLine(line);
-          yield return (object) null;
+          yield return null;
         }
         else if (line.StartsWith(delayTag))
         {
@@ -96,8 +94,8 @@ namespace Engine.Source.Services.Consoles.Binds
         else
         {
           console.ExecuteCommand(line);
-          yield return (object) null;
-          line = (string) null;
+          yield return null;
+          line = null;
         }
       }
     }

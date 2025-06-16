@@ -1,4 +1,8 @@
-﻿using Engine.Common;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using Engine.Common;
 using Engine.Common.Commons.Cloneable;
 using Engine.Common.Services;
 using Engine.Source.Commons;
@@ -9,15 +13,10 @@ using InputServices;
 using Inspectors;
 using SRDebugger.Services;
 using SRF.Service;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using UnityEngine;
 
 namespace Engine.Source.Services.Inputs
 {
-  [RuntimeService(new System.Type[] {typeof (GameActionService)})]
+  [RuntimeService(typeof (GameActionService))]
   public class GameActionService : IInitialisable, IUpdatable
   {
     public ActionGroupContext context = ActionGroupContext.None;
@@ -42,15 +41,15 @@ namespace Engine.Source.Services.Inputs
 
     public void AddListener(GameActionType type, GameActionHandle action, bool isHighPriority = false)
     {
-      if (!this.initialise)
-        throw new Exception(this.GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
+      if (!initialise)
+        throw new Exception(GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
       List<GameActionHandle> gameActionHandleList;
-      if (!this.actions.TryGetValue(type, out gameActionHandleList))
+      if (!actions.TryGetValue(type, out gameActionHandleList))
       {
         gameActionHandleList = new List<GameActionHandle>();
-        this.actions.Add(type, gameActionHandleList);
+        actions.Add(type, gameActionHandleList);
       }
-      if (this.HasListener(type, action))
+      if (HasListener(type, action))
         return;
       if (isHighPriority)
         gameActionHandleList.Insert(0, action);
@@ -60,19 +59,19 @@ namespace Engine.Source.Services.Inputs
 
     public bool HasListener(GameActionType type, GameActionHandle action)
     {
-      if (!this.initialise)
-        throw new Exception(this.GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
+      if (!initialise)
+        throw new Exception(GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
       List<GameActionHandle> gameActionHandleList;
-      return this.actions.TryGetValue(type, out gameActionHandleList) && gameActionHandleList.Contains(action);
+      return actions.TryGetValue(type, out gameActionHandleList) && gameActionHandleList.Contains(action);
     }
 
     public void RemoveListener(GameActionType type, GameActionHandle action)
     {
       List<GameActionHandle> gameActionHandleList;
-      if (!this.actions.TryGetValue(type, out gameActionHandleList))
+      if (!actions.TryGetValue(type, out gameActionHandleList))
       {
         gameActionHandleList = new List<GameActionHandle>();
-        this.actions.Add(type, gameActionHandleList);
+        actions.Add(type, gameActionHandleList);
       }
       if (!gameActionHandleList.Contains(action))
         return;
@@ -81,35 +80,35 @@ namespace Engine.Source.Services.Inputs
 
     public void Initialise()
     {
-      this.initialise = true;
-      InstanceByRequest<UpdateService>.Instance.Updater.AddUpdatable((IUpdatable) this);
-      InstanceByRequest<EngineApplication>.Instance.OnApplicationFocusEvent += new Action<bool>(this.OnApplicationFocusEvent);
-      JoystickLayoutSwitcher.Instance.OnLayoutChanged += new Action<JoystickLayoutSwitcher.KeyLayouts>(this.OnLayoutChanged);
-      this.LoadSettings();
+      initialise = true;
+      InstanceByRequest<UpdateService>.Instance.Updater.AddUpdatable(this);
+      InstanceByRequest<EngineApplication>.Instance.OnApplicationFocusEvent += OnApplicationFocusEvent;
+      JoystickLayoutSwitcher.Instance.OnLayoutChanged += OnLayoutChanged;
+      LoadSettings();
     }
 
     private void OnLayoutChanged(JoystickLayoutSwitcher.KeyLayouts newLayout)
     {
-      this.ResetKeys();
-      this.LoadSettings();
+      ResetKeys();
+      LoadSettings();
     }
 
     public void Terminate()
     {
-      InstanceByRequest<UpdateService>.Instance.Updater.RemoveUpdatable((IUpdatable) this);
-      InstanceByRequest<EngineApplication>.Instance.OnApplicationFocusEvent -= new Action<bool>(this.OnApplicationFocusEvent);
-      JoystickLayoutSwitcher.Instance.OnLayoutChanged -= new Action<JoystickLayoutSwitcher.KeyLayouts>(this.OnLayoutChanged);
-      this.initialise = false;
+      InstanceByRequest<UpdateService>.Instance.Updater.RemoveUpdatable(this);
+      InstanceByRequest<EngineApplication>.Instance.OnApplicationFocusEvent -= OnApplicationFocusEvent;
+      JoystickLayoutSwitcher.Instance.OnLayoutChanged -= OnLayoutChanged;
+      initialise = false;
     }
 
     private void LoadSettings()
     {
-      if (!this.initialise)
-        throw new Exception(this.GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
-      this.ResetRebinds();
+      if (!initialise)
+        throw new Exception(GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
+      ResetRebinds();
       foreach (KeyValuePair<string, KeyCode> keyValuePair in InstanceByRequest<InputGameSetting>.Instance.KeySettings.Value)
-        this.SetRebind(keyValuePair.Key, keyValuePair.Value);
-      Action onBindsChange = this.OnBindsChange;
+        SetRebind(keyValuePair.Key, keyValuePair.Value);
+      Action onBindsChange = OnBindsChange;
       if (onBindsChange == null)
         return;
       onBindsChange();
@@ -117,13 +116,13 @@ namespace Engine.Source.Services.Inputs
 
     private void SaveSettings()
     {
-      if (!this.initialise)
-        throw new Exception(this.GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
+      if (!initialise)
+        throw new Exception(GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
       List<KeyValuePair<string, KeyCode>> source = new List<KeyValuePair<string, KeyCode>>();
-      foreach (ActionGroup bind1 in this.binds)
+      foreach (ActionGroup bind1 in binds)
       {
         ActionGroup bind = bind1;
-        if (bind.Context != ActionGroupContext.Debug && !source.Any<KeyValuePair<string, KeyCode>>((Func<KeyValuePair<string, KeyCode>, bool>) (x => x.Key == bind.Name && x.Value == bind.Key)) && !JoystickLayoutSwitcher.Instance.Groups.Any<ActionGroup>((Func<ActionGroup, bool>) (x => x.Name == bind.Name && x.Key == bind.Key)))
+        if (bind.Context != ActionGroupContext.Debug && !source.Any((Func<KeyValuePair<string, KeyCode>, bool>) (x => x.Key == bind.Name && x.Value == bind.Key)) && !JoystickLayoutSwitcher.Instance.Groups.Any(x => x.Name == bind.Name && x.Key == bind.Key))
           source.Add(new KeyValuePair<string, KeyCode>(bind.Name, bind.Key));
       }
       InstanceByRequest<InputGameSetting>.Instance.KeySettings.Value = source;
@@ -131,8 +130,8 @@ namespace Engine.Source.Services.Inputs
 
     private bool SetRebind(string name, KeyCode key)
     {
-      ActionGroup actionGroup = (ActionGroup) null;
-      foreach (ActionGroup bind in this.binds)
+      ActionGroup actionGroup = null;
+      foreach (ActionGroup bind in binds)
       {
         if (bind.Name == name && bind.IsChangeble)
         {
@@ -143,9 +142,9 @@ namespace Engine.Source.Services.Inputs
       if (actionGroup == null || actionGroup.Key == key)
         return false;
       actionGroup.Key = key;
-      for (int index = 0; index < this.binds.Count; ++index)
+      for (int index = 0; index < binds.Count; ++index)
       {
-        ActionGroup bind = this.binds[index];
+        ActionGroup bind = binds[index];
         if (bind != actionGroup && bind.IsChangeble && bind.Context == actionGroup.Context && bind.Key == key)
           bind.Key = KeyCode.None;
       }
@@ -154,12 +153,12 @@ namespace Engine.Source.Services.Inputs
 
     public void AddRebind(ActionGroup action, KeyCode key)
     {
-      if (!this.initialise)
-        throw new Exception(this.GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
-      if (!this.SetRebind(action.Name, key))
+      if (!initialise)
+        throw new Exception(GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
+      if (!SetRebind(action.Name, key))
         return;
-      this.SaveSettings();
-      Action onBindsChange = this.OnBindsChange;
+      SaveSettings();
+      Action onBindsChange = OnBindsChange;
       if (onBindsChange == null)
         return;
       onBindsChange();
@@ -167,11 +166,11 @@ namespace Engine.Source.Services.Inputs
 
     public void ResetAllRebinds()
     {
-      if (!this.initialise)
-        throw new Exception(this.GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
-      this.ResetRebinds();
-      this.SaveSettings();
-      Action onBindsChange = this.OnBindsChange;
+      if (!initialise)
+        throw new Exception(GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
+      ResetRebinds();
+      SaveSettings();
+      Action onBindsChange = OnBindsChange;
       if (onBindsChange == null)
         return;
       onBindsChange();
@@ -179,9 +178,9 @@ namespace Engine.Source.Services.Inputs
 
     private void ResetRebinds()
     {
-      this.binds.Clear();
+      binds.Clear();
       foreach (ActionGroup group in JoystickLayoutSwitcher.Instance.Groups)
-        this.binds.Add(CloneableObjectUtility.Clone<ActionGroup>(group));
+        binds.Add(CloneableObjectUtility.Clone(group));
       foreach (ActionInfo debugAction in InteractUtility.DebugActions)
       {
         ActionGroup actionGroup = ServiceCache.Factory.Create<ActionGroup>();
@@ -192,43 +191,43 @@ namespace Engine.Source.Services.Inputs
         actionGroup.Interact = true;
         actionGroup.Context = ActionGroupContext.Debug;
         actionGroup.Actions.Add(debugAction.Action);
-        this.binds.Add(actionGroup);
+        binds.Add(actionGroup);
       }
     }
 
     public List<ActionGroup> GetBinds()
     {
-      if (!this.initialise)
-        throw new Exception(this.GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
-      return this.binds;
+      if (!initialise)
+        throw new Exception(GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
+      return binds;
     }
 
     public void ComputeUpdate()
     {
-      if (!this.initialise)
-        throw new Exception(this.GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
-      if (this.debug == null)
-        this.debug = SRServiceManager.GetService<IDebugService>();
-      if (this.debug != null && this.debug.IsDebugPanelVisible)
+      if (!initialise)
+        throw new Exception(GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
+      if (debug == null)
+        debug = SRServiceManager.GetService<IDebugService>();
+      if (debug != null && debug.IsDebugPanelVisible)
       {
-        this.ResetKeys();
+        ResetKeys();
       }
       else
       {
-        this.tmp.Clear();
-        this.tmp2.Clear();
-        this.tmpBinds.Clear();
-        this.tmpBinds.AddRange((IEnumerable<ActionGroup>) this.GetBinds());
-        foreach (ActionGroup tmpBind in this.tmpBinds)
+        tmp.Clear();
+        tmp2.Clear();
+        tmpBinds.Clear();
+        tmpBinds.AddRange(GetBinds());
+        foreach (ActionGroup tmpBind in tmpBinds)
         {
-          if (!this.computedBinds.Contains(tmpBind) && !this.tmp.Contains(tmpBind.Key) && !this.tmp2.Contains(tmpBind.Joystick) && this.IsKeyDown(tmpBind) && this.ComputeAction(tmpBind, true))
+          if (!computedBinds.Contains(tmpBind) && !tmp.Contains(tmpBind.Key) && !tmp2.Contains(tmpBind.Joystick) && IsKeyDown(tmpBind) && ComputeAction(tmpBind, true))
           {
-            this.computedBinds.Add(tmpBind);
-            this.tmp.Add(tmpBind.Key);
-            this.tmp2.Add(tmpBind.Joystick);
+            computedBinds.Add(tmpBind);
+            tmp.Add(tmpBind.Key);
+            tmp2.Add(tmpBind.Joystick);
           }
         }
-        this.ComputeReleased();
+        ComputeReleased();
         if (!Input.anyKeyDown)
           return;
         foreach (KeyCode keyCode in Enum.GetValues(typeof (KeyCode)))
@@ -237,8 +236,8 @@ namespace Engine.Source.Services.Inputs
           {
             if (Input.GetKeyDown(keyCode))
             {
-              if (this.OnKeyPressed != null)
-                this.FireKeyPressed(keyCode);
+              if (OnKeyPressed != null)
+                FireKeyPressed(keyCode);
               InputService.Instance.JoystickUsed = false;
             }
           }
@@ -251,12 +250,12 @@ namespace Engine.Source.Services.Inputs
     private void ComputeReleased()
     {
 label_1:
-      foreach (ActionGroup computedBind in this.computedBinds)
+      foreach (ActionGroup computedBind in computedBinds)
       {
-        if (this.IsKeyRelease(computedBind))
+        if (IsKeyRelease(computedBind))
         {
-          this.computedBinds.Remove(computedBind);
-          this.ComputeAction(computedBind, false);
+          computedBinds.Remove(computedBind);
+          ComputeAction(computedBind, false);
           goto label_1;
         }
       }
@@ -264,7 +263,7 @@ label_1:
 
     private bool IsKeyDown(ActionGroup bind)
     {
-      return (!this.debug.IsDebugging ? Input.GetKeyDown(bind.Key) : InputUtility.IsKeyDown(bind.Key) || InputUtility.IsKeyDown(bind.Key, KeyModifficator.Shift) || InputUtility.IsKeyDown(bind.Key, KeyModifficator.Alt)) | InputService.Instance.GetButtonDown(bind.Joystick, bind.JoystickHold);
+      return (!debug.IsDebugging ? Input.GetKeyDown(bind.Key) : InputUtility.IsKeyDown(bind.Key) || InputUtility.IsKeyDown(bind.Key, KeyModifficator.Shift) || InputUtility.IsKeyDown(bind.Key, KeyModifficator.Alt)) | InputService.Instance.GetButtonDown(bind.Joystick, bind.JoystickHold);
     }
 
     private bool IsKeyRelease(ActionGroup bind)
@@ -274,26 +273,26 @@ label_1:
 
     private void FireKeyPressed(KeyCode code)
     {
-      if (!this.initialise)
-        throw new Exception(this.GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
-      this.OnKeyPressed(code);
+      if (!initialise)
+        throw new Exception(GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
+      OnKeyPressed(code);
     }
 
     private bool ComputeAction(ActionGroup group, bool down)
     {
-      if (!this.initialise)
-        throw new Exception(this.GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
+      if (!initialise)
+        throw new Exception(GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
       foreach (GameActionType action in group.Actions)
       {
-        if (this.TryGetListeners(action, this.tmpListeners))
+        if (TryGetListeners(action, tmpListeners))
         {
-          foreach (GameActionHandle tmpListener in this.tmpListeners)
+          foreach (GameActionHandle tmpListener in tmpListeners)
           {
             if (tmpListener(action, down))
             {
               if (down)
               {
-                Action<GameActionType> onGameAction = this.OnGameAction;
+                Action<GameActionType> onGameAction = OnGameAction;
                 if (onGameAction != null)
                   onGameAction(action);
               }
@@ -313,29 +312,29 @@ label_1:
 
     private void OnApplicationFocusEvent(bool focus)
     {
-      if (!this.initialise)
-        throw new Exception(this.GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
+      if (!initialise)
+        throw new Exception(GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
       if (focus)
         return;
-      this.ResetKeys();
+      ResetKeys();
     }
 
     private void ResetKeys()
     {
-      if (!this.initialise)
-        throw new Exception(this.GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
-      foreach (ActionGroup computedBind in this.computedBinds)
-        this.ComputeAction(computedBind, false);
-      this.computedBinds.Clear();
+      if (!initialise)
+        throw new Exception(GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
+      foreach (ActionGroup computedBind in computedBinds)
+        ComputeAction(computedBind, false);
+      computedBinds.Clear();
     }
 
     private bool TryGetListeners(GameActionType type, List<GameActionHandle> listeners)
     {
       listeners.Clear();
       List<GameActionHandle> collection;
-      if (!this.actions.TryGetValue(type, out collection))
+      if (!actions.TryGetValue(type, out collection))
         return false;
-      listeners.AddRange((IEnumerable<GameActionHandle>) collection);
+      listeners.AddRange(collection);
       return true;
     }
   }

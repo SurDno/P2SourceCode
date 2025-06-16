@@ -11,11 +11,11 @@ namespace BehaviorDesigner.Runtime
     {
       int hashCode = xml.GetHashCode();
       XmlDocument data;
-      if (!XmlDeserializationCache.serializationCache.TryGetValue(hashCode, out data))
+      if (!serializationCache.TryGetValue(hashCode, out data))
       {
         data = new XmlDocument();
         data.LoadXml(xml);
-        XmlDeserializationCache.serializationCache.Add(hashCode, data);
+        serializationCache.Add(hashCode, data);
       }
       return data;
     }

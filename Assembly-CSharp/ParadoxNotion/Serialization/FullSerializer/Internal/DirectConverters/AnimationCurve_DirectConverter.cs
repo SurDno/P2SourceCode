@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using System;
+using System.Collections.Generic;
 
 namespace ParadoxNotion.Serialization.FullSerializer.Internal.DirectConverters
 {
@@ -9,7 +9,7 @@ namespace ParadoxNotion.Serialization.FullSerializer.Internal.DirectConverters
       AnimationCurve model,
       Dictionary<string, fsData> serialized)
     {
-      return fsResult.Success + this.SerializeMember<Keyframe[]>(serialized, (System.Type) null, "keys", model.keys) + this.SerializeMember<WrapMode>(serialized, (System.Type) null, "preWrapMode", model.preWrapMode) + this.SerializeMember<WrapMode>(serialized, (System.Type) null, "postWrapMode", model.postWrapMode);
+      return fsResult.Success + SerializeMember<Keyframe[]>(serialized, null, "keys", model.keys) + SerializeMember<WrapMode>(serialized, null, "preWrapMode", model.preWrapMode) + SerializeMember<WrapMode>(serialized, null, "postWrapMode", model.postWrapMode);
     }
 
     protected override fsResult DoDeserialize(
@@ -18,18 +18,18 @@ namespace ParadoxNotion.Serialization.FullSerializer.Internal.DirectConverters
     {
       fsResult success = fsResult.Success;
       Keyframe[] keys = model.keys;
-      fsResult fsResult1 = success + this.DeserializeMember<Keyframe[]>(data, (System.Type) null, "keys", out keys);
+      fsResult fsResult1 = success + DeserializeMember(data, null, "keys", out keys);
       model.keys = keys;
       WrapMode preWrapMode = model.preWrapMode;
-      fsResult fsResult2 = fsResult1 + this.DeserializeMember<WrapMode>(data, (System.Type) null, "preWrapMode", out preWrapMode);
+      fsResult fsResult2 = fsResult1 + DeserializeMember(data, null, "preWrapMode", out preWrapMode);
       model.preWrapMode = preWrapMode;
       WrapMode postWrapMode = model.postWrapMode;
-      fsResult fsResult3 = fsResult2 + this.DeserializeMember<WrapMode>(data, (System.Type) null, "postWrapMode", out postWrapMode);
+      fsResult fsResult3 = fsResult2 + DeserializeMember(data, null, "postWrapMode", out postWrapMode);
       model.postWrapMode = postWrapMode;
       return fsResult3;
     }
 
-    public override object CreateInstance(fsData data, System.Type storageType)
+    public override object CreateInstance(fsData data, Type storageType)
     {
       return (object) new AnimationCurve();
     }

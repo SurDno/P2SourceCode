@@ -1,4 +1,6 @@
-﻿using Cofe.Loggers;
+﻿using System;
+using System.Xml;
+using Cofe.Loggers;
 using Cofe.Serializations.Data;
 using Engine.Common.MindMap;
 using Engine.Common.Services;
@@ -9,8 +11,6 @@ using PLVirtualMachine.Common.Serialization;
 using PLVirtualMachine.Data.SaveLoad;
 using PLVirtualMachine.GameLogic;
 using PLVirtualMachine.LogicMap;
-using System;
-using System.Xml;
 
 namespace PLVirtualMachine.Dynamic
 {
@@ -34,25 +34,25 @@ namespace PLVirtualMachine.Dynamic
     {
       this.parentNode = parentNode;
       this.staticNodeContent = staticNodeContent;
-      this.dynamicGuid = DynamicMindMap.RegistrDynamicMMObject((IDynamicMindMapObject) this);
-      this.active = false;
+      dynamicGuid = DynamicMindMap.RegistrDynamicMMObject(this);
+      active = false;
       if (staticNodeContent == null)
         return;
       MMContentKind byNodeContentType = DynamicMindMap.GetEngineNodeContentKindByNodeContentType(staticNodeContent.ContentType);
-      IMMPlaceholder mmPlaceholder = (IMMPlaceholder) null;
+      IMMPlaceholder mmPlaceholder = null;
       if (staticNodeContent.Picture != null)
       {
         Guid engineTemplateGuid = staticNodeContent.Picture.EngineTemplateGuid;
         mmPlaceholder = ServiceCache.TemplateService.GetTemplate<IMMPlaceholder>(engineTemplateGuid);
         if (mmPlaceholder == null)
-          Logger.AddError(string.Format("Mindmap placeholder with guid={0} not found", (object) engineTemplateGuid));
+          Logger.AddError(string.Format("Mindmap placeholder with guid={0} not found", engineTemplateGuid));
       }
-      this.engineContent = ServiceCache.Factory.Create<IMMContent>(this.dynamicGuid);
-      this.engineContent.Kind = byNodeContentType;
-      this.engineContent.Placeholder = mmPlaceholder;
-      this.engineContent.Description = EngineAPIManager.CreateEngineTextInstance(staticNodeContent.DescriptionText);
-      ServiceCache.MindMapService.AddContent(this.engineContent);
-      this.nodeContentActivateEventBody = new DynamicEventBody((VMPartCondition) staticNodeContent.ContentCondition, (INamed) this, parentNode.GameTimeContext, new DynamicEventBody.OnEventBodyRise(this.OnCheckRise), false);
+      engineContent = ServiceCache.Factory.Create<IMMContent>(dynamicGuid);
+      engineContent.Kind = byNodeContentType;
+      engineContent.Placeholder = mmPlaceholder;
+      engineContent.Description = EngineAPIManager.CreateEngineTextInstance(staticNodeContent.DescriptionText);
+      ServiceCache.MindMapService.AddContent(engineContent);
+      nodeContentActivateEventBody = new DynamicEventBody((VMPartCondition) staticNodeContent.ContentCondition, this, parentNode.GameTimeContext, OnCheckRise, false);
     }
 
     public string Name
@@ -60,59 +60,59 @@ namespace PLVirtualMachine.Dynamic
       get
       {
         string str = "none";
-        if (this.staticNodeContent != null)
-          str = this.staticNodeContent.ContentNumber.ToString();
-        return string.Format("Node {0} content index {1}", (object) this.parentNode.Name, (object) str);
+        if (staticNodeContent != null)
+          str = staticNodeContent.ContentNumber.ToString();
+        return string.Format("Node {0} content index {1}", parentNode.Name, str);
       }
     }
 
     public ulong StaticGuid
     {
-      get => this.staticNodeContent == null ? 0UL : this.staticNodeContent.BaseGuid;
+      get => staticNodeContent == null ? 0UL : staticNodeContent.BaseGuid;
     }
 
-    public Guid DynamicGuid => this.dynamicGuid;
+    public Guid DynamicGuid => dynamicGuid;
 
     public bool Active
     {
-      get => this.active;
-      set => this.active = value;
+      get => active;
+      set => active = value;
     }
 
     public void OnCheckRise(object newConditionValue, EEventRaisingMode raisingMode)
     {
-      bool active = this.Active;
+      bool active = Active;
       bool bActive = (bool) newConditionValue;
       if (bActive == active)
         return;
-      this.parentNode.SetContentActive(this, bActive);
+      parentNode.SetContentActive(this, bActive);
     }
 
     public void Think()
     {
-      if (this.firstThink)
+      if (firstThink)
       {
-        this.OnCheckRise((object) this.nodeContentActivateEventBody.CalculateConditionResult(), EEventRaisingMode.ERM_ADD_TO_QUEUE);
-        this.firstThink = false;
+        OnCheckRise(nodeContentActivateEventBody.CalculateConditionResult(), EEventRaisingMode.ERM_ADD_TO_QUEUE);
+        firstThink = false;
       }
       else
       {
-        if (!this.NeedUpdate())
+        if (!NeedUpdate())
           return;
-        this.nodeContentActivateEventBody.Think();
+        nodeContentActivateEventBody.Think();
       }
     }
 
     public void Free()
     {
-      this.nodeContentActivateEventBody.ClearSubscribtions();
-      ServiceCache.MindMapService.RemoveContent(this.engineContent);
+      nodeContentActivateEventBody.ClearSubscribtions();
+      ServiceCache.MindMapService.RemoveContent(engineContent);
     }
 
     public void StateSave(IDataWriter writer)
     {
-      SaveManagerUtility.Save(writer, "StaticGuid", this.staticNodeContent != null ? this.staticNodeContent.BaseGuid : 0UL);
-      SaveManagerUtility.Save(writer, "DynamicGuid", this.dynamicGuid);
+      SaveManagerUtility.Save(writer, "StaticGuid", staticNodeContent != null ? staticNodeContent.BaseGuid : 0UL);
+      SaveManagerUtility.Save(writer, "DynamicGuid", dynamicGuid);
     }
 
     public void LoadFromXML(XmlElement xmlNode)
@@ -122,21 +122,21 @@ namespace PLVirtualMachine.Dynamic
         XmlElement childNode = (XmlElement) xmlNode.ChildNodes[i];
         if (childNode.Name == "DynamicGuid")
         {
-          this.dynamicGuid = VMSaveLoadManager.ReadGuid((XmlNode) childNode);
-          this.engineContent.Id = this.dynamicGuid;
+          dynamicGuid = VMSaveLoadManager.ReadGuid(childNode);
+          engineContent.Id = dynamicGuid;
         }
       }
-      if (this.staticNodeContent != null)
+      if (staticNodeContent != null)
         return;
-      Logger.AddError(string.Format("SaveLoad error: dynamic map node content id={0} hasn't his static object, probably it was removed from GameData", (object) this.dynamicGuid));
+      Logger.AddError(string.Format("SaveLoad error: dynamic map node content id={0} hasn't his static object, probably it was removed from GameData", dynamicGuid));
     }
 
     public void AfterSaveLoading()
     {
-      if (this.nodeContentActivateEventBody != null)
-        this.nodeContentActivateEventBody.AfterSaveLoading();
-      this.Active = this.nodeContentActivateEventBody.CalculateConditionResult();
-      this.firstThink = true;
+      if (nodeContentActivateEventBody != null)
+        nodeContentActivateEventBody.AfterSaveLoading();
+      Active = nodeContentActivateEventBody.CalculateConditionResult();
+      firstThink = true;
     }
 
     public bool Modified => true;
@@ -147,7 +147,7 @@ namespace PLVirtualMachine.Dynamic
 
     public bool NeedUpdate()
     {
-      return this.nodeContentActivateEventBody != null && this.nodeContentActivateEventBody.NeedUpdate();
+      return nodeContentActivateEventBody != null && nodeContentActivateEventBody.NeedUpdate();
     }
   }
 }

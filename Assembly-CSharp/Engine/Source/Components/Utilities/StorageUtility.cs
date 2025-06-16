@@ -1,13 +1,12 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Cofe.Proxies;
 using Engine.Common;
 using Engine.Common.Components;
 using Engine.Common.Components.Storable;
 using Engine.Common.Types;
 using Engine.Source.Inventory;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
 
 namespace Engine.Source.Components.Utilities
 {
@@ -23,8 +22,8 @@ namespace Engine.Source.Components.Utilities
       Cell cell)
     {
       if (container == null)
-        return StorageUtility.GetIntersectFindContainer(storage, storable);
-      return cell == null ? StorageUtility.GetIntersectFindCell(storage, container, storable) : StorageUtility.GetIntersectAndCheck(storage, container, storable, cell.To());
+        return GetIntersectFindContainer(storage, storable);
+      return cell == null ? GetIntersectFindCell(storage, container, storable) : GetIntersectAndCheck(storage, container, storable, cell.To());
     }
 
     private static Intersect GetIntersectAndCheck(
@@ -50,8 +49,7 @@ namespace Engine.Source.Components.Utilities
       intersectAndCheck.Cell = cell;
       IList<Cell> cellList;
       if (storable == null || storable.IsDisposed)
-        cellList = (IList<Cell>) new List<Cell>()
-        {
+        cellList = new List<Cell> {
           cell.To()
         };
       else if (container.GetKind() == ContainerCellKind.OneCellToOneStorable)
@@ -66,8 +64,7 @@ namespace Engine.Source.Components.Utilities
           Debug.LogError((object) ("stored.Storable.Placeholder == null , owner : " + storable.Owner.GetInfo() + " , storage owner : " + storage.Owner.GetInfo()));
           return new Intersect();
         }
-        cellList = (IList<Cell>) new List<Cell>()
-        {
+        cellList = new List<Cell> {
           ((InventoryGridLimited) storable.Placeholder.Grid)[0, 0]
         };
       }
@@ -90,7 +87,7 @@ namespace Engine.Source.Components.Utilities
         cellList = grid.Cells;
       }
       intersectAndCheck.IsAllowed = true;
-      foreach (Cell cell1 in (IEnumerable<Cell>) cellList)
+      foreach (Cell cell1 in cellList)
       {
         Pair<int, int> pair;
         if (storable == null || storable.IsDisposed)
@@ -100,13 +97,12 @@ namespace Engine.Source.Components.Utilities
         else
         {
           Vector2 vector2 = new Vector2((float) cell1.Column, (float) cell1.Row) + new Vector2((float) cell.Column, (float) cell.Row);
-          pair = new Pair<int, int>()
-          {
+          pair = new Pair<int, int> {
             Item1 = (int) Math.Round((double) vector2.x),
             Item2 = (int) Math.Round((double) vector2.y)
           };
         }
-        Cell cell2 = (Cell) null;
+        Cell cell2 = null;
         if (container.GetGrid() is InventoryGridInfinited)
         {
           InventoryGridInfinited grid = (InventoryGridInfinited) container.GetGrid();
@@ -131,7 +127,7 @@ namespace Engine.Source.Components.Utilities
             bool flag = false;
             foreach (StorableGroup group in storable.Groups)
             {
-              if (container.GetLimitations().Contains<StorableGroup>(group) && !container.GetExcept().Contains<StorableGroup>(group))
+              if (container.GetLimitations().Contains(group) && !container.GetExcept().Contains(group))
               {
                 flag = true;
                 break;
@@ -144,7 +140,7 @@ namespace Engine.Source.Components.Utilities
               continue;
             }
           }
-          IStorableComponent storableComponent1 = (IStorableComponent) null;
+          IStorableComponent storableComponent1 = null;
           foreach (IStorableComponent storableComponent2 in storage.Items)
           {
             if ((storable == null || storable.IsDisposed || storable.Owner != storableComponent2.Owner) && container == storableComponent2.Container)
@@ -156,7 +152,7 @@ namespace Engine.Source.Components.Utilities
               }
               else
               {
-                foreach (Cell cell3 in (IEnumerable<Cell>) ((InventoryGridLimited) ((StorableComponent) storableComponent2).Placeholder.Grid).Cells)
+                foreach (Cell cell3 in ((InventoryGridLimited) ((StorableComponent) storableComponent2).Placeholder.Grid).Cells)
                 {
                   Vector2 vector2 = new Vector2((float) cell3.Column, (float) cell3.Row) + new Vector2((float) ((StorableComponent) storableComponent2).Cell.Column, (float) ((StorableComponent) storableComponent2).Cell.Row);
                   if (cell2.Column == Mathf.RoundToInt(vector2.x) && cell2.Row == Mathf.RoundToInt(vector2.y))
@@ -195,11 +191,10 @@ namespace Engine.Source.Components.Utilities
           if (container.GetKind() != ContainerCellKind.OneCellToOneStorable && intersectAndCheck.Cells.Count != cellList.Count)
           {
             intersectAndCheck.IsAllowed = false;
-            break;
           }
           break;
         case 1:
-          StorableComponent storableComponent = intersectAndCheck.Storables.FirstOrDefault<StorableComponent>();
+          StorableComponent storableComponent = intersectAndCheck.Storables.FirstOrDefault();
           int num = storable == null || storable.IsDisposed ? 0 : (storable.Owner == storableComponent.Owner ? 1 : (!(storable.Owner.TemplateId == storableComponent.Owner.TemplateId) ? 0 : (storableComponent.Max - storableComponent.Count >= storable.Count ? 1 : 0)));
           intersectAndCheck.IsAllowed = num != 0;
           break;
@@ -214,9 +209,9 @@ namespace Engine.Source.Components.Utilities
       IStorageComponent storage,
       StorableComponent storable)
     {
-      StorageUtility.tmpContainers.Clear();
-      StorageUtility.tmpContainers.AddRange(storage.Containers);
-      StorageUtility.tmpContainers.Shuffle<IInventoryComponent>();
+      tmpContainers.Clear();
+      tmpContainers.AddRange(storage.Containers);
+      tmpContainers.Shuffle();
       foreach (IStorableComponent storableComponent in storage.Items)
       {
         if (storableComponent != null && storableComponent.Owner != null && storable != null && storable.Owner != null && storableComponent.Owner.TemplateId == storable.Owner.TemplateId)
@@ -243,19 +238,19 @@ namespace Engine.Source.Components.Utilities
         storable.Owner.Dispose();
         return new Intersect();
       }
-      foreach (IInventoryComponent tmpContainer in StorageUtility.tmpContainers)
+      foreach (IInventoryComponent tmpContainer in tmpContainers)
       {
-        if ((!tmpContainer.GetLimitations().Any<StorableGroup>() || tmpContainer.GetLimitations().Intersect<StorableGroup>(storable.Groups).Any<StorableGroup>()) && !tmpContainer.GetExcept().Intersect<StorableGroup>(storable.Groups).Any<StorableGroup>() && tmpContainer.Enabled.Value)
+        if ((!tmpContainer.GetLimitations().Any() || tmpContainer.GetLimitations().Intersect(storable.Groups).Any()) && !tmpContainer.GetExcept().Intersect(storable.Groups).Any() && tmpContainer.Enabled.Value)
         {
-          Intersect intersectFindCell = StorageUtility.GetIntersectFindCell(storage, tmpContainer, storable);
+          Intersect intersectFindCell = GetIntersectFindCell(storage, tmpContainer, storable);
           if (intersectFindCell.IsAllowed)
           {
-            StorageUtility.tmpContainers.Clear();
+            tmpContainers.Clear();
             return intersectFindCell;
           }
         }
       }
-      StorageUtility.tmpContainers.Clear();
+      tmpContainers.Clear();
       return new Intersect();
     }
 
@@ -270,37 +265,36 @@ namespace Engine.Source.Components.Utilities
       foreach (IStorableComponent storableComponent in storage1.Items)
       {
         if (storable.Owner.TemplateId == storableComponent.Owner.TemplateId && storableComponent.Container.Owner.Id == container.Owner.Id && storableComponent.Max - storableComponent.Count >= storable.Count)
-          return StorageUtility.GetIntersectAndCheck(storage, container, storable, ((StorableComponent) storableComponent).Cell.To());
+          return GetIntersectAndCheck(storage, container, storable, ((StorableComponent) storableComponent).Cell.To());
       }
-      Vector2 size = StorageUtility.CalculateSize((IStorageComponent) storage1, container);
+      Vector2 size = CalculateSize(storage1, container);
       int num1 = Mathf.RoundToInt(size.x);
       int num2 = Mathf.RoundToInt(size.y);
-      StorageUtility.tmpCells.Clear();
+      tmpCells.Clear();
       for (int index1 = 0; index1 < num2; ++index1)
       {
         for (int index2 = 0; index2 < num1; ++index2)
-          StorageUtility.tmpCells.Add(new IntCell()
-          {
+          tmpCells.Add(new IntCell {
             Column = index2,
             Row = index1
           });
       }
-      foreach (IntCell tmpCell in StorageUtility.tmpCells)
+      foreach (IntCell tmpCell in tmpCells)
       {
-        Intersect intersectAndCheck = StorageUtility.GetIntersectAndCheck(storage, container, storable, tmpCell);
+        Intersect intersectAndCheck = GetIntersectAndCheck(storage, container, storable, tmpCell);
         if (intersectAndCheck.IsAllowed)
         {
-          StorageUtility.tmpCells.Clear();
+          tmpCells.Clear();
           return intersectAndCheck;
         }
       }
-      StorageUtility.tmpCells.Clear();
+      tmpCells.Clear();
       return new Intersect();
     }
 
     private static Vector2 CalculateSize(IStorageComponent storage, IInventoryComponent container)
     {
-      if (container.GetGrid() == null || !storage.Containers.Contains<IInventoryComponent>(container))
+      if (container.GetGrid() == null || !storage.Containers.Contains(container))
         return Vector2.zero;
       Vector2 size = new Vector2((float) container.GetGrid().Columns, (float) container.GetGrid().Rows);
       if (container.GetGrid() is IInventoryGridInfinited)
@@ -322,21 +316,21 @@ namespace Engine.Source.Components.Utilities
       IStorageComponent storage,
       IEntity template)
     {
-      return storage.Containers.FirstOrDefault<IInventoryComponent>((Func<IInventoryComponent, bool>) (o =>
+      return storage.Containers.FirstOrDefault(o =>
       {
         if (o.Owner.TemplateId == template.Id)
           return true;
         return o.Owner.Template != null && o.Owner.Template.TemplateId == template.Id;
-      }));
+      });
     }
 
     public static int GetItemAmount(IEnumerable<IStorableComponent> items, IEntity resource)
     {
-      Guid itemId = StorageUtility.GetItemId(resource);
+      Guid itemId = GetItemId(resource);
       int itemAmount = 0;
       foreach (IStorableComponent storableComponent in items)
       {
-        if (StorageUtility.GetItemId(storableComponent.Owner) == itemId)
+        if (GetItemId(storableComponent.Owner) == itemId)
           itemAmount += storableComponent.Count;
       }
       return itemAmount;

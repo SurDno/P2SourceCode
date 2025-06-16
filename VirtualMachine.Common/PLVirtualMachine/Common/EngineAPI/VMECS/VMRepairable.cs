@@ -1,7 +1,7 @@
-﻿using Cofe.Loggers;
+﻿using System;
+using Cofe.Loggers;
 using Engine.Common.Components;
 using PLVirtualMachine.Common.EngineAPI.VMECS.VMAttributes;
-using System;
 
 namespace PLVirtualMachine.Common.EngineAPI.VMECS
 {
@@ -15,38 +15,38 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
     {
       get
       {
-        if (this.Component != null)
-          return this.Component.Durability.Value;
-        Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", (object) this.Name, (object) this.Parent.Name));
+        if (Component != null)
+          return Component.Durability.Value;
+        Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", Name, Parent.Name));
         return 0.0f;
       }
       set
       {
-        if (this.Component == null)
-          Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", (object) this.Name, (object) this.Parent.Name));
+        if (Component == null)
+          Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", Name, Parent.Name));
         else
-          this.Component.Durability.Value = value;
+          Component.Durability.Value = value;
       }
     }
 
     public override void Clear()
     {
-      if (!this.InstanceValid)
+      if (!InstanceValid)
         return;
-      this.Component.Durability.ChangeValueEvent -= new Action<float>(this.ChangeDurabilityValueEvent);
+      Component.Durability.ChangeValueEvent -= ChangeDurabilityValueEvent;
       base.Clear();
     }
 
     protected override void Init()
     {
-      if (this.IsTemplate)
+      if (IsTemplate)
         return;
-      this.Component.Durability.ChangeValueEvent += new Action<float>(this.ChangeDurabilityValueEvent);
+      Component.Durability.ChangeValueEvent += ChangeDurabilityValueEvent;
     }
 
     private void ChangeDurabilityValueEvent(float value)
     {
-      Action<float> changeDurability = this.OnChangeDurability;
+      Action<float> changeDurability = OnChangeDurability;
       if (changeDurability == null)
         return;
       changeDurability(value);

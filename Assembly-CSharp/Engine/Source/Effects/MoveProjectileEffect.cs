@@ -7,8 +7,6 @@ using Engine.Source.Commons.Effects;
 using Engine.Source.Components;
 using Engine.Source.Connections;
 using Inspectors;
-using System;
-using UnityEngine;
 
 namespace Engine.Source.Effects
 {
@@ -16,21 +14,21 @@ namespace Engine.Source.Effects
   [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
   public class MoveProjectileEffect : IEffect
   {
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected ParameterEffectQueueEnum queue = ParameterEffectQueueEnum.None;
-    [DataReadProxy(MemberEnum.None, Name = "Power")]
-    [DataWriteProxy(MemberEnum.None, Name = "Power")]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy(Name = "Power")]
+    [DataWriteProxy(Name = "Power")]
+    [CopyableProxy]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected float throwPower = 20f;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy()]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected UnityAsset<GameObject> projectilePrefab;
@@ -38,58 +36,58 @@ namespace Engine.Source.Effects
     private EnemyBase enemy;
     private IEntityView bomb;
 
-    public string Name => this.GetType().Name;
+    public string Name => GetType().Name;
 
     [Inspected]
     public AbilityItem AbilityItem { get; set; }
 
     public IEntity Target { get; set; }
 
-    public ParameterEffectQueueEnum Queue => this.queue;
+    public ParameterEffectQueueEnum Queue => queue;
 
     public bool Prepare(float currentRealTime, float currentGameTime) => true;
 
     public bool Compute(float currentRealTime, float currentGameTime)
     {
-      ParentComponent component1 = this.AbilityItem.Self.GetComponent<ParentComponent>();
-      this.self = (EnemyBase) null;
+      ParentComponent component1 = AbilityItem.Self.GetComponent<ParentComponent>();
+      self = null;
       if (component1 != null)
       {
         if (component1.GetRootParent() == null)
           return true;
-        this.self = ((IEntityView) component1.GetRootParent()).GameObject?.GetComponent<EnemyBase>();
+        self = ((IEntityView) component1.GetRootParent()).GameObject?.GetComponent<EnemyBase>();
       }
-      this.enemy = this.self?.Enemy;
-      NPCWeaponService component2 = this.self?.GetComponent<NPCWeaponService>();
-      if ((UnityEngine.Object) this.self == (UnityEngine.Object) null || (UnityEngine.Object) this.enemy == (UnityEngine.Object) null || (UnityEngine.Object) component2 == (UnityEngine.Object) null)
+      enemy = self?.Enemy;
+      NPCWeaponService component2 = self?.GetComponent<NPCWeaponService>();
+      if ((UnityEngine.Object) self == (UnityEngine.Object) null || (UnityEngine.Object) enemy == (UnityEngine.Object) null || (UnityEngine.Object) component2 == (UnityEngine.Object) null)
         return true;
-      this.bomb = (IEntityView) this.AbilityItem.Self;
-      if (this.bomb != null)
+      bomb = (IEntityView) AbilityItem.Self;
+      if (bomb != null)
       {
-        if ((UnityEngine.Object) this.bomb.GameObject != (UnityEngine.Object) null)
-          this.Throw();
+        if ((UnityEngine.Object) bomb.GameObject != (UnityEngine.Object) null)
+          Throw();
         else
-          this.bomb.OnGameObjectChangedEvent += new Action(this.OnGameObjectChanged);
+          bomb.OnGameObjectChangedEvent += OnGameObjectChanged;
       }
       return false;
     }
 
     private void OnGameObjectChanged()
     {
-      if (!((UnityEngine.Object) this.bomb.GameObject != (UnityEngine.Object) null))
+      if (!((UnityEngine.Object) bomb.GameObject != (UnityEngine.Object) null))
         return;
-      this.bomb.OnGameObjectChangedEvent -= new Action(this.OnGameObjectChanged);
-      this.Throw();
+      bomb.OnGameObjectChangedEvent -= OnGameObjectChanged;
+      Throw();
     }
 
     private void Throw()
     {
-      Vector3 vector3 = this.self.LastThrowV * ((this.enemy.transform.position - this.self.transform.position).normalized * Mathf.Cos(this.self.LastThrowAngle) + Vector3.up * Mathf.Sin(this.self.LastThrowAngle));
-      GameObject gameObject = this.bomb.GameObject;
+      Vector3 vector3 = self.LastThrowV * ((enemy.transform.position - self.transform.position).normalized * Mathf.Cos(self.LastThrowAngle) + Vector3.up * Mathf.Sin(self.LastThrowAngle));
+      GameObject gameObject = bomb.GameObject;
       Rigidbody component = gameObject.GetComponent<Rigidbody>();
       component.velocity = vector3;
-      component.angularVelocity = UnityEngine.Random.insideUnitSphere * this.throwPower;
-      gameObject.GetComponent<ProjectileObject>().SetOwner(this.self);
+      component.angularVelocity = UnityEngine.Random.insideUnitSphere * throwPower;
+      gameObject.GetComponent<ProjectileObject>().SetOwner(self);
     }
 
     public void Cleanup()

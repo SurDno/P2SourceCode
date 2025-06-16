@@ -5,7 +5,7 @@ namespace PLVirtualMachine.Common
 {
   public abstract class IVariableService
   {
-    public static void Initialize(IVariableService service) => IVariableService.Instance = service;
+    public static void Initialize(IVariableService service) => Instance = service;
 
     public string GetContextData(IContext context)
     {
@@ -26,8 +26,8 @@ namespace PLVirtualMachine.Common
         return gameObjectContext.BaseGuid.ToString();
       }
       if (typeof (IVariable).IsAssignableFrom(context.GetType()))
-        return this.GetVariableData((IVariable) context);
-      Logger.AddError(string.Format("Invalid context: {0}", (object) this.GetContextString(context)));
+        return GetVariableData((IVariable) context);
+      Logger.AddError(string.Format("Invalid context: {0}", GetContextString(context)));
       return "";
     }
 
@@ -53,7 +53,7 @@ namespace PLVirtualMachine.Common
       IContextElement contextElement)
     {
       if (contextObj == null)
-        return (IVariable) null;
+        return null;
       IVariable contextVariableByData = contextObj.GetContextVariable(data);
       if (contextVariableByData == null && localContext != null && typeof (IObject).IsAssignableFrom(contextObj.GetType()) && localContext.Owner != null && localContext.Owner.IsEqual((IObject) contextObj) && CommonVariableUtility.IsLocalVariableData(data))
         contextVariableByData = localContext.GetLocalContextVariable(data, contextElement);

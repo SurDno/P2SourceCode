@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace Engine.Source.UI.Menu.Protagonist.LockPicking
+﻿namespace Engine.Source.UI.Menu.Protagonist.LockPicking
 {
   [CreateAssetMenu(fileName = "Lock Picking Settings", menuName = "Data/Lock Picking Settings")]
   public class LockPickingSettingsData : ScriptableObject
@@ -8,6 +6,6 @@ namespace Engine.Source.UI.Menu.Protagonist.LockPicking
     [SerializeField]
     private LockPickingSettings settings;
 
-    public LockPickingSettings Settings => this.settings;
+    public LockPickingSettings Settings => settings;
   }
 }

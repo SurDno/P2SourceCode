@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace RootMotion.Dynamics
+﻿namespace RootMotion.Dynamics
 {
   [HelpURL("http://root-motion.com/puppetmasterdox/html/page6.html")]
   [AddComponentMenu("Scripts/RootMotion.Dynamics/PuppetMaster/Prop Root")]
@@ -29,48 +27,48 @@ namespace RootMotion.Dynamics
 
     public void DropImmediate()
     {
-      if ((Object) this.lastProp == (Object) null)
+      if ((Object) lastProp == (Object) null)
         return;
-      this.puppetMaster.RemoveMuscleRecursive(this.lastProp.muscle, true);
-      this.lastProp.Drop();
-      this.currentProp = (Prop) null;
-      this.lastProp = (Prop) null;
+      puppetMaster.RemoveMuscleRecursive(lastProp.muscle, true);
+      lastProp.Drop();
+      currentProp = null;
+      lastProp = null;
     }
 
     private void Awake()
     {
-      if (!((Object) this.currentProp != (Object) null))
+      if (!((Object) currentProp != (Object) null))
         return;
-      this.currentProp.StartPickedUp(this);
+      currentProp.StartPickedUp(this);
     }
 
     private void Update()
     {
-      if (!this.fixedUpdateCalled || !((Object) this.currentProp != (Object) null) || !((Object) this.lastProp == (Object) this.currentProp) || !((Object) this.currentProp.muscle.connectedBody == (Object) null))
+      if (!fixedUpdateCalled || !((Object) currentProp != (Object) null) || !((Object) lastProp == (Object) currentProp) || !((Object) currentProp.muscle.connectedBody == (Object) null))
         return;
-      this.currentProp.Drop();
-      this.currentProp = (Prop) null;
-      this.lastProp = (Prop) null;
+      currentProp.Drop();
+      currentProp = null;
+      lastProp = null;
     }
 
     private void FixedUpdate()
     {
-      this.fixedUpdateCalled = true;
-      if ((Object) this.currentProp == (Object) this.lastProp)
+      fixedUpdateCalled = true;
+      if ((Object) currentProp == (Object) lastProp)
         return;
-      if ((Object) this.currentProp == (Object) null)
+      if ((Object) currentProp == (Object) null)
       {
-        this.puppetMaster.RemoveMuscleRecursive(this.lastProp.muscle, true);
-        this.lastProp.Drop();
+        puppetMaster.RemoveMuscleRecursive(lastProp.muscle, true);
+        lastProp.Drop();
       }
-      if ((Object) this.lastProp == (Object) null)
-        this.AttachProp(this.currentProp);
-      if ((Object) this.lastProp != (Object) null && (Object) this.currentProp != (Object) null)
+      if ((Object) lastProp == (Object) null)
+        AttachProp(currentProp);
+      if ((Object) lastProp != (Object) null && (Object) currentProp != (Object) null)
       {
-        this.puppetMaster.RemoveMuscleRecursive(this.lastProp.muscle, true);
-        this.AttachProp(this.currentProp);
+        puppetMaster.RemoveMuscleRecursive(lastProp.muscle, true);
+        AttachProp(currentProp);
       }
-      this.lastProp = this.currentProp;
+      lastProp = currentProp;
     }
 
     private void AttachProp(Prop prop)
@@ -78,10 +76,10 @@ namespace RootMotion.Dynamics
       prop.transform.position = this.transform.position;
       prop.transform.rotation = this.transform.rotation;
       prop.PickUp(this);
-      this.puppetMaster.AddMuscle(prop.muscle, prop.transform, this.connectTo, this.transform, prop.muscleProps, forceLayers: prop.forceLayers);
+      puppetMaster.AddMuscle(prop.muscle, prop.transform, connectTo, this.transform, prop.muscleProps, forceLayers: prop.forceLayers);
       if (!((Object) prop.additionalPin != (Object) null) || !((Object) prop.additionalPinTarget != (Object) null))
         return;
-      this.puppetMaster.AddMuscle(prop.additionalPin, prop.additionalPinTarget, prop.muscle.GetComponent<Rigidbody>(), prop.transform, new Muscle.Props(prop.additionalPinWeight, 0.0f, 0.0f, 0.0f, false, Muscle.Group.Prop), true, prop.forceLayers);
+      puppetMaster.AddMuscle(prop.additionalPin, prop.additionalPinTarget, prop.muscle.GetComponent<Rigidbody>(), prop.transform, new Muscle.Props(prop.additionalPinWeight, 0.0f, 0.0f, 0.0f, false, Muscle.Group.Prop), true, prop.forceLayers);
     }
   }
 }

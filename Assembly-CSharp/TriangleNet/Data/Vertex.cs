@@ -9,16 +9,16 @@ namespace TriangleNet.Data
     internal Otri tri;
     internal VertexType type;
 
-    public VertexType Type => this.type;
+    public VertexType Type => type;
 
     public double this[int i]
     {
       get
       {
         if (i == 0)
-          return this.x;
+          return x;
         if (i == 1)
-          return this.y;
+          return y;
         throw new ArgumentOutOfRangeException("Index must be 0 or 1.");
       }
     }
@@ -41,12 +41,12 @@ namespace TriangleNet.Data
     public Vertex(double x, double y, int mark, int attribs)
       : base(x, y, mark)
     {
-      this.type = VertexType.InputVertex;
+      type = VertexType.InputVertex;
       if (attribs <= 0)
         return;
-      this.attributes = new double[attribs];
+      attributes = new double[attribs];
     }
 
-    public override int GetHashCode() => this.hash;
+    public override int GetHashCode() => hash;
   }
 }

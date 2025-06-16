@@ -1,9 +1,10 @@
-﻿using PLVirtualMachine.Base;
+﻿using System;
+using System.Collections.Generic;
+using PLVirtualMachine.Base;
 using PLVirtualMachine.Common;
 using PLVirtualMachine.Common.EngineAPI;
 using PLVirtualMachine.Dynamic;
 using PLVirtualMachine.Objects;
-using System.Collections.Generic;
 
 namespace PLVirtualMachine.GameLogic
 {
@@ -11,35 +12,35 @@ namespace PLVirtualMachine.GameLogic
   {
     private VMEntity entity;
     private VMLogicObject staticObject;
-    private System.Type parentComponentAPIType;
+    private Type parentComponentAPIType;
     private FunctionInfo functionInfo;
     private static Dictionary<string, FunctionInfo> functionsInfoDict = new Dictionary<string, FunctionInfo>();
 
     public VMFunction(BaseFunction func, DynamicFSM dynFSM)
       : base(func)
     {
-      this.entity = dynFSM.Entity;
-      this.staticObject = dynFSM.FSMStaticObject;
+      entity = dynFSM.Entity;
+      staticObject = dynFSM.FSMStaticObject;
     }
 
     public VMFunction(
       APIMethodInfo methodInfo,
       string componentName,
-      System.Type componentAPIType,
+      Type componentAPIType,
       DynamicFSM dynFSM)
       : base(methodInfo.MethodName, componentName)
     {
-      this.entity = dynFSM.Entity;
-      this.staticObject = dynFSM.FSMStaticObject;
-      this.parentComponentAPIType = componentAPIType;
-      this.functionInfo = VMFunction.CreateFunctionInfo(componentName, methodInfo);
+      entity = dynFSM.Entity;
+      staticObject = dynFSM.FSMStaticObject;
+      parentComponentAPIType = componentAPIType;
+      functionInfo = CreateFunctionInfo(componentName, methodInfo);
     }
 
-    public System.Type ParentComponentAPIType
+    public Type ParentComponentAPIType
     {
       get
       {
-        return this.ParentComponent != null ? ((VMFunctionalComponent) this.ParentComponent).ComponentType : this.parentComponentAPIType;
+        return ParentComponent != null ? ((VMFunctionalComponent) ParentComponent).ComponentType : parentComponentAPIType;
       }
     }
 
@@ -47,38 +48,38 @@ namespace PLVirtualMachine.GameLogic
     {
       get
       {
-        return this.ParentComponent != null ? ((VMBaseObject) this.ParentComponent).Name : this.parentComponentName;
+        return ParentComponent != null ? ((VMBaseObject) ParentComponent).Name : parentComponentName;
       }
     }
 
-    public VMEntity Entity => this.entity;
+    public VMEntity Entity => entity;
 
     public override List<APIParamInfo> InputParams
     {
-      get => this.functionInfo != null ? this.functionInfo.Params : base.InputParams;
+      get => functionInfo != null ? functionInfo.Params : base.InputParams;
     }
 
     public override APIParamInfo OutputParam
     {
-      get => this.functionInfo != null ? this.functionInfo.OutputParam : base.OutputParam;
+      get => functionInfo != null ? functionInfo.OutputParam : base.OutputParam;
     }
 
     public override void Clear()
     {
       base.Clear();
-      this.entity = (VMEntity) null;
-      this.staticObject = (VMLogicObject) null;
-      this.functionInfo = (FunctionInfo) null;
-      if (VMFunction.functionsInfoDict == null || VMFunction.functionsInfoDict.Count <= 0)
+      entity = null;
+      staticObject = null;
+      functionInfo = null;
+      if (functionsInfoDict == null || functionsInfoDict.Count <= 0)
         return;
-      VMFunction.functionsInfoDict.Clear();
+      functionsInfoDict.Clear();
     }
 
     private static FunctionInfo CreateFunctionInfo(string componentName, APIMethodInfo methodInfo)
     {
       string key = componentName + methodInfo.MethodName;
-      if (VMFunction.functionsInfoDict.ContainsKey(key))
-        return VMFunction.functionsInfoDict[key];
+      if (functionsInfoDict.ContainsKey(key))
+        return functionsInfoDict[key];
       FunctionInfo functionInfo = new FunctionInfo();
       for (int index = 0; index < methodInfo.InputParams.Count; ++index)
       {
@@ -87,7 +88,7 @@ namespace PLVirtualMachine.GameLogic
       }
       if (methodInfo.ReturnParam != null)
         functionInfo.OutputParam = methodInfo.ReturnParam;
-      VMFunction.functionsInfoDict.Add(key, functionInfo);
+      functionsInfoDict.Add(key, functionInfo);
       return functionInfo;
     }
   }

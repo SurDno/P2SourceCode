@@ -13,7 +13,7 @@ namespace SteamNative
 
     public static SteamItemDetails_t FromPointer(IntPtr p)
     {
-      return Platform.PackSmall ? (SteamItemDetails_t) (SteamItemDetails_t.PackSmall) Marshal.PtrToStructure(p, typeof (SteamItemDetails_t.PackSmall)) : (SteamItemDetails_t) Marshal.PtrToStructure(p, typeof (SteamItemDetails_t));
+      return Platform.PackSmall ? (PackSmall) Marshal.PtrToStructure(p, typeof (PackSmall)) : (SteamItemDetails_t) Marshal.PtrToStructure(p, typeof (SteamItemDetails_t));
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
@@ -24,10 +24,9 @@ namespace SteamNative
       public ushort Quantity;
       public ushort Flags;
 
-      public static implicit operator SteamItemDetails_t(SteamItemDetails_t.PackSmall d)
+      public static implicit operator SteamItemDetails_t(PackSmall d)
       {
-        return new SteamItemDetails_t()
-        {
+        return new SteamItemDetails_t {
           ItemId = d.ItemId,
           Definition = d.Definition,
           Quantity = d.Quantity,

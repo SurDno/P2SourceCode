@@ -1,4 +1,8 @@
-﻿using AssetDatabases;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Reflection;
+using AssetDatabases;
 using Cofe.Utility;
 using Engine.Common;
 using Engine.Common.Services;
@@ -8,45 +12,39 @@ using Engine.Source.Services;
 using Engine.Source.Services.Assets;
 using Engine.Source.Settings.External;
 using Inspectors;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Reflection;
-using UnityEngine;
-using UnityEngine.Profiling;
 
 namespace Engine.Services.Engine.Assets
 {
-  [RuntimeService(new System.Type[] {typeof (AssetLoader)})]
+  [RuntimeService(typeof (AssetLoader))]
   public class AssetLoader : IUpdatable, IInitialisable
   {
     [Inspected]
     private List<AssetState> assets = new List<AssetState>();
     private bool initialise;
 
-    public bool IsEmpty => this.assets.Count == 0;
+    public bool IsEmpty => assets.Count == 0;
 
     public void Initialise()
     {
-      this.initialise = true;
-      InstanceByRequest<UpdateService>.Instance.Updater.AddUpdatable((IUpdatable) this);
+      initialise = true;
+      InstanceByRequest<UpdateService>.Instance.Updater.AddUpdatable(this);
     }
 
     public void Terminate()
     {
-      InstanceByRequest<UpdateService>.Instance.Updater.RemoveUpdatable((IUpdatable) this);
-      this.initialise = false;
+      InstanceByRequest<UpdateService>.Instance.Updater.RemoveUpdatable(this);
+      initialise = false;
     }
 
     public void ComputeUpdate()
     {
-      if (!this.initialise)
-        throw new Exception(this.GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
+      if (!initialise)
+        throw new Exception(GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
       if (ServiceCache.OptimizationService.FrameHasSpike)
         return;
-      for (int index1 = 0; index1 < this.assets.Count; ++index1)
+      for (int index1 = 0; index1 < assets.Count; ++index1)
       {
-        AssetState asset = this.assets[index1];
+        AssetState asset = assets[index1];
         if (asset.NeedDispose)
         {
           asset.Asset.Dispose(asset.DisposeReason);
@@ -55,9 +53,9 @@ namespace Engine.Services.Engine.Assets
         asset.Asset.Update();
         if (asset.Asset.IsError)
         {
-          this.assets.RemoveAt(index1);
+          assets.RemoveAt(index1);
           Func<bool, IEnumerator> onLoad = asset.OnLoad;
-          IEnumerator enumerator = onLoad != null ? onLoad(false) : (IEnumerator) null;
+          IEnumerator enumerator = onLoad != null ? onLoad(false) : null;
           do
             ;
           while (enumerator.MoveNext());
@@ -69,7 +67,7 @@ namespace Engine.Services.Engine.Assets
         }
         if (asset.Asset.IsReadyToDispose)
         {
-          this.assets.RemoveAt(index1);
+          assets.RemoveAt(index1);
           Action onDispose = asset.OnDispose;
           if (onDispose != null)
             onDispose();
@@ -83,7 +81,7 @@ namespace Engine.Services.Engine.Assets
             asset.Processor = asset.OnLoad(true);
           if (asset.Processor == null)
           {
-            this.assets.RemoveAt(index1);
+            assets.RemoveAt(index1);
           }
           else
           {
@@ -92,8 +90,8 @@ namespace Engine.Services.Engine.Assets
             {
               if (!asset.Processor.MoveNext())
               {
-                asset.Processor = (IEnumerator) null;
-                this.assets.RemoveAt(index1);
+                asset.Processor = null;
+                assets.RemoveAt(index1);
                 ServiceCache.OptimizationService.FrameHasSpike = true;
                 break;
               }
@@ -109,15 +107,14 @@ namespace Engine.Services.Engine.Assets
       UnityAsset<GameObject> resource,
       Func<bool, IEnumerator> load)
     {
-      if (!this.initialise)
-        throw new Exception(this.GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
+      if (!initialise)
+        throw new Exception(GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
       string path = AssetDatabaseService.Instance.GetPath(resource.Id);
       if (path.IsNullOrEmpty())
-        return (PrefabAsset) null;
+        return null;
       PrefabAsset prefabAsset = new PrefabAsset(path);
-      this.assets.Add(new AssetState()
-      {
-        Asset = (IAsset) prefabAsset,
+      assets.Add(new AssetState {
+        Asset = prefabAsset,
         OnLoad = load
       });
       return prefabAsset;
@@ -128,14 +125,13 @@ namespace Engine.Services.Engine.Assets
       Func<bool, IEnumerator> load,
       string context)
     {
-      if (!this.initialise)
-        throw new Exception(this.GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
+      if (!initialise)
+        throw new Exception(GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
       if (reference == null)
-        return (SceneAsset) null;
+        return null;
       SceneAsset sceneAsset = new SceneAsset(reference, context);
-      this.assets.Add(new AssetState()
-      {
-        Asset = (IAsset) sceneAsset,
+      assets.Add(new AssetState {
+        Asset = sceneAsset,
         OnLoad = load
       });
       return sceneAsset;
@@ -143,25 +139,24 @@ namespace Engine.Services.Engine.Assets
 
     public void DisposeAsset(IAsset asset, Action dispose, string reason)
     {
-      if (!this.initialise)
-        throw new Exception(this.GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
+      if (!initialise)
+        throw new Exception(GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
       int num = -1;
-      for (int index = 0; index < this.assets.Count; ++index)
+      for (int index = 0; index < assets.Count; ++index)
       {
-        AssetState asset1 = this.assets[index];
+        AssetState asset1 = assets[index];
         if (asset1.Asset == asset)
         {
           asset1.OnDispose = dispose;
           if (asset1.Processor != null)
           {
-            AssetState assetState = new AssetState()
-            {
+            AssetState assetState = new AssetState {
               Asset = asset
             };
             assetState.OnDispose = dispose;
             assetState.NeedDispose = true;
             assetState.DisposeReason = reason;
-            this.assets.Add(assetState);
+            assets.Add(assetState);
             return;
           }
           num = index;
@@ -170,13 +165,12 @@ namespace Engine.Services.Engine.Assets
       }
       if (num == -1)
       {
-        AssetState assetState = new AssetState()
-        {
+        AssetState assetState = new AssetState {
           Asset = asset
         };
-        int count = this.assets.Count;
+        int count = assets.Count;
         assetState.OnDispose = dispose;
-        this.assets.Add(assetState);
+        assets.Add(assetState);
       }
       asset.Dispose(reason);
     }

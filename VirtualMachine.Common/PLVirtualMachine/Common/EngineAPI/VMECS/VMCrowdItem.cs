@@ -10,6 +10,6 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
     public const string ComponentName = "CrowdItemComponent";
 
     [Property("Area", "")]
-    public AreaEnum Area => this.Component.Area;
+    public AreaEnum Area => Component.Area;
   }
 }

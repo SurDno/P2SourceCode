@@ -1,4 +1,5 @@
-﻿using Cofe.Utility;
+﻿using System.Collections;
+using Cofe.Utility;
 using Engine.Common;
 using Engine.Common.Components;
 using Engine.Common.Components.Locations;
@@ -8,8 +9,6 @@ using Engine.Source.Components;
 using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
-using System.Collections;
-using UnityEngine;
 
 namespace Engine.Source.Blueprints
 {
@@ -19,8 +18,8 @@ namespace Engine.Source.Blueprints
     protected override void RegisterPorts()
     {
       base.RegisterPorts();
-      FlowOutput output = this.AddFlowOutput("Out");
-      this.AddFlowInput("In", (FlowHandler) (() => this.StartCoroutine(this.WaitingLoading(output))));
+      FlowOutput output = AddFlowOutput("Out");
+      AddFlowInput("In", (FlowHandler) (() => StartCoroutine(WaitingLoading(output))));
     }
 
     private IEnumerator WaitingLoading(FlowOutput output)
@@ -49,12 +48,12 @@ namespace Engine.Source.Blueprints
           }
           else
           {
-            Debug.Log((object) ObjectInfoUtility.GetStream().Append(TypeUtility.GetTypeName(this.GetType())).Append(" , location ").GetInfo((object) location.Owner));
+            Debug.Log((object) ObjectInfoUtility.GetStream().Append(TypeUtility.GetTypeName(GetType())).Append(" , location ").GetInfo(location.Owner));
             do
             {
-              yield return (object) null;
+              yield return null;
             }
-            while (!this.CheckLoading(location));
+            while (!CheckLoading(location));
             output.Call();
           }
         }
@@ -68,12 +67,12 @@ namespace Engine.Source.Blueprints
       if (location.IsHibernation)
       {
         if (WaitingLoadingUtility.Logs.Add(location.Owner))
-          Debug.Log((object) ObjectInfoUtility.GetStream().Append("Waiting loading indoor : ").GetInfo((object) location.Owner));
+          Debug.Log((object) ObjectInfoUtility.GetStream().Append("Waiting loading indoor : ").GetInfo(location.Owner));
         return false;
       }
       foreach (ILocationComponent child in ((LocationComponent) location).Childs)
       {
-        if (!this.CheckLoading(child))
+        if (!CheckLoading(child))
           return false;
       }
       return true;

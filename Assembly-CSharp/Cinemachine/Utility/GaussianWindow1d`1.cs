@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEngine;
 
 namespace Cinemachine.Utility
 {
@@ -12,63 +11,63 @@ namespace Cinemachine.Utility
 
     public float Sigma { get; private set; }
 
-    public int KernelSize => this.mKernel.Length;
+    public int KernelSize => mKernel.Length;
 
     private void GenerateKernel(float sigma, int maxKernelRadius)
     {
       int num = Math.Min(maxKernelRadius, Mathf.FloorToInt(Mathf.Abs(sigma) * 2.5f));
-      this.mKernel = new float[2 * num + 1];
-      this.mKernelSum = 0.0f;
+      mKernel = new float[2 * num + 1];
+      mKernelSum = 0.0f;
       if (num == 0)
       {
-        this.mKernelSum = this.mKernel[0] = 1f;
+        mKernelSum = mKernel[0] = 1f;
       }
       else
       {
         for (int index = -num; index <= num; ++index)
         {
-          this.mKernel[index + num] = (float) (Math.Exp((double) -(index * index) / (2.0 * (double) sigma * (double) sigma)) / Math.Sqrt(2.0 * Math.PI * (double) sigma));
-          this.mKernelSum += this.mKernel[index + num];
+          mKernel[index + num] = (float) (Math.Exp(-(index * index) / (2.0 * sigma * sigma)) / Math.Sqrt(2.0 * Math.PI * sigma));
+          mKernelSum += mKernel[index + num];
         }
       }
-      this.Sigma = sigma;
+      Sigma = sigma;
     }
 
     protected abstract T Compute(int windowPos);
 
     public GaussianWindow1d(float sigma, int maxKernelRadius = 10)
     {
-      this.GenerateKernel(sigma, maxKernelRadius);
-      this.mCurrentPos = 0;
+      GenerateKernel(sigma, maxKernelRadius);
+      mCurrentPos = 0;
     }
 
-    public void Reset() => this.mData = (T[]) null;
+    public void Reset() => mData = null;
 
-    public bool IsEmpty() => this.mData == null;
+    public bool IsEmpty() => mData == null;
 
     public void AddValue(T v)
     {
-      if (this.mData == null)
+      if (mData == null)
       {
-        this.mData = new T[this.KernelSize];
-        for (int index = 0; index < this.KernelSize; ++index)
-          this.mData[index] = v;
-        this.mCurrentPos = Mathf.Min(1, this.KernelSize - 1);
+        mData = new T[KernelSize];
+        for (int index = 0; index < KernelSize; ++index)
+          mData[index] = v;
+        mCurrentPos = Mathf.Min(1, KernelSize - 1);
       }
-      this.mData[this.mCurrentPos] = v;
-      if (++this.mCurrentPos != this.KernelSize)
+      mData[mCurrentPos] = v;
+      if (++mCurrentPos != KernelSize)
         return;
-      this.mCurrentPos = 0;
+      mCurrentPos = 0;
     }
 
     public T Filter(T v)
     {
-      if (this.KernelSize < 3)
+      if (KernelSize < 3)
         return v;
-      this.AddValue(v);
-      return this.Value();
+      AddValue(v);
+      return Value();
     }
 
-    public T Value() => this.Compute(this.mCurrentPos);
+    public T Value() => Compute(mCurrentPos);
   }
 }

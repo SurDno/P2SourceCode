@@ -11,10 +11,10 @@ namespace BehaviorDesigner.Runtime
 
     public void Initialize(int i, TaskStatus status, int stack, int composite)
     {
-      this.index = i;
-      this.taskStatus = status;
-      this.stackIndex = stack;
-      this.compositeIndex = composite;
+      index = i;
+      taskStatus = status;
+      stackIndex = stack;
+      compositeIndex = composite;
     }
   }
 }

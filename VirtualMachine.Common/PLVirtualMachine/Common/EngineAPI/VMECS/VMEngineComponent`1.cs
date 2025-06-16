@@ -14,28 +14,28 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
       base.Initialize(parent, component);
       this.component = (T) component;
       if (component == null)
-        Logger.AddError(string.Format("Engine component not defined, perhaps need special vm component initialization, type : {0}", (object) this.GetType()));
-      this.Init();
+        Logger.AddError(string.Format("Engine component not defined, perhaps need special vm component initialization, type : {0}", GetType()));
+      Init();
     }
 
     public T TemplateComponent
     {
       get
       {
-        if ((object) this.component == null)
+        if (component == null)
         {
-          Logger.AddError(string.Format("Entity {0} component {1} instance is null at {2}", (object) this.OwnerTemplateName, (object) this.GetType(), (object) EngineAPIManager.Instance.CurrentFSMStateInfo));
+          Logger.AddError(string.Format("Entity {0} component {1} instance is null at {2}", OwnerTemplateName, GetType(), EngineAPIManager.Instance.CurrentFSMStateInfo));
           return default (T);
         }
-        if (this.component.Owner == null)
+        if (component.Owner == null)
         {
-          Logger.AddError(string.Format("Entity {0} component {1} owner instance is null at {2}", (object) this.OwnerTemplateName, (object) this.GetType(), (object) EngineAPIManager.Instance.CurrentFSMStateInfo));
-          return this.component;
+          Logger.AddError(string.Format("Entity {0} component {1} owner instance is null at {2}", OwnerTemplateName, GetType(), EngineAPIManager.Instance.CurrentFSMStateInfo));
+          return component;
         }
-        if (!this.component.Owner.IsDisposed)
-          return this.component;
-        Logger.AddError("Entity is disposed , type : " + (object) this.GetType() + " , id : " + (object) this.component.Owner.Id + " , template id : " + (object) this.component.Owner.TemplateId);
-        return this.component;
+        if (!component.Owner.IsDisposed)
+          return component;
+        Logger.AddError("Entity is disposed , type : " + GetType() + " , id : " + component.Owner.Id + " , template id : " + component.Owner.TemplateId);
+        return component;
       }
     }
 
@@ -43,35 +43,35 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
     {
       get
       {
-        if ((object) this.component == null)
+        if (component == null)
         {
-          Logger.AddError(string.Format("Entity {0} component {1} instance is null at {2}", (object) this.OwnerTemplateName, (object) this.GetType(), (object) EngineAPIManager.Instance.CurrentFSMStateInfo));
+          Logger.AddError(string.Format("Entity {0} component {1} instance is null at {2}", OwnerTemplateName, GetType(), EngineAPIManager.Instance.CurrentFSMStateInfo));
           return default (T);
         }
-        if (this.component.Owner == null)
+        if (component.Owner == null)
         {
-          Logger.AddError(string.Format("Entity {0} component {1} owner instance is null at {2}", (object) this.OwnerTemplateName, (object) this.GetType(), (object) EngineAPIManager.Instance.CurrentFSMStateInfo));
-          return this.component;
+          Logger.AddError(string.Format("Entity {0} component {1} owner instance is null at {2}", OwnerTemplateName, GetType(), EngineAPIManager.Instance.CurrentFSMStateInfo));
+          return component;
         }
-        if (this.component.Owner.IsDisposed)
+        if (component.Owner.IsDisposed)
         {
-          Logger.AddError("Entity is disposed , type : " + (object) this.GetType() + " , id : " + (object) this.component.Owner.Id + " , template id : " + (object) this.component.Owner.TemplateId);
-          return this.component;
+          Logger.AddError("Entity is disposed , type : " + GetType() + " , id : " + component.Owner.Id + " , template id : " + component.Owner.TemplateId);
+          return component;
         }
-        if (!this.component.Owner.IsTemplate)
-          return this.component;
-        Logger.AddError("Entity is template , type : " + (object) this.GetType() + " , id : " + (object) this.component.Owner.Id + " , template id : " + (object) this.component.Owner.TemplateId);
-        return this.component;
+        if (!component.Owner.IsTemplate)
+          return component;
+        Logger.AddError("Entity is template , type : " + GetType() + " , id : " + component.Owner.Id + " , template id : " + component.Owner.TemplateId);
+        return component;
       }
     }
 
-    public override void Clear() => this.component = default (T);
+    public override void Clear() => component = default (T);
 
-    public bool IsTemplate => this.TemplateComponent.Owner.IsTemplate;
+    public bool IsTemplate => TemplateComponent.Owner.IsTemplate;
 
     protected override bool InstanceValid
     {
-      get => (object) this.component != null && this.component.Owner != null;
+      get => component != null && component.Owner != null;
     }
 
     protected virtual void Init()
@@ -83,8 +83,8 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
       get
       {
         string ownerTemplateName = "none";
-        if (this.Parent != null)
-          ownerTemplateName = this.Parent.Name;
+        if (Parent != null)
+          ownerTemplateName = Parent.Name;
         return ownerTemplateName;
       }
     }

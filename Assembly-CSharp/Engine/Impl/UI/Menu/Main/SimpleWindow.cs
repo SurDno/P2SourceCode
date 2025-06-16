@@ -15,27 +15,27 @@ namespace Engine.Impl.UI.Menu.Main
 
     public override void Initialize()
     {
-      this.RegisterLayer();
+      RegisterLayer();
       base.Initialize();
     }
 
     protected override void OnDisable()
     {
-      ServiceLocator.GetService<CameraService>().Kind = this.lastCameraKind;
-      CursorService.Instance.Free = CursorService.Instance.Visible = this.lastVisibleCursor;
-      PlayerUtility.ShowPlayerHands(!this.lastPause);
-      InstanceByRequest<EngineApplication>.Instance.IsPaused = this.lastPause;
+      ServiceLocator.GetService<CameraService>().Kind = lastCameraKind;
+      CursorService.Instance.Free = CursorService.Instance.Visible = lastVisibleCursor;
+      PlayerUtility.ShowPlayerHands(!lastPause);
+      InstanceByRequest<EngineApplication>.Instance.IsPaused = lastPause;
       base.OnDisable();
     }
 
     protected override void OnEnable()
     {
-      this.lastPause = InstanceByRequest<EngineApplication>.Instance.IsPaused;
+      lastPause = InstanceByRequest<EngineApplication>.Instance.IsPaused;
       InstanceByRequest<EngineApplication>.Instance.IsPaused = true;
       PlayerUtility.ShowPlayerHands(false);
-      this.lastVisibleCursor = CursorService.Instance.Visible;
+      lastVisibleCursor = CursorService.Instance.Visible;
       CursorService.Instance.Free = CursorService.Instance.Visible = true;
-      this.lastCameraKind = ServiceLocator.GetService<CameraService>().Kind;
+      lastCameraKind = ServiceLocator.GetService<CameraService>().Kind;
       ServiceLocator.GetService<CameraService>().Kind = CameraKindEnum.Unknown;
       base.OnEnable();
     }

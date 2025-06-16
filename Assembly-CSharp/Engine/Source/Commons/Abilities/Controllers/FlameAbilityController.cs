@@ -5,7 +5,6 @@ using Engine.Common.Services;
 using Engine.Impl.Services;
 using Engine.Impl.Services.Factories;
 using Inspectors;
-using System;
 
 namespace Engine.Source.Commons.Abilities.Controllers
 {
@@ -13,15 +12,15 @@ namespace Engine.Source.Commons.Abilities.Controllers
   [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
   public class FlameAbilityController : IAbilityController, IUpdatable
   {
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected bool realTime = false;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy()]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected double interval = 0.0;
@@ -33,50 +32,50 @@ namespace Engine.Source.Commons.Abilities.Controllers
     public void Initialise(AbilityItem abilityItem)
     {
       this.abilityItem = abilityItem;
-      this.owner = abilityItem.Ability.Owner;
-      ((IEntityView) this.owner).OnGameObjectChangedEvent += new Action(this.OnGameObjectChangedEvent);
-      this.OnGameObjectChangedEvent();
+      owner = abilityItem.Ability.Owner;
+      ((IEntityView) owner).OnGameObjectChangedEvent += OnGameObjectChangedEvent;
+      OnGameObjectChangedEvent();
     }
 
     public void Shutdown()
     {
-      ((IEntityView) this.owner).OnGameObjectChangedEvent -= new Action(this.OnGameObjectChangedEvent);
+      ((IEntityView) owner).OnGameObjectChangedEvent -= OnGameObjectChangedEvent;
     }
 
     private void OnGameObjectChangedEvent()
     {
-      if ((UnityEngine.Object) this.sanitar != (UnityEngine.Object) null)
+      if ((UnityEngine.Object) sanitar != (UnityEngine.Object) null)
       {
-        InstanceByRequest<UpdateService>.Instance.Updater.RemoveUpdatable((IUpdatable) this);
-        this.sanitar = (PivotSanitar) null;
+        InstanceByRequest<UpdateService>.Instance.Updater.RemoveUpdatable(this);
+        sanitar = null;
       }
-      if (!((IEntityView) this.owner).IsAttached)
+      if (!((IEntityView) owner).IsAttached)
         return;
-      this.sanitar = ((IEntityView) this.owner).GameObject.GetComponent<PivotSanitar>();
-      if ((UnityEngine.Object) this.sanitar != (UnityEngine.Object) null)
+      sanitar = ((IEntityView) owner).GameObject.GetComponent<PivotSanitar>();
+      if ((UnityEngine.Object) sanitar != (UnityEngine.Object) null)
       {
-        this.time = 0.0;
-        InstanceByRequest<UpdateService>.Instance.Updater.AddUpdatable((IUpdatable) this);
+        time = 0.0;
+        InstanceByRequest<UpdateService>.Instance.Updater.AddUpdatable(this);
       }
     }
 
     public void ComputeUpdate()
     {
-      if ((UnityEngine.Object) this.sanitar == (UnityEngine.Object) null)
+      if ((UnityEngine.Object) sanitar == (UnityEngine.Object) null)
         return;
-      if (!this.sanitar.Flamethrower)
+      if (!sanitar.Flamethrower)
       {
-        this.time = 0.0;
+        time = 0.0;
       }
       else
       {
         TimeService service = ServiceLocator.GetService<TimeService>();
-        double num = this.realTime ? service.RealTime.TotalSeconds : service.AbsoluteGameTime.TotalSeconds;
-        if (this.time + this.interval > num)
+        double num = realTime ? service.RealTime.TotalSeconds : service.AbsoluteGameTime.TotalSeconds;
+        if (time + interval > num)
           return;
-        this.time = num;
-        this.abilityItem.Active = true;
-        this.abilityItem.Active = false;
+        time = num;
+        abilityItem.Active = true;
+        abilityItem.Active = false;
       }
     }
   }

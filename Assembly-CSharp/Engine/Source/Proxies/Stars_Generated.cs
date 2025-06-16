@@ -1,9 +1,9 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons.Cloneable;
 using Engine.Common.Commons.Converters;
 using Engine.Impl.Weather.Element;
-using System;
 
 namespace Engine.Source.Proxies
 {
@@ -18,27 +18,27 @@ namespace Engine.Source.Proxies
     public object Clone()
     {
       Stars_Generated instance = Activator.CreateInstance<Stars_Generated>();
-      this.CopyTo((object) instance);
-      return (object) instance;
+      CopyTo(instance);
+      return instance;
     }
 
     public void CopyTo(object target2)
     {
       Stars_Generated starsGenerated = (Stars_Generated) target2;
-      starsGenerated.brightness = this.brightness;
-      starsGenerated.size = this.size;
+      starsGenerated.brightness = brightness;
+      starsGenerated.size = size;
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.Write(writer, "Brightness", this.brightness);
-      DefaultDataWriteUtility.Write(writer, "Size", this.size);
+      DefaultDataWriteUtility.Write(writer, "Brightness", brightness);
+      DefaultDataWriteUtility.Write(writer, "Size", size);
     }
 
     public void DataRead(IDataReader reader, Type type)
     {
-      this.brightness = DefaultDataReadUtility.Read(reader, "Brightness", this.brightness);
-      this.size = DefaultDataReadUtility.Read(reader, "Size", this.size);
+      brightness = DefaultDataReadUtility.Read(reader, "Brightness", brightness);
+      size = DefaultDataReadUtility.Read(reader, "Size", size);
     }
   }
 }

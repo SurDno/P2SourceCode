@@ -9,6 +9,6 @@ namespace PLVirtualMachine.Common.EngineAPI
     public readonly List<APIEventInfo> Events = new List<APIEventInfo>();
     public readonly List<APIPropertyInfo> Properties = new List<APIPropertyInfo>();
 
-    public ComponentInfo(string componentName) => this.ComponentName = componentName;
+    public ComponentInfo(string componentName) => ComponentName = componentName;
   }
 }

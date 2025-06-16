@@ -1,24 +1,24 @@
-﻿using Cofe.Meta;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Cofe.Meta;
 using Engine.Common;
 using Engine.Common.Components;
 using Engine.Common.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Engine.Source.Services.Consoles.Binds
 {
   [Initialisable]
   public static class BindStorableConsoleCommands
   {
-    [Cofe.Meta.Initialise]
+    [Initialise]
     private static void Initialise()
     {
-      ConsoleTargetService.AddTarget("-storable", (Func<string, object>) (value => (object) BindStorableConsoleCommands.Storables().FirstOrDefault<IStorableComponent>((Func<IStorableComponent, bool>) (o => o.Owner.Name == value))));
+      ConsoleTargetService.AddTarget("-storable", value => Storables().FirstOrDefault(o => o.Owner.Name == value));
       EnumConsoleCommand.AddBind("-storable", (Func<string>) (() =>
       {
-        List<IStorableComponent> list = BindStorableConsoleCommands.Storables().ToList<IStorableComponent>();
-        list.Sort((Comparison<IStorableComponent>) ((a, b) => a.Owner.Name.CompareTo(b.Owner.Name)));
+        List<IStorableComponent> list = Storables().ToList();
+        list.Sort((a, b) => a.Owner.Name.CompareTo(b.Owner.Name));
         string str = "\nStorables :\n";
         foreach (IStorableComponent storableComponent in list)
           str = str + storableComponent.Owner.Name + "\n";
@@ -49,16 +49,16 @@ namespace Engine.Source.Services.Consoles.Binds
         return typeof (IStorageComponent).Name + " not found";
       if (target2 == null)
         return typeof (IStorableComponent).Name + " not found";
-      IEntity entity = ServiceLocator.GetService<IFactory>().Instantiate<IEntity>(target2.Owner);
+      IEntity entity = ServiceLocator.GetService<IFactory>().Instantiate(target2.Owner);
       ServiceLocator.GetService<ISimulation>().Add(entity, ServiceLocator.GetService<ISimulation>().Storables);
       IStorableComponent component = entity.GetComponent<IStorableComponent>();
-      target1.AddItem(component, (IInventoryComponent) null);
+      target1.AddItem(component, null);
       return "Add item : " + target2.Owner.Name + " , to storage : " + target1.Owner.Name;
     }
 
     private static IEnumerable<IStorableComponent> Storables()
     {
-      return ServiceLocator.GetService<ITemplateService>().GetTemplates<IEntity>().Select<IEntity, IStorableComponent>((Func<IEntity, IStorableComponent>) (o => o.GetComponent<IStorableComponent>())).Where<IStorableComponent>((Func<IStorableComponent, bool>) (o => o != null));
+      return ServiceLocator.GetService<ITemplateService>().GetTemplates<IEntity>().Select(o => o.GetComponent<IStorableComponent>()).Where(o => o != null);
     }
   }
 }

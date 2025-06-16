@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-[RequireComponent(typeof (BoxCollider))]
+﻿[RequireComponent(typeof (BoxCollider))]
 [AddComponentMenu("Image Effects/Amplify Color Volume")]
 public class AmplifyColorVolume : AmplifyColorVolumeBase
 {
@@ -9,7 +7,7 @@ public class AmplifyColorVolume : AmplifyColorVolumeBase
     AmplifyColorTriggerProxy component = other.GetComponent<AmplifyColorTriggerProxy>();
     if (!((Object) component != (Object) null) || !component.OwnerEffect.UseVolumes || ((int) component.OwnerEffect.VolumeCollisionMask & 1 << this.gameObject.layer) == 0)
       return;
-    component.OwnerEffect.EnterVolume((AmplifyColorVolumeBase) this);
+    component.OwnerEffect.EnterVolume(this);
   }
 
   private void OnTriggerExit(Collider other)
@@ -17,6 +15,6 @@ public class AmplifyColorVolume : AmplifyColorVolumeBase
     AmplifyColorTriggerProxy component = other.GetComponent<AmplifyColorTriggerProxy>();
     if (!((Object) component != (Object) null) || !component.OwnerEffect.UseVolumes || ((int) component.OwnerEffect.VolumeCollisionMask & 1 << this.gameObject.layer) == 0)
       return;
-    component.OwnerEffect.ExitVolume((AmplifyColorVolumeBase) this);
+    component.OwnerEffect.ExitVolume(this);
   }
 }

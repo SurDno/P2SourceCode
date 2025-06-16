@@ -1,7 +1,6 @@
 ﻿using Engine.Common.Components;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
-using System;
 
 namespace Engine.Source.Commons.Abilities.Controllers
 {
@@ -15,21 +14,21 @@ namespace Engine.Source.Commons.Abilities.Controllers
     public void Initialise(AbilityItem abilityItem)
     {
       this.abilityItem = abilityItem;
-      this.controller = this.abilityItem.Ability.Owner.GetComponent<IControllerComponent>();
-      if (this.controller == null)
+      controller = this.abilityItem.Ability.Owner.GetComponent<IControllerComponent>();
+      if (controller == null)
         return;
-      this.controller.IsStelth.ChangeValueEvent += new Action<bool>(this.OnStelthEnableChanged);
-      this.OnStelthEnableChanged(this.controller.IsStelth.Value);
+      controller.IsStelth.ChangeValueEvent += OnStelthEnableChanged;
+      OnStelthEnableChanged(controller.IsStelth.Value);
     }
 
     public void Shutdown()
     {
-      if (this.controller == null)
+      if (controller == null)
         return;
-      this.controller.IsStelth.ChangeValueEvent -= new Action<bool>(this.OnStelthEnableChanged);
-      this.controller = (IControllerComponent) null;
+      controller.IsStelth.ChangeValueEvent -= OnStelthEnableChanged;
+      controller = null;
     }
 
-    private void OnStelthEnableChanged(bool enabled) => this.abilityItem.Active = enabled;
+    private void OnStelthEnableChanged(bool enabled) => abilityItem.Active = enabled;
   }
 }

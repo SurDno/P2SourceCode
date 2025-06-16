@@ -1,6 +1,5 @@
 ﻿using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
-using UnityEngine;
 
 namespace Engine.Source.Commons.Parameters
 {
@@ -12,7 +11,7 @@ namespace Engine.Source.Commons.Parameters
 
     protected override void Correct()
     {
-      this.Value = Mathf.Clamp(this.value, this.minValue, this.maxValue);
+      Value = Mathf.Clamp(value, minValue, maxValue);
     }
   }
 }

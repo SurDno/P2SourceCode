@@ -15,24 +15,24 @@ namespace FlowCanvas.Nodes
 
     protected override void RegisterPorts()
     {
-      this.becameTrue = this.AddFlowOutput("Became True");
-      this.becameFalse = this.AddFlowOutput("Became False");
-      this.condition = this.AddValueInput<bool>("Condition");
+      becameTrue = AddFlowOutput("Became True");
+      becameFalse = AddFlowOutput("Became False");
+      condition = AddValueInput<bool>("Condition");
     }
 
     public void Update()
     {
-      if (!this.condition.value)
+      if (!condition.value)
       {
-        if (!this.lastState)
+        if (!lastState)
           return;
-        this.becameFalse.Call();
-        this.lastState = false;
+        becameFalse.Call();
+        lastState = false;
       }
-      else if (!this.lastState)
+      else if (!lastState)
       {
-        this.becameTrue.Call();
-        this.lastState = true;
+        becameTrue.Call();
+        lastState = true;
       }
     }
   }

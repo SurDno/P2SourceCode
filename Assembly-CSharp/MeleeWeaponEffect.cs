@@ -1,6 +1,4 @@
 ﻿using Inspectors;
-using System;
-using UnityEngine;
 
 public class MeleeWeaponEffect : MonoBehaviour
 {
@@ -18,61 +16,61 @@ public class MeleeWeaponEffect : MonoBehaviour
   private float splatBuildUp;
   [SerializeField]
   private float splatFadeSpeed;
-  private float splatLevel = 0.0f;
+  private float splatLevel;
 
   [Inspected(Mode = ExecuteMode.Runtime)]
   private void OnAttackHit()
   {
-    this.SetSplatLevel(this.splatLevel + this.splatBuildUp);
-    this.particles?.Play();
+    SetSplatLevel(splatLevel + splatBuildUp);
+    particles?.Play();
   }
 
   private void OnAttackHit(WeaponEnum weapon)
   {
     if (weapon != this.weapon)
       return;
-    this.OnAttackHit();
+    OnAttackHit();
   }
 
   private void OnDestroy()
   {
-    this.attacker.PunchHitEvent -= new Action<WeaponEnum>(this.OnAttackHit);
+    attacker.PunchHitEvent -= OnAttackHit;
   }
 
-  private void OnDisable() => this.SetSplatLevel(0.0f);
+  private void OnDisable() => SetSplatLevel(0.0f);
 
   private void SetSplatLevel(float value)
   {
     value = Mathf.Clamp(value, 0.0f, 3f);
-    if ((double) value == (double) this.splatLevel)
+    if (value == (double) splatLevel)
       return;
-    this.splatLevel = value;
-    if ((UnityEngine.Object) this.splatRenderer == (UnityEngine.Object) null)
+    splatLevel = value;
+    if ((UnityEngine.Object) splatRenderer == (UnityEngine.Object) null)
       return;
-    if (MeleeWeaponEffect.propertyBlock == null)
+    if (propertyBlock == null)
     {
-      MeleeWeaponEffect.propertyBlock = new MaterialPropertyBlock();
-      MeleeWeaponEffect.propertyID = Shader.PropertyToID("_GlobalSplatColor");
+      propertyBlock = new MaterialPropertyBlock();
+      propertyID = Shader.PropertyToID("_GlobalSplatColor");
     }
-    if ((double) value == 0.0)
+    if (value == 0.0)
     {
-      this.splatRenderer.SetPropertyBlock((MaterialPropertyBlock) null);
+      splatRenderer.SetPropertyBlock((MaterialPropertyBlock) null);
     }
     else
     {
       Color color = new Color(Mathf.Clamp01(value), Mathf.Clamp01(value - 1f), Mathf.Clamp01(value - 2f));
       color = color.gamma;
-      MeleeWeaponEffect.propertyBlock.SetColor(MeleeWeaponEffect.propertyID, color);
-      this.splatRenderer.SetPropertyBlock(MeleeWeaponEffect.propertyBlock);
+      propertyBlock.SetColor(propertyID, color);
+      splatRenderer.SetPropertyBlock(propertyBlock);
     }
   }
 
-  private void Start() => this.attacker.PunchHitEvent += new Action<WeaponEnum>(this.OnAttackHit);
+  private void Start() => attacker.PunchHitEvent += OnAttackHit;
 
   private void Update()
   {
-    if ((double) this.splatLevel == 0.0)
+    if (splatLevel == 0.0)
       return;
-    this.SetSplatLevel(this.splatLevel - Time.deltaTime * this.splatFadeSpeed);
+    SetSplatLevel(splatLevel - Time.deltaTime * splatFadeSpeed);
   }
 }

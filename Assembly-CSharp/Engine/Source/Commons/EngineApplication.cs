@@ -1,20 +1,17 @@
-﻿using Engine.Common;
+﻿using System;
+using System.Collections;
+using System.Diagnostics;
+using System.Reflection;
+using System.Runtime;
+using System.Threading;
+using Engine.Common;
 using Engine.Source.Otimizations;
 using Engine.Source.Settings.External;
 using InputServices;
 using Inspectors;
 using SRDebugger.Services;
 using SRF.Service;
-using System;
-using System.Collections;
-using System.Diagnostics;
-using System.Reflection;
-using System.Runtime;
-using System.Threading;
-using UnityEngine;
-using UnityEngine.AI;
 using UnityEngine.Analytics;
-using UnityEngine.SceneManagement;
 
 namespace Engine.Source.Commons
 {
@@ -31,14 +28,14 @@ namespace Engine.Source.Commons
     [Inspected]
     public bool IsPaused
     {
-      get => this.isPaused;
+      get => isPaused;
       set
       {
-        this.DontStopLipSyncInPause = false;
-        if (this.isPaused == value)
+        DontStopLipSyncInPause = false;
+        if (isPaused == value)
           return;
-        this.isPaused = value;
-        Action onPauseEvent = this.OnPauseEvent;
+        isPaused = value;
+        Action onPauseEvent = OnPauseEvent;
         if (onPauseEvent == null)
           return;
         onPauseEvent();
@@ -48,16 +45,16 @@ namespace Engine.Source.Commons
     [Inspected(Mutable = true)]
     public bool ViewEnabled
     {
-      get => this.viewEnabled;
+      get => viewEnabled;
       set
       {
-        if (this.viewEnabled == value)
+        if (viewEnabled == value)
           return;
-        this.viewEnabled = value;
-        Action<bool> viewEnabledEvent = this.OnViewEnabledEvent;
+        viewEnabled = value;
+        Action<bool> viewEnabledEvent = OnViewEnabledEvent;
         if (viewEnabledEvent == null)
           return;
-        viewEnabledEvent(this.viewEnabled);
+        viewEnabledEvent(viewEnabled);
       }
     }
 
@@ -91,7 +88,7 @@ namespace Engine.Source.Commons
 
     public void FireApplicationFocusEvent(bool focus)
     {
-      Action<bool> applicationFocusEvent = this.OnApplicationFocusEvent;
+      Action<bool> applicationFocusEvent = OnApplicationFocusEvent;
       if (applicationFocusEvent == null)
         return;
       applicationFocusEvent(focus);
@@ -99,9 +96,9 @@ namespace Engine.Source.Commons
 
     public IEnumerator Initialize()
     {
-      this.IsInitialized = !this.IsInitialized ? true : throw new Exception();
-      EngineApplication.MainThread = Thread.CurrentThread;
-      yield return (object) MemoryStrategy.Instance.Compute(MemoryStrategyContextEnum.ApplicationStart);
+      IsInitialized = !IsInitialized ? true : throw new Exception();
+      MainThread = Thread.CurrentThread;
+      yield return MemoryStrategy.Instance.Compute(MemoryStrategyContextEnum.ApplicationStart);
       UnityEngine.Debug.Log((object) ("Build Version : " + Application.version));
       UnityEngine.Debug.Log((object) ("Build Time : " + ScriptableObjectInstance<BuildData>.Instance.Time));
       UnityEngine.Debug.Log((object) ("Build Label : " + ScriptableObjectInstance<BuildData>.Instance.Label));
@@ -117,10 +114,10 @@ namespace Engine.Source.Commons
       ISystemInformationService systemInformationService = SRServiceManager.GetService<ISystemInformationService>();
       if (systemInformationService != null)
       {
-        systemInformationService.AddInfo(typeof (BuildData).Name, (ISystemInfo) SRDebugger.Services.Info.Create("Version", (object) Application.version));
-        systemInformationService.AddInfo(typeof (BuildData).Name, (ISystemInfo) SRDebugger.Services.Info.Create("Branch", (object) ScriptableObjectInstance<BuildData>.Instance.Branch));
-        systemInformationService.AddInfo(typeof (BuildData).Name, (ISystemInfo) SRDebugger.Services.Info.Create("Time", (object) ScriptableObjectInstance<BuildData>.Instance.Time));
-        systemInformationService.AddInfo(typeof (BuildData).Name, (ISystemInfo) SRDebugger.Services.Info.Create("Label", (Func<object>) (() => (object) InstanceByRequest<LabelService>.Instance.Label), false));
+        systemInformationService.AddInfo(typeof (BuildData).Name, Info.Create("Version", (object) Application.version));
+        systemInformationService.AddInfo(typeof (BuildData).Name, Info.Create("Branch", ScriptableObjectInstance<BuildData>.Instance.Branch));
+        systemInformationService.AddInfo(typeof (BuildData).Name, Info.Create("Time", ScriptableObjectInstance<BuildData>.Instance.Time));
+        systemInformationService.AddInfo(typeof (BuildData).Name, Info.Create("Label", () => InstanceByRequest<LabelService>.Instance.Label));
       }
       if (UnityEngine.Debug.isDebugBuild)
         SRDebug.Init();
@@ -128,24 +125,24 @@ namespace Engine.Source.Commons
       MainMenuSetup.SetupMainMenuSettings();
       Stopwatch sw = new Stopwatch();
       sw.Restart();
-      yield return (object) InitialiseServices.Initialise();
+      yield return InitialiseServices.Initialise();
       sw.Stop();
-      UnityEngine.Debug.Log((object) ObjectInfoUtility.GetStream().Append("[Engine]").Append("  ").Append("InitialiseServices").Append(" , elapsed : ").Append((object) sw.Elapsed));
-      this.IsPaused = true;
-      Action onInitialized = this.OnInitialized;
+      UnityEngine.Debug.Log((object) ObjectInfoUtility.GetStream().Append("[Engine]").Append("  ").Append("InitialiseServices").Append(" , elapsed : ").Append(sw.Elapsed));
+      IsPaused = true;
+      Action onInitialized = OnInitialized;
       if (onInitialized != null)
         onInitialized();
     }
 
     public void Terminate()
     {
-      this.IsInitialized = this.IsInitialized ? false : throw new Exception();
+      IsInitialized = IsInitialized ? false : throw new Exception();
       InitialiseServices.Terminate();
     }
 
     public void Exit()
     {
-      Action onApplicationQuit = this.OnApplicationQuit;
+      Action onApplicationQuit = OnApplicationQuit;
       if (onApplicationQuit != null)
         onApplicationQuit();
       Application.Quit();

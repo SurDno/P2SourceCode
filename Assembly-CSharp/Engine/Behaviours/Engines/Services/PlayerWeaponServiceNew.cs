@@ -1,12 +1,11 @@
-﻿using Engine.Behaviours.Engines.Controllers;
+﻿using System;
+using System.Collections.Generic;
+using Engine.Behaviours.Engines.Controllers;
 using Engine.Behaviours.Unity.Mecanim;
 using Engine.Common;
 using Engine.Common.Components.AttackerPlayer;
 using Engine.Source.Commons;
 using Inspectors;
-using System;
-using System.Collections.Generic;
-using UnityEngine;
 
 namespace Engine.Behaviours.Engines.Services
 {
@@ -15,53 +14,52 @@ namespace Engine.Behaviours.Engines.Services
     private IEntity target;
     private Animator animator;
     private PlayerAnimatorState animatorState;
-    private bool isAttached = false;
+    private bool isAttached;
     private bool isPaused;
     private List<PlayerWeaponSwitchCommand> switchCommandsList = new List<PlayerWeaponSwitchCommand>();
-    private bool enabled = false;
+    private bool enabled;
     private WeaponKind kind = WeaponKind.Unknown;
     private IWeaponController currentWeaponController;
-    private Dictionary<WeaponKind, IWeaponController> controllers = new Dictionary<WeaponKind, IWeaponController>()
-    {
+    private Dictionary<WeaponKind, IWeaponController> controllers = new Dictionary<WeaponKind, IWeaponController> {
       {
         WeaponKind.Unknown,
-        (IWeaponController) new EmptyWeaponController()
+        new EmptyWeaponController()
       },
       {
         WeaponKind.Hands,
-        (IWeaponController) new PlayerHandsWeaponController()
+        new PlayerHandsWeaponController()
       },
       {
         WeaponKind.Knife,
-        (IWeaponController) new PlayerKnifeWeaponController()
+        new PlayerKnifeWeaponController()
       },
       {
         WeaponKind.Revolver,
-        (IWeaponController) new PlayerRevolverWeaponController()
+        new PlayerRevolverWeaponController()
       },
       {
         WeaponKind.Rifle,
-        (IWeaponController) new PlayerRifleWeaponController()
+        new PlayerRifleWeaponController()
       },
       {
         WeaponKind.Visir,
-        (IWeaponController) new PlayerVisirWeaponController()
+        new PlayerVisirWeaponController()
       },
       {
         WeaponKind.Flashlight,
-        (IWeaponController) new PlayerFlashlightWeaponController()
+        new PlayerFlashlightWeaponController()
       },
       {
         WeaponKind.Lockpick,
-        (IWeaponController) new PlayerLockpickWeaponController()
+        new PlayerLockpickWeaponController()
       },
       {
         WeaponKind.Scalpel,
-        (IWeaponController) new PlayerScalpelWeaponController()
+        new PlayerScalpelWeaponController()
       },
       {
         WeaponKind.Shotgun,
-        (IWeaponController) new PlayerShotgunWeaponController()
+        new PlayerShotgunWeaponController()
       }
     };
 
@@ -75,40 +73,40 @@ namespace Engine.Behaviours.Engines.Services
 
     public bool IsPaused
     {
-      get => this.isPaused;
+      get => isPaused;
       set
       {
-        this.isPaused = value;
-        if (!((UnityEngine.Object) this.animator != (UnityEngine.Object) null))
+        isPaused = value;
+        if (!((UnityEngine.Object) animator != (UnityEngine.Object) null))
           return;
-        if (this.isPaused)
-          this.animator.SetFloat("Mecanim.Speed", 0.0f);
+        if (isPaused)
+          animator.SetFloat("Mecanim.Speed", 0.0f);
         else
-          this.animator.SetFloat("Mecanim.Speed", 1f);
+          animator.SetFloat("Mecanim.Speed", 1f);
       }
     }
 
     private void Awake()
     {
-      this.animator = this.gameObject.GetComponent<Animator>();
-      if ((UnityEngine.Object) this.animator == (UnityEngine.Object) null)
+      animator = this.gameObject.GetComponent<Animator>();
+      if ((UnityEngine.Object) animator == (UnityEngine.Object) null)
       {
         Debug.LogError((object) string.Format("{0} has no animator", (object) this.gameObject));
       }
       else
       {
-        this.animatorState = PlayerAnimatorState.GetAnimatorState(this.animator);
-        this.IsPaused = InstanceByRequest<EngineApplication>.Instance.IsPaused;
+        animatorState = PlayerAnimatorState.GetAnimatorState(animator);
+        IsPaused = InstanceByRequest<EngineApplication>.Instance.IsPaused;
       }
     }
 
     void IEntityAttachable.Attach(IEntity owner)
     {
-      this.isAttached = true;
-      this.Initialize(owner, this.animator, true);
+      isAttached = true;
+      Initialize(owner, animator, true);
     }
 
-    void IEntityAttachable.Detach() => this.isAttached = false;
+    void IEntityAttachable.Detach() => isAttached = false;
 
     [Inspected(Mutable = true)]
     public bool GeometryVisible
@@ -116,43 +114,43 @@ namespace Engine.Behaviours.Engines.Services
       set
       {
         if (!value)
-          this.switchCommandsList.RemoveAll((Predicate<PlayerWeaponSwitchCommand>) (x => !x.SwitchOn));
-        foreach (KeyValuePair<WeaponKind, IWeaponController> controller in this.controllers)
+          switchCommandsList.RemoveAll(x => !x.SwitchOn);
+        foreach (KeyValuePair<WeaponKind, IWeaponController> controller in controllers)
           controller.Value.GeometryVisible = false;
-        if (this.currentWeaponController != null)
-          this.currentWeaponController.GeometryVisible = value;
+        if (currentWeaponController != null)
+          currentWeaponController.GeometryVisible = value;
         if (!value)
           return;
-        this.switchCommandsList.Clear();
+        switchCommandsList.Clear();
       }
     }
 
     [Inspected(Mutable = true)]
-    public WeaponKind KindBase => this.kind;
+    public WeaponKind KindBase => kind;
 
     public void SetWeapon(WeaponKind kind, IEntity item)
     {
-      if (this.kind == kind && this.currentWeaponController != null && this.currentWeaponController.GetItem() == item)
+      if (this.kind == kind && currentWeaponController != null && currentWeaponController.GetItem() == item)
         return;
-      if (!this.enabled)
+      if (!enabled)
       {
-        this.currentWeaponController?.Shutdown();
-        this.currentWeaponController = this.controllers[kind];
-        this.currentWeaponController.SetItem(item);
-        this.currentWeaponController.GeometryVisible = true;
-        this.currentWeaponController.Activate(true);
+        currentWeaponController?.Shutdown();
+        currentWeaponController = controllers[kind];
+        currentWeaponController.SetItem(item);
+        currentWeaponController.GeometryVisible = true;
+        currentWeaponController.Activate(true);
         this.kind = kind;
       }
       else
       {
-        if (this.switchCommandsList.Exists((Predicate<PlayerWeaponSwitchCommand>) (x => x.SwitchOn && x.IsActive && kind == WeaponKind.Unknown)))
+        if (switchCommandsList.Exists(x => x.SwitchOn && x.IsActive && kind == WeaponKind.Unknown))
           return;
-        this.switchCommandsList.RemoveAll((Predicate<PlayerWeaponSwitchCommand>) (x => !x.IsActive));
-        if (this.kind != WeaponKind.Unknown && this.currentWeaponController.GeometryVisible)
-          this.AddCommand(this.kind, false);
+        switchCommandsList.RemoveAll(x => !x.IsActive);
+        if (this.kind != WeaponKind.Unknown && currentWeaponController.GeometryVisible)
+          AddCommand(this.kind, false);
         if (kind == 0)
           return;
-        this.AddCommand(kind, true, item);
+        AddCommand(kind, true, item);
       }
     }
 
@@ -162,165 +160,165 @@ namespace Engine.Behaviours.Engines.Services
       command.WeaponKind = weapon;
       command.SwitchOn = switchOn;
       command.item = item;
-      this.switchCommandsList.Add(command);
-      if (this.switchCommandsList.Exists((Predicate<PlayerWeaponSwitchCommand>) (x => x.IsActive)))
+      switchCommandsList.Add(command);
+      if (switchCommandsList.Exists(x => x.IsActive))
         return;
-      this.ExecuteCommand(command);
+      ExecuteCommand(command);
     }
 
     public void OnWeaponSwitch(WeaponKind kind, bool switchOn)
     {
-      PlayerWeaponSwitchCommand weaponSwitchCommand = this.switchCommandsList.Find((Predicate<PlayerWeaponSwitchCommand>) (x => x.WeaponKind == kind && x.SwitchOn == switchOn));
+      PlayerWeaponSwitchCommand weaponSwitchCommand = switchCommandsList.Find(x => x.WeaponKind == kind && x.SwitchOn == switchOn);
       if (weaponSwitchCommand == null)
         return;
       weaponSwitchCommand.IsActive = false;
-      IWeaponController controller = this.controllers[weaponSwitchCommand.WeaponKind];
-      this.switchCommandsList.Remove(weaponSwitchCommand);
+      IWeaponController controller = controllers[weaponSwitchCommand.WeaponKind];
+      switchCommandsList.Remove(weaponSwitchCommand);
       if (!switchOn)
       {
         controller.GeometryVisible = false;
         kind = WeaponKind.Unknown;
-        this.controllers[kind].GeometryVisible = true;
+        controllers[kind].GeometryVisible = true;
       }
-      if (this.switchCommandsList.Count <= 0)
+      if (switchCommandsList.Count <= 0)
         return;
-      this.ExecuteCommand(this.switchCommandsList[0]);
+      ExecuteCommand(switchCommandsList[0]);
     }
 
     private void ExecuteCommand(PlayerWeaponSwitchCommand command)
     {
-      this.kind = WeaponKind.Unknown;
+      kind = WeaponKind.Unknown;
       command.IsActive = true;
-      IWeaponController controller1 = this.controllers[command.WeaponKind];
+      IWeaponController controller1 = controllers[command.WeaponKind];
       if (command.SwitchOn)
       {
-        this.currentWeaponController?.Shutdown();
-        foreach (KeyValuePair<WeaponKind, IWeaponController> controller2 in this.controllers)
+        currentWeaponController?.Shutdown();
+        foreach (KeyValuePair<WeaponKind, IWeaponController> controller2 in controllers)
           controller2.Value.GeometryVisible = false;
         controller1.GeometryVisible = true;
         controller1.Activate(true);
         controller1.SetItem(command.item);
-        this.kind = command.WeaponKind;
-        this.currentWeaponController = controller1;
+        kind = command.WeaponKind;
+        currentWeaponController = controller1;
       }
       else
       {
         controller1.Shutdown();
-        this.currentWeaponController = this.controllers[WeaponKind.Unknown];
+        currentWeaponController = controllers[WeaponKind.Unknown];
       }
     }
 
     public void OnEnable()
     {
-      this.enabled = true;
-      this.switchCommandsList.Clear();
-      this.currentWeaponController?.OnEnable();
-      InstanceByRequest<EngineApplication>.Instance.OnPauseEvent -= new Action(this.WorldPauseHandler);
-      InstanceByRequest<EngineApplication>.Instance.OnPauseEvent += new Action(this.WorldPauseHandler);
-      this.IsPaused = InstanceByRequest<EngineApplication>.Instance.IsPaused;
+      enabled = true;
+      switchCommandsList.Clear();
+      currentWeaponController?.OnEnable();
+      InstanceByRequest<EngineApplication>.Instance.OnPauseEvent -= WorldPauseHandler;
+      InstanceByRequest<EngineApplication>.Instance.OnPauseEvent += WorldPauseHandler;
+      IsPaused = InstanceByRequest<EngineApplication>.Instance.IsPaused;
     }
 
     public void OnDisable()
     {
-      this.enabled = false;
-      this.currentWeaponController?.OnDisable();
-      InstanceByRequest<EngineApplication>.Instance.OnPauseEvent -= new Action(this.WorldPauseHandler);
-      this.IsPaused = InstanceByRequest<EngineApplication>.Instance.IsPaused;
+      enabled = false;
+      currentWeaponController?.OnDisable();
+      InstanceByRequest<EngineApplication>.Instance.OnPauseEvent -= WorldPauseHandler;
+      IsPaused = InstanceByRequest<EngineApplication>.Instance.IsPaused;
     }
 
-    private void OnDestroy() => this.currentWeaponController?.Shutdown();
+    private void OnDestroy() => currentWeaponController?.Shutdown();
 
     [Inspected]
     public IEntity Target
     {
-      get => this.target;
+      get => target;
       set
       {
-        if (this.target == value)
+        if (target == value)
           return;
-        this.target = value;
+        target = value;
       }
     }
 
     public void Initialize(IEntity entity, Animator animator, bool geometryVisible)
     {
       this.animator = animator;
-      foreach (KeyValuePair<WeaponKind, IWeaponController> controller1 in this.controllers)
+      foreach (KeyValuePair<WeaponKind, IWeaponController> controller1 in controllers)
       {
         KeyValuePair<WeaponKind, IWeaponController> controller = controller1;
         controller.Value.WeaponHolsterStartEvent += (Action) (() =>
         {
-          Action<WeaponKind> holsterStartEvent = this.WeaponHolsterStartEvent;
+          Action<WeaponKind> holsterStartEvent = WeaponHolsterStartEvent;
           if (holsterStartEvent == null)
             return;
           holsterStartEvent(controller.Key);
         });
         controller.Value.WeaponUnholsterEndEvent += (Action) (() =>
         {
-          Action<WeaponKind> unholsterEndEvent = this.WeaponUnholsterEndEvent;
+          Action<WeaponKind> unholsterEndEvent = WeaponUnholsterEndEvent;
           if (unholsterEndEvent == null)
             return;
           unholsterEndEvent(controller.Key);
         });
-        controller.Value.WeaponShootEvent += (Action<IEntity, ShotType, ReactionType, ShotSubtypeEnum>) ((weapon, shotType, reactionType, shotSubtype) =>
+        controller.Value.WeaponShootEvent += (weapon, shotType, reactionType, shotSubtype) =>
         {
-          Action<WeaponKind, IEntity, ShotType, ReactionType, ShotSubtypeEnum> weaponShootEvent = this.WeaponShootEvent;
+          Action<WeaponKind, IEntity, ShotType, ReactionType, ShotSubtypeEnum> weaponShootEvent = WeaponShootEvent;
           if (weaponShootEvent == null)
             return;
           weaponShootEvent(controller.Key, weapon, shotType, reactionType, shotSubtype);
-        });
+        };
         controller.Value.Initialise(entity, this.gameObject, this.animator);
       }
-      this.currentWeaponController = this.controllers[WeaponKind.Unknown];
-      this.currentWeaponController.GeometryVisible = true;
-      this.GeometryVisible = geometryVisible;
-      this.switchCommandsList = new List<PlayerWeaponSwitchCommand>();
+      currentWeaponController = controllers[WeaponKind.Unknown];
+      currentWeaponController.GeometryVisible = true;
+      GeometryVisible = geometryVisible;
+      switchCommandsList = new List<PlayerWeaponSwitchCommand>();
     }
 
     public void ResetWeapon()
     {
-      if (!this.isAttached)
+      if (!isAttached)
         return;
-      this.currentWeaponController.Reset();
+      currentWeaponController.Reset();
     }
 
     public void Update()
     {
-      if (!this.isAttached)
+      if (!isAttached)
         return;
-      this.currentWeaponController?.Update(this.Target);
+      currentWeaponController?.Update(Target);
     }
 
     public void LateUpdate()
     {
-      if (!this.isAttached)
+      if (!isAttached)
         return;
-      this.currentWeaponController?.LateUpdate(this.Target);
+      currentWeaponController?.LateUpdate(Target);
     }
 
     public void FixedUpdate()
     {
-      if (!this.isAttached)
+      if (!isAttached)
         return;
-      this.currentWeaponController?.FixedUpdate(this.Target);
+      currentWeaponController?.FixedUpdate(Target);
     }
 
     public void AnimatorEvent(string data)
     {
-      if (!this.isAttached)
+      if (!isAttached)
         return;
-      this.currentWeaponController.OnAnimatorEvent(data);
+      currentWeaponController.OnAnimatorEvent(data);
     }
 
     private void WorldPauseHandler()
     {
-      this.IsPaused = InstanceByRequest<EngineApplication>.Instance.IsPaused;
+      IsPaused = InstanceByRequest<EngineApplication>.Instance.IsPaused;
     }
 
-    public IWeaponController GetCurrentWeaponController() => this.currentWeaponController;
+    public IWeaponController GetCurrentWeaponController() => currentWeaponController;
 
-    public bool IsWeaponOn() => !(this.currentWeaponController is EmptyWeaponController);
+    public bool IsWeaponOn() => !(currentWeaponController is EmptyWeaponController);
 
-    public void Reaction() => this.currentWeaponController.Reaction();
+    public void Reaction() => currentWeaponController.Reaction();
   }
 }

@@ -1,5 +1,4 @@
 ﻿using AssetDatabases;
-using UnityEngine;
 
 public class AssetDatabaseData : MonoBehaviour
 {

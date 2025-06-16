@@ -1,4 +1,7 @@
-﻿using Cofe.Loggers;
+﻿using System;
+using System.Collections.Generic;
+using System.Xml;
+using Cofe.Loggers;
 using Cofe.Serializations.Data;
 using Engine.Common;
 using Engine.Common.Components;
@@ -9,9 +12,6 @@ using PLVirtualMachine.Common.EngineAPI.VMECS;
 using PLVirtualMachine.Common.Serialization;
 using PLVirtualMachine.Data.SaveLoad;
 using PLVirtualMachine.Objects;
-using System;
-using System.Collections.Generic;
-using System.Xml;
 
 namespace PLVirtualMachine.Dynamic.Components
 {
@@ -25,12 +25,12 @@ namespace PLVirtualMachine.Dynamic.Components
     public override void Clear()
     {
       base.Clear();
-      if (this.loadedCommandList == null)
+      if (loadedCommandList == null)
         return;
-      foreach (StorageCommand loadedCommand in this.loadedCommandList)
+      foreach (StorageCommand loadedCommand in loadedCommandList)
         loadedCommand.Clear();
-      this.loadedCommandList.Clear();
-      this.loadedCommandList = (List<StorageCommand>) null;
+      loadedCommandList.Clear();
+      loadedCommandList = null;
     }
 
     public int ProcessRandomAddItemsToStorage(StorageCommand storageCommand)
@@ -43,13 +43,13 @@ namespace PLVirtualMachine.Dynamic.Components
         int itemsToAdd = 1;
         if (storageCommand.ItemsCount > 1)
         {
-          itemsToAdd = (int) Math.Round((double) storageCommand.ItemsCount * (2.0 * VMMath.GetRandomDouble()));
+          itemsToAdd = (int) Math.Round(storageCommand.ItemsCount * (2.0 * VMMath.GetRandomDouble()));
           if (itemsToAdd >= storableComponent.Max)
             itemsToAdd = storableComponent.Max;
         }
         if (itemsToAdd > storageCommand.MaxItemsCount)
           itemsToAdd = storageCommand.MaxItemsCount;
-        if (this.DoAddItemsToStorage(storageCommand.TargetStorage.Parent.Instance, owner, itemsToAdd))
+        if (DoAddItemsToStorage(storageCommand.TargetStorage.Parent.Instance, owner, itemsToAdd))
           return itemsToAdd;
         owner.Dispose();
       }
@@ -58,32 +58,32 @@ namespace PLVirtualMachine.Dynamic.Components
 
     public void StateSave(IDataWriter writer)
     {
-      SaveManagerUtility.SaveDynamicSerializableList<IStorageCommand>(writer, "StorageGroupCommandQueue", (IEnumerable<IStorageCommand>) this.commandsQueue);
+      SaveManagerUtility.SaveDynamicSerializableList(writer, "StorageGroupCommandQueue", commandsQueue);
     }
 
     public void LoadFromXML(XmlElement xmlNode)
     {
-      this.loadedCommandList.Clear();
+      loadedCommandList.Clear();
       for (int i = 0; i < xmlNode.ChildNodes.Count; ++i)
       {
         if (xmlNode.ChildNodes[i].Name == "StorageGroupCommandQueue")
-          VMSaveLoadManager.LoadDynamiSerializableList<StorageCommand>((XmlElement) xmlNode.ChildNodes[i], this.loadedCommandList);
+          VMSaveLoadManager.LoadDynamiSerializableList((XmlElement) xmlNode.ChildNodes[i], loadedCommandList);
       }
     }
 
     public void AfterSaveLoading()
     {
-      this.commandsQueue.Clear();
-      if (this.loadedCommandList.Count > 0)
+      commandsQueue.Clear();
+      if (loadedCommandList.Count > 0)
       {
-        for (int index = 0; index < this.loadedCommandList.Count; ++index)
+        for (int index = 0; index < loadedCommandList.Count; ++index)
         {
-          StorageCommand loadedCommand = this.loadedCommandList[index];
+          StorageCommand loadedCommand = loadedCommandList[index];
           loadedCommand.AfterSaveLoading();
-          this.commandsQueue.Enqueue((IStorageCommand) loadedCommand);
+          commandsQueue.Enqueue(loadedCommand);
         }
       }
-      this.Active = this.commandsQueue.Count > 0;
+      Active = commandsQueue.Count > 0;
     }
 
     protected override void ProcessCommand(IStorageCommand storageCommand)
@@ -92,15 +92,15 @@ namespace PLVirtualMachine.Dynamic.Components
       if (storageCommand.StorageCommandType == EStorageCommandType.StorageCommandTypeAddItem)
       {
         if (storageCommand1.ItemsCount > 1 || storageCommand1.CombinationParams != null)
-          this.DoAddItemstoStorage(storageCommand1.TargetStorage, storageCommand1.TargetItemTemplate, storageCommand1.ItemsCount, storageCommand1.ContainerTypesInfo, storageCommand1.ContainerTagsInfo, storageCommand1.CombinationParams, storageCommand1.DropIfBusyMode);
+          DoAddItemstoStorage(storageCommand1.TargetStorage, storageCommand1.TargetItemTemplate, storageCommand1.ItemsCount, storageCommand1.ContainerTypesInfo, storageCommand1.ContainerTagsInfo, storageCommand1.CombinationParams, storageCommand1.DropIfBusyMode);
         else
-          this.DoAddItemstoStorage(storageCommand1.TargetStorage, storageCommand1.TargetItemTemplate, storageCommand1.ContainerTypesInfo, storageCommand1.ContainerTagsInfo, storageCommand1.DropIfBusyMode);
+          DoAddItemstoStorage(storageCommand1.TargetStorage, storageCommand1.TargetItemTemplate, storageCommand1.ContainerTypesInfo, storageCommand1.ContainerTagsInfo, storageCommand1.DropIfBusyMode);
       }
       else
       {
         if (storageCommand.StorageCommandType != EStorageCommandType.StorageCommandClear)
           return;
-        this.DoFreeStorage(storageCommand1.TargetStorage);
+        DoFreeStorage(storageCommand1.TargetStorage);
       }
     }
 
@@ -117,7 +117,7 @@ namespace PLVirtualMachine.Dynamic.Components
       IStorableComponent storableComponent = VMStorable.MakeStorableByTemplate(storage.Parent, template);
       IEntity owner = storableComponent.Owner;
       int itemsToAdd = 1;
-      if (this.DoAddItemsToStorage(storage, owner, itemsToAdd, containerTypes, containerTags, 0, dropIfBusy: dropIfBusy))
+      if (DoAddItemsToStorage(storage, owner, itemsToAdd, containerTypes, containerTags, 0, dropIfBusy: dropIfBusy))
         return;
       storableComponent.Owner.Dispose();
     }
@@ -148,7 +148,7 @@ namespace PLVirtualMachine.Dynamic.Components
             int itemsToAdd1 = storableComponent.Max;
             if (itemsToAdd1 > itemsToAdd - num)
               itemsToAdd1 = itemsToAdd - num;
-            if (!this.DoAddItemsToStorage(storage, owner, itemsToAdd1, containerTypes, containerTags, needContainerNum, ciParams, dropIfBusy))
+            if (!DoAddItemsToStorage(storage, owner, itemsToAdd1, containerTypes, containerTags, needContainerNum, ciParams, dropIfBusy))
               owner.Dispose();
             num += itemsToAdd1;
           }
@@ -156,7 +156,7 @@ namespace PLVirtualMachine.Dynamic.Components
         }
         else
         {
-          Logger.AddError(string.Format("Cannot create storable by template {0} in storage {1} at {2}", (object) template.Name, (object) storage.Parent.Name, (object) DynamicFSM.CurrentStateInfo));
+          Logger.AddError(string.Format("Cannot create storable by template {0} in storage {1} at {2}", template.Name, storage.Parent.Name, DynamicFSM.CurrentStateInfo));
           break;
         }
       }
@@ -175,23 +175,23 @@ namespace PLVirtualMachine.Dynamic.Components
     {
       if (storage == null)
       {
-        Logger.AddError(string.Format("Storage for adding items not defined at {0}", (object) DynamicFSM.CurrentStateInfo));
+        Logger.AddError(string.Format("Storage for adding items not defined at {0}", DynamicFSM.CurrentStateInfo));
         return false;
       }
       if (addingItemEntity == null)
       {
-        Logger.AddError(string.Format("Adding item entity not defined at {0}", (object) DynamicFSM.CurrentStateInfo));
+        Logger.AddError(string.Format("Adding item entity not defined at {0}", DynamicFSM.CurrentStateInfo));
         return false;
       }
       IStorableComponent component1 = addingItemEntity.GetComponent<IStorableComponent>();
       if (component1 == null)
       {
-        Logger.AddError(string.Format("Add item to storage error: adding item Entity {0} hasn't storable component at {1}", (object) addingItemEntity.Name, (object) DynamicFSM.CurrentStateInfo));
+        Logger.AddError(string.Format("Add item to storage error: adding item Entity {0} hasn't storable component at {1}", addingItemEntity.Name, DynamicFSM.CurrentStateInfo));
         return false;
       }
       if (component1.Owner == null)
       {
-        Logger.AddError(string.Format("Add item to storage error: adding item Entity {0} storable component is invalid at {1}", (object) addingItemEntity.Name, (object) DynamicFSM.CurrentStateInfo));
+        Logger.AddError(string.Format("Add item to storage error: adding item Entity {0} storable component is invalid at {1}", addingItemEntity.Name, DynamicFSM.CurrentStateInfo));
         return false;
       }
       bool storage1 = false;
@@ -253,11 +253,11 @@ namespace PLVirtualMachine.Dynamic.Components
           if (maxIntVal < minIntVal)
             maxIntVal = minIntVal;
           int randomInt = VMMath.GetRandomInt(minIntVal, maxIntVal);
-          component1.Durability.Value = 1E-05f * (float) randomInt;
+          component1.Durability.Value = 1E-05f * randomInt;
         }
       }
       else
-        Logger.AddWarning(string.Format("Add item to storage warning: adding items '{0}' count is 0 at {1}", (object) addingItemEntity.Name, (object) DynamicFSM.CurrentStateInfo));
+        Logger.AddWarning(string.Format("Add item to storage warning: adding items '{0}' count is 0 at {1}", addingItemEntity.Name, DynamicFSM.CurrentStateInfo));
       return storage1;
     }
 
@@ -280,12 +280,12 @@ namespace PLVirtualMachine.Dynamic.Components
       IStorableComponent component2 = addingItemEntity.GetComponent<IStorableComponent>();
       if (component2 == null)
       {
-        Logger.AddError(string.Format("Add item to storage error: adding item Entity {0} hasn't storable component at {1}", (object) addingItemEntity.Name, (object) DynamicFSM.CurrentStateInfo));
+        Logger.AddError(string.Format("Add item to storage error: adding item Entity {0} hasn't storable component at {1}", addingItemEntity.Name, DynamicFSM.CurrentStateInfo));
         return false;
       }
       if (component2.Owner == null)
       {
-        Logger.AddError(string.Format("Add item to storage error: adding item Entity {0} storable component is invalid at {1}", (object) addingItemEntity.Name, (object) DynamicFSM.CurrentStateInfo));
+        Logger.AddError(string.Format("Add item to storage error: adding item Entity {0} storable component is invalid at {1}", addingItemEntity.Name, DynamicFSM.CurrentStateInfo));
         return false;
       }
       component2.Count = itemsToAdd;

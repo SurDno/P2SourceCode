@@ -1,14 +1,11 @@
 ﻿using Engine.Source.Commons;
-using System;
-using UnityEngine;
-using UnityEngine.UI;
 
 public class BuildVersionText : MonoBehaviour
 {
   private void Start()
   {
-    InstanceByRequest<LabelService>.Instance.OnInvalidate += new Action(this.OnInvalidate);
-    this.OnInvalidate();
+    InstanceByRequest<LabelService>.Instance.OnInvalidate += OnInvalidate;
+    OnInvalidate();
   }
 
   private void OnInvalidate()

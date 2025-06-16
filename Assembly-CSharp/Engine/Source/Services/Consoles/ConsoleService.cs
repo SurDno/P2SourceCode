@@ -1,12 +1,11 @@
-﻿using Cofe.Utility;
-using Inspectors;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using UnityEngine;
+using Cofe.Utility;
+using Inspectors;
 
 namespace Engine.Source.Services.Consoles
 {
-  [RuntimeService(new System.Type[] {typeof (ConsoleService)})]
+  [RuntimeService(typeof (ConsoleService))]
   public class ConsoleService
   {
     public const string HelpToken = "?";
@@ -30,40 +29,40 @@ namespace Engine.Source.Services.Consoles
     {
       add
       {
-        lock (this.sync)
+        lock (sync)
         {
-          if (this.onAddedLine == null && value != null)
+          if (onAddedLine == null && value != null)
             value("Print \"?\" for help");
-          this.onAddedLine += value;
+          onAddedLine += value;
         }
       }
       remove
       {
-        lock (this.sync)
-          this.onAddedLine -= value;
+        lock (sync)
+          onAddedLine -= value;
       }
     }
 
     public static void RegisterCommand(string name, Func<string, ConsoleParameter[], string> func)
     {
-      if (ConsoleService.commands.ContainsKey(name))
+      if (commands.ContainsKey(name))
         Debug.LogError((object) ("Command exist : " + name));
       else
-        ConsoleService.commands.Add(name, func);
+        commands.Add(name, func);
     }
 
     public void ExecuteCommand(string value)
     {
       if (value == "?")
       {
-        this.AddLine(this.GetHelpText());
+        AddLine(GetHelpText());
       }
       else
       {
-        string str = "Execute command : \"" + value + "\"\n" + this.ComputeCommand(value);
+        string str = "Execute command : \"" + value + "\"\n" + ComputeCommand(value);
         char[] chArray = new char[1]{ '\n' };
         foreach (string line in str.Split(chArray))
-          this.AddLine(line);
+          AddLine(line);
       }
     }
 
@@ -78,7 +77,7 @@ namespace Engine.Source.Services.Consoles
     private string GetHelpText()
     {
       string helpText = "Format :\ncommand [value | \"value with spaces\" | -param | -param: value | -param: \"value with spaces\"]\n\nCommands :\n";
-      foreach (string key in ConsoleService.commands.Keys)
+      foreach (string key in commands.Keys)
         helpText = helpText + key + "\n";
       return helpText;
     }
@@ -98,10 +97,10 @@ namespace Engine.Source.Services.Consoles
         key = value.Substring(0, num);
         value = value.Substring(num);
       }
-      Func<string, ConsoleParameter[], string> func = (Func<string, ConsoleParameter[], string>) null;
-      if (!ConsoleService.commands.TryGetValue(key, out func))
+      Func<string, ConsoleParameter[], string> func = null;
+      if (!commands.TryGetValue(key, out func))
         return "Command not found : " + key;
-      List<ConsoleParameter> parameters = this.GetParameters(value);
+      List<ConsoleParameter> parameters = GetParameters(value);
       return func(key, parameters.ToArray());
     }
 

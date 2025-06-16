@@ -15,17 +15,17 @@ namespace FlowCanvas
 
     public void Call()
     {
-      if (this.pointer == null || this.parent.graph.isPaused)
+      if (pointer == null || parent.graph.isPaused)
         return;
-      this.pointer();
+      pointer();
     }
 
-    public void BindTo(FlowInput target) => this.pointer = target.pointer;
+    public void BindTo(FlowInput target) => pointer = target.pointer;
 
-    public void BindTo(FlowHandler call) => this.pointer = call;
+    public void BindTo(FlowHandler call) => pointer = call;
 
-    public void UnBind() => this.pointer = (FlowHandler) null;
+    public void UnBind() => pointer = null;
 
-    public void Append(FlowHandler action) => this.pointer += action;
+    public void Append(FlowHandler action) => pointer += action;
   }
 }

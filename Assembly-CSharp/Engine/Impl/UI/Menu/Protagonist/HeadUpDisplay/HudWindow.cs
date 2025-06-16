@@ -8,7 +8,6 @@ using Engine.Source.Services.Notifications;
 using Engine.Source.UI;
 using Engine.Source.Utility;
 using InputServices;
-using UnityEngine;
 
 namespace Engine.Impl.UI.Menu.Protagonist.HeadUpDisplay
 {
@@ -25,11 +24,11 @@ namespace Engine.Impl.UI.Menu.Protagonist.HeadUpDisplay
     [SerializeField]
     private HideableView textNotificationsVisibility;
 
-    public InteractableWindow InteractableInterface => this.interactableInterface;
+    public InteractableWindow InteractableInterface => interactableInterface;
 
     public override void Initialize()
     {
-      this.RegisterLayer<IHudWindow>((IHudWindow) this);
+      RegisterLayer((IHudWindow) this);
       base.Initialize();
     }
 
@@ -38,16 +37,16 @@ namespace Engine.Impl.UI.Menu.Protagonist.HeadUpDisplay
       base.OnEnable();
       CursorService.Instance.Free = CursorService.Instance.Visible = false;
       IEntity player = ServiceLocator.GetService<ISimulation>().Player;
-      foreach (EntityView entityView in this.playerEntityView)
+      foreach (EntityView entityView in playerEntityView)
         entityView.Value = player;
-      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.MainMenu, new GameActionHandle(this.MainMenuListener));
+      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.MainMenu, MainMenuListener);
     }
 
     protected override void OnDisable()
     {
-      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.MainMenu, new GameActionHandle(this.MainMenuListener));
-      foreach (EntityView entityView in this.playerEntityView)
-        entityView.Value = (IEntity) null;
+      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.MainMenu, MainMenuListener);
+      foreach (EntityView entityView in playerEntityView)
+        entityView.Value = null;
       base.OnDisable();
     }
 
@@ -61,25 +60,25 @@ namespace Engine.Impl.UI.Menu.Protagonist.HeadUpDisplay
 
     public INotification Create(NotificationEnum type)
     {
-      foreach (NotificationLayerView notificationLayer in this.notificationLayers)
+      foreach (NotificationLayerView notificationLayer in notificationLayers)
       {
         INotification notification = notificationLayer.Create(type);
         if (notification != null)
           return notification;
       }
-      return (INotification) null;
+      return null;
     }
 
     public void SetVisibility(bool visible, bool ignoreTextNotifications)
     {
-      this.visibilityView.Visible = visible;
+      visibilityView.Visible = visible;
       if (!this.isActiveAndEnabled)
-        this.visibilityView.SkipAnimation();
+        visibilityView.SkipAnimation();
       if (ignoreTextNotifications)
         return;
-      this.textNotificationsVisibility.Visible = visible;
+      textNotificationsVisibility.Visible = visible;
       if (!this.isActiveAndEnabled)
-        this.textNotificationsVisibility.SkipAnimation();
+        textNotificationsVisibility.SkipAnimation();
     }
   }
 }

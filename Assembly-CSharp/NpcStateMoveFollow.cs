@@ -1,5 +1,4 @@
 ﻿using Engine.Behaviours.Components;
-using UnityEngine;
 
 public class NpcStateMoveFollow : NpcStateMoveBase
 {
@@ -15,57 +14,57 @@ public class NpcStateMoveFollow : NpcStateMoveBase
 
   public void Activate(Transform target, float followDistance)
   {
-    if (!this.Activate())
+    if (!Activate())
       return;
     this.target = target;
     this.followDistance = followDistance;
-    this.completed = false;
+    completed = false;
     if ((Object) target == (Object) null)
     {
-      Debug.LogWarning((object) (this.GameObject.name + ": target is null"));
-      this.Status = NpcStateStatusEnum.Failed;
+      Debug.LogWarning((object) (GameObject.name + ": target is null"));
+      Status = NpcStateStatusEnum.Failed;
     }
     else
     {
-      this.lastDestination = target.position;
-      if ((double) (target.position - this.GameObject.transform.position).magnitude < 1.1000000238418579 * (double) followDistance)
-        this.Status = NpcStateStatusEnum.Success;
+      lastDestination = target.position;
+      if ((double) (target.position - GameObject.transform.position).magnitude < 1.1000000238418579 * followDistance)
+        Status = NpcStateStatusEnum.Success;
       else
-        this.agent.SetDestination(this.lastDestination);
+        agent.SetDestination(lastDestination);
     }
   }
 
   public override void DoUpdate()
   {
-    if ((Object) this.target == (Object) null)
+    if ((Object) target == (Object) null)
     {
-      Debug.LogWarning((object) (this.GameObject.name + ": target is null"));
-      this.Status = NpcStateStatusEnum.Failed;
+      Debug.LogWarning((object) (GameObject.name + ": target is null"));
+      Status = NpcStateStatusEnum.Failed;
     }
     else
     {
-      if (this.completed)
+      if (completed)
         return;
-      if (this.agent.hasPath && (double) this.agent.remainingDistance < (double) this.followDistance)
+      if (agent.hasPath && (double) agent.remainingDistance < followDistance)
       {
-        this.CompleteTask(false);
-        this.completed = true;
+        CompleteTask(false);
+        completed = true;
       }
-      Vector3 vector3 = this.lastDestination - this.target.position;
+      Vector3 vector3 = lastDestination - target.position;
       float magnitude = vector3.magnitude;
-      vector3 = this.target.position - this.GameObject.transform.position;
-      if ((double) vector3.magnitude > (double) this.followDistance * 5.0)
+      vector3 = target.position - GameObject.transform.position;
+      if ((double) vector3.magnitude > followDistance * 5.0)
       {
-        if ((double) magnitude > (double) this.followDistance)
+        if (magnitude > (double) followDistance)
         {
-          this.lastDestination = this.target.position;
-          this.agent.SetDestination(this.lastDestination);
+          lastDestination = target.position;
+          agent.SetDestination(lastDestination);
         }
       }
-      else if ((double) magnitude > 0.30000001192092896 * (double) this.followDistance)
+      else if (magnitude > 0.30000001192092896 * followDistance)
       {
-        this.lastDestination = this.target.position;
-        this.agent.SetDestination(this.lastDestination);
+        lastDestination = target.position;
+        agent.SetDestination(lastDestination);
       }
     }
   }

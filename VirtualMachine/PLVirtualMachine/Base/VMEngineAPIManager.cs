@@ -1,4 +1,7 @@
-﻿using Cofe.Loggers;
+﻿using System;
+using System.Collections.Generic;
+using System.Reflection;
+using Cofe.Loggers;
 using Engine.Common;
 using Engine.Common.Components.Movable;
 using Engine.Common.Components.Prototype;
@@ -11,9 +14,7 @@ using PLVirtualMachine.Common.VMSpecialAttributes;
 using PLVirtualMachine.Dynamic;
 using PLVirtualMachine.GameLogic;
 using PLVirtualMachine.Objects;
-using System;
-using System.Collections.Generic;
-using System.Reflection;
+using IObject = Engine.Common.IObject;
 
 namespace PLVirtualMachine.Base
 {
@@ -25,7 +26,7 @@ namespace PLVirtualMachine.Base
 
     static VMEngineAPIManager()
     {
-      EngineAPIManager.Instance = (EngineAPIManager) new VMEngineAPIManager();
+      Instance = new VMEngineAPIManager();
     }
 
     public override VMBaseEntity CreateWorldTemplateDynamicChildInstance(
@@ -56,7 +57,7 @@ namespace PLVirtualMachine.Base
 
     public override string CurrentFSMStateInfo => DynamicFSM.CurrentStateInfo;
 
-    public static void Start() => EngineAPIManager.Init();
+    public static void Start() => Init();
 
     public static object ExecMethod(
       IDynamicGameObjectContext initiator,
@@ -68,35 +69,35 @@ namespace PLVirtualMachine.Base
       List<VMType> dParamTypes,
       VMType outputType)
     {
-      if (componentBaseType == (Type) null)
+      if (componentBaseType == null)
       {
-        Logger.AddError(string.Format("Component base type not defined for method {0}, component {1} at {2}", (object) methodName, (object) componentName, (object) DynamicFSM.CurrentStateInfo));
-        return (object) null;
+        Logger.AddError(string.Format("Component base type not defined for method {0}, component {1} at {2}", methodName, componentName, DynamicFSM.CurrentStateInfo));
+        return null;
       }
       if (objGuid == Guid.Empty)
       {
-        Logger.AddError(string.Format("Cannot exec engine method {0} for entity with id=0 at {1}", (object) (componentBaseType.Name + "." + methodName), (object) DynamicFSM.CurrentStateInfo));
-        return (object) null;
+        Logger.AddError(string.Format("Cannot exec engine method {0} for entity with id=0 at {1}", componentBaseType.Name + "." + methodName, DynamicFSM.CurrentStateInfo));
+        return null;
       }
       VMEntity entityByEngineGuid = WorldEntityUtility.GetDynamicObjectEntityByEngineGuid(objGuid);
       if (entityByEngineGuid == null)
       {
-        Logger.AddError(string.Format("Object with id={0} not found in virtual machine at {1}", (object) objGuid, (object) DynamicFSM.CurrentStateInfo));
-        return (object) null;
+        Logger.AddError(string.Format("Object with id={0} not found in virtual machine at {1}", objGuid, DynamicFSM.CurrentStateInfo));
+        return null;
       }
       if (!entityByEngineGuid.Instantiated && methodName != "Instantiate")
       {
-        Logger.AddError(string.Format("Cannot call method {0} at removed or not instantiated object {1} at {2}", (object) methodName, (object) entityByEngineGuid.Name, (object) DynamicFSM.CurrentStateInfo));
-        return (object) null;
+        Logger.AddError(string.Format("Cannot call method {0} at removed or not instantiated object {1} at {2}", methodName, entityByEngineGuid.Name, DynamicFSM.CurrentStateInfo));
+        return null;
       }
-      if (methodName == EngineAPIManager.GetSpecialFunctionName(ESpecialFunctionName.SFN_OBJECT_INIT, typeof (VMCommon)))
+      if (methodName == GetSpecialFunctionName(ESpecialFunctionName.SFN_OBJECT_INIT, typeof (VMCommon)))
       {
         CreateEntityUtility.InitializeObject(entityByEngineGuid, (VMLogicObject) entityByEngineGuid.EditorTemplate, entityByEngineGuid.GetFSM());
-        return (object) null;
+        return null;
       }
-      VMEngineAPIManager.lastMethodExecInitiator = initiator;
-      VMComponent objectComponentByType = EngineAPIManager.GetObjectComponentByType((VMBaseEntity) entityByEngineGuid, componentBaseType);
-      MethodExecuteContext methodExecuteContext = VMEngineAPIManager.GetMethodExecuteContext(objectComponentByType, methodName, dParams.Count);
+      lastMethodExecInitiator = initiator;
+      VMComponent objectComponentByType = GetObjectComponentByType(entityByEngineGuid, componentBaseType);
+      MethodExecuteContext methodExecuteContext = GetMethodExecuteContext(objectComponentByType, methodName, dParams.Count);
       for (int index = 0; index < methodExecuteContext.InputParamsInfo.Length; ++index)
       {
         try
@@ -105,33 +106,33 @@ namespace PLVirtualMachine.Base
         }
         catch (Exception ex)
         {
-          Logger.AddError(string.Format("Exec method {0} params processing error: {1} at {2}", (object) methodName, (object) ex.ToString(), (object) DynamicFSM.CurrentStateInfo));
+          Logger.AddError(string.Format("Exec method {0} params processing error: {1} at {2}", methodName, ex, DynamicFSM.CurrentStateInfo));
         }
       }
       try
       {
-        object engValue = methodExecuteContext.ExecMethodInfo.Invoke((object) objectComponentByType, methodExecuteContext.InputParams);
-        VMEngineAPIManager.lastEntityMethodExecData.Initialize(entityByEngineGuid, objectComponentByType, methodExecuteContext.ExecMethodInfo, methodExecuteContext.InputParams);
+        object engValue = methodExecuteContext.ExecMethodInfo.Invoke(objectComponentByType, methodExecuteContext.InputParams);
+        lastEntityMethodExecData.Initialize(entityByEngineGuid, objectComponentByType, methodExecuteContext.ExecMethodInfo, methodExecuteContext.InputParams);
         VMType vmType = outputType;
-        return VMEngineAPIManager.ConvertEngineTypeToEditorType(engValue, vmType);
+        return ConvertEngineTypeToEditorType(engValue, vmType);
       }
       catch (Exception ex)
       {
-        Logger.AddError(string.Format("Call method {0} error in object {1}: {2} at {3}", (object) methodName, (object) entityByEngineGuid.Name, (object) ex.ToString(), (object) DynamicFSM.CurrentStateInfo));
-        return (object) null;
+        Logger.AddError(string.Format("Call method {0} error in object {1}: {2} at {3}", methodName, entityByEngineGuid.Name, ex, DynamicFSM.CurrentStateInfo));
+        return null;
       }
     }
 
     public static object ExecMethod(EntityMethodExecuteData executeData)
     {
       if (executeData == null)
-        return (object) null;
+        return null;
       VMComponent targetComponent = executeData.TargetComponent;
       MethodInfo execMethodInfo = executeData.ExecMethodInfo;
       object[] inputParams = executeData.InputParams;
       VMComponent vmComponent = targetComponent;
       object[] parameters = inputParams;
-      return VMEngineAPIManager.ConvertEngineTypeToEditorType(execMethodInfo.Invoke((object) vmComponent, parameters));
+      return ConvertEngineTypeToEditorType(execMethodInfo.Invoke(vmComponent, parameters));
     }
 
     public static object ExecMethodOnComponentDirect(
@@ -143,12 +144,12 @@ namespace PLVirtualMachine.Base
       MethodInfo componentMethodInfo = InfoAttribute.GetComponentMethodInfo(name, methodName);
       try
       {
-        return componentMethodInfo.Invoke((object) funcComponent, dFactParams);
+        return componentMethodInfo.Invoke(funcComponent, dFactParams);
       }
       catch (Exception ex)
       {
-        Logger.AddError(string.Format("Call direct on component method {0} error in {1}.{2}, error: {3} at {4}", (object) methodName, (object) funcComponent.Parent.Name, (object) name, (object) ex, (object) DynamicFSM.CurrentStateInfo));
-        return (object) null;
+        Logger.AddError(string.Format("Call direct on component method {0} error in {1}.{2}, error: {3} at {4}", methodName, funcComponent.Parent.Name, name, ex, DynamicFSM.CurrentStateInfo));
+        return null;
       }
     }
 
@@ -159,12 +160,12 @@ namespace PLVirtualMachine.Base
     {
       if (obj == null)
       {
-        Logger.AddError(string.Format("Instantiating object not defined at {0}!", (object) DynamicFSM.CurrentStateInfo));
+        Logger.AddError(string.Format("Instantiating object not defined at {0}!", DynamicFSM.CurrentStateInfo));
       }
       else
       {
         obj.Instantiated = true;
-        IBlueprint templateByEngineGuid = EngineAPIManager.Instance.GetEditorTemplateByEngineGuid(obj.EngineGuid);
+        IBlueprint templateByEngineGuid = Instance.GetEditorTemplateByEngineGuid(obj.EngineGuid);
         if (typeof (VMWorldObject).IsAssignableFrom(templateByEngineGuid.GetType()))
         {
           VMWorldObject vmWorldObject = (VMWorldObject) templateByEngineGuid;
@@ -178,13 +179,13 @@ namespace PLVirtualMachine.Base
               VirtualMachine.Instance.SpawnObject((VMEntity) obj, entityByPositionId, areaType);
             }
             else
-              Logger.AddError(string.Format("Cannot instantiate object {0}, because it's spawn position not defined at {1}", (object) templateByEngineGuid.Name, (object) DynamicFSM.CurrentStateInfo));
+              Logger.AddError(string.Format("Cannot instantiate object {0}, because it's spawn position not defined at {1}", templateByEngineGuid.Name, DynamicFSM.CurrentStateInfo));
           }
           else
             VirtualMachine.Instance.SpawnObject((VMEntity) obj, forceSpawnPos, areaType);
         }
         else
-          Logger.AddError(string.Format("Cannot instantiate not world object {0} at {1}", (object) templateByEngineGuid.Name, (object) DynamicFSM.CurrentStateInfo));
+          Logger.AddError(string.Format("Cannot instantiate not world object {0} at {1}", templateByEngineGuid.Name, DynamicFSM.CurrentStateInfo));
       }
     }
 
@@ -213,12 +214,12 @@ namespace PLVirtualMachine.Base
       if (flag1 | flag4)
       {
         if (engValue == null)
-          return (object) new VMObjRef();
+          return new VMObjRef();
         if (typeof (IEntity).IsAssignableFrom(engValue.GetType()))
         {
           VMObjRef editorType = new VMObjRef();
-          editorType.Initialize(((Engine.Common.IObject) engValue).Id);
-          return (object) editorType;
+          editorType.Initialize(((IObject) engValue).Id);
+          return editorType;
         }
         if (typeof (IObjRef).IsAssignableFrom(engValue.GetType()))
           return engValue;
@@ -226,58 +227,58 @@ namespace PLVirtualMachine.Base
         {
           VMObjRef editorType = new VMObjRef();
           editorType.InitializeInstance((IEngineRTInstance) engValue);
-          return (object) editorType;
+          return editorType;
         }
         if (flag1)
         {
-          Logger.AddError(string.Format("Cannot convert value with type {0} to IObjRef at {1}", (object) engValue.GetType(), (object) DynamicFSM.CurrentStateInfo));
-          return (object) null;
+          Logger.AddError(string.Format("Cannot convert value with type {0} to IObjRef at {1}", engValue.GetType(), DynamicFSM.CurrentStateInfo));
+          return null;
         }
       }
       if (flag2 | flag4)
       {
         if (engValue == null)
-          return (object) new VMBlueprintRef();
+          return new VMBlueprintRef();
         if (engValue is IEntity entity && ServiceCache.TemplateService.GetTemplate<IEntity>(entity.Id) != null)
         {
           VMBlueprintRef editorType = new VMBlueprintRef();
           editorType.Initialize(entity.Id);
-          return (object) editorType;
+          return editorType;
         }
         if (typeof (IBlueprintRef).IsAssignableFrom(engValue.GetType()))
           return engValue;
         if (flag2)
         {
-          Logger.AddError(string.Format("Cannot convert value with type {0} to IObjRef at {1}", (object) engValue.GetType(), (object) DynamicFSM.CurrentStateInfo));
-          return (object) null;
+          Logger.AddError(string.Format("Cannot convert value with type {0} to IObjRef at {1}", engValue.GetType(), DynamicFSM.CurrentStateInfo));
+          return null;
         }
       }
       if (flag3 | flag4)
       {
         if (engValue == null)
-          return (object) new VMSampleRef();
-        if (typeof (Engine.Common.IObject).IsAssignableFrom(engValue.GetType()))
+          return new VMSampleRef();
+        if (typeof (IObject).IsAssignableFrom(engValue.GetType()))
         {
           VMSampleRef editorType = new VMSampleRef();
-          editorType.Initialize(((Engine.Common.IObject) engValue).Id);
-          return (object) editorType;
+          editorType.Initialize(((IObject) engValue).Id);
+          return editorType;
         }
         if (typeof (ISampleRef).IsAssignableFrom(engValue.GetType()))
           return engValue;
         if (flag3)
         {
-          Logger.AddError(string.Format("Cannot convert value with type {0} to ISampleRef at {1}", (object) engValue.GetType(), (object) DynamicFSM.CurrentStateInfo));
-          return (object) null;
+          Logger.AddError(string.Format("Cannot convert value with type {0} to ISampleRef at {1}", engValue.GetType(), DynamicFSM.CurrentStateInfo));
+          return null;
         }
       }
       if (engValue == null)
-        return (object) null;
+        return null;
       if (engValue.GetType().IsEnum)
       {
         if (vmType == null)
           return engValue;
         if (typeof (string) == vmType.BaseType)
-          return (object) engValue.ToString();
+          return engValue.ToString();
         int num = vmType.BaseType.IsEnum ? 1 : 0;
         return engValue;
       }
@@ -285,7 +286,7 @@ namespace PLVirtualMachine.Base
       {
         for (int objIndex = 0; objIndex < ((ICommonList) engValue).ObjectsCount; ++objIndex)
         {
-          object editorType = VMEngineAPIManager.ConvertEngineTypeToEditorType(((ICommonList) engValue).GetObject(objIndex));
+          object editorType = ConvertEngineTypeToEditorType(((ICommonList) engValue).GetObject(objIndex));
           ((ICommonList) engValue).SetObject(objIndex, editorType);
         }
         return engValue;
@@ -297,23 +298,23 @@ namespace PLVirtualMachine.Base
     {
       get
       {
-        return VMEngineAPIManager.lastEntityMethodExecData.TargetEntity != null ? VMEngineAPIManager.lastEntityMethodExecData : (EntityMethodExecuteData) null;
+        return lastEntityMethodExecData.TargetEntity != null ? lastEntityMethodExecData : null;
       }
     }
 
     public static IDynamicGameObjectContext LastMethodExecInitiator
     {
-      get => VMEngineAPIManager.lastMethodExecInitiator;
+      get => lastMethodExecInitiator;
     }
 
-    public static void OnRestart() => VMEngineAPIManager.lastEntityMethodExecData.Clear();
+    public static void OnRestart() => lastEntityMethodExecData.Clear();
 
     public static void Clear()
     {
-      VMEngineAPIManager.lastMethodExecInitiator = (IDynamicGameObjectContext) null;
-      VMEngineAPIManager.lastEntityMethodExecData = new EntityMethodExecuteData();
-      VMEngineAPIManager.methodExecuteContextsDict.Clear();
-      foreach (KeyValuePair<string, Dictionary<EContextVariableCategory, List<IVariable>>> keyValuePair1 in EngineAPIManager.componentsAbstractVarsDict)
+      lastMethodExecInitiator = null;
+      lastEntityMethodExecData = new EntityMethodExecuteData();
+      methodExecuteContextsDict.Clear();
+      foreach (KeyValuePair<string, Dictionary<EContextVariableCategory, List<IVariable>>> keyValuePair1 in componentsAbstractVarsDict)
       {
         foreach (KeyValuePair<EContextVariableCategory, List<IVariable>> keyValuePair2 in keyValuePair1.Value)
         {
@@ -333,14 +334,14 @@ namespace PLVirtualMachine.Base
       string methodName,
       int paramsCount)
     {
-      string str = funcComponent.Name + methodName + paramsCount.ToString();
-      MethodExecuteContext methodExecuteContext1 = (MethodExecuteContext) null;
-      if (VMEngineAPIManager.methodExecuteContextsDict.TryGetValue(str, out methodExecuteContext1))
+      string str = funcComponent.Name + methodName + paramsCount;
+      MethodExecuteContext methodExecuteContext1 = null;
+      if (methodExecuteContextsDict.TryGetValue(str, out methodExecuteContext1))
         return methodExecuteContext1;
       MethodInfo componentMethodInfo = InfoAttribute.GetComponentMethodInfo(funcComponent.Name, methodName);
       MethodExecuteContext methodExecuteContext2 = new MethodExecuteContext();
       methodExecuteContext2.Initialize(str, componentMethodInfo);
-      VMEngineAPIManager.methodExecuteContextsDict.Add(str, methodExecuteContext2);
+      methodExecuteContextsDict.Add(str, methodExecuteContext2);
       return methodExecuteContext2;
     }
   }

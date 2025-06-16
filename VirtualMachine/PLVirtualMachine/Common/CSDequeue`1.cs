@@ -14,44 +14,44 @@ namespace PLVirtualMachine.Common
 
     public CSDequeue(List<T> list)
     {
-      this.linkedListData = new LinkedList<T>((IEnumerable<T>) list);
+      linkedListData = new LinkedList<T>(list);
     }
 
-    public void PushBack(T obj) => this.linkedListData.AddLast(obj);
+    public void PushBack(T obj) => linkedListData.AddLast(obj);
 
     public T PopBack()
     {
-      T obj = this.linkedListData.Last.Value;
-      this.linkedListData.RemoveLast();
+      T obj = linkedListData.Last.Value;
+      linkedListData.RemoveLast();
       return obj;
     }
 
-    public T GetBack() => this.linkedListData.Last.Value;
+    public T GetBack() => linkedListData.Last.Value;
 
     public void MergeBack(CSDequeue<T> other)
     {
-      this.linkedListData = new LinkedList<T>(this.linkedListData.Concat<T>((IEnumerable<T>) other.linkedListData));
+      linkedListData = new LinkedList<T>(linkedListData.Concat(other.linkedListData));
     }
 
-    public void PushFront(T obj) => this.linkedListData.AddFirst(obj);
+    public void PushFront(T obj) => linkedListData.AddFirst(obj);
 
     public T PopFront()
     {
-      if (this.linkedListData.First == null)
+      if (linkedListData.First == null)
         return default (T);
-      T obj = this.linkedListData.First.Value;
-      this.linkedListData.RemoveFirst();
+      T obj = linkedListData.First.Value;
+      linkedListData.RemoveFirst();
       return obj;
     }
 
-    public T GetFront() => this.linkedListData.First.Value;
+    public T GetFront() => linkedListData.First.Value;
 
     public void MergeFront(CSDequeue<T> other)
     {
       LinkedList<T> linkedListData = other.linkedListData;
       try
       {
-        this.linkedListData = new LinkedList<T>(linkedListData.Concat<T>((IEnumerable<T>) this.linkedListData));
+        this.linkedListData = new LinkedList<T>(linkedListData.Concat(this.linkedListData));
       }
       catch (Exception ex)
       {
@@ -59,12 +59,12 @@ namespace PLVirtualMachine.Common
       }
     }
 
-    public void Clear() => this.linkedListData.Clear();
+    public void Clear() => linkedListData.Clear();
 
-    public int Count() => this.linkedListData.Count;
+    public int Count() => linkedListData.Count;
 
-    public bool Empty() => this.linkedListData.Count == 0;
+    public bool Empty() => linkedListData.Count == 0;
 
-    public List<T> ToList => this.linkedListData.ToList<T>();
+    public List<T> ToList => linkedListData.ToList();
   }
 }

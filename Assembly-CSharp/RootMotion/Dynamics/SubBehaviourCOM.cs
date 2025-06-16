@@ -1,12 +1,11 @@
 ﻿using System;
-using UnityEngine;
 
 namespace RootMotion.Dynamics
 {
   [Serializable]
   public class SubBehaviourCOM : SubBehaviourBase
   {
-    public SubBehaviourCOM.Mode mode;
+    public Mode mode;
     public float velocityDamper = 1f;
     public float velocityLerpSpeed = 5f;
     public float velocityMax = 1f;
@@ -40,79 +39,79 @@ namespace RootMotion.Dynamics
     {
       this.behaviour = behaviour;
       this.groundLayers = groundLayers;
-      this.rotation = Quaternion.identity;
-      this.groundContacts = new bool[behaviour.puppetMaster.muscles.Length];
-      this.groundContactPoints = new Vector3[this.groundContacts.Length];
-      behaviour.OnPreActivate += new BehaviourBase.BehaviourDelegate(this.OnPreActivate);
-      behaviour.OnPreLateUpdate += new BehaviourBase.BehaviourDelegate(this.OnPreLateUpdate);
-      behaviour.OnPreDeactivate += new BehaviourBase.BehaviourDelegate(this.OnPreDeactivate);
-      behaviour.OnPreMuscleCollision += new BehaviourBase.CollisionDelegate(this.OnPreMuscleCollision);
-      behaviour.OnPreMuscleCollisionExit += new BehaviourBase.CollisionDelegate(this.OnPreMuscleCollisionExit);
-      behaviour.OnHierarchyChanged += new BehaviourBase.BehaviourDelegate(this.OnHierarchyChanged);
+      rotation = Quaternion.identity;
+      groundContacts = new bool[behaviour.puppetMaster.muscles.Length];
+      groundContactPoints = new Vector3[groundContacts.Length];
+      behaviour.OnPreActivate += OnPreActivate;
+      behaviour.OnPreLateUpdate += OnPreLateUpdate;
+      behaviour.OnPreDeactivate += OnPreDeactivate;
+      behaviour.OnPreMuscleCollision += OnPreMuscleCollision;
+      behaviour.OnPreMuscleCollisionExit += OnPreMuscleCollisionExit;
+      behaviour.OnHierarchyChanged += OnHierarchyChanged;
     }
 
     private void OnHierarchyChanged()
     {
-      Array.Resize<bool>(ref this.groundContacts, this.behaviour.puppetMaster.muscles.Length);
-      Array.Resize<Vector3>(ref this.groundContactPoints, this.behaviour.puppetMaster.muscles.Length);
+      Array.Resize(ref groundContacts, behaviour.puppetMaster.muscles.Length);
+      Array.Resize(ref groundContactPoints, behaviour.puppetMaster.muscles.Length);
     }
 
     private void OnPreMuscleCollision(MuscleCollision c)
     {
-      if (!LayerMaskExtensions.Contains(this.groundLayers, c.collision.gameObject.layer) || c.collision.contacts.Length == 0)
+      if (!LayerMaskExtensions.Contains(groundLayers, c.collision.gameObject.layer) || c.collision.contacts.Length == 0)
         return;
-      this.lastGroundedTime = Time.time;
-      this.groundContacts[c.muscleIndex] = true;
-      if (this.mode != SubBehaviourCOM.Mode.CenterOfPressure)
+      lastGroundedTime = Time.time;
+      groundContacts[c.muscleIndex] = true;
+      if (mode != Mode.CenterOfPressure)
         return;
-      this.groundContactPoints[c.muscleIndex] = this.GetCollisionCOP(c.collision);
+      groundContactPoints[c.muscleIndex] = GetCollisionCOP(c.collision);
     }
 
     private void OnPreMuscleCollisionExit(MuscleCollision c)
     {
-      if (!LayerMaskExtensions.Contains(this.groundLayers, c.collision.gameObject.layer))
+      if (!LayerMaskExtensions.Contains(groundLayers, c.collision.gameObject.layer))
         return;
-      this.groundContacts[c.muscleIndex] = false;
-      this.groundContactPoints[c.muscleIndex] = Vector3.zero;
+      groundContacts[c.muscleIndex] = false;
+      groundContactPoints[c.muscleIndex] = Vector3.zero;
     }
 
     private void OnPreActivate()
     {
-      this.position = this.GetCenterOfMass();
-      this.centerOfPressure = this.GetFeetCentroid();
-      this.direction = this.position - this.centerOfPressure;
-      this.angle = Vector3.Angle(this.direction, Vector3.up);
-      this.velocity = Vector3.zero;
+      position = GetCenterOfMass();
+      centerOfPressure = GetFeetCentroid();
+      direction = position - centerOfPressure;
+      angle = Vector3.Angle(direction, Vector3.up);
+      velocity = Vector3.zero;
     }
 
     private void OnPreLateUpdate()
     {
-      this.isGrounded = this.IsGrounded();
-      if (this.mode == SubBehaviourCOM.Mode.FeetCentroid || !this.isGrounded)
+      isGrounded = IsGrounded();
+      if (mode == Mode.FeetCentroid || !isGrounded)
       {
-        this.centerOfPressure = this.GetFeetCentroid();
+        centerOfPressure = GetFeetCentroid();
       }
       else
       {
-        Vector3 b = this.isGrounded ? this.GetCenterOfPressure() : this.GetFeetCentroid();
-        this.centerOfPressure = (double) this.centerOfPressureSpeed <= 2.0 ? b : Vector3.Lerp(this.centerOfPressure, b, Time.deltaTime * this.centerOfPressureSpeed);
+        Vector3 b = isGrounded ? GetCenterOfPressure() : GetFeetCentroid();
+        centerOfPressure = centerOfPressureSpeed <= 2.0 ? b : Vector3.Lerp(centerOfPressure, b, Time.deltaTime * centerOfPressureSpeed);
       }
-      this.position = this.GetCenterOfMass();
-      Vector3 vector3 = (this.GetCenterOfMassVelocity() - this.position) with
+      position = GetCenterOfMass();
+      Vector3 vector3 = (GetCenterOfMassVelocity() - position) with
       {
         y = 0.0f
       };
-      vector3 = Vector3.ClampMagnitude(vector3, this.velocityMax);
-      this.velocity = (double) this.velocityLerpSpeed <= 0.0 ? vector3 : Vector3.Lerp(this.velocity, vector3, Time.deltaTime * this.velocityLerpSpeed);
-      this.position += this.velocity * this.velocityDamper;
-      this.position += this.behaviour.puppetMaster.targetRoot.rotation * this.offset;
-      this.direction = this.position - this.centerOfPressure;
-      this.rotation = Quaternion.FromToRotation(Vector3.up, this.direction);
-      this.inverseRotation = Quaternion.Inverse(this.rotation);
-      this.angle = Quaternion.Angle(Quaternion.identity, this.rotation);
+      vector3 = Vector3.ClampMagnitude(vector3, velocityMax);
+      velocity = velocityLerpSpeed <= 0.0 ? vector3 : Vector3.Lerp(velocity, vector3, Time.deltaTime * velocityLerpSpeed);
+      position += velocity * velocityDamper;
+      position += behaviour.puppetMaster.targetRoot.rotation * offset;
+      direction = position - centerOfPressure;
+      rotation = Quaternion.FromToRotation(Vector3.up, direction);
+      inverseRotation = Quaternion.Inverse(rotation);
+      angle = Quaternion.Angle(Quaternion.identity, rotation);
     }
 
-    private void OnPreDeactivate() => this.velocity = Vector3.zero;
+    private void OnPreDeactivate() => velocity = Vector3.zero;
 
     private Vector3 GetCollisionCOP(Collision collision)
     {
@@ -124,9 +123,9 @@ namespace RootMotion.Dynamics
 
     private bool IsGrounded()
     {
-      for (int index = 0; index < this.groundContacts.Length; ++index)
+      for (int index = 0; index < groundContacts.Length; ++index)
       {
-        if (this.groundContacts[index])
+        if (groundContacts[index])
           return true;
       }
       return false;
@@ -136,7 +135,7 @@ namespace RootMotion.Dynamics
     {
       Vector3 zero = Vector3.zero;
       float num = 0.0f;
-      foreach (Muscle muscle in this.behaviour.puppetMaster.muscles)
+      foreach (Muscle muscle in behaviour.puppetMaster.muscles)
       {
         zero += muscle.rigidbody.worldCenterOfMass * muscle.rigidbody.mass;
         num += muscle.rigidbody.mass;
@@ -149,7 +148,7 @@ namespace RootMotion.Dynamics
     {
       Vector3 vector3_1 = Vector3.zero;
       float num = 0.0f;
-      foreach (Muscle muscle in this.behaviour.puppetMaster.muscles)
+      foreach (Muscle muscle in behaviour.puppetMaster.muscles)
       {
         vector3_1 = vector3_1 + muscle.rigidbody.worldCenterOfMass * muscle.rigidbody.mass + muscle.rigidbody.velocity * muscle.rigidbody.mass;
         num += muscle.rigidbody.mass;
@@ -161,8 +160,8 @@ namespace RootMotion.Dynamics
     private Vector3 GetMomentum()
     {
       Vector3 zero = Vector3.zero;
-      for (int index = 0; index < this.behaviour.puppetMaster.muscles.Length; ++index)
-        zero += this.behaviour.puppetMaster.muscles[index].rigidbody.velocity * this.behaviour.puppetMaster.muscles[index].rigidbody.mass;
+      for (int index = 0; index < behaviour.puppetMaster.muscles.Length; ++index)
+        zero += behaviour.puppetMaster.muscles[index].rigidbody.velocity * behaviour.puppetMaster.muscles[index].rigidbody.mass;
       return zero;
     }
 
@@ -170,11 +169,11 @@ namespace RootMotion.Dynamics
     {
       Vector3 zero = Vector3.zero;
       int num = 0;
-      for (int index = 0; index < this.groundContacts.Length; ++index)
+      for (int index = 0; index < groundContacts.Length; ++index)
       {
-        if (this.groundContacts[index])
+        if (groundContacts[index])
         {
-          zero += this.groundContactPoints[index];
+          zero += groundContactPoints[index];
           ++num;
         }
       }
@@ -185,11 +184,11 @@ namespace RootMotion.Dynamics
     {
       Vector3 zero = Vector3.zero;
       int num = 0;
-      for (int index = 0; index < this.behaviour.puppetMaster.muscles.Length; ++index)
+      for (int index = 0; index < behaviour.puppetMaster.muscles.Length; ++index)
       {
-        if (this.behaviour.puppetMaster.muscles[index].props.group == Muscle.Group.Foot)
+        if (behaviour.puppetMaster.muscles[index].props.group == Muscle.Group.Foot)
         {
-          zero += this.behaviour.puppetMaster.muscles[index].rigidbody.worldCenterOfMass;
+          zero += behaviour.puppetMaster.muscles[index].rigidbody.worldCenterOfMass;
           ++num;
         }
       }

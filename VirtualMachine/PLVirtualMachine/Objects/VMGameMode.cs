@@ -1,11 +1,11 @@
-﻿using Cofe.Loggers;
+﻿using System.Xml;
+using Cofe.Loggers;
 using Engine.Common.Commons;
 using PLVirtualMachine.Base;
 using PLVirtualMachine.Common;
 using PLVirtualMachine.Common.Data;
 using PLVirtualMachine.Common.EngineAPI;
 using PLVirtualMachine.Data;
-using System.Xml;
 using VirtualMachine.Common;
 using VirtualMachine.Common.Data;
 using VirtualMachine.Data;
@@ -22,50 +22,49 @@ namespace PLVirtualMachine.Objects
     IObject,
     IEditorBaseTemplate
   {
-    [FieldData("IsMain", DataFieldType.None)]
+    [FieldData("IsMain")]
     private bool isMain;
-    [FieldData("StartGameTime", DataFieldType.None)]
+    [FieldData("StartGameTime")]
     private GameTime startGameTime;
-    [FieldData("StartSolarTime", DataFieldType.None)]
+    [FieldData("StartSolarTime")]
     private GameTime startSolarTime;
-    [FieldData("GameTimeSpeed", DataFieldType.None)]
+    [FieldData("GameTimeSpeed")]
     private float gameTimeSpeed;
-    [FieldData("SolarTimeSpeed", DataFieldType.None)]
+    [FieldData("SolarTimeSpeed")]
     private float solarTimeSpeed;
-    [FieldData("PlayerRef", DataFieldType.None)]
+    [FieldData("PlayerRef")]
     private CommonVariable playerRef;
 
     public virtual void EditorDataRead(XmlReader xml, IDataCreator creator, string typeContext)
     {
-      while (xml.Read())
-      {
+      while (xml.Read()) {
         if (xml.NodeType == XmlNodeType.Element)
         {
           switch (xml.Name)
           {
             case "GameTimeSpeed":
-              this.gameTimeSpeed = EditorDataReadUtility.ReadValue(xml, this.gameTimeSpeed);
+              gameTimeSpeed = EditorDataReadUtility.ReadValue(xml, gameTimeSpeed);
               continue;
             case "IsMain":
-              this.isMain = EditorDataReadUtility.ReadValue(xml, this.isMain);
+              isMain = EditorDataReadUtility.ReadValue(xml, isMain);
               continue;
             case "Name":
-              this.name = EditorDataReadUtility.ReadValue(xml, this.name);
+              name = EditorDataReadUtility.ReadValue(xml, name);
               continue;
             case "Parent":
-              this.parent = EditorDataReadUtility.ReadReference<IContainer>(xml, creator);
+              parent = EditorDataReadUtility.ReadReference<IContainer>(xml, creator);
               continue;
             case "PlayerRef":
-              this.playerRef = EditorDataReadUtility.ReadSerializable<CommonVariable>(xml);
+              playerRef = EditorDataReadUtility.ReadSerializable<CommonVariable>(xml);
               continue;
             case "SolarTimeSpeed":
-              this.solarTimeSpeed = EditorDataReadUtility.ReadValue(xml, this.solarTimeSpeed);
+              solarTimeSpeed = EditorDataReadUtility.ReadValue(xml, solarTimeSpeed);
               continue;
             case "StartGameTime":
-              this.startGameTime = EditorDataReadUtility.ReadSerializable<GameTime>(xml);
+              startGameTime = EditorDataReadUtility.ReadSerializable<GameTime>(xml);
               continue;
             case "StartSolarTime":
-              this.startSolarTime = EditorDataReadUtility.ReadSerializable<GameTime>(xml);
+              startSolarTime = EditorDataReadUtility.ReadSerializable<GameTime>(xml);
               continue;
             default:
               if (XMLDataLoader.Logs.Add(typeContext + " : " + xml.Name))
@@ -74,7 +73,8 @@ namespace PLVirtualMachine.Objects
               continue;
           }
         }
-        else if (xml.NodeType == XmlNodeType.EndElement)
+
+        if (xml.NodeType == XmlNodeType.EndElement)
           break;
       }
     }
@@ -86,16 +86,16 @@ namespace PLVirtualMachine.Objects
 
     public override EObjectCategory GetCategory() => EObjectCategory.OBJECT_CATEGORY_GAME_MODE;
 
-    public bool IsMain => this.isMain;
+    public bool IsMain => isMain;
 
-    public GameTime StartGameTime => this.startGameTime;
+    public GameTime StartGameTime => startGameTime;
 
-    public float GameTimeSpeed => this.gameTimeSpeed;
+    public float GameTimeSpeed => gameTimeSpeed;
 
-    public GameTime StartSolarTime => this.startSolarTime;
+    public GameTime StartSolarTime => startSolarTime;
 
-    public float SolarTimeSpeed => this.solarTimeSpeed;
+    public float SolarTimeSpeed => solarTimeSpeed;
 
-    public CommonVariable PlayCharacterVariable => this.playerRef;
+    public CommonVariable PlayCharacterVariable => playerRef;
   }
 }

@@ -21,7 +21,7 @@ namespace ParadoxNotion.Serialization.FullSerializer
       {
         char ch = str[index];
         int int32 = Convert.ToInt32(ch);
-        if (int32 < 0 || int32 > (int) sbyte.MaxValue)
+        if (int32 < 0 || int32 > sbyte.MaxValue)
         {
           flag = true;
           break;
@@ -50,9 +50,9 @@ namespace ParadoxNotion.Serialization.FullSerializer
       {
         char ch = str[index];
         int int32 = Convert.ToInt32(ch);
-        if (int32 < 0 || int32 > (int) sbyte.MaxValue)
+        if (int32 < 0 || int32 > sbyte.MaxValue)
         {
-          stringBuilder.Append(string.Format("\\u{0:x4} ", (object) int32).Trim());
+          stringBuilder.Append(string.Format("\\u{0:x4} ", int32).Trim());
         }
         else
         {
@@ -106,7 +106,7 @@ namespace ParadoxNotion.Serialization.FullSerializer
             if (flag1)
               stream.Write(',');
             flag1 = true;
-            fsJsonPrinter.BuildCompressedString(data1, stream);
+            BuildCompressedString(data1, stream);
           }
           stream.Write(']');
           break;
@@ -124,13 +124,13 @@ namespace ParadoxNotion.Serialization.FullSerializer
               stream.Write(keyValuePair.Key);
               stream.Write('"');
               stream.Write(":");
-              fsJsonPrinter.BuildCompressedString(keyValuePair.Value, stream);
+              BuildCompressedString(keyValuePair.Value, stream);
             }
           }
           stream.Write('}');
           break;
         case fsDataType.Double:
-          stream.Write(fsJsonPrinter.ConvertDoubleToString(data.AsDouble));
+          stream.Write(ConvertDoubleToString(data.AsDouble));
           break;
         case fsDataType.Int64:
           stream.Write(data.AsInt64);
@@ -145,7 +145,7 @@ namespace ParadoxNotion.Serialization.FullSerializer
           break;
         case fsDataType.String:
           stream.Write('"');
-          stream.Write(fsJsonPrinter.EscapeString(data.AsString));
+          stream.Write(EscapeString(data.AsString));
           stream.Write('"');
           break;
         case fsDataType.Null:
@@ -175,11 +175,11 @@ namespace ParadoxNotion.Serialization.FullSerializer
               stream.WriteLine();
             }
             flag1 = true;
-            fsJsonPrinter.InsertSpacing(stream, depth + 1);
-            fsJsonPrinter.BuildPrettyString(data1, stream, depth + 1);
+            InsertSpacing(stream, depth + 1);
+            BuildPrettyString(data1, stream, depth + 1);
           }
           stream.WriteLine();
-          fsJsonPrinter.InsertSpacing(stream, depth);
+          InsertSpacing(stream, depth);
           stream.Write(']');
           break;
         case fsDataType.Object:
@@ -196,20 +196,20 @@ namespace ParadoxNotion.Serialization.FullSerializer
                 stream.WriteLine();
               }
               flag2 = true;
-              fsJsonPrinter.InsertSpacing(stream, depth + 1);
+              InsertSpacing(stream, depth + 1);
               stream.Write('"');
               stream.Write(keyValuePair.Key);
               stream.Write('"');
               stream.Write(": ");
-              fsJsonPrinter.BuildPrettyString(keyValuePair.Value, stream, depth + 1);
+              BuildPrettyString(keyValuePair.Value, stream, depth + 1);
             }
           }
           stream.WriteLine();
-          fsJsonPrinter.InsertSpacing(stream, depth);
+          InsertSpacing(stream, depth);
           stream.Write('}');
           break;
         case fsDataType.Double:
-          stream.Write(fsJsonPrinter.ConvertDoubleToString(data.AsDouble));
+          stream.Write(ConvertDoubleToString(data.AsDouble));
           break;
         case fsDataType.Int64:
           stream.Write(data.AsInt64);
@@ -224,7 +224,7 @@ namespace ParadoxNotion.Serialization.FullSerializer
           break;
         case fsDataType.String:
           stream.Write('"');
-          stream.Write(fsJsonPrinter.EscapeString(data.AsString));
+          stream.Write(EscapeString(data.AsString));
           stream.Write('"');
           break;
         case fsDataType.Null:
@@ -235,7 +235,7 @@ namespace ParadoxNotion.Serialization.FullSerializer
 
     public static void PrettyJson(fsData data, TextWriter outputStream)
     {
-      fsJsonPrinter.BuildPrettyString(data, outputStream, 0);
+      BuildPrettyString(data, outputStream, 0);
     }
 
     public static string PrettyJson(fsData data)
@@ -243,14 +243,14 @@ namespace ParadoxNotion.Serialization.FullSerializer
       StringBuilder sb = new StringBuilder();
       using (StringWriter stream = new StringWriter(sb))
       {
-        fsJsonPrinter.BuildPrettyString(data, (TextWriter) stream, 0);
+        BuildPrettyString(data, stream, 0);
         return sb.ToString();
       }
     }
 
     public static void CompressedJson(fsData data, StreamWriter outputStream)
     {
-      fsJsonPrinter.BuildCompressedString(data, (TextWriter) outputStream);
+      BuildCompressedString(data, outputStream);
     }
 
     public static string CompressedJson(fsData data)
@@ -258,7 +258,7 @@ namespace ParadoxNotion.Serialization.FullSerializer
       StringBuilder sb = new StringBuilder();
       using (StringWriter stream = new StringWriter(sb))
       {
-        fsJsonPrinter.BuildCompressedString(data, (TextWriter) stream);
+        BuildCompressedString(data, stream);
         return sb.ToString();
       }
     }
@@ -266,8 +266,8 @@ namespace ParadoxNotion.Serialization.FullSerializer
     private static string ConvertDoubleToString(double d)
     {
       if (double.IsInfinity(d) || double.IsNaN(d))
-        return d.ToString((IFormatProvider) CultureInfo.InvariantCulture);
-      string str = d.ToString((IFormatProvider) CultureInfo.InvariantCulture);
+        return d.ToString(CultureInfo.InvariantCulture);
+      string str = d.ToString(CultureInfo.InvariantCulture);
       if (!str.Contains(".") && !str.Contains("e") && !str.Contains("E"))
         str += ".0";
       return str;

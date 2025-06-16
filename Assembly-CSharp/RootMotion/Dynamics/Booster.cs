@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEngine;
 
 namespace RootMotion.Dynamics
 {
@@ -26,29 +25,29 @@ namespace RootMotion.Dynamics
 
     public void Boost(BehaviourPuppet puppet)
     {
-      if (this.fullBody)
+      if (fullBody)
       {
-        puppet.Boost(this.immunity, this.impulseMlp);
+        puppet.Boost(immunity, impulseMlp);
       }
       else
       {
-        foreach (ConfigurableJoint muscle in this.muscles)
+        foreach (ConfigurableJoint muscle in muscles)
         {
           for (int muscleIndex = 0; muscleIndex < puppet.puppetMaster.muscles.Length; ++muscleIndex)
           {
             if ((UnityEngine.Object) puppet.puppetMaster.muscles[muscleIndex].joint == (UnityEngine.Object) muscle)
             {
-              puppet.Boost(muscleIndex, this.immunity, this.impulseMlp, this.boostParents, this.boostChildren);
+              puppet.Boost(muscleIndex, immunity, impulseMlp, boostParents, boostChildren);
               break;
             }
           }
         }
-        foreach (Muscle.Group group in this.groups)
+        foreach (Muscle.Group group in groups)
         {
           for (int muscleIndex = 0; muscleIndex < puppet.puppetMaster.muscles.Length; ++muscleIndex)
           {
             if (puppet.puppetMaster.muscles[muscleIndex].props.group == group)
-              puppet.Boost(muscleIndex, this.immunity, this.impulseMlp, this.boostParents, this.boostChildren);
+              puppet.Boost(muscleIndex, immunity, impulseMlp, boostParents, boostChildren);
           }
         }
       }

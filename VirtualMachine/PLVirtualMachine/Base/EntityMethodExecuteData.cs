@@ -1,7 +1,7 @@
-﻿using PLVirtualMachine.Common.EngineAPI.VMECS;
-using PLVirtualMachine.Dynamic;
-using System;
+﻿using System;
 using System.Reflection;
+using PLVirtualMachine.Common.EngineAPI.VMECS;
+using PLVirtualMachine.Dynamic;
 
 namespace PLVirtualMachine.Base
 {
@@ -13,15 +13,15 @@ namespace PLVirtualMachine.Base
       MethodInfo methodInfo,
       object[] dParams)
     {
-      this.TargetEntity = entity;
-      this.TargetComponent = comp;
-      this.ExecMethodInfo = methodInfo;
-      this.InputParams = dParams;
+      TargetEntity = entity;
+      TargetComponent = comp;
+      ExecMethodInfo = methodInfo;
+      InputParams = dParams;
     }
 
     public VMEntity TargetEntity { get; private set; }
 
-    public Guid TargetEntityGuid => this.TargetEntity.EngineGuid;
+    public Guid TargetEntityGuid => TargetEntity.EngineGuid;
 
     public MethodInfo ExecMethodInfo { get; private set; }
 
@@ -29,6 +29,6 @@ namespace PLVirtualMachine.Base
 
     public VMComponent TargetComponent { get; private set; }
 
-    public void Clear() => this.TargetEntity = (VMEntity) null;
+    public void Clear() => TargetEntity = null;
   }
 }

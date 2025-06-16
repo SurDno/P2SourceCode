@@ -11,13 +11,13 @@ namespace UnityEngine.PostProcessing
 
     public bool enabled
     {
-      get => this.m_Enabled;
+      get => m_Enabled;
       set
       {
-        this.m_Enabled = value;
+        m_Enabled = value;
         if (!value)
           return;
-        this.OnValidate();
+        OnValidate();
       }
     }
 

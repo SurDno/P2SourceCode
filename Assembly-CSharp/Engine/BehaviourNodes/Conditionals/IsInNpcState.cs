@@ -1,4 +1,5 @@
-﻿using BehaviorDesigner.Runtime;
+﻿using System;
+using BehaviorDesigner.Runtime;
 using BehaviorDesigner.Runtime.Tasks;
 using Cofe.Proxies;
 using Cofe.Serializations.Data;
@@ -6,7 +7,6 @@ using Engine.Common.Commons;
 using Engine.Common.Commons.Converters;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
-using UnityEngine;
 
 namespace Engine.BehaviourNodes.Conditionals
 {
@@ -17,36 +17,36 @@ namespace Engine.BehaviourNodes.Conditionals
   [FactoryProxy(typeof (IsInNpcState))]
   public class IsInNpcState : Conditional, IStub, ISerializeDataWrite, ISerializeDataRead
   {
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy()]
     [SerializeField]
     public NpcStateEnum npcState;
 
     public override TaskStatus OnUpdate()
     {
-      NpcState component = this.gameObject.GetComponent<NpcState>();
-      return (UnityEngine.Object) component == (UnityEngine.Object) null ? TaskStatus.Failure : (component.CurrentNpcState == this.npcState ? TaskStatus.Success : TaskStatus.Failure);
+      NpcState component = gameObject.GetComponent<NpcState>();
+      return (UnityEngine.Object) component == (UnityEngine.Object) null ? TaskStatus.Failure : (component.CurrentNpcState == npcState ? TaskStatus.Success : TaskStatus.Failure);
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.WriteSerialize<NodeData>(writer, "NodeData", this.nodeData);
-      DefaultDataWriteUtility.Write(writer, "Id", this.id);
-      DefaultDataWriteUtility.Write(writer, "FriendlyName", this.friendlyName);
-      DefaultDataWriteUtility.Write(writer, "Instant", this.instant);
-      DefaultDataWriteUtility.Write(writer, "Disabled", this.disabled);
-      DefaultDataWriteUtility.WriteEnum<NpcStateEnum>(writer, "NpcState", this.npcState);
+      DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
+      DefaultDataWriteUtility.Write(writer, "Id", id);
+      DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
+      DefaultDataWriteUtility.Write(writer, "Instant", instant);
+      DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
+      DefaultDataWriteUtility.WriteEnum(writer, "NpcState", npcState);
     }
 
-    public void DataRead(IDataReader reader, System.Type type)
+    public void DataRead(IDataReader reader, Type type)
     {
-      this.nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
-      this.id = DefaultDataReadUtility.Read(reader, "Id", this.id);
-      this.friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", this.friendlyName);
-      this.instant = DefaultDataReadUtility.Read(reader, "Instant", this.instant);
-      this.disabled = DefaultDataReadUtility.Read(reader, "Disabled", this.disabled);
-      this.npcState = DefaultDataReadUtility.ReadEnum<NpcStateEnum>(reader, "NpcState");
+      nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
+      id = DefaultDataReadUtility.Read(reader, "Id", id);
+      friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
+      instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
+      disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
+      npcState = DefaultDataReadUtility.ReadEnum<NpcStateEnum>(reader, "NpcState");
     }
   }
 }

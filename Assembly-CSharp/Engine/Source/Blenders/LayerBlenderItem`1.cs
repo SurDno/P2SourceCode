@@ -1,11 +1,10 @@
-﻿using Engine.Common;
+﻿using System;
+using Engine.Common;
 using Engine.Common.Blenders;
 using Engine.Common.Services;
 using Engine.Impl.Services;
 using Engine.Source.Commons;
 using Inspectors;
-using System;
-using UnityEngine;
 
 namespace Engine.Source.Blenders
 {
@@ -30,91 +29,91 @@ namespace Engine.Source.Blenders
 
     public ISmoothBlender<T> Blender
     {
-      get => this.blender;
+      get => blender;
       set
       {
-        if (this.blender != null)
-          this.blender.OnChanged -= new Action<ISmoothBlender<T>>(this.BlenderOnChanged);
-        this.blender = value;
-        if (this.blender != null)
-          this.blender.OnChanged += new Action<ISmoothBlender<T>>(this.BlenderOnChanged);
-        Action<ILayerBlenderItem<T>> onChanged = this.OnChanged;
+        if (blender != null)
+          blender.OnChanged -= BlenderOnChanged;
+        blender = value;
+        if (blender != null)
+          blender.OnChanged += BlenderOnChanged;
+        Action<ILayerBlenderItem<T>> onChanged = OnChanged;
         if (onChanged == null)
           return;
-        onChanged((ILayerBlenderItem<T>) this);
+        onChanged(this);
       }
     }
 
     private void BlenderOnChanged(ISmoothBlender<T> obj)
     {
-      Action<ILayerBlenderItem<T>> onChanged = this.OnChanged;
+      Action<ILayerBlenderItem<T>> onChanged = OnChanged;
       if (onChanged == null)
         return;
-      onChanged((ILayerBlenderItem<T>) this);
+      onChanged(this);
     }
 
     [Inspected]
-    public float Opacity => this.currentOpacity;
+    public float Opacity => currentOpacity;
 
     [Inspected]
-    public float TargetOpacity => this.compute ? this.targetOpacity : this.currentOpacity;
+    public float TargetOpacity => compute ? targetOpacity : currentOpacity;
 
-    public void SetOpacity(float value) => this.SetOpacity(value, TimeSpan.Zero);
+    public void SetOpacity(float value) => SetOpacity(value, TimeSpan.Zero);
 
     public void SetOpacity(float value, TimeSpan interval)
     {
-      this.Stop();
-      this.startTime = ServiceLocator.GetService<TimeService>().AbsoluteGameTime;
+      Stop();
+      startTime = ServiceLocator.GetService<TimeService>().AbsoluteGameTime;
       this.interval = interval;
-      this.targetOpacity = value;
-      this.compute = true;
-      InstanceByRequest<UpdateService>.Instance.Updater.AddUpdatable((IUpdatable) this);
+      targetOpacity = value;
+      compute = true;
+      InstanceByRequest<UpdateService>.Instance.Updater.AddUpdatable(this);
     }
 
     private void Stop()
     {
-      if (!this.compute)
+      if (!compute)
         return;
-      this.compute = false;
-      InstanceByRequest<UpdateService>.Instance.Updater.RemoveUpdatable((IUpdatable) this);
-      this.fromOpacity = this.currentOpacity;
-      this.startTime = TimeSpan.Zero;
-      this.interval = TimeSpan.Zero;
-      this.targetOpacity = 0.0f;
-      this.progress = 0.0f;
-      Action<ILayerBlenderItem<T>> onChanged = this.OnChanged;
+      compute = false;
+      InstanceByRequest<UpdateService>.Instance.Updater.RemoveUpdatable(this);
+      fromOpacity = currentOpacity;
+      startTime = TimeSpan.Zero;
+      interval = TimeSpan.Zero;
+      targetOpacity = 0.0f;
+      progress = 0.0f;
+      Action<ILayerBlenderItem<T>> onChanged = OnChanged;
       if (onChanged == null)
         return;
-      onChanged((ILayerBlenderItem<T>) this);
+      onChanged(this);
     }
 
     public override void Dispose()
     {
-      this.Stop();
+      Stop();
       base.Dispose();
     }
 
     public void ComputeUpdate()
     {
-      if (!this.compute)
+      if (!compute)
         return;
-      TimeSpan timeSpan = ServiceLocator.GetService<TimeService>().AbsoluteGameTime - this.startTime;
-      if (timeSpan >= this.interval)
+      TimeSpan timeSpan = ServiceLocator.GetService<TimeService>().AbsoluteGameTime - startTime;
+      if (timeSpan >= interval)
       {
-        this.currentOpacity = this.targetOpacity;
-        this.Stop();
+        currentOpacity = targetOpacity;
+        Stop();
       }
       else
       {
-        float num = Mathf.Clamp01((float) (timeSpan.TotalSeconds / this.interval.TotalSeconds));
-        if ((double) num == (double) this.progress)
+        float num = Mathf.Clamp01((float) (timeSpan.TotalSeconds / interval.TotalSeconds));
+        if (num == (double) progress)
           return;
-        this.progress = num;
-        this.currentOpacity = Mathf.LerpUnclamped(this.fromOpacity, this.targetOpacity, this.progress);
-        Action<ILayerBlenderItem<T>> onChanged = this.OnChanged;
+        progress = num;
+        currentOpacity = Mathf.LerpUnclamped(fromOpacity, targetOpacity, progress);
+        Action<ILayerBlenderItem<T>> onChanged = OnChanged;
         if (onChanged == null)
           return;
-        onChanged((ILayerBlenderItem<T>) this);
+        onChanged(this);
       }
     }
 

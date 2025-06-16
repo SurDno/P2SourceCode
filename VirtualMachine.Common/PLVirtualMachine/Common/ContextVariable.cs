@@ -1,6 +1,6 @@
-﻿using PLVirtualMachine.Common.EngineAPI;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using PLVirtualMachine.Common.EngineAPI;
 
 namespace PLVirtualMachine.Common
 {
@@ -20,15 +20,15 @@ namespace PLVirtualMachine.Common
       get => EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_LOCAL_VAR;
     }
 
-    public string Name => this.name;
+    public string Name => name;
 
-    public VMType Type => this.type;
+    public VMType Type => type;
 
     public IEnumerable<string> GetComponentNames()
     {
-      if (this.Type.IsFunctionalSpecial)
+      if (Type.IsFunctionalSpecial)
       {
-        foreach (string functionalPart in this.Type.GetFunctionalParts())
+        foreach (string functionalPart in Type.GetFunctionalParts())
           yield return functionalPart;
       }
     }
@@ -36,40 +36,40 @@ namespace PLVirtualMachine.Common
     public virtual IEnumerable<IVariable> GetContextVariables(
       EContextVariableCategory contextVarCategory)
     {
-      return this.TypedBlueprint != null ? this.TypedBlueprint.GetContextVariables(contextVarCategory) : this.GetFunctionalContextVariables(contextVarCategory);
+      return TypedBlueprint != null ? TypedBlueprint.GetContextVariables(contextVarCategory) : GetFunctionalContextVariables(contextVarCategory);
     }
 
     public virtual IVariable GetContextVariable(string variableName)
     {
-      foreach (IVariable functionalContextVariable in this.GetFunctionalContextVariables(EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_PARAM))
+      foreach (IVariable functionalContextVariable in GetFunctionalContextVariables(EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_PARAM))
       {
         if (functionalContextVariable.Name == variableName)
           return functionalContextVariable;
       }
-      foreach (IVariable functionalContextVariable in this.GetFunctionalContextVariables(EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_APIFUNCTION))
+      foreach (IVariable functionalContextVariable in GetFunctionalContextVariables(EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_APIFUNCTION))
       {
         if (functionalContextVariable.Name == variableName)
           return functionalContextVariable;
       }
-      return this.TypedBlueprint != null ? this.TypedBlueprint.GetContextVariable(variableName) : (IVariable) null;
+      return TypedBlueprint != null ? TypedBlueprint.GetContextVariable(variableName) : null;
     }
 
     public IBlueprint TypedBlueprint
     {
-      get => this.Type.IsComplexSpecial ? this.Type.SpecialTypeBlueprint : (IBlueprint) null;
+      get => Type.IsComplexSpecial ? Type.SpecialTypeBlueprint : null;
     }
 
     public bool IsFunctionalSupport(string componentName)
     {
-      return this.GetComponentNames().Contains<string>(componentName);
+      return GetComponentNames().Contains(componentName);
     }
 
     public bool IsFunctionalSupport(IEnumerable<string> functionalsList)
     {
-      IEnumerable<string> componentNames = this.GetComponentNames();
+      IEnumerable<string> componentNames = GetComponentNames();
       foreach (string functionals in functionalsList)
       {
-        if (!componentNames.Contains<string>(functionals))
+        if (!componentNames.Contains(functionals))
           return false;
       }
       return true;
@@ -77,22 +77,22 @@ namespace PLVirtualMachine.Common
 
     public bool IsEqual(IVariable other)
     {
-      return other is ContextVariable contextVariable && this.name == contextVariable.name;
+      return other is ContextVariable contextVariable && name == contextVariable.name;
     }
 
     public virtual void Clear()
     {
-      if (this.type == null)
+      if (type == null)
         return;
-      this.type = (VMType) null;
+      type = null;
     }
 
     private IEnumerable<IVariable> GetFunctionalContextVariables(
       EContextVariableCategory contextVarCategory)
     {
-      if ((contextVarCategory == EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_APIFUNCTION || contextVarCategory == EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_PARAM) && this.Type.IsFunctionalSpecial)
+      if ((contextVarCategory == EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_APIFUNCTION || contextVarCategory == EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_PARAM) && Type.IsFunctionalSpecial)
       {
-        foreach (string functionalPart in this.Type.GetFunctionalParts())
+        foreach (string functionalPart in Type.GetFunctionalParts())
         {
           foreach (IVariable functionalContextVariable in EngineAPIManager.GetAbstractVariablesByFunctionalName(functionalPart, contextVarCategory))
             yield return functionalContextVariable;

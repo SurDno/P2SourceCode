@@ -1,5 +1,5 @@
-﻿using Facepunch.Steamworks;
-using System;
+﻿using System;
+using Facepunch.Steamworks;
 
 namespace SteamNative
 {
@@ -12,46 +12,46 @@ namespace SteamNative
     {
       this.steamworks = steamworks;
       if (Platform.IsWindows64)
-        this.platform = (Platform.Interface) new Platform.Win64(pointer);
+        platform = (Platform.Interface) new Platform.Win64(pointer);
       else if (Platform.IsWindows32)
-        this.platform = (Platform.Interface) new Platform.Win32(pointer);
+        platform = (Platform.Interface) new Platform.Win32(pointer);
       else if (Platform.IsLinux32)
-        this.platform = (Platform.Interface) new Platform.Linux32(pointer);
+        platform = (Platform.Interface) new Platform.Linux32(pointer);
       else if (Platform.IsLinux64)
       {
-        this.platform = (Platform.Interface) new Platform.Linux64(pointer);
+        platform = (Platform.Interface) new Platform.Linux64(pointer);
       }
       else
       {
         if (!Platform.IsOsx)
           return;
-        this.platform = (Platform.Interface) new Platform.Mac(pointer);
+        platform = (Platform.Interface) new Platform.Mac(pointer);
       }
     }
 
-    public bool IsValid => this.platform != null && this.platform.IsValid;
+    public bool IsValid => platform != null && platform.IsValid;
 
     public virtual void Dispose()
     {
-      if (this.platform == null)
+      if (platform == null)
         return;
-      this.platform.Dispose();
-      this.platform = (Platform.Interface) null;
+      platform.Dispose();
+      platform = (Platform.Interface) null;
     }
 
     public void AddHeader(HHTMLBrowser unBrowserHandle, string pchKey, string pchValue)
     {
-      this.platform.ISteamHTMLSurface_AddHeader(unBrowserHandle.Value, pchKey, pchValue);
+      platform.ISteamHTMLSurface_AddHeader(unBrowserHandle.Value, pchKey, pchValue);
     }
 
     public void AllowStartRequest(HHTMLBrowser unBrowserHandle, bool bAllowed)
     {
-      this.platform.ISteamHTMLSurface_AllowStartRequest(unBrowserHandle.Value, bAllowed);
+      platform.ISteamHTMLSurface_AllowStartRequest(unBrowserHandle.Value, bAllowed);
     }
 
     public void CopyToClipboard(HHTMLBrowser unBrowserHandle)
     {
-      this.platform.ISteamHTMLSurface_CopyToClipboard(unBrowserHandle.Value);
+      platform.ISteamHTMLSurface_CopyToClipboard(unBrowserHandle.Value);
     }
 
     public CallbackHandle CreateBrowser(
@@ -59,19 +59,19 @@ namespace SteamNative
       string pchUserCSS,
       Action<HTML_BrowserReady_t, bool> CallbackFunction = null)
     {
-      SteamAPICall_t steamApiCallT = (SteamAPICall_t) 0UL;
-      SteamAPICall_t browser = this.platform.ISteamHTMLSurface_CreateBrowser(pchUserAgent, pchUserCSS);
-      return CallbackFunction == null ? (CallbackHandle) null : HTML_BrowserReady_t.CallResult(this.steamworks, browser, CallbackFunction);
+      SteamAPICall_t steamApiCallT = 0UL;
+      SteamAPICall_t browser = platform.ISteamHTMLSurface_CreateBrowser(pchUserAgent, pchUserCSS);
+      return CallbackFunction == null ? null : HTML_BrowserReady_t.CallResult(steamworks, browser, CallbackFunction);
     }
 
     public void DestructISteamHTMLSurface()
     {
-      this.platform.ISteamHTMLSurface_DestructISteamHTMLSurface();
+      platform.ISteamHTMLSurface_DestructISteamHTMLSurface();
     }
 
     public void ExecuteJavascript(HHTMLBrowser unBrowserHandle, string pchScript)
     {
-      this.platform.ISteamHTMLSurface_ExecuteJavascript(unBrowserHandle.Value, pchScript);
+      platform.ISteamHTMLSurface_ExecuteJavascript(unBrowserHandle.Value, pchScript);
     }
 
     public void Find(
@@ -80,29 +80,29 @@ namespace SteamNative
       bool bCurrentlyInFind,
       bool bReverse)
     {
-      this.platform.ISteamHTMLSurface_Find(unBrowserHandle.Value, pchSearchStr, bCurrentlyInFind, bReverse);
+      platform.ISteamHTMLSurface_Find(unBrowserHandle.Value, pchSearchStr, bCurrentlyInFind, bReverse);
     }
 
     public void GetLinkAtPosition(HHTMLBrowser unBrowserHandle, int x, int y)
     {
-      this.platform.ISteamHTMLSurface_GetLinkAtPosition(unBrowserHandle.Value, x, y);
+      platform.ISteamHTMLSurface_GetLinkAtPosition(unBrowserHandle.Value, x, y);
     }
 
     public void GoBack(HHTMLBrowser unBrowserHandle)
     {
-      this.platform.ISteamHTMLSurface_GoBack(unBrowserHandle.Value);
+      platform.ISteamHTMLSurface_GoBack(unBrowserHandle.Value);
     }
 
     public void GoForward(HHTMLBrowser unBrowserHandle)
     {
-      this.platform.ISteamHTMLSurface_GoForward(unBrowserHandle.Value);
+      platform.ISteamHTMLSurface_GoForward(unBrowserHandle.Value);
     }
 
-    public bool Init() => this.platform.ISteamHTMLSurface_Init();
+    public bool Init() => platform.ISteamHTMLSurface_Init();
 
     public void JSDialogResponse(HHTMLBrowser unBrowserHandle, bool bResult)
     {
-      this.platform.ISteamHTMLSurface_JSDialogResponse(unBrowserHandle.Value, bResult);
+      platform.ISteamHTMLSurface_JSDialogResponse(unBrowserHandle.Value, bResult);
     }
 
     public void KeyChar(
@@ -110,7 +110,7 @@ namespace SteamNative
       uint cUnicodeChar,
       HTMLKeyModifiers eHTMLKeyModifiers)
     {
-      this.platform.ISteamHTMLSurface_KeyChar(unBrowserHandle.Value, cUnicodeChar, eHTMLKeyModifiers);
+      platform.ISteamHTMLSurface_KeyChar(unBrowserHandle.Value, cUnicodeChar, eHTMLKeyModifiers);
     }
 
     public void KeyDown(
@@ -118,7 +118,7 @@ namespace SteamNative
       uint nNativeKeyCode,
       HTMLKeyModifiers eHTMLKeyModifiers)
     {
-      this.platform.ISteamHTMLSurface_KeyDown(unBrowserHandle.Value, nNativeKeyCode, eHTMLKeyModifiers);
+      platform.ISteamHTMLSurface_KeyDown(unBrowserHandle.Value, nNativeKeyCode, eHTMLKeyModifiers);
     }
 
     public void KeyUp(
@@ -126,57 +126,57 @@ namespace SteamNative
       uint nNativeKeyCode,
       HTMLKeyModifiers eHTMLKeyModifiers)
     {
-      this.platform.ISteamHTMLSurface_KeyUp(unBrowserHandle.Value, nNativeKeyCode, eHTMLKeyModifiers);
+      platform.ISteamHTMLSurface_KeyUp(unBrowserHandle.Value, nNativeKeyCode, eHTMLKeyModifiers);
     }
 
     public void LoadURL(HHTMLBrowser unBrowserHandle, string pchURL, string pchPostData)
     {
-      this.platform.ISteamHTMLSurface_LoadURL(unBrowserHandle.Value, pchURL, pchPostData);
+      platform.ISteamHTMLSurface_LoadURL(unBrowserHandle.Value, pchURL, pchPostData);
     }
 
     public void MouseDoubleClick(HHTMLBrowser unBrowserHandle, HTMLMouseButton eMouseButton)
     {
-      this.platform.ISteamHTMLSurface_MouseDoubleClick(unBrowserHandle.Value, eMouseButton);
+      platform.ISteamHTMLSurface_MouseDoubleClick(unBrowserHandle.Value, eMouseButton);
     }
 
     public void MouseDown(HHTMLBrowser unBrowserHandle, HTMLMouseButton eMouseButton)
     {
-      this.platform.ISteamHTMLSurface_MouseDown(unBrowserHandle.Value, eMouseButton);
+      platform.ISteamHTMLSurface_MouseDown(unBrowserHandle.Value, eMouseButton);
     }
 
     public void MouseMove(HHTMLBrowser unBrowserHandle, int x, int y)
     {
-      this.platform.ISteamHTMLSurface_MouseMove(unBrowserHandle.Value, x, y);
+      platform.ISteamHTMLSurface_MouseMove(unBrowserHandle.Value, x, y);
     }
 
     public void MouseUp(HHTMLBrowser unBrowserHandle, HTMLMouseButton eMouseButton)
     {
-      this.platform.ISteamHTMLSurface_MouseUp(unBrowserHandle.Value, eMouseButton);
+      platform.ISteamHTMLSurface_MouseUp(unBrowserHandle.Value, eMouseButton);
     }
 
     public void MouseWheel(HHTMLBrowser unBrowserHandle, int nDelta)
     {
-      this.platform.ISteamHTMLSurface_MouseWheel(unBrowserHandle.Value, nDelta);
+      platform.ISteamHTMLSurface_MouseWheel(unBrowserHandle.Value, nDelta);
     }
 
     public void PasteFromClipboard(HHTMLBrowser unBrowserHandle)
     {
-      this.platform.ISteamHTMLSurface_PasteFromClipboard(unBrowserHandle.Value);
+      platform.ISteamHTMLSurface_PasteFromClipboard(unBrowserHandle.Value);
     }
 
     public void Reload(HHTMLBrowser unBrowserHandle)
     {
-      this.platform.ISteamHTMLSurface_Reload(unBrowserHandle.Value);
+      platform.ISteamHTMLSurface_Reload(unBrowserHandle.Value);
     }
 
     public void RemoveBrowser(HHTMLBrowser unBrowserHandle)
     {
-      this.platform.ISteamHTMLSurface_RemoveBrowser(unBrowserHandle.Value);
+      platform.ISteamHTMLSurface_RemoveBrowser(unBrowserHandle.Value);
     }
 
     public void SetBackgroundMode(HHTMLBrowser unBrowserHandle, bool bBackgroundMode)
     {
-      this.platform.ISteamHTMLSurface_SetBackgroundMode(unBrowserHandle.Value, bBackgroundMode);
+      platform.ISteamHTMLSurface_SetBackgroundMode(unBrowserHandle.Value, bBackgroundMode);
     }
 
     public void SetCookie(
@@ -188,17 +188,17 @@ namespace SteamNative
       bool bSecure,
       bool bHTTPOnly)
     {
-      this.platform.ISteamHTMLSurface_SetCookie(pchHostname, pchKey, pchValue, pchPath, nExpires.Value, bSecure, bHTTPOnly);
+      platform.ISteamHTMLSurface_SetCookie(pchHostname, pchKey, pchValue, pchPath, nExpires.Value, bSecure, bHTTPOnly);
     }
 
     public void SetHorizontalScroll(HHTMLBrowser unBrowserHandle, uint nAbsolutePixelScroll)
     {
-      this.platform.ISteamHTMLSurface_SetHorizontalScroll(unBrowserHandle.Value, nAbsolutePixelScroll);
+      platform.ISteamHTMLSurface_SetHorizontalScroll(unBrowserHandle.Value, nAbsolutePixelScroll);
     }
 
     public void SetKeyFocus(HHTMLBrowser unBrowserHandle, bool bHasKeyFocus)
     {
-      this.platform.ISteamHTMLSurface_SetKeyFocus(unBrowserHandle.Value, bHasKeyFocus);
+      platform.ISteamHTMLSurface_SetKeyFocus(unBrowserHandle.Value, bHasKeyFocus);
     }
 
     public void SetPageScaleFactor(
@@ -207,34 +207,34 @@ namespace SteamNative
       int nPointX,
       int nPointY)
     {
-      this.platform.ISteamHTMLSurface_SetPageScaleFactor(unBrowserHandle.Value, flZoom, nPointX, nPointY);
+      platform.ISteamHTMLSurface_SetPageScaleFactor(unBrowserHandle.Value, flZoom, nPointX, nPointY);
     }
 
     public void SetSize(HHTMLBrowser unBrowserHandle, uint unWidth, uint unHeight)
     {
-      this.platform.ISteamHTMLSurface_SetSize(unBrowserHandle.Value, unWidth, unHeight);
+      platform.ISteamHTMLSurface_SetSize(unBrowserHandle.Value, unWidth, unHeight);
     }
 
     public void SetVerticalScroll(HHTMLBrowser unBrowserHandle, uint nAbsolutePixelScroll)
     {
-      this.platform.ISteamHTMLSurface_SetVerticalScroll(unBrowserHandle.Value, nAbsolutePixelScroll);
+      platform.ISteamHTMLSurface_SetVerticalScroll(unBrowserHandle.Value, nAbsolutePixelScroll);
     }
 
-    public bool Shutdown() => this.platform.ISteamHTMLSurface_Shutdown();
+    public bool Shutdown() => platform.ISteamHTMLSurface_Shutdown();
 
     public void StopFind(HHTMLBrowser unBrowserHandle)
     {
-      this.platform.ISteamHTMLSurface_StopFind(unBrowserHandle.Value);
+      platform.ISteamHTMLSurface_StopFind(unBrowserHandle.Value);
     }
 
     public void StopLoad(HHTMLBrowser unBrowserHandle)
     {
-      this.platform.ISteamHTMLSurface_StopLoad(unBrowserHandle.Value);
+      platform.ISteamHTMLSurface_StopLoad(unBrowserHandle.Value);
     }
 
     public void ViewSource(HHTMLBrowser unBrowserHandle)
     {
-      this.platform.ISteamHTMLSurface_ViewSource(unBrowserHandle.Value);
+      platform.ISteamHTMLSurface_ViewSource(unBrowserHandle.Value);
     }
   }
 }

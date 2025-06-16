@@ -1,5 +1,4 @@
 ﻿using ParadoxNotion.Design;
-using UnityEngine;
 
 namespace FlowCanvas.Nodes
 {
@@ -12,9 +11,9 @@ namespace FlowCanvas.Nodes
     {
       if ((Object) gameObject == (Object) null)
         return default (T);
-      if ((Object) this._component == (Object) null || (Object) this._component.gameObject != (Object) gameObject)
-        this._component = gameObject.GetComponent<T>();
-      return this._component;
+      if ((Object) _component == (Object) null || (Object) _component.gameObject != (Object) gameObject)
+        _component = gameObject.GetComponent<T>();
+      return _component;
     }
   }
 }

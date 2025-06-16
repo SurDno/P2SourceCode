@@ -14,7 +14,7 @@ namespace Engine.Source.Components.Interactable.Validators
       if (component == null)
         return new ValidateResult(false, "CollectControllerComponent not found");
       bool flag = component.ValidateCollect();
-      return !flag ? new ValidateResult(false, "ValidateCollect " + flag.ToString()) : new ValidateResult(true);
+      return !flag ? new ValidateResult(false, "ValidateCollect " + flag) : new ValidateResult(true);
     }
   }
 }

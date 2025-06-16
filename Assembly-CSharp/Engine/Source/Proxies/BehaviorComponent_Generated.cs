@@ -1,10 +1,10 @@
-﻿using BehaviorDesigner.Runtime;
+﻿using System;
+using BehaviorDesigner.Runtime;
 using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons.Cloneable;
 using Engine.Source.Components;
 using Scripts.Tools.Serializations.Converters;
-using System;
 
 namespace Engine.Source.Proxies
 {
@@ -21,33 +21,33 @@ namespace Engine.Source.Proxies
     public object Clone()
     {
       BehaviorComponent_Generated instance = Activator.CreateInstance<BehaviorComponent_Generated>();
-      this.CopyTo((object) instance);
-      return (object) instance;
+      CopyTo(instance);
+      return instance;
     }
 
     public void CopyTo(object target2)
     {
-      ((BehaviorComponent) target2).behaviorTreeResource = this.behaviorTreeResource;
+      ((BehaviorComponent) target2).behaviorTreeResource = behaviorTreeResource;
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      UnityDataWriteUtility.Write<ExternalBehaviorTree>(writer, "BehaviorTree", this.behaviorTreeResource);
+      UnityDataWriteUtility.Write<ExternalBehaviorTree>(writer, "BehaviorTree", behaviorTreeResource);
     }
 
     public void DataRead(IDataReader reader, Type type)
     {
-      this.behaviorTreeResource = UnityDataReadUtility.Read<ExternalBehaviorTree>(reader, "BehaviorTree", this.behaviorTreeResource);
+      behaviorTreeResource = UnityDataReadUtility.Read<ExternalBehaviorTree>(reader, "BehaviorTree", behaviorTreeResource);
     }
 
     public void StateSave(IDataWriter writer)
     {
-      UnityDataWriteUtility.Write<ExternalBehaviorTree>(writer, "BehaviorTreeResource", this.behaviorTreeResource);
+      UnityDataWriteUtility.Write<ExternalBehaviorTree>(writer, "BehaviorTreeResource", behaviorTreeResource);
     }
 
     public void StateLoad(IDataReader reader, Type type)
     {
-      this.behaviorTreeResource = UnityDataReadUtility.Read<ExternalBehaviorTree>(reader, "BehaviorTreeResource", this.behaviorTreeResource);
+      behaviorTreeResource = UnityDataReadUtility.Read<ExternalBehaviorTree>(reader, "BehaviorTreeResource", behaviorTreeResource);
     }
   }
 }

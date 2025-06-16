@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-public class LodSimple : MonoBehaviour
+﻿public class LodSimple : MonoBehaviour
 {
   [SerializeField]
   private float disableDistance = 30f;

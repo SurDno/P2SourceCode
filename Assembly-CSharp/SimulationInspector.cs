@@ -1,5 +1,3 @@
-﻿using UnityEngine;
-
-public class SimulationInspector : MonoBehaviour
+﻿public class SimulationInspector : MonoBehaviour
 {
 }

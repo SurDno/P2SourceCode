@@ -1,6 +1,5 @@
 ﻿using Engine.Source.Commons;
 using Engine.Source.Difficulties;
-using UnityEngine;
 
 namespace Engine.Impl.UI.Controls
 {
@@ -11,9 +10,9 @@ namespace Engine.Impl.UI.Controls
 
     public override void Invoke()
     {
-      DifficultyUtility.SetPresetValues(this.difficultyPresetName);
+      DifficultyUtility.SetPresetValues(difficultyPresetName);
       DifficultySettings instance = InstanceByRequest<DifficultySettings>.Instance;
-      instance.OriginalExperience.Value = this.difficultyPresetName == "Default";
+      instance.OriginalExperience.Value = difficultyPresetName == "Default";
       instance.Apply();
     }
   }

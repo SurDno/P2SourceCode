@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-public class PlagueCloud : MonoBehaviour
+﻿public class PlagueCloud : MonoBehaviour
 {
   [Header("Settings")]
   public PlagueCloudParticlesSettings InvisibleSettings;
@@ -9,33 +7,33 @@ public class PlagueCloud : MonoBehaviour
   public float MovementSpeed;
   [Header("State")]
   [SerializeField]
-  private PlagueCloud.VisibilityType visibility = PlagueCloud.VisibilityType.Invisible;
-  public PlagueCloud.MovementType Movement;
+  private VisibilityType visibility = VisibilityType.Invisible;
+  public MovementType Movement;
   public Transform TargetTransform;
   public Vector3 TargetPosition;
   private PlagueCloudParticles[] particles;
 
-  public PlagueCloud.VisibilityType Visibility
+  public VisibilityType Visibility
   {
-    get => this.visibility;
+    get => visibility;
     set
     {
-      if (this.visibility == value)
+      if (visibility == value)
         return;
-      this.visibility = value;
-      this.UpdateState();
+      visibility = value;
+      UpdateState();
     }
   }
 
-  private void Start() => this.UpdateState();
+  private void Start() => UpdateState();
 
   private void Update()
   {
-    if (this.Movement == PlagueCloud.MovementType.Custom || this.Movement == PlagueCloud.MovementType.TowardTransform && (Object) this.TargetTransform == (Object) null)
+    if (Movement == MovementType.Custom || Movement == MovementType.TowardTransform && (Object) TargetTransform == (Object) null)
       return;
     Vector3 position = this.transform.position;
-    Vector3 vector3 = this.Movement == PlagueCloud.MovementType.TowardTransform ? this.TargetTransform.position : this.TargetPosition;
-    Vector3 a = Vector3.MoveTowards(position, vector3, this.MovementSpeed * Time.deltaTime);
+    Vector3 vector3 = Movement == MovementType.TowardTransform ? TargetTransform.position : TargetPosition;
+    Vector3 a = Vector3.MoveTowards(position, vector3, MovementSpeed * Time.deltaTime);
     this.transform.position = a;
     if ((double) Vector3.Distance(a, vector3) <= 0.5)
       return;
@@ -44,20 +42,20 @@ public class PlagueCloud : MonoBehaviour
 
   private void UpdateState()
   {
-    if (this.particles == null)
-      this.particles = this.GetComponentsInChildren<PlagueCloudParticles>();
-    for (int index = 0; index < this.particles.Length; ++index)
+    if (particles == null)
+      particles = this.GetComponentsInChildren<PlagueCloudParticles>();
+    for (int index = 0; index < particles.Length; ++index)
     {
-      switch (this.visibility)
+      switch (visibility)
       {
-        case PlagueCloud.VisibilityType.Invisible:
-          this.ApplySettings(this.particles[index], this.InvisibleSettings);
+        case VisibilityType.Invisible:
+          ApplySettings(particles[index], InvisibleSettings);
           break;
-        case PlagueCloud.VisibilityType.Visible:
-          this.ApplySettings(this.particles[index], this.VisibleSettings);
+        case VisibilityType.Visible:
+          ApplySettings(particles[index], VisibleSettings);
           break;
-        case PlagueCloud.VisibilityType.Attack:
-          this.ApplySettings(this.particles[index], this.AttackSettings);
+        case VisibilityType.Attack:
+          ApplySettings(particles[index], AttackSettings);
           break;
       }
     }

@@ -1,4 +1,7 @@
-﻿using Engine.Common;
+﻿using System;
+using System.Collections.Generic;
+using Cofe.Serializations.Data;
+using Engine.Common;
 using Engine.Common.Commons;
 using Engine.Common.Components;
 using Engine.Common.Components.Parameters;
@@ -14,9 +17,6 @@ using Engine.Source.Commons.Parameters;
 using Engine.Source.Connections;
 using Engine.Source.Services;
 using Inspectors;
-using System;
-using System.Collections.Generic;
-using UnityEngine;
 
 namespace Engine.Source.Components.Maps
 {
@@ -31,16 +31,16 @@ namespace Engine.Source.Components.Maps
     INeedSave,
     IEntityEventsListener
   {
-    [StateSaveProxy(MemberEnum.None)]
-    [StateLoadProxy(MemberEnum.None)]
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [StateSaveProxy]
+    [StateLoadProxy]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected bool isEnabled = true;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected Typed<IMapPlaceholder> placeholder;
@@ -54,8 +54,8 @@ namespace Engine.Source.Components.Maps
     [StateLoadProxy(MemberEnum.CustomReference)]
     [Inspected]
     protected IMapTooltipResource tooltipResource;
-    [StateSaveProxy(MemberEnum.None)]
-    [StateLoadProxy(MemberEnum.None)]
+    [StateSaveProxy]
+    [StateLoadProxy]
     protected bool discovered;
     [FromThis]
     private IRegionComponent region;
@@ -67,8 +67,8 @@ namespace Engine.Source.Components.Maps
     private NotificationService notificationService;
     [FromLocator]
     private MapService mapService;
-    [StateSaveProxy(MemberEnum.None)]
-    [StateLoadProxy(MemberEnum.None)]
+    [StateSaveProxy]
+    [StateLoadProxy()]
     [Inspected]
     protected LocalizedText title = LocalizedText.Empty;
 
@@ -77,11 +77,11 @@ namespace Engine.Source.Components.Maps
     [Inspected(Mutable = true)]
     public bool IsEnabled
     {
-      get => this.isEnabled;
+      get => isEnabled;
       set
       {
-        this.isEnabled = value;
-        this.OnChangeEnabled();
+        isEnabled = value;
+        OnChangeEnabled();
       }
     }
 
@@ -90,49 +90,49 @@ namespace Engine.Source.Components.Maps
     [Inspected]
     public IEntity BoundCharacter { get; set; }
 
-    [StateSaveProxy(MemberEnum.None)]
-    [StateLoadProxy(MemberEnum.None)]
+    [StateSaveProxy]
+    [StateLoadProxy]
     [Inspected]
     public LocalizedText Text { get; set; }
 
-    [StateSaveProxy(MemberEnum.None)]
-    [StateLoadProxy(MemberEnum.None)]
+    [StateSaveProxy]
+    [StateLoadProxy]
     [Inspected]
     public LocalizedText TooltipText { get; set; }
 
     [Inspected]
-    public IParameterValue<BoundHealthStateEnum> BoundHealthState { get; } = (IParameterValue<BoundHealthStateEnum>) new ParameterValue<BoundHealthStateEnum>();
+    public IParameterValue<BoundHealthStateEnum> BoundHealthState { get; } = new ParameterValue<BoundHealthStateEnum>();
 
     [Inspected]
-    public IParameterValue<bool> SavePointIcon { get; } = (IParameterValue<bool>) new ParameterValue<bool>();
+    public IParameterValue<bool> SavePointIcon { get; } = new ParameterValue<bool>();
 
     [Inspected]
-    public IParameterValue<bool> SleepIcon { get; } = (IParameterValue<bool>) new ParameterValue<bool>();
+    public IParameterValue<bool> SleepIcon { get; } = new ParameterValue<bool>();
 
     [Inspected]
-    public IParameterValue<bool> CraftIcon { get; } = (IParameterValue<bool>) new ParameterValue<bool>();
+    public IParameterValue<bool> CraftIcon { get; } = new ParameterValue<bool>();
 
     [Inspected]
-    public IParameterValue<bool> StorageIcon { get; } = (IParameterValue<bool>) new ParameterValue<bool>();
+    public IParameterValue<bool> StorageIcon { get; } = new ParameterValue<bool>();
 
     [Inspected]
-    public IParameterValue<bool> MerchantIcon { get; } = (IParameterValue<bool>) new ParameterValue<bool>();
+    public IParameterValue<bool> MerchantIcon { get; } = new ParameterValue<bool>();
 
     [Inspected]
-    public IParameterValue<FastTravelPointEnum> FastTravelPoint { get; } = (IParameterValue<FastTravelPointEnum>) new ParameterValue<FastTravelPointEnum>();
+    public IParameterValue<FastTravelPointEnum> FastTravelPoint { get; } = new ParameterValue<FastTravelPointEnum>();
 
     public event Action DiscoveredChangeEvent;
 
     [Inspected(Mutable = true)]
     public bool Discovered
     {
-      get => this.discovered;
+      get => discovered;
       set
       {
-        if (this.discovered == value || this.discovered && this.title != LocalizedText.Empty && this.region == null)
+        if (discovered == value || discovered && title != LocalizedText.Empty && region == null)
           return;
-        this.discovered = value;
-        Action discoveredChangeEvent = this.DiscoveredChangeEvent;
+        discovered = value;
+        Action discoveredChangeEvent = DiscoveredChangeEvent;
         if (discoveredChangeEvent == null)
           return;
         discoveredChangeEvent();
@@ -141,66 +141,66 @@ namespace Engine.Source.Components.Maps
 
     public LocalizedText Title
     {
-      get => this.title;
+      get => title;
       set
       {
-        this.title = value;
-        if (!(this.title != LocalizedText.Empty))
+        title = value;
+        if (!(title != LocalizedText.Empty))
           return;
-        this.Discovered = true;
+        Discovered = true;
       }
     }
 
     public IMapPlaceholder Resource
     {
-      get => this.placeholder.Value;
+      get => placeholder.Value;
       set
       {
-        this.placeholder.Value = value;
+        placeholder.Value = value;
         if (value == null)
           return;
         if (InstanceByRequest<EngineApplication>.Instance.ViewEnabled)
-          this.notificationService.AddNotify(NotificationEnum.Map, Array.Empty<object>());
-        this.Discovered = true;
+          notificationService.AddNotify(NotificationEnum.Map, Array.Empty<object>());
+        Discovered = true;
       }
     }
 
     public IMapTooltipResource TooltipResource
     {
-      get => this.tooltipResource;
+      get => tooltipResource;
       set
       {
-        this.tooltipResource = value;
+        tooltipResource = value;
         if (value != null)
         {
           if (InstanceByRequest<EngineApplication>.Instance.ViewEnabled)
-            this.notificationService.AddNotify(NotificationEnum.Map, Array.Empty<object>());
-          this.Discovered = true;
+            notificationService.AddNotify(NotificationEnum.Map, Array.Empty<object>());
+          Discovered = true;
         }
-        this.UpdateHUDMarker();
+        UpdateHUDMarker();
       }
     }
 
-    MapPlaceholder IMapItem.Resource => (MapPlaceholder) this.placeholder.Value;
+    MapPlaceholder IMapItem.Resource => (MapPlaceholder) placeholder.Value;
 
     public Vector2 WorldPosition
     {
       get
       {
-        Vector3 position = ((IEntityView) this.Owner).Position;
+        Vector3 position = ((IEntityView) Owner).Position;
         return new Vector2(position.x, position.z);
       }
     }
 
-    public float Rotation => ((IEntityView) this.Owner).Rotation.eulerAngles.y;
+    public float Rotation => ((IEntityView) Owner).Rotation.eulerAngles.y;
 
-    public IRegionComponent Region => this.region;
+    public IRegionComponent Region => region;
 
-    public float Reputation => this.region != null ? this.region.Reputation.Value : 0.0f;
+    public float Reputation => region != null ? region.Reputation.Value : 0.0f;
 
-    public int Disease => this.region != null ? this.region.DiseaseLevel.Value : 0;
+    public int Disease => region != null ? region.DiseaseLevel.Value : 0;
 
-    public IEnumerable<IMMNode> Nodes => (IEnumerable<IMMNode>) this.nodes;
+    public IEnumerable<IMMNode> Nodes => nodes;
 
     public bool NeedSave => true;
 
@@ -208,115 +208,115 @@ namespace Engine.Source.Components.Maps
     {
       if (node == null)
       {
-        Debug.LogError((object) ("Trying to add a null node to map item : " + this.Owner.GetInfo()));
+        Debug.LogError((object) ("Trying to add a null node to map item : " + Owner.GetInfo()));
       }
       else
       {
-        this.nodes.Remove(node);
-        this.nodes.Add(node);
-        this.Discovered = true;
-        this.UpdateHUDMarker();
+        nodes.Remove(node);
+        nodes.Add(node);
+        Discovered = true;
+        UpdateHUDMarker();
       }
     }
 
     public void RemoveNode(IMMNode node)
     {
-      this.nodes.Remove(node);
-      this.UpdateHUDMarker();
+      nodes.Remove(node);
+      UpdateHUDMarker();
     }
 
     public void ClearNodes()
     {
-      this.nodes.Clear();
-      this.UpdateHUDMarker();
+      nodes.Clear();
+      UpdateHUDMarker();
     }
 
     public override void OnAdded()
     {
       base.OnAdded();
-      this.BoundHealthState.Set<BoundHealthStateEnum>(this.parameters?.GetByName<BoundHealthStateEnum>(ParameterNameEnum.BoundHealthState));
-      this.SavePointIcon.Set<bool>(this.parameters?.GetByName<bool>(ParameterNameEnum.SavePointIcon));
-      this.SleepIcon.Set<bool>(this.parameters?.GetByName<bool>(ParameterNameEnum.SleepIcon));
-      this.CraftIcon.Set<bool>(this.parameters?.GetByName<bool>(ParameterNameEnum.CraftIcon));
-      this.StorageIcon.Set<bool>(this.parameters?.GetByName<bool>(ParameterNameEnum.StorageIcon));
-      this.MerchantIcon.Set<bool>(this.parameters?.GetByName<bool>(ParameterNameEnum.MerchantIcon));
-      this.FastTravelPoint.Set<FastTravelPointEnum>(this.parameters?.GetByName<FastTravelPointEnum>(ParameterNameEnum.FastTravelPointIndex));
-      ((Entity) this.Owner).AddListener((IEntityEventsListener) this);
-      this.OnEnableChangedEvent();
-      MapItemComponent.Items.Add(this);
+      BoundHealthState.Set(parameters?.GetByName<BoundHealthStateEnum>(ParameterNameEnum.BoundHealthState));
+      SavePointIcon.Set(parameters?.GetByName<bool>(ParameterNameEnum.SavePointIcon));
+      SleepIcon.Set(parameters?.GetByName<bool>(ParameterNameEnum.SleepIcon));
+      CraftIcon.Set(parameters?.GetByName<bool>(ParameterNameEnum.CraftIcon));
+      StorageIcon.Set(parameters?.GetByName<bool>(ParameterNameEnum.StorageIcon));
+      MerchantIcon.Set(parameters?.GetByName<bool>(ParameterNameEnum.MerchantIcon));
+      FastTravelPoint.Set(parameters?.GetByName<FastTravelPointEnum>(ParameterNameEnum.FastTravelPointIndex));
+      ((Entity) Owner).AddListener(this);
+      OnEnableChangedEvent();
+      Items.Add(this);
     }
 
     public override void OnRemoved()
     {
-      MapItemComponent.Items.Remove(this);
-      ((Entity) this.Owner).RemoveListener((IEntityEventsListener) this);
-      this.RemoveFromMap();
-      this.parameters = (ParametersComponent) null;
-      this.BoundHealthState.Set<BoundHealthStateEnum>((IParameter<BoundHealthStateEnum>) null);
-      this.SavePointIcon.Set<bool>((IParameter<bool>) null);
-      this.SleepIcon.Set<bool>((IParameter<bool>) null);
-      this.CraftIcon.Set<bool>((IParameter<bool>) null);
-      this.StorageIcon.Set<bool>((IParameter<bool>) null);
-      this.MerchantIcon.Set<bool>((IParameter<bool>) null);
-      this.FastTravelPoint.Set<FastTravelPointEnum>((IParameter<FastTravelPointEnum>) null);
+      Items.Remove(this);
+      ((Entity) Owner).RemoveListener(this);
+      RemoveFromMap();
+      parameters = null;
+      BoundHealthState.Set(null);
+      SavePointIcon.Set(null);
+      SleepIcon.Set(null);
+      CraftIcon.Set(null);
+      StorageIcon.Set(null);
+      MerchantIcon.Set(null);
+      FastTravelPoint.Set(null);
       base.OnRemoved();
     }
 
     private void OnEnableChangedEvent()
     {
-      if (this.Owner == null)
+      if (Owner == null)
         return;
-      if (this.Owner.IsEnabledInHierarchy && this.IsEnabled)
-        this.AddToMap();
+      if (Owner.IsEnabledInHierarchy && IsEnabled)
+        AddToMap();
       else
-        this.RemoveFromMap();
+        RemoveFromMap();
     }
 
     private void AddToMap()
     {
-      this.RemoveFromMap();
-      if (this.added)
+      RemoveFromMap();
+      if (added)
         return;
-      this.added = true;
-      this.mapService.AddMapItem((IMapItem) this);
-      this.UpdateHUDMarker();
+      added = true;
+      mapService.AddMapItem(this);
+      UpdateHUDMarker();
     }
 
     private void RemoveFromMap()
     {
-      if (!this.added)
+      if (!added)
         return;
-      this.added = false;
-      this.mapService.RemoveMapItem((IMapItem) this);
-      this.UpdateHUDMarker();
+      added = false;
+      mapService.RemoveMapItem(this);
+      UpdateHUDMarker();
     }
 
     private void UpdateHUDMarker()
     {
-      bool flag = this.added && (this.nodes.Count > 0 || this.tooltipResource != null);
-      if (flag == this.hudMarkerAdded)
+      bool flag = added && (nodes.Count > 0 || tooltipResource != null);
+      if (flag == hudMarkerAdded)
         return;
-      this.hudMarkerAdded = flag;
-      if (this.hudMarkerAdded)
-        this.mapService.AddHUDItem((IMapItem) this);
+      hudMarkerAdded = flag;
+      if (hudMarkerAdded)
+        mapService.AddHUDItem(this);
       else
-        this.mapService.RemoveHUDItem((IMapItem) this);
+        mapService.RemoveHUDItem(this);
     }
 
     public override void OnChangeEnabled()
     {
       base.OnChangeEnabled();
-      this.OnEnableChangedEvent();
+      OnEnableChangedEvent();
     }
 
-    [Cofe.Serializations.Data.OnLoaded]
-    private void OnLoaded() => this.OnEnableChangedEvent();
+    [OnLoaded]
+    private void OnLoaded() => OnEnableChangedEvent();
 
     public void OnEntityEvent(IEntity sender, EntityEvents kind)
     {
       if (kind != EntityEvents.EnableChangedEvent)
         return;
-      this.OnEnableChangedEvent();
+      OnEnableChangedEvent();
     }
   }
 }

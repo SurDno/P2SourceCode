@@ -3,7 +3,6 @@ using Engine.Source.Services.Inputs;
 using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
-using System;
 
 namespace Engine.Source.Blueprints
 {
@@ -17,26 +16,26 @@ namespace Engine.Source.Blueprints
     protected override void RegisterPorts()
     {
       base.RegisterPorts();
-      this.output = this.AddFlowOutput("Out");
+      output = AddFlowOutput("Out");
     }
 
     public override void OnGraphStarted()
     {
       base.OnGraphStarted();
-      ServiceLocator.GetService<GameActionService>().OnGameAction += new Action<GameActionType>(this.WaitGameActionNode_OnGameAction);
+      ServiceLocator.GetService<GameActionService>().OnGameAction += WaitGameActionNode_OnGameAction;
     }
 
     public override void OnGraphStoped()
     {
-      ServiceLocator.GetService<GameActionService>().OnGameAction -= new Action<GameActionType>(this.WaitGameActionNode_OnGameAction);
+      ServiceLocator.GetService<GameActionService>().OnGameAction -= WaitGameActionNode_OnGameAction;
       base.OnGraphStoped();
     }
 
     private void WaitGameActionNode_OnGameAction(GameActionType type)
     {
-      if (type != this.gameActionInput.value || !((UnityEngine.Object) this.graphAgent != (UnityEngine.Object) null))
+      if (type != gameActionInput.value || !((UnityEngine.Object) graphAgent != (UnityEngine.Object) null))
         return;
-      this.output.Call();
+      output.Call();
     }
   }
 }

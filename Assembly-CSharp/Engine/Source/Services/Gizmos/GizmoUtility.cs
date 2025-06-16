@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEngine;
 
 namespace Engine.Source.Services.Gizmos
 {
@@ -39,11 +38,11 @@ namespace Engine.Source.Services.Gizmos
 
     public static void DrawCircle(Vector3 position, float radius, bool solid)
     {
-      int num = (int) Mathf.Clamp((float) (int) ((double) (6.28318548f * radius) / 0.5), 32f, 100f) / 2 * 2;
+      int num = (int) Mathf.Clamp((float) (int) (6.28318548f * radius / 0.5), 32f, 100f) / 2 * 2;
       Vector3 v1 = new Vector3(Mathf.Cos(0.0f) * radius + position.x, position.y, Mathf.Sin(0.0f) * radius + position.z);
       for (int index = 0; index < num; ++index)
       {
-        float f = Mathf.Lerp(0.0f, 6.28318548f, (float) (index + 1) / (float) num);
+        float f = Mathf.Lerp(0.0f, 6.28318548f, (index + 1) / (float) num);
         Vector3 v2 = new Vector3(Mathf.Cos(f) * radius + position.x, position.y, Mathf.Sin(f) * radius + position.z);
         if (solid || index % 2 != 1)
         {
@@ -63,16 +62,16 @@ namespace Engine.Source.Services.Gizmos
       Func<float, float, float> func)
     {
       startAngle %= 360f;
-      if ((double) startAngle < 0.0)
+      if (startAngle < 0.0)
         startAngle += 360f;
       endAngle %= 360f;
-      if ((double) endAngle < 0.0)
+      if (endAngle < 0.0)
         endAngle += 360f;
       float num1 = startAngle * ((float) Math.PI / 180f);
       float num2 = endAngle * ((float) Math.PI / 180f);
-      if ((double) num1 > (double) num2)
+      if (num1 > (double) num2)
         num2 += 6.28318548f;
-      int num3 = (int) Mathf.Clamp((float) (int) ((double) ((num2 - num1) * radius) / 0.5), 32f, 100f) / 2 * 2 + 1;
+      int num3 = (int) Mathf.Clamp((float) (int) ((num2 - num1) * radius / 0.5), 32f, 100f) / 2 * 2 + 1;
       float num4 = radius * func(0.0f, num2 - num1);
       Vector3 v1 = new Vector3(Mathf.Cos(num1) * num4 + position.x, position.y, Mathf.Sin(num1) * num4 + position.z);
       GL.Vertex(v1);
@@ -84,7 +83,7 @@ namespace Engine.Source.Services.Gizmos
       Vector3 v3 = v1;
       for (int index = 0; index < num3; ++index)
       {
-        float f = Mathf.Lerp(num1, num2, (float) (index + 1) / (float) num3);
+        float f = Mathf.Lerp(num1, num2, (index + 1) / (float) num3);
         float num6 = radius * func(f - num1, num2 - num1);
         Vector3 v4 = new Vector3(Mathf.Cos(f) * num6 + position.x, position.y, Mathf.Sin(f) * num6 + position.z);
         if (solid || index % 2 != 1)

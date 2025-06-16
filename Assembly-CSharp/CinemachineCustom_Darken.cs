@@ -1,5 +1,4 @@
 ﻿using Cinemachine.PostFX;
-using UnityEngine;
 using UnityEngine.PostProcessing;
 
 [ExecuteInEditMode]
@@ -14,12 +13,12 @@ public class CinemachineCustom_Darken : MonoBehaviour
 
   private void Update()
   {
-    this.postFx = this.GetComponent<CinemachinePostFX>();
-    if ((Object) this.postFx == (Object) null || (Object) this.postFx.m_Profile == (Object) null)
+    postFx = this.GetComponent<CinemachinePostFX>();
+    if ((Object) postFx == (Object) null || (Object) postFx.m_Profile == (Object) null)
       return;
-    ColorGradingModel colorGrading = this.postFx.m_Profile.colorGrading;
+    ColorGradingModel colorGrading = postFx.m_Profile.colorGrading;
     ColorGradingModel.Settings settings = colorGrading.settings;
-    settings.basic.postExposure = -10f * this.DarkenLevel;
+    settings.basic.postExposure = -10f * DarkenLevel;
     colorGrading.settings = settings;
   }
 }

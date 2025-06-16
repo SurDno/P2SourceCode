@@ -1,12 +1,11 @@
 ﻿using System;
-using UnityEngine;
 
 [CreateAssetMenu(fileName = "New Settings", menuName = "Plague/Zone Settings")]
 public class PlagueZoneSettings : ScriptableObject
 {
   [Tooltip("Высота над основным слоем с линейно уменьшающейся плотностью")]
   public float falloffHeight;
-  public PlagueZoneSettings.LODLevel[] lodLevels;
+  public LODLevel[] lodLevels;
   [Tooltip("Высота над землей слоя с полной плотностью")]
   public float mainHeight;
   [Tooltip("Максимальный наклон столбов")]
@@ -14,16 +13,16 @@ public class PlagueZoneSettings : ScriptableObject
 
   public void CheckValues()
   {
-    if ((double) this.mainHeight < 0.10000000149011612)
-      this.mainHeight = 0.1f;
-    if ((double) this.falloffHeight < 0.10000000149011612)
-      this.falloffHeight = 0.1f;
-    for (int index = 0; index < this.lodLevels.Length; ++index)
+    if (mainHeight < 0.10000000149011612)
+      mainHeight = 0.1f;
+    if (falloffHeight < 0.10000000149011612)
+      falloffHeight = 0.1f;
+    for (int index = 0; index < lodLevels.Length; ++index)
     {
-      if ((double) this.lodLevels[index].countPerAre < 0.0)
-        this.lodLevels[index].countPerAre = 0.0f;
-      if ((double) this.lodLevels[index].shaftRadius < 0.10000000149011612)
-        this.lodLevels[index].shaftRadius = 0.1f;
+      if (lodLevels[index].countPerAre < 0.0)
+        lodLevels[index].countPerAre = 0.0f;
+      if (lodLevels[index].shaftRadius < 0.10000000149011612)
+        lodLevels[index].shaftRadius = 0.1f;
     }
   }
 

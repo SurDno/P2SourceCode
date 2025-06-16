@@ -1,6 +1,5 @@
-﻿using Engine.Common.Components.Parameters;
-using System;
-using UnityEngine;
+﻿using System;
+using Engine.Common.Components.Parameters;
 
 namespace Engine.Source.Commons.Parameters
 {
@@ -10,9 +9,9 @@ namespace Engine.Source.Commons.Parameters
 
     protected void ChangeParameterInvoke(IParameter parameter)
     {
-      if (this.listeners == null)
+      if (listeners == null)
         return;
-      foreach (IChangeParameterListener listener in this.listeners)
+      foreach (IChangeParameterListener listener in listeners)
       {
         try
         {
@@ -27,35 +26,35 @@ namespace Engine.Source.Commons.Parameters
 
     public void AddListener(IChangeParameterListener listener)
     {
-      if (this.listeners == null)
+      if (listeners == null)
       {
-        this.listeners = new IChangeParameterListener[1]
+        listeners = new IChangeParameterListener[1]
         {
           listener
         };
       }
       else
       {
-        if (Array.IndexOf<IChangeParameterListener>(this.listeners, listener) != -1)
+        if (Array.IndexOf(listeners, listener) != -1)
           return;
-        Array.Resize<IChangeParameterListener>(ref this.listeners, this.listeners.Length + 1);
-        this.listeners[this.listeners.Length - 1] = listener;
+        Array.Resize(ref listeners, listeners.Length + 1);
+        listeners[listeners.Length - 1] = listener;
       }
     }
 
     public void RemoveListener(IChangeParameterListener listener)
     {
-      int index = this.listeners != null ? Array.IndexOf<IChangeParameterListener>(this.listeners, listener) : -1;
+      int index = listeners != null ? Array.IndexOf(listeners, listener) : -1;
       if (index == -1)
         return;
-      if (this.listeners.Length == 1)
+      if (listeners.Length == 1)
       {
-        this.listeners = (IChangeParameterListener[]) null;
+        listeners = null;
       }
       else
       {
-        this.listeners[index] = this.listeners[this.listeners.Length - 1];
-        Array.Resize<IChangeParameterListener>(ref this.listeners, this.listeners.Length - 1);
+        listeners[index] = listeners[listeners.Length - 1];
+        Array.Resize(ref listeners, listeners.Length - 1);
       }
     }
   }

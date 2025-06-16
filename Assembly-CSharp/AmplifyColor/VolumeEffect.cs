@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using UnityEngine;
 
 namespace AmplifyColor
 {
@@ -14,8 +13,8 @@ namespace AmplifyColor
 
     public VolumeEffect(AmplifyColorBase effect)
     {
-      this.gameObject = effect;
-      this.components = new List<VolumeEffectComponent>();
+      gameObject = effect;
+      components = new List<VolumeEffectComponent>();
     }
 
     public static VolumeEffect BlendValuesToVolumeEffect(
@@ -79,34 +78,34 @@ namespace AmplifyColor
     {
       if (compFlags == null)
       {
-        VolumeEffectComponent volumeEffectComponent = new VolumeEffectComponent(string.Concat((object) ((object) c).GetType()));
-        this.components.Add(volumeEffectComponent);
+        VolumeEffectComponent volumeEffectComponent = new VolumeEffectComponent(string.Concat(((object) c).GetType()));
+        components.Add(volumeEffectComponent);
         return volumeEffectComponent;
       }
       VolumeEffectComponent effectComponent;
-      if ((effectComponent = this.FindEffectComponent(string.Concat((object) ((object) c).GetType()))) != null)
+      if ((effectComponent = FindEffectComponent(string.Concat(((object) c).GetType()))) != null)
       {
         effectComponent.UpdateComponent(c, compFlags);
         return effectComponent;
       }
       VolumeEffectComponent volumeEffectComponent1 = new VolumeEffectComponent(c, compFlags);
-      this.components.Add(volumeEffectComponent1);
+      components.Add(volumeEffectComponent1);
       return volumeEffectComponent1;
     }
 
-    public void RemoveEffectComponent(VolumeEffectComponent comp) => this.components.Remove(comp);
+    public void RemoveEffectComponent(VolumeEffectComponent comp) => components.Remove(comp);
 
     public void UpdateVolume()
     {
-      if ((UnityEngine.Object) this.gameObject == (UnityEngine.Object) null)
+      if ((UnityEngine.Object) gameObject == (UnityEngine.Object) null)
         return;
-      foreach (VolumeEffectComponentFlags component1 in this.gameObject.EffectFlags.components)
+      foreach (VolumeEffectComponentFlags component1 in gameObject.EffectFlags.components)
       {
         if (component1.blendFlag)
         {
-          Component component2 = this.gameObject.GetComponent(component1.componentName);
+          Component component2 = gameObject.GetComponent(component1.componentName);
           if ((UnityEngine.Object) component2 != (UnityEngine.Object) null)
-            this.AddComponent(component2, component1);
+            AddComponent(component2, component1);
         }
       }
     }
@@ -120,7 +119,7 @@ namespace AmplifyColor
         if (component1.blendFlag)
         {
           Component component2 = gameObject.GetComponent(component1.componentName);
-          VolumeEffectComponent effectComponent = this.FindEffectComponent(component1.componentName);
+          VolumeEffectComponent effectComponent = FindEffectComponent(component1.componentName);
           if (!((UnityEngine.Object) component2 == (UnityEngine.Object) null) && effectComponent != null)
           {
             foreach (VolumeEffectFieldFlags componentField in component1.componentFields)
@@ -129,15 +128,15 @@ namespace AmplifyColor
               {
                 FieldInfo field = ((object) component2).GetType().GetField(componentField.fieldName);
                 VolumeEffectField effectField = effectComponent.FindEffectField(componentField.fieldName);
-                if (!(field == (FieldInfo) null) && effectField != null)
+                if (!(field == null) && effectField != null)
                 {
                   switch (field.FieldType.FullName)
                   {
                     case "System.Single":
-                      field.SetValue((object) component2, (object) effectField.valueSingle);
+                      field.SetValue((object) component2, effectField.valueSingle);
                       break;
                     case "System.Boolean":
-                      field.SetValue((object) component2, (object) effectField.valueBoolean);
+                      field.SetValue((object) component2, effectField.valueBoolean);
                       break;
                     case "UnityEngine.Vector2":
                       field.SetValue((object) component2, (object) effectField.valueVector2);
@@ -170,7 +169,7 @@ namespace AmplifyColor
         if (component1.blendFlag)
         {
           Component component2 = gameObject.GetComponent(component1.componentName);
-          VolumeEffectComponent effectComponent1 = this.FindEffectComponent(component1.componentName);
+          VolumeEffectComponent effectComponent1 = FindEffectComponent(component1.componentName);
           VolumeEffectComponent effectComponent2 = other.FindEffectComponent(component1.componentName);
           if (!((UnityEngine.Object) component2 == (UnityEngine.Object) null) && effectComponent1 != null && effectComponent2 != null)
           {
@@ -182,7 +181,7 @@ namespace AmplifyColor
                 FieldInfo field = ((object) component2).GetType().GetField(componentField.fieldName);
                 VolumeEffectField effectField1 = effectComponent1.FindEffectField(componentField.fieldName);
                 VolumeEffectField effectField2 = effectComponent2.FindEffectField(componentField.fieldName);
-                if (!(field == (FieldInfo) null) && effectField1 != null && effectField2 != null)
+                if (!(field == null) && effectField1 != null && effectField2 != null)
                 {
                   switch (field.FieldType.FullName)
                   {
@@ -190,7 +189,7 @@ namespace AmplifyColor
                       field.SetValue((object) component2, (object) Mathf.Lerp(effectField1.valueSingle, effectField2.valueSingle, blendAmount));
                       break;
                     case "System.Boolean":
-                      field.SetValue((object) component2, (object) effectField2.valueBoolean);
+                      field.SetValue((object) component2, effectField2.valueBoolean);
                       break;
                     case "UnityEngine.Vector2":
                       field.SetValue((object) component2, (object) Vector2.Lerp(effectField1.valueVector2, effectField2.valueVector2, blendAmount));
@@ -215,22 +214,22 @@ namespace AmplifyColor
 
     public VolumeEffectComponent FindEffectComponent(string compName)
     {
-      for (int index = 0; index < this.components.Count; ++index)
+      for (int index = 0; index < components.Count; ++index)
       {
-        if (this.components[index].componentName == compName)
-          return this.components[index];
+        if (components[index].componentName == compName)
+          return components[index];
       }
-      return (VolumeEffectComponent) null;
+      return null;
     }
 
     public static Component[] ListAcceptableComponents(AmplifyColorBase go)
     {
-      return (UnityEngine.Object) go == (UnityEngine.Object) null ? new Component[0] : ((IEnumerable<Component>) go.GetComponents(typeof (Component))).Where<Component>((Func<Component, bool>) (comp => (UnityEngine.Object) comp != (UnityEngine.Object) null && !string.Concat((object) ((object) comp).GetType()).StartsWith("UnityEngine.") && !(((object) comp).GetType() == typeof (AmplifyColorBase)))).ToArray<Component>();
+      return (UnityEngine.Object) go == (UnityEngine.Object) null ? new Component[0] : ((IEnumerable<Component>) go.GetComponents(typeof (Component))).Where((Func<Component, bool>) (comp => (UnityEngine.Object) comp != (UnityEngine.Object) null && !string.Concat(((object) comp).GetType()).StartsWith("UnityEngine.") && !(((object) comp).GetType() == typeof (AmplifyColorBase)))).ToArray();
     }
 
     public string[] GetComponentNames()
     {
-      return this.components.Select<VolumeEffectComponent, string>((Func<VolumeEffectComponent, string>) (r => r.componentName)).ToArray<string>();
+      return components.Select(r => r.componentName).ToArray();
     }
   }
 }

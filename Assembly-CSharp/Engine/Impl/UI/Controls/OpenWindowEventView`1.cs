@@ -1,7 +1,6 @@
 ﻿using Engine.Common.Services;
 using Engine.Impl.Services;
 using Engine.Source.UI;
-using UnityEngine;
 
 namespace Engine.Impl.UI.Controls
 {
@@ -12,9 +11,9 @@ namespace Engine.Impl.UI.Controls
 
     public override void Invoke()
     {
-      if (!this.PrepareWindow())
+      if (!PrepareWindow())
         return;
-      if (this.swap)
+      if (swap)
         ServiceLocator.GetService<UIService>().Swap<T>();
       else
         ServiceLocator.GetService<UIService>().Push<T>();

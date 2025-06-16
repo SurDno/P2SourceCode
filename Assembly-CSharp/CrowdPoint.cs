@@ -1,6 +1,4 @@
 ﻿using Engine.Common.Components.Movable;
-using UnityEngine;
-using UnityEngine.Serialization;
 
 public class CrowdPoint : MonoBehaviour
 {
@@ -10,7 +8,7 @@ public class CrowdPoint : MonoBehaviour
   [SerializeField]
   private bool onNavMesh;
 
-  public AreaEnum Area => this.area;
+  public AreaEnum Area => area;
 
-  public bool OnNavMesh => this.onNavMesh;
+  public bool OnNavMesh => onNavMesh;
 }

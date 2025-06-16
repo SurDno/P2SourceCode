@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-public class ExampleWheelController : MonoBehaviour
+﻿public class ExampleWheelController : MonoBehaviour
 {
   public float acceleration;
   public Renderer motionVectorRenderer;
@@ -8,20 +6,20 @@ public class ExampleWheelController : MonoBehaviour
 
   private void Start()
   {
-    this.m_Rigidbody = this.GetComponent<Rigidbody>();
-    this.m_Rigidbody.maxAngularVelocity = 100f;
+    m_Rigidbody = this.GetComponent<Rigidbody>();
+    m_Rigidbody.maxAngularVelocity = 100f;
   }
 
   private void Update()
   {
     if (Input.GetKey(KeyCode.UpArrow))
-      this.m_Rigidbody.AddRelativeTorque(new Vector3(-1f * this.acceleration, 0.0f, 0.0f), ForceMode.Acceleration);
+      m_Rigidbody.AddRelativeTorque(new Vector3(-1f * acceleration, 0.0f, 0.0f), ForceMode.Acceleration);
     else if (Input.GetKey(KeyCode.DownArrow))
-      this.m_Rigidbody.AddRelativeTorque(new Vector3(1f * this.acceleration, 0.0f, 0.0f), ForceMode.Acceleration);
-    float num = (float) (-(double) this.m_Rigidbody.angularVelocity.x / 100.0);
-    if (!(bool) (Object) this.motionVectorRenderer)
+      m_Rigidbody.AddRelativeTorque(new Vector3(1f * acceleration, 0.0f, 0.0f), ForceMode.Acceleration);
+    float num = (float) (-(double) m_Rigidbody.angularVelocity.x / 100.0);
+    if (!(bool) (Object) motionVectorRenderer)
       return;
-    this.motionVectorRenderer.material.SetFloat(ExampleWheelController.Uniforms._MotionAmount, Mathf.Clamp(num, -0.25f, 0.25f));
+    motionVectorRenderer.material.SetFloat(Uniforms._MotionAmount, Mathf.Clamp(num, -0.25f, 0.25f));
   }
 
   private static class Uniforms

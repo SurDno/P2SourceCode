@@ -1,6 +1,6 @@
-﻿using Engine.Common;
+﻿using System;
+using Engine.Common;
 using Engine.Source.Commons;
-using System;
 
 public class FlockChildProxy : IUpdatable, IDisposable
 {
@@ -9,13 +9,13 @@ public class FlockChildProxy : IUpdatable, IDisposable
   public FlockChildProxy(FlockChild child)
   {
     this.child = child;
-    InstanceByRequest<UpdateService>.Instance.FlockCastUpdater.AddUpdatable((IUpdatable) this);
+    InstanceByRequest<UpdateService>.Instance.FlockCastUpdater.AddUpdatable(this);
   }
 
-  public void ComputeUpdate() => this.child.ProxyUpdate();
+  public void ComputeUpdate() => child.ProxyUpdate();
 
   public void Dispose()
   {
-    InstanceByRequest<UpdateService>.Instance.FlockCastUpdater.RemoveUpdatable((IUpdatable) this);
+    InstanceByRequest<UpdateService>.Instance.FlockCastUpdater.RemoveUpdatable(this);
   }
 }

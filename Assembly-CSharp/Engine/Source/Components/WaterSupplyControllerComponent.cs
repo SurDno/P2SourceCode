@@ -21,27 +21,27 @@ namespace Engine.Source.Components
     private ParametersComponent parameters;
 
     [Inspected]
-    public IParameterValue<int> Bullets { get; } = (IParameterValue<int>) new ParameterValue<int>();
+    public IParameterValue<int> Bullets { get; } = new ParameterValue<int>();
 
     [Inspected]
-    public IParameterValue<float> Durability { get; } = (IParameterValue<float>) new ParameterValue<float>();
+    public IParameterValue<float> Durability { get; } = new ParameterValue<float>();
 
     [Inspected]
-    public IParameterValue<LiquidTypeEnum> LiquidType { get; } = (IParameterValue<LiquidTypeEnum>) new ParameterValue<LiquidTypeEnum>();
+    public IParameterValue<LiquidTypeEnum> LiquidType { get; } = new ParameterValue<LiquidTypeEnum>();
 
     public override void OnAdded()
     {
       base.OnAdded();
-      this.Bullets.Set<int>(this.parameters.GetByName<int>(ParameterNameEnum.Bullets));
-      this.Durability.Set<float>(this.parameters.GetByName<float>(ParameterNameEnum.Durability));
-      this.LiquidType.Set<LiquidTypeEnum>(this.parameters.GetByName<LiquidTypeEnum>(ParameterNameEnum.LiquidType));
+      Bullets.Set(parameters.GetByName<int>(ParameterNameEnum.Bullets));
+      Durability.Set(parameters.GetByName<float>(ParameterNameEnum.Durability));
+      LiquidType.Set(parameters.GetByName<LiquidTypeEnum>(ParameterNameEnum.LiquidType));
     }
 
     public override void OnRemoved()
     {
-      this.Bullets.Set<int>((IParameter<int>) null);
-      this.Durability.Set<float>((IParameter<float>) null);
-      this.LiquidType.Set<LiquidTypeEnum>((IParameter<LiquidTypeEnum>) null);
+      Bullets.Set(null);
+      Durability.Set(null);
+      LiquidType.Set(null);
       base.OnRemoved();
     }
   }

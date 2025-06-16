@@ -1,6 +1,5 @@
-﻿using Engine.Common.Commons;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Engine.Common.Commons;
 
 namespace Engine.Source.Services
 {
@@ -15,32 +14,32 @@ namespace Engine.Source.Services
     public List<FractionEnum> HelpInCombatFractions = new List<FractionEnum>();
     public List<FractionEnum> AskForHelpFractions = new List<FractionEnum>();
 
-    public FractionEnum Fraction => this.fraction;
+    public FractionEnum Fraction => fraction;
 
-    public List<CombatServiceCharacterInfo> PersonalFractionEnemies => this.personalFractionEnemies;
+    public List<CombatServiceCharacterInfo> PersonalFractionEnemies => personalFractionEnemies;
 
     public CombatServiceCombatFractionInfo(FractionEnum fraction)
     {
       this.fraction = fraction;
-      FractionSettings fractionSettings = ScriptableObjectInstance<FractionsSettingsData>.Instance.Fractions.Find((Predicate<FractionSettings>) (x => x.Name == fraction));
+      FractionSettings fractionSettings = ScriptableObjectInstance<FractionsSettingsData>.Instance.Fractions.Find(x => x.Name == fraction);
       if (fractionSettings == null)
         return;
-      FractionRelationGroup fractionRelationGroup1 = fractionSettings.Relations.Find((Predicate<FractionRelationGroup>) (x => x.Relation == FractionRelationEnum.AttackOnSee));
+      FractionRelationGroup fractionRelationGroup1 = fractionSettings.Relations.Find(x => x.Relation == FractionRelationEnum.AttackOnSee);
       if (fractionRelationGroup1 != null)
-        this.AttackFractions.AddRange((IEnumerable<FractionEnum>) fractionRelationGroup1.Fractions);
-      FractionRelationGroup fractionRelationGroup2 = fractionSettings.Relations.Find((Predicate<FractionRelationGroup>) (x => x.Relation == FractionRelationEnum.FearOnSee));
+        AttackFractions.AddRange(fractionRelationGroup1.Fractions);
+      FractionRelationGroup fractionRelationGroup2 = fractionSettings.Relations.Find(x => x.Relation == FractionRelationEnum.FearOnSee);
       if (fractionRelationGroup2 != null)
-        this.FearFractions.AddRange((IEnumerable<FractionEnum>) fractionRelationGroup2.Fractions);
-      FractionRelationGroup fractionRelationGroup3 = fractionSettings.Relations.Find((Predicate<FractionRelationGroup>) (x => x.Relation == FractionRelationEnum.FearOnAttack));
+        FearFractions.AddRange(fractionRelationGroup2.Fractions);
+      FractionRelationGroup fractionRelationGroup3 = fractionSettings.Relations.Find(x => x.Relation == FractionRelationEnum.FearOnAttack);
       if (fractionRelationGroup3 != null)
-        this.FearOnAttackFractions.AddRange((IEnumerable<FractionEnum>) fractionRelationGroup3.Fractions);
-      FractionRelationGroup fractionRelationGroup4 = fractionSettings.Relations.Find((Predicate<FractionRelationGroup>) (x => x.Relation == FractionRelationEnum.HelpInCombat));
+        FearOnAttackFractions.AddRange(fractionRelationGroup3.Fractions);
+      FractionRelationGroup fractionRelationGroup4 = fractionSettings.Relations.Find(x => x.Relation == FractionRelationEnum.HelpInCombat);
       if (fractionRelationGroup4 != null)
-        this.HelpInCombatFractions.AddRange((IEnumerable<FractionEnum>) fractionRelationGroup4.Fractions);
+        HelpInCombatFractions.AddRange(fractionRelationGroup4.Fractions);
       foreach (FractionSettings fraction1 in ScriptableObjectInstance<FractionsSettingsData>.Instance.Fractions)
       {
-        if (fraction1.Relations.Exists((Predicate<FractionRelationGroup>) (x => x.Relation == FractionRelationEnum.HelpInCombat && x.Fractions.Contains(fraction))))
-          this.AskForHelpFractions.Add(fraction1.Name);
+        if (fraction1.Relations.Exists(x => x.Relation == FractionRelationEnum.HelpInCombat && x.Fractions.Contains(fraction)))
+          AskForHelpFractions.Add(fraction1.Name);
       }
     }
 
@@ -50,11 +49,11 @@ namespace Engine.Source.Services
     {
       if (enemy == null || reporter == null || enemy.IsCombatIgnored || enemy.IsImmortal && !enemy.IsPlayer || reporter.IsCombatIgnored || enemy == reporter)
         return false;
-      if (!this.HelpInCombatFractions.Contains(reporter.Fraction))
+      if (!HelpInCombatFractions.Contains(reporter.Fraction))
       {
-        if (!this.Characters.Contains(reporter) || reporter.PersonalFearEnemies.Contains(enemy) || reporter.PersonalAttackEnemies.Contains(enemy))
+        if (!Characters.Contains(reporter) || reporter.PersonalFearEnemies.Contains(enemy) || reporter.PersonalAttackEnemies.Contains(enemy))
           return false;
-        if (this.FearOnAttackFractions.Contains(enemy.Fraction))
+        if (FearOnAttackFractions.Contains(enemy.Fraction))
         {
           reporter.PersonalFearEnemies.Add(enemy);
           reporter.RecountEnemies();
@@ -63,14 +62,14 @@ namespace Engine.Source.Services
         reporter.PersonalAttackEnemies.Add(enemy);
         return true;
       }
-      if (this.Fraction == enemy.Fraction || this.FearFractions.Contains(enemy.Fraction) || this.AttackFractions.Contains(enemy.Fraction))
+      if (Fraction == enemy.Fraction || FearFractions.Contains(enemy.Fraction) || AttackFractions.Contains(enemy.Fraction))
         return false;
-      if (this.FearOnAttackFractions.Contains(enemy.Fraction))
+      if (FearOnAttackFractions.Contains(enemy.Fraction))
       {
-        this.FearFractions.Add(enemy.Fraction);
+        FearFractions.Add(enemy.Fraction);
         return true;
       }
-      this.AttackFractions.Add(enemy.Fraction);
+      AttackFractions.Add(enemy.Fraction);
       return true;
     }
   }

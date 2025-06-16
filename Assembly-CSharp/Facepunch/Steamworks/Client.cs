@@ -1,7 +1,7 @@
-﻿using Facepunch.Steamworks.Interop;
-using SteamNative;
-using System;
+﻿using System;
 using System.IO;
+using Facepunch.Steamworks.Interop;
+using SteamNative;
 
 namespace Facepunch.Steamworks
 {
@@ -51,123 +51,123 @@ namespace Facepunch.Steamworks
 
     public Client(uint appId)
     {
-      Client.Instance = Client.Instance == null ? this : throw new Exception("Only one Facepunch.Steamworks.Client can exist - dispose the old one before trying to create a new one.");
-      this.native = new NativeInterface();
-      if (!this.native.InitClient((BaseSteamworks) this))
+      Instance = Instance == null ? this : throw new Exception("Only one Facepunch.Steamworks.Client can exist - dispose the old one before trying to create a new one.");
+      native = new NativeInterface();
+      if (!native.InitClient(this))
       {
-        this.native.Dispose();
-        this.native = (NativeInterface) null;
-        Client.Instance = (Client) null;
+        native.Dispose();
+        native = null;
+        Instance = null;
       }
       else
       {
-        this.SetupCommonInterfaces();
-        this.Voice = new Voice(this);
-        this.ServerList = new ServerList(this);
-        this.LobbyList = new LobbyList(this);
-        this.App = new App(this);
-        this.Stats = new Stats(this);
-        this.Achievements = new Achievements(this);
-        this.MicroTransactions = new MicroTransactions(this);
-        this.User = new User(this);
-        this.RemoteStorage = new RemoteStorage(this);
-        this.Workshop.friends = this.Friends;
-        this.Stats.UpdateStats();
-        this.AppId = appId;
-        this.Username = this.native.friends.GetPersonaName();
-        this.SteamId = this.native.user.GetSteamID();
-        this.BetaName = this.native.apps.GetCurrentBetaName();
-        this.OwnerSteamId = this.native.apps.GetAppOwner();
-        string appInstallDir = this.native.apps.GetAppInstallDir((AppId_t) this.AppId);
+        SetupCommonInterfaces();
+        Voice = new Voice(this);
+        ServerList = new ServerList(this);
+        LobbyList = new LobbyList(this);
+        App = new App(this);
+        Stats = new Stats(this);
+        Achievements = new Achievements(this);
+        MicroTransactions = new MicroTransactions(this);
+        User = new User(this);
+        RemoteStorage = new RemoteStorage(this);
+        Workshop.friends = Friends;
+        Stats.UpdateStats();
+        AppId = appId;
+        Username = native.friends.GetPersonaName();
+        SteamId = native.user.GetSteamID();
+        BetaName = native.apps.GetCurrentBetaName();
+        OwnerSteamId = native.apps.GetAppOwner();
+        string appInstallDir = native.apps.GetAppInstallDir(AppId);
         if (!string.IsNullOrEmpty(appInstallDir) && Directory.Exists(appInstallDir))
-          this.InstallFolder = new DirectoryInfo(appInstallDir);
-        this.BuildId = this.native.apps.GetAppBuildId();
-        this.CurrentLanguage = this.native.apps.GetCurrentGameLanguage();
-        this.AvailableLanguages = this.native.apps.GetAvailableGameLanguages().Split(new char[1]
+          InstallFolder = new DirectoryInfo(appInstallDir);
+        BuildId = native.apps.GetAppBuildId();
+        CurrentLanguage = native.apps.GetCurrentGameLanguage();
+        AvailableLanguages = native.apps.GetAvailableGameLanguages().Split(new char[1]
         {
           ';'
         }, StringSplitOptions.RemoveEmptyEntries);
-        this.Update();
+        Update();
       }
     }
 
     public override void Update()
     {
-      if (!this.IsValid)
+      if (!IsValid)
         return;
-      this.RunCallbacks();
-      this.Voice.Update();
+      RunCallbacks();
+      Voice.Update();
       base.Update();
     }
 
-    public void RunCallbacks() => this.native.api.SteamAPI_RunCallbacks();
+    public void RunCallbacks() => native.api.SteamAPI_RunCallbacks();
 
     public override void Dispose()
     {
-      if (this.Voice != null)
-        this.Voice = (Voice) null;
-      if (this.ServerList != null)
+      if (Voice != null)
+        Voice = null;
+      if (ServerList != null)
       {
-        this.ServerList.Dispose();
-        this.ServerList = (ServerList) null;
+        ServerList.Dispose();
+        ServerList = null;
       }
-      if (this.LobbyList != null)
+      if (LobbyList != null)
       {
-        this.LobbyList.Dispose();
-        this.LobbyList = (LobbyList) null;
+        LobbyList.Dispose();
+        LobbyList = null;
       }
-      if (this.App != null)
+      if (App != null)
       {
-        this.App.Dispose();
-        this.App = (App) null;
+        App.Dispose();
+        App = null;
       }
-      if (this.Stats != null)
+      if (Stats != null)
       {
-        this.Stats.Dispose();
-        this.Stats = (Stats) null;
+        Stats.Dispose();
+        Stats = null;
       }
-      if (this.Achievements != null)
+      if (Achievements != null)
       {
-        this.Achievements.Dispose();
-        this.Achievements = (Achievements) null;
+        Achievements.Dispose();
+        Achievements = null;
       }
-      if (this.MicroTransactions != null)
+      if (MicroTransactions != null)
       {
-        this.MicroTransactions.Dispose();
-        this.MicroTransactions = (MicroTransactions) null;
+        MicroTransactions.Dispose();
+        MicroTransactions = null;
       }
-      if (this.User != null)
+      if (User != null)
       {
-        this.User.Dispose();
-        this.User = (User) null;
+        User.Dispose();
+        User = null;
       }
-      if (this.RemoteStorage != null)
+      if (RemoteStorage != null)
       {
-        this.RemoteStorage.Dispose();
-        this.RemoteStorage = (RemoteStorage) null;
+        RemoteStorage.Dispose();
+        RemoteStorage = null;
       }
-      if (Client.Instance == this)
-        Client.Instance = (Client) null;
+      if (Instance == this)
+        Instance = null;
       base.Dispose();
     }
 
     public Leaderboard GetLeaderboard(
       string name,
-      Client.LeaderboardSortMethod sortMethod = Client.LeaderboardSortMethod.None,
-      Client.LeaderboardDisplayType displayType = Client.LeaderboardDisplayType.None)
+      LeaderboardSortMethod sortMethod = LeaderboardSortMethod.None,
+      LeaderboardDisplayType displayType = LeaderboardDisplayType.None)
     {
       Leaderboard leaderboard = new Leaderboard(this);
-      this.native.userstats.FindOrCreateLeaderboard(name, (SteamNative.LeaderboardSortMethod) sortMethod, (SteamNative.LeaderboardDisplayType) displayType, new Action<LeaderboardFindResult_t, bool>(leaderboard.OnBoardCreated));
+      native.userstats.FindOrCreateLeaderboard(name, (SteamNative.LeaderboardSortMethod) sortMethod, (SteamNative.LeaderboardDisplayType) displayType, leaderboard.OnBoardCreated);
       return leaderboard;
     }
 
-    public bool IsSubscribed => this.native.apps.BIsSubscribed();
+    public bool IsSubscribed => native.apps.BIsSubscribed();
 
-    public bool IsCybercafe => this.native.apps.BIsCybercafe();
+    public bool IsCybercafe => native.apps.BIsCybercafe();
 
-    public bool IsSubscribedFromFreeWeekend => this.native.apps.BIsSubscribedFromFreeWeekend();
+    public bool IsSubscribedFromFreeWeekend => native.apps.BIsSubscribedFromFreeWeekend();
 
-    public bool IsLowViolence => this.native.apps.BIsLowViolence();
+    public bool IsLowViolence => native.apps.BIsLowViolence();
 
     public static bool RestartIfNecessary(uint appid)
     {
@@ -179,9 +179,9 @@ namespace Facepunch.Steamworks
     {
       get
       {
-        if (this._auth == null)
-          this._auth = new Auth() { client = this };
-        return this._auth;
+        if (_auth == null)
+          _auth = new Auth { client = this };
+        return _auth;
       }
     }
 
@@ -189,9 +189,9 @@ namespace Facepunch.Steamworks
     {
       get
       {
-        if (this._friends == null)
-          this._friends = new Friends(this);
-        return this._friends;
+        if (_friends == null)
+          _friends = new Friends(this);
+        return _friends;
       }
     }
 
@@ -199,9 +199,9 @@ namespace Facepunch.Steamworks
     {
       get
       {
-        if (this._lobby == null)
-          this._lobby = new Lobby(this);
-        return this._lobby;
+        if (_lobby == null)
+          _lobby = new Lobby(this);
+        return _lobby;
       }
     }
 
@@ -209,9 +209,9 @@ namespace Facepunch.Steamworks
     {
       get
       {
-        if (this._overlay == null)
-          this._overlay = new Overlay() { client = this };
-        return this._overlay;
+        if (_overlay == null)
+          _overlay = new Overlay { client = this };
+        return _overlay;
       }
     }
 
@@ -219,9 +219,9 @@ namespace Facepunch.Steamworks
     {
       get
       {
-        if (this._screenshots == null)
-          this._screenshots = new Screenshots(this);
-        return this._screenshots;
+        if (_screenshots == null)
+          _screenshots = new Screenshots(this);
+        return _screenshots;
       }
     }
 

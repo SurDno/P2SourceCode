@@ -4,19 +4,19 @@ namespace FlowCanvas.Nodes
 {
   [Category("Flow Controllers/Filters")]
   [Description("Filter the Flow based on a chance of 0 to 1 for 0% - 100%")]
-  [ContextDefinedInputs(new System.Type[] {typeof (float)})]
+  [ContextDefinedInputs(typeof (float))]
   public class Chance : FlowControlNode
   {
     protected override void RegisterPorts()
     {
-      FlowOutput o = this.AddFlowOutput("Out");
-      ValueInput<float> c = this.AddValueInput<float>("Percentage");
-      this.AddFlowInput("In", (FlowHandler) (() =>
+      FlowOutput o = AddFlowOutput("Out");
+      ValueInput<float> c = AddValueInput<float>("Percentage");
+      AddFlowInput("In", () =>
       {
-        if ((double) UnityEngine.Random.Range(0.0f, 1f) >= (double) c.value)
+        if ((double) UnityEngine.Random.Range(0.0f, 1f) >= c.value)
           return;
         o.Call();
-      }));
+      });
     }
   }
 }

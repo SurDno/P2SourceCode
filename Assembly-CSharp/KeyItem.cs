@@ -1,7 +1,5 @@
-﻿using Engine.Source.Services.Inputs;
-using System;
-using UnityEngine;
-using UnityEngine.UI;
+﻿using System;
+using Engine.Source.Services.Inputs;
 
 public class KeyItem : MonoBehaviour
 {
@@ -18,21 +16,21 @@ public class KeyItem : MonoBehaviour
 
   public void SetText(string text) => this.GetComponent<Text>().text = text;
 
-  public void SetReadonly() => this.GetComponent<Text>().color = this.readonlyColor;
+  public void SetReadonly() => this.GetComponent<Text>().color = readonlyColor;
 
   public bool Selection
   {
-    get => this.selction;
+    get => selction;
     set
     {
-      this.selction = value;
-      this.GetComponent<Text>().color = this.selction ? this.activeColor : this.baseColor;
+      selction = value;
+      this.GetComponent<Text>().color = selction ? activeColor : baseColor;
     }
   }
 
   public void OnPress()
   {
-    Action<KeyItem> onPressed = this.OnPressed;
+    Action<KeyItem> onPressed = OnPressed;
     if (onPressed == null)
       return;
     onPressed(this);

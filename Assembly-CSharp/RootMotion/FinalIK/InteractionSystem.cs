@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace RootMotion.FinalIK
 {
@@ -29,12 +27,12 @@ namespace RootMotion.FinalIK
     public float camRaycastDistance = 1f;
     private List<InteractionTrigger> inContact = new List<InteractionTrigger>();
     private List<int> bestRangeIndexes = new List<int>();
-    public InteractionSystem.InteractionDelegate OnInteractionStart;
-    public InteractionSystem.InteractionDelegate OnInteractionPause;
-    public InteractionSystem.InteractionDelegate OnInteractionPickUp;
-    public InteractionSystem.InteractionDelegate OnInteractionResume;
-    public InteractionSystem.InteractionDelegate OnInteractionStop;
-    public InteractionSystem.InteractionEventDelegate OnInteractionEvent;
+    public InteractionDelegate OnInteractionStart;
+    public InteractionDelegate OnInteractionPause;
+    public InteractionDelegate OnInteractionPickUp;
+    public InteractionDelegate OnInteractionResume;
+    public InteractionDelegate OnInteractionStop;
+    public InteractionEventDelegate OnInteractionEvent;
     public RaycastHit raycastHit;
     [Space(10f)]
     [Tooltip("Reference to the FBBIK component.")]
@@ -98,11 +96,11 @@ namespace RootMotion.FinalIK
     {
       get
       {
-        if (!this.IsValid(true))
+        if (!IsValid(true))
           return false;
-        for (int index = 0; index < this.interactionEffectors.Length; ++index)
+        for (int index = 0; index < interactionEffectors.Length; ++index)
         {
-          if (this.interactionEffectors[index].inInteraction && !this.interactionEffectors[index].isPaused)
+          if (interactionEffectors[index].inInteraction && !interactionEffectors[index].isPaused)
             return true;
         }
         return false;
@@ -111,35 +109,35 @@ namespace RootMotion.FinalIK
 
     public bool IsInInteraction(FullBodyBipedEffector effectorType)
     {
-      if (!this.IsValid(true))
+      if (!IsValid(true))
         return false;
-      for (int index = 0; index < this.interactionEffectors.Length; ++index)
+      for (int index = 0; index < interactionEffectors.Length; ++index)
       {
-        if (this.interactionEffectors[index].effectorType == effectorType)
-          return this.interactionEffectors[index].inInteraction && !this.interactionEffectors[index].isPaused;
+        if (interactionEffectors[index].effectorType == effectorType)
+          return interactionEffectors[index].inInteraction && !interactionEffectors[index].isPaused;
       }
       return false;
     }
 
     public bool IsPaused(FullBodyBipedEffector effectorType)
     {
-      if (!this.IsValid(true))
+      if (!IsValid(true))
         return false;
-      for (int index = 0; index < this.interactionEffectors.Length; ++index)
+      for (int index = 0; index < interactionEffectors.Length; ++index)
       {
-        if (this.interactionEffectors[index].effectorType == effectorType)
-          return this.interactionEffectors[index].inInteraction && this.interactionEffectors[index].isPaused;
+        if (interactionEffectors[index].effectorType == effectorType)
+          return interactionEffectors[index].inInteraction && interactionEffectors[index].isPaused;
       }
       return false;
     }
 
     public bool IsPaused()
     {
-      if (!this.IsValid(true))
+      if (!IsValid(true))
         return false;
-      for (int index = 0; index < this.interactionEffectors.Length; ++index)
+      for (int index = 0; index < interactionEffectors.Length; ++index)
       {
-        if (this.interactionEffectors[index].inInteraction && this.interactionEffectors[index].isPaused)
+        if (interactionEffectors[index].inInteraction && interactionEffectors[index].isPaused)
           return true;
       }
       return false;
@@ -147,15 +145,15 @@ namespace RootMotion.FinalIK
 
     public bool IsInSync()
     {
-      if (!this.IsValid(true))
+      if (!IsValid(true))
         return false;
-      for (int index1 = 0; index1 < this.interactionEffectors.Length; ++index1)
+      for (int index1 = 0; index1 < interactionEffectors.Length; ++index1)
       {
-        if (this.interactionEffectors[index1].isPaused)
+        if (interactionEffectors[index1].isPaused)
         {
-          for (int index2 = 0; index2 < this.interactionEffectors.Length; ++index2)
+          for (int index2 = 0; index2 < interactionEffectors.Length; ++index2)
           {
-            if (index2 != index1 && this.interactionEffectors[index2].inInteraction && !this.interactionEffectors[index2].isPaused)
+            if (index2 != index1 && interactionEffectors[index2].inInteraction && !interactionEffectors[index2].isPaused)
               return false;
           }
         }
@@ -168,109 +166,109 @@ namespace RootMotion.FinalIK
       InteractionObject interactionObject,
       bool interrupt)
     {
-      if (!this.IsValid(true) || (Object) interactionObject == (Object) null)
+      if (!IsValid(true) || (Object) interactionObject == (Object) null)
         return false;
-      for (int index = 0; index < this.interactionEffectors.Length; ++index)
+      for (int index = 0; index < interactionEffectors.Length; ++index)
       {
-        if (this.interactionEffectors[index].effectorType == effectorType)
-          return this.interactionEffectors[index].Start(interactionObject, this.targetTag, this.fadeInTime, interrupt);
+        if (interactionEffectors[index].effectorType == effectorType)
+          return interactionEffectors[index].Start(interactionObject, targetTag, fadeInTime, interrupt);
       }
       return false;
     }
 
     public bool PauseInteraction(FullBodyBipedEffector effectorType)
     {
-      if (!this.IsValid(true))
+      if (!IsValid(true))
         return false;
-      for (int index = 0; index < this.interactionEffectors.Length; ++index)
+      for (int index = 0; index < interactionEffectors.Length; ++index)
       {
-        if (this.interactionEffectors[index].effectorType == effectorType)
-          return this.interactionEffectors[index].Pause();
+        if (interactionEffectors[index].effectorType == effectorType)
+          return interactionEffectors[index].Pause();
       }
       return false;
     }
 
     public bool ResumeInteraction(FullBodyBipedEffector effectorType)
     {
-      if (!this.IsValid(true))
+      if (!IsValid(true))
         return false;
-      for (int index = 0; index < this.interactionEffectors.Length; ++index)
+      for (int index = 0; index < interactionEffectors.Length; ++index)
       {
-        if (this.interactionEffectors[index].effectorType == effectorType)
-          return this.interactionEffectors[index].Resume();
+        if (interactionEffectors[index].effectorType == effectorType)
+          return interactionEffectors[index].Resume();
       }
       return false;
     }
 
     public bool StopInteraction(FullBodyBipedEffector effectorType)
     {
-      if (!this.IsValid(true))
+      if (!IsValid(true))
         return false;
-      for (int index = 0; index < this.interactionEffectors.Length; ++index)
+      for (int index = 0; index < interactionEffectors.Length; ++index)
       {
-        if (this.interactionEffectors[index].effectorType == effectorType)
-          return this.interactionEffectors[index].Stop();
+        if (interactionEffectors[index].effectorType == effectorType)
+          return interactionEffectors[index].Stop();
       }
       return false;
     }
 
     public void PauseAll()
     {
-      if (!this.IsValid(true))
+      if (!IsValid(true))
         return;
-      for (int index = 0; index < this.interactionEffectors.Length; ++index)
-        this.interactionEffectors[index].Pause();
+      for (int index = 0; index < interactionEffectors.Length; ++index)
+        interactionEffectors[index].Pause();
     }
 
     public void ResumeAll()
     {
-      if (!this.IsValid(true))
+      if (!IsValid(true))
         return;
-      for (int index = 0; index < this.interactionEffectors.Length; ++index)
-        this.interactionEffectors[index].Resume();
+      for (int index = 0; index < interactionEffectors.Length; ++index)
+        interactionEffectors[index].Resume();
     }
 
     public void StopAll()
     {
-      for (int index = 0; index < this.interactionEffectors.Length; ++index)
-        this.interactionEffectors[index].Stop();
+      for (int index = 0; index < interactionEffectors.Length; ++index)
+        interactionEffectors[index].Stop();
     }
 
     public InteractionObject GetInteractionObject(FullBodyBipedEffector effectorType)
     {
-      if (!this.IsValid(true))
-        return (InteractionObject) null;
-      for (int index = 0; index < this.interactionEffectors.Length; ++index)
+      if (!IsValid(true))
+        return null;
+      for (int index = 0; index < interactionEffectors.Length; ++index)
       {
-        if (this.interactionEffectors[index].effectorType == effectorType)
-          return this.interactionEffectors[index].interactionObject;
+        if (interactionEffectors[index].effectorType == effectorType)
+          return interactionEffectors[index].interactionObject;
       }
-      return (InteractionObject) null;
+      return null;
     }
 
     public float GetProgress(FullBodyBipedEffector effectorType)
     {
-      if (!this.IsValid(true))
+      if (!IsValid(true))
         return 0.0f;
-      for (int index = 0; index < this.interactionEffectors.Length; ++index)
+      for (int index = 0; index < interactionEffectors.Length; ++index)
       {
-        if (this.interactionEffectors[index].effectorType == effectorType)
-          return this.interactionEffectors[index].progress;
+        if (interactionEffectors[index].effectorType == effectorType)
+          return interactionEffectors[index].progress;
       }
       return 0.0f;
     }
 
     public float GetMinActiveProgress()
     {
-      if (!this.IsValid(true))
+      if (!IsValid(true))
         return 0.0f;
       float minActiveProgress = 1f;
-      for (int index = 0; index < this.interactionEffectors.Length; ++index)
+      for (int index = 0; index < interactionEffectors.Length; ++index)
       {
-        if (this.interactionEffectors[index].inInteraction)
+        if (interactionEffectors[index].inInteraction)
         {
-          float progress = this.interactionEffectors[index].progress;
-          if ((double) progress > 0.0 && (double) progress < (double) minActiveProgress)
+          float progress = interactionEffectors[index].progress;
+          if (progress > 0.0 && progress < (double) minActiveProgress)
             minActiveProgress = progress;
         }
       }
@@ -279,15 +277,15 @@ namespace RootMotion.FinalIK
 
     public bool TriggerInteraction(int index, bool interrupt)
     {
-      if (!this.IsValid(true) || !this.TriggerIndexIsValid(index))
+      if (!IsValid(true) || !TriggerIndexIsValid(index))
         return false;
       bool flag = true;
-      InteractionTrigger.Range range = this.triggersInRange[index].ranges[this.bestRangeIndexes[index]];
+      InteractionTrigger.Range range = triggersInRange[index].ranges[bestRangeIndexes[index]];
       for (int index1 = 0; index1 < range.interactions.Length; ++index1)
       {
         for (int index2 = 0; index2 < range.interactions[index1].effectors.Length; ++index2)
         {
-          if (!this.StartInteraction(range.interactions[index1].effectors[index2], range.interactions[index1].interactionObject, interrupt))
+          if (!StartInteraction(range.interactions[index1].effectors[index2], range.interactions[index1].interactionObject, interrupt))
             flag = false;
         }
       }
@@ -299,17 +297,17 @@ namespace RootMotion.FinalIK
       bool interrupt,
       out InteractionObject interactionObject)
     {
-      interactionObject = (InteractionObject) null;
-      if (!this.IsValid(true) || !this.TriggerIndexIsValid(index))
+      interactionObject = null;
+      if (!IsValid(true) || !TriggerIndexIsValid(index))
         return false;
       bool flag = true;
-      InteractionTrigger.Range range = this.triggersInRange[index].ranges[this.bestRangeIndexes[index]];
+      InteractionTrigger.Range range = triggersInRange[index].ranges[bestRangeIndexes[index]];
       for (int index1 = 0; index1 < range.interactions.Length; ++index1)
       {
         for (int index2 = 0; index2 < range.interactions[index1].effectors.Length; ++index2)
         {
           interactionObject = range.interactions[index1].interactionObject;
-          if (!this.StartInteraction(range.interactions[index1].effectors[index2], interactionObject, interrupt))
+          if (!StartInteraction(range.interactions[index1].effectors[index2], interactionObject, interrupt))
             flag = false;
         }
       }
@@ -321,11 +319,11 @@ namespace RootMotion.FinalIK
       bool interrupt,
       out InteractionTarget interactionTarget)
     {
-      interactionTarget = (InteractionTarget) null;
-      if (!this.IsValid(true) || !this.TriggerIndexIsValid(index))
+      interactionTarget = null;
+      if (!IsValid(true) || !TriggerIndexIsValid(index))
         return false;
       bool flag = true;
-      InteractionTrigger.Range range = this.triggersInRange[index].ranges[this.bestRangeIndexes[index]];
+      InteractionTrigger.Range range = triggersInRange[index].ranges[bestRangeIndexes[index]];
       for (int index1 = 0; index1 < range.interactions.Length; ++index1)
       {
         for (int index2 = 0; index2 < range.interactions[index1].effectors.Length; ++index2)
@@ -334,7 +332,7 @@ namespace RootMotion.FinalIK
           Transform target = interactionObject.GetTarget(range.interactions[index1].effectors[index2], this.tag);
           if ((Object) target != (Object) null)
             interactionTarget = target.GetComponent<InteractionTarget>();
-          if (!this.StartInteraction(range.interactions[index1].effectors[index2], interactionObject, interrupt))
+          if (!StartInteraction(range.interactions[index1].effectors[index2], interactionObject, interrupt))
             flag = false;
         }
       }
@@ -343,26 +341,26 @@ namespace RootMotion.FinalIK
 
     public InteractionTrigger.Range GetClosestInteractionRange()
     {
-      if (!this.IsValid(true))
-        return (InteractionTrigger.Range) null;
-      int closestTriggerIndex = this.GetClosestTriggerIndex();
-      return closestTriggerIndex < 0 || closestTriggerIndex >= this.triggersInRange.Count ? (InteractionTrigger.Range) null : this.triggersInRange[closestTriggerIndex].ranges[this.bestRangeIndexes[closestTriggerIndex]];
+      if (!IsValid(true))
+        return null;
+      int closestTriggerIndex = GetClosestTriggerIndex();
+      return closestTriggerIndex < 0 || closestTriggerIndex >= triggersInRange.Count ? null : triggersInRange[closestTriggerIndex].ranges[bestRangeIndexes[closestTriggerIndex]];
     }
 
     public InteractionObject GetClosestInteractionObjectInRange()
     {
-      return this.GetClosestInteractionRange()?.interactions[0].interactionObject;
+      return GetClosestInteractionRange()?.interactions[0].interactionObject;
     }
 
     public InteractionTarget GetClosestInteractionTargetInRange()
     {
-      InteractionTrigger.Range interactionRange = this.GetClosestInteractionRange();
+      InteractionTrigger.Range interactionRange = GetClosestInteractionRange();
       return interactionRange?.interactions[0].interactionObject.GetTarget(interactionRange.interactions[0].effectors[0], this);
     }
 
     public InteractionObject[] GetClosestInteractionObjectsInRange()
     {
-      InteractionTrigger.Range interactionRange = this.GetClosestInteractionRange();
+      InteractionTrigger.Range interactionRange = GetClosestInteractionRange();
       if (interactionRange == null)
         return new InteractionObject[0];
       InteractionObject[] interactionObjectsInRange = new InteractionObject[interactionRange.interactions.Length];
@@ -373,7 +371,7 @@ namespace RootMotion.FinalIK
 
     public InteractionTarget[] GetClosestInteractionTargetsInRange()
     {
-      InteractionTrigger.Range interactionRange = this.GetClosestInteractionRange();
+      InteractionTrigger.Range interactionRange = GetClosestInteractionRange();
       if (interactionRange == null)
         return new InteractionTarget[0];
       List<InteractionTarget> interactionTargetList = new List<InteractionTarget>();
@@ -387,16 +385,16 @@ namespace RootMotion.FinalIK
 
     public bool TriggerEffectorsReady(int index)
     {
-      if (!this.IsValid(true) || !this.TriggerIndexIsValid(index))
+      if (!IsValid(true) || !TriggerIndexIsValid(index))
         return false;
-      for (int index1 = 0; index1 < this.triggersInRange[index].ranges.Length; ++index1)
+      for (int index1 = 0; index1 < triggersInRange[index].ranges.Length; ++index1)
       {
-        InteractionTrigger.Range range = this.triggersInRange[index].ranges[index1];
+        InteractionTrigger.Range range = triggersInRange[index].ranges[index1];
         for (int index2 = 0; index2 < range.interactions.Length; ++index2)
         {
           for (int index3 = 0; index3 < range.interactions[index2].effectors.Length; ++index3)
           {
-            if (this.IsInInteraction(range.interactions[index2].effectors[index3]))
+            if (IsInInteraction(range.interactions[index2].effectors[index3]))
               return false;
           }
         }
@@ -404,11 +402,11 @@ namespace RootMotion.FinalIK
         {
           for (int index5 = 0; index5 < range.interactions[index4].effectors.Length; ++index5)
           {
-            if (this.IsPaused(range.interactions[index4].effectors[index5]))
+            if (IsPaused(range.interactions[index4].effectors[index5]))
             {
               for (int index6 = 0; index6 < range.interactions[index4].effectors.Length; ++index6)
               {
-                if (index6 != index5 && !this.IsPaused(range.interactions[index4].effectors[index6]))
+                if (index6 != index5 && !IsPaused(range.interactions[index4].effectors[index6]))
                   return false;
               }
             }
@@ -420,28 +418,28 @@ namespace RootMotion.FinalIK
 
     public InteractionTrigger.Range GetTriggerRange(int index)
     {
-      if (!this.IsValid(true))
-        return (InteractionTrigger.Range) null;
-      if (index >= 0 && index < this.bestRangeIndexes.Count)
-        return this.triggersInRange[index].ranges[this.bestRangeIndexes[index]];
+      if (!IsValid(true))
+        return null;
+      if (index >= 0 && index < bestRangeIndexes.Count)
+        return triggersInRange[index].ranges[bestRangeIndexes[index]];
       Warning.Log("Index out of range.", this.transform);
-      return (InteractionTrigger.Range) null;
+      return null;
     }
 
     public int GetClosestTriggerIndex()
     {
-      if (!this.IsValid(true) || this.triggersInRange.Count == 0)
+      if (!IsValid(true) || triggersInRange.Count == 0)
         return -1;
-      if (this.triggersInRange.Count == 1)
+      if (triggersInRange.Count == 1)
         return 0;
       int closestTriggerIndex = -1;
       float num1 = float.PositiveInfinity;
-      for (int index = 0; index < this.triggersInRange.Count; ++index)
+      for (int index = 0; index < triggersInRange.Count; ++index)
       {
-        if ((Object) this.triggersInRange[index] != (Object) null)
+        if ((Object) triggersInRange[index] != (Object) null)
         {
-          float num2 = Vector3.SqrMagnitude(this.triggersInRange[index].transform.position - this.transform.position);
-          if ((double) num2 < (double) num1)
+          float num2 = Vector3.SqrMagnitude(triggersInRange[index].transform.position - this.transform.position);
+          if (num2 < (double) num1)
           {
             closestTriggerIndex = index;
             num1 = num2;
@@ -453,38 +451,38 @@ namespace RootMotion.FinalIK
 
     public FullBodyBipedIK ik
     {
-      get => this.fullBody;
-      set => this.fullBody = value;
+      get => fullBody;
+      set => fullBody = value;
     }
 
     public List<InteractionTrigger> triggersInRange { get; private set; }
 
     protected virtual void Start()
     {
-      if ((Object) this.fullBody == (Object) null)
-        this.fullBody = this.GetComponent<FullBodyBipedIK>();
-      if ((Object) this.fullBody == (Object) null)
+      if ((Object) fullBody == (Object) null)
+        fullBody = this.GetComponent<FullBodyBipedIK>();
+      if ((Object) fullBody == (Object) null)
       {
         Warning.Log("InteractionSystem can not find a FullBodyBipedIK component", this.transform);
       }
       else
       {
-        IKSolverFullBodyBiped solver1 = this.fullBody.solver;
-        solver1.OnPreUpdate = solver1.OnPreUpdate + new IKSolver.UpdateDelegate(this.OnPreFBBIK);
-        IKSolverFullBodyBiped solver2 = this.fullBody.solver;
-        solver2.OnPostUpdate = solver2.OnPostUpdate + new IKSolver.UpdateDelegate(this.OnPostFBBIK);
-        IKSolverFullBodyBiped solver3 = this.fullBody.solver;
-        solver3.OnFixTransforms = solver3.OnFixTransforms + new IKSolver.UpdateDelegate(this.OnFixTransforms);
-        this.OnInteractionStart += new InteractionSystem.InteractionDelegate(this.LookAtInteraction);
-        this.OnInteractionPause += new InteractionSystem.InteractionDelegate(this.InteractionPause);
-        this.OnInteractionResume += new InteractionSystem.InteractionDelegate(this.InteractionResume);
-        this.OnInteractionStop += new InteractionSystem.InteractionDelegate(this.InteractionStop);
-        foreach (InteractionEffector interactionEffector in this.interactionEffectors)
+        IKSolverFullBodyBiped solver1 = fullBody.solver;
+        solver1.OnPreUpdate = solver1.OnPreUpdate + OnPreFBBIK;
+        IKSolverFullBodyBiped solver2 = fullBody.solver;
+        solver2.OnPostUpdate = solver2.OnPostUpdate + OnPostFBBIK;
+        IKSolverFullBodyBiped solver3 = fullBody.solver;
+        solver3.OnFixTransforms = solver3.OnFixTransforms + OnFixTransforms;
+        OnInteractionStart += LookAtInteraction;
+        OnInteractionPause += InteractionPause;
+        OnInteractionResume += InteractionResume;
+        OnInteractionStop += InteractionStop;
+        foreach (InteractionEffector interactionEffector in interactionEffectors)
           interactionEffector.Initiate(this);
-        this.triggersInRange = new List<InteractionTrigger>();
-        this.c = this.GetComponent<Collider>();
-        this.UpdateTriggerEventBroadcasting();
-        this.initiated = true;
+        triggersInRange = new List<InteractionTrigger>();
+        c = this.GetComponent<Collider>();
+        UpdateTriggerEventBroadcasting();
+        initiated = true;
       }
     }
 
@@ -492,66 +490,66 @@ namespace RootMotion.FinalIK
       FullBodyBipedEffector effector,
       InteractionObject interactionObject)
     {
-      this.lookAt.isPaused = true;
+      lookAt.isPaused = true;
     }
 
     private void InteractionResume(
       FullBodyBipedEffector effector,
       InteractionObject interactionObject)
     {
-      this.lookAt.isPaused = false;
+      lookAt.isPaused = false;
     }
 
     private void InteractionStop(
       FullBodyBipedEffector effector,
       InteractionObject interactionObject)
     {
-      this.lookAt.isPaused = false;
+      lookAt.isPaused = false;
     }
 
     private void LookAtInteraction(
       FullBodyBipedEffector effector,
       InteractionObject interactionObject)
     {
-      this.lookAt.Look(interactionObject.lookAtTarget, Time.time + interactionObject.length * 0.5f);
+      lookAt.Look(interactionObject.lookAtTarget, Time.time + interactionObject.length * 0.5f);
     }
 
     public void OnTriggerEnter(Collider c)
     {
-      if ((Object) this.fullBody == (Object) null)
+      if ((Object) fullBody == (Object) null)
         return;
       InteractionTrigger component = c.GetComponent<InteractionTrigger>();
-      if ((Object) component == (Object) null || this.inContact.Contains(component))
+      if ((Object) component == (Object) null || inContact.Contains(component))
         return;
-      this.inContact.Add(component);
+      inContact.Add(component);
     }
 
     public void OnTriggerExit(Collider c)
     {
-      if ((Object) this.fullBody == (Object) null)
+      if ((Object) fullBody == (Object) null)
         return;
       InteractionTrigger component = c.GetComponent<InteractionTrigger>();
       if ((Object) component == (Object) null)
         return;
-      this.inContact.Remove(component);
+      inContact.Remove(component);
     }
 
     private bool ContactIsInRange(int index, out int bestRangeIndex)
     {
       bestRangeIndex = -1;
-      if (!this.IsValid(true))
+      if (!IsValid(true))
         return false;
-      if (index < 0 || index >= this.inContact.Count)
+      if (index < 0 || index >= inContact.Count)
       {
         Warning.Log("Index out of range.", this.transform);
         return false;
       }
-      if ((Object) this.inContact[index] == (Object) null)
+      if ((Object) inContact[index] == (Object) null)
       {
         Warning.Log("The InteractionTrigger in the list 'inContact' has been destroyed", this.transform);
         return false;
       }
-      bestRangeIndex = this.inContact[index].GetBestRangeIndex(this.transform, this.FPSCamera, this.raycastHit);
+      bestRangeIndex = inContact[index].GetBestRangeIndex(this.transform, FPSCamera, raycastHit);
       return bestRangeIndex != -1;
     }
 
@@ -559,112 +557,112 @@ namespace RootMotion.FinalIK
     {
       if (Application.isPlaying)
         return;
-      if ((Object) this.fullBody == (Object) null)
-        this.fullBody = this.GetComponent<FullBodyBipedIK>();
-      if (!((Object) this.characterCollider == (Object) null))
+      if ((Object) fullBody == (Object) null)
+        fullBody = this.GetComponent<FullBodyBipedIK>();
+      if (!((Object) characterCollider == (Object) null))
         return;
-      this.characterCollider = this.GetComponent<Collider>();
+      characterCollider = this.GetComponent<Collider>();
     }
 
     private void Update()
     {
-      if ((Object) this.fullBody == (Object) null)
+      if ((Object) fullBody == (Object) null)
         return;
-      this.UpdateTriggerEventBroadcasting();
-      this.Raycasting();
-      this.triggersInRange.Clear();
-      this.bestRangeIndexes.Clear();
-      for (int index = 0; index < this.inContact.Count; ++index)
+      UpdateTriggerEventBroadcasting();
+      Raycasting();
+      triggersInRange.Clear();
+      bestRangeIndexes.Clear();
+      for (int index = 0; index < inContact.Count; ++index)
       {
         int bestRangeIndex = -1;
-        if ((Object) this.inContact[index] != (Object) null && this.inContact[index].gameObject.activeInHierarchy && this.inContact[index].enabled && this.ContactIsInRange(index, out bestRangeIndex))
+        if ((Object) inContact[index] != (Object) null && inContact[index].gameObject.activeInHierarchy && inContact[index].enabled && ContactIsInRange(index, out bestRangeIndex))
         {
-          this.triggersInRange.Add(this.inContact[index]);
-          this.bestRangeIndexes.Add(bestRangeIndex);
+          triggersInRange.Add(inContact[index]);
+          bestRangeIndexes.Add(bestRangeIndex);
         }
       }
-      this.lookAt.Update();
+      lookAt.Update();
     }
 
     private void Raycasting()
     {
-      if ((int) this.camRaycastLayers == -1 || (Object) this.FPSCamera == (Object) null)
+      if ((int) camRaycastLayers == -1 || (Object) FPSCamera == (Object) null)
         return;
-      Physics.Raycast(this.FPSCamera.position, this.FPSCamera.forward, out this.raycastHit, this.camRaycastDistance, (int) this.camRaycastLayers);
+      Physics.Raycast(FPSCamera.position, FPSCamera.forward, out raycastHit, camRaycastDistance, (int) camRaycastLayers);
     }
 
     private void UpdateTriggerEventBroadcasting()
     {
-      if ((Object) this.characterCollider == (Object) null)
-        this.characterCollider = this.c;
-      if ((Object) this.characterCollider != (Object) null && (Object) this.characterCollider != (Object) this.c)
+      if ((Object) characterCollider == (Object) null)
+        characterCollider = c;
+      if ((Object) characterCollider != (Object) null && (Object) characterCollider != (Object) c)
       {
-        if ((Object) this.characterCollider.GetComponent<TriggerEventBroadcaster>() == (Object) null)
-          this.characterCollider.gameObject.AddComponent<TriggerEventBroadcaster>().target = this.gameObject;
-        if ((Object) this.lastCollider != (Object) null && (Object) this.lastCollider != (Object) this.c && (Object) this.lastCollider != (Object) this.characterCollider)
+        if ((Object) characterCollider.GetComponent<TriggerEventBroadcaster>() == (Object) null)
+          characterCollider.gameObject.AddComponent<TriggerEventBroadcaster>().target = this.gameObject;
+        if ((Object) lastCollider != (Object) null && (Object) lastCollider != (Object) c && (Object) lastCollider != (Object) characterCollider)
         {
-          TriggerEventBroadcaster component = this.lastCollider.GetComponent<TriggerEventBroadcaster>();
+          TriggerEventBroadcaster component = lastCollider.GetComponent<TriggerEventBroadcaster>();
           if ((Object) component != (Object) null)
             Object.Destroy((Object) component);
         }
       }
-      this.lastCollider = this.characterCollider;
+      lastCollider = characterCollider;
     }
 
     private void UpdateEffectors()
     {
-      if ((Object) this.fullBody == (Object) null)
+      if ((Object) fullBody == (Object) null)
         return;
-      for (int index = 0; index < this.interactionEffectors.Length; ++index)
-        this.interactionEffectors[index].Update(this.transform, this.speed);
-      for (int index = 0; index < this.interactionEffectors.Length; ++index)
-        this.interactionEffectors[index].ResetToDefaults(this.resetToDefaultsSpeed * this.speed);
+      for (int index = 0; index < interactionEffectors.Length; ++index)
+        interactionEffectors[index].Update(this.transform, speed);
+      for (int index = 0; index < interactionEffectors.Length; ++index)
+        interactionEffectors[index].ResetToDefaults(resetToDefaultsSpeed * speed);
     }
 
     private void OnPreFBBIK()
     {
-      if (!this.enabled || (Object) this.fullBody == (Object) null || !this.fullBody.enabled)
+      if (!this.enabled || (Object) fullBody == (Object) null || !fullBody.enabled)
         return;
-      this.lookAt.SolveSpine();
-      this.UpdateEffectors();
+      lookAt.SolveSpine();
+      UpdateEffectors();
     }
 
     private void OnPostFBBIK()
     {
-      if (!this.enabled || (Object) this.fullBody == (Object) null || !this.fullBody.enabled)
+      if (!this.enabled || (Object) fullBody == (Object) null || !fullBody.enabled)
         return;
-      for (int index = 0; index < this.interactionEffectors.Length; ++index)
-        this.interactionEffectors[index].OnPostFBBIK();
-      this.lookAt.SolveHead();
+      for (int index = 0; index < interactionEffectors.Length; ++index)
+        interactionEffectors[index].OnPostFBBIK();
+      lookAt.SolveHead();
     }
 
-    private void OnFixTransforms() => this.lookAt.OnFixTransforms();
+    private void OnFixTransforms() => lookAt.OnFixTransforms();
 
     private void OnDestroy()
     {
-      if ((Object) this.fullBody == (Object) null)
+      if ((Object) fullBody == (Object) null)
         return;
-      IKSolverFullBodyBiped solver1 = this.fullBody.solver;
-      solver1.OnPreUpdate = solver1.OnPreUpdate - new IKSolver.UpdateDelegate(this.OnPreFBBIK);
-      IKSolverFullBodyBiped solver2 = this.fullBody.solver;
-      solver2.OnPostUpdate = solver2.OnPostUpdate - new IKSolver.UpdateDelegate(this.OnPostFBBIK);
-      IKSolverFullBodyBiped solver3 = this.fullBody.solver;
-      solver3.OnFixTransforms = solver3.OnFixTransforms - new IKSolver.UpdateDelegate(this.OnFixTransforms);
-      this.OnInteractionStart -= new InteractionSystem.InteractionDelegate(this.LookAtInteraction);
-      this.OnInteractionPause -= new InteractionSystem.InteractionDelegate(this.InteractionPause);
-      this.OnInteractionResume -= new InteractionSystem.InteractionDelegate(this.InteractionResume);
-      this.OnInteractionStop -= new InteractionSystem.InteractionDelegate(this.InteractionStop);
+      IKSolverFullBodyBiped solver1 = fullBody.solver;
+      solver1.OnPreUpdate = solver1.OnPreUpdate - OnPreFBBIK;
+      IKSolverFullBodyBiped solver2 = fullBody.solver;
+      solver2.OnPostUpdate = solver2.OnPostUpdate - OnPostFBBIK;
+      IKSolverFullBodyBiped solver3 = fullBody.solver;
+      solver3.OnFixTransforms = solver3.OnFixTransforms - OnFixTransforms;
+      OnInteractionStart -= LookAtInteraction;
+      OnInteractionPause -= InteractionPause;
+      OnInteractionResume -= InteractionResume;
+      OnInteractionStop -= InteractionStop;
     }
 
     private bool IsValid(bool log)
     {
-      if ((Object) this.fullBody == (Object) null)
+      if ((Object) fullBody == (Object) null)
       {
         if (log)
           Warning.Log("FBBIK is null. Will not update the InteractionSystem", this.transform);
         return false;
       }
-      if (this.initiated)
+      if (initiated)
         return true;
       if (log)
         Warning.Log("The InteractionSystem has not been initiated yet.", this.transform);
@@ -673,12 +671,12 @@ namespace RootMotion.FinalIK
 
     private bool TriggerIndexIsValid(int index)
     {
-      if (index < 0 || index >= this.triggersInRange.Count)
+      if (index < 0 || index >= triggersInRange.Count)
       {
         Warning.Log("Index out of range.", this.transform);
         return false;
       }
-      if (!((Object) this.triggersInRange[index] == (Object) null))
+      if (!((Object) triggersInRange[index] == (Object) null))
         return true;
       Warning.Log("The InteractionTrigger in the list 'inContact' has been destroyed", this.transform);
       return false;

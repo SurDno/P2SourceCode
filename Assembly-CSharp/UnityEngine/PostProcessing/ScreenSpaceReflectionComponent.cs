@@ -1,6 +1,4 @@
-﻿using UnityEngine.Rendering;
-
-namespace UnityEngine.PostProcessing
+﻿namespace UnityEngine.PostProcessing
 {
   public sealed class ScreenSpaceReflectionComponent : 
     PostProcessingComponentCommandBuffer<ScreenSpaceReflectionModel>
@@ -15,16 +13,16 @@ namespace UnityEngine.PostProcessing
 
     public override bool active
     {
-      get => this.model.enabled && this.context.isGBufferAvailable && !this.context.interrupted;
+      get => model.enabled && context.isGBufferAvailable && !context.interrupted;
     }
 
     public override void OnEnable()
     {
-      this.m_ReflectionTextures[0] = Shader.PropertyToID("_ReflectionTexture0");
-      this.m_ReflectionTextures[1] = Shader.PropertyToID("_ReflectionTexture1");
-      this.m_ReflectionTextures[2] = Shader.PropertyToID("_ReflectionTexture2");
-      this.m_ReflectionTextures[3] = Shader.PropertyToID("_ReflectionTexture3");
-      this.m_ReflectionTextures[4] = Shader.PropertyToID("_ReflectionTexture4");
+      m_ReflectionTextures[0] = Shader.PropertyToID("_ReflectionTexture0");
+      m_ReflectionTextures[1] = Shader.PropertyToID("_ReflectionTexture1");
+      m_ReflectionTextures[2] = Shader.PropertyToID("_ReflectionTexture2");
+      m_ReflectionTextures[3] = Shader.PropertyToID("_ReflectionTexture3");
+      m_ReflectionTextures[4] = Shader.PropertyToID("_ReflectionTexture4");
     }
 
     public override string GetName() => "Screen Space Reflection";
@@ -33,84 +31,84 @@ namespace UnityEngine.PostProcessing
 
     public override void PopulateCommandBuffer(CommandBuffer cb)
     {
-      ScreenSpaceReflectionModel.Settings settings = this.model.settings;
-      Camera camera = this.context.camera;
+      ScreenSpaceReflectionModel.Settings settings = model.settings;
+      Camera camera = context.camera;
       int num1 = settings.reflection.reflectionQuality == ScreenSpaceReflectionModel.SSRResolution.High ? 1 : 2;
-      int num2 = this.context.width / num1;
-      int num3 = this.context.height / num1;
-      float width = (float) this.context.width;
-      float height = (float) this.context.height;
+      int num2 = context.width / num1;
+      int num3 = context.height / num1;
+      float width = context.width;
+      float height = context.height;
       float num4 = width / 2f;
       float num5 = height / 2f;
-      Material mat = this.context.materialFactory.Get("Hidden/Post FX/Screen Space Reflection");
-      mat.SetInt(ScreenSpaceReflectionComponent.Uniforms._RayStepSize, settings.reflection.stepSize);
-      mat.SetInt(ScreenSpaceReflectionComponent.Uniforms._AdditiveReflection, settings.reflection.blendType == ScreenSpaceReflectionModel.SSRReflectionBlendType.Additive ? 1 : 0);
-      mat.SetInt(ScreenSpaceReflectionComponent.Uniforms._BilateralUpsampling, this.k_BilateralUpsample ? 1 : 0);
-      mat.SetInt(ScreenSpaceReflectionComponent.Uniforms._TreatBackfaceHitAsMiss, this.k_TreatBackfaceHitAsMiss ? 1 : 0);
-      mat.SetInt(ScreenSpaceReflectionComponent.Uniforms._AllowBackwardsRays, settings.reflection.reflectBackfaces ? 1 : 0);
-      mat.SetInt(ScreenSpaceReflectionComponent.Uniforms._TraceBehindObjects, this.k_TraceBehindObjects ? 1 : 0);
-      mat.SetInt(ScreenSpaceReflectionComponent.Uniforms._MaxSteps, settings.reflection.iterationCount);
-      mat.SetInt(ScreenSpaceReflectionComponent.Uniforms._FullResolutionFiltering, 0);
-      mat.SetInt(ScreenSpaceReflectionComponent.Uniforms._HalfResolution, settings.reflection.reflectionQuality != ScreenSpaceReflectionModel.SSRResolution.High ? 1 : 0);
-      mat.SetInt(ScreenSpaceReflectionComponent.Uniforms._HighlightSuppression, this.k_HighlightSuppression ? 1 : 0);
+      Material mat = context.materialFactory.Get("Hidden/Post FX/Screen Space Reflection");
+      mat.SetInt(Uniforms._RayStepSize, settings.reflection.stepSize);
+      mat.SetInt(Uniforms._AdditiveReflection, settings.reflection.blendType == ScreenSpaceReflectionModel.SSRReflectionBlendType.Additive ? 1 : 0);
+      mat.SetInt(Uniforms._BilateralUpsampling, k_BilateralUpsample ? 1 : 0);
+      mat.SetInt(Uniforms._TreatBackfaceHitAsMiss, k_TreatBackfaceHitAsMiss ? 1 : 0);
+      mat.SetInt(Uniforms._AllowBackwardsRays, settings.reflection.reflectBackfaces ? 1 : 0);
+      mat.SetInt(Uniforms._TraceBehindObjects, k_TraceBehindObjects ? 1 : 0);
+      mat.SetInt(Uniforms._MaxSteps, settings.reflection.iterationCount);
+      mat.SetInt(Uniforms._FullResolutionFiltering, 0);
+      mat.SetInt(Uniforms._HalfResolution, settings.reflection.reflectionQuality != ScreenSpaceReflectionModel.SSRResolution.High ? 1 : 0);
+      mat.SetInt(Uniforms._HighlightSuppression, k_HighlightSuppression ? 1 : 0);
       float num6 = width / (-2f * Mathf.Tan((float) ((double) camera.fieldOfView / 180.0 * 3.1415927410125732 * 0.5)));
-      mat.SetFloat(ScreenSpaceReflectionComponent.Uniforms._PixelsPerMeterAtOneMeter, num6);
-      mat.SetFloat(ScreenSpaceReflectionComponent.Uniforms._ScreenEdgeFading, settings.screenEdgeMask.intensity);
-      mat.SetFloat(ScreenSpaceReflectionComponent.Uniforms._ReflectionBlur, settings.reflection.reflectionBlur);
-      mat.SetFloat(ScreenSpaceReflectionComponent.Uniforms._MaxRayTraceDistance, settings.reflection.maxDistance);
-      mat.SetFloat(ScreenSpaceReflectionComponent.Uniforms._FadeDistance, settings.intensity.fadeDistance);
-      mat.SetFloat(ScreenSpaceReflectionComponent.Uniforms._LayerThickness, settings.reflection.widthModifier);
-      mat.SetFloat(ScreenSpaceReflectionComponent.Uniforms._SSRMultiplier, settings.intensity.reflectionMultiplier);
-      mat.SetFloat(ScreenSpaceReflectionComponent.Uniforms._FresnelFade, settings.intensity.fresnelFade);
-      mat.SetFloat(ScreenSpaceReflectionComponent.Uniforms._FresnelFadePower, settings.intensity.fresnelFadePower);
+      mat.SetFloat(Uniforms._PixelsPerMeterAtOneMeter, num6);
+      mat.SetFloat(Uniforms._ScreenEdgeFading, settings.screenEdgeMask.intensity);
+      mat.SetFloat(Uniforms._ReflectionBlur, settings.reflection.reflectionBlur);
+      mat.SetFloat(Uniforms._MaxRayTraceDistance, settings.reflection.maxDistance);
+      mat.SetFloat(Uniforms._FadeDistance, settings.intensity.fadeDistance);
+      mat.SetFloat(Uniforms._LayerThickness, settings.reflection.widthModifier);
+      mat.SetFloat(Uniforms._SSRMultiplier, settings.intensity.reflectionMultiplier);
+      mat.SetFloat(Uniforms._FresnelFade, settings.intensity.fresnelFade);
+      mat.SetFloat(Uniforms._FresnelFadePower, settings.intensity.fresnelFadePower);
       Matrix4x4 projectionMatrix = camera.projectionMatrix;
-      Vector4 vector4 = new Vector4((float) (-2.0 / ((double) width * (double) projectionMatrix[0])), (float) (-2.0 / ((double) height * (double) projectionMatrix[5])), (1f - projectionMatrix[2]) / projectionMatrix[0], (1f + projectionMatrix[6]) / projectionMatrix[5]);
+      Vector4 vector4 = new Vector4((float) (-2.0 / (width * (double) projectionMatrix[0])), (float) (-2.0 / (height * (double) projectionMatrix[5])), (1f - projectionMatrix[2]) / projectionMatrix[0], (1f + projectionMatrix[6]) / projectionMatrix[5]);
       Vector3 vector3 = float.IsPositiveInfinity(camera.farClipPlane) ? new Vector3(camera.nearClipPlane, -1f, 1f) : new Vector3(camera.nearClipPlane * camera.farClipPlane, camera.nearClipPlane - camera.farClipPlane, camera.farClipPlane);
-      mat.SetVector(ScreenSpaceReflectionComponent.Uniforms._ReflectionBufferSize, (Vector4) new Vector2((float) num2, (float) num3));
-      mat.SetVector(ScreenSpaceReflectionComponent.Uniforms._ScreenSize, (Vector4) new Vector2(width, height));
-      mat.SetVector(ScreenSpaceReflectionComponent.Uniforms._InvScreenSize, (Vector4) new Vector2(1f / width, 1f / height));
-      mat.SetVector(ScreenSpaceReflectionComponent.Uniforms._ProjInfo, vector4);
-      mat.SetVector(ScreenSpaceReflectionComponent.Uniforms._CameraClipInfo, (Vector4) vector3);
+      mat.SetVector(Uniforms._ReflectionBufferSize, (Vector4) new Vector2((float) num2, (float) num3));
+      mat.SetVector(Uniforms._ScreenSize, (Vector4) new Vector2(width, height));
+      mat.SetVector(Uniforms._InvScreenSize, (Vector4) new Vector2(1f / width, 1f / height));
+      mat.SetVector(Uniforms._ProjInfo, vector4);
+      mat.SetVector(Uniforms._CameraClipInfo, (Vector4) vector3);
       Matrix4x4 matrix4x4_1 = new Matrix4x4();
       matrix4x4_1.SetRow(0, new Vector4(num4, 0.0f, 0.0f, num4));
       matrix4x4_1.SetRow(1, new Vector4(0.0f, num5, 0.0f, num5));
       matrix4x4_1.SetRow(2, new Vector4(0.0f, 0.0f, 1f, 0.0f));
       matrix4x4_1.SetRow(3, new Vector4(0.0f, 0.0f, 0.0f, 1f));
       Matrix4x4 matrix4x4_2 = matrix4x4_1 * projectionMatrix;
-      mat.SetMatrix(ScreenSpaceReflectionComponent.Uniforms._ProjectToPixelMatrix, matrix4x4_2);
-      mat.SetMatrix(ScreenSpaceReflectionComponent.Uniforms._WorldToCameraMatrix, camera.worldToCameraMatrix);
-      mat.SetMatrix(ScreenSpaceReflectionComponent.Uniforms._CameraToWorldMatrix, camera.worldToCameraMatrix.inverse);
-      RenderTextureFormat format = this.context.isHdr ? RenderTextureFormat.ARGBHalf : RenderTextureFormat.ARGB32;
-      int roughnessTexture = ScreenSpaceReflectionComponent.Uniforms._NormalAndRoughnessTexture;
-      int hitPointTexture = ScreenSpaceReflectionComponent.Uniforms._HitPointTexture;
-      int blurTexture = ScreenSpaceReflectionComponent.Uniforms._BlurTexture;
-      int filteredReflections = ScreenSpaceReflectionComponent.Uniforms._FilteredReflections;
-      int reflectionTexture1 = ScreenSpaceReflectionComponent.Uniforms._FinalReflectionTexture;
-      int tempTexture = ScreenSpaceReflectionComponent.Uniforms._TempTexture;
+      mat.SetMatrix(Uniforms._ProjectToPixelMatrix, matrix4x4_2);
+      mat.SetMatrix(Uniforms._WorldToCameraMatrix, camera.worldToCameraMatrix);
+      mat.SetMatrix(Uniforms._CameraToWorldMatrix, camera.worldToCameraMatrix.inverse);
+      RenderTextureFormat format = context.isHdr ? RenderTextureFormat.ARGBHalf : RenderTextureFormat.ARGB32;
+      int roughnessTexture = Uniforms._NormalAndRoughnessTexture;
+      int hitPointTexture = Uniforms._HitPointTexture;
+      int blurTexture = Uniforms._BlurTexture;
+      int filteredReflections = Uniforms._FilteredReflections;
+      int reflectionTexture1 = Uniforms._FinalReflectionTexture;
+      int tempTexture = Uniforms._TempTexture;
       cb.GetTemporaryRT(roughnessTexture, -1, -1, 0, FilterMode.Point, RenderTextureFormat.ARGB32, RenderTextureReadWrite.Linear);
       cb.GetTemporaryRT(hitPointTexture, num2, num3, 0, FilterMode.Bilinear, RenderTextureFormat.ARGBHalf, RenderTextureReadWrite.Linear);
       for (int index = 0; index < 5; ++index)
-        cb.GetTemporaryRT(this.m_ReflectionTextures[index], num2 >> index, num3 >> index, 0, FilterMode.Bilinear, format);
-      cb.GetTemporaryRT(filteredReflections, num2, num3, 0, this.k_BilateralUpsample ? FilterMode.Point : FilterMode.Bilinear, format);
+        cb.GetTemporaryRT(m_ReflectionTextures[index], num2 >> index, num3 >> index, 0, FilterMode.Bilinear, format);
+      cb.GetTemporaryRT(filteredReflections, num2, num3, 0, k_BilateralUpsample ? FilterMode.Point : FilterMode.Bilinear, format);
       cb.GetTemporaryRT(reflectionTexture1, num2, num3, 0, FilterMode.Point, format);
       cb.Blit((RenderTargetIdentifier) BuiltinRenderTextureType.CameraTarget, (RenderTargetIdentifier) roughnessTexture, mat, 6);
       cb.Blit((RenderTargetIdentifier) BuiltinRenderTextureType.CameraTarget, (RenderTargetIdentifier) hitPointTexture, mat, 0);
       cb.Blit((RenderTargetIdentifier) BuiltinRenderTextureType.CameraTarget, (RenderTargetIdentifier) filteredReflections, mat, 5);
-      cb.Blit((RenderTargetIdentifier) filteredReflections, (RenderTargetIdentifier) this.m_ReflectionTextures[0], mat, 8);
+      cb.Blit((RenderTargetIdentifier) filteredReflections, (RenderTargetIdentifier) m_ReflectionTextures[0], mat, 8);
       for (int index = 1; index < 5; ++index)
       {
-        int reflectionTexture2 = this.m_ReflectionTextures[index - 1];
+        int reflectionTexture2 = m_ReflectionTextures[index - 1];
         int num7 = index;
         cb.GetTemporaryRT(blurTexture, num2 >> num7, num3 >> num7, 0, FilterMode.Bilinear, format);
-        cb.SetGlobalVector(ScreenSpaceReflectionComponent.Uniforms._Axis, new Vector4(1f, 0.0f, 0.0f, 0.0f));
-        cb.SetGlobalFloat(ScreenSpaceReflectionComponent.Uniforms._CurrentMipLevel, (float) index - 1f);
+        cb.SetGlobalVector(Uniforms._Axis, new Vector4(1f, 0.0f, 0.0f, 0.0f));
+        cb.SetGlobalFloat(Uniforms._CurrentMipLevel, index - 1f);
         cb.Blit((RenderTargetIdentifier) reflectionTexture2, (RenderTargetIdentifier) blurTexture, mat, 2);
-        cb.SetGlobalVector(ScreenSpaceReflectionComponent.Uniforms._Axis, new Vector4(0.0f, 1f, 0.0f, 0.0f));
-        int reflectionTexture3 = this.m_ReflectionTextures[index];
+        cb.SetGlobalVector(Uniforms._Axis, new Vector4(0.0f, 1f, 0.0f, 0.0f));
+        int reflectionTexture3 = m_ReflectionTextures[index];
         cb.Blit((RenderTargetIdentifier) blurTexture, (RenderTargetIdentifier) reflectionTexture3, mat, 2);
         cb.ReleaseTemporaryRT(blurTexture);
       }
-      cb.Blit((RenderTargetIdentifier) this.m_ReflectionTextures[0], (RenderTargetIdentifier) reflectionTexture1, mat, 3);
+      cb.Blit((RenderTargetIdentifier) m_ReflectionTextures[0], (RenderTargetIdentifier) reflectionTexture1, mat, 3);
       cb.GetTemporaryRT(tempTexture, camera.pixelWidth, camera.pixelHeight, 0, FilterMode.Bilinear, format);
       cb.Blit((RenderTargetIdentifier) BuiltinRenderTextureType.CameraTarget, (RenderTargetIdentifier) tempTexture, mat, 1);
       cb.Blit((RenderTargetIdentifier) tempTexture, (RenderTargetIdentifier) BuiltinRenderTextureType.CameraTarget);

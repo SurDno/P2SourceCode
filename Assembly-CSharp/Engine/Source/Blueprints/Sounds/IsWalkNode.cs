@@ -15,7 +15,7 @@ namespace Engine.Source.Blueprints.Sounds
     [Port("Value")]
     private bool Value()
     {
-      IEntity player = this.simulation.Player;
+      IEntity player = simulation.Player;
       if (player != null)
       {
         ControllerComponent component = player.GetComponent<ControllerComponent>();

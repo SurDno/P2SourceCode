@@ -1,18 +1,18 @@
-﻿using Cofe.Loggers;
+﻿using System;
+using System.Xml;
+using Cofe.Loggers;
 using Cofe.Serializations.Data;
 using PLVirtualMachine.Common.Data;
 using PLVirtualMachine.Common.EngineAPI.VMECS.VMAttributes;
 using PLVirtualMachine.Common.VMSpecialAttributes;
-using System;
-using System.Xml;
 
 namespace PLVirtualMachine.Common.EngineAPI.VMECS
 {
-  [Info("Common", null)]
+  [Info("Common")]
   public class VMCommon : VMComponent
   {
     public const string ComponentName = "Common";
-    private string customTag = VMCommon.defaultTag;
+    private string customTag = defaultTag;
     public static string defaultTag = "Default";
 
     public override void Initialize(VMBaseEntity parent) => base.Initialize(parent);
@@ -33,14 +33,14 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
     [Method("Instantiate", "", "")]
     public virtual void Instantiate()
     {
-      if (!this.Parent.Instantiated)
-        EngineAPIManager.Instance.InstantiateObject(this.Parent);
-      this.RemoveEvent();
+      if (!Parent.Instantiated)
+        EngineAPIManager.Instance.InstantiateObject(Parent);
+      RemoveEvent();
     }
 
     public void OnRemove()
     {
-      Action removeEvent = this.RemoveEvent;
+      Action removeEvent = RemoveEvent;
       if (removeEvent == null)
         return;
       removeEvent();
@@ -51,27 +51,27 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
     {
       get
       {
-        if (this.Parent == null)
+        if (Parent == null)
         {
-          Logger.AddError(string.Format("Parent entity for common component not defined !"));
+          Logger.AddError("Parent entity for common component not defined !");
           return false;
         }
-        if (this.Parent.Instance != null)
-          return this.Parent.Instance.IsEnabled;
-        Logger.AddError(string.Format("Parent engine entity instance for vm entity {0} common component not defined !", (object) this.Parent.Name));
+        if (Parent.Instance != null)
+          return Parent.Instance.IsEnabled;
+        Logger.AddError(string.Format("Parent engine entity instance for vm entity {0} common component not defined !", Parent.Name));
         return false;
       }
       set
       {
-        if (this.Parent == null)
+        if (Parent == null)
         {
-          Logger.AddError(string.Format("Parent entity for common component not defined !"));
+          Logger.AddError("Parent entity for common component not defined !");
         }
         else
         {
-          if (this.Parent.Instance == null)
+          if (Parent.Instance == null)
             return;
-          this.Parent.Instance.IsEnabled = value;
+          Parent.Instance.IsEnabled = value;
         }
       }
     }
@@ -79,7 +79,7 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
     public override void StateSave(IDataWriter writer)
     {
       base.StateSave(writer);
-      SaveManagerUtility.Save(writer, "CustomTag", this.customTag);
+      SaveManagerUtility.Save(writer, "CustomTag", customTag);
     }
 
     public override void LoadFromXML(XmlElement xmlNode)
@@ -88,17 +88,17 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
       for (int i = 0; i < xmlNode.ChildNodes.Count; ++i)
       {
         if (xmlNode.ChildNodes[i].Name == "CustomTag")
-          this.customTag = xmlNode.ChildNodes[i].InnerText;
+          customTag = xmlNode.ChildNodes[i].InnerText;
       }
     }
 
     public string CustomTag
     {
-      get => this.customTag;
+      get => customTag;
       set
       {
-        this.customTag = value;
-        this.OnModify();
+        customTag = value;
+        OnModify();
       }
     }
   }

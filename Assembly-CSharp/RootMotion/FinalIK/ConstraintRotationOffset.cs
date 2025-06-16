@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEngine;
 
 namespace RootMotion.FinalIK
 {
@@ -15,19 +14,19 @@ namespace RootMotion.FinalIK
 
     public override void UpdateConstraint()
     {
-      if ((double) this.weight <= 0.0 || !this.isValid)
+      if (weight <= 0.0 || !isValid)
         return;
-      if (!this.initiated)
+      if (!initiated)
       {
-        this.defaultLocalRotation = this.transform.localRotation;
-        this.lastLocalRotation = this.transform.localRotation;
-        this.initiated = true;
+        defaultLocalRotation = transform.localRotation;
+        lastLocalRotation = transform.localRotation;
+        initiated = true;
       }
-      if (this.rotationChanged)
-        this.defaultLocalRotation = this.transform.localRotation;
-      this.transform.localRotation = this.defaultLocalRotation;
-      this.transform.rotation = Quaternion.Slerp(this.transform.rotation, this.offset, this.weight);
-      this.lastLocalRotation = this.transform.localRotation;
+      if (rotationChanged)
+        defaultLocalRotation = transform.localRotation;
+      transform.localRotation = defaultLocalRotation;
+      transform.rotation = Quaternion.Slerp(transform.rotation, offset, weight);
+      lastLocalRotation = transform.localRotation;
     }
 
     public ConstraintRotationOffset()
@@ -36,6 +35,6 @@ namespace RootMotion.FinalIK
 
     public ConstraintRotationOffset(Transform transform) => this.transform = transform;
 
-    private bool rotationChanged => this.transform.localRotation != this.lastLocalRotation;
+    private bool rotationChanged => transform.localRotation != lastLocalRotation;
   }
 }

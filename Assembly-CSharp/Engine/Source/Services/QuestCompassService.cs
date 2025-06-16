@@ -1,9 +1,9 @@
-﻿using Inspectors;
-using System;
+﻿using System;
+using Inspectors;
 
 namespace Engine.Source.Services
 {
-  [GameService(new Type[] {typeof (QuestCompassService)})]
+  [GameService(typeof (QuestCompassService))]
   public class QuestCompassService
   {
     private bool enabled;
@@ -12,13 +12,13 @@ namespace Engine.Source.Services
     [Inspected(Mutable = true)]
     public bool IsEnabled
     {
-      get => this.enabled;
+      get => enabled;
       set
       {
-        if (this.enabled == value)
+        if (enabled == value)
           return;
-        this.enabled = value;
-        Action<bool> onEnableChanged = this.OnEnableChanged;
+        enabled = value;
+        Action<bool> onEnableChanged = OnEnableChanged;
         if (onEnableChanged == null)
           return;
         onEnableChanged(value);

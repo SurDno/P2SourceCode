@@ -1,4 +1,10 @@
-﻿using Cofe.Loggers;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Xml;
+using Cofe.Loggers;
 using Cofe.Serializations.Data;
 using Engine.Common;
 using Engine.Common.Components.Movable;
@@ -15,12 +21,6 @@ using PLVirtualMachine.Dynamic;
 using PLVirtualMachine.Dynamic.Components;
 using PLVirtualMachine.Objects;
 using PLVirtualMachine.Time;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Xml;
 
 namespace PLVirtualMachine
 {
@@ -39,8 +39,8 @@ namespace PLVirtualMachine
 
     public VirtualMachine()
     {
-      VirtualMachine.Instance = this;
-      IVariableService.Initialize((IVariableService) new VMVariableService());
+      Instance = this;
+      IVariableService.Initialize(new VMVariableService());
     }
 
     public static VirtualMachine Instance { get; private set; }
@@ -63,8 +63,8 @@ namespace PLVirtualMachine
     {
       get
       {
-        yield return this.WorldHierarchyRootEntity;
-        List<VMBaseEntity> allChildEntities = this.WorldHierarchyRootEntity.GetAllChildEntities();
+        yield return WorldHierarchyRootEntity;
+        List<VMBaseEntity> allChildEntities = WorldHierarchyRootEntity.GetAllChildEntities();
         if (allChildEntities != null)
         {
           foreach (VMEntity vmEntity in allChildEntities)
@@ -77,25 +77,25 @@ namespace PLVirtualMachine
     {
       get
       {
-        yield return this.GameRootEntity;
-        if (this.GameRootEntity.GetAllChildEntities() != null)
+        yield return GameRootEntity;
+        if (GameRootEntity.GetAllChildEntities() != null)
         {
-          foreach (VMEntity allChildEntity in this.GameRootEntity.GetAllChildEntities())
+          foreach (VMEntity allChildEntity in GameRootEntity.GetAllChildEntities())
             yield return allChildEntity;
         }
       }
     }
 
-    public int DynamicFSMObjectsCount => this.dynamicFSMObjectsQueue.Count;
+    public int DynamicFSMObjectsCount => dynamicFSMObjectsQueue.Count;
 
     public IEnumerator Initialize(bool debug, float maxEventQueueTimePerFrame = 0.0f)
     {
       DebugUtility.IsDebug = debug;
       DebugUtility.Clear();
       VMEngineAPIManager.Start();
-      DelayTimer.Begin(TimeSpan.FromSeconds((double) VirtualMachine.LOADING_UPD_INTERVAL));
-      this.IsInitialized = true;
-      this.MainEventQueueTimeMaxPerFrame = maxEventQueueTimePerFrame;
+      DelayTimer.Begin(TimeSpan.FromSeconds(LOADING_UPD_INTERVAL));
+      IsInitialized = true;
+      MainEventQueueTimeMaxPerFrame = maxEventQueueTimePerFrame;
       yield break;
     }
 
@@ -103,41 +103,41 @@ namespace PLVirtualMachine
     {
       try
       {
-        if (VirtualMachine.fatalErrorText.Length > 1)
+        if (fatalErrorText.Length > 1)
         {
-          Logger.AddError(VirtualMachine.fatalErrorText);
-          throw new Exception(VirtualMachine.fatalErrorText);
+          Logger.AddError(fatalErrorText);
+          throw new Exception(fatalErrorText);
         }
-        if (!this.IsLoaded)
+        if (!IsLoaded)
           return;
-        this.UpdateInternal(delta);
+        UpdateInternal(delta);
       }
       catch (Exception ex)
       {
-        Logger.AddError(ex.ToString() + " at " + DynamicFSM.CurrentStateInfo);
+        Logger.AddError(ex + " at " + DynamicFSM.CurrentStateInfo);
       }
     }
 
     public void Clear()
     {
-      VirtualMachine.fatalErrorText = "";
-      this.ClearHierarhy();
+      fatalErrorText = "";
+      ClearHierarhy();
       GlobalVariableUtility.Clear();
       DebugUtility.Clear();
-      this.IsLoaded = false;
-      this.isWorldLoaded = false;
+      IsLoaded = false;
+      isWorldLoaded = false;
       ExpressionUtility.Clear();
       GameTimeManager.ClearContexts();
       DynamicMindMap.Clear();
       AssyncProcessManager.Clear();
       VMEngineAPIManager.OnRestart();
       WorldEntityUtility.Clear();
-      this.dynamicFSMObjectsQueue.Clear();
-      this.processingEventsFSMDeQueue.Clear();
-      this.ResetRoot();
-      this.GameRootFsm = (DynamicFSM) null;
-      this.GameRootEntity = (VMEntity) null;
-      this.WorldHierarchyRootEntity = (VMEntity) null;
+      dynamicFSMObjectsQueue.Clear();
+      processingEventsFSMDeQueue.Clear();
+      ResetRoot();
+      GameRootFsm = null;
+      GameRootEntity = null;
+      WorldHierarchyRootEntity = null;
       DynamicFSM.ClearAll();
       VMSpeaking.ClearAll();
     }
@@ -145,14 +145,14 @@ namespace PLVirtualMachine
     public void UpdateInternal(TimeSpan delta)
     {
       DebugUtility.Update();
-      if (this.OnSaveLoaded)
+      if (OnSaveLoaded)
       {
-        this.WorldHierarchyRootEntity.TestHierarchyConsistency();
-        this.GameRootFsm.RaiseEventByName(EngineAPIManager.GetSpecialEventName(ESpecialEventName.SEN_LOAD_GAME, typeof (VMGameComponent), true), EEventRaisingMode.ERM_ATONCE);
-        this.OnSaveLoaded = false;
+        WorldHierarchyRootEntity.TestHierarchyConsistency();
+        GameRootFsm.RaiseEventByName(EngineAPIManager.GetSpecialEventName(ESpecialEventName.SEN_LOAD_GAME, typeof (VMGameComponent), true), EEventRaisingMode.ERM_ATONCE);
+        OnSaveLoaded = false;
       }
-      this.UpdateFSM();
-      this.UpdateFSMEventsRT();
+      UpdateFSM();
+      UpdateFSMEventsRT();
       AssyncProcessManager.Update(delta);
       GameTimeManager.Update(delta);
       DynamicMindMap.Update();
@@ -163,80 +163,80 @@ namespace PLVirtualMachine
       if (eventInfo.Instance == null)
         return;
       if (ServiceCache.OptimizationService.IsUnity)
-        eventInfo.MakeHashHistory(this.CurrentEventInfo);
-      if (this.MainEventsQueueProcessingMode)
-        this.processingEventsHotFSMDeQueue.PushBack(eventInfo);
+        eventInfo.MakeHashHistory(CurrentEventInfo);
+      if (MainEventsQueueProcessingMode)
+        processingEventsHotFSMDeQueue.PushBack(eventInfo);
       else
-        this.processingEventsFSMDeQueue.PushBack(eventInfo);
+        processingEventsFSMDeQueue.PushBack(eventInfo);
     }
 
     private IEnumerator UpdateFSMEvents()
     {
-      if (!DynamicTalkingFSM.IsTalking && !this.processingEventsFSMDeQueue.Empty())
+      if (!DynamicTalkingFSM.IsTalking && !processingEventsFSMDeQueue.Empty())
       {
-        this.MainEventsQueueProcessingMode = true;
+        MainEventsQueueProcessingMode = true;
         long startMainEventProcTicks = Stopwatch.GetTimestamp();
         do
         {
-          RaisedEventInfo eventInfo = this.processingEventsFSMDeQueue.PopFront();
+          RaisedEventInfo eventInfo = processingEventsFSMDeQueue.PopFront();
           if (eventInfo != null && eventInfo.Instance != null)
           {
-            this.CurrentEventInfo = eventInfo;
+            CurrentEventInfo = eventInfo;
             eventInfo.OwnerFSM.ProcessEvent(eventInfo);
-            if (!this.processingEventsHotFSMDeQueue.Empty())
+            if (!processingEventsHotFSMDeQueue.Empty())
             {
-              this.processingEventsFSMDeQueue.MergeFront(this.processingEventsHotFSMDeQueue);
-              this.processingEventsHotFSMDeQueue.Clear();
+              processingEventsFSMDeQueue.MergeFront(processingEventsHotFSMDeQueue);
+              processingEventsHotFSMDeQueue.Clear();
             }
-            this.CurrentEventInfo = (RaisedEventInfo) null;
+            CurrentEventInfo = null;
             if (DelayTimer.Check)
-              yield return (object) null;
+              yield return null;
           }
           else
             break;
         }
-        while (((double) this.MainEventQueueTimeMaxPerFrame <= 9.9999999747524271E-07 || (double) (Stopwatch.GetTimestamp() - startMainEventProcTicks) / (double) Stopwatch.Frequency < (double) this.MainEventQueueTimeMaxPerFrame) && !this.processingEventsFSMDeQueue.Empty());
-        this.MainEventsQueueProcessingMode = false;
+        while ((MainEventQueueTimeMaxPerFrame <= 9.9999999747524271E-07 || (Stopwatch.GetTimestamp() - startMainEventProcTicks) / (double) Stopwatch.Frequency < MainEventQueueTimeMaxPerFrame) && !processingEventsFSMDeQueue.Empty());
+        MainEventsQueueProcessingMode = false;
       }
     }
 
     private void UpdateFSMEventsRT()
     {
-      if (DynamicTalkingFSM.IsTalking || this.processingEventsFSMDeQueue.Empty())
+      if (DynamicTalkingFSM.IsTalking || processingEventsFSMDeQueue.Empty())
         return;
-      this.MainEventsQueueProcessingMode = true;
+      MainEventsQueueProcessingMode = true;
       do
       {
-        RaisedEventInfo eventInfo = this.processingEventsFSMDeQueue.PopFront();
+        RaisedEventInfo eventInfo = processingEventsFSMDeQueue.PopFront();
         if (eventInfo != null && eventInfo.Instance != null)
         {
-          this.CurrentEventInfo = eventInfo;
+          CurrentEventInfo = eventInfo;
           eventInfo.OwnerFSM.ProcessEvent(eventInfo);
-          if (!this.processingEventsHotFSMDeQueue.Empty())
+          if (!processingEventsHotFSMDeQueue.Empty())
           {
-            this.processingEventsFSMDeQueue.MergeFront(this.processingEventsHotFSMDeQueue);
-            this.processingEventsHotFSMDeQueue.Clear();
+            processingEventsFSMDeQueue.MergeFront(processingEventsHotFSMDeQueue);
+            processingEventsHotFSMDeQueue.Clear();
           }
-          this.CurrentEventInfo = (RaisedEventInfo) null;
+          CurrentEventInfo = null;
         }
         else
           break;
       }
-      while (!this.processingEventsFSMDeQueue.Empty());
-      this.MainEventsQueueProcessingMode = false;
+      while (!processingEventsFSMDeQueue.Empty());
+      MainEventsQueueProcessingMode = false;
     }
 
     private void UpdateFSM()
     {
-      if (this.dynamicFSMObjectsQueue.Count <= 0)
+      if (dynamicFSMObjectsQueue.Count <= 0)
         return;
       int num = 0;
-      int count = this.dynamicFSMObjectsQueue.Count;
+      int count = dynamicFSMObjectsQueue.Count;
       for (int index = 0; index < count; ++index)
       {
-        DynamicFSM dynamicFsm = this.dynamicFSMObjectsQueue.Dequeue();
+        DynamicFSM dynamicFsm = dynamicFSMObjectsQueue.Dequeue();
         dynamicFsm.Think();
-        this.dynamicFSMObjectsQueue.Enqueue(dynamicFsm);
+        dynamicFSMObjectsQueue.Enqueue(dynamicFsm);
         if (dynamicFsm.Active)
           ++num;
         if (num >= 100)
@@ -246,31 +246,31 @@ namespace PLVirtualMachine
 
     private IEnumerator DoStartGame()
     {
-      if (this.GameRootFsm == null)
+      if (GameRootFsm == null)
       {
-        Logger.AddError(string.Format("Game root fsm not inited!!!"));
+        Logger.AddError("Game root fsm not inited!!!");
       }
       else
       {
-        this.isStartGame = false;
-        this.GameRootFsm.Think();
-        yield return (object) null;
-        yield return (object) this.UpdateFSMEvents();
-        yield return (object) null;
-        int iTerationsCount = this.dynamicFSMObjectsQueue.Count;
+        isStartGame = false;
+        GameRootFsm.Think();
+        yield return null;
+        yield return UpdateFSMEvents();
+        yield return null;
+        int iTerationsCount = dynamicFSMObjectsQueue.Count;
         for (int i = 0; i < iTerationsCount; ++i)
         {
-          DynamicFSM dynamicFsm = this.dynamicFSMObjectsQueue.Dequeue();
+          DynamicFSM dynamicFsm = dynamicFSMObjectsQueue.Dequeue();
           if (dynamicFsm.FSMStaticObject.Static && dynamicFsm.FSMStaticObject.GetCategory() != EObjectCategory.OBJECT_CATEGORY_GAME)
             dynamicFsm.Think();
-          this.dynamicFSMObjectsQueue.Enqueue(dynamicFsm);
+          dynamicFSMObjectsQueue.Enqueue(dynamicFsm);
           if (DelayTimer.Check)
-            yield return (object) null;
+            yield return null;
         }
-        yield return (object) this.UpdateFSMEvents();
-        yield return (object) null;
-        this.GameRootFsm.RaiseEventByName(((VMGameRoot) IStaticDataContainer.StaticDataContainer.GameRoot).GetStartGameEventFuncName());
-        yield return (object) this.UpdateFSMEvents();
+        yield return UpdateFSMEvents();
+        yield return null;
+        GameRootFsm.RaiseEventByName(((VMGameRoot) IStaticDataContainer.StaticDataContainer.GameRoot).GetStartGameEventFuncName());
+        yield return UpdateFSMEvents();
       }
     }
 
@@ -281,7 +281,7 @@ namespace PLVirtualMachine
       if (spawnMilestone != null)
         spawnEntity.SetPosition(spawnMilestone, areaType);
       if (spawnEntity.GetFSM() == null)
-        Logger.AddError(string.Format("Cannot spawn object '{0}' to world, spawning object dynamic fsm with guid={1} not found in vm!!!", (object) spawnEntity.Name, (object) spawnEntity.EngineGuid));
+        Logger.AddError(string.Format("Cannot spawn object '{0}' to world, spawning object dynamic fsm with guid={1} not found in vm!!!", spawnEntity.Name, spawnEntity.EngineGuid));
       else
         spawnEntity.GetFSM().Active = true;
     }
@@ -296,32 +296,32 @@ namespace PLVirtualMachine
         if (instObjEntity.IsPlayerControllable(true))
         {
           GameTimeManager.MakePlayCharacterEntity(instObjEntity);
-          instObjEntity.SetPosition(spawnMilestoneRealEntity, AreaEnum.Unknown);
+          instObjEntity.SetPosition(spawnMilestoneRealEntity);
         }
-        this.SpawnObjectToWorld(instObjEntity, spawnMilestoneRealEntity, areaType);
+        SpawnObjectToWorld(instObjEntity, spawnMilestoneRealEntity, areaType);
       }
       else
-        this.SpawnObjectToWorld(instObjEntity, spawnMilestoneRealEntity, areaType);
+        SpawnObjectToWorld(instObjEntity, spawnMilestoneRealEntity, areaType);
     }
 
     public VMEntity CreateRoot(VMLogicObject logicObj, VMBaseEntity parentEntity)
     {
       if (logicObj.GetCategory() == EObjectCategory.OBJECT_CATEGORY_GAME)
       {
-        if (this.GameRootFsm == null)
+        if (GameRootFsm == null)
         {
           VMEntity entity = new VMEntity();
           Guid engineGuid = ((VMGameRoot) logicObj).EngineGuid;
-          entity.Initialize((ILogicObject) logicObj, engineGuid);
-          entity.OnCreate(false);
-          this.GameRootFsm = new DynamicFSM(entity, logicObj);
+          entity.Initialize(logicObj, engineGuid);
+          entity.OnCreate();
+          GameRootFsm = new DynamicFSM(entity, logicObj);
           return entity;
         }
         Logger.AddError("Root object already created !");
-        return (VMEntity) null;
+        return null;
       }
-      Logger.AddError("Is not : " + (object) EObjectCategory.OBJECT_CATEGORY_GAME);
-      return (VMEntity) null;
+      Logger.AddError("Is not : " + EObjectCategory.OBJECT_CATEGORY_GAME);
+      return null;
     }
 
     public void RemoveDynamicObject(Guid remObjId)
@@ -330,9 +330,9 @@ namespace PLVirtualMachine
       if (entityByEngineGuid == null)
       {
         if (EngineAPIManager.ObjectCreationExtraDebugInfoMode)
-          Logger.AddError(string.Format("Cannot remove object: dynamic object with guid = {0} not exist at {1}", (object) remObjId, (object) DynamicFSM.CurrentStateInfo));
+          Logger.AddError(string.Format("Cannot remove object: dynamic object with guid = {0} not exist at {1}", remObjId, DynamicFSM.CurrentStateInfo));
         else
-          Logger.AddWarning(string.Format("Cannot remove object: dynamic object with guid = {0} not exist at {1}", (object) remObjId, (object) DynamicFSM.CurrentStateInfo));
+          Logger.AddWarning(string.Format("Cannot remove object: dynamic object with guid = {0} not exist at {1}", remObjId, DynamicFSM.CurrentStateInfo));
       }
       else
       {
@@ -347,8 +347,8 @@ namespace PLVirtualMachine
 
     public IBlueprint GetVirtualObjectBaseTemplate(VMEntity virtualObjEntity)
     {
-      Guid baseTemplateGuid = this.GetVirtualObjectBaseTemplateGuid(virtualObjEntity);
-      return baseTemplateGuid == Guid.Empty ? (IBlueprint) null : (IBlueprint) ((VMGameRoot) IStaticDataContainer.StaticDataContainer.GameRoot).GetEngineTemplateByGuid(baseTemplateGuid);
+      Guid baseTemplateGuid = GetVirtualObjectBaseTemplateGuid(virtualObjEntity);
+      return baseTemplateGuid == Guid.Empty ? null : (IBlueprint) ((VMGameRoot) IStaticDataContainer.StaticDataContainer.GameRoot).GetEngineTemplateByGuid(baseTemplateGuid);
     }
 
     public Guid GetVirtualObjectBaseTemplateGuid(VMEntity virtualObjEntity)
@@ -380,7 +380,7 @@ namespace PLVirtualMachine
       GlobalVariableUtility.RegistrInGlobalVariables(entity);
     }
 
-    public void RegisterActiveFSM(DynamicFSM fsm) => this.dynamicFSMObjectsQueue.Enqueue(fsm);
+    public void RegisterActiveFSM(DynamicFSM fsm) => dynamicFSMObjectsQueue.Enqueue(fsm);
 
     public void Terminate()
     {
@@ -388,51 +388,51 @@ namespace PLVirtualMachine
 
     private bool CheckWorldLoaded()
     {
-      if (this.isWorldLoaded)
+      if (isWorldLoaded)
         return true;
-      this.isWorldLoaded = true;
+      isWorldLoaded = true;
       ((GameComponent) VMGameComponent.Instance).StartGameTime();
-      return this.isWorldLoaded;
+      return isWorldLoaded;
     }
 
     public IEnumerator Load()
     {
-      this.ForceCreateFSM = !ServiceCache.OptimizationService.LazyFsm;
+      ForceCreateFSM = !ServiceCache.OptimizationService.LazyFsm;
       ILoadProgress progress = ServiceLocator.GetService<ILoadProgress>();
       DebugUtility.Init();
-      if (this.IsLoaded)
-        this.Clear();
-      this.ResetRoot();
-      this.GameRootEntity = this.CreateRoot((VMLogicObject) IStaticDataContainer.StaticDataContainer.GameRoot, (VMBaseEntity) null);
+      if (IsLoaded)
+        Clear();
+      ResetRoot();
+      GameRootEntity = CreateRoot((VMLogicObject) IStaticDataContainer.StaticDataContainer.GameRoot, null);
       progress?.OnBeforeCreateHierarchy();
-      yield return (object) null;
-      this.WorldHierarchyRootEntity = (VMEntity) null;
-      yield return (object) this.LoadVMWorldHierarchy();
+      yield return null;
+      WorldHierarchyRootEntity = null;
+      yield return LoadVMWorldHierarchy();
       progress?.OnAfterCreateHierarchy();
-      yield return (object) null;
+      yield return null;
       foreach (IObjRef hierarchyStaticObject in ((VMGameRoot) IStaticDataContainer.StaticDataContainer.GameRoot).GetNotHierarchyStaticObjects())
       {
         IBlueprint templateObject = hierarchyStaticObject.Object;
         if (templateObject == null)
-          Logger.AddError("Static object is null, id : " + (object) hierarchyStaticObject.BaseGuid);
+          Logger.AddError("Static object is null, id : " + hierarchyStaticObject.BaseGuid);
         else if (!(templateObject is IGameRoot))
-          yield return (object) CreateEntityUtility.CreateObject(templateObject, (VMBaseEntity) null);
+          yield return CreateEntityUtility.CreateObject(templateObject, null);
       }
-      this.GameRootEntity.AfterCreate();
-      yield return (object) null;
+      GameRootEntity.AfterCreate();
+      yield return null;
       GameTimeManager.Start();
-      this.IsLoaded = true;
-      this.isStartGame = true;
-      this.CheckWorldLoaded();
-      yield return (object) this.DoStartGame();
+      IsLoaded = true;
+      isStartGame = true;
+      CheckWorldLoaded();
+      yield return DoStartGame();
       progress?.OnLoadComplete();
     }
 
     public void Save(IDataWriter writer)
     {
-      if (this.processingEventsFSMDeQueue.Count() > 0)
+      if (processingEventsFSMDeQueue.Count() > 0)
       {
-        List<RaisedEventInfo> toList = this.processingEventsFSMDeQueue.ToList;
+        List<RaisedEventInfo> toList = processingEventsFSMDeQueue.ToList;
         Dictionary<string, int> dictionary = new Dictionary<string, int>();
         for (int index = 0; index < toList.Count; ++index)
         {
@@ -447,72 +447,72 @@ namespace PLVirtualMachine
         {
           if (str1.Length > 0)
             str1 += ", ";
-          string str2 = keyValuePair.Key + " (" + keyValuePair.Value.ToString() + ")";
+          string str2 = keyValuePair.Key + " (" + keyValuePair.Value + ")";
           str1 += str2;
         }
-        Logger.AddError(string.Format("SaveLoad error: main vm events queue isn't empty at start save ! Events: {0}", (object) str1));
+        Logger.AddError(string.Format("SaveLoad error: main vm events queue isn't empty at start save ! Events: {0}", str1));
       }
-      SaveManagerUtility.SaveDynamicSerializableList<VMEntity>(writer, "HierarchyObjects", this.WorldHierarchyEntitiesForSave);
-      SaveManagerUtility.SaveDynamicSerializableList<VMEntity>(writer, "GameObjects", this.GameEntitiesForSave);
-      SaveManagerUtility.SaveDynamicSerializableList<FreeEntityInfo>(writer, "FreeEntityList", VMEntity.GetFreeEntities());
+      SaveManagerUtility.SaveDynamicSerializableList(writer, "HierarchyObjects", WorldHierarchyEntitiesForSave);
+      SaveManagerUtility.SaveDynamicSerializableList(writer, "GameObjects", GameEntitiesForSave);
+      SaveManagerUtility.SaveDynamicSerializableList(writer, "FreeEntityList", VMEntity.GetFreeEntities());
       GameTimeManager.StateSave(writer);
       DynamicMindMap.SaveMindMapsToXML(writer);
     }
 
     public IEnumerator Load(XmlElement element)
     {
-      this.ForceCreateFSM = !ServiceCache.OptimizationService.LazyFsm;
+      ForceCreateFSM = !ServiceCache.OptimizationService.LazyFsm;
       ILoadProgress progress = ServiceLocator.GetService<ILoadProgress>();
       DelayTimer.Begin(TimeSpan.FromSeconds(3.0));
       DebugUtility.Init();
-      if (this.IsLoaded)
-        this.Clear();
+      if (IsLoaded)
+        Clear();
       progress?.OnBeforeCreateHierarchy();
-      yield return (object) null;
-      yield return (object) this.LoadVMWorldHierarchy();
+      yield return null;
+      yield return LoadVMWorldHierarchy();
       progress?.OnAfterCreateHierarchy();
-      yield return (object) null;
+      yield return null;
       XmlElement hierarchyObjectsNode = (XmlElement) element.FirstChild;
       VMSaveLoadManagerUtility.LoadEntities(hierarchyObjectsNode);
-      yield return (object) null;
-      this.GameRootEntity = this.CreateRoot((VMLogicObject) IStaticDataContainer.StaticDataContainer.GameRoot, (VMBaseEntity) null);
+      yield return null;
+      GameRootEntity = CreateRoot((VMLogicObject) IStaticDataContainer.StaticDataContainer.GameRoot, null);
       XmlElement notHierarchyObjectsNode = (XmlElement) hierarchyObjectsNode.NextSibling;
       VMSaveLoadManagerUtility.LoadEntities(notHierarchyObjectsNode);
-      yield return (object) null;
+      yield return null;
       XmlElement freeEntityesNode = (XmlElement) notHierarchyObjectsNode.NextSibling;
       List<FreeEntityInfo> freeEntityInfoList = new List<FreeEntityInfo>();
-      VMSaveLoadManager.LoadDynamiSerializableList<FreeEntityInfo>(freeEntityesNode, freeEntityInfoList);
+      VMSaveLoadManager.LoadDynamiSerializableList(freeEntityesNode, freeEntityInfoList);
       VMEntity.LoadFreeEntities(freeEntityInfoList);
-      yield return (object) null;
+      yield return null;
       XmlElement vmTimeManagerNode = (XmlElement) freeEntityesNode.NextSibling;
       GameTimeManager.LoadFromXML(vmTimeManagerNode);
-      this.WorldHierarchyRootEntity.AfterSaveLoading();
-      yield return (object) null;
-      this.GameRootEntity.AfterSaveLoading();
-      yield return (object) null;
+      WorldHierarchyRootEntity.AfterSaveLoading();
+      yield return null;
+      GameRootEntity.AfterSaveLoading();
+      yield return null;
       DynamicMindMap.LoadMindMapsFromXML((XmlElement) vmTimeManagerNode.NextSibling);
-      yield return (object) null;
-      this.processingEventsFSMDeQueue.Clear();
+      yield return null;
+      processingEventsFSMDeQueue.Clear();
       VMSaveLoadManagerUtility.Clear();
-      this.IsLoaded = true;
-      this.OnSaveLoaded = true;
+      IsLoaded = true;
+      OnSaveLoaded = true;
       progress?.OnLoadComplete();
     }
 
-    public void Unload() => this.Clear();
+    public void Unload() => Clear();
 
     private IEnumerator LoadVMWorldHierarchy()
     {
       Queue<HierachyInfo> infos = new Queue<HierachyInfo>();
-      this.WorldHierarchyRootEntity = (VMEntity) VirtualMachine.CreateVMHierarchy(HierarchyManager.GameHierarchyRoot, (VMBaseEntity) null, infos);
+      WorldHierarchyRootEntity = (VMEntity) CreateVMHierarchy(HierarchyManager.GameHierarchyRoot, null, infos);
       while (infos.Count != 0)
       {
         HierachyInfo hierachyInfo = infos.Dequeue();
-        VirtualMachine.CreateVMHierarchy((IWorldHierarchyObject) hierachyInfo.HierarchyTemplateObject, hierachyInfo.ParentVMEntity, infos);
+        CreateVMHierarchy((IWorldHierarchyObject) hierachyInfo.HierarchyTemplateObject, hierachyInfo.ParentVMEntity, infos);
         if (DelayTimer.Check)
-          yield return (object) null;
+          yield return null;
       }
-      this.WorldHierarchyRootEntity.AfterCreate();
+      WorldHierarchyRootEntity.AfterCreate();
     }
 
     public static VMBaseEntity CreateVMHierarchy(
@@ -522,8 +522,7 @@ namespace PLVirtualMachine
     {
       VMBaseEntity vmHierarchy = CreateHierarchyEntityUtility.CreateObject(hierarchyTemplateObject, parentVMEntity);
       foreach (IHierarchyObject hierarchyChild in hierarchyTemplateObject.HierarchyChilds)
-        infos.Enqueue(new HierachyInfo()
-        {
+        infos.Enqueue(new HierachyInfo {
           HierarchyTemplateObject = hierarchyChild,
           ParentVMEntity = vmHierarchy
         });
@@ -538,21 +537,21 @@ namespace PLVirtualMachine
 
     private void ClearHierarhy()
     {
-      this.WorldHierarchyRootEntity.DisposeInstance(true);
-      this.GameRootEntity.DisposeInstance(true);
+      WorldHierarchyRootEntity.DisposeInstance(true);
+      GameRootEntity.DisposeInstance(true);
     }
 
     private void BuildStaticHierarchy()
     {
-      if (this.isStaticHierarchyBuilded)
+      if (isStaticHierarchyBuilded)
         return;
       HierarchyManager.BuildStaticHierarchy();
-      this.isStaticHierarchyBuilded = true;
+      isStaticHierarchyBuilded = true;
     }
 
     private void ResetRoot()
     {
-      this.GameRootFsm = (DynamicFSM) null;
+      GameRootFsm = null;
       VMEntityUtility.ResetRoot();
     }
 
@@ -571,28 +570,28 @@ namespace PLVirtualMachine
         ILoadProgress progress = ServiceLocator.GetService<ILoadProgress>();
         DelayTimer.Begin(TimeSpan.FromSeconds(1.0));
         progress?.OnBeforeLoadData();
-        yield return (object) XMLDataLoader.Instance.LoadDataFromXML(dataFolderName, threadCount, dataCapacity);
+        yield return XMLDataLoader.Instance.LoadDataFromXML(dataFolderName, threadCount, dataCapacity);
         progress?.OnAfterLoadData();
-        yield return (object) null;
+        yield return null;
         GameTimeManager.Init();
         foreach (KeyValuePair<string, IGameMode> gameMode in ((VMGameRoot) IStaticDataContainer.StaticDataContainer.GameRoot).GameModes)
           GameTimeManager.CreateGameTimeContext(gameMode.Value);
-        yield return (object) null;
-        this.BuildStaticHierarchy();
+        yield return null;
+        BuildStaticHierarchy();
         progress?.OnBuildHierarchy();
-        this.IsDataLoaded = true;
+        IsDataLoaded = true;
         progress?.OnLoadDataComplete();
-        yield return (object) null;
+        yield return null;
       }
     }
 
     public void UnloadData()
     {
       WorldEntityUtility.ClearStatic();
-      this.isStaticHierarchyBuilded = false;
+      isStaticHierarchyBuilded = false;
       XMLDataLoader.Instance.Clear();
       VMTypePool.Clear();
-      this.IsDataLoaded = false;
+      IsDataLoaded = false;
       HierarchyManager.Clear();
       GameTimeManager.Clear();
       GlobalVariableUtility.ClearAll();

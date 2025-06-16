@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEngine;
 
 namespace AmplifyBloom
 {
@@ -19,21 +18,21 @@ namespace AmplifyBloom
     [SerializeField]
     private float m_attenuation = 0.85f;
     [SerializeField]
-    private float m_inclination = 0.0f;
+    private float m_inclination;
     [SerializeField]
-    private float m_rotation = 0.0f;
+    private float m_rotation;
     [SerializeField]
-    private StarLineData[] m_starLinesArr = (StarLineData[]) null;
+    private StarLineData[] m_starLinesArr;
     [SerializeField]
     private float m_customIncrement = 90f;
     [SerializeField]
-    private float m_longAttenuation = 0.0f;
+    private float m_longAttenuation;
 
     public StarDefData()
     {
     }
 
-    public void Destroy() => this.m_starLinesArr = (StarLineData[]) null;
+    public void Destroy() => m_starLinesArr = null;
 
     public StarDefData(
       StarLibType starType,
@@ -47,122 +46,122 @@ namespace AmplifyBloom
       float longAttenuation = 0.0f,
       float customIncrement = -1f)
     {
-      this.m_starType = starType;
-      this.m_starName = starName;
-      this.m_passCount = passCount;
-      this.m_sampleLength = sampleLength;
-      this.m_attenuation = attenuation;
-      this.m_starlinesCount = starLinesCount;
-      this.m_inclination = inclination;
-      this.m_rotation = rotation;
-      this.m_customIncrement = customIncrement;
-      this.m_longAttenuation = longAttenuation;
-      this.CalculateStarData();
+      m_starType = starType;
+      m_starName = starName;
+      m_passCount = passCount;
+      m_sampleLength = sampleLength;
+      m_attenuation = attenuation;
+      m_starlinesCount = starLinesCount;
+      m_inclination = inclination;
+      m_rotation = rotation;
+      m_customIncrement = customIncrement;
+      m_longAttenuation = longAttenuation;
+      CalculateStarData();
     }
 
     public void CalculateStarData()
     {
-      if (this.m_starlinesCount == 0)
+      if (m_starlinesCount == 0)
         return;
-      this.m_starLinesArr = new StarLineData[this.m_starlinesCount];
-      float num = ((double) this.m_customIncrement > 0.0 ? this.m_customIncrement : 180f / (float) this.m_starlinesCount) * ((float) Math.PI / 180f);
-      for (int index = 0; index < this.m_starlinesCount; ++index)
+      m_starLinesArr = new StarLineData[m_starlinesCount];
+      float num = (m_customIncrement > 0.0 ? m_customIncrement : 180f / m_starlinesCount) * ((float) Math.PI / 180f);
+      for (int index = 0; index < m_starlinesCount; ++index)
       {
-        this.m_starLinesArr[index] = new StarLineData();
-        this.m_starLinesArr[index].PassCount = this.m_passCount;
-        this.m_starLinesArr[index].SampleLength = this.m_sampleLength;
-        this.m_starLinesArr[index].Attenuation = (double) this.m_longAttenuation <= 0.0 ? this.m_attenuation : (index % 2 == 0 ? this.m_longAttenuation : this.m_attenuation);
-        this.m_starLinesArr[index].Inclination = num * (float) index;
+        m_starLinesArr[index] = new StarLineData();
+        m_starLinesArr[index].PassCount = m_passCount;
+        m_starLinesArr[index].SampleLength = m_sampleLength;
+        m_starLinesArr[index].Attenuation = m_longAttenuation <= 0.0 ? m_attenuation : (index % 2 == 0 ? m_longAttenuation : m_attenuation);
+        m_starLinesArr[index].Inclination = num * index;
       }
     }
 
     public StarLibType StarType
     {
-      get => this.m_starType;
-      set => this.m_starType = value;
+      get => m_starType;
+      set => m_starType = value;
     }
 
     public string StarName
     {
-      get => this.m_starName;
-      set => this.m_starName = value;
+      get => m_starName;
+      set => m_starName = value;
     }
 
     public int StarlinesCount
     {
-      get => this.m_starlinesCount;
+      get => m_starlinesCount;
       set
       {
-        this.m_starlinesCount = value;
-        this.CalculateStarData();
+        m_starlinesCount = value;
+        CalculateStarData();
       }
     }
 
     public int PassCount
     {
-      get => this.m_passCount;
+      get => m_passCount;
       set
       {
-        this.m_passCount = value;
-        this.CalculateStarData();
+        m_passCount = value;
+        CalculateStarData();
       }
     }
 
     public float SampleLength
     {
-      get => this.m_sampleLength;
+      get => m_sampleLength;
       set
       {
-        this.m_sampleLength = value;
-        this.CalculateStarData();
+        m_sampleLength = value;
+        CalculateStarData();
       }
     }
 
     public float Attenuation
     {
-      get => this.m_attenuation;
+      get => m_attenuation;
       set
       {
-        this.m_attenuation = value;
-        this.CalculateStarData();
+        m_attenuation = value;
+        CalculateStarData();
       }
     }
 
     public float Inclination
     {
-      get => this.m_inclination;
+      get => m_inclination;
       set
       {
-        this.m_inclination = value;
-        this.CalculateStarData();
+        m_inclination = value;
+        CalculateStarData();
       }
     }
 
     public float CameraRotInfluence
     {
-      get => this.m_rotation;
-      set => this.m_rotation = value;
+      get => m_rotation;
+      set => m_rotation = value;
     }
 
-    public StarLineData[] StarLinesArr => this.m_starLinesArr;
+    public StarLineData[] StarLinesArr => m_starLinesArr;
 
     public float CustomIncrement
     {
-      get => this.m_customIncrement;
+      get => m_customIncrement;
       set
       {
-        this.m_customIncrement = value;
-        this.CalculateStarData();
+        m_customIncrement = value;
+        CalculateStarData();
       }
     }
 
     public float LongAttenuation
     {
-      get => this.m_longAttenuation;
+      get => m_longAttenuation;
       set
       {
-        this.m_longAttenuation = value;
-        this.CalculateStarData();
+        m_longAttenuation = value;
+        CalculateStarData();
       }
     }
   }

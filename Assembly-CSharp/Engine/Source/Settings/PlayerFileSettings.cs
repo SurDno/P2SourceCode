@@ -1,9 +1,8 @@
-﻿using Cofe.Serializations.Converters;
-using Engine.Common.Utility;
-using System;
+﻿using System;
 using System.IO;
 using System.Xml;
-using UnityEngine;
+using Cofe.Serializations.Converters;
+using Engine.Common.Utility;
 
 namespace Engine.Source.Settings
 {
@@ -14,82 +13,82 @@ namespace Engine.Source.Settings
 
     public PlayerFileSettings()
     {
-      if (File.Exists(this.path))
+      if (File.Exists(path))
       {
         try
         {
           XmlDocument xmlDocument = new XmlDocument();
-          xmlDocument.Load(this.path);
-          this.element = xmlDocument.DocumentElement;
+          xmlDocument.Load(path);
+          element = xmlDocument.DocumentElement;
         }
         catch (Exception ex)
         {
           Debug.LogException(ex);
         }
       }
-      if (this.element != null)
+      if (element != null)
         return;
-      this.element = XmlUtility.CreateDocument().CreateNode("Root");
-      this.Save();
+      element = XmlUtility.CreateDocument().CreateNode("Root");
+      Save();
     }
 
     public int GetInt(string name, int defaultValue)
     {
-      string str = this.GetValue(name);
+      string str = GetValue(name);
       return str == null ? defaultValue : DefaultConverter.ParseInt(str);
     }
 
     public void SetInt(string name, int value)
     {
-      this.SetValue(name, DefaultConverter.ToString(value));
+      SetValue(name, DefaultConverter.ToString(value));
     }
 
     public bool GetBool(string name, bool defaultValue)
     {
-      string str = this.GetValue(name);
+      string str = GetValue(name);
       return str == null ? defaultValue : DefaultConverter.ParseBool(str);
     }
 
     public void SetBool(string name, bool value)
     {
-      this.SetValue(name, DefaultConverter.ToString(value));
+      SetValue(name, DefaultConverter.ToString(value));
     }
 
     public float GetFloat(string name, float defaultValue)
     {
-      string str = this.GetValue(name);
+      string str = GetValue(name);
       return str == null ? defaultValue : DefaultConverter.ParseFloat(str);
     }
 
     public void SetFloat(string name, float value)
     {
-      this.SetValue(name, DefaultConverter.ToString(value));
+      SetValue(name, DefaultConverter.ToString(value));
     }
 
     public string GetString(string name, string defaultValue)
     {
-      return this.GetValue(name) ?? defaultValue;
+      return GetValue(name) ?? defaultValue;
     }
 
-    public void SetString(string name, string value) => this.SetValue(name, value);
+    public void SetString(string name, string value) => SetValue(name, value);
 
     public T GetEnum<T>(string name, T defaultValue) where T : struct, IComparable, IFormattable, IConvertible
     {
-      string str = this.GetValue(name);
+      string str = GetValue(name);
       T result;
-      return str == null || !DefaultConverter.TryParseEnum<T>(str, out result) ? defaultValue : result;
+      return str == null || !DefaultConverter.TryParseEnum(str, out result) ? defaultValue : result;
     }
 
     public void SetEnum<T>(string name, T value) where T : struct, IComparable, IFormattable, IConvertible
     {
-      this.SetValue(name, value.ToString());
+      SetValue(name, value.ToString());
     }
 
     public void Save()
     {
       try
       {
-        this.element.SaveDocument(this.path);
+        element.SaveDocument(path);
       }
       catch (Exception ex)
       {
@@ -99,18 +98,18 @@ namespace Engine.Source.Settings
 
     private string GetValue(string name)
     {
-      foreach (XmlElement childNode in this.element.ChildNodes)
+      foreach (XmlElement childNode in element.ChildNodes)
       {
         XmlElement xmlElement = childNode["Key"];
         if (xmlElement != null && xmlElement.InnerText == name)
           return childNode["Value"]?.InnerText;
       }
-      return (string) null;
+      return null;
     }
 
     private void SetValue(string name, string value)
     {
-      foreach (XmlElement childNode in this.element.ChildNodes)
+      foreach (XmlElement childNode in element.ChildNodes)
       {
         XmlElement xmlElement1 = childNode["Key"];
         if (xmlElement1 != null && xmlElement1.InnerText == name)
@@ -125,7 +124,7 @@ namespace Engine.Source.Settings
           return;
         }
       }
-      XmlElement node = this.element.CreateNode("Item");
+      XmlElement node = element.CreateNode("Item");
       node.CreateNode("Key", name);
       node.CreateNode("Value", value);
     }

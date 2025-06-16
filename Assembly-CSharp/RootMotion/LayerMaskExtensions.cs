@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using UnityEngine;
 
 namespace RootMotion
 {
@@ -12,12 +11,12 @@ namespace RootMotion
 
     public static LayerMask Create(params string[] layerNames)
     {
-      return LayerMaskExtensions.NamesToMask(layerNames);
+      return NamesToMask(layerNames);
     }
 
     public static LayerMask Create(params int[] layerNumbers)
     {
-      return LayerMaskExtensions.LayerNumbersToMask(layerNumbers);
+      return LayerNumbersToMask(layerNumbers);
     }
 
     public static LayerMask NamesToMask(params string[] layerNames)
@@ -40,12 +39,12 @@ namespace RootMotion
 
     public static LayerMask AddToMask(this LayerMask original, params string[] layerNames)
     {
-      return (LayerMask) ((int) original | (int) LayerMaskExtensions.NamesToMask(layerNames));
+      return (LayerMask) ((int) original | (int) NamesToMask(layerNames));
     }
 
     public static LayerMask RemoveFromMask(this LayerMask original, params string[] layerNames)
     {
-      return (LayerMask) ~((int) (LayerMask) ~(int) original | (int) LayerMaskExtensions.NamesToMask(layerNames));
+      return (LayerMask) ~((int) (LayerMask) ~(int) original | (int) NamesToMask(layerNames));
     }
 
     public static string[] MaskToNames(this LayerMask original)

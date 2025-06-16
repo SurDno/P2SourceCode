@@ -1,10 +1,9 @@
-﻿using SRDebugger.Services;
+﻿using System.Collections.Generic;
+using System.Text;
+using SRDebugger.Services;
 using SRDebugger.UI.Controls;
 using SRF;
 using SRF.Service;
-using System.Collections.Generic;
-using System.Text;
-using UnityEngine;
 
 namespace SRDebugger.UI.Tabs
 {
@@ -15,15 +14,15 @@ namespace SRDebugger.UI.Tabs
     public InfoBlock InfoBlockPrefab;
     public RectTransform LayoutContainer;
 
-    protected void Start() => this.Construct();
+    protected void Start() => Construct();
 
-    protected void OnEnable() => this.Refresh();
+    protected void OnEnable() => Refresh();
 
     public void Refresh()
     {
       ISystemInformationService service = SRServiceManager.GetService<ISystemInformationService>();
-      foreach (KeyValuePair<string, InfoBlock> infoBlock in this._infoBlocks)
-        this.FillInfoBlock(infoBlock.Value, service.GetInfo(infoBlock.Key));
+      foreach (KeyValuePair<string, InfoBlock> infoBlock in _infoBlocks)
+        FillInfoBlock(infoBlock.Value, service.GetInfo(infoBlock.Key));
     }
 
     private void Construct()
@@ -34,9 +33,9 @@ namespace SRDebugger.UI.Tabs
         IList<ISystemInfo> info = service.GetInfo(category);
         if (info.Count != 0)
         {
-          InfoBlock block = this.CreateBlock(category);
-          this.FillInfoBlock(block, info);
-          this._infoBlocks.Add(category, block);
+          InfoBlock block = CreateBlock(category);
+          FillInfoBlock(block, info);
+          _infoBlocks.Add(category, block);
         }
       }
     }
@@ -45,14 +44,14 @@ namespace SRDebugger.UI.Tabs
     {
       StringBuilder stringBuilder = new StringBuilder();
       int num1 = 0;
-      foreach (ISystemInfo systemInfo in (IEnumerable<ISystemInfo>) info)
+      foreach (ISystemInfo systemInfo in info)
       {
         if (systemInfo.Title.Length > num1)
           num1 = systemInfo.Title.Length;
       }
       int num2 = num1 + 2;
       bool flag = true;
-      foreach (ISystemInfo systemInfo in (IEnumerable<ISystemInfo>) info)
+      foreach (ISystemInfo systemInfo in info)
       {
         if (flag)
           flag = false;
@@ -67,7 +66,7 @@ namespace SRDebugger.UI.Tabs
         for (int length = systemInfo.Title.Length; length <= num2; ++length)
           stringBuilder.Append(' ');
         if (systemInfo.Value is bool)
-          stringBuilder.Append(systemInfo.Value.ToString());
+          stringBuilder.Append(systemInfo.Value);
         else
           stringBuilder.Append(systemInfo.Value);
       }
@@ -76,9 +75,9 @@ namespace SRDebugger.UI.Tabs
 
     private InfoBlock CreateBlock(string title)
     {
-      InfoBlock block = SRInstantiate.Instantiate<InfoBlock>(this.InfoBlockPrefab);
+      InfoBlock block = SRInstantiate.Instantiate<InfoBlock>(InfoBlockPrefab);
       block.Title.text = title;
-      block.CachedTransform.SetParent((Transform) this.LayoutContainer, false);
+      block.CachedTransform.SetParent((Transform) LayoutContainer, false);
       return block;
     }
   }

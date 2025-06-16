@@ -3,7 +3,7 @@ using PLVirtualMachine.Common.VMSpecialAttributes;
 
 namespace PLVirtualMachine.Common.EngineAPI.VMECS
 {
-  [Info("Combination", null)]
+  [Info("Combination")]
   public class VMCombination : VMComponent
   {
     public const string ComponentName = "Combination";
@@ -15,8 +15,8 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
     [SpecialProperty(ESpecialPropertyName.SPN_COMBINATION_DATA)]
     public ObjectCombinationDataStruct CombinationData
     {
-      get => this.combinationData;
-      set => this.combinationData = value;
+      get => combinationData;
+      set => combinationData = value;
     }
   }
 }

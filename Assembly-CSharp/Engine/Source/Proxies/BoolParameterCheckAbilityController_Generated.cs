@@ -1,10 +1,10 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons.Cloneable;
 using Engine.Common.Commons.Converters;
 using Engine.Common.Components.Parameters;
 using Engine.Source.Commons.Abilities.Controllers;
-using System;
 
 namespace Engine.Source.Proxies
 {
@@ -19,27 +19,27 @@ namespace Engine.Source.Proxies
     public object Clone()
     {
       BoolParameterCheckAbilityController_Generated instance = Activator.CreateInstance<BoolParameterCheckAbilityController_Generated>();
-      this.CopyTo((object) instance);
-      return (object) instance;
+      CopyTo(instance);
+      return instance;
     }
 
     public void CopyTo(object target2)
     {
       BoolParameterCheckAbilityController_Generated controllerGenerated = (BoolParameterCheckAbilityController_Generated) target2;
-      controllerGenerated.parameterName = this.parameterName;
-      controllerGenerated.value = this.value;
+      controllerGenerated.parameterName = parameterName;
+      controllerGenerated.value = value;
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.WriteEnum<ParameterNameEnum>(writer, "Parameter", this.parameterName);
-      DefaultDataWriteUtility.Write(writer, "Value", this.value);
+      DefaultDataWriteUtility.WriteEnum(writer, "Parameter", parameterName);
+      DefaultDataWriteUtility.Write(writer, "Value", value);
     }
 
     public void DataRead(IDataReader reader, Type type)
     {
-      this.parameterName = DefaultDataReadUtility.ReadEnum<ParameterNameEnum>(reader, "Parameter");
-      this.value = DefaultDataReadUtility.Read(reader, "Value", this.value);
+      parameterName = DefaultDataReadUtility.ReadEnum<ParameterNameEnum>(reader, "Parameter");
+      value = DefaultDataReadUtility.Read(reader, "Value", value);
     }
   }
 }

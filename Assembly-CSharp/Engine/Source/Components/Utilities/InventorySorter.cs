@@ -1,9 +1,8 @@
-﻿using Engine.Common.Components;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Engine.Common.Components;
 using Engine.Common.Components.Storable;
 using Engine.Source.Inventory;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Engine.Source.Components.Utilities
 {
@@ -11,8 +10,8 @@ namespace Engine.Source.Components.Utilities
   {
     public static void Sort(IStorageComponent storage)
     {
-      InventorySorter.ConcatSameItems(storage);
-      InventorySorter.MoveItems(storage);
+      ConcatSameItems(storage);
+      MoveItems(storage);
     }
 
     private static void ConcatSameItems(IStorageComponent storage)
@@ -39,14 +38,14 @@ namespace Engine.Source.Components.Utilities
 
     private static void MoveItems(IStorageComponent storage)
     {
-      IOrderedEnumerable<IInventoryComponent> orderedEnumerable = storage.Containers.Where<IInventoryComponent>((Func<IInventoryComponent, bool>) (c => c.Enabled.Value && c.GetGroup() == InventoryGroup.Backpack)).OrderBy<IInventoryComponent, int>((Func<IInventoryComponent, int>) (c => c.GetGrid().Rows * c.GetGrid().Columns));
-      List<StorableComponent> itemsLeft = new List<IStorableComponent>(storage.Items.Where<IStorableComponent>((Func<IStorableComponent, bool>) (item => item.Container.GetGroup() == InventoryGroup.Backpack))).ConvertAll<StorableComponent>((Converter<IStorableComponent, StorableComponent>) (item => item as StorableComponent));
-      foreach (IInventoryComponent inventoryComponent in (IEnumerable<IInventoryComponent>) orderedEnumerable)
+      IOrderedEnumerable<IInventoryComponent> orderedEnumerable = storage.Containers.Where(c => c.Enabled.Value && c.GetGroup() == InventoryGroup.Backpack).OrderBy(c => c.GetGrid().Rows * c.GetGrid().Columns);
+      List<StorableComponent> itemsLeft = new List<IStorableComponent>(storage.Items.Where(item => item.Container.GetGroup() == InventoryGroup.Backpack)).ConvertAll(item => item as StorableComponent);
+      foreach (IInventoryComponent inventoryComponent in orderedEnumerable)
       {
         if (itemsLeft.Count == 0)
           break;
-        int[][] greedMatrix = InventorySorter.CreateGreedMatrix(inventoryComponent.GetGrid());
-        foreach (StorableComponent storableComponent in InventorySorter.GetItemsToFillContainer(inventoryComponent, greedMatrix, itemsLeft))
+        int[][] greedMatrix = CreateGreedMatrix(inventoryComponent.GetGrid());
+        foreach (StorableComponent storableComponent in GetItemsToFillContainer(inventoryComponent, greedMatrix, itemsLeft))
           itemsLeft.Remove(storableComponent);
       }
     }
@@ -56,14 +55,14 @@ namespace Engine.Source.Components.Utilities
       int[][] backpackMatrix,
       List<StorableComponent> itemsLeft)
     {
-      IEnumerable<StorableComponent> storableComponents = itemsLeft.Where<StorableComponent>((Func<StorableComponent, bool>) (item => item.Placeholder.Grid.Rows <= backpack.GetGrid().Rows && item.Placeholder.Grid.Columns <= backpack.GetGrid().Columns)).OrderBy<StorableComponent, int>((Func<StorableComponent, int>) (item => item.Placeholder.Grid.Columns * item.Placeholder.Grid.Rows)).Reverse<StorableComponent>();
+      IEnumerable<StorableComponent> storableComponents = itemsLeft.Where(item => item.Placeholder.Grid.Rows <= backpack.GetGrid().Rows && item.Placeholder.Grid.Columns <= backpack.GetGrid().Columns).OrderBy(item => item.Placeholder.Grid.Columns * item.Placeholder.Grid.Rows).Reverse();
       List<StorableComponent> itemsToFillContainer = new List<StorableComponent>();
       foreach (StorableComponent storableComponent in storableComponents)
       {
-        Cell cellToPlace = InventorySorter.FindCellToPlace(backpackMatrix, storableComponent);
+        Cell cellToPlace = FindCellToPlace(backpackMatrix, storableComponent);
         if (cellToPlace != null)
         {
-          InventorySorter.Place(backpack, backpackMatrix, storableComponent, cellToPlace);
+          Place(backpack, backpackMatrix, storableComponent, cellToPlace);
           itemsToFillContainer.Add(storableComponent);
         }
       }
@@ -79,7 +78,7 @@ namespace Engine.Source.Components.Utilities
       item.Container = backpack;
       item.Cell.Column = cell.Column;
       item.Cell.Row = cell.Row;
-      int[][] greedMatrix = InventorySorter.CreateGreedMatrix((IInventoryGridBase) item.Placeholder.Grid);
+      int[][] greedMatrix = CreateGreedMatrix(item.Placeholder.Grid);
       int row = cell.Row;
       int column = cell.Column;
       for (int index1 = 0; index1 < greedMatrix.Length; ++index1)
@@ -91,22 +90,21 @@ namespace Engine.Source.Components.Utilities
 
     private static Cell FindCellToPlace(int[][] backpackMatrix, StorableComponent item)
     {
-      int[][] greedMatrix = InventorySorter.CreateGreedMatrix((IInventoryGridBase) item.Placeholder.Grid);
+      int[][] greedMatrix = CreateGreedMatrix(item.Placeholder.Grid);
       int iPlace = 0;
       for (int length1 = backpackMatrix.Length; iPlace < length1; ++iPlace)
       {
         int jPlace = 0;
         for (int length2 = backpackMatrix[iPlace].Length; jPlace < length2; ++jPlace)
         {
-          if (InventorySorter.CanPlace(backpackMatrix, greedMatrix, iPlace, jPlace))
-            return new Cell()
-            {
+          if (CanPlace(backpackMatrix, greedMatrix, iPlace, jPlace))
+            return new Cell {
               Row = iPlace,
               Column = jPlace
             };
         }
       }
-      return (Cell) null;
+      return null;
     }
 
     private static bool CanPlace(int[][] m1, int[][] m2, int iPlace, int jPlace)

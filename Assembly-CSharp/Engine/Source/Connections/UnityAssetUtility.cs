@@ -1,6 +1,6 @@
-﻿using AssetDatabases;
+﻿using System;
+using AssetDatabases;
 using Cofe.Utility;
-using System;
 
 namespace Engine.Source.Connections
 {

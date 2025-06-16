@@ -1,10 +1,10 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons.Cloneable;
 using Engine.Common.Commons.Converters;
 using Engine.Source.Commons.Abilities;
 using Engine.Source.Effects.Values;
-using System;
 
 namespace Engine.Source.Proxies
 {
@@ -19,27 +19,27 @@ namespace Engine.Source.Proxies
     public object Clone()
     {
       AbilityValueInfo_Generated instance = Activator.CreateInstance<AbilityValueInfo_Generated>();
-      this.CopyTo((object) instance);
-      return (object) instance;
+      CopyTo(instance);
+      return instance;
     }
 
     public void CopyTo(object target2)
     {
       AbilityValueInfo_Generated valueInfoGenerated = (AbilityValueInfo_Generated) target2;
-      valueInfoGenerated.Name = this.Name;
-      valueInfoGenerated.Value = CloneableObjectUtility.Clone<IAbilityValue>(this.Value);
+      valueInfoGenerated.Name = Name;
+      valueInfoGenerated.Value = CloneableObjectUtility.Clone(Value);
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.WriteEnum<AbilityValueNameEnum>(writer, "Name", this.Name);
-      DefaultDataWriteUtility.WriteSerialize<IAbilityValue>(writer, "Value", this.Value);
+      DefaultDataWriteUtility.WriteEnum(writer, "Name", Name);
+      DefaultDataWriteUtility.WriteSerialize(writer, "Value", Value);
     }
 
     public void DataRead(IDataReader reader, Type type)
     {
-      this.Name = DefaultDataReadUtility.ReadEnum<AbilityValueNameEnum>(reader, "Name");
-      this.Value = DefaultDataReadUtility.ReadSerialize<IAbilityValue>(reader, "Value");
+      Name = DefaultDataReadUtility.ReadEnum<AbilityValueNameEnum>(reader, "Name");
+      Value = DefaultDataReadUtility.ReadSerialize<IAbilityValue>(reader, "Value");
     }
   }
 }

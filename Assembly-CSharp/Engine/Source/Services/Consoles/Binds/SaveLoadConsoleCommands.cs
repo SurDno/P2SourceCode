@@ -1,13 +1,12 @@
-﻿using Cofe.Meta;
+﻿using System;
+using System.IO;
+using System.Linq;
+using Cofe.Meta;
 using Engine.Common.Services;
 using Engine.Impl.Services;
 using Engine.Source.Commons;
 using Engine.Source.Services.Profiles;
 using Engine.Source.Services.Saves;
-using System;
-using System.IO;
-using System.Linq;
-using UnityEngine;
 
 namespace Engine.Source.Services.Consoles.Binds
 {
@@ -92,7 +91,7 @@ namespace Engine.Source.Services.Consoles.Binds
         else
         {
           ProfilesService service = ServiceLocator.GetService<ProfilesService>();
-          if (service.Profiles.Count<ProfileData>() == 0)
+          if (service.Profiles.Count() == 0)
             service.GenerateNewProfile(InstanceByRequest<GameDataService>.Instance.GetCurrentGameData().GameName);
           ServiceLocator.GetService<GameLauncher>().StartNewGame();
         }

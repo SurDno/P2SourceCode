@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-[ExecuteInEditMode]
+﻿[ExecuteInEditMode]
 public class IndoorCubemap : MonoBehaviour
 {
   [SerializeField]
@@ -14,9 +12,9 @@ public class IndoorCubemap : MonoBehaviour
 
   private void OnEnable()
   {
-    if (!((Object) this.cubemap != (Object) null))
+    if (!((Object) cubemap != (Object) null))
       return;
-    Shader.SetGlobalInt("Pathologic_IndoorCubemapLod", (int) Mathf.Log((float) this.cubemap.width, 2f));
-    Shader.SetGlobalTexture("Pathologic_IndoorCubemap", (Texture) this.cubemap);
+    Shader.SetGlobalInt("Pathologic_IndoorCubemapLod", (int) Mathf.Log((float) cubemap.width, 2f));
+    Shader.SetGlobalTexture("Pathologic_IndoorCubemap", (Texture) cubemap);
   }
 }

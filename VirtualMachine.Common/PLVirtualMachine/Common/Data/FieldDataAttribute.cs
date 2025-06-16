@@ -2,7 +2,7 @@
 
 namespace PLVirtualMachine.Common.Data
 {
-  [AttributeUsage(AttributeTargets.Field, AllowMultiple = false, Inherited = false)]
+  [AttributeUsage(AttributeTargets.Field)]
   public class FieldDataAttribute : Attribute
   {
     public readonly string Name;
@@ -10,8 +10,8 @@ namespace PLVirtualMachine.Common.Data
 
     public FieldDataAttribute(string name, DataFieldType dataFieldType = DataFieldType.None)
     {
-      this.Name = name;
-      this.DataFieldType = dataFieldType;
+      Name = name;
+      DataFieldType = dataFieldType;
     }
   }
 }

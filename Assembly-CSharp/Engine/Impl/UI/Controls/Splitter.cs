@@ -1,9 +1,4 @@
-﻿using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.Serialization;
-using UnityEngine.UI;
-
-namespace Engine.Impl.UI.Controls
+﻿namespace Engine.Impl.UI.Controls
 {
   [DisallowMultipleComponent]
   [RequireComponent(typeof (CanvasRenderer))]
@@ -28,42 +23,42 @@ namespace Engine.Impl.UI.Controls
 
     public Direction Direction
     {
-      get => this.direction;
-      set => this.direction = value;
+      get => direction;
+      set => direction = value;
     }
 
-    public void OnBeginDrag(PointerEventData EventData) => this.isDragging = true;
+    public void OnBeginDrag(PointerEventData EventData) => isDragging = true;
 
     public void OnDrag(PointerEventData data)
     {
-      switch (this.direction)
+      switch (direction)
       {
         case Direction.LeftToRight:
-          this.target.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, this.target.rect.width - data.delta.x);
+          target.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, target.rect.width - data.delta.x);
           break;
         case Direction.RightToLeft:
-          this.target.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, this.target.rect.width + data.delta.x);
+          target.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, target.rect.width + data.delta.x);
           break;
         case Direction.TopToBottom:
-          this.target.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, this.target.rect.height - data.delta.y);
+          target.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, target.rect.height - data.delta.y);
           break;
         case Direction.BottomToTop:
-          this.target.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, this.target.rect.height + data.delta.y);
+          target.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, target.rect.height + data.delta.y);
           break;
       }
     }
 
-    public void OnEndDrag(PointerEventData data) => this.isDragging = false;
+    public void OnEndDrag(PointerEventData data) => isDragging = false;
 
     public void OnPointerEnter(PointerEventData data)
     {
-      if (this.isDragging)
+      if (isDragging)
         ;
     }
 
     public void OnPointerExit(PointerEventData data)
     {
-      if (this.isDragging)
+      if (isDragging)
         ;
     }
   }

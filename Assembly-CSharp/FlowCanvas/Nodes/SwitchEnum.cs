@@ -1,27 +1,26 @@
-﻿using ParadoxNotion.Design;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using UnityEngine;
+using ParadoxNotion.Design;
 
 namespace FlowCanvas.Nodes
 {
   [Category("Flow Controllers/Switchers")]
   [Description("Branch the Flow based on an enum value.\nThere are 2 ways to set the Enum type:\n1) Drag and Drop an enum connection on top of the node.\n2) Select the type after it has been added in the Prefered Types Editor Window.")]
-  [ContextDefinedInputs(new System.Type[] {typeof (Enum)})]
+  [ContextDefinedInputs(typeof (Enum))]
   public class SwitchEnum : FlowControlNode
   {
     [SerializeField]
-    private System.Type _type = (System.Type) null;
+    private Type _type = null;
 
     protected override void RegisterPorts()
     {
-      if (this._type == (System.Type) null)
+      if (_type == null)
         return;
-      ValueInput e = this.AddValueInput(this._type.Name, this._type);
+      ValueInput e = AddValueInput(_type.Name, _type);
       List<FlowOutput> outs = new List<FlowOutput>();
-      foreach (string name in Enum.GetNames(this._type))
-        outs.Add(this.AddFlowOutput(name));
-      this.AddFlowInput("In", (FlowHandler) (() => outs[(int) Enum.Parse(e.value.GetType(), e.value.ToString())].Call()));
+      foreach (string name in Enum.GetNames(_type))
+        outs.Add(AddFlowOutput(name));
+      AddFlowInput("In", () => outs[(int) Enum.Parse(e.value.GetType(), e.value.ToString())].Call());
     }
   }
 }

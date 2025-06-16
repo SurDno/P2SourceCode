@@ -1,10 +1,9 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons.Cloneable;
 using Engine.Common.Commons.Converters;
 using Engine.Source.Components.Selectors;
-using Engine.Source.Connections;
-using System;
 
 namespace Engine.Source.Proxies
 {
@@ -19,23 +18,23 @@ namespace Engine.Source.Proxies
     public object Clone()
     {
       SelectorPreset_Generated instance = Activator.CreateInstance<SelectorPreset_Generated>();
-      this.CopyTo((object) instance);
-      return (object) instance;
+      CopyTo(instance);
+      return instance;
     }
 
     public void CopyTo(object target2)
     {
-      CloneableObjectUtility.CopyListTo<SceneGameObject>(((SelectorPreset) target2).Objects, this.Objects);
+      CloneableObjectUtility.CopyListTo(((SelectorPreset) target2).Objects, Objects);
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.WriteListSerialize<SceneGameObject>(writer, "Objects", this.Objects);
+      DefaultDataWriteUtility.WriteListSerialize(writer, "Objects", Objects);
     }
 
     public void DataRead(IDataReader reader, Type type)
     {
-      this.Objects = DefaultDataReadUtility.ReadListSerialize<SceneGameObject>(reader, "Objects", this.Objects);
+      Objects = DefaultDataReadUtility.ReadListSerialize(reader, "Objects", Objects);
     }
   }
 }

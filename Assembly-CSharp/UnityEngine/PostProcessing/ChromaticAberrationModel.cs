@@ -6,17 +6,17 @@ namespace UnityEngine.PostProcessing
   public class ChromaticAberrationModel : PostProcessingModel
   {
     [SerializeField]
-    private ChromaticAberrationModel.Settings m_Settings = ChromaticAberrationModel.Settings.defaultSettings;
+    private Settings m_Settings = Settings.defaultSettings;
 
-    public ChromaticAberrationModel.Settings settings
+    public Settings settings
     {
-      get => this.m_Settings;
-      set => this.m_Settings = value;
+      get => m_Settings;
+      set => m_Settings = value;
     }
 
     public override void Reset()
     {
-      this.m_Settings = ChromaticAberrationModel.Settings.defaultSettings;
+      m_Settings = Settings.defaultSettings;
     }
 
     [Serializable]
@@ -28,12 +28,11 @@ namespace UnityEngine.PostProcessing
       [Tooltip("Amount of tangential distortion.")]
       public float intensity;
 
-      public static ChromaticAberrationModel.Settings defaultSettings
+      public static Settings defaultSettings
       {
         get
         {
-          return new ChromaticAberrationModel.Settings()
-          {
+          return new Settings {
             spectralTexture = (Texture2D) null,
             intensity = 0.1f
           };

@@ -23,27 +23,27 @@ namespace TriangleNet.Tools
     {
       this.mesh = mesh;
       this.includeBoundary = includeBoundary;
-      this.Generate();
+      Generate();
     }
 
-    public Point[] Points => this.points;
+    public Point[] Points => points;
 
-    public List<VoronoiRegion> Regions => this.regions;
+    public List<VoronoiRegion> Regions => regions;
 
     private void Generate()
     {
-      this.mesh.Renumber();
-      this.mesh.MakeVertexMap();
-      this.points = new Point[this.mesh.triangles.Count + this.mesh.subsegs.Count * 5];
-      this.regions = new List<VoronoiRegion>(this.mesh.vertices.Count);
-      this.ComputeCircumCenters();
-      this.TagBlindTriangles();
-      foreach (Vertex vertex in this.mesh.vertices.Values)
+      mesh.Renumber();
+      mesh.MakeVertexMap();
+      points = new Point[mesh.triangles.Count + mesh.subsegs.Count * 5];
+      regions = new List<VoronoiRegion>(mesh.vertices.Count);
+      ComputeCircumCenters();
+      TagBlindTriangles();
+      foreach (Vertex vertex in mesh.vertices.Values)
       {
         if (vertex.type == VertexType.FreeVertex || vertex.Boundary == 0)
-          this.ConstructBvdCell(vertex);
-        else if (this.includeBoundary)
-          this.ConstructBoundaryBvdCell(vertex);
+          ConstructBvdCell(vertex);
+        else if (includeBoundary)
+          ConstructBoundaryBvdCell(vertex);
       }
     }
 
@@ -52,26 +52,26 @@ namespace TriangleNet.Tools
       Otri otri = new Otri();
       double xi = 0.0;
       double eta = 0.0;
-      foreach (Triangle triangle in this.mesh.triangles.Values)
+      foreach (Triangle triangle in mesh.triangles.Values)
       {
         otri.triangle = triangle;
-        Point circumcenter = Primitives.FindCircumcenter((Point) otri.Org(), (Point) otri.Dest(), (Point) otri.Apex(), ref xi, ref eta);
+        Point circumcenter = Primitives.FindCircumcenter(otri.Org(), otri.Dest(), otri.Apex(), ref xi, ref eta);
         circumcenter.id = triangle.id;
-        this.points[triangle.id] = circumcenter;
+        points[triangle.id] = circumcenter;
       }
     }
 
     private void TagBlindTriangles()
     {
       int num = 0;
-      this.subsegMap = new Dictionary<int, Segment>();
+      subsegMap = new Dictionary<int, Segment>();
       Otri otri = new Otri();
       Otri o2 = new Otri();
       Osub seg = new Osub();
       Osub os = new Osub();
-      foreach (Triangle triangle in this.mesh.triangles.Values)
+      foreach (Triangle triangle in mesh.triangles.Values)
         triangle.infected = false;
-      foreach (Segment segment in this.mesh.subsegs.Values)
+      foreach (Segment segment in mesh.subsegs.Values)
       {
         Stack<Triangle> triangleStack = new Stack<Triangle>();
         seg.seg = segment;
@@ -87,11 +87,11 @@ namespace TriangleNet.Tools
         {
           otri.triangle = triangleStack.Pop();
           otri.orient = 0;
-          if (this.TriangleIsBlinded(ref otri, ref seg))
+          if (TriangleIsBlinded(ref otri, ref seg))
           {
             otri.triangle.infected = true;
             ++num;
-            this.subsegMap.Add(otri.triangle.hash, seg.seg);
+            subsegMap.Add(otri.triangle.hash, seg.seg);
             for (otri.orient = 0; otri.orient < 3; ++otri.orient)
             {
               otri.Sym(ref o2);
@@ -111,24 +111,24 @@ namespace TriangleNet.Tools
       Vertex p4_3 = tri.Apex();
       Vertex p1 = seg.Org();
       Vertex p2 = seg.Dest();
-      Point point = this.points[tri.triangle.id];
+      Point point = points[tri.triangle.id];
       Point p;
-      return this.SegmentsIntersect((Point) p1, (Point) p2, point, (Point) p4_1, out p, true) || this.SegmentsIntersect((Point) p1, (Point) p2, point, (Point) p4_2, out p, true) || this.SegmentsIntersect((Point) p1, (Point) p2, point, (Point) p4_3, out p, true);
+      return SegmentsIntersect(p1, p2, point, p4_1, out p, true) || SegmentsIntersect(p1, p2, point, p4_2, out p, true) || SegmentsIntersect(p1, p2, point, p4_3, out p, true);
     }
 
     private void ConstructBvdCell(Vertex vertex)
     {
       VoronoiRegion voronoiRegion = new VoronoiRegion(vertex);
-      this.regions.Add(voronoiRegion);
+      regions.Add(voronoiRegion);
       Otri o2_1 = new Otri();
       Otri o2_2 = new Otri();
       Otri o2_3 = new Otri();
       Osub osub = new Osub();
       Osub o2_4 = new Osub();
-      int count = this.mesh.triangles.Count;
+      int count = mesh.triangles.Count;
       List<Point> points = new List<Point>();
       vertex.tri.Copy(ref o2_2);
-      if ((Point) o2_2.Org() != (Point) vertex)
+      if (o2_2.Org() != vertex)
         throw new Exception("ConstructBvdCell: inconsistent topology.");
       o2_2.Copy(ref o2_1);
       o2_2.Onext(ref o2_3);
@@ -142,46 +142,46 @@ namespace TriangleNet.Tools
           points.Add(point1);
           if (o2_3.triangle.infected)
           {
-            o2_4.seg = this.subsegMap[o2_3.triangle.hash];
-            if (this.SegmentsIntersect((Point) o2_4.SegOrg(), (Point) o2_4.SegDest(), point1, point2, out p, true))
+            o2_4.seg = subsegMap[o2_3.triangle.hash];
+            if (SegmentsIntersect(o2_4.SegOrg(), o2_4.SegDest(), point1, point2, out p, true))
             {
-              p.id = count + this.segIndex;
-              this.points[count + this.segIndex] = p;
-              ++this.segIndex;
+              p.id = count + segIndex;
+              this.points[count + segIndex] = p;
+              ++segIndex;
               points.Add(p);
             }
           }
         }
         else
         {
-          osub.seg = this.subsegMap[o2_1.triangle.hash];
+          osub.seg = subsegMap[o2_1.triangle.hash];
           if (!o2_3.triangle.infected)
           {
-            if (this.SegmentsIntersect((Point) osub.SegOrg(), (Point) osub.SegDest(), point1, point2, out p, true))
+            if (SegmentsIntersect(osub.SegOrg(), osub.SegDest(), point1, point2, out p, true))
             {
-              p.id = count + this.segIndex;
-              this.points[count + this.segIndex] = p;
-              ++this.segIndex;
+              p.id = count + segIndex;
+              this.points[count + segIndex] = p;
+              ++segIndex;
               points.Add(p);
             }
           }
           else
           {
-            o2_4.seg = this.subsegMap[o2_3.triangle.hash];
+            o2_4.seg = subsegMap[o2_3.triangle.hash];
             if (!osub.Equal(o2_4))
             {
-              if (this.SegmentsIntersect((Point) osub.SegOrg(), (Point) osub.SegDest(), point1, point2, out p, true))
+              if (SegmentsIntersect(osub.SegOrg(), osub.SegDest(), point1, point2, out p, true))
               {
-                p.id = count + this.segIndex;
-                this.points[count + this.segIndex] = p;
-                ++this.segIndex;
+                p.id = count + segIndex;
+                this.points[count + segIndex] = p;
+                ++segIndex;
                 points.Add(p);
               }
-              if (this.SegmentsIntersect((Point) o2_4.SegOrg(), (Point) o2_4.SegDest(), point1, point2, out p, true))
+              if (SegmentsIntersect(o2_4.SegOrg(), o2_4.SegDest(), point1, point2, out p, true))
               {
-                p.id = count + this.segIndex;
-                this.points[count + this.segIndex] = p;
-                ++this.segIndex;
+                p.id = count + segIndex;
+                this.points[count + segIndex] = p;
+                ++segIndex;
                 points.Add(p);
               }
             }
@@ -197,17 +197,17 @@ namespace TriangleNet.Tools
     private void ConstructBoundaryBvdCell(Vertex vertex)
     {
       VoronoiRegion voronoiRegion = new VoronoiRegion(vertex);
-      this.regions.Add(voronoiRegion);
+      regions.Add(voronoiRegion);
       Otri o2_1 = new Otri();
       Otri o2_2 = new Otri();
       Otri o2_3 = new Otri();
       Otri o2_4 = new Otri();
       Osub osub = new Osub();
       Osub o2_5 = new Osub();
-      int count = this.mesh.triangles.Count;
+      int count = mesh.triangles.Count;
       List<Point> points = new List<Point>();
       vertex.tri.Copy(ref o2_2);
-      if ((Point) o2_2.Org() != (Point) vertex)
+      if (o2_2.Org() != vertex)
         throw new Exception("ConstructBoundaryBvdCell: inconsistent topology.");
       o2_2.Copy(ref o2_1);
       o2_2.Onext(ref o2_3);
@@ -225,17 +225,17 @@ namespace TriangleNet.Tools
       if (o2_4.triangle == Mesh.dummytri)
       {
         Point point = new Point(vertex.x, vertex.y);
-        point.id = count + this.segIndex;
-        this.points[count + this.segIndex] = point;
-        ++this.segIndex;
+        point.id = count + segIndex;
+        this.points[count + segIndex] = point;
+        ++segIndex;
         points.Add(point);
       }
       Vertex vertex1 = o2_1.Org();
       Vertex vertex2 = o2_1.Dest();
       Point p = new Point((vertex1.X + vertex2.X) / 2.0, (vertex1.Y + vertex2.Y) / 2.0);
-      p.id = count + this.segIndex;
-      this.points[count + this.segIndex] = p;
-      ++this.segIndex;
+      p.id = count + segIndex;
+      this.points[count + segIndex] = p;
+      ++segIndex;
       points.Add(p);
       do
       {
@@ -247,9 +247,9 @@ namespace TriangleNet.Tools
           Vertex vertex3 = o2_1.Org();
           Vertex vertex4 = o2_1.Apex();
           p = new Point((vertex3.X + vertex4.X) / 2.0, (vertex3.Y + vertex4.Y) / 2.0);
-          p.id = count + this.segIndex;
-          this.points[count + this.segIndex] = p;
-          ++this.segIndex;
+          p.id = count + segIndex;
+          this.points[count + segIndex] = p;
+          ++segIndex;
           points.Add(p);
           break;
         }
@@ -259,19 +259,19 @@ namespace TriangleNet.Tools
           points.Add(point1);
           if (o2_3.triangle.infected)
           {
-            o2_5.seg = this.subsegMap[o2_3.triangle.hash];
-            if (this.SegmentsIntersect((Point) o2_5.SegOrg(), (Point) o2_5.SegDest(), point1, point2, out p, true))
+            o2_5.seg = subsegMap[o2_3.triangle.hash];
+            if (SegmentsIntersect(o2_5.SegOrg(), o2_5.SegDest(), point1, point2, out p, true))
             {
-              p.id = count + this.segIndex;
-              this.points[count + this.segIndex] = p;
-              ++this.segIndex;
+              p.id = count + segIndex;
+              this.points[count + segIndex] = p;
+              ++segIndex;
               points.Add(p);
             }
           }
         }
         else
         {
-          osub.seg = this.subsegMap[o2_1.triangle.hash];
+          osub.seg = subsegMap[o2_1.triangle.hash];
           Vertex p1 = osub.SegOrg();
           Vertex p2 = osub.SegDest();
           if (!o2_3.triangle.infected)
@@ -279,49 +279,49 @@ namespace TriangleNet.Tools
             vertex2 = o2_1.Dest();
             Vertex vertex5 = o2_1.Apex();
             Point p3 = new Point((vertex2.X + vertex5.X) / 2.0, (vertex2.Y + vertex5.Y) / 2.0);
-            if (this.SegmentsIntersect((Point) p1, (Point) p2, p3, point1, out p, false))
+            if (SegmentsIntersect(p1, p2, p3, point1, out p, false))
             {
-              p.id = count + this.segIndex;
-              this.points[count + this.segIndex] = p;
-              ++this.segIndex;
+              p.id = count + segIndex;
+              this.points[count + segIndex] = p;
+              ++segIndex;
               points.Add(p);
             }
-            if (this.SegmentsIntersect((Point) p1, (Point) p2, point1, point2, out p, true))
+            if (SegmentsIntersect(p1, p2, point1, point2, out p, true))
             {
-              p.id = count + this.segIndex;
-              this.points[count + this.segIndex] = p;
-              ++this.segIndex;
+              p.id = count + segIndex;
+              this.points[count + segIndex] = p;
+              ++segIndex;
               points.Add(p);
             }
           }
           else
           {
-            o2_5.seg = this.subsegMap[o2_3.triangle.hash];
+            o2_5.seg = subsegMap[o2_3.triangle.hash];
             if (!osub.Equal(o2_5))
             {
-              if (this.SegmentsIntersect((Point) p1, (Point) p2, point1, point2, out p, true))
+              if (SegmentsIntersect(p1, p2, point1, point2, out p, true))
               {
-                p.id = count + this.segIndex;
-                this.points[count + this.segIndex] = p;
-                ++this.segIndex;
+                p.id = count + segIndex;
+                this.points[count + segIndex] = p;
+                ++segIndex;
                 points.Add(p);
               }
-              if (this.SegmentsIntersect((Point) o2_5.SegOrg(), (Point) o2_5.SegDest(), point1, point2, out p, true))
+              if (SegmentsIntersect(o2_5.SegOrg(), o2_5.SegDest(), point1, point2, out p, true))
               {
-                p.id = count + this.segIndex;
-                this.points[count + this.segIndex] = p;
-                ++this.segIndex;
+                p.id = count + segIndex;
+                this.points[count + segIndex] = p;
+                ++segIndex;
                 points.Add(p);
               }
             }
             else
             {
               Point p3 = new Point((vertex1.X + vertex2.X) / 2.0, (vertex1.Y + vertex2.Y) / 2.0);
-              if (this.SegmentsIntersect((Point) p1, (Point) p2, p3, point2, out p, false))
+              if (SegmentsIntersect(p1, p2, p3, point2, out p, false))
               {
-                p.id = count + this.segIndex;
-                this.points[count + this.segIndex] = p;
-                ++this.segIndex;
+                p.id = count + segIndex;
+                this.points[count + segIndex] = p;
+                ++segIndex;
                 points.Add(p);
               }
             }
@@ -342,7 +342,7 @@ namespace TriangleNet.Tools
       out Point p,
       bool strictIntersect)
     {
-      p = (Point) null;
+      p = null;
       double x1 = p1.X;
       double y1 = p1.Y;
       double x2 = p2.X;

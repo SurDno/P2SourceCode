@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEngine;
 
 namespace JBrothers.PreIntegratedSkinShader2.Demo
 {
@@ -10,54 +9,54 @@ namespace JBrothers.PreIntegratedSkinShader2.Demo
     private Material materialCopy;
     private Material materialOrig;
     public Renderer meshRenderer;
-    private DemoController.SkyboxSphere probeBakedWithSkybox;
+    private SkyboxSphere probeBakedWithSkybox;
     private Quaternion probeBakedWithSunRotation = Quaternion.identity;
     public PreIntegratedSkinProfile[] profiles;
     private Material profileSphereMaterial;
     public Shader profileSphereShader;
     public ReflectionProbe reflectionProbe;
-    private DemoController.SkyboxSphere selectedSkybox;
+    private SkyboxSphere selectedSkybox;
     public Material[] skyboxes;
     private Material skyboxSphereMaterial;
-    private DemoController.SkyboxSphere[] skyboxSpheres;
+    private SkyboxSphere[] skyboxSpheres;
     public Shader skyboxSphereShader;
     public float sphereSize = 64f;
     public Light sun;
 
     private void Start()
     {
-      this._MainTex = Shader.PropertyToID("_MainTex");
-      if (!(bool) (UnityEngine.Object) this.skyboxSphereShader)
+      _MainTex = Shader.PropertyToID("_MainTex");
+      if (!(bool) (UnityEngine.Object) skyboxSphereShader)
       {
         Debug.LogWarning((object) "no skybox preview shader");
         this.enabled = false;
       }
       else
       {
-        this.skyboxSphereMaterial = new Material(this.skyboxSphereShader);
-        if (!(bool) (UnityEngine.Object) this.profileSphereShader)
+        skyboxSphereMaterial = new Material(skyboxSphereShader);
+        if (!(bool) (UnityEngine.Object) profileSphereShader)
         {
           Debug.LogWarning((object) "no profile preview shader");
           this.enabled = false;
         }
         else
         {
-          this.profileSphereMaterial = new Material(this.profileSphereShader);
-          this.profileSphereMaterial.SetTexture("_LookupDirectSM2", (Texture) Resources.Load<Texture2D>("PSSLookupDirectSM2"));
-          if (!(bool) (UnityEngine.Object) this.meshRenderer)
+          profileSphereMaterial = new Material(profileSphereShader);
+          profileSphereMaterial.SetTexture("_LookupDirectSM2", (Texture) Resources.Load<Texture2D>("PSSLookupDirectSM2"));
+          if (!(bool) (UnityEngine.Object) meshRenderer)
           {
             Debug.LogWarning((object) "no mesh renderer");
             this.enabled = false;
           }
           else
           {
-            this.materialOrig = this.meshRenderer.sharedMaterial;
-            this.materialCopy = this.meshRenderer.material;
-            this.skyboxSpheres = new DemoController.SkyboxSphere[this.skyboxes.Length];
-            for (int index = 0; index < this.skyboxes.Length; ++index)
+            materialOrig = meshRenderer.sharedMaterial;
+            materialCopy = meshRenderer.material;
+            skyboxSpheres = new SkyboxSphere[skyboxes.Length];
+            for (int index = 0; index < skyboxes.Length; ++index)
             {
-              Material skybox = this.skyboxes[index];
-              DemoController.SkyboxSphere skyboxSphere = new DemoController.SkyboxSphere();
+              Material skybox = skyboxes[index];
+              SkyboxSphere skyboxSphere = new SkyboxSphere();
               if (!(bool) (UnityEngine.Object) skybox)
               {
                 Debug.LogWarning((object) "no skybox material specified");
@@ -65,11 +64,11 @@ namespace JBrothers.PreIntegratedSkinShader2.Demo
                 return;
               }
               skyboxSphere.skybox = skybox;
-              skyboxSphere.cube = this.bakeSkyboxMaterialToCube(this.cubemapResolution, skybox);
-              this.skyboxSpheres[index] = skyboxSphere;
+              skyboxSphere.cube = bakeSkyboxMaterialToCube(cubemapResolution, skybox);
+              skyboxSpheres[index] = skyboxSphere;
             }
-            this.SelectSkybox(this.skyboxSpheres[0]);
-            this.UpdateRelfectionProbeIfNecessary();
+            SelectSkybox(skyboxSpheres[0]);
+            UpdateRelfectionProbeIfNecessary();
           }
         }
       }
@@ -77,25 +76,25 @@ namespace JBrothers.PreIntegratedSkinShader2.Demo
 
     private void OnDestroy()
     {
-      if (this.skyboxSpheres != null)
+      if (skyboxSpheres != null)
       {
-        foreach (DemoController.SkyboxSphere skyboxSphere in this.skyboxSpheres)
+        foreach (SkyboxSphere skyboxSphere in skyboxSpheres)
           UnityEngine.Object.Destroy((UnityEngine.Object) skyboxSphere.cube);
       }
-      if ((bool) (UnityEngine.Object) this.skyboxSphereMaterial)
-        UnityEngine.Object.Destroy((UnityEngine.Object) this.skyboxSphereMaterial);
-      if (!(bool) (UnityEngine.Object) this.materialCopy)
+      if ((bool) (UnityEngine.Object) skyboxSphereMaterial)
+        UnityEngine.Object.Destroy((UnityEngine.Object) skyboxSphereMaterial);
+      if (!(bool) (UnityEngine.Object) materialCopy)
         return;
-      UnityEngine.Object.Destroy((UnityEngine.Object) this.materialCopy);
+      UnityEngine.Object.Destroy((UnityEngine.Object) materialCopy);
     }
 
-    private void SelectSkybox(DemoController.SkyboxSphere sb)
+    private void SelectSkybox(SkyboxSphere sb)
     {
-      this.selectedSkybox = sb;
+      selectedSkybox = sb;
       RenderSettings.skybox = sb.skybox;
     }
 
-    private void Update() => this.UpdateRelfectionProbeIfNecessary();
+    private void Update() => UpdateRelfectionProbeIfNecessary();
 
     private void OnGUI()
     {
@@ -108,74 +107,74 @@ namespace JBrothers.PreIntegratedSkinShader2.Demo
       int controlId = GUIUtility.GetControlID(FocusType.Passive);
       GUILayout.BeginVertical(GUI.skin.box);
       GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
-      foreach (DemoController.SkyboxSphere skyboxSphere in this.skyboxSpheres)
+      foreach (SkyboxSphere skyboxSphere in skyboxSpheres)
       {
-        Rect rect1 = GUILayoutUtility.GetRect(this.sphereSize, this.sphereSize, GUILayout.ExpandWidth(false));
+        Rect rect1 = GUILayoutUtility.GetRect(sphereSize, sphereSize, GUILayout.ExpandWidth(false));
         Rect rect2 = new Rect(rect1.x, (float) Screen.height - rect1.y - rect1.height, rect1.width, rect1.height);
         bool flag = false;
         if (rect2.Contains(Input.mousePosition))
         {
           float num = (float) ((double) rect1.width * (double) rect1.height / 4.0);
-          flag = (double) ((Vector2) Input.mousePosition - rect2.center).sqrMagnitude < (double) num;
+          flag = (double) ((Vector2) Input.mousePosition - rect2.center).sqrMagnitude < num;
         }
         if (Event.current.type == EventType.Repaint)
         {
           float num = Mathf.Repeat(Time.time / 10f, 1f);
-          this.skyboxSphereMaterial.SetFloat("_Alpha", flag ? 1f : 0.5f);
-          this.skyboxSphereMaterial.SetFloat("_Radius", flag ? 0.5f : 0.4f);
-          this.skyboxSphereMaterial.SetTexture("_Cube", (Texture) skyboxSphere.cube);
-          this.skyboxSphereMaterial.SetFloat("_Rotation", num);
-          Graphics.DrawTexture(rect1, (Texture) Texture2D.whiteTexture, this.skyboxSphereMaterial);
+          skyboxSphereMaterial.SetFloat("_Alpha", flag ? 1f : 0.5f);
+          skyboxSphereMaterial.SetFloat("_Radius", flag ? 0.5f : 0.4f);
+          skyboxSphereMaterial.SetTexture("_Cube", (Texture) skyboxSphere.cube);
+          skyboxSphereMaterial.SetFloat("_Rotation", num);
+          Graphics.DrawTexture(rect1, (Texture) Texture2D.whiteTexture, skyboxSphereMaterial);
         }
         if (flag)
           GUI.Label(rect1, skyboxSphere.skybox.name, style1);
         if (flag && Input.GetMouseButtonDown(0))
-          this.SelectSkybox(skyboxSphere);
+          SelectSkybox(skyboxSphere);
       }
       GUILayout.EndHorizontal();
       GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
-      foreach (PreIntegratedSkinProfile profile in this.profiles)
+      foreach (PreIntegratedSkinProfile profile in profiles)
       {
-        Rect rect3 = GUILayoutUtility.GetRect(this.sphereSize, this.sphereSize, GUILayout.ExpandWidth(false));
+        Rect rect3 = GUILayoutUtility.GetRect(sphereSize, sphereSize, GUILayout.ExpandWidth(false));
         Rect rect4 = new Rect(rect3.x, (float) Screen.height - rect3.y - rect3.height, rect3.width, rect3.height);
         bool flag = false;
         if (rect4.Contains(Input.mousePosition))
         {
           float num = (float) ((double) rect3.width * (double) rect3.height / 4.0);
-          flag = (double) ((Vector2) Input.mousePosition - rect4.center).sqrMagnitude < (double) num;
+          flag = (double) ((Vector2) Input.mousePosition - rect4.center).sqrMagnitude < num;
         }
         if (Event.current.type.Equals((object) EventType.Repaint))
         {
           float num = Mathf.Repeat(Time.time / 10f, 1f);
-          this.profileSphereMaterial.SetFloat("_Alpha", flag ? 1f : 0.5f);
-          this.profileSphereMaterial.SetFloat("_Radius", flag ? 0.5f : 0.4f);
-          this.profileSphereMaterial.SetFloat("_Rotation", num);
-          profile.ApplyProfile(this.profileSphereMaterial);
-          Graphics.DrawTexture(rect3, (Texture) Texture2D.whiteTexture, this.profileSphereMaterial);
+          profileSphereMaterial.SetFloat("_Alpha", flag ? 1f : 0.5f);
+          profileSphereMaterial.SetFloat("_Radius", flag ? 0.5f : 0.4f);
+          profileSphereMaterial.SetFloat("_Rotation", num);
+          profile.ApplyProfile(profileSphereMaterial);
+          Graphics.DrawTexture(rect3, (Texture) Texture2D.whiteTexture, profileSphereMaterial);
         }
         if (flag)
           GUI.Label(rect3, profile.name, style1);
         if (flag && Input.GetMouseButtonDown(0))
-          profile.ApplyProfile(this.materialCopy);
+          profile.ApplyProfile(materialCopy);
       }
       GUILayout.EndHorizontal();
-      this.sun.enabled = GUILayout.Toggle(this.sun.enabled, "Direct light");
+      sun.enabled = GUILayout.Toggle(sun.enabled, "Direct light");
       GUILayout.BeginVertical();
       GUILayout.Label("Ambient intensity", style2);
       RenderSettings.ambientIntensity = GUILayout.HorizontalSlider(RenderSettings.ambientIntensity, 0.0f, 2f);
       GUILayout.EndVertical();
       GUILayout.BeginVertical();
       GUILayout.Label("Reflection intensity", style2);
-      this.reflectionProbe.intensity = GUILayout.HorizontalSlider(this.reflectionProbe.intensity, 0.0f, 2f);
+      reflectionProbe.intensity = GUILayout.HorizontalSlider(reflectionProbe.intensity, 0.0f, 2f);
       GUILayout.EndVertical();
-      bool flag1 = this.materialCopy.GetTexture(this._MainTex) != Texture2D.whiteTexture;
+      bool flag1 = materialCopy.GetTexture(_MainTex) != Texture2D.whiteTexture;
       bool flag2 = GUILayout.Toggle(flag1, "Use diffuse texture");
       if (flag2 != flag1)
       {
         if (flag2)
-          this.materialCopy.SetTexture(this._MainTex, this.materialOrig.GetTexture(this._MainTex));
+          materialCopy.SetTexture(_MainTex, materialOrig.GetTexture(_MainTex));
         else
-          this.materialCopy.SetTexture(this._MainTex, (Texture) Texture2D.whiteTexture);
+          materialCopy.SetTexture(_MainTex, (Texture) Texture2D.whiteTexture);
       }
       GUILayout.EndVertical();
       Rect lastRect = GUILayoutUtility.GetLastRect();
@@ -208,21 +207,21 @@ namespace JBrothers.PreIntegratedSkinShader2.Demo
 
     private void UpdateRelfectionProbeIfNecessary()
     {
-      if (!(bool) (UnityEngine.Object) this.sun)
+      if (!(bool) (UnityEngine.Object) sun)
         return;
       bool flag = false;
-      if (this.probeBakedWithSkybox != this.selectedSkybox)
+      if (probeBakedWithSkybox != selectedSkybox)
       {
         flag = true;
-        this.probeBakedWithSkybox = this.selectedSkybox;
+        probeBakedWithSkybox = selectedSkybox;
       }
-      if (this.sun.transform.rotation != this.probeBakedWithSunRotation)
+      if (sun.transform.rotation != probeBakedWithSunRotation)
       {
         flag = true;
-        this.probeBakedWithSunRotation = this.sun.transform.rotation;
+        probeBakedWithSunRotation = sun.transform.rotation;
       }
-      if (flag && this.reflectionProbe.isActiveAndEnabled)
-        this.reflectionProbe.RenderProbe();
+      if (flag && reflectionProbe.isActiveAndEnabled)
+        reflectionProbe.RenderProbe();
     }
 
     private Cubemap bakeSkyboxMaterialToCube(int size, Material skybox)

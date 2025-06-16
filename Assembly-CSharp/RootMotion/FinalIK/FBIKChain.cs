@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEngine;
 
 namespace RootMotion.FinalIK
 {
@@ -16,11 +15,11 @@ namespace RootMotion.FinalIK
     public float pushParent;
     [Range(0.0f, 1f)]
     public float reach = 0.1f;
-    public FBIKChain.Smoothing reachSmoothing = FBIKChain.Smoothing.Exponential;
-    public FBIKChain.Smoothing pushSmoothing = FBIKChain.Smoothing.Exponential;
+    public Smoothing reachSmoothing = Smoothing.Exponential;
+    public Smoothing pushSmoothing = Smoothing.Exponential;
     public IKSolver.Node[] nodes = new IKSolver.Node[0];
     public int[] children = new int[0];
-    public FBIKChain.ChildConstraint[] childConstraints = new FBIKChain.ChildConstraint[0];
+    public ChildConstraint[] childConstraints = new ChildConstraint[0];
     public IKConstraintBend bendConstraint = new IKConstraintBend();
     private float rootLength;
     private bool initiated;
@@ -43,22 +42,22 @@ namespace RootMotion.FinalIK
     {
       this.pin = pin;
       this.pull = pull;
-      this.SetNodes(nodeTransforms);
-      this.children = new int[0];
+      SetNodes(nodeTransforms);
+      children = new int[0];
     }
 
     public void SetNodes(params Transform[] boneTransforms)
     {
-      this.nodes = new IKSolver.Node[boneTransforms.Length];
+      nodes = new IKSolver.Node[boneTransforms.Length];
       for (int index = 0; index < boneTransforms.Length; ++index)
-        this.nodes[index] = new IKSolver.Node(boneTransforms[index]);
+        nodes[index] = new IKSolver.Node(boneTransforms[index]);
     }
 
     public int GetNodeIndex(Transform boneTransform)
     {
-      for (int nodeIndex = 0; nodeIndex < this.nodes.Length; ++nodeIndex)
+      for (int nodeIndex = 0; nodeIndex < nodes.Length; ++nodeIndex)
       {
-        if ((UnityEngine.Object) this.nodes[nodeIndex].transform == (UnityEngine.Object) boneTransform)
+        if ((UnityEngine.Object) nodes[nodeIndex].transform == (UnityEngine.Object) boneTransform)
           return nodeIndex;
       }
       return -1;
@@ -66,12 +65,12 @@ namespace RootMotion.FinalIK
 
     public bool IsValid(ref string message)
     {
-      if (this.nodes.Length == 0)
+      if (nodes.Length == 0)
       {
         message = "FBIK chain contains no nodes.";
         return false;
       }
-      foreach (IKSolver.Point node in this.nodes)
+      foreach (IKSolver.Point node in nodes)
       {
         if ((UnityEngine.Object) node.transform == (UnityEngine.Object) null)
         {
@@ -84,195 +83,195 @@ namespace RootMotion.FinalIK
 
     public void Initiate(IKSolverFullBody solver)
     {
-      this.initiated = false;
-      foreach (IKSolver.Node node in this.nodes)
+      initiated = false;
+      foreach (IKSolver.Node node in nodes)
         node.solverPosition = node.transform.position;
-      this.CalculateBoneLengths(solver);
-      foreach (FBIKChain.ChildConstraint childConstraint in this.childConstraints)
+      CalculateBoneLengths(solver);
+      foreach (ChildConstraint childConstraint in childConstraints)
         childConstraint.Initiate(solver);
-      if (this.nodes.Length == 3)
+      if (nodes.Length == 3)
       {
-        this.bendConstraint.SetBones(this.nodes[0].transform, this.nodes[1].transform, this.nodes[2].transform);
-        this.bendConstraint.Initiate(solver);
+        bendConstraint.SetBones(nodes[0].transform, nodes[1].transform, nodes[2].transform);
+        bendConstraint.Initiate(solver);
       }
-      this.crossFades = new float[this.children.Length];
-      this.initiated = true;
+      crossFades = new float[children.Length];
+      initiated = true;
     }
 
     public void ReadPose(IKSolverFullBody solver, bool fullBody)
     {
-      if (!this.initiated)
+      if (!initiated)
         return;
-      for (int index = 0; index < this.nodes.Length; ++index)
-        this.nodes[index].solverPosition = this.nodes[index].transform.position + this.nodes[index].offset;
-      this.CalculateBoneLengths(solver);
+      for (int index = 0; index < nodes.Length; ++index)
+        nodes[index].solverPosition = nodes[index].transform.position + nodes[index].offset;
+      CalculateBoneLengths(solver);
       if (!fullBody)
         return;
-      for (int index = 0; index < this.childConstraints.Length; ++index)
-        this.childConstraints[index].OnPreSolve(solver);
-      if (this.children.Length != 0)
+      for (int index = 0; index < childConstraints.Length; ++index)
+        childConstraints[index].OnPreSolve(solver);
+      if (children.Length != 0)
       {
-        float effectorPositionWeight = this.nodes[this.nodes.Length - 1].effectorPositionWeight;
-        for (int index = 0; index < this.children.Length; ++index)
-          effectorPositionWeight += solver.chain[this.children[index]].nodes[0].effectorPositionWeight * solver.chain[this.children[index]].pull;
+        float effectorPositionWeight = nodes[nodes.Length - 1].effectorPositionWeight;
+        for (int index = 0; index < children.Length; ++index)
+          effectorPositionWeight += solver.chain[children[index]].nodes[0].effectorPositionWeight * solver.chain[children[index]].pull;
         float num = Mathf.Clamp(effectorPositionWeight, 1f, float.PositiveInfinity);
-        for (int index = 0; index < this.children.Length; ++index)
-          this.crossFades[index] = solver.chain[this.children[index]].nodes[0].effectorPositionWeight * solver.chain[this.children[index]].pull / num;
+        for (int index = 0; index < children.Length; ++index)
+          crossFades[index] = solver.chain[children[index]].nodes[0].effectorPositionWeight * solver.chain[children[index]].pull / num;
       }
-      this.pullParentSum = 0.0f;
-      for (int index = 0; index < this.children.Length; ++index)
-        this.pullParentSum += solver.chain[this.children[index]].pull;
-      this.pullParentSum = Mathf.Clamp(this.pullParentSum, 1f, float.PositiveInfinity);
-      this.reachForce = this.nodes.Length != 3 ? 0.0f : this.reach * Mathf.Clamp(this.nodes[2].effectorPositionWeight, 0.0f, 1f);
-      if ((double) this.push > 0.0 && this.nodes.Length > 1)
-        this.distance = Vector3.Distance(this.nodes[0].transform.position, this.nodes[this.nodes.Length - 1].transform.position);
+      pullParentSum = 0.0f;
+      for (int index = 0; index < children.Length; ++index)
+        pullParentSum += solver.chain[children[index]].pull;
+      pullParentSum = Mathf.Clamp(pullParentSum, 1f, float.PositiveInfinity);
+      reachForce = nodes.Length != 3 ? 0.0f : reach * Mathf.Clamp(nodes[2].effectorPositionWeight, 0.0f, 1f);
+      if (push > 0.0 && nodes.Length > 1)
+        distance = Vector3.Distance(nodes[0].transform.position, nodes[nodes.Length - 1].transform.position);
     }
 
     private void CalculateBoneLengths(IKSolverFullBody solver)
     {
-      this.length = 0.0f;
-      for (int index = 0; index < this.nodes.Length - 1; ++index)
+      length = 0.0f;
+      for (int index = 0; index < nodes.Length - 1; ++index)
       {
-        this.nodes[index].length = Vector3.Distance(this.nodes[index].transform.position, this.nodes[index + 1].transform.position);
-        this.length += this.nodes[index].length;
-        if ((double) this.nodes[index].length == 0.0)
+        nodes[index].length = Vector3.Distance(nodes[index].transform.position, nodes[index + 1].transform.position);
+        length += nodes[index].length;
+        if (nodes[index].length == 0.0)
         {
-          Warning.Log("Bone " + this.nodes[index].transform.name + " - " + this.nodes[index + 1].transform.name + " length is zero, can not solve.", this.nodes[index].transform);
+          Warning.Log("Bone " + nodes[index].transform.name + " - " + nodes[index + 1].transform.name + " length is zero, can not solve.", nodes[index].transform);
           return;
         }
       }
-      for (int index = 0; index < this.children.Length; ++index)
+      for (int index = 0; index < children.Length; ++index)
       {
-        solver.chain[this.children[index]].rootLength = (solver.chain[this.children[index]].nodes[0].transform.position - this.nodes[this.nodes.Length - 1].transform.position).magnitude;
-        if ((double) solver.chain[this.children[index]].rootLength == 0.0)
+        solver.chain[children[index]].rootLength = (solver.chain[children[index]].nodes[0].transform.position - nodes[nodes.Length - 1].transform.position).magnitude;
+        if (solver.chain[children[index]].rootLength == 0.0)
           return;
       }
-      if (this.nodes.Length != 3)
+      if (nodes.Length != 3)
         return;
-      this.sqrMag1 = this.nodes[0].length * this.nodes[0].length;
-      this.sqrMag2 = this.nodes[1].length * this.nodes[1].length;
-      this.sqrMagDif = this.sqrMag1 - this.sqrMag2;
+      sqrMag1 = nodes[0].length * nodes[0].length;
+      sqrMag2 = nodes[1].length * nodes[1].length;
+      sqrMagDif = sqrMag1 - sqrMag2;
     }
 
     public void Reach(IKSolverFullBody solver)
     {
-      if (!this.initiated)
+      if (!initiated)
         return;
-      for (int index = 0; index < this.children.Length; ++index)
-        solver.chain[this.children[index]].Reach(solver);
-      if ((double) this.reachForce <= 0.0)
+      for (int index = 0; index < children.Length; ++index)
+        solver.chain[children[index]].Reach(solver);
+      if (reachForce <= 0.0)
         return;
-      Vector3 vector3_1 = this.nodes[2].solverPosition - this.nodes[0].solverPosition;
+      Vector3 vector3_1 = nodes[2].solverPosition - nodes[0].solverPosition;
       if (vector3_1 == Vector3.zero)
         return;
       float magnitude = vector3_1.magnitude;
-      Vector3 vector3_2 = vector3_1 / magnitude * this.length;
-      float num = Mathf.Clamp(Mathf.Clamp(magnitude / this.length, 1f - this.reachForce, 1f + this.reachForce) - 1f + this.reachForce, -1f, 1f);
-      switch (this.reachSmoothing)
+      Vector3 vector3_2 = vector3_1 / magnitude * length;
+      float num = Mathf.Clamp(Mathf.Clamp(magnitude / length, 1f - reachForce, 1f + reachForce) - 1f + reachForce, -1f, 1f);
+      switch (reachSmoothing)
       {
-        case FBIKChain.Smoothing.Exponential:
+        case Smoothing.Exponential:
           num *= num;
           break;
-        case FBIKChain.Smoothing.Cubic:
+        case Smoothing.Cubic:
           num *= num * num;
           break;
       }
       Vector3 vector3_3 = vector3_2 * Mathf.Clamp(num, 0.0f, magnitude);
-      IKSolver.Node node1 = this.nodes[0];
-      node1.solverPosition = node1.solverPosition + vector3_3 * (1f - this.nodes[0].effectorPositionWeight);
-      IKSolver.Node node2 = this.nodes[2];
+      IKSolver.Node node1 = nodes[0];
+      node1.solverPosition = node1.solverPosition + vector3_3 * (1f - nodes[0].effectorPositionWeight);
+      IKSolver.Node node2 = nodes[2];
       node2.solverPosition = node2.solverPosition + vector3_3;
     }
 
     public Vector3 Push(IKSolverFullBody solver)
     {
       Vector3 zero = Vector3.zero;
-      for (int index = 0; index < this.children.Length; ++index)
-        zero += solver.chain[this.children[index]].Push(solver) * solver.chain[this.children[index]].pushParent;
-      IKSolver.Node node1 = this.nodes[this.nodes.Length - 1];
+      for (int index = 0; index < children.Length; ++index)
+        zero += solver.chain[children[index]].Push(solver) * solver.chain[children[index]].pushParent;
+      IKSolver.Node node1 = nodes[nodes.Length - 1];
       node1.solverPosition = node1.solverPosition + zero;
-      if (this.nodes.Length < 2 || (double) this.push <= 0.0)
+      if (nodes.Length < 2 || push <= 0.0)
         return Vector3.zero;
-      Vector3 vector3_1 = this.nodes[2].solverPosition - this.nodes[0].solverPosition;
+      Vector3 vector3_1 = nodes[2].solverPosition - nodes[0].solverPosition;
       float magnitude = vector3_1.magnitude;
-      if ((double) magnitude == 0.0)
+      if (magnitude == 0.0)
         return Vector3.zero;
-      float num = (float) (1.0 - (double) magnitude / (double) this.distance);
-      if ((double) num <= 0.0)
+      float num = (float) (1.0 - magnitude / (double) distance);
+      if (num <= 0.0)
         return Vector3.zero;
-      switch (this.pushSmoothing)
+      switch (pushSmoothing)
       {
-        case FBIKChain.Smoothing.Exponential:
+        case Smoothing.Exponential:
           num *= num;
           break;
-        case FBIKChain.Smoothing.Cubic:
+        case Smoothing.Cubic:
           num *= num * num;
           break;
       }
-      Vector3 vector3_2 = -vector3_1 * num * this.push;
-      IKSolver.Node node2 = this.nodes[0];
+      Vector3 vector3_2 = -vector3_1 * num * push;
+      IKSolver.Node node2 = nodes[0];
       node2.solverPosition = node2.solverPosition + vector3_2;
       return vector3_2;
     }
 
     public void SolveTrigonometric(IKSolverFullBody solver, bool calculateBendDirection = false)
     {
-      if (!this.initiated)
+      if (!initiated)
         return;
-      for (int index = 0; index < this.children.Length; ++index)
-        solver.chain[this.children[index]].SolveTrigonometric(solver, calculateBendDirection);
-      if (this.nodes.Length != 3)
+      for (int index = 0; index < children.Length; ++index)
+        solver.chain[children[index]].SolveTrigonometric(solver, calculateBendDirection);
+      if (nodes.Length != 3)
         return;
-      Vector3 vector3 = this.nodes[2].solverPosition - this.nodes[0].solverPosition;
+      Vector3 vector3 = nodes[2].solverPosition - nodes[0].solverPosition;
       float magnitude = vector3.magnitude;
-      if ((double) magnitude == 0.0)
+      if (magnitude == 0.0)
         return;
-      float directionMagnitude = Mathf.Clamp(magnitude, 0.0f, this.length * 0.99999f);
-      this.nodes[1].solverPosition = this.nodes[0].solverPosition + this.GetDirToBendPoint(vector3 / magnitude * directionMagnitude, !calculateBendDirection || !this.bendConstraint.initiated ? this.nodes[1].solverPosition - this.nodes[0].solverPosition : this.bendConstraint.GetDir(solver), directionMagnitude);
+      float directionMagnitude = Mathf.Clamp(magnitude, 0.0f, length * 0.99999f);
+      nodes[1].solverPosition = nodes[0].solverPosition + this.GetDirToBendPoint(vector3 / magnitude * directionMagnitude, !calculateBendDirection || !bendConstraint.initiated ? nodes[1].solverPosition - nodes[0].solverPosition : bendConstraint.GetDir(solver), directionMagnitude);
     }
 
     public void Stage1(IKSolverFullBody solver)
     {
-      for (int index = 0; index < this.children.Length; ++index)
-        solver.chain[this.children[index]].Stage1(solver);
-      if (this.children.Length == 0)
+      for (int index = 0; index < children.Length; ++index)
+        solver.chain[children[index]].Stage1(solver);
+      if (children.Length == 0)
       {
-        this.ForwardReach(this.nodes[this.nodes.Length - 1].solverPosition);
+        ForwardReach(nodes[nodes.Length - 1].solverPosition);
       }
       else
       {
-        Vector3 solverPosition = this.nodes[this.nodes.Length - 1].solverPosition;
-        this.SolveChildConstraints(solver);
-        for (int index = 0; index < this.children.Length; ++index)
+        Vector3 solverPosition = nodes[nodes.Length - 1].solverPosition;
+        SolveChildConstraints(solver);
+        for (int index = 0; index < children.Length; ++index)
         {
-          Vector3 vector3 = solver.chain[this.children[index]].nodes[0].solverPosition;
-          if ((double) solver.chain[this.children[index]].rootLength > 0.0)
-            vector3 = this.SolveFABRIKJoint(this.nodes[this.nodes.Length - 1].solverPosition, solver.chain[this.children[index]].nodes[0].solverPosition, solver.chain[this.children[index]].rootLength);
-          if ((double) this.pullParentSum > 0.0)
-            solverPosition += (vector3 - this.nodes[this.nodes.Length - 1].solverPosition) * (solver.chain[this.children[index]].pull / this.pullParentSum);
+          Vector3 vector3 = solver.chain[children[index]].nodes[0].solverPosition;
+          if (solver.chain[children[index]].rootLength > 0.0)
+            vector3 = SolveFABRIKJoint(nodes[nodes.Length - 1].solverPosition, solver.chain[children[index]].nodes[0].solverPosition, solver.chain[children[index]].rootLength);
+          if (pullParentSum > 0.0)
+            solverPosition += (vector3 - nodes[nodes.Length - 1].solverPosition) * (solver.chain[children[index]].pull / pullParentSum);
         }
-        this.ForwardReach(Vector3.Lerp(solverPosition, this.nodes[this.nodes.Length - 1].solverPosition, this.pin));
+        ForwardReach(Vector3.Lerp(solverPosition, nodes[nodes.Length - 1].solverPosition, pin));
       }
     }
 
     public void Stage2(IKSolverFullBody solver, Vector3 position)
     {
-      this.BackwardReach(position);
+      BackwardReach(position);
       int num = Mathf.Clamp(solver.iterations, 2, 4);
-      if (this.childConstraints.Length != 0)
+      if (childConstraints.Length != 0)
       {
         for (int index = 0; index < num; ++index)
-          this.SolveConstraintSystems(solver);
+          SolveConstraintSystems(solver);
       }
-      for (int index = 0; index < this.children.Length; ++index)
-        solver.chain[this.children[index]].Stage2(solver, this.nodes[this.nodes.Length - 1].solverPosition);
+      for (int index = 0; index < children.Length; ++index)
+        solver.chain[children[index]].Stage2(solver, nodes[nodes.Length - 1].solverPosition);
     }
 
     public void SolveConstraintSystems(IKSolverFullBody solver)
     {
-      this.SolveChildConstraints(solver);
-      for (int index = 0; index < this.children.Length; ++index)
-        this.SolveLinearConstraint(this.nodes[this.nodes.Length - 1], solver.chain[this.children[index]].nodes[0], this.crossFades[index], solver.chain[this.children[index]].rootLength);
+      SolveChildConstraints(solver);
+      for (int index = 0; index < children.Length; ++index)
+        SolveLinearConstraint(nodes[nodes.Length - 1], solver.chain[children[index]].nodes[0], crossFades[index], solver.chain[children[index]].rootLength);
     }
 
     private Vector3 SolveFABRIKJoint(Vector3 pos1, Vector3 pos2, float length)
@@ -285,15 +284,15 @@ namespace RootMotion.FinalIK
       Vector3 bendDirection,
       float directionMagnitude)
     {
-      float z = (float) (((double) directionMagnitude * (double) directionMagnitude + (double) this.sqrMagDif) / 2.0) / directionMagnitude;
-      float y = (float) Math.Sqrt((double) Mathf.Clamp(this.sqrMag1 - z * z, 0.0f, float.PositiveInfinity));
+      float z = (float) ((directionMagnitude * (double) directionMagnitude + sqrMagDif) / 2.0) / directionMagnitude;
+      float y = (float) Math.Sqrt((double) Mathf.Clamp(sqrMag1 - z * z, 0.0f, float.PositiveInfinity));
       return direction == Vector3.zero ? Vector3.zero : Quaternion.LookRotation(direction, bendDirection) * new Vector3(0.0f, y, z);
     }
 
     private void SolveChildConstraints(IKSolverFullBody solver)
     {
-      for (int index = 0; index < this.childConstraints.Length; ++index)
-        this.childConstraints[index].Solve(solver);
+      for (int index = 0; index < childConstraints.Length; ++index)
+        childConstraints[index].Solve(solver);
     }
 
     private void SolveLinearConstraint(
@@ -304,9 +303,9 @@ namespace RootMotion.FinalIK
     {
       Vector3 vector3_1 = node2.solverPosition - node1.solverPosition;
       float magnitude = vector3_1.magnitude;
-      if ((double) distance == (double) magnitude || (double) magnitude == 0.0)
+      if (distance == (double) magnitude || magnitude == 0.0)
         return;
-      Vector3 vector3_2 = vector3_1 * (float) (1.0 - (double) distance / (double) magnitude);
+      Vector3 vector3_2 = vector3_1 * (float) (1.0 - distance / (double) magnitude);
       IKSolver.Node node3 = node1;
       node3.solverPosition = node3.solverPosition + vector3_2 * crossFade;
       IKSolver.Node node4 = node2;
@@ -315,25 +314,25 @@ namespace RootMotion.FinalIK
 
     public void ForwardReach(Vector3 position)
     {
-      this.nodes[this.nodes.Length - 1].solverPosition = position;
-      for (int index = this.nodes.Length - 2; index > -1; --index)
-        this.nodes[index].solverPosition = this.SolveFABRIKJoint(this.nodes[index].solverPosition, this.nodes[index + 1].solverPosition, this.nodes[index].length);
+      nodes[nodes.Length - 1].solverPosition = position;
+      for (int index = nodes.Length - 2; index > -1; --index)
+        nodes[index].solverPosition = SolveFABRIKJoint(nodes[index].solverPosition, nodes[index + 1].solverPosition, nodes[index].length);
     }
 
     private void BackwardReach(Vector3 position)
     {
-      if ((double) this.rootLength > 0.0)
-        position = this.SolveFABRIKJoint(this.nodes[0].solverPosition, position, this.rootLength);
-      this.nodes[0].solverPosition = position;
-      for (int index = 1; index < this.nodes.Length; ++index)
-        this.nodes[index].solverPosition = this.SolveFABRIKJoint(this.nodes[index].solverPosition, this.nodes[index - 1].solverPosition, this.nodes[index - 1].length);
+      if (rootLength > 0.0)
+        position = SolveFABRIKJoint(nodes[0].solverPosition, position, rootLength);
+      nodes[0].solverPosition = position;
+      for (int index = 1; index < nodes.Length; ++index)
+        nodes[index].solverPosition = SolveFABRIKJoint(nodes[index].solverPosition, nodes[index - 1].solverPosition, nodes[index - 1].length);
     }
 
     [Serializable]
     public class ChildConstraint
     {
-      public float pushElasticity = 0.0f;
-      public float pullElasticity = 0.0f;
+      public float pushElasticity;
+      public float pullElasticity;
       [SerializeField]
       private Transform bone1;
       [SerializeField]
@@ -361,36 +360,36 @@ namespace RootMotion.FinalIK
 
       public void Initiate(IKSolverFullBody solver)
       {
-        this.chain1Index = solver.GetChainIndex(this.bone1);
-        this.chain2Index = solver.GetChainIndex(this.bone2);
-        this.OnPreSolve(solver);
+        chain1Index = solver.GetChainIndex(bone1);
+        chain2Index = solver.GetChainIndex(bone2);
+        OnPreSolve(solver);
       }
 
       public void OnPreSolve(IKSolverFullBody solver)
       {
-        this.nominalDistance = Vector3.Distance(solver.chain[this.chain1Index].nodes[0].transform.position, solver.chain[this.chain2Index].nodes[0].transform.position);
-        this.isRigid = (double) this.pushElasticity <= 0.0 && (double) this.pullElasticity <= 0.0;
-        this.crossFade = !this.isRigid ? 0.5f : (float) (1.0 - (0.5 + (double) (solver.chain[this.chain1Index].pull - solver.chain[this.chain2Index].pull) * 0.5));
-        this.inverseCrossFade = 1f - this.crossFade;
+        nominalDistance = Vector3.Distance(solver.chain[chain1Index].nodes[0].transform.position, solver.chain[chain2Index].nodes[0].transform.position);
+        isRigid = pushElasticity <= 0.0 && pullElasticity <= 0.0;
+        crossFade = !isRigid ? 0.5f : (float) (1.0 - (0.5 + (solver.chain[chain1Index].pull - solver.chain[chain2Index].pull) * 0.5));
+        inverseCrossFade = 1f - crossFade;
       }
 
       public void Solve(IKSolverFullBody solver)
       {
-        if ((double) this.pushElasticity >= 1.0 && (double) this.pullElasticity >= 1.0)
+        if (pushElasticity >= 1.0 && pullElasticity >= 1.0)
           return;
-        Vector3 vector3_1 = solver.chain[this.chain2Index].nodes[0].solverPosition - solver.chain[this.chain1Index].nodes[0].solverPosition;
+        Vector3 vector3_1 = solver.chain[chain2Index].nodes[0].solverPosition - solver.chain[chain1Index].nodes[0].solverPosition;
         float magnitude = vector3_1.magnitude;
-        if ((double) magnitude == (double) this.nominalDistance || (double) magnitude == 0.0)
+        if (magnitude == (double) nominalDistance || magnitude == 0.0)
           return;
         float num1 = 1f;
-        if (!this.isRigid)
-          num1 = 1f - ((double) magnitude > (double) this.nominalDistance ? this.pullElasticity : this.pushElasticity);
-        float num2 = num1 * (float) (1.0 - (double) this.nominalDistance / (double) magnitude);
+        if (!isRigid)
+          num1 = 1f - (magnitude > (double) nominalDistance ? pullElasticity : pushElasticity);
+        float num2 = num1 * (float) (1.0 - nominalDistance / (double) magnitude);
         Vector3 vector3_2 = vector3_1 * num2;
-        IKSolver.Node node1 = solver.chain[this.chain1Index].nodes[0];
-        node1.solverPosition = node1.solverPosition + vector3_2 * this.crossFade;
-        IKSolver.Node node2 = solver.chain[this.chain2Index].nodes[0];
-        node2.solverPosition = node2.solverPosition - vector3_2 * this.inverseCrossFade;
+        IKSolver.Node node1 = solver.chain[chain1Index].nodes[0];
+        node1.solverPosition = node1.solverPosition + vector3_2 * crossFade;
+        IKSolver.Node node2 = solver.chain[chain2Index].nodes[0];
+        node2.solverPosition = node2.solverPosition - vector3_2 * inverseCrossFade;
       }
     }
 

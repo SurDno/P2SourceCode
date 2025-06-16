@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
-using UnityEngine;
 
 namespace BehaviorDesigner.Runtime
 {
@@ -10,23 +9,23 @@ namespace BehaviorDesigner.Runtime
   public class VariableSynchronizer : MonoBehaviour
   {
     [SerializeField]
-    private List<VariableSynchronizer.SynchronizedVariable> synchronizedVariables = new List<VariableSynchronizer.SynchronizedVariable>();
+    private List<SynchronizedVariable> synchronizedVariables = new List<SynchronizedVariable>();
 
-    public List<VariableSynchronizer.SynchronizedVariable> SynchronizedVariables
+    public List<SynchronizedVariable> SynchronizedVariables
     {
-      get => this.synchronizedVariables;
+      get => synchronizedVariables;
       set
       {
-        this.synchronizedVariables = value;
+        synchronizedVariables = value;
         this.enabled = true;
       }
     }
 
     public void Awake()
     {
-      for (int index = this.synchronizedVariables.Count - 1; index > -1; --index)
+      for (int index = synchronizedVariables.Count - 1; index > -1; --index)
       {
-        VariableSynchronizer.SynchronizedVariable synchronizedVariable = this.synchronizedVariables[index];
+        SynchronizedVariable synchronizedVariable = synchronizedVariables[index];
         synchronizedVariable.sharedVariable = synchronizedVariable.behavior.GetVariable(synchronizedVariable.variableName);
         string str = "";
         if (synchronizedVariable.sharedVariable == null)
@@ -37,7 +36,7 @@ namespace BehaviorDesigner.Runtime
         {
           switch (synchronizedVariable.synchronizationType)
           {
-            case VariableSynchronizer.SynchronizationType.BehaviorDesigner:
+            case SynchronizationType.BehaviorDesigner:
               BehaviorTree targetComponent = synchronizedVariable.targetComponent as BehaviorTree;
               if ((UnityEngine.Object) targetComponent == (UnityEngine.Object) null)
               {
@@ -48,9 +47,9 @@ namespace BehaviorDesigner.Runtime
               if (synchronizedVariable.targetSharedVariable == null)
                 str = "the target SharedVariable cannot be found";
               break;
-            case VariableSynchronizer.SynchronizationType.Property:
+            case SynchronizationType.Property:
               PropertyInfo property = ((object) synchronizedVariable.targetComponent).GetType().GetProperty(synchronizedVariable.targetName);
-              if (property == (PropertyInfo) null)
+              if (property == null)
               {
                 str = "the property " + synchronizedVariable.targetName + " doesn't exist";
                 break;
@@ -58,21 +57,21 @@ namespace BehaviorDesigner.Runtime
               if (synchronizedVariable.setVariable)
               {
                 MethodInfo getMethod = property.GetGetMethod();
-                if (getMethod == (MethodInfo) null)
+                if (getMethod == null)
                   str = "the property has no get method";
                 else
-                  synchronizedVariable.getDelegate = VariableSynchronizer.CreateGetDelegate((object) synchronizedVariable.targetComponent, getMethod);
+                  synchronizedVariable.getDelegate = CreateGetDelegate((object) synchronizedVariable.targetComponent, getMethod);
               }
               else
               {
                 MethodInfo setMethod = property.GetSetMethod();
-                if (setMethod == (MethodInfo) null)
+                if (setMethod == null)
                   str = "the property has no set method";
                 else
-                  synchronizedVariable.setDelegate = VariableSynchronizer.CreateSetDelegate((object) synchronizedVariable.targetComponent, setMethod);
+                  synchronizedVariable.setDelegate = CreateSetDelegate((object) synchronizedVariable.targetComponent, setMethod);
               }
               break;
-            case VariableSynchronizer.SynchronizationType.Animator:
+            case SynchronizationType.Animator:
               synchronizedVariable.animator = synchronizedVariable.targetComponent as Animator;
               if ((UnityEngine.Object) synchronizedVariable.animator == (UnityEngine.Object) null)
               {
@@ -80,26 +79,26 @@ namespace BehaviorDesigner.Runtime
                 break;
               }
               synchronizedVariable.targetID = Animator.StringToHash(synchronizedVariable.targetName);
-              System.Type propertyType = synchronizedVariable.sharedVariable.GetType().GetProperty("Value").PropertyType;
+              Type propertyType = synchronizedVariable.sharedVariable.GetType().GetProperty("Value").PropertyType;
               if (propertyType.Equals(typeof (bool)))
-                synchronizedVariable.animatorParameterType = VariableSynchronizer.AnimatorParameterType.Bool;
+                synchronizedVariable.animatorParameterType = AnimatorParameterType.Bool;
               else if (propertyType.Equals(typeof (float)))
-                synchronizedVariable.animatorParameterType = VariableSynchronizer.AnimatorParameterType.Float;
+                synchronizedVariable.animatorParameterType = AnimatorParameterType.Float;
               else if (propertyType.Equals(typeof (int)))
-                synchronizedVariable.animatorParameterType = VariableSynchronizer.AnimatorParameterType.Integer;
+                synchronizedVariable.animatorParameterType = AnimatorParameterType.Integer;
               else
-                str = "there is no animator parameter type that can synchronize with " + (object) propertyType;
+                str = "there is no animator parameter type that can synchronize with " + propertyType;
               break;
-            case VariableSynchronizer.SynchronizationType.PlayMaker:
-              System.Type typeWithinAssembly1 = TaskUtility.GetTypeWithinAssembly("BehaviorDesigner.Runtime.VariableSynchronizer_PlayMaker");
-              if (typeWithinAssembly1 != (System.Type) null)
+            case SynchronizationType.PlayMaker:
+              Type typeWithinAssembly1 = TaskUtility.GetTypeWithinAssembly("BehaviorDesigner.Runtime.VariableSynchronizer_PlayMaker");
+              if (typeWithinAssembly1 != null)
               {
                 MethodInfo method1 = typeWithinAssembly1.GetMethod("Start");
-                if (method1 != (MethodInfo) null)
+                if (method1 != null)
                 {
-                  switch ((int) method1.Invoke((object) null, new object[1]
+                  switch ((int) method1.Invoke(null, new object[1]
                   {
-                    (object) synchronizedVariable
+                    synchronizedVariable
                   }))
                   {
                     case 1:
@@ -110,26 +109,25 @@ namespace BehaviorDesigner.Runtime
                       break;
                     default:
                       MethodInfo method2 = typeWithinAssembly1.GetMethod("Tick");
-                      if (method2 != (MethodInfo) null)
-                        synchronizedVariable.thirdPartyTick = (Action<VariableSynchronizer.SynchronizedVariable>) Delegate.CreateDelegate(typeof (Action<VariableSynchronizer.SynchronizedVariable>), method2);
+                      if (method2 != null)
+                        synchronizedVariable.thirdPartyTick = (Action<SynchronizedVariable>) Delegate.CreateDelegate(typeof (Action<SynchronizedVariable>), method2);
                       break;
                   }
-                  break;
                 }
                 break;
               }
               str = "has the PlayMaker classes been imported?";
               break;
-            case VariableSynchronizer.SynchronizationType.uFrame:
-              System.Type typeWithinAssembly2 = TaskUtility.GetTypeWithinAssembly("BehaviorDesigner.Runtime.VariableSynchronizer_uFrame");
-              if (typeWithinAssembly2 != (System.Type) null)
+            case SynchronizationType.uFrame:
+              Type typeWithinAssembly2 = TaskUtility.GetTypeWithinAssembly("BehaviorDesigner.Runtime.VariableSynchronizer_uFrame");
+              if (typeWithinAssembly2 != null)
               {
                 MethodInfo method3 = typeWithinAssembly2.GetMethod("Start");
-                if (method3 != (MethodInfo) null)
+                if (method3 != null)
                 {
-                  switch ((int) method3.Invoke((object) null, new object[1]
+                  switch ((int) method3.Invoke(null, new object[1]
                   {
-                    (object) synchronizedVariable
+                    synchronizedVariable
                   }))
                   {
                     case 1:
@@ -140,11 +138,10 @@ namespace BehaviorDesigner.Runtime
                       break;
                     default:
                       MethodInfo method4 = typeWithinAssembly2.GetMethod("Tick");
-                      if (method4 != (MethodInfo) null)
-                        synchronizedVariable.thirdPartyTick = (Action<VariableSynchronizer.SynchronizedVariable>) Delegate.CreateDelegate(typeof (Action<VariableSynchronizer.SynchronizedVariable>), method4);
+                      if (method4 != null)
+                        synchronizedVariable.thirdPartyTick = (Action<SynchronizedVariable>) Delegate.CreateDelegate(typeof (Action<SynchronizedVariable>), method4);
                       break;
                   }
-                  break;
                 }
                 break;
               }
@@ -154,25 +151,25 @@ namespace BehaviorDesigner.Runtime
         }
         if (!string.IsNullOrEmpty(str))
         {
-          Debug.LogError((object) string.Format("Unable to synchronize {0}: {1}", (object) synchronizedVariable.sharedVariable.Name, (object) str));
-          this.synchronizedVariables.RemoveAt(index);
+          Debug.LogError((object) string.Format("Unable to synchronize {0}: {1}", synchronizedVariable.sharedVariable.Name, str));
+          synchronizedVariables.RemoveAt(index);
         }
       }
-      if (this.synchronizedVariables.Count != 0)
+      if (synchronizedVariables.Count != 0)
         return;
       this.enabled = false;
     }
 
-    private void Update() => this.Tick();
+    private void Update() => Tick();
 
     public void Tick()
     {
-      for (int index = 0; index < this.synchronizedVariables.Count; ++index)
+      for (int index = 0; index < synchronizedVariables.Count; ++index)
       {
-        VariableSynchronizer.SynchronizedVariable synchronizedVariable = this.synchronizedVariables[index];
+        SynchronizedVariable synchronizedVariable = synchronizedVariables[index];
         switch (synchronizedVariable.synchronizationType)
         {
-          case VariableSynchronizer.SynchronizationType.BehaviorDesigner:
+          case SynchronizationType.BehaviorDesigner:
             if (synchronizedVariable.setVariable)
             {
               synchronizedVariable.sharedVariable.SetValue(synchronizedVariable.targetSharedVariable.GetValue());
@@ -180,7 +177,7 @@ namespace BehaviorDesigner.Runtime
             }
             synchronizedVariable.targetSharedVariable.SetValue(synchronizedVariable.sharedVariable.GetValue());
             break;
-          case VariableSynchronizer.SynchronizationType.Property:
+          case SynchronizationType.Property:
             if (synchronizedVariable.setVariable)
             {
               synchronizedVariable.sharedVariable.SetValue(synchronizedVariable.getDelegate());
@@ -188,42 +185,40 @@ namespace BehaviorDesigner.Runtime
             }
             synchronizedVariable.setDelegate(synchronizedVariable.sharedVariable.GetValue());
             break;
-          case VariableSynchronizer.SynchronizationType.Animator:
+          case SynchronizationType.Animator:
             if (synchronizedVariable.setVariable)
             {
               switch (synchronizedVariable.animatorParameterType)
               {
-                case VariableSynchronizer.AnimatorParameterType.Bool:
+                case AnimatorParameterType.Bool:
                   synchronizedVariable.sharedVariable.SetValue((object) synchronizedVariable.animator.GetBool(synchronizedVariable.targetID));
                   continue;
-                case VariableSynchronizer.AnimatorParameterType.Float:
+                case AnimatorParameterType.Float:
                   synchronizedVariable.sharedVariable.SetValue((object) synchronizedVariable.animator.GetFloat(synchronizedVariable.targetID));
                   continue;
-                case VariableSynchronizer.AnimatorParameterType.Integer:
+                case AnimatorParameterType.Integer:
                   synchronizedVariable.sharedVariable.SetValue((object) synchronizedVariable.animator.GetInteger(synchronizedVariable.targetID));
                   continue;
                 default:
                   continue;
               }
             }
-            else
+
+            switch (synchronizedVariable.animatorParameterType)
             {
-              switch (synchronizedVariable.animatorParameterType)
-              {
-                case VariableSynchronizer.AnimatorParameterType.Bool:
-                  synchronizedVariable.animator.SetBool(synchronizedVariable.targetID, (bool) synchronizedVariable.sharedVariable.GetValue());
-                  break;
-                case VariableSynchronizer.AnimatorParameterType.Float:
-                  synchronizedVariable.animator.SetFloat(synchronizedVariable.targetID, (float) synchronizedVariable.sharedVariable.GetValue());
-                  break;
-                case VariableSynchronizer.AnimatorParameterType.Integer:
-                  synchronizedVariable.animator.SetInteger(synchronizedVariable.targetID, (int) synchronizedVariable.sharedVariable.GetValue());
-                  break;
-              }
-              break;
+              case AnimatorParameterType.Bool:
+                synchronizedVariable.animator.SetBool(synchronizedVariable.targetID, (bool) synchronizedVariable.sharedVariable.GetValue());
+                break;
+              case AnimatorParameterType.Float:
+                synchronizedVariable.animator.SetFloat(synchronizedVariable.targetID, (float) synchronizedVariable.sharedVariable.GetValue());
+                break;
+              case AnimatorParameterType.Integer:
+                synchronizedVariable.animator.SetInteger(synchronizedVariable.targetID, (int) synchronizedVariable.sharedVariable.GetValue());
+                break;
             }
-          case VariableSynchronizer.SynchronizationType.PlayMaker:
-          case VariableSynchronizer.SynchronizationType.uFrame:
+            break;
+          case SynchronizationType.PlayMaker:
+          case SynchronizationType.uFrame:
             synchronizedVariable.thirdPartyTick(synchronizedVariable);
             break;
         }
@@ -232,15 +227,15 @@ namespace BehaviorDesigner.Runtime
 
     private static Func<object> CreateGetDelegate(object instance, MethodInfo method)
     {
-      return ((Expression<Func<object>>) (() => System.Linq.Expressions.Expression.Call(instance, method) as object)).Compile();
+      return ((Expression<Func<object>>) (() => Expression.Call(instance, method))).Compile();
     }
 
     private static Action<object> CreateSetDelegate(object instance, MethodInfo method)
     {
-      ConstantExpression instance1 = System.Linq.Expressions.Expression.Constant(instance);
-      ParameterExpression parameterExpression = System.Linq.Expressions.Expression.Parameter(typeof (object), "p");
-      UnaryExpression unaryExpression = System.Linq.Expressions.Expression.Convert((System.Linq.Expressions.Expression) parameterExpression, method.GetParameters()[0].ParameterType);
-      return System.Linq.Expressions.Expression.Lambda<Action<object>>((System.Linq.Expressions.Expression) System.Linq.Expressions.Expression.Call((System.Linq.Expressions.Expression) instance1, method, (System.Linq.Expressions.Expression) unaryExpression), parameterExpression).Compile();
+      ConstantExpression instance1 = Expression.Constant(instance);
+      ParameterExpression parameterExpression = Expression.Parameter(typeof (object), "p");
+      UnaryExpression unaryExpression = Expression.Convert(parameterExpression, method.GetParameters()[0].ParameterType);
+      return Expression.Lambda<Action<object>>(Expression.Call(instance1, method, unaryExpression), parameterExpression).Compile();
     }
 
     public enum SynchronizationType
@@ -262,7 +257,7 @@ namespace BehaviorDesigner.Runtime
     [Serializable]
     public class SynchronizedVariable
     {
-      public VariableSynchronizer.SynchronizationType synchronizationType;
+      public SynchronizationType synchronizationType;
       public bool setVariable;
       public BehaviorTree behavior;
       public string variableName;
@@ -272,15 +267,15 @@ namespace BehaviorDesigner.Runtime
       public Action<object> setDelegate;
       public Func<object> getDelegate;
       public Animator animator;
-      public VariableSynchronizer.AnimatorParameterType animatorParameterType;
+      public AnimatorParameterType animatorParameterType;
       public int targetID;
-      public Action<VariableSynchronizer.SynchronizedVariable> thirdPartyTick;
+      public Action<SynchronizedVariable> thirdPartyTick;
       public Enum variableType;
       public object thirdPartyVariable;
       public SharedVariable sharedVariable;
 
       public SynchronizedVariable(
-        VariableSynchronizer.SynchronizationType synchronizationType,
+        SynchronizationType synchronizationType,
         bool setVariable,
         BehaviorTree behavior,
         string variableName,

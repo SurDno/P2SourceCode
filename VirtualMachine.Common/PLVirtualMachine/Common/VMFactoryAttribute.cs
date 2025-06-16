@@ -1,10 +1,10 @@
-﻿using Cofe.Meta;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using Cofe.Meta;
 
 namespace PLVirtualMachine.Common
 {
-  [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
+  [AttributeUsage(AttributeTargets.Class, Inherited = false)]
   public class VMFactoryAttribute : TypeAttribute
   {
     private Type type;
@@ -12,11 +12,11 @@ namespace PLVirtualMachine.Common
 
     public static bool TryGetValue(Type type, out Type result)
     {
-      return VMFactoryAttribute.types.TryGetValue(type, out result);
+      return types.TryGetValue(type, out result);
     }
 
     public VMFactoryAttribute(Type type) => this.type = type;
 
-    public override void ComputeType(Type type) => VMFactoryAttribute.types.Add(this.type, type);
+    public override void ComputeType(Type type) => types.Add(this.type, type);
   }
 }

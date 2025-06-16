@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace Engine.Impl.UI.Controls
+﻿namespace Engine.Impl.UI.Controls
 {
   public class SwitchingSpriteView : SpriteViewBase
   {
@@ -13,16 +11,16 @@ namespace Engine.Impl.UI.Controls
 
     protected override void ApplyValue(bool instant)
     {
-      if ((Object) this.currentProgressView == (Object) null)
+      if ((Object) currentProgressView == (Object) null)
         instant = true;
       if (instant)
       {
-        this.backView?.SetValue((Sprite) null, true);
-        this.frontView?.SetValue(this.GetValue(), true);
-        if ((Object) this.currentProgressView != (Object) null)
+        backView?.SetValue((Sprite) null, true);
+        frontView?.SetValue(GetValue(), true);
+        if ((Object) currentProgressView != (Object) null)
         {
-          this.currentProgressView.Progress = 1f;
-          this.currentProgressView.SkipAnimation();
+          currentProgressView.Progress = 1f;
+          currentProgressView.SkipAnimation();
         }
         this.enabled = false;
       }
@@ -30,27 +28,27 @@ namespace Engine.Impl.UI.Controls
       {
         if (this.enabled)
           return;
-        this.TransitionStart();
+        TransitionStart();
         this.enabled = true;
       }
     }
 
     private void TransitionStart()
     {
-      this.backView.SetValue(this.frontView.GetValue(), true);
-      this.frontView.SetValue(this.GetValue(), true);
-      this.currentProgressView.Progress = 0.0f;
-      this.currentProgressView.SkipAnimation();
+      backView.SetValue(frontView.GetValue(), true);
+      frontView.SetValue(GetValue(), true);
+      currentProgressView.Progress = 0.0f;
+      currentProgressView.SkipAnimation();
     }
 
     private void Update()
     {
-      if ((double) this.currentProgressView.Progress < 1.0)
+      if (currentProgressView.Progress < 1.0)
         return;
-      if ((Object) this.GetValue() == (Object) this.frontView.GetValue())
+      if ((Object) GetValue() == (Object) frontView.GetValue())
         this.enabled = false;
       else
-        this.TransitionStart();
+        TransitionStart();
     }
   }
 }

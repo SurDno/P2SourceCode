@@ -1,5 +1,5 @@
-﻿using Inspectors;
-using System;
+﻿using System;
+using Inspectors;
 
 namespace Engine.Source.Settings
 {
@@ -14,28 +14,28 @@ namespace Engine.Source.Settings
     public EnumValue(string name, T defaultValue = default (T))
     {
       this.name = name;
-      this.value = PlayerSettings.Instance.GetEnum<T>(name, defaultValue);
+      value = PlayerSettings.Instance.GetEnum(name, defaultValue);
       this.defaultValue = defaultValue;
     }
 
     [Inspected(Mutable = true)]
     public T Value
     {
-      get => this.value;
+      get => value;
       set
       {
-        if (this.value.CompareTo((object) value) == 0)
+        if (this.value.CompareTo(value) == 0)
           return;
         this.value = value;
-        PlayerSettings.Instance.SetEnum<T>(this.name, value);
+        PlayerSettings.Instance.SetEnum(name, value);
         PlayerSettings.Instance.Save();
       }
     }
 
-    public T DefaultValue => this.defaultValue;
+    public T DefaultValue => defaultValue;
 
-    public T MinValue => this.defaultValue;
+    public T MinValue => defaultValue;
 
-    public T MaxValue => this.defaultValue;
+    public T MaxValue => defaultValue;
   }
 }

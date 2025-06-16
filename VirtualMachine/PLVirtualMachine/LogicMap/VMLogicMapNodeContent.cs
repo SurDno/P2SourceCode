@@ -1,11 +1,11 @@
-﻿using Cofe.Loggers;
+﻿using System.Xml;
+using Cofe.Loggers;
 using Engine.Common.Commons;
 using PLVirtualMachine.Base;
 using PLVirtualMachine.Common;
 using PLVirtualMachine.Common.Data;
 using PLVirtualMachine.Data;
 using PLVirtualMachine.GameLogic;
-using System.Xml;
 using VirtualMachine.Common;
 using VirtualMachine.Common.Data;
 using VirtualMachine.Data;
@@ -16,9 +16,9 @@ namespace PLVirtualMachine.LogicMap
   [DataFactory("MindMapNodeContent")]
   public class VMLogicMapNodeContent : VMBaseObject, IStub, IEditorDataReader, IOrderedChild
   {
-    [FieldData("ContentType", DataFieldType.None)]
+    [FieldData("ContentType")]
     private EMMNodeContentType contentType;
-    [FieldData("Number", DataFieldType.None)]
+    [FieldData("Number")]
     private int contentNumber;
     [FieldData("ContentDescriptionText", DataFieldType.Reference)]
     private VMGameString contentDescriptionText;
@@ -29,32 +29,31 @@ namespace PLVirtualMachine.LogicMap
 
     public virtual void EditorDataRead(XmlReader xml, IDataCreator creator, string typeContext)
     {
-      while (xml.Read())
-      {
+      while (xml.Read()) {
         if (xml.NodeType == XmlNodeType.Element)
         {
           switch (xml.Name)
           {
             case "ContentCondition":
-              this.contentCondition = EditorDataReadUtility.ReadReference<ICondition>(xml, creator);
+              contentCondition = EditorDataReadUtility.ReadReference<ICondition>(xml, creator);
               continue;
             case "ContentDescriptionText":
-              this.contentDescriptionText = EditorDataReadUtility.ReadReference<VMGameString>(xml, creator);
+              contentDescriptionText = EditorDataReadUtility.ReadReference<VMGameString>(xml, creator);
               continue;
             case "ContentPicture":
-              this.contentPicture = EditorDataReadUtility.ReadReference<ISample>(xml, creator);
+              contentPicture = EditorDataReadUtility.ReadReference<ISample>(xml, creator);
               continue;
             case "ContentType":
-              this.contentType = EditorDataReadUtility.ReadEnum<EMMNodeContentType>(xml);
+              contentType = EditorDataReadUtility.ReadEnum<EMMNodeContentType>(xml);
               continue;
             case "Name":
-              this.name = EditorDataReadUtility.ReadValue(xml, this.name);
+              name = EditorDataReadUtility.ReadValue(xml, name);
               continue;
             case "Number":
-              this.contentNumber = EditorDataReadUtility.ReadValue(xml, this.contentNumber);
+              contentNumber = EditorDataReadUtility.ReadValue(xml, contentNumber);
               continue;
             case "Parent":
-              this.parent = EditorDataReadUtility.ReadReference<IContainer>(xml, creator);
+              parent = EditorDataReadUtility.ReadReference<IContainer>(xml, creator);
               continue;
             default:
               if (XMLDataLoader.Logs.Add(typeContext + " : " + xml.Name))
@@ -63,7 +62,8 @@ namespace PLVirtualMachine.LogicMap
               continue;
           }
         }
-        else if (xml.NodeType == XmlNodeType.EndElement)
+
+        if (xml.NodeType == XmlNodeType.EndElement)
           break;
       }
     }
@@ -73,28 +73,28 @@ namespace PLVirtualMachine.LogicMap
     {
     }
 
-    public EMMNodeContentType ContentType => this.contentType;
+    public EMMNodeContentType ContentType => contentType;
 
-    public int ContentNumber => this.contentNumber;
+    public int ContentNumber => contentNumber;
 
-    public IGameString DescriptionText => (IGameString) this.contentDescriptionText;
+    public IGameString DescriptionText => contentDescriptionText;
 
-    public ICondition ContentCondition => this.contentCondition;
+    public ICondition ContentCondition => contentCondition;
 
-    public ISample Picture => this.contentPicture;
+    public ISample Picture => contentPicture;
 
     public override EObjectCategory GetCategory() => EObjectCategory.OBJECT_CATEGORY_GRAPH_ELEMENT;
 
-    public int Order => this.contentNumber;
+    public int Order => contentNumber;
 
     public override void Clear()
     {
-      this.contentDescriptionText = (VMGameString) null;
-      this.contentPicture = (ISample) null;
-      if (this.contentCondition == null)
+      contentDescriptionText = null;
+      contentPicture = null;
+      if (contentCondition == null)
         return;
-      ((VMPartCondition) this.contentCondition).Clear();
-      this.contentCondition = (ICondition) null;
+      ((VMPartCondition) contentCondition).Clear();
+      contentCondition = null;
     }
   }
 }

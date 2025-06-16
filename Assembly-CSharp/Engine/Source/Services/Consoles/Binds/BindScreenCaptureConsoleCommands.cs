@@ -1,8 +1,7 @@
-﻿using Cofe.Meta;
-using Cofe.Serializations.Converters;
-using System;
+﻿using System;
 using System.Globalization;
-using UnityEngine;
+using Cofe.Meta;
+using Cofe.Serializations.Converters;
 
 namespace Engine.Source.Services.Consoles.Binds
 {
@@ -28,9 +27,9 @@ namespace Engine.Source.Services.Consoles.Binds
       if (superSize <= 0)
         return "Error superSize";
       SRDebug.Instance.HideDebugPanel();
-      string fileName = DateTime.Now.ToString((IFormatProvider) CultureInfo.InvariantCulture) + ".png";
+      string fileName = DateTime.Now.ToString(CultureInfo.InvariantCulture) + ".png";
       fileName = fileName.Replace("/", "_").Replace(":", "_");
-      CoroutineService.Instance.WaitFrame((Action) (() => ScreenCapture.CaptureScreenshot(fileName, superSize)));
+      CoroutineService.Instance.WaitFrame(() => ScreenCapture.CaptureScreenshot(fileName, superSize));
       return command + " " + fileName;
     }
   }

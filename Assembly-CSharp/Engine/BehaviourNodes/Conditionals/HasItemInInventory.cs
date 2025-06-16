@@ -1,4 +1,6 @@
-﻿using BehaviorDesigner.Runtime;
+﻿using System;
+using System.Reflection;
+using BehaviorDesigner.Runtime;
 using BehaviorDesigner.Runtime.Tasks;
 using Cofe.Proxies;
 using Cofe.Serializations.Data;
@@ -8,8 +10,6 @@ using Engine.Common.Commons.Converters;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Engine.Source.Components;
-using System.Reflection;
-using UnityEngine;
 
 namespace Engine.BehaviourNodes.Conditionals
 {
@@ -20,18 +20,18 @@ namespace Engine.BehaviourNodes.Conditionals
   [FactoryProxy(typeof (HasItemInInventory))]
   public class HasItemInInventory : Conditional, IStub, ISerializeDataWrite, ISerializeDataRead
   {
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy()]
     [SerializeField]
     public string ItemName;
 
     public override TaskStatus OnUpdate()
     {
-      IEntity entity = EntityUtility.GetEntity(this.gameObject);
+      IEntity entity = EntityUtility.GetEntity(gameObject);
       if (entity == null)
       {
-        Debug.LogWarning((object) (this.gameObject.name + " : entity not found, method : " + this.GetType().Name + ":" + MethodBase.GetCurrentMethod().Name), (UnityEngine.Object) this.gameObject);
+        Debug.LogWarning((object) (gameObject.name + " : entity not found, method : " + GetType().Name + ":" + MethodBase.GetCurrentMethod().Name), (UnityEngine.Object) gameObject);
         return TaskStatus.Failure;
       }
       StorageComponent component1 = entity.GetComponent<StorageComponent>();
@@ -39,7 +39,7 @@ namespace Engine.BehaviourNodes.Conditionals
       {
         foreach (IComponent component2 in component1.Items)
         {
-          if (component2.Owner.Name == this.ItemName)
+          if (component2.Owner.Name == ItemName)
             return TaskStatus.Success;
         }
       }
@@ -48,22 +48,22 @@ namespace Engine.BehaviourNodes.Conditionals
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.WriteSerialize<NodeData>(writer, "NodeData", this.nodeData);
-      DefaultDataWriteUtility.Write(writer, "Id", this.id);
-      DefaultDataWriteUtility.Write(writer, "FriendlyName", this.friendlyName);
-      DefaultDataWriteUtility.Write(writer, "Instant", this.instant);
-      DefaultDataWriteUtility.Write(writer, "Disabled", this.disabled);
-      DefaultDataWriteUtility.Write(writer, "ItemName", this.ItemName);
+      DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
+      DefaultDataWriteUtility.Write(writer, "Id", id);
+      DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
+      DefaultDataWriteUtility.Write(writer, "Instant", instant);
+      DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
+      DefaultDataWriteUtility.Write(writer, "ItemName", ItemName);
     }
 
-    public void DataRead(IDataReader reader, System.Type type)
+    public void DataRead(IDataReader reader, Type type)
     {
-      this.nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
-      this.id = DefaultDataReadUtility.Read(reader, "Id", this.id);
-      this.friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", this.friendlyName);
-      this.instant = DefaultDataReadUtility.Read(reader, "Instant", this.instant);
-      this.disabled = DefaultDataReadUtility.Read(reader, "Disabled", this.disabled);
-      this.ItemName = DefaultDataReadUtility.Read(reader, "ItemName", this.ItemName);
+      nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
+      id = DefaultDataReadUtility.Read(reader, "Id", id);
+      friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
+      instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
+      disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
+      ItemName = DefaultDataReadUtility.Read(reader, "ItemName", ItemName);
     }
   }
 }

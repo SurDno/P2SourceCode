@@ -1,6 +1,4 @@
 ﻿using SRF;
-using UnityEngine;
-using UnityEngine.UI;
 
 namespace SRDebugger.UI.Controls
 {
@@ -12,8 +10,8 @@ namespace SRDebugger.UI.Controls
 
     public bool IsActive
     {
-      get => this.ActiveToggle.enabled;
-      set => this.ActiveToggle.enabled = value;
+      get => ActiveToggle.enabled;
+      set => ActiveToggle.enabled = value;
     }
   }
 }

@@ -2,7 +2,6 @@
 using Engine.Behaviours.Unity.Mecanim;
 using Engine.Source.Commons;
 using Inspectors;
-using UnityEngine;
 
 public class NpcStateRagdollRessurect : INpcState
 {
@@ -31,54 +30,54 @@ public class NpcStateRagdollRessurect : INpcState
 
   private bool TryInit()
   {
-    if (this.inited)
+    if (inited)
       return true;
-    this.behavior = (Behaviour) this.pivot.GetBehavior();
-    this.rigidbody = this.pivot.GetRigidbody();
-    this.collider = this.GameObject.GetComponent<CapsuleCollider>();
-    this.animator = this.pivot.GetAnimator();
-    if ((Object) this.animator == (Object) null)
+    behavior = (Behaviour) pivot.GetBehavior();
+    rigidbody = pivot.GetRigidbody();
+    collider = GameObject.GetComponent<CapsuleCollider>();
+    animator = pivot.GetAnimator();
+    if ((Object) animator == (Object) null)
     {
-      Debug.LogError((object) ("Null animator " + this.GameObject.name), (Object) this.GameObject);
-      Debug.LogError((object) ("Null animator " + this.GameObject.GetFullName()));
-      this.failed = true;
+      Debug.LogError((object) ("Null animator " + GameObject.name), (Object) GameObject);
+      Debug.LogError((object) ("Null animator " + GameObject.GetFullName()));
+      failed = true;
       return false;
     }
-    this.fightAnimatorState = FightAnimatorBehavior.GetAnimatorState(this.animator);
-    this.animatorState = AnimatorState45.GetAnimatorState(this.animator);
-    this.ragdollLayerIndex = this.animator.GetLayerIndex("Ragdoll Layer");
-    this.failed = false;
-    this.inited = true;
+    fightAnimatorState = FightAnimatorBehavior.GetAnimatorState(animator);
+    animatorState = AnimatorState45.GetAnimatorState(animator);
+    ragdollLayerIndex = animator.GetLayerIndex("Ragdoll Layer");
+    failed = false;
+    inited = true;
     return true;
   }
 
   public NpcStateRagdollRessurect(NpcState npcState, Pivot pivot)
   {
-    this.GameObject = npcState.gameObject;
+    GameObject = npcState.gameObject;
     this.pivot = pivot;
     this.npcState = npcState;
   }
 
   public void Activate()
   {
-    if (!this.TryInit())
+    if (!TryInit())
       return;
-    if (this.pivot.HierarhyStructure != Pivot.HierarhyStructureEnum.PuppetMaster)
+    if (pivot.HierarhyStructure != Pivot.HierarhyStructureEnum.PuppetMaster)
     {
       Debug.LogWarning((object) "Only PupperMaster ragdoll can be ressurected");
     }
     else
     {
-      this.Status = NpcStateStatusEnum.Running;
-      this.ressurectStarted = false;
-      this.initialRagdollWeight = this.pivot.RagdollWeight;
-      this.initialRagdollLayerWeight = this.animator.GetLayerWeight(this.ragdollLayerIndex);
-      this.animator.SetLayerWeight(this.ragdollLayerIndex, 1f);
-      this.animatorWasEnabled = this.npcState.AnimatorEnabled;
+      Status = NpcStateStatusEnum.Running;
+      ressurectStarted = false;
+      initialRagdollWeight = pivot.RagdollWeight;
+      initialRagdollLayerWeight = animator.GetLayerWeight(ragdollLayerIndex);
+      animator.SetLayerWeight(ragdollLayerIndex, 1f);
+      animatorWasEnabled = npcState.AnimatorEnabled;
       bool flag;
-      if ((bool) (Object) this.pivot.RootBone)
+      if ((bool) (Object) pivot.RootBone)
       {
-        flag = (double) Vector3.Dot(Vector3.up, this.pivot.RootBone.up) > 0.0;
+        flag = (double) Vector3.Dot(Vector3.up, pivot.RootBone.up) > 0.0;
       }
       else
       {
@@ -87,65 +86,65 @@ public class NpcStateRagdollRessurect : INpcState
       }
       if (flag)
       {
-        this.animatorState.ResetAllTriggers();
-        this.animatorState.SetTrigger("Triggers/RagdollGetUpFromBack");
+        animatorState.ResetAllTriggers();
+        animatorState.SetTrigger("Triggers/RagdollGetUpFromBack");
       }
       else
       {
-        this.animatorState.ResetAllTriggers();
-        this.animatorState.SetTrigger("Triggers/RagdollGetUpFromBelly");
+        animatorState.ResetAllTriggers();
+        animatorState.SetTrigger("Triggers/RagdollGetUpFromBelly");
       }
     }
   }
 
   public void Shutdown()
   {
-    if (this.pivot.HierarhyStructure != Pivot.HierarhyStructureEnum.PuppetMaster)
+    if (pivot.HierarhyStructure != Pivot.HierarhyStructureEnum.PuppetMaster)
       return;
-    this.pivot.RagdollWeight = this.initialRagdollWeight;
-    this.animator.SetLayerWeight(this.ragdollLayerIndex, this.initialRagdollLayerWeight);
-    this.npcState.AnimatorEnabled = this.animatorWasEnabled;
+    pivot.RagdollWeight = initialRagdollWeight;
+    animator.SetLayerWeight(ragdollLayerIndex, initialRagdollLayerWeight);
+    npcState.AnimatorEnabled = animatorWasEnabled;
   }
 
   public void OnAnimatorMove()
   {
-    if (!this.failed)
+    if (!failed)
       ;
   }
 
   public void OnAnimatorEventEvent(string obj)
   {
-    if (!this.failed)
+    if (!failed)
       ;
   }
 
   public void Update()
   {
-    if (this.failed)
+    if (failed)
       return;
-    this.pivot.RagdollWeight = 0.0f;
-    if (InstanceByRequest<EngineApplication>.Instance.IsPaused || this.Status != 0)
+    pivot.RagdollWeight = 0.0f;
+    if (InstanceByRequest<EngineApplication>.Instance.IsPaused || Status != 0)
       return;
-    if (this.pivot.HierarhyStructure == Pivot.HierarhyStructureEnum.PuppetMaster)
+    if (pivot.HierarhyStructure == Pivot.HierarhyStructureEnum.PuppetMaster)
     {
-      if (!this.ressurectStarted)
+      if (!ressurectStarted)
       {
-        if (this.fightAnimatorState.IsRessurect)
-          this.ressurectStarted = true;
+        if (fightAnimatorState.IsRessurect)
+          ressurectStarted = true;
       }
-      else if (!this.fightAnimatorState.IsRessurect)
+      else if (!fightAnimatorState.IsRessurect)
       {
-        this.Status = NpcStateStatusEnum.Success;
-        this.pivot.RagdollWeight = 0.0f;
+        Status = NpcStateStatusEnum.Success;
+        pivot.RagdollWeight = 0.0f;
         return;
       }
     }
-    else if ((double) this.pivot.RagdollWeight == 0.0)
-      this.Status = NpcStateStatusEnum.Success;
-    if (this.pivot.HierarhyStructure == Pivot.HierarhyStructureEnum.PuppetMaster)
-      this.pivot.RagdollWeight = Mathf.MoveTowards(this.pivot.RagdollWeight, 0.0f, Time.deltaTime / 0.5f);
+    else if (pivot.RagdollWeight == 0.0)
+      Status = NpcStateStatusEnum.Success;
+    if (pivot.HierarhyStructure == Pivot.HierarhyStructureEnum.PuppetMaster)
+      pivot.RagdollWeight = Mathf.MoveTowards(pivot.RagdollWeight, 0.0f, Time.deltaTime / 0.5f);
     else
-      this.pivot.RagdollWeight = 0.0f;
+      pivot.RagdollWeight = 0.0f;
   }
 
   public void OnLodStateChanged(bool enabled)

@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-using UnityEngine.Events;
-using UnityEngine.PostProcessing;
+﻿using UnityEngine.PostProcessing;
 
 namespace Cinemachine.PostFX
 {
@@ -22,50 +20,50 @@ namespace Cinemachine.PostFX
 
     private void OnEnable()
     {
-      this.postProcessingOverride = this.GetComponent<PostProcessingStackOverride>();
+      postProcessingOverride = this.GetComponent<PostProcessingStackOverride>();
     }
 
     private void ConnectToBrain()
     {
-      this.brain = this.GetComponent<CinemachineBrain>();
-      if (!((Object) this.brain != (Object) null))
+      brain = this.GetComponent<CinemachineBrain>();
+      if (!((Object) brain != (Object) null))
         return;
-      this.brain.m_CameraCutEvent.RemoveListener(new UnityAction<CinemachineBrain>(this.OnCameraCut));
-      this.brain.m_CameraCutEvent.AddListener(new UnityAction<CinemachineBrain>(this.OnCameraCut));
+      brain.m_CameraCutEvent.RemoveListener(new UnityAction<CinemachineBrain>(OnCameraCut));
+      brain.m_CameraCutEvent.AddListener(new UnityAction<CinemachineBrain>(OnCameraCut));
     }
 
     private void OnDestroy()
     {
-      if (!((Object) this.brain != (Object) null))
+      if (!((Object) brain != (Object) null))
         return;
-      this.brain.m_CameraCutEvent.RemoveListener(new UnityAction<CinemachineBrain>(this.OnCameraCut));
+      brain.m_CameraCutEvent.RemoveListener(new UnityAction<CinemachineBrain>(OnCameraCut));
     }
 
     internal void PostFXHandler(CinemachineBrain brain)
     {
-      if (!this.enabled || !((Object) this.brain != (Object) null) || !((Object) this.postProcessingOverride != (Object) null))
+      if (!this.enabled || !((Object) this.brain != (Object) null) || !((Object) postProcessingOverride != (Object) null))
         return;
-      CinemachinePostProcessingOverride processingOverride = this.GetEffectivePostFX(brain.ActiveVirtualCamera);
+      CinemachinePostProcessingOverride processingOverride = GetEffectivePostFX(brain.ActiveVirtualCamera);
       if ((Object) processingOverride != (Object) null)
       {
-        this.postProcessingOverride.NestedOverride = processingOverride.postProcessingOverride;
+        postProcessingOverride.NestedOverride = processingOverride.postProcessingOverride;
       }
       else
       {
         processingOverride = this;
-        this.postProcessingOverride.NestedOverride = (PostProcessingStackOverride) null;
+        postProcessingOverride.NestedOverride = null;
       }
       CameraState currentCameraState = brain.CurrentCameraState;
       if (currentCameraState.HasLookAt && processingOverride.focusTracksTarget)
       {
-        PostProcessingStackOverride.DepthOfFieldOverride depthOfFieldOverride = this.postProcessingOverride.DepthOfField;
+        PostProcessingStackOverride.DepthOfFieldOverride depthOfFieldOverride = postProcessingOverride.DepthOfField;
         if (!depthOfFieldOverride.Override && (Object) processingOverride != (Object) this)
           depthOfFieldOverride = processingOverride.postProcessingOverride?.DepthOfField;
         if (depthOfFieldOverride != null && !depthOfFieldOverride.Override)
-          depthOfFieldOverride = (PostProcessingStackOverride.DepthOfFieldOverride) null;
+          depthOfFieldOverride = null;
         if (depthOfFieldOverride != null)
         {
-          float num = (currentCameraState.FinalPosition - currentCameraState.ReferenceLookAt).magnitude + this.focusOffset;
+          float num = (currentCameraState.FinalPosition - currentCameraState.ReferenceLookAt).magnitude + focusOffset;
           depthOfFieldOverride.FocusDistance = num;
         }
       }
@@ -76,13 +74,13 @@ namespace Cinemachine.PostFX
       while (vcam != null && vcam.LiveChildOrSelf != vcam)
         vcam = vcam.LiveChildOrSelf;
       CinemachinePostProcessingOverride effectivePostFx;
-      for (effectivePostFx = (CinemachinePostProcessingOverride) null; vcam != null && (Object) effectivePostFx == (Object) null; vcam = vcam.ParentCamera)
+      for (effectivePostFx = null; vcam != null && (Object) effectivePostFx == (Object) null; vcam = vcam.ParentCamera)
       {
         CinemachineVirtualCameraBase virtualCameraBase = vcam as CinemachineVirtualCameraBase;
         if ((Object) virtualCameraBase != (Object) null)
           effectivePostFx = virtualCameraBase.GetComponent<CinemachinePostProcessingOverride>();
         if ((Object) effectivePostFx != (Object) null && !effectivePostFx.enabled)
-          effectivePostFx = (CinemachinePostProcessingOverride) null;
+          effectivePostFx = null;
       }
       return effectivePostFx;
     }
@@ -110,8 +108,8 @@ namespace Cinemachine.PostFX
     [RuntimeInitializeOnLoadMethod]
     public static void InitializeModule()
     {
-      CinemachineBrain.sPostProcessingHandler.RemoveListener(new UnityAction<CinemachineBrain>(CinemachinePostProcessingOverride.StaticPostFXHandler));
-      CinemachineBrain.sPostProcessingHandler.AddListener(new UnityAction<CinemachineBrain>(CinemachinePostProcessingOverride.StaticPostFXHandler));
+      CinemachineBrain.sPostProcessingHandler.RemoveListener(new UnityAction<CinemachineBrain>(StaticPostFXHandler));
+      CinemachineBrain.sPostProcessingHandler.AddListener(new UnityAction<CinemachineBrain>(StaticPostFXHandler));
     }
   }
 }

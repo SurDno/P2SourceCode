@@ -1,9 +1,7 @@
-﻿using ParadoxNotion.Serialization.FullSerializer.Internal;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Linq;
 using System.Reflection;
-using UnityEngine;
+using ParadoxNotion.Serialization.FullSerializer.Internal;
 
 namespace ParadoxNotion.Serialization
 {
@@ -23,47 +21,47 @@ namespace ParadoxNotion.Serialization
 
     void ISerializationCallbackReceiver.OnBeforeSerialize()
     {
-      this._hasChanged = false;
-      if (!(this._method != (MethodInfo) null))
+      _hasChanged = false;
+      if (!(_method != null))
         return;
-      this._returnInfo = this._method.ReturnType.FullName;
-      this._baseInfo = string.Format("{0}|{1}", (object) this._method.RTReflectedType().FullName, (object) this._method.Name);
-      this._paramsInfo = string.Join("|", ((IEnumerable<ParameterInfo>) this._method.GetParameters()).Select<ParameterInfo, string>((Func<ParameterInfo, string>) (p => p.ParameterType.FullName)).ToArray<string>());
+      _returnInfo = _method.ReturnType.FullName;
+      _baseInfo = string.Format("{0}|{1}", _method.RTReflectedType().FullName, _method.Name);
+      _paramsInfo = string.Join("|", _method.GetParameters().Select(p => p.ParameterType.FullName).ToArray());
     }
 
     void ISerializationCallbackReceiver.OnAfterDeserialize()
     {
-      this._hasChanged = false;
-      string[] strArray1 = this._baseInfo.Split('|');
-      System.Type type1 = fsTypeCache.GetType(strArray1[0], (System.Type) null);
-      if (type1 == (System.Type) null)
+      _hasChanged = false;
+      string[] strArray1 = _baseInfo.Split('|');
+      Type type1 = fsTypeCache.GetType(strArray1[0], null);
+      if (type1 == null)
       {
-        this._method = (MethodInfo) null;
+        _method = null;
       }
       else
       {
         string name = strArray1[1];
         string[] strArray2;
-        if (!string.IsNullOrEmpty(this._paramsInfo))
-          strArray2 = this._paramsInfo.Split('|');
+        if (!string.IsNullOrEmpty(_paramsInfo))
+          strArray2 = _paramsInfo.Split('|');
         else
-          strArray2 = (string[]) null;
+          strArray2 = null;
         string[] source = strArray2;
-        System.Type[] typeArray = source == null ? new System.Type[0] : ((IEnumerable<string>) source).Select<string, System.Type>((Func<string, System.Type>) (n => fsTypeCache.GetType(n, (System.Type) null))).ToArray<System.Type>();
-        if (((IEnumerable<System.Type>) typeArray).All<System.Type>((Func<System.Type, bool>) (t => t != (System.Type) null)))
+        Type[] typeArray = source == null ? new Type[0] : source.Select(n => fsTypeCache.GetType(n, null)).ToArray();
+        if (typeArray.All(t => t != null))
         {
-          this._method = type1.RTGetMethod(name, typeArray);
-          if (!string.IsNullOrEmpty(this._returnInfo))
+          _method = type1.RTGetMethod(name, typeArray);
+          if (!string.IsNullOrEmpty(_returnInfo))
           {
-            System.Type type2 = fsTypeCache.GetType(this._returnInfo, (System.Type) null);
-            if (this._method != (MethodInfo) null && type2 != this._method.ReturnType)
-              this._method = (MethodInfo) null;
+            Type type2 = fsTypeCache.GetType(_returnInfo, null);
+            if (_method != null && type2 != _method.ReturnType)
+              _method = null;
           }
         }
-        if (!(this._method == (MethodInfo) null))
+        if (!(_method == null))
           return;
-        this._hasChanged = true;
-        this._method = ((IEnumerable<MethodInfo>) type1.RTGetMethods()).FirstOrDefault<MethodInfo>((Func<MethodInfo, bool>) (m => m.Name == name));
+        _hasChanged = true;
+        _method = type1.RTGetMethods().FirstOrDefault(m => m.Name == name);
       }
     }
 
@@ -73,17 +71,17 @@ namespace ParadoxNotion.Serialization
 
     public SerializedMethodInfo(MethodInfo method)
     {
-      this._hasChanged = false;
-      this._method = method;
+      _hasChanged = false;
+      _method = method;
     }
 
-    public MethodInfo Get() => this._method;
+    public MethodInfo Get() => _method;
 
-    public bool HasChanged() => this._hasChanged;
+    public bool HasChanged() => _hasChanged;
 
     public string GetMethodString()
     {
-      return string.Format("{0} ({1})", (object) this._baseInfo.Replace("|", "."), (object) this._paramsInfo.Replace("|", ", "));
+      return string.Format("{0} ({1})", _baseInfo.Replace("|", "."), _paramsInfo.Replace("|", ", "));
     }
   }
 }

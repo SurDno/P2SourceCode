@@ -1,5 +1,4 @@
 ﻿using ParadoxNotion.Design;
-using UnityEngine;
 
 namespace FlowCanvas.Nodes
 {
@@ -13,8 +12,8 @@ namespace FlowCanvas.Nodes
     [HideInInspector]
     public ValueInput<T> port { get; private set; }
 
-    public override string name => string.Format("@ {0}", (object) this.identifier);
+    public override string name => string.Format("@ {0}", identifier);
 
-    protected override void RegisterPorts() => this.port = this.AddValueInput<T>("Value");
+    protected override void RegisterPorts() => port = AddValueInput<T>("Value");
   }
 }

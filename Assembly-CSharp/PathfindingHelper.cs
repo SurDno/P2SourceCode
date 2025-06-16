@@ -1,10 +1,8 @@
-﻿using Engine.Common.Services;
+﻿using System;
+using System.Collections;
+using Engine.Common.Services;
 using Engine.Source.Commons;
 using Engine.Source.Services.Gizmos;
-using System;
-using System.Collections;
-using UnityEngine;
-using UnityEngine.AI;
 
 public static class PathfindingHelper
 {
@@ -23,21 +21,21 @@ public static class PathfindingHelper
     float num2 = num1;
     float num3 = num1;
     float num4 = 0.0f;
-    for (int index = 0; index < PathfindingHelper.retreatRayCount; ++index)
+    for (int index = 0; index < retreatRayCount; ++index)
     {
-      float angle = (float) ((double) index * (double) PathfindingHelper.retreatSectorAngleInDegrees / (double) (PathfindingHelper.retreatRayCount - 1) - (double) PathfindingHelper.retreatSectorAngleInDegrees / 2.0);
+      float angle = (float) (index * (double) retreatSectorAngleInDegrees / (retreatRayCount - 1) - retreatSectorAngleInDegrees / 2.0);
       Vector3 vector3_2 = -(Quaternion.AngleAxis(angle, Vector3.up) * vector3_1);
       NavMeshHit hit;
-      float num5 = !NavMesh.Raycast(myPosition, myPosition + vector3_2 * PathfindingHelper.retreatSearchDistance, out hit, -1) ? PathfindingHelper.retreatSearchDistance : hit.distance;
-      float num6 = hit.distance * Mathf.Cos((float) (0.5 * (double) angle * (Math.PI / 180.0)));
-      if ((double) num6 > (double) num2)
+      float num5 = !NavMesh.Raycast(myPosition, myPosition + vector3_2 * retreatSearchDistance, out hit, -1) ? retreatSearchDistance : hit.distance;
+      float num6 = hit.distance * Mathf.Cos((float) (0.5 * angle * (Math.PI / 180.0)));
+      if (num6 > (double) num2)
       {
         num2 = num6;
         num3 = num5;
         num4 = angle;
       }
     }
-    return (double) num2 == (double) num1 ? new float?() : new float?(num4);
+    return num2 == (double) num1 ? new float?() : num4;
   }
 
   public static float? FindBestRetreatDirection2(Transform myTansform, Transform enemyTransform)
@@ -52,12 +50,12 @@ public static class PathfindingHelper
     float num3 = num1;
     float num4 = 0.0f;
     float num5 = 360f;
-    for (int index = 0; index < PathfindingHelper.retreatRayCount; ++index)
+    for (int index = 0; index < retreatRayCount; ++index)
     {
-      float angle = (float) index * num5 / (float) PathfindingHelper.retreatRayCount;
+      float angle = index * num5 / retreatRayCount;
       Vector3 to = -(Quaternion.AngleAxis(angle, Vector3.up) * from);
       NavMeshHit hit;
-      float num6 = !NavMesh.Raycast(myTansform.position, myTansform.position + to * PathfindingHelper.retreatSearchDistance, out hit, -1) ? PathfindingHelper.retreatSearchDistance : hit.distance;
+      float num6 = !NavMesh.Raycast(myTansform.position, myTansform.position + to * retreatSearchDistance, out hit, -1) ? retreatSearchDistance : hit.distance;
       float num7 = Mathf.Sin((float) (0.5 * (double) Vector3.Angle(from, to) * (Math.PI / 180.0)));
       float num8 = Mathf.Cos((float) (0.5 * (double) Vector3.Angle(myTansform.forward, to) * (Math.PI / 180.0)));
       float num9 = hit.distance * num7 * num8 * num8;
@@ -68,25 +66,25 @@ public static class PathfindingHelper
         Color green = Color.green;
         ServiceLocator.GetService<GizmoService>().DrawLine(position, end, green);
       }
-      if ((double) num9 > (double) num2)
+      if (num9 > (double) num2)
       {
         num2 = num9;
         num3 = num6;
         num4 = angle;
       }
     }
-    return (double) num2 == (double) num1 ? new float?() : new float?(num4);
+    return num2 == (double) num1 ? new float?() : num4;
   }
 
   private static IEnumerator ExecuteSecond(float delay, Action action)
   {
     float time = Time.unscaledTime;
-    while ((double) time + (double) delay > (double) Time.unscaledTime)
+    while (time + (double) delay > (double) Time.unscaledTime)
     {
       Action action1 = action;
       if (action1 != null)
         action1();
-      yield return (object) null;
+      yield return null;
     }
   }
 

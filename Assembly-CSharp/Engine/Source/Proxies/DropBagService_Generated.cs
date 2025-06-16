@@ -1,9 +1,8 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
-using Engine.Common;
 using Engine.Source.Services;
 using Scripts.Tools.Serializations.Converters;
-using System;
 
 namespace Engine.Source.Proxies
 {
@@ -12,12 +11,12 @@ namespace Engine.Source.Proxies
   {
     public void StateSave(IDataWriter writer)
     {
-      CustomStateSaveUtility.SaveListReferences<IEntity>(writer, "Bags", this.bags);
+      CustomStateSaveUtility.SaveListReferences(writer, "Bags", bags);
     }
 
     public void StateLoad(IDataReader reader, Type type)
     {
-      this.bags = CustomStateLoadUtility.LoadListReferences<IEntity>(reader, "Bags", this.bags);
+      bags = CustomStateLoadUtility.LoadListReferences(reader, "Bags", bags);
     }
   }
 }

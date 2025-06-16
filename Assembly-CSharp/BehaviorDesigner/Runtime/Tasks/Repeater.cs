@@ -1,11 +1,11 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons;
 using Engine.Common.Commons.Converters;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Scripts.Tools.Serializations.Converters;
-using UnityEngine;
 
 namespace BehaviorDesigner.Runtime.Tasks
 {
@@ -18,73 +18,73 @@ namespace BehaviorDesigner.Runtime.Tasks
   public class Repeater : Decorator, IStub, ISerializeDataWrite, ISerializeDataRead
   {
     [Tooltip("The number of times to repeat the execution of its child task")]
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [SerializeField]
-    public SharedInt count = (SharedInt) 1;
+    public SharedInt count = 1;
     [Tooltip("Allows the repeater to repeat forever")]
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [SerializeField]
     public SharedBool repeatForever;
     [Tooltip("Should the task return if the child task returns a failure")]
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy()]
     [SerializeField]
     public SharedBool endOnFailure;
-    private int executionCount = 0;
+    private int executionCount;
     private TaskStatus executionStatus = TaskStatus.Inactive;
 
     public new void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.WriteSerialize<NodeData>(writer, "NodeData", this.nodeData);
-      DefaultDataWriteUtility.Write(writer, "Id", this.id);
-      DefaultDataWriteUtility.Write(writer, "FriendlyName", this.friendlyName);
-      DefaultDataWriteUtility.Write(writer, "Instant", this.instant);
-      DefaultDataWriteUtility.Write(writer, "Disabled", this.disabled);
-      BehaviorTreeDataWriteUtility.WriteTaskList<Task>(writer, "Children", this.children);
-      BehaviorTreeDataWriteUtility.WriteShared<SharedInt>(writer, "Count", this.count);
-      BehaviorTreeDataWriteUtility.WriteShared<SharedBool>(writer, "RepeatForever", this.repeatForever);
-      BehaviorTreeDataWriteUtility.WriteShared<SharedBool>(writer, "EndOnFailure", this.endOnFailure);
+      DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
+      DefaultDataWriteUtility.Write(writer, "Id", id);
+      DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
+      DefaultDataWriteUtility.Write(writer, "Instant", instant);
+      DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
+      BehaviorTreeDataWriteUtility.WriteTaskList(writer, "Children", children);
+      BehaviorTreeDataWriteUtility.WriteShared(writer, "Count", count);
+      BehaviorTreeDataWriteUtility.WriteShared(writer, "RepeatForever", repeatForever);
+      BehaviorTreeDataWriteUtility.WriteShared(writer, "EndOnFailure", endOnFailure);
     }
 
-    public new void DataRead(IDataReader reader, System.Type type)
+    public new void DataRead(IDataReader reader, Type type)
     {
-      this.nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
-      this.id = DefaultDataReadUtility.Read(reader, "Id", this.id);
-      this.friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", this.friendlyName);
-      this.instant = DefaultDataReadUtility.Read(reader, "Instant", this.instant);
-      this.disabled = DefaultDataReadUtility.Read(reader, "Disabled", this.disabled);
-      this.children = BehaviorTreeDataReadUtility.ReadTaskList<Task>(reader, "Children", this.children);
-      this.count = BehaviorTreeDataReadUtility.ReadShared<SharedInt>(reader, "Count", this.count);
-      this.repeatForever = BehaviorTreeDataReadUtility.ReadShared<SharedBool>(reader, "RepeatForever", this.repeatForever);
-      this.endOnFailure = BehaviorTreeDataReadUtility.ReadShared<SharedBool>(reader, "EndOnFailure", this.endOnFailure);
+      nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
+      id = DefaultDataReadUtility.Read(reader, "Id", id);
+      friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
+      instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
+      disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
+      children = BehaviorTreeDataReadUtility.ReadTaskList(reader, "Children", children);
+      count = BehaviorTreeDataReadUtility.ReadShared(reader, "Count", count);
+      repeatForever = BehaviorTreeDataReadUtility.ReadShared(reader, "RepeatForever", repeatForever);
+      endOnFailure = BehaviorTreeDataReadUtility.ReadShared(reader, "EndOnFailure", endOnFailure);
     }
 
     public override bool CanExecute()
     {
-      return (this.repeatForever.Value || this.executionCount < this.count.Value) && (!this.endOnFailure.Value || this.endOnFailure.Value && this.executionStatus != TaskStatus.Failure);
+      return (repeatForever.Value || executionCount < count.Value) && (!endOnFailure.Value || endOnFailure.Value && executionStatus != TaskStatus.Failure);
     }
 
     public override void OnChildExecuted(TaskStatus childStatus)
     {
-      ++this.executionCount;
-      this.executionStatus = childStatus;
+      ++executionCount;
+      executionStatus = childStatus;
     }
 
     public override void OnEnd()
     {
-      this.executionCount = 0;
-      this.executionStatus = TaskStatus.Inactive;
+      executionCount = 0;
+      executionStatus = TaskStatus.Inactive;
     }
 
     public override void OnReset()
     {
-      this.count = (SharedInt) 0;
-      this.endOnFailure = (SharedBool) true;
+      count = 0;
+      endOnFailure = true;
     }
   }
 }

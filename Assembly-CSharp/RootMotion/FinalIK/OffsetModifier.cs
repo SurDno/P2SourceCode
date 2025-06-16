@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections;
-using UnityEngine;
 
 namespace RootMotion.FinalIK
 {
@@ -12,42 +11,42 @@ namespace RootMotion.FinalIK
     public FullBodyBipedIK ik;
     protected float lastTime;
 
-    protected float deltaTime => Time.time - this.lastTime;
+    protected float deltaTime => Time.time - lastTime;
 
     protected abstract void OnModifyOffset();
 
-    protected virtual void Start() => this.StartCoroutine(this.Initiate());
+    protected virtual void Start() => this.StartCoroutine(Initiate());
 
     private IEnumerator Initiate()
     {
-      while ((UnityEngine.Object) this.ik == (UnityEngine.Object) null)
-        yield return (object) null;
-      IKSolverFullBodyBiped solver = this.ik.solver;
-      solver.OnPreUpdate = solver.OnPreUpdate + new IKSolver.UpdateDelegate(this.ModifyOffset);
-      this.lastTime = Time.time;
+      while ((UnityEngine.Object) ik == (UnityEngine.Object) null)
+        yield return null;
+      IKSolverFullBodyBiped solver = ik.solver;
+      solver.OnPreUpdate = solver.OnPreUpdate + ModifyOffset;
+      lastTime = Time.time;
     }
 
     private void ModifyOffset()
     {
-      if (!this.enabled || (double) this.weight <= 0.0 || (double) this.deltaTime <= 0.0 || (UnityEngine.Object) this.ik == (UnityEngine.Object) null)
+      if (!this.enabled || weight <= 0.0 || deltaTime <= 0.0 || (UnityEngine.Object) ik == (UnityEngine.Object) null)
         return;
-      this.weight = Mathf.Clamp(this.weight, 0.0f, 1f);
-      this.OnModifyOffset();
-      this.lastTime = Time.time;
+      weight = Mathf.Clamp(weight, 0.0f, 1f);
+      OnModifyOffset();
+      lastTime = Time.time;
     }
 
-    protected void ApplyLimits(OffsetModifier.OffsetLimits[] limits)
+    protected void ApplyLimits(OffsetLimits[] limits)
     {
-      foreach (OffsetModifier.OffsetLimits limit in limits)
-        limit.Apply(this.ik.solver.GetEffector(limit.effector), this.transform.rotation);
+      foreach (OffsetLimits limit in limits)
+        limit.Apply(ik.solver.GetEffector(limit.effector), this.transform.rotation);
     }
 
     protected virtual void OnDestroy()
     {
-      if (!((UnityEngine.Object) this.ik != (UnityEngine.Object) null))
+      if (!((UnityEngine.Object) ik != (UnityEngine.Object) null))
         return;
-      IKSolverFullBodyBiped solver = this.ik.solver;
-      solver.OnPreUpdate = solver.OnPreUpdate - new IKSolver.UpdateDelegate(this.ModifyOffset);
+      IKSolverFullBodyBiped solver = ik.solver;
+      solver.OnPreUpdate = solver.OnPreUpdate - ModifyOffset;
     }
 
     [Serializable]
@@ -56,7 +55,7 @@ namespace RootMotion.FinalIK
       [Tooltip("The effector type (this is just an enum)")]
       public FullBodyBipedEffector effector;
       [Tooltip("Spring force, if zero then this is a hard limit, if not, offset can exceed the limit.")]
-      public float spring = 0.0f;
+      public float spring;
       [Tooltip("Which axes to limit the offset on?")]
       public bool x;
       [Tooltip("Which axes to limit the offset on?")]
@@ -79,38 +78,38 @@ namespace RootMotion.FinalIK
       public void Apply(IKEffector e, Quaternion rootRotation)
       {
         Vector3 vector3 = Quaternion.Inverse(rootRotation) * e.positionOffset;
-        if ((double) this.spring <= 0.0)
+        if (spring <= 0.0)
         {
-          if (this.x)
-            vector3.x = Mathf.Clamp(vector3.x, this.minX, this.maxX);
-          if (this.y)
-            vector3.y = Mathf.Clamp(vector3.y, this.minY, this.maxY);
-          if (this.z)
-            vector3.z = Mathf.Clamp(vector3.z, this.minZ, this.maxZ);
+          if (x)
+            vector3.x = Mathf.Clamp(vector3.x, minX, maxX);
+          if (y)
+            vector3.y = Mathf.Clamp(vector3.y, minY, maxY);
+          if (z)
+            vector3.z = Mathf.Clamp(vector3.z, minZ, maxZ);
         }
         else
         {
-          if (this.x)
-            vector3.x = this.SpringAxis(vector3.x, this.minX, this.maxX);
-          if (this.y)
-            vector3.y = this.SpringAxis(vector3.y, this.minY, this.maxY);
-          if (this.z)
-            vector3.z = this.SpringAxis(vector3.z, this.minZ, this.maxZ);
+          if (x)
+            vector3.x = SpringAxis(vector3.x, minX, maxX);
+          if (y)
+            vector3.y = SpringAxis(vector3.y, minY, maxY);
+          if (z)
+            vector3.z = SpringAxis(vector3.z, minZ, maxZ);
         }
         e.positionOffset = rootRotation * vector3;
       }
 
       private float SpringAxis(float value, float min, float max)
       {
-        if ((double) value > (double) min && (double) value < (double) max)
+        if (value > (double) min && value < (double) max)
           return value;
-        return (double) value < (double) min ? this.Spring(value, min, true) : this.Spring(value, max, false);
+        return value < (double) min ? Spring(value, min, true) : Spring(value, max, false);
       }
 
       private float Spring(float value, float limit, bool negative)
       {
         float max = value - limit;
-        float num = max * this.spring;
+        float num = max * spring;
         return negative ? value + Mathf.Clamp(-num, 0.0f, -max) : value - Mathf.Clamp(num, 0.0f, max);
       }
     }

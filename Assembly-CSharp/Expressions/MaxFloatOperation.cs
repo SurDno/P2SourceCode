@@ -7,13 +7,13 @@ namespace Expressions
   [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
   public class MaxFloatOperation : BinaryOperation<float>
   {
-    protected override float Compute(float a, float b) => (double) a > (double) b ? a : b;
+    protected override float Compute(float a, float b) => a > (double) b ? a : b;
 
     public override string ValueView
     {
       get
       {
-        return "max(" + (this.a != null ? this.a.ValueView : "null") + ", " + (this.b != null ? this.b.ValueView : "null") + ")";
+        return "max(" + (a != null ? a.ValueView : "null") + ", " + (b != null ? b.ValueView : "null") + ")";
       }
     }
   }

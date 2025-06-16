@@ -4,7 +4,6 @@ using Engine.Source.Commons;
 using Engine.Source.Components;
 using Inspectors;
 using Scripts.Behaviours.LoadControllers;
-using UnityEngine;
 
 public class LoadByDistanceOfRegion : BaseLoadByDistance, IEntityAttachable
 {
@@ -19,53 +18,53 @@ public class LoadByDistanceOfRegion : BaseLoadByDistance, IEntityAttachable
   [Inspected]
   private RegionComponent region;
 
-  public override float LoadDistance => this.loadDistance;
+  public override float LoadDistance => loadDistance;
 
-  public override float UnloadDistance => this.unloadDistance;
+  public override float UnloadDistance => unloadDistance;
 
   private bool IsLoadCondition(Vector3 position)
   {
-    return (double) (position - this.region.RegionMesh.Center).magnitude < (double) (this.loadDistance + this.region.RegionMesh.Radius);
+    return (double) (position - region.RegionMesh.Center).magnitude < loadDistance + region.RegionMesh.Radius;
   }
 
   private bool IsUnloadCondition(Vector3 position)
   {
-    return (double) (position - this.region.RegionMesh.Center).magnitude > (double) (this.unloadDistance + this.region.RegionMesh.Radius);
+    return (double) (position - region.RegionMesh.Center).magnitude > unloadDistance + region.RegionMesh.Radius;
   }
 
   public void Attach(IEntity owner)
   {
-    this.model = owner.GetComponent<StaticModelComponent>();
-    if (this.model != null)
-      this.model.NeedLoad = this.on;
-    this.region = owner.GetComponent<RegionComponent>();
+    model = owner.GetComponent<StaticModelComponent>();
+    if (model != null)
+      model.NeedLoad = on;
+    region = owner.GetComponent<RegionComponent>();
   }
 
   public void Detach()
   {
-    this.model = (StaticModelComponent) null;
-    this.region = (RegionComponent) null;
+    model = null;
+    region = null;
   }
 
   private void Update()
   {
-    if (this.region == null || (Object) this.region.RegionMesh == (Object) null || this.model == null)
+    if (region == null || (Object) region.RegionMesh == (Object) null || model == null)
       return;
     IEntity player = ServiceLocator.GetService<ISimulation>().Player;
     if (player == null || !player.IsEnabledInHierarchy || player.GetComponent<NavigationComponent>().WaitTeleport)
       return;
     Vector3 position = ((IEntityView) player).Position;
-    bool flag = this.on;
-    if (this.on)
+    bool flag = on;
+    if (on)
     {
-      if (this.IsUnloadCondition(position))
+      if (IsUnloadCondition(position))
         flag = false;
     }
-    else if (this.IsLoadCondition(position))
+    else if (IsLoadCondition(position))
       flag = true;
-    if (flag == this.on)
+    if (flag == on)
       return;
-    this.on = flag;
-    this.model.NeedLoad = this.on;
+    on = flag;
+    model.NeedLoad = on;
   }
 }

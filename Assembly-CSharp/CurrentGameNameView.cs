@@ -1,6 +1,5 @@
 ﻿using Engine.Impl.UI.Controls;
 using Engine.Source.Commons;
-using UnityEngine;
 
 public class CurrentGameNameView : MonoBehaviour
 {
@@ -9,6 +8,6 @@ public class CurrentGameNameView : MonoBehaviour
 
   private void OnEnable()
   {
-    this.view.StringValue = InstanceByRequest<GameDataService>.Instance.GetCurrentGameData().GameName;
+    view.StringValue = InstanceByRequest<GameDataService>.Instance.GetCurrentGameData().GameName;
   }
 }

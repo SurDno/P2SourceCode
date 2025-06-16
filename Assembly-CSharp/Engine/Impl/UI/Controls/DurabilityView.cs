@@ -1,22 +1,20 @@
-﻿using Engine.Common;
+﻿using System.Collections.Generic;
 using Engine.Common.Components.Parameters;
 using Engine.Source.Components;
 using Engine.Source.Components.Repairing;
-using System.Collections.Generic;
-using UnityEngine;
 
 namespace Engine.Impl.UI.Controls
 {
   public class DurabilityView : EntityViewBase, IChangeParameterListener
   {
     [SerializeField]
-    private HideableView hideableView = (HideableView) null;
+    private HideableView hideableView = null;
     [SerializeField]
-    private ProgressViewBase solidView = (ProgressViewBase) null;
+    private ProgressViewBase solidView = null;
     [SerializeField]
-    private ProgressViewBase repairableView = (ProgressViewBase) null;
+    private ProgressViewBase repairableView = null;
     [SerializeField]
-    private ProgressViewBase valueView = (ProgressViewBase) null;
+    private ProgressViewBase valueView = null;
     [SerializeField]
     private List<ProgressViewBase> thresholdViews = new List<ProgressViewBase>();
     [SerializeField]
@@ -26,102 +24,102 @@ namespace Engine.Impl.UI.Controls
     private RepairableSettings repairableSettings;
     private int thresholdPrototypeCount = -1;
 
-    public List<ProgressViewBase> ThresholdViews => this.thresholdViews;
+    public List<ProgressViewBase> ThresholdViews => thresholdViews;
 
     protected override void ApplyValue()
     {
-      if (this.parameter != null)
-        this.parameter.RemoveListener((IChangeParameterListener) this);
-      if (this.Value == null)
+      if (parameter != null)
+        parameter.RemoveListener(this);
+      if (Value == null)
       {
-        this.parameter = (IParameter<float>) null;
-        this.repairable = (RepairableComponent) null;
-        this.repairableSettings = (RepairableSettings) null;
+        parameter = null;
+        repairable = null;
+        repairableSettings = null;
       }
       else
       {
-        this.parameter = this.Value.GetComponent<ParametersComponent>()?.GetByName<float>(ParameterNameEnum.Durability);
-        this.repairable = this.Value.GetComponent<RepairableComponent>();
-        this.repairableSettings = this.repairable?.Settings;
+        parameter = Value.GetComponent<ParametersComponent>()?.GetByName<float>(ParameterNameEnum.Durability);
+        repairable = Value.GetComponent<RepairableComponent>();
+        repairableSettings = repairable?.Settings;
       }
-      if (this.parameter != null)
-        this.parameter.AddListener((IChangeParameterListener) this);
-      this.ApplyParameterValue();
-      if (!((Object) this.hideableView != (Object) null))
+      if (parameter != null)
+        parameter.AddListener(this);
+      ApplyParameterValue();
+      if (!((Object) hideableView != (Object) null))
         return;
-      this.hideableView.Visible = this.parameter != null;
+      hideableView.Visible = parameter != null;
     }
 
     private void ApplyParameterValue()
     {
-      this.ApplyRepairable();
-      if (!((Object) this.valueView != (Object) null))
+      ApplyRepairable();
+      if (!((Object) valueView != (Object) null))
         return;
-      this.valueView.Progress = this.CurrentDurability();
+      valueView.Progress = CurrentDurability();
     }
 
     private float CurrentDurability()
     {
-      return Mathf.Clamp01(this.parameter != null ? this.parameter.Value : this.defaultValue);
+      return Mathf.Clamp01(parameter != null ? parameter.Value : defaultValue);
     }
 
     private void ApplyRepairable()
     {
-      RepairableLevel repairableLevel1 = (RepairableLevel) null;
-      RepairableLevel repairableLevel2 = (RepairableLevel) null;
-      List<RepairableLevel> levels = this.repairableSettings?.Levels;
+      RepairableLevel repairableLevel1 = null;
+      RepairableLevel repairableLevel2 = null;
+      List<RepairableLevel> levels = repairableSettings?.Levels;
       if (levels == null || levels.Count == 0)
       {
-        this.SetThresholdCount(0);
+        SetThresholdCount(0);
       }
       else
       {
-        if (this.SetThresholdCount(levels.Count))
+        if (SetThresholdCount(levels.Count))
         {
           for (int index = 0; index < levels.Count; ++index)
           {
             RepairableLevel repairableLevel3 = levels[index];
-            if (repairableLevel3 == null || (double) repairableLevel3.MaxDurability == 1.0)
+            if (repairableLevel3 == null || repairableLevel3.MaxDurability == 1.0)
             {
-              this.thresholdViews[index].gameObject.SetActive(false);
+              thresholdViews[index].gameObject.SetActive(false);
             }
             else
             {
               float maxDurability = repairableLevel3.MaxDurability;
-              if (index < this.thresholdViews.Count && (Object) this.thresholdViews[index] != (Object) null)
-                this.thresholdViews[index].Progress = maxDurability;
+              if (index < thresholdViews.Count && (Object) thresholdViews[index] != (Object) null)
+                thresholdViews[index].Progress = maxDurability;
             }
           }
         }
-        repairableLevel1 = this.repairable.TargetLevel();
-        repairableLevel2 = this.repairable.BaseLevel();
+        repairableLevel1 = repairable.TargetLevel();
+        repairableLevel2 = repairable.BaseLevel();
       }
-      if ((Object) this.repairableView != (Object) null)
-        this.repairableView.Progress = repairableLevel1 != null ? repairableLevel1.MaxDurability : 0.0f;
-      if (!((Object) this.solidView != (Object) null))
+      if ((Object) repairableView != (Object) null)
+        repairableView.Progress = repairableLevel1 != null ? repairableLevel1.MaxDurability : 0.0f;
+      if (!((Object) solidView != (Object) null))
         return;
-      this.solidView.Progress = repairableLevel2 != null ? repairableLevel2.MaxDurability : 0.0f;
+      solidView.Progress = repairableLevel2 != null ? repairableLevel2.MaxDurability : 0.0f;
     }
 
-    private void OnDestroy() => this.Value = (IEntity) null;
+    private void OnDestroy() => Value = null;
 
     private bool SetThresholdCount(int count)
     {
-      if (this.thresholdViews == null)
+      if (thresholdViews == null)
         return false;
-      if (this.thresholdPrototypeCount == -1)
-        this.thresholdPrototypeCount = this.thresholdViews.Count;
-      if (this.thresholdPrototypeCount == 0)
+      if (thresholdPrototypeCount == -1)
+        thresholdPrototypeCount = thresholdViews.Count;
+      if (thresholdPrototypeCount == 0)
         return false;
-      while (this.thresholdViews.Count < count)
+      while (thresholdViews.Count < count)
       {
-        ProgressViewBase thresholdView = this.thresholdViews[this.thresholdViews.Count % this.thresholdPrototypeCount];
+        ProgressViewBase thresholdView = thresholdViews[thresholdViews.Count % thresholdPrototypeCount];
         ProgressViewBase progressViewBase = Object.Instantiate<ProgressViewBase>(thresholdView);
         progressViewBase.transform.SetParent(thresholdView.transform.parent, false);
-        this.thresholdViews.Add(progressViewBase);
+        thresholdViews.Add(progressViewBase);
       }
-      for (int index = 0; index < this.thresholdViews.Count; ++index)
-        this.thresholdViews[index].gameObject.SetActive(index < count);
+      for (int index = 0; index < thresholdViews.Count; ++index)
+        thresholdViews[index].gameObject.SetActive(index < count);
       return true;
     }
 
@@ -129,7 +127,7 @@ namespace Engine.Impl.UI.Controls
     {
       if (parameter != this.parameter)
         return;
-      this.ApplyParameterValue();
+      ApplyParameterValue();
     }
   }
 }

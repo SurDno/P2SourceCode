@@ -1,27 +1,26 @@
 ﻿using System;
-using UnityEngine;
 
 namespace RootMotion.FinalIK
 {
   public class Inertia : OffsetModifier
   {
     [Tooltip("The array of Bodies")]
-    public Inertia.Body[] bodies;
+    public Body[] bodies;
     [Tooltip("The array of OffsetLimits")]
-    public OffsetModifier.OffsetLimits[] limits;
+    public OffsetLimits[] limits;
 
     public void ResetBodies()
     {
-      this.lastTime = Time.time;
-      foreach (Inertia.Body body in this.bodies)
+      lastTime = Time.time;
+      foreach (Body body in bodies)
         body.Reset();
     }
 
     protected override void OnModifyOffset()
     {
-      foreach (Inertia.Body body in this.bodies)
-        body.Update(this.ik.solver, this.weight, this.deltaTime);
-      this.ApplyLimits(this.limits);
+      foreach (Body body in bodies)
+        body.Update(ik.solver, weight, deltaTime);
+      ApplyLimits(limits);
     }
 
     [Serializable]
@@ -30,7 +29,7 @@ namespace RootMotion.FinalIK
       [Tooltip("The Transform to follow, can be any bone of the character")]
       public Transform transform;
       [Tooltip("Linking the body to effectors. One Body can be used to offset more than one effector")]
-      public Inertia.Body.EffectorLink[] effectorLinks;
+      public EffectorLink[] effectorLinks;
       [Tooltip("The speed to follow the Transform")]
       public float speed = 10f;
       [Tooltip("The acceleration, smaller values means lazyer following")]
@@ -48,30 +47,30 @@ namespace RootMotion.FinalIK
 
       public void Reset()
       {
-        if ((UnityEngine.Object) this.transform == (UnityEngine.Object) null)
+        if ((UnityEngine.Object) transform == (UnityEngine.Object) null)
           return;
-        this.lazyPoint = this.transform.position;
-        this.lastPosition = this.transform.position;
-        this.direction = Vector3.zero;
+        lazyPoint = transform.position;
+        lastPosition = transform.position;
+        direction = Vector3.zero;
       }
 
       public void Update(IKSolverFullBodyBiped solver, float weight, float deltaTime)
       {
-        if ((UnityEngine.Object) this.transform == (UnityEngine.Object) null)
+        if ((UnityEngine.Object) transform == (UnityEngine.Object) null)
           return;
-        if (this.firstUpdate)
+        if (firstUpdate)
         {
-          this.Reset();
-          this.firstUpdate = false;
+          Reset();
+          firstUpdate = false;
         }
-        this.direction = Vector3.Lerp(this.direction, (this.transform.position - this.lazyPoint) / deltaTime * 0.01f, deltaTime * this.acceleration);
-        this.lazyPoint += this.direction * deltaTime * this.speed;
-        this.delta = this.transform.position - this.lastPosition;
-        this.lazyPoint += this.delta * this.matchVelocity;
-        this.lazyPoint.y += this.gravity * deltaTime;
-        foreach (Inertia.Body.EffectorLink effectorLink in this.effectorLinks)
-          solver.GetEffector(effectorLink.effector).positionOffset += (this.lazyPoint - this.transform.position) * effectorLink.weight * weight;
-        this.lastPosition = this.transform.position;
+        direction = Vector3.Lerp(direction, (transform.position - lazyPoint) / deltaTime * 0.01f, deltaTime * acceleration);
+        lazyPoint += direction * deltaTime * speed;
+        delta = transform.position - lastPosition;
+        lazyPoint += delta * matchVelocity;
+        lazyPoint.y += gravity * deltaTime;
+        foreach (EffectorLink effectorLink in effectorLinks)
+          solver.GetEffector(effectorLink.effector).positionOffset += (lazyPoint - transform.position) * effectorLink.weight * weight;
+        lastPosition = transform.position;
       }
 
       [Serializable]

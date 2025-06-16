@@ -1,4 +1,6 @@
-﻿using Engine.Common;
+﻿using System;
+using Cofe.Serializations.Data;
+using Engine.Common;
 using Engine.Common.BoundCharacters;
 using Engine.Common.Commons;
 using Engine.Common.Components;
@@ -13,7 +15,6 @@ using Engine.Source.Components.Maps;
 using Engine.Source.Connections;
 using Engine.Source.Services;
 using Inspectors;
-using System;
 
 namespace Engine.Source.Components.BoundCharacters
 {
@@ -25,18 +26,18 @@ namespace Engine.Source.Components.BoundCharacters
     IComponent,
     INeedSave
   {
-    [CopyableProxy(MemberEnum.None)]
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [StateSaveProxy(MemberEnum.None)]
-    [StateLoadProxy(MemberEnum.None)]
+    [CopyableProxy]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [StateSaveProxy]
+    [StateLoadProxy]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected bool isEnabled = true;
-    [StateSaveProxy(MemberEnum.None)]
-    [StateLoadProxy(MemberEnum.None)]
+    [StateSaveProxy]
+    [StateLoadProxy]
     protected BoundCharacterGroup group;
-    [StateSaveProxy(MemberEnum.None)]
-    [StateLoadProxy(MemberEnum.None)]
+    [StateSaveProxy]
+    [StateLoadProxy()]
     [Inspected(Mutable = true)]
     protected Typed<IBoundCharacterPlaceholder> placeholder;
     protected IEntity homeRegion;
@@ -46,41 +47,41 @@ namespace Engine.Source.Components.BoundCharacters
     [FromLocator]
     private BoundCharactersService boundCharactersService;
 
-    [StateSaveProxy(MemberEnum.None)]
-    [StateLoadProxy(MemberEnum.None)]
+    [StateSaveProxy]
+    [StateLoadProxy]
     [Inspected(Mutable = true)]
     public int SortOrder { get; set; }
 
-    [StateSaveProxy(MemberEnum.None)]
-    [StateLoadProxy(MemberEnum.None)]
+    [StateSaveProxy]
+    [StateLoadProxy]
     [Inspected(Mutable = true)]
     public BoundCharacterGroup SeenGroup { get; set; }
 
-    [StateSaveProxy(MemberEnum.None)]
-    [StateLoadProxy(MemberEnum.None)]
+    [StateSaveProxy]
+    [StateLoadProxy]
     [Inspected]
     public LocalizedText Name { get; set; } = LocalizedText.Empty;
 
     [Inspected]
-    public IParameterValue<BoundHealthStateEnum> BoundHealthState { get; } = (IParameterValue<BoundHealthStateEnum>) new ParameterValue<BoundHealthStateEnum>();
+    public IParameterValue<BoundHealthStateEnum> BoundHealthState { get; } = new ParameterValue<BoundHealthStateEnum>();
 
     [Inspected]
-    public IParameterValue<bool> HealingAttempted { get; } = (IParameterValue<bool>) new ParameterValue<bool>();
+    public IParameterValue<bool> HealingAttempted { get; } = new ParameterValue<bool>();
 
     [Inspected]
-    public IParameterValue<bool> ImmuneBoosterAttempted { get; } = (IParameterValue<bool>) new ParameterValue<bool>();
+    public IParameterValue<bool> ImmuneBoosterAttempted { get; } = new ParameterValue<bool>();
 
     [Inspected]
-    public IParameterValue<float> Immunity { get; } = (IParameterValue<float>) new ParameterValue<float>();
+    public IParameterValue<float> Immunity { get; } = new ParameterValue<float>();
 
     [Inspected]
-    public IParameterValue<float> Infection { get; } = (IParameterValue<float>) new ParameterValue<float>();
+    public IParameterValue<float> Infection { get; } = new ParameterValue<float>();
 
     [Inspected]
-    public IParameterValue<float> RandomRoll { get; } = (IParameterValue<float>) new ParameterValue<float>();
+    public IParameterValue<float> RandomRoll { get; } = new ParameterValue<float>();
 
-    [StateSaveProxy(MemberEnum.None)]
-    [StateLoadProxy(MemberEnum.None)]
+    [StateSaveProxy]
+    [StateLoadProxy]
     [Inspected(Mutable = true)]
     public BoundHealthStateEnum SeenBoundHealthState { get; set; } = BoundHealthStateEnum.None;
 
@@ -89,25 +90,25 @@ namespace Engine.Source.Components.BoundCharacters
     [Inspected]
     public IEntity HomeRegion
     {
-      get => this.homeRegion;
+      get => homeRegion;
       set
       {
-        if (this.homeRegion == value)
+        if (homeRegion == value)
           return;
-        if (this.homeRegion != null)
+        if (homeRegion != null)
         {
-          MapItemComponent component = this.homeRegion.GetComponent<MapItemComponent>();
+          MapItemComponent component = homeRegion.GetComponent<MapItemComponent>();
           if (component != null)
-            component.DiscoveredChangeEvent -= new Action(this.NotifyIfNotSeen);
+            component.DiscoveredChangeEvent -= NotifyIfNotSeen;
         }
-        this.homeRegion = value;
-        if (this.homeRegion != null)
+        homeRegion = value;
+        if (homeRegion != null)
         {
-          MapItemComponent component = this.homeRegion.GetComponent<MapItemComponent>();
+          MapItemComponent component = homeRegion.GetComponent<MapItemComponent>();
           if (component != null)
-            component.DiscoveredChangeEvent += new Action(this.NotifyIfNotSeen);
+            component.DiscoveredChangeEvent += NotifyIfNotSeen;
         }
-        this.NotifyIfNotSeen();
+        NotifyIfNotSeen();
       }
     }
 
@@ -126,26 +127,26 @@ namespace Engine.Source.Components.BoundCharacters
     [Inspected(Mutable = true)]
     public bool IsEnabled
     {
-      get => this.isEnabled;
+      get => isEnabled;
       set
       {
-        if (this.isEnabled == value)
+        if (isEnabled == value)
           return;
-        this.isEnabled = value;
-        this.OnChangeEnabled();
+        isEnabled = value;
+        OnChangeEnabled();
       }
     }
 
     [Inspected(Mutable = true)]
     public BoundCharacterGroup Group
     {
-      get => this.group;
+      get => group;
       set
       {
-        if (this.group == value)
+        if (group == value)
           return;
-        this.group = value;
-        this.NotifyIfNotSeen();
+        group = value;
+        NotifyIfNotSeen();
       }
     }
 
@@ -159,20 +160,20 @@ namespace Engine.Source.Components.BoundCharacters
 
     public IBoundCharacterPlaceholder Resource
     {
-      get => this.placeholder.Value;
-      set => this.placeholder.Value = value;
+      get => placeholder.Value;
+      set => placeholder.Value = value;
     }
 
     public bool NeedSave => true;
 
     private void NotifyIfNotSeen()
     {
-      if (!this.added || !InstanceByRequest<EngineApplication>.Instance.ViewEnabled || this.group == BoundCharacterGroup.None)
+      if (!added || !InstanceByRequest<EngineApplication>.Instance.ViewEnabled || group == BoundCharacterGroup.None)
         return;
-      if (this.group == this.SeenGroup)
+      if (group == SeenGroup)
       {
         BoundHealthStateEnum boundHealthStateEnum = BoundCharacterUtility.PerceivedHealth(this);
-        if (this.SeenBoundHealthState == boundHealthStateEnum || boundHealthStateEnum == BoundHealthStateEnum.Normal)
+        if (SeenBoundHealthState == boundHealthStateEnum || boundHealthStateEnum == BoundHealthStateEnum.Normal)
           return;
       }
       ServiceLocator.GetService<NotificationService>().AddNotify(NotificationEnum.BoundCharacters, Array.Empty<object>());
@@ -181,86 +182,86 @@ namespace Engine.Source.Components.BoundCharacters
     public override void OnAdded()
     {
       base.OnAdded();
-      this.BoundHealthState.Set<BoundHealthStateEnum>(this.parameters?.GetByName<BoundHealthStateEnum>(ParameterNameEnum.BoundHealthState));
-      this.BoundHealthState.ChangeValueEvent += new Action<BoundHealthStateEnum>(this.OnBoundHealthStateValueChange);
-      this.HealingAttempted.Set<bool>(this.parameters?.GetByName<bool>(ParameterNameEnum.HealingAttempted));
-      this.ImmuneBoosterAttempted.Set<bool>(this.parameters?.GetByName<bool>(ParameterNameEnum.ImmuneBoostAttempted));
-      this.Immunity.Set<float>(this.parameters?.GetByName<float>(ParameterNameEnum.Immunity));
-      this.Infection.Set<float>(this.parameters?.GetByName<float>(ParameterNameEnum.Infection));
-      this.RandomRoll.Set<float>(this.parameters?.GetByName<float>(ParameterNameEnum.RandomRoll));
-      this.OnEnableChangedEvent();
+      BoundHealthState.Set(parameters?.GetByName<BoundHealthStateEnum>(ParameterNameEnum.BoundHealthState));
+      BoundHealthState.ChangeValueEvent += OnBoundHealthStateValueChange;
+      HealingAttempted.Set(parameters?.GetByName<bool>(ParameterNameEnum.HealingAttempted));
+      ImmuneBoosterAttempted.Set(parameters?.GetByName<bool>(ParameterNameEnum.ImmuneBoostAttempted));
+      Immunity.Set(parameters?.GetByName<float>(ParameterNameEnum.Immunity));
+      Infection.Set(parameters?.GetByName<float>(ParameterNameEnum.Infection));
+      RandomRoll.Set(parameters?.GetByName<float>(ParameterNameEnum.RandomRoll));
+      OnEnableChangedEvent();
     }
 
     private void OnBoundHealthStateValueChange(BoundHealthStateEnum value)
     {
-      this.NotifyIfNotSeen();
+      NotifyIfNotSeen();
     }
 
     private void OnEnableChangedEvent()
     {
-      if (this.IsEnabled && !this.IsDisposed)
-        this.AddToService();
+      if (IsEnabled && !IsDisposed)
+        AddToService();
       else
-        this.RemoveFromService();
+        RemoveFromService();
     }
 
     public override void OnRemoved()
     {
-      this.RemoveFromService();
-      this.parameters = (ParametersComponent) null;
-      this.BoundHealthState.ChangeValueEvent -= new Action<BoundHealthStateEnum>(this.OnBoundHealthStateValueChange);
-      this.BoundHealthState.Set<BoundHealthStateEnum>((IParameter<BoundHealthStateEnum>) null);
-      this.HealingAttempted.Set<bool>((IParameter<bool>) null);
-      this.ImmuneBoosterAttempted.Set<bool>((IParameter<bool>) null);
-      this.Immunity.Set<float>((IParameter<float>) null);
-      this.Infection.Set<float>((IParameter<float>) null);
-      this.RandomRoll.Set<float>((IParameter<float>) null);
+      RemoveFromService();
+      parameters = null;
+      BoundHealthState.ChangeValueEvent -= OnBoundHealthStateValueChange;
+      BoundHealthState.Set(null);
+      HealingAttempted.Set(null);
+      ImmuneBoosterAttempted.Set(null);
+      Immunity.Set(null);
+      Infection.Set(null);
+      RandomRoll.Set(null);
       base.OnRemoved();
     }
 
     private void AddToService()
     {
-      if (this.added)
+      if (added)
         return;
-      this.added = true;
-      this.boundCharactersService.AddKeyCharacter(this);
-      this.NotifyIfNotSeen();
+      added = true;
+      boundCharactersService.AddKeyCharacter(this);
+      NotifyIfNotSeen();
     }
 
     private void RemoveFromService()
     {
-      if (!this.added)
+      if (!added)
         return;
-      this.added = false;
-      this.boundCharactersService.RemoveKeyCharacter(this);
+      added = false;
+      boundCharactersService.RemoveKeyCharacter(this);
     }
 
     public override void OnChangeEnabled()
     {
       base.OnChangeEnabled();
-      this.OnEnableChangedEvent();
+      OnEnableChangedEvent();
     }
 
-    [Cofe.Serializations.Data.OnLoaded]
-    private void OnLoaded() => this.OnEnableChangedEvent();
+    [OnLoaded]
+    private void OnLoaded() => OnEnableChangedEvent();
 
     [Inspected]
     public void StorePreRollState()
     {
-      this.PreRollStateStored = true;
-      this.PreRollHealthState = this.BoundHealthState.Value;
-      if (this.PreRollHealthState == BoundHealthStateEnum.Danger)
+      PreRollStateStored = true;
+      PreRollHealthState = BoundHealthState.Value;
+      if (PreRollHealthState == BoundHealthStateEnum.Danger)
       {
-        this.PreRollStatValue = this.Immunity.Value;
-        this.PreRollMedicated = this.ImmuneBoosterAttempted.Value;
+        PreRollStatValue = Immunity.Value;
+        PreRollMedicated = ImmuneBoosterAttempted.Value;
       }
-      else if (this.PreRollHealthState == BoundHealthStateEnum.Diseased)
+      else if (PreRollHealthState == BoundHealthStateEnum.Diseased)
       {
-        this.PreRollStatValue = this.Infection.Value;
-        this.PreRollMedicated = this.HealingAttempted.Value;
+        PreRollStatValue = Infection.Value;
+        PreRollMedicated = HealingAttempted.Value;
       }
       else
-        this.PreRollMedicated = false;
+        PreRollMedicated = false;
     }
   }
 }

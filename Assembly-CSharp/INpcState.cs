@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-public interface INpcState
+﻿public interface INpcState
 {
   GameObject GameObject { get; }
 

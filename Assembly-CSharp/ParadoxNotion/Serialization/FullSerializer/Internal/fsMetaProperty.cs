@@ -9,37 +9,37 @@ namespace ParadoxNotion.Serialization.FullSerializer.Internal
 
     internal fsMetaProperty(fsConfig config, FieldInfo field)
     {
-      this._memberInfo = (MemberInfo) field;
-      this.StorageType = field.FieldType;
-      this.MemberName = field.Name;
-      this.IsPublic = field.IsPublic;
-      this.CanRead = true;
-      this.CanWrite = true;
-      this.CommonInitialize(config);
+      _memberInfo = field;
+      StorageType = field.FieldType;
+      MemberName = field.Name;
+      IsPublic = field.IsPublic;
+      CanRead = true;
+      CanWrite = true;
+      CommonInitialize(config);
     }
 
     internal fsMetaProperty(fsConfig config, PropertyInfo property)
     {
-      this._memberInfo = (MemberInfo) property;
-      this.StorageType = property.PropertyType;
-      this.MemberName = property.Name;
-      this.IsPublic = property.GetGetMethod() != (MethodInfo) null && property.GetGetMethod().IsPublic && property.GetSetMethod() != (MethodInfo) null && property.GetSetMethod().IsPublic;
-      this.CanRead = property.CanRead;
-      this.CanWrite = property.CanWrite;
-      this.CommonInitialize(config);
+      _memberInfo = property;
+      StorageType = property.PropertyType;
+      MemberName = property.Name;
+      IsPublic = property.GetGetMethod() != null && property.GetGetMethod().IsPublic && property.GetSetMethod() != null && property.GetSetMethod().IsPublic;
+      CanRead = property.CanRead;
+      CanWrite = property.CanWrite;
+      CommonInitialize(config);
     }
 
     private void CommonInitialize(fsConfig config)
     {
-      fsPropertyAttribute attribute = fsPortableReflection.GetAttribute<fsPropertyAttribute>(this._memberInfo);
+      fsPropertyAttribute attribute = fsPortableReflection.GetAttribute<fsPropertyAttribute>(_memberInfo);
       if (attribute != null)
       {
-        this.JsonName = attribute.Name;
-        this.OverrideConverterType = attribute.Converter;
+        JsonName = attribute.Name;
+        OverrideConverterType = attribute.Converter;
       }
-      if (!string.IsNullOrEmpty(this.JsonName))
+      if (!string.IsNullOrEmpty(JsonName))
         return;
-      this.JsonName = config.GetJsonNameFromMemberName(this.MemberName, this._memberInfo);
+      JsonName = config.GetJsonNameFromMemberName(MemberName, _memberInfo);
     }
 
     public Type StorageType { get; private set; }
@@ -58,25 +58,25 @@ namespace ParadoxNotion.Serialization.FullSerializer.Internal
 
     public void Write(object context, object value)
     {
-      FieldInfo memberInfo1 = this._memberInfo as FieldInfo;
-      PropertyInfo memberInfo2 = this._memberInfo as PropertyInfo;
-      if (memberInfo1 != (FieldInfo) null)
+      FieldInfo memberInfo1 = _memberInfo as FieldInfo;
+      PropertyInfo memberInfo2 = _memberInfo as PropertyInfo;
+      if (memberInfo1 != null)
       {
         memberInfo1.SetValue(context, value);
       }
       else
       {
-        if (!(memberInfo2 != (PropertyInfo) null))
+        if (!(memberInfo2 != null))
           return;
         MethodInfo setMethod = memberInfo2.GetSetMethod(true);
-        if (setMethod != (MethodInfo) null)
+        if (setMethod != null)
           setMethod.Invoke(context, new object[1]{ value });
       }
     }
 
     public object Read(object context)
     {
-      return this._memberInfo is PropertyInfo ? ((PropertyInfo) this._memberInfo).GetValue(context, new object[0]) : ((FieldInfo) this._memberInfo).GetValue(context);
+      return _memberInfo is PropertyInfo ? ((PropertyInfo) _memberInfo).GetValue(context, new object[0]) : ((FieldInfo) _memberInfo).GetValue(context);
     }
   }
 }

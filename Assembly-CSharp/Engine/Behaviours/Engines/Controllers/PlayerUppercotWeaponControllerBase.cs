@@ -1,4 +1,5 @@
-﻿using Engine.Behaviours.Components;
+﻿using System;
+using Engine.Behaviours.Components;
 using Engine.Behaviours.Unity.Mecanim;
 using Engine.Common;
 using Engine.Common.Components;
@@ -10,8 +11,6 @@ using Engine.Source.Components;
 using Engine.Source.Components.Utilities;
 using Engine.Source.Services.Inputs;
 using Engine.Source.Utility;
-using System;
-using UnityEngine;
 
 namespace Engine.Behaviours.Engines.Controllers
 {
@@ -30,11 +29,11 @@ namespace Engine.Behaviours.Engines.Controllers
     private ControllerComponent controllerComponent;
     protected bool geometryVisible;
     protected bool weaponVisible;
-    private float timeToLastPunch = 0.0f;
-    private float blockStance = 0.0f;
-    private float realBlockStance = 0.0f;
-    private float realStamina = 0.0f;
-    private bool lastPunchWasByLeftHand = false;
+    private float timeToLastPunch;
+    private float blockStance;
+    private float realBlockStance;
+    private float realStamina;
+    private bool lastPunchWasByLeftHand;
     private CharacterController characterController;
     protected IEntity item;
     private string WeaponPunchString;
@@ -46,9 +45,9 @@ namespace Engine.Behaviours.Engines.Controllers
     private string WeaponSpecialPrepunchString;
     private float fireDownTime;
     private bool fireButtonDown;
-    private bool isBlocking = false;
+    private bool isBlocking;
     private bool listenersAdded;
-    private float smoothedNormalizedSpeed = 0.0f;
+    private float smoothedNormalizedSpeed;
     private float layerWeight;
 
     public event Action WeaponUnholsterEndEvent;
@@ -71,26 +70,26 @@ namespace Engine.Behaviours.Engines.Controllers
     {
       set
       {
-        this.geometryVisible = value;
-        this.ApplyVisibility();
+        geometryVisible = value;
+        ApplyVisibility();
       }
-      get => this.geometryVisible;
+      get => geometryVisible;
     }
 
     private bool WeaponVisible
     {
       set
       {
-        this.weaponVisible = value;
-        this.ApplyVisibility();
+        weaponVisible = value;
+        ApplyVisibility();
       }
     }
 
     public void Initialise(IEntity entity, GameObject gameObject, Animator animator)
     {
       this.entity = entity;
-      this.pivot = gameObject.GetComponent<PivotPlayer>();
-      if ((UnityEngine.Object) this.pivot == (UnityEngine.Object) null)
+      pivot = gameObject.GetComponent<PivotPlayer>();
+      if ((UnityEngine.Object) pivot == (UnityEngine.Object) null)
       {
         Debug.LogErrorFormat("{0} has no {1} unity component", (object) gameObject.name, (object) typeof (PivotPlayer).Name);
       }
@@ -98,38 +97,38 @@ namespace Engine.Behaviours.Engines.Controllers
       {
         this.gameObject = gameObject;
         this.animator = animator;
-        this.playerEnemy = gameObject.GetComponent<PlayerEnemy>();
-        this.characterController = gameObject.GetComponent<CharacterController>();
-        this.controllerComponent = entity.GetComponent<ControllerComponent>();
-        this.animatorState = PlayerAnimatorState.GetAnimatorState(animator);
-        this.lowStamina = entity.GetComponent<ParametersComponent>().GetByName<bool>(ParameterNameEnum.LowStamina);
-        this.stealth = entity.GetComponent<ParametersComponent>().GetByName<bool>(ParameterNameEnum.Stealth);
+        playerEnemy = gameObject.GetComponent<PlayerEnemy>();
+        characterController = gameObject.GetComponent<CharacterController>();
+        controllerComponent = entity.GetComponent<ControllerComponent>();
+        animatorState = PlayerAnimatorState.GetAnimatorState(animator);
+        lowStamina = entity.GetComponent<ParametersComponent>().GetByName<bool>(ParameterNameEnum.LowStamina);
+        stealth = entity.GetComponent<ParametersComponent>().GetByName<bool>(ParameterNameEnum.Stealth);
         if (entity == null)
         {
           Debug.LogWarningFormat("{0} can't map entity", (object) gameObject.name);
         }
         else
         {
-          this.detectable = (DetectableComponent) entity.GetComponent<IDetectableComponent>();
-          if (this.detectable == null)
+          detectable = (DetectableComponent) entity.GetComponent<IDetectableComponent>();
+          if (detectable == null)
           {
             Debug.LogWarningFormat("{0} doesn't have {1} engine component", (object) gameObject.name, (object) typeof (IDetectableComponent).Name);
           }
           else
           {
-            this.WeaponPunchString = this.Prefix + ".Punch";
-            this.WeaponPunchLowStaminaString = this.Prefix + ".PunchLowStamina";
-            this.WeaponPrepunchString = this.Prefix + ".Prepunch";
-            this.WeaponPushString = this.Prefix + ".Push";
-            this.WeaponUppercutString = this.Prefix + ".Uppercut";
-            this.WeaponBackstabString = this.Prefix + ".Backstab";
-            this.WeaponSpecialPrepunchString = this.Prefix + ".SpecialPrepunch";
+            WeaponPunchString = Prefix + ".Punch";
+            WeaponPunchLowStaminaString = Prefix + ".PunchLowStamina";
+            WeaponPrepunchString = Prefix + ".Prepunch";
+            WeaponPushString = Prefix + ".Push";
+            WeaponUppercutString = Prefix + ".Uppercut";
+            WeaponBackstabString = Prefix + ".Backstab";
+            WeaponSpecialPrepunchString = Prefix + ".SpecialPrepunch";
           }
         }
       }
     }
 
-    public IEntity GetItem() => this.item;
+    public IEntity GetItem() => item;
 
     public virtual void SetItem(IEntity item)
     {
@@ -137,161 +136,161 @@ namespace Engine.Behaviours.Engines.Controllers
       ParametersComponent component = item.GetComponent<ParametersComponent>();
       if (component == null)
         return;
-      this.durability = component.GetByName<float>(ParameterNameEnum.Durability);
+      durability = component.GetByName<float>(ParameterNameEnum.Durability);
     }
 
     public void OnEnable()
     {
-      this.ApplyVisibility();
-      this.animator.SetTrigger("Triggers/Restore");
-      this.AddListeners();
+      ApplyVisibility();
+      animator.SetTrigger("Triggers/Restore");
+      AddListeners();
     }
 
     public void OnDisable()
     {
-      this.blockStance = 0.0f;
-      this.RemoveListeners();
+      blockStance = 0.0f;
+      RemoveListeners();
     }
 
     public void Activate(bool geometryVisible)
     {
-      this.WeaponVisible = true;
-      this.animatorState.Unholster();
-      Action unholsterEndEvent = this.WeaponUnholsterEndEvent;
+      WeaponVisible = true;
+      animatorState.Unholster();
+      Action unholsterEndEvent = WeaponUnholsterEndEvent;
       if (unholsterEndEvent != null)
         unholsterEndEvent();
-      this.AddListeners();
+      AddListeners();
     }
 
     public void Shutdown()
     {
-      Action holsterStartEvent = this.WeaponHolsterStartEvent;
+      Action holsterStartEvent = WeaponHolsterStartEvent;
       if (holsterStartEvent != null)
         holsterStartEvent();
-      this.RemoveListeners();
-      this.animatorState.Holster();
-      this.blockStance = 0.0f;
-      this.playerEnemy.BlockStance = false;
-      this.isBlocking = false;
+      RemoveListeners();
+      animatorState.Holster();
+      blockStance = 0.0f;
+      playerEnemy.BlockStance = false;
+      isBlocking = false;
     }
 
     private void AddListeners()
     {
-      if (this.listenersAdded)
+      if (listenersAdded)
         return;
-      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Fire, new GameActionHandle(this.PunchListener));
-      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Block, new GameActionHandle(this.BlockListener));
-      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Push, new GameActionHandle(this.PushListener));
-      this.listenersAdded = true;
+      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Fire, PunchListener);
+      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Block, BlockListener);
+      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Push, PushListener);
+      listenersAdded = true;
     }
 
     private void RemoveListeners()
     {
-      if (!this.listenersAdded)
+      if (!listenersAdded)
         return;
-      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Fire, new GameActionHandle(this.PunchListener));
-      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Block, new GameActionHandle(this.BlockListener));
-      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Push, new GameActionHandle(this.PushListener));
-      this.listenersAdded = false;
+      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Fire, PunchListener);
+      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Block, BlockListener);
+      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Push, PushListener);
+      listenersAdded = false;
     }
 
     private bool PunchListener(GameActionType type, bool down)
     {
-      if (this.entity != ServiceLocator.GetService<ISimulation>().Player || !PlayerUtility.IsPlayerCanControlling || this.playerEnemy.IsStagger)
+      if (entity != ServiceLocator.GetService<ISimulation>().Player || !PlayerUtility.IsPlayerCanControlling || playerEnemy.IsStagger)
         return false;
-      this.fireButtonDown = down;
-      if (down && (double) this.timeToLastPunch <= 0.0)
+      fireButtonDown = down;
+      if (down && timeToLastPunch <= 0.0)
       {
-        if (this.SupportsLowStaminaPunch && this.lowStamina.Value)
+        if (SupportsLowStaminaPunch && lowStamina.Value)
         {
-          this.animatorState.PunchLowStamina();
-          this.timeToLastPunch = 1.5f;
+          animatorState.PunchLowStamina();
+          timeToLastPunch = 1.5f;
         }
         else
         {
-          this.blockStance = 0.0f;
-          if (this.stealth.Value)
+          blockStance = 0.0f;
+          if (stealth.Value)
           {
-            this.animatorState.PunchBackstab();
-            this.timeToLastPunch = 1.2f;
+            animatorState.PunchBackstab();
+            timeToLastPunch = 1.2f;
           }
           else
-            this.animatorState.PunchUppercut();
+            animatorState.PunchUppercut();
         }
-        if (this.durability != null && (double) this.durability.Value <= 0.0)
+        if (durability != null && durability.Value <= 0.0)
         {
-          Action<IEntity, ShotType, ReactionType, ShotSubtypeEnum> weaponShootEvent = this.WeaponShootEvent;
+          Action<IEntity, ShotType, ReactionType, ShotSubtypeEnum> weaponShootEvent = WeaponShootEvent;
           if (weaponShootEvent != null)
-            weaponShootEvent(this.item, ShotType.None, ReactionType.None, ShotSubtypeEnum.WeaponBroken);
+            weaponShootEvent(item, ShotType.None, ReactionType.None, ShotSubtypeEnum.WeaponBroken);
         }
         return true;
       }
-      if (down || (double) this.fireDownTime >= 0.40000000596046448 || (double) this.timeToLastPunch > 0.0)
+      if (down || fireDownTime >= 0.40000000596046448 || timeToLastPunch > 0.0)
         return true;
-      this.blockStance = 0.0f;
-      this.realBlockStance = 0.0f;
-      this.animatorState.BlockStance = SmoothUtility.Smooth12(this.realBlockStance);
-      if (this.SupportsLowStaminaPunch && this.lowStamina.Value)
+      blockStance = 0.0f;
+      realBlockStance = 0.0f;
+      animatorState.BlockStance = SmoothUtility.Smooth12(realBlockStance);
+      if (SupportsLowStaminaPunch && lowStamina.Value)
       {
-        this.animatorState.PunchLowStamina();
-        this.timeToLastPunch = 1.5f;
+        animatorState.PunchLowStamina();
+        timeToLastPunch = 1.5f;
       }
       else
       {
-        if (this.lastPunchWasByLeftHand)
-          this.animatorState.PunchRight();
+        if (lastPunchWasByLeftHand)
+          animatorState.PunchRight();
         else
-          this.animatorState.PunchLeft();
-        this.lastPunchWasByLeftHand = !this.lastPunchWasByLeftHand;
-        this.timeToLastPunch = 0.8f;
+          animatorState.PunchLeft();
+        lastPunchWasByLeftHand = !lastPunchWasByLeftHand;
+        timeToLastPunch = 0.8f;
       }
-      if (this.durability != null && (double) this.durability.Value <= 0.0)
+      if (durability != null && durability.Value <= 0.0)
       {
-        Action<IEntity, ShotType, ReactionType, ShotSubtypeEnum> weaponShootEvent = this.WeaponShootEvent;
+        Action<IEntity, ShotType, ReactionType, ShotSubtypeEnum> weaponShootEvent = WeaponShootEvent;
         if (weaponShootEvent != null)
-          weaponShootEvent(this.item, ShotType.None, ReactionType.None, ShotSubtypeEnum.WeaponBroken);
+          weaponShootEvent(item, ShotType.None, ReactionType.None, ShotSubtypeEnum.WeaponBroken);
       }
       return true;
     }
 
     private bool PushListener(GameActionType type, bool down)
     {
-      if (this.entity != ServiceLocator.GetService<ISimulation>().Player || !PlayerUtility.IsPlayerCanControlling || this.lowStamina.Value)
+      if (entity != ServiceLocator.GetService<ISimulation>().Player || !PlayerUtility.IsPlayerCanControlling || lowStamina.Value)
         return false;
-      if (!down || (double) this.timeToLastPunch > 0.0)
+      if (!down || timeToLastPunch > 0.0)
         return true;
-      this.animatorState.Push();
-      this.timeToLastPunch = ScriptableObjectInstance<FightSettingsData>.Instance.Description.PlayerPunchCooldownTime;
+      animatorState.Push();
+      timeToLastPunch = ScriptableObjectInstance<FightSettingsData>.Instance.Description.PlayerPunchCooldownTime;
       return true;
     }
 
     private bool BlockListener(GameActionType type, bool down)
     {
-      if (this.entity != ServiceLocator.GetService<ISimulation>().Player || !PlayerUtility.IsPlayerCanControlling)
+      if (entity != ServiceLocator.GetService<ISimulation>().Player || !PlayerUtility.IsPlayerCanControlling)
         return false;
-      this.isBlocking = down;
+      isBlocking = down;
       return true;
     }
 
     public void Update(IEntity target)
     {
-      if (this.entity != ServiceLocator.GetService<ISimulation>().Player || !PlayerUtility.IsPlayerCanControlling)
+      if (entity != ServiceLocator.GetService<ISimulation>().Player || !PlayerUtility.IsPlayerCanControlling)
         return;
       float target1 = 0.0f;
-      bool flag = this.controllerComponent != null && this.controllerComponent.IsRun.Value;
-      if (this.controllerComponent.IsWalk.Value)
-        target1 = (flag ? 1f : 0.5f) * this.controllerComponent.WalkModifier.Value;
-      if (this.fireButtonDown)
-        this.fireDownTime += Time.deltaTime;
+      bool flag = controllerComponent != null && controllerComponent.IsRun.Value;
+      if (controllerComponent.IsWalk.Value)
+        target1 = (flag ? 1f : 0.5f) * controllerComponent.WalkModifier.Value;
+      if (fireButtonDown)
+        fireDownTime += Time.deltaTime;
       else
-        this.fireDownTime = 0.0f;
-      if ((double) this.timeToLastPunch > 0.0)
-        this.timeToLastPunch -= Time.deltaTime;
-      this.smoothedNormalizedSpeed = Mathf.MoveTowards(this.smoothedNormalizedSpeed, target1, Time.deltaTime / 1f);
-      this.animatorState.WalkSpeed = this.smoothedNormalizedSpeed;
-      if (this.entity != ServiceLocator.GetService<ISimulation>().Player || !PlayerUtility.IsPlayerCanControlling)
+        fireDownTime = 0.0f;
+      if (timeToLastPunch > 0.0)
+        timeToLastPunch -= Time.deltaTime;
+      smoothedNormalizedSpeed = Mathf.MoveTowards(smoothedNormalizedSpeed, target1, Time.deltaTime / 1f);
+      animatorState.WalkSpeed = smoothedNormalizedSpeed;
+      if (entity != ServiceLocator.GetService<ISimulation>().Player || !PlayerUtility.IsPlayerCanControlling)
         return;
-      this.blockStance = !this.isBlocking || (double) this.timeToLastPunch > 0.0 ? 0.0f : 1f;
+      blockStance = !isBlocking || timeToLastPunch > 0.0 ? 0.0f : 1f;
     }
 
     public void UpdateSilent(IEntity target)
@@ -300,7 +299,7 @@ namespace Engine.Behaviours.Engines.Controllers
         ;
     }
 
-    public void Reset() => this.animatorState.ResetAnimator();
+    public void Reset() => animatorState.ResetAnimator();
 
     public bool Validate(GameObject gameObject, IEntity item) => true;
 
@@ -310,69 +309,69 @@ namespace Engine.Behaviours.Engines.Controllers
 
     public void FixedUpdate(IEntity target)
     {
-      this.realBlockStance = Mathf.MoveTowards(this.realBlockStance, this.blockStance, Time.fixedDeltaTime / ScriptableObjectInstance<FightSettingsData>.Instance.Description.PlayerBlockStanceTime);
-      this.animatorState.BlockStance = SmoothUtility.Smooth12(this.realBlockStance);
-      this.realStamina = Mathf.MoveTowards(this.realStamina, this.lowStamina.Value ? 0.0f : 1f, Time.fixedDeltaTime / ScriptableObjectInstance<FightSettingsData>.Instance.Description.PlayerBlockStanceTime);
-      this.animatorState.Stamina = this.realStamina;
-      if (!((UnityEngine.Object) this.playerEnemy != (UnityEngine.Object) null))
+      realBlockStance = Mathf.MoveTowards(realBlockStance, blockStance, Time.fixedDeltaTime / ScriptableObjectInstance<FightSettingsData>.Instance.Description.PlayerBlockStanceTime);
+      animatorState.BlockStance = SmoothUtility.Smooth12(realBlockStance);
+      realStamina = Mathf.MoveTowards(realStamina, lowStamina.Value ? 0.0f : 1f, Time.fixedDeltaTime / ScriptableObjectInstance<FightSettingsData>.Instance.Description.PlayerBlockStanceTime);
+      animatorState.Stamina = realStamina;
+      if (!((UnityEngine.Object) playerEnemy != (UnityEngine.Object) null))
         return;
-      this.playerEnemy.BlockStance = (double) this.realBlockStance >= 0.5;
+      playerEnemy.BlockStance = realBlockStance >= 0.5;
     }
 
     public void OnAnimatorEvent(string data)
     {
-      if (data.StartsWith(this.WeaponPunchLowStaminaString))
+      if (data.StartsWith(WeaponPunchLowStaminaString))
       {
-        Action<IEntity, ShotType, ReactionType, ShotSubtypeEnum> weaponShootEvent = this.WeaponShootEvent;
+        Action<IEntity, ShotType, ReactionType, ShotSubtypeEnum> weaponShootEvent = WeaponShootEvent;
         if (weaponShootEvent == null)
           return;
-        weaponShootEvent(this.item, ShotType.LowStamina, this.lastPunchWasByLeftHand ? ReactionType.Left : ReactionType.Right, ShotSubtypeEnum.None);
+        weaponShootEvent(item, ShotType.LowStamina, lastPunchWasByLeftHand ? ReactionType.Left : ReactionType.Right, ShotSubtypeEnum.None);
       }
-      else if (data.StartsWith(this.WeaponPunchString))
+      else if (data.StartsWith(WeaponPunchString))
       {
-        ShotType shotType = !this.SupportsLowStaminaPunch ? (!this.lowStamina.Value ? ShotType.Moderate : ShotType.LowStamina) : ShotType.Moderate;
-        Action<IEntity, ShotType, ReactionType, ShotSubtypeEnum> weaponShootEvent = this.WeaponShootEvent;
+        ShotType shotType = !SupportsLowStaminaPunch ? (!lowStamina.Value ? ShotType.Moderate : ShotType.LowStamina) : ShotType.Moderate;
+        Action<IEntity, ShotType, ReactionType, ShotSubtypeEnum> weaponShootEvent = WeaponShootEvent;
         if (weaponShootEvent == null)
           return;
-        weaponShootEvent(this.item, shotType, this.lastPunchWasByLeftHand ? ReactionType.Left : ReactionType.Right, ShotSubtypeEnum.None);
+        weaponShootEvent(item, shotType, lastPunchWasByLeftHand ? ReactionType.Left : ReactionType.Right, ShotSubtypeEnum.None);
       }
-      else if (data.StartsWith(this.WeaponPrepunchString))
+      else if (data.StartsWith(WeaponPrepunchString))
       {
-        Action<IEntity, ShotType, ReactionType, ShotSubtypeEnum> weaponShootEvent = this.WeaponShootEvent;
+        Action<IEntity, ShotType, ReactionType, ShotSubtypeEnum> weaponShootEvent = WeaponShootEvent;
         if (weaponShootEvent == null)
           return;
-        weaponShootEvent(this.item, ShotType.Prepunch, this.lastPunchWasByLeftHand ? ReactionType.Left : ReactionType.Right, ShotSubtypeEnum.None);
+        weaponShootEvent(item, ShotType.Prepunch, lastPunchWasByLeftHand ? ReactionType.Left : ReactionType.Right, ShotSubtypeEnum.None);
       }
-      else if (data.StartsWith(this.WeaponPushString))
+      else if (data.StartsWith(WeaponPushString))
       {
-        Action<IEntity, ShotType, ReactionType, ShotSubtypeEnum> weaponShootEvent = this.WeaponShootEvent;
+        Action<IEntity, ShotType, ReactionType, ShotSubtypeEnum> weaponShootEvent = WeaponShootEvent;
         if (weaponShootEvent == null)
           return;
-        weaponShootEvent(this.item, ShotType.Push, ReactionType.None, ShotSubtypeEnum.None);
+        weaponShootEvent(item, ShotType.Push, ReactionType.None, ShotSubtypeEnum.None);
       }
-      else if (data.StartsWith(this.WeaponUppercutString))
+      else if (data.StartsWith(WeaponUppercutString))
       {
-        ShotType shotType = !this.SupportsLowStaminaPunch ? (!this.lowStamina.Value ? ShotType.Uppercut : ShotType.LowStamina) : ShotType.Uppercut;
-        Action<IEntity, ShotType, ReactionType, ShotSubtypeEnum> weaponShootEvent = this.WeaponShootEvent;
+        ShotType shotType = !SupportsLowStaminaPunch ? (!lowStamina.Value ? ShotType.Uppercut : ShotType.LowStamina) : ShotType.Uppercut;
+        Action<IEntity, ShotType, ReactionType, ShotSubtypeEnum> weaponShootEvent = WeaponShootEvent;
         if (weaponShootEvent == null)
           return;
-        weaponShootEvent(this.item, shotType, ReactionType.Uppercut, ShotSubtypeEnum.None);
+        weaponShootEvent(item, shotType, ReactionType.Uppercut, ShotSubtypeEnum.None);
       }
-      else if (data.StartsWith(this.WeaponBackstabString))
+      else if (data.StartsWith(WeaponBackstabString))
       {
-        ShotType shotType = !this.SupportsLowStaminaPunch ? (!this.lowStamina.Value ? ShotType.Backstab : ShotType.LowStamina) : ShotType.Backstab;
-        Action<IEntity, ShotType, ReactionType, ShotSubtypeEnum> weaponShootEvent = this.WeaponShootEvent;
+        ShotType shotType = !SupportsLowStaminaPunch ? (!lowStamina.Value ? ShotType.Backstab : ShotType.LowStamina) : ShotType.Backstab;
+        Action<IEntity, ShotType, ReactionType, ShotSubtypeEnum> weaponShootEvent = WeaponShootEvent;
         if (weaponShootEvent == null)
           return;
-        weaponShootEvent(this.item, shotType, ReactionType.Backstab, ShotSubtypeEnum.None);
+        weaponShootEvent(item, shotType, ReactionType.Backstab, ShotSubtypeEnum.None);
       }
       else
       {
-        if (!data.StartsWith(this.WeaponSpecialPrepunchString))
+        if (!data.StartsWith(WeaponSpecialPrepunchString))
           return;
-        Action<IEntity, ShotType, ReactionType, ShotSubtypeEnum> weaponShootEvent = this.WeaponShootEvent;
+        Action<IEntity, ShotType, ReactionType, ShotSubtypeEnum> weaponShootEvent = WeaponShootEvent;
         if (weaponShootEvent != null)
-          weaponShootEvent(this.item, ShotType.SpecialPrepunch, ReactionType.Uppercut, ShotSubtypeEnum.None);
+          weaponShootEvent(item, ShotType.SpecialPrepunch, ReactionType.Uppercut, ShotSubtypeEnum.None);
       }
     }
 

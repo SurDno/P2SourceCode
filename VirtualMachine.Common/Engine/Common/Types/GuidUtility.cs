@@ -1,5 +1,5 @@
-﻿using PLVirtualMachine.Common;
-using System;
+﻿using System;
+using PLVirtualMachine.Common;
 
 namespace Engine.Common.Types
 {

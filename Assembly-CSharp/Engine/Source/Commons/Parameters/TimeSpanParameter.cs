@@ -1,12 +1,11 @@
-﻿using Cofe.Utility;
+﻿using System;
+using System.Reflection;
+using Cofe.Utility;
 using Engine.Common.Components.Parameters;
 using Engine.Common.Generator;
 using Engine.Common.Services;
 using Engine.Impl.Services.Factories;
 using Inspectors;
-using System;
-using System.Reflection;
-using UnityEngine;
 
 namespace Engine.Source.Commons.Parameters
 {
@@ -18,34 +17,34 @@ namespace Engine.Source.Commons.Parameters
     IParameter,
     IComputeParameter
   {
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [StateSaveProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [StateSaveProxy]
+    [CopyableProxy]
     [NeedSaveProxy]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected ParameterNameEnum name;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [StateSaveProxy(MemberEnum.None)]
-    [StateLoadProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [StateSaveProxy]
+    [StateLoadProxy]
+    [CopyableProxy]
     [NeedSaveProxy]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected TimeSpan value;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [StateSaveProxy(MemberEnum.None)]
-    [StateLoadProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [StateSaveProxy]
+    [StateLoadProxy]
+    [CopyableProxy]
     [NeedSaveProxy]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected TimeSpan minValue;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [StateSaveProxy(MemberEnum.None)]
-    [StateLoadProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [StateSaveProxy]
+    [StateLoadProxy]
+    [CopyableProxy()]
     [NeedSaveProxy]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected TimeSpan maxValue;
@@ -53,15 +52,15 @@ namespace Engine.Source.Commons.Parameters
     private bool mutableChecked;
 
     [Inspected(Header = true)]
-    public ParameterNameEnum Name => this.name;
+    public ParameterNameEnum Name => name;
 
     [Inspected(Header = true, Mutable = true)]
     public TimeSpan Value
     {
-      get => this.value;
+      get => value;
       set
       {
-        this.CheckMutable();
+        CheckMutable();
         this.value = value;
       }
     }
@@ -69,47 +68,47 @@ namespace Engine.Source.Commons.Parameters
     [Inspected]
     public TimeSpan BaseValue
     {
-      get => this.value;
+      get => value;
       set
       {
-        Debug.LogError((object) ("Parameter : " + (object) this.name + " , type : " + TypeUtility.GetTypeName(this.GetType()) + " , property : " + MethodBase.GetCurrentMethod().Name + " not supported setter"));
+        Debug.LogError((object) ("Parameter : " + name + " , type : " + TypeUtility.GetTypeName(GetType()) + " , property : " + MethodBase.GetCurrentMethod().Name + " not supported setter"));
       }
     }
 
     [Inspected]
     public TimeSpan MinValue
     {
-      get => this.minValue;
+      get => minValue;
       set
       {
-        this.CheckMutable();
-        this.minValue = value;
+        CheckMutable();
+        minValue = value;
       }
     }
 
     [Inspected]
     public TimeSpan MaxValue
     {
-      get => this.maxValue;
+      get => maxValue;
       set
       {
-        this.CheckMutable();
-        this.maxValue = value;
+        CheckMutable();
+        maxValue = value;
       }
     }
 
     [Inspected]
     public bool Resetable => false;
 
-    public object ValueData => (object) this.Value;
+    public object ValueData => Value;
 
     private void CheckMutable()
     {
-      if (this.mutableChecked)
+      if (mutableChecked)
         return;
-      this.mutableChecked = true;
-      this.storedValue = this.value;
-      ServiceLocator.GetService<ParametersUpdater>().AddParameter((IComputeParameter) this);
+      mutableChecked = true;
+      storedValue = value;
+      ServiceLocator.GetService<ParametersUpdater>().AddParameter(this);
     }
 
     void IComputeParameter.ResetResetable()
@@ -122,10 +121,10 @@ namespace Engine.Source.Commons.Parameters
 
     void IComputeParameter.ComputeEvent()
     {
-      this.mutableChecked = false;
-      if (!(this.storedValue != this.value))
+      mutableChecked = false;
+      if (!(storedValue != value))
         return;
-      this.ChangeParameterInvoke((IParameter) this);
+      ChangeParameterInvoke(this);
     }
   }
 }

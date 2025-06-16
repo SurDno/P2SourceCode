@@ -1,7 +1,4 @@
-﻿using UnityEngine;
-using UnityEngine.UI;
-
-namespace Engine.Impl.UI.Controls
+﻿namespace Engine.Impl.UI.Controls
 {
   public class ProgressMinLayoutHeight : ProgressView
   {
@@ -18,9 +15,9 @@ namespace Engine.Impl.UI.Controls
 
     protected override void ApplyProgress()
     {
-      if (!((Object) this.element != (Object) null))
+      if (!((Object) element != (Object) null))
         return;
-      this.element.minHeight = Mathf.Lerp(this.min, this.max, this.Progress);
+      element.minHeight = Mathf.Lerp(min, max, Progress);
     }
   }
 }

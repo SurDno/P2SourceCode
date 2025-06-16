@@ -1,10 +1,9 @@
-﻿using AssetDatabases;
-using Engine.Common;
-using Engine.Source.Commons;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using UnityEngine;
+using AssetDatabases;
+using Engine.Common;
+using Engine.Source.Commons;
 
 namespace Engine.Source.Services.Templates
 {
@@ -17,18 +16,16 @@ namespace Engine.Source.Services.Templates
       {
         using (MemoryStream memoryStream = new MemoryStream(context.bytes))
         {
-          IObject @object = SerializeUtility.Deserialize<IObject>((Stream) memoryStream, path);
+          IObject @object = SerializeUtility.Deserialize<IObject>(memoryStream, path);
           if (@object != null)
             return @object;
           Debug.LogError((object) ("Error deserialize template, path : " + path), (UnityEngine.Object) context);
-          return (IObject) null;
+          return null;
         }
       }
-      else
-      {
-        Debug.LogError((object) ("Error load template, path : " + path), (UnityEngine.Object) context);
-        return (IObject) null;
-      }
+
+      Debug.LogError((object) ("Error load template, path : " + path), (UnityEngine.Object) context);
+      return null;
     }
 
     public static void AddTemplateImpl(

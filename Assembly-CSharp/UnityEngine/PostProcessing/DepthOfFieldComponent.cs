@@ -12,7 +12,7 @@ namespace UnityEngine.PostProcessing
     {
       get
       {
-        return this.model.enabled && SystemInfo.SupportsRenderTextureFormat(RenderTextureFormat.ARGBHalf) && !this.context.interrupted;
+        return model.enabled && SystemInfo.SupportsRenderTextureFormat(RenderTextureFormat.ARGBHalf) && !context.interrupted;
       }
     }
 
@@ -20,18 +20,18 @@ namespace UnityEngine.PostProcessing
 
     private float CalculateFocalLength()
     {
-      DepthOfFieldModel.Settings settings = this.model.settings;
-      return !settings.useCameraFov ? settings.focalLength / 1000f : 0.012f / Mathf.Tan(0.5f * (this.context.camera.fieldOfView * ((float) Math.PI / 180f)));
+      DepthOfFieldModel.Settings settings = model.settings;
+      return !settings.useCameraFov ? settings.focalLength / 1000f : 0.012f / Mathf.Tan(0.5f * (context.camera.fieldOfView * ((float) Math.PI / 180f)));
     }
 
     private float CalculateMaxCoCRadius(int screenHeight)
     {
-      return Mathf.Min(0.05f, (float) ((double) this.model.settings.kernelSize * 4.0 + 6.0) / (float) screenHeight);
+      return Mathf.Min(0.05f, (float) ((double) model.settings.kernelSize * 4.0 + 6.0) / screenHeight);
     }
 
     private bool CheckHistory(int width, int height)
     {
-      return (UnityEngine.Object) this.m_CoCHistory != (UnityEngine.Object) null && this.m_CoCHistory.IsCreated() && this.m_CoCHistory.width == width && this.m_CoCHistory.height == height;
+      return (UnityEngine.Object) m_CoCHistory != (UnityEngine.Object) null && m_CoCHistory.IsCreated() && m_CoCHistory.width == width && m_CoCHistory.height == height;
     }
 
     private RenderTextureFormat SelectFormat(
@@ -50,62 +50,62 @@ namespace UnityEngine.PostProcessing
       Vector2 taaJitter,
       float taaBlending)
     {
-      DepthOfFieldModel.Settings settings = this.model.settings;
+      DepthOfFieldModel.Settings settings = model.settings;
       RenderTextureFormat format1 = RenderTextureFormat.ARGBHalf;
-      RenderTextureFormat format2 = this.SelectFormat(RenderTextureFormat.R8, RenderTextureFormat.RHalf);
-      float focalLength = this.CalculateFocalLength();
+      RenderTextureFormat format2 = SelectFormat(RenderTextureFormat.R8, RenderTextureFormat.RHalf);
+      float focalLength = CalculateFocalLength();
       float x = Mathf.Max(settings.focusDistance, focalLength);
       float num = (float) source.width / (float) source.height;
-      float y = (float) ((double) focalLength * (double) focalLength / ((double) settings.aperture * ((double) x - (double) focalLength) * 0.024000000208616257 * 2.0));
-      float maxCoCradius = this.CalculateMaxCoCRadius(source.height);
-      Material mat = this.context.materialFactory.Get("Hidden/Post FX/Depth Of Field");
-      mat.SetFloat(DepthOfFieldComponent.Uniforms._Distance, x);
-      mat.SetFloat(DepthOfFieldComponent.Uniforms._LensCoeff, y);
-      mat.SetFloat(DepthOfFieldComponent.Uniforms._MaxCoC, maxCoCradius);
-      mat.SetFloat(DepthOfFieldComponent.Uniforms._RcpMaxCoC, 1f / maxCoCradius);
-      mat.SetFloat(DepthOfFieldComponent.Uniforms._RcpAspect, 1f / num);
-      RenderTexture renderTexture1 = this.context.renderTextureFactory.Get(Mathf.Max(1, this.context.width), Mathf.Max(1, this.context.height), format: format2);
+      float y = (float) (focalLength * (double) focalLength / (settings.aperture * (x - (double) focalLength) * 0.024000000208616257 * 2.0));
+      float maxCoCradius = CalculateMaxCoCRadius(source.height);
+      Material mat = context.materialFactory.Get("Hidden/Post FX/Depth Of Field");
+      mat.SetFloat(Uniforms._Distance, x);
+      mat.SetFloat(Uniforms._LensCoeff, y);
+      mat.SetFloat(Uniforms._MaxCoC, maxCoCradius);
+      mat.SetFloat(Uniforms._RcpMaxCoC, 1f / maxCoCradius);
+      mat.SetFloat(Uniforms._RcpAspect, 1f / num);
+      RenderTexture renderTexture1 = context.renderTextureFactory.Get(Mathf.Max(1, context.width), Mathf.Max(1, context.height), format: format2);
       Graphics.Blit((Texture) null, renderTexture1, mat, 0);
       if (antialiasCoC)
       {
-        mat.SetTexture(DepthOfFieldComponent.Uniforms._CoCTex, (Texture) renderTexture1);
-        float z = this.CheckHistory(this.context.width, this.context.height) ? taaBlending : 0.0f;
-        mat.SetVector(DepthOfFieldComponent.Uniforms._TaaParams, (Vector4) new Vector3(taaJitter.x, taaJitter.y, z));
-        RenderTexture temporary = RenderTexture.GetTemporary(this.context.width, this.context.height, 0, format2);
-        Graphics.Blit((Texture) this.m_CoCHistory, temporary, mat, 1);
-        this.context.renderTextureFactory.Release(renderTexture1);
-        if ((UnityEngine.Object) this.m_CoCHistory != (UnityEngine.Object) null)
-          RenderTexture.ReleaseTemporary(this.m_CoCHistory);
-        this.m_CoCHistory = renderTexture1 = temporary;
+        mat.SetTexture(Uniforms._CoCTex, (Texture) renderTexture1);
+        float z = CheckHistory(context.width, context.height) ? taaBlending : 0.0f;
+        mat.SetVector(Uniforms._TaaParams, (Vector4) new Vector3(taaJitter.x, taaJitter.y, z));
+        RenderTexture temporary = RenderTexture.GetTemporary(context.width, context.height, 0, format2);
+        Graphics.Blit((Texture) m_CoCHistory, temporary, mat, 1);
+        context.renderTextureFactory.Release(renderTexture1);
+        if ((UnityEngine.Object) m_CoCHistory != (UnityEngine.Object) null)
+          RenderTexture.ReleaseTemporary(m_CoCHistory);
+        m_CoCHistory = renderTexture1 = temporary;
       }
-      int width = Mathf.Max(1, this.context.width / 2);
-      int height = Mathf.Max(1, this.context.height / 2);
-      RenderTexture renderTexture2 = this.context.renderTextureFactory.Get(width, height, format: format1);
-      mat.SetTexture(DepthOfFieldComponent.Uniforms._CoCTex, (Texture) renderTexture1);
+      int width = Mathf.Max(1, context.width / 2);
+      int height = Mathf.Max(1, context.height / 2);
+      RenderTexture renderTexture2 = context.renderTextureFactory.Get(width, height, format: format1);
+      mat.SetTexture(Uniforms._CoCTex, (Texture) renderTexture1);
       Graphics.Blit((Texture) source, renderTexture2, mat, 2);
-      RenderTexture renderTexture3 = this.context.renderTextureFactory.Get(width, height, format: format1);
+      RenderTexture renderTexture3 = context.renderTextureFactory.Get(width, height, format: format1);
       Graphics.Blit((Texture) renderTexture2, renderTexture3, mat, (int) (3 + settings.kernelSize));
       Graphics.Blit((Texture) renderTexture3, renderTexture2, mat, 7);
-      uberMaterial.SetVector(DepthOfFieldComponent.Uniforms._DepthOfFieldParams, (Vector4) new Vector3(x, y, maxCoCradius));
-      if (this.context.profile.debugViews.IsModeActive(BuiltinDebugViewsModel.Mode.FocusPlane))
+      uberMaterial.SetVector(Uniforms._DepthOfFieldParams, (Vector4) new Vector3(x, y, maxCoCradius));
+      if (context.profile.debugViews.IsModeActive(BuiltinDebugViewsModel.Mode.FocusPlane))
       {
         uberMaterial.EnableKeyword("DEPTH_OF_FIELD_COC_VIEW");
-        this.context.Interrupt();
+        context.Interrupt();
       }
       else
       {
-        uberMaterial.SetTexture(DepthOfFieldComponent.Uniforms._DepthOfFieldTex, (Texture) renderTexture2);
-        uberMaterial.SetTexture(DepthOfFieldComponent.Uniforms._DepthOfFieldCoCTex, (Texture) renderTexture1);
+        uberMaterial.SetTexture(Uniforms._DepthOfFieldTex, (Texture) renderTexture2);
+        uberMaterial.SetTexture(Uniforms._DepthOfFieldCoCTex, (Texture) renderTexture1);
         uberMaterial.EnableKeyword("DEPTH_OF_FIELD");
       }
-      this.context.renderTextureFactory.Release(renderTexture3);
+      context.renderTextureFactory.Release(renderTexture3);
     }
 
     public override void OnDisable()
     {
-      if ((UnityEngine.Object) this.m_CoCHistory != (UnityEngine.Object) null)
-        RenderTexture.ReleaseTemporary(this.m_CoCHistory);
-      this.m_CoCHistory = (RenderTexture) null;
+      if ((UnityEngine.Object) m_CoCHistory != (UnityEngine.Object) null)
+        RenderTexture.ReleaseTemporary(m_CoCHistory);
+      m_CoCHistory = (RenderTexture) null;
     }
 
     private static class Uniforms

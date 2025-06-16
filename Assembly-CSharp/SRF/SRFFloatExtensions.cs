@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace SRF
+﻿namespace SRF
 {
   public static class SRFFloatExtensions
   {

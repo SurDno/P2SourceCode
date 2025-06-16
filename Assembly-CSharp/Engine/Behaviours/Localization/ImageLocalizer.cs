@@ -1,20 +1,19 @@
-﻿using Engine.Common.Services;
-using System;
-using UnityEngine;
+﻿using System;
+using Engine.Common.Services;
 
 namespace Engine.Behaviours.Localization
 {
   public class ImageLocalizer : ImageLocalizerBase
   {
     [SerializeField]
-    private ImageLocalizer.LanguageSprite[] sprites;
+    private LanguageSprite[] sprites;
 
     protected override Sprite GetSprite(LanguageEnum language)
     {
       Sprite sprite1 = (Sprite) null;
-      for (int index = 0; index < this.sprites.Length; ++index)
+      for (int index = 0; index < sprites.Length; ++index)
       {
-        ImageLocalizer.LanguageSprite sprite2 = this.sprites[index];
+        LanguageSprite sprite2 = sprites[index];
         if (sprite2.Language == language)
         {
           sprite1 = sprite2.Sprite;
@@ -32,9 +31,9 @@ namespace Engine.Behaviours.Localization
       [SerializeField]
       private Sprite sprite;
 
-      public LanguageEnum Language => this.language;
+      public LanguageEnum Language => language;
 
-      public Sprite Sprite => this.sprite;
+      public Sprite Sprite => sprite;
     }
   }
 }

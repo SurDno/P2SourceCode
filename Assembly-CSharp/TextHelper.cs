@@ -1,22 +1,21 @@
-﻿using Cofe.Serializations.Converters;
+﻿using System.Text;
+using Cofe.Serializations.Converters;
 using Engine.Common.Services;
 using Engine.Impl.Services;
 using Engine.Source.Services.Inputs;
 using Engine.Source.Utility;
 using InputServices;
-using System.Text;
-using UnityEngine;
 
 public class TextHelper
 {
   public static string FormatString(string message, int fontSize, bool smallCaps, bool allCaps)
   {
-    message = TextHelper.Localize(message);
-    message = TextHelper.ReplaceTags(message);
+    message = Localize(message);
+    message = ReplaceTags(message);
     if (allCaps)
-      message = TextHelper.FormatStringToUpper(message);
+      message = FormatStringToUpper(message);
     else if (smallCaps)
-      message = TextHelper.FormatStringUpperCharsToCapital(message, fontSize);
+      message = FormatStringUpperCharsToCapital(message, fontSize);
     return message;
   }
 
@@ -45,12 +44,12 @@ public class TextHelper
   public static string FormatStringToUpper(string message)
   {
     if (string.IsNullOrEmpty(message))
-      return (string) null;
+      return null;
     StringBuilder stringBuilder = new StringBuilder();
     for (int index = 0; index < message.Length; ++index)
     {
       char ch = message[index];
-      if (TextHelper.CharIsEditable(message, index))
+      if (CharIsEditable(message, index))
         stringBuilder.Append(ch.ToString().ToUpper());
       else
         stringBuilder.Append(ch);
@@ -62,14 +61,14 @@ public class TextHelper
   public static string FormatStringUpperCharsToCapital(string message, int fontSize)
   {
     if (string.IsNullOrEmpty(message))
-      return (string) null;
-    string str = "<size=" + (object) Mathf.RoundToInt((float) fontSize * 1.25f) + ">";
+      return null;
+    string str = "<size=" + (object) Mathf.RoundToInt(fontSize * 1.25f) + ">";
     StringBuilder stringBuilder = new StringBuilder();
     bool flag = false;
     for (int index = 0; index < message.Length; ++index)
     {
       char c = message[index];
-      if (TextHelper.CharIsEditable(message, index) && !char.IsLower(c))
+      if (CharIsEditable(message, index) && !char.IsLower(c))
       {
         if (!flag)
         {
@@ -136,7 +135,7 @@ public class TextHelper
           string str4 = text.Substring(num + str2.Length);
           string str5 = text.Substring(length + str1.Length, num - length - str1.Length);
           GameActionType result;
-          if (DefaultConverter.TryParseEnum<GameActionType>(str5, out result))
+          if (DefaultConverter.TryParseEnum(str5, out result))
             str5 = InputUtility.GetHotKeyNameByAction(result, InputService.Instance.JoystickUsed);
           text = str3 + hotkeyPrefix + str5 + hotkeySuffix + str4;
         }
@@ -153,6 +152,6 @@ label_6:
 
   public static string ReplaceTags(string text)
   {
-    return TextHelper.ReplaceTags(text, string.Empty, string.Empty);
+    return ReplaceTags(text, string.Empty, string.Empty);
   }
 }

@@ -1,62 +1,60 @@
-﻿using UnityEngine;
-
-namespace Engine.Impl.UI.Controls
+﻿namespace Engine.Impl.UI.Controls
 {
   public class ProgressAnimated : ProgressView
   {
     [SerializeField]
-    private ProgressViewBase progressView = (ProgressViewBase) null;
+    private ProgressViewBase progressView = null;
     [SerializeField]
-    private HideableView increasingEffect = (HideableView) null;
+    private HideableView increasingEffect = null;
     [SerializeField]
-    private HideableView decreasingEffect = (HideableView) null;
+    private HideableView decreasingEffect = null;
     [SerializeField]
     private float smoothTime = 1f;
     [SerializeField]
     private float effectThreshold = 0.0f;
-    private float velocity = 0.0f;
+    private float velocity;
 
     private void Update()
     {
-      if ((Object) this.progressView == (Object) null)
+      if ((Object) progressView == (Object) null)
         return;
-      float progress = this.progressView.Progress;
-      if ((double) progress == (double) this.Progress)
+      float progress = progressView.Progress;
+      if (progress == (double) Progress)
         return;
-      float num = Mathf.MoveTowards(Mathf.SmoothDamp(progress, this.Progress, ref this.velocity, this.smoothTime), this.Progress, Time.deltaTime * (1f / 1000f));
-      this.progressView.Progress = num;
-      if ((Object) this.increasingEffect == (Object) this.decreasingEffect)
+      float num = Mathf.MoveTowards(Mathf.SmoothDamp(progress, Progress, ref velocity, smoothTime), Progress, Time.deltaTime * (1f / 1000f));
+      progressView.Progress = num;
+      if ((Object) increasingEffect == (Object) decreasingEffect)
       {
-        if (!((Object) this.increasingEffect != (Object) null))
+        if (!((Object) increasingEffect != (Object) null))
           return;
-        this.increasingEffect.Visible = (double) this.Progress - (double) num > (double) this.effectThreshold || (double) num - (double) this.Progress > (double) this.effectThreshold;
+        increasingEffect.Visible = Progress - (double) num > effectThreshold || num - (double) Progress > effectThreshold;
       }
       else
       {
-        if ((Object) this.increasingEffect != (Object) null)
-          this.increasingEffect.Visible = (double) this.Progress - (double) num > (double) this.effectThreshold;
-        if ((Object) this.decreasingEffect != (Object) null)
-          this.decreasingEffect.Visible = (double) num - (double) this.Progress > (double) this.effectThreshold;
+        if ((Object) increasingEffect != (Object) null)
+          increasingEffect.Visible = Progress - (double) num > effectThreshold;
+        if ((Object) decreasingEffect != (Object) null)
+          decreasingEffect.Visible = num - (double) Progress > effectThreshold;
       }
     }
 
     public override void SkipAnimation()
     {
-      if ((Object) this.progressView != (Object) null)
-        this.progressView.Progress = this.Progress;
-      this.velocity = 0.0f;
-      if ((Object) this.increasingEffect != (Object) null)
-        this.increasingEffect.Visible = false;
-      if (!((Object) this.decreasingEffect != (Object) null))
+      if ((Object) progressView != (Object) null)
+        progressView.Progress = Progress;
+      velocity = 0.0f;
+      if ((Object) increasingEffect != (Object) null)
+        increasingEffect.Visible = false;
+      if (!((Object) decreasingEffect != (Object) null))
         return;
-      this.decreasingEffect.Visible = false;
+      decreasingEffect.Visible = false;
     }
 
     protected override void ApplyProgress()
     {
       if (Application.isPlaying)
         return;
-      this.SkipAnimation();
+      SkipAnimation();
     }
   }
 }

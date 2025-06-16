@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEngine;
 
 namespace RootMotion.FinalIK
 {
@@ -9,7 +8,7 @@ namespace RootMotion.FinalIK
     public Transform transform;
     public float weight;
 
-    public bool isValid => (UnityEngine.Object) this.transform != (UnityEngine.Object) null;
+    public bool isValid => (UnityEngine.Object) transform != (UnityEngine.Object) null;
 
     public abstract void UpdateConstraint();
   }

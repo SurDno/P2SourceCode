@@ -1,11 +1,4 @@
-﻿using Cofe.Loggers;
-using Cofe.Serializations.Converters;
-using Engine.Common.Comparers;
-using Engine.Common.Threads;
-using PLVirtualMachine.Common;
-using PLVirtualMachine.Common.Data;
-using PLVirtualMachine.Objects;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -13,6 +6,13 @@ using System.IO;
 using System.IO.Compression;
 using System.Threading;
 using System.Xml;
+using Cofe.Loggers;
+using Cofe.Serializations.Converters;
+using Engine.Common.Comparers;
+using Engine.Common.Threads;
+using PLVirtualMachine.Common;
+using PLVirtualMachine.Common.Data;
+using PLVirtualMachine.Objects;
 using VirtualMachine.Common;
 using VirtualMachine.Data;
 
@@ -26,7 +26,7 @@ namespace PLVirtualMachine.Data
 
     private XMLDataLoader()
     {
-      IStaticDataContainer.StaticDataContainer = (IStaticDataContainer) this;
+      StaticDataContainer = this;
     }
 
     public static XMLDataLoader Instance { get; private set; } = new XMLDataLoader();
@@ -36,58 +36,56 @@ namespace PLVirtualMachine.Data
       get
       {
         GameDataInfo currentData = this.currentData;
-        return currentData == null ? (IGameRoot) null : (IGameRoot) currentData.Root;
+        return currentData == null ? null : (IGameRoot) currentData.Root;
       }
     }
 
     public IEnumerator LoadDataFromXML(string dataFolderName, int threadCount, int dataCapacity)
     {
-      this.Clear();
-      this.currentData = new GameDataInfo()
-      {
+      Clear();
+      currentData = new GameDataInfo {
         Name = dataFolderName,
-        Objects = new Dictionary<ulong, IObject>(dataCapacity, (IEqualityComparer<ulong>) UlongComparer.Instance)
+        Objects = new Dictionary<ulong, IObject>(dataCapacity, UlongComparer.Instance)
       };
-      yield return (object) null;
+      yield return null;
       if (threadCount == 0)
       {
-        ThreadState<KeyValuePair<string, Type>, string> state = new ThreadState<KeyValuePair<string, Type>, string>()
-        {
+        ThreadState<KeyValuePair<string, Type>, string> state = new ThreadState<KeyValuePair<string, Type>, string> {
           Context = dataFolderName
         };
         foreach (KeyValuePair<string, Type> keyValuePair in DataFactoryAttribute.Items)
-          this.ComputeDataType(keyValuePair, state);
+          ComputeDataType(keyValuePair, state);
       }
       else
-        ThreadPoolUtility.Compute<KeyValuePair<string, Type>, string>(new Action<KeyValuePair<string, Type>, ThreadState<KeyValuePair<string, Type>, string>>(this.ComputeDataType), DataFactoryAttribute.Items, threadCount, dataFolderName);
-      if (this.currentData.Root == null)
+        ThreadPoolUtility.Compute(ComputeDataType, DataFactoryAttribute.Items, threadCount, dataFolderName);
+      if (currentData.Root == null)
         Logger.AddError("Root not found");
-      yield return (object) null;
-      yield return (object) this.AfterLoadObjects();
-      if (dataCapacity < this.currentData.Objects.Count)
+      yield return null;
+      yield return AfterLoadObjects();
+      if (dataCapacity < currentData.Objects.Count)
         Logger.AddError("Wrong capacity");
-      Logger.AddInfo("Load data complete, name : " + dataFolderName + " , count : " + (object) this.currentData.Objects.Count + " , capacity : " + (object) dataCapacity);
+      Logger.AddInfo("Load data complete, name : " + dataFolderName + " , count : " + currentData.Objects.Count + " , capacity : " + dataCapacity);
     }
 
     private IEnumerator AfterLoadObjects()
     {
-      this.currentData.Root.OnAfterLoad();
-      yield return (object) null;
-      foreach (KeyValuePair<ulong, IObject> keyValuePair in this.currentData.Objects)
+      currentData.Root.OnAfterLoad();
+      yield return null;
+      foreach (KeyValuePair<ulong, IObject> keyValuePair in currentData.Objects)
       {
         IObject @object = keyValuePair.Value;
-        if (@object != this.currentData.Root && @object is IOnAfterLoaded onAfterLoaded)
+        if (@object != currentData.Root && @object is IOnAfterLoaded onAfterLoaded)
           onAfterLoaded.OnAfterLoad();
         if (DelayTimer.Check)
-          yield return (object) null;
+          yield return null;
       }
-      foreach (KeyValuePair<ulong, IObject> keyValuePair in this.currentData.Objects)
+      foreach (KeyValuePair<ulong, IObject> keyValuePair in currentData.Objects)
       {
         IObject @object = keyValuePair.Value;
-        if (@object != this.currentData.Root && @object is IOnAfterLoaded onAfterLoaded)
+        if (@object != currentData.Root && @object is IOnAfterLoaded onAfterLoaded)
           onAfterLoaded.OnPostLoad();
         if (DelayTimer.Check)
-          yield return (object) null;
+          yield return null;
       }
     }
 
@@ -98,22 +96,22 @@ namespace PLVirtualMachine.Data
       string str1 = state.Context + "/" + item.Key + ".xml.gz";
       if (File.Exists(str1))
       {
-        IObject @object = (IObject) null;
-        this.LoadDataCompress(str1, item.Key, item.Value, ref @object);
+        IObject @object = null;
+        LoadDataCompress(str1, item.Key, item.Value, ref @object);
         if (!(item.Value == typeof (VMGameRoot)))
           return;
-        this.currentData.Root = (VMGameRoot) @object;
+        currentData.Root = (VMGameRoot) @object;
       }
       else
       {
         string str2 = state.Context + "/" + item.Key + ".xml";
         if (!File.Exists(str2))
           return;
-        IObject @object = (IObject) null;
-        this.LoadData(str2, item.Key, item.Value, ref @object);
+        IObject @object = null;
+        LoadData(str2, item.Key, item.Value, ref @object);
         if (!(item.Value == typeof (VMGameRoot)))
           return;
-        this.currentData.Root = (VMGameRoot) @object;
+        currentData.Root = (VMGameRoot) @object;
       }
     }
 
@@ -123,20 +121,20 @@ namespace PLVirtualMachine.Data
       stopwatch.Start();
       using (FileStream fileStream = File.OpenRead(fileName))
       {
-        using (GZipStream input = new GZipStream((Stream) fileStream, CompressionMode.Decompress))
+        using (GZipStream input = new GZipStream(fileStream, CompressionMode.Decompress))
         {
-          using (XmlReader xml = XmlReader.Create((Stream) input))
+          using (XmlReader xml = XmlReader.Create(input))
           {
             while (xml.Read())
             {
               if (xml.NodeType == XmlNodeType.Element)
-                this.LoadXmlDataObjectsFromReader(xml, type, ref item, typeName);
+                LoadXmlDataObjectsFromReader(xml, type, ref item, typeName);
             }
           }
         }
       }
       stopwatch.Stop();
-      Logger.AddInfo(" -  - [LoadDataFromXML] LoadObjects, name : " + Path.GetFileNameWithoutExtension(fileName) + " , elapsed : " + (object) stopwatch.Elapsed + " , thread : " + (object) Thread.CurrentThread.ManagedThreadId);
+      Logger.AddInfo(" -  - [LoadDataFromXML] LoadObjects, name : " + Path.GetFileNameWithoutExtension(fileName) + " , elapsed : " + stopwatch.Elapsed + " , thread : " + Thread.CurrentThread.ManagedThreadId);
     }
 
     private void LoadData(string fileName, string typeName, Type type, ref IObject item)
@@ -145,17 +143,17 @@ namespace PLVirtualMachine.Data
       stopwatch.Start();
       using (FileStream input = File.OpenRead(fileName))
       {
-        using (XmlReader xml = XmlReader.Create((Stream) input))
+        using (XmlReader xml = XmlReader.Create(input))
         {
           while (xml.Read())
           {
             if (xml.NodeType == XmlNodeType.Element)
-              this.LoadXmlDataObjectsFromReader(xml, type, ref item, typeName);
+              LoadXmlDataObjectsFromReader(xml, type, ref item, typeName);
           }
         }
       }
       stopwatch.Stop();
-      Logger.AddInfo(" -  - [LoadDataFromXML] LoadObjects, name : " + Path.GetFileNameWithoutExtension(fileName) + " , elapsed : " + (object) stopwatch.Elapsed + " , thread : " + (object) Thread.CurrentThread.ManagedThreadId);
+      Logger.AddInfo(" -  - [LoadDataFromXML] LoadObjects, name : " + Path.GetFileNameWithoutExtension(fileName) + " , elapsed : " + stopwatch.Elapsed + " , thread : " + Thread.CurrentThread.ManagedThreadId);
     }
 
     private void LoadXmlDataObjectsFromReader(
@@ -176,37 +174,37 @@ namespace PLVirtualMachine.Data
           ulong id = DefaultConverter.ParseUlong(xml.Value);
           if (xml.MoveToAttribute(nameof (type)))
             type = DataFactoryAttribute.GetTypeByName(xml.Value);
-          item = this.GetOrCreateObjectThreadSave(type, id);
+          item = GetOrCreateObjectThreadSave(type, id);
           if (item is IEditorDataReader editorDataReader)
-            editorDataReader.EditorDataRead(xml, (IDataCreator) this, typeContext);
+            editorDataReader.EditorDataRead(xml, this, typeContext);
           else
-            Logger.AddError("Type : " + (object) item.GetType() + " is not IEditorDataReader");
+            Logger.AddError("Type : " + item.GetType() + " is not IEditorDataReader");
         }
       }
     }
 
     private IObject GetOrCreateObjectThreadSave(Type type, ulong id)
     {
-      lock (XMLDataLoader.sync)
+      lock (sync)
       {
         IObject instance;
-        if (this.currentData.Objects.TryGetValue(id, out instance))
+        if (currentData.Objects.TryGetValue(id, out instance))
           return instance;
-        instance = (IObject) Activator.CreateInstance(type, (object) id);
-        this.currentData.Objects.Add(id, instance);
+        instance = (IObject) Activator.CreateInstance(type, id);
+        currentData.Objects.Add(id, instance);
         return instance;
       }
     }
 
     public IObject GetOrCreateObjectThreadSave(ulong id)
     {
-      lock (XMLDataLoader.sync)
+      lock (sync)
       {
         IObject instance;
-        if (this.currentData.Objects.TryGetValue(id, out instance))
+        if (currentData.Objects.TryGetValue(id, out instance))
           return instance;
-        instance = (IObject) Activator.CreateInstance(XmlDataLoaderUtility.GetObjTypeById(id), (object) id);
-        this.currentData.Objects.Add(id, instance);
+        instance = (IObject) Activator.CreateInstance(XmlDataLoaderUtility.GetObjTypeById(id), id);
+        currentData.Objects.Add(id, instance);
         return instance;
       }
     }
@@ -214,30 +212,30 @@ namespace PLVirtualMachine.Data
     public override IObject GetOrCreateObject(ulong id)
     {
       IObject @object;
-      if (this.currentData.Objects.TryGetValue(id, out @object))
+      if (currentData.Objects.TryGetValue(id, out @object))
         return @object;
-      IObject instance = (IObject) Activator.CreateInstance(XmlDataLoaderUtility.GetObjTypeById(id), (object) id);
-      this.currentData.Objects.Add(id, instance);
+      IObject instance = (IObject) Activator.CreateInstance(XmlDataLoaderUtility.GetObjTypeById(id), id);
+      currentData.Objects.Add(id, instance);
       return instance;
     }
 
     public override IObject GetObjectByGuid(ulong id)
     {
       IObject objectByGuid;
-      this.currentData.Objects.TryGetValue(id, out objectByGuid);
+      currentData.Objects.TryGetValue(id, out objectByGuid);
       return objectByGuid;
     }
 
     public void Clear()
     {
-      if (this.currentData == null)
+      if (currentData == null)
         return;
-      if (this.currentData.Root != null)
-        this.currentData.Root.Clear();
-      this.currentData.Objects.Clear();
-      this.currentData.Objects = (Dictionary<ulong, IObject>) null;
-      this.currentData.Root = (VMGameRoot) null;
-      this.currentData = (GameDataInfo) null;
+      if (currentData.Root != null)
+        currentData.Root.Clear();
+      currentData.Objects.Clear();
+      currentData.Objects = null;
+      currentData.Root = null;
+      currentData = null;
     }
   }
 }

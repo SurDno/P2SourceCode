@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace UnityStandardAssets.ImageEffects
+﻿namespace UnityStandardAssets.ImageEffects
 {
   [ExecuteInEditMode]
   [AddComponentMenu("Image Effects/Blur/Blur")]
@@ -17,20 +15,20 @@ namespace UnityStandardAssets.ImageEffects
     {
       get
       {
-        if ((Object) Blur.m_Material == (Object) null)
+        if ((Object) m_Material == (Object) null)
         {
-          Blur.m_Material = new Material(this.blurShader);
-          Blur.m_Material.hideFlags = HideFlags.DontSave;
+          m_Material = new Material(blurShader);
+          m_Material.hideFlags = HideFlags.DontSave;
         }
-        return Blur.m_Material;
+        return m_Material;
       }
     }
 
     protected void OnDisable()
     {
-      if (!(bool) (Object) Blur.m_Material)
+      if (!(bool) (Object) m_Material)
         return;
-      Object.DestroyImmediate((Object) Blur.m_Material);
+      Object.DestroyImmediate((Object) m_Material);
     }
 
     protected void Start()
@@ -41,7 +39,7 @@ namespace UnityStandardAssets.ImageEffects
       }
       else
       {
-        if ((bool) (Object) this.blurShader && this.material.shader.isSupported)
+        if ((bool) (Object) blurShader && material.shader.isSupported)
           return;
         this.enabled = false;
       }
@@ -49,14 +47,14 @@ namespace UnityStandardAssets.ImageEffects
 
     public void FourTapCone(RenderTexture source, RenderTexture dest, int iteration)
     {
-      float num = (float) (0.5 + (double) iteration * (double) this.blurSpread);
-      Graphics.BlitMultiTap((Texture) source, dest, this.material, new Vector2(-num, -num), new Vector2(-num, num), new Vector2(num, num), new Vector2(num, -num));
+      float num = (float) (0.5 + iteration * (double) blurSpread);
+      Graphics.BlitMultiTap((Texture) source, dest, material, new Vector2(-num, -num), new Vector2(-num, num), new Vector2(num, num), new Vector2(num, -num));
     }
 
     private void DownSample4x(RenderTexture source, RenderTexture dest)
     {
       float num = 1f;
-      Graphics.BlitMultiTap((Texture) source, dest, this.material, new Vector2(-num, -num), new Vector2(-num, num), new Vector2(num, num), new Vector2(num, -num));
+      Graphics.BlitMultiTap((Texture) source, dest, material, new Vector2(-num, -num), new Vector2(-num, num), new Vector2(num, num), new Vector2(num, -num));
     }
 
     private void OnRenderImage(RenderTexture source, RenderTexture destination)
@@ -64,11 +62,11 @@ namespace UnityStandardAssets.ImageEffects
       int width = source.width / 4;
       int height = source.height / 4;
       RenderTexture renderTexture = RenderTexture.GetTemporary(width, height, 0);
-      this.DownSample4x(source, renderTexture);
-      for (int iteration = 0; iteration < this.iterations; ++iteration)
+      DownSample4x(source, renderTexture);
+      for (int iteration = 0; iteration < iterations; ++iteration)
       {
         RenderTexture temporary = RenderTexture.GetTemporary(width, height, 0);
-        this.FourTapCone(renderTexture, temporary, iteration);
+        FourTapCone(renderTexture, temporary, iteration);
         RenderTexture.ReleaseTemporary(renderTexture);
         renderTexture = temporary;
       }

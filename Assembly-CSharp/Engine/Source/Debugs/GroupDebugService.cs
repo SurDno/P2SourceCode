@@ -1,12 +1,10 @@
-﻿using Cofe.Meta;
-using Engine.Common;
+﻿using System;
+using System.Collections.Generic;
+using Cofe.Meta;
 using Engine.Common.Services;
 using Engine.Source.Commons;
 using Engine.Source.Services.Gizmos;
 using Engine.Source.Utility;
-using System;
-using System.Collections.Generic;
-using UnityEngine;
 
 namespace Engine.Source.Debugs
 {
@@ -20,20 +18,20 @@ namespace Engine.Source.Debugs
     private static Color trueColor = Color.white;
     private static Color falseColor = ColorPreset.LightGray;
     private static bool visible;
-    private static List<GroupDebugService.GroupInfo> groups = new List<GroupDebugService.GroupInfo>();
+    private static List<GroupInfo> groups = new List<GroupInfo>();
     private static List<Action> handlers = new List<Action>();
 
     public static bool IsGroupVisible(string name)
     {
-      foreach (GroupDebugService.GroupInfo group in GroupDebugService.groups)
+      foreach (GroupInfo group in groups)
       {
         if (group.Name == name)
-          return (bool) group.Visible;
+          return group.Visible;
       }
       return false;
     }
 
-    public static void RegisterGroup(Action handler) => GroupDebugService.handlers.Add(handler);
+    public static void RegisterGroup(Action handler) => handlers.Add(handler);
 
     public static void RegisterGroup(
       string name,
@@ -41,43 +39,42 @@ namespace Engine.Source.Debugs
       KeyModifficator modifficators,
       Action handler)
     {
-      GroupDebugService.groups.Add(new GroupDebugService.GroupInfo()
-      {
+      groups.Add(new GroupInfo {
         Name = name,
         HotKey = key,
         Modifficators = modifficators,
         Handler = handler,
         Visible = new BoolPlayerProperty(name)
       });
-      GroupDebugService.groups.Sort((Comparison<GroupDebugService.GroupInfo>) ((a, b) => a.HotKey.CompareTo((object) b.HotKey)));
+      groups.Sort((a, b) => a.HotKey.CompareTo((object) b.HotKey));
     }
 
-    [Cofe.Meta.Initialise]
+    [Initialise]
     private static void Initialise()
     {
-      InstanceByRequest<UpdateService>.Instance.Updater.AddUpdatable((IUpdatable) new UpdatableProxy((Action) (() => GroupDebugService.Update())));
+      InstanceByRequest<UpdateService>.Instance.Updater.AddUpdatable(new UpdatableProxy((Action) (() => Update())));
     }
 
     private static void Update()
     {
       if (!InstanceByRequest<EngineApplication>.Instance.IsDebug)
         return;
-      foreach (Action handler in GroupDebugService.handlers)
+      foreach (Action handler in handlers)
         handler();
-      if (InputUtility.IsKeyDown(GroupDebugService.key))
-        GroupDebugService.visible = !GroupDebugService.visible;
-      string text1 = GroupDebugService.name + " (" + InputUtility.GetHotKeyText(GroupDebugService.key, GroupDebugService.modifficators) + ")";
-      ServiceLocator.GetService<GizmoService>().DrawText(text1, GroupDebugService.headerColor);
-      foreach (GroupDebugService.GroupInfo group in GroupDebugService.groups)
+      if (InputUtility.IsKeyDown(key))
+        visible = !visible;
+      string text1 = name + " (" + InputUtility.GetHotKeyText(key, modifficators) + ")";
+      ServiceLocator.GetService<GizmoService>().DrawText(text1, headerColor);
+      foreach (GroupInfo group in groups)
       {
         if (InputUtility.IsKeyDown(group.HotKey, group.Modifficators))
-          group.Visible.Value = !(bool) group.Visible;
-        if (GroupDebugService.visible)
+          group.Visible.Value = !group.Visible;
+        if (visible)
         {
           string text2 = "  " + group.Name + " (" + InputUtility.GetHotKeyText(group.HotKey, group.Modifficators) + ")";
-          ServiceLocator.GetService<GizmoService>().DrawText(text2, (bool) group.Visible ? GroupDebugService.trueColor : GroupDebugService.falseColor);
+          ServiceLocator.GetService<GizmoService>().DrawText(text2, group.Visible ? trueColor : falseColor);
         }
-        else if ((bool) group.Visible)
+        else if (group.Visible)
           group.Handler();
       }
     }

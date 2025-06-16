@@ -7,8 +7,8 @@ namespace Engine.Source.Services
   [GenerateProxy(TypeEnum.StateSave | TypeEnum.StateLoad)]
   public class ForcedDialogCharacterInfo
   {
-    [StateSaveProxy(MemberEnum.None)]
-    [StateLoadProxy(MemberEnum.None)]
+    [StateSaveProxy]
+    [StateLoadProxy()]
     [Inspected]
     public float Distance;
     [StateSaveProxy(MemberEnum.CustomReference)]

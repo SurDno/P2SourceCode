@@ -1,6 +1,5 @@
 ﻿using ParadoxNotion.Design;
 using ParadoxNotion.Services;
-using System;
 
 namespace FlowCanvas.Nodes
 {
@@ -11,18 +10,18 @@ namespace FlowCanvas.Nodes
   {
     private FlowOutput lateUpdate;
 
-    protected override void RegisterPorts() => this.lateUpdate = this.AddFlowOutput("Out");
+    protected override void RegisterPorts() => lateUpdate = AddFlowOutput("Out");
 
     public override void OnGraphStarted()
     {
-      BlueprintManager.current.onLateUpdate += new Action(this.LateUpdate);
+      BlueprintManager.current.onLateUpdate += LateUpdate;
     }
 
     public override void OnGraphStoped()
     {
-      BlueprintManager.current.onLateUpdate -= new Action(this.LateUpdate);
+      BlueprintManager.current.onLateUpdate -= LateUpdate;
     }
 
-    private void LateUpdate() => this.lateUpdate.Call();
+    private void LateUpdate() => lateUpdate.Call();
   }
 }

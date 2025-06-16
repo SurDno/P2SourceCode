@@ -1,6 +1,4 @@
 ﻿using System;
-using UnityEngine;
-using UnityEngine.UI;
 
 namespace SRF.UI
 {
@@ -12,7 +10,7 @@ namespace SRF.UI
     public override void SetLayoutDirty()
     {
       base.SetLayoutDirty();
-      Action<SRText> layoutDirty = this.LayoutDirty;
+      Action<SRText> layoutDirty = LayoutDirty;
       if (layoutDirty == null)
         return;
       layoutDirty(this);

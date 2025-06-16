@@ -1,8 +1,7 @@
-﻿using AssetDatabases;
+﻿using System.Collections;
+using AssetDatabases;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
-using System.Collections;
-using UnityEngine;
 
 namespace Engine.Source.Otimizations
 {
@@ -12,13 +11,13 @@ namespace Engine.Source.Otimizations
   {
     public IEnumerator Compute(MemoryStrategyContextEnum context)
     {
-      yield return (object) this.Compute();
+      yield return Compute();
     }
 
     private IEnumerator Compute()
     {
       while (!SceneController.CanLoad)
-        yield return (object) null;
+        yield return null;
       SceneController.Disabled = true;
       yield return (object) Resources.UnloadUnusedAssets();
       SceneController.Disabled = false;

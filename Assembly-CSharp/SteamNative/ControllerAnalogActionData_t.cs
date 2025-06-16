@@ -14,7 +14,7 @@ namespace SteamNative
 
     public static ControllerAnalogActionData_t FromPointer(IntPtr p)
     {
-      return Platform.PackSmall ? (ControllerAnalogActionData_t) (ControllerAnalogActionData_t.PackSmall) Marshal.PtrToStructure(p, typeof (ControllerAnalogActionData_t.PackSmall)) : (ControllerAnalogActionData_t) Marshal.PtrToStructure(p, typeof (ControllerAnalogActionData_t));
+      return Platform.PackSmall ? (PackSmall) Marshal.PtrToStructure(p, typeof (PackSmall)) : (ControllerAnalogActionData_t) Marshal.PtrToStructure(p, typeof (ControllerAnalogActionData_t));
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
@@ -27,10 +27,9 @@ namespace SteamNative
       public bool BActive;
 
       public static implicit operator ControllerAnalogActionData_t(
-        ControllerAnalogActionData_t.PackSmall d)
+        PackSmall d)
       {
-        return new ControllerAnalogActionData_t()
-        {
+        return new ControllerAnalogActionData_t {
           EMode = d.EMode,
           X = d.X,
           Y = d.Y,

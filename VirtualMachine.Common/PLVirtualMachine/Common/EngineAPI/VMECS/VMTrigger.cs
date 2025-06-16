@@ -1,7 +1,7 @@
-﻿using Engine.Common;
+﻿using System;
+using Engine.Common;
 using Engine.Common.Components;
 using PLVirtualMachine.Common.EngineAPI.VMECS.VMAttributes;
-using System;
 
 namespace PLVirtualMachine.Common.EngineAPI.VMECS
 {
@@ -18,39 +18,39 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
     public event Action<IEntity> ObjectExitEvent;
 
     [Method("Contains object", "object", "")]
-    public virtual bool IsContainsObject(IEntity target) => this.Component.Contains(target);
+    public virtual bool IsContainsObject(IEntity target) => Component.Contains(target);
 
     public void OnEntityEnter(
       ref EventArgument<IEntity, ITriggerComponent> eventArgs)
     {
-      if (this.ObjectEnterEvent == null)
+      if (ObjectEnterEvent == null)
         return;
-      this.ObjectEnterEvent(eventArgs.Actor);
+      ObjectEnterEvent(eventArgs.Actor);
     }
 
     public void OnEntityExit(
       ref EventArgument<IEntity, ITriggerComponent> eventArgs)
     {
-      if (this.ObjectExitEvent == null)
+      if (ObjectExitEvent == null)
         return;
-      this.ObjectExitEvent(eventArgs.Actor);
+      ObjectExitEvent(eventArgs.Actor);
     }
 
     public override void Clear()
     {
-      if (!this.InstanceValid)
+      if (!InstanceValid)
         return;
-      this.Component.EntityEnterEvent -= new TriggerHandler(this.OnEntityEnter);
-      this.Component.EntityExitEvent -= new TriggerHandler(this.OnEntityExit);
+      Component.EntityEnterEvent -= OnEntityEnter;
+      Component.EntityExitEvent -= OnEntityExit;
       base.Clear();
     }
 
     protected override void Init()
     {
-      if (this.IsTemplate)
+      if (IsTemplate)
         return;
-      this.Component.EntityEnterEvent += new TriggerHandler(this.OnEntityEnter);
-      this.Component.EntityExitEvent += new TriggerHandler(this.OnEntityExit);
+      Component.EntityEnterEvent += OnEntityEnter;
+      Component.EntityExitEvent += OnEntityExit;
     }
   }
 }

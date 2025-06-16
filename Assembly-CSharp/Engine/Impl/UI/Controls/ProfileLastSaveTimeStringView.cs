@@ -1,6 +1,5 @@
-﻿using Engine.Source.Services.Profiles;
-using System;
-using UnityEngine;
+﻿using System;
+using Engine.Source.Services.Profiles;
 
 namespace Engine.Impl.UI.Controls
 {
@@ -13,23 +12,23 @@ namespace Engine.Impl.UI.Controls
 
     public override void SkipAnimation()
     {
-      if (!((UnityEngine.Object) this.view != (UnityEngine.Object) null))
+      if (!((UnityEngine.Object) view != (UnityEngine.Object) null))
         return;
-      this.view.SkipAnimation();
+      view.SkipAnimation();
     }
 
     protected override void ApplyStringValue()
     {
-      if (!((UnityEngine.Object) this.view != (UnityEngine.Object) null) || !Application.isPlaying)
+      if (!((UnityEngine.Object) view != (UnityEngine.Object) null) || !Application.isPlaying)
         return;
-      string lastSave = ProfilesUtility.GetLastSave(this.StringValue);
+      string lastSave = ProfilesUtility.GetLastSave(StringValue);
       if (lastSave != "")
       {
-        DateTime saveCreationTime = ProfilesUtility.GetSaveCreationTime(this.StringValue, lastSave);
-        this.view.StringValue = !(saveCreationTime != DateTime.MinValue) ? "" : ProfilesUtility.ConvertCreationTime(saveCreationTime, this.formatTag);
+        DateTime saveCreationTime = ProfilesUtility.GetSaveCreationTime(StringValue, lastSave);
+        view.StringValue = !(saveCreationTime != DateTime.MinValue) ? "" : ProfilesUtility.ConvertCreationTime(saveCreationTime, formatTag);
       }
       else
-        this.view.StringValue = "";
+        view.StringValue = "";
     }
   }
 }

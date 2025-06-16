@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace Engine.Impl.UI.Controls
+﻿namespace Engine.Impl.UI.Controls
 {
   public class SplitColorView : SingleColorView
   {
@@ -9,10 +7,10 @@ namespace Engine.Impl.UI.Controls
 
     protected override void ApplyValue(bool instant)
     {
-      if (this.views == null)
+      if (views == null)
         return;
-      for (int index = 0; index < this.views.Length; ++index)
-        this.views[index].SetValue(this.GetValue(), instant);
+      for (int index = 0; index < views.Length; ++index)
+        views[index].SetValue(GetValue(), instant);
     }
   }
 }

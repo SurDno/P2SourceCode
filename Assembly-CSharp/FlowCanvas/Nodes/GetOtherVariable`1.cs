@@ -13,9 +13,9 @@ namespace FlowCanvas.Nodes
 
     protected override void RegisterPorts()
     {
-      ValueInput<Blackboard> bb = this.AddValueInput<Blackboard>("Blackboard");
-      ValueInput<string> varName = this.AddValueInput<string>("Variable");
-      this.AddValueOutput<T>("Value", (ValueHandler<T>) (() => bb.value.GetValue<T>(varName.value)));
+      ValueInput<Blackboard> bb = AddValueInput<Blackboard>("Blackboard");
+      ValueInput<string> varName = AddValueInput<string>("Variable");
+      AddValueOutput("Value", () => bb.value.GetValue<T>(varName.value));
     }
 
     public override void SetVariable(object o)

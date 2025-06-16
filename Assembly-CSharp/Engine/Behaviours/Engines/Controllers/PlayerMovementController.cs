@@ -1,7 +1,6 @@
-﻿using Engine.Behaviours.Components;
+﻿using System;
+using Engine.Behaviours.Components;
 using Engine.Behaviours.Engines.Services;
-using System;
-using UnityEngine;
 
 namespace Engine.Behaviours.Engines.Controllers
 {
@@ -17,38 +16,38 @@ namespace Engine.Behaviours.Engines.Controllers
 
     public bool IsPaused
     {
-      get => this.isPaused;
+      get => isPaused;
       set
       {
-        this.isPaused = value;
-        if (!((UnityEngine.Object) this.animator != (UnityEngine.Object) null))
+        isPaused = value;
+        if (!((UnityEngine.Object) animator != (UnityEngine.Object) null))
           return;
-        if (this.isPaused && this.animator.gameObject.activeSelf)
-          this.animator.SetFloat("Mecanim.Speed", 0.0f);
+        if (isPaused && animator.gameObject.activeSelf)
+          animator.SetFloat("Mecanim.Speed", 0.0f);
         else
-          this.animator.SetFloat("Mecanim.Speed", 1f);
+          animator.SetFloat("Mecanim.Speed", 1f);
       }
     }
 
     public bool GeometryVisible
     {
-      set => this.weaponService.GeometryVisible = value;
+      set => weaponService.GeometryVisible = value;
     }
 
     public void Initialize(GameObject gameObject)
     {
       this.gameObject = gameObject;
-      this.collider = gameObject.GetComponent<CapsuleCollider>();
-      this.weaponService = gameObject.GetComponent<PlayerWeaponServiceNew>();
-      if ((UnityEngine.Object) this.weaponService == (UnityEngine.Object) null)
+      collider = gameObject.GetComponent<CapsuleCollider>();
+      weaponService = gameObject.GetComponent<PlayerWeaponServiceNew>();
+      if ((UnityEngine.Object) weaponService == (UnityEngine.Object) null)
         Debug.LogWarningFormat("{0} doesn' contain {1} unity component.", (object) gameObject.name, (object) typeof (PlayerWeaponServiceNew).Name);
-      this.pivot = gameObject.GetComponent<Pivot>();
-      if ((UnityEngine.Object) this.pivot == (UnityEngine.Object) null)
+      pivot = gameObject.GetComponent<Pivot>();
+      if ((UnityEngine.Object) pivot == (UnityEngine.Object) null)
         Debug.LogWarningFormat("{0} doesn' contain {1} unity component.", (object) gameObject.name, (object) typeof (Pivot).Name);
-      this.characterController = gameObject.GetComponent<CharacterController>();
-      if ((UnityEngine.Object) this.characterController == (UnityEngine.Object) null)
+      characterController = gameObject.GetComponent<CharacterController>();
+      if ((UnityEngine.Object) characterController == (UnityEngine.Object) null)
         Debug.LogWarningFormat("{0} doesn' contain {1} unity component.", (object) gameObject.name, (object) typeof (CharacterController).Name);
-      this.animator = gameObject.GetComponent<Animator>();
+      animator = gameObject.GetComponent<Animator>();
     }
 
     public void StartMovement(Vector3 direction, EngineBehavior.GaitType gait)
@@ -64,7 +63,7 @@ namespace Engine.Behaviours.Engines.Controllers
 
     public void OnAnimatorMove()
     {
-      this.gameObject.transform.rotation *= Quaternion.AngleAxis(57.29578f * this.animator.angularVelocity.y * (this.animator.updateMode == AnimatorUpdateMode.AnimatePhysics ? Time.fixedDeltaTime : Time.deltaTime), Vector3.up);
+      gameObject.transform.rotation *= Quaternion.AngleAxis(57.29578f * animator.angularVelocity.y * (animator.updateMode == AnimatorUpdateMode.AnimatePhysics ? Time.fixedDeltaTime : Time.deltaTime), Vector3.up);
     }
 
     public void Update()

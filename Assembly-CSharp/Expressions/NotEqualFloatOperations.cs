@@ -7,7 +7,7 @@ namespace Expressions
   [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
   public class NotEqualFloatOperations : ComparisonOperation<float>
   {
-    protected override bool Compute(float a, float b) => (double) a != (double) b;
+    protected override bool Compute(float a, float b) => a != (double) b;
 
     protected override string OperatorView() => "!=";
   }

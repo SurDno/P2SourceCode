@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace AmplifyBloom
 {
@@ -9,50 +8,50 @@ namespace AmplifyBloom
   {
     private const int PerPassSampleCount = 8;
     [SerializeField]
-    private bool m_isActive = false;
+    private bool m_isActive;
     [SerializeField]
-    private bool m_applyOnBloomSource = false;
+    private bool m_applyOnBloomSource;
     [SerializeField]
     private float m_bokehSampleRadius = 0.5f;
     [SerializeField]
     private Vector4 m_bokehCameraProperties = new Vector4(0.05f, 0.018f, 1.34f, 0.18f);
     [SerializeField]
-    private float m_offsetRotation = 0.0f;
+    private float m_offsetRotation;
     [SerializeField]
     private ApertureShape m_apertureShape = ApertureShape.Hexagon;
     private List<AmplifyBokehData> m_bokehOffsets;
 
     public AmplifyBokeh()
     {
-      this.m_bokehOffsets = new List<AmplifyBokehData>();
-      this.CreateBokehOffsets(ApertureShape.Hexagon);
+      m_bokehOffsets = new List<AmplifyBokehData>();
+      CreateBokehOffsets(ApertureShape.Hexagon);
     }
 
     public void Destroy()
     {
-      for (int index = 0; index < this.m_bokehOffsets.Count; ++index)
-        this.m_bokehOffsets[index].Destroy();
+      for (int index = 0; index < m_bokehOffsets.Count; ++index)
+        m_bokehOffsets[index].Destroy();
     }
 
     private void CreateBokehOffsets(ApertureShape shape)
     {
-      this.m_bokehOffsets.Clear();
+      m_bokehOffsets.Clear();
       switch (shape)
       {
         case ApertureShape.Square:
-          this.m_bokehOffsets.Add(new AmplifyBokehData(this.CalculateBokehSamples(8, this.m_offsetRotation)));
-          this.m_bokehOffsets.Add(new AmplifyBokehData(this.CalculateBokehSamples(8, this.m_offsetRotation + 90f)));
+          m_bokehOffsets.Add(new AmplifyBokehData(CalculateBokehSamples(8, m_offsetRotation)));
+          m_bokehOffsets.Add(new AmplifyBokehData(CalculateBokehSamples(8, m_offsetRotation + 90f)));
           break;
         case ApertureShape.Hexagon:
-          this.m_bokehOffsets.Add(new AmplifyBokehData(this.CalculateBokehSamples(8, this.m_offsetRotation)));
-          this.m_bokehOffsets.Add(new AmplifyBokehData(this.CalculateBokehSamples(8, this.m_offsetRotation - 75f)));
-          this.m_bokehOffsets.Add(new AmplifyBokehData(this.CalculateBokehSamples(8, this.m_offsetRotation + 75f)));
+          m_bokehOffsets.Add(new AmplifyBokehData(CalculateBokehSamples(8, m_offsetRotation)));
+          m_bokehOffsets.Add(new AmplifyBokehData(CalculateBokehSamples(8, m_offsetRotation - 75f)));
+          m_bokehOffsets.Add(new AmplifyBokehData(CalculateBokehSamples(8, m_offsetRotation + 75f)));
           break;
         case ApertureShape.Octagon:
-          this.m_bokehOffsets.Add(new AmplifyBokehData(this.CalculateBokehSamples(8, this.m_offsetRotation)));
-          this.m_bokehOffsets.Add(new AmplifyBokehData(this.CalculateBokehSamples(8, this.m_offsetRotation + 65f)));
-          this.m_bokehOffsets.Add(new AmplifyBokehData(this.CalculateBokehSamples(8, this.m_offsetRotation + 90f)));
-          this.m_bokehOffsets.Add(new AmplifyBokehData(this.CalculateBokehSamples(8, this.m_offsetRotation + 115f)));
+          m_bokehOffsets.Add(new AmplifyBokehData(CalculateBokehSamples(8, m_offsetRotation)));
+          m_bokehOffsets.Add(new AmplifyBokehData(CalculateBokehSamples(8, m_offsetRotation + 65f)));
+          m_bokehOffsets.Add(new AmplifyBokehData(CalculateBokehSamples(8, m_offsetRotation + 90f)));
+          m_bokehOffsets.Add(new AmplifyBokehData(CalculateBokehSamples(8, m_offsetRotation + 115f)));
           break;
       }
     }
@@ -62,11 +61,11 @@ namespace AmplifyBloom
       Vector4[] bokehSamples = new Vector4[sampleCount];
       float f = (float) Math.PI / 180f * angle;
       float num = (float) Screen.width / (float) Screen.height;
-      Vector4 b = new Vector4(this.m_bokehSampleRadius * Mathf.Cos(f), this.m_bokehSampleRadius * Mathf.Sin(f));
+      Vector4 b = new Vector4(m_bokehSampleRadius * Mathf.Cos(f), m_bokehSampleRadius * Mathf.Sin(f));
       b.x /= num;
       for (int index = 0; index < sampleCount; ++index)
       {
-        float t = (float) index / ((float) sampleCount - 1f);
+        float t = index / (sampleCount - 1f);
         bokehSamples[index] = Vector4.Lerp(-b, b, t);
       }
       return bokehSamples;
@@ -74,27 +73,27 @@ namespace AmplifyBloom
 
     public void ApplyBokehFilter(RenderTexture source, Material material)
     {
-      for (int index = 0; index < this.m_bokehOffsets.Count; ++index)
-        this.m_bokehOffsets[index].BokehRenderTexture = AmplifyUtils.GetTempRenderTarget(source.width, source.height);
-      material.SetVector(AmplifyUtils.BokehParamsId, this.m_bokehCameraProperties);
-      for (int index1 = 0; index1 < this.m_bokehOffsets.Count; ++index1)
+      for (int index = 0; index < m_bokehOffsets.Count; ++index)
+        m_bokehOffsets[index].BokehRenderTexture = AmplifyUtils.GetTempRenderTarget(source.width, source.height);
+      material.SetVector(AmplifyUtils.BokehParamsId, m_bokehCameraProperties);
+      for (int index1 = 0; index1 < m_bokehOffsets.Count; ++index1)
       {
         for (int index2 = 0; index2 < 8; ++index2)
-          material.SetVector(AmplifyUtils.AnamorphicGlareWeightsStr[index2], this.m_bokehOffsets[index1].Offsets[index2]);
-        Graphics.Blit((Texture) source, this.m_bokehOffsets[index1].BokehRenderTexture, material, 27);
+          material.SetVector(AmplifyUtils.AnamorphicGlareWeightsStr[index2], m_bokehOffsets[index1].Offsets[index2]);
+        Graphics.Blit((Texture) source, m_bokehOffsets[index1].BokehRenderTexture, material, 27);
       }
-      for (int index = 0; index < this.m_bokehOffsets.Count - 1; ++index)
-        material.SetTexture(AmplifyUtils.AnamorphicRTS[index], (Texture) this.m_bokehOffsets[index].BokehRenderTexture);
+      for (int index = 0; index < m_bokehOffsets.Count - 1; ++index)
+        material.SetTexture(AmplifyUtils.AnamorphicRTS[index], (Texture) m_bokehOffsets[index].BokehRenderTexture);
       source.DiscardContents();
-      Graphics.Blit((Texture) this.m_bokehOffsets[this.m_bokehOffsets.Count - 1].BokehRenderTexture, source, material, 28 + (this.m_bokehOffsets.Count - 2));
-      for (int index = 0; index < this.m_bokehOffsets.Count; ++index)
+      Graphics.Blit((Texture) m_bokehOffsets[m_bokehOffsets.Count - 1].BokehRenderTexture, source, material, 28 + (m_bokehOffsets.Count - 2));
+      for (int index = 0; index < m_bokehOffsets.Count; ++index)
       {
-        AmplifyUtils.ReleaseTempRenderTarget(this.m_bokehOffsets[index].BokehRenderTexture);
-        this.m_bokehOffsets[index].BokehRenderTexture = (RenderTexture) null;
+        AmplifyUtils.ReleaseTempRenderTarget(m_bokehOffsets[index].BokehRenderTexture);
+        m_bokehOffsets[index].BokehRenderTexture = (RenderTexture) null;
       }
     }
 
-    public void OnAfterDeserialize() => this.CreateBokehOffsets(this.m_apertureShape);
+    public void OnAfterDeserialize() => CreateBokehOffsets(m_apertureShape);
 
     public void OnBeforeSerialize()
     {
@@ -102,68 +101,68 @@ namespace AmplifyBloom
 
     public ApertureShape ApertureShape
     {
-      get => this.m_apertureShape;
+      get => m_apertureShape;
       set
       {
-        if (this.m_apertureShape == value)
+        if (m_apertureShape == value)
           return;
-        this.m_apertureShape = value;
-        this.CreateBokehOffsets(value);
+        m_apertureShape = value;
+        CreateBokehOffsets(value);
       }
     }
 
     public bool ApplyBokeh
     {
-      get => this.m_isActive;
-      set => this.m_isActive = value;
+      get => m_isActive;
+      set => m_isActive = value;
     }
 
     public bool ApplyOnBloomSource
     {
-      get => this.m_applyOnBloomSource;
-      set => this.m_applyOnBloomSource = value;
+      get => m_applyOnBloomSource;
+      set => m_applyOnBloomSource = value;
     }
 
     public float BokehSampleRadius
     {
-      get => this.m_bokehSampleRadius;
-      set => this.m_bokehSampleRadius = value;
+      get => m_bokehSampleRadius;
+      set => m_bokehSampleRadius = value;
     }
 
     public float OffsetRotation
     {
-      get => this.m_offsetRotation;
-      set => this.m_offsetRotation = value;
+      get => m_offsetRotation;
+      set => m_offsetRotation = value;
     }
 
     public Vector4 BokehCameraProperties
     {
-      get => this.m_bokehCameraProperties;
-      set => this.m_bokehCameraProperties = value;
+      get => m_bokehCameraProperties;
+      set => m_bokehCameraProperties = value;
     }
 
     public float Aperture
     {
-      get => this.m_bokehCameraProperties.x;
-      set => this.m_bokehCameraProperties.x = value;
+      get => m_bokehCameraProperties.x;
+      set => m_bokehCameraProperties.x = value;
     }
 
     public float FocalLength
     {
-      get => this.m_bokehCameraProperties.y;
-      set => this.m_bokehCameraProperties.y = value;
+      get => m_bokehCameraProperties.y;
+      set => m_bokehCameraProperties.y = value;
     }
 
     public float FocalDistance
     {
-      get => this.m_bokehCameraProperties.z;
-      set => this.m_bokehCameraProperties.z = value;
+      get => m_bokehCameraProperties.z;
+      set => m_bokehCameraProperties.z = value;
     }
 
     public float MaxCoCDiameter
     {
-      get => this.m_bokehCameraProperties.w;
-      set => this.m_bokehCameraProperties.w = value;
+      get => m_bokehCameraProperties.w;
+      set => m_bokehCameraProperties.w = value;
     }
   }
 }

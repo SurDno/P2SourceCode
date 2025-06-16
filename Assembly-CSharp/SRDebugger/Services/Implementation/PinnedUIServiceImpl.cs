@@ -1,30 +1,29 @@
 ﻿using SRDebugger.UI.Other;
 using SRF;
 using SRF.Service;
-using UnityEngine;
 
 namespace SRDebugger.Services.Implementation
 {
-  [SRF.Service.Service(typeof (IPinnedUIService))]
+  [Service(typeof (IPinnedUIService))]
   public class PinnedUIServiceImpl : SRServiceBase<IPinnedUIService>, IPinnedUIService
   {
     private PinnedUIRoot _uiRoot;
 
     public bool IsProfilerPinned
     {
-      get => !((Object) this._uiRoot == (Object) null) && this._uiRoot.Profiler.activeSelf;
+      get => !((Object) _uiRoot == (Object) null) && _uiRoot.Profiler.activeSelf;
       set
       {
-        if ((Object) this._uiRoot == (Object) null)
-          this.Load();
-        this._uiRoot.Profiler.SetActive(value);
+        if ((Object) _uiRoot == (Object) null)
+          Load();
+        _uiRoot.Profiler.SetActive(value);
       }
     }
 
     protected override void Awake()
     {
       base.Awake();
-      this.CachedTransform.SetParent(Hierarchy.Get("SRDebugger/UI"));
+      CachedTransform.SetParent(Hierarchy.Get("SRDebugger/UI"));
     }
 
     private void Load()
@@ -37,9 +36,9 @@ namespace SRDebugger.Services.Implementation
       else
       {
         PinnedUIRoot pinnedUiRoot = SRInstantiate.Instantiate<PinnedUIRoot>(prefab);
-        pinnedUiRoot.CachedTransform.SetParent(this.CachedTransform, false);
-        this._uiRoot = pinnedUiRoot;
-        this.UpdateAnchors();
+        pinnedUiRoot.CachedTransform.SetParent(CachedTransform, false);
+        _uiRoot = pinnedUiRoot;
+        UpdateAnchors();
       }
     }
 
@@ -50,30 +49,30 @@ namespace SRDebugger.Services.Implementation
         case PinAlignment.TopLeft:
         case PinAlignment.BottomLeft:
         case PinAlignment.CenterLeft:
-          this._uiRoot.Profiler.transform.SetSiblingIndex(0);
+          _uiRoot.Profiler.transform.SetSiblingIndex(0);
           break;
         case PinAlignment.TopRight:
         case PinAlignment.BottomRight:
         case PinAlignment.CenterRight:
-          this._uiRoot.Profiler.transform.SetSiblingIndex(1);
+          _uiRoot.Profiler.transform.SetSiblingIndex(1);
           break;
       }
       switch (Settings.Instance.ProfilerAlignment)
       {
         case PinAlignment.TopLeft:
         case PinAlignment.TopRight:
-          this._uiRoot.ProfilerVerticalLayoutGroup.childAlignment = TextAnchor.UpperCenter;
+          _uiRoot.ProfilerVerticalLayoutGroup.childAlignment = TextAnchor.UpperCenter;
           break;
         case PinAlignment.BottomLeft:
         case PinAlignment.BottomRight:
-          this._uiRoot.ProfilerVerticalLayoutGroup.childAlignment = TextAnchor.LowerCenter;
+          _uiRoot.ProfilerVerticalLayoutGroup.childAlignment = TextAnchor.LowerCenter;
           break;
         case PinAlignment.CenterLeft:
         case PinAlignment.CenterRight:
-          this._uiRoot.ProfilerVerticalLayoutGroup.childAlignment = TextAnchor.MiddleCenter;
+          _uiRoot.ProfilerVerticalLayoutGroup.childAlignment = TextAnchor.MiddleCenter;
           break;
       }
-      this._uiRoot.ProfilerHandleManager.SetAlignment(Settings.Instance.ProfilerAlignment);
+      _uiRoot.ProfilerHandleManager.SetAlignment(Settings.Instance.ProfilerAlignment);
     }
   }
 }

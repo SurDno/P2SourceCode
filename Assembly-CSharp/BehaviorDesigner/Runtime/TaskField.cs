@@ -1,5 +1,5 @@
-﻿using BehaviorDesigner.Runtime.Tasks;
-using System.Reflection;
+﻿using System.Reflection;
+using BehaviorDesigner.Runtime.Tasks;
 
 namespace BehaviorDesigner.Runtime
 {
@@ -10,8 +10,8 @@ namespace BehaviorDesigner.Runtime
 
     public TaskField(Task t, FieldInfo f)
     {
-      this.task = t;
-      this.fieldInfo = f;
+      task = t;
+      fieldInfo = f;
     }
   }
 }

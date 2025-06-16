@@ -1,9 +1,8 @@
-﻿using Engine.Behaviours.Components;
+﻿using System.Collections.Generic;
+using Engine.Behaviours.Components;
 using Engine.Common;
 using Engine.Source.Commons;
 using Engine.Source.Settings;
-using System.Collections.Generic;
-using UnityEngine;
 using UnityStandardAssets.ImageEffects;
 
 namespace Engine.Source.Services.CameraServices
@@ -37,28 +36,28 @@ namespace Engine.Source.Services.CameraServices
 
     public void Shutdown()
     {
-      if (!this.initialised)
+      if (!initialised)
         return;
-      this.initialised = false;
-      if ((Object) this.secondaryCameraObject != (Object) null)
+      initialised = false;
+      if ((Object) secondaryCameraObject != (Object) null)
       {
-        Object.DestroyImmediate((Object) this.secondaryCameraObject);
-        this.secondaryCameraObject = (GameObject) null;
+        Object.DestroyImmediate((Object) secondaryCameraObject);
+        secondaryCameraObject = (GameObject) null;
       }
-      if ((Object) this.unityRigInstance != (Object) null)
+      if ((Object) unityRigInstance != (Object) null)
       {
-        Object.DestroyImmediate((Object) this.unityRigInstance);
-        this.unityRigInstance = (GameObject) null;
+        Object.DestroyImmediate((Object) unityRigInstance);
+        unityRigInstance = (GameObject) null;
       }
-      foreach (KeyValuePair<GameObject, int> storedLayer in this.storedLayers)
+      foreach (KeyValuePair<GameObject, int> storedLayer in storedLayers)
       {
         if ((Object) storedLayer.Key != (Object) null)
           storedLayer.Key.layer = storedLayer.Value;
       }
-      this.storedLayers.Clear();
+      storedLayers.Clear();
       UnityEngine.Camera camera = GameCamera.Instance.Camera;
       if ((Object) camera != (Object) null)
-        camera.cullingMask = this.storedCullingMask;
+        camera.cullingMask = storedCullingMask;
       GameCamera.Instance.ResetCutsceneFov();
     }
 
@@ -67,94 +66,94 @@ namespace Engine.Source.Services.CameraServices
       if (target == null)
         return;
       GameObject gameObject = ((IEntityView) target).GameObject;
-      if (!this.initialised)
+      if (!initialised)
       {
-        this.initialised = true;
-        this.InternalInitialise(gameObject);
+        initialised = true;
+        InternalInitialise(gameObject);
       }
-      if ((Object) this.unityRigInstance == (Object) null || (Object) this.cameraPivotTransform == (Object) null || (Object) gameObject == (Object) null)
+      if ((Object) unityRigInstance == (Object) null || (Object) cameraPivotTransform == (Object) null || (Object) gameObject == (Object) null)
         return;
       Pivot component = gameObject.GetComponent<Pivot>();
       if ((Object) component == (Object) null || (Object) component.AnchorCameraFPS == (Object) null)
         return;
-      if ((Object) this.unityRigInstance != (Object) null)
+      if ((Object) unityRigInstance != (Object) null)
       {
         Transform transform = component.AnchorCameraFPS.transform;
-        this.unityRigInstance.transform.localPosition = transform.position;
-        this.unityRigInstance.transform.localRotation = transform.rotation;
+        unityRigInstance.transform.localPosition = transform.position;
+        unityRigInstance.transform.localRotation = transform.rotation;
         Vector3 localScale = transform.localScale;
         float num = (float) (((double) Mathf.Abs(localScale.x) + (double) Mathf.Abs(localScale.y) + (double) Mathf.Abs(localScale.z)) / 3.0);
-        this.unityRigInstance.transform.localScale = new Vector3(num, num, num);
+        unityRigInstance.transform.localScale = new Vector3(num, num, num);
         DialogLightingProfile dialogLightingProfile = component.DialogLightingProfile;
         if ((Object) dialogLightingProfile == (Object) null)
           dialogLightingProfile = ScriptableObjectInstance<ResourceFromCodeData>.Instance.DefaultDialogLightingProfile;
         if ((Object) dialogLightingProfile != (Object) null)
         {
-          if ((Object) this.keyLightPivot != (Object) null)
-            this.keyLightPivot.localEulerAngles = (Vector3) dialogLightingProfile.KeyLightRotation;
-          if ((Object) this.backLightPivot != (Object) null)
-            this.backLightPivot.localEulerAngles = (Vector3) dialogLightingProfile.BackLightRotation;
-          if ((Object) this.fillLightPivot != (Object) null)
-            this.fillLightPivot.localEulerAngles = (Vector3) dialogLightingProfile.FillLightRotation;
+          if ((Object) keyLightPivot != (Object) null)
+            keyLightPivot.localEulerAngles = (Vector3) dialogLightingProfile.KeyLightRotation;
+          if ((Object) backLightPivot != (Object) null)
+            backLightPivot.localEulerAngles = (Vector3) dialogLightingProfile.BackLightRotation;
+          if ((Object) fillLightPivot != (Object) null)
+            fillLightPivot.localEulerAngles = (Vector3) dialogLightingProfile.FillLightRotation;
         }
-        this.keyLight.range = this.baseKeyLightRange * num;
-        this.backLight.range = this.baseBackLightRange * num;
-        this.fillLight.range = this.baseFillLightRange * num;
+        keyLight.range = baseKeyLightRange * num;
+        backLight.range = baseBackLightRange * num;
+        fillLight.range = baseFillLightRange * num;
       }
       if ((Object) GameCamera.Instance.CameraTransform != (Object) null)
       {
-        GameCamera.Instance.CameraTransform.position = this.cameraPivotTransform.transform.position;
-        GameCamera.Instance.CameraTransform.rotation = this.cameraPivotTransform.transform.rotation;
+        GameCamera.Instance.CameraTransform.position = cameraPivotTransform.transform.position;
+        GameCamera.Instance.CameraTransform.rotation = cameraPivotTransform.transform.rotation;
       }
-      if (!((Object) this.secondaryCameraObject != (Object) null))
+      if (!((Object) secondaryCameraObject != (Object) null))
         return;
-      this.secondaryCameraObject.transform.localPosition = this.cameraPivotTransform.transform.position;
-      this.secondaryCameraObject.transform.localRotation = this.cameraPivotTransform.transform.rotation;
-      if ((Object) this.dof != (Object) null)
+      secondaryCameraObject.transform.localPosition = cameraPivotTransform.transform.position;
+      secondaryCameraObject.transform.localRotation = cameraPivotTransform.transform.rotation;
+      if ((Object) dof != (Object) null)
       {
-        this.dof.focalTransform = (Object) component.DialogDOFTarget != (Object) null ? component.DialogDOFTarget.transform : (Transform) null;
-        this.dof.enabled = InstanceByRequest<GraphicsGameSettings>.Instance.DOF.Value && (Object) this.dof.focalTransform != (Object) null;
+        dof.focalTransform = (Object) component.DialogDOFTarget != (Object) null ? component.DialogDOFTarget.transform : (Transform) null;
+        dof.enabled = InstanceByRequest<GraphicsGameSettings>.Instance.DOF.Value && (Object) dof.focalTransform != (Object) null;
       }
-      if ((Object) this.postProcessing != (Object) null)
-        this.postProcessing.Antialiasing.Override = !InstanceByRequest<GraphicsGameSettings>.Instance.Antialiasing.Value;
+      if ((Object) postProcessing != (Object) null)
+        postProcessing.Antialiasing.Override = !InstanceByRequest<GraphicsGameSettings>.Instance.Antialiasing.Value;
     }
 
     private void InternalInitialise(GameObject gameObjectTarget)
     {
-      this.unityRigInstance = Object.Instantiate<GameObject>(this.rigPrefab);
-      this.cameraPivotTransform = this.unityRigInstance.transform.Find("Camera");
-      this.keyLightPivot = this.unityRigInstance.transform.Find("KeyLight");
-      this.backLightPivot = this.unityRigInstance.transform.Find("BackLight");
-      this.fillLightPivot = this.unityRigInstance.transform.Find("FillLight");
-      this.keyLight = this.keyLightPivot.GetComponentInChildren<Light>();
-      this.backLight = this.backLightPivot.GetComponentInChildren<Light>();
-      this.fillLight = this.fillLightPivot.GetComponentInChildren<Light>();
-      this.baseKeyLightRange = this.keyLight.range;
-      this.baseBackLightRange = this.backLight.range;
-      this.baseFillLightRange = this.fillLight.range;
+      unityRigInstance = Object.Instantiate<GameObject>(rigPrefab);
+      cameraPivotTransform = unityRigInstance.transform.Find("Camera");
+      keyLightPivot = unityRigInstance.transform.Find("KeyLight");
+      backLightPivot = unityRigInstance.transform.Find("BackLight");
+      fillLightPivot = unityRigInstance.transform.Find("FillLight");
+      keyLight = keyLightPivot.GetComponentInChildren<Light>();
+      backLight = backLightPivot.GetComponentInChildren<Light>();
+      fillLight = fillLightPivot.GetComponentInChildren<Light>();
+      baseKeyLightRange = keyLight.range;
+      baseBackLightRange = backLight.range;
+      baseFillLightRange = fillLight.range;
       if ((Object) gameObjectTarget != (Object) null)
       {
         foreach (Component componentsInChild in gameObjectTarget.GetComponentsInChildren<Transform>())
         {
           GameObject gameObject = componentsInChild.gameObject;
-          this.storedLayers.Add(gameObject, gameObject.layer);
+          storedLayers.Add(gameObject, gameObject.layer);
           gameObject.layer = ScriptableObjectInstance<GameSettingsData>.Instance.DialogLayer.GetIndex();
         }
       }
       GameObject dialogCameraPrefab = ScriptableObjectInstance<ResourceFromCodeData>.Instance.DialogCameraPrefab;
       if ((Object) dialogCameraPrefab != (Object) null)
       {
-        this.secondaryCameraObject = Object.Instantiate<GameObject>(dialogCameraPrefab);
-        this.dof = this.secondaryCameraObject.GetComponent<DepthOfField>();
-        this.postProcessing = this.secondaryCameraObject.GetComponent<PostProcessingStackOverride>();
-        UnityEngine.Camera component = this.secondaryCameraObject.GetComponent<UnityEngine.Camera>();
+        secondaryCameraObject = Object.Instantiate<GameObject>(dialogCameraPrefab);
+        dof = secondaryCameraObject.GetComponent<DepthOfField>();
+        postProcessing = secondaryCameraObject.GetComponent<PostProcessingStackOverride>();
+        UnityEngine.Camera component = secondaryCameraObject.GetComponent<UnityEngine.Camera>();
         if ((bool) (Object) component)
           GameCamera.Instance.SetCutsceneFov(component.fieldOfView);
       }
       UnityEngine.Camera camera = GameCamera.Instance.Camera;
       if (!((Object) camera != (Object) null))
         return;
-      this.storedCullingMask = camera.cullingMask;
+      storedCullingMask = camera.cullingMask;
       camera.cullingMask &= ~(int) ScriptableObjectInstance<GameSettingsData>.Instance.DialogLayer;
     }
   }

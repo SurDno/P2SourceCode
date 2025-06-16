@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace Engine.Behaviours.Unity.Mecanim
+﻿namespace Engine.Behaviours.Unity.Mecanim
 {
   public class AnimatorBehaviorBase45_FireStopDoneEvent : StateMachineBehaviour
   {
@@ -15,13 +13,13 @@ namespace Engine.Behaviours.Unity.Mecanim
       AnimatorState45 animatorState = AnimatorState45.GetAnimatorState(animator);
       Rootmotion45 component = animator.gameObject.GetComponent<Rootmotion45>();
       animatorState.FireStopDoneEvent();
-      if (stateInfo.fullPathHash == AnimatorBehaviorBase45_FireStopDoneEvent.movableWalkStopLeftStateHash)
+      if (stateInfo.fullPathHash == movableWalkStopLeftStateHash)
       {
         animatorState.VelocityScale = animatorState.RemainingDistance / AnimatorBehaviorBase45Utility.LeftLegStopDistance(component, animatorState.MovableSpeed);
       }
       else
       {
-        if (stateInfo.fullPathHash != AnimatorBehaviorBase45_FireStopDoneEvent.movableWalkStopRightStateHash)
+        if (stateInfo.fullPathHash != movableWalkStopRightStateHash)
           return;
         animatorState.VelocityScale = animatorState.RemainingDistance / AnimatorBehaviorBase45Utility.RightLegStopDistance(component, animatorState.MovableSpeed);
       }

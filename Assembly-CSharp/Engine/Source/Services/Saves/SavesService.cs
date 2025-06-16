@@ -1,19 +1,19 @@
-﻿using Cofe.Utility;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Xml;
+using Cofe.Utility;
 using Engine.Common.Services;
 using Engine.Source.Commons;
 using Engine.Source.Saves;
 using Engine.Source.Settings.External;
 using Engine.Source.Unity;
 using Scripts.Utility;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Xml;
 
 namespace Engine.Source.Services.Saves
 {
-  [RuntimeService(new System.Type[] {typeof (SavesService)})]
+  [RuntimeService(typeof (SavesService))]
   public class SavesService : IErrorLoadingHandler
   {
     private List<ISavesController> serializables;
@@ -24,119 +24,119 @@ namespace Engine.Source.Services.Saves
 
     public string ErrorLoading { get; private set; }
 
-    public bool HasErrorLoading => this.ErrorLoading != null;
+    public bool HasErrorLoading => ErrorLoading != null;
 
     public IEnumerator Load()
     {
       UnityEngine.Debug.Log((object) "Try default load");
-      this.ErrorLoading = (string) null;
-      if (this.saveLoadState)
+      ErrorLoading = null;
+      if (saveLoadState)
       {
         UnityEngine.Debug.LogError((object) "Save load already state");
       }
       else
       {
-        this.saveLoadState = true;
+        saveLoadState = true;
         Stopwatch sw = new Stopwatch();
-        this.serializables = ServiceLocatorUtility.GetServices<ISavesController, SaveDependAttribute>();
-        for (int index = 0; index < this.serializables.Count; ++index)
+        serializables = ServiceLocatorUtility.GetServices<ISavesController, SaveDependAttribute>();
+        for (int index = 0; index < serializables.Count; ++index)
         {
-          ISavesController serializable = this.serializables[index];
+          ISavesController serializable = serializables[index];
           sw.Restart();
-          yield return (object) serializable.Load((IErrorLoadingHandler) this);
+          yield return serializable.Load(this);
           sw.Stop();
-          UnityEngine.Debug.Log((object) ObjectInfoUtility.GetStream().Append(nameof (SavesService)).Append(" : ").Append(nameof (Load)).Append(" , type : ").Append(TypeUtility.GetTypeName(serializable.GetType())).Append(" , elapsed : ").Append((object) sw.Elapsed));
-          if (!this.HasErrorLoading)
-            serializable = (ISavesController) null;
+          UnityEngine.Debug.Log((object) ObjectInfoUtility.GetStream().Append(nameof (SavesService)).Append(" : ").Append(nameof (Load)).Append(" , type : ").Append(TypeUtility.GetTypeName(serializable.GetType())).Append(" , elapsed : ").Append(sw.Elapsed));
+          if (!HasErrorLoading)
+            serializable = null;
           else
             break;
         }
-        this.saveLoadState = false;
+        saveLoadState = false;
       }
     }
 
     public IEnumerator Load(string saveName)
     {
       UnityEngine.Debug.Log((object) ObjectInfoUtility.GetStream().Append("Try load ").Append(saveName));
-      this.ErrorLoading = (string) null;
-      if (this.saveLoadState)
+      ErrorLoading = null;
+      if (saveLoadState)
       {
         UnityEngine.Debug.LogError((object) "Save load already state");
       }
       else
       {
-        this.saveLoadState = true;
+        saveLoadState = true;
         Stopwatch sw = new Stopwatch();
-        this.serializables = ServiceLocatorUtility.GetServices<ISavesController, SaveDependAttribute>();
-        for (int index = 0; index < this.serializables.Count; ++index)
+        serializables = ServiceLocatorUtility.GetServices<ISavesController, SaveDependAttribute>();
+        for (int index = 0; index < serializables.Count; ++index)
         {
-          ISavesController serializable = this.serializables[index];
+          ISavesController serializable = serializables[index];
           string typeName = TypeUtility.GetTypeName(serializable.GetType());
           string fileName = saveName + "/" + typeName + ".xml";
           sw.Restart();
-          XmlDocument doc = (XmlDocument) null;
+          XmlDocument doc = null;
           try
           {
             doc = SavesServiceUtility.LoadDocument(fileName);
           }
           catch (Exception ex)
           {
-            this.LogException(ex);
+            LogException(ex);
             break;
           }
           if (doc == null)
           {
-            this.LogError("File not found : " + fileName);
+            LogError("File not found : " + fileName);
             break;
           }
-          yield return (object) serializable.Load(doc.DocumentElement, fileName, (IErrorLoadingHandler) this);
+          yield return serializable.Load(doc.DocumentElement, fileName, this);
           sw.Stop();
-          UnityEngine.Debug.Log((object) ObjectInfoUtility.GetStream().Append(nameof (SavesService)).Append(" : ").Append(nameof (Load)).Append(" , file name : ").Append(fileName).Append(" , type : ").Append(typeName).Append(" , elapsed : ").Append((object) sw.Elapsed));
-          if (!this.HasErrorLoading)
+          UnityEngine.Debug.Log((object) ObjectInfoUtility.GetStream().Append(nameof (SavesService)).Append(" : ").Append(nameof (Load)).Append(" , file name : ").Append(fileName).Append(" , type : ").Append(typeName).Append(" , elapsed : ").Append(sw.Elapsed));
+          if (!HasErrorLoading)
           {
-            serializable = (ISavesController) null;
-            typeName = (string) null;
-            fileName = (string) null;
-            doc = (XmlDocument) null;
+            serializable = null;
+            typeName = null;
+            fileName = null;
+            doc = null;
           }
           else
             break;
         }
-        if (!this.HasErrorLoading)
+        if (!HasErrorLoading)
           ServiceLocator.GetService<LogicEventService>().FireCommonEvent("GameLoadComplete");
-        this.saveLoadState = false;
+        saveLoadState = false;
       }
     }
 
     public void Unload()
     {
       UnityEngine.Debug.Log((object) "Try unload");
-      if (this.saveLoadState)
+      if (saveLoadState)
       {
         UnityEngine.Debug.LogError((object) "Save load already state");
       }
       else
       {
-        this.saveLoadState = true;
+        saveLoadState = true;
         Stopwatch stopwatch = new Stopwatch();
-        for (int index = 0; index < this.serializables.Count; ++index)
+        for (int index = 0; index < serializables.Count; ++index)
         {
-          ISavesController serializable = this.serializables[index];
+          ISavesController serializable = serializables[index];
           try
           {
             stopwatch.Restart();
             serializable.Unload();
             stopwatch.Stop();
-            UnityEngine.Debug.Log((object) ObjectInfoUtility.GetStream().Append(nameof (SavesService)).Append(" : ").Append(nameof (Unload)).Append(" , type : ").Append(TypeUtility.GetTypeName(serializable.GetType())).Append(" , elapsed : ").Append((object) stopwatch.Elapsed));
+            UnityEngine.Debug.Log((object) ObjectInfoUtility.GetStream().Append(nameof (SavesService)).Append(" : ").Append(nameof (Unload)).Append(" , type : ").Append(TypeUtility.GetTypeName(serializable.GetType())).Append(" , elapsed : ").Append(stopwatch.Elapsed));
           }
           catch (Exception ex)
           {
             UnityEngine.Debug.LogException(ex);
           }
         }
-        this.serializables = (List<ISavesController>) null;
-        this.saveLoadState = false;
-        Action unloadEvent = this.UnloadEvent;
+        serializables = null;
+        saveLoadState = false;
+        Action unloadEvent = UnloadEvent;
         if (unloadEvent == null)
           return;
         unloadEvent();
@@ -146,38 +146,38 @@ namespace Engine.Source.Services.Saves
     public void Save(string saveName)
     {
       UnityEngine.Debug.Log((object) ObjectInfoUtility.GetStream().Append("Try save ").Append(saveName));
-      if (this.saveLoadState)
+      if (saveLoadState)
       {
         UnityEngine.Debug.LogError((object) "Save load already state");
       }
       else
       {
-        this.saveLoadState = true;
+        saveLoadState = true;
         FileUtility.CleanFolder(saveName);
         Stopwatch stopwatch = new Stopwatch();
-        for (int index = 0; index < this.serializables.Count; ++index)
+        for (int index = 0; index < serializables.Count; ++index)
         {
-          ISavesController serializable = this.serializables[index];
+          ISavesController serializable = serializables[index];
           string typeName = TypeUtility.GetTypeName(serializable.GetType());
           string fileName = saveName + "/" + typeName + ".xml";
           stopwatch.Restart();
           SavesServiceUtility.SaveToFile("Document", serializable, fileName, ExternalSettingsInstance<ExternalOptimizationSettings>.Instance.SaveCompress);
           stopwatch.Stop();
-          UnityEngine.Debug.Log((object) ObjectInfoUtility.GetStream().Append(nameof (SavesService)).Append(" : ").Append(nameof (Save)).Append(" , type : ").Append(typeName).Append(" , elapsed : ").Append((object) stopwatch.Elapsed));
+          UnityEngine.Debug.Log((object) ObjectInfoUtility.GetStream().Append(nameof (SavesService)).Append(" : ").Append(nameof (Save)).Append(" , type : ").Append(typeName).Append(" , elapsed : ").Append(stopwatch.Elapsed));
         }
-        this.saveLoadState = false;
+        saveLoadState = false;
       }
     }
 
     public void LogError(string text)
     {
-      this.ErrorLoading = text;
+      ErrorLoading = text;
       UnityEngine.Debug.LogError((object) text);
     }
 
     public void LogException(Exception e)
     {
-      this.ErrorLoading = e.ToString();
+      ErrorLoading = e.ToString();
       UnityEngine.Debug.LogException(e);
     }
 

@@ -1,20 +1,18 @@
-﻿using Engine.Impl.UI.Menu.Main;
-using System.Collections;
+﻿using System.Collections;
 using System.Diagnostics;
-using UnityEngine;
-using UnityEngine.SceneManagement;
+using Engine.Impl.UI.Menu.Main;
 
 public class MainSceneLoader : MonoBehaviour
 {
-  private void Start() => this.StartCoroutine(this.LoadMainMenu());
+  private void Start() => this.StartCoroutine(LoadMainMenu());
 
   private IEnumerator LoadMainMenu()
   {
-    yield return (object) null;
+    yield return null;
     string mainName = "Main.unity".Replace(".unity", "");
     LoadWindow.Instance.Progress = 0.0f;
     LoadWindow.Instance.ShowProgress = true;
-    yield return (object) null;
+    yield return null;
     float prev = 0.0f;
     Stopwatch sw = new Stopwatch();
     sw.Restart();
@@ -22,15 +20,15 @@ public class MainSceneLoader : MonoBehaviour
     while (!asyncOperation.isDone)
     {
       float value = asyncOperation.progress;
-      if ((double) prev < (double) value)
+      if (prev < (double) value)
       {
         prev = value;
         LoadWindow.Instance.Progress = value * ScriptableObjectInstance<GameSettingsData>.Instance.MaxLoaderProgress;
       }
-      yield return (object) null;
+      yield return null;
     }
     sw.Stop();
-    UnityEngine.Debug.Log((object) ObjectInfoUtility.GetStream().Append("Load main scene, elapsed : ").Append((object) sw.Elapsed));
+    UnityEngine.Debug.Log((object) ObjectInfoUtility.GetStream().Append("Load main scene, elapsed : ").Append(sw.Elapsed));
     Scene mainScene = SceneManager.GetSceneByName(mainName);
     Scene loaderScene = this.gameObject.scene;
     GameObject[] gameObjectArray = loaderScene.GetRootGameObjects();

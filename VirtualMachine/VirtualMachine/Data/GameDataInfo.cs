@@ -1,6 +1,6 @@
-﻿using PLVirtualMachine.Common;
+﻿using System.Collections.Generic;
+using PLVirtualMachine.Common;
 using PLVirtualMachine.Objects;
-using System.Collections.Generic;
 
 namespace VirtualMachine.Data
 {

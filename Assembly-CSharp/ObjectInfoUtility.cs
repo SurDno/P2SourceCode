@@ -1,14 +1,12 @@
-﻿using AssetDatabases;
-using Cofe.Utility;
-using Engine.Common;
-using Engine.Source.Commons;
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Threading;
-using UnityEngine;
-using UnityEngine.SceneManagement;
+using AssetDatabases;
+using Cofe.Utility;
+using Engine.Common;
+using Engine.Source.Commons;
 
 public static class ObjectInfoUtility
 {
@@ -17,41 +15,41 @@ public static class ObjectInfoUtility
 
   public static StringBuilder GetStream()
   {
-    if (ObjectInfoUtility.thread != Thread.CurrentThread)
+    if (thread != Thread.CurrentThread)
     {
       UnityEngine.Debug.LogException(new Exception("Get Stream from wrong thread"));
       return new StringBuilder();
     }
-    ObjectInfoUtility.tmp.Clear();
-    return ObjectInfoUtility.tmp;
+    tmp.Clear();
+    return tmp;
   }
 
   public static string GetHierarchyPath(this IEntity entity)
   {
-    return ObjectInfoUtility.GetStream().GetHierarchyPath(entity).ToString();
+    return GetStream().GetHierarchyPath(entity).ToString();
   }
 
   public static string GetInfo(this object target)
   {
-    return ObjectInfoUtility.GetStream().GetInfo(target).ToString();
+    return GetStream().GetInfo(target).ToString();
   }
 
   public static string GetInfo(this IObject obj)
   {
-    return ObjectInfoUtility.GetStream().GetInfo(obj).ToString();
+    return GetStream().GetInfo(obj).ToString();
   }
 
   public static string GetInfo(this UnityEngine.Object obj)
   {
-    return ObjectInfoUtility.GetStream().GetInfo(obj).ToString();
+    return GetStream().GetInfo(obj).ToString();
   }
 
   public static string GetFullName(this GameObject go)
   {
-    return ObjectInfoUtility.GetStream().GetFullName(go).ToString();
+    return GetStream().GetFullName(go).ToString();
   }
 
-  public static string GetStackTrace() => ObjectInfoUtility.GetStream().GetStackTrace(2).ToString();
+  public static string GetStackTrace() => GetStream().GetStackTrace(2).ToString();
 
   public static StringBuilder GetStackTrace(this StringBuilder info, int startIndex = 1)
   {
@@ -117,7 +115,7 @@ public static class ObjectInfoUtility
       info.GetInfo(object2);
       return info;
     }
-    info.Append(target.ToString());
+    info.Append(target);
     return info;
   }
 
@@ -133,7 +131,7 @@ public static class ObjectInfoUtility
     {
       info.Append("template");
       info.Append(" , id : ");
-      info.Append((object) obj.Id);
+      info.Append(obj.Id);
       info.Append(" , name : ");
       info.Append(Path.GetFileNameWithoutExtension(obj.Source));
       info.Append(" , source : ");
@@ -143,13 +141,13 @@ public static class ObjectInfoUtility
     {
       info.Append("instance");
       info.Append(" , id : ");
-      info.Append((object) obj.Id);
+      info.Append(obj.Id);
       info.Append(" , name : ");
       info.Append(obj.Name);
       if (obj is Entity entity)
       {
         info.Append(" , hierarchy path : ");
-        info.GetHierarchyPath((IEntity) entity);
+        info.GetHierarchyPath(entity);
         string context = entity.Context;
         info.Append(" , context : ");
         info.Append(context ?? "[null]");
@@ -174,7 +172,7 @@ public static class ObjectInfoUtility
     info.Append("type : ");
     info.Append(TypeUtility.GetTypeName(((object) obj).GetType()));
     info.Append(" , to string : ");
-    info.Append(((object) obj).ToString());
+    info.Append(((object) obj));
     GameObject go = obj as GameObject;
     if ((UnityEngine.Object) go != (UnityEngine.Object) null)
     {

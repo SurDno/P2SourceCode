@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace ParadoxNotion
+﻿namespace ParadoxNotion
 {
   public static class RectUtils
   {

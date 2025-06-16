@@ -1,29 +1,27 @@
-﻿using JetBrains.Annotations;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using UnityEngine.Profiling;
 
 namespace UnityHeapCrawler
 {
   public class TypeStats : IComparable<TypeStats>
   {
     [NotNull]
-    public static readonly Dictionary<System.Type, TypeStats> Data = new Dictionary<System.Type, TypeStats>();
+    public static readonly Dictionary<Type, TypeStats> Data = new Dictionary<Type, TypeStats>();
     [NotNull]
-    public readonly System.Type Type;
+    public readonly Type Type;
     public long SelfSize;
     public long TotalSize;
     public long NativeSize;
     public int Count;
 
-    public static void Init() => TypeStats.Data.Clear();
+    public static void Init() => Data.Clear();
 
     public static void RegisterItem([NotNull] CrawlItem item)
     {
-      TypeStats typeStats = TypeStats.DemandTypeStats(item.Object.GetType());
+      TypeStats typeStats = DemandTypeStats(item.Object.GetType());
       ++typeStats.Count;
-      typeStats.SelfSize += (long) item.SelfSize;
-      typeStats.TotalSize += (long) item.TotalSize;
+      typeStats.SelfSize += item.SelfSize;
+      typeStats.TotalSize += item.TotalSize;
       UnityEngine.Object o = item.Object as UnityEngine.Object;
       if (!(o != (UnityEngine.Object) null))
         return;
@@ -32,26 +30,26 @@ namespace UnityHeapCrawler
 
     public static void RegisterInstance([NotNull] CrawlItem parent, [NotNull] string name, [NotNull] object instance)
     {
-      TypeStats.DemandTypeStats(instance.GetType());
+      DemandTypeStats(instance.GetType());
     }
 
-    private TypeStats([NotNull] System.Type type) => this.Type = type;
+    private TypeStats([NotNull] Type type) => Type = type;
 
     public int CompareTo([CanBeNull] TypeStats other)
     {
       if (this == other)
         return 0;
-      return other == null ? 1 : other.SelfSize.CompareTo(this.SelfSize);
+      return other == null ? 1 : other.SelfSize.CompareTo(SelfSize);
     }
 
     [NotNull]
-    private static TypeStats DemandTypeStats([NotNull] System.Type type)
+    private static TypeStats DemandTypeStats([NotNull] Type type)
     {
       TypeStats typeStats;
-      if (!TypeStats.Data.TryGetValue(type, out typeStats))
+      if (!Data.TryGetValue(type, out typeStats))
       {
         typeStats = new TypeStats(type);
-        TypeStats.Data[type] = typeStats;
+        Data[type] = typeStats;
       }
       return typeStats;
     }

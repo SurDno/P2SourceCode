@@ -1,8 +1,8 @@
-﻿using Cofe.Loggers;
+﻿using System.Xml;
+using Cofe.Loggers;
 using Cofe.Serializations.Data;
 using PLVirtualMachine.Common.Data;
 using PLVirtualMachine.Common.Serialization;
-using System.Xml;
 
 namespace PLVirtualMachine.Common.EngineAPI
 {
@@ -18,50 +18,50 @@ namespace PLVirtualMachine.Common.EngineAPI
     {
     }
 
-    public ItemTradePriceInfo(IWorldBlueprint item) => this.itemTemplate = item;
+    public ItemTradePriceInfo(IWorldBlueprint item) => itemTemplate = item;
 
     public IWorldBlueprint ItemTemplate
     {
-      get => this.itemTemplate;
-      set => this.itemTemplate = value;
+      get => itemTemplate;
+      set => itemTemplate = value;
     }
 
     public float Price
     {
-      get => this.priceValue;
-      set => this.priceValue = value;
+      get => priceValue;
+      set => priceValue = value;
     }
 
     public float BuyPrice
     {
-      get => this.buyPriceValue;
-      set => this.buyPriceValue = value;
+      get => buyPriceValue;
+      set => buyPriceValue = value;
     }
 
     public float PriceFactor
     {
-      get => this.priceFactor;
-      set => this.priceFactor = value;
+      get => priceFactor;
+      set => priceFactor = value;
     }
 
     public float BuyPriceFactor
     {
-      get => this.buyPriceFactor;
-      set => this.buyPriceFactor = value;
+      get => buyPriceFactor;
+      set => buyPriceFactor = value;
     }
 
-    public float ResultPrice => this.priceValue * this.priceFactor;
+    public float ResultPrice => priceValue * priceFactor;
 
-    public float ResultBuyPrice => this.buyPriceValue * this.buyPriceFactor;
+    public float ResultBuyPrice => buyPriceValue * buyPriceFactor;
 
     public void StateSave(IDataWriter writer)
     {
-      if (this.itemTemplate != null)
-        SaveManagerUtility.Save(writer, "TemplateGuid", this.itemTemplate.BaseGuid);
-      SaveManagerUtility.Save(writer, "Price", this.priceValue);
-      SaveManagerUtility.Save(writer, "BuyPrice", this.buyPriceValue);
-      SaveManagerUtility.Save(writer, "PriceFactor", this.priceFactor);
-      SaveManagerUtility.Save(writer, "BuyPriceFactor", this.buyPriceFactor);
+      if (itemTemplate != null)
+        SaveManagerUtility.Save(writer, "TemplateGuid", itemTemplate.BaseGuid);
+      SaveManagerUtility.Save(writer, "Price", priceValue);
+      SaveManagerUtility.Save(writer, "BuyPrice", buyPriceValue);
+      SaveManagerUtility.Save(writer, "PriceFactor", priceFactor);
+      SaveManagerUtility.Save(writer, "BuyPriceFactor", buyPriceFactor);
     }
 
     public void LoadFromXML(XmlElement xmlNode)
@@ -75,21 +75,21 @@ namespace PLVirtualMachine.Common.EngineAPI
           if (blueprintByGuid != null)
           {
             if (typeof (IWorldBlueprint).IsAssignableFrom(blueprintByGuid.GetType()))
-              this.itemTemplate = (IWorldBlueprint) blueprintByGuid;
+              itemTemplate = (IWorldBlueprint) blueprintByGuid;
             else
-              Logger.AddError(string.Format("SaveLoad error: cannot load item trade price info, item template id {0} is invalid", (object) uint64));
+              Logger.AddError(string.Format("SaveLoad error: cannot load item trade price info, item template id {0} is invalid", uint64));
           }
           else
-            Logger.AddError(string.Format("SaveLoad error: cannot load item trade price info, item template id {0} not found", (object) uint64));
+            Logger.AddError(string.Format("SaveLoad error: cannot load item trade price info, item template id {0} not found", uint64));
         }
         else if (childNode.Name == "Price")
-          this.priceValue = StringUtility.ToSingle(childNode.InnerText);
+          priceValue = StringUtility.ToSingle(childNode.InnerText);
         else if (childNode.Name == "BuyPrice")
-          this.buyPriceValue = StringUtility.ToSingle(childNode.InnerText);
+          buyPriceValue = StringUtility.ToSingle(childNode.InnerText);
         else if (childNode.Name == "PriceFactor")
-          this.priceFactor = StringUtility.ToSingle(childNode.InnerText);
+          priceFactor = StringUtility.ToSingle(childNode.InnerText);
         else if (childNode.Name == "BuyPriceFactor")
-          this.buyPriceFactor = StringUtility.ToSingle(childNode.InnerText);
+          buyPriceFactor = StringUtility.ToSingle(childNode.InnerText);
       }
     }
 

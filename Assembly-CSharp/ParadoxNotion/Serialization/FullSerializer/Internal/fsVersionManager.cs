@@ -14,7 +14,7 @@ namespace ParadoxNotion.Serialization.FullSerializer.Internal
       out List<fsVersionedType> path)
     {
       path = new List<fsVersionedType>();
-      if (!fsVersionManager.GetVersionImportPathRecursive(path, currentVersion, targetVersion))
+      if (!GetVersionImportPathRecursive(path, currentVersion, targetVersion))
         return fsResult.Fail("There is no migration path from \"" + currentVersion + "\" to \"" + targetVersion.VersionString + "\"");
       path.Add(targetVersion);
       return fsResult.Success;
@@ -28,7 +28,7 @@ namespace ParadoxNotion.Serialization.FullSerializer.Internal
       for (int index = 0; index < current.Ancestors.Length; ++index)
       {
         fsVersionedType ancestor = current.Ancestors[index];
-        if (ancestor.VersionString == currentVersion || fsVersionManager.GetVersionImportPathRecursive(path, currentVersion, ancestor))
+        if (ancestor.VersionString == currentVersion || GetVersionImportPathRecursive(path, currentVersion, ancestor))
         {
           path.Add(ancestor);
           return true;
@@ -40,30 +40,29 @@ namespace ParadoxNotion.Serialization.FullSerializer.Internal
     public static fsOption<fsVersionedType> GetVersionedType(Type type)
     {
       fsOption<fsVersionedType> versionedType1;
-      if (!fsVersionManager._cache.TryGetValue(type, out versionedType1))
+      if (!_cache.TryGetValue(type, out versionedType1))
       {
-        fsObjectAttribute attribute = fsPortableReflection.GetAttribute<fsObjectAttribute>((MemberInfo) type);
+        fsObjectAttribute attribute = fsPortableReflection.GetAttribute<fsObjectAttribute>(type);
         if (attribute != null && (!string.IsNullOrEmpty(attribute.VersionString) || attribute.PreviousModels != null))
         {
           if (attribute.PreviousModels != null && string.IsNullOrEmpty(attribute.VersionString))
-            throw new Exception("fsObject attribute on " + (object) type + " contains a PreviousModels specifier - it must also include a VersionString modifier");
+            throw new Exception("fsObject attribute on " + type + " contains a PreviousModels specifier - it must also include a VersionString modifier");
           fsVersionedType[] fsVersionedTypeArray = new fsVersionedType[attribute.PreviousModels != null ? attribute.PreviousModels.Length : 0];
           for (int index = 0; index < fsVersionedTypeArray.Length; ++index)
           {
-            fsOption<fsVersionedType> versionedType2 = fsVersionManager.GetVersionedType(attribute.PreviousModels[index]);
-            fsVersionedTypeArray[index] = !versionedType2.IsEmpty ? versionedType2.Value : throw new Exception("Unable to create versioned type for ancestor " + (object) versionedType2 + "; please add an [fsObject(VersionString=\"...\")] attribute");
+            fsOption<fsVersionedType> versionedType2 = GetVersionedType(attribute.PreviousModels[index]);
+            fsVersionedTypeArray[index] = !versionedType2.IsEmpty ? versionedType2.Value : throw new Exception("Unable to create versioned type for ancestor " + versionedType2 + "; please add an [fsObject(VersionString=\"...\")] attribute");
           }
-          fsVersionedType type1 = new fsVersionedType()
-          {
+          fsVersionedType type1 = new fsVersionedType {
             Ancestors = fsVersionedTypeArray,
             VersionString = attribute.VersionString,
             ModelType = type
           };
-          fsVersionManager.VerifyUniqueVersionStrings(type1);
-          fsVersionManager.VerifyConstructors(type1);
-          versionedType1 = fsOption.Just<fsVersionedType>(type1);
+          VerifyUniqueVersionStrings(type1);
+          VerifyConstructors(type1);
+          versionedType1 = fsOption.Just(type1);
         }
-        fsVersionManager._cache[type] = versionedType1;
+        _cache[type] = versionedType1;
       }
       return versionedType1;
     }

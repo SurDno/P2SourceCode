@@ -1,4 +1,5 @@
-﻿using Engine.Common;
+﻿using System;
+using Engine.Common;
 using Engine.Common.Components;
 using Engine.Common.Components.Gate;
 using Engine.Common.Services;
@@ -7,7 +8,6 @@ using Engine.Source.UI;
 using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
-using System;
 
 namespace Engine.Source.Blueprints
 {
@@ -20,14 +20,14 @@ namespace Engine.Source.Blueprints
     protected override void RegisterPorts()
     {
       base.RegisterPorts();
-      this.doorInput = this.AddValueInput<IDoorComponent>("Door");
-      this.AddFlowInput("In", new FlowHandler(this.Execute));
-      this.output = this.AddFlowOutput("Out");
+      doorInput = AddValueInput<IDoorComponent>("Door");
+      AddFlowInput("In", Execute);
+      output = AddFlowOutput("Out");
     }
 
     private void Execute()
     {
-      IDoorComponent door = this.doorInput.value;
+      IDoorComponent door = doorInput.value;
       if (door != null && door.LockState.Value == LockState.Locked)
       {
         IEntity player = ServiceLocator.GetService<ISimulation>().Player;
@@ -36,7 +36,7 @@ namespace Engine.Source.Blueprints
           IStorageComponent storage = player.GetComponent<IStorageComponent>();
           if (storage != null)
           {
-            UIServiceUtility.PushWindow<ILockPickingWindow>(this.output, (Action<ILockPickingWindow>) (window =>
+            UIServiceUtility.PushWindow(output, (Action<ILockPickingWindow>) (window =>
             {
               window.Actor = storage;
               window.Target = door;
@@ -45,7 +45,7 @@ namespace Engine.Source.Blueprints
           }
         }
       }
-      this.output.Call();
+      output.Call();
     }
   }
 }

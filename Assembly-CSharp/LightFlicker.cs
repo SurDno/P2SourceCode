@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-public class LightFlicker : MonoBehaviour
+﻿public class LightFlicker : MonoBehaviour
 {
   private float baseIntensity;
   public bool flicker = true;
@@ -9,14 +7,14 @@ public class LightFlicker : MonoBehaviour
 
   private void Awake()
   {
-    this.lightComp = this.gameObject.GetComponent<Light>();
-    this.baseIntensity = this.lightComp.intensity;
+    lightComp = this.gameObject.GetComponent<Light>();
+    baseIntensity = lightComp.intensity;
   }
 
   private void Update()
   {
-    if (!this.flicker)
+    if (!flicker)
       return;
-    this.lightComp.intensity = Mathf.Lerp(this.baseIntensity - this.flickerIntensity, this.baseIntensity, Mathf.PerlinNoise(Random.Range(0.0f, 1000f), Time.time));
+    lightComp.intensity = Mathf.Lerp(baseIntensity - flickerIntensity, baseIntensity, Mathf.PerlinNoise(Random.Range(0.0f, 1000f), Time.time));
   }
 }

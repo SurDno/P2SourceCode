@@ -21,7 +21,7 @@ namespace TriangleNet.IO
       int length = triangles == null ? 0 : triangles.Length;
       int count = input.segments.Count;
       mesh.inelements = length;
-      mesh.regions.AddRange((IEnumerable<RegionPointer>) input.regions);
+      mesh.regions.AddRange(input.regions);
       for (int index = 0; index < mesh.inelements; ++index)
         mesh.MakeTriangle(ref newotri);
       if (mesh.behavior.Poly)
@@ -75,12 +75,12 @@ namespace TriangleNet.IO
             {
               Vertex vertex3 = o2_4.Dest();
               Vertex vertex4 = o2_4.Apex();
-              if ((Point) vertex2 == (Point) vertex3)
+              if (vertex2 == vertex3)
               {
                 newotri.Lprev(ref o2_1);
                 o2_1.Bond(ref o2_4);
               }
-              if ((Point) vertex1 == (Point) vertex4)
+              if (vertex1 == vertex4)
               {
                 o2_4.Lprev(ref o2_2);
                 newotri.Bond(ref o2_2);
@@ -129,7 +129,7 @@ namespace TriangleNet.IO
             for (bool flag = true; flag && tri.triangle != Mesh.dummytri; tri = otriListArray[index7][index8])
             {
               Vertex vertex8 = tri.Dest();
-              if ((Point) vertex7 == (Point) vertex8)
+              if (vertex7 == vertex8)
               {
                 otriListArray[index7].Remove(otri4);
                 tri.SegBond(ref osub);

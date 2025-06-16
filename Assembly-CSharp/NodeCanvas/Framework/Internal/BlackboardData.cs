@@ -1,8 +1,7 @@
-﻿using ParadoxNotion;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
+using ParadoxNotion;
 
 namespace NodeCanvas.Framework.Internal
 {
@@ -14,8 +13,8 @@ namespace NodeCanvas.Framework.Internal
 
     public Dictionary<string, Variable> variables
     {
-      get => this._variables;
-      set => this._variables = value;
+      get => _variables;
+      set => _variables = value;
     }
 
     public Variable AddVariable(string varName, object value)
@@ -23,39 +22,39 @@ namespace NodeCanvas.Framework.Internal
       if (value == null)
       {
         Debug.LogError((object) "<b>Blackboard:</b> You can't use AddVariable with a null value. Use AddVariable(string, Type) to add the new data first");
-        return (Variable) null;
+        return null;
       }
-      Variable variable = this.AddVariable(varName, value.GetType());
+      Variable variable = AddVariable(varName, value.GetType());
       if (variable != null)
         variable.value = value;
       return variable;
     }
 
-    public Variable AddVariable(string varName, System.Type type)
+    public Variable AddVariable(string varName, Type type)
     {
-      if (this.variables.ContainsKey(varName))
+      if (variables.ContainsKey(varName))
       {
-        Variable variable = this.GetVariable(varName, type);
+        Variable variable = GetVariable(varName, type);
         if (variable == null)
-          Debug.LogError((object) string.Format("<b>Blackboard:</b> Variable with name '{0}' already exists in blackboard '{1}', but is of different type! Returning null instead of new.", (object) varName, (object) ""));
+          Debug.LogError((object) string.Format("<b>Blackboard:</b> Variable with name '{0}' already exists in blackboard '{1}', but is of different type! Returning null instead of new.", varName, ""));
         else
-          Debug.LogWarning((object) string.Format("<b>Blackboard:</b> Variable with name '{0}' already exists in blackboard '{1}'. Returning existing instead of new.", (object) varName, (object) ""));
+          Debug.LogWarning((object) string.Format("<b>Blackboard:</b> Variable with name '{0}' already exists in blackboard '{1}'. Returning existing instead of new.", varName, ""));
         return variable;
       }
-      Variable instance = (Variable) Activator.CreateInstance(typeof (Variable<>).RTMakeGenericType(new System.Type[1]
+      Variable instance = (Variable) Activator.CreateInstance(typeof (Variable<>).RTMakeGenericType(new Type[1]
       {
         type
       }));
       instance.name = varName;
-      this.variables[varName] = instance;
+      variables[varName] = instance;
       return instance;
     }
 
     public Variable RemoveVariable(string varName)
     {
-      Variable variable = (Variable) null;
-      if (this.variables.TryGetValue(varName, out variable))
-        this.variables.Remove(varName);
+      Variable variable = null;
+      if (variables.TryGetValue(varName, out variable))
+        variables.Remove(varName);
       return variable;
     }
 
@@ -63,24 +62,24 @@ namespace NodeCanvas.Framework.Internal
     {
       try
       {
-        return (this.variables[varName] as Variable<T>).value;
+        return (variables[varName] as Variable<T>).value;
       }
       catch
       {
         try
         {
-          return (T) this.variables[varName].value;
+          return (T) variables[varName].value;
         }
         catch
         {
-          if (!this.variables.ContainsKey(varName))
+          if (!variables.ContainsKey(varName))
           {
-            Debug.LogError((object) string.Format("<b>Blackboard:</b> No Variable of name '{0}' and type '{1}' exists on Blackboard '{2}'. Returning default T...", (object) varName, (object) typeof (T).FriendlyName(), (object) ""));
+            Debug.LogError((object) string.Format("<b>Blackboard:</b> No Variable of name '{0}' and type '{1}' exists on Blackboard '{2}'. Returning default T...", varName, typeof (T).FriendlyName(), ""));
             return default (T);
           }
         }
       }
-      Debug.LogError((object) string.Format("<b>Blackboard:</b> Can't cast value of variable with name '{0}' to type '{1}'", (object) varName, (object) typeof (T).FriendlyName()));
+      Debug.LogError((object) string.Format("<b>Blackboard:</b> Can't cast value of variable with name '{0}' to type '{1}'", varName, typeof (T).FriendlyName()));
       return default (T);
     }
 
@@ -88,16 +87,16 @@ namespace NodeCanvas.Framework.Internal
     {
       try
       {
-        Variable variable = this.variables[varName];
+        Variable variable = variables[varName];
         variable.value = value;
         return variable;
       }
       catch
       {
-        if (!this.variables.ContainsKey(varName))
+        if (!variables.ContainsKey(varName))
         {
-          Debug.Log((object) string.Format("<b>Blackboard:</b> No Variable of name '{0}' and type '{1}' exists on Blackboard '{2}'. Adding new instead...", (object) varName, value != null ? (object) value.GetType().FriendlyName() : (object) "null", (object) ""));
-          Variable variable = this.AddVariable(varName, value);
+          Debug.Log((object) string.Format("<b>Blackboard:</b> No Variable of name '{0}' and type '{1}' exists on Blackboard '{2}'. Adding new instead...", varName, value != null ? value.GetType().FriendlyName() : (object) "null", ""));
+          Variable variable = AddVariable(varName, value);
           if (variable != null)
           {
             variable.isProtected = true;
@@ -108,37 +107,37 @@ namespace NodeCanvas.Framework.Internal
         else
           Debug.LogError((object) "2");
       }
-      Debug.LogError((object) ("<b>Blackboard:</b> Can't cast value '" + (value != null ? value.ToString() : "null") + "' to blackboard variable of name '" + varName + "' and type " + this.variables[varName].varType.Name));
-      return (Variable) null;
+      Debug.LogError((object) ("<b>Blackboard:</b> Can't cast value '" + (value != null ? value.ToString() : "null") + "' to blackboard variable of name '" + varName + "' and type " + variables[varName].varType.Name));
+      return null;
     }
 
-    public Variable GetVariable(string varName, System.Type ofType = null)
+    public Variable GetVariable(string varName, Type ofType = null)
     {
       Variable variable;
-      return this.variables != null && varName != null && this.variables.TryGetValue(varName, out variable) && (ofType == (System.Type) null || variable.CanConvertTo(ofType)) ? variable : (Variable) null;
+      return variables != null && varName != null && variables.TryGetValue(varName, out variable) && (ofType == null || variable.CanConvertTo(ofType)) ? variable : null;
     }
 
     public Variable GetVariableByID(string ID)
     {
-      if (this.variables != null && ID != null)
+      if (variables != null && ID != null)
       {
-        foreach (KeyValuePair<string, Variable> variable in this.variables)
+        foreach (KeyValuePair<string, Variable> variable in variables)
         {
           if (variable.Value.ID == ID)
             return variable.Value;
         }
       }
-      return (Variable) null;
+      return null;
     }
 
     public Variable<T> GetVariable<T>(string varName)
     {
-      return (Variable<T>) this.GetVariable(varName, typeof (T));
+      return (Variable<T>) GetVariable(varName, typeof (T));
     }
 
-    public string[] GetVariableNames(System.Type ofType)
+    public string[] GetVariableNames(Type ofType)
     {
-      return this.variables.Values.Where<Variable>((Func<Variable, bool>) (v => v.CanConvertTo(ofType))).Select<Variable, string>((Func<Variable, string>) (v => v.name)).ToArray<string>();
+      return variables.Values.Where(v => v.CanConvertTo(ofType)).Select(v => v.name).ToArray();
     }
   }
 }

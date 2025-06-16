@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Xml;
-using UnityEngine;
 
 [Serializable]
 public class VisemeBoneDefine
@@ -13,29 +12,29 @@ public class VisemeBoneDefine
   {
   }
 
-  public VisemeBoneDefine(string vis) => this.m_visemeLabel = vis;
+  public VisemeBoneDefine(string vis) => m_visemeLabel = vis;
 
   public string Name
   {
-    get => this.m_visemeLabel;
-    set => this.m_visemeLabel = value;
+    get => m_visemeLabel;
+    set => m_visemeLabel = value;
   }
 
-  public bool HasPose => this.m_BonePoses != null && this.m_BonePoses.Length != 0;
+  public bool HasPose => m_BonePoses != null && m_BonePoses.Length != 0;
 
   public void RecordBonePositions(Transform[] boneList)
   {
-    this.m_BonePoses = new BonePose[boneList.Length];
+    m_BonePoses = new BonePose[boneList.Length];
     for (int index = 0; index < boneList.Length; ++index)
     {
-      this.m_BonePoses[index] = new BonePose();
-      this.m_BonePoses[index].InitializeBone(boneList[index]);
+      m_BonePoses[index] = new BonePose();
+      m_BonePoses[index].InitializeBone(boneList[index]);
     }
   }
 
   public void ResetBonePose(BonePose[] basePoses)
   {
-    foreach (BonePose bonePose in this.m_BonePoses)
+    foreach (BonePose bonePose in m_BonePoses)
     {
       foreach (BonePose basePose in basePoses)
       {
@@ -55,39 +54,39 @@ public class VisemeBoneDefine
       if (reader.Name == endTag && reader.NodeType == XmlNodeType.EndElement)
         flag = true;
       else if (reader.Name == "label")
-        this.m_visemeLabel = XMLUtils.ReadXMLInnerText(reader, "label");
+        m_visemeLabel = XMLUtils.ReadXMLInnerText(reader, "label");
       else if (reader.Name == "bone")
       {
         ++num;
         BonePose bonePose = new BonePose();
         bonePose.ReadBonePose(reader, flipX, scale);
-        arrayList.Add((object) bonePose);
+        arrayList.Add(bonePose);
       }
     }
-    this.m_BonePoses = new BonePose[arrayList.Count];
+    m_BonePoses = new BonePose[arrayList.Count];
     int index = 0;
     foreach (BonePose bonePose in arrayList)
     {
-      this.m_BonePoses[index] = bonePose;
+      m_BonePoses[index] = bonePose;
       ++index;
     }
   }
 
   public void LoadUnityBones(Transform gObject, Hashtable cache, bool bKeepLocalRotations)
   {
-    foreach (BonePose bonePose in this.m_BonePoses)
+    foreach (BonePose bonePose in m_BonePoses)
       bonePose.LoadUnityBone(gObject, cache, bKeepLocalRotations);
   }
 
   public void ResetToThisPose()
   {
-    foreach (BonePose bonePose in this.m_BonePoses)
+    foreach (BonePose bonePose in m_BonePoses)
       bonePose.ResetToThisTransform();
   }
 
   public void Print()
   {
-    foreach (BonePose bonePose in this.m_BonePoses)
+    foreach (BonePose bonePose in m_BonePoses)
       bonePose.Print();
   }
 
@@ -95,7 +94,7 @@ public class VisemeBoneDefine
   {
     if (this == defaultModel)
       return;
-    foreach (BonePose bonePose1 in this.m_BonePoses)
+    foreach (BonePose bonePose1 in m_BonePoses)
     {
       BonePose bonePose2 = defaultModel.GetBonePose(bonePose1.boneName);
       if (bonePose2 != null)
@@ -107,17 +106,17 @@ public class VisemeBoneDefine
 
   private BonePose GetBonePose(string boneName)
   {
-    foreach (BonePose bonePose in this.m_BonePoses)
+    foreach (BonePose bonePose in m_BonePoses)
     {
       if (bonePose.boneName == boneName)
         return bonePose;
     }
-    return (BonePose) null;
+    return null;
   }
 
   public void Deform(float weight, BoneDeformMemento memento)
   {
-    foreach (BonePose bonePose in this.m_BonePoses)
+    foreach (BonePose bonePose in m_BonePoses)
       bonePose.Deform(weight, memento);
   }
 }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.IO.Compression;
@@ -20,7 +19,7 @@ namespace TriangleNet.IO
     private int triangles;
     private int[] vertices;
 
-    public static DebugWriter Session => DebugWriter.instance;
+    public static DebugWriter Session => instance;
 
     private DebugWriter()
     {
@@ -28,62 +27,62 @@ namespace TriangleNet.IO
 
     public void Start(string session)
     {
-      this.iteration = 0;
+      iteration = 0;
       this.session = session;
-      if (this.stream != null)
+      if (stream != null)
         throw new Exception("A session is active. Finish before starting a new.");
-      this.tmpFile = Path.GetTempFileName();
-      this.stream = new StreamWriter(this.tmpFile);
+      tmpFile = Path.GetTempFileName();
+      stream = new StreamWriter(tmpFile);
     }
 
     public void Write(Mesh mesh, bool skip = false)
     {
-      this.WriteMesh(mesh, skip);
-      this.triangles = mesh.Triangles.Count;
+      WriteMesh(mesh, skip);
+      triangles = mesh.Triangles.Count;
     }
 
-    public void Finish() => this.Finish(this.session + ".mshx");
+    public void Finish() => Finish(session + ".mshx");
 
     private void Finish(string path)
     {
-      if (this.stream == null)
+      if (stream == null)
         return;
-      this.stream.Flush();
-      this.stream.Dispose();
-      this.stream = (StreamWriter) null;
+      stream.Flush();
+      stream.Dispose();
+      stream = null;
       using (FileStream fileStream = new FileStream(path, FileMode.Create))
       {
-        using (GZipStream gzipStream = new GZipStream((Stream) fileStream, CompressionMode.Compress, false))
+        using (GZipStream gzipStream = new GZipStream(fileStream, CompressionMode.Compress, false))
         {
-          byte[] bytes = Encoding.UTF8.GetBytes("#!N" + (object) this.iteration + Environment.NewLine);
+          byte[] bytes = Encoding.UTF8.GetBytes("#!N" + iteration + Environment.NewLine);
           gzipStream.Write(bytes, 0, bytes.Length);
-          byte[] buffer = File.ReadAllBytes(this.tmpFile);
+          byte[] buffer = File.ReadAllBytes(tmpFile);
           gzipStream.Write(buffer, 0, buffer.Length);
         }
       }
-      File.Delete(this.tmpFile);
+      File.Delete(tmpFile);
     }
 
     private void WriteGeometry(InputGeometry geometry)
     {
-      this.stream.WriteLine("#!G{0}", (object) this.iteration++);
+      stream.WriteLine("#!G{0}", iteration++);
     }
 
     private void WriteMesh(Mesh mesh, bool skip)
     {
-      if (this.triangles == mesh.triangles.Count & skip)
+      if (triangles == mesh.triangles.Count & skip)
         return;
-      this.stream.WriteLine("#!M{0}", (object) this.iteration++);
-      if (this.VerticesChanged(mesh))
+      stream.WriteLine("#!M{0}", iteration++);
+      if (VerticesChanged(mesh))
       {
-        this.HashVertices(mesh);
-        this.stream.WriteLine("{0}", (object) mesh.vertices.Count);
+        HashVertices(mesh);
+        stream.WriteLine("{0}", mesh.vertices.Count);
         foreach (Vertex vertex in mesh.vertices.Values)
-          this.stream.WriteLine("{0} {1} {2} {3}", (object) vertex.hash, (object) vertex.x.ToString((IFormatProvider) DebugWriter.nfi), (object) vertex.y.ToString((IFormatProvider) DebugWriter.nfi), (object) vertex.mark);
+          stream.WriteLine("{0} {1} {2} {3}", vertex.hash, vertex.x.ToString(nfi), vertex.y.ToString(nfi), vertex.mark);
       }
       else
-        this.stream.WriteLine("0");
-      this.stream.WriteLine("{0}", (object) mesh.subsegs.Count);
+        stream.WriteLine("0");
+      stream.WriteLine("{0}", mesh.subsegs.Count);
       Osub osub = new Osub();
       osub.orient = 0;
       foreach (Segment segment in mesh.subsegs.Values)
@@ -93,23 +92,23 @@ namespace TriangleNet.IO
           osub.seg = segment;
           Vertex vertex1 = osub.Org();
           Vertex vertex2 = osub.Dest();
-          this.stream.WriteLine("{0} {1} {2} {3}", (object) osub.seg.hash, (object) vertex1.hash, (object) vertex2.hash, (object) osub.seg.boundary);
+          stream.WriteLine("{0} {1} {2} {3}", osub.seg.hash, vertex1.hash, vertex2.hash, osub.seg.boundary);
         }
       }
       Otri otri = new Otri();
       Otri o2 = new Otri();
       otri.orient = 0;
-      this.stream.WriteLine("{0}", (object) mesh.triangles.Count);
+      stream.WriteLine("{0}", mesh.triangles.Count);
       foreach (Triangle triangle in mesh.triangles.Values)
       {
         otri.triangle = triangle;
         Vertex vertex3 = otri.Org();
         Vertex vertex4 = otri.Dest();
         Vertex vertex5 = otri.Apex();
-        int num1 = (Point) vertex3 == (Point) null ? -1 : vertex3.hash;
-        int num2 = (Point) vertex4 == (Point) null ? -1 : vertex4.hash;
-        int num3 = (Point) vertex5 == (Point) null ? -1 : vertex5.hash;
-        this.stream.Write("{0} {1} {2} {3}", (object) otri.triangle.hash, (object) num1, (object) num2, (object) num3);
+        int num1 = vertex3 == null ? -1 : vertex3.hash;
+        int num2 = vertex4 == null ? -1 : vertex4.hash;
+        int num3 = vertex5 == null ? -1 : vertex5.hash;
+        stream.Write("{0} {1} {2} {3}", otri.triangle.hash, num1, num2, num3);
         otri.orient = 1;
         otri.Sym(ref o2);
         int hash1 = o2.triangle.hash;
@@ -119,18 +118,18 @@ namespace TriangleNet.IO
         otri.orient = 0;
         otri.Sym(ref o2);
         int hash3 = o2.triangle.hash;
-        this.stream.WriteLine(" {0} {1} {2}", (object) hash1, (object) hash2, (object) hash3);
+        stream.WriteLine(" {0} {1} {2}", hash1, hash2, hash3);
       }
     }
 
     private bool VerticesChanged(Mesh mesh)
     {
-      if (this.vertices == null || mesh.Vertices.Count != this.vertices.Length)
+      if (vertices == null || mesh.Vertices.Count != vertices.Length)
         return true;
       int num = 0;
-      foreach (Point vertex in (IEnumerable<Vertex>) mesh.Vertices)
+      foreach (Point vertex in mesh.Vertices)
       {
-        if (vertex.id != this.vertices[num++])
+        if (vertex.id != vertices[num++])
           return true;
       }
       return false;
@@ -138,11 +137,11 @@ namespace TriangleNet.IO
 
     private void HashVertices(Mesh mesh)
     {
-      if (this.vertices == null || mesh.Vertices.Count != this.vertices.Length)
-        this.vertices = new int[mesh.Vertices.Count];
+      if (vertices == null || mesh.Vertices.Count != vertices.Length)
+        vertices = new int[mesh.Vertices.Count];
       int num = 0;
-      foreach (Vertex vertex in (IEnumerable<Vertex>) mesh.Vertices)
-        this.vertices[num++] = vertex.id;
+      foreach (Vertex vertex in mesh.Vertices)
+        vertices[num++] = vertex.id;
     }
   }
 }

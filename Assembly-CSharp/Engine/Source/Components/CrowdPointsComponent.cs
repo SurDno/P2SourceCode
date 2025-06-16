@@ -1,4 +1,6 @@
-﻿using Engine.Common;
+﻿using System;
+using System.Collections.Generic;
+using Engine.Common;
 using Engine.Common.Components;
 using Engine.Common.Components.Movable;
 using Engine.Common.Generator;
@@ -10,9 +12,6 @@ using Engine.Source.Components.Regions;
 using Engine.Source.Components.Utilities;
 using Engine.Source.Services;
 using Inspectors;
-using System;
-using System.Collections.Generic;
-using UnityEngine;
 
 namespace Engine.Source.Components
 {
@@ -29,7 +28,7 @@ namespace Engine.Source.Components
 
     public event Action<ICrowdPointsComponent, bool> ChangePointsEvent;
 
-    public IEnumerable<CrowdPointInfo> Points => (IEnumerable<CrowdPointInfo>) this.points;
+    public IEnumerable<CrowdPointInfo> Points => points;
 
     [Inspected]
     public bool PointsReady { get; private set; }
@@ -40,11 +39,10 @@ namespace Engine.Source.Components
         return;
       if (area < AreaEnum.__EndMasks)
       {
-        if (this.region == null || !((UnityEngine.Object) this.region.RegionMesh != (UnityEngine.Object) null))
+        if (region == null || !((UnityEngine.Object) region.RegionMesh != (UnityEngine.Object) null))
           return;
         for (int index = 0; index < count; ++index)
-          result.Add(new CrowdPointInfo()
-          {
+          result.Add(new CrowdPointInfo {
             GameObject = (GameObject) null,
             Rotation = Quaternion.identity,
             Area = area,
@@ -55,7 +53,7 @@ namespace Engine.Source.Components
       {
         if (area <= AreaEnum.__EndMasks)
           return;
-        foreach (CrowdPointInfo point in this.points)
+        foreach (CrowdPointInfo point in points)
         {
           if (area == point.Area && (UnityEngine.Object) point.GameObject != (UnityEngine.Object) null && point.GameObject.activeInHierarchy)
             result.Add(point);
@@ -69,10 +67,10 @@ namespace Engine.Source.Components
       radius = 0;
       center = Vector3.zero;
       point = Vector3.zero;
-      point = this.region.RegionMesh.GetRandomPoint();
+      point = region.RegionMesh.GetRandomPoint();
       center = point;
       NavMeshUtility.SamplePosition(ref point, mask, out radius, 32);
-      return RegionUtility.GetRegionByPosition(point) == this.region;
+      return RegionUtility.GetRegionByPosition(point) == region;
     }
 
     private void FindPoint(out int radius, out Vector3 center, out Vector3 point, AreaEnum area)
@@ -83,70 +81,69 @@ namespace Engine.Source.Components
       point = Vector3.zero;
       for (int index = 0; index < 5; ++index)
       {
-        point = this.region.RegionMesh.GetRandomPoint();
+        point = region.RegionMesh.GetRandomPoint();
         center = point;
         NavMeshUtility.SamplePosition(ref point, mask, out radius, 32);
-        if (RegionUtility.GetRegionByPosition(point) == this.region)
+        if (RegionUtility.GetRegionByPosition(point) == region)
           return;
       }
-      Debug.LogError((object) ("Nav mesh point not found , region : " + this.region.Owner.GetInfo() + " , area : " + (object) area));
+      Debug.LogError((object) ("Nav mesh point not found , region : " + region.Owner.GetInfo() + " , area : " + area));
     }
 
     public override void OnAdded()
     {
       base.OnAdded();
-      this.location = LocationItemUtility.FindParentComponent<ILocationComponent>(this.Owner);
-      if (this.location == null)
+      location = LocationItemUtility.FindParentComponent<ILocationComponent>(Owner);
+      if (location == null)
         return;
-      this.location.OnHibernationChanged += new Action<ILocationComponent>(this.OnChangeHibernation);
-      this.OnChangeHibernation(this.location);
+      location.OnHibernationChanged += OnChangeHibernation;
+      OnChangeHibernation(location);
     }
 
     public override void OnRemoved()
     {
-      if (this.location != null)
-        this.location.OnHibernationChanged -= new Action<ILocationComponent>(this.OnChangeHibernation);
+      if (location != null)
+        location.OnHibernationChanged -= OnChangeHibernation;
       base.OnRemoved();
     }
 
     private void OnChangeHibernation(ILocationComponent sender)
     {
-      this.points.Clear();
-      this.PointsReady = false;
-      if (!this.location.IsHibernation)
+      points.Clear();
+      PointsReady = false;
+      if (!location.IsHibernation)
       {
-        StaticModelComponent component = this.Owner.GetComponent<StaticModelComponent>();
+        StaticModelComponent component = Owner.GetComponent<StaticModelComponent>();
         if (component != null)
         {
           SceneAsset sceneAsset = component.SceneAsset;
           if (sceneAsset != null)
           {
             foreach (GameObject rootGameObject in sceneAsset.Scene.GetRootGameObjects())
-              this.ComputeGameObject(rootGameObject);
+              ComputeGameObject(rootGameObject);
           }
         }
         else
         {
-          GameObject gameObject = ((IEntityView) this.Owner).GameObject;
+          GameObject gameObject = ((IEntityView) Owner).GameObject;
           if ((UnityEngine.Object) gameObject != (UnityEngine.Object) null)
-            this.ComputeGameObject(gameObject);
+            ComputeGameObject(gameObject);
         }
-        this.PointsReady = true;
+        PointsReady = true;
       }
-      Action<ICrowdPointsComponent, bool> changePointsEvent = this.ChangePointsEvent;
+      Action<ICrowdPointsComponent, bool> changePointsEvent = ChangePointsEvent;
       if (changePointsEvent == null)
         return;
-      changePointsEvent((ICrowdPointsComponent) this, this.PointsReady);
+      changePointsEvent(this, PointsReady);
     }
 
     private void ComputeGameObject(GameObject go)
     {
-      CrowdPointsComponent.crowdPointsTempList.Clear();
+      crowdPointsTempList.Clear();
       Transform transform = go.transform;
-      go.GetComponentsInChildren<CrowdPoint>(CrowdPointsComponent.crowdPointsTempList);
-      foreach (CrowdPoint crowdPointsTemp in CrowdPointsComponent.crowdPointsTempList)
-        this.points.Add(new CrowdPointInfo()
-        {
+      go.GetComponentsInChildren<CrowdPoint>(crowdPointsTempList);
+      foreach (CrowdPoint crowdPointsTemp in crowdPointsTempList)
+        points.Add(new CrowdPointInfo {
           GameObject = crowdPointsTemp.gameObject,
           Radius = 0,
           CenterPoint = crowdPointsTemp.gameObject.transform.position,
@@ -156,7 +153,7 @@ namespace Engine.Source.Components
           OnNavMesh = crowdPointsTemp.OnNavMesh,
           EntityPoint = LocationItemUtility.GetFirstEngineObject(crowdPointsTemp.gameObject.transform)
         });
-      CrowdPointsComponent.crowdPointsTempList.Clear();
+      crowdPointsTempList.Clear();
     }
   }
 }

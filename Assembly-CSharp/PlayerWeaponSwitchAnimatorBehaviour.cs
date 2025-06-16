@@ -1,6 +1,5 @@
 ﻿using Engine.Behaviours.Engines.Services;
 using Engine.Common.Components.AttackerPlayer;
-using UnityEngine;
 
 public class PlayerWeaponSwitchAnimatorBehaviour : StateMachineBehaviour
 {
@@ -13,6 +12,6 @@ public class PlayerWeaponSwitchAnimatorBehaviour : StateMachineBehaviour
   {
     if ((double) animator.GetLayerWeight(layerIndex) <= 0.0)
       return;
-    animator.gameObject.GetComponent<PlayerWeaponServiceNew>().OnWeaponSwitch(this.Kind, this.SwitchOn);
+    animator.gameObject.GetComponent<PlayerWeaponServiceNew>().OnWeaponSwitch(Kind, SwitchOn);
   }
 }

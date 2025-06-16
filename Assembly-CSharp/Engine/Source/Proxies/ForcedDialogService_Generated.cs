@@ -1,8 +1,8 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons.Converters;
 using Engine.Source.Services;
-using System;
 
 namespace Engine.Source.Proxies
 {
@@ -14,12 +14,12 @@ namespace Engine.Source.Proxies
   {
     public void StateSave(IDataWriter writer)
     {
-      DefaultStateSaveUtility.SaveListSerialize<ForcedDialogCharacterInfo>(writer, "Characters", this.characters);
+      DefaultStateSaveUtility.SaveListSerialize(writer, "Characters", characters);
     }
 
     public void StateLoad(IDataReader reader, Type type)
     {
-      this.characters = DefaultStateLoadUtility.ReadListSerialize<ForcedDialogCharacterInfo>(reader, "Characters", this.characters);
+      characters = DefaultStateLoadUtility.ReadListSerialize(reader, "Characters", characters);
     }
   }
 }

@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace RootMotion.FinalIK
+﻿namespace RootMotion.FinalIK
 {
   public class FBBIKArmBending : MonoBehaviour
   {
@@ -15,42 +13,42 @@ namespace RootMotion.FinalIK
 
     private void LateUpdate()
     {
-      if ((Object) this.ik == (Object) null)
+      if ((Object) ik == (Object) null)
         return;
-      if (!this.initiated)
+      if (!initiated)
       {
-        IKSolverFullBodyBiped solver = this.ik.solver;
-        solver.OnPostUpdate = solver.OnPostUpdate + new IKSolver.UpdateDelegate(this.OnPostFBBIK);
-        this.initiated = true;
+        IKSolverFullBodyBiped solver = ik.solver;
+        solver.OnPostUpdate = solver.OnPostUpdate + OnPostFBBIK;
+        initiated = true;
       }
-      if ((Object) this.ik.solver.leftHandEffector.target != (Object) null)
+      if ((Object) ik.solver.leftHandEffector.target != (Object) null)
       {
-        this.ik.solver.leftArmChain.bendConstraint.direction = this.ik.solver.leftHandEffector.target.rotation * Vector3.left + this.ik.solver.leftHandEffector.target.rotation * this.bendDirectionOffsetLeft + this.ik.transform.rotation * this.characterSpaceBendOffsetLeft;
-        this.ik.solver.leftArmChain.bendConstraint.weight = 1f;
+        ik.solver.leftArmChain.bendConstraint.direction = ik.solver.leftHandEffector.target.rotation * Vector3.left + ik.solver.leftHandEffector.target.rotation * bendDirectionOffsetLeft + ik.transform.rotation * characterSpaceBendOffsetLeft;
+        ik.solver.leftArmChain.bendConstraint.weight = 1f;
       }
-      if (!((Object) this.ik.solver.rightHandEffector.target != (Object) null))
+      if (!((Object) ik.solver.rightHandEffector.target != (Object) null))
         return;
-      this.ik.solver.rightArmChain.bendConstraint.direction = this.ik.solver.rightHandEffector.target.rotation * Vector3.right + this.ik.solver.rightHandEffector.target.rotation * this.bendDirectionOffsetRight + this.ik.transform.rotation * this.characterSpaceBendOffsetRight;
-      this.ik.solver.rightArmChain.bendConstraint.weight = 1f;
+      ik.solver.rightArmChain.bendConstraint.direction = ik.solver.rightHandEffector.target.rotation * Vector3.right + ik.solver.rightHandEffector.target.rotation * bendDirectionOffsetRight + ik.transform.rotation * characterSpaceBendOffsetRight;
+      ik.solver.rightArmChain.bendConstraint.weight = 1f;
     }
 
     private void OnPostFBBIK()
     {
-      if ((Object) this.ik == (Object) null)
+      if ((Object) ik == (Object) null)
         return;
-      if ((Object) this.ik.solver.leftHandEffector.target != (Object) null)
-        this.ik.references.leftHand.rotation = this.ik.solver.leftHandEffector.target.rotation;
-      if (!((Object) this.ik.solver.rightHandEffector.target != (Object) null))
+      if ((Object) ik.solver.leftHandEffector.target != (Object) null)
+        ik.references.leftHand.rotation = ik.solver.leftHandEffector.target.rotation;
+      if (!((Object) ik.solver.rightHandEffector.target != (Object) null))
         return;
-      this.ik.references.rightHand.rotation = this.ik.solver.rightHandEffector.target.rotation;
+      ik.references.rightHand.rotation = ik.solver.rightHandEffector.target.rotation;
     }
 
     private void OnDestroy()
     {
-      if (!((Object) this.ik != (Object) null))
+      if (!((Object) ik != (Object) null))
         return;
-      IKSolverFullBodyBiped solver = this.ik.solver;
-      solver.OnPostUpdate = solver.OnPostUpdate - new IKSolver.UpdateDelegate(this.OnPostFBBIK);
+      IKSolverFullBodyBiped solver = ik.solver;
+      solver.OnPostUpdate = solver.OnPostUpdate - OnPostFBBIK;
     }
   }
 }

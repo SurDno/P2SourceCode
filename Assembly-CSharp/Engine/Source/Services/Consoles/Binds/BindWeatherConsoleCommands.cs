@@ -1,27 +1,26 @@
-﻿using Cofe.Meta;
+﻿using System;
+using System.Linq;
+using Cofe.Meta;
 using Cofe.Serializations.Converters;
-using Engine.Common.Blenders;
 using Engine.Common.Services;
 using Engine.Common.Weather;
 using Engine.Impl.Services;
-using System;
-using System.Linq;
 
 namespace Engine.Source.Services.Consoles.Binds
 {
   [Initialisable]
   public static class BindWeatherConsoleCommands
   {
-    [Cofe.Meta.Initialise]
+    [Initialise]
     private static void Initialise()
     {
-      ConsoleTargetService.AddTarget(typeof (WeatherController).Name, (Func<string, object>) (value => (object) ServiceLocator.GetService<IWeatherController>()));
-      ConsoleTargetService.AddTarget("-weather", (Func<string, object>) (value => (object) ServiceLocator.GetService<ITemplateService>().GetTemplates<IWeatherSnapshot>().FirstOrDefault<IWeatherSnapshot>((Func<IWeatherSnapshot, bool>) (o => o.Name == value))));
-      ConsoleTargetService.AddTarget("-weather_layer", (Func<string, object>) (value => (object) ServiceLocator.GetService<WeatherController>().Blender.Items.ElementAtOrDefault<ILayerBlenderItem<IWeatherSnapshot>>(DefaultConverter.ParseInt(value))));
-      SetConsoleCommand.AddBind<IWeatherLayerBlenderItem, float>("weather_opacity", true, (Action<IWeatherLayerBlenderItem, float>) ((target, value) => target.SetOpacity(value)));
-      GetConsoleCommand.AddBind<IWeatherLayerBlenderItem, float>("weather_opacity", true, (Func<IWeatherLayerBlenderItem, float>) (target => target.Opacity));
-      SetConsoleCommand.AddBind<WeatherController, bool>("weather_enable", true, (Action<WeatherController, bool>) ((target, value) => target.IsEnabled = value));
-      GetConsoleCommand.AddBind<WeatherController, bool>("weather_enable", true, (Func<WeatherController, bool>) (target => target.IsEnabled));
+      ConsoleTargetService.AddTarget(typeof (WeatherController).Name, value => ServiceLocator.GetService<IWeatherController>());
+      ConsoleTargetService.AddTarget("-weather", value => ServiceLocator.GetService<ITemplateService>().GetTemplates<IWeatherSnapshot>().FirstOrDefault(o => o.Name == value));
+      ConsoleTargetService.AddTarget("-weather_layer", value => ServiceLocator.GetService<WeatherController>().Blender.Items.ElementAtOrDefault(DefaultConverter.ParseInt(value)));
+      SetConsoleCommand.AddBind("weather_opacity", true, (Action<IWeatherLayerBlenderItem, float>) ((target, value) => target.SetOpacity(value)));
+      GetConsoleCommand.AddBind("weather_opacity", true, (Func<IWeatherLayerBlenderItem, float>) (target => target.Opacity));
+      SetConsoleCommand.AddBind("weather_enable", true, (Action<WeatherController, bool>) ((target, value) => target.IsEnabled = value));
+      GetConsoleCommand.AddBind("weather_enable", true, (Func<WeatherController, bool>) (target => target.IsEnabled));
       EnumConsoleCommand.AddBind("-weather", (Func<string>) (() =>
       {
         string str = "\nWeather :\n";
@@ -29,7 +28,7 @@ namespace Engine.Source.Services.Consoles.Binds
           str = str + template.Name + "\n";
         return str;
       }));
-      EnumConsoleCommand.AddBind("-weather_layer", (Func<string>) (() => "\nWeather layer count : " + (object) ServiceLocator.GetService<WeatherController>().Blender.Items.Count<ILayerBlenderItem<IWeatherSnapshot>>()));
+      EnumConsoleCommand.AddBind("-weather_layer", (Func<string>) (() => "\nWeather layer count : " + ServiceLocator.GetService<WeatherController>().Blender.Items.Count()));
     }
 
     [ConsoleCommand("change_weather")]
@@ -42,7 +41,7 @@ namespace Engine.Source.Services.Consoles.Binds
       float num;
       if (parameters.Length == 2)
       {
-        layerBlenderItem = ServiceLocator.GetService<WeatherController>().Blender.Items.FirstOrDefault<ILayerBlenderItem<IWeatherSnapshot>>() as IWeatherLayerBlenderItem;
+        layerBlenderItem = ServiceLocator.GetService<WeatherController>().Blender.Items.FirstOrDefault() as IWeatherLayerBlenderItem;
         target = ConsoleTargetService.GetTarget(typeof (IWeatherSnapshot), parameters[0]) as IWeatherSnapshot;
         num = DefaultConverter.ParseFloat(parameters[1].Value);
       }
@@ -59,8 +58,8 @@ namespace Engine.Source.Services.Consoles.Binds
       if (target == null)
         return "Snapshot not found";
       ITimeService service = ServiceLocator.GetService<ITimeService>();
-      layerBlenderItem.Blender.BlendTo(target, TimeSpan.FromSeconds((double) num * (double) service.GameTimeFactor));
-      return "Set weather snaphot : " + target.Name + " , to layer : " + layerBlenderItem.Name + " , interval : " + (object) num;
+      layerBlenderItem.Blender.BlendTo(target, TimeSpan.FromSeconds(num * (double) service.GameTimeFactor));
+      return "Set weather snaphot : " + target.Name + " , to layer : " + layerBlenderItem.Name + " , interval : " + num;
     }
   }
 }

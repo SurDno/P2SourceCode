@@ -1,4 +1,5 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons;
 using Engine.Common.Commons.Converters;
@@ -6,7 +7,6 @@ using Engine.Common.Components.MessangerStationary;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Scripts.Tools.Serializations.Converters;
-using UnityEngine;
 
 namespace BehaviorDesigner.Runtime.Tasks.Pathologic
 {
@@ -16,40 +16,40 @@ namespace BehaviorDesigner.Runtime.Tasks.Pathologic
   [Factory]
   [GeneratePartial(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
   [FactoryProxy(typeof (FollowTeleportStationary))]
-  public class FollowTeleportStationary : BehaviorDesigner.Runtime.Tasks.Action, IStub, ISerializeDataWrite, ISerializeDataRead
+  public class FollowTeleportStationary : Action, IStub, ISerializeDataWrite, ISerializeDataRead
   {
-    [BehaviorDesigner.Runtime.Tasks.Tooltip("Через это время будет предпринята очередная попытка телепортации, если почтальон не дошел до цели.")]
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [Tooltip("Через это время будет предпринята очередная попытка телепортации, если почтальон не дошел до цели.")]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [SerializeField]
-    public SharedFloat TeleportRepeatTime = (SharedFloat) 30f;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    public SharedFloat TeleportRepeatTime = 30f;
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy()]
     [SerializeField]
     public SpawnpointKindEnum spawnpointKind = SpawnpointKindEnum.None;
     private NpcState npcState;
 
     public override void OnStart()
     {
-      if ((UnityEngine.Object) this.npcState == (UnityEngine.Object) null)
+      if ((UnityEngine.Object) npcState == (UnityEngine.Object) null)
       {
-        this.npcState = this.gameObject.GetComponent<NpcState>();
-        if ((UnityEngine.Object) this.npcState == (UnityEngine.Object) null)
+        npcState = gameObject.GetComponent<NpcState>();
+        if ((UnityEngine.Object) npcState == (UnityEngine.Object) null)
         {
-          Debug.LogWarning((object) (this.gameObject.name + ": doesn't contain " + typeof (NpcState).Name + " engine component"), (UnityEngine.Object) this.gameObject);
+          Debug.LogWarning((object) (gameObject.name + ": doesn't contain " + typeof (NpcState).Name + " engine component"), (UnityEngine.Object) gameObject);
           return;
         }
       }
-      this.npcState.MoveFollowTeleportStationary(this.TeleportRepeatTime.Value, this.spawnpointKind);
+      npcState.MoveFollowTeleportStationary(TeleportRepeatTime.Value, spawnpointKind);
     }
 
     public override TaskStatus OnUpdate()
     {
-      if ((UnityEngine.Object) this.npcState == (UnityEngine.Object) null || this.npcState.CurrentNpcState != NpcStateEnum.MoveFollowTeleportStationary)
+      if ((UnityEngine.Object) npcState == (UnityEngine.Object) null || npcState.CurrentNpcState != NpcStateEnum.MoveFollowTeleportStationary)
         return TaskStatus.Failure;
-      switch (this.npcState.Status)
+      switch (npcState.Status)
       {
         case NpcStateStatusEnum.Success:
           return TaskStatus.Success;
@@ -62,24 +62,24 @@ namespace BehaviorDesigner.Runtime.Tasks.Pathologic
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.WriteSerialize<NodeData>(writer, "NodeData", this.nodeData);
-      DefaultDataWriteUtility.Write(writer, "Id", this.id);
-      DefaultDataWriteUtility.Write(writer, "FriendlyName", this.friendlyName);
-      DefaultDataWriteUtility.Write(writer, "Instant", this.instant);
-      DefaultDataWriteUtility.Write(writer, "Disabled", this.disabled);
-      BehaviorTreeDataWriteUtility.WriteShared<SharedFloat>(writer, "TeleportRepeatTime", this.TeleportRepeatTime);
-      DefaultDataWriteUtility.WriteEnum<SpawnpointKindEnum>(writer, "SpawnpointKind", this.spawnpointKind);
+      DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
+      DefaultDataWriteUtility.Write(writer, "Id", id);
+      DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
+      DefaultDataWriteUtility.Write(writer, "Instant", instant);
+      DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
+      BehaviorTreeDataWriteUtility.WriteShared(writer, "TeleportRepeatTime", TeleportRepeatTime);
+      DefaultDataWriteUtility.WriteEnum(writer, "SpawnpointKind", spawnpointKind);
     }
 
-    public void DataRead(IDataReader reader, System.Type type)
+    public void DataRead(IDataReader reader, Type type)
     {
-      this.nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
-      this.id = DefaultDataReadUtility.Read(reader, "Id", this.id);
-      this.friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", this.friendlyName);
-      this.instant = DefaultDataReadUtility.Read(reader, "Instant", this.instant);
-      this.disabled = DefaultDataReadUtility.Read(reader, "Disabled", this.disabled);
-      this.TeleportRepeatTime = BehaviorTreeDataReadUtility.ReadShared<SharedFloat>(reader, "TeleportRepeatTime", this.TeleportRepeatTime);
-      this.spawnpointKind = DefaultDataReadUtility.ReadEnum<SpawnpointKindEnum>(reader, "SpawnpointKind");
+      nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
+      id = DefaultDataReadUtility.Read(reader, "Id", id);
+      friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
+      instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
+      disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
+      TeleportRepeatTime = BehaviorTreeDataReadUtility.ReadShared(reader, "TeleportRepeatTime", TeleportRepeatTime);
+      spawnpointKind = DefaultDataReadUtility.ReadEnum<SpawnpointKindEnum>(reader, "SpawnpointKind");
     }
   }
 }

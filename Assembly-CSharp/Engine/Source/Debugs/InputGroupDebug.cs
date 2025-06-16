@@ -1,13 +1,11 @@
-﻿using Cofe.Meta;
+﻿using System;
+using Cofe.Meta;
 using Engine.Common.Services;
 using Engine.Source.Commons;
 using Engine.Source.Services.Gizmos;
 using Engine.Source.Services.Inputs;
 using Engine.Source.Utility;
 using InputServices;
-using System;
-using System.Linq.Expressions;
-using UnityEngine;
 
 namespace Engine.Source.Debugs
 {
@@ -28,34 +26,34 @@ namespace Engine.Source.Debugs
     private static BoolPlayerProperty commonVisible;
     private static BoolPlayerProperty joystickVisible;
 
-    [Cofe.Meta.Initialise]
+    [Initialise]
     private static void Initialise()
     {
       InstanceByRequest<EngineApplication>.Instance.OnInitialized += (Action) (() =>
       {
-        GroupDebugService.RegisterGroup(InputGroupDebug.name, InputGroupDebug.key, InputGroupDebug.modifficators, new Action(InputGroupDebug.Update));
-        InputGroupDebug.commonVisible = BoolPlayerProperty.Create<BoolPlayerProperty>((Expression<Func<BoolPlayerProperty>>) (() => InputGroupDebug.commonVisible));
-        InputGroupDebug.joystickVisible = BoolPlayerProperty.Create<BoolPlayerProperty>((Expression<Func<BoolPlayerProperty>>) (() => InputGroupDebug.joystickVisible));
+        GroupDebugService.RegisterGroup(name, key, modifficators, Update);
+        commonVisible = BoolPlayerProperty.Create(() => commonVisible);
+        joystickVisible = BoolPlayerProperty.Create(() => joystickVisible);
       });
     }
 
     private static void Update()
     {
-      if (InputUtility.IsKeyDown(InputGroupDebug.commonKey, KeyModifficator.Control))
-        InputGroupDebug.commonVisible.Value = !(bool) InputGroupDebug.commonVisible;
-      if (InputUtility.IsKeyDown(InputGroupDebug.joystickKey, KeyModifficator.Control))
-        InputGroupDebug.joystickVisible.Value = !(bool) InputGroupDebug.joystickVisible;
-      string text1 = "\n" + InputGroupDebug.name + " (" + InputUtility.GetHotKeyText(InputGroupDebug.key, InputGroupDebug.modifficators) + ")";
-      ServiceLocator.GetService<GizmoService>().DrawText(text1, InputGroupDebug.headerColor);
-      string text2 = "  Common " + ((bool) InputGroupDebug.commonVisible ? (object) "True" : (object) "False") + " [Control + " + (object) InputGroupDebug.commonKey + "]";
-      ServiceLocator.GetService<GizmoService>().DrawText(text2, (bool) InputGroupDebug.commonVisible ? InputGroupDebug.trueColor : InputGroupDebug.falseColor);
-      string text3 = "  Joystick " + ((bool) InputGroupDebug.joystickVisible ? (object) "True" : (object) "False") + " [Control + " + (object) InputGroupDebug.joystickKey + "]";
-      ServiceLocator.GetService<GizmoService>().DrawText(text3, (bool) InputGroupDebug.joystickVisible ? InputGroupDebug.trueColor : InputGroupDebug.falseColor);
-      if ((bool) InputGroupDebug.commonVisible)
-        InputGroupDebug.DrawCommon();
-      if (!(bool) InputGroupDebug.joystickVisible)
+      if (InputUtility.IsKeyDown(commonKey, KeyModifficator.Control))
+        commonVisible.Value = !commonVisible;
+      if (InputUtility.IsKeyDown(joystickKey, KeyModifficator.Control))
+        joystickVisible.Value = !joystickVisible;
+      string text1 = "\n" + name + " (" + InputUtility.GetHotKeyText(key, modifficators) + ")";
+      ServiceLocator.GetService<GizmoService>().DrawText(text1, headerColor);
+      string text2 = "  Common " + (commonVisible ? "True" : (object) "False") + " [Control + " + (object) commonKey + "]";
+      ServiceLocator.GetService<GizmoService>().DrawText(text2, commonVisible ? trueColor : falseColor);
+      string text3 = "  Joystick " + (joystickVisible ? "True" : (object) "False") + " [Control + " + (object) joystickKey + "]";
+      ServiceLocator.GetService<GizmoService>().DrawText(text3, joystickVisible ? trueColor : falseColor);
+      if (commonVisible)
+        DrawCommon();
+      if (!joystickVisible)
         return;
-      InputGroupDebug.DrawJoystick();
+      DrawJoystick();
     }
 
     private static void DrawCommon()
@@ -69,26 +67,26 @@ namespace Engine.Source.Debugs
       string text1 = str3 + axisName3 + " : " + (object) Input.GetAxisRaw(axisName3) + "\n";
       for (int index = 1; index <= 28; ++index)
       {
-        string axisName4 = "JoystickAxis" + (object) index;
+        string axisName4 = "JoystickAxis" + index;
         text1 = text1 + axisName4 + " : " + (object) Input.GetAxisRaw(axisName4) + "\n";
       }
-      ServiceLocator.GetService<GizmoService>().DrawText(text1, InputGroupDebug.bodyColor);
+      ServiceLocator.GetService<GizmoService>().DrawText(text1, bodyColor);
       string text2 = "";
       if (Input.anyKey)
       {
         text2 = "Pressed : \n";
-        foreach (KeyCode key in InputGroupDebug.keys)
+        foreach (KeyCode key in keys)
         {
           if (Input.GetKey(key))
             text2 = text2 + (object) key + "\n";
         }
       }
-      ServiceLocator.GetService<GizmoService>().DrawText(text2, InputGroupDebug.bodyColor);
+      ServiceLocator.GetService<GizmoService>().DrawText(text2, bodyColor);
     }
 
     private static void DrawJoystick()
     {
-      string text1 = "\nJoystick present : " + InputService.Instance.JoystickPresent.ToString() + "\n";
+      string text1 = "\nJoystick present : " + InputService.Instance.JoystickPresent + "\n";
       string[] joystickNames = Input.GetJoystickNames();
       if (joystickNames.Length != 0)
       {
@@ -96,35 +94,35 @@ namespace Engine.Source.Debugs
         for (int index = 0; index < joystickNames.Length; ++index)
           text1 = text1 + "Joystick name : " + joystickNames[index] + "\n";
       }
-      ServiceLocator.GetService<GizmoService>().DrawText(text1, InputGroupDebug.bodyColor);
+      ServiceLocator.GetService<GizmoService>().DrawText(text1, bodyColor);
       JoystickLayout layout = InputService.Instance.Layout;
       if (layout == null)
         return;
-      ServiceLocator.GetService<GizmoService>().DrawText("Layout : " + layout.Name, InputGroupDebug.headerColor);
-      ServiceLocator.GetService<GizmoService>().DrawText("\nAxes : ", InputGroupDebug.headerColor);
+      ServiceLocator.GetService<GizmoService>().DrawText("Layout : " + layout.Name, headerColor);
+      ServiceLocator.GetService<GizmoService>().DrawText("\nAxes : ", headerColor);
       foreach (AxisBind ax in layout.Axes)
       {
         string name = ax.Name;
         float axis = InputService.Instance.GetAxis(name);
-        string text2 = name + " : " + (object) axis;
-        ServiceLocator.GetService<GizmoService>().DrawText(text2, (double) axis != 0.0 ? InputGroupDebug.bodyColor2 : InputGroupDebug.bodyColor);
+        string text2 = name + " : " + axis;
+        ServiceLocator.GetService<GizmoService>().DrawText(text2, axis != 0.0 ? bodyColor2 : bodyColor);
       }
-      ServiceLocator.GetService<GizmoService>().DrawText("\nButtons : ", InputGroupDebug.headerColor);
+      ServiceLocator.GetService<GizmoService>().DrawText("\nButtons : ", headerColor);
       foreach (AxisToButton axesToButton in layout.AxesToButtons)
       {
         string name = axesToButton.Name;
         bool button1 = InputService.Instance.GetButton(name, false);
         bool button2 = InputService.Instance.GetButton(name, true);
-        string text3 = name + " : " + button1.ToString() + " , hold : " + button2.ToString();
-        ServiceLocator.GetService<GizmoService>().DrawText(text3, button1 ? InputGroupDebug.bodyColor2 : InputGroupDebug.bodyColor);
+        string text3 = name + " : " + button1 + " , hold : " + button2;
+        ServiceLocator.GetService<GizmoService>().DrawText(text3, button1 ? bodyColor2 : bodyColor);
       }
       foreach (KeyToButton keysToButton in layout.KeysToButtons)
       {
         string name = keysToButton.Name;
         bool button3 = InputService.Instance.GetButton(name, false);
         bool button4 = InputService.Instance.GetButton(name, true);
-        string text4 = name + " : " + button3.ToString() + " , hold : " + button4.ToString();
-        ServiceLocator.GetService<GizmoService>().DrawText(text4, button3 ? InputGroupDebug.bodyColor2 : InputGroupDebug.bodyColor);
+        string text4 = name + " : " + button3 + " , hold : " + button4;
+        ServiceLocator.GetService<GizmoService>().DrawText(text4, button3 ? bodyColor2 : bodyColor);
       }
     }
   }

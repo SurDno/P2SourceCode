@@ -1,8 +1,5 @@
 ﻿using Engine.Common.Services;
 using Engine.Impl.Services;
-using System;
-using UnityEngine;
-using UnityEngine.UI;
 
 namespace Engine.Behaviours.Localization
 {
@@ -13,9 +10,9 @@ namespace Engine.Behaviours.Localization
 
     private void Localize()
     {
-      LanguageEnum currentLanguage = this.localizationService.CurrentLanguage;
+      LanguageEnum currentLanguage = localizationService.CurrentLanguage;
       Image component = this.GetComponent<Image>();
-      component.sprite = this.GetSprite(currentLanguage);
+      component.sprite = GetSprite(currentLanguage);
       component.enabled = (UnityEngine.Object) component.sprite != (UnityEngine.Object) null;
     }
 
@@ -23,13 +20,13 @@ namespace Engine.Behaviours.Localization
 
     protected override void OnConnectToEngine()
     {
-      this.Localize();
-      this.localizationService.LocalizationChanged += new Action(this.Localize);
+      Localize();
+      localizationService.LocalizationChanged += Localize;
     }
 
     protected override void OnDisconnectFromEngine()
     {
-      this.localizationService.LocalizationChanged -= new Action(this.Localize);
+      localizationService.LocalizationChanged -= Localize;
     }
   }
 }

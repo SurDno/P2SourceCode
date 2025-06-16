@@ -1,6 +1,6 @@
-﻿using Engine.Common.Generator;
+﻿using System.Collections;
+using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
-using System.Collections;
 
 namespace Engine.Source.Otimizations
 {

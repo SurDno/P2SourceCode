@@ -7,7 +7,7 @@
 
     public RegionPointer(double x, double y, int id)
     {
-      this.point = new Point(x, y);
+      point = new Point(x, y);
       this.id = id;
     }
   }

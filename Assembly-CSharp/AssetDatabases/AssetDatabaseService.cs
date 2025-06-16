@@ -1,5 +1,4 @@
 ﻿using Cofe.Utility;
-using UnityEngine;
 
 namespace AssetDatabases
 {
@@ -11,12 +10,12 @@ namespace AssetDatabases
     {
       get
       {
-        if (AssetDatabaseService.instance == null)
+        if (instance == null)
         {
-          AssetDatabaseService.instance = (IAssetDatabase) new AssetDatabaseBuild();
-          Debug.Log((object) ObjectInfoUtility.GetStream().Append("IAssetDatabase").Append(" : ").Append(TypeUtility.GetTypeName(AssetDatabaseService.instance.GetType())));
+          instance = new AssetDatabaseBuild();
+          Debug.Log((object) ObjectInfoUtility.GetStream().Append("IAssetDatabase").Append(" : ").Append(TypeUtility.GetTypeName(instance.GetType())));
         }
-        return AssetDatabaseService.instance;
+        return instance;
       }
     }
   }

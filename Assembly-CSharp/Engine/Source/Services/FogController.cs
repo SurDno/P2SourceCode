@@ -1,19 +1,18 @@
-﻿using Engine.Common;
+﻿using System;
+using Engine.Common;
 using Engine.Impl.Weather.Element;
-using System;
-using UnityEngine;
 using UnityStandardAssets.ImageEffects;
 
 namespace Engine.Source.Services
 {
-  [RuntimeService(new System.Type[] {typeof (FogController)})]
+  [RuntimeService(typeof (FogController))]
   public class FogController : IInitialisable
   {
     private GlobalFog engineFog;
 
     public event Action<float> DensityChangedEvent;
 
-    public void Initialise() => this.engineFog = UnityEngine.Object.FindObjectOfType<GlobalFog>();
+    public void Initialise() => engineFog = UnityEngine.Object.FindObjectOfType<GlobalFog>();
 
     public void Terminate()
     {
@@ -21,26 +20,26 @@ namespace Engine.Source.Services
 
     public void CopyTo(Fog fog)
     {
-      if ((UnityEngine.Object) this.engineFog == (UnityEngine.Object) null)
+      if ((UnityEngine.Object) engineFog == (UnityEngine.Object) null)
         return;
       fog.Density = RenderSettings.fogDensity;
-      fog.StartDistance = this.engineFog.startDistance;
-      fog.Height = this.engineFog.height;
+      fog.StartDistance = engineFog.startDistance;
+      fog.Height = engineFog.height;
     }
 
     public void CopyFrom(Fog fog)
     {
-      if ((UnityEngine.Object) this.engineFog == (UnityEngine.Object) null)
+      if ((UnityEngine.Object) engineFog == (UnityEngine.Object) null)
         return;
-      if ((double) RenderSettings.fogDensity != (double) fog.Density)
+      if ((double) RenderSettings.fogDensity != fog.Density)
       {
         RenderSettings.fogDensity = fog.Density;
-        Action<float> densityChangedEvent = this.DensityChangedEvent;
+        Action<float> densityChangedEvent = DensityChangedEvent;
         if (densityChangedEvent != null)
           densityChangedEvent(fog.Density);
       }
-      this.engineFog.height = fog.Height;
-      this.engineFog.startDistance = fog.StartDistance;
+      engineFog.height = fog.Height;
+      engineFog.startDistance = fog.StartDistance;
       Shader.SetGlobalFloat("_FogStartDistance", fog.StartDistance);
     }
   }

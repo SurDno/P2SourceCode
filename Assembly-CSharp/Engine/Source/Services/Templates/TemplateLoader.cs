@@ -10,9 +10,9 @@ namespace Engine.Source.Services.Templates
     {
       get
       {
-        if (TemplateLoader.instance == null)
-          TemplateLoader.instance = !TemplateLoader.Compress ? (ITemplateLoader) new RuntimeTemplateLoader() : (ITemplateLoader) new RuntimeCompressedTemplateLoader();
-        return TemplateLoader.instance;
+        if (instance == null)
+          instance = !Compress ? new RuntimeTemplateLoader() : new RuntimeCompressedTemplateLoader();
+        return instance;
       }
     }
 

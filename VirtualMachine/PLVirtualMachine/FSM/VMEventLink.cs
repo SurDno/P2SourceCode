@@ -1,11 +1,11 @@
-﻿using Cofe.Loggers;
+﻿using System.Collections.Generic;
+using System.Xml;
+using Cofe.Loggers;
 using Engine.Common.Commons;
 using PLVirtualMachine.Base;
 using PLVirtualMachine.Common;
 using PLVirtualMachine.Common.Data;
 using PLVirtualMachine.Data;
-using System.Collections.Generic;
-using System.Xml;
 using VirtualMachine.Common;
 using VirtualMachine.Common.Data;
 using VirtualMachine.Data;
@@ -31,63 +31,62 @@ namespace PLVirtualMachine.FSM
   {
     [FieldData("Event", DataFieldType.Reference)]
     private IEvent linkEvent;
-    [FieldData("EventObject", DataFieldType.None)]
+    [FieldData("EventObject")]
     private CommonVariable linkEventObject;
     [FieldData("Source", DataFieldType.Reference)]
     private IState sourceState;
-    [FieldData("SourceExitPointIndex", DataFieldType.None)]
+    [FieldData("SourceExitPointIndex")]
     private int sourceExitPointIndex = -1;
     [FieldData("Destination", DataFieldType.Reference)]
     private IState destState;
-    [FieldData("DestEntryPointIndex", DataFieldType.None)]
+    [FieldData("DestEntryPointIndex")]
     private int destEntryPointIndex = -1;
     [FieldData("ParentGraphAssocLink", DataFieldType.Reference)]
     private VMEventLink parentGraphAssociatedLink;
-    [FieldData("Enabled", DataFieldType.None)]
+    [FieldData("Enabled")]
     private bool enabled = true;
-    [FieldData("SourceParams", DataFieldType.None)]
+    [FieldData("SourceParams")]
     private List<CommonVariable> sourceParams = new List<CommonVariable>();
 
     public virtual void EditorDataRead(XmlReader xml, IDataCreator creator, string typeContext)
     {
-      while (xml.Read())
-      {
+      while (xml.Read()) {
         if (xml.NodeType == XmlNodeType.Element)
         {
           switch (xml.Name)
           {
             case "DestEntryPointIndex":
-              this.destEntryPointIndex = EditorDataReadUtility.ReadValue(xml, this.destEntryPointIndex);
+              destEntryPointIndex = EditorDataReadUtility.ReadValue(xml, destEntryPointIndex);
               continue;
             case "Destination":
-              this.destState = EditorDataReadUtility.ReadReference<IState>(xml, creator);
+              destState = EditorDataReadUtility.ReadReference<IState>(xml, creator);
               continue;
             case "Enabled":
-              this.enabled = EditorDataReadUtility.ReadValue(xml, this.enabled);
+              enabled = EditorDataReadUtility.ReadValue(xml, enabled);
               continue;
             case "Event":
-              this.linkEvent = EditorDataReadUtility.ReadReference<IEvent>(xml, creator);
+              linkEvent = EditorDataReadUtility.ReadReference<IEvent>(xml, creator);
               continue;
             case "EventObject":
-              this.linkEventObject = EditorDataReadUtility.ReadSerializable<CommonVariable>(xml);
+              linkEventObject = EditorDataReadUtility.ReadSerializable<CommonVariable>(xml);
               continue;
             case "Name":
-              this.name = EditorDataReadUtility.ReadValue(xml, this.name);
+              name = EditorDataReadUtility.ReadValue(xml, name);
               continue;
             case "Parent":
-              this.parent = EditorDataReadUtility.ReadReference<IContainer>(xml, creator);
+              parent = EditorDataReadUtility.ReadReference<IContainer>(xml, creator);
               continue;
             case "ParentGraphAssocLink":
-              this.parentGraphAssociatedLink = EditorDataReadUtility.ReadReference<VMEventLink>(xml, creator);
+              parentGraphAssociatedLink = EditorDataReadUtility.ReadReference<VMEventLink>(xml, creator);
               continue;
             case "Source":
-              this.sourceState = EditorDataReadUtility.ReadReference<IState>(xml, creator);
+              sourceState = EditorDataReadUtility.ReadReference<IState>(xml, creator);
               continue;
             case "SourceExitPointIndex":
-              this.sourceExitPointIndex = EditorDataReadUtility.ReadValue(xml, this.sourceExitPointIndex);
+              sourceExitPointIndex = EditorDataReadUtility.ReadValue(xml, sourceExitPointIndex);
               continue;
             case "SourceParams":
-              this.sourceParams = EditorDataReadUtility.ReadSerializableList<CommonVariable>(xml, this.sourceParams);
+              sourceParams = EditorDataReadUtility.ReadSerializableList(xml, sourceParams);
               continue;
             default:
               if (XMLDataLoader.Logs.Add(typeContext + " : " + xml.Name))
@@ -96,7 +95,8 @@ namespace PLVirtualMachine.FSM
               continue;
           }
         }
-        else if (xml.NodeType == XmlNodeType.EndElement)
+
+        if (xml.NodeType == XmlNodeType.EndElement)
           break;
       }
     }
@@ -108,23 +108,23 @@ namespace PLVirtualMachine.FSM
 
     public override EObjectCategory GetCategory() => EObjectCategory.OBJECT_CATEGORY_GRAPH_ELEMENT;
 
-    public IGraphObject Source => (IGraphObject) this.sourceState;
+    public IGraphObject Source => sourceState;
 
-    public IState SourceState => this.sourceState;
+    public IState SourceState => sourceState;
 
-    public int SourceExitPoint => this.sourceExitPointIndex;
+    public int SourceExitPoint => sourceExitPointIndex;
 
-    public IGraphObject Destination => (IGraphObject) this.destState;
+    public IGraphObject Destination => destState;
 
-    public IState DestState => this.destState;
+    public IState DestState => destState;
 
-    public int DestEntryPoint => this.destEntryPointIndex;
+    public int DestEntryPoint => destEntryPointIndex;
 
     public EventInfo Event
     {
       get
       {
-        return this.parentGraphAssociatedLink != null ? this.parentGraphAssociatedLink.Event : new EventInfo(this.linkEvent, this.linkEventObject);
+        return parentGraphAssociatedLink != null ? parentGraphAssociatedLink.Event : new EventInfo(linkEvent, linkEventObject);
       }
     }
 
@@ -132,33 +132,33 @@ namespace PLVirtualMachine.FSM
     {
       get
       {
-        if (this.sourceState != null)
-          return this.sourceState.Owner;
-        if (this.destState != null)
-          return this.destState.Owner;
-        Logger.AddError(string.Format("Invalid link with id = {0}", (object) this.BaseGuid));
-        return (IContainer) null;
+        if (sourceState != null)
+          return sourceState.Owner;
+        if (destState != null)
+          return destState.Owner;
+        Logger.AddError(string.Format("Invalid link with id = {0}", BaseGuid));
+        return null;
       }
     }
 
     public bool IsInitial()
     {
-      return this.IsValid && (this.Event.EventInstance != null && this.linkEvent != null && this.linkEvent.IsInitial((IObject) this.Owner) || this.parentGraphAssociatedLink != null);
+      return IsValid && (Event.EventInstance != null && linkEvent != null && linkEvent.IsInitial(Owner) || parentGraphAssociatedLink != null);
     }
 
-    public bool Enabled => this.enabled;
+    public bool Enabled => enabled;
 
-    public bool IsValid => this.destState != null || this.sourceState != null;
+    public bool IsValid => destState != null || sourceState != null;
 
-    public IEventLink GetParentGraphAssociatedLink() => (IEventLink) this.parentGraphAssociatedLink;
+    public IEventLink GetParentGraphAssociatedLink() => parentGraphAssociatedLink;
 
     public bool ExitFromSubGraph
     {
       get
       {
-        if (this.destState != null || !((FiniteStateMachine) this.Parent).IsSubGraph)
+        if (destState != null || !((FiniteStateMachine) Parent).IsSubGraph)
           return false;
-        return this.LinkExitType == ELinkExitType.LINK_EXIT_TYPE_OUTER_GRAPH || this.LinkExitType == ELinkExitType.LINK_EXIT_TYPE_OUTER_EVENT_EXECUTION;
+        return LinkExitType == ELinkExitType.LINK_EXIT_TYPE_OUTER_GRAPH || LinkExitType == ELinkExitType.LINK_EXIT_TYPE_OUTER_EVENT_EXECUTION;
       }
     }
 
@@ -166,7 +166,7 @@ namespace PLVirtualMachine.FSM
     {
       get
       {
-        return this.destState == null ? (ELinkExitType) this.destEntryPointIndex : ELinkExitType.LINK_EXIT_TYPE_NONE;
+        return destState == null ? (ELinkExitType) destEntryPointIndex : ELinkExitType.LINK_EXIT_TYPE_NONE;
       }
     }
 
@@ -176,68 +176,68 @@ namespace PLVirtualMachine.FSM
       int iCounter = 0)
     {
       List<IVariable> contextVariables = new List<IVariable>();
-      if (this.linkEvent != null)
+      if (linkEvent != null)
       {
-        List<BaseMessage> returnMessages = this.linkEvent.ReturnMessages;
+        List<BaseMessage> returnMessages = linkEvent.ReturnMessages;
         for (int index = 0; index < returnMessages.Count; ++index)
-          contextVariables.Add((IVariable) returnMessages[index]);
+          contextVariables.Add(returnMessages[index]);
       }
-      if ((eContextVarCategory == EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_LOCAL_VAR || eContextVarCategory == EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_ALL) && ((IFiniteStateMachine) this.Parent).InputParams.Count > 0)
+      if ((eContextVarCategory == EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_LOCAL_VAR || eContextVarCategory == EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_ALL) && ((IFiniteStateMachine) Parent).InputParams.Count > 0)
       {
-        for (int index = 0; index < ((IFiniteStateMachine) this.Parent).InputParams.Count; ++index)
-          contextVariables.Add((IVariable) ((IFiniteStateMachine) this.Parent).InputParams[index]);
+        for (int index = 0; index < ((IFiniteStateMachine) Parent).InputParams.Count; ++index)
+          contextVariables.Add(((IFiniteStateMachine) Parent).InputParams[index]);
       }
       return contextVariables;
     }
 
     public IVariable GetLocalContextVariable(string variableUniName, IContextElement currentElement = null)
     {
-      if (this.linkEvent != null)
+      if (linkEvent != null)
       {
-        List<BaseMessage> returnMessages = this.linkEvent.ReturnMessages;
+        List<BaseMessage> returnMessages = linkEvent.ReturnMessages;
         for (int index = 0; index < returnMessages.Count; ++index)
         {
           if (returnMessages[index].Name == variableUniName)
-            return (IVariable) returnMessages[index];
+            return returnMessages[index];
         }
-        if (((IFiniteStateMachine) this.Parent).InputParams.Count > 0)
+        if (((IFiniteStateMachine) Parent).InputParams.Count > 0)
         {
-          for (int index = 0; index < ((IFiniteStateMachine) this.Parent).InputParams.Count; ++index)
+          for (int index = 0; index < ((IFiniteStateMachine) Parent).InputParams.Count; ++index)
           {
-            if (((IFiniteStateMachine) this.Parent).InputParams[index].Name == variableUniName)
-              return (IVariable) ((IFiniteStateMachine) this.Parent).InputParams[index];
+            if (((IFiniteStateMachine) Parent).InputParams[index].Name == variableUniName)
+              return ((IFiniteStateMachine) Parent).InputParams[index];
           }
         }
       }
-      return (IVariable) null;
+      return null;
     }
 
-    public List<CommonVariable> SourceParams => this.sourceParams;
+    public List<CommonVariable> SourceParams => sourceParams;
 
     public override void Clear()
     {
       base.Clear();
-      if (this.linkEvent != null)
+      if (linkEvent != null)
       {
-        this.linkEvent.Clear();
-        this.linkEvent = (IEvent) null;
+        linkEvent.Clear();
+        linkEvent = null;
       }
-      if (this.linkEventObject != null)
+      if (linkEventObject != null)
       {
-        this.linkEventObject.Clear();
-        this.linkEventObject = (CommonVariable) null;
+        linkEventObject.Clear();
+        linkEventObject = null;
       }
-      if (this.sourceState != null)
-        this.sourceState = (IState) null;
-      if (this.destState != null)
-        this.destState = (IState) null;
-      this.parentGraphAssociatedLink = (VMEventLink) null;
-      if (this.sourceParams == null)
+      if (sourceState != null)
+        sourceState = null;
+      if (destState != null)
+        destState = null;
+      parentGraphAssociatedLink = null;
+      if (sourceParams == null)
         return;
-      foreach (ContextVariable sourceParam in this.sourceParams)
+      foreach (ContextVariable sourceParam in sourceParams)
         sourceParam.Clear();
-      this.sourceParams.Clear();
-      this.sourceParams = (List<CommonVariable>) null;
+      sourceParams.Clear();
+      sourceParams = null;
     }
   }
 }

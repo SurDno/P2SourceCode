@@ -6,8 +6,7 @@
 
     public static implicit operator UGCFileWriteStreamHandle_t(ulong value)
     {
-      return new UGCFileWriteStreamHandle_t()
-      {
+      return new UGCFileWriteStreamHandle_t {
         Value = value
       };
     }

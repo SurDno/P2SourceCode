@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEngine;
 
 public class TOD_Time : MonoBehaviour
 {
@@ -36,109 +35,109 @@ public class TOD_Time : MonoBehaviour
 
   public void RefreshTimeCurve()
   {
-    this.TimeCurve.preWrapMode = WrapMode.Once;
-    this.TimeCurve.postWrapMode = WrapMode.Once;
-    this.ApproximateCurve(this.TimeCurve, out this.timeCurve, out this.timeCurveInverse);
-    this.timeCurve.preWrapMode = WrapMode.Loop;
-    this.timeCurve.postWrapMode = WrapMode.Loop;
-    this.timeCurveInverse.preWrapMode = WrapMode.Loop;
-    this.timeCurveInverse.postWrapMode = WrapMode.Loop;
+    TimeCurve.preWrapMode = WrapMode.Once;
+    TimeCurve.postWrapMode = WrapMode.Once;
+    ApproximateCurve(TimeCurve, out timeCurve, out timeCurveInverse);
+    timeCurve.preWrapMode = WrapMode.Loop;
+    timeCurve.postWrapMode = WrapMode.Loop;
+    timeCurveInverse.preWrapMode = WrapMode.Loop;
+    timeCurveInverse.postWrapMode = WrapMode.Loop;
   }
 
   public float ApplyTimeCurve(float deltaTime)
   {
-    float time = this.timeCurveInverse.Evaluate(this.sky.Cycle.Hour) + deltaTime;
-    deltaTime = this.timeCurve.Evaluate(time) - this.sky.Cycle.Hour;
-    if ((double) time >= 24.0)
-      deltaTime += (float) ((int) time / 24 * 24);
-    else if ((double) time < 0.0)
-      deltaTime += (float) (((int) time / 24 - 1) * 24);
+    float time = timeCurveInverse.Evaluate(sky.Cycle.Hour) + deltaTime;
+    deltaTime = timeCurve.Evaluate(time) - sky.Cycle.Hour;
+    if (time >= 24.0)
+      deltaTime += (int) time / 24 * 24;
+    else if (time < 0.0)
+      deltaTime += ((int) time / 24 - 1) * 24;
     return deltaTime;
   }
 
   public void AddHours(float hours, bool adjust = true)
   {
-    if (this.UseTimeCurve & adjust)
-      hours = this.ApplyTimeCurve(hours);
-    DateTime dateTime1 = this.sky.Cycle.DateTime;
-    DateTime dateTime2 = dateTime1.AddHours((double) hours);
-    this.sky.Cycle.DateTime = dateTime2;
+    if (UseTimeCurve & adjust)
+      hours = ApplyTimeCurve(hours);
+    DateTime dateTime1 = sky.Cycle.DateTime;
+    DateTime dateTime2 = dateTime1.AddHours(hours);
+    sky.Cycle.DateTime = dateTime2;
     if (dateTime2.Year > dateTime1.Year)
     {
-      Action onYear = this.OnYear;
+      Action onYear = OnYear;
       if (onYear != null)
         onYear();
-      Action onMonth = this.OnMonth;
+      Action onMonth = OnMonth;
       if (onMonth != null)
         onMonth();
-      Action onDay = this.OnDay;
+      Action onDay = OnDay;
       if (onDay != null)
         onDay();
-      Action onHour = this.OnHour;
+      Action onHour = OnHour;
       if (onHour != null)
         onHour();
-      Action onMinute = this.OnMinute;
+      Action onMinute = OnMinute;
       if (onMinute != null)
         onMinute();
     }
     else if (dateTime2.Month > dateTime1.Month)
     {
-      Action onMonth = this.OnMonth;
+      Action onMonth = OnMonth;
       if (onMonth != null)
         onMonth();
-      Action onDay = this.OnDay;
+      Action onDay = OnDay;
       if (onDay != null)
         onDay();
-      Action onHour = this.OnHour;
+      Action onHour = OnHour;
       if (onHour != null)
         onHour();
-      Action onMinute = this.OnMinute;
+      Action onMinute = OnMinute;
       if (onMinute != null)
         onMinute();
     }
     else if (dateTime2.Day > dateTime1.Day)
     {
-      Action onDay = this.OnDay;
+      Action onDay = OnDay;
       if (onDay != null)
         onDay();
-      Action onHour = this.OnHour;
+      Action onHour = OnHour;
       if (onHour != null)
         onHour();
-      Action onMinute = this.OnMinute;
+      Action onMinute = OnMinute;
       if (onMinute != null)
         onMinute();
     }
     else if (dateTime2.Hour > dateTime1.Hour)
     {
-      Action onHour = this.OnHour;
+      Action onHour = OnHour;
       if (onHour != null)
         onHour();
-      Action onMinute = this.OnMinute;
+      Action onMinute = OnMinute;
       if (onMinute != null)
         onMinute();
     }
     else if (dateTime2.Minute > dateTime1.Minute)
     {
-      Action onMinute = this.OnMinute;
+      Action onMinute = OnMinute;
       if (onMinute != null)
         onMinute();
     }
     double totalHours1 = dateTime1.TimeOfDay.TotalHours;
     double totalHours2 = dateTime2.TimeOfDay.TotalHours;
-    if (totalHours1 < (double) this.sky.SunriseTime && totalHours2 >= (double) this.sky.SunriseTime)
+    if (totalHours1 < sky.SunriseTime && totalHours2 >= sky.SunriseTime)
     {
-      Action onSunrise = this.OnSunrise;
+      Action onSunrise = OnSunrise;
       if (onSunrise != null)
         onSunrise();
     }
-    if (totalHours1 >= (double) this.sky.SunsetTime || totalHours2 < (double) this.sky.SunsetTime)
+    if (totalHours1 >= sky.SunsetTime || totalHours2 < sky.SunsetTime)
       return;
-    Action onSunset = this.OnSunset;
+    Action onSunset = OnSunset;
     if (onSunset != null)
       onSunset();
   }
 
-  public void AddSeconds(float seconds, bool adjust = true) => this.AddHours(seconds / 3600f);
+  public void AddSeconds(float seconds, bool adjust = true) => AddHours(seconds / 3600f);
 
   private void CalculateLinearTangents(Keyframe[] keys)
   {
@@ -173,30 +172,30 @@ public class TOD_Time : MonoBehaviour
       keys1[time2] = new Keyframe((float) time2, time1);
       keys2[time2] = new Keyframe(time1, (float) time2);
     }
-    this.CalculateLinearTangents(keys1);
-    this.CalculateLinearTangents(keys2);
+    CalculateLinearTangents(keys1);
+    CalculateLinearTangents(keys2);
     approxCurve = new AnimationCurve(keys1);
     approxInverse = new AnimationCurve(keys2);
   }
 
   protected void Awake()
   {
-    this.sky = this.GetComponent<TOD_Sky>();
-    if (this.UseDeviceDate)
+    sky = this.GetComponent<TOD_Sky>();
+    if (UseDeviceDate)
     {
-      this.sky.Cycle.Year = DateTime.Now.Year;
-      this.sky.Cycle.Month = DateTime.Now.Month;
-      this.sky.Cycle.Day = DateTime.Now.Day;
+      sky.Cycle.Year = DateTime.Now.Year;
+      sky.Cycle.Month = DateTime.Now.Month;
+      sky.Cycle.Day = DateTime.Now.Day;
     }
-    if (this.UseDeviceTime)
-      this.sky.Cycle.Hour = (float) DateTime.Now.TimeOfDay.TotalHours;
-    this.RefreshTimeCurve();
+    if (UseDeviceTime)
+      sky.Cycle.Hour = (float) DateTime.Now.TimeOfDay.TotalHours;
+    RefreshTimeCurve();
   }
 
   protected void FixedUpdate()
   {
-    if (!this.ProgressTime || (double) this.DayLengthInMinutes <= 0.0)
+    if (!ProgressTime || DayLengthInMinutes <= 0.0)
       return;
-    this.AddSeconds(Time.deltaTime * (1440f / this.DayLengthInMinutes));
+    AddSeconds(Time.deltaTime * (1440f / DayLengthInMinutes));
   }
 }

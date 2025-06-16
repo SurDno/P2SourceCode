@@ -1,7 +1,6 @@
-﻿using Engine.Common;
+﻿using System;
+using Engine.Common;
 using Engine.Common.Components.AttackerPlayer;
-using System;
-using UnityEngine;
 
 public interface INPCWeaponController
 {

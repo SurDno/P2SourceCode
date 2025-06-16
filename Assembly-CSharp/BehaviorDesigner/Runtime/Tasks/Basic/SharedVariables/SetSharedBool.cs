@@ -1,11 +1,11 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons;
 using Engine.Common.Commons.Converters;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Scripts.Tools.Serializations.Converters;
-using UnityEngine;
 
 namespace BehaviorDesigner.Runtime.Tasks.Basic.SharedVariables
 {
@@ -14,54 +14,54 @@ namespace BehaviorDesigner.Runtime.Tasks.Basic.SharedVariables
   [TaskDescription("Sets the SharedBool variable to the specified object. Returns Success.")]
   [Factory]
   [GeneratePartial(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
-  public class SetSharedBool : BehaviorDesigner.Runtime.Tasks.Action, IStub, ISerializeDataWrite, ISerializeDataRead
+  public class SetSharedBool : Action, IStub, ISerializeDataWrite, ISerializeDataRead
   {
-    [BehaviorDesigner.Runtime.Tasks.Tooltip("The value to set the SharedBool to")]
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [Tooltip("The value to set the SharedBool to")]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [SerializeField]
     public SharedBool targetValue;
     [RequiredField]
-    [BehaviorDesigner.Runtime.Tasks.Tooltip("The SharedBool to set")]
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [Tooltip("The SharedBool to set")]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy()]
     [SerializeField]
     public SharedBool targetVariable;
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.WriteSerialize<NodeData>(writer, "NodeData", this.nodeData);
-      DefaultDataWriteUtility.Write(writer, "Id", this.id);
-      DefaultDataWriteUtility.Write(writer, "FriendlyName", this.friendlyName);
-      DefaultDataWriteUtility.Write(writer, "Instant", this.instant);
-      DefaultDataWriteUtility.Write(writer, "Disabled", this.disabled);
-      BehaviorTreeDataWriteUtility.WriteShared<SharedBool>(writer, "TargetValue", this.targetValue);
-      BehaviorTreeDataWriteUtility.WriteShared<SharedBool>(writer, "TargetVariable", this.targetVariable);
+      DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
+      DefaultDataWriteUtility.Write(writer, "Id", id);
+      DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
+      DefaultDataWriteUtility.Write(writer, "Instant", instant);
+      DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
+      BehaviorTreeDataWriteUtility.WriteShared(writer, "TargetValue", targetValue);
+      BehaviorTreeDataWriteUtility.WriteShared(writer, "TargetVariable", targetVariable);
     }
 
-    public void DataRead(IDataReader reader, System.Type type)
+    public void DataRead(IDataReader reader, Type type)
     {
-      this.nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
-      this.id = DefaultDataReadUtility.Read(reader, "Id", this.id);
-      this.friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", this.friendlyName);
-      this.instant = DefaultDataReadUtility.Read(reader, "Instant", this.instant);
-      this.disabled = DefaultDataReadUtility.Read(reader, "Disabled", this.disabled);
-      this.targetValue = BehaviorTreeDataReadUtility.ReadShared<SharedBool>(reader, "TargetValue", this.targetValue);
-      this.targetVariable = BehaviorTreeDataReadUtility.ReadShared<SharedBool>(reader, "TargetVariable", this.targetVariable);
+      nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
+      id = DefaultDataReadUtility.Read(reader, "Id", id);
+      friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
+      instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
+      disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
+      targetValue = BehaviorTreeDataReadUtility.ReadShared(reader, "TargetValue", targetValue);
+      targetVariable = BehaviorTreeDataReadUtility.ReadShared(reader, "TargetVariable", targetVariable);
     }
 
     public override TaskStatus OnUpdate()
     {
-      this.targetVariable.Value = this.targetValue.Value;
+      targetVariable.Value = targetValue.Value;
       return TaskStatus.Success;
     }
 
     public override void OnReset()
     {
-      this.targetValue = (SharedBool) false;
-      this.targetVariable = (SharedBool) false;
+      targetValue = false;
+      targetVariable = false;
     }
   }
 }

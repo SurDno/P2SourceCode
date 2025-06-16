@@ -1,11 +1,9 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
-using Engine.Common.Commons;
 using Engine.Common.Commons.Cloneable;
 using Engine.Common.Commons.Converters;
 using Engine.Source.Components;
-using Engine.Source.Reputations;
-using System;
 
 namespace Engine.Source.Proxies
 {
@@ -20,45 +18,45 @@ namespace Engine.Source.Proxies
     public object Clone()
     {
       PlayerControllerComponent_Generated instance = Activator.CreateInstance<PlayerControllerComponent_Generated>();
-      this.CopyTo((object) instance);
-      return (object) instance;
+      CopyTo(instance);
+      return instance;
     }
 
     public void CopyTo(object target2)
     {
       PlayerControllerComponent_Generated componentGenerated = (PlayerControllerComponent_Generated) target2;
-      CloneableObjectUtility.CopyListTo<ReputationInfo>(componentGenerated.reputations, this.reputations);
-      componentGenerated.thresholdNearRegionsPositive = this.thresholdNearRegionsPositive;
-      componentGenerated.thresholdNearRegionsNegative = this.thresholdNearRegionsNegative;
-      componentGenerated.coefficientNearRegionsPositive = this.coefficientNearRegionsPositive;
-      componentGenerated.coefficientNearRegionsNegative = this.coefficientNearRegionsNegative;
-      componentGenerated.thresholdPlayerInfected = this.thresholdPlayerInfected;
-      componentGenerated.thresholdRegionInfected = this.thresholdRegionInfected;
-      CloneableObjectUtility.FillListTo<FractionEnum>(componentGenerated.dangerousFractions, this.dangerousFractions);
+      CloneableObjectUtility.CopyListTo(componentGenerated.reputations, reputations);
+      componentGenerated.thresholdNearRegionsPositive = thresholdNearRegionsPositive;
+      componentGenerated.thresholdNearRegionsNegative = thresholdNearRegionsNegative;
+      componentGenerated.coefficientNearRegionsPositive = coefficientNearRegionsPositive;
+      componentGenerated.coefficientNearRegionsNegative = coefficientNearRegionsNegative;
+      componentGenerated.thresholdPlayerInfected = thresholdPlayerInfected;
+      componentGenerated.thresholdRegionInfected = thresholdRegionInfected;
+      CloneableObjectUtility.FillListTo(componentGenerated.dangerousFractions, dangerousFractions);
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.WriteListSerialize<ReputationInfo>(writer, "Reputations", this.reputations);
-      DefaultDataWriteUtility.Write(writer, "ThresholdNearRegionsPositive", this.thresholdNearRegionsPositive);
-      DefaultDataWriteUtility.Write(writer, "ThresholdNearRegionsNegative", this.thresholdNearRegionsNegative);
-      DefaultDataWriteUtility.Write(writer, "CoefficientNearRegionsPositive", this.coefficientNearRegionsPositive);
-      DefaultDataWriteUtility.Write(writer, "CoefficientNearRegionsNegative", this.coefficientNearRegionsNegative);
-      DefaultDataWriteUtility.Write(writer, "ThresholdPlayerInfected", this.thresholdPlayerInfected);
-      DefaultDataWriteUtility.Write(writer, "ThresholdRegionInfected", this.thresholdRegionInfected);
-      DefaultDataWriteUtility.WriteListEnum<FractionEnum>(writer, "DangerousFractions", this.dangerousFractions);
+      DefaultDataWriteUtility.WriteListSerialize(writer, "Reputations", reputations);
+      DefaultDataWriteUtility.Write(writer, "ThresholdNearRegionsPositive", thresholdNearRegionsPositive);
+      DefaultDataWriteUtility.Write(writer, "ThresholdNearRegionsNegative", thresholdNearRegionsNegative);
+      DefaultDataWriteUtility.Write(writer, "CoefficientNearRegionsPositive", coefficientNearRegionsPositive);
+      DefaultDataWriteUtility.Write(writer, "CoefficientNearRegionsNegative", coefficientNearRegionsNegative);
+      DefaultDataWriteUtility.Write(writer, "ThresholdPlayerInfected", thresholdPlayerInfected);
+      DefaultDataWriteUtility.Write(writer, "ThresholdRegionInfected", thresholdRegionInfected);
+      DefaultDataWriteUtility.WriteListEnum(writer, "DangerousFractions", dangerousFractions);
     }
 
     public void DataRead(IDataReader reader, Type type)
     {
-      this.reputations = DefaultDataReadUtility.ReadListSerialize<ReputationInfo>(reader, "Reputations", this.reputations);
-      this.thresholdNearRegionsPositive = DefaultDataReadUtility.Read(reader, "ThresholdNearRegionsPositive", this.thresholdNearRegionsPositive);
-      this.thresholdNearRegionsNegative = DefaultDataReadUtility.Read(reader, "ThresholdNearRegionsNegative", this.thresholdNearRegionsNegative);
-      this.coefficientNearRegionsPositive = DefaultDataReadUtility.Read(reader, "CoefficientNearRegionsPositive", this.coefficientNearRegionsPositive);
-      this.coefficientNearRegionsNegative = DefaultDataReadUtility.Read(reader, "CoefficientNearRegionsNegative", this.coefficientNearRegionsNegative);
-      this.thresholdPlayerInfected = DefaultDataReadUtility.Read(reader, "ThresholdPlayerInfected", this.thresholdPlayerInfected);
-      this.thresholdRegionInfected = DefaultDataReadUtility.Read(reader, "ThresholdRegionInfected", this.thresholdRegionInfected);
-      this.dangerousFractions = DefaultDataReadUtility.ReadListEnum<FractionEnum>(reader, "DangerousFractions", this.dangerousFractions);
+      reputations = DefaultDataReadUtility.ReadListSerialize(reader, "Reputations", reputations);
+      thresholdNearRegionsPositive = DefaultDataReadUtility.Read(reader, "ThresholdNearRegionsPositive", thresholdNearRegionsPositive);
+      thresholdNearRegionsNegative = DefaultDataReadUtility.Read(reader, "ThresholdNearRegionsNegative", thresholdNearRegionsNegative);
+      coefficientNearRegionsPositive = DefaultDataReadUtility.Read(reader, "CoefficientNearRegionsPositive", coefficientNearRegionsPositive);
+      coefficientNearRegionsNegative = DefaultDataReadUtility.Read(reader, "CoefficientNearRegionsNegative", coefficientNearRegionsNegative);
+      thresholdPlayerInfected = DefaultDataReadUtility.Read(reader, "ThresholdPlayerInfected", thresholdPlayerInfected);
+      thresholdRegionInfected = DefaultDataReadUtility.Read(reader, "ThresholdRegionInfected", thresholdRegionInfected);
+      dangerousFractions = DefaultDataReadUtility.ReadListEnum(reader, "DangerousFractions", dangerousFractions);
     }
   }
 }

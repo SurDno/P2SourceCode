@@ -1,4 +1,10 @@
-﻿using Cofe.Serializations.Data;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Xml;
+using Cofe.Serializations.Data;
 using Cofe.Utility;
 using Engine.Common;
 using Engine.Impl.UI;
@@ -9,21 +15,14 @@ using Engine.Source.Services.Saves;
 using Engine.Source.UI;
 using Engine.Source.UI.Menu.Main;
 using Inspectors;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Xml;
-using UnityEngine;
 
 namespace Engine.Impl.Services
 {
-  [RuntimeService(new System.Type[] {typeof (UIService)})]
+  [RuntimeService(typeof (UIService))]
   public class UIService : IInitialisable, ISavesController
   {
     [Inspected]
-    private Dictionary<System.Type, UIWindow> layers = new Dictionary<System.Type, UIWindow>();
+    private Dictionary<Type, UIWindow> layers = new Dictionary<Type, UIWindow>();
     [Inspected]
     private List<UIWindow> windows = new List<UIWindow>();
     [Inspected]
@@ -40,9 +39,9 @@ namespace Engine.Impl.Services
     {
       get
       {
-        if (!this.IsInitialize)
-          throw new Exception(TypeUtility.GetTypeName(this.GetType()) + "." + MethodBase.GetCurrentMethod().Name);
-        return this.uiRoot.SmallLoading;
+        if (!IsInitialize)
+          throw new Exception(TypeUtility.GetTypeName(GetType()) + "." + MethodBase.GetCurrentMethod().Name);
+        return uiRoot.SmallLoading;
       }
     }
 
@@ -51,9 +50,9 @@ namespace Engine.Impl.Services
     {
       get
       {
-        if (!this.IsInitialize)
-          throw new Exception(TypeUtility.GetTypeName(this.GetType()) + "." + MethodBase.GetCurrentMethod().Name);
-        return this.uiRoot.VirtualCursor;
+        if (!IsInitialize)
+          throw new Exception(TypeUtility.GetTypeName(GetType()) + "." + MethodBase.GetCurrentMethod().Name);
+        return uiRoot.VirtualCursor;
       }
     }
 
@@ -61,15 +60,15 @@ namespace Engine.Impl.Services
     {
       get
       {
-        if (!this.IsInitialize)
-          throw new Exception(TypeUtility.GetTypeName(this.GetType()) + "." + MethodBase.GetCurrentMethod().Name);
-        return this.uiBehaviour.gameObject.activeSelf;
+        if (!IsInitialize)
+          throw new Exception(TypeUtility.GetTypeName(GetType()) + "." + MethodBase.GetCurrentMethod().Name);
+        return uiBehaviour.gameObject.activeSelf;
       }
       set
       {
-        if (!this.IsInitialize)
-          throw new Exception(TypeUtility.GetTypeName(this.GetType()) + "." + MethodBase.GetCurrentMethod().Name);
-        this.uiBehaviour.gameObject.SetActive(value);
+        if (!IsInitialize)
+          throw new Exception(TypeUtility.GetTypeName(GetType()) + "." + MethodBase.GetCurrentMethod().Name);
+        uiBehaviour.gameObject.SetActive(value);
       }
     }
 
@@ -78,125 +77,125 @@ namespace Engine.Impl.Services
     {
       get
       {
-        if (!this.IsInitialize)
-          throw new Exception(TypeUtility.GetTypeName(this.GetType()) + "." + MethodBase.GetCurrentMethod().Name);
-        return this.windows.LastOrDefault<UIWindow>();
+        if (!IsInitialize)
+          throw new Exception(TypeUtility.GetTypeName(GetType()) + "." + MethodBase.GetCurrentMethod().Name);
+        return windows.LastOrDefault();
       }
     }
 
-    public UIWindow Get(System.Type type)
+    public UIWindow Get(Type type)
     {
       UIWindow uiWindow;
-      this.layers.TryGetValue(type, out uiWindow);
+      layers.TryGetValue(type, out uiWindow);
       return uiWindow;
     }
 
-    public T Get<T>() where T : class, IWindow => this.Get(typeof (T)) as T;
+    public T Get<T>() where T : class, IWindow => Get(typeof (T)) as T;
 
-    public UIWindow Swap(System.Type type)
+    public UIWindow Swap(Type type)
     {
-      Debug.Log((object) ObjectInfoUtility.GetStream().Append("Try swap window : ").Append(TypeUtility.GetTypeName(type)).Append(" , info : ").Append(TypeUtility.GetTypeName(this.GetType())).Append(":").Append(MethodBase.GetCurrentMethod().Name).Append("\n").GetStackTrace());
-      if (!this.IsInitialize)
-        throw new Exception(TypeUtility.GetTypeName(this.GetType()) + "." + MethodBase.GetCurrentMethod().Name);
-      if (this.windows.Count == 0)
+      Debug.Log((object) ObjectInfoUtility.GetStream().Append("Try swap window : ").Append(TypeUtility.GetTypeName(type)).Append(" , info : ").Append(TypeUtility.GetTypeName(GetType())).Append(":").Append(MethodBase.GetCurrentMethod().Name).Append("\n").GetStackTrace());
+      if (!IsInitialize)
+        throw new Exception(TypeUtility.GetTypeName(GetType()) + "." + MethodBase.GetCurrentMethod().Name);
+      if (windows.Count == 0)
       {
-        Debug.LogError((object) ("Windows not found , info : " + this.GetType().Name + ":" + MethodBase.GetCurrentMethod().Name));
-        return (UIWindow) null;
+        Debug.LogError((object) ("Windows not found , info : " + GetType().Name + ":" + MethodBase.GetCurrentMethod().Name));
+        return null;
       }
       UIWindow openWindow;
-      if (!this.layers.TryGetValue(type, out openWindow))
-        throw new Exception(TypeUtility.GetTypeName(this.GetType()) + "." + MethodBase.GetCurrentMethod().Name);
-      if (this.windows.Contains(openWindow))
+      if (!layers.TryGetValue(type, out openWindow))
+        throw new Exception(TypeUtility.GetTypeName(GetType()) + "." + MethodBase.GetCurrentMethod().Name);
+      if (windows.Contains(openWindow))
       {
-        Debug.LogError((object) ("Already pushed window : " + ((object) openWindow).GetType().Name));
-        return (UIWindow) null;
+        Debug.LogError((object) ("Already pushed window : " + openWindow.GetType().Name));
+        return null;
       }
-      if (this.IsTransition)
+      if (IsTransition)
       {
-        Debug.LogError((object) ("Transition already, info : " + this.GetType().Name + ":" + MethodBase.GetCurrentMethod().Name));
-        return (UIWindow) null;
+        Debug.LogError((object) ("Transition already, info : " + GetType().Name + ":" + MethodBase.GetCurrentMethod().Name));
+        return null;
       }
-      UIWindow active = this.Active;
-      this.windows.RemoveAt(this.windows.Count - 1);
-      this.windows.Add(openWindow);
-      CoroutineService.Instance.Route(this.TranslateRoute(active, openWindow));
+      UIWindow active = Active;
+      windows.RemoveAt(windows.Count - 1);
+      windows.Add(openWindow);
+      CoroutineService.Instance.Route(TranslateRoute(active, openWindow));
       return openWindow;
     }
 
-    public T Swap<T>() where T : class, IWindow => this.Swap(typeof (T)) as T;
+    public T Swap<T>() where T : class, IWindow => Swap(typeof (T)) as T;
 
-    public UIWindow Push(System.Type type)
+    public UIWindow Push(Type type)
     {
-      Debug.Log((object) ObjectInfoUtility.GetStream().Append("Try push window : ").Append(TypeUtility.GetTypeName(type)).Append(" , info : ").Append(TypeUtility.GetTypeName(this.GetType())).Append(":").Append(MethodBase.GetCurrentMethod().Name).Append("\n").GetStackTrace());
-      if (!this.IsInitialize)
-        throw new Exception(TypeUtility.GetTypeName(this.GetType()) + "." + MethodBase.GetCurrentMethod().Name);
+      Debug.Log((object) ObjectInfoUtility.GetStream().Append("Try push window : ").Append(TypeUtility.GetTypeName(type)).Append(" , info : ").Append(TypeUtility.GetTypeName(GetType())).Append(":").Append(MethodBase.GetCurrentMethod().Name).Append("\n").GetStackTrace());
+      if (!IsInitialize)
+        throw new Exception(TypeUtility.GetTypeName(GetType()) + "." + MethodBase.GetCurrentMethod().Name);
       UIWindow openWindow;
-      if (!this.layers.TryGetValue(type, out openWindow))
-        throw new Exception(TypeUtility.GetTypeName(this.GetType()) + "." + MethodBase.GetCurrentMethod().Name);
-      if (this.windows.Contains(openWindow))
+      if (!layers.TryGetValue(type, out openWindow))
+        throw new Exception(TypeUtility.GetTypeName(GetType()) + "." + MethodBase.GetCurrentMethod().Name);
+      if (windows.Contains(openWindow))
       {
-        Debug.LogError((object) ("Already pushed window : " + ((object) openWindow).GetType().Name));
-        return (UIWindow) null;
+        Debug.LogError((object) ("Already pushed window : " + openWindow.GetType().Name));
+        return null;
       }
-      if (this.IsTransition)
+      if (IsTransition)
       {
-        Debug.LogError((object) ("Transition already, info : " + this.GetType().Name + ":" + MethodBase.GetCurrentMethod().Name));
-        return (UIWindow) null;
+        Debug.LogError((object) ("Transition already, info : " + GetType().Name + ":" + MethodBase.GetCurrentMethod().Name));
+        return null;
       }
-      UIWindow active = this.Active;
-      this.windows.Add(openWindow);
-      CoroutineService.Instance.Route(this.TranslateRoute(active, openWindow));
+      UIWindow active = Active;
+      windows.Add(openWindow);
+      CoroutineService.Instance.Route(TranslateRoute(active, openWindow));
       return openWindow;
     }
 
-    public T Push<T>() where T : class, IWindow => this.Push(typeof (T)) as T;
+    public T Push<T>() where T : class, IWindow => Push(typeof (T)) as T;
 
     public void Pop()
     {
-      Debug.Log((object) ObjectInfoUtility.GetStream().Append("Try pop window , info : ").Append(TypeUtility.GetTypeName(this.GetType())).Append(":").Append(MethodBase.GetCurrentMethod().Name).Append("\n").GetStackTrace());
-      if (!this.IsInitialize)
-        throw new Exception(TypeUtility.GetTypeName(this.GetType()) + "." + MethodBase.GetCurrentMethod().Name);
-      if (this.windows.Count == 0)
-        Debug.LogError((object) ("Windows not found , info : " + this.GetType().Name + ":" + MethodBase.GetCurrentMethod().Name));
-      else if (this.IsTransition)
+      Debug.Log((object) ObjectInfoUtility.GetStream().Append("Try pop window , info : ").Append(TypeUtility.GetTypeName(GetType())).Append(":").Append(MethodBase.GetCurrentMethod().Name).Append("\n").GetStackTrace());
+      if (!IsInitialize)
+        throw new Exception(TypeUtility.GetTypeName(GetType()) + "." + MethodBase.GetCurrentMethod().Name);
+      if (windows.Count == 0)
+        Debug.LogError((object) ("Windows not found , info : " + GetType().Name + ":" + MethodBase.GetCurrentMethod().Name));
+      else if (IsTransition)
       {
-        Debug.LogError((object) ("Transition already, info : " + this.GetType().Name + ":" + MethodBase.GetCurrentMethod().Name));
+        Debug.LogError((object) ("Transition already, info : " + GetType().Name + ":" + MethodBase.GetCurrentMethod().Name));
       }
       else
       {
-        UIWindow active1 = this.Active;
-        this.windows.RemoveAt(this.windows.Count - 1);
-        UIWindow active2 = this.Active;
-        CoroutineService.Instance.Route(this.TranslateRoute(active1, active2));
+        UIWindow active1 = Active;
+        windows.RemoveAt(windows.Count - 1);
+        UIWindow active2 = Active;
+        CoroutineService.Instance.Route(TranslateRoute(active1, active2));
       }
     }
 
     public void RegisterLayer<T>(T window) where T : class, IWindow
     {
-      if (!this.IsInitialize)
-        throw new Exception(TypeUtility.GetTypeName(this.GetType()) + "." + MethodBase.GetCurrentMethod().Name);
-      this.layers.Add(typeof (T), (object) window as UIWindow);
+      if (!IsInitialize)
+        throw new Exception(TypeUtility.GetTypeName(GetType()) + "." + MethodBase.GetCurrentMethod().Name);
+      layers.Add(typeof (T), (object) window as UIWindow);
     }
 
     public void Initialise()
     {
-      this.IsInitialize = true;
-      this.uiRoot = UnityEngine.Object.FindObjectOfType<UIRoot>();
-      this.uiRoot.Initialize();
-      this.uiBehaviour = this.uiRoot.Root.GetComponent<UIControl>();
-      this.uiBehaviour.Transform.pivot = Vector2.zero;
-      this.uiBehaviour.Transform.anchorMin = Vector2.zero;
-      this.uiBehaviour.Transform.anchorMax = Vector2.one;
-      this.uiRoot.SmallLoading.gameObject.SetActive(false);
-      int childCount = this.uiBehaviour.transform.childCount;
+      IsInitialize = true;
+      uiRoot = UnityEngine.Object.FindObjectOfType<UIRoot>();
+      uiRoot.Initialize();
+      uiBehaviour = uiRoot.Root.GetComponent<UIControl>();
+      uiBehaviour.Transform.pivot = Vector2.zero;
+      uiBehaviour.Transform.anchorMin = Vector2.zero;
+      uiBehaviour.Transform.anchorMax = Vector2.one;
+      uiRoot.SmallLoading.gameObject.SetActive(false);
+      int childCount = uiBehaviour.transform.childCount;
       for (int index = 0; index < childCount; ++index)
       {
-        UIWindow component = this.uiBehaviour.transform.GetChild(index).GetComponent<UIWindow>();
+        UIWindow component = uiBehaviour.transform.GetChild(index).GetComponent<UIWindow>();
         if ((UnityEngine.Object) component != (UnityEngine.Object) null)
           component.Initialize();
       }
-      UnityEngine.Camera component1 = this.uiRoot.GetComponent<UnityEngine.Camera>();
-      Canvas[] componentsInChildren = this.uiBehaviour.GetComponentsInChildren<Canvas>(true);
+      UnityEngine.Camera component1 = uiRoot.GetComponent<UnityEngine.Camera>();
+      Canvas[] componentsInChildren = uiBehaviour.GetComponentsInChildren<Canvas>(true);
       for (int index = 0; index < componentsInChildren.Length; ++index)
       {
         componentsInChildren[index].renderMode = RenderMode.ScreenSpaceCamera;
@@ -207,24 +206,24 @@ namespace Engine.Impl.Services
 
     public void Terminate()
     {
-      foreach (KeyValuePair<System.Type, UIWindow> layer in this.layers)
+      foreach (KeyValuePair<Type, UIWindow> layer in layers)
       {
         if (layer.Value.IsEnabled)
           layer.Value.IsEnabled = false;
       }
-      this.layers.Clear();
-      this.IsInitialize = false;
+      layers.Clear();
+      IsInitialize = false;
     }
 
     private IEnumerator TranslateRoute(UIWindow closeWindow, UIWindow openWindow)
     {
-      this.IsTransition = true;
+      IsTransition = true;
       Func<UIWindow, UIWindow, IEnumerator> transition = UITransitionFactory.GetTransition(closeWindow, openWindow);
       IEnumerator iterator = transition(closeWindow, openWindow);
       while (iterator.MoveNext())
         yield return iterator.Current;
-      this.IsTransition = false;
-      Debug.Log((object) ObjectInfoUtility.GetStream().Append("End translate window , info : ").Append(TypeUtility.GetTypeName(this.GetType())).Append(":").Append(MethodBase.GetCurrentMethod().Name).Append("\n").GetStackTrace());
+      IsTransition = false;
+      Debug.Log((object) ObjectInfoUtility.GetStream().Append("End translate window , info : ").Append(TypeUtility.GetTypeName(GetType())).Append(":").Append(MethodBase.GetCurrentMethod().Name).Append("\n").GetStackTrace());
     }
 
     public IEnumerator Load(IErrorLoadingHandler errorHandler)

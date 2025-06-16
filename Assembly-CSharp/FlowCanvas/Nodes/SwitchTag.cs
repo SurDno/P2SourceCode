@@ -1,31 +1,30 @@
-﻿using ParadoxNotion.Design;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using System.Collections.Generic;
+using ParadoxNotion.Design;
 
 namespace FlowCanvas.Nodes
 {
   [Category("Flow Controllers/Switchers")]
   [Description("Branch the Flow based on the tag of a GameObject value")]
-  [ContextDefinedInputs(new System.Type[] {typeof (GameObject)})]
+  [ContextDefinedInputs(typeof (GameObject))]
   public class SwitchTag : FlowControlNode
   {
     [SerializeField]
-    private string[] _tagNames = (string[]) null;
+    private string[] _tagNames = null;
 
     protected override void RegisterPorts()
     {
-      ValueInput<GameObject> go = this.AddValueInput<GameObject>("Value");
+      ValueInput<GameObject> go = AddValueInput<GameObject>("Value");
       List<FlowOutput> outs = new List<FlowOutput>();
-      for (int index = 0; index < this._tagNames.Length; ++index)
-        outs.Add(this.AddFlowOutput(this._tagNames[index], index.ToString()));
-      this.AddFlowInput("In", (FlowHandler) (() =>
+      for (int index = 0; index < _tagNames.Length; ++index)
+        outs.Add(AddFlowOutput(_tagNames[index], index.ToString()));
+      AddFlowInput("In", () =>
       {
-        for (int index = 0; index < this._tagNames.Length; ++index)
+        for (int index = 0; index < _tagNames.Length; ++index)
         {
-          if (this._tagNames[index] == go.value.tag)
+          if (_tagNames[index] == go.value.tag)
             outs[index].Call();
         }
-      }));
+      });
     }
   }
 }

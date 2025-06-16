@@ -1,4 +1,5 @@
-﻿using PLVirtualMachine.Common;
+﻿using System;
+using PLVirtualMachine.Common;
 using PLVirtualMachine.Common.Data;
 using PLVirtualMachine.Common.EngineAPI;
 
@@ -10,11 +11,11 @@ namespace PLVirtualMachine.GameLogic
   {
     public void Initialize(ulong baseGuid)
     {
-      this.BaseGuid = baseGuid;
-      this.Load();
+      BaseGuid = baseGuid;
+      Load();
     }
 
-    public void Initialize(IState state) => this.LoadStaticInstance((IObject) state);
+    public void Initialize(IState state) => LoadStaticInstance(state);
 
     public override EContextVariableCategory Category
     {
@@ -25,16 +26,16 @@ namespace PLVirtualMachine.GameLogic
     {
       get
       {
-        if (this.StaticInstance == null && this.BaseGuid > 0UL)
-          this.LoadStaticInstance(IStaticDataContainer.StaticDataContainer.GetObjectByGuid(this.BaseGuid));
-        return (IState) this.StaticInstance;
+        if (StaticInstance == null && BaseGuid > 0UL)
+          LoadStaticInstance(IStaticDataContainer.StaticDataContainer.GetObjectByGuid(BaseGuid));
+        return (IState) StaticInstance;
       }
     }
 
-    public override VMType Type => VMType.CreateStateSpecialType((IGraphObject) this.State);
+    public override VMType Type => VMType.CreateStateSpecialType(State);
 
-    public override bool Empty => this.State == null && base.Empty;
+    public override bool Empty => State == null && base.Empty;
 
-    protected override System.Type NeedInstanceType => typeof (IState);
+    protected override Type NeedInstanceType => typeof (IState);
   }
 }

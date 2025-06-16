@@ -1,7 +1,4 @@
-﻿using System;
-using UnityEngine;
-
-public class NPCBombWeaponController : NPCWeaponControllerBase
+﻿public class NPCBombWeaponController : NPCWeaponControllerBase
 {
   private GameObject bomb;
   private ProjectileObject projectile;
@@ -10,11 +7,11 @@ public class NPCBombWeaponController : NPCWeaponControllerBase
 
   public override void Initialise(NPCWeaponService service)
   {
-    this.npcEnemy = service.GetComponent<NPCEnemy>();
+    npcEnemy = service.GetComponent<NPCEnemy>();
     if ((UnityEngine.Object) service.BombParent != (UnityEngine.Object) null)
     {
-      this.bomb = UnityEngine.Object.Instantiate<GameObject>(service.BombPrefab, service.BombParent);
-      this.bomb?.SetActive(false);
+      bomb = UnityEngine.Object.Instantiate<GameObject>(service.BombPrefab, service.BombParent);
+      bomb?.SetActive(false);
     }
     base.Initialise(service);
   }
@@ -24,58 +21,58 @@ public class NPCBombWeaponController : NPCWeaponControllerBase
     base.ShowWeapon(show);
     if (show)
       return;
-    this.bomb?.SetActive(show);
+    bomb?.SetActive(show);
   }
 
   protected override void GetLayersIndices()
   {
-    if (!((UnityEngine.Object) this.animator != (UnityEngine.Object) null))
+    if (!((UnityEngine.Object) animator != (UnityEngine.Object) null))
       return;
-    this.walkLayerIndex = this.animator.GetLayerIndex("Fight Bomb Walk Layer");
-    this.attackLayerIndex = this.animator.GetLayerIndex("Fight Bomb Attack Layer");
-    this.reactionLayerIndex = this.animator.GetLayerIndex("Fight Bomb Reaction Layer");
+    walkLayerIndex = animator.GetLayerIndex("Fight Bomb Walk Layer");
+    attackLayerIndex = animator.GetLayerIndex("Fight Bomb Attack Layer");
+    reactionLayerIndex = animator.GetLayerIndex("Fight Bomb Reaction Layer");
   }
 
   public override void OnAnimatorEvent(string data)
   {
     if (data.StartsWith("Bomb.Show"))
     {
-      if ((UnityEngine.Object) this.bomb == (UnityEngine.Object) null && (UnityEngine.Object) this.service.BombParent != (UnityEngine.Object) null)
-        this.bomb = UnityEngine.Object.Instantiate<GameObject>(this.service.BombPrefab, this.service.BombParent);
-      this.ShowWeapon(true);
-      this.bomb?.SetActive(true);
+      if ((UnityEngine.Object) bomb == (UnityEngine.Object) null && (UnityEngine.Object) service.BombParent != (UnityEngine.Object) null)
+        bomb = UnityEngine.Object.Instantiate<GameObject>(service.BombPrefab, service.BombParent);
+      ShowWeapon(true);
+      bomb?.SetActive(true);
     }
     else if (data.StartsWith("Bomb.Throw"))
     {
-      this.bomb?.SetActive(false);
-      this.CreateBomb();
+      bomb?.SetActive(false);
+      CreateBomb();
     }
     base.OnAnimatorEvent(data);
   }
 
   private void CreateBomb()
   {
-    EnemyBase enemy = this.npcEnemy.Enemy;
+    EnemyBase enemy = npcEnemy.Enemy;
     if ((UnityEngine.Object) enemy == (UnityEngine.Object) null)
       return;
-    Vector3 vector3 = this.npcEnemy.LastThrowV * ((enemy.transform.position - this.npcEnemy.transform.position).normalized * Mathf.Cos(this.npcEnemy.LastThrowAngle) + Vector3.up * Mathf.Sin(this.npcEnemy.LastThrowAngle));
-    Transform transform = this.service.BombParent.transform;
+    Vector3 vector3 = npcEnemy.LastThrowV * ((enemy.transform.position - npcEnemy.transform.position).normalized * Mathf.Cos(npcEnemy.LastThrowAngle) + Vector3.up * Mathf.Sin(npcEnemy.LastThrowAngle));
+    Transform transform = service.BombParent.transform;
     GameObject gameObject = UnityEngine.Object.Instantiate<GameObject>(ScriptableObjectInstance<ResourceFromCodeData>.Instance.BottleBomb, transform.position, transform.rotation);
     Rigidbody component = gameObject.GetComponent<Rigidbody>();
     component.velocity = vector3;
-    component.angularVelocity = UnityEngine.Random.insideUnitSphere * this.throwPower;
+    component.angularVelocity = UnityEngine.Random.insideUnitSphere * throwPower;
     component.useGravity = true;
-    this.projectile = gameObject.GetComponent<ProjectileObject>();
-    this.projectile.SetOwner((EnemyBase) this.npcEnemy);
-    this.projectile.OnProjectileHit -= new Action<Transform>(this.OnProjectileHit);
-    this.projectile.OnProjectileHit += new Action<Transform>(this.OnProjectileHit);
+    projectile = gameObject.GetComponent<ProjectileObject>();
+    projectile.SetOwner(npcEnemy);
+    projectile.OnProjectileHit -= OnProjectileHit;
+    projectile.OnProjectileHit += OnProjectileHit;
   }
 
   private void OnProjectileHit(Transform projectileTransform)
   {
-    this.service.ProjectileHitPosition = projectileTransform.position;
-    this.service.ProjectileHitRotation = projectileTransform.rotation;
-    this.BombHit();
-    UnityEngine.Object.Destroy((UnityEngine.Object) this.projectile.gameObject);
+    service.ProjectileHitPosition = projectileTransform.position;
+    service.ProjectileHitRotation = projectileTransform.rotation;
+    BombHit();
+    UnityEngine.Object.Destroy((UnityEngine.Object) projectile.gameObject);
   }
 }

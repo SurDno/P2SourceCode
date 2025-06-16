@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEngine;
 
 namespace RootMotion.FinalIK
 {
@@ -10,16 +9,16 @@ namespace RootMotion.FinalIK
     [Range(0.0f, 180f)]
     public float twistLimit = 180f;
     [Range(0.0f, 3f)]
-    public int smoothIterations = 0;
+    public int smoothIterations;
     [SerializeField]
     [HideInInspector]
-    public RotationLimitPolygonal.LimitPoint[] points;
+    public LimitPoint[] points;
     [SerializeField]
     [HideInInspector]
     public Vector3[] P;
     [SerializeField]
     [HideInInspector]
-    public RotationLimitPolygonal.ReachCone[] reachCones = new RotationLimitPolygonal.ReachCone[0];
+    public ReachCone[] reachCones = new ReachCone[0];
 
     [ContextMenu("User Manual")]
     private void OpenUserManual()
@@ -45,82 +44,82 @@ namespace RootMotion.FinalIK
       Application.OpenURL("http://forum.unity3d.com/threads/final-ik-full-body-ik-aim-look-at-fabrik-ccd-ik-1-0-released.222685/");
     }
 
-    public void SetLimitPoints(RotationLimitPolygonal.LimitPoint[] points)
+    public void SetLimitPoints(LimitPoint[] points)
     {
       if (points.Length < 3)
       {
-        this.LogWarning("The polygon must have at least 3 Limit Points.");
+        LogWarning("The polygon must have at least 3 Limit Points.");
       }
       else
       {
         this.points = points;
-        this.BuildReachCones();
+        BuildReachCones();
       }
     }
 
     protected override Quaternion LimitRotation(Quaternion rotation)
     {
-      if (this.reachCones.Length == 0)
-        this.Start();
-      return RotationLimit.LimitTwist(this.LimitSwing(rotation), this.axis, this.secondaryAxis, this.twistLimit);
+      if (reachCones.Length == 0)
+        Start();
+      return LimitTwist(LimitSwing(rotation), axis, secondaryAxis, twistLimit);
     }
 
     private void Start()
     {
-      if (this.points.Length < 3)
-        this.ResetToDefault();
-      for (int index = 0; index < this.reachCones.Length; ++index)
+      if (points.Length < 3)
+        ResetToDefault();
+      for (int index = 0; index < reachCones.Length; ++index)
       {
-        if (!this.reachCones[index].isValid)
+        if (!reachCones[index].isValid)
         {
-          if (this.smoothIterations <= 0)
+          if (smoothIterations <= 0)
           {
-            int num = index >= this.reachCones.Length - 1 ? 0 : index + 1;
-            this.LogWarning("Reach Cone {point " + (object) index + ", point " + (object) num + ", Origin} has negative volume. Make sure Axis vector is in the reachable area and the polygon is convex.");
+            int num = index >= reachCones.Length - 1 ? 0 : index + 1;
+            LogWarning("Reach Cone {point " + index + ", point " + num + ", Origin} has negative volume. Make sure Axis vector is in the reachable area and the polygon is convex.");
           }
           else
-            this.LogWarning("One of the Reach Cones in the polygon has negative volume. Make sure Axis vector is in the reachable area and the polygon is convex.");
+            LogWarning("One of the Reach Cones in the polygon has negative volume. Make sure Axis vector is in the reachable area and the polygon is convex.");
         }
       }
-      this.axis = this.axis.normalized;
+      axis = axis.normalized;
     }
 
     public void ResetToDefault()
     {
-      this.points = new RotationLimitPolygonal.LimitPoint[4];
-      for (int index = 0; index < this.points.Length; ++index)
-        this.points[index] = new RotationLimitPolygonal.LimitPoint();
+      points = new LimitPoint[4];
+      for (int index = 0; index < points.Length; ++index)
+        points[index] = new LimitPoint();
       Quaternion rotation1 = Quaternion.AngleAxis(45f, Vector3.right);
       Quaternion rotation2 = Quaternion.AngleAxis(45f, Vector3.up);
-      this.points[0].point = rotation1 * rotation2 * this.axis;
-      this.points[1].point = Quaternion.Inverse(rotation1) * rotation2 * this.axis;
-      this.points[2].point = Quaternion.Inverse(rotation1) * Quaternion.Inverse(rotation2) * this.axis;
-      this.points[3].point = rotation1 * Quaternion.Inverse(rotation2) * this.axis;
-      this.BuildReachCones();
+      points[0].point = rotation1 * rotation2 * axis;
+      points[1].point = Quaternion.Inverse(rotation1) * rotation2 * axis;
+      points[2].point = Quaternion.Inverse(rotation1) * Quaternion.Inverse(rotation2) * axis;
+      points[3].point = rotation1 * Quaternion.Inverse(rotation2) * axis;
+      BuildReachCones();
     }
 
     public void BuildReachCones()
     {
-      this.smoothIterations = Mathf.Clamp(this.smoothIterations, 0, 3);
-      this.P = new Vector3[this.points.Length];
-      for (int index = 0; index < this.points.Length; ++index)
-        this.P[index] = this.points[index].point.normalized;
-      for (int index = 0; index < this.smoothIterations; ++index)
-        this.P = this.SmoothPoints();
-      this.reachCones = new RotationLimitPolygonal.ReachCone[this.P.Length];
-      for (int index = 0; index < this.reachCones.Length - 1; ++index)
-        this.reachCones[index] = new RotationLimitPolygonal.ReachCone(Vector3.zero, this.axis.normalized, this.P[index], this.P[index + 1]);
-      this.reachCones[this.P.Length - 1] = new RotationLimitPolygonal.ReachCone(Vector3.zero, this.axis.normalized, this.P[this.P.Length - 1], this.P[0]);
-      for (int index = 0; index < this.reachCones.Length; ++index)
-        this.reachCones[index].Calculate();
+      smoothIterations = Mathf.Clamp(smoothIterations, 0, 3);
+      P = new Vector3[points.Length];
+      for (int index = 0; index < points.Length; ++index)
+        P[index] = points[index].point.normalized;
+      for (int index = 0; index < smoothIterations; ++index)
+        P = SmoothPoints();
+      reachCones = new ReachCone[P.Length];
+      for (int index = 0; index < reachCones.Length - 1; ++index)
+        reachCones[index] = new ReachCone(Vector3.zero, axis.normalized, P[index], P[index + 1]);
+      reachCones[P.Length - 1] = new ReachCone(Vector3.zero, axis.normalized, P[P.Length - 1], P[0]);
+      for (int index = 0; index < reachCones.Length; ++index)
+        reachCones[index].Calculate();
     }
 
     private Vector3[] SmoothPoints()
     {
-      Vector3[] vector3Array = new Vector3[this.P.Length * 2];
-      float scalar = this.GetScalar(this.P.Length);
+      Vector3[] vector3Array = new Vector3[P.Length * 2];
+      float scalar = GetScalar(P.Length);
       for (int index = 0; index < vector3Array.Length; index += 2)
-        vector3Array[index] = this.PointToTangentPlane(this.P[index / 2], 1f);
+        vector3Array[index] = PointToTangentPlane(P[index / 2], 1f);
       for (int index = 1; index < vector3Array.Length; index += 2)
       {
         Vector3 zero1 = Vector3.zero;
@@ -142,11 +141,11 @@ namespace RootMotion.FinalIK
           zero3 = vector3Array[0];
         }
         Vector3 vector3 = index >= vector3Array.Length - 1 ? vector3Array[0] : vector3Array[index + 1];
-        int num = vector3Array.Length / this.points.Length;
-        vector3Array[index] = 0.5f * (vector3Array[index - 1] + vector3) + scalar * this.points[index / num].tangentWeight * (vector3 - zero1) + scalar * this.points[index / num].tangentWeight * (vector3Array[index - 1] - zero3);
+        int num = vector3Array.Length / points.Length;
+        vector3Array[index] = 0.5f * (vector3Array[index - 1] + vector3) + scalar * points[index / num].tangentWeight * (vector3 - zero1) + scalar * points[index / num].tangentWeight * (vector3Array[index - 1] - zero3);
       }
       for (int index = 0; index < vector3Array.Length; ++index)
-        vector3Array[index] = this.TangentPointToSphere(vector3Array[index], 1f);
+        vector3Array[index] = TangentPointToSphere(vector3Array[index], 1f);
       return vector3Array;
     }
 
@@ -165,45 +164,45 @@ namespace RootMotion.FinalIK
 
     private Vector3 PointToTangentPlane(Vector3 p, float r)
     {
-      float num1 = Vector3.Dot(this.axis, p);
-      float num2 = (float) (2.0 * (double) r * (double) r / ((double) r * (double) r + (double) num1));
-      return num2 * p + (1f - num2) * -this.axis;
+      float num1 = Vector3.Dot(axis, p);
+      float num2 = (float) (2.0 * r * r / (r * (double) r + num1));
+      return num2 * p + (1f - num2) * -axis;
     }
 
     private Vector3 TangentPointToSphere(Vector3 q, float r)
     {
-      float num1 = Vector3.Dot(q - this.axis, q - this.axis);
-      float num2 = (float) (4.0 * (double) r * (double) r / (4.0 * (double) r * (double) r + (double) num1));
-      return num2 * q + (1f - num2) * -this.axis;
+      float num1 = Vector3.Dot(q - axis, q - axis);
+      float num2 = (float) (4.0 * r * r / (4.0 * r * r + num1));
+      return num2 * q + (1f - num2) * -axis;
     }
 
     private Quaternion LimitSwing(Quaternion rotation)
     {
       if (rotation == Quaternion.identity)
         return rotation;
-      Vector3 vector3 = rotation * this.axis;
-      int reachCone = this.GetReachCone(vector3);
+      Vector3 vector3 = rotation * axis;
+      int reachCone = GetReachCone(vector3);
       if (reachCone == -1)
       {
         if (!Warning.logged)
-          this.LogWarning("RotationLimitPolygonal reach cones are invalid.");
+          LogWarning("RotationLimitPolygonal reach cones are invalid.");
         return rotation;
       }
-      if ((double) Vector3.Dot(this.reachCones[reachCone].B, vector3) > 0.0)
+      if ((double) Vector3.Dot(reachCones[reachCone].B, vector3) > 0.0)
         return rotation;
-      Vector3 rhs = Vector3.Cross(this.axis, vector3);
-      Vector3 toDirection = Vector3.Cross(-this.reachCones[reachCone].B, rhs);
-      return Quaternion.FromToRotation(rotation * this.axis, toDirection) * rotation;
+      Vector3 rhs = Vector3.Cross(axis, vector3);
+      Vector3 toDirection = Vector3.Cross(-reachCones[reachCone].B, rhs);
+      return Quaternion.FromToRotation(rotation * axis, toDirection) * rotation;
     }
 
     private int GetReachCone(Vector3 L)
     {
-      float num1 = Vector3.Dot(this.reachCones[0].S, L);
-      for (int reachCone = 0; reachCone < this.reachCones.Length; ++reachCone)
+      float num1 = Vector3.Dot(reachCones[0].S, L);
+      for (int reachCone = 0; reachCone < reachCones.Length; ++reachCone)
       {
         float num2 = num1;
-        num1 = reachCone >= this.reachCones.Length - 1 ? Vector3.Dot(this.reachCones[0].S, L) : Vector3.Dot(this.reachCones[reachCone + 1].S, L);
-        if ((double) num2 >= 0.0 && (double) num1 < 0.0)
+        num1 = reachCone >= reachCones.Length - 1 ? Vector3.Dot(reachCones[0].S, L) : Vector3.Dot(reachCones[reachCone + 1].S, L);
+        if (num2 >= 0.0 && num1 < 0.0)
           return reachCone;
       }
       return -1;
@@ -217,33 +216,33 @@ namespace RootMotion.FinalIK
       public Vector3 S;
       public Vector3 B;
 
-      public Vector3 o => this.tetrahedron[0];
+      public Vector3 o => tetrahedron[0];
 
-      public Vector3 a => this.tetrahedron[1];
+      public Vector3 a => tetrahedron[1];
 
-      public Vector3 b => this.tetrahedron[2];
+      public Vector3 b => tetrahedron[2];
 
-      public Vector3 c => this.tetrahedron[3];
+      public Vector3 c => tetrahedron[3];
 
       public ReachCone(Vector3 _o, Vector3 _a, Vector3 _b, Vector3 _c)
       {
-        this.tetrahedron = new Vector3[4];
-        this.tetrahedron[0] = _o;
-        this.tetrahedron[1] = _a;
-        this.tetrahedron[2] = _b;
-        this.tetrahedron[3] = _c;
-        this.volume = 0.0f;
-        this.S = Vector3.zero;
-        this.B = Vector3.zero;
+        tetrahedron = new Vector3[4];
+        tetrahedron[0] = _o;
+        tetrahedron[1] = _a;
+        tetrahedron[2] = _b;
+        tetrahedron[3] = _c;
+        volume = 0.0f;
+        S = Vector3.zero;
+        B = Vector3.zero;
       }
 
-      public bool isValid => (double) this.volume > 0.0;
+      public bool isValid => volume > 0.0;
 
       public void Calculate()
       {
-        this.volume = Vector3.Dot(Vector3.Cross(this.a, this.b), this.c) / 6f;
-        this.S = Vector3.Cross(this.a, this.b).normalized;
-        this.B = Vector3.Cross(this.b, this.c).normalized;
+        volume = Vector3.Dot(Vector3.Cross(a, b), c) / 6f;
+        S = Vector3.Cross(a, b).normalized;
+        B = Vector3.Cross(b, c).normalized;
       }
     }
 
@@ -255,8 +254,8 @@ namespace RootMotion.FinalIK
 
       public LimitPoint()
       {
-        this.point = Vector3.forward;
-        this.tangentWeight = 1f;
+        point = Vector3.forward;
+        tangentWeight = 1f;
       }
     }
   }

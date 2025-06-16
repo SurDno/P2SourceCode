@@ -1,4 +1,5 @@
-﻿using Engine.Common;
+﻿using System.Collections.Generic;
+using Engine.Common;
 using Engine.Common.Commons;
 using Engine.Common.Components;
 using Engine.Common.Components.Parameters;
@@ -10,7 +11,6 @@ using Engine.Source.Components.Crowds;
 using Engine.Source.Connections;
 using Engine.Source.Services;
 using Inspectors;
-using System.Collections.Generic;
 
 namespace Engine.Source.Components
 {
@@ -22,50 +22,47 @@ namespace Engine.Source.Components
     ICrowdContextComponent,
     IComponent
   {
-    [DataReadProxy(MemberEnum.None, Name = "Storable")]
-    [DataWriteProxy(MemberEnum.None, Name = "Storable")]
+    [DataReadProxy(Name = "Storable")]
+    [DataWriteProxy(Name = "Storable")]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    [CopyableProxy(MemberEnum.None)]
+    [CopyableProxy]
     protected Typed<IEntity> itemEntity;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    [CopyableProxy(MemberEnum.None)]
+    [CopyableProxy()]
     protected bool sendActionEvent = false;
     [FromThis]
-    private DynamicModelComponent model = (DynamicModelComponent) null;
+    private DynamicModelComponent model = null;
     [FromThis]
-    private ParametersComponent parameters = (ParametersComponent) null;
+    private ParametersComponent parameters = null;
     private IParameter<bool> collectedParameter;
 
     public bool ValidateCollect()
     {
-      return this.collectedParameter != null && !this.collectedParameter.Value;
+      return collectedParameter != null && !collectedParameter.Value;
     }
 
     public void Collect()
     {
-      if (this.collectedParameter == null || this.collectedParameter.Value)
+      if (collectedParameter == null || collectedParameter.Value)
         return;
-      this.collectedParameter.Value = true;
-      IStorableComponent component1 = this.itemEntity.Value?.GetComponent<IStorableComponent>();
+      collectedParameter.Value = true;
+      IStorableComponent component1 = itemEntity.Value?.GetComponent<IStorableComponent>();
       if (component1 != null)
       {
         IStorageComponent component2 = ServiceLocator.GetService<ISimulation>().Player?.GetComponent<IStorageComponent>();
         if (component2 != null)
         {
-          IEntity entity = ServiceLocator.GetService<IFactory>().Instantiate<IEntity>(component1.Owner);
+          IEntity entity = ServiceLocator.GetService<IFactory>().Instantiate(component1.Owner);
           ServiceLocator.GetService<ISimulation>().Add(entity, ServiceLocator.GetService<ISimulation>().Storables);
-          component2.AddItemOrDrop(entity.GetComponent<IStorableComponent>(), (IInventoryComponent) null);
-          ServiceLocator.GetService<NotificationService>().AddNotify(NotificationEnum.ItemRecieve, new object[1]
-          {
-            (object) component1.Owner
-          });
+          component2.AddItemOrDrop(entity.GetComponent<IStorableComponent>(), null);
+          ServiceLocator.GetService<NotificationService>().AddNotify(NotificationEnum.ItemRecieve, component1.Owner);
         }
       }
-      if (!this.sendActionEvent)
+      if (!sendActionEvent)
         return;
       ServiceLocator.GetService<ISimulation>().Player.GetComponent<PlayerControllerComponent>()?.ComputeAction(ActionEnum.CollectItem);
     }
@@ -73,36 +70,36 @@ namespace Engine.Source.Components
     public override void OnAdded()
     {
       base.OnAdded();
-      if (this.parameters != null)
-        this.collectedParameter = this.parameters.GetByName<bool>(ParameterNameEnum.Collected);
-      InstanceByRequest<UpdateService>.Instance.Updater.AddUpdatable((IUpdatable) this);
+      if (parameters != null)
+        collectedParameter = parameters.GetByName<bool>(ParameterNameEnum.Collected);
+      InstanceByRequest<UpdateService>.Instance.Updater.AddUpdatable(this);
     }
 
     public override void OnRemoved()
     {
-      InstanceByRequest<UpdateService>.Instance.Updater.RemoveUpdatable((IUpdatable) this);
-      this.collectedParameter = (IParameter<bool>) null;
+      InstanceByRequest<UpdateService>.Instance.Updater.RemoveUpdatable(this);
+      collectedParameter = null;
       base.OnRemoved();
     }
 
     public void ComputeUpdate()
     {
-      if (this.model == null || this.collectedParameter == null)
+      if (model == null || collectedParameter == null)
         return;
-      bool flag = !this.collectedParameter.Value;
-      if (flag == this.model.IsEnabled)
+      bool flag = !collectedParameter.Value;
+      if (flag == model.IsEnabled)
         return;
-      this.model.IsEnabled = flag;
+      model.IsEnabled = flag;
     }
 
     public void StoreState(List<IParameter> states, bool indoor)
     {
-      CrowdContextUtility.Store(this.parameters, states, ParameterNameEnum.Collected);
+      CrowdContextUtility.Store(parameters, states, ParameterNameEnum.Collected);
     }
 
     public void RestoreState(List<IParameter> states, bool indoor)
     {
-      CrowdContextUtility.Restore(this.parameters, states, ParameterNameEnum.Collected);
+      CrowdContextUtility.Restore(parameters, states, ParameterNameEnum.Collected);
     }
   }
 }

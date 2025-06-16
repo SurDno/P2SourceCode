@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using PLVirtualMachine.Common.Data;
 
 namespace PLVirtualMachine.Common.VMDebug
 {
@@ -14,31 +15,31 @@ namespace PLVirtualMachine.Common.VMDebug
     private List<object> paramsValues = new List<object>();
     private string lastError = "";
 
-    public EDebugIPCMessageType MessageType => this.messageType;
+    public EDebugIPCMessageType MessageType => messageType;
 
     public Guid DebugObjectEngGuid
     {
-      get => this.debugObjectEngineGuid;
-      set => this.debugObjectEngineGuid = value;
+      get => debugObjectEngineGuid;
+      set => debugObjectEngineGuid = value;
     }
 
     public string DebugObjectUniName
     {
-      get => this.debugObjectUniName;
-      set => this.debugObjectUniName = value;
+      get => debugObjectUniName;
+      set => debugObjectUniName = value;
     }
 
     public ulong StateGuid
     {
-      get => this.stateGuid;
-      set => this.stateGuid = value;
+      get => stateGuid;
+      set => stateGuid = value;
     }
 
-    public List<ulong> RaisedEvents => this.staticGuidsList;
+    public List<ulong> RaisedEvents => staticGuidsList;
 
-    public List<ulong> ChangedParams => this.paramsChanged;
+    public List<ulong> ChangedParams => paramsChanged;
 
-    public List<object> ChangedParamValues => this.paramsValues;
+    public List<object> ChangedParamValues => paramsValues;
 
     public void Deserialize(byte[] data, int length)
     {
@@ -46,46 +47,46 @@ namespace PLVirtualMachine.Common.VMDebug
       {
         if (length < 4)
         {
-          this.lastError = string.Format("Cannot read ipc message: invalid data length");
+          lastError = "Cannot read ipc message: invalid data length";
         }
         else
         {
           int offset = 0;
-          this.messageType = (EDebugIPCMessageType) IpcMessageUtility.DeserializeInt(data, ref offset);
-          if (this.messageType == EDebugIPCMessageType.IPC_MESSAGE_SERVER_EVENT_ADD_DEBUG_OBJECT || this.messageType == EDebugIPCMessageType.IPC_MESSAGE_SERVER_EVENT_REMOVE_DEBUG_OBJECT || this.messageType == EDebugIPCMessageType.IPC_MESSAGE_REQUEST_SET_DEBUG_OBJECT || this.messageType == EDebugIPCMessageType.IPC_MESSAGE_REQUEST_SET_DEBUG_CAMERA || this.messageType == EDebugIPCMessageType.IPC_MESSAGE_REQUEST_SET_BREAKPOINT || this.messageType == EDebugIPCMessageType.IPC_MESSAGE_RESPONSE_SET_BREAKPOINT || this.messageType == EDebugIPCMessageType.IPC_MESSAGE_REQUEST_REMOVE_BREAKPOINT || this.messageType == EDebugIPCMessageType.IPC_MESSAGE_RESPONSE_REMOVE_BREAKPOINT || this.messageType == EDebugIPCMessageType.IPC_MESSAGE_REQUEST_STEP_INTO || this.messageType == EDebugIPCMessageType.IPC_MESSAGE_REQUEST_STEP_OVER || this.messageType == EDebugIPCMessageType.IPC_MESSAGE_SERVER_EVENT_INPUT_STATE || this.messageType == EDebugIPCMessageType.IPC_MESSAGE_SERVER_EVENT_OUTPUT_STATE || this.messageType == EDebugIPCMessageType.IPC_MESSAGE_SERVER_EVENT_PARAM_VALUE_CHANGE || this.messageType == EDebugIPCMessageType.IPC_MESSAGE_RESPONSE_SET_DEBUG_OBJECT)
+          messageType = (EDebugIPCMessageType) IpcMessageUtility.DeserializeInt(data, ref offset);
+          if (messageType == EDebugIPCMessageType.IPC_MESSAGE_SERVER_EVENT_ADD_DEBUG_OBJECT || messageType == EDebugIPCMessageType.IPC_MESSAGE_SERVER_EVENT_REMOVE_DEBUG_OBJECT || messageType == EDebugIPCMessageType.IPC_MESSAGE_REQUEST_SET_DEBUG_OBJECT || messageType == EDebugIPCMessageType.IPC_MESSAGE_REQUEST_SET_DEBUG_CAMERA || messageType == EDebugIPCMessageType.IPC_MESSAGE_REQUEST_SET_BREAKPOINT || messageType == EDebugIPCMessageType.IPC_MESSAGE_RESPONSE_SET_BREAKPOINT || messageType == EDebugIPCMessageType.IPC_MESSAGE_REQUEST_REMOVE_BREAKPOINT || messageType == EDebugIPCMessageType.IPC_MESSAGE_RESPONSE_REMOVE_BREAKPOINT || messageType == EDebugIPCMessageType.IPC_MESSAGE_REQUEST_STEP_INTO || messageType == EDebugIPCMessageType.IPC_MESSAGE_REQUEST_STEP_OVER || messageType == EDebugIPCMessageType.IPC_MESSAGE_SERVER_EVENT_INPUT_STATE || messageType == EDebugIPCMessageType.IPC_MESSAGE_SERVER_EVENT_OUTPUT_STATE || messageType == EDebugIPCMessageType.IPC_MESSAGE_SERVER_EVENT_PARAM_VALUE_CHANGE || messageType == EDebugIPCMessageType.IPC_MESSAGE_RESPONSE_SET_DEBUG_OBJECT)
           {
             if (length <= offset + 4)
             {
-              this.lastError = string.Format("Cannot read ipc message: invalid data length");
+              lastError = "Cannot read ipc message: invalid data length";
               return;
             }
-            this.debugObjectEngineGuid = IpcMessageUtility.DeserializeGuid(data, ref offset);
+            debugObjectEngineGuid = IpcMessageUtility.DeserializeGuid(data, ref offset);
           }
-          if (this.messageType == EDebugIPCMessageType.IPC_MESSAGE_SERVER_EVENT_UPDATE_OBJECTS_END)
-            this.stateGuid = IpcMessageUtility.DeserializeUInt64(data, ref offset);
-          else if (this.messageType == EDebugIPCMessageType.IPC_MESSAGE_SERVER_EVENT_ADD_DEBUG_OBJECT || this.messageType == EDebugIPCMessageType.IPC_MESSAGE_SERVER_EVENT_REMOVE_DEBUG_OBJECT || this.messageType == EDebugIPCMessageType.IPC_MESSAGE_REQUEST_SET_DEBUG_OBJECT || this.messageType == EDebugIPCMessageType.IPC_MESSAGE_RESPONSE_SET_DEBUG_OBJECT || this.messageType == EDebugIPCMessageType.IPC_MESSAGE_REQUEST_SET_BREAKPOINT || this.messageType == EDebugIPCMessageType.IPC_MESSAGE_RESPONSE_SET_BREAKPOINT || this.messageType == EDebugIPCMessageType.IPC_MESSAGE_REQUEST_REMOVE_BREAKPOINT || this.messageType == EDebugIPCMessageType.IPC_MESSAGE_RESPONSE_REMOVE_BREAKPOINT || this.messageType == EDebugIPCMessageType.IPC_MESSAGE_SERVER_EVENT_INPUT_STATE || this.messageType == EDebugIPCMessageType.IPC_MESSAGE_SERVER_EVENT_OUTPUT_STATE)
+          if (messageType == EDebugIPCMessageType.IPC_MESSAGE_SERVER_EVENT_UPDATE_OBJECTS_END)
+            stateGuid = IpcMessageUtility.DeserializeUInt64(data, ref offset);
+          else if (messageType == EDebugIPCMessageType.IPC_MESSAGE_SERVER_EVENT_ADD_DEBUG_OBJECT || messageType == EDebugIPCMessageType.IPC_MESSAGE_SERVER_EVENT_REMOVE_DEBUG_OBJECT || messageType == EDebugIPCMessageType.IPC_MESSAGE_REQUEST_SET_DEBUG_OBJECT || messageType == EDebugIPCMessageType.IPC_MESSAGE_RESPONSE_SET_DEBUG_OBJECT || messageType == EDebugIPCMessageType.IPC_MESSAGE_REQUEST_SET_BREAKPOINT || messageType == EDebugIPCMessageType.IPC_MESSAGE_RESPONSE_SET_BREAKPOINT || messageType == EDebugIPCMessageType.IPC_MESSAGE_REQUEST_REMOVE_BREAKPOINT || messageType == EDebugIPCMessageType.IPC_MESSAGE_RESPONSE_REMOVE_BREAKPOINT || messageType == EDebugIPCMessageType.IPC_MESSAGE_SERVER_EVENT_INPUT_STATE || messageType == EDebugIPCMessageType.IPC_MESSAGE_SERVER_EVENT_OUTPUT_STATE)
           {
             if (length < offset + 8)
             {
-              this.lastError = string.Format("Cannot read ipc message: invalid object engine guid data");
+              lastError = "Cannot read ipc message: invalid object engine guid data";
               return;
             }
-            this.stateGuid = IpcMessageUtility.DeserializeUInt64(data, ref offset);
+            stateGuid = IpcMessageUtility.DeserializeUInt64(data, ref offset);
           }
-          if (this.messageType == EDebugIPCMessageType.IPC_MESSAGE_SERVER_EVENT_INPUT_STATE)
+          if (messageType == EDebugIPCMessageType.IPC_MESSAGE_SERVER_EVENT_INPUT_STATE)
           {
             if (length < offset + 4)
             {
-              this.lastError = string.Format("Cannot read ipc message: invalid raised events count data");
+              lastError = "Cannot read ipc message: invalid raised events count data";
               return;
             }
-            this.staticGuidsList = IpcMessageUtility.DeSerializeUInt64List(data, ref offset);
+            staticGuidsList = IpcMessageUtility.DeSerializeUInt64List(data, ref offset);
           }
-          if (this.messageType == EDebugIPCMessageType.IPC_MESSAGE_SERVER_EVENT_PARAM_VALUE_CHANGE || this.messageType == EDebugIPCMessageType.IPC_MESSAGE_SERVER_EVENT_INPUT_STATE)
+          if (messageType == EDebugIPCMessageType.IPC_MESSAGE_SERVER_EVENT_PARAM_VALUE_CHANGE || messageType == EDebugIPCMessageType.IPC_MESSAGE_SERVER_EVENT_INPUT_STATE)
           {
             if (length < offset + 4)
             {
-              this.lastError = string.Format("Cannot read ipc message: invalid changed params count data");
+              lastError = "Cannot read ipc message: invalid changed params count data";
               return;
             }
             int num1 = IpcMessageUtility.DeserializeInt(data, ref offset);
@@ -94,11 +95,11 @@ namespace PLVirtualMachine.Common.VMDebug
               ulong num2 = IpcMessageUtility.DeserializeUInt64(data, ref offset);
               try
               {
-                Type valueType = PLVirtualMachine.Common.Data.StringSerializer.ReadTypeByString(IpcMessageUtility.DeserializeString(data, ref offset));
-                if (!((Type) null != valueType))
+                Type valueType = StringSerializer.ReadTypeByString(IpcMessageUtility.DeserializeString(data, ref offset));
+                if (!(null != valueType))
                   return;
-                this.paramsValues.Add(IpcMessageUtility.DeserializeValue(data, ref offset, valueType));
-                this.paramsChanged.Add(num2);
+                paramsValues.Add(IpcMessageUtility.DeserializeValue(data, ref offset, valueType));
+                paramsChanged.Add(num2);
               }
               catch (Exception ex)
               {
@@ -106,20 +107,20 @@ namespace PLVirtualMachine.Common.VMDebug
               }
             }
           }
-          if (this.messageType != EDebugIPCMessageType.IPC_MESSAGE_REQUEST_RAISE_EVENT)
+          if (messageType != EDebugIPCMessageType.IPC_MESSAGE_REQUEST_RAISE_EVENT)
             return;
-          this.debugObjectUniName = IpcMessageUtility.DeserializeString(data, ref offset);
-          this.stateGuid = IpcMessageUtility.DeserializeUInt64(data, ref offset);
+          debugObjectUniName = IpcMessageUtility.DeserializeString(data, ref offset);
+          stateGuid = IpcMessageUtility.DeserializeUInt64(data, ref offset);
         }
       }
       catch (Exception ex)
       {
-        this.lastError = string.Format("Ipc message deserialize error: {0}", (object) ex.ToString());
+        lastError = string.Format("Ipc message deserialize error: {0}", ex.ToString());
       }
     }
 
-    public string LastError => this.lastError;
+    public string LastError => lastError;
 
-    public bool IsValid => this.lastError.Length == 0;
+    public bool IsValid => lastError.Length == 0;
   }
 }

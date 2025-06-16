@@ -1,66 +1,66 @@
-﻿using Engine.Source.Commons;
+﻿using System;
+using System.Collections.Generic;
+using Engine.Source.Commons;
 using Engine.Source.Services.Inputs;
 using Engine.Source.Settings;
 using Engine.Source.Settings.External;
-using System;
-using System.Collections.Generic;
 
 public class JoystickLayoutSwitcher
 {
   private static JoystickLayoutSwitcher _instance;
-  private JoystickLayoutSwitcher.KeyLayouts _currentLayout = JoystickLayoutSwitcher.KeyLayouts.None;
+  private KeyLayouts _currentLayout = KeyLayouts.None;
 
-  public event Action<JoystickLayoutSwitcher.KeyLayouts> OnLayoutChanged;
+  public event Action<KeyLayouts> OnLayoutChanged;
 
   public static JoystickLayoutSwitcher Instance
   {
     get
     {
-      if (JoystickLayoutSwitcher._instance == null)
-        JoystickLayoutSwitcher._instance = new JoystickLayoutSwitcher();
-      return JoystickLayoutSwitcher._instance;
+      if (_instance == null)
+        _instance = new JoystickLayoutSwitcher();
+      return _instance;
     }
   }
 
   private JoystickLayoutSwitcher()
   {
-    this.ApplyInputGameSettings();
-    InstanceByRequest<InputGameSetting>.Instance.OnApply += new Action(this.ApplyInputGameSettings);
+    ApplyInputGameSettings();
+    InstanceByRequest<InputGameSetting>.Instance.OnApply += ApplyInputGameSettings;
   }
 
   public void ChangeLayout(int newLayoutIndex)
   {
-    this.CurrentLayout = (JoystickLayoutSwitcher.KeyLayouts) newLayoutIndex;
+    CurrentLayout = (KeyLayouts) newLayoutIndex;
   }
 
-  public int GetCurrentLayoutIndex() => (int) (this.CurrentLayout + 1);
+  public int GetCurrentLayoutIndex() => (int) (CurrentLayout + 1);
 
-  public JoystickLayoutSwitcher.KeyLayouts CurrentLayout
+  public KeyLayouts CurrentLayout
   {
-    get => this._currentLayout;
+    get => _currentLayout;
     private set
     {
-      if (this._currentLayout == value)
+      if (_currentLayout == value)
         return;
-      this._currentLayout = value;
-      switch (this._currentLayout)
+      _currentLayout = value;
+      switch (_currentLayout)
       {
-        case JoystickLayoutSwitcher.KeyLayouts.One:
-          this.Groups = ExternalSettingsInstance<ExternalGameActionSettings>.Instance.Groups_Set_1;
+        case KeyLayouts.One:
+          Groups = ExternalSettingsInstance<ExternalGameActionSettings>.Instance.Groups_Set_1;
           break;
-        case JoystickLayoutSwitcher.KeyLayouts.Two:
-          this.Groups = ExternalSettingsInstance<ExternalGameActionSettings>.Instance.Groups_Set_2;
+        case KeyLayouts.Two:
+          Groups = ExternalSettingsInstance<ExternalGameActionSettings>.Instance.Groups_Set_2;
           break;
-        case JoystickLayoutSwitcher.KeyLayouts.Three:
-          this.Groups = ExternalSettingsInstance<ExternalGameActionSettings>.Instance.Groups_Set_3;
+        case KeyLayouts.Three:
+          Groups = ExternalSettingsInstance<ExternalGameActionSettings>.Instance.Groups_Set_3;
           break;
         default:
           return;
       }
-      Action<JoystickLayoutSwitcher.KeyLayouts> onLayoutChanged = this.OnLayoutChanged;
+      Action<KeyLayouts> onLayoutChanged = OnLayoutChanged;
       if (onLayoutChanged == null)
         return;
-      onLayoutChanged(this._currentLayout);
+      onLayoutChanged(_currentLayout);
     }
   }
 
@@ -77,7 +77,7 @@ public class JoystickLayoutSwitcher
 
   private void ApplyInputGameSettings()
   {
-    this.ChangeLayout(InstanceByRequest<InputGameSetting>.Instance.JoystickLayout.Value);
+    ChangeLayout(InstanceByRequest<InputGameSetting>.Instance.JoystickLayout.Value);
   }
 
   public enum KeyLayouts

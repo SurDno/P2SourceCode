@@ -1,6 +1,4 @@
 ﻿using System;
-using UnityEngine;
-using UnityEngine.Rendering;
 
 [Serializable]
 public class TOD_ReflectionParameters

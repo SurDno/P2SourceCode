@@ -1,9 +1,8 @@
-﻿using Cofe.Utility;
+﻿using System.Collections;
+using Cofe.Utility;
 using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
-using System.Collections;
-using UnityEngine;
 
 namespace Engine.Source.Blueprints
 {
@@ -16,28 +15,28 @@ namespace Engine.Source.Blueprints
     protected override void RegisterPorts()
     {
       base.RegisterPorts();
-      FlowOutput output = this.AddFlowOutput("Complete");
-      this.AddFlowInput("In", (FlowHandler) (() =>
+      FlowOutput output = AddFlowOutput("Complete");
+      AddFlowInput("In", () =>
       {
-        Animation animation1 = this.inputAnimation.value;
+        Animation animation1 = inputAnimation.value;
         if (!((Object) animation1 != (Object) null))
           return;
         animation1.wrapMode = WrapMode.Once;
-        string animation2 = this.inputName.value;
+        string animation2 = inputName.value;
         if (!animation2.IsNullOrEmpty())
           animation1.Play(animation2);
         else
           animation1.Play();
-        this.StartCoroutine(this.WaitComplete(animation1, output));
-      }));
-      this.inputAnimation = this.AddValueInput<Animation>("Animation");
-      this.inputName = this.AddValueInput<string>("Name");
+        StartCoroutine(WaitComplete(animation1, output));
+      });
+      inputAnimation = AddValueInput<Animation>("Animation");
+      inputName = AddValueInput<string>("Name");
     }
 
     private IEnumerator WaitComplete(Animation animation, FlowOutput output)
     {
       while (animation.isPlaying)
-        yield return (object) null;
+        yield return null;
       output.Call();
     }
   }

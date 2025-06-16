@@ -10,23 +10,23 @@ namespace ClipperLib
     {
       get
       {
-        int count = this.m_AllPolys.Count;
-        if (count > 0 && this.m_Childs[0] != this.m_AllPolys[0])
+        int count = m_AllPolys.Count;
+        if (count > 0 && m_Childs[0] != m_AllPolys[0])
           --count;
         return count;
       }
     }
 
-    ~PolyTree() => this.Clear();
+    ~PolyTree() => Clear();
 
     public void Clear()
     {
-      for (int index = 0; index < this.m_AllPolys.Count; ++index)
-        this.m_AllPolys[index] = (PolyNode) null;
-      this.m_AllPolys.Clear();
-      this.m_Childs.Clear();
+      for (int index = 0; index < m_AllPolys.Count; ++index)
+        m_AllPolys[index] = null;
+      m_AllPolys.Clear();
+      m_Childs.Clear();
     }
 
-    public PolyNode GetFirst() => this.m_Childs.Count > 0 ? this.m_Childs[0] : (PolyNode) null;
+    public PolyNode GetFirst() => m_Childs.Count > 0 ? m_Childs[0] : null;
   }
 }

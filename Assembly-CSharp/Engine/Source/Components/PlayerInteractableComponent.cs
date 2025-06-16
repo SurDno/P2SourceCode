@@ -1,5 +1,7 @@
-﻿using Engine.Common;
-using Engine.Common.Components;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Engine.Common;
 using Engine.Common.Generator;
 using Engine.Common.Services;
 using Engine.Impl.Services;
@@ -13,10 +15,6 @@ using Engine.Source.UI;
 using Engine.Source.Utility;
 using InputServices;
 using Inspectors;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
 
 namespace Engine.Source.Components
 {
@@ -45,110 +43,110 @@ namespace Engine.Source.Components
     private List<GameActionType> cachedLastInteractionTypes = new List<GameActionType>();
     private List<GameActionType> comparationList = new List<GameActionType>();
 
-    public InteractableComponent Interactable => this.currentInteractable;
+    public InteractableComponent Interactable => currentInteractable;
 
     public IEnumerable<InteractItemInfo> ValidateItems
     {
-      get => (IEnumerable<InteractItemInfo>) this.validateItems;
+      get => validateItems;
     }
 
     public override void OnChangeEnabled()
     {
       base.OnChangeEnabled();
-      this.currentTarget = (IEntity) null;
-      this.currentInteractable = (InteractableComponent) null;
-      this.validateItems.Clear();
+      currentTarget = null;
+      currentInteractable = null;
+      validateItems.Clear();
     }
 
     public void ComputeUpdate()
     {
       if (!PlayerUtility.IsPlayerCanControlling)
       {
-        this.ClearActions();
+        ClearActions();
       }
       else
       {
-        if (this.isJoystick != InputService.Instance.JoystickUsed)
+        if (isJoystick != InputService.Instance.JoystickUsed)
         {
-          this.isJoystick = InputService.Instance.JoystickUsed;
-          this.cachedLastInteractionTypes = (List<GameActionType>) null;
+          isJoystick = InputService.Instance.JoystickUsed;
+          cachedLastInteractionTypes = null;
         }
-        IEntity entity = this.pickingService.TargetEntity;
-        if (entity != null && (double) this.pickingService.TargetEntityDistance > (double) ExternalSettingsInstance<ExternalCommonSettings>.Instance.InteractionDistance)
-          entity = (IEntity) null;
-        if (entity != this.currentTarget)
+        IEntity entity = pickingService.TargetEntity;
+        if (entity != null && pickingService.TargetEntityDistance > (double) ExternalSettingsInstance<ExternalCommonSettings>.Instance.InteractionDistance)
+          entity = null;
+        if (entity != currentTarget)
         {
-          this.currentTarget = entity;
-          this.currentInteractable = (InteractableComponent) null;
-          this.cachedLastInteractionTypes = (List<GameActionType>) null;
-          if (this.currentTarget != null)
-            this.currentInteractable = this.currentTarget.GetComponent<InteractableComponent>();
+          currentTarget = entity;
+          currentInteractable = null;
+          cachedLastInteractionTypes = null;
+          if (currentTarget != null)
+            currentInteractable = currentTarget.GetComponent<InteractableComponent>();
         }
-        this.UpdateActions();
+        UpdateActions();
       }
     }
 
     private void ClearActions()
     {
-      this.validateItems.Clear();
-      this.cachedLastInteractionTypes = (List<GameActionType>) null;
+      validateItems.Clear();
+      cachedLastInteractionTypes = null;
     }
 
     private void UpdateActions()
     {
       bool isSame = false;
-      if (this.currentInteractable != null && !this.currentInteractable.IsDisposed && this.currentInteractable.Owner.IsEnabledInHierarchy && this.currentInteractable.IsEnabled)
+      if (currentInteractable != null && !currentInteractable.IsDisposed && currentInteractable.Owner.IsEnabledInHierarchy && currentInteractable.IsEnabled)
       {
-        this.comparationList.Clear();
-        this.currentInteractable.Items.ForEach((Action<InteractItem>) (i =>
+        comparationList.Clear();
+        currentInteractable.Items.ForEach(i =>
         {
-          if (!InteractValidationService.Validate((IInteractableComponent) this.currentInteractable, i).Result)
+          if (!InteractValidationService.Validate(currentInteractable, i).Result)
             return;
-          this.comparationList.Add(i.Action);
-        }));
-        if (this.cachedLastInteractionTypes == null || !this.cachedLastInteractionTypes.SequenceEqual<GameActionType>((IEnumerable<GameActionType>) this.comparationList))
+          comparationList.Add(i.Action);
+        });
+        if (cachedLastInteractionTypes == null || !cachedLastInteractionTypes.SequenceEqual(comparationList))
         {
-          this.ClearActions();
-          this.validateItems.AddRange(this.currentInteractable.GetValidateItems(this.Owner));
-          this.cachedLastInteractionTypes = new List<GameActionType>((IEnumerable<GameActionType>) this.comparationList);
+          ClearActions();
+          validateItems.AddRange(currentInteractable.GetValidateItems(Owner));
+          cachedLastInteractionTypes = new List<GameActionType>(comparationList);
         }
         else
           isSame = true;
       }
       else
-        this.ClearActions();
+        ClearActions();
       if (!isSame)
       {
-        if (this.validateItemsOrdered == null)
-          this.validateItemsOrdered = this.validateItems.OrderBy<InteractItemInfo, bool>((Func<InteractItemInfo, bool>) (o => o.Invalid));
-        this.tmp.Clear();
-        this.tmp.AddRange((IEnumerable<InteractItemInfo>) this.validateItemsOrdered);
-        for (int index = 1; index < this.tmp.Count && !this.tmp[index].Invalid; ++index)
+        if (validateItemsOrdered == null)
+          validateItemsOrdered = validateItems.OrderBy(o => o.Invalid);
+        tmp.Clear();
+        tmp.AddRange(validateItemsOrdered);
+        for (int index = 1; index < tmp.Count && !tmp[index].Invalid; ++index)
         {
-          if (this.tmp[index].Item.Action == this.tmp[index - 1].Item.Action)
+          if (tmp[index].Item.Action == tmp[index - 1].Item.Action)
           {
-            this.tmp[index].Invalid = true;
-            this.tmp[index].Dublicate = true;
+            tmp[index].Invalid = true;
+            tmp[index].Dublicate = true;
           }
         }
         int index1 = 0;
-        for (int index2 = 0; index2 < this.validateItems.Count; ++index2)
+        for (int index2 = 0; index2 < validateItems.Count; ++index2)
         {
-          InteractItemInfo validateItem = this.validateItems[index2];
+          InteractItemInfo validateItem = validateItems[index2];
           if (validateItem.Invalid)
           {
             validateItem.OverrideAction = index1 < InteractUtility.DebugActions.Length ? InteractUtility.DebugActions[index1].Action : InteractUtility.DebugActions[InteractUtility.DebugActions.Length - 1].Action;
             ++index1;
           }
         }
-        CoroutineService.Instance.WaitFrame(1, (Action) (() => this.UpdateIcons(false)));
+        CoroutineService.Instance.WaitFrame(1, (Action) (() => UpdateIcons(false)));
       }
-      this.UpdateIcons(isSame);
+      UpdateIcons(isSame);
     }
 
     private void UpdateIcons(bool isSame)
     {
-      IHudWindow hudWindow = this.uiService.Get<IHudWindow>();
+      IHudWindow hudWindow = uiService.Get<IHudWindow>();
       if (hudWindow == null)
         return;
       InteractableWindow interactableInterface = hudWindow.InteractableInterface;
@@ -160,21 +158,21 @@ namespace Engine.Source.Components
         if (!InputService.Instance.JoystickUsed)
         {
           string text = "";
-          if (this.currentInteractable != null && !this.currentInteractable.IsDisposed)
+          if (currentInteractable != null && !currentInteractable.IsDisposed)
           {
-            info = DefaultInteractableMapping.GetIconType((IInteractableComponent) this.currentInteractable, this.validateItems);
-            text = DefaultInteractableMapping.GetText(this.validateItems);
+            info = DefaultInteractableMapping.GetIconType(currentInteractable, validateItems);
+            text = DefaultInteractableMapping.GetText(validateItems);
           }
           interactableInterface.SetInfo(info, text);
         }
         else
         {
           List<KeyValuePair<Sprite, bool>> iconSprites = (List<KeyValuePair<Sprite, bool>>) null;
-          if (this.currentInteractable != null && !this.currentInteractable.IsDisposed)
+          if (currentInteractable != null && !currentInteractable.IsDisposed)
           {
-            InteractableWindow.IconType iconType = DefaultInteractableMapping.GetIconType((IInteractableComponent) this.currentInteractable, this.validateItems);
+            InteractableWindow.IconType iconType = DefaultInteractableMapping.GetIconType(currentInteractable, validateItems);
             List<KeyValuePair<GameActionType, bool>> actions;
-            string[] text = DefaultInteractableMapping.GetText(this.validateItems, out iconSprites, out actions);
+            string[] text = DefaultInteractableMapping.GetText(validateItems, out iconSprites, out actions);
             interactableInterface.SetInfo(iconType, text, iconSprites, actions);
           }
           else
@@ -187,10 +185,10 @@ namespace Engine.Source.Components
 
     private bool Listener(GameActionType type, bool down)
     {
-      if (!PlayerUtility.IsPlayerCanControlling || !down || this.currentInteractable == null || this.currentInteractable.IsDisposed)
+      if (!PlayerUtility.IsPlayerCanControlling || !down || currentInteractable == null || currentInteractable.IsDisposed)
         return false;
-      InteractItemInfo interactItemInfo = (InteractItemInfo) null;
-      foreach (InteractItemInfo validateItem in this.validateItems)
+      InteractItemInfo interactItemInfo = null;
+      foreach (InteractItemInfo validateItem in validateItems)
       {
         if (validateItem.Invalid)
         {
@@ -208,34 +206,34 @@ namespace Engine.Source.Components
       }
       if (interactItemInfo == null)
         return false;
-      this.currentInteractable.BeginInteract(this.Owner, interactItemInfo.Item.Type);
-      this.currentInteractable = (InteractableComponent) null;
-      this.currentTarget = (IEntity) null;
-      this.validateItems.Clear();
-      this.UpdateIcons(false);
+      currentInteractable.BeginInteract(Owner, interactItemInfo.Item.Type);
+      currentInteractable = null;
+      currentTarget = null;
+      validateItems.Clear();
+      UpdateIcons(false);
       return true;
     }
 
     public void PlayerActivated()
     {
-      InstanceByRequest<UpdateService>.Instance.Updater.AddUpdatable((IUpdatable) this);
+      InstanceByRequest<UpdateService>.Instance.Updater.AddUpdatable(this);
       foreach (GameActionType interactAction in InteractUtility.InteractActions)
-        this.gameActionService.AddListener(interactAction, new GameActionHandle(this.Listener));
-      JoystickLayoutSwitcher.Instance.OnLayoutChanged += new Action<JoystickLayoutSwitcher.KeyLayouts>(this.OnLayoutChanged);
+        gameActionService.AddListener(interactAction, Listener);
+      JoystickLayoutSwitcher.Instance.OnLayoutChanged += OnLayoutChanged;
     }
 
     public void PlayerDeactivated()
     {
-      InstanceByRequest<UpdateService>.Instance.Updater.RemoveUpdatable((IUpdatable) this);
+      InstanceByRequest<UpdateService>.Instance.Updater.RemoveUpdatable(this);
       foreach (GameActionType interactAction in InteractUtility.InteractActions)
-        this.gameActionService.RemoveListener(interactAction, new GameActionHandle(this.Listener));
-      JoystickLayoutSwitcher.Instance.OnLayoutChanged -= new Action<JoystickLayoutSwitcher.KeyLayouts>(this.OnLayoutChanged);
+        gameActionService.RemoveListener(interactAction, Listener);
+      JoystickLayoutSwitcher.Instance.OnLayoutChanged -= OnLayoutChanged;
     }
 
     private void OnLayoutChanged(JoystickLayoutSwitcher.KeyLayouts newLayout)
     {
-      this.cachedLastInteractionTypes = (List<GameActionType>) null;
-      this.UpdateActions();
+      cachedLastInteractionTypes = null;
+      UpdateActions();
     }
   }
 }

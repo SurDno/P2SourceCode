@@ -1,10 +1,10 @@
-﻿using BehaviorDesigner.Runtime.Tasks;
-using Cofe.Utility;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
-using UnityEngine;
+using BehaviorDesigner.Runtime.Tasks;
+using Cofe.Utility;
+using Action = System.Action;
 
 namespace BehaviorDesigner.Runtime
 {
@@ -13,78 +13,78 @@ namespace BehaviorDesigner.Runtime
     [SerializeField]
     private bool startWhenEnabled = true;
     [SerializeField]
-    private bool pauseWhenDisabled = false;
+    private bool pauseWhenDisabled;
     [SerializeField]
-    private bool restartWhenComplete = false;
+    private bool restartWhenComplete;
     [SerializeField]
-    private bool resetValuesOnRestart = false;
+    private bool resetValuesOnRestart;
     [SerializeField]
     private ExternalBehaviorTree externalBehavior;
     private BehaviorSource behaviorSource;
-    private bool hasInheritedVariables = false;
-    private bool isPaused = false;
+    private bool hasInheritedVariables;
+    private bool isPaused;
     private TaskStatus executionStatus = TaskStatus.Inactive;
-    private bool initialized = false;
+    private bool initialized;
     private Dictionary<Task, Dictionary<string, object>> defaultValues;
     private Dictionary<string, object> defaultVariableValues;
-    private Dictionary<string, List<TaskCoroutine>> activeTaskCoroutines = (Dictionary<string, List<TaskCoroutine>>) null;
-    private Dictionary<System.Type, Dictionary<string, Delegate>> eventTable;
+    private Dictionary<string, List<TaskCoroutine>> activeTaskCoroutines = null;
+    private Dictionary<Type, Dictionary<string, Delegate>> eventTable;
 
-    public event BehaviorTree.BehaviorHandler OnBehaviorStart;
+    public event BehaviorHandler OnBehaviorStart;
 
-    public event BehaviorTree.BehaviorHandler OnBehaviorRestart;
+    public event BehaviorHandler OnBehaviorRestart;
 
-    public event BehaviorTree.BehaviorHandler OnBehaviorEnd;
+    public event BehaviorHandler OnBehaviorEnd;
 
     public bool StartWhenEnabled
     {
-      get => this.startWhenEnabled;
-      set => this.startWhenEnabled = value;
+      get => startWhenEnabled;
+      set => startWhenEnabled = value;
     }
 
     public bool PauseWhenDisabled
     {
-      get => this.pauseWhenDisabled;
-      set => this.pauseWhenDisabled = value;
+      get => pauseWhenDisabled;
+      set => pauseWhenDisabled = value;
     }
 
     public bool RestartWhenComplete
     {
-      get => this.restartWhenComplete;
-      set => this.restartWhenComplete = value;
+      get => restartWhenComplete;
+      set => restartWhenComplete = value;
     }
 
     public bool ResetValuesOnRestart
     {
-      get => this.resetValuesOnRestart;
-      set => this.resetValuesOnRestart = value;
+      get => resetValuesOnRestart;
+      set => resetValuesOnRestart = value;
     }
 
     public ExternalBehaviorTree ExternalBehaviorTree
     {
-      get => this.externalBehavior;
+      get => externalBehavior;
       set
       {
         MonoBehaviourInstance<BehaviorTreeManager>.Instance.DisableBehavior(this);
-        this.behaviorSource.HasSerialized = false;
-        this.initialized = false;
-        this.externalBehavior = value;
-        if (!this.startWhenEnabled)
+        behaviorSource.HasSerialized = false;
+        initialized = false;
+        externalBehavior = value;
+        if (!startWhenEnabled)
           return;
-        this.EnableBehavior();
+        EnableBehavior();
       }
     }
 
     public bool HasInheritedVariables
     {
-      get => this.hasInheritedVariables;
-      set => this.hasInheritedVariables = value;
+      get => hasInheritedVariables;
+      set => hasInheritedVariables = value;
     }
 
     public BehaviorSource BehaviorSource
     {
-      get => this.behaviorSource;
-      set => this.behaviorSource = value;
+      get => behaviorSource;
+      set => behaviorSource = value;
     }
 
     public UnityEngine.Object GetObject() => (UnityEngine.Object) this;
@@ -93,55 +93,55 @@ namespace BehaviorDesigner.Runtime
 
     public TaskStatus ExecutionStatus
     {
-      get => this.executionStatus;
-      set => this.executionStatus = value;
+      get => executionStatus;
+      set => executionStatus = value;
     }
 
-    public BehaviorTree() => this.behaviorSource = new BehaviorSource((IBehaviorTree) this);
+    public BehaviorTree() => behaviorSource = new BehaviorSource(this);
 
     public void Start()
     {
-      if (!this.startWhenEnabled)
+      if (!startWhenEnabled)
         return;
-      this.EnableBehavior();
+      EnableBehavior();
     }
 
     public void EnableBehavior()
     {
       MonoBehaviourInstance<BehaviorTreeManager>.Instance.EnableBehavior(this);
-      if (this.initialized)
+      if (initialized)
         return;
-      this.initialized = true;
+      initialized = true;
     }
 
     public void DisableBehavior()
     {
-      MonoBehaviourInstance<BehaviorTreeManager>.Instance.DisableBehavior(this, this.pauseWhenDisabled);
-      this.isPaused = this.pauseWhenDisabled;
+      MonoBehaviourInstance<BehaviorTreeManager>.Instance.DisableBehavior(this, pauseWhenDisabled);
+      isPaused = pauseWhenDisabled;
     }
 
     public void DisableBehavior(bool pause)
     {
       MonoBehaviourInstance<BehaviorTreeManager>.Instance.DisableBehavior(this, pause);
-      this.isPaused = pause;
+      isPaused = pause;
     }
 
     public void OnEnable()
     {
-      if (this.isPaused)
+      if (isPaused)
       {
         MonoBehaviourInstance<BehaviorTreeManager>.Instance.EnableBehavior(this);
-        this.isPaused = false;
+        isPaused = false;
       }
       else
       {
-        if (!this.startWhenEnabled || !this.initialized)
+        if (!startWhenEnabled || !initialized)
           return;
-        this.EnableBehavior();
+        EnableBehavior();
       }
     }
 
-    public void OnDisable() => this.DisableBehavior();
+    public void OnDisable() => DisableBehavior();
 
     public void OnDestroy()
     {
@@ -150,19 +150,19 @@ namespace BehaviorDesigner.Runtime
 
     public SharedVariable GetVariable(string name)
     {
-      this.CheckForSerialization();
-      return this.behaviorSource.GetVariable(name);
+      CheckForSerialization();
+      return behaviorSource.GetVariable(name);
     }
 
     public void SetVariable(string name, SharedVariable item)
     {
-      this.CheckForSerialization();
-      this.behaviorSource.SetVariable(name, item);
+      CheckForSerialization();
+      behaviorSource.SetVariable(name, item);
     }
 
     public void SetVariableValue(string name, object value)
     {
-      SharedVariable variable = this.GetVariable(name);
+      SharedVariable variable = GetVariable(name);
       if (variable != null)
       {
         if (value is SharedVariable)
@@ -182,7 +182,7 @@ namespace BehaviorDesigner.Runtime
         instance.Name = sharedVariable.Name;
         instance.IsShared = sharedVariable.IsShared;
         instance.SetValue(sharedVariable.GetValue());
-        this.behaviorSource.SetVariable(name, instance);
+        behaviorSource.SetVariable(name, instance);
       }
       else
         Debug.LogError((object) ("Error: No variable exists with name " + name + " in: " + (object) this.gameObject));
@@ -190,36 +190,36 @@ namespace BehaviorDesigner.Runtime
 
     public List<SharedVariable> GetAllVariables()
     {
-      this.CheckForSerialization();
-      return this.behaviorSource.GetAllVariables();
+      CheckForSerialization();
+      return behaviorSource.GetAllVariables();
     }
 
     public void CheckForSerialization()
     {
-      if ((UnityEngine.Object) this.externalBehavior != (UnityEngine.Object) null)
+      if ((UnityEngine.Object) externalBehavior != (UnityEngine.Object) null)
       {
-        List<SharedVariable> sharedVariableList = (List<SharedVariable>) null;
+        List<SharedVariable> sharedVariableList = null;
         bool force = false;
-        if (!this.hasInheritedVariables)
+        if (!hasInheritedVariables)
         {
-          this.behaviorSource.CheckForSerialization(false, (BehaviorSource) null, this.GetOwnerName());
-          sharedVariableList = this.behaviorSource.GetAllVariables();
-          this.hasInheritedVariables = true;
+          behaviorSource.CheckForSerialization(false, null, GetOwnerName());
+          sharedVariableList = behaviorSource.GetAllVariables();
+          hasInheritedVariables = true;
           force = true;
         }
-        this.externalBehavior.BehaviorSource.Owner = (IBehaviorTree) this.ExternalBehaviorTree;
-        this.externalBehavior.BehaviorSource.CheckForSerialization(force, this.BehaviorSource, this.GetOwnerName());
-        this.externalBehavior.BehaviorSource.EntryTask = this.behaviorSource.EntryTask;
+        externalBehavior.BehaviorSource.Owner = ExternalBehaviorTree;
+        externalBehavior.BehaviorSource.CheckForSerialization(force, BehaviorSource, GetOwnerName());
+        externalBehavior.BehaviorSource.EntryTask = behaviorSource.EntryTask;
         if (sharedVariableList == null)
           return;
         for (int index = 0; index < sharedVariableList.Count; ++index)
         {
           if (sharedVariableList[index] != null)
-            this.behaviorSource.SetVariable(sharedVariableList[index].Name, sharedVariableList[index]);
+            behaviorSource.SetVariable(sharedVariableList[index].Name, sharedVariableList[index]);
         }
       }
       else
-        this.behaviorSource.CheckForSerialization(false, (BehaviorSource) null, this.GetOwnerName());
+        behaviorSource.CheckForSerialization(false, null, GetOwnerName());
     }
 
     private T FindTask<T>(Task task) where T : Task
@@ -232,7 +232,7 @@ namespace BehaviorDesigner.Runtime
         {
           T obj = default (T);
           T task1;
-          if ((object) (task1 = this.FindTask<T>(parentTask.Children[index])) != null)
+          if ((task1 = FindTask<T>(parentTask.Children[index])) != null)
             return task1;
         }
       }
@@ -246,7 +246,7 @@ namespace BehaviorDesigner.Runtime
       if (!(task is ParentTask parentTask) || parentTask.Children == null)
         return;
       for (int index = 0; index < parentTask.Children.Count; ++index)
-        this.FindTasks<T>(parentTask.Children[index], ref taskList);
+        FindTasks(parentTask.Children[index], ref taskList);
     }
 
     private Task FindTaskWithName(string taskName, Task task)
@@ -258,11 +258,11 @@ namespace BehaviorDesigner.Runtime
         for (int index = 0; index < parentTask.Children.Count; ++index)
         {
           Task taskWithName;
-          if ((taskWithName = this.FindTaskWithName(taskName, parentTask.Children[index])) != null)
+          if ((taskWithName = FindTaskWithName(taskName, parentTask.Children[index])) != null)
             return taskWithName;
         }
       }
-      return (Task) null;
+      return null;
     }
 
     private void FindTasksWithName(string taskName, Task task, ref List<Task> taskList)
@@ -272,29 +272,28 @@ namespace BehaviorDesigner.Runtime
       if (!(task is ParentTask parentTask) || parentTask.Children == null)
         return;
       for (int index = 0; index < parentTask.Children.Count; ++index)
-        this.FindTasksWithName(taskName, parentTask.Children[index], ref taskList);
+        FindTasksWithName(taskName, parentTask.Children[index], ref taskList);
     }
 
     public Coroutine StartTaskCoroutine(Task task, string methodName)
     {
       MethodInfo method = task.GetType().GetMethod(methodName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-      if (method == (MethodInfo) null)
+      if (method == null)
       {
         Debug.LogError((object) ("Unable to start coroutine " + methodName + ": method not found"));
         return (Coroutine) null;
       }
-      if (this.activeTaskCoroutines == null)
-        this.activeTaskCoroutines = new Dictionary<string, List<TaskCoroutine>>();
-      TaskCoroutine taskCoroutine = new TaskCoroutine(this, (IEnumerator) method.Invoke((object) task, new object[0]), methodName);
-      if (this.activeTaskCoroutines.ContainsKey(methodName))
+      if (activeTaskCoroutines == null)
+        activeTaskCoroutines = new Dictionary<string, List<TaskCoroutine>>();
+      TaskCoroutine taskCoroutine = new TaskCoroutine(this, (IEnumerator) method.Invoke(task, new object[0]), methodName);
+      if (activeTaskCoroutines.ContainsKey(methodName))
       {
-        List<TaskCoroutine> activeTaskCoroutine = this.activeTaskCoroutines[methodName];
+        List<TaskCoroutine> activeTaskCoroutine = activeTaskCoroutines[methodName];
         activeTaskCoroutine.Add(taskCoroutine);
-        this.activeTaskCoroutines[methodName] = activeTaskCoroutine;
+        activeTaskCoroutines[methodName] = activeTaskCoroutine;
       }
       else
-        this.activeTaskCoroutines.Add(methodName, new List<TaskCoroutine>()
-        {
+        activeTaskCoroutines.Add(methodName, new List<TaskCoroutine> {
           taskCoroutine
         });
       return taskCoroutine.Coroutine;
@@ -303,26 +302,25 @@ namespace BehaviorDesigner.Runtime
     public Coroutine StartTaskCoroutine(Task task, string methodName, object value)
     {
       MethodInfo method = task.GetType().GetMethod(methodName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-      if (method == (MethodInfo) null)
+      if (method == null)
       {
         Debug.LogError((object) ("Unable to start coroutine " + methodName + ": method not found"));
         return (Coroutine) null;
       }
-      if (this.activeTaskCoroutines == null)
-        this.activeTaskCoroutines = new Dictionary<string, List<TaskCoroutine>>();
-      TaskCoroutine taskCoroutine = new TaskCoroutine(this, (IEnumerator) method.Invoke((object) task, new object[1]
+      if (activeTaskCoroutines == null)
+        activeTaskCoroutines = new Dictionary<string, List<TaskCoroutine>>();
+      TaskCoroutine taskCoroutine = new TaskCoroutine(this, (IEnumerator) method.Invoke(task, new object[1]
       {
         value
       }), methodName);
-      if (this.activeTaskCoroutines.ContainsKey(methodName))
+      if (activeTaskCoroutines.ContainsKey(methodName))
       {
-        List<TaskCoroutine> activeTaskCoroutine = this.activeTaskCoroutines[methodName];
+        List<TaskCoroutine> activeTaskCoroutine = activeTaskCoroutines[methodName];
         activeTaskCoroutine.Add(taskCoroutine);
-        this.activeTaskCoroutines[methodName] = activeTaskCoroutine;
+        activeTaskCoroutines[methodName] = activeTaskCoroutine;
       }
       else
-        this.activeTaskCoroutines.Add(methodName, new List<TaskCoroutine>()
-        {
+        activeTaskCoroutines.Add(methodName, new List<TaskCoroutine> {
           taskCoroutine
         });
       return taskCoroutine.Coroutine;
@@ -330,9 +328,9 @@ namespace BehaviorDesigner.Runtime
 
     public void StopTaskCoroutine(string methodName)
     {
-      if (!this.activeTaskCoroutines.ContainsKey(methodName))
+      if (!activeTaskCoroutines.ContainsKey(methodName))
         return;
-      List<TaskCoroutine> activeTaskCoroutine = this.activeTaskCoroutines[methodName];
+      List<TaskCoroutine> activeTaskCoroutine = activeTaskCoroutines[methodName];
       for (int index = 0; index < activeTaskCoroutine.Count; ++index)
         activeTaskCoroutine[index].Stop();
     }
@@ -340,7 +338,7 @@ namespace BehaviorDesigner.Runtime
     public void StopAllTaskCoroutines()
     {
       this.StopAllCoroutines();
-      foreach (KeyValuePair<string, List<TaskCoroutine>> activeTaskCoroutine in this.activeTaskCoroutines)
+      foreach (KeyValuePair<string, List<TaskCoroutine>> activeTaskCoroutine in activeTaskCoroutines)
       {
         List<TaskCoroutine> taskCoroutineList = activeTaskCoroutine.Value;
         for (int index = 0; index < taskCoroutineList.Count; ++index)
@@ -350,23 +348,23 @@ namespace BehaviorDesigner.Runtime
 
     public void TaskCoroutineEnded(TaskCoroutine taskCoroutine, string coroutineName)
     {
-      if (!this.activeTaskCoroutines.ContainsKey(coroutineName))
+      if (!activeTaskCoroutines.ContainsKey(coroutineName))
         return;
-      List<TaskCoroutine> activeTaskCoroutine = this.activeTaskCoroutines[coroutineName];
+      List<TaskCoroutine> activeTaskCoroutine = activeTaskCoroutines[coroutineName];
       if (activeTaskCoroutine.Count == 1)
       {
-        this.activeTaskCoroutines.Remove(coroutineName);
+        activeTaskCoroutines.Remove(coroutineName);
       }
       else
       {
         activeTaskCoroutine.Remove(taskCoroutine);
-        this.activeTaskCoroutines[coroutineName] = activeTaskCoroutine;
+        activeTaskCoroutines[coroutineName] = activeTaskCoroutine;
       }
     }
 
     public void OnBehaviorStarted()
     {
-      BehaviorTree.BehaviorHandler onBehaviorStart = this.OnBehaviorStart;
+      BehaviorHandler onBehaviorStart = OnBehaviorStart;
       if (onBehaviorStart == null)
         return;
       onBehaviorStart(this);
@@ -374,7 +372,7 @@ namespace BehaviorDesigner.Runtime
 
     public void OnBehaviorRestarted()
     {
-      BehaviorTree.BehaviorHandler onBehaviorRestart = this.OnBehaviorRestart;
+      BehaviorHandler onBehaviorRestart = OnBehaviorRestart;
       if (onBehaviorRestart == null)
         return;
       onBehaviorRestart(this);
@@ -382,7 +380,7 @@ namespace BehaviorDesigner.Runtime
 
     public void OnBehaviorEnded()
     {
-      BehaviorTree.BehaviorHandler onBehaviorEnd = this.OnBehaviorEnd;
+      BehaviorHandler onBehaviorEnd = OnBehaviorEnd;
       if (onBehaviorEnd == null)
         return;
       onBehaviorEnd(this);
@@ -390,13 +388,13 @@ namespace BehaviorDesigner.Runtime
 
     private void RegisterEvent(string name, Delegate handler)
     {
-      if (this.eventTable == null)
-        this.eventTable = new Dictionary<System.Type, Dictionary<string, Delegate>>();
+      if (eventTable == null)
+        eventTable = new Dictionary<Type, Dictionary<string, Delegate>>();
       Dictionary<string, Delegate> dictionary;
-      if (!this.eventTable.TryGetValue(handler.GetType(), out dictionary))
+      if (!eventTable.TryGetValue(handler.GetType(), out dictionary))
       {
         dictionary = new Dictionary<string, Delegate>();
-        this.eventTable.Add(handler.GetType(), dictionary);
+        eventTable.Add(handler.GetType(), dictionary);
       }
       Delegate a;
       if (dictionary.TryGetValue(name, out a))
@@ -405,57 +403,57 @@ namespace BehaviorDesigner.Runtime
         dictionary.Add(name, handler);
     }
 
-    public void RegisterEvent(string name, System.Action handler)
+    public void RegisterEvent(string name, Action handler)
     {
-      this.RegisterEvent(name, (Delegate) handler);
+      RegisterEvent(name, (Delegate) handler);
     }
 
     public void RegisterEvent<T>(string name, Action<T> handler)
     {
-      this.RegisterEvent(name, (Delegate) handler);
+      RegisterEvent(name, (Delegate) handler);
     }
 
     public void RegisterEvent<T, U>(string name, Action<T, U> handler)
     {
-      this.RegisterEvent(name, (Delegate) handler);
+      RegisterEvent(name, (Delegate) handler);
     }
 
     public void RegisterEvent<T, U, V>(string name, Action<T, U, V> handler)
     {
-      this.RegisterEvent(name, (Delegate) handler);
+      RegisterEvent(name, (Delegate) handler);
     }
 
-    private Delegate GetDelegate(string name, System.Type type)
+    private Delegate GetDelegate(string name, Type type)
     {
       Dictionary<string, Delegate> dictionary;
       Delegate @delegate;
-      return this.eventTable != null && this.eventTable.TryGetValue(type, out dictionary) && dictionary.TryGetValue(name, out @delegate) ? @delegate : (Delegate) null;
+      return eventTable != null && eventTable.TryGetValue(type, out dictionary) && dictionary.TryGetValue(name, out @delegate) ? @delegate : null;
     }
 
     public void SendEvent(string name)
     {
-      if (!(this.GetDelegate(name, typeof (System.Action)) is System.Action action))
+      if (!(GetDelegate(name, typeof (Action)) is Action action))
         return;
       action();
     }
 
     public void SendEvent<T>(string name, T arg1)
     {
-      if (!(this.GetDelegate(name, typeof (Action<T>)) is Action<T> action))
+      if (!(GetDelegate(name, typeof (Action<T>)) is Action<T> action))
         return;
       action(arg1);
     }
 
     public void SendEvent<T, U>(string name, T arg1, U arg2)
     {
-      if (!(this.GetDelegate(name, typeof (Action<T, U>)) is Action<T, U> action))
+      if (!(GetDelegate(name, typeof (Action<T, U>)) is Action<T, U> action))
         return;
       action(arg1, arg2);
     }
 
     public void SendEvent<T, U, V>(string name, T arg1, U arg2, V arg3)
     {
-      if (!(this.GetDelegate(name, typeof (Action<T, U, V>)) is Action<T, U, V> action))
+      if (!(GetDelegate(name, typeof (Action<T, U, V>)) is Action<T, U, V> action))
         return;
       action(arg1, arg2, arg3);
     }
@@ -464,53 +462,53 @@ namespace BehaviorDesigner.Runtime
     {
       Dictionary<string, Delegate> dictionary;
       Delegate source;
-      if (this.eventTable == null || !this.eventTable.TryGetValue(handler.GetType(), out dictionary) || !dictionary.TryGetValue(name, out source))
+      if (eventTable == null || !eventTable.TryGetValue(handler.GetType(), out dictionary) || !dictionary.TryGetValue(name, out source))
         return;
       dictionary[name] = Delegate.Remove(source, handler);
     }
 
-    public void UnregisterEvent(string name, System.Action handler)
+    public void UnregisterEvent(string name, Action handler)
     {
-      this.UnregisterEvent(name, (Delegate) handler);
+      UnregisterEvent(name, (Delegate) handler);
     }
 
     public void UnregisterEvent<T>(string name, Action<T> handler)
     {
-      this.UnregisterEvent(name, (Delegate) handler);
+      UnregisterEvent(name, (Delegate) handler);
     }
 
     public void UnregisterEvent<T, U>(string name, Action<T, U> handler)
     {
-      this.UnregisterEvent(name, (Delegate) handler);
+      UnregisterEvent(name, (Delegate) handler);
     }
 
     public void UnregisterEvent<T, U, V>(string name, Action<T, U, V> handler)
     {
-      this.UnregisterEvent(name, (Delegate) handler);
+      UnregisterEvent(name, (Delegate) handler);
     }
 
     public void SaveResetValues()
     {
-      if (this.defaultValues == null)
+      if (defaultValues == null)
       {
-        this.CheckForSerialization();
-        this.defaultValues = new Dictionary<Task, Dictionary<string, object>>();
-        this.defaultVariableValues = new Dictionary<string, object>();
-        this.SaveValues();
+        CheckForSerialization();
+        defaultValues = new Dictionary<Task, Dictionary<string, object>>();
+        defaultVariableValues = new Dictionary<string, object>();
+        SaveValues();
       }
       else
-        this.ResetValues();
+        ResetValues();
     }
 
     private void SaveValues()
     {
-      List<SharedVariable> allVariables = this.behaviorSource.GetAllVariables();
+      List<SharedVariable> allVariables = behaviorSource.GetAllVariables();
       if (allVariables != null)
       {
         for (int index = 0; index < allVariables.Count; ++index)
-          this.defaultVariableValues.Add(allVariables[index].Name, allVariables[index].GetValue());
+          defaultVariableValues.Add(allVariables[index].Name, allVariables[index].GetValue());
       }
-      this.SaveValue(this.behaviorSource.RootTask);
+      SaveValue(behaviorSource.RootTask);
     }
 
     private void SaveValue(Task task)
@@ -521,38 +519,38 @@ namespace BehaviorDesigner.Runtime
       Dictionary<string, object> dictionary = new Dictionary<string, object>();
       for (int index = 0; index < publicFields.Length; ++index)
       {
-        object obj = publicFields[index].GetValue((object) task);
+        object obj = publicFields[index].GetValue(task);
         if (!(obj is SharedVariable) || !(obj as SharedVariable).IsShared)
-          dictionary.Add(publicFields[index].Name, publicFields[index].GetValue((object) task));
+          dictionary.Add(publicFields[index].Name, publicFields[index].GetValue(task));
       }
-      this.defaultValues.Add(task, dictionary);
+      defaultValues.Add(task, dictionary);
       if (!(task is ParentTask))
         return;
       ParentTask parentTask = task as ParentTask;
       if (parentTask.Children != null)
       {
         for (int index = 0; index < parentTask.Children.Count; ++index)
-          this.SaveValue(parentTask.Children[index]);
+          SaveValue(parentTask.Children[index]);
       }
     }
 
     private void ResetValues()
     {
-      foreach (KeyValuePair<string, object> defaultVariableValue in this.defaultVariableValues)
-        this.SetVariableValue(defaultVariableValue.Key, defaultVariableValue.Value);
-      this.ResetValue(this.behaviorSource.RootTask);
+      foreach (KeyValuePair<string, object> defaultVariableValue in defaultVariableValues)
+        SetVariableValue(defaultVariableValue.Key, defaultVariableValue.Value);
+      ResetValue(behaviorSource.RootTask);
     }
 
     private void ResetValue(Task task)
     {
       Dictionary<string, object> dictionary;
-      if (task == null || !this.defaultValues.TryGetValue(task, out dictionary))
+      if (task == null || !defaultValues.TryGetValue(task, out dictionary))
         return;
       foreach (KeyValuePair<string, object> keyValuePair in dictionary)
       {
         FieldInfo field = task.GetType().GetField(keyValuePair.Key);
-        if (field != (FieldInfo) null)
-          field.SetValue((object) task, keyValuePair.Value);
+        if (field != null)
+          field.SetValue(task, keyValuePair.Value);
       }
       if (!(task is ParentTask))
         return;
@@ -560,11 +558,11 @@ namespace BehaviorDesigner.Runtime
       if (parentTask.Children != null)
       {
         for (int index = 0; index < parentTask.Children.Count; ++index)
-          this.ResetValue(parentTask.Children[index]);
+          ResetValue(parentTask.Children[index]);
       }
     }
 
-    public override string ToString() => this.behaviorSource.ToString();
+    public override string ToString() => behaviorSource.ToString();
 
     int IBehaviorTree.GetInstanceID() => this.GetInstanceID();
 

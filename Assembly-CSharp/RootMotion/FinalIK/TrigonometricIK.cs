@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace RootMotion.FinalIK
+﻿namespace RootMotion.FinalIK
 {
   [HelpURL("http://www.root-motion.com/finalikdox/html/page9.html")]
   [AddComponentMenu("Scripts/RootMotion.FinalIK/IK/Trigonometric IK")]
@@ -32,6 +30,6 @@ namespace RootMotion.FinalIK
       Application.OpenURL("http://forum.unity3d.com/threads/final-ik-full-body-ik-aim-look-at-fabrik-ccd-ik-1-0-released.222685/");
     }
 
-    public override IKSolver GetIKSolver() => (IKSolver) this.solver;
+    public override IKSolver GetIKSolver() => solver;
   }
 }

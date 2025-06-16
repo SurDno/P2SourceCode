@@ -1,10 +1,9 @@
-﻿using Cofe.Loggers;
+﻿using System.Collections.Generic;
+using System.Text;
+using Cofe.Loggers;
 using Cofe.Serializations.Converters;
 using Engine.Common.Utility;
 using PLVirtualMachine.Common.EngineAPI;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace PLVirtualMachine.Common
 {
@@ -15,17 +14,17 @@ namespace PLVirtualMachine.Common
 
     public HierarchyGuid(string data)
     {
-      this.guids = (ulong[]) null;
+      guids = null;
       HierarchyGuid result;
-      if (!HierarchyGuid.TryParse(data, out result))
+      if (!TryParse(data, out result))
         Logger.AddError("Invalid hierarchy guid format: no hierarchy splitter or incorrect symbols count in string, data : '" + data + "' , state : " + EngineAPIManager.Instance.CurrentFSMStateInfo);
       else
-        this.guids = result.guids;
+        guids = result.guids;
     }
 
     public static bool TryParse(string data, out HierarchyGuid result)
     {
-      result = HierarchyGuid.Empty;
+      result = Empty;
       List<ulong> ulongList = new List<ulong>();
       if (data != "")
       {
@@ -49,50 +48,50 @@ namespace PLVirtualMachine.Common
 
     public HierarchyGuid(ulong templateGuid)
     {
-      this.guids = new ulong[1]{ templateGuid };
+      guids = new ulong[1]{ templateGuid };
     }
 
     public HierarchyGuid(HierarchyGuid parentGuid, ulong templateGuid)
     {
-      this.guids = new ulong[parentGuid.guids.Length + 1];
-      parentGuid.guids.CopyTo((Array) this.guids, 0);
-      this.guids[parentGuid.guids.Length] = templateGuid;
+      guids = new ulong[parentGuid.guids.Length + 1];
+      parentGuid.guids.CopyTo(guids, 0);
+      guids[parentGuid.guids.Length] = templateGuid;
     }
 
-    public ulong[] Guids => this.guids;
+    public ulong[] Guids => guids;
 
     public ulong TemplateGuid
     {
-      get => this.guids != null && this.guids.Length != 0 ? this.guids[this.guids.Length - 1] : 0UL;
+      get => guids != null && guids.Length != 0 ? guids[guids.Length - 1] : 0UL;
     }
 
-    public bool IsEmpty => this.guids == null || this.guids.Length == 0;
+    public bool IsEmpty => guids == null || guids.Length == 0;
 
-    public bool IsHierarchy => this.guids != null && this.guids.Length > 1;
+    public bool IsHierarchy => guids != null && guids.Length > 1;
 
     public string Write()
     {
       StringBuilder stringBuilder = new StringBuilder();
-      if (this.guids != null)
+      if (guids != null)
       {
-        for (int index = 0; index < this.guids.Length; ++index)
+        for (int index = 0; index < guids.Length; ++index)
         {
-          stringBuilder.Append(this.guids[index].ToString());
-          if (index < this.guids.Length - 1)
+          stringBuilder.Append(guids[index].ToString());
+          if (index < guids.Length - 1)
             stringBuilder.Append("H");
         }
       }
       return stringBuilder.ToString();
     }
 
-    public string DataStr => this.Write();
+    public string DataStr => Write();
 
     public override int GetHashCode()
     {
       int hashCode = 0;
-      if (this.guids != null)
+      if (guids != null)
       {
-        foreach (ulong guid in this.guids)
+        foreach (ulong guid in guids)
           hashCode ^= guid.GetHashCode();
       }
       return hashCode;

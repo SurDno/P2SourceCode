@@ -1,16 +1,15 @@
 ﻿using System;
-using UnityEngine;
 
 namespace RootMotion.FinalIK
 {
   public class Amplifier : OffsetModifier
   {
     [Tooltip("The amplified bodies.")]
-    public Amplifier.Body[] bodies;
+    public Body[] bodies;
 
     protected override void OnModifyOffset()
     {
-      if (!this.ik.fixTransforms)
+      if (!ik.fixTransforms)
       {
         if (Warning.logged)
           return;
@@ -18,8 +17,8 @@ namespace RootMotion.FinalIK
       }
       else
       {
-        foreach (Amplifier.Body body in this.bodies)
-          body.Update(this.ik.solver, this.weight, this.deltaTime);
+        foreach (Body body in bodies)
+          body.Update(ik.solver, weight, deltaTime);
       }
     }
 
@@ -31,7 +30,7 @@ namespace RootMotion.FinalIK
       [Tooltip("Amplify the 'transform's' position relative to this Transform.")]
       public Transform relativeTo;
       [Tooltip("Linking the body to effectors. One Body can be used to offset more than one effector.")]
-      public Amplifier.Body.EffectorLink[] effectorLinks;
+      public EffectorLink[] effectorLinks;
       [Tooltip("Amplification magnitude along the up axis of the character.")]
       public float verticalWeight = 1f;
       [Tooltip("Amplification magnitude along the horizontal axes of the character.")]
@@ -44,21 +43,21 @@ namespace RootMotion.FinalIK
 
       public void Update(IKSolverFullBodyBiped solver, float w, float deltaTime)
       {
-        if ((UnityEngine.Object) this.transform == (UnityEngine.Object) null || (UnityEngine.Object) this.relativeTo == (UnityEngine.Object) null)
+        if ((UnityEngine.Object) transform == (UnityEngine.Object) null || (UnityEngine.Object) relativeTo == (UnityEngine.Object) null)
           return;
-        Vector3 vector3_1 = this.relativeTo.InverseTransformDirection(this.transform.position - this.relativeTo.position);
-        if (this.firstUpdate)
+        Vector3 vector3_1 = relativeTo.InverseTransformDirection(transform.position - relativeTo.position);
+        if (firstUpdate)
         {
-          this.lastRelativePos = vector3_1;
-          this.firstUpdate = false;
+          lastRelativePos = vector3_1;
+          firstUpdate = false;
         }
-        Vector3 b = (vector3_1 - this.lastRelativePos) / deltaTime;
-        this.smoothDelta = (double) this.speed <= 0.0 ? b : Vector3.Lerp(this.smoothDelta, b, deltaTime * this.speed);
-        Vector3 v = this.relativeTo.TransformDirection(this.smoothDelta);
-        Vector3 vector3_2 = V3Tools.ExtractVertical(v, solver.GetRoot().up, this.verticalWeight) + V3Tools.ExtractHorizontal(v, solver.GetRoot().up, this.horizontalWeight);
-        for (int index = 0; index < this.effectorLinks.Length; ++index)
-          solver.GetEffector(this.effectorLinks[index].effector).positionOffset += vector3_2 * w * this.effectorLinks[index].weight;
-        this.lastRelativePos = vector3_1;
+        Vector3 b = (vector3_1 - lastRelativePos) / deltaTime;
+        smoothDelta = speed <= 0.0 ? b : Vector3.Lerp(smoothDelta, b, deltaTime * speed);
+        Vector3 v = relativeTo.TransformDirection(smoothDelta);
+        Vector3 vector3_2 = V3Tools.ExtractVertical(v, solver.GetRoot().up, verticalWeight) + V3Tools.ExtractHorizontal(v, solver.GetRoot().up, horizontalWeight);
+        for (int index = 0; index < effectorLinks.Length; ++index)
+          solver.GetEffector(effectorLinks[index].effector).positionOffset += vector3_2 * w * effectorLinks[index].weight;
+        lastRelativePos = vector3_1;
       }
 
       private static Vector3 Multiply(Vector3 v1, Vector3 v2)

@@ -16,10 +16,10 @@ namespace PLVirtualMachine
       IEntity storageEntity,
       VMStorage storage)
     {
-      this.MinRandInterval = minRand;
-      this.MaxRandInterval = maxRand;
-      this.StorageEntity = storageEntity;
-      this.Storage = storage;
+      MinRandInterval = minRand;
+      MaxRandInterval = maxRand;
+      StorageEntity = storageEntity;
+      Storage = storage;
     }
   }
 }

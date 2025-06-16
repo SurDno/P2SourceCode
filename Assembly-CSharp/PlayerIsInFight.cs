@@ -1,4 +1,5 @@
-﻿using BehaviorDesigner.Runtime;
+﻿using System;
+using BehaviorDesigner.Runtime;
 using BehaviorDesigner.Runtime.Tasks;
 using Cofe.Proxies;
 using Cofe.Serializations.Data;
@@ -8,7 +9,6 @@ using Engine.Common.Generator;
 using Engine.Common.Services;
 using Engine.Impl.Services.Factories;
 using Engine.Source.Services;
-using System;
 
 [TaskDescription("Player is in fight")]
 [TaskCategory("Pathologic")]
@@ -25,19 +25,19 @@ public class PlayerIsInFight : Conditional, IStub, ISerializeDataWrite, ISeriali
 
   public void DataWrite(IDataWriter writer)
   {
-    DefaultDataWriteUtility.WriteSerialize<NodeData>(writer, "NodeData", this.nodeData);
-    DefaultDataWriteUtility.Write(writer, "Id", this.id);
-    DefaultDataWriteUtility.Write(writer, "FriendlyName", this.friendlyName);
-    DefaultDataWriteUtility.Write(writer, "Instant", this.instant);
-    DefaultDataWriteUtility.Write(writer, "Disabled", this.disabled);
+    DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
+    DefaultDataWriteUtility.Write(writer, "Id", id);
+    DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
+    DefaultDataWriteUtility.Write(writer, "Instant", instant);
+    DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
   }
 
   public void DataRead(IDataReader reader, Type type)
   {
-    this.nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
-    this.id = DefaultDataReadUtility.Read(reader, "Id", this.id);
-    this.friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", this.friendlyName);
-    this.instant = DefaultDataReadUtility.Read(reader, "Instant", this.instant);
-    this.disabled = DefaultDataReadUtility.Read(reader, "Disabled", this.disabled);
+    nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
+    id = DefaultDataReadUtility.Read(reader, "Id", id);
+    friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
+    instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
+    disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
   }
 }

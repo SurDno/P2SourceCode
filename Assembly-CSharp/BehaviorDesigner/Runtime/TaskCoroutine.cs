@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using UnityEngine;
 
 namespace BehaviorDesigner.Runtime
 {
@@ -9,25 +8,25 @@ namespace BehaviorDesigner.Runtime
     private Coroutine mCoroutine;
     private BehaviorTree mParent;
     private string mCoroutineName;
-    private bool mStop = false;
+    private bool mStop;
 
-    public Coroutine Coroutine => this.mCoroutine;
+    public Coroutine Coroutine => mCoroutine;
 
-    public void Stop() => this.mStop = true;
+    public void Stop() => mStop = true;
 
     public TaskCoroutine(BehaviorTree parent, IEnumerator coroutine, string coroutineName)
     {
-      this.mParent = parent;
-      this.mCoroutineEnumerator = coroutine;
-      this.mCoroutineName = coroutineName;
-      this.mCoroutine = parent.StartCoroutine(this.RunCoroutine());
+      mParent = parent;
+      mCoroutineEnumerator = coroutine;
+      mCoroutineName = coroutineName;
+      mCoroutine = parent.StartCoroutine(RunCoroutine());
     }
 
     public IEnumerator RunCoroutine()
     {
-      while (!this.mStop && this.mCoroutineEnumerator != null && this.mCoroutineEnumerator.MoveNext())
-        yield return this.mCoroutineEnumerator.Current;
-      this.mParent.TaskCoroutineEnded(this, this.mCoroutineName);
+      while (!mStop && mCoroutineEnumerator != null && mCoroutineEnumerator.MoveNext())
+        yield return mCoroutineEnumerator.Current;
+      mParent.TaskCoroutineEnded(this, mCoroutineName);
     }
   }
 }

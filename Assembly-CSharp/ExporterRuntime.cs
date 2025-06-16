@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-public class ExporterRuntime : MonoBehaviour
+﻿public class ExporterRuntime : MonoBehaviour
 {
   public void ExportObj(GameObject mainObj, string path, string name)
   {

@@ -1,4 +1,7 @@
-﻿using Cofe.Loggers;
+﻿using System;
+using System.Collections.Generic;
+using System.Xml;
+using Cofe.Loggers;
 using Engine.Common.Commons;
 using Engine.Common.Comparers;
 using PLVirtualMachine.Common;
@@ -10,9 +13,6 @@ using PLVirtualMachine.Data;
 using PLVirtualMachine.FSM;
 using PLVirtualMachine.GameLogic;
 using PLVirtualMachine.LogicMap;
-using System;
-using System.Collections.Generic;
-using System.Xml;
 using VirtualMachine.Common;
 using VirtualMachine.Common.Data;
 using VirtualMachine.Data;
@@ -44,13 +44,13 @@ namespace PLVirtualMachine.Objects
     private List<IGameMode> gameModesList = new List<IGameMode>();
     [FieldData("LogicMaps", DataFieldType.Reference)]
     private List<ILogicMap> logicMapsList = new List<ILogicMap>();
-    [FieldData("BaseToEngineGuidsTable", DataFieldType.None)]
+    [FieldData("BaseToEngineGuidsTable")]
     private BaseToEngineGuidsTableData baseToEngineGuidsTable;
-    [FieldData("HierarchyScenesStructure", DataFieldType.None)]
+    [FieldData("HierarchyScenesStructure")]
     private Dictionary<ulong, HierarchySceneInfoData> hierarchyScenesStructure;
-    [FieldData("HierarchyEngineGuidsTable", DataFieldType.None)]
+    [FieldData("HierarchyEngineGuidsTable")]
     private List<Guid> hierarchyEngineGuidsTable;
-    [FieldData("WorldObjectSaveOptimizeMode", DataFieldType.None)]
+    [FieldData("WorldObjectSaveOptimizeMode")]
     private bool worldObjectSaveOptimizedMode;
     private IGameMode mainGameMode;
     private Dictionary<string, IFunctionalComponent> allFunctionalComponents;
@@ -59,72 +59,71 @@ namespace PLVirtualMachine.Objects
     private List<IVariable> logicMapRefs;
     private List<IVariable> gameModeRefs;
     private Dictionary<ulong, ILogicMap> logicMapsByGuidsDict;
-    private Dictionary<Guid, VMWorldObject> engineTemplateObjectGuidsDict = new Dictionary<Guid, VMWorldObject>((IEqualityComparer<Guid>) GuidComparer.Instance);
-    private Dictionary<ulong, VMWorldObject> engineTemplateObjectBaseGuidsDict = new Dictionary<ulong, VMWorldObject>((IEqualityComparer<ulong>) UlongComparer.Instance);
-    private Dictionary<ulong, VMLogicObject> staticObjectsBaseGuidsDict = new Dictionary<ulong, VMLogicObject>((IEqualityComparer<ulong>) UlongComparer.Instance);
+    private Dictionary<Guid, VMWorldObject> engineTemplateObjectGuidsDict = new Dictionary<Guid, VMWorldObject>(GuidComparer.Instance);
+    private Dictionary<ulong, VMWorldObject> engineTemplateObjectBaseGuidsDict = new Dictionary<ulong, VMWorldObject>(UlongComparer.Instance);
+    private Dictionary<ulong, VMLogicObject> staticObjectsBaseGuidsDict = new Dictionary<ulong, VMLogicObject>(UlongComparer.Instance);
     private Dictionary<Guid, ISampleRef> samplesByEngineGuid;
     private Dictionary<ulong, ISampleRef> samplesByBaseGuid;
-    private Dictionary<ulong, IBlueprint> allClasses = new Dictionary<ulong, IBlueprint>((IEqualityComparer<ulong>) UlongComparer.Instance);
-    private Dictionary<ulong, IBlueprint> allBlueprints = new Dictionary<ulong, IBlueprint>((IEqualityComparer<ulong>) UlongComparer.Instance);
+    private Dictionary<ulong, IBlueprint> allClasses = new Dictionary<ulong, IBlueprint>(UlongComparer.Instance);
+    private Dictionary<ulong, IBlueprint> allBlueprints = new Dictionary<ulong, IBlueprint>(UlongComparer.Instance);
     private List<VMTalkingGraph> allTalkings;
     private Guid gameRootEngineGuid = Guid.Empty;
     private string startGameEventFuncName = "";
 
     public virtual void EditorDataRead(XmlReader xml, IDataCreator creator, string typeContext)
     {
-      while (xml.Read())
-      {
+      while (xml.Read()) {
         if (xml.NodeType == XmlNodeType.Element)
         {
           switch (xml.Name)
           {
             case "BaseToEngineGuidsTable":
-              this.baseToEngineGuidsTable = EditorDataReadUtility.ReadEditorDataSerializable<BaseToEngineGuidsTableData>(xml, creator, typeContext);
+              baseToEngineGuidsTable = EditorDataReadUtility.ReadEditorDataSerializable<BaseToEngineGuidsTableData>(xml, creator, typeContext);
               continue;
             case "ChildObjects":
-              this.gameObjects = EditorDataReadUtility.ReadReferenceList<IContainer>(xml, creator, this.gameObjects);
+              gameObjects = EditorDataReadUtility.ReadReferenceList(xml, creator, gameObjects);
               continue;
             case "CustomParams":
-              this.customParamsDict = EditorDataReadUtility.ReadStringReferenceDictionary<IParam>(xml, creator, this.customParamsDict);
+              customParamsDict = EditorDataReadUtility.ReadStringReferenceDictionary(xml, creator, customParamsDict);
               continue;
             case "EventGraph":
-              this.stateGraph = EditorDataReadUtility.ReadReference<IFiniteStateMachine>(xml, creator);
+              stateGraph = EditorDataReadUtility.ReadReference<IFiniteStateMachine>(xml, creator);
               continue;
             case "Events":
-              this.customEventsList = EditorDataReadUtility.ReadReferenceList<IEvent>(xml, creator, this.customEventsList);
+              customEventsList = EditorDataReadUtility.ReadReferenceList(xml, creator, customEventsList);
               continue;
             case "FunctionalComponents":
-              this.functionalComponents = EditorDataReadUtility.ReadReferenceList<IFunctionalComponent>(xml, creator, this.functionalComponents);
+              functionalComponents = EditorDataReadUtility.ReadReferenceList(xml, creator, functionalComponents);
               continue;
             case "GameModes":
-              this.gameModesList = EditorDataReadUtility.ReadReferenceList<IGameMode>(xml, creator, this.gameModesList);
+              gameModesList = EditorDataReadUtility.ReadReferenceList(xml, creator, gameModesList);
               continue;
             case "GameTimeContext":
-              this.gameTimeContext = EditorDataReadUtility.ReadReference<IGameMode>(xml, creator);
+              gameTimeContext = EditorDataReadUtility.ReadReference<IGameMode>(xml, creator);
               continue;
             case "HierarchyEngineGuidsTable":
-              this.hierarchyEngineGuidsTable = EditorDataReadUtility.ReadValueList(xml, this.hierarchyEngineGuidsTable);
+              hierarchyEngineGuidsTable = EditorDataReadUtility.ReadValueList(xml, hierarchyEngineGuidsTable);
               continue;
             case "HierarchyScenesStructure":
-              this.hierarchyScenesStructure = EditorDataReadUtility.ReadUlongEditorDataSerializableDictionary<HierarchySceneInfoData>(xml, creator, this.hierarchyScenesStructure);
+              hierarchyScenesStructure = EditorDataReadUtility.ReadUlongEditorDataSerializableDictionary(xml, creator, hierarchyScenesStructure);
               continue;
             case "LogicMaps":
-              this.logicMapsList = EditorDataReadUtility.ReadReferenceList<ILogicMap>(xml, creator, this.logicMapsList);
+              logicMapsList = EditorDataReadUtility.ReadReferenceList(xml, creator, logicMapsList);
               continue;
             case "Name":
-              this.name = EditorDataReadUtility.ReadValue(xml, this.name);
+              name = EditorDataReadUtility.ReadValue(xml, name);
               continue;
             case "Parent":
-              this.parent = EditorDataReadUtility.ReadReference<IContainer>(xml, creator);
+              parent = EditorDataReadUtility.ReadReference<IContainer>(xml, creator);
               continue;
             case "Samples":
-              this.samplesList = EditorDataReadUtility.ReadReferenceList<ISample>(xml, creator, this.samplesList);
+              samplesList = EditorDataReadUtility.ReadReferenceList(xml, creator, samplesList);
               continue;
             case "StandartParams":
-              this.standartParamsDict = EditorDataReadUtility.ReadStringReferenceDictionary<IParam>(xml, creator, this.standartParamsDict);
+              standartParamsDict = EditorDataReadUtility.ReadStringReferenceDictionary(xml, creator, standartParamsDict);
               continue;
             case "WorldObjectSaveOptimizeMode":
-              this.worldObjectSaveOptimizedMode = EditorDataReadUtility.ReadValue(xml, this.worldObjectSaveOptimizedMode);
+              worldObjectSaveOptimizedMode = EditorDataReadUtility.ReadValue(xml, worldObjectSaveOptimizedMode);
               continue;
             default:
               if (XMLDataLoader.Logs.Add(typeContext + " : " + xml.Name))
@@ -133,7 +132,8 @@ namespace PLVirtualMachine.Objects
               continue;
           }
         }
-        else if (xml.NodeType == XmlNodeType.EndElement)
+
+        if (xml.NodeType == XmlNodeType.EndElement)
           break;
       }
     }
@@ -145,7 +145,7 @@ namespace PLVirtualMachine.Objects
 
     public override EObjectCategory GetCategory() => EObjectCategory.OBJECT_CATEGORY_GAME;
 
-    public List<IBlueprint> BaseBlueprints => (List<IBlueprint>) null;
+    public List<IBlueprint> BaseBlueprints => null;
 
     public override bool Static => true;
 
@@ -157,13 +157,13 @@ namespace PLVirtualMachine.Objects
       switch (contextVarCategory)
       {
         case EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_GLOBAL_VAR:
-          return (IEnumerable<IVariable>) this.globalVariablesRefs;
+          return globalVariablesRefs;
         case EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_CLASS:
-          return (IEnumerable<IVariable>) this.allClassesRefs;
+          return allClassesRefs;
         case EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_LOGIC_MAP:
-          return (IEnumerable<IVariable>) this.logicMapRefs;
+          return logicMapRefs;
         case EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_GAMEMODE:
-          return (IEnumerable<IVariable>) this.gameModeRefs;
+          return gameModeRefs;
         default:
           return base.GetContextVariables(contextVarCategory);
       }
@@ -171,50 +171,50 @@ namespace PLVirtualMachine.Objects
 
     public override Dictionary<string, IFunctionalComponent> FunctionalComponents
     {
-      get => this.allFunctionalComponents;
+      get => allFunctionalComponents;
     }
 
     public IEnumerable<IBlueprint> Blueprints
     {
-      get => (IEnumerable<IBlueprint>) this.allBlueprints.Values;
+      get => allBlueprints.Values;
     }
 
-    public List<ISample> Samples => this.samplesList;
+    public List<ISample> Samples => samplesList;
 
     public Dictionary<string, IGameMode> GameModes
     {
       get
       {
         Dictionary<string, IGameMode> gameModes = new Dictionary<string, IGameMode>();
-        for (int index = 0; index < this.gameModesList.Count; ++index)
-          gameModes.Add(this.gameModesList[index].Name, this.gameModesList[index]);
+        for (int index = 0; index < gameModesList.Count; ++index)
+          gameModes.Add(gameModesList[index].Name, gameModesList[index]);
         return gameModes;
       }
     }
 
-    public Dictionary<ulong, ILogicMap> LogicMaps => this.logicMapsByGuidsDict;
+    public Dictionary<ulong, ILogicMap> LogicMaps => logicMapsByGuidsDict;
 
-    public IEnumerable<IHierarchyObject> HierarchyChilds => (IEnumerable<IHierarchyObject>) null;
+    public IEnumerable<IHierarchyObject> HierarchyChilds => null;
 
-    public override IBlueprint Blueprint => (IBlueprint) this;
+    public override IBlueprint Blueprint => this;
 
     public Guid EngineGuid
     {
       get
       {
-        if (this.gameRootEngineGuid == Guid.Empty)
-          this.gameRootEngineGuid = this.hierarchyEngineGuidsTable[0];
-        return this.gameRootEngineGuid;
+        if (gameRootEngineGuid == Guid.Empty)
+          gameRootEngineGuid = hierarchyEngineGuidsTable[0];
+        return gameRootEngineGuid;
       }
     }
 
-    public List<Guid> HierarchyEngineGuidsTable => this.hierarchyEngineGuidsTable;
+    public List<Guid> HierarchyEngineGuidsTable => hierarchyEngineGuidsTable;
 
     public HierarchyGuid HierarchyGuid => HierarchyGuid.Empty;
 
     public Guid EngineTemplateGuid => Guid.Empty;
 
-    public IContainer VirtualObjectTemplate => (IContainer) null;
+    public IContainer VirtualObjectTemplate => null;
 
     public IEnumerable<Guid> MountingSceneGuids
     {
@@ -236,16 +236,16 @@ namespace PLVirtualMachine.Objects
       }
     }
 
-    public void OnBuildHierarchy() => this.PreloadChildWorldObjects();
+    public void OnBuildHierarchy() => PreloadChildWorldObjects();
 
-    public IGameMode MainGameMode => this.mainGameMode;
+    public IGameMode MainGameMode => mainGameMode;
 
-    public IBlueprint EditorTemplate => (IBlueprint) this;
+    public IBlueprint EditorTemplate => this;
 
     protected override void PreloadChildWorldObjects()
     {
       base.PreloadChildWorldObjects();
-      this.PreloadBlueprints();
+      PreloadBlueprints();
     }
 
     protected override void UpdateContextVariablesTotalCache()
@@ -253,73 +253,73 @@ namespace PLVirtualMachine.Objects
       base.UpdateContextVariablesTotalCache();
       VMObjRef vmObjRef = new VMObjRef();
       vmObjRef.Initialize((IBlueprint) IStaticDataContainer.StaticDataContainer.GameRoot);
-      this.LoadContextVaraiblesTotalCache((IVariable) vmObjRef);
+      LoadContextVaraiblesTotalCache(vmObjRef);
       foreach (IObjRef staticObject in ((VMLogicObject) IStaticDataContainer.StaticDataContainer.GameRoot).GetStaticObjects())
       {
         if (((BaseRef) staticObject).Exist)
-          this.LoadContextVaraiblesTotalCache((IVariable) staticObject);
+          LoadContextVaraiblesTotalCache(staticObject);
       }
       foreach (IVariable blueprint in ((VMLogicObject) IStaticDataContainer.StaticDataContainer.GameRoot).GetBlueprints())
-        this.LoadContextVaraiblesTotalCache(blueprint);
-      List<VMTalkingGraph> templatesTalkings = this.GetAllTemplatesTalkings();
+        LoadContextVaraiblesTotalCache(blueprint);
+      List<VMTalkingGraph> templatesTalkings = GetAllTemplatesTalkings();
       List<IVariable> variableList1 = new List<IVariable>();
       foreach (VMTalkingGraph vmTalkingGraph in templatesTalkings)
       {
         VMStateRef vmStateRef = new VMStateRef();
-        vmStateRef.Initialize((IState) vmTalkingGraph);
-        variableList1.Add((IVariable) vmStateRef);
+        vmStateRef.Initialize(vmTalkingGraph);
+        variableList1.Add(vmStateRef);
       }
-      IEnumerable<VMLogicMapNode> allLogicMapNodes = this.GetAllLogicMapNodes();
+      IEnumerable<VMLogicMapNode> allLogicMapNodes = GetAllLogicMapNodes();
       List<IVariable> variableList2 = new List<IVariable>();
       foreach (VMLogicMapNode lmNode in allLogicMapNodes)
       {
         VMLogicMapNodeRef vmLogicMapNodeRef = new VMLogicMapNodeRef();
-        vmLogicMapNodeRef.Initialize((IGraphObject) lmNode);
-        variableList2.Add((IVariable) vmLogicMapNodeRef);
+        vmLogicMapNodeRef.Initialize(lmNode);
+        variableList2.Add(vmLogicMapNodeRef);
       }
-      foreach (IVariable contextVariable in this.GetContextVariables(EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_CLASS))
-        this.LoadContextVaraiblesTotalCache(contextVariable);
-      foreach (IVariable contextVariable in this.GetContextVariables(EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_GLOBAL_VAR))
-        this.LoadContextVaraiblesTotalCache(contextVariable);
-      foreach (IVariable contextVariable in this.GetContextVariables(EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_LOGIC_MAP))
-        this.LoadContextVaraiblesTotalCache(contextVariable);
-      IEnumerable<IVariable> contextVariables = this.GetContextVariables(EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_GAMEMODE);
+      foreach (IVariable contextVariable in GetContextVariables(EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_CLASS))
+        LoadContextVaraiblesTotalCache(contextVariable);
+      foreach (IVariable contextVariable in GetContextVariables(EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_GLOBAL_VAR))
+        LoadContextVaraiblesTotalCache(contextVariable);
+      foreach (IVariable contextVariable in GetContextVariables(EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_LOGIC_MAP))
+        LoadContextVaraiblesTotalCache(contextVariable);
+      IEnumerable<IVariable> contextVariables = GetContextVariables(EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_GAMEMODE);
       foreach (IVariable variable in variableList1)
-        this.LoadContextVaraiblesTotalCache(variable);
+        LoadContextVaraiblesTotalCache(variable);
       foreach (IVariable variable in variableList2)
-        this.LoadContextVaraiblesTotalCache(variable);
+        LoadContextVaraiblesTotalCache(variable);
       foreach (IVariable variable in contextVariables)
-        this.LoadContextVaraiblesTotalCache(variable);
+        LoadContextVaraiblesTotalCache(variable);
       foreach (ISample sample in ((VMGameRoot) IStaticDataContainer.StaticDataContainer.GameRoot).Samples)
       {
         VMSampleRef vmSampleRef = new VMSampleRef();
         vmSampleRef.Initialize(sample);
-        this.LoadContextVaraiblesTotalCache((IVariable) vmSampleRef);
+        LoadContextVaraiblesTotalCache(vmSampleRef);
       }
     }
 
     public ulong GetBaseGuidByEngineTemplateGuid(Guid guid)
     {
-      return this.baseToEngineGuidsTable.GetBaseGuidByEngineTemplateGuid(guid);
+      return baseToEngineGuidsTable.GetBaseGuidByEngineTemplateGuid(guid);
     }
 
     public Guid GetEngineTemplateGuidByBaseGuid(ulong id)
     {
-      return this.baseToEngineGuidsTable.GetEngineTemplateGuidByBaseGuid(id);
+      return baseToEngineGuidsTable.GetEngineTemplateGuidByBaseGuid(id);
     }
 
     public IWorldBlueprint GetEngineTemplateByGuid(Guid engineTemplateGuid)
     {
       VMWorldObject engineTemplateByGuid;
-      this.engineTemplateObjectGuidsDict.TryGetValue(engineTemplateGuid, out engineTemplateByGuid);
-      return (IWorldBlueprint) engineTemplateByGuid;
+      engineTemplateObjectGuidsDict.TryGetValue(engineTemplateGuid, out engineTemplateByGuid);
+      return engineTemplateByGuid;
     }
 
     public IWorldBlueprint GetEngineTemplateByGuid(ulong editorTemplateGuid)
     {
       VMWorldObject engineTemplateByGuid;
-      this.engineTemplateObjectBaseGuidsDict.TryGetValue(editorTemplateGuid, out engineTemplateByGuid);
-      return (IWorldBlueprint) engineTemplateByGuid;
+      engineTemplateObjectBaseGuidsDict.TryGetValue(editorTemplateGuid, out engineTemplateByGuid);
+      return engineTemplateByGuid;
     }
 
     public IWorldHierarchyObject GetWorldHierarhyObjectByGuid(HierarchyGuid hGuid)
@@ -330,257 +330,257 @@ namespace PLVirtualMachine.Objects
     public IBlueprint GetBlueprintByGuid(ulong bpGuid)
     {
       IBlueprint blueprint;
-      return this.allBlueprints.TryGetValue(bpGuid, out blueprint) || this.allClasses.TryGetValue(bpGuid, out blueprint) ? blueprint : (IBlueprint) null;
+      return allBlueprints.TryGetValue(bpGuid, out blueprint) || allClasses.TryGetValue(bpGuid, out blueprint) ? blueprint : null;
     }
 
     public HierarchyGuid GetHierarchyGuidByHierarchyPath(string sPath) => HierarchyGuid.Empty;
 
     public List<IObjRef> GetNotHierarchyStaticObjects()
     {
-      List<IObjRef> hierarchyStaticObjects = new List<IObjRef>(this.staticObjectsBaseGuidsDict.Count);
-      foreach (KeyValuePair<ulong, VMLogicObject> keyValuePair in this.staticObjectsBaseGuidsDict)
+      List<IObjRef> hierarchyStaticObjects = new List<IObjRef>(staticObjectsBaseGuidsDict.Count);
+      foreach (KeyValuePair<ulong, VMLogicObject> keyValuePair in staticObjectsBaseGuidsDict)
       {
         VMLogicObject vmLogicObject = keyValuePair.Value;
         if (!(vmLogicObject is IWorldObject worldObject) || !worldObject.IsEngineRoot)
         {
           VMObjRef vmObjRef = new VMObjRef();
           vmObjRef.Initialize((IBlueprint) vmLogicObject);
-          hierarchyStaticObjects.Add((IObjRef) vmObjRef);
+          hierarchyStaticObjects.Add(vmObjRef);
         }
       }
       return hierarchyStaticObjects;
     }
 
-    public string GetStartGameEventFuncName() => this.startGameEventFuncName;
+    public string GetStartGameEventFuncName() => startGameEventFuncName;
 
     public List<VMTalkingGraph> GetAllTemplatesTalkings()
     {
-      if (this.allTalkings == null)
-        this.PreloadTalkings();
-      return this.allTalkings;
+      if (allTalkings == null)
+        PreloadTalkings();
+      return allTalkings;
     }
 
     public IEnumerable<VMLogicMapNode> GetAllLogicMapNodes()
     {
-      for (int i = 0; i < this.logicMapsList.Count; ++i)
+      for (int i = 0; i < logicMapsList.Count; ++i)
       {
-        for (int j = 0; j < this.logicMapsList[i].Nodes.Count; ++j)
-          yield return (VMLogicMapNode) this.logicMapsList[i].Nodes[j];
+        for (int j = 0; j < logicMapsList[i].Nodes.Count; ++j)
+          yield return (VMLogicMapNode) logicMapsList[i].Nodes[j];
       }
     }
 
     public Dictionary<ulong, HierarchySceneInfoData> HierarchyScenesStructure
     {
-      get => this.hierarchyScenesStructure;
+      get => hierarchyScenesStructure;
     }
 
     public override void OnAfterLoad()
     {
-      this.ComputeFunctionalComponents();
-      IEnumerable<VMLogicObject> allLogicObjects = this.GetAllLogicObjects();
-      this.ComputeBlueprints(allLogicObjects);
-      this.ComputeTemplates(allLogicObjects);
-      this.ComputeSamples();
+      ComputeFunctionalComponents();
+      IEnumerable<VMLogicObject> allLogicObjects = GetAllLogicObjects();
+      ComputeBlueprints(allLogicObjects);
+      ComputeTemplates(allLogicObjects);
+      ComputeSamples();
       base.OnAfterLoad();
-      this.ComputeVariables();
-      this.ComputeMaps();
-      this.ComputeModes();
-      this.ComputeStartEvents();
+      ComputeVariables();
+      ComputeMaps();
+      ComputeModes();
+      ComputeStartEvents();
     }
 
-    public bool WorldObjectSaveOptimizedMode => this.worldObjectSaveOptimizedMode;
+    public bool WorldObjectSaveOptimizedMode => worldObjectSaveOptimizedMode;
 
     public override void Clear()
     {
       base.Clear();
-      this.samplesList.Clear();
-      this.samplesList = (List<ISample>) null;
-      this.gameModesList.Clear();
-      this.gameModesList = (List<IGameMode>) null;
-      if (this.logicMapsList != null)
+      samplesList.Clear();
+      samplesList = null;
+      gameModesList.Clear();
+      gameModesList = null;
+      if (logicMapsList != null)
       {
-        foreach (IContainer logicMaps in this.logicMapsList)
+        foreach (IContainer logicMaps in logicMapsList)
           logicMaps.Clear();
-        this.logicMapsList.Clear();
+        logicMapsList.Clear();
       }
-      this.logicMapsList = (List<ILogicMap>) null;
-      if (this.hierarchyScenesStructure != null)
+      logicMapsList = null;
+      if (hierarchyScenesStructure != null)
       {
-        foreach (KeyValuePair<ulong, HierarchySceneInfoData> keyValuePair in this.hierarchyScenesStructure)
+        foreach (KeyValuePair<ulong, HierarchySceneInfoData> keyValuePair in hierarchyScenesStructure)
           keyValuePair.Value.Clear();
-        this.hierarchyScenesStructure.Clear();
-        this.hierarchyScenesStructure = (Dictionary<ulong, HierarchySceneInfoData>) null;
+        hierarchyScenesStructure.Clear();
+        hierarchyScenesStructure = null;
       }
-      if (this.hierarchyEngineGuidsTable != null)
+      if (hierarchyEngineGuidsTable != null)
       {
-        this.hierarchyEngineGuidsTable.Clear();
-        this.hierarchyEngineGuidsTable = (List<Guid>) null;
+        hierarchyEngineGuidsTable.Clear();
+        hierarchyEngineGuidsTable = null;
       }
-      this.mainGameMode = (IGameMode) null;
-      if (this.allFunctionalComponents != null)
+      mainGameMode = null;
+      if (allFunctionalComponents != null)
       {
-        foreach (KeyValuePair<string, IFunctionalComponent> functionalComponent in this.allFunctionalComponents)
+        foreach (KeyValuePair<string, IFunctionalComponent> functionalComponent in allFunctionalComponents)
           functionalComponent.Value.Clear();
-        this.allFunctionalComponents.Clear();
-        this.allFunctionalComponents = (Dictionary<string, IFunctionalComponent>) null;
+        allFunctionalComponents.Clear();
+        allFunctionalComponents = null;
       }
-      if (this.allClassesRefs != null)
-        this.allClassesRefs.Clear();
-      if (this.globalVariablesRefs != null)
-        this.globalVariablesRefs.Clear();
-      if (this.logicMapRefs != null)
-        this.logicMapRefs.Clear();
-      if (this.gameModeRefs != null)
-        this.gameModeRefs.Clear();
-      if (this.logicMapsByGuidsDict != null)
+      if (allClassesRefs != null)
+        allClassesRefs.Clear();
+      if (globalVariablesRefs != null)
+        globalVariablesRefs.Clear();
+      if (logicMapRefs != null)
+        logicMapRefs.Clear();
+      if (gameModeRefs != null)
+        gameModeRefs.Clear();
+      if (logicMapsByGuidsDict != null)
       {
-        this.logicMapsByGuidsDict.Clear();
-        this.logicMapsByGuidsDict = (Dictionary<ulong, ILogicMap>) null;
+        logicMapsByGuidsDict.Clear();
+        logicMapsByGuidsDict = null;
       }
-      this.engineTemplateObjectGuidsDict.Clear();
-      this.engineTemplateObjectGuidsDict = (Dictionary<Guid, VMWorldObject>) null;
-      this.engineTemplateObjectBaseGuidsDict.Clear();
-      this.engineTemplateObjectBaseGuidsDict = (Dictionary<ulong, VMWorldObject>) null;
-      this.staticObjectsBaseGuidsDict.Clear();
-      this.staticObjectsBaseGuidsDict = (Dictionary<ulong, VMLogicObject>) null;
-      this.samplesByEngineGuid.Clear();
-      this.samplesByEngineGuid = (Dictionary<Guid, ISampleRef>) null;
-      this.samplesByBaseGuid.Clear();
-      this.samplesByBaseGuid = (Dictionary<ulong, ISampleRef>) null;
-      this.allClasses.Clear();
-      this.allClasses = (Dictionary<ulong, IBlueprint>) null;
-      this.allBlueprints.Clear();
-      this.allBlueprints = (Dictionary<ulong, IBlueprint>) null;
-      this.allTalkings.Clear();
-      this.allTalkings = (List<VMTalkingGraph>) null;
+      engineTemplateObjectGuidsDict.Clear();
+      engineTemplateObjectGuidsDict = null;
+      engineTemplateObjectBaseGuidsDict.Clear();
+      engineTemplateObjectBaseGuidsDict = null;
+      staticObjectsBaseGuidsDict.Clear();
+      staticObjectsBaseGuidsDict = null;
+      samplesByEngineGuid.Clear();
+      samplesByEngineGuid = null;
+      samplesByBaseGuid.Clear();
+      samplesByBaseGuid = null;
+      allClasses.Clear();
+      allClasses = null;
+      allBlueprints.Clear();
+      allBlueprints = null;
+      allTalkings.Clear();
+      allTalkings = null;
     }
 
     private void ComputeFunctionalComponents()
     {
-      this.allFunctionalComponents = new Dictionary<string, IFunctionalComponent>(this.functionalComponents.Count);
-      foreach (IFunctionalComponent functionalComponent in this.functionalComponents)
-        this.allFunctionalComponents.Add(functionalComponent.Name, functionalComponent);
+      allFunctionalComponents = new Dictionary<string, IFunctionalComponent>(functionalComponents.Count);
+      foreach (IFunctionalComponent functionalComponent in functionalComponents)
+        allFunctionalComponents.Add(functionalComponent.Name, functionalComponent);
     }
 
     private void ComputeStartEvents()
     {
-      this.startGameEventFuncName = "";
+      startGameEventFuncName = "";
       ulong num = 0;
-      foreach (IEvent @event in this.events)
+      foreach (IEvent @event in events)
       {
         if (!@event.IsManual)
         {
           VMFunctionalComponent parent = (VMFunctionalComponent) @event.Parent;
-          if (parent.Main && (!(this.startGameEventFuncName != "") || parent.BaseGuid <= num) && @event.Name == EngineAPIManager.GetSpecialEventName(ESpecialEventName.SEN_START_GAME, typeof (VMGameComponent)) && this.startGameEventFuncName == "")
+          if (parent.Main && (!(startGameEventFuncName != "") || parent.BaseGuid <= num) && @event.Name == EngineAPIManager.GetSpecialEventName(ESpecialEventName.SEN_START_GAME, typeof (VMGameComponent)) && startGameEventFuncName == "")
           {
-            this.startGameEventFuncName = @event.FunctionalName;
+            startGameEventFuncName = @event.FunctionalName;
             num = parent.BaseGuid;
           }
         }
       }
-      if (!(this.startGameEventFuncName == ""))
+      if (!(startGameEventFuncName == ""))
         return;
-      Logger.AddError(string.Format("Start game event not found in game root !"));
+      Logger.AddError("Start game event not found in game root !");
     }
 
     private void ComputeVariables()
     {
-      this.globalVariablesRefs = new List<IVariable>();
-      foreach (KeyValuePair<ulong, IBlueprint> allBlueprint in this.allBlueprints)
+      globalVariablesRefs = new List<IVariable>();
+      foreach (KeyValuePair<ulong, IBlueprint> allBlueprint in allBlueprints)
       {
         IBlueprint blueprint = allBlueprint.Value;
         GlobalVariable instancesListVariable = GlobalVariableUtility.CreateGlobalTemplateInstancesListVariable(blueprint);
         GlobalVariableUtility.RegistrGlobalTemplateInstancesList(blueprint);
-        this.globalVariablesRefs.Add((IVariable) instancesListVariable);
+        globalVariablesRefs.Add(instancesListVariable);
       }
     }
 
     private void ComputeMaps()
     {
-      this.logicMapsByGuidsDict = new Dictionary<ulong, ILogicMap>(this.logicMapsList.Count, (IEqualityComparer<ulong>) UlongComparer.Instance);
-      this.logicMapRefs = new List<IVariable>(this.logicMapsList.Count);
-      foreach (ILogicMap logicMaps in this.logicMapsList)
+      logicMapsByGuidsDict = new Dictionary<ulong, ILogicMap>(logicMapsList.Count, UlongComparer.Instance);
+      logicMapRefs = new List<IVariable>(logicMapsList.Count);
+      foreach (ILogicMap logicMaps in logicMapsList)
       {
         VMLogicMapRef vmLogicMapRef = new VMLogicMapRef();
         vmLogicMapRef.Initialize(logicMaps);
-        this.logicMapRefs.Add((IVariable) vmLogicMapRef);
-        this.logicMapsByGuidsDict.Add(logicMaps.BaseGuid, logicMaps);
+        logicMapRefs.Add(vmLogicMapRef);
+        logicMapsByGuidsDict.Add(logicMaps.BaseGuid, logicMaps);
       }
     }
 
     private void ComputeModes()
     {
-      this.gameModeRefs = new List<IVariable>(this.gameModesList.Count);
-      foreach (IGameMode gameModes in this.gameModesList)
+      gameModeRefs = new List<IVariable>(gameModesList.Count);
+      foreach (IGameMode gameModes in gameModesList)
       {
         if (gameModes.IsMain)
-          this.mainGameMode = gameModes;
+          mainGameMode = gameModes;
         VMGameModeRef vmGameModeRef = new VMGameModeRef();
         vmGameModeRef.Initialize(gameModes);
-        this.gameModeRefs.Add((IVariable) vmGameModeRef);
+        gameModeRefs.Add(vmGameModeRef);
       }
-      if (this.mainGameMode != null)
+      if (mainGameMode != null)
         return;
-      Logger.AddError(string.Format("Main game mode not defined!"));
+      Logger.AddError("Main game mode not defined!");
     }
 
     private void ComputeBlueprints(IEnumerable<VMLogicObject> logicObjects)
     {
-      this.allBlueprints.Clear();
-      this.allClasses.Clear();
+      allBlueprints.Clear();
+      allClasses.Clear();
       foreach (VMLogicObject logicObject in logicObjects)
       {
         if (!logicObject.Static)
         {
-          if (!this.allBlueprints.ContainsKey(logicObject.BaseGuid))
+          if (!allBlueprints.ContainsKey(logicObject.BaseGuid))
           {
-            this.allBlueprints.Add(logicObject.BaseGuid, (IBlueprint) logicObject);
+            allBlueprints.Add(logicObject.BaseGuid, (IBlueprint) logicObject);
             if (logicObject.GetCategory() == EObjectCategory.OBJECT_CATEGORY_CLASS)
-              this.allClasses.Add(logicObject.BaseGuid, (IBlueprint) logicObject);
+              allClasses.Add(logicObject.BaseGuid, (IBlueprint) logicObject);
           }
           else
-            Logger.AddError(string.Format("Logic object blueprint {0} dublicated in game", (object) logicObject.Name));
+            Logger.AddError(string.Format("Logic object blueprint {0} dublicated in game", logicObject.Name));
         }
         else if (!logicObject.IsVirtual)
         {
-          if (!this.staticObjectsBaseGuidsDict.ContainsKey(logicObject.BaseGuid))
-            this.staticObjectsBaseGuidsDict.Add(logicObject.BaseGuid, logicObject);
+          if (!staticObjectsBaseGuidsDict.ContainsKey(logicObject.BaseGuid))
+            staticObjectsBaseGuidsDict.Add(logicObject.BaseGuid, logicObject);
           else
-            Logger.AddError(string.Format("Logic static object {0} dublicated in game", (object) logicObject.Name));
+            Logger.AddError(string.Format("Logic static object {0} dublicated in game", logicObject.Name));
         }
       }
-      this.allClassesRefs = new List<IVariable>(this.allClasses.Count);
-      foreach (KeyValuePair<ulong, IBlueprint> allClass in this.allClasses)
+      allClassesRefs = new List<IVariable>(allClasses.Count);
+      foreach (KeyValuePair<ulong, IBlueprint> allClass in allClasses)
       {
         VMBlueprintRef vmBlueprintRef = new VMBlueprintRef();
         vmBlueprintRef.Initialize(allClass.Value);
-        this.allClassesRefs.Add((IVariable) vmBlueprintRef);
+        allClassesRefs.Add(vmBlueprintRef);
       }
     }
 
     private void ComputeSamples()
     {
-      this.samplesByBaseGuid = new Dictionary<ulong, ISampleRef>(this.samplesList.Count, (IEqualityComparer<ulong>) UlongComparer.Instance);
-      this.samplesByEngineGuid = new Dictionary<Guid, ISampleRef>(this.samplesList.Count, (IEqualityComparer<Guid>) GuidComparer.Instance);
-      foreach (ISample samples in this.samplesList)
+      samplesByBaseGuid = new Dictionary<ulong, ISampleRef>(samplesList.Count, UlongComparer.Instance);
+      samplesByEngineGuid = new Dictionary<Guid, ISampleRef>(samplesList.Count, GuidComparer.Instance);
+      foreach (ISample samples in samplesList)
       {
         VMSampleRef vmSampleRef = new VMSampleRef();
         vmSampleRef.Initialize(samples);
-        if (!this.samplesByBaseGuid.ContainsKey(samples.BaseGuid))
-          this.samplesByBaseGuid.Add(samples.BaseGuid, (ISampleRef) vmSampleRef);
+        if (!samplesByBaseGuid.ContainsKey(samples.BaseGuid))
+          samplesByBaseGuid.Add(samples.BaseGuid, vmSampleRef);
         else
-          Logger.AddError(string.Format("Sample base guid={0} is dublicated", (object) samples.BaseGuid));
-        if (!this.samplesByEngineGuid.ContainsKey(((VMSample) samples).EngineTemplateGuid))
-          this.samplesByEngineGuid.Add(((VMSample) samples).EngineTemplateGuid, (ISampleRef) vmSampleRef);
+          Logger.AddError(string.Format("Sample base guid={0} is dublicated", samples.BaseGuid));
+        if (!samplesByEngineGuid.ContainsKey(((VMSample) samples).EngineTemplateGuid))
+          samplesByEngineGuid.Add(((VMSample) samples).EngineTemplateGuid, vmSampleRef);
         else
-          Logger.AddError(string.Format("Sample guid={0} is dublicated", (object) ((VMSample) samples).EngineTemplateGuid));
+          Logger.AddError(string.Format("Sample guid={0} is dublicated", ((VMSample) samples).EngineTemplateGuid));
       }
     }
 
     private void ComputeTemplates(IEnumerable<VMLogicObject> logicObjects)
     {
-      this.engineTemplateObjectBaseGuidsDict.Clear();
-      this.engineTemplateObjectGuidsDict.Clear();
+      engineTemplateObjectBaseGuidsDict.Clear();
+      engineTemplateObjectGuidsDict.Clear();
       foreach (VMLogicObject logicObject in logicObjects)
       {
         if ((logicObject.GetCategory() & EObjectCategory.OBJECT_CATEGORY_TEMPLATES) > EObjectCategory.OBJECT_CATEGORY_NONE)
@@ -588,16 +588,16 @@ namespace PLVirtualMachine.Objects
           VMWorldObject vmWorldObject = (VMWorldObject) logicObject;
           if (!vmWorldObject.IsVirtual)
           {
-            if (!this.engineTemplateObjectBaseGuidsDict.ContainsKey(vmWorldObject.BaseGuid))
-              this.engineTemplateObjectBaseGuidsDict.Add(vmWorldObject.BaseGuid, vmWorldObject);
+            if (!engineTemplateObjectBaseGuidsDict.ContainsKey(vmWorldObject.BaseGuid))
+              engineTemplateObjectBaseGuidsDict.Add(vmWorldObject.BaseGuid, vmWorldObject);
             else
-              Logger.AddError(string.Format("Template base guid={0} is dublicated", (object) vmWorldObject.BaseGuid));
+              Logger.AddError(string.Format("Template base guid={0} is dublicated", vmWorldObject.BaseGuid));
             if (vmWorldObject.EngineTemplateGuid != Guid.Empty)
             {
-              if (!this.engineTemplateObjectGuidsDict.ContainsKey(vmWorldObject.EngineTemplateGuid))
-                this.engineTemplateObjectGuidsDict.Add(vmWorldObject.EngineTemplateGuid, vmWorldObject);
+              if (!engineTemplateObjectGuidsDict.ContainsKey(vmWorldObject.EngineTemplateGuid))
+                engineTemplateObjectGuidsDict.Add(vmWorldObject.EngineTemplateGuid, vmWorldObject);
               else
-                Logger.AddError(string.Format("Engine template guid={0} is dublicated", (object) vmWorldObject.EngineTemplateGuid));
+                Logger.AddError(string.Format("Engine template guid={0} is dublicated", vmWorldObject.EngineTemplateGuid));
             }
           }
         }
@@ -606,15 +606,15 @@ namespace PLVirtualMachine.Objects
 
     private void PreloadTalkings()
     {
-      this.allTalkings = new List<VMTalkingGraph>();
-      for (int index = 0; index < this.blueprints.Count; ++index)
+      allTalkings = new List<VMTalkingGraph>();
+      for (int index = 0; index < blueprints.Count; ++index)
       {
-        if (this.blueprints[index].Blueprint is VMBlueprint blueprint && blueprint.IsFunctionalSupport("Speaking") && blueprint.StateGraph != null)
+        if (blueprints[index].Blueprint is VMBlueprint blueprint && blueprint.IsFunctionalSupport("Speaking") && blueprint.StateGraph != null)
         {
           foreach (IFiniteStateMachine finiteStateMachine in blueprint.StateGraph.GetSubGraphStructure(EGraphType.GRAPH_TYPE_TALKING, false))
           {
             if (finiteStateMachine is VMTalkingGraph vmTalkingGraph)
-              this.allTalkings.Add(vmTalkingGraph);
+              allTalkings.Add(vmTalkingGraph);
           }
         }
       }

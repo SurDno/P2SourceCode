@@ -1,7 +1,6 @@
-﻿using Engine.Source.Commons;
+﻿using System.Collections;
+using Engine.Source.Commons;
 using Engine.Source.Settings.External;
-using System.Collections;
-using UnityEngine;
 
 [RequireComponent(typeof (AudioSource))]
 public class DisableSoundAtMaxDistance : MonoBehaviour
@@ -11,11 +10,11 @@ public class DisableSoundAtMaxDistance : MonoBehaviour
 
   private IEnumerator Start()
   {
-    if ((Object) this.audioSource == (Object) null)
+    if ((Object) audioSource == (Object) null)
     {
       Debug.LogError((object) ("Null audio source, gameobject (need to fix by level designer), trying to get component: " + this.GetInfo()), (Object) this.gameObject);
-      this.audioSource = this.GetComponent<AudioSource>();
-      if ((Object) this.audioSource == (Object) null)
+      audioSource = this.GetComponent<AudioSource>();
+      if ((Object) audioSource == (Object) null)
       {
         Debug.LogError((object) ("Can't get component: " + this.GetInfo()), (Object) this.gameObject);
         yield break;
@@ -33,7 +32,7 @@ public class DisableSoundAtMaxDistance : MonoBehaviour
         else
         {
           yield return (object) wait;
-          this.UpdateEnable();
+          UpdateEnable();
         }
       }
     }
@@ -41,9 +40,9 @@ public class DisableSoundAtMaxDistance : MonoBehaviour
 
   private void UpdateEnable()
   {
-    bool flag = (double) (this.transform.position - EngineApplication.PlayerPosition).sqrMagnitude < (double) (this.audioSource.maxDistance * this.audioSource.maxDistance);
-    if (this.audioSource.enabled == flag)
+    bool flag = (double) (this.transform.position - EngineApplication.PlayerPosition).sqrMagnitude < (double) (audioSource.maxDistance * audioSource.maxDistance);
+    if (audioSource.enabled == flag)
       return;
-    this.audioSource.enabled = flag;
+    audioSource.enabled = flag;
   }
 }

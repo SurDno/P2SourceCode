@@ -13,14 +13,14 @@
 
     public IntPoint(double x, double y)
     {
-      this.X = (long) x;
-      this.Y = (long) y;
+      X = (long) x;
+      Y = (long) y;
     }
 
     public IntPoint(IntPoint pt)
     {
-      this.X = pt.X;
-      this.Y = pt.Y;
+      X = pt.X;
+      Y = pt.Y;
     }
 
     public static bool operator ==(IntPoint a, IntPoint b) => a.X == b.X && a.Y == b.Y;
@@ -29,7 +29,7 @@
 
     public override bool Equals(object obj)
     {
-      return obj != null && obj is IntPoint intPoint && this.X == intPoint.X && this.Y == intPoint.Y;
+      return obj != null && obj is IntPoint intPoint && X == intPoint.X && Y == intPoint.Y;
     }
 
     public override int GetHashCode() => base.GetHashCode();

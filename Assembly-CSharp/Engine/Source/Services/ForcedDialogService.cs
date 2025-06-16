@@ -1,4 +1,7 @@
-﻿using Cofe.Proxies;
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.Xml;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Cofe.Serializations.Data.Xml;
 using Cofe.Utility;
@@ -14,16 +17,11 @@ using Engine.Source.Saves;
 using Engine.Source.Services.Saves;
 using Engine.Source.Utility;
 using Inspectors;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Xml;
-using UnityEngine;
 
 namespace Engine.Source.Services
 {
   [SaveDepend(typeof (ISimulation))]
-  [GameService(new System.Type[] {typeof (ForcedDialogService), typeof (IForcedDialogService)})]
+  [GameService(typeof (ForcedDialogService), typeof (IForcedDialogService))]
   [GenerateProxy(TypeEnum.StateSave | TypeEnum.StateLoad)]
   public class ForcedDialogService : 
     IInitialisable,
@@ -32,20 +30,20 @@ namespace Engine.Source.Services
     ISavesController,
     IEntityEventsListener
   {
-    [StateSaveProxy(MemberEnum.None)]
-    [StateLoadProxy(MemberEnum.None)]
+    [StateSaveProxy]
+    [StateLoadProxy()]
     [Inspected]
     protected List<ForcedDialogCharacterInfo> characters = new List<ForcedDialogCharacterInfo>();
 
     public void Initialise()
     {
-      InstanceByRequest<UpdateService>.Instance.Updater.AddUpdatable((IUpdatable) this);
+      InstanceByRequest<UpdateService>.Instance.Updater.AddUpdatable(this);
     }
 
     public void Terminate()
     {
-      InstanceByRequest<UpdateService>.Instance.Updater.RemoveUpdatable((IUpdatable) this);
-      this.characters.Clear();
+      InstanceByRequest<UpdateService>.Instance.Updater.RemoveUpdatable(this);
+      characters.Clear();
     }
 
     public void AddForcedDialog(IEntity character, float distance)
@@ -59,40 +57,40 @@ namespace Engine.Source.Services
       }
       else
       {
-        this.RemoveForcedDialog(character);
+        RemoveForcedDialog(character);
         ForcedDialogCharacterInfo dialogCharacterInfo = ProxyFactory.Create<ForcedDialogCharacterInfo>();
         dialogCharacterInfo.Character = character;
         dialogCharacterInfo.Distance = distance;
-        this.characters.Add(dialogCharacterInfo);
-        this.ComputeAdded(character);
+        characters.Add(dialogCharacterInfo);
+        ComputeAdded(character);
       }
     }
 
     public void RemoveForcedDialog(IEntity character)
     {
       int index = 0;
-      while (index < this.characters.Count)
+      while (index < characters.Count)
       {
-        if (this.characters[index].Character == character)
-          this.characters.RemoveAt(index);
+        if (characters[index].Character == character)
+          characters.RemoveAt(index);
         else
           ++index;
       }
-      ((Entity) character).RemoveListener((IEntityEventsListener) this);
+      ((Entity) character).RemoveListener(this);
     }
 
-    private void OnCharacterDisposed(IEntity sender) => this.RemoveForcedDialog(sender);
+    private void OnCharacterDisposed(IEntity sender) => RemoveForcedDialog(sender);
 
     public void ComputeUpdate()
     {
-      if (this.characters.Count == 0 || !PlayerUtility.IsPlayerCanControlling)
+      if (characters.Count == 0 || !PlayerUtility.IsPlayerCanControlling)
         return;
       IEntity player = ServiceLocator.GetService<ISimulation>().Player;
-      foreach (ForcedDialogCharacterInfo character in this.characters)
+      foreach (ForcedDialogCharacterInfo character in characters)
       {
-        if (this.TryStartDialog(player, character))
+        if (TryStartDialog(player, character))
         {
-          this.RemoveForcedDialog(character.Character);
+          RemoveForcedDialog(character.Character);
           break;
         }
       }
@@ -100,9 +98,9 @@ namespace Engine.Source.Services
 
     private bool TryStartDialog(IEntity player, ForcedDialogCharacterInfo character)
     {
-      if (character == null || character.Character == null || !(character.Character is IEntityView) || (UnityEngine.Object) ((IEntityView) character.Character).GameObject == (UnityEngine.Object) null || !((IEntityView) character.Character).GameObject.activeSelf || (double) character.Distance != 0.0 && (double) (((IEntityView) character.Character).Position - ((IEntityView) player).Position).magnitude >= (double) character.Distance || !this.SameIndoorWithPlayer(player, character))
+      if (character == null || character.Character == null || !(character.Character is IEntityView) || (UnityEngine.Object) ((IEntityView) character.Character).GameObject == (UnityEngine.Object) null || !((IEntityView) character.Character).GameObject.activeSelf || character.Distance != 0.0 && (double) (((IEntityView) character.Character).Position - ((IEntityView) player).Position).magnitude >= character.Distance || !SameIndoorWithPlayer(player, character))
         return false;
-      this.StartDialog(character.Character);
+      StartDialog(character.Character);
       return true;
     }
 
@@ -122,7 +120,7 @@ namespace Engine.Source.Services
         component.BeginInteract(player, InteractType.Dialog);
       }
       else
-        BlueprintServiceUtility.Start(ScriptableObjectInstance<ResourceFromCodeData>.Instance.DialogBlueprint, character, (Action) null, character.GetInfo());
+        BlueprintServiceUtility.Start(ScriptableObjectInstance<ResourceFromCodeData>.Instance.DialogBlueprint, character, null, character.GetInfo());
     }
 
     public IEnumerator Load(IErrorLoadingHandler errorHandler)
@@ -132,43 +130,43 @@ namespace Engine.Source.Services
 
     public IEnumerator Load(XmlElement element, string context, IErrorLoadingHandler errorHandler)
     {
-      XmlElement node = element[TypeUtility.GetTypeName(this.GetType())];
+      XmlElement node = element[TypeUtility.GetTypeName(GetType())];
       if (node == null)
       {
-        errorHandler.LogError(TypeUtility.GetTypeName(this.GetType()) + " node not found , context : " + context);
+        errorHandler.LogError(TypeUtility.GetTypeName(GetType()) + " node not found , context : " + context);
       }
       else
       {
-        XmlNodeDataReader reader = new XmlNodeDataReader((XmlNode) node, context);
-        ((ISerializeStateLoad) this).StateLoad((IDataReader) reader, this.GetType());
+        XmlNodeDataReader reader = new XmlNodeDataReader(node, context);
+        ((ISerializeStateLoad) this).StateLoad(reader, GetType());
         yield break;
       }
     }
 
-    public void Unload() => this.characters.Clear();
+    public void Unload() => characters.Clear();
 
     public void Save(IDataWriter writer, string context)
     {
-      DefaultStateSaveUtility.SaveSerialize<ForcedDialogService>(writer, TypeUtility.GetTypeName(this.GetType()), this);
+      DefaultStateSaveUtility.SaveSerialize(writer, TypeUtility.GetTypeName(GetType()), this);
     }
 
     private void ComputeAdded(IEntity character)
     {
-      ((Entity) character).AddListener((IEntityEventsListener) this);
+      ((Entity) character).AddListener(this);
     }
 
-    [Cofe.Serializations.Data.OnLoaded]
+    [OnLoaded]
     private void OnLoaded()
     {
-      foreach (ForcedDialogCharacterInfo character in this.characters)
-        this.ComputeAdded(character.Character);
+      foreach (ForcedDialogCharacterInfo character in characters)
+        ComputeAdded(character.Character);
     }
 
     public void OnEntityEvent(IEntity sender, EntityEvents kind)
     {
       if (kind != EntityEvents.DisposeEvent)
         return;
-      this.OnCharacterDisposed(sender);
+      OnCharacterDisposed(sender);
     }
   }
 }

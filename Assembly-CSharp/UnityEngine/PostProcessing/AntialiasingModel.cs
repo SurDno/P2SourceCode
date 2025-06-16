@@ -6,15 +6,15 @@ namespace UnityEngine.PostProcessing
   public class AntialiasingModel : PostProcessingModel
   {
     [SerializeField]
-    private AntialiasingModel.Settings m_Settings = AntialiasingModel.Settings.defaultSettings;
+    private Settings m_Settings = Settings.defaultSettings;
 
-    public AntialiasingModel.Settings settings
+    public Settings settings
     {
-      get => this.m_Settings;
-      set => this.m_Settings = value;
+      get => m_Settings;
+      set => m_Settings = value;
     }
 
-    public override void Reset() => this.m_Settings = AntialiasingModel.Settings.defaultSettings;
+    public override void Reset() => m_Settings = Settings.defaultSettings;
 
     public enum Method
     {
@@ -43,34 +43,29 @@ namespace UnityEngine.PostProcessing
       [Tooltip("Local contrast adaptation value to disallow the algorithm from executing on the darker regions.")]
       [Range(0.0f, 0.0833f)]
       public float minimumRequiredLuminance;
-      public static AntialiasingModel.FxaaQualitySettings[] presets = new AntialiasingModel.FxaaQualitySettings[5]
+      public static FxaaQualitySettings[] presets = new FxaaQualitySettings[5]
       {
-        new AntialiasingModel.FxaaQualitySettings()
-        {
+        new FxaaQualitySettings {
           subpixelAliasingRemovalAmount = 0.0f,
           edgeDetectionThreshold = 0.333f,
           minimumRequiredLuminance = 0.0833f
         },
-        new AntialiasingModel.FxaaQualitySettings()
-        {
+        new FxaaQualitySettings {
           subpixelAliasingRemovalAmount = 0.25f,
           edgeDetectionThreshold = 0.25f,
           minimumRequiredLuminance = 0.0833f
         },
-        new AntialiasingModel.FxaaQualitySettings()
-        {
+        new FxaaQualitySettings {
           subpixelAliasingRemovalAmount = 0.75f,
           edgeDetectionThreshold = 0.166f,
           minimumRequiredLuminance = 0.0833f
         },
-        new AntialiasingModel.FxaaQualitySettings()
-        {
+        new FxaaQualitySettings {
           subpixelAliasingRemovalAmount = 1f,
           edgeDetectionThreshold = 0.125f,
           minimumRequiredLuminance = 1f / 16f
         },
-        new AntialiasingModel.FxaaQualitySettings()
-        {
+        new FxaaQualitySettings {
           subpixelAliasingRemovalAmount = 1f,
           edgeDetectionThreshold = 0.063f,
           minimumRequiredLuminance = 0.0312f
@@ -93,38 +88,33 @@ namespace UnityEngine.PostProcessing
       [Tooltip("Local contrast adaptation value to disallow the algorithm from executing on the darker regions.")]
       [Range(0.04f, 0.06f)]
       public float minimumRequiredLuminance;
-      public static AntialiasingModel.FxaaConsoleSettings[] presets = new AntialiasingModel.FxaaConsoleSettings[5]
+      public static FxaaConsoleSettings[] presets = new FxaaConsoleSettings[5]
       {
-        new AntialiasingModel.FxaaConsoleSettings()
-        {
+        new FxaaConsoleSettings {
           subpixelSpreadAmount = 0.33f,
           edgeSharpnessAmount = 8f,
           edgeDetectionThreshold = 0.25f,
           minimumRequiredLuminance = 0.06f
         },
-        new AntialiasingModel.FxaaConsoleSettings()
-        {
+        new FxaaConsoleSettings {
           subpixelSpreadAmount = 0.33f,
           edgeSharpnessAmount = 8f,
           edgeDetectionThreshold = 0.125f,
           minimumRequiredLuminance = 0.06f
         },
-        new AntialiasingModel.FxaaConsoleSettings()
-        {
+        new FxaaConsoleSettings {
           subpixelSpreadAmount = 0.5f,
           edgeSharpnessAmount = 8f,
           edgeDetectionThreshold = 0.125f,
           minimumRequiredLuminance = 0.05f
         },
-        new AntialiasingModel.FxaaConsoleSettings()
-        {
+        new FxaaConsoleSettings {
           subpixelSpreadAmount = 0.5f,
           edgeSharpnessAmount = 4f,
           edgeDetectionThreshold = 0.125f,
           minimumRequiredLuminance = 0.04f
         },
-        new AntialiasingModel.FxaaConsoleSettings()
-        {
+        new FxaaConsoleSettings {
           subpixelSpreadAmount = 0.5f,
           edgeSharpnessAmount = 2f,
           edgeDetectionThreshold = 0.125f,
@@ -136,15 +126,14 @@ namespace UnityEngine.PostProcessing
     [Serializable]
     public struct FxaaSettings
     {
-      public AntialiasingModel.FxaaPreset preset;
+      public FxaaPreset preset;
 
-      public static AntialiasingModel.FxaaSettings defaultSettings
+      public static FxaaSettings defaultSettings
       {
         get
         {
-          return new AntialiasingModel.FxaaSettings()
-          {
-            preset = AntialiasingModel.FxaaPreset.Default
+          return new FxaaSettings {
+            preset = FxaaPreset.Default
           };
         }
       }
@@ -166,12 +155,11 @@ namespace UnityEngine.PostProcessing
       [Range(0.0f, 0.99f)]
       public float motionBlending;
 
-      public static AntialiasingModel.TaaSettings defaultSettings
+      public static TaaSettings defaultSettings
       {
         get
         {
-          return new AntialiasingModel.TaaSettings()
-          {
+          return new TaaSettings {
             jitterSpread = 0.75f,
             sharpen = 0.3f,
             stationaryBlending = 0.95f,
@@ -184,19 +172,18 @@ namespace UnityEngine.PostProcessing
     [Serializable]
     public struct Settings
     {
-      public AntialiasingModel.Method method;
-      public AntialiasingModel.FxaaSettings fxaaSettings;
-      public AntialiasingModel.TaaSettings taaSettings;
+      public Method method;
+      public FxaaSettings fxaaSettings;
+      public TaaSettings taaSettings;
 
-      public static AntialiasingModel.Settings defaultSettings
+      public static Settings defaultSettings
       {
         get
         {
-          return new AntialiasingModel.Settings()
-          {
-            method = AntialiasingModel.Method.Fxaa,
-            fxaaSettings = AntialiasingModel.FxaaSettings.defaultSettings,
-            taaSettings = AntialiasingModel.TaaSettings.defaultSettings
+          return new Settings {
+            method = Method.Fxaa,
+            fxaaSettings = FxaaSettings.defaultSettings,
+            taaSettings = TaaSettings.defaultSettings
           };
         }
       }

@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-public class Rootmotion45 : MonoBehaviour
+﻿public class Rootmotion45 : MonoBehaviour
 {
   [Header("Agent speed")]
   [Tooltip("Желательно подобрать эту скорость максимально близко с скорости цикла шага. Навигационный агент будет передвигаться на такой скорости во время бега.")]

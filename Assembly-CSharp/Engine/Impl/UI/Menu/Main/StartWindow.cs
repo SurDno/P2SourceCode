@@ -8,10 +8,6 @@ using Engine.Source.UI;
 using Engine.Source.UI.Menu.Main;
 using InputServices;
 using Scripts.Data;
-using UnityEngine;
-using UnityEngine.Events;
-using UnityEngine.EventSystems;
-using UnityEngine.UI;
 
 namespace Engine.Impl.UI.Menu.Main
 {
@@ -37,21 +33,21 @@ namespace Engine.Impl.UI.Menu.Main
     private GameObject helpPanel;
     [SerializeField]
     private Image selectedLine;
-    private int currentIndex = 0;
+    private int currentIndex;
     private Button[] buttons = (Button[]) null;
 
     public override void Initialize()
     {
-      this.RegisterLayer<IStartWindow>((IStartWindow) this);
+      RegisterLayer((IStartWindow) this);
       if (!BuildSettingsUtility.IsDataExist("MarbleNest"))
-        this.newMarbleNestGameButton.gameObject.SetActive(false);
-      this.continueButton.onClick.AddListener(new UnityAction(this.ContinueGame));
-      this.newGameButton.onClick.AddListener(new UnityAction(this.NewGame));
-      this.newMarbleNestGameButton.onClick.AddListener(new UnityAction(this.NewMarbleNestGame));
-      this.loadGameButton.onClick.AddListener(new UnityAction(this.OpenLoadGameWindow));
-      this.settingsButton.onClick.AddListener(new UnityAction(this.OpenSettingsWindow));
-      this.creditsButton.onClick.AddListener(new UnityAction(this.OpenCreditsWindow));
-      this.exitButton.onClick.AddListener(new UnityAction(this.ExitGame));
+        newMarbleNestGameButton.gameObject.SetActive(false);
+      continueButton.onClick.AddListener(new UnityAction(ContinueGame));
+      newGameButton.onClick.AddListener(new UnityAction(NewGame));
+      newMarbleNestGameButton.onClick.AddListener(new UnityAction(NewMarbleNestGame));
+      loadGameButton.onClick.AddListener(new UnityAction(OpenLoadGameWindow));
+      settingsButton.onClick.AddListener(new UnityAction(OpenSettingsWindow));
+      creditsButton.onClick.AddListener(new UnityAction(OpenCreditsWindow));
+      exitButton.onClick.AddListener(new UnityAction(ExitGame));
       base.Initialize();
     }
 
@@ -68,7 +64,7 @@ namespace Engine.Impl.UI.Menu.Main
 
     public void NewMarbleNestGame()
     {
-      CoroutineService.Instance.Route(LoadGameUtility.StartNewGame(this.marbleNestGameDataName));
+      CoroutineService.Instance.Route(LoadGameUtility.StartNewGame(marbleNestGameDataName));
     }
 
     public void OpenLoadGameWindow()
@@ -91,79 +87,79 @@ namespace Engine.Impl.UI.Menu.Main
 
     protected override void OnEnable()
     {
-      this.exitButton.gameObject.SetActive(true);
+      exitButton.gameObject.SetActive(true);
       base.OnEnable();
       CursorService.Instance.Free = true;
       if (!InputService.Instance.JoystickUsed)
         CursorService.Instance.Visible = true;
-      this.UpdateContinueButton();
+      UpdateContinueButton();
       GameActionService service = ServiceLocator.GetService<GameActionService>();
-      this.currentIndex = 0;
-      this.buttons = this.GetComponentsInChildren<Button>();
-      service.AddListener(GameActionType.Forward, new GameActionHandle(this.ChangeSelectedItem));
-      service.AddListener(GameActionType.Backward, new GameActionHandle(this.ChangeSelectedItem));
-      service.AddListener(GameActionType.LStickDown, new GameActionHandle(this.ChangeSelectedItem));
-      service.AddListener(GameActionType.LStickUp, new GameActionHandle(this.ChangeSelectedItem));
-      service.AddListener(GameActionType.Submit, new GameActionHandle(this.ChangeSelectedItem));
-      this.selectedLine.enabled = false;
+      currentIndex = 0;
+      buttons = this.GetComponentsInChildren<Button>();
+      service.AddListener(GameActionType.Forward, ChangeSelectedItem);
+      service.AddListener(GameActionType.Backward, ChangeSelectedItem);
+      service.AddListener(GameActionType.LStickDown, ChangeSelectedItem);
+      service.AddListener(GameActionType.LStickUp, ChangeSelectedItem);
+      service.AddListener(GameActionType.Submit, ChangeSelectedItem);
+      selectedLine.enabled = false;
     }
 
     protected override void OnDisable()
     {
       base.OnDisable();
       GameActionService service = ServiceLocator.GetService<GameActionService>();
-      service.RemoveListener(GameActionType.Forward, new GameActionHandle(this.ChangeSelectedItem));
-      service.RemoveListener(GameActionType.Backward, new GameActionHandle(this.ChangeSelectedItem));
-      service.RemoveListener(GameActionType.LStickDown, new GameActionHandle(this.ChangeSelectedItem));
-      service.RemoveListener(GameActionType.LStickUp, new GameActionHandle(this.ChangeSelectedItem));
-      service.RemoveListener(GameActionType.Submit, new GameActionHandle(this.ChangeSelectedItem));
+      service.RemoveListener(GameActionType.Forward, ChangeSelectedItem);
+      service.RemoveListener(GameActionType.Backward, ChangeSelectedItem);
+      service.RemoveListener(GameActionType.LStickDown, ChangeSelectedItem);
+      service.RemoveListener(GameActionType.LStickUp, ChangeSelectedItem);
+      service.RemoveListener(GameActionType.Submit, ChangeSelectedItem);
     }
 
     private bool ChangeSelectedItem(GameActionType type, bool down)
     {
-      if (!this.helpPanel.activeInHierarchy)
+      if (!helpPanel.activeInHierarchy)
         return false;
       if (((type == GameActionType.LStickUp ? 1 : (type == GameActionType.Forward ? 1 : 0)) & (down ? 1 : 0)) != 0)
       {
-        --this.currentIndex;
-        this.ChangeSelection();
+        --currentIndex;
+        ChangeSelection();
         return true;
       }
       if (((type == GameActionType.LStickDown ? 1 : (type == GameActionType.Backward ? 1 : 0)) & (down ? 1 : 0)) != 0)
       {
-        ++this.currentIndex;
-        this.ChangeSelection();
+        ++currentIndex;
+        ChangeSelection();
         return true;
       }
       if (!(type == GameActionType.Submit & down))
         return false;
-      ExecuteEvents.Execute<ISubmitHandler>(this.buttons[this.currentIndex].gameObject, (BaseEventData) new PointerEventData(EventSystem.current), ExecuteEvents.submitHandler);
+      ExecuteEvents.Execute<ISubmitHandler>(buttons[currentIndex].gameObject, (BaseEventData) new PointerEventData(EventSystem.current), ExecuteEvents.submitHandler);
       return true;
     }
 
     private void ChangeSelection()
     {
-      if (this.currentIndex > this.buttons.Length - 1)
-        this.currentIndex = 0;
-      if (this.currentIndex < 0)
-        this.currentIndex = this.buttons.Length - 1;
-      EventSystem.current.SetSelectedGameObject(this.buttons[this.currentIndex].gameObject);
-      this.SetSelectionLine();
+      if (currentIndex > buttons.Length - 1)
+        currentIndex = 0;
+      if (currentIndex < 0)
+        currentIndex = buttons.Length - 1;
+      EventSystem.current.SetSelectedGameObject(buttons[currentIndex].gameObject);
+      SetSelectionLine();
     }
 
     protected override void OnJoystick(bool joystick)
     {
       base.OnJoystick(joystick);
-      this.helpPanel.SetActive(joystick);
+      helpPanel.SetActive(joystick);
       EventSystem.current.SetSelectedGameObject((GameObject) null);
       if (joystick)
       {
-        if (this.currentIndex != 0)
-          EventSystem.current.SetSelectedGameObject(this.buttons[this.currentIndex].gameObject);
+        if (currentIndex != 0)
+          EventSystem.current.SetSelectedGameObject(buttons[currentIndex].gameObject);
         else
-          EventSystem.current.SetSelectedGameObject(this.continueButton.gameObject.activeSelf ? this.continueButton.gameObject : this.newGameButton.gameObject);
+          EventSystem.current.SetSelectedGameObject(continueButton.gameObject.activeSelf ? continueButton.gameObject : newGameButton.gameObject);
       }
-      this.SetSelectionLine();
+      SetSelectionLine();
     }
 
     private void SetSelectionLine()
@@ -171,20 +167,20 @@ namespace Engine.Impl.UI.Menu.Main
       GameObject selectedGameObject = EventSystem.current.currentSelectedGameObject;
       Text component = (Object) selectedGameObject != (Object) null ? selectedGameObject.GetComponent<Text>() : (Text) null;
       bool flag = (Object) component != (Object) null && InputService.Instance.JoystickUsed;
-      this.selectedLine.enabled = flag;
+      selectedLine.enabled = flag;
       if (!flag)
         return;
-      Vector2 sizeDelta = this.selectedLine.rectTransform.sizeDelta;
-      this.selectedLine.rectTransform.position = component.rectTransform.position;
+      Vector2 sizeDelta = selectedLine.rectTransform.sizeDelta;
+      selectedLine.rectTransform.position = component.rectTransform.position;
       sizeDelta.x = component.preferredWidth;
-      this.selectedLine.rectTransform.sizeDelta = sizeDelta;
+      selectedLine.rectTransform.sizeDelta = sizeDelta;
     }
 
     private void UpdateContinueButton()
     {
-      if (!((Object) this.continueButton != (Object) null))
+      if (!((Object) continueButton != (Object) null))
         return;
-      this.continueButton.gameObject.SetActive(ProfilesUtility.IsSaveExist(ServiceLocator.GetService<ProfilesService>().GetLastSaveName()));
+      continueButton.gameObject.SetActive(ProfilesUtility.IsSaveExist(ServiceLocator.GetService<ProfilesService>().GetLastSaveName()));
     }
   }
 }

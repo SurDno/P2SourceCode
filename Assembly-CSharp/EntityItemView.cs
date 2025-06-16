@@ -1,6 +1,5 @@
 ﻿using Engine.Impl.UI.Controls;
 using Engine.Source.Components;
-using UnityEngine;
 
 public class EntityItemView : ItemView
 {
@@ -9,12 +8,12 @@ public class EntityItemView : ItemView
 
   public override StorableComponent Storable
   {
-    get => this.view?.Value?.GetComponent<StorableComponent>();
+    get => view?.Value?.GetComponent<StorableComponent>();
     set
     {
-      if (!((Object) this.view != (Object) null))
+      if (!((Object) view != (Object) null))
         return;
-      this.view.Value = value?.Owner;
+      view.Value = value?.Owner;
     }
   }
 }

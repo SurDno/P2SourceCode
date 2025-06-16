@@ -6,15 +6,15 @@ namespace UnityEngine.PostProcessing
   public class FogModel : PostProcessingModel
   {
     [SerializeField]
-    private FogModel.Settings m_Settings = FogModel.Settings.defaultSettings;
+    private Settings m_Settings = Settings.defaultSettings;
 
-    public FogModel.Settings settings
+    public Settings settings
     {
-      get => this.m_Settings;
-      set => this.m_Settings = value;
+      get => m_Settings;
+      set => m_Settings = value;
     }
 
-    public override void Reset() => this.m_Settings = FogModel.Settings.defaultSettings;
+    public override void Reset() => m_Settings = Settings.defaultSettings;
 
     [Serializable]
     public struct Settings
@@ -22,12 +22,11 @@ namespace UnityEngine.PostProcessing
       [Tooltip("Should the fog affect the skybox?")]
       public bool excludeSkybox;
 
-      public static FogModel.Settings defaultSettings
+      public static Settings defaultSettings
       {
         get
         {
-          return new FogModel.Settings()
-          {
+          return new Settings {
             excludeSkybox = true
           };
         }

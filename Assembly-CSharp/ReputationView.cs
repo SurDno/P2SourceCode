@@ -1,5 +1,5 @@
-﻿using Engine.Common.Commons;
-using Engine.Common.Components;
+﻿using System;
+using Engine.Common.Commons;
 using Engine.Common.Components.Regions;
 using Engine.Common.Services;
 using Engine.Impl.UI.Controls;
@@ -7,8 +7,6 @@ using Engine.Source.Components;
 using Engine.Source.Components.Regions;
 using Engine.Source.Services;
 using Engine.Source.Services.Saves;
-using System;
-using UnityEngine;
 
 public class ReputationView : MonoBehaviour
 {
@@ -50,7 +48,7 @@ public class ReputationView : MonoBehaviour
 
   private void Awake()
   {
-    ServiceLocator.GetService<SavesService>().UnloadEvent += new Action(this.OnGameUnloaded);
+    ServiceLocator.GetService<SavesService>().UnloadEvent += OnGameUnloaded;
   }
 
   public void Initialize(
@@ -59,81 +57,81 @@ public class ReputationView : MonoBehaviour
     RectTransform otherLayout)
   {
     this.regionId = regionId;
-    this.currentRect.SetParent((Transform) currentLayout, false);
-    this.otherRect.SetParent((Transform) otherLayout, false);
-    this.UpdateRegion();
+    currentRect.SetParent((Transform) currentLayout, false);
+    otherRect.SetParent((Transform) otherLayout, false);
+    UpdateRegion();
   }
 
   private void OnDestroy()
   {
-    ServiceLocator.GetService<SavesService>().UnloadEvent -= new Action(this.OnGameUnloaded);
+    ServiceLocator.GetService<SavesService>().UnloadEvent -= OnGameUnloaded;
   }
 
-  private void OnDisable() => this.SetRegion((RegionComponent) null);
+  private void OnDisable() => SetRegion(null);
 
-  private void OnEnable() => this.UpdateRegion();
+  private void OnEnable() => UpdateRegion();
 
-  private void OnGameUnloaded() => this.updatedAfterGameLoad = false;
+  private void OnGameUnloaded() => updatedAfterGameLoad = false;
 
   private void SetValue(float value)
   {
-    bool flag = !this.updatedAfterGameLoad || ServiceLocator.GetService<NotificationService>().TypeOrLayerBlocked(NotificationEnum.Reputation);
+    bool flag = !updatedAfterGameLoad || ServiceLocator.GetService<NotificationService>().TypeOrLayerBlocked(NotificationEnum.Reputation);
     if (!flag)
     {
-      float num = value - this.valueView.Progress;
-      if ((double) num <= -(double) this.highThreshold)
+      float num = value - valueView.Progress;
+      if (num <= -(double) highThreshold)
       {
-        this.downHighView.Invoke();
-        Action reputationHighDownEvent = this.ReputationHighDownEvent;
+        downHighView.Invoke();
+        Action reputationHighDownEvent = ReputationHighDownEvent;
         if (reputationHighDownEvent != null)
           reputationHighDownEvent();
       }
-      else if ((double) num <= -(double) this.mediumThreshold)
-        this.downMediumView.Invoke();
-      else if ((double) num < 0.0)
-        this.downLowView.Invoke();
-      else if ((double) num >= (double) this.highThreshold)
+      else if (num <= -(double) mediumThreshold)
+        downMediumView.Invoke();
+      else if (num < 0.0)
+        downLowView.Invoke();
+      else if (num >= (double) highThreshold)
       {
-        this.upHighView.Invoke();
-        Action reputationHighUpEvent = this.ReputationHighUpEvent;
+        upHighView.Invoke();
+        Action reputationHighUpEvent = ReputationHighUpEvent;
         if (reputationHighUpEvent != null)
           reputationHighUpEvent();
       }
-      else if ((double) num >= (double) this.mediumThreshold)
-        this.upMediumView.Invoke();
-      else if ((double) num > 0.0)
-        this.upLowView.Invoke();
+      else if (num >= (double) mediumThreshold)
+        upMediumView.Invoke();
+      else if (num > 0.0)
+        upLowView.Invoke();
     }
-    this.valueView.Progress = value;
+    valueView.Progress = value;
     if (flag)
-      this.valueView.SkipAnimation();
-    this.updatedAfterGameLoad = true;
+      valueView.SkipAnimation();
+    updatedAfterGameLoad = true;
   }
 
   public void SetCurrentRegion(RegionEnum currentRegionId, bool instant)
   {
-    this.currentView.Visible = this.regionId == currentRegionId;
+    currentView.Visible = regionId == currentRegionId;
     if (!instant)
       return;
-    this.currentView.SkipAnimation();
+    currentView.SkipAnimation();
   }
 
   private void SetRegion(RegionComponent newRegion)
   {
-    if (this.region != null)
+    if (region != null)
     {
-      if (this.region.Reputation != null)
-        this.region.Reputation.ChangeValueEvent -= new Action<float>(this.SetValue);
+      if (region.Reputation != null)
+        region.Reputation.ChangeValueEvent -= SetValue;
       else
         Debug.LogError((object) "region.Reputation == null , разобраться");
     }
-    this.region = newRegion;
-    if (this.region == null)
+    region = newRegion;
+    if (region == null)
       return;
-    this.nameView.StringValue = RegionUtility.GetRegionTitle((IRegionComponent) this.region);
-    this.SetValue(this.region.Reputation.Value);
-    this.region.Reputation.ChangeValueEvent += new Action<float>(this.SetValue);
+    nameView.StringValue = RegionUtility.GetRegionTitle(region);
+    SetValue(region.Reputation.Value);
+    region.Reputation.ChangeValueEvent += SetValue;
   }
 
-  private void UpdateRegion() => this.SetRegion(RegionUtility.GetRegionByName(this.regionId));
+  private void UpdateRegion() => SetRegion(RegionUtility.GetRegionByName(regionId));
 }

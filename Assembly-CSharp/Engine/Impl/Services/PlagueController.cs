@@ -1,13 +1,12 @@
-﻿using Engine.Common;
+﻿using System;
+using Engine.Common;
 using Engine.Common.Services;
 using Engine.Source.Commons;
 using Engine.Source.Services;
-using System;
-using UnityEngine;
 
 namespace Engine.Impl.Services
 {
-  [GameService(new System.Type[] {typeof (IPlagueController)})]
+  [GameService(typeof (IPlagueController))]
   public class PlagueController : IPlagueController
   {
     public float GetLevel(IEntity entity)

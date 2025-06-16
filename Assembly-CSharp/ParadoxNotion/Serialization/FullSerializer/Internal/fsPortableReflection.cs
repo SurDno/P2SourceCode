@@ -8,44 +8,43 @@ namespace ParadoxNotion.Serialization.FullSerializer.Internal
   public static class fsPortableReflection
   {
     public static Type[] EmptyTypes = new Type[0];
-    private static IDictionary<fsPortableReflection.AttributeQuery, Attribute> _cachedAttributeQueries = (IDictionary<fsPortableReflection.AttributeQuery, Attribute>) new Dictionary<fsPortableReflection.AttributeQuery, Attribute>((IEqualityComparer<fsPortableReflection.AttributeQuery>) new fsPortableReflection.AttributeQueryComparator());
+    private static IDictionary<AttributeQuery, Attribute> _cachedAttributeQueries = new Dictionary<AttributeQuery, Attribute>(new AttributeQueryComparator());
     private static BindingFlags DeclaredFlags = BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
 
     public static bool HasAttribute(MemberInfo element, Type attributeType)
     {
-      return fsPortableReflection.GetAttribute(element, attributeType, true) != null;
+      return GetAttribute(element, attributeType, true) != null;
     }
 
     public static bool HasAttribute<TAttribute>(MemberInfo element)
     {
-      return fsPortableReflection.HasAttribute(element, typeof (TAttribute));
+      return HasAttribute(element, typeof (TAttribute));
     }
 
     public static Attribute GetAttribute(MemberInfo element, Type attributeType, bool shouldCache)
     {
-      fsPortableReflection.AttributeQuery key = new fsPortableReflection.AttributeQuery()
-      {
+      AttributeQuery key = new AttributeQuery {
         MemberInfo = element,
         AttributeType = attributeType
       };
       Attribute attribute;
-      if (!fsPortableReflection._cachedAttributeQueries.TryGetValue(key, out attribute))
+      if (!_cachedAttributeQueries.TryGetValue(key, out attribute))
       {
-        attribute = (Attribute) ((IEnumerable<object>) element.GetCustomAttributes(attributeType, true)).FirstOrDefault<object>();
+        attribute = (Attribute) element.GetCustomAttributes(attributeType, true).FirstOrDefault();
         if (shouldCache)
-          fsPortableReflection._cachedAttributeQueries[key] = attribute;
+          _cachedAttributeQueries[key] = attribute;
       }
       return attribute;
     }
 
     public static TAttribute GetAttribute<TAttribute>(MemberInfo element, bool shouldCache) where TAttribute : Attribute
     {
-      return (TAttribute) fsPortableReflection.GetAttribute(element, typeof (TAttribute), shouldCache);
+      return (TAttribute) GetAttribute(element, typeof (TAttribute), shouldCache);
     }
 
     public static TAttribute GetAttribute<TAttribute>(MemberInfo element) where TAttribute : Attribute
     {
-      return fsPortableReflection.GetAttribute<TAttribute>(element, true);
+      return GetAttribute<TAttribute>(element, true);
     }
 
     public static PropertyInfo GetDeclaredProperty(this Type type, string propertyName)
@@ -56,7 +55,7 @@ namespace ParadoxNotion.Serialization.FullSerializer.Internal
         if (declaredProperties[index].Name == propertyName)
           return declaredProperties[index];
       }
-      return (PropertyInfo) null;
+      return null;
     }
 
     public static MethodInfo GetDeclaredMethod(this Type type, string methodName)
@@ -67,7 +66,7 @@ namespace ParadoxNotion.Serialization.FullSerializer.Internal
         if (declaredMethods[index].Name == methodName)
           return declaredMethods[index];
       }
-      return (MethodInfo) null;
+      return null;
     }
 
     public static ConstructorInfo GetDeclaredConstructor(this Type type, Type[] parameters)
@@ -85,18 +84,18 @@ namespace ParadoxNotion.Serialization.FullSerializer.Internal
           return declaredConstructor;
         }
       }
-      return (ConstructorInfo) null;
+      return null;
     }
 
     public static ConstructorInfo[] GetDeclaredConstructors(this Type type)
     {
-      return type.GetConstructors(fsPortableReflection.DeclaredFlags);
+      return type.GetConstructors(DeclaredFlags);
     }
 
     public static MemberInfo[] GetFlattenedMember(this Type type, string memberName)
     {
       List<MemberInfo> memberInfoList = new List<MemberInfo>();
-      for (; type != (Type) null; type = type.Resolve().BaseType)
+      for (; type != null; type = type.Resolve().BaseType)
       {
         MemberInfo[] declaredMembers = type.GetDeclaredMembers();
         for (int index = 0; index < declaredMembers.Length; ++index)
@@ -110,7 +109,7 @@ namespace ParadoxNotion.Serialization.FullSerializer.Internal
 
     public static MethodInfo GetFlattenedMethod(this Type type, string methodName)
     {
-      for (; type != (Type) null; type = type.Resolve().BaseType)
+      for (; type != null; type = type.Resolve().BaseType)
       {
         MethodInfo[] declaredMethods = type.GetDeclaredMethods();
         for (int index = 0; index < declaredMethods.Length; ++index)
@@ -119,12 +118,12 @@ namespace ParadoxNotion.Serialization.FullSerializer.Internal
             return declaredMethods[index];
         }
       }
-      return (MethodInfo) null;
+      return null;
     }
 
     public static IEnumerable<MethodInfo> GetFlattenedMethods(this Type type, string methodName)
     {
-      while (type != (Type) null)
+      while (type != null)
       {
         MethodInfo[] methods = type.GetDeclaredMethods();
         for (int i = 0; i < methods.Length; ++i)
@@ -133,13 +132,13 @@ namespace ParadoxNotion.Serialization.FullSerializer.Internal
             yield return methods[i];
         }
         type = type.Resolve().BaseType;
-        methods = (MethodInfo[]) null;
+        methods = null;
       }
     }
 
     public static PropertyInfo GetFlattenedProperty(this Type type, string propertyName)
     {
-      for (; type != (Type) null; type = type.Resolve().BaseType)
+      for (; type != null; type = type.Resolve().BaseType)
       {
         PropertyInfo[] declaredProperties = type.GetDeclaredProperties();
         for (int index = 0; index < declaredProperties.Length; ++index)
@@ -148,7 +147,7 @@ namespace ParadoxNotion.Serialization.FullSerializer.Internal
             return declaredProperties[index];
         }
       }
-      return (PropertyInfo) null;
+      return null;
     }
 
     public static MemberInfo GetDeclaredMember(this Type type, string memberName)
@@ -159,30 +158,30 @@ namespace ParadoxNotion.Serialization.FullSerializer.Internal
         if (declaredMembers[index].Name == memberName)
           return declaredMembers[index];
       }
-      return (MemberInfo) null;
+      return null;
     }
 
     public static MethodInfo[] GetDeclaredMethods(this Type type)
     {
-      return type.GetMethods(fsPortableReflection.DeclaredFlags);
+      return type.GetMethods(DeclaredFlags);
     }
 
     public static PropertyInfo[] GetDeclaredProperties(this Type type)
     {
-      return type.GetProperties(fsPortableReflection.DeclaredFlags);
+      return type.GetProperties(DeclaredFlags);
     }
 
     public static FieldInfo[] GetDeclaredFields(this Type type)
     {
-      return type.GetFields(fsPortableReflection.DeclaredFlags);
+      return type.GetFields(DeclaredFlags);
     }
 
     public static MemberInfo[] GetDeclaredMembers(this Type type)
     {
-      return type.GetMembers(fsPortableReflection.DeclaredFlags);
+      return type.GetMembers(DeclaredFlags);
     }
 
-    public static MemberInfo AsMemberInfo(Type type) => (MemberInfo) type;
+    public static MemberInfo AsMemberInfo(Type type) => type;
 
     public static bool IsType(MemberInfo member) => member is Type;
 
@@ -196,16 +195,16 @@ namespace ParadoxNotion.Serialization.FullSerializer.Internal
       public Type AttributeType;
     }
 
-    private class AttributeQueryComparator : IEqualityComparer<fsPortableReflection.AttributeQuery>
+    private class AttributeQueryComparator : IEqualityComparer<AttributeQuery>
     {
       public bool Equals(
-        fsPortableReflection.AttributeQuery x,
-        fsPortableReflection.AttributeQuery y)
+        AttributeQuery x,
+        AttributeQuery y)
       {
         return x.MemberInfo == y.MemberInfo && x.AttributeType == y.AttributeType;
       }
 
-      public int GetHashCode(fsPortableReflection.AttributeQuery obj)
+      public int GetHashCode(AttributeQuery obj)
       {
         return obj.MemberInfo.GetHashCode() + 17 * obj.AttributeType.GetHashCode();
       }

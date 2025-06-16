@@ -2,7 +2,6 @@
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Inspectors;
-using System;
 
 namespace Engine.Source.Commons.Abilities.Controllers
 {
@@ -10,9 +9,9 @@ namespace Engine.Source.Commons.Abilities.Controllers
   [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
   public class PlayerJumpAbilityController : IAbilityController
   {
-    [DataReadProxy(MemberEnum.None, Name = "jump")]
-    [DataWriteProxy(MemberEnum.None, Name = "jump")]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy(Name = "jump")]
+    [DataWriteProxy(Name = "jump")]
+    [CopyableProxy()]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected bool jump;
     private AbilityItem abilityItem;
@@ -23,37 +22,37 @@ namespace Engine.Source.Commons.Abilities.Controllers
       this.abilityItem = abilityItem;
       IEntityView owner = (IEntityView) this.abilityItem.Ability.Owner;
       if ((UnityEngine.Object) owner.GameObject == (UnityEngine.Object) null)
-        owner.OnGameObjectChangedEvent += new Action(this.OnViewGameObjectChanged);
+        owner.OnGameObjectChangedEvent += OnViewGameObjectChanged;
       else
-        this.OnViewGameObjectChanged();
+        OnViewGameObjectChanged();
     }
 
     private void OnViewGameObjectChanged()
     {
-      IEntityView owner = (IEntityView) this.abilityItem.Ability.Owner;
+      IEntityView owner = (IEntityView) abilityItem.Ability.Owner;
       if ((UnityEngine.Object) owner.GameObject == (UnityEngine.Object) null)
         return;
-      this.playerMoveController = owner.GameObject.GetComponent<PlayerMoveController>();
-      if (!(bool) (UnityEngine.Object) this.playerMoveController)
+      playerMoveController = owner.GameObject.GetComponent<PlayerMoveController>();
+      if (!(bool) (UnityEngine.Object) playerMoveController)
         return;
-      owner.OnGameObjectChangedEvent -= new Action(this.OnViewGameObjectChanged);
-      this.playerMoveController.JumpEvent += new Action<bool>(this.OnJumpEvent);
+      owner.OnGameObjectChangedEvent -= OnViewGameObjectChanged;
+      playerMoveController.JumpEvent += OnJumpEvent;
     }
 
     private void OnJumpEvent(bool jump)
     {
       if (this.jump != jump)
         return;
-      this.abilityItem.Active = true;
-      this.abilityItem.Active = false;
+      abilityItem.Active = true;
+      abilityItem.Active = false;
     }
 
     public void Shutdown()
     {
-      ((IEntityView) this.abilityItem.Ability.Owner).OnGameObjectChangedEvent -= new Action(this.OnViewGameObjectChanged);
-      if (!(bool) (UnityEngine.Object) this.playerMoveController)
+      ((IEntityView) abilityItem.Ability.Owner).OnGameObjectChangedEvent -= OnViewGameObjectChanged;
+      if (!(bool) (UnityEngine.Object) playerMoveController)
         return;
-      this.playerMoveController.JumpEvent -= new Action<bool>(this.OnJumpEvent);
+      playerMoveController.JumpEvent -= OnJumpEvent;
     }
   }
 }

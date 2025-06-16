@@ -1,8 +1,8 @@
-﻿using Cofe.Loggers;
+﻿using System.Xml;
+using Cofe.Loggers;
 using Engine.Common.Commons;
 using PLVirtualMachine.Common.Data;
 using PLVirtualMachine.Data;
-using System.Xml;
 using VirtualMachine.Common;
 using VirtualMachine.Common.Data;
 
@@ -11,34 +11,33 @@ namespace VirtualMachine.Data.Customs
   [DataFactory("ActionLoopInfoData")]
   public class ActionLoopInfoData : IStub, IEditorDataReader
   {
-    [FieldData("Name", DataFieldType.None)]
+    [FieldData("Name")]
     public string Name = "";
-    [FieldData("Start", DataFieldType.None)]
+    [FieldData("Start")]
     public string Start = "";
-    [FieldData("End", DataFieldType.None)]
+    [FieldData("End")]
     public string End = "";
-    [FieldData("Random", DataFieldType.None)]
+    [FieldData("Random")]
     public bool Random;
 
     public virtual void EditorDataRead(XmlReader xml, IDataCreator creator, string typeContext)
     {
-      while (xml.Read())
-      {
+      while (xml.Read()) {
         if (xml.NodeType == XmlNodeType.Element)
         {
           switch (xml.Name)
           {
             case "Name":
-              this.Name = EditorDataReadUtility.ReadValue(xml, this.Name);
+              Name = EditorDataReadUtility.ReadValue(xml, Name);
               continue;
             case "Start":
-              this.Start = EditorDataReadUtility.ReadValue(xml, this.Start);
+              Start = EditorDataReadUtility.ReadValue(xml, Start);
               continue;
             case "End":
-              this.End = EditorDataReadUtility.ReadValue(xml, this.End);
+              End = EditorDataReadUtility.ReadValue(xml, End);
               continue;
             case "Random":
-              this.Random = EditorDataReadUtility.ReadValue(xml, this.Random);
+              Random = EditorDataReadUtility.ReadValue(xml, Random);
               continue;
             default:
               if (XMLDataLoader.Logs.Add(typeContext + " : " + xml.Name))
@@ -47,7 +46,8 @@ namespace VirtualMachine.Data.Customs
               continue;
           }
         }
-        else if (xml.NodeType == XmlNodeType.EndElement)
+
+        if (xml.NodeType == XmlNodeType.EndElement)
           break;
       }
     }

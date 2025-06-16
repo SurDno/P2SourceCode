@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace Pathologic.Prototype
+﻿namespace Pathologic.Prototype
 {
   public class StickyIdleDemoBehaviour : StateMachineBehaviour
   {

@@ -1,6 +1,5 @@
-﻿using ParadoxNotion.Design;
-using System.Collections;
-using UnityEngine;
+﻿using System.Collections;
+using ParadoxNotion.Design;
 
 namespace FlowCanvas.Nodes
 {
@@ -11,12 +10,12 @@ namespace FlowCanvas.Nodes
 
     public override IEnumerator Invoke(float time)
     {
-      this.timeLeft = time;
-      while ((double) this.timeLeft > 0.0)
+      timeLeft = time;
+      while (timeLeft > 0.0)
       {
-        this.timeLeft -= Time.deltaTime;
-        this.timeLeft = Mathf.Max(this.timeLeft, 0.0f);
-        yield return (object) null;
+        timeLeft -= Time.deltaTime;
+        timeLeft = Mathf.Max(timeLeft, 0.0f);
+        yield return null;
       }
     }
   }

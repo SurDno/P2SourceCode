@@ -1,7 +1,6 @@
 ﻿using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
-using UnityEngine;
 
 namespace Engine.Source.Blueprints
 {
@@ -13,10 +12,10 @@ namespace Engine.Source.Blueprints
     protected override void RegisterPorts()
     {
       base.RegisterPorts();
-      this.goInput = this.AddValueInput<GameObject>("GameObject");
-      this.AddValueOutput<GameObject>("Attached", (ValueHandler<GameObject>) (() =>
+      goInput = AddValueInput<GameObject>("GameObject");
+      AddValueOutput("Attached", (ValueHandler<GameObject>) (() =>
       {
-        GameObject context = this.goInput.value;
+        GameObject context = goInput.value;
         if ((Object) context != (Object) null)
         {
           AttachedGameObject component = context.GetComponent<AttachedGameObject>();

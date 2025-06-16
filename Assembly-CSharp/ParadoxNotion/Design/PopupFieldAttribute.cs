@@ -2,7 +2,7 @@
 
 namespace ParadoxNotion.Design
 {
-  [AttributeUsage(AttributeTargets.Field, AllowMultiple = false, Inherited = false)]
+  [AttributeUsage(AttributeTargets.Field)]
   public class PopupFieldAttribute : Attribute
   {
     public object[] values;

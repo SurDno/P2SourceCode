@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Reflection;
 using System.Text;
 
 namespace ParadoxNotion.Serialization.FullSerializer.Internal
@@ -20,9 +19,9 @@ namespace ParadoxNotion.Serialization.FullSerializer.Internal
 
     public override fsResult TrySerialize(object instance, out fsData serialized, Type storageType)
     {
-      if (this.Serializer.Config.SerializeEnumsAsInteger)
+      if (Serializer.Config.SerializeEnumsAsInteger)
         serialized = new fsData(Convert.ToInt64(instance));
-      else if (fsPortableReflection.GetAttribute<FlagsAttribute>((MemberInfo) storageType) != null)
+      else if (fsPortableReflection.GetAttribute<FlagsAttribute>(storageType) != null)
       {
         long int64_1 = Convert.ToInt64(instance);
         StringBuilder stringBuilder = new StringBuilder();
@@ -35,7 +34,7 @@ namespace ParadoxNotion.Serialization.FullSerializer.Internal
             if (!flag)
               stringBuilder.Append(",");
             flag = false;
-            stringBuilder.Append(obj.ToString());
+            stringBuilder.Append(obj);
           }
         }
         serialized = new fsData(stringBuilder.ToString());
@@ -57,8 +56,8 @@ namespace ParadoxNotion.Serialization.FullSerializer.Internal
         for (int index = 0; index < strArray.Length; ++index)
         {
           string str = strArray[index];
-          if (!fsEnumConverter.ArrayContains<string>(Enum.GetNames(storageType), str))
-            return fsResult.Fail("Cannot find enum name " + str + " on type " + (object) storageType);
+          if (!ArrayContains(Enum.GetNames(storageType), str))
+            return fsResult.Fail("Cannot find enum name " + str + " on type " + storageType);
           long num2 = (long) Convert.ChangeType(Enum.Parse(storageType, str), typeof (long));
           num1 |= num2;
         }

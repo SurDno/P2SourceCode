@@ -1,7 +1,7 @@
-﻿using Engine.Common.Components;
-using Engine.Common.Components.Interactable;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using Engine.Common.Components;
+using Engine.Common.Components.Interactable;
 
 namespace Engine.Source.Components.Interactable
 {
@@ -13,7 +13,7 @@ namespace Engine.Source.Components.Interactable
       InteractType type,
       Func<IInteractableComponent, InteractItem, ValidateResult> validator)
     {
-      InteractValidationService.validators.Add(type, validator);
+      validators.Add(type, validator);
     }
 
     public static ValidateResult Validate(IInteractableComponent interactable, InteractItem item)
@@ -23,7 +23,7 @@ namespace Engine.Source.Components.Interactable
       if (!interactable.IsEnabled)
         return new ValidateResult(false, "Interactable disabled");
       Func<IInteractableComponent, InteractItem, ValidateResult> func;
-      return InteractValidationService.validators.TryGetValue(item.Type, out func) ? func(interactable, item) : new ValidateResult(true, "Validator not found");
+      return validators.TryGetValue(item.Type, out func) ? func(interactable, item) : new ValidateResult(true, "Validator not found");
     }
   }
 }

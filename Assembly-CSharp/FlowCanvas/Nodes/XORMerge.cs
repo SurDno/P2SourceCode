@@ -1,6 +1,6 @@
-﻿using ParadoxNotion.Design;
-using System;
+﻿using System;
 using System.Collections;
+using ParadoxNotion.Design;
 
 namespace FlowCanvas.Nodes
 {
@@ -16,31 +16,31 @@ namespace FlowCanvas.Nodes
 
     protected override void RegisterPorts()
     {
-      this.fOut = this.AddFlowOutput("Out");
-      this.AddFlowInput("A", (FlowHandler) (() =>
+      fOut = AddFlowOutput("Out");
+      AddFlowInput("A", () =>
       {
-        this.a = true;
-        this.Check();
-      }));
-      this.AddFlowInput("B", (FlowHandler) (() =>
+        a = true;
+        Check();
+      });
+      AddFlowInput("B", () =>
       {
-        this.b = true;
-        this.Check();
-      }));
+        b = true;
+        Check();
+      });
     }
 
     private void Check()
     {
-      if ((this.a || this.b) && this.a != this.b)
-        this.fOut.Call();
-      this.StartCoroutine(this.Reset());
+      if ((a || b) && a != b)
+        fOut.Call();
+      StartCoroutine(Reset());
     }
 
     private IEnumerator Reset()
     {
-      yield return (object) null;
-      this.a = false;
-      this.b = false;
+      yield return null;
+      a = false;
+      b = false;
     }
   }
 }

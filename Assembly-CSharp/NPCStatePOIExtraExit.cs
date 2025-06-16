@@ -1,6 +1,5 @@
 ﻿using Engine.Behaviours.Components;
 using Engine.Behaviours.Unity.Mecanim;
-using UnityEngine;
 
 public class NPCStatePOIExtraExit : INpcState
 {
@@ -11,7 +10,7 @@ public class NPCStatePOIExtraExit : INpcState
   private AnimatorState45 animatorState;
   private bool initiallyKinematic;
   private bool failed;
-  private bool inited = false;
+  private bool inited;
   private bool complete;
   private float exitTime;
 
@@ -19,67 +18,67 @@ public class NPCStatePOIExtraExit : INpcState
 
   public NPCStatePOIExtraExit(NpcState npcState, Pivot pivot)
   {
-    this.GameObject = npcState.gameObject;
+    GameObject = npcState.gameObject;
     this.pivot = pivot;
     this.npcState = npcState;
   }
 
   private bool TryInit()
   {
-    if (this.inited)
+    if (inited)
       return true;
-    this.animator = this.pivot.GetAnimator();
-    if ((Object) this.animator == (Object) null)
+    animator = pivot.GetAnimator();
+    if ((Object) animator == (Object) null)
     {
-      Debug.LogError((object) ("Null animator " + this.GameObject.name), (Object) this.GameObject);
-      Debug.LogError((object) ("Null animator " + this.GameObject.GetFullName()));
-      this.failed = true;
+      Debug.LogError((object) ("Null animator " + GameObject.name), (Object) GameObject);
+      Debug.LogError((object) ("Null animator " + GameObject.GetFullName()));
+      failed = true;
       return false;
     }
-    this.animatorState = AnimatorState45.GetAnimatorState(this.animator);
-    this.rigidbody = this.pivot.GetRigidbody();
-    this.failed = false;
-    this.inited = true;
+    animatorState = AnimatorState45.GetAnimatorState(animator);
+    rigidbody = pivot.GetRigidbody();
+    failed = false;
+    inited = true;
     return true;
   }
 
   public void Activate(INpcState previousState, float time)
   {
-    if (!this.TryInit())
+    if (!TryInit())
       return;
     if (!(previousState is INpcStateNeedSyncBack))
     {
-      this.complete = true;
+      complete = true;
     }
     else
     {
-      this.exitTime = time;
-      bool flag = this.pivot.HasFastPOIExit((previousState as INpcStateNeedSyncBack).GetPoiType());
-      this.animatorState.ResetAllTriggers();
-      this.animatorState.SetTrigger(flag ? "Triggers/POIExtraExit" : "Triggers/POIExtraExitNoAnimation");
-      this.complete = false;
-      if (!(bool) (Object) this.rigidbody)
+      exitTime = time;
+      bool flag = pivot.HasFastPOIExit((previousState as INpcStateNeedSyncBack).GetPoiType());
+      animatorState.ResetAllTriggers();
+      animatorState.SetTrigger(flag ? "Triggers/POIExtraExit" : "Triggers/POIExtraExitNoAnimation");
+      complete = false;
+      if (!(bool) (Object) rigidbody)
         return;
-      this.initiallyKinematic = this.rigidbody.isKinematic;
-      this.rigidbody.isKinematic = true;
+      initiallyKinematic = rigidbody.isKinematic;
+      rigidbody.isKinematic = true;
     }
   }
 
   public NpcStateStatusEnum Status
   {
-    get => this.complete ? NpcStateStatusEnum.Success : NpcStateStatusEnum.Running;
+    get => complete ? NpcStateStatusEnum.Success : NpcStateStatusEnum.Running;
   }
 
   public void Shutdown()
   {
-    if (!(bool) (Object) this.rigidbody)
+    if (!(bool) (Object) rigidbody)
       return;
-    this.rigidbody.isKinematic = this.initiallyKinematic;
+    rigidbody.isKinematic = initiallyKinematic;
   }
 
   public void OnAnimatorEventEvent(string obj)
   {
-    if (!this.failed)
+    if (!failed)
       ;
   }
 
@@ -89,20 +88,20 @@ public class NPCStatePOIExtraExit : INpcState
 
   public void OnAnimatorMove()
   {
-    if (this.failed || this.complete)
+    if (failed || complete)
       return;
-    float num = this.animator.updateMode == AnimatorUpdateMode.AnimatePhysics ? Time.fixedDeltaTime : Time.deltaTime;
-    if (!this.animatorState.IsPOI && !this.animatorState.IsPOIExit)
-      this.animatorState.ControlMovableState = AnimatorState45.MovableState45.Idle;
-    this.exitTime -= num;
-    if ((double) this.exitTime <= 0.0 && !this.animatorState.IsPOI && !this.animatorState.IsPOIExit)
+    float num = animator.updateMode == AnimatorUpdateMode.AnimatePhysics ? Time.fixedDeltaTime : Time.deltaTime;
+    if (!animatorState.IsPOI && !animatorState.IsPOIExit)
+      animatorState.ControlMovableState = AnimatorState45.MovableState45.Idle;
+    exitTime -= num;
+    if (exitTime <= 0.0 && !animatorState.IsPOI && !animatorState.IsPOIExit)
     {
-      this.complete = true;
+      complete = true;
     }
     else
     {
-      this.GameObject.transform.position += this.animator.deltaPosition;
-      this.GameObject.transform.rotation *= this.animator.deltaRotation;
+      GameObject.transform.position += animator.deltaPosition;
+      GameObject.transform.rotation *= animator.deltaRotation;
     }
   }
 

@@ -36,7 +36,7 @@ namespace SteamNative
 
     public static gameserveritem_t FromPointer(IntPtr p)
     {
-      return Platform.PackSmall ? (gameserveritem_t) (gameserveritem_t.PackSmall) Marshal.PtrToStructure(p, typeof (gameserveritem_t.PackSmall)) : (gameserveritem_t) Marshal.PtrToStructure(p, typeof (gameserveritem_t));
+      return Platform.PackSmall ? (PackSmall) Marshal.PtrToStructure(p, typeof (PackSmall)) : (gameserveritem_t) Marshal.PtrToStructure(p, typeof (gameserveritem_t));
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
@@ -70,10 +70,9 @@ namespace SteamNative
       public string GameTags;
       public ulong SteamID;
 
-      public static implicit operator gameserveritem_t(gameserveritem_t.PackSmall d)
+      public static implicit operator gameserveritem_t(PackSmall d)
       {
-        return new gameserveritem_t()
-        {
+        return new gameserveritem_t {
           NetAdr = d.NetAdr,
           Ping = d.Ping,
           HadSuccessfulResponse = d.HadSuccessfulResponse,

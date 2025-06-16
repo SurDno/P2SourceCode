@@ -1,12 +1,11 @@
 ﻿using ParadoxNotion.Design;
-using UnityEngine;
 
 namespace FlowCanvas.Nodes
 {
   [Name("Latch Integer")]
   [Category("Flow Controllers/Flow Convert")]
   [Description("Convert a Flow signal to an integer value")]
-  [ContextDefinedInputs(new System.Type[] {typeof (int)})]
+  [ContextDefinedInputs(typeof (int))]
   public class LatchInt : FlowControlNode, IMultiPortNode
   {
     [SerializeField]
@@ -15,23 +14,23 @@ namespace FlowCanvas.Nodes
 
     public int portCount
     {
-      get => this._portCount;
-      set => this._portCount = value;
+      get => _portCount;
+      set => _portCount = value;
     }
 
     protected override void RegisterPorts()
     {
-      FlowOutput o = this.AddFlowOutput("Out");
-      for (int index = 0; index < this.portCount; ++index)
+      FlowOutput o = AddFlowOutput("Out");
+      for (int index = 0; index < portCount; ++index)
       {
         int i = index;
-        this.AddFlowInput(i.ToString(), (FlowHandler) (() =>
+        AddFlowInput(i.ToString(), () =>
         {
-          this.latched = i;
+          latched = i;
           o.Call();
-        }));
+        });
       }
-      this.AddValueOutput<int>("Value", (ValueHandler<int>) (() => this.latched));
+      AddValueOutput("Value", () => latched);
     }
   }
 }

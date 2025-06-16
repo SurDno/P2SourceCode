@@ -8,15 +8,15 @@ namespace Engine.Source.Effects.Engine
 {
   public abstract class EffectContextValueAssignment<T> : IEffectValueSetter where T : struct
   {
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected]
     [Inspected(Name = "a", Mutable = true, Mode = ExecuteMode.Edit)]
     protected IValueSetter<T> a;
-    [DataReadProxy(MemberEnum.None, Name = "Source")]
-    [DataWriteProxy(MemberEnum.None, Name = "Source")]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy(Name = "Source")]
+    [DataWriteProxy(Name = "Source")]
+    [CopyableProxy()]
     [Inspected]
     [Inspected(Name = "b", Mutable = true, Mode = ExecuteMode.Edit)]
     protected IValue<T> b;
@@ -27,8 +27,8 @@ namespace Engine.Source.Effects.Engine
     {
       get
       {
-        this.view.Value = this.ValueView;
-        return this.view;
+        view.Value = ValueView;
+        return view;
       }
     }
 
@@ -40,9 +40,9 @@ namespace Engine.Source.Effects.Engine
 
     public void Compute(IEffect context)
     {
-      if (this.b == null || this.a == null)
+      if (b == null || a == null)
         return;
-      this.a.SetValue(this.Compute(this.a.GetValue(context), this.b.GetValue(context)), context);
+      a.SetValue(Compute(a.GetValue(context), b.GetValue(context)), context);
     }
   }
 }

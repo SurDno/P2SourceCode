@@ -6,7 +6,6 @@ using Engine.Common.Components.Interactable;
 using Engine.Common.Components.Parameters;
 using Engine.Common.Services;
 using Engine.Source.Services;
-using System;
 
 namespace Engine.Source.Components.Interactable.Validators
 {
@@ -32,7 +31,7 @@ namespace Engine.Source.Components.Interactable.Validators
       IParameter<FractionEnum> fraction = component1.GetByName<FractionEnum>(ParameterNameEnum.Fraction);
       if (fraction != null)
       {
-        FractionSettings fractionSettings = ScriptableObjectInstance<FractionsSettingsData>.Instance.Fractions.Find((Predicate<FractionSettings>) (x => x.Name == fraction.Value));
+        FractionSettings fractionSettings = ScriptableObjectInstance<FractionsSettingsData>.Instance.Fractions.Find(x => x.Name == fraction.Value);
         if (fractionSettings != null)
           num = fractionSettings.PlayerTradeReputationThreshold;
       }
@@ -43,8 +42,8 @@ namespace Engine.Source.Components.Interactable.Validators
         if (component2 != null)
         {
           IRegionComponent region = component2.Region;
-          if (region != null && (double) region.Reputation.Value < (double) num)
-            return new ValidateResult(false, "Reputation " + (object) region.Reputation.Value + " " + (object) num);
+          if (region != null && region.Reputation.Value < (double) num)
+            return new ValidateResult(false, "Reputation " + region.Reputation.Value + " " + num);
         }
       }
       IEntity player = ServiceLocator.GetService<ISimulation>().Player;

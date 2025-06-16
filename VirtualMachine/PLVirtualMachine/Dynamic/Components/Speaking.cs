@@ -1,4 +1,6 @@
-﻿using Cofe.Loggers;
+﻿using System.Linq;
+using System.Xml;
+using Cofe.Loggers;
 using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using PLVirtualMachine.Common;
@@ -6,9 +8,6 @@ using PLVirtualMachine.Common.Data;
 using PLVirtualMachine.Common.EngineAPI.VMECS;
 using PLVirtualMachine.Data.SaveLoad;
 using PLVirtualMachine.Objects;
-using System;
-using System.Linq;
-using System.Xml;
 
 namespace PLVirtualMachine.Dynamic.Components
 {
@@ -26,13 +25,13 @@ namespace PLVirtualMachine.Dynamic.Components
       switch (target.Name)
       {
         case "BeginTalkingEvent":
-          this.BeginTalkingEvent += (Action) (() => target.RaiseFromEngineImpl());
+          BeginTalkingEvent += () => target.RaiseFromEngineImpl();
           break;
         case "EndTalkingEvent":
-          this.EndTalkingEvent += (Action<IStateRef>) (p1 => target.RaiseFromEngineImpl((object) p1));
+          EndTalkingEvent += p1 => target.RaiseFromEngineImpl(p1);
           break;
         case "OnSpeechReplyEvent":
-          this.OnSpeechReplyEvent += (Action<ulong>) (p1 => target.RaiseFromEngineImpl((object) p1));
+          OnSpeechReplyEvent += p1 => target.RaiseFromEngineImpl(p1);
           break;
       }
     }
@@ -40,9 +39,9 @@ namespace PLVirtualMachine.Dynamic.Components
     public override void StateSave(IDataWriter writer)
     {
       base.StateSave(writer);
-      SaveManagerUtility.Save(writer, "ContextTalkingAvailable", this.contextTalkingAvailable);
-      SaveManagerUtility.SaveSerializable(writer, "CurrentTalking", (IVMStringSerializable) this.currentTalking);
-      SaveManagerUtility.SaveList(writer, "PassedOnlyOnceTalkigList", this.passedOnlyOnceTalkigs.Select<IFiniteStateMachine, ulong>((Func<IFiniteStateMachine, ulong>) (o => o.BaseGuid)));
+      SaveManagerUtility.Save(writer, "ContextTalkingAvailable", contextTalkingAvailable);
+      SaveManagerUtility.SaveSerializable(writer, "CurrentTalking", currentTalking);
+      SaveManagerUtility.SaveList(writer, "PassedOnlyOnceTalkigList", passedOnlyOnceTalkigs.Select(o => o.BaseGuid));
     }
 
     public override void LoadFromXML(XmlElement xmlNode)
@@ -52,28 +51,28 @@ namespace PLVirtualMachine.Dynamic.Components
       {
         XmlElement childNode1 = (XmlElement) xmlNode.ChildNodes[i];
         if (childNode1.Name == "ContextTalkingAvailable")
-          this.contextTalkingAvailable = VMSaveLoadManager.ReadBool((XmlNode) childNode1);
+          contextTalkingAvailable = VMSaveLoadManager.ReadBool(childNode1);
         else if (childNode1.Name == "CurrentTalking")
-          this.currentTalking = VMSaveLoadManager.ReadValue<IStateRef>((XmlNode) childNode1);
+          currentTalking = VMSaveLoadManager.ReadValue<IStateRef>(childNode1);
         else if (childNode1.Name == "PassedOnlyOnceTalkigList")
         {
-          this.passedOnlyOnceTalkigs.Clear();
+          passedOnlyOnceTalkigs.Clear();
           foreach (XmlNode childNode2 in childNode1.ChildNodes)
           {
             ulong stateId = VMSaveLoadManager.ReadUlong(childNode2);
-            if (this.Parent.EditorTemplate == null)
+            if (Parent.EditorTemplate == null)
             {
-              Logger.AddError(string.Format("SaveLoad error: editor template not defined at {0}", (object) this.Parent.Name));
+              Logger.AddError(string.Format("SaveLoad error: editor template not defined at {0}", Parent.Name));
               return;
             }
-            if (this.Parent.EditorTemplate.StateGraph == null)
+            if (Parent.EditorTemplate.StateGraph == null)
             {
-              Logger.AddError(string.Format("SaveLoad error: state graph not defined at talking object {0}", (object) this.Parent.Name));
+              Logger.AddError(string.Format("SaveLoad error: state graph not defined at talking object {0}", Parent.Name));
               return;
             }
-            IState stateByGuid = this.Parent.EditorTemplate.StateGraph.GetStateByGuid(stateId);
+            IState stateByGuid = Parent.EditorTemplate.StateGraph.GetStateByGuid(stateId);
             if (stateByGuid != null)
-              this.passedOnlyOnceTalkigs.Add((IFiniteStateMachine) stateByGuid);
+              passedOnlyOnceTalkigs.Add((IFiniteStateMachine) stateByGuid);
           }
         }
       }

@@ -1,10 +1,10 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons.Cloneable;
 using Engine.Common.Commons.Converters;
 using Engine.Common.Components.Crowds;
 using Engine.Source.OutdoorCrowds;
-using System;
 
 namespace Engine.Source.Proxies
 {
@@ -19,27 +19,27 @@ namespace Engine.Source.Proxies
     public object Clone()
     {
       OutdoorCrowdLayout_Generated instance = Activator.CreateInstance<OutdoorCrowdLayout_Generated>();
-      this.CopyTo((object) instance);
-      return (object) instance;
+      CopyTo(instance);
+      return instance;
     }
 
     public void CopyTo(object target2)
     {
       OutdoorCrowdLayout_Generated crowdLayoutGenerated = (OutdoorCrowdLayout_Generated) target2;
-      crowdLayoutGenerated.Layout = this.Layout;
-      CloneableObjectUtility.CopyListTo<OutdoorCrowdState>(crowdLayoutGenerated.States, this.States);
+      crowdLayoutGenerated.Layout = Layout;
+      CloneableObjectUtility.CopyListTo(crowdLayoutGenerated.States, States);
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.WriteEnum<OutdoorCrowdLayoutEnum>(writer, "Layout", this.Layout);
-      DefaultDataWriteUtility.WriteListSerialize<OutdoorCrowdState>(writer, "States", this.States);
+      DefaultDataWriteUtility.WriteEnum(writer, "Layout", Layout);
+      DefaultDataWriteUtility.WriteListSerialize(writer, "States", States);
     }
 
     public void DataRead(IDataReader reader, Type type)
     {
-      this.Layout = DefaultDataReadUtility.ReadEnum<OutdoorCrowdLayoutEnum>(reader, "Layout");
-      this.States = DefaultDataReadUtility.ReadListSerialize<OutdoorCrowdState>(reader, "States", this.States);
+      Layout = DefaultDataReadUtility.ReadEnum<OutdoorCrowdLayoutEnum>(reader, "Layout");
+      States = DefaultDataReadUtility.ReadListSerialize(reader, "States", States);
     }
   }
 }

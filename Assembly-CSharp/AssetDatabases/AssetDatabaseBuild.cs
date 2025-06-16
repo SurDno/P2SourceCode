@@ -1,48 +1,46 @@
-﻿using Cofe.Utility;
-using Engine.Common.Comparers;
-using Scripts.AssetDatabaseService;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-using UnityEngine;
-using UnityEngine.SceneManagement;
+using Cofe.Utility;
+using Engine.Common.Comparers;
+using Scripts.AssetDatabaseService;
 
 namespace AssetDatabases
 {
   public class AssetDatabaseBuild : IAssetDatabase
   {
-    private Dictionary<Guid, string> paths = new Dictionary<Guid, string>((IEqualityComparer<Guid>) GuidComparer.Instance);
+    private Dictionary<Guid, string> paths = new Dictionary<Guid, string>(GuidComparer.Instance);
     private Dictionary<string, Guid> ids = new Dictionary<string, Guid>();
 
     public void RegisterAssets()
     {
       AssetDatabaseMapData assetDatabaseMapData = AssetDatabaseUtility.LoadFromFile<AssetDatabaseMapData>(PlatformUtility.GetPath("Data/Database/AssetDatabaseData.xml"));
       int count = assetDatabaseMapData.Items.Count;
-      this.paths = new Dictionary<Guid, string>(count, (IEqualityComparer<Guid>) GuidComparer.Instance);
-      this.ids = new Dictionary<string, Guid>(count);
+      paths = new Dictionary<Guid, string>(count, GuidComparer.Instance);
+      ids = new Dictionary<string, Guid>(count);
       foreach (AssetDatabaseMapItemData databaseMapItemData in assetDatabaseMapData.Items)
       {
         Guid key = new Guid(databaseMapItemData.Id);
-        this.paths.Add(key, databaseMapItemData.Name);
-        this.ids.Add(databaseMapItemData.Name, key);
+        paths.Add(key, databaseMapItemData.Name);
+        ids.Add(databaseMapItemData.Name, key);
       }
     }
 
-    public int GetAllAssetPathsCount() => this.paths.Count;
+    public int GetAllAssetPathsCount() => paths.Count;
 
-    public IEnumerable<string> GetAllAssetPaths() => (IEnumerable<string>) this.paths.Values;
+    public IEnumerable<string> GetAllAssetPaths() => paths.Values;
 
     public Guid GetId(string path)
     {
       Guid id;
-      this.ids.TryGetValue(path, out id);
+      ids.TryGetValue(path, out id);
       return id;
     }
 
     public string GetPath(Guid id)
     {
       string str;
-      return this.paths.TryGetValue(id, out str) ? str : "";
+      return paths.TryGetValue(id, out str) ? str : "";
     }
 
     public T Load<T>(string path) where T : UnityEngine.Object
@@ -76,17 +74,17 @@ namespace AssetDatabases
         {
           ResourceRequest operation = Resources.LoadAsync<T>(resourcePath);
           if (operation != null)
-            return (IAsyncLoad) new AsyncLoadFromResources(operation);
+            return new AsyncLoadFromResources(operation);
         }
       }
       Debug.LogError((object) (MethodBase.GetCurrentMethod().Name + " wrong async operator : " + path));
-      return (IAsyncLoad) null;
+      return null;
     }
 
     public IAsyncLoad LoadSceneAsync(string path)
     {
       SceneManager.LoadSceneAsync(path, LoadSceneMode.Additive);
-      return (IAsyncLoad) new AsyncLoadScene(path);
+      return new AsyncLoadScene(path);
     }
 
     public void Unload(UnityEngine.Object obj)

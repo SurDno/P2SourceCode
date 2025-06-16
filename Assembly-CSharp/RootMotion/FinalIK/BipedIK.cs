@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace RootMotion.FinalIK
+﻿namespace RootMotion.FinalIK
 {
   [HelpURL("http://www.root-motion.com/finalikdox/html/page2.html")]
   [AddComponentMenu("Scripts/RootMotion.FinalIK/IK/Biped IK")]
@@ -35,37 +33,37 @@ namespace RootMotion.FinalIK
 
     public float GetIKPositionWeight(AvatarIKGoal goal)
     {
-      return this.GetGoalIK(goal).GetIKPositionWeight();
+      return GetGoalIK(goal).GetIKPositionWeight();
     }
 
     public float GetIKRotationWeight(AvatarIKGoal goal)
     {
-      return this.GetGoalIK(goal).GetIKRotationWeight();
+      return GetGoalIK(goal).GetIKRotationWeight();
     }
 
     public void SetIKPositionWeight(AvatarIKGoal goal, float weight)
     {
-      this.GetGoalIK(goal).SetIKPositionWeight(weight);
+      GetGoalIK(goal).SetIKPositionWeight(weight);
     }
 
     public void SetIKRotationWeight(AvatarIKGoal goal, float weight)
     {
-      this.GetGoalIK(goal).SetIKRotationWeight(weight);
+      GetGoalIK(goal).SetIKRotationWeight(weight);
     }
 
     public void SetIKPosition(AvatarIKGoal goal, Vector3 IKPosition)
     {
-      this.GetGoalIK(goal).SetIKPosition(IKPosition);
+      GetGoalIK(goal).SetIKPosition(IKPosition);
     }
 
     public void SetIKRotation(AvatarIKGoal goal, Quaternion IKRotation)
     {
-      this.GetGoalIK(goal).SetIKRotation(IKRotation);
+      GetGoalIK(goal).SetIKRotation(IKRotation);
     }
 
-    public Vector3 GetIKPosition(AvatarIKGoal goal) => this.GetGoalIK(goal).GetIKPosition();
+    public Vector3 GetIKPosition(AvatarIKGoal goal) => GetGoalIK(goal).GetIKPosition();
 
-    public Quaternion GetIKRotation(AvatarIKGoal goal) => this.GetGoalIK(goal).GetIKRotation();
+    public Quaternion GetIKRotation(AvatarIKGoal goal) => GetGoalIK(goal).GetIKRotation();
 
     public void SetLookAtWeight(
       float weight,
@@ -76,104 +74,104 @@ namespace RootMotion.FinalIK
       float clampWeightHead,
       float clampWeightEyes)
     {
-      this.solvers.lookAt.SetLookAtWeight(weight, bodyWeight, headWeight, eyesWeight, clampWeight, clampWeightHead, clampWeightEyes);
+      solvers.lookAt.SetLookAtWeight(weight, bodyWeight, headWeight, eyesWeight, clampWeight, clampWeightHead, clampWeightEyes);
     }
 
     public void SetLookAtPosition(Vector3 lookAtPosition)
     {
-      this.solvers.lookAt.SetIKPosition(lookAtPosition);
+      solvers.lookAt.SetIKPosition(lookAtPosition);
     }
 
     public void SetSpinePosition(Vector3 spinePosition)
     {
-      this.solvers.spine.SetIKPosition(spinePosition);
+      solvers.spine.SetIKPosition(spinePosition);
     }
 
-    public void SetSpineWeight(float weight) => this.solvers.spine.SetIKPositionWeight(weight);
+    public void SetSpineWeight(float weight) => solvers.spine.SetIKPositionWeight(weight);
 
     public IKSolverLimb GetGoalIK(AvatarIKGoal goal)
     {
       switch (goal)
       {
         case AvatarIKGoal.LeftFoot:
-          return this.solvers.leftFoot;
+          return solvers.leftFoot;
         case AvatarIKGoal.RightFoot:
-          return this.solvers.rightFoot;
+          return solvers.rightFoot;
         case AvatarIKGoal.LeftHand:
-          return this.solvers.leftHand;
+          return solvers.leftHand;
         case AvatarIKGoal.RightHand:
-          return this.solvers.rightHand;
+          return solvers.rightHand;
         default:
-          return (IKSolverLimb) null;
+          return null;
       }
     }
 
-    public void InitiateBipedIK() => this.InitiateSolver();
+    public void InitiateBipedIK() => InitiateSolver();
 
-    public void UpdateBipedIK() => this.UpdateSolver();
+    public void UpdateBipedIK() => UpdateSolver();
 
     public void SetToDefaults()
     {
-      foreach (IKSolverLimb limb in this.solvers.limbs)
+      foreach (IKSolverLimb limb in solvers.limbs)
       {
         limb.SetIKPositionWeight(0.0f);
         limb.SetIKRotationWeight(0.0f);
         limb.bendModifier = IKSolverLimb.BendModifier.Animation;
         limb.bendModifierWeight = 1f;
       }
-      this.solvers.leftHand.maintainRotationWeight = 0.0f;
-      this.solvers.rightHand.maintainRotationWeight = 0.0f;
-      this.solvers.spine.SetIKPositionWeight(0.0f);
-      this.solvers.spine.tolerance = 0.0f;
-      this.solvers.spine.maxIterations = 2;
-      this.solvers.spine.useRotationLimits = false;
-      this.solvers.aim.SetIKPositionWeight(0.0f);
-      this.solvers.aim.tolerance = 0.0f;
-      this.solvers.aim.maxIterations = 2;
-      this.SetLookAtWeight(0.0f, 0.5f, 1f, 1f, 0.5f, 0.7f, 0.5f);
+      solvers.leftHand.maintainRotationWeight = 0.0f;
+      solvers.rightHand.maintainRotationWeight = 0.0f;
+      solvers.spine.SetIKPositionWeight(0.0f);
+      solvers.spine.tolerance = 0.0f;
+      solvers.spine.maxIterations = 2;
+      solvers.spine.useRotationLimits = false;
+      solvers.aim.SetIKPositionWeight(0.0f);
+      solvers.aim.tolerance = 0.0f;
+      solvers.aim.maxIterations = 2;
+      SetLookAtWeight(0.0f, 0.5f, 1f, 1f, 0.5f, 0.7f, 0.5f);
     }
 
     protected override void FixTransforms()
     {
-      this.solvers.lookAt.FixTransforms();
-      for (int index = 0; index < this.solvers.limbs.Length; ++index)
-        this.solvers.limbs[index].FixTransforms();
+      solvers.lookAt.FixTransforms();
+      for (int index = 0; index < solvers.limbs.Length; ++index)
+        solvers.limbs[index].FixTransforms();
     }
 
     protected override void InitiateSolver()
     {
       string errorMessage = "";
-      if (BipedReferences.SetupError(this.references, ref errorMessage))
+      if (BipedReferences.SetupError(references, ref errorMessage))
       {
-        Warning.Log(errorMessage, this.references.root);
+        Warning.Log(errorMessage, references.root);
       }
       else
       {
-        this.solvers.AssignReferences(this.references);
-        if (this.solvers.spine.bones.Length > 1)
-          this.solvers.spine.Initiate(this.transform);
-        this.solvers.lookAt.Initiate(this.transform);
-        this.solvers.aim.Initiate(this.transform);
-        foreach (IKSolver limb in this.solvers.limbs)
+        solvers.AssignReferences(references);
+        if (solvers.spine.bones.Length > 1)
+          solvers.spine.Initiate(this.transform);
+        solvers.lookAt.Initiate(this.transform);
+        solvers.aim.Initiate(this.transform);
+        foreach (IKSolver limb in solvers.limbs)
           limb.Initiate(this.transform);
-        this.solvers.pelvis.Initiate(this.references.pelvis);
+        solvers.pelvis.Initiate(references.pelvis);
       }
     }
 
     protected override void UpdateSolver()
     {
-      for (int index = 0; index < this.solvers.limbs.Length; ++index)
+      for (int index = 0; index < solvers.limbs.Length; ++index)
       {
-        this.solvers.limbs[index].MaintainBend();
-        this.solvers.limbs[index].MaintainRotation();
+        solvers.limbs[index].MaintainBend();
+        solvers.limbs[index].MaintainRotation();
       }
-      this.solvers.pelvis.Update();
-      if (this.solvers.spine.bones.Length > 1)
-        this.solvers.spine.Update();
-      this.solvers.aim.Update();
-      this.solvers.lookAt.Update();
-      for (int index = 0; index < this.solvers.limbs.Length; ++index)
-        this.solvers.limbs[index].Update();
+      solvers.pelvis.Update();
+      if (solvers.spine.bones.Length > 1)
+        solvers.spine.Update();
+      solvers.aim.Update();
+      solvers.lookAt.Update();
+      for (int index = 0; index < solvers.limbs.Length; ++index)
+        solvers.limbs[index].Update();
     }
 
     public void LogWarning(string message) => Warning.Log(message, this.transform);

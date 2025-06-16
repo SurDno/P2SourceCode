@@ -2,7 +2,7 @@
 
 namespace PLVirtualMachine.Common.EngineAPI.VMECS
 {
-  [Info("GlobalMarketManager", null)]
+  [Info("GlobalMarketManager")]
   public class VMGlobalMarketManager : VMComponent
   {
     public const string ComponentName = "GlobalMarketManager";

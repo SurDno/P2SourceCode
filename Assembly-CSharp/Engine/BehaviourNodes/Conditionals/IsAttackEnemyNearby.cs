@@ -1,4 +1,5 @@
-﻿using BehaviorDesigner.Runtime;
+﻿using System;
+using BehaviorDesigner.Runtime;
 using BehaviorDesigner.Runtime.Tasks;
 using Cofe.Proxies;
 using Cofe.Serializations.Data;
@@ -10,7 +11,6 @@ using Engine.Common.Services;
 using Engine.Impl.Services.Factories;
 using Engine.Source.Services;
 using Scripts.Tools.Serializations.Converters;
-using UnityEngine;
 
 namespace Engine.BehaviourNodes.Conditionals
 {
@@ -21,33 +21,33 @@ namespace Engine.BehaviourNodes.Conditionals
   [FactoryProxy(typeof (IsAttackEnemyNearby))]
   public class IsAttackEnemyNearby : Conditional, IStub, ISerializeDataWrite, ISerializeDataRead
   {
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [SerializeField]
     public SharedTransform Target;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy()]
     [SerializeField]
     public SharedTransform Enemy;
     private CombatService combatService;
 
     public override void OnAwake()
     {
-      this.combatService = ServiceLocator.GetService<CombatService>();
+      combatService = ServiceLocator.GetService<CombatService>();
     }
 
     public override TaskStatus OnUpdate()
     {
-      IEntity entity = !((UnityEngine.Object) this.Target.Value == (UnityEngine.Object) null) ? EntityUtility.GetEntity(this.Target.Value.gameObject) : EntityUtility.GetEntity(this.gameObject);
+      IEntity entity = !((UnityEngine.Object) Target.Value == (UnityEngine.Object) null) ? EntityUtility.GetEntity(Target.Value.gameObject) : EntityUtility.GetEntity(gameObject);
       if (entity == null)
         return TaskStatus.Failure;
-      CombatServiceCharacterInfo serviceCharacterInfo = this.combatService.GetCharacterInfo(entity)?.AttackEnemyNearby();
+      CombatServiceCharacterInfo serviceCharacterInfo = combatService.GetCharacterInfo(entity)?.AttackEnemyNearby();
       bool flag = false;
       if (serviceCharacterInfo != null && (UnityEngine.Object) serviceCharacterInfo.Character != (UnityEngine.Object) null && (UnityEngine.Object) serviceCharacterInfo.Character.transform != (UnityEngine.Object) null)
       {
-        this.Enemy.Value = serviceCharacterInfo?.Character?.transform;
+        Enemy.Value = serviceCharacterInfo?.Character?.transform;
         flag = true;
       }
       return flag ? TaskStatus.Success : TaskStatus.Failure;
@@ -55,24 +55,24 @@ namespace Engine.BehaviourNodes.Conditionals
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.WriteSerialize<NodeData>(writer, "NodeData", this.nodeData);
-      DefaultDataWriteUtility.Write(writer, "Id", this.id);
-      DefaultDataWriteUtility.Write(writer, "FriendlyName", this.friendlyName);
-      DefaultDataWriteUtility.Write(writer, "Instant", this.instant);
-      DefaultDataWriteUtility.Write(writer, "Disabled", this.disabled);
-      BehaviorTreeDataWriteUtility.WriteShared<SharedTransform>(writer, "Target", this.Target);
-      BehaviorTreeDataWriteUtility.WriteShared<SharedTransform>(writer, "Enemy", this.Enemy);
+      DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
+      DefaultDataWriteUtility.Write(writer, "Id", id);
+      DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
+      DefaultDataWriteUtility.Write(writer, "Instant", instant);
+      DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
+      BehaviorTreeDataWriteUtility.WriteShared(writer, "Target", Target);
+      BehaviorTreeDataWriteUtility.WriteShared(writer, "Enemy", Enemy);
     }
 
-    public void DataRead(IDataReader reader, System.Type type)
+    public void DataRead(IDataReader reader, Type type)
     {
-      this.nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
-      this.id = DefaultDataReadUtility.Read(reader, "Id", this.id);
-      this.friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", this.friendlyName);
-      this.instant = DefaultDataReadUtility.Read(reader, "Instant", this.instant);
-      this.disabled = DefaultDataReadUtility.Read(reader, "Disabled", this.disabled);
-      this.Target = BehaviorTreeDataReadUtility.ReadShared<SharedTransform>(reader, "Target", this.Target);
-      this.Enemy = BehaviorTreeDataReadUtility.ReadShared<SharedTransform>(reader, "Enemy", this.Enemy);
+      nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
+      id = DefaultDataReadUtility.Read(reader, "Id", id);
+      friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
+      instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
+      disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
+      Target = BehaviorTreeDataReadUtility.ReadShared(reader, "Target", Target);
+      Enemy = BehaviorTreeDataReadUtility.ReadShared(reader, "Enemy", Enemy);
     }
   }
 }

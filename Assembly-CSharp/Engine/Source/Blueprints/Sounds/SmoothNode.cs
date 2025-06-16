@@ -1,7 +1,6 @@
 ﻿using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
-using UnityEngine;
 
 namespace Engine.Source.Blueprints.Sounds
 {
@@ -18,41 +17,41 @@ namespace Engine.Source.Blueprints.Sounds
     [Port("Value")]
     private float Value()
     {
-      this.UpdateValue();
-      return this.prevValue;
+      UpdateValue();
+      return prevValue;
     }
 
     public override void OnGraphStarted()
     {
       base.OnGraphStarted();
-      this.time = Time.time;
+      time = Time.time;
     }
 
     private void UpdateValue()
     {
-      float num1 = this.valueInput.value;
-      if ((double) num1 == (double) this.prevValue)
+      float num1 = valueInput.value;
+      if (num1 == (double) prevValue)
       {
-        this.time = Time.time;
+        time = Time.time;
       }
       else
       {
-        if ((double) this.time == (double) Time.time)
+        if (time == (double) Time.time)
           return;
-        float num2 = (Time.time - this.time) / this.timeInput.value;
-        if ((double) num1 > (double) this.prevValue)
+        float num2 = (Time.time - time) / timeInput.value;
+        if (num1 > (double) prevValue)
         {
-          this.prevValue += num2;
-          if ((double) this.prevValue > (double) num1)
-            this.prevValue = num1;
+          prevValue += num2;
+          if (prevValue > (double) num1)
+            prevValue = num1;
         }
         else
         {
-          this.prevValue -= num2;
-          if ((double) this.prevValue < (double) num1)
-            this.prevValue = num1;
+          prevValue -= num2;
+          if (prevValue < (double) num1)
+            prevValue = num1;
         }
-        this.time = Time.time;
+        time = Time.time;
       }
     }
   }

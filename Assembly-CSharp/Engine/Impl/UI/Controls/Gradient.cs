@@ -1,7 +1,4 @@
 ﻿using System;
-using UnityEngine;
-using UnityEngine.Sprites;
-using UnityEngine.UI;
 
 namespace Engine.Impl.UI.Controls
 {
@@ -12,10 +9,10 @@ namespace Engine.Impl.UI.Controls
     [SerializeField]
     private Sprite sprite;
     [SerializeField]
-    private Gradient.GradientDirection direction;
+    private GradientDirection direction;
     [SerializeField]
     [Range(0.0f, 1f)]
-    private float startPosition = 0.0f;
+    private float startPosition;
     [SerializeField]
     private Color startColor = Color.white;
     [SerializeField]
@@ -26,74 +23,74 @@ namespace Engine.Impl.UI.Controls
 
     public Sprite Sprite
     {
-      get => this.sprite;
+      get => sprite;
       set
       {
-        if ((UnityEngine.Object) this.sprite == (UnityEngine.Object) value)
+        if ((UnityEngine.Object) sprite == (UnityEngine.Object) value)
           return;
-        this.sprite = value;
+        sprite = value;
         this.SetVerticesDirty();
       }
     }
 
-    public Gradient.GradientDirection Direction
+    public GradientDirection Direction
     {
-      get => this.direction;
+      get => direction;
       set
       {
-        if (this.direction == value)
+        if (direction == value)
           return;
-        this.direction = value;
+        direction = value;
         this.SetVerticesDirty();
       }
     }
 
     public float StartPosition
     {
-      get => this.startPosition;
+      get => startPosition;
       set
       {
         value = Mathf.Clamp01(value);
-        if ((double) this.startPosition == (double) value)
+        if (startPosition == (double) value)
           return;
-        this.startPosition = value;
+        startPosition = value;
         this.SetVerticesDirty();
       }
     }
 
     public float EndPosition
     {
-      get => this.endPosition;
+      get => endPosition;
       set
       {
         value = Mathf.Clamp01(value);
-        if ((double) this.endPosition == (double) value)
+        if (endPosition == (double) value)
           return;
-        this.endPosition = value;
+        endPosition = value;
         this.SetVerticesDirty();
       }
     }
 
     public Color StartColor
     {
-      get => this.startColor;
+      get => startColor;
       set
       {
-        if (this.startColor == value)
+        if (startColor == value)
           return;
-        this.startColor = value;
+        startColor = value;
         this.SetVerticesDirty();
       }
     }
 
     public Color EndColor
     {
-      get => this.endColor;
+      get => endColor;
       set
       {
-        if (this.endColor == value)
+        if (endColor == value)
           return;
-        this.endColor = value;
+        endColor = value;
         this.SetVerticesDirty();
       }
     }
@@ -103,18 +100,18 @@ namespace Engine.Impl.UI.Controls
     protected override void OnPopulateMesh(VertexHelper vh)
     {
       vh.Clear();
-      Vector4 drawingDimensions = this.GetDrawingDimensions();
-      if ((double) drawingDimensions.x >= (double) drawingDimensions.z || (double) drawingDimensions.y >= (double) drawingDimensions.w || (double) this.startPosition >= (double) this.endPosition)
+      Vector4 drawingDimensions = GetDrawingDimensions();
+      if ((double) drawingDimensions.x >= (double) drawingDimensions.z || (double) drawingDimensions.y >= (double) drawingDimensions.w || startPosition >= (double) endPosition)
         return;
-      Vector4 corners = (UnityEngine.Object) this.sprite != (UnityEngine.Object) null ? DataUtility.GetOuterUV(this.sprite) : Vector4.zero;
-      Vector4 vector4_1 = this.Crop(drawingDimensions);
-      Vector4 vector4_2 = this.Crop(corners);
-      Color color1 = this.startColor * this.color;
-      Color color2 = this.endColor * this.color;
+      Vector4 corners = (UnityEngine.Object) sprite != (UnityEngine.Object) null ? DataUtility.GetOuterUV(sprite) : Vector4.zero;
+      Vector4 vector4_1 = Crop(drawingDimensions);
+      Vector4 vector4_2 = Crop(corners);
+      Color color1 = startColor * this.color;
+      Color color2 = endColor * this.color;
       vh.AddVert(new Vector3(vector4_1.x, vector4_1.y), (Color32) color1, new Vector2(vector4_2.x, vector4_2.y));
-      vh.AddVert(new Vector3(vector4_1.x, vector4_1.w), (Color32) (this.direction == Gradient.GradientDirection.Horizontal ? color1 : color2), new Vector2(vector4_2.x, vector4_2.w));
+      vh.AddVert(new Vector3(vector4_1.x, vector4_1.w), (Color32) (direction == GradientDirection.Horizontal ? color1 : color2), new Vector2(vector4_2.x, vector4_2.w));
       vh.AddVert(new Vector3(vector4_1.z, vector4_1.w), (Color32) color2, new Vector2(vector4_2.z, vector4_2.w));
-      vh.AddVert(new Vector3(vector4_1.z, vector4_1.y), (Color32) (this.direction == Gradient.GradientDirection.Horizontal ? color2 : color1), new Vector2(vector4_2.z, vector4_2.y));
+      vh.AddVert(new Vector3(vector4_1.z, vector4_1.y), (Color32) (direction == GradientDirection.Horizontal ? color2 : color1), new Vector2(vector4_2.z, vector4_2.y));
       vh.AddTriangle(0, 1, 2);
       vh.AddTriangle(2, 3, 0);
     }
@@ -122,15 +119,15 @@ namespace Engine.Impl.UI.Controls
     protected Vector4 Crop(Vector4 corners)
     {
       Vector4 vector4 = corners;
-      if (this.direction == Gradient.GradientDirection.Horizontal)
+      if (direction == GradientDirection.Horizontal)
       {
-        vector4.x = (float) ((double) corners.x * (1.0 - (double) this.startPosition) + (double) corners.z * (double) this.startPosition);
-        vector4.z = (float) ((double) corners.x * (1.0 - (double) this.endPosition) + (double) corners.z * (double) this.endPosition);
+        vector4.x = (float) ((double) corners.x * (1.0 - startPosition) + (double) corners.z * startPosition);
+        vector4.z = (float) ((double) corners.x * (1.0 - endPosition) + (double) corners.z * endPosition);
       }
       else
       {
-        vector4.y = (float) ((double) corners.y * (1.0 - (double) this.startPosition) + (double) corners.w * (double) this.startPosition);
-        vector4.w = (float) ((double) corners.y * (1.0 - (double) this.endPosition) + (double) corners.w * (double) this.endPosition);
+        vector4.y = (float) ((double) corners.y * (1.0 - startPosition) + (double) corners.w * startPosition);
+        vector4.w = (float) ((double) corners.y * (1.0 - endPosition) + (double) corners.w * endPosition);
       }
       return vector4;
     }
@@ -147,18 +144,18 @@ namespace Engine.Impl.UI.Controls
     {
       get
       {
-        return (UnityEngine.Object) this.sprite == (UnityEngine.Object) null ? (Texture) Graphic.s_WhiteTexture : (Texture) this.sprite.texture;
+        return (UnityEngine.Object) sprite == (UnityEngine.Object) null ? (Texture) Graphic.s_WhiteTexture : (Texture) sprite.texture;
       }
     }
 
     private Vector4 GetDrawingDimensions()
     {
       Rect pixelAdjustedRect = this.GetPixelAdjustedRect();
-      Vector4 vector4 = (UnityEngine.Object) this.sprite == (UnityEngine.Object) null ? Vector4.zero : DataUtility.GetPadding(this.sprite);
-      Vector2 vector2 = (UnityEngine.Object) this.sprite == (UnityEngine.Object) null ? new Vector2(pixelAdjustedRect.width, pixelAdjustedRect.height) : new Vector2(this.sprite.rect.width, this.sprite.rect.height);
+      Vector4 vector4 = (UnityEngine.Object) sprite == (UnityEngine.Object) null ? Vector4.zero : DataUtility.GetPadding(sprite);
+      Vector2 vector2 = (UnityEngine.Object) sprite == (UnityEngine.Object) null ? new Vector2(pixelAdjustedRect.width, pixelAdjustedRect.height) : new Vector2(sprite.rect.width, sprite.rect.height);
       int num1 = Mathf.RoundToInt(vector2.x);
       int num2 = Mathf.RoundToInt(vector2.y);
-      Vector4 drawingDimensions = new Vector4(vector4.x / (float) num1, vector4.y / (float) num2, ((float) num1 - vector4.z) / (float) num1, ((float) num2 - vector4.w) / (float) num2);
+      Vector4 drawingDimensions = new Vector4(vector4.x / (float) num1, vector4.y / (float) num2, ((float) num1 - vector4.z) / num1, ((float) num2 - vector4.w) / num2);
       drawingDimensions = new Vector4(pixelAdjustedRect.x + pixelAdjustedRect.width * drawingDimensions.x, pixelAdjustedRect.y + pixelAdjustedRect.height * drawingDimensions.y, pixelAdjustedRect.x + pixelAdjustedRect.width * drawingDimensions.z, pixelAdjustedRect.y + pixelAdjustedRect.height * drawingDimensions.w);
       return drawingDimensions;
     }

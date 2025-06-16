@@ -1,11 +1,9 @@
-﻿using Cofe.Utility;
+﻿using System;
+using System.Linq;
+using Cofe.Utility;
 using Engine.Common.Services;
 using Engine.Source.Services.Inputs;
 using InputServices;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
 
 namespace Engine.Source.Utility
 {
@@ -15,7 +13,7 @@ namespace Engine.Source.Utility
 
     public static bool IsKeyDown(KeyCode key, KeyModifficator modifficators = KeyModifficator.None)
     {
-      return Input.GetKeyDown(key) && InputUtility.CheckModificators(modifficators);
+      return Input.GetKeyDown(key) && CheckModificators(modifficators);
     }
 
     public static bool CheckModificators(KeyModifficator modifficators)
@@ -29,7 +27,7 @@ namespace Engine.Source.Utility
       foreach (KeyModifficator keyModifficator in Enum.GetValues(typeof (KeyModifficator)))
       {
         if ((modifficators & keyModifficator) != 0)
-          str1 = str1 + (object) keyModifficator + " + ";
+          str1 = str1 + keyModifficator + " + ";
       }
       string str2;
       switch (key)
@@ -50,7 +48,7 @@ namespace Engine.Source.Utility
 
     public static string GetHotKeyNameByGroup(ActionGroup action, bool joystick, out bool isHold)
     {
-      ActionGroup actionGroup = ServiceLocator.GetService<GameActionService>().GetBinds().FirstOrDefault<ActionGroup>((Func<ActionGroup, bool>) (o => o.Name == action.Name));
+      ActionGroup actionGroup = ServiceLocator.GetService<GameActionService>().GetBinds().FirstOrDefault(o => o.Name == action.Name);
       string hotKeyNameByGroup = "";
       isHold = false;
       if (actionGroup != null)
@@ -69,7 +67,7 @@ namespace Engine.Source.Utility
           }
         }
         else if (actionGroup.Key != 0)
-          hotKeyNameByGroup += InputUtility.GetHotKeyText(actionGroup.Key, KeyModifficator.None);
+          hotKeyNameByGroup += GetHotKeyText(actionGroup.Key, KeyModifficator.None);
       }
       return hotKeyNameByGroup;
     }
@@ -77,16 +75,16 @@ namespace Engine.Source.Utility
     public static string GetHotKeyNameByActionWithoutHold(GameActionType action)
     {
       GameActionService service = ServiceLocator.GetService<GameActionService>();
-      ActionGroup bind = service != null ? service.GetBinds().FirstOrDefault<ActionGroup>((Func<ActionGroup, bool>) (o =>
+      ActionGroup bind = service != null ? service.GetBinds().FirstOrDefault(o =>
       {
         if (!o.Actions.Contains(action))
           return false;
         return !InputService.Instance.JoystickUsed || o.Joystick != "";
-      })) : (ActionGroup) null;
+      }) : null;
       string actionWithoutHold = "";
       if (bind != null)
       {
-        ActionGroup actionGroup = ServiceLocator.GetService<GameActionService>().GetBinds().FirstOrDefault<ActionGroup>((Func<ActionGroup, bool>) (o => o.Name == bind.Name));
+        ActionGroup actionGroup = ServiceLocator.GetService<GameActionService>().GetBinds().FirstOrDefault(o => o.Name == bind.Name);
         if (actionGroup != null && InputService.Instance.JoystickPresent && !actionGroup.Joystick.IsNullOrEmpty())
           actionWithoutHold += actionGroup.Joystick;
       }
@@ -95,10 +93,10 @@ namespace Engine.Source.Utility
 
     public static string GetHotKeyNameByGroup(ActionGroup action, bool joystick)
     {
-      ActionGroup bind = ServiceLocator.GetService<GameActionService>().GetBinds().FirstOrDefault<ActionGroup>((Func<ActionGroup, bool>) (o => o.Name == action.Name));
+      ActionGroup bind = ServiceLocator.GetService<GameActionService>().GetBinds().FirstOrDefault(o => o.Name == action.Name);
       if (joystick && bind.Joystick == "")
       {
-        ActionGroup actionGroup = ServiceLocator.GetService<GameActionService>().GetBinds().FirstOrDefault<ActionGroup>((Func<ActionGroup, bool>) (o => o.Actions.Intersect<GameActionType>((IEnumerable<GameActionType>) bind.Actions).Count<GameActionType>() > 0 && o.Joystick != ""));
+        ActionGroup actionGroup = ServiceLocator.GetService<GameActionService>().GetBinds().FirstOrDefault(o => o.Actions.Intersect(bind.Actions).Count() > 0 && o.Joystick != "");
         if (actionGroup != null)
           bind = actionGroup;
       }
@@ -116,7 +114,7 @@ namespace Engine.Source.Utility
           }
         }
         else if (bind.Key != 0)
-          hotKeyNameByGroup += InputUtility.GetHotKeyText(bind.Key, KeyModifficator.None);
+          hotKeyNameByGroup += GetHotKeyText(bind.Key, KeyModifficator.None);
       }
       return hotKeyNameByGroup;
     }
@@ -127,14 +125,14 @@ namespace Engine.Source.Utility
       out bool isHold)
     {
       GameActionService service = ServiceLocator.GetService<GameActionService>();
-      ActionGroup action1 = service != null ? service.GetBinds().FirstOrDefault<ActionGroup>((Func<ActionGroup, bool>) (o =>
+      ActionGroup action1 = service != null ? service.GetBinds().FirstOrDefault(o =>
       {
         if (!o.Actions.Contains(action))
           return false;
         return !joystick || o.Joystick != "";
-      })) : (ActionGroup) null;
+      }) : null;
       if (action1 != null)
-        return InputUtility.GetHotKeyNameByGroup(action1, joystick, out isHold);
+        return GetHotKeyNameByGroup(action1, joystick, out isHold);
       isHold = false;
       return "";
     }
@@ -142,22 +140,22 @@ namespace Engine.Source.Utility
     public static string GetHotKeyNameByAction(GameActionType action, bool joystick)
     {
       GameActionService service = ServiceLocator.GetService<GameActionService>();
-      ActionGroup action1 = service != null ? service.GetBinds().FirstOrDefault<ActionGroup>((Func<ActionGroup, bool>) (o =>
+      ActionGroup action1 = service != null ? service.GetBinds().FirstOrDefault(o =>
       {
         if (!o.Actions.Contains(action))
           return false;
         return !joystick || o.Joystick != "";
-      })) : (ActionGroup) null;
-      return action1 != null ? InputUtility.GetHotKeyNameByGroup(action1, joystick) : "";
+      }) : null;
+      return action1 != null ? GetHotKeyNameByGroup(action1, joystick) : "";
     }
 
     public static string GetHotKeyByGroup(ActionGroup action, bool joystick, out bool hold)
     {
       GameActionService service = ServiceLocator.GetService<GameActionService>();
-      if ((service != null ? service.GetBinds().FirstOrDefault<ActionGroup>((Func<ActionGroup, bool>) (o => o.Name == action.Name)) : (ActionGroup) null) == null)
+      if ((service != null ? service.GetBinds().FirstOrDefault(o => o.Name == action.Name) : null) == null)
       {
         hold = false;
-        return (string) null;
+        return null;
       }
       if (joystick)
       {
@@ -171,16 +169,16 @@ namespace Engine.Source.Utility
     public static string GetHotKeyByAction(GameActionType action, bool joystick, out bool hold)
     {
       GameActionService service = ServiceLocator.GetService<GameActionService>();
-      ActionGroup action1 = service != null ? service.GetBinds().FirstOrDefault<ActionGroup>((Func<ActionGroup, bool>) (o =>
+      ActionGroup action1 = service != null ? service.GetBinds().FirstOrDefault(o =>
       {
         if (!o.Actions.Contains(action))
           return false;
         return !joystick || o.Joystick != "";
-      })) : (ActionGroup) null;
+      }) : null;
       if (action1 != null)
-        return InputUtility.GetHotKeyByGroup(action1, joystick, out hold);
+        return GetHotKeyByGroup(action1, joystick, out hold);
       hold = false;
-      return (string) null;
+      return null;
     }
   }
 }

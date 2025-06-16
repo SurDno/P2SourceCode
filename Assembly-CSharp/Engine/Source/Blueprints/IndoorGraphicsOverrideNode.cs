@@ -14,18 +14,18 @@ namespace Engine.Source.Blueprints
     protected override void RegisterPorts()
     {
       base.RegisterPorts();
-      FlowOutput output = this.AddFlowOutput("Out");
-      this.AddFlowInput("In", (FlowHandler) (() =>
+      FlowOutput output = AddFlowOutput("Out");
+      AddFlowInput("In", () =>
       {
-        bool flag = this.insideIndoorInput.value;
+        bool flag = insideIndoorInput.value;
         PlayerIndoorCheck.Override(flag);
-        PlayerIsolatedIndoorCheck.Override(flag && this.isolatedInput.value);
-        CutsceneIndoorCheck.Set(this.cutsceneIsolatedInput.value);
+        PlayerIsolatedIndoorCheck.Override(flag && isolatedInput.value);
+        CutsceneIndoorCheck.Set(cutsceneIsolatedInput.value);
         output.Call();
-      }));
-      this.insideIndoorInput = this.AddValueInput<bool>("InsideIndoor");
-      this.isolatedInput = this.AddValueInput<bool>("Isolated");
-      this.cutsceneIsolatedInput = this.AddValueInput<bool>("CutsceneIsolated");
+      });
+      insideIndoorInput = AddValueInput<bool>("InsideIndoor");
+      isolatedInput = AddValueInput<bool>("Isolated");
+      cutsceneIsolatedInput = AddValueInput<bool>("CutsceneIsolated");
     }
   }
 }

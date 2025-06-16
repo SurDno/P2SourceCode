@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEngine;
 
 namespace SRF.UI
 {
@@ -8,33 +7,31 @@ namespace SRF.UI
   [AddComponentMenu("SRF/UI/Responsive (Enable)")]
   public class ResponsiveEnable : ResponsiveBase
   {
-    public ResponsiveEnable.Entry[] Entries = new ResponsiveEnable.Entry[0];
+    public Entry[] Entries = new Entry[0];
 
     protected override void Refresh()
     {
-      Rect rect = this.RectTransform.rect;
-      for (int index1 = 0; index1 < this.Entries.Length; ++index1)
+      Rect rect = RectTransform.rect;
+      for (int index1 = 0; index1 < Entries.Length; ++index1)
       {
-        ResponsiveEnable.Entry entry = this.Entries[index1];
+        Entry entry = Entries[index1];
         bool flag = true;
         switch (entry.Mode)
         {
-          case ResponsiveEnable.Modes.EnableAbove:
-            if ((double) entry.ThresholdHeight > 0.0)
-              flag = (double) rect.height >= (double) entry.ThresholdHeight & flag;
-            if ((double) entry.ThresholdWidth > 0.0)
+          case Modes.EnableAbove:
+            if (entry.ThresholdHeight > 0.0)
+              flag = (double) rect.height >= entry.ThresholdHeight & flag;
+            if (entry.ThresholdWidth > 0.0)
             {
-              flag = (double) rect.width >= (double) entry.ThresholdWidth & flag;
-              break;
+              flag = (double) rect.width >= entry.ThresholdWidth & flag;
             }
             break;
-          case ResponsiveEnable.Modes.EnableBelow:
-            if ((double) entry.ThresholdHeight > 0.0)
-              flag = (double) rect.height <= (double) entry.ThresholdHeight & flag;
-            if ((double) entry.ThresholdWidth > 0.0)
+          case Modes.EnableBelow:
+            if (entry.ThresholdHeight > 0.0)
+              flag = (double) rect.height <= entry.ThresholdHeight & flag;
+            if (entry.ThresholdWidth > 0.0)
             {
-              flag = (double) rect.width <= (double) entry.ThresholdWidth & flag;
-              break;
+              flag = (double) rect.width <= entry.ThresholdWidth & flag;
             }
             break;
           default:
@@ -72,7 +69,7 @@ namespace SRF.UI
     {
       public Behaviour[] Components;
       public GameObject[] GameObjects;
-      public ResponsiveEnable.Modes Mode;
+      public Modes Mode;
       public float ThresholdHeight;
       public float ThresholdWidth;
     }

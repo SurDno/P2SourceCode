@@ -1,9 +1,9 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons.Cloneable;
 using Engine.Common.Commons.Converters;
 using Engine.Source.Commons.Abilities.Controllers;
-using System;
 
 namespace Engine.Source.Proxies
 {
@@ -18,27 +18,27 @@ namespace Engine.Source.Proxies
     public object Clone()
     {
       FlameAbilityController_Generated instance = Activator.CreateInstance<FlameAbilityController_Generated>();
-      this.CopyTo((object) instance);
-      return (object) instance;
+      CopyTo(instance);
+      return instance;
     }
 
     public void CopyTo(object target2)
     {
       FlameAbilityController_Generated controllerGenerated = (FlameAbilityController_Generated) target2;
-      controllerGenerated.realTime = this.realTime;
-      controllerGenerated.interval = this.interval;
+      controllerGenerated.realTime = realTime;
+      controllerGenerated.interval = interval;
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.Write(writer, "RealTime", this.realTime);
-      DefaultDataWriteUtility.Write(writer, "Interval", this.interval);
+      DefaultDataWriteUtility.Write(writer, "RealTime", realTime);
+      DefaultDataWriteUtility.Write(writer, "Interval", interval);
     }
 
     public void DataRead(IDataReader reader, Type type)
     {
-      this.realTime = DefaultDataReadUtility.Read(reader, "RealTime", this.realTime);
-      this.interval = DefaultDataReadUtility.Read(reader, "Interval", this.interval);
+      realTime = DefaultDataReadUtility.Read(reader, "RealTime", realTime);
+      interval = DefaultDataReadUtility.Read(reader, "Interval", interval);
     }
   }
 }

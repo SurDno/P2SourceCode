@@ -14,34 +14,34 @@ namespace Engine.Source.Inventory
     IInventoryGridBase,
     IObject
   {
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected int columns;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected int rows;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy()]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected DirectionKind direction = DirectionKind.Vertical;
 
     public int Columns
     {
-      get => this.columns;
-      set => this.columns = value;
+      get => columns;
+      set => columns = value;
     }
 
     public int Rows
     {
-      get => this.rows;
-      set => this.rows = value;
+      get => rows;
+      set => rows = value;
     }
 
-    public DirectionKind Direction => this.direction;
+    public DirectionKind Direction => direction;
   }
 }

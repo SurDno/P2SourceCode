@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using UnityEngine;
 
 namespace Pathologic.Prototype
 {
@@ -10,30 +9,30 @@ namespace Pathologic.Prototype
     private float _unlockTime;
     public Vector3 AttackPosition;
     public Quaternion AttackRotation;
-    public FightAnimation.ListWithScalableValues HitTimesA = new FightAnimation.ListWithScalableValues();
-    public FightAnimation.ListWithScalableValues HitTimesB = new FightAnimation.ListWithScalableValues();
+    public ListWithScalableValues HitTimesA = new ListWithScalableValues();
+    public ListWithScalableValues HitTimesB = new ListWithScalableValues();
 
     public float SpeedScale
     {
-      get => this._speedScale;
+      get => _speedScale;
       set
       {
-        this._speedScale = value;
-        this.HitTimesA.Scale = this._speedScale;
-        this.HitTimesB.Scale = this._speedScale;
+        _speedScale = value;
+        HitTimesA.Scale = _speedScale;
+        HitTimesB.Scale = _speedScale;
       }
     }
 
     public float MatchTargetTime
     {
-      get => this._matchTargetTime / this.SpeedScale;
-      set => this._matchTargetTime = value;
+      get => _matchTargetTime / SpeedScale;
+      set => _matchTargetTime = value;
     }
 
     public float UnlockTime
     {
-      get => this._unlockTime / this.SpeedScale;
-      set => this._unlockTime = value;
+      get => _unlockTime / SpeedScale;
+      set => _unlockTime = value;
     }
 
     public class ListWithScalableValues
@@ -41,11 +40,11 @@ namespace Pathologic.Prototype
       private List<float> _values = new List<float>();
       public float Scale;
 
-      public int Count => this._values.Count;
+      public int Count => _values.Count;
 
-      public float this[int index] => this._values[index] / this.Scale;
+      public float this[int index] => _values[index] / Scale;
 
-      public void Add(float value) => this._values.Add(value);
+      public void Add(float value) => _values.Add(value);
     }
   }
 }

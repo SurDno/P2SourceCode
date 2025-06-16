@@ -1,4 +1,5 @@
-﻿using Cofe.Meta;
+﻿using System.Collections.Generic;
+using Cofe.Meta;
 using Engine.Common;
 using Engine.Common.Commons.Cloneable;
 using Engine.Common.Generator;
@@ -6,7 +7,6 @@ using Engine.Impl.Services.Factories;
 using Engine.Source.Commons.Effects;
 using Engine.Source.Components;
 using Inspectors;
-using System.Collections.Generic;
 
 namespace Engine.Source.Commons.Abilities
 {
@@ -14,29 +14,29 @@ namespace Engine.Source.Commons.Abilities
   [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
   public class AbilityItem
   {
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected(Header = true, Mutable = true, Mode = ExecuteMode.EditAndRuntime)]
     protected string name = "";
-    [DataReadProxy(MemberEnum.None, Name = "AbilityController")]
-    [DataWriteProxy(MemberEnum.None, Name = "AbilityController")]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy(Name = "AbilityController")]
+    [DataWriteProxy(Name = "AbilityController")]
+    [CopyableProxy]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected IAbilityController controller;
-    [DataReadProxy(MemberEnum.None, Name = "AbilityProjectile")]
-    [DataWriteProxy(MemberEnum.None, Name = "AbilityProjectile")]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy(Name = "AbilityProjectile")]
+    [DataWriteProxy(Name = "AbilityProjectile")]
+    [CopyableProxy]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected IAbilityProjectile projectile;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected AbilityTargetEnum targets;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy()]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected List<IEffect> effects = new List<IEffect>();
     [Inspected]
@@ -45,90 +45,90 @@ namespace Engine.Source.Commons.Abilities
     private IEntity item;
     private IEntity self;
 
-    public IEntity Item => this.item;
+    public IEntity Item => item;
 
-    public IEntity Self => this.self;
+    public IEntity Self => self;
 
     public Ability Ability { get; private set; }
 
     [Inspected(Mutable = true)]
     public bool Active
     {
-      get => this.active;
+      get => active;
       set
       {
-        if (this.active == value)
+        if (active == value)
           return;
         if (value)
-          this.Start();
+          Start();
         else
-          this.Stop();
+          Stop();
       }
     }
 
     [Inspected]
-    public IAbilityController AbilityController => this.controller;
+    public IAbilityController AbilityController => controller;
 
     [Inspected]
-    public IAbilityProjectile Projectile => this.projectile;
+    public IAbilityProjectile Projectile => projectile;
 
     [Inspected]
-    public AbilityTargetEnum Targets => this.targets;
+    public AbilityTargetEnum Targets => targets;
 
     [Inspected]
-    public List<IEffect> Effects => this.effects;
+    public List<IEffect> Effects => effects;
 
-    public void AddDependEffect(IEffect effect) => this.dependEffects.Add(effect);
+    public void AddDependEffect(IEffect effect) => dependEffects.Add(effect);
 
     public void AddEffects()
     {
-      StorableComponent component = this.Ability.Owner.GetComponent<StorableComponent>();
+      StorableComponent component = Ability.Owner.GetComponent<StorableComponent>();
       if (component != null)
       {
-        this.item = this.Ability.Owner;
-        this.self = component.Storage.Owner;
+        item = Ability.Owner;
+        self = component.Storage.Owner;
       }
       else
       {
-        this.item = (IEntity) null;
-        this.self = this.Ability.Owner;
+        item = null;
+        self = Ability.Owner;
       }
       OutsideAbilityTargets targets = new OutsideAbilityTargets();
-      if (this.projectile != null)
-        this.projectile.ComputeTargets(this.Self, this.item, targets);
-      if ((this.targets & AbilityTargetEnum.Item) != (AbilityTargetEnum) 0 && this.CheckTargetPlayer(this.Item?.GetComponent<EffectsComponent>()))
-        this.AddEffects(this.Item?.GetComponent<EffectsComponent>());
-      if ((this.targets & AbilityTargetEnum.Self) != (AbilityTargetEnum) 0 && this.CheckTargetPlayer(this.Self?.GetComponent<EffectsComponent>()))
-        this.AddEffects(this.Self?.GetComponent<EffectsComponent>());
+      if (projectile != null)
+        projectile.ComputeTargets(Self, item, targets);
+      if ((this.targets & AbilityTargetEnum.Item) != 0 && CheckTargetPlayer(Item?.GetComponent<EffectsComponent>()))
+        AddEffects(Item?.GetComponent<EffectsComponent>());
+      if ((this.targets & AbilityTargetEnum.Self) != 0 && CheckTargetPlayer(Self?.GetComponent<EffectsComponent>()))
+        AddEffects(Self?.GetComponent<EffectsComponent>());
       if ((this.targets & AbilityTargetEnum.Target) == 0)
         return;
       foreach (EffectsComponent target in targets.Targets)
       {
-        if (this.CheckTargetPlayer(target))
-          this.AddEffects(target);
+        if (CheckTargetPlayer(target))
+          AddEffects(target);
       }
     }
 
     private bool CheckTargetPlayer(EffectsComponent target)
     {
-      if (target == null || this.targets == AbilityTargetEnum.Item || this.targets == AbilityTargetEnum.Self || this.targets == AbilityTargetEnum.Target)
+      if (target == null || targets == AbilityTargetEnum.Item || targets == AbilityTargetEnum.Self || targets == AbilityTargetEnum.Target)
         return true;
       IEntity owner = target.Owner;
-      if ((this.targets & AbilityTargetEnum.Item) != 0)
-        owner = this.item?.GetComponent<StorableComponent>()?.Storage?.Owner;
+      if ((targets & AbilityTargetEnum.Item) != 0)
+        owner = item?.GetComponent<StorableComponent>()?.Storage?.Owner;
       if (owner == null)
         return true;
       PlayerControllerComponent component = owner.GetComponent<PlayerControllerComponent>();
-      return (this.targets == AbilityTargetEnum.ItemPlayer || this.targets == AbilityTargetEnum.SelfPlayer || this.targets == AbilityTargetEnum.TargetPlayer) == (component != null);
+      return (targets == AbilityTargetEnum.ItemPlayer || targets == AbilityTargetEnum.SelfPlayer || targets == AbilityTargetEnum.TargetPlayer) == (component != null);
     }
 
     private void AddEffects(EffectsComponent target)
     {
       if (target == null)
         return;
-      foreach (IEffect effect1 in this.effects)
+      foreach (IEffect effect1 in effects)
       {
-        IEffect effect2 = CloneableObjectUtility.Clone<IEffect>(effect1);
+        IEffect effect2 = CloneableObjectUtility.Clone(effect1);
         effect2.AbilityItem = this;
         effect2.Target = target.Owner;
         target.AddEffect(effect2);
@@ -137,46 +137,46 @@ namespace Engine.Source.Commons.Abilities
 
     public void Initialise(Ability ability)
     {
-      this.Ability = ability;
-      if (this.AbilityController == null)
+      Ability = ability;
+      if (AbilityController == null)
         return;
-      this.AbilityController.Initialise(this);
+      AbilityController.Initialise(this);
     }
 
     public void Shutdown()
     {
-      if (this.AbilityController == null)
+      if (AbilityController == null)
         return;
-      this.AbilityController.Shutdown();
+      AbilityController.Shutdown();
     }
 
     public void RemoveDependEffects()
     {
-      foreach (IEffect dependEffect in this.dependEffects)
+      foreach (IEffect dependEffect in dependEffects)
         dependEffect.Target.GetComponent<EffectsComponent>().RemoveEffect(dependEffect);
-      this.dependEffects.Clear();
+      dependEffects.Clear();
     }
 
     private void Start()
     {
-      if (this.active)
+      if (active)
         return;
-      this.active = true;
-      this.AddEffects();
+      active = true;
+      AddEffects();
     }
 
     private void Stop()
     {
-      if (!this.active)
+      if (!active)
         return;
-      this.active = false;
-      this.RemoveDependEffects();
+      active = false;
+      RemoveDependEffects();
     }
 
-    [global::ComputeBytes]
+    [ComputeBytes]
     private void ComputeBytes()
     {
-      foreach (object effect in this.effects)
+      foreach (object effect in effects)
         MetaService.Compute(effect, ComputeBytesAttribute.Id);
     }
   }

@@ -16,13 +16,13 @@ namespace Engine.Source.Blueprints
     protected override void RegisterPorts()
     {
       base.RegisterPorts();
-      FlowOutput output = this.AddFlowOutput("Out");
-      this.AddFlowInput("In", (FlowHandler) (() =>
+      FlowOutput output = AddFlowOutput("Out");
+      AddFlowInput("In", () =>
       {
-        ServiceLocator.GetService<MapService>().FastTravelOrigin = this.targetInput.value?.GetComponent<FastTravelComponent>();
+        ServiceLocator.GetService<MapService>().FastTravelOrigin = targetInput.value?.GetComponent<FastTravelComponent>();
         output.Call();
-      }));
-      this.targetInput = this.AddValueInput<IEntity>("Target");
+      });
+      targetInput = AddValueInput<IEntity>("Target");
     }
   }
 }

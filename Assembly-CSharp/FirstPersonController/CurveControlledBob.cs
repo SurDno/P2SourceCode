@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEngine;
 
 namespace FirstPersonController
 {
@@ -25,21 +24,21 @@ namespace FirstPersonController
 
     public void Setup(Camera camera, float bobBaseInterval)
     {
-      this.m_BobBaseInterval = bobBaseInterval;
-      this.m_OriginalCameraPosition = camera.transform.localPosition;
-      this.m_Time = this.Bobcurve[this.Bobcurve.length - 1].time;
+      m_BobBaseInterval = bobBaseInterval;
+      m_OriginalCameraPosition = camera.transform.localPosition;
+      m_Time = Bobcurve[Bobcurve.length - 1].time;
     }
 
     public Vector3 DoHeadBob(float speed)
     {
-      float x = this.m_OriginalCameraPosition.x + this.Bobcurve.Evaluate(this.m_CyclePositionX) * this.HorizontalBobRange;
-      float y = this.m_OriginalCameraPosition.y + this.Bobcurve.Evaluate(this.m_CyclePositionY) * this.VerticalBobRange;
-      this.m_CyclePositionX += speed * Time.deltaTime / this.m_BobBaseInterval;
-      this.m_CyclePositionY += speed * Time.deltaTime / this.m_BobBaseInterval * this.VerticaltoHorizontalRatio;
-      if ((double) this.m_CyclePositionX > (double) this.m_Time)
-        this.m_CyclePositionX -= this.m_Time;
-      if ((double) this.m_CyclePositionY > (double) this.m_Time)
-        this.m_CyclePositionY -= this.m_Time;
+      float x = m_OriginalCameraPosition.x + Bobcurve.Evaluate(m_CyclePositionX) * HorizontalBobRange;
+      float y = m_OriginalCameraPosition.y + Bobcurve.Evaluate(m_CyclePositionY) * VerticalBobRange;
+      m_CyclePositionX += speed * Time.deltaTime / m_BobBaseInterval;
+      m_CyclePositionY += speed * Time.deltaTime / m_BobBaseInterval * VerticaltoHorizontalRatio;
+      if (m_CyclePositionX > (double) m_Time)
+        m_CyclePositionX -= m_Time;
+      if (m_CyclePositionY > (double) m_Time)
+        m_CyclePositionY -= m_Time;
       return new Vector3(x, y, 0.0f);
     }
   }

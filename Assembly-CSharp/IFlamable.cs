@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-public interface IFlamable
+﻿public interface IFlamable
 {
   GameObject gameObject { get; }
 }

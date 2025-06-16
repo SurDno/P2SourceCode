@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-public class StaticMeshBuffers
+﻿public class StaticMeshBuffers
 {
   public Vector3[] Vertices;
   public Color32[] Colors;
@@ -9,27 +7,27 @@ public class StaticMeshBuffers
   public Vector4[] Tangents;
   public int[] Triangles;
 
-  public int VertexCount => this.Vertices.Length;
+  public int VertexCount => Vertices.Length;
 
-  public int TriangleCount => this.Triangles.Length;
+  public int TriangleCount => Triangles.Length;
 
-  public bool HasColors() => !this.IsNullOrEmpty<Color32>(this.Colors);
+  public bool HasColors() => !IsNullOrEmpty(Colors);
 
-  public bool HasUV() => !this.IsNullOrEmpty<Vector2>(this.UV);
+  public bool HasUV() => !IsNullOrEmpty(UV);
 
-  public bool HasNormals() => !this.IsNullOrEmpty<Vector3>(this.Normals);
+  public bool HasNormals() => !IsNullOrEmpty(Normals);
 
-  public bool HasTangents() => !this.IsNullOrEmpty<Vector4>(this.Tangents);
+  public bool HasTangents() => !IsNullOrEmpty(Tangents);
 
   private bool IsNullOrEmpty<T>(T[] array) => array == null || array.Length == 0;
 
   public StaticMeshBuffers(Mesh mesh)
   {
-    this.Vertices = mesh.vertices;
-    this.Colors = mesh.colors32;
-    this.UV = mesh.uv;
-    this.Normals = mesh.normals;
-    this.Tangents = mesh.tangents;
-    this.Triangles = mesh.triangles;
+    Vertices = mesh.vertices;
+    Colors = mesh.colors32;
+    UV = mesh.uv;
+    Normals = mesh.normals;
+    Tangents = mesh.tangents;
+    Triangles = mesh.triangles;
   }
 }

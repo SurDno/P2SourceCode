@@ -1,4 +1,9 @@
-﻿using Cofe.Serializations.Data;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Xml;
+using Cofe.Serializations.Data;
 using Cofe.Serializations.Data.Xml;
 using Cofe.Utility;
 using Engine.Common;
@@ -15,17 +20,11 @@ using Engine.Source.Saves;
 using Engine.Source.Services.Saves;
 using Engine.Source.Settings.External;
 using Inspectors;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Xml;
-using UnityEngine;
 
 namespace Engine.Source.Services
 {
   [SaveDepend(typeof (ISimulation))]
-  [GameService(new System.Type[] {typeof (DropBagService), typeof (IDropBagService)})]
+  [GameService(typeof (DropBagService), typeof (IDropBagService))]
   [GenerateProxy(TypeEnum.StateSave | TypeEnum.StateLoad)]
   public class DropBagService : IDropBagService, ISavesController
   {
@@ -42,16 +41,16 @@ namespace Engine.Source.Services
 
     public void AddEntity(IEntity entity)
     {
-      if (this.waitings.Count == 0)
+      if (waitings.Count == 0)
         throw new Exception("No waiting entity");
-      this.bags.Add(entity);
-      List<IStorableComponent> list = this.waitings.ToList<IStorableComponent>();
-      this.waitings.Clear();
+      bags.Add(entity);
+      List<IStorableComponent> list = waitings.ToList();
+      waitings.Clear();
       foreach (IStorableComponent storable in list)
-        this.AddOrDrop(storable, entity);
-      if (list.Count == this.waitings.Count)
+        AddOrDrop(storable, entity);
+      if (list.Count == waitings.Count)
       {
-        this.waitings.Clear();
+        waitings.Clear();
         throw new Exception("Drop cycle");
       }
     }
@@ -60,36 +59,36 @@ namespace Engine.Source.Services
     {
       if (storable.IsDisposed)
         return;
-      Intersect intersect = StorageUtility.GetIntersect(entity.GetComponent<IStorageComponent>(), (IInventoryComponent) null, (StorableComponent) storable, (Cell) null);
+      Intersect intersect = StorageUtility.GetIntersect(entity.GetComponent<IStorageComponent>(), null, (StorableComponent) storable, null);
       if (!intersect.IsAllowed)
       {
-        Debug.Log((object) ObjectInfoUtility.GetStream().Append("Redrop storable : ").GetInfo((object) storable.Owner));
-        this.DropBag(storable, entity);
+        Debug.Log((object) ObjectInfoUtility.GetStream().Append("Redrop storable : ").GetInfo(storable.Owner));
+        DropBag(storable, entity);
       }
       else
       {
-        Debug.Log((object) ObjectInfoUtility.GetStream().Append("Receve bag for storable : ").GetInfo((object) storable.Owner));
+        Debug.Log((object) ObjectInfoUtility.GetStream().Append("Receve bag for storable : ").GetInfo(storable.Owner));
         IEntity player = ServiceLocator.GetService<ISimulation>().Player;
-        this.AddItem(storable, entity, intersect, player, true);
+        AddItem(storable, entity, intersect, player, true);
       }
     }
 
     public void Reset()
     {
-      foreach (IEntity bag in this.bags.ToList<IEntity>())
+      foreach (IEntity bag in bags.ToList())
       {
         if (bag == null)
           Debug.LogError((object) "Bag is null");
         else
-          this.RemoveBag(bag);
+          RemoveBag(bag);
       }
     }
 
     private void RemoveBag(IEntity bag)
     {
-      if (this.bags.Contains(bag))
-        this.bags.Remove(bag);
-      Action<IEntity> onDeleteEntity = this.OnDeleteEntity;
+      if (bags.Contains(bag))
+        bags.Remove(bag);
+      Action<IEntity> onDeleteEntity = OnDeleteEntity;
       if (onDeleteEntity == null)
         return;
       onDeleteEntity(bag);
@@ -98,16 +97,16 @@ namespace Engine.Source.Services
     private IEnumerable<IEntity> FindExistingBags(IEntity target)
     {
       float searchRange = ExternalSettingsInstance<ExternalCommonSettings>.Instance.DropBagSearchRadius;
-      foreach (IEntity bag1 in this.bags)
+      foreach (IEntity bag1 in bags)
       {
         IEntity bag = bag1;
         if (bag == null)
           Debug.LogError((object) "Bug is null");
         else if (!bag.IsDisposed)
         {
-          if ((double) (((IEntityView) bag).Position - ((IEntityView) target).Position).magnitude < (double) searchRange)
+          if ((double) (((IEntityView) bag).Position - ((IEntityView) target).Position).magnitude < searchRange)
             yield return bag;
-          bag = (IEntity) null;
+          bag = null;
         }
       }
     }
@@ -117,12 +116,12 @@ namespace Engine.Source.Services
       if (storage == null || storage.IsDisposed)
         return;
       IEntity entity = storage.Owner;
-      for (int index = 0; index < this.bags.Count; ++index)
+      for (int index = 0; index < bags.Count; ++index)
       {
-        if (entity == this.bags[index])
+        if (entity == bags[index])
         {
-          this.bags.RemoveAt(index);
-          CoroutineService.Instance.WaitFrame((Action) (() => this.RemoveBag(entity)));
+          bags.RemoveAt(index);
+          CoroutineService.Instance.WaitFrame((Action) (() => RemoveBag(entity)));
           break;
         }
       }
@@ -146,24 +145,24 @@ namespace Engine.Source.Services
         }
         else
         {
-          foreach (IEntity existingBag in this.FindExistingBags(owner))
+          foreach (IEntity existingBag in FindExistingBags(owner))
           {
             if (!existingBag.IsDisposed)
             {
-              Intersect intersect = StorageUtility.GetIntersect(existingBag.GetComponent<IStorageComponent>(), (IInventoryComponent) null, (StorableComponent) storable, (Cell) null);
+              Intersect intersect = StorageUtility.GetIntersect(existingBag.GetComponent<IStorageComponent>(), null, (StorableComponent) storable, null);
               if (intersect.IsAllowed)
               {
-                this.AddItem(storable, existingBag, intersect, owner, false);
+                AddItem(storable, existingBag, intersect, owner, false);
                 return;
               }
             }
           }
-          this.waitings.Add(storable);
-          if (this.waitings.Count != 1)
+          waitings.Add(storable);
+          if (waitings.Count != 1)
             return;
-          Debug.Log((object) ObjectInfoUtility.GetStream().Append("Requre bag for storable : ").GetInfo((object) storable.Owner));
+          Debug.Log((object) ObjectInfoUtility.GetStream().Append("Requre bag for storable : ").GetInfo(storable.Owner));
           DynamicModelComponent.GroupContext = "[Bugs]";
-          Action<IEntity> onCreateEntity = this.OnCreateEntity;
+          Action<IEntity> onCreateEntity = OnCreateEntity;
           if (onCreateEntity != null)
             onCreateEntity(entity);
         }
@@ -179,10 +178,7 @@ namespace Engine.Source.Services
     {
       if (storable.IsDisposed)
         return;
-      ServiceLocator.GetService<NotificationService>().AddNotify(NotificationEnum.ItemDrop, new object[1]
-      {
-        (object) storable.Owner.Template
-      });
+      ServiceLocator.GetService<NotificationService>().AddNotify(NotificationEnum.ItemDrop, storable.Owner.Template);
       bag.GetComponent<ContextComponent>()?.AddContext(owner.GetInfo());
       if (teleport)
       {
@@ -202,7 +198,7 @@ namespace Engine.Source.Services
         else
           Debug.LogError((object) ("INavigationComponent not found in " + bag.GetInfo()));
       }
-      if (!(storable.Container == null ? intersect.Storage.AddItem((IStorableComponent) intersect.Storable, intersect.Container) : ((StorageComponent) storable.Storage).MoveItem(storable, intersect.Storage, intersect.Container, intersect.Cell.To())))
+      if (!(storable.Container == null ? intersect.Storage.AddItem(intersect.Storable, intersect.Container) : ((StorageComponent) storable.Storage).MoveItem(storable, intersect.Storage, intersect.Container, intersect.Cell.To())))
         throw new Exception();
     }
 
@@ -213,24 +209,24 @@ namespace Engine.Source.Services
 
     public IEnumerator Load(XmlElement element, string context, IErrorLoadingHandler errorHandler)
     {
-      XmlElement node = element[TypeUtility.GetTypeName(this.GetType())];
+      XmlElement node = element[TypeUtility.GetTypeName(GetType())];
       if (node == null)
       {
-        errorHandler.LogError(TypeUtility.GetTypeName(this.GetType()) + " node not found , context : " + context);
+        errorHandler.LogError(TypeUtility.GetTypeName(GetType()) + " node not found , context : " + context);
       }
       else
       {
-        XmlNodeDataReader reader = new XmlNodeDataReader((XmlNode) node, context);
-        ((ISerializeStateLoad) this).StateLoad((IDataReader) reader, this.GetType());
+        XmlNodeDataReader reader = new XmlNodeDataReader(node, context);
+        ((ISerializeStateLoad) this).StateLoad(reader, GetType());
         yield break;
       }
     }
 
-    public void Unload() => this.bags.Clear();
+    public void Unload() => bags.Clear();
 
     public void Save(IDataWriter writer, string context)
     {
-      DefaultStateSaveUtility.SaveSerialize<DropBagService>(writer, TypeUtility.GetTypeName(this.GetType()), this);
+      DefaultStateSaveUtility.SaveSerialize(writer, TypeUtility.GetTypeName(GetType()), this);
     }
   }
 }

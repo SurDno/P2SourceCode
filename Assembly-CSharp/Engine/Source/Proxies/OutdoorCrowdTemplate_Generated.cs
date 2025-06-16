@@ -1,13 +1,12 @@
-﻿using Cofe.Loggers;
+﻿using System;
+using Cofe.Loggers;
 using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Cofe.Utility;
-using Engine.Common;
 using Engine.Common.Commons.Cloneable;
 using Engine.Common.Commons.Converters;
 using Engine.Source.OutdoorCrowds;
 using Scripts.Tools.Serializations.Converters;
-using System;
 
 namespace Engine.Source.Proxies
 {
@@ -22,39 +21,39 @@ namespace Engine.Source.Proxies
     public object Clone()
     {
       OutdoorCrowdTemplate_Generated instance = Activator.CreateInstance<OutdoorCrowdTemplate_Generated>();
-      this.CopyTo((object) instance);
-      return (object) instance;
+      CopyTo(instance);
+      return instance;
     }
 
     public void CopyTo(object target2)
     {
       OutdoorCrowdTemplate_Generated templateGenerated = (OutdoorCrowdTemplate_Generated) target2;
-      templateGenerated.Name = this.Name;
-      templateGenerated.Template = this.Template;
-      ((ICopyable) this.Day).CopyTo((object) templateGenerated.Day);
-      ((ICopyable) this.Night).CopyTo((object) templateGenerated.Night);
+      templateGenerated.Name = Name;
+      templateGenerated.Template = Template;
+      ((ICopyable) Day).CopyTo(templateGenerated.Day);
+      ((ICopyable) Night).CopyTo(templateGenerated.Night);
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.Write(writer, "Name", this.Name);
-      UnityDataWriteUtility.Write<IEntity>(writer, "Template", this.Template);
-      DefaultDataWriteUtility.WriteSerialize<OutdoorCrowdTemplateCount>(writer, "Day", this.Day);
-      DefaultDataWriteUtility.WriteSerialize<OutdoorCrowdTemplateCount>(writer, "Night", this.Night);
+      DefaultDataWriteUtility.Write(writer, "Name", Name);
+      UnityDataWriteUtility.Write(writer, "Template", Template);
+      DefaultDataWriteUtility.WriteSerialize(writer, "Day", Day);
+      DefaultDataWriteUtility.WriteSerialize(writer, "Night", Night);
     }
 
     public void DataRead(IDataReader reader, Type type)
     {
-      this.Name = DefaultDataReadUtility.Read(reader, "Name", this.Name);
-      this.Template = UnityDataReadUtility.Read<IEntity>(reader, "Template", this.Template);
+      Name = DefaultDataReadUtility.Read(reader, "Name", Name);
+      Template = UnityDataReadUtility.Read(reader, "Template", Template);
       IDataReader child1 = reader.GetChild("Day");
-      OutdoorCrowdTemplateCount day = this.Day;
+      OutdoorCrowdTemplateCount day = Day;
       if (day is ISerializeDataRead serializeDataRead1)
         serializeDataRead1.DataRead(child1, typeof (OutdoorCrowdTemplateCount));
       else
         Logger.AddError("Type : " + TypeUtility.GetTypeName(day.GetType()) + " is not " + typeof (ISerializeDataRead).Name);
       IDataReader child2 = reader.GetChild("Night");
-      OutdoorCrowdTemplateCount night = this.Night;
+      OutdoorCrowdTemplateCount night = Night;
       if (night is ISerializeDataRead serializeDataRead2)
         serializeDataRead2.DataRead(child2, typeof (OutdoorCrowdTemplateCount));
       else

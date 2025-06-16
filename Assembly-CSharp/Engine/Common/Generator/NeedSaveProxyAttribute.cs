@@ -2,7 +2,7 @@
 
 namespace Engine.Common.Generator
 {
-  [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = false, Inherited = false)]
+  [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
   public class NeedSaveProxyAttribute : Attribute
   {
   }

@@ -1,4 +1,8 @@
-﻿using Cofe.Loggers;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using Cofe.Loggers;
 using Engine.Common;
 using Engine.Common.Components;
 using Engine.Common.Components.Storable;
@@ -6,10 +10,6 @@ using Engine.Common.Services;
 using Engine.Common.Types;
 using PLVirtualMachine.Common.EngineAPI.VMECS.VMAttributes;
 using PLVirtualMachine.Common.VMSpecialAttributes;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace PLVirtualMachine.Common.EngineAPI.VMECS
 {
@@ -24,13 +24,13 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
     public static bool TestSimplePickUpMode = false;
 
     [Event("Item adding event", "item:Storable,Container template:Inventory")]
-    public event VMStorage.ItemInventoryActionEventType AddItemEvent;
+    public event ItemInventoryActionEventType AddItemEvent;
 
     [Event("Item removing event", "item:Storable,Container template:Inventory")]
-    public event VMStorage.ItemInventoryActionEventType RemoveItemEvent;
+    public event ItemInventoryActionEventType RemoveItemEvent;
 
     [Event("Item change event", "item:Storable,Container template:Inventory")]
-    public event VMStorage.ItemInventoryActionEventType ChangeItemEvent;
+    public event ItemInventoryActionEventType ChangeItemEvent;
 
     [Method("Add items combination", "Item cobination:Combination", "")]
     public virtual void PickUpCombination(IBlueprintRef combinationObject)
@@ -62,21 +62,21 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
     {
       if (template == null)
       {
-        Logger.AddError(string.Format("PickUp thing entity is null !"));
+        Logger.AddError("PickUp thing entity is null !");
       }
       else
       {
-        IStorableComponent storableComponent = VMStorable.MakeStorableByTemplate(this.Parent, template);
+        IStorableComponent storableComponent = VMStorable.MakeStorableByTemplate(Parent, template);
         if (storableComponent == null)
         {
-          Logger.AddError(string.Format("Cannot crteate storable entity by template {0} !", (object) template.Name));
+          Logger.AddError(string.Format("Cannot crteate storable entity by template {0} !", template.Name));
         }
         else
         {
           IStorableComponent component = storableComponent.Owner.GetComponent<IStorableComponent>();
-          if (!VMStorage.DoAddItemToStorage(this.Component, component, dropIfBusy: true))
+          if (!DoAddItemToStorage(Component, component, dropIfBusy: true))
             component.Owner.Dispose();
-          this.OnModify();
+          OnModify();
         }
       }
     }
@@ -88,7 +88,7 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
       {
         if (template == null)
         {
-          Logger.AddError(string.Format("PickUp thing entity is null !"));
+          Logger.AddError("PickUp thing entity is null !");
         }
         else
         {
@@ -97,12 +97,12 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
           IStorableComponent component;
           do
           {
-            component = VMStorable.MakeStorableByTemplate(this.Parent, template).Owner.GetComponent<IStorableComponent>();
+            component = VMStorable.MakeStorableByTemplate(Parent, template).Owner.GetComponent<IStorableComponent>();
             int num2 = component.Max;
             if (num2 > thingsCount - num1)
               num2 = thingsCount - num1;
             component.Count = num2;
-            if (VMStorage.DoAddItemToStorage(this.Component, component, dropIfBusy: true))
+            if (DoAddItemToStorage(Component, component, dropIfBusy: true))
               num1 += num2;
             else
               goto label_7;
@@ -112,12 +112,12 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
 label_7:
           component.Owner.Dispose();
 label_8:
-          this.OnModify();
+          OnModify();
         }
       }
       catch (Exception ex)
       {
-        Logger.AddError(string.Format("Cannot pick up items {0} to {1} storage: {2}", (object) template.Name, (object) this.Parent.Name, (object) ex));
+        Logger.AddError(string.Format("Cannot pick up items {0} to {1} storage: {2}", template.Name, Parent.Name, ex));
       }
     }
 
@@ -134,16 +134,16 @@ label_8:
         }
         else
         {
-          IInventoryComponent containerByTemplate = this.GetContainerByTemplate(containerTemplate);
+          IInventoryComponent containerByTemplate = GetContainerByTemplate(containerTemplate);
           if (containerByTemplate == null)
-            Logger.AddError(string.Format("PickUp target container name={0} id ={1} not found !", (object) containerTemplate.Name, (object) containerTemplate.Id));
+            Logger.AddError(string.Format("PickUp target container name={0} id ={1} not found !", containerTemplate.Name, containerTemplate.Id));
           else
-            this.Component.AddItemOrDrop(VMStorable.MakeStorableByTemplate(this.Parent, template), containerByTemplate);
+            Component.AddItemOrDrop(VMStorable.MakeStorableByTemplate(Parent, template), containerByTemplate);
         }
       }
       catch (Exception ex)
       {
-        Logger.AddError(string.Format("Cannot pick up items {0} to {1} storage: {2}", (object) template.Name, (object) this.Parent.Name, (object) ex));
+        Logger.AddError(string.Format("Cannot pick up items {0} to {1} storage: {2}", template.Name, Parent.Name, ex));
       }
     }
 
@@ -160,12 +160,12 @@ label_8:
     {
       if (template == null)
       {
-        Logger.AddError(string.Format("Remove thing entity is null !"));
+        Logger.AddError("Remove thing entity is null !");
       }
       else
       {
         List<IEntity> entityList = new List<IEntity>();
-        foreach (IStorableComponent storableComponent in this.Component.Items)
+        foreach (IStorableComponent storableComponent in Component.Items)
         {
           if (storableComponent != null && !storableComponent.IsDisposed && storableComponent.Owner.Name == template.Name)
           {
@@ -183,7 +183,7 @@ label_8:
             }
           }
         }
-        this.OnModify();
+        OnModify();
         for (int index = 0; index < entityList.Count; ++index)
           entityList[index].Dispose();
       }
@@ -194,35 +194,35 @@ label_8:
     {
       if (template == null)
       {
-        Logger.AddError(string.Format("Receive thing entity is null !"));
+        Logger.AddError("Receive thing entity is null !");
       }
       else
       {
-        IStorableComponent storableByTemplate = this.GetStorableByTemplate((Engine.Common.IObject) template);
+        IStorableComponent storableByTemplate = GetStorableByTemplate(template);
         if (storableByTemplate == null)
           return;
         if (newPlace == null)
         {
-          Logger.AddError(string.Format("New place for storable receiving in {0} not defined !", (object) this.Parent.Name));
+          Logger.AddError(string.Format("New place for storable receiving in {0} not defined !", Parent.Name));
         }
         else
         {
           IEntity entity = ServiceCache.Simulation.Get(newPlace.EngineGuid);
           if (entity == null)
           {
-            Logger.AddError(string.Format("New place entity guid={0} for storable receiving in {1} not found !", (object) newPlace.EngineGuid, (object) this.Parent.Name));
+            Logger.AddError(string.Format("New place entity guid={0} for storable receiving in {1} not found !", newPlace.EngineGuid, Parent.Name));
           }
           else
           {
             IStorageComponent component = entity.GetComponent<IStorageComponent>();
             if (component == null)
             {
-              Logger.AddError(string.Format("New place entity {0} for storable receiving in {1} hasn't storage component !", (object) entity.Name, (object) this.Parent.Name));
+              Logger.AddError(string.Format("New place entity {0} for storable receiving in {1} hasn't storage component !", entity.Name, Parent.Name));
             }
             else
             {
-              this.OnModify();
-              this.Component.MoveItem(storableByTemplate, component, (IInventoryComponent) null);
+              OnModify();
+              Component.MoveItem(storableByTemplate, component, null);
             }
           }
         }
@@ -234,40 +234,40 @@ label_8:
     {
       if (newPlace == null)
       {
-        Logger.AddError(string.Format("New place for storable receiving in {0} not defined !", (object) this.Parent.Name));
+        Logger.AddError(string.Format("New place for storable receiving in {0} not defined !", Parent.Name));
       }
       else
       {
         IEntity entity = ServiceCache.Simulation.Get(newPlace.EngineGuid);
         if (entity == null)
         {
-          Logger.AddError(string.Format("New place entity guid={0} for storable receiving in {1} not found !", (object) newPlace.EngineGuid, (object) this.Parent.Name));
+          Logger.AddError(string.Format("New place entity guid={0} for storable receiving in {1} not found !", newPlace.EngineGuid, Parent.Name));
         }
         else
         {
           IStorageComponent component = entity.GetComponent<IStorageComponent>();
           if (component == null)
           {
-            Logger.AddError(string.Format("New place entity {0} for storable receiving in {1} hasn't storage component !", (object) entity.Name, (object) this.Parent.Name));
+            Logger.AddError(string.Format("New place entity {0} for storable receiving in {1} hasn't storage component !", entity.Name, Parent.Name));
           }
           else
           {
             List<IStorableComponent> storableComponentList = new List<IStorableComponent>();
-            if (itemsCount > this.Component.Items.Count<IStorableComponent>())
-              itemsCount = this.Component.Items.Count<IStorableComponent>();
-            int num = (int) Math.Floor((double) this.Component.Items.Count<IStorableComponent>() * VMMath.GetRandomDouble());
+            if (itemsCount > Component.Items.Count())
+              itemsCount = Component.Items.Count();
+            int num = (int) Math.Floor(Component.Items.Count() * VMMath.GetRandomDouble());
             for (int index1 = 0; index1 < itemsCount; ++index1)
             {
               int index2 = index1 + num;
-              if (index2 >= this.Component.Items.Count<IStorableComponent>())
-                index2 -= this.Component.Items.Count<IStorableComponent>();
-              IStorableComponent storableComponent = this.Component.Items.ElementAt<IStorableComponent>(index2);
+              if (index2 >= Component.Items.Count())
+                index2 -= Component.Items.Count();
+              IStorableComponent storableComponent = Component.Items.ElementAt(index2);
               if (storableComponent != null && !storableComponent.IsDisposed)
                 storableComponentList.Add(storableComponent);
             }
-            this.OnModify();
+            OnModify();
             for (int index = 0; index < storableComponentList.Count; ++index)
-              this.Component.MoveItem(storableComponentList[index], component, (IInventoryComponent) null);
+              Component.MoveItem(storableComponentList[index], component, null);
           }
         }
       }
@@ -278,33 +278,33 @@ label_8:
     {
       if (newPlace == null)
       {
-        Logger.AddError(string.Format("New place for storable receiving in {0} not defined !", (object) this.Parent.Name));
+        Logger.AddError(string.Format("New place for storable receiving in {0} not defined !", Parent.Name));
       }
       else
       {
         IEntity entity = ServiceCache.Simulation.Get(newPlace.EngineGuid);
         if (entity == null)
         {
-          Logger.AddError(string.Format("New place entity guid={0} for storable receiving in {1} not found !", (object) newPlace.EngineGuid, (object) this.Parent.Name));
+          Logger.AddError(string.Format("New place entity guid={0} for storable receiving in {1} not found !", newPlace.EngineGuid, Parent.Name));
         }
         else
         {
           IStorageComponent component = entity.GetComponent<IStorageComponent>();
           if (component == null)
           {
-            Logger.AddError(string.Format("New place entity {0} for storable receiving in {1} hasn't storage component !", (object) entity.Name, (object) this.Parent.Name));
+            Logger.AddError(string.Format("New place entity {0} for storable receiving in {1} hasn't storage component !", entity.Name, Parent.Name));
           }
           else
           {
             List<IStorableComponent> storableComponentList = new List<IStorableComponent>();
-            foreach (IStorableComponent storableComponent in this.Component.Items)
+            foreach (IStorableComponent storableComponent in Component.Items)
             {
               if (storableComponent != null && !storableComponent.IsDisposed)
                 storableComponentList.Add(storableComponent);
             }
             for (int index = 0; index < storableComponentList.Count; ++index)
-              this.Component.MoveItem(storableComponentList[index], component, (IInventoryComponent) null);
-            this.OnModify();
+              Component.MoveItem(storableComponentList[index], component, null);
+            OnModify();
           }
         }
       }
@@ -313,14 +313,14 @@ label_8:
     [Property("Is Free", "", false, false, false)]
     public bool IsFree
     {
-      get => this.Component.IsFree.Value;
-      set => this.Component.IsFree.Value = value;
+      get => Component.IsFree.Value;
+      set => Component.IsFree.Value = value;
     }
 
     [Method("Get items count", "", "")]
     public int GetItemsCount()
     {
-      return this.Component.Items.Where<IStorableComponent>((Func<IStorableComponent, bool>) (o => o != null && !o.IsDisposed)).Count<IStorableComponent>();
+      return Component.Items.Where(o => o != null && !o.IsDisposed).Count();
     }
 
     [Method("Get items count by template", "Item template:Storable", "")]
@@ -329,11 +329,11 @@ label_8:
     {
       if (template == null)
       {
-        Logger.AddError(string.Format("Get storable entity is null !"));
+        Logger.AddError("Get storable entity is null !");
         return 0;
       }
       int itemsCountByTemplate = 0;
-      foreach (IStorableComponent storableComponent in this.Component.Items)
+      foreach (IStorableComponent storableComponent in Component.Items)
       {
         if (storableComponent.Owner.TemplateId == template.Id)
           itemsCountByTemplate += storableComponent.Count;
@@ -349,15 +349,15 @@ label_8:
     {
       if (template == null)
       {
-        Logger.AddError(string.Format("Storable entity for item checking not defined !"));
+        Logger.AddError("Storable entity for item checking not defined !");
         return false;
       }
       if (containerTemplate == null)
       {
-        Logger.AddError(string.Format("Storage place for item checking not defined !"));
+        Logger.AddError("Storage place for item checking not defined !");
         return false;
       }
-      foreach (IStorableComponent storableComponent in this.Component.Items)
+      foreach (IStorableComponent storableComponent in Component.Items)
       {
         if (storableComponent != null && !storableComponent.IsDisposed && storableComponent.Container.Owner.TemplateId == containerTemplate.Id && storableComponent.Owner.TemplateId == template.Id)
           return true;
@@ -369,9 +369,9 @@ label_8:
     public void SetStorablesTitle([Template] IEntity template, ITextRef text)
     {
       if (template == null)
-        Logger.AddError(string.Format("Storable entity for title setting not defined !"));
+        Logger.AddError("Storable entity for title setting not defined !");
       LocalizedText engineTextInstance = EngineAPIManager.CreateEngineTextInstance(text);
-      foreach (IStorableComponent storableComponent in this.Component.Items)
+      foreach (IStorableComponent storableComponent in Component.Items)
       {
         if (storableComponent != null && !storableComponent.IsDisposed && storableComponent.Owner.TemplateId == template.Id)
           VMStorable.DoSetStorableTextField(storableComponent, "title", engineTextInstance);
@@ -382,9 +382,9 @@ label_8:
     public void SetStorablesDescription([Template] IEntity template, ITextRef text)
     {
       if (template == null)
-        Logger.AddError(string.Format("Storable entity for description setting not defined !"));
+        Logger.AddError("Storable entity for description setting not defined !");
       LocalizedText engineTextInstance = EngineAPIManager.CreateEngineTextInstance(text);
-      foreach (IStorableComponent storableComponent in this.Component.Items)
+      foreach (IStorableComponent storableComponent in Component.Items)
       {
         if (storableComponent != null && !storableComponent.IsDisposed && storableComponent.Owner.TemplateId == template.Id)
           VMStorable.DoSetStorableTextField(storableComponent, "description", engineTextInstance);
@@ -395,9 +395,9 @@ label_8:
     public void SetStorablesTooltip([Template] IEntity template, ITextRef text)
     {
       if (template == null)
-        Logger.AddError(string.Format("Storable entity for tooltip setting not defined !"));
+        Logger.AddError("Storable entity for tooltip setting not defined !");
       LocalizedText engineTextInstance = EngineAPIManager.CreateEngineTextInstance(text);
-      foreach (IStorableComponent storableComponent in this.Component.Items)
+      foreach (IStorableComponent storableComponent in Component.Items)
       {
         if (storableComponent != null && !storableComponent.IsDisposed && storableComponent.Owner.TemplateId == template.Id)
           VMStorable.DoSetStorableTextField(storableComponent, "tooltip", engineTextInstance);
@@ -408,15 +408,15 @@ label_8:
     {
       if (template == null)
       {
-        Logger.AddError(string.Format("Get storable entity is null !"));
-        return (IStorableComponent) null;
+        Logger.AddError("Get storable entity is null !");
+        return null;
       }
-      foreach (IStorableComponent storableByTemplate in this.Component.Items)
+      foreach (IStorableComponent storableByTemplate in Component.Items)
       {
         if (storableByTemplate != null && !storableByTemplate.IsDisposed && storableByTemplate.Owner.Name == template.Name)
           return storableByTemplate;
       }
-      return (IStorableComponent) null;
+      return null;
     }
 
     [Method("Clear storage", "", "")]
@@ -424,16 +424,16 @@ label_8:
     {
       try
       {
-        this.Component.ClearItems();
+        Component.ClearItems();
       }
       catch (Exception ex)
       {
         string str = "Not defined";
-        if (this.Component != null && this.Component.Owner != null)
-          str = this.Component.Owner.Name;
-        Logger.AddError(string.Format("Storage {0} clear error: {1)", (object) str, (object) ex.Message));
+        if (Component != null && Component.Owner != null)
+          str = Component.Owner.Name;
+        Logger.AddError(string.Format("Storage {0} clear error: {1)", str, ex.Message));
       }
-      this.OnModify();
+      OnModify();
     }
 
     [Method("Clear Container", "Container template:Inventory", "")]
@@ -443,84 +443,84 @@ label_8:
       {
         if (containerTemplate == null)
         {
-          Logger.AddError(string.Format("Storage container for claring not defined !"));
+          Logger.AddError("Storage container for claring not defined !");
           return;
         }
         IInventoryComponent component = containerTemplate.GetComponent<IInventoryComponent>();
         if (component != null)
-          this.Component.ClearItems(component);
+          Component.ClearItems(component);
         else
-          Logger.AddError(string.Format("Container {0} not found in storage {1} at {2} !", (object) containerTemplate.Name, (object) this.Parent.Name, (object) EngineAPIManager.Instance.CurrentFSMStateInfo));
+          Logger.AddError(string.Format("Container {0} not found in storage {1} at {2} !", containerTemplate.Name, Parent.Name, EngineAPIManager.Instance.CurrentFSMStateInfo));
       }
       catch (Exception ex)
       {
         string str1 = "Not defined";
         string str2 = "Not defined";
-        if (this.Component != null && this.Component.Owner != null)
-          str1 = this.Component.Owner.Name;
+        if (Component != null && Component.Owner != null)
+          str1 = Component.Owner.Name;
         if (containerTemplate != null)
           str2 = containerTemplate.Name;
-        Logger.AddError(string.Format("Storage {0} container {1} clear error: {2)", (object) str1, (object) str2, (object) ex.Message));
+        Logger.AddError(string.Format("Storage {0} container {1} clear error: {2)", str1, str2, ex.Message));
       }
-      this.OnModify();
+      OnModify();
     }
 
     [Method("Get Open", "Container template:Inventory", "")]
     public ContainerOpenStateEnum GetOpen([Template] IEntity containerTemplate)
     {
-      IInventoryComponent containerByTemplate = this.GetContainerByTemplate(containerTemplate);
+      IInventoryComponent containerByTemplate = GetContainerByTemplate(containerTemplate);
       if (containerByTemplate != null)
         return containerByTemplate.OpenState.Value;
-      Logger.AddWarning(string.Format("Container {0} not found in {1}", (object) containerTemplate.Name, (object) this.Parent.Name));
+      Logger.AddWarning(string.Format("Container {0} not found in {1}", containerTemplate.Name, Parent.Name));
       return ContainerOpenStateEnum.Closed;
     }
 
     [Method("Set Open", "Container template:Inventory, value:bool", "")]
     public void SetOpen([Template] IEntity containerTemplate, ContainerOpenStateEnum value)
     {
-      IInventoryComponent containerByTemplate = this.GetContainerByTemplate(containerTemplate);
+      IInventoryComponent containerByTemplate = GetContainerByTemplate(containerTemplate);
       if (containerByTemplate != null)
         containerByTemplate.OpenState.Value = value;
       else
-        Logger.AddWarning(string.Format("Container {0} not found in {1}", (object) containerTemplate.Name, (object) this.Parent.Name));
-      this.OnModify();
+        Logger.AddWarning(string.Format("Container {0} not found in {1}", containerTemplate.Name, Parent.Name));
+      OnModify();
     }
 
     [Method("Set All Open", "value:bool", "")]
     public void SetAllOpen(ContainerOpenStateEnum value)
     {
-      foreach (IInventoryComponent container in this.Component.Containers)
+      foreach (IInventoryComponent container in Component.Containers)
       {
         if (container != null)
           container.OpenState.Value = value;
       }
-      this.OnModify();
+      OnModify();
     }
 
     [Method("Get Available", "Container template:Inventory", "")]
     public bool GetAvailable([Template] IEntity containerTemplate)
     {
-      IInventoryComponent containerByTemplate = this.GetContainerByTemplate(containerTemplate);
+      IInventoryComponent containerByTemplate = GetContainerByTemplate(containerTemplate);
       if (containerByTemplate != null)
         return containerByTemplate.Available.Value;
-      Logger.AddWarning(string.Format("Container {0} not found in {1}", (object) containerTemplate.Name, (object) this.Parent.Name));
+      Logger.AddWarning(string.Format("Container {0} not found in {1}", containerTemplate.Name, Parent.Name));
       return false;
     }
 
     [Method("Set Available", "Container template:Inventory, value:bool", "")]
     public void SetAvailable([Template] IEntity containerTemplate, bool value)
     {
-      IInventoryComponent containerByTemplate = this.GetContainerByTemplate(containerTemplate);
+      IInventoryComponent containerByTemplate = GetContainerByTemplate(containerTemplate);
       if (containerByTemplate != null)
         containerByTemplate.Available.Value = value;
       else
-        Logger.AddWarning(string.Format("Container {0} not found in {1}", (object) containerTemplate.Name, (object) this.Parent.Name));
+        Logger.AddWarning(string.Format("Container {0} not found in {1}", containerTemplate.Name, Parent.Name));
     }
 
     [Method("Set All Available", "value:bool", "")]
     public void SetAllAvailable(bool value)
     {
-      foreach (IInventoryComponent container in this.Component.Containers)
+      foreach (IInventoryComponent container in Component.Containers)
       {
         if (container != null)
           container.Available.Value = value;
@@ -530,101 +530,101 @@ label_8:
     [Method("Get Enabled", "Container template:Inventory", "")]
     public bool GetEnabled([Template] IEntity containerTemplate)
     {
-      IInventoryComponent containerByTemplate = this.GetContainerByTemplate(containerTemplate);
+      IInventoryComponent containerByTemplate = GetContainerByTemplate(containerTemplate);
       if (containerByTemplate != null)
         return containerByTemplate.Enabled.Value;
-      Logger.AddWarning(string.Format("Container {0} not found in {1}", (object) containerTemplate.Name, (object) this.Parent.Name));
+      Logger.AddWarning(string.Format("Container {0} not found in {1}", containerTemplate.Name, Parent.Name));
       return false;
     }
 
     [Method("Set Enabled", "Container template:Inventory, value:bool", "")]
     public void SetEnabled([Template] IEntity containerTemplate, bool value)
     {
-      IInventoryComponent containerByTemplate = this.GetContainerByTemplate(containerTemplate);
+      IInventoryComponent containerByTemplate = GetContainerByTemplate(containerTemplate);
       if (containerByTemplate != null)
         containerByTemplate.Enabled.Value = value;
       else
-        Logger.AddWarning(string.Format("Container {0} not found in {1}", (object) containerTemplate.Name, (object) this.Parent.Name));
-      this.OnModify();
+        Logger.AddWarning(string.Format("Container {0} not found in {1}", containerTemplate.Name, Parent.Name));
+      OnModify();
     }
 
     [Method("Set All Enabled", "value:bool", "")]
     public void SetAllEnabled(bool value)
     {
-      foreach (IInventoryComponent container in this.Component.Containers)
+      foreach (IInventoryComponent container in Component.Containers)
       {
         if (container != null)
           container.Enabled.Value = value;
       }
-      this.OnModify();
+      OnModify();
     }
 
     [Method("Set disease", "Container template:Inventory, value:float", "")]
     public void SetDisease([Template] IEntity containerTemplate, float value)
     {
-      IInventoryComponent containerByTemplate = this.GetContainerByTemplate(containerTemplate);
+      IInventoryComponent containerByTemplate = GetContainerByTemplate(containerTemplate);
       if (containerByTemplate != null)
         containerByTemplate.Disease.Value = value;
       else
-        Logger.AddWarning(string.Format("Container {0} not found in {1}", (object) containerTemplate.Name, (object) this.Parent.Name));
-      this.OnModify();
+        Logger.AddWarning(string.Format("Container {0} not found in {1}", containerTemplate.Name, Parent.Name));
+      OnModify();
     }
 
     protected IInventoryComponent GetContainerByTemplate(IEntity containerTemplate)
     {
-      return this.Component.Containers.FirstOrDefault<IInventoryComponent>((Func<IInventoryComponent, bool>) (o =>
+      return Component.Containers.FirstOrDefault(o =>
       {
         if (o.Owner.TemplateId == containerTemplate.Id)
           return true;
         return o.Owner.Template != null && o.Owner.Template.TemplateId == containerTemplate.Id;
-      }));
+      });
     }
 
-    public int InnerContainersCount => this.innerContainersList.Count;
+    public int InnerContainersCount => innerContainersList.Count;
 
     public IInventoryComponent GetInnerContainer(int containerIndex)
     {
-      if (containerIndex >= 0 && containerIndex < this.innerContainersList.Count)
-        return this.innerContainersList[containerIndex];
-      Logger.AddError(string.Format("Invalid inner container index {0} int {1} storage !", (object) containerIndex, (object) this.Parent.Name));
-      return (IInventoryComponent) null;
+      if (containerIndex >= 0 && containerIndex < innerContainersList.Count)
+        return innerContainersList[containerIndex];
+      Logger.AddError(string.Format("Invalid inner container index {0} int {1} storage !", containerIndex, Parent.Name));
+      return null;
     }
 
     public List<IInventoryComponent> GetInnerContainersByTagsList(OperationMultiTagsInfo tagsList)
     {
       if (tagsList == null)
-        return this.innerContainersList;
+        return innerContainersList;
       List<IInventoryComponent> containersByTagsList = new List<IInventoryComponent>();
-      for (int index = 0; index < this.innerContainersList.Count; ++index)
+      for (int index = 0; index < innerContainersList.Count; ++index)
       {
-        if (index < this.innerContainerTags.Count && tagsList.CheckTag(this.innerContainerTags[index]))
-          containersByTagsList.Add(this.innerContainersList[index]);
+        if (index < innerContainerTags.Count && tagsList.CheckTag(innerContainerTags[index]))
+          containersByTagsList.Add(innerContainersList[index]);
       }
       return containersByTagsList;
     }
 
     public string GetInnerContainerTag(int containerIndex)
     {
-      if (containerIndex >= 0 && containerIndex < this.innerContainerTags.Count)
-        return this.innerContainerTags[containerIndex];
-      Logger.AddError(string.Format("Invalid inner container index {0} in {1} storage !", (object) containerIndex, (object) this.Parent.Name));
+      if (containerIndex >= 0 && containerIndex < innerContainerTags.Count)
+        return innerContainerTags[containerIndex];
+      Logger.AddError(string.Format("Invalid inner container index {0} in {1} storage !", containerIndex, Parent.Name));
       return "";
     }
 
     public void SetInnerContainerTag(int containerIndex, string sTag)
     {
-      if (containerIndex >= 0 && containerIndex < this.innerContainerTags.Count)
-        this.innerContainerTags[containerIndex] = sTag;
+      if (containerIndex >= 0 && containerIndex < innerContainerTags.Count)
+        innerContainerTags[containerIndex] = sTag;
       else
-        Logger.AddError(string.Format("Invalid inner container index {0} in {1} storage !", (object) containerIndex, (object) this.Parent.Name));
-      this.OnModify();
+        Logger.AddError(string.Format("Invalid inner container index {0} in {1} storage !", containerIndex, Parent.Name));
+      OnModify();
     }
 
     public void ResetInnerContainersTags()
     {
-      for (int index = 0; index < this.innerContainerTags.Count; ++index)
-        this.innerContainerTags[index] = VMCommon.defaultTag;
-      this.OnModify();
+      for (int index = 0; index < innerContainerTags.Count; ++index)
+        innerContainerTags[index] = VMCommon.defaultTag;
+      OnModify();
     }
 
     public override void OnCreate()
@@ -633,21 +633,21 @@ label_8:
 
     public override void AfterCreate()
     {
-      if (this.Component == null)
+      if (Component == null)
       {
-        Logger.AddError(string.Format("Component {0} instance not created in {1} !", (object) this.Name, (object) this.Parent.Name));
+        Logger.AddError(string.Format("Component {0} instance not created in {1} !", Name, Parent.Name));
       }
       else
       {
         try
         {
-          if (this.IsTemplate)
+          if (IsTemplate)
             return;
-          this.innerContainersList.Clear();
-          this.innerContainerTags.Clear();
-          this.innerContainersList.Capacity = this.Component.InventoryTemplates.Count<IEntity>();
-          this.innerContainerTags.Capacity = this.Component.InventoryTemplates.Count<IEntity>();
-          List<VMBaseEntity> childEntities = this.Parent.GetChildEntities();
+          innerContainersList.Clear();
+          innerContainerTags.Clear();
+          innerContainersList.Capacity = Component.InventoryTemplates.Count();
+          innerContainerTags.Capacity = Component.InventoryTemplates.Count();
+          List<VMBaseEntity> childEntities = Parent.GetChildEntities();
           if (childEntities != null)
           {
             for (int index = 0; index < childEntities.Count; ++index)
@@ -657,49 +657,49 @@ label_8:
                 IInventoryComponent component = childEntities[index].Instance.GetComponent<IInventoryComponent>();
                 if (component != null)
                 {
-                  this.innerContainersList.Add(component);
-                  this.innerContainerTags.Add("");
+                  innerContainersList.Add(component);
+                  innerContainerTags.Add("");
                 }
               }
               else
-                Logger.AddError(string.Format("Invalid inventory container creation: Storage {0} inner inventory {1} engine instance not defined !", (object) this.Parent.Name, (object) childEntities[index].Name));
+                Logger.AddError(string.Format("Invalid inventory container creation: Storage {0} inner inventory {1} engine instance not defined !", Parent.Name, childEntities[index].Name));
             }
           }
-          if (this.innerContainersList.Count != 0)
+          if (innerContainersList.Count != 0)
             return;
-          foreach (IEntity inventoryTemplate in this.Component.InventoryTemplates)
+          foreach (IEntity inventoryTemplate in Component.InventoryTemplates)
           {
-            IInventoryComponent inventoryComponent = VMStorage.MakeStorageInventoryByTemplate(this.Parent, inventoryTemplate);
+            IInventoryComponent inventoryComponent = MakeStorageInventoryByTemplate(Parent, inventoryTemplate);
             if (inventoryComponent != null)
             {
-              this.innerContainersList.Add(inventoryComponent);
-              this.innerContainerTags.Add("");
+              innerContainersList.Add(inventoryComponent);
+              innerContainerTags.Add("");
             }
           }
         }
         catch (Exception ex)
         {
-          Logger.AddError(string.Format("Entity {0} storage component aftercreation error: {1} !", (object) this.Parent.Name, (object) ex.ToString()));
+          Logger.AddError(string.Format("Entity {0} storage component aftercreation error: {1} !", Parent.Name, ex));
         }
       }
     }
 
     public void OnLoadInventory(IEntity inventoryEntity)
     {
-      this.innerContainersList.Add(inventoryEntity.GetComponent<IInventoryComponent>());
+      innerContainersList.Add(inventoryEntity.GetComponent<IInventoryComponent>());
     }
 
     public void CheckInventoryTagsConsistensy()
     {
-      if (this.innerContainersList.Count == this.innerContainerTags.Count)
+      if (innerContainersList.Count == innerContainerTags.Count)
         return;
-      if (this.innerContainerTags.Count < this.innerContainersList.Count)
+      if (innerContainerTags.Count < innerContainersList.Count)
       {
-        for (int index = 0; index < this.innerContainersList.Count - this.innerContainerTags.Count; ++index)
-          this.innerContainerTags.Add("");
+        for (int index = 0; index < innerContainersList.Count - innerContainerTags.Count; ++index)
+          innerContainerTags.Add("");
       }
       else
-        this.innerContainerTags.RemoveRange(this.innerContainersList.Count, this.innerContainerTags.Count - this.innerContainersList.Count);
+        innerContainerTags.RemoveRange(innerContainersList.Count, innerContainerTags.Count - innerContainersList.Count);
     }
 
     public static IInventoryComponent MakeStorageInventoryByTemplate(
@@ -708,22 +708,22 @@ label_8:
     {
       if (template.GetComponent<IInventoryComponent>() == null)
       {
-        Logger.AddError(string.Format("Invalid inventory object template {0}: there is no inventory component!", (object) template.Name));
-        return (IInventoryComponent) null;
+        Logger.AddError(string.Format("Invalid inventory object template {0}: there is no inventory component!", template.Name));
+        return null;
       }
       try
       {
         VMBaseEntity dynamicChildInstance = EngineAPIManager.Instance.CreateWorldTemplateDynamicChildInstance(template, storageEntity, storageEntity.Instance);
         if (dynamicChildInstance != null)
           return dynamicChildInstance.Instance.GetComponent<IInventoryComponent>();
-        Logger.AddError(string.Format("Cannot create storage inventory entity in {0}, probably editor template with engine id = {1} not found", (object) storageEntity.Name, (object) template.Id));
-        return (IInventoryComponent) null;
+        Logger.AddError(string.Format("Cannot create storage inventory entity in {0}, probably editor template with engine id = {1} not found", storageEntity.Name, template.Id));
+        return null;
       }
       catch (Exception ex)
       {
-        Logger.AddError(string.Format("Making inventory instance in storage {0} by template {1}  error: {2}", (object) storageEntity.Name, (object) template.Name, (object) ex));
+        Logger.AddError(string.Format("Making inventory instance in storage {0} by template {1}  error: {2}", storageEntity.Name, template.Name, ex));
       }
-      return (IInventoryComponent) null;
+      return null;
     }
 
     public static bool DoAddItemToStorage(
@@ -734,17 +734,17 @@ label_8:
     {
       if (storage == null)
       {
-        Logger.AddError(string.Format("Cannot add item to storage, storage component not defined"));
+        Logger.AddError("Cannot add item to storage, storage component not defined");
         return false;
       }
       if (storable == null)
       {
-        Logger.AddError(string.Format("Cannot add item to storage, storable component not defined"));
+        Logger.AddError("Cannot add item to storage, storable component not defined");
         return false;
       }
       if (storable.Count <= 0)
       {
-        Logger.AddWarning(string.Format("Add item to storage warning: adding items '{0}' count is 0", (object) storable.Owner.Name));
+        Logger.AddWarning(string.Format("Add item to storage warning: adding items '{0}' count is 0", storable.Owner.Name));
         return false;
       }
       try
@@ -755,7 +755,7 @@ label_8:
           IEntity owner = storable.Owner;
           if (storable.Owner == null)
           {
-            Logger.AddError(string.Format("Invalid storable adding to {0} at", (object) storage.Owner.Name));
+            Logger.AddError(string.Format("Invalid storable adding to {0} at", storage.Owner.Name));
             storage1 = false;
           }
           else
@@ -770,7 +770,7 @@ label_8:
       }
       catch (Exception ex)
       {
-        Logger.AddError(string.Format("Cannot add item {0} to storage {1}, error: {2}", (object) storage.Owner, (object) storable.Owner, (object) ex.ToString()));
+        Logger.AddError(string.Format("Cannot add item {0} to storage {1}, error: {2}", storage.Owner, storable.Owner, ex.ToString()));
       }
       return false;
     }
@@ -786,25 +786,25 @@ label_8:
         {
           IEntity template = (IEntity) item.Owner.Template ?? VMStorable.GetEngTemplateByStorableName(item.Owner.Name);
           if (template == null)
-            Logger.AddError(string.Format("New added to {0} storable entity engine template not defined !", (object) this.Parent.Name));
+            Logger.AddError(string.Format("New added to {0} storable entity engine template not defined !", Parent.Name));
           else
             VMStorable.MakeStorableByInstance(this, item, template);
           if (EngineAPIManager.Instance.GetEditorTemplateByEngineGuid(id) == null)
           {
-            Logger.AddWarning(string.Format("New added to {0} storable entity engine template not defined !", (object) this.Parent.Name));
+            Logger.AddWarning(string.Format("New added to {0} storable entity engine template not defined !", Parent.Name));
             return;
           }
         }
-        if (this.AddItemEvent == null)
+        if (AddItemEvent == null)
           return;
-        IEntity template1 = (IEntity) null;
+        IEntity template1 = null;
         if (container != null && container.Owner != null)
           template1 = (IEntity) container.Owner.Template;
-        this.AddItemEvent(item.Owner, template1);
+        AddItemEvent(item.Owner, template1);
       }
       catch (Exception ex)
       {
-        Logger.AddError(string.Format("RaiseAddItemEvent error: {0} in {1} !", (object) ex.ToString(), (object) this.Parent.Name));
+        Logger.AddError(string.Format("RaiseAddItemEvent error: {0} in {1} !", ex, Parent.Name));
       }
     }
 
@@ -820,23 +820,23 @@ label_8:
           IEntity template = (IEntity) item.Owner.Template ?? VMStorable.GetEngTemplateByStorableName(item.Owner.Name);
           if (template == null)
           {
-            Logger.AddError(string.Format("Removing from {0} storable entity engine template not defined !", (object) this.Parent.Name));
+            Logger.AddError(string.Format("Removing from {0} storable entity engine template not defined !", Parent.Name));
             return;
           }
           VMStorable.MakeStorableByInstance(this, item, template);
           if (EngineAPIManager.Instance.GetEditorTemplateByEngineGuid(id) == null)
           {
-            Logger.AddWarning(string.Format("Removing from  {0} storable entity engine template not defined !", (object) this.Parent.Name));
+            Logger.AddWarning(string.Format("Removing from  {0} storable entity engine template not defined !", Parent.Name));
             return;
           }
         }
-        if (this.RemoveItemEvent == null)
+        if (RemoveItemEvent == null)
           return;
-        this.RemoveItemEvent(item.Owner, (IEntity) container.Owner.Template);
+        RemoveItemEvent(item.Owner, (IEntity) container.Owner.Template);
       }
       catch (Exception ex)
       {
-        Logger.AddError(string.Format("Removing item at {0} storage event raising error: {1}", (object) this.Parent.Name, (object) ex.Message));
+        Logger.AddError(string.Format("Removing item at {0} storage event raising error: {1}", Parent.Name, ex.Message));
       }
     }
 
@@ -848,40 +848,40 @@ label_8:
         IEntity template = (IEntity) item.Owner.Template ?? VMStorable.GetEngTemplateByStorableName(item.Owner.Name);
         if (template == null)
         {
-          Logger.AddError(string.Format("Change from {0} storable entity engine template not defined !", (object) this.Parent.Name));
+          Logger.AddError(string.Format("Change from {0} storable entity engine template not defined !", Parent.Name));
           return;
         }
         VMStorable.MakeStorableByInstance(this, item, template);
         if (EngineAPIManager.Instance.GetEditorTemplateByEngineGuid(id) == null)
         {
-          Logger.AddWarning(string.Format("Change from  {0} storable entity engine template not defined !", (object) this.Parent.Name));
+          Logger.AddWarning(string.Format("Change from  {0} storable entity engine template not defined !", Parent.Name));
           return;
         }
       }
-      if (this.ChangeItemEvent == null)
+      if (ChangeItemEvent == null)
         return;
-      this.ChangeItemEvent(item.Owner, (IEntity) container.Owner.Template);
+      ChangeItemEvent(item.Owner, (IEntity) container.Owner.Template);
     }
 
     public override void Clear()
     {
-      if (!this.InstanceValid)
+      if (!InstanceValid)
         return;
-      this.Component.OnAddItemEvent -= new Action<IStorableComponent, IInventoryComponent>(this.RaiseAddItemEvent);
-      this.Component.OnRemoveItemEvent -= new Action<IStorableComponent, IInventoryComponent>(this.RaiseRemoveItemEvent);
-      this.Component.OnChangeItemEvent -= new Action<IStorableComponent, IInventoryComponent>(this.RaiseChangeItemEvent);
-      this.innerContainersList.Clear();
+      Component.OnAddItemEvent -= RaiseAddItemEvent;
+      Component.OnRemoveItemEvent -= RaiseRemoveItemEvent;
+      Component.OnChangeItemEvent -= RaiseChangeItemEvent;
+      innerContainersList.Clear();
       base.Clear();
     }
 
     protected override void Init()
     {
-      this.SetEngineData(this.TemplateComponent.Tag);
-      if (this.IsTemplate)
+      SetEngineData(TemplateComponent.Tag);
+      if (IsTemplate)
         return;
-      this.Component.OnAddItemEvent += new Action<IStorableComponent, IInventoryComponent>(this.RaiseAddItemEvent);
-      this.Component.OnRemoveItemEvent += new Action<IStorableComponent, IInventoryComponent>(this.RaiseRemoveItemEvent);
-      this.Component.OnChangeItemEvent += new Action<IStorableComponent, IInventoryComponent>(this.RaiseChangeItemEvent);
+      Component.OnAddItemEvent += RaiseAddItemEvent;
+      Component.OnRemoveItemEvent += RaiseRemoveItemEvent;
+      Component.OnChangeItemEvent += RaiseChangeItemEvent;
     }
 
     public delegate void ItemInventoryActionEventType(IEntity entity, [Template] IEntity template);

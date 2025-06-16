@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace Engine.Impl.UI.Controls
+﻿namespace Engine.Impl.UI.Controls
 {
   public class RelayGameActionView : GameActionViewBase
   {
@@ -9,7 +7,7 @@ namespace Engine.Impl.UI.Controls
 
     protected override void ApplyValue(bool instant)
     {
-      this.view?.SetValue(this.GetValue(), instant);
+      view?.SetValue(GetValue(), instant);
     }
   }
 }

@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-public class FightAnimator_ReactionEmpty : StateMachineBehaviour
+﻿public class FightAnimator_ReactionEmpty : StateMachineBehaviour
 {
   public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
   {

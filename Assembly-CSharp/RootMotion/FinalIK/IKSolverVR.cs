@@ -1,7 +1,4 @@
 ﻿using System;
-using UnityEngine;
-using UnityEngine.Events;
-using UnityEngine.Serialization;
 
 namespace RootMotion.FinalIK
 {
@@ -26,19 +23,19 @@ namespace RootMotion.FinalIK
     [Tooltip("If true, will keep the toes planted even if head target is out of reach.")]
     public bool plantFeet = true;
     [Tooltip("The spine solver.")]
-    public IKSolverVR.Spine spine = new IKSolverVR.Spine();
+    public Spine spine = new Spine();
     [Tooltip("The left arm solver.")]
-    public IKSolverVR.Arm leftArm = new IKSolverVR.Arm();
+    public Arm leftArm = new Arm();
     [Tooltip("The right arm solver.")]
-    public IKSolverVR.Arm rightArm = new IKSolverVR.Arm();
+    public Arm rightArm = new Arm();
     [Tooltip("The left leg solver.")]
-    public IKSolverVR.Leg leftLeg = new IKSolverVR.Leg();
+    public Leg leftLeg = new Leg();
     [Tooltip("The right leg solver.")]
-    public IKSolverVR.Leg rightLeg = new IKSolverVR.Leg();
+    public Leg rightLeg = new Leg();
     [Tooltip("The procedural locomotion solver.")]
-    public IKSolverVR.Locomotion locomotion = new IKSolverVR.Locomotion();
-    private IKSolverVR.Leg[] legs = new IKSolverVR.Leg[2];
-    private IKSolverVR.Arm[] arms = new IKSolverVR.Arm[2];
+    public Locomotion locomotion = new Locomotion();
+    private Leg[] legs = new Leg[2];
+    private Arm[] arms = new Arm[2];
     private Vector3 headPosition;
     private Vector3 headDeltaPosition;
     private Vector3 raycastOriginPelvis;
@@ -56,15 +53,15 @@ namespace RootMotion.FinalIK
       }
       else
       {
-        this.solverTransforms = references.GetTransforms();
-        this.hasChest = (UnityEngine.Object) this.solverTransforms[3] != (UnityEngine.Object) null;
-        this.hasNeck = (UnityEngine.Object) this.solverTransforms[4] != (UnityEngine.Object) null;
-        this.hasShoulders = (UnityEngine.Object) this.solverTransforms[6] != (UnityEngine.Object) null && (UnityEngine.Object) this.solverTransforms[10] != (UnityEngine.Object) null;
-        this.hasToes = (UnityEngine.Object) this.solverTransforms[17] != (UnityEngine.Object) null && (UnityEngine.Object) this.solverTransforms[21] != (UnityEngine.Object) null;
-        this.readPositions = new Vector3[this.solverTransforms.Length];
-        this.readRotations = new Quaternion[this.solverTransforms.Length];
-        this.DefaultAnimationCurves();
-        this.GuessHandOrientations(references, true);
+        solverTransforms = references.GetTransforms();
+        hasChest = (UnityEngine.Object) solverTransforms[3] != (UnityEngine.Object) null;
+        hasNeck = (UnityEngine.Object) solverTransforms[4] != (UnityEngine.Object) null;
+        hasShoulders = (UnityEngine.Object) solverTransforms[6] != (UnityEngine.Object) null && (UnityEngine.Object) solverTransforms[10] != (UnityEngine.Object) null;
+        hasToes = (UnityEngine.Object) solverTransforms[17] != (UnityEngine.Object) null && (UnityEngine.Object) solverTransforms[21] != (UnityEngine.Object) null;
+        readPositions = new Vector3[solverTransforms.Length];
+        readRotations = new Quaternion[solverTransforms.Length];
+        DefaultAnimationCurves();
+        GuessHandOrientations(references, true);
       }
     }
 
@@ -76,82 +73,82 @@ namespace RootMotion.FinalIK
       }
       else
       {
-        if (this.leftArm.wristToPalmAxis == Vector3.zero || !onlyIfZero)
-          this.leftArm.wristToPalmAxis = this.GuessWristToPalmAxis(references.leftHand, references.leftForearm);
-        if (this.leftArm.palmToThumbAxis == Vector3.zero || !onlyIfZero)
-          this.leftArm.palmToThumbAxis = this.GuessPalmToThumbAxis(references.leftHand, references.leftForearm);
-        if (this.rightArm.wristToPalmAxis == Vector3.zero || !onlyIfZero)
-          this.rightArm.wristToPalmAxis = this.GuessWristToPalmAxis(references.rightHand, references.rightForearm);
-        if (!(this.rightArm.palmToThumbAxis == Vector3.zero) && onlyIfZero)
+        if (leftArm.wristToPalmAxis == Vector3.zero || !onlyIfZero)
+          leftArm.wristToPalmAxis = GuessWristToPalmAxis(references.leftHand, references.leftForearm);
+        if (leftArm.palmToThumbAxis == Vector3.zero || !onlyIfZero)
+          leftArm.palmToThumbAxis = GuessPalmToThumbAxis(references.leftHand, references.leftForearm);
+        if (rightArm.wristToPalmAxis == Vector3.zero || !onlyIfZero)
+          rightArm.wristToPalmAxis = GuessWristToPalmAxis(references.rightHand, references.rightForearm);
+        if (!(rightArm.palmToThumbAxis == Vector3.zero) && onlyIfZero)
           return;
-        this.rightArm.palmToThumbAxis = this.GuessPalmToThumbAxis(references.rightHand, references.rightForearm);
+        rightArm.palmToThumbAxis = GuessPalmToThumbAxis(references.rightHand, references.rightForearm);
       }
     }
 
     public void DefaultAnimationCurves()
     {
-      if (this.locomotion.stepHeight == null)
-        this.locomotion.stepHeight = new AnimationCurve();
-      if (this.locomotion.heelHeight == null)
-        this.locomotion.heelHeight = new AnimationCurve();
-      if (this.locomotion.stepHeight.keys.Length == 0)
-        this.locomotion.stepHeight.keys = IKSolverVR.GetSineKeyframes(0.03f);
-      if (this.locomotion.heelHeight.keys.Length != 0)
+      if (locomotion.stepHeight == null)
+        locomotion.stepHeight = new AnimationCurve();
+      if (locomotion.heelHeight == null)
+        locomotion.heelHeight = new AnimationCurve();
+      if (locomotion.stepHeight.keys.Length == 0)
+        locomotion.stepHeight.keys = GetSineKeyframes(0.03f);
+      if (locomotion.heelHeight.keys.Length != 0)
         return;
-      this.locomotion.heelHeight.keys = IKSolverVR.GetSineKeyframes(0.03f);
+      locomotion.heelHeight.keys = GetSineKeyframes(0.03f);
     }
 
-    public void AddPositionOffset(IKSolverVR.PositionOffset positionOffset, Vector3 value)
+    public void AddPositionOffset(PositionOffset positionOffset, Vector3 value)
     {
       switch (positionOffset)
       {
-        case IKSolverVR.PositionOffset.Pelvis:
-          this.spine.pelvisPositionOffset += value;
+        case PositionOffset.Pelvis:
+          spine.pelvisPositionOffset += value;
           break;
-        case IKSolverVR.PositionOffset.Chest:
-          this.spine.chestPositionOffset += value;
+        case PositionOffset.Chest:
+          spine.chestPositionOffset += value;
           break;
-        case IKSolverVR.PositionOffset.Head:
-          this.spine.headPositionOffset += value;
+        case PositionOffset.Head:
+          spine.headPositionOffset += value;
           break;
-        case IKSolverVR.PositionOffset.LeftHand:
-          this.leftArm.handPositionOffset += value;
+        case PositionOffset.LeftHand:
+          leftArm.handPositionOffset += value;
           break;
-        case IKSolverVR.PositionOffset.RightHand:
-          this.rightArm.handPositionOffset += value;
+        case PositionOffset.RightHand:
+          rightArm.handPositionOffset += value;
           break;
-        case IKSolverVR.PositionOffset.LeftFoot:
-          this.leftLeg.footPositionOffset += value;
+        case PositionOffset.LeftFoot:
+          leftLeg.footPositionOffset += value;
           break;
-        case IKSolverVR.PositionOffset.RightFoot:
-          this.rightLeg.footPositionOffset += value;
+        case PositionOffset.RightFoot:
+          rightLeg.footPositionOffset += value;
           break;
-        case IKSolverVR.PositionOffset.LeftHeel:
-          this.leftLeg.heelPositionOffset += value;
+        case PositionOffset.LeftHeel:
+          leftLeg.heelPositionOffset += value;
           break;
-        case IKSolverVR.PositionOffset.RightHeel:
-          this.rightLeg.heelPositionOffset += value;
+        case PositionOffset.RightHeel:
+          rightLeg.heelPositionOffset += value;
           break;
       }
     }
 
-    public void AddRotationOffset(IKSolverVR.RotationOffset rotationOffset, Vector3 value)
+    public void AddRotationOffset(RotationOffset rotationOffset, Vector3 value)
     {
       this.AddRotationOffset(rotationOffset, Quaternion.Euler(value));
     }
 
-    public void AddRotationOffset(IKSolverVR.RotationOffset rotationOffset, Quaternion value)
+    public void AddRotationOffset(RotationOffset rotationOffset, Quaternion value)
     {
       switch (rotationOffset)
       {
-        case IKSolverVR.RotationOffset.Pelvis:
-          this.spine.pelvisRotationOffset = value * this.spine.pelvisRotationOffset;
+        case RotationOffset.Pelvis:
+          spine.pelvisRotationOffset = value * spine.pelvisRotationOffset;
           break;
-        case IKSolverVR.RotationOffset.Chest:
-          this.spine.chestRotationOffset = value * this.spine.chestRotationOffset;
+        case RotationOffset.Chest:
+          spine.chestRotationOffset = value * spine.chestRotationOffset;
           break;
-        case IKSolverVR.RotationOffset.Head:
-          this.spine.headRotationOffset = value * this.spine.headRotationOffset;
+        case RotationOffset.Head:
+          spine.headRotationOffset = value * spine.headRotationOffset;
           break;
       }
     }
@@ -161,85 +158,85 @@ namespace RootMotion.FinalIK
       Quaternion deltaRotation,
       Vector3 platformPivot)
     {
-      this.locomotion.AddDeltaPosition(deltaPosition);
-      this.raycastOriginPelvis += deltaPosition;
-      this.locomotion.AddDeltaRotation(deltaRotation, platformPivot);
-      this.spine.faceDirection = deltaRotation * this.spine.faceDirection;
+      locomotion.AddDeltaPosition(deltaPosition);
+      raycastOriginPelvis += deltaPosition;
+      locomotion.AddDeltaRotation(deltaRotation, platformPivot);
+      spine.faceDirection = deltaRotation * spine.faceDirection;
     }
 
     public void Reset()
     {
-      if (!this.initiated)
+      if (!initiated)
         return;
-      this.UpdateSolverTransforms();
-      this.Read(this.readPositions, this.readRotations, this.hasChest, this.hasNeck, this.hasShoulders, this.hasToes);
-      this.spine.faceDirection = this.rootBone.readRotation * Vector3.forward;
-      this.locomotion.Reset(this.readPositions, this.readRotations);
-      this.raycastOriginPelvis = this.spine.pelvis.readPosition;
+      UpdateSolverTransforms();
+      Read(readPositions, readRotations, hasChest, hasNeck, hasShoulders, hasToes);
+      spine.faceDirection = rootBone.readRotation * Vector3.forward;
+      locomotion.Reset(readPositions, readRotations);
+      raycastOriginPelvis = spine.pelvis.readPosition;
     }
 
     public override void StoreDefaultLocalState()
     {
-      for (int index = 1; index < this.solverTransforms.Length; ++index)
+      for (int index = 1; index < solverTransforms.Length; ++index)
       {
-        if ((UnityEngine.Object) this.solverTransforms[index] != (UnityEngine.Object) null)
+        if ((UnityEngine.Object) solverTransforms[index] != (UnityEngine.Object) null)
         {
-          this.defaultLocalPositions[index - 1] = this.solverTransforms[index].localPosition;
-          this.defaultLocalRotations[index - 1] = this.solverTransforms[index].localRotation;
+          defaultLocalPositions[index - 1] = solverTransforms[index].localPosition;
+          defaultLocalRotations[index - 1] = solverTransforms[index].localRotation;
         }
       }
     }
 
     public override void FixTransforms()
     {
-      if (!this.initiated)
+      if (!initiated)
         return;
-      for (int index = 1; index < this.solverTransforms.Length; ++index)
+      for (int index = 1; index < solverTransforms.Length; ++index)
       {
-        if ((UnityEngine.Object) this.solverTransforms[index] != (UnityEngine.Object) null)
+        if ((UnityEngine.Object) solverTransforms[index] != (UnityEngine.Object) null)
         {
           if (index == 1 | (index > 5 && index < 14))
-            this.solverTransforms[index].localPosition = this.defaultLocalPositions[index - 1];
-          this.solverTransforms[index].localRotation = this.defaultLocalRotations[index - 1];
+            solverTransforms[index].localPosition = defaultLocalPositions[index - 1];
+          solverTransforms[index].localRotation = defaultLocalRotations[index - 1];
         }
       }
     }
 
-    public override IKSolver.Point[] GetPoints()
+    public override Point[] GetPoints()
     {
       Debug.LogError((object) "GetPoints() is not applicable to IKSolverVR.");
-      return (IKSolver.Point[]) null;
+      return null;
     }
 
-    public override IKSolver.Point GetPoint(Transform transform)
+    public override Point GetPoint(Transform transform)
     {
       Debug.LogError((object) "GetPoint is not applicable to IKSolverVR.");
-      return (IKSolver.Point) null;
+      return null;
     }
 
     public override bool IsValid(ref string message)
     {
-      if (this.solverTransforms == null || this.solverTransforms.Length == 0)
+      if (solverTransforms == null || solverTransforms.Length == 0)
       {
         message = "Trying to initiate IKSolverVR with invalid bone references.";
         return false;
       }
-      if (this.leftArm.wristToPalmAxis == Vector3.zero)
+      if (leftArm.wristToPalmAxis == Vector3.zero)
       {
         message = "Left arm 'Wrist To Palm Axis' needs to be set in VRIK. Please select the hand bone, set it to the axis that points from the wrist towards the palm. If the arrow points away from the palm, axis must be negative.";
         return false;
       }
-      if (this.rightArm.wristToPalmAxis == Vector3.zero)
+      if (rightArm.wristToPalmAxis == Vector3.zero)
       {
         message = "Right arm 'Wrist To Palm Axis' needs to be set in VRIK. Please select the hand bone, set it to the axis that points from the wrist towards the palm. If the arrow points away from the palm, axis must be negative.";
         return false;
       }
-      if (this.leftArm.palmToThumbAxis == Vector3.zero)
+      if (leftArm.palmToThumbAxis == Vector3.zero)
       {
         message = "Left arm 'Palm To Thumb Axis' needs to be set in VRIK. Please select the hand bone, set it to the axis that points from the palm towards the thumb. If the arrow points away from the thumb, axis must be negative.";
         return false;
       }
-      if (!(this.rightArm.palmToThumbAxis == Vector3.zero))
+      if (!(rightArm.palmToThumbAxis == Vector3.zero))
         return true;
       message = "Right arm 'Palm To Thumb Axis' needs to be set in VRIK. Please select the hand bone, set it to the axis that points from the palm towards the thumb. If the arrow points away from the thumb, axis must be negative.";
       return false;
@@ -278,7 +275,7 @@ namespace RootMotion.FinalIK
       for (int index2 = 0; index2 < hand.childCount; ++index2)
       {
         float num2 = Vector3.SqrMagnitude(hand.GetChild(index2).position - hand.position);
-        if ((double) num2 < (double) num1)
+        if (num2 < (double) num1)
         {
           num1 = num2;
           index1 = index2;
@@ -305,42 +302,42 @@ namespace RootMotion.FinalIK
 
     private void UpdateSolverTransforms()
     {
-      for (int index = 0; index < this.solverTransforms.Length; ++index)
+      for (int index = 0; index < solverTransforms.Length; ++index)
       {
-        if ((UnityEngine.Object) this.solverTransforms[index] != (UnityEngine.Object) null)
+        if ((UnityEngine.Object) solverTransforms[index] != (UnityEngine.Object) null)
         {
-          this.readPositions[index] = this.solverTransforms[index].position;
-          this.readRotations[index] = this.solverTransforms[index].rotation;
+          readPositions[index] = solverTransforms[index].position;
+          readRotations[index] = solverTransforms[index].rotation;
         }
       }
     }
 
     protected override void OnInitiate()
     {
-      this.UpdateSolverTransforms();
-      this.Read(this.readPositions, this.readRotations, this.hasChest, this.hasNeck, this.hasShoulders, this.hasToes);
+      UpdateSolverTransforms();
+      Read(readPositions, readRotations, hasChest, hasNeck, hasShoulders, hasToes);
     }
 
     protected override void OnUpdate()
     {
-      if ((double) this.IKPositionWeight <= 0.0)
+      if (IKPositionWeight <= 0.0)
         return;
-      this.UpdateSolverTransforms();
-      this.Read(this.readPositions, this.readRotations, this.hasChest, this.hasNeck, this.hasShoulders, this.hasToes);
-      this.Solve();
-      this.Write();
-      this.WriteTransforms();
+      UpdateSolverTransforms();
+      Read(readPositions, readRotations, hasChest, hasNeck, hasShoulders, hasToes);
+      Solve();
+      Write();
+      WriteTransforms();
     }
 
     private void WriteTransforms()
     {
-      for (int index = 0; index < this.solverTransforms.Length; ++index)
+      for (int index = 0; index < solverTransforms.Length; ++index)
       {
-        if ((UnityEngine.Object) this.solverTransforms[index] != (UnityEngine.Object) null)
+        if ((UnityEngine.Object) solverTransforms[index] != (UnityEngine.Object) null)
         {
           if (index < 2 | (index > 5 && index < 14))
-            this.solverTransforms[index].position = V3Tools.Lerp(this.solverTransforms[index].position, this.GetPosition(index), this.IKPositionWeight);
-          this.solverTransforms[index].rotation = QuaTools.Lerp(this.solverTransforms[index].rotation, this.GetRotation(index), this.IKPositionWeight);
+            solverTransforms[index].position = V3Tools.Lerp(solverTransforms[index].position, GetPosition(index), IKPositionWeight);
+          solverTransforms[index].rotation = QuaTools.Lerp(solverTransforms[index].rotation, GetRotation(index), IKPositionWeight);
         }
       }
     }
@@ -353,51 +350,51 @@ namespace RootMotion.FinalIK
       bool hasShoulders,
       bool hasToes)
     {
-      if (this.rootBone == null)
-        this.rootBone = new IKSolverVR.VirtualBone(positions[0], rotations[0]);
+      if (rootBone == null)
+        rootBone = new VirtualBone(positions[0], rotations[0]);
       else
-        this.rootBone.Read(positions[0], rotations[0]);
-      this.spine.Read(positions, rotations, hasChest, hasNeck, hasShoulders, hasToes, 0, 1);
-      this.leftArm.Read(positions, rotations, hasChest, hasNeck, hasShoulders, hasToes, hasChest ? 3 : 2, 6);
-      this.rightArm.Read(positions, rotations, hasChest, hasNeck, hasShoulders, hasToes, hasChest ? 3 : 2, 10);
-      this.leftLeg.Read(positions, rotations, hasChest, hasNeck, hasShoulders, hasToes, 1, 14);
-      this.rightLeg.Read(positions, rotations, hasChest, hasNeck, hasShoulders, hasToes, 1, 18);
+        rootBone.Read(positions[0], rotations[0]);
+      spine.Read(positions, rotations, hasChest, hasNeck, hasShoulders, hasToes, 0, 1);
+      leftArm.Read(positions, rotations, hasChest, hasNeck, hasShoulders, hasToes, hasChest ? 3 : 2, 6);
+      rightArm.Read(positions, rotations, hasChest, hasNeck, hasShoulders, hasToes, hasChest ? 3 : 2, 10);
+      leftLeg.Read(positions, rotations, hasChest, hasNeck, hasShoulders, hasToes, 1, 14);
+      rightLeg.Read(positions, rotations, hasChest, hasNeck, hasShoulders, hasToes, 1, 18);
       for (int index = 0; index < rotations.Length; ++index)
       {
-        this.solvedPositions[index] = positions[index];
-        this.solvedRotations[index] = rotations[index];
+        solvedPositions[index] = positions[index];
+        solvedRotations[index] = rotations[index];
       }
-      if (this.initiated)
+      if (initiated)
         return;
-      this.legs = new IKSolverVR.Leg[2]
+      legs = new Leg[2]
       {
-        this.leftLeg,
-        this.rightLeg
+        leftLeg,
+        rightLeg
       };
-      this.arms = new IKSolverVR.Arm[2]
+      arms = new Arm[2]
       {
-        this.leftArm,
-        this.rightArm
+        leftArm,
+        rightArm
       };
-      this.locomotion.Initiate(positions, rotations, hasToes);
-      this.raycastOriginPelvis = this.spine.pelvis.readPosition;
-      this.spine.faceDirection = this.readRotations[0] * Vector3.forward;
+      locomotion.Initiate(positions, rotations, hasToes);
+      raycastOriginPelvis = spine.pelvis.readPosition;
+      spine.faceDirection = readRotations[0] * Vector3.forward;
     }
 
     private void Solve()
     {
-      this.spine.PreSolve();
-      foreach (IKSolverVR.BodyPart arm in this.arms)
+      spine.PreSolve();
+      foreach (BodyPart arm in arms)
         arm.PreSolve();
-      foreach (IKSolverVR.BodyPart leg in this.legs)
+      foreach (BodyPart leg in legs)
         leg.PreSolve();
-      foreach (IKSolverVR.BodyPart arm in this.arms)
+      foreach (BodyPart arm in arms)
         arm.ApplyOffsets();
-      this.spine.ApplyOffsets();
-      this.spine.Solve(this.rootBone, this.legs, this.arms);
-      if ((double) this.spine.pelvisPositionWeight > 0.0 && this.plantFeet)
-        Warning.Log("If VRIK 'Pelvis Position Weight' is > 0, 'Plant Feet' should be disabled to improve performance and stability.", this.root);
-      if ((double) this.locomotion.weight > 0.0)
+      spine.ApplyOffsets();
+      spine.Solve(rootBone, legs, arms);
+      if (spine.pelvisPositionWeight > 0.0 && plantFeet)
+        Warning.Log("If VRIK 'Pelvis Position Weight' is > 0, 'Plant Feet' should be disabled to improve performance and stability.", root);
+      if (locomotion.weight > 0.0)
       {
         Vector3 leftFootPosition = Vector3.zero;
         Vector3 rightFootPosition = Vector3.zero;
@@ -407,130 +404,130 @@ namespace RootMotion.FinalIK
         float rightFootOffset = 0.0f;
         float leftHeelOffset = 0.0f;
         float rightHeelOffset = 0.0f;
-        this.locomotion.Solve(this.rootBone, this.spine, this.leftLeg, this.rightLeg, this.leftArm, this.rightArm, this.supportLegIndex, out leftFootPosition, out rightFootPosition, out leftFootRotation, out rightFootRotation, out leftFootOffset, out rightFootOffset, out leftHeelOffset, out rightHeelOffset);
-        leftFootPosition += this.root.up * leftFootOffset;
-        rightFootPosition += this.root.up * rightFootOffset;
-        this.leftLeg.footPositionOffset += (leftFootPosition - this.leftLeg.lastBone.solverPosition) * this.IKPositionWeight * (1f - this.leftLeg.positionWeight) * this.locomotion.weight;
-        this.rightLeg.footPositionOffset += (rightFootPosition - this.rightLeg.lastBone.solverPosition) * this.IKPositionWeight * (1f - this.rightLeg.positionWeight) * this.locomotion.weight;
-        this.leftLeg.heelPositionOffset += this.root.up * leftHeelOffset * this.locomotion.weight;
-        this.rightLeg.heelPositionOffset += this.root.up * rightHeelOffset * this.locomotion.weight;
-        Quaternion rotation1 = QuaTools.FromToRotation(this.leftLeg.lastBone.solverRotation, leftFootRotation);
-        Quaternion rotation2 = QuaTools.FromToRotation(this.rightLeg.lastBone.solverRotation, rightFootRotation);
-        Quaternion quaternion1 = Quaternion.Lerp(Quaternion.identity, rotation1, this.IKPositionWeight * (1f - this.leftLeg.rotationWeight) * this.locomotion.weight);
-        Quaternion quaternion2 = Quaternion.Lerp(Quaternion.identity, rotation2, this.IKPositionWeight * (1f - this.rightLeg.rotationWeight) * this.locomotion.weight);
-        this.leftLeg.footRotationOffset = quaternion1 * this.leftLeg.footRotationOffset;
-        this.rightLeg.footRotationOffset = quaternion2 * this.rightLeg.footRotationOffset;
-        Vector3 plane = V3Tools.PointToPlane(Vector3.Lerp(this.leftLeg.position + this.leftLeg.footPositionOffset, this.rightLeg.position + this.rightLeg.footPositionOffset, 0.5f), this.rootBone.solverPosition, this.root.up);
-        this.rootBone.solverPosition = Vector3.Lerp(this.rootBone.solverPosition + this.rootVelocity * Time.deltaTime * 2f * this.locomotion.weight, plane, Time.deltaTime * this.locomotion.rootSpeed * this.locomotion.weight);
-        this.rootVelocity += (plane - this.rootBone.solverPosition) * Time.deltaTime * 10f;
-        this.rootVelocity -= V3Tools.ExtractVertical(this.rootVelocity, this.root.up, 1f);
-        this.bodyOffset = Vector3.Lerp(this.bodyOffset, this.root.up * (leftFootOffset + rightFootOffset), Time.deltaTime * 3f);
-        this.bodyOffset = Vector3.Lerp(Vector3.zero, this.bodyOffset, this.locomotion.weight);
+        locomotion.Solve(rootBone, spine, leftLeg, rightLeg, leftArm, rightArm, supportLegIndex, out leftFootPosition, out rightFootPosition, out leftFootRotation, out rightFootRotation, out leftFootOffset, out rightFootOffset, out leftHeelOffset, out rightHeelOffset);
+        leftFootPosition += root.up * leftFootOffset;
+        rightFootPosition += root.up * rightFootOffset;
+        leftLeg.footPositionOffset += (leftFootPosition - leftLeg.lastBone.solverPosition) * IKPositionWeight * (1f - leftLeg.positionWeight) * locomotion.weight;
+        rightLeg.footPositionOffset += (rightFootPosition - rightLeg.lastBone.solverPosition) * IKPositionWeight * (1f - rightLeg.positionWeight) * locomotion.weight;
+        leftLeg.heelPositionOffset += root.up * leftHeelOffset * locomotion.weight;
+        rightLeg.heelPositionOffset += root.up * rightHeelOffset * locomotion.weight;
+        Quaternion rotation1 = QuaTools.FromToRotation(leftLeg.lastBone.solverRotation, leftFootRotation);
+        Quaternion rotation2 = QuaTools.FromToRotation(rightLeg.lastBone.solverRotation, rightFootRotation);
+        Quaternion quaternion1 = Quaternion.Lerp(Quaternion.identity, rotation1, IKPositionWeight * (1f - leftLeg.rotationWeight) * locomotion.weight);
+        Quaternion quaternion2 = Quaternion.Lerp(Quaternion.identity, rotation2, IKPositionWeight * (1f - rightLeg.rotationWeight) * locomotion.weight);
+        leftLeg.footRotationOffset = quaternion1 * leftLeg.footRotationOffset;
+        rightLeg.footRotationOffset = quaternion2 * rightLeg.footRotationOffset;
+        Vector3 plane = V3Tools.PointToPlane(Vector3.Lerp(leftLeg.position + leftLeg.footPositionOffset, rightLeg.position + rightLeg.footPositionOffset, 0.5f), rootBone.solverPosition, root.up);
+        rootBone.solverPosition = Vector3.Lerp(rootBone.solverPosition + rootVelocity * Time.deltaTime * 2f * locomotion.weight, plane, Time.deltaTime * locomotion.rootSpeed * locomotion.weight);
+        rootVelocity += (plane - rootBone.solverPosition) * Time.deltaTime * 10f;
+        rootVelocity -= V3Tools.ExtractVertical(rootVelocity, root.up, 1f);
+        bodyOffset = Vector3.Lerp(bodyOffset, root.up * (leftFootOffset + rightFootOffset), Time.deltaTime * 3f);
+        bodyOffset = Vector3.Lerp(Vector3.zero, bodyOffset, locomotion.weight);
       }
-      foreach (IKSolverVR.BodyPart leg in this.legs)
+      foreach (BodyPart leg in legs)
         leg.ApplyOffsets();
-      if (!this.plantFeet)
+      if (!plantFeet)
       {
-        this.spine.InverseTranslateToHead(this.legs, false, false, this.bodyOffset, 1f);
-        foreach (IKSolverVR.BodyPart leg in this.legs)
-          leg.TranslateRoot(this.spine.pelvis.solverPosition, this.spine.pelvis.solverRotation);
-        foreach (IKSolverVR.Leg leg in this.legs)
+        spine.InverseTranslateToHead(legs, false, false, bodyOffset, 1f);
+        foreach (BodyPart leg in legs)
+          leg.TranslateRoot(spine.pelvis.solverPosition, spine.pelvis.solverRotation);
+        foreach (Leg leg in legs)
           leg.Solve();
       }
       else
       {
         for (int index = 0; index < 2; ++index)
         {
-          this.spine.InverseTranslateToHead(this.legs, true, index == 0, this.bodyOffset, 1f);
-          foreach (IKSolverVR.BodyPart leg in this.legs)
-            leg.TranslateRoot(this.spine.pelvis.solverPosition, this.spine.pelvis.solverRotation);
-          foreach (IKSolverVR.Leg leg in this.legs)
+          spine.InverseTranslateToHead(legs, true, index == 0, bodyOffset, 1f);
+          foreach (BodyPart leg in legs)
+            leg.TranslateRoot(spine.pelvis.solverPosition, spine.pelvis.solverRotation);
+          foreach (Leg leg in legs)
             leg.Solve();
         }
       }
-      for (int index = 0; index < this.arms.Length; ++index)
-        this.arms[index].TranslateRoot(this.spine.chest.solverPosition, this.spine.chest.solverRotation);
-      for (int index = 0; index < this.arms.Length; ++index)
-        this.arms[index].Solve(index == 0);
-      this.spine.ResetOffsets();
-      foreach (IKSolverVR.BodyPart leg in this.legs)
+      for (int index = 0; index < arms.Length; ++index)
+        arms[index].TranslateRoot(spine.chest.solverPosition, spine.chest.solverRotation);
+      for (int index = 0; index < arms.Length; ++index)
+        arms[index].Solve(index == 0);
+      spine.ResetOffsets();
+      foreach (BodyPart leg in legs)
         leg.ResetOffsets();
-      foreach (IKSolverVR.BodyPart arm in this.arms)
+      foreach (BodyPart arm in arms)
         arm.ResetOffsets();
-      this.spine.pelvisPositionOffset += this.GetPelvisOffset();
-      this.spine.chestPositionOffset += this.spine.pelvisPositionOffset;
-      this.Write();
-      this.supportLegIndex = -1;
+      spine.pelvisPositionOffset += GetPelvisOffset();
+      spine.chestPositionOffset += spine.pelvisPositionOffset;
+      Write();
+      supportLegIndex = -1;
       float num1 = float.PositiveInfinity;
-      for (int index = 0; index < this.legs.Length; ++index)
+      for (int index = 0; index < legs.Length; ++index)
       {
-        float num2 = Vector3.SqrMagnitude(this.legs[index].lastBone.solverPosition - this.legs[index].bones[0].solverPosition);
-        if ((double) num2 < (double) num1)
+        float num2 = Vector3.SqrMagnitude(legs[index].lastBone.solverPosition - legs[index].bones[0].solverPosition);
+        if (num2 < (double) num1)
         {
-          this.supportLegIndex = index;
+          supportLegIndex = index;
           num1 = num2;
         }
       }
     }
 
-    private Vector3 GetPosition(int index) => this.solvedPositions[index];
+    private Vector3 GetPosition(int index) => solvedPositions[index];
 
-    private Quaternion GetRotation(int index) => this.solvedRotations[index];
+    private Quaternion GetRotation(int index) => solvedRotations[index];
 
     [HideInInspector]
-    public IKSolverVR.VirtualBone rootBone { get; private set; }
+    public VirtualBone rootBone { get; private set; }
 
     private void Write()
     {
-      this.solvedPositions[0] = this.rootBone.solverPosition;
-      this.solvedRotations[0] = this.rootBone.solverRotation;
-      this.spine.Write(ref this.solvedPositions, ref this.solvedRotations);
-      foreach (IKSolverVR.BodyPart leg in this.legs)
-        leg.Write(ref this.solvedPositions, ref this.solvedRotations);
-      foreach (IKSolverVR.BodyPart arm in this.arms)
-        arm.Write(ref this.solvedPositions, ref this.solvedRotations);
+      solvedPositions[0] = rootBone.solverPosition;
+      solvedRotations[0] = rootBone.solverRotation;
+      spine.Write(ref solvedPositions, ref solvedRotations);
+      foreach (BodyPart leg in legs)
+        leg.Write(ref solvedPositions, ref solvedRotations);
+      foreach (BodyPart arm in arms)
+        arm.Write(ref solvedPositions, ref solvedRotations);
     }
 
     private Vector3 GetPelvisOffset()
     {
-      if ((double) this.locomotion.weight <= 0.0 || (int) this.locomotion.blockingLayers == -1)
+      if (locomotion.weight <= 0.0 || (int) locomotion.blockingLayers == -1)
         return Vector3.zero;
       Vector3 raycastOriginPelvis = this.raycastOriginPelvis with
       {
-        y = this.spine.pelvis.solverPosition.y
+        y = spine.pelvis.solverPosition.y
       };
-      Vector3 origin = this.spine.pelvis.readPosition with
+      Vector3 origin = spine.pelvis.readPosition with
       {
-        y = this.spine.pelvis.solverPosition.y
+        y = spine.pelvis.solverPosition.y
       };
       Vector3 direction1 = origin - raycastOriginPelvis;
       RaycastHit hitInfo;
-      if ((double) this.locomotion.raycastRadius <= 0.0)
+      if (locomotion.raycastRadius <= 0.0)
       {
-        if (Physics.Raycast(raycastOriginPelvis, direction1, out hitInfo, direction1.magnitude * 1.1f, (int) this.locomotion.blockingLayers))
+        if (Physics.Raycast(raycastOriginPelvis, direction1, out hitInfo, direction1.magnitude * 1.1f, (int) locomotion.blockingLayers))
           origin = hitInfo.point;
       }
-      else if (Physics.SphereCast(raycastOriginPelvis, this.locomotion.raycastRadius * 1.1f, direction1, out hitInfo, direction1.magnitude, (int) this.locomotion.blockingLayers))
+      else if (Physics.SphereCast(raycastOriginPelvis, locomotion.raycastRadius * 1.1f, direction1, out hitInfo, direction1.magnitude, (int) locomotion.blockingLayers))
         origin = raycastOriginPelvis + direction1.normalized * hitInfo.distance / 1.1f;
-      Vector3 vector3 = this.spine.pelvis.solverPosition;
+      Vector3 vector3 = spine.pelvis.solverPosition;
       Vector3 direction2 = vector3 - origin;
-      if ((double) this.locomotion.raycastRadius <= 0.0)
+      if (locomotion.raycastRadius <= 0.0)
       {
-        if (Physics.Raycast(origin, direction2, out hitInfo, direction2.magnitude, (int) this.locomotion.blockingLayers))
+        if (Physics.Raycast(origin, direction2, out hitInfo, direction2.magnitude, (int) locomotion.blockingLayers))
           vector3 = hitInfo.point;
       }
-      else if (Physics.SphereCast(origin, this.locomotion.raycastRadius, direction2, out hitInfo, direction2.magnitude, (int) this.locomotion.blockingLayers))
+      else if (Physics.SphereCast(origin, locomotion.raycastRadius, direction2, out hitInfo, direction2.magnitude, (int) locomotion.blockingLayers))
         vector3 = origin + direction2.normalized * hitInfo.distance;
-      this.lastOffset = Vector3.Lerp(this.lastOffset, Vector3.zero, Time.deltaTime * 3f);
-      this.lastOffset = Vector3.Lerp(this.lastOffset, (vector3 + Vector3.ClampMagnitude(this.lastOffset, 0.75f)) with
+      lastOffset = Vector3.Lerp(lastOffset, Vector3.zero, Time.deltaTime * 3f);
+      lastOffset = Vector3.Lerp(lastOffset, (vector3 + Vector3.ClampMagnitude(lastOffset, 0.75f)) with
       {
-        y = this.spine.pelvis.solverPosition.y
-      } - this.spine.pelvis.solverPosition, Time.deltaTime * 15f);
-      return this.lastOffset;
+        y = spine.pelvis.solverPosition.y
+      } - spine.pelvis.solverPosition, Time.deltaTime * 15f);
+      return lastOffset;
     }
 
     [Serializable]
-    public class Arm : IKSolverVR.BodyPart
+    public class Arm : BodyPart
     {
       [Tooltip("The hand target")]
       public Transform target;
@@ -543,7 +540,7 @@ namespace RootMotion.FinalIK
       [Range(0.0f, 1f)]
       public float rotationWeight = 1f;
       [Tooltip("Different techniques for shoulder bone rotation.")]
-      public IKSolverVR.Arm.ShoulderRotationMode shoulderRotationMode = IKSolverVR.Arm.ShoulderRotationMode.YawPitch;
+      public ShoulderRotationMode shoulderRotationMode = ShoulderRotationMode.YawPitch;
       [Tooltip("The weight of shoulder rotation")]
       [Range(0.0f, 1f)]
       public float shoulderRotationWeight = 1f;
@@ -588,13 +585,13 @@ namespace RootMotion.FinalIK
 
       public Quaternion rotation { get; private set; }
 
-      private IKSolverVR.VirtualBone shoulder => this.bones[0];
+      private VirtualBone shoulder => bones[0];
 
-      private IKSolverVR.VirtualBone upperArm => this.bones[1];
+      private VirtualBone upperArm => bones[1];
 
-      private IKSolverVR.VirtualBone forearm => this.bones[2];
+      private VirtualBone forearm => bones[2];
 
-      private IKSolverVR.VirtualBone hand => this.bones[3];
+      private VirtualBone hand => bones[3];
 
       protected override void OnRead(
         Vector3[] positions,
@@ -614,172 +611,172 @@ namespace RootMotion.FinalIK
         Quaternion rotation3 = rotations[index + 2];
         Vector3 position4 = positions[index + 3];
         Quaternion rotation4 = rotations[index + 3];
-        if (!this.initiated)
+        if (!initiated)
         {
-          this.IKPosition = position4;
-          this.IKRotation = rotation4;
-          this.rotation = this.IKRotation;
-          this.hasShoulder = hasShoulders;
-          this.bones = new IKSolverVR.VirtualBone[this.hasShoulder ? 4 : 3];
-          if (this.hasShoulder)
+          IKPosition = position4;
+          IKRotation = rotation4;
+          rotation = IKRotation;
+          hasShoulder = hasShoulders;
+          bones = new VirtualBone[hasShoulder ? 4 : 3];
+          if (hasShoulder)
           {
-            this.bones[0] = new IKSolverVR.VirtualBone(position1, rotation1);
-            this.bones[1] = new IKSolverVR.VirtualBone(position2, rotation2);
-            this.bones[2] = new IKSolverVR.VirtualBone(position3, rotation3);
-            this.bones[3] = new IKSolverVR.VirtualBone(position4, rotation4);
+            bones[0] = new VirtualBone(position1, rotation1);
+            bones[1] = new VirtualBone(position2, rotation2);
+            bones[2] = new VirtualBone(position3, rotation3);
+            bones[3] = new VirtualBone(position4, rotation4);
           }
           else
           {
-            this.bones[0] = new IKSolverVR.VirtualBone(position2, rotation2);
-            this.bones[1] = new IKSolverVR.VirtualBone(position3, rotation3);
-            this.bones[2] = new IKSolverVR.VirtualBone(position4, rotation4);
+            bones[0] = new VirtualBone(position2, rotation2);
+            bones[1] = new VirtualBone(position3, rotation3);
+            bones[2] = new VirtualBone(position4, rotation4);
           }
-          this.chestForwardAxis = Quaternion.Inverse(this.rootRotation) * (rotations[0] * Vector3.forward);
-          this.chestUpAxis = Quaternion.Inverse(this.rootRotation) * (rotations[0] * Vector3.up);
+          chestForwardAxis = Quaternion.Inverse(rootRotation) * (rotations[0] * Vector3.forward);
+          chestUpAxis = Quaternion.Inverse(rootRotation) * (rotations[0] * Vector3.up);
         }
-        if (this.hasShoulder)
+        if (hasShoulder)
         {
-          this.bones[0].Read(position1, rotation1);
-          this.bones[1].Read(position2, rotation2);
-          this.bones[2].Read(position3, rotation3);
-          this.bones[3].Read(position4, rotation4);
+          bones[0].Read(position1, rotation1);
+          bones[1].Read(position2, rotation2);
+          bones[2].Read(position3, rotation3);
+          bones[3].Read(position4, rotation4);
         }
         else
         {
-          this.bones[0].Read(position2, rotation2);
-          this.bones[1].Read(position3, rotation3);
-          this.bones[2].Read(position4, rotation4);
+          bones[0].Read(position2, rotation2);
+          bones[1].Read(position3, rotation3);
+          bones[2].Read(position4, rotation4);
         }
       }
 
       public override void PreSolve()
       {
-        if ((UnityEngine.Object) this.target != (UnityEngine.Object) null)
+        if ((UnityEngine.Object) target != (UnityEngine.Object) null)
         {
-          this.IKPosition = this.target.position;
-          this.IKRotation = this.target.rotation;
+          IKPosition = target.position;
+          IKRotation = target.rotation;
         }
-        this.position = V3Tools.Lerp(this.hand.solverPosition, this.IKPosition, this.positionWeight);
-        this.rotation = QuaTools.Lerp(this.hand.solverRotation, this.IKRotation, this.rotationWeight);
-        this.shoulder.axis = this.shoulder.axis.normalized;
-        this.forearmRelToUpperArm = Quaternion.Inverse(this.upperArm.solverRotation) * this.forearm.solverRotation;
+        position = V3Tools.Lerp(hand.solverPosition, IKPosition, positionWeight);
+        rotation = QuaTools.Lerp(hand.solverRotation, IKRotation, rotationWeight);
+        shoulder.axis = shoulder.axis.normalized;
+        forearmRelToUpperArm = Quaternion.Inverse(upperArm.solverRotation) * forearm.solverRotation;
       }
 
-      public override void ApplyOffsets() => this.position += this.handPositionOffset;
+      public override void ApplyOffsets() => position += handPositionOffset;
 
       private void Stretching()
       {
-        float num1 = this.upperArm.length + this.forearm.length;
+        float num1 = upperArm.length + forearm.length;
         Vector3 zero1 = Vector3.zero;
         Vector3 zero2 = Vector3.zero;
-        if ((double) this.armLengthMlp != 1.0)
+        if (armLengthMlp != 1.0)
         {
-          num1 *= this.armLengthMlp;
-          Vector3 vector3_1 = (this.forearm.solverPosition - this.upperArm.solverPosition) * (this.armLengthMlp - 1f);
-          Vector3 vector3_2 = (this.hand.solverPosition - this.forearm.solverPosition) * (this.armLengthMlp - 1f);
-          this.forearm.solverPosition += vector3_1;
-          this.hand.solverPosition += vector3_1 + vector3_2;
+          num1 *= armLengthMlp;
+          Vector3 vector3_1 = (forearm.solverPosition - upperArm.solverPosition) * (armLengthMlp - 1f);
+          Vector3 vector3_2 = (hand.solverPosition - forearm.solverPosition) * (armLengthMlp - 1f);
+          forearm.solverPosition += vector3_1;
+          hand.solverPosition += vector3_1 + vector3_2;
         }
-        float num2 = this.stretchCurve.Evaluate(Vector3.Distance(this.upperArm.solverPosition, this.position) / num1) * this.positionWeight;
-        Vector3 vector3_3 = (this.forearm.solverPosition - this.upperArm.solverPosition) * num2;
-        Vector3 vector3_4 = (this.hand.solverPosition - this.forearm.solverPosition) * num2;
-        this.forearm.solverPosition += vector3_3;
-        this.hand.solverPosition += vector3_3 + vector3_4;
+        float num2 = stretchCurve.Evaluate(Vector3.Distance(upperArm.solverPosition, position) / num1) * positionWeight;
+        Vector3 vector3_3 = (forearm.solverPosition - upperArm.solverPosition) * num2;
+        Vector3 vector3_4 = (hand.solverPosition - forearm.solverPosition) * num2;
+        forearm.solverPosition += vector3_3;
+        hand.solverPosition += vector3_3 + vector3_4;
       }
 
       public void Solve(bool isLeft)
       {
-        this.chestRotation = Quaternion.LookRotation(this.rootRotation * this.chestForwardAxis, this.rootRotation * this.chestUpAxis);
-        this.chestForward = this.chestRotation * Vector3.forward;
-        this.chestUp = this.chestRotation * Vector3.up;
-        if (this.hasShoulder && (double) this.shoulderRotationWeight > 0.0)
+        chestRotation = Quaternion.LookRotation(rootRotation * chestForwardAxis, rootRotation * chestUpAxis);
+        chestForward = chestRotation * Vector3.forward;
+        chestUp = chestRotation * Vector3.up;
+        if (hasShoulder && shoulderRotationWeight > 0.0)
         {
-          switch (this.shoulderRotationMode)
+          switch (shoulderRotationMode)
           {
-            case IKSolverVR.Arm.ShoulderRotationMode.YawPitch:
-              Vector3 vector3_1 = this.position - this.shoulder.solverPosition;
+            case ShoulderRotationMode.YawPitch:
+              Vector3 vector3_1 = position - shoulder.solverPosition;
               vector3_1 = vector3_1.normalized;
               float num1 = isLeft ? 45f : -45f;
-              Quaternion rotation1 = Quaternion.AngleAxis((isLeft ? -90f : 90f) + num1, this.chestUp) * this.chestRotation;
+              Quaternion rotation1 = Quaternion.AngleAxis((isLeft ? -90f : 90f) + num1, chestUp) * chestRotation;
               Vector3 lhs = Quaternion.Inverse(rotation1) * vector3_1;
               float num2 = Mathf.Atan2(lhs.x, lhs.z) * 57.29578f * (1f - Mathf.Abs(Vector3.Dot(lhs, Vector3.up))) - num1;
               float num3 = isLeft ? -20f : -50f;
               float num4 = isLeft ? 50f : 20f;
-              float angle1 = this.DamperValue(num2, num3 - num1, num4 - num1, 0.7f);
-              Quaternion rotation2 = Quaternion.FromToRotation(this.shoulder.solverRotation * this.shoulder.axis, rotation1 * (Quaternion.AngleAxis(angle1, Vector3.up) * Vector3.forward));
-              Quaternion quaternion1 = Quaternion.AngleAxis(isLeft ? -90f : 90f, this.chestUp) * this.chestRotation;
-              Quaternion rotation3 = Quaternion.AngleAxis(isLeft ? -30f : 30f, this.chestForward) * quaternion1;
-              vector3_1 = this.position - (this.shoulder.solverPosition + this.chestRotation * (isLeft ? Vector3.right : Vector3.left) * this.mag);
+              float angle1 = DamperValue(num2, num3 - num1, num4 - num1, 0.7f);
+              Quaternion rotation2 = Quaternion.FromToRotation(shoulder.solverRotation * shoulder.axis, rotation1 * (Quaternion.AngleAxis(angle1, Vector3.up) * Vector3.forward));
+              Quaternion quaternion1 = Quaternion.AngleAxis(isLeft ? -90f : 90f, chestUp) * chestRotation;
+              Quaternion rotation3 = Quaternion.AngleAxis(isLeft ? -30f : 30f, chestForward) * quaternion1;
+              vector3_1 = position - (shoulder.solverPosition + chestRotation * (isLeft ? Vector3.right : Vector3.left) * mag);
               Vector3 vector3_2 = Quaternion.Inverse(rotation3) * vector3_1;
-              float num5 = this.DamperValue(Mathf.Atan2(vector3_2.y, vector3_2.z) * 57.29578f - -30f, -15f, 75f);
+              float num5 = DamperValue(Mathf.Atan2(vector3_2.y, vector3_2.z) * 57.29578f - -30f, -15f, 75f);
               Quaternion quaternion2 = Quaternion.AngleAxis(-num5, rotation3 * Vector3.right) * rotation2;
-              if ((double) this.shoulderRotationWeight * (double) this.positionWeight < 1.0)
-                quaternion2 = Quaternion.Lerp(Quaternion.identity, quaternion2, this.shoulderRotationWeight * this.positionWeight);
-              IKSolverVR.VirtualBone.RotateBy(this.bones, quaternion2);
-              this.Stretching();
-              IKSolverVR.VirtualBone.SolveTrigonometric(this.bones, 1, 2, 3, this.position, this.GetBendNormal(this.position - this.upperArm.solverPosition), this.positionWeight);
-              float angle2 = Mathf.Clamp(num5 * 2f * this.positionWeight, 0.0f, 180f);
-              this.shoulder.solverRotation = Quaternion.AngleAxis(angle2, this.shoulder.solverRotation * (isLeft ? this.shoulder.axis : -this.shoulder.axis)) * this.shoulder.solverRotation;
-              this.upperArm.solverRotation = Quaternion.AngleAxis(angle2, this.upperArm.solverRotation * (isLeft ? this.upperArm.axis : -this.upperArm.axis)) * this.upperArm.solverRotation;
+              if (shoulderRotationWeight * (double) positionWeight < 1.0)
+                quaternion2 = Quaternion.Lerp(Quaternion.identity, quaternion2, shoulderRotationWeight * positionWeight);
+              VirtualBone.RotateBy(bones, quaternion2);
+              Stretching();
+              VirtualBone.SolveTrigonometric(bones, 1, 2, 3, position, GetBendNormal(position - upperArm.solverPosition), positionWeight);
+              float angle2 = Mathf.Clamp(num5 * 2f * positionWeight, 0.0f, 180f);
+              shoulder.solverRotation = Quaternion.AngleAxis(angle2, shoulder.solverRotation * (isLeft ? shoulder.axis : -shoulder.axis)) * shoulder.solverRotation;
+              upperArm.solverRotation = Quaternion.AngleAxis(angle2, upperArm.solverRotation * (isLeft ? upperArm.axis : -upperArm.axis)) * upperArm.solverRotation;
               break;
-            case IKSolverVR.Arm.ShoulderRotationMode.FromTo:
-              Quaternion solverRotation = this.shoulder.solverRotation;
-              IKSolverVR.VirtualBone.RotateBy(this.bones, Quaternion.Slerp(Quaternion.identity, Quaternion.FromToRotation((this.upperArm.solverPosition - this.shoulder.solverPosition).normalized + this.chestForward, this.position - this.shoulder.solverPosition), 0.5f * this.shoulderRotationWeight * this.positionWeight));
-              this.Stretching();
-              IKSolverVR.VirtualBone.SolveTrigonometric(this.bones, 0, 2, 3, this.position, Vector3.Cross(this.forearm.solverPosition - this.shoulder.solverPosition, this.hand.solverPosition - this.shoulder.solverPosition), 0.5f * this.shoulderRotationWeight * this.positionWeight);
-              IKSolverVR.VirtualBone.SolveTrigonometric(this.bones, 1, 2, 3, this.position, this.GetBendNormal(this.position - this.upperArm.solverPosition), this.positionWeight);
-              Quaternion quaternion3 = Quaternion.Inverse(Quaternion.LookRotation(this.chestUp, this.chestForward));
-              Vector3 vector3_3 = quaternion3 * (solverRotation * this.shoulder.axis);
-              Vector3 vector3_4 = quaternion3 * (this.shoulder.solverRotation * this.shoulder.axis);
+            case ShoulderRotationMode.FromTo:
+              Quaternion solverRotation = shoulder.solverRotation;
+              VirtualBone.RotateBy(bones, Quaternion.Slerp(Quaternion.identity, Quaternion.FromToRotation((upperArm.solverPosition - shoulder.solverPosition).normalized + chestForward, position - shoulder.solverPosition), 0.5f * shoulderRotationWeight * positionWeight));
+              Stretching();
+              VirtualBone.SolveTrigonometric(bones, 0, 2, 3, position, Vector3.Cross(forearm.solverPosition - shoulder.solverPosition, hand.solverPosition - shoulder.solverPosition), 0.5f * shoulderRotationWeight * positionWeight);
+              VirtualBone.SolveTrigonometric(bones, 1, 2, 3, position, GetBendNormal(position - upperArm.solverPosition), positionWeight);
+              Quaternion quaternion3 = Quaternion.Inverse(Quaternion.LookRotation(chestUp, chestForward));
+              Vector3 vector3_3 = quaternion3 * (solverRotation * shoulder.axis);
+              Vector3 vector3_4 = quaternion3 * (shoulder.solverRotation * shoulder.axis);
               float num6 = Mathf.DeltaAngle(Mathf.Atan2(vector3_3.x, vector3_3.z) * 57.29578f, Mathf.Atan2(vector3_4.x, vector3_4.z) * 57.29578f);
               if (isLeft)
                 num6 = -num6;
-              float angle3 = Mathf.Clamp(num6 * 2f * this.positionWeight, 0.0f, 180f);
-              this.shoulder.solverRotation = Quaternion.AngleAxis(angle3, this.shoulder.solverRotation * (isLeft ? this.shoulder.axis : -this.shoulder.axis)) * this.shoulder.solverRotation;
-              this.upperArm.solverRotation = Quaternion.AngleAxis(angle3, this.upperArm.solverRotation * (isLeft ? this.upperArm.axis : -this.upperArm.axis)) * this.upperArm.solverRotation;
+              float angle3 = Mathf.Clamp(num6 * 2f * positionWeight, 0.0f, 180f);
+              shoulder.solverRotation = Quaternion.AngleAxis(angle3, shoulder.solverRotation * (isLeft ? shoulder.axis : -shoulder.axis)) * shoulder.solverRotation;
+              upperArm.solverRotation = Quaternion.AngleAxis(angle3, upperArm.solverRotation * (isLeft ? upperArm.axis : -upperArm.axis)) * upperArm.solverRotation;
               break;
           }
         }
         else
         {
-          this.Stretching();
-          IKSolverVR.VirtualBone.SolveTrigonometric(this.bones, 1, 2, 3, this.position, this.GetBendNormal(this.position - this.upperArm.solverPosition), this.positionWeight);
+          Stretching();
+          VirtualBone.SolveTrigonometric(bones, 1, 2, 3, position, GetBendNormal(position - upperArm.solverPosition), positionWeight);
         }
-        Quaternion quaternion4 = this.upperArm.solverRotation * this.forearmRelToUpperArm;
-        this.RotateTo(this.forearm, Quaternion.FromToRotation(quaternion4 * this.forearm.axis, this.hand.solverPosition - this.forearm.solverPosition) * quaternion4, this.positionWeight);
-        if ((double) this.rotationWeight >= 1.0)
+        Quaternion quaternion4 = upperArm.solverRotation * forearmRelToUpperArm;
+        RotateTo(forearm, Quaternion.FromToRotation(quaternion4 * forearm.axis, hand.solverPosition - forearm.solverPosition) * quaternion4, positionWeight);
+        if (rotationWeight >= 1.0)
         {
-          this.hand.solverRotation = this.rotation;
+          hand.solverRotation = rotation;
         }
         else
         {
-          if ((double) this.rotationWeight <= 0.0)
+          if (rotationWeight <= 0.0)
             return;
-          this.hand.solverRotation = Quaternion.Lerp(this.hand.solverRotation, this.rotation, this.rotationWeight);
+          hand.solverRotation = Quaternion.Lerp(hand.solverRotation, rotation, rotationWeight);
         }
       }
 
-      public override void ResetOffsets() => this.handPositionOffset = Vector3.zero;
+      public override void ResetOffsets() => handPositionOffset = Vector3.zero;
 
       public override void Write(ref Vector3[] solvedPositions, ref Quaternion[] solvedRotations)
       {
-        if (this.hasShoulder)
+        if (hasShoulder)
         {
-          solvedPositions[this.index] = this.shoulder.solverPosition;
-          solvedRotations[this.index] = this.shoulder.solverRotation;
+          solvedPositions[index] = shoulder.solverPosition;
+          solvedRotations[index] = shoulder.solverRotation;
         }
-        solvedPositions[this.index + 1] = this.upperArm.solverPosition;
-        solvedPositions[this.index + 2] = this.forearm.solverPosition;
-        solvedPositions[this.index + 3] = this.hand.solverPosition;
-        solvedRotations[this.index + 1] = this.upperArm.solverRotation;
-        solvedRotations[this.index + 2] = this.forearm.solverRotation;
-        solvedRotations[this.index + 3] = this.hand.solverRotation;
+        solvedPositions[index + 1] = upperArm.solverPosition;
+        solvedPositions[index + 2] = forearm.solverPosition;
+        solvedPositions[index + 3] = hand.solverPosition;
+        solvedRotations[index + 1] = upperArm.solverRotation;
+        solvedRotations[index + 2] = forearm.solverRotation;
+        solvedRotations[index + 3] = hand.solverRotation;
       }
 
       private float DamperValue(float value, float min, float max, float weight = 1f)
       {
         float num1 = max - min;
-        if ((double) weight < 1.0)
+        if (weight < 1.0)
         {
           float num2 = max - num1 * 0.5f;
           float num3 = (value - num2) * 0.5f;
@@ -792,22 +789,22 @@ namespace RootMotion.FinalIK
 
       private Vector3 GetBendNormal(Vector3 dir)
       {
-        if ((UnityEngine.Object) this.bendGoal != (UnityEngine.Object) null)
-          this.bendDirection = this.bendGoal.position - this.bones[1].solverPosition;
-        Vector3 vector3_1 = this.bones[0].solverRotation * this.bones[0].axis;
-        Vector3 vector3_2 = Quaternion.FromToRotation(Vector3.down, Quaternion.Inverse(this.chestRotation) * dir.normalized + Vector3.forward) * Vector3.back;
-        Vector3 vector3_3 = this.chestRotation * (Quaternion.FromToRotation(Quaternion.Inverse(this.chestRotation) * vector3_1, Quaternion.Inverse(this.chestRotation) * dir) * vector3_2) + vector3_1 - this.rotation * this.wristToPalmAxis - this.rotation * this.palmToThumbAxis * 0.5f;
-        if ((double) this.bendGoalWeight > 0.0)
-          vector3_3 = Vector3.Slerp(vector3_3, this.bendDirection, this.bendGoalWeight);
-        if ((double) this.swivelOffset != 0.0)
-          vector3_3 = Quaternion.AngleAxis(this.swivelOffset, -dir) * vector3_3;
+        if ((UnityEngine.Object) bendGoal != (UnityEngine.Object) null)
+          bendDirection = bendGoal.position - bones[1].solverPosition;
+        Vector3 vector3_1 = bones[0].solverRotation * bones[0].axis;
+        Vector3 vector3_2 = Quaternion.FromToRotation(Vector3.down, Quaternion.Inverse(chestRotation) * dir.normalized + Vector3.forward) * Vector3.back;
+        Vector3 vector3_3 = chestRotation * (Quaternion.FromToRotation(Quaternion.Inverse(chestRotation) * vector3_1, Quaternion.Inverse(chestRotation) * dir) * vector3_2) + vector3_1 - rotation * wristToPalmAxis - rotation * palmToThumbAxis * 0.5f;
+        if (bendGoalWeight > 0.0)
+          vector3_3 = Vector3.Slerp(vector3_3, bendDirection, bendGoalWeight);
+        if (swivelOffset != 0.0)
+          vector3_3 = Quaternion.AngleAxis(swivelOffset, -dir) * vector3_3;
         return Vector3.Cross(vector3_3, dir);
       }
 
       private void Visualize(
-        IKSolverVR.VirtualBone bone1,
-        IKSolverVR.VirtualBone bone2,
-        IKSolverVR.VirtualBone bone3,
+        VirtualBone bone1,
+        VirtualBone bone2,
+        VirtualBone bone3,
         Color color)
       {
         Debug.DrawLine(bone1.solverPosition, bone2.solverPosition, color);
@@ -826,7 +823,7 @@ namespace RootMotion.FinalIK
     public abstract class BodyPart
     {
       [HideInInspector]
-      public IKSolverVR.VirtualBone[] bones = new IKSolverVR.VirtualBone[0];
+      public VirtualBone[] bones = new VirtualBone[0];
       protected bool initiated;
       protected Vector3 rootPosition;
       protected Quaternion rootRotation = Quaternion.identity;
@@ -865,55 +862,55 @@ namespace RootMotion.FinalIK
         int index)
       {
         this.index = index;
-        this.rootPosition = positions[rootIndex];
-        this.rootRotation = rotations[rootIndex];
-        this.OnRead(positions, rotations, hasChest, hasNeck, hasShoulders, hasToes, rootIndex, index);
-        this.mag = IKSolverVR.VirtualBone.PreSolve(ref this.bones);
-        this.sqrMag = this.mag * this.mag;
-        this.initiated = true;
+        rootPosition = positions[rootIndex];
+        rootRotation = rotations[rootIndex];
+        OnRead(positions, rotations, hasChest, hasNeck, hasShoulders, hasToes, rootIndex, index);
+        mag = VirtualBone.PreSolve(ref bones);
+        sqrMag = mag * mag;
+        initiated = true;
       }
 
       public void MovePosition(Vector3 position)
       {
-        Vector3 vector3 = position - this.bones[0].solverPosition;
-        foreach (IKSolverVR.VirtualBone bone in this.bones)
+        Vector3 vector3 = position - bones[0].solverPosition;
+        foreach (VirtualBone bone in bones)
           bone.solverPosition += vector3;
       }
 
       public void MoveRotation(Quaternion rotation)
       {
-        IKSolverVR.VirtualBone.RotateAroundPoint(this.bones, 0, this.bones[0].solverPosition, QuaTools.FromToRotation(this.bones[0].solverRotation, rotation));
+        VirtualBone.RotateAroundPoint(bones, 0, bones[0].solverPosition, QuaTools.FromToRotation(bones[0].solverRotation, rotation));
       }
 
       public void Translate(Vector3 position, Quaternion rotation)
       {
-        this.MovePosition(position);
-        this.MoveRotation(rotation);
+        MovePosition(position);
+        MoveRotation(rotation);
       }
 
       public void TranslateRoot(Vector3 newRootPos, Quaternion newRootRot)
       {
-        Vector3 vector3 = newRootPos - this.rootPosition;
-        this.rootPosition = newRootPos;
-        foreach (IKSolverVR.VirtualBone bone in this.bones)
+        Vector3 vector3 = newRootPos - rootPosition;
+        rootPosition = newRootPos;
+        foreach (VirtualBone bone in bones)
           bone.solverPosition += vector3;
-        Quaternion rotation = QuaTools.FromToRotation(this.rootRotation, newRootRot);
-        this.rootRotation = newRootRot;
-        IKSolverVR.VirtualBone.RotateAroundPoint(this.bones, 0, newRootPos, rotation);
+        Quaternion rotation = QuaTools.FromToRotation(rootRotation, newRootRot);
+        rootRotation = newRootRot;
+        VirtualBone.RotateAroundPoint(bones, 0, newRootPos, rotation);
       }
 
-      public void RotateTo(IKSolverVR.VirtualBone bone, Quaternion rotation, float weight = 1f)
+      public void RotateTo(VirtualBone bone, Quaternion rotation, float weight = 1f)
       {
-        if ((double) weight <= 0.0)
+        if (weight <= 0.0)
           return;
         Quaternion quaternion = QuaTools.FromToRotation(bone.solverRotation, rotation);
-        if ((double) weight < 1.0)
+        if (weight < 1.0)
           quaternion = Quaternion.Slerp(Quaternion.identity, quaternion, weight);
-        for (int index = 0; index < this.bones.Length; ++index)
+        for (int index = 0; index < bones.Length; ++index)
         {
-          if (this.bones[index] == bone)
+          if (bones[index] == bone)
           {
-            IKSolverVR.VirtualBone.RotateAroundPoint(this.bones, index, this.bones[index].solverPosition, quaternion);
+            VirtualBone.RotateAroundPoint(bones, index, bones[index].solverPosition, quaternion);
             break;
           }
         }
@@ -921,11 +918,11 @@ namespace RootMotion.FinalIK
 
       public void Visualize(Color color)
       {
-        for (int index = 0; index < this.bones.Length - 1; ++index)
-          Debug.DrawLine(this.bones[index].solverPosition, this.bones[index + 1].solverPosition, color);
+        for (int index = 0; index < bones.Length - 1; ++index)
+          Debug.DrawLine(bones[index].solverPosition, bones[index + 1].solverPosition, color);
       }
 
-      public void Visualize() => this.Visualize(Color.white);
+      public void Visualize() => Visualize(Color.white);
     }
 
     [Serializable]
@@ -945,7 +942,7 @@ namespace RootMotion.FinalIK
       private float supportLegW;
       private float supportLegWV;
 
-      public bool isStepping => (double) this.stepProgress < 1.0;
+      public bool isStepping => stepProgress < 1.0;
 
       public float stepProgress { get; private set; }
 
@@ -956,66 +953,66 @@ namespace RootMotion.FinalIK
         Vector3 characterSpaceOffset)
       {
         this.characterSpaceOffset = characterSpaceOffset;
-        this.Reset(rootRotation, footPosition, footRotation);
+        Reset(rootRotation, footPosition, footRotation);
       }
 
       public void Reset(Quaternion rootRotation, Vector3 footPosition, Quaternion footRotation)
       {
-        this.position = footPosition;
-        this.rotation = footRotation;
-        this.stepFrom = this.position;
-        this.stepTo = this.position;
-        this.stepFromRot = this.rotation;
-        this.stepToRot = this.rotation;
-        this.stepToRootRot = rootRotation;
-        this.stepProgress = 1f;
-        this.footRelativeToRoot = Quaternion.Inverse(rootRotation) * this.rotation;
+        position = footPosition;
+        rotation = footRotation;
+        stepFrom = position;
+        stepTo = position;
+        stepFromRot = rotation;
+        stepToRot = rotation;
+        stepToRootRot = rootRotation;
+        stepProgress = 1f;
+        footRelativeToRoot = Quaternion.Inverse(rootRotation) * rotation;
       }
 
       public void StepTo(Vector3 p, Quaternion rootRotation)
       {
-        this.stepFrom = this.position;
-        this.stepTo = p;
-        this.stepFromRot = this.rotation;
-        this.stepToRootRot = rootRotation;
-        this.stepToRot = rootRotation * this.footRelativeToRoot;
-        this.stepProgress = 0.0f;
+        stepFrom = position;
+        stepTo = p;
+        stepFromRot = rotation;
+        stepToRootRot = rootRotation;
+        stepToRot = rootRotation * footRelativeToRoot;
+        stepProgress = 0.0f;
       }
 
       public void UpdateStepping(Vector3 p, Quaternion rootRotation, float speed)
       {
-        this.stepTo = Vector3.Lerp(this.stepTo, p, Time.deltaTime * speed);
-        this.stepToRot = Quaternion.Lerp(this.stepToRot, rootRotation * this.footRelativeToRoot, Time.deltaTime * speed);
-        this.stepToRootRot = this.stepToRot * Quaternion.Inverse(this.footRelativeToRoot);
+        stepTo = Vector3.Lerp(stepTo, p, Time.deltaTime * speed);
+        stepToRot = Quaternion.Lerp(stepToRot, rootRotation * footRelativeToRoot, Time.deltaTime * speed);
+        stepToRootRot = stepToRot * Quaternion.Inverse(footRelativeToRoot);
       }
 
       public void UpdateStanding(Quaternion rootRotation, float minAngle, float speed)
       {
-        if ((double) speed <= 0.0 || (double) minAngle >= 180.0)
+        if (speed <= 0.0 || minAngle >= 180.0)
           return;
-        Quaternion quaternion = rootRotation * this.footRelativeToRoot;
-        float num = Quaternion.Angle(this.rotation, quaternion);
-        if ((double) num <= (double) minAngle)
+        Quaternion quaternion = rootRotation * footRelativeToRoot;
+        float num = Quaternion.Angle(rotation, quaternion);
+        if (num <= (double) minAngle)
           return;
-        this.rotation = Quaternion.RotateTowards(this.rotation, quaternion, Mathf.Min((float) ((double) Time.deltaTime * (double) speed * (1.0 - (double) this.supportLegW)), num - minAngle));
+        rotation = Quaternion.RotateTowards(rotation, quaternion, Mathf.Min((float) ((double) Time.deltaTime * speed * (1.0 - supportLegW)), num - minAngle));
       }
 
       public void Update(InterpolationMode interpolation, UnityEvent onStep)
       {
-        this.supportLegW = Mathf.SmoothDamp(this.supportLegW, this.isSupportLeg ? 1f : 0.0f, ref this.supportLegWV, 0.2f);
-        if (!this.isStepping)
+        supportLegW = Mathf.SmoothDamp(supportLegW, isSupportLeg ? 1f : 0.0f, ref supportLegWV, 0.2f);
+        if (!isStepping)
           return;
-        this.stepProgress = Mathf.MoveTowards(this.stepProgress, 1f, Time.deltaTime * this.stepSpeed);
-        if ((double) this.stepProgress >= 1.0)
+        stepProgress = Mathf.MoveTowards(stepProgress, 1f, Time.deltaTime * stepSpeed);
+        if (stepProgress >= 1.0)
           onStep.Invoke();
-        float t = Interp.Float(this.stepProgress, interpolation);
-        this.position = Vector3.Lerp(this.stepFrom, this.stepTo, t);
-        this.rotation = Quaternion.Lerp(this.stepFromRot, this.stepToRot, t);
+        float t = Interp.Float(stepProgress, interpolation);
+        position = Vector3.Lerp(stepFrom, stepTo, t);
+        rotation = Quaternion.Lerp(stepFromRot, stepToRot, t);
       }
     }
 
     [Serializable]
-    public class Leg : IKSolverVR.BodyPart
+    public class Leg : BodyPart
     {
       [Tooltip("The toe/foot target.")]
       public Transform target;
@@ -1062,15 +1059,15 @@ namespace RootMotion.FinalIK
 
       public bool hasToes { get; private set; }
 
-      public IKSolverVR.VirtualBone thigh => this.bones[0];
+      public VirtualBone thigh => bones[0];
 
-      private IKSolverVR.VirtualBone calf => this.bones[1];
+      private VirtualBone calf => bones[1];
 
-      private IKSolverVR.VirtualBone foot => this.bones[2];
+      private VirtualBone foot => bones[2];
 
-      private IKSolverVR.VirtualBone toes => this.bones[3];
+      private VirtualBone toes => bones[3];
 
-      public IKSolverVR.VirtualBone lastBone => this.bones[this.bones.Length - 1];
+      public VirtualBone lastBone => bones[bones.Length - 1];
 
       public Vector3 thighRelativeToPelvis { get; private set; }
 
@@ -1092,133 +1089,133 @@ namespace RootMotion.FinalIK
         Quaternion rotation3 = rotations[index + 2];
         Vector3 position4 = positions[index + 3];
         Quaternion rotation4 = rotations[index + 3];
-        if (!this.initiated)
+        if (!initiated)
         {
           this.hasToes = hasToes;
-          this.bones = new IKSolverVR.VirtualBone[hasToes ? 4 : 3];
+          bones = new VirtualBone[hasToes ? 4 : 3];
           if (hasToes)
           {
-            this.bones[0] = new IKSolverVR.VirtualBone(position1, rotation1);
-            this.bones[1] = new IKSolverVR.VirtualBone(position2, rotation2);
-            this.bones[2] = new IKSolverVR.VirtualBone(position3, rotation3);
-            this.bones[3] = new IKSolverVR.VirtualBone(position4, rotation4);
-            this.IKPosition = position4;
-            this.IKRotation = rotation4;
+            bones[0] = new VirtualBone(position1, rotation1);
+            bones[1] = new VirtualBone(position2, rotation2);
+            bones[2] = new VirtualBone(position3, rotation3);
+            bones[3] = new VirtualBone(position4, rotation4);
+            IKPosition = position4;
+            IKRotation = rotation4;
           }
           else
           {
-            this.bones[0] = new IKSolverVR.VirtualBone(position1, rotation1);
-            this.bones[1] = new IKSolverVR.VirtualBone(position2, rotation2);
-            this.bones[2] = new IKSolverVR.VirtualBone(position3, rotation3);
-            this.IKPosition = position3;
-            this.IKRotation = rotation3;
+            bones[0] = new VirtualBone(position1, rotation1);
+            bones[1] = new VirtualBone(position2, rotation2);
+            bones[2] = new VirtualBone(position3, rotation3);
+            IKPosition = position3;
+            IKRotation = rotation3;
           }
-          this.rotation = this.IKRotation;
+          rotation = IKRotation;
         }
         if (hasToes)
         {
-          this.bones[0].Read(position1, rotation1);
-          this.bones[1].Read(position2, rotation2);
-          this.bones[2].Read(position3, rotation3);
-          this.bones[3].Read(position4, rotation4);
+          bones[0].Read(position1, rotation1);
+          bones[1].Read(position2, rotation2);
+          bones[2].Read(position3, rotation3);
+          bones[3].Read(position4, rotation4);
         }
         else
         {
-          this.bones[0].Read(position1, rotation1);
-          this.bones[1].Read(position2, rotation2);
-          this.bones[2].Read(position3, rotation3);
+          bones[0].Read(position1, rotation1);
+          bones[1].Read(position2, rotation2);
+          bones[2].Read(position3, rotation3);
         }
       }
 
       public override void PreSolve()
       {
-        if ((UnityEngine.Object) this.target != (UnityEngine.Object) null)
+        if ((UnityEngine.Object) target != (UnityEngine.Object) null)
         {
-          this.IKPosition = this.target.position;
-          this.IKRotation = this.target.rotation;
+          IKPosition = target.position;
+          IKRotation = target.rotation;
         }
-        this.footPosition = this.foot.solverPosition;
-        this.footRotation = this.foot.solverRotation;
-        this.position = this.lastBone.solverPosition;
-        this.rotation = this.lastBone.solverRotation;
-        if ((double) this.rotationWeight > 0.0)
-          this.ApplyRotationOffset(QuaTools.FromToRotation(this.rotation, this.IKRotation), this.rotationWeight);
-        if ((double) this.positionWeight > 0.0)
-          this.ApplyPositionOffset(this.IKPosition - this.position, this.positionWeight);
-        this.thighRelativeToPelvis = Quaternion.Inverse(this.rootRotation) * (this.thigh.solverPosition - this.rootPosition);
-        this.calfRelToThigh = Quaternion.Inverse(this.thigh.solverRotation) * this.calf.solverRotation;
-        this.bendNormal = Vector3.Cross(this.calf.solverPosition - this.thigh.solverPosition, this.foot.solverPosition - this.calf.solverPosition);
+        footPosition = foot.solverPosition;
+        footRotation = foot.solverRotation;
+        position = lastBone.solverPosition;
+        rotation = lastBone.solverRotation;
+        if (rotationWeight > 0.0)
+          ApplyRotationOffset(QuaTools.FromToRotation(rotation, IKRotation), rotationWeight);
+        if (positionWeight > 0.0)
+          ApplyPositionOffset(IKPosition - position, positionWeight);
+        thighRelativeToPelvis = Quaternion.Inverse(rootRotation) * (thigh.solverPosition - rootPosition);
+        calfRelToThigh = Quaternion.Inverse(thigh.solverRotation) * calf.solverRotation;
+        bendNormal = Vector3.Cross(calf.solverPosition - thigh.solverPosition, foot.solverPosition - calf.solverPosition);
       }
 
       public override void ApplyOffsets()
       {
-        this.ApplyPositionOffset(this.footPositionOffset, 1f);
-        this.ApplyRotationOffset(this.footRotationOffset, 1f);
-        Quaternion rotation = Quaternion.FromToRotation(this.footPosition - this.position, this.footPosition + this.heelPositionOffset - this.position);
-        this.footPosition = this.position + rotation * (this.footPosition - this.position);
-        this.footRotation = rotation * this.footRotation;
+        ApplyPositionOffset(footPositionOffset, 1f);
+        ApplyRotationOffset(footRotationOffset, 1f);
+        Quaternion rotation = Quaternion.FromToRotation(footPosition - position, footPosition + heelPositionOffset - position);
+        footPosition = position + rotation * (footPosition - position);
+        footRotation = rotation * footRotation;
         float num = 0.0f;
-        if ((UnityEngine.Object) this.bendGoal != (UnityEngine.Object) null && (double) this.bendGoalWeight > 0.0)
+        if ((UnityEngine.Object) bendGoal != (UnityEngine.Object) null && bendGoalWeight > 0.0)
         {
-          Vector3 vector3_1 = Vector3.Cross(this.bendGoal.position - this.thigh.solverPosition, this.position - this.thigh.solverPosition);
-          Vector3 vector3_2 = Quaternion.Inverse(Quaternion.LookRotation(this.bendNormal, this.thigh.solverPosition - this.foot.solverPosition)) * vector3_1;
-          num = Mathf.Atan2(vector3_2.x, vector3_2.z) * 57.29578f * this.bendGoalWeight;
+          Vector3 vector3_1 = Vector3.Cross(bendGoal.position - thigh.solverPosition, position - thigh.solverPosition);
+          Vector3 vector3_2 = Quaternion.Inverse(Quaternion.LookRotation(bendNormal, thigh.solverPosition - foot.solverPosition)) * vector3_1;
+          num = Mathf.Atan2(vector3_2.x, vector3_2.z) * 57.29578f * bendGoalWeight;
         }
-        float angle = this.swivelOffset + num;
-        if ((double) angle == 0.0)
+        float angle = swivelOffset + num;
+        if (angle == 0.0)
           return;
-        this.bendNormal = Quaternion.AngleAxis(angle, this.thigh.solverPosition - this.lastBone.solverPosition) * this.bendNormal;
-        this.thigh.solverRotation = Quaternion.AngleAxis(-angle, this.thigh.solverRotation * this.thigh.axis) * this.thigh.solverRotation;
+        bendNormal = Quaternion.AngleAxis(angle, thigh.solverPosition - lastBone.solverPosition) * bendNormal;
+        thigh.solverRotation = Quaternion.AngleAxis(-angle, thigh.solverRotation * thigh.axis) * thigh.solverRotation;
       }
 
       private void ApplyPositionOffset(Vector3 offset, float weight)
       {
-        if ((double) weight <= 0.0)
+        if (weight <= 0.0)
           return;
         offset *= weight;
-        this.footPosition += offset;
-        this.position += offset;
+        footPosition += offset;
+        position += offset;
       }
 
       private void ApplyRotationOffset(Quaternion offset, float weight)
       {
-        if ((double) weight <= 0.0)
+        if (weight <= 0.0)
           return;
-        if ((double) weight < 1.0)
+        if (weight < 1.0)
           offset = Quaternion.Lerp(Quaternion.identity, offset, weight);
-        this.footRotation = offset * this.footRotation;
-        this.rotation = offset * this.rotation;
-        this.bendNormal = offset * this.bendNormal;
-        this.footPosition = this.position + offset * (this.footPosition - this.position);
+        footRotation = offset * footRotation;
+        rotation = offset * rotation;
+        bendNormal = offset * bendNormal;
+        footPosition = position + offset * (footPosition - position);
       }
 
       public void Solve()
       {
-        IKSolverVR.VirtualBone.SolveTrigonometric(this.bones, 0, 1, 2, this.footPosition, this.bendNormal, 1f);
-        this.RotateTo(this.foot, this.footRotation);
-        if (!this.hasToes)
+        VirtualBone.SolveTrigonometric(bones, 0, 1, 2, footPosition, bendNormal, 1f);
+        RotateTo(foot, footRotation);
+        if (!hasToes)
           return;
-        IKSolverVR.VirtualBone.SolveTrigonometric(this.bones, 0, 2, 3, this.position, Vector3.Cross(this.foot.solverPosition - this.thigh.solverPosition, this.toes.solverPosition - this.foot.solverPosition), 1f);
-        Quaternion quaternion = this.thigh.solverRotation * this.calfRelToThigh;
-        this.calf.solverRotation = Quaternion.FromToRotation(quaternion * this.calf.axis, this.foot.solverPosition - this.calf.solverPosition) * quaternion;
-        this.toes.solverRotation = this.rotation;
+        VirtualBone.SolveTrigonometric(bones, 0, 2, 3, position, Vector3.Cross(foot.solverPosition - thigh.solverPosition, toes.solverPosition - foot.solverPosition), 1f);
+        Quaternion quaternion = thigh.solverRotation * calfRelToThigh;
+        calf.solverRotation = Quaternion.FromToRotation(quaternion * calf.axis, foot.solverPosition - calf.solverPosition) * quaternion;
+        toes.solverRotation = rotation;
       }
 
       public override void Write(ref Vector3[] solvedPositions, ref Quaternion[] solvedRotations)
       {
-        solvedRotations[this.index] = this.thigh.solverRotation;
-        solvedRotations[this.index + 1] = this.calf.solverRotation;
-        solvedRotations[this.index + 2] = this.foot.solverRotation;
-        if (!this.hasToes)
+        solvedRotations[index] = thigh.solverRotation;
+        solvedRotations[index + 1] = calf.solverRotation;
+        solvedRotations[index + 2] = foot.solverRotation;
+        if (!hasToes)
           return;
-        solvedRotations[this.index + 3] = this.toes.solverRotation;
+        solvedRotations[index + 3] = toes.solverRotation;
       }
 
       public override void ResetOffsets()
       {
-        this.footPositionOffset = Vector3.zero;
-        this.footRotationOffset = Quaternion.identity;
-        this.heelPositionOffset = Vector3.zero;
+        footPositionOffset = Vector3.zero;
+        footRotationOffset = Quaternion.identity;
+        heelPositionOffset = Vector3.zero;
       }
     }
 
@@ -1272,7 +1269,7 @@ namespace RootMotion.FinalIK
       public UnityEvent onLeftFootstep = new UnityEvent();
       [Tooltip("Called when the right foot has finished a step")]
       public UnityEvent onRightFootstep = new UnityEvent();
-      private IKSolverVR.Footstep[] footsteps = new IKSolverVR.Footstep[0];
+      private Footstep[] footsteps = new Footstep[0];
       private Vector3 lastComPosition;
       private Vector3 comVelocity;
       private int leftFootIndex;
@@ -1282,28 +1279,28 @@ namespace RootMotion.FinalIK
 
       public void Initiate(Vector3[] positions, Quaternion[] rotations, bool hasToes)
       {
-        this.leftFootIndex = hasToes ? 17 : 16;
-        this.rightFootIndex = hasToes ? 21 : 20;
-        this.footsteps = new IKSolverVR.Footstep[2]
+        leftFootIndex = hasToes ? 17 : 16;
+        rightFootIndex = hasToes ? 21 : 20;
+        footsteps = new Footstep[2]
         {
-          new IKSolverVR.Footstep(rotations[0], positions[this.leftFootIndex], rotations[this.leftFootIndex], this.footDistance * Vector3.left),
-          new IKSolverVR.Footstep(rotations[0], positions[this.rightFootIndex], rotations[this.rightFootIndex], this.footDistance * Vector3.right)
+          new Footstep(rotations[0], positions[leftFootIndex], rotations[leftFootIndex], footDistance * Vector3.left),
+          new Footstep(rotations[0], positions[rightFootIndex], rotations[rightFootIndex], footDistance * Vector3.right)
         };
       }
 
       public void Reset(Vector3[] positions, Quaternion[] rotations)
       {
-        this.lastComPosition = Vector3.Lerp(positions[1], positions[5], 0.25f) + rotations[0] * this.offset;
-        this.comVelocity = Vector3.zero;
-        this.footsteps[0].Reset(rotations[0], positions[this.leftFootIndex], rotations[this.leftFootIndex]);
-        this.footsteps[1].Reset(rotations[0], positions[this.rightFootIndex], rotations[this.rightFootIndex]);
+        lastComPosition = Vector3.Lerp(positions[1], positions[5], 0.25f) + rotations[0] * offset;
+        comVelocity = Vector3.zero;
+        footsteps[0].Reset(rotations[0], positions[leftFootIndex], rotations[leftFootIndex]);
+        footsteps[1].Reset(rotations[0], positions[rightFootIndex], rotations[rightFootIndex]);
       }
 
       public void AddDeltaRotation(Quaternion delta, Vector3 pivot)
       {
-        Vector3 vector3_1 = this.lastComPosition - pivot;
-        this.lastComPosition = pivot + delta * vector3_1;
-        foreach (IKSolverVR.Footstep footstep in this.footsteps)
+        Vector3 vector3_1 = lastComPosition - pivot;
+        lastComPosition = pivot + delta * vector3_1;
+        foreach (Footstep footstep in footsteps)
         {
           footstep.rotation = delta * footstep.rotation;
           footstep.stepFromRot = delta * footstep.stepFromRot;
@@ -1320,8 +1317,8 @@ namespace RootMotion.FinalIK
 
       public void AddDeltaPosition(Vector3 delta)
       {
-        this.lastComPosition += delta;
-        foreach (IKSolverVR.Footstep footstep in this.footsteps)
+        lastComPosition += delta;
+        foreach (Footstep footstep in footsteps)
         {
           footstep.position += delta;
           footstep.stepFrom += delta;
@@ -1330,12 +1327,12 @@ namespace RootMotion.FinalIK
       }
 
       public void Solve(
-        IKSolverVR.VirtualBone rootBone,
-        IKSolverVR.Spine spine,
-        IKSolverVR.Leg leftLeg,
-        IKSolverVR.Leg rightLeg,
-        IKSolverVR.Arm leftArm,
-        IKSolverVR.Arm rightArm,
+        VirtualBone rootBone,
+        Spine spine,
+        Leg leftLeg,
+        Leg rightLeg,
+        Arm leftArm,
+        Arm rightArm,
         int supportLegIndex,
         out Vector3 leftFootPosition,
         out Vector3 rightFootPosition,
@@ -1346,7 +1343,7 @@ namespace RootMotion.FinalIK
         out float leftHeelOffset,
         out float rightHeelOffset)
       {
-        if ((double) this.weight <= 0.0)
+        if (weight <= 0.0)
         {
           leftFootPosition = Vector3.zero;
           rightFootPosition = Vector3.zero;
@@ -1362,85 +1359,85 @@ namespace RootMotion.FinalIK
           Vector3 vector3_1 = rootBone.solverRotation * Vector3.up;
           Vector3 vector3_2 = spine.pelvis.solverPosition + spine.pelvis.solverRotation * leftLeg.thighRelativeToPelvis;
           Vector3 vector3_3 = spine.pelvis.solverPosition + spine.pelvis.solverRotation * rightLeg.thighRelativeToPelvis;
-          this.footsteps[0].characterSpaceOffset = this.footDistance * Vector3.left;
-          this.footsteps[1].characterSpaceOffset = this.footDistance * Vector3.right;
+          footsteps[0].characterSpaceOffset = footDistance * Vector3.left;
+          footsteps[1].characterSpaceOffset = footDistance * Vector3.right;
           Vector3 faceDirection = spine.faceDirection;
           Vector3 vertical = V3Tools.ExtractVertical(faceDirection, vector3_1, 1f);
           Quaternion quaternion = Quaternion.LookRotation(faceDirection - vertical, vector3_1);
           float num1 = 1f;
           float num2 = 1f;
           float num3 = 0.2f;
-          float num4 = (float) ((double) num1 + (double) num2 + 2.0 * (double) num3);
-          this.centerOfMass = Vector3.zero;
-          this.centerOfMass += spine.pelvis.solverPosition * num1;
-          this.centerOfMass += spine.head.solverPosition * num2;
-          this.centerOfMass += leftArm.position * num3;
-          this.centerOfMass += rightArm.position * num3;
-          this.centerOfMass /= num4;
-          this.centerOfMass += rootBone.solverRotation * this.offset;
-          this.comVelocity = (double) Time.deltaTime > 0.0 ? (this.centerOfMass - this.lastComPosition) / Time.deltaTime : Vector3.zero;
-          this.lastComPosition = this.centerOfMass;
-          this.comVelocity = Vector3.ClampMagnitude(this.comVelocity, this.maxVelocity) * this.velocityFactor;
-          Vector3 point = this.centerOfMass + this.comVelocity;
+          float num4 = (float) (num1 + (double) num2 + 2.0 * num3);
+          centerOfMass = Vector3.zero;
+          centerOfMass += spine.pelvis.solverPosition * num1;
+          centerOfMass += spine.head.solverPosition * num2;
+          centerOfMass += leftArm.position * num3;
+          centerOfMass += rightArm.position * num3;
+          centerOfMass /= num4;
+          centerOfMass += rootBone.solverRotation * offset;
+          comVelocity = (double) Time.deltaTime > 0.0 ? (centerOfMass - lastComPosition) / Time.deltaTime : Vector3.zero;
+          lastComPosition = centerOfMass;
+          comVelocity = Vector3.ClampMagnitude(comVelocity, maxVelocity) * velocityFactor;
+          Vector3 point = centerOfMass + comVelocity;
           Vector3 plane1 = V3Tools.PointToPlane(spine.pelvis.solverPosition, rootBone.solverPosition, vector3_1);
           Vector3 plane2 = V3Tools.PointToPlane(point, rootBone.solverPosition, vector3_1);
-          Vector3 vector3_4 = Vector3.Lerp(this.footsteps[0].position, this.footsteps[1].position, 0.5f);
-          float num5 = Vector3.Angle(point - vector3_4, rootBone.solverRotation * Vector3.up) * this.comAngleMlp;
-          for (int index = 0; index < this.footsteps.Length; ++index)
-            this.footsteps[index].isSupportLeg = supportLegIndex == index;
-          for (int index = 0; index < this.footsteps.Length; ++index)
+          Vector3 vector3_4 = Vector3.Lerp(footsteps[0].position, footsteps[1].position, 0.5f);
+          float num5 = Vector3.Angle(point - vector3_4, rootBone.solverRotation * Vector3.up) * comAngleMlp;
+          for (int index = 0; index < footsteps.Length; ++index)
+            footsteps[index].isSupportLeg = supportLegIndex == index;
+          for (int index = 0; index < footsteps.Length; ++index)
           {
-            if (this.footsteps[index].isStepping)
+            if (footsteps[index].isStepping)
             {
-              Vector3 vector3_5 = plane2 + rootBone.solverRotation * this.footsteps[index].characterSpaceOffset;
-              if (!this.StepBlocked(this.footsteps[index].stepFrom, vector3_5, rootBone.solverPosition))
-                this.footsteps[index].UpdateStepping(vector3_5, quaternion, 10f);
+              Vector3 vector3_5 = plane2 + rootBone.solverRotation * footsteps[index].characterSpaceOffset;
+              if (!StepBlocked(footsteps[index].stepFrom, vector3_5, rootBone.solverPosition))
+                footsteps[index].UpdateStepping(vector3_5, quaternion, 10f);
             }
             else
-              this.footsteps[index].UpdateStanding(quaternion, this.relaxLegTwistMinAngle, this.relaxLegTwistSpeed);
+              footsteps[index].UpdateStanding(quaternion, relaxLegTwistMinAngle, relaxLegTwistSpeed);
           }
-          if (this.CanStep())
+          if (CanStep())
           {
             int index1 = -1;
             float num6 = float.NegativeInfinity;
-            for (int index2 = 0; index2 < this.footsteps.Length; ++index2)
+            for (int index2 = 0; index2 < footsteps.Length; ++index2)
             {
-              if (!this.footsteps[index2].isStepping)
+              if (!footsteps[index2].isStepping)
               {
-                Vector3 vector3_6 = plane2 + rootBone.solverRotation * this.footsteps[index2].characterSpaceOffset;
+                Vector3 vector3_6 = plane2 + rootBone.solverRotation * footsteps[index2].characterSpaceOffset;
                 float num7 = index2 == 0 ? leftLeg.mag : rightLeg.mag;
                 Vector3 b = index2 == 0 ? vector3_2 : vector3_3;
-                float num8 = Vector3.Distance(this.footsteps[index2].position, b);
+                float num8 = Vector3.Distance(footsteps[index2].position, b);
                 bool flag1 = false;
-                if ((double) num8 >= (double) num7 * (double) this.maxLegStretch)
+                if (num8 >= num7 * (double) maxLegStretch)
                 {
-                  vector3_6 = plane1 + rootBone.solverRotation * this.footsteps[index2].characterSpaceOffset;
+                  vector3_6 = plane1 + rootBone.solverRotation * footsteps[index2].characterSpaceOffset;
                   flag1 = true;
                 }
                 bool flag2 = false;
-                for (int index3 = 0; index3 < this.footsteps.Length; ++index3)
+                for (int index3 = 0; index3 < footsteps.Length; ++index3)
                 {
                   if (index3 != index2 && !flag1)
                   {
-                    if ((double) Vector3.Distance(this.footsteps[index2].position, this.footsteps[index3].position) >= 0.25 || (double) (this.footsteps[index2].position - vector3_6).sqrMagnitude >= (double) (this.footsteps[index3].position - vector3_6).sqrMagnitude)
-                      flag2 = IKSolverVR.Locomotion.GetLineSphereCollision(this.footsteps[index2].position, vector3_6, this.footsteps[index3].position, 0.25f);
+                    if ((double) Vector3.Distance(footsteps[index2].position, footsteps[index3].position) >= 0.25 || (double) (footsteps[index2].position - vector3_6).sqrMagnitude >= (double) (footsteps[index3].position - vector3_6).sqrMagnitude)
+                      flag2 = GetLineSphereCollision(footsteps[index2].position, vector3_6, footsteps[index3].position, 0.25f);
                     if (flag2)
                       break;
                   }
                 }
-                float num9 = Quaternion.Angle(quaternion, this.footsteps[index2].stepToRootRot);
-                if (!flag2 || (double) num9 > (double) this.angleThreshold)
+                float num9 = Quaternion.Angle(quaternion, footsteps[index2].stepToRootRot);
+                if (!flag2 || num9 > (double) angleThreshold)
                 {
-                  float num10 = Vector3.Distance(this.footsteps[index2].position, vector3_6);
-                  float num11 = Mathf.Lerp(this.stepThreshold, this.stepThreshold * 0.1f, num5 * 0.015f);
+                  float num10 = Vector3.Distance(footsteps[index2].position, vector3_6);
+                  float num11 = Mathf.Lerp(stepThreshold, stepThreshold * 0.1f, num5 * 0.015f);
                   if (flag1)
                     num11 *= 0.5f;
                   if (index2 == 0)
                     num11 *= 0.9f;
-                  if (!this.StepBlocked(this.footsteps[index2].position, vector3_6, rootBone.solverPosition) && ((double) num10 > (double) num11 || (double) num9 > (double) this.angleThreshold))
+                  if (!StepBlocked(footsteps[index2].position, vector3_6, rootBone.solverPosition) && (num10 > (double) num11 || num9 > (double) angleThreshold))
                   {
                     float num12 = 0.0f - num10;
-                    if ((double) num12 > (double) num6)
+                    if (num12 > (double) num6)
                     {
                       index1 = index2;
                       num6 = num12;
@@ -1451,55 +1448,55 @@ namespace RootMotion.FinalIK
             }
             if (index1 != -1)
             {
-              Vector3 p = plane2 + rootBone.solverRotation * this.footsteps[index1].characterSpaceOffset;
-              this.footsteps[index1].stepSpeed = UnityEngine.Random.Range(this.stepSpeed, this.stepSpeed * 1.5f);
-              this.footsteps[index1].StepTo(p, quaternion);
+              Vector3 p = plane2 + rootBone.solverRotation * footsteps[index1].characterSpaceOffset;
+              footsteps[index1].stepSpeed = UnityEngine.Random.Range(stepSpeed, stepSpeed * 1.5f);
+              footsteps[index1].StepTo(p, quaternion);
             }
           }
-          this.footsteps[0].Update(this.stepInterpolation, this.onLeftFootstep);
-          this.footsteps[1].Update(this.stepInterpolation, this.onRightFootstep);
-          leftFootPosition = this.footsteps[0].position;
-          rightFootPosition = this.footsteps[1].position;
+          footsteps[0].Update(stepInterpolation, onLeftFootstep);
+          footsteps[1].Update(stepInterpolation, onRightFootstep);
+          leftFootPosition = footsteps[0].position;
+          rightFootPosition = footsteps[1].position;
           leftFootPosition = V3Tools.PointToPlane(leftFootPosition, leftLeg.lastBone.readPosition, vector3_1);
           rightFootPosition = V3Tools.PointToPlane(rightFootPosition, rightLeg.lastBone.readPosition, vector3_1);
-          leftFootOffset = this.stepHeight.Evaluate(this.footsteps[0].stepProgress);
-          rightFootOffset = this.stepHeight.Evaluate(this.footsteps[1].stepProgress);
-          leftHeelOffset = this.heelHeight.Evaluate(this.footsteps[0].stepProgress);
-          rightHeelOffset = this.heelHeight.Evaluate(this.footsteps[1].stepProgress);
-          leftFootRotation = this.footsteps[0].rotation;
-          rightFootRotation = this.footsteps[1].rotation;
+          leftFootOffset = stepHeight.Evaluate(footsteps[0].stepProgress);
+          rightFootOffset = stepHeight.Evaluate(footsteps[1].stepProgress);
+          leftHeelOffset = heelHeight.Evaluate(footsteps[0].stepProgress);
+          rightHeelOffset = heelHeight.Evaluate(footsteps[1].stepProgress);
+          leftFootRotation = footsteps[0].rotation;
+          rightFootRotation = footsteps[1].rotation;
         }
       }
 
-      public Vector3 leftFootstepPosition => this.footsteps[0].position;
+      public Vector3 leftFootstepPosition => footsteps[0].position;
 
-      public Vector3 rightFootstepPosition => this.footsteps[1].position;
+      public Vector3 rightFootstepPosition => footsteps[1].position;
 
-      public Quaternion leftFootstepRotation => this.footsteps[0].rotation;
+      public Quaternion leftFootstepRotation => footsteps[0].rotation;
 
-      public Quaternion rightFootstepRotation => this.footsteps[1].rotation;
+      public Quaternion rightFootstepRotation => footsteps[1].rotation;
 
       private bool StepBlocked(Vector3 fromPosition, Vector3 toPosition, Vector3 rootPosition)
       {
-        if ((int) this.blockingLayers == -1 || !this.blockingEnabled)
+        if ((int) blockingLayers == -1 || !blockingEnabled)
           return false;
         Vector3 origin = fromPosition with
         {
-          y = rootPosition.y + this.raycastHeight + this.raycastRadius
+          y = rootPosition.y + raycastHeight + raycastRadius
         };
         Vector3 direction = (toPosition - origin) with
         {
           y = 0.0f
         };
         RaycastHit hitInfo;
-        return (double) this.raycastRadius <= 0.0 ? Physics.Raycast(origin, direction, out hitInfo, direction.magnitude, (int) this.blockingLayers) : Physics.SphereCast(origin, this.raycastRadius, direction, out hitInfo, direction.magnitude, (int) this.blockingLayers);
+        return raycastRadius <= 0.0 ? Physics.Raycast(origin, direction, out hitInfo, direction.magnitude, (int) blockingLayers) : Physics.SphereCast(origin, raycastRadius, direction, out hitInfo, direction.magnitude, (int) blockingLayers);
       }
 
       private bool CanStep()
       {
-        foreach (IKSolverVR.Footstep footstep in this.footsteps)
+        foreach (Footstep footstep in footsteps)
         {
-          if (footstep.isStepping && (double) footstep.stepProgress < 0.800000011920929)
+          if (footstep.isStepping && footstep.stepProgress < 0.800000011920929)
             return false;
         }
         return true;
@@ -1514,15 +1511,15 @@ namespace RootMotion.FinalIK
         Vector3 forward = lineEnd - lineStart;
         Vector3 upwards = sphereCenter - lineStart;
         float num = upwards.magnitude - sphereRadius;
-        if ((double) num > (double) forward.magnitude)
+        if (num > (double) forward.magnitude)
           return false;
         Vector3 vector3 = Quaternion.Inverse(Quaternion.LookRotation(forward, upwards)) * upwards;
-        return (double) vector3.z < 0.0 ? (double) num < 0.0 : (double) vector3.y - (double) sphereRadius < 0.0;
+        return (double) vector3.z < 0.0 ? num < 0.0 : (double) vector3.y - sphereRadius < 0.0;
       }
     }
 
     [Serializable]
-    public class Spine : IKSolverVR.BodyPart
+    public class Spine : BodyPart
     {
       [Tooltip("The head target.")]
       public Transform headTarget;
@@ -1635,18 +1632,18 @@ namespace RootMotion.FinalIK
       private float sizeMlp;
       private Vector3 chestForward;
 
-      public IKSolverVR.VirtualBone pelvis => this.bones[this.pelvisIndex];
+      public VirtualBone pelvis => bones[pelvisIndex];
 
-      public IKSolverVR.VirtualBone firstSpineBone => this.bones[this.spineIndex];
+      public VirtualBone firstSpineBone => bones[spineIndex];
 
-      public IKSolverVR.VirtualBone chest
+      public VirtualBone chest
       {
-        get => this.hasChest ? this.bones[this.chestIndex] : this.bones[this.spineIndex];
+        get => hasChest ? bones[chestIndex] : bones[spineIndex];
       }
 
-      private IKSolverVR.VirtualBone neck => this.bones[this.neckIndex];
+      private VirtualBone neck => bones[neckIndex];
 
-      public IKSolverVR.VirtualBone head => this.bones[this.headIndex];
+      public VirtualBone head => bones[headIndex];
 
       public Quaternion anchorRotation { get; private set; }
 
@@ -1675,265 +1672,265 @@ namespace RootMotion.FinalIK
           position3 = position2;
           rotation3 = rotation2;
         }
-        if (!this.initiated)
+        if (!initiated)
         {
           this.hasChest = hasChest;
           this.hasNeck = hasNeck;
-          this.headHeight = V3Tools.ExtractVertical(position5 - positions[0], rotations[0] * Vector3.up, 1f).magnitude;
+          headHeight = V3Tools.ExtractVertical(position5 - positions[0], rotations[0] * Vector3.up, 1f).magnitude;
           int length = 3;
           if (hasChest)
             ++length;
           if (hasNeck)
             ++length;
-          this.bones = new IKSolverVR.VirtualBone[length];
-          this.chestIndex = hasChest ? 2 : 1;
-          this.neckIndex = 1;
+          bones = new VirtualBone[length];
+          chestIndex = hasChest ? 2 : 1;
+          neckIndex = 1;
           if (hasChest)
-            ++this.neckIndex;
+            ++neckIndex;
           if (hasNeck)
-            ++this.neckIndex;
-          this.headIndex = 2;
+            ++neckIndex;
+          headIndex = 2;
           if (hasChest)
-            ++this.headIndex;
+            ++headIndex;
           if (hasNeck)
-            ++this.headIndex;
-          this.bones[0] = new IKSolverVR.VirtualBone(position1, rotation1);
-          this.bones[1] = new IKSolverVR.VirtualBone(position2, rotation2);
+            ++headIndex;
+          bones[0] = new VirtualBone(position1, rotation1);
+          bones[1] = new VirtualBone(position2, rotation2);
           if (hasChest)
-            this.bones[this.chestIndex] = new IKSolverVR.VirtualBone(position3, rotation3);
+            bones[chestIndex] = new VirtualBone(position3, rotation3);
           if (hasNeck)
-            this.bones[this.neckIndex] = new IKSolverVR.VirtualBone(position4, rotation4);
-          this.bones[this.headIndex] = new IKSolverVR.VirtualBone(position5, rotation5);
-          this.pelvisRotationOffset = Quaternion.identity;
-          this.chestRotationOffset = Quaternion.identity;
-          this.headRotationOffset = Quaternion.identity;
-          this.anchorRelativeToHead = Quaternion.Inverse(rotation5) * rotations[0];
-          this.pelvisRelativeRotation = Quaternion.Inverse(rotation5) * rotation1;
-          this.chestRelativeRotation = Quaternion.Inverse(rotation5) * rotation3;
-          this.chestForward = Quaternion.Inverse(rotation3) * (rotations[0] * Vector3.forward);
-          this.faceDirection = rotations[0] * Vector3.forward;
-          this.IKPositionHead = position5;
-          this.IKRotationHead = rotation5;
-          this.IKPositionPelvis = position1;
-          this.IKRotationPelvis = rotation1;
-          this.goalPositionChest = position3 + rotations[0] * Vector3.forward;
+            bones[neckIndex] = new VirtualBone(position4, rotation4);
+          bones[headIndex] = new VirtualBone(position5, rotation5);
+          pelvisRotationOffset = Quaternion.identity;
+          chestRotationOffset = Quaternion.identity;
+          headRotationOffset = Quaternion.identity;
+          anchorRelativeToHead = Quaternion.Inverse(rotation5) * rotations[0];
+          pelvisRelativeRotation = Quaternion.Inverse(rotation5) * rotation1;
+          chestRelativeRotation = Quaternion.Inverse(rotation5) * rotation3;
+          chestForward = Quaternion.Inverse(rotation3) * (rotations[0] * Vector3.forward);
+          faceDirection = rotations[0] * Vector3.forward;
+          IKPositionHead = position5;
+          IKRotationHead = rotation5;
+          IKPositionPelvis = position1;
+          IKRotationPelvis = rotation1;
+          goalPositionChest = position3 + rotations[0] * Vector3.forward;
         }
-        this.bones[0].Read(position1, rotation1);
-        this.bones[1].Read(position2, rotation2);
+        bones[0].Read(position1, rotation1);
+        bones[1].Read(position2, rotation2);
         if (hasChest)
-          this.bones[this.chestIndex].Read(position3, rotation3);
+          bones[chestIndex].Read(position3, rotation3);
         if (hasNeck)
-          this.bones[this.neckIndex].Read(position4, rotation4);
-        this.bones[this.headIndex].Read(position5, rotation5);
-        this.sizeMlp = Vector3.Distance(position1, position5) / 0.7f;
+          bones[neckIndex].Read(position4, rotation4);
+        bones[headIndex].Read(position5, rotation5);
+        sizeMlp = Vector3.Distance(position1, position5) / 0.7f;
       }
 
       public override void PreSolve()
       {
-        if ((UnityEngine.Object) this.headTarget != (UnityEngine.Object) null)
+        if ((UnityEngine.Object) headTarget != (UnityEngine.Object) null)
         {
-          this.IKPositionHead = this.headTarget.position;
-          this.IKRotationHead = this.headTarget.rotation;
+          IKPositionHead = headTarget.position;
+          IKRotationHead = headTarget.rotation;
         }
-        if ((UnityEngine.Object) this.chestGoal != (UnityEngine.Object) null)
-          this.goalPositionChest = this.chestGoal.position;
-        if ((UnityEngine.Object) this.pelvisTarget != (UnityEngine.Object) null)
+        if ((UnityEngine.Object) chestGoal != (UnityEngine.Object) null)
+          goalPositionChest = chestGoal.position;
+        if ((UnityEngine.Object) pelvisTarget != (UnityEngine.Object) null)
         {
-          this.IKPositionPelvis = this.pelvisTarget.position;
-          this.IKRotationPelvis = this.pelvisTarget.rotation;
+          IKPositionPelvis = pelvisTarget.position;
+          IKRotationPelvis = pelvisTarget.rotation;
         }
-        this.headPosition = V3Tools.Lerp(this.head.solverPosition, this.IKPositionHead, this.positionWeight);
-        this.headRotation = QuaTools.Lerp(this.head.solverRotation, this.IKRotationHead, this.rotationWeight);
+        headPosition = V3Tools.Lerp(head.solverPosition, IKPositionHead, positionWeight);
+        headRotation = QuaTools.Lerp(head.solverRotation, IKRotationHead, rotationWeight);
       }
 
       public override void ApplyOffsets()
       {
-        this.headPosition += this.headPositionOffset;
-        Vector3 vector3 = this.rootRotation * Vector3.up;
+        headPosition += headPositionOffset;
+        Vector3 vector3 = rootRotation * Vector3.up;
         if (vector3 == Vector3.up)
         {
-          this.headPosition.y = Math.Max(this.rootPosition.y + this.minHeadHeight, this.headPosition.y);
+          headPosition.y = Math.Max(rootPosition.y + minHeadHeight, headPosition.y);
         }
         else
         {
-          Vector3 v = this.headPosition - this.rootPosition;
+          Vector3 v = headPosition - rootPosition;
           Vector3 horizontal = V3Tools.ExtractHorizontal(v, vector3, 1f);
           Vector3 lhs = v - horizontal;
           if ((double) Vector3.Dot(lhs, vector3) > 0.0)
           {
-            if ((double) lhs.magnitude < (double) this.minHeadHeight)
-              lhs = lhs.normalized * this.minHeadHeight;
+            if ((double) lhs.magnitude < minHeadHeight)
+              lhs = lhs.normalized * minHeadHeight;
           }
           else
-            lhs = -lhs.normalized * this.minHeadHeight;
-          this.headPosition = this.rootPosition + horizontal + lhs;
+            lhs = -lhs.normalized * minHeadHeight;
+          headPosition = rootPosition + horizontal + lhs;
         }
-        this.headRotation = this.headRotationOffset * this.headRotation;
-        this.headDeltaPosition = this.headPosition - this.head.solverPosition;
-        this.pelvisDeltaRotation = QuaTools.FromToRotation(this.pelvis.solverRotation, this.headRotation * this.pelvisRelativeRotation);
-        this.anchorRotation = this.headRotation * this.anchorRelativeToHead;
+        headRotation = headRotationOffset * headRotation;
+        headDeltaPosition = headPosition - head.solverPosition;
+        pelvisDeltaRotation = QuaTools.FromToRotation(pelvis.solverRotation, headRotation * pelvisRelativeRotation);
+        anchorRotation = headRotation * anchorRelativeToHead;
       }
 
       private void CalculateChestTargetRotation(
-        IKSolverVR.VirtualBone rootBone,
-        IKSolverVR.Arm[] arms)
+        VirtualBone rootBone,
+        Arm[] arms)
       {
-        this.chestTargetRotation = this.headRotation * this.chestRelativeRotation;
-        this.AdjustChestByHands(ref this.chestTargetRotation, arms);
-        this.faceDirection = Vector3.Cross(this.anchorRotation * Vector3.right, rootBone.readRotation * Vector3.up) + this.anchorRotation * Vector3.forward;
+        chestTargetRotation = headRotation * chestRelativeRotation;
+        AdjustChestByHands(ref chestTargetRotation, arms);
+        faceDirection = Vector3.Cross(anchorRotation * Vector3.right, rootBone.readRotation * Vector3.up) + anchorRotation * Vector3.forward;
       }
 
       public void Solve(
-        IKSolverVR.VirtualBone rootBone,
-        IKSolverVR.Leg[] legs,
-        IKSolverVR.Arm[] arms)
+        VirtualBone rootBone,
+        Leg[] legs,
+        Arm[] arms)
       {
-        this.CalculateChestTargetRotation(rootBone, arms);
-        if ((double) this.maxRootAngle < 180.0)
+        CalculateChestTargetRotation(rootBone, arms);
+        if (this.maxRootAngle < 180.0)
         {
-          Vector3 vector3 = Quaternion.Inverse(rootBone.solverRotation) * this.faceDirection;
+          Vector3 vector3 = Quaternion.Inverse(rootBone.solverRotation) * faceDirection;
           float num = Mathf.Atan2(vector3.x, vector3.z) * 57.29578f;
           float angle = 0.0f;
           float maxRootAngle = this.maxRootAngle;
-          if ((double) num > (double) maxRootAngle)
+          if (num > (double) maxRootAngle)
             angle = num - maxRootAngle;
-          if ((double) num < -(double) maxRootAngle)
+          if (num < -(double) maxRootAngle)
             angle = num + maxRootAngle;
           rootBone.solverRotation = Quaternion.AngleAxis(angle, rootBone.readRotation * Vector3.up) * rootBone.solverRotation;
         }
-        Vector3 solverPosition = this.pelvis.solverPosition;
+        Vector3 solverPosition = pelvis.solverPosition;
         Vector3 rootUp = rootBone.solverRotation * Vector3.up;
-        this.TranslatePelvis(legs, this.headDeltaPosition, this.pelvisDeltaRotation);
-        this.FABRIKPass(solverPosition, rootUp);
-        this.Bend(this.bones, this.pelvisIndex, this.chestIndex, this.chestTargetRotation, this.chestRotationOffset, this.chestClampWeight, false, this.neckStiffness);
-        if ((double) this.chestGoalWeight > 0.0)
-          this.Bend(this.bones, this.pelvisIndex, this.chestIndex, Quaternion.FromToRotation(this.bones[this.chestIndex].solverRotation * this.chestForward, this.goalPositionChest - this.bones[this.chestIndex].solverPosition) * this.bones[this.chestIndex].solverRotation, this.chestRotationOffset, this.chestClampWeight, false, this.chestGoalWeight);
-        this.InverseTranslateToHead(legs, false, false, Vector3.zero, 1f);
-        this.FABRIKPass(solverPosition, rootUp);
-        this.Bend(this.bones, this.neckIndex, this.headIndex, this.headRotation, this.headClampWeight, true, 1f);
-        this.SolvePelvis();
+        TranslatePelvis(legs, headDeltaPosition, pelvisDeltaRotation);
+        FABRIKPass(solverPosition, rootUp);
+        Bend(bones, pelvisIndex, chestIndex, chestTargetRotation, chestRotationOffset, chestClampWeight, false, neckStiffness);
+        if (chestGoalWeight > 0.0)
+          Bend(bones, pelvisIndex, chestIndex, Quaternion.FromToRotation(bones[chestIndex].solverRotation * chestForward, goalPositionChest - bones[chestIndex].solverPosition) * bones[chestIndex].solverRotation, chestRotationOffset, chestClampWeight, false, chestGoalWeight);
+        InverseTranslateToHead(legs, false, false, Vector3.zero, 1f);
+        FABRIKPass(solverPosition, rootUp);
+        Bend(bones, neckIndex, headIndex, headRotation, headClampWeight, true, 1f);
+        SolvePelvis();
       }
 
       private void FABRIKPass(Vector3 animatedPelvisPos, Vector3 rootUp)
       {
-        IKSolverVR.VirtualBone.SolveFABRIK(this.bones, Vector3.Lerp(this.pelvis.solverPosition, animatedPelvisPos, this.maintainPelvisPosition) + this.pelvisPositionOffset - this.chestPositionOffset, this.headPosition - this.chestPositionOffset, 1f, 1f, 1, this.mag, rootUp * (this.bones[this.bones.Length - 1].solverPosition - this.bones[0].solverPosition).magnitude);
+        VirtualBone.SolveFABRIK(bones, Vector3.Lerp(pelvis.solverPosition, animatedPelvisPos, maintainPelvisPosition) + pelvisPositionOffset - chestPositionOffset, headPosition - chestPositionOffset, 1f, 1f, 1, mag, rootUp * (bones[bones.Length - 1].solverPosition - bones[0].solverPosition).magnitude);
       }
 
       private void SolvePelvis()
       {
-        if ((double) this.pelvisPositionWeight <= 0.0)
+        if (pelvisPositionWeight <= 0.0)
           return;
-        Quaternion solverRotation = this.head.solverRotation;
-        Vector3 vector3 = (this.IKPositionPelvis + this.pelvisPositionOffset - this.pelvis.solverPosition) * this.pelvisPositionWeight;
-        foreach (IKSolverVR.VirtualBone bone in this.bones)
+        Quaternion solverRotation = head.solverRotation;
+        Vector3 vector3 = (IKPositionPelvis + pelvisPositionOffset - pelvis.solverPosition) * pelvisPositionWeight;
+        foreach (VirtualBone bone in bones)
           bone.solverPosition += vector3;
-        Vector3 bendNormal = this.anchorRotation * Vector3.right;
-        if (this.hasChest && this.hasNeck)
+        Vector3 bendNormal = anchorRotation * Vector3.right;
+        if (hasChest && hasNeck)
         {
-          IKSolverVR.VirtualBone.SolveTrigonometric(this.bones, this.pelvisIndex, this.spineIndex, this.headIndex, this.headPosition, bendNormal, this.pelvisPositionWeight * 0.6f);
-          IKSolverVR.VirtualBone.SolveTrigonometric(this.bones, this.spineIndex, this.chestIndex, this.headIndex, this.headPosition, bendNormal, this.pelvisPositionWeight * 0.6f);
-          IKSolverVR.VirtualBone.SolveTrigonometric(this.bones, this.chestIndex, this.neckIndex, this.headIndex, this.headPosition, bendNormal, this.pelvisPositionWeight * 1f);
+          VirtualBone.SolveTrigonometric(bones, pelvisIndex, spineIndex, headIndex, headPosition, bendNormal, pelvisPositionWeight * 0.6f);
+          VirtualBone.SolveTrigonometric(bones, spineIndex, chestIndex, headIndex, headPosition, bendNormal, pelvisPositionWeight * 0.6f);
+          VirtualBone.SolveTrigonometric(bones, chestIndex, neckIndex, headIndex, headPosition, bendNormal, pelvisPositionWeight * 1f);
         }
-        else if (this.hasChest && !this.hasNeck)
+        else if (hasChest && !hasNeck)
         {
-          IKSolverVR.VirtualBone.SolveTrigonometric(this.bones, this.pelvisIndex, this.spineIndex, this.headIndex, this.headPosition, bendNormal, this.pelvisPositionWeight * 0.75f);
-          IKSolverVR.VirtualBone.SolveTrigonometric(this.bones, this.spineIndex, this.chestIndex, this.headIndex, this.headPosition, bendNormal, this.pelvisPositionWeight * 1f);
+          VirtualBone.SolveTrigonometric(bones, pelvisIndex, spineIndex, headIndex, headPosition, bendNormal, pelvisPositionWeight * 0.75f);
+          VirtualBone.SolveTrigonometric(bones, spineIndex, chestIndex, headIndex, headPosition, bendNormal, pelvisPositionWeight * 1f);
         }
-        else if (!this.hasChest && this.hasNeck)
+        else if (!hasChest && hasNeck)
         {
-          IKSolverVR.VirtualBone.SolveTrigonometric(this.bones, this.pelvisIndex, this.spineIndex, this.headIndex, this.headPosition, bendNormal, this.pelvisPositionWeight * 0.75f);
-          IKSolverVR.VirtualBone.SolveTrigonometric(this.bones, this.spineIndex, this.neckIndex, this.headIndex, this.headPosition, bendNormal, this.pelvisPositionWeight * 1f);
+          VirtualBone.SolveTrigonometric(bones, pelvisIndex, spineIndex, headIndex, headPosition, bendNormal, pelvisPositionWeight * 0.75f);
+          VirtualBone.SolveTrigonometric(bones, spineIndex, neckIndex, headIndex, headPosition, bendNormal, pelvisPositionWeight * 1f);
         }
-        else if (!this.hasNeck && !this.hasChest)
-          IKSolverVR.VirtualBone.SolveTrigonometric(this.bones, this.pelvisIndex, this.spineIndex, this.headIndex, this.headPosition, bendNormal, this.pelvisPositionWeight);
-        this.head.solverRotation = solverRotation;
+        else if (!hasNeck && !hasChest)
+          VirtualBone.SolveTrigonometric(bones, pelvisIndex, spineIndex, headIndex, headPosition, bendNormal, pelvisPositionWeight);
+        head.solverRotation = solverRotation;
       }
 
       public override void Write(ref Vector3[] solvedPositions, ref Quaternion[] solvedRotations)
       {
-        solvedPositions[this.index] = this.bones[0].solverPosition;
-        solvedRotations[this.index] = this.bones[0].solverRotation;
-        solvedRotations[this.index + 1] = this.bones[1].solverRotation;
-        if (this.hasChest)
-          solvedRotations[this.index + 2] = this.bones[this.chestIndex].solverRotation;
-        if (this.hasNeck)
-          solvedRotations[this.index + 3] = this.bones[this.neckIndex].solverRotation;
-        solvedRotations[this.index + 4] = this.bones[this.headIndex].solverRotation;
+        solvedPositions[index] = bones[0].solverPosition;
+        solvedRotations[index] = bones[0].solverRotation;
+        solvedRotations[index + 1] = bones[1].solverRotation;
+        if (hasChest)
+          solvedRotations[index + 2] = bones[chestIndex].solverRotation;
+        if (hasNeck)
+          solvedRotations[index + 3] = bones[neckIndex].solverRotation;
+        solvedRotations[index + 4] = bones[headIndex].solverRotation;
       }
 
       public override void ResetOffsets()
       {
-        this.pelvisPositionOffset = Vector3.zero;
-        this.chestPositionOffset = Vector3.zero;
-        this.headPositionOffset = this.locomotionHeadPositionOffset;
-        this.pelvisRotationOffset = Quaternion.identity;
-        this.chestRotationOffset = Quaternion.identity;
-        this.headRotationOffset = Quaternion.identity;
+        pelvisPositionOffset = Vector3.zero;
+        chestPositionOffset = Vector3.zero;
+        headPositionOffset = locomotionHeadPositionOffset;
+        pelvisRotationOffset = Quaternion.identity;
+        chestRotationOffset = Quaternion.identity;
+        headRotationOffset = Quaternion.identity;
       }
 
-      private void AdjustChestByHands(ref Quaternion chestTargetRotation, IKSolverVR.Arm[] arms)
+      private void AdjustChestByHands(ref Quaternion chestTargetRotation, Arm[] arms)
       {
-        Quaternion quaternion1 = Quaternion.Inverse(this.anchorRotation);
-        Vector3 vector3_1 = quaternion1 * (arms[0].position - this.headPosition) / this.sizeMlp;
-        Vector3 vector3_2 = quaternion1 * (arms[1].position - this.headPosition) / this.sizeMlp;
+        Quaternion quaternion1 = Quaternion.Inverse(anchorRotation);
+        Vector3 vector3_1 = quaternion1 * (arms[0].position - headPosition) / sizeMlp;
+        Vector3 vector3_2 = quaternion1 * (arms[1].position - headPosition) / sizeMlp;
         Vector3 forward = Vector3.forward;
         forward.x += vector3_1.x * Mathf.Abs(vector3_1.x);
         forward.x += vector3_1.z * Mathf.Abs(vector3_1.z);
         forward.x += vector3_2.x * Mathf.Abs(vector3_2.x);
         forward.x -= vector3_2.z * Mathf.Abs(vector3_2.z);
-        forward.x *= 5f * this.rotateChestByHands;
-        Quaternion quaternion2 = Quaternion.AngleAxis(Mathf.Atan2(forward.x, forward.z) * 57.29578f, this.rootRotation * Vector3.up);
+        forward.x *= 5f * rotateChestByHands;
+        Quaternion quaternion2 = Quaternion.AngleAxis(Mathf.Atan2(forward.x, forward.z) * 57.29578f, rootRotation * Vector3.up);
         chestTargetRotation = quaternion2 * chestTargetRotation;
         Vector3 up = Vector3.up;
         up.x += vector3_1.y;
         up.x -= vector3_2.y;
-        up.x *= 0.5f * this.rotateChestByHands;
-        Quaternion quaternion3 = Quaternion.AngleAxis(Mathf.Atan2(up.x, up.y) * 57.29578f, this.rootRotation * Vector3.back);
+        up.x *= 0.5f * rotateChestByHands;
+        Quaternion quaternion3 = Quaternion.AngleAxis(Mathf.Atan2(up.x, up.y) * 57.29578f, rootRotation * Vector3.back);
         chestTargetRotation = quaternion3 * chestTargetRotation;
       }
 
       public void InverseTranslateToHead(
-        IKSolverVR.Leg[] legs,
+        Leg[] legs,
         bool limited,
         bool useCurrentLegMag,
         Vector3 offset,
         float w)
       {
-        Vector3 pelvisPosition = this.pelvis.solverPosition + (this.headPosition + offset - this.head.solverPosition) * w * (1f - this.pelvisPositionWeight);
-        this.MovePosition(limited ? this.LimitPelvisPosition(legs, pelvisPosition, useCurrentLegMag) : pelvisPosition);
+        Vector3 pelvisPosition = pelvis.solverPosition + (headPosition + offset - head.solverPosition) * w * (1f - pelvisPositionWeight);
+        MovePosition(limited ? LimitPelvisPosition(legs, pelvisPosition, useCurrentLegMag) : pelvisPosition);
       }
 
       private void TranslatePelvis(
-        IKSolverVR.Leg[] legs,
+        Leg[] legs,
         Vector3 deltaPosition,
         Quaternion deltaRotation)
       {
-        Vector3 solverPosition = this.head.solverPosition;
-        deltaRotation = QuaTools.ClampRotation(deltaRotation, this.chestClampWeight, 2);
-        IKSolverVR.VirtualBone.RotateAroundPoint(this.bones, 0, this.pelvis.solverPosition, this.pelvisRotationOffset * Quaternion.Slerp(Quaternion.Slerp(Quaternion.identity, deltaRotation, this.bodyRotStiffness), QuaTools.FromToRotation(this.pelvis.solverRotation, this.IKRotationPelvis), this.pelvisRotationWeight));
-        deltaPosition -= this.head.solverPosition - solverPosition;
-        Vector3 vector3 = this.rootRotation * Vector3.forward;
-        float num = V3Tools.ExtractVertical(deltaPosition, this.rootRotation * Vector3.up, 1f).magnitude * -this.moveBodyBackWhenCrouching * this.headHeight;
+        Vector3 solverPosition = head.solverPosition;
+        deltaRotation = QuaTools.ClampRotation(deltaRotation, chestClampWeight, 2);
+        VirtualBone.RotateAroundPoint(bones, 0, pelvis.solverPosition, pelvisRotationOffset * Quaternion.Slerp(Quaternion.Slerp(Quaternion.identity, deltaRotation, bodyRotStiffness), QuaTools.FromToRotation(pelvis.solverRotation, IKRotationPelvis), pelvisRotationWeight));
+        deltaPosition -= head.solverPosition - solverPosition;
+        Vector3 vector3 = rootRotation * Vector3.forward;
+        float num = V3Tools.ExtractVertical(deltaPosition, rootRotation * Vector3.up, 1f).magnitude * -moveBodyBackWhenCrouching * headHeight;
         deltaPosition += vector3 * num;
-        this.MovePosition(this.LimitPelvisPosition(legs, this.pelvis.solverPosition + deltaPosition * this.bodyPosStiffness, false));
+        MovePosition(LimitPelvisPosition(legs, pelvis.solverPosition + deltaPosition * bodyPosStiffness, false));
       }
 
       private Vector3 LimitPelvisPosition(
-        IKSolverVR.Leg[] legs,
+        Leg[] legs,
         Vector3 pelvisPosition,
         bool useCurrentLegMag,
         int it = 2)
       {
         if (useCurrentLegMag)
         {
-          foreach (IKSolverVR.Leg leg in legs)
+          foreach (Leg leg in legs)
             leg.currentMag = Vector3.Distance(leg.thigh.solverPosition, leg.lastBone.solverPosition);
         }
         for (int index = 0; index < it; ++index)
         {
-          foreach (IKSolverVR.Leg leg in legs)
+          foreach (Leg leg in legs)
           {
-            Vector3 vector3_1 = pelvisPosition - this.pelvis.solverPosition;
+            Vector3 vector3_1 = pelvisPosition - pelvis.solverPosition;
             Vector3 vector3_2 = leg.thigh.solverPosition + vector3_1;
             Vector3 vector = vector3_2 - leg.position;
             float maxLength = useCurrentLegMag ? leg.currentMag : leg.mag;
@@ -1945,7 +1942,7 @@ namespace RootMotion.FinalIK
       }
 
       private void Bend(
-        IKSolverVR.VirtualBone[] bones,
+        VirtualBone[] bones,
         int firstIndex,
         int lastIndex,
         Quaternion targetRotation,
@@ -1953,23 +1950,23 @@ namespace RootMotion.FinalIK
         bool uniformWeight,
         float w)
       {
-        if ((double) w <= 0.0 || bones.Length == 0)
+        if (w <= 0.0 || bones.Length == 0)
           return;
         int num1 = lastIndex + 1 - firstIndex;
         if (num1 < 1)
           return;
         Quaternion b = QuaTools.ClampRotation(QuaTools.FromToRotation(bones[lastIndex].solverRotation, targetRotation), clampWeight, 2);
-        float num2 = uniformWeight ? 1f / (float) num1 : 0.0f;
+        float num2 = uniformWeight ? 1f / num1 : 0.0f;
         for (int index = firstIndex; index < lastIndex + 1; ++index)
         {
           if (!uniformWeight)
             num2 = Mathf.Clamp((float) ((index - firstIndex + 1) / num1), 0.0f, 1f);
-          IKSolverVR.VirtualBone.RotateAroundPoint(bones, index, bones[index].solverPosition, Quaternion.Slerp(Quaternion.identity, b, num2 * w));
+          VirtualBone.RotateAroundPoint(bones, index, bones[index].solverPosition, Quaternion.Slerp(Quaternion.identity, b, num2 * w));
         }
       }
 
       private void Bend(
-        IKSolverVR.VirtualBone[] bones,
+        VirtualBone[] bones,
         int firstIndex,
         int lastIndex,
         Quaternion targetRotation,
@@ -1978,18 +1975,18 @@ namespace RootMotion.FinalIK
         bool uniformWeight,
         float w)
       {
-        if ((double) w <= 0.0 || bones.Length == 0)
+        if (w <= 0.0 || bones.Length == 0)
           return;
         int num = lastIndex + 1 - firstIndex;
         if (num < 1)
           return;
         Quaternion b = QuaTools.ClampRotation(QuaTools.FromToRotation(bones[lastIndex].solverRotation, targetRotation), clampWeight, 2);
-        float t = uniformWeight ? 1f / (float) num : 0.0f;
+        float t = uniformWeight ? 1f / num : 0.0f;
         for (int index = firstIndex; index < lastIndex + 1; ++index)
         {
           if (!uniformWeight)
             t = Mathf.Clamp((float) ((index - firstIndex + 1) / num), 0.0f, 1f);
-          IKSolverVR.VirtualBone.RotateAroundPoint(bones, index, bones[index].solverPosition, Quaternion.Slerp(Quaternion.Slerp(Quaternion.identity, rotationOffset, t), b, t * w));
+          VirtualBone.RotateAroundPoint(bones, index, bones[index].solverPosition, Quaternion.Slerp(Quaternion.Slerp(Quaternion.identity, rotationOffset, t), b, t * w));
         }
       }
     }
@@ -2027,32 +2024,32 @@ namespace RootMotion.FinalIK
       public float sqrMag;
       public Vector3 axis;
 
-      public VirtualBone(Vector3 position, Quaternion rotation) => this.Read(position, rotation);
+      public VirtualBone(Vector3 position, Quaternion rotation) => Read(position, rotation);
 
       public void Read(Vector3 position, Quaternion rotation)
       {
-        this.readPosition = position;
-        this.readRotation = rotation;
-        this.solverPosition = position;
-        this.solverRotation = rotation;
+        readPosition = position;
+        readRotation = rotation;
+        solverPosition = position;
+        solverRotation = rotation;
       }
 
       public static void SwingRotation(
-        IKSolverVR.VirtualBone[] bones,
+        VirtualBone[] bones,
         int index,
         Vector3 swingTarget,
         float weight = 1f)
       {
-        if ((double) weight <= 0.0)
+        if (weight <= 0.0)
           return;
         Quaternion b = Quaternion.FromToRotation(bones[index].solverRotation * bones[index].axis, swingTarget - bones[index].solverPosition);
-        if ((double) weight < 1.0)
+        if (weight < 1.0)
           b = Quaternion.Lerp(Quaternion.identity, b, weight);
         for (int index1 = index; index1 < bones.Length; ++index1)
           bones[index1].solverRotation = b * bones[index1].solverRotation;
       }
 
-      public static float PreSolve(ref IKSolverVR.VirtualBone[] bones)
+      public static float PreSolve(ref VirtualBone[] bones)
       {
         float num = 0.0f;
         for (int index = 0; index < bones.Length; ++index)
@@ -2074,7 +2071,7 @@ namespace RootMotion.FinalIK
       }
 
       public static void RotateAroundPoint(
-        IKSolverVR.VirtualBone[] bones,
+        VirtualBone[] bones,
         int index,
         Vector3 point,
         Quaternion rotation)
@@ -2090,7 +2087,7 @@ namespace RootMotion.FinalIK
         }
       }
 
-      public static void RotateBy(IKSolverVR.VirtualBone[] bones, int index, Quaternion rotation)
+      public static void RotateBy(VirtualBone[] bones, int index, Quaternion rotation)
       {
         for (int index1 = index; index1 < bones.Length; ++index1)
         {
@@ -2103,7 +2100,7 @@ namespace RootMotion.FinalIK
         }
       }
 
-      public static void RotateBy(IKSolverVR.VirtualBone[] bones, Quaternion rotation)
+      public static void RotateBy(VirtualBone[] bones, Quaternion rotation)
       {
         for (int index = 0; index < bones.Length; ++index)
         {
@@ -2119,14 +2116,14 @@ namespace RootMotion.FinalIK
         }
       }
 
-      public static void RotateTo(IKSolverVR.VirtualBone[] bones, int index, Quaternion rotation)
+      public static void RotateTo(VirtualBone[] bones, int index, Quaternion rotation)
       {
         Quaternion rotation1 = QuaTools.FromToRotation(bones[index].solverRotation, rotation);
-        IKSolverVR.VirtualBone.RotateAroundPoint(bones, index, bones[index].solverPosition, rotation1);
+        RotateAroundPoint(bones, index, bones[index].solverPosition, rotation1);
       }
 
       public static void SolveTrigonometric(
-        IKSolverVR.VirtualBone[] bones,
+        VirtualBone[] bones,
         int first,
         int second,
         int third,
@@ -2134,26 +2131,26 @@ namespace RootMotion.FinalIK
         Vector3 bendNormal,
         float weight)
       {
-        if ((double) weight <= 0.0)
+        if (weight <= 0.0)
           return;
         targetPosition = Vector3.Lerp(bones[third].solverPosition, targetPosition, weight);
         Vector3 vector3 = targetPosition - bones[first].solverPosition;
         float sqrMagnitude1 = vector3.sqrMagnitude;
-        if ((double) sqrMagnitude1 == 0.0)
+        if (sqrMagnitude1 == 0.0)
           return;
         float directionMag = Mathf.Sqrt(sqrMagnitude1);
         float sqrMagnitude2 = (bones[second].solverPosition - bones[first].solverPosition).sqrMagnitude;
         float sqrMagnitude3 = (bones[third].solverPosition - bones[second].solverPosition).sqrMagnitude;
         Vector3 bendDirection = Vector3.Cross(vector3, bendNormal);
-        Vector3 directionToBendPoint = IKSolverVR.VirtualBone.GetDirectionToBendPoint(vector3, directionMag, bendDirection, sqrMagnitude2, sqrMagnitude3);
+        Vector3 directionToBendPoint = GetDirectionToBendPoint(vector3, directionMag, bendDirection, sqrMagnitude2, sqrMagnitude3);
         Quaternion quaternion1 = Quaternion.FromToRotation(bones[second].solverPosition - bones[first].solverPosition, directionToBendPoint);
-        if ((double) weight < 1.0)
+        if (weight < 1.0)
           quaternion1 = Quaternion.Lerp(Quaternion.identity, quaternion1, weight);
-        IKSolverVR.VirtualBone.RotateAroundPoint(bones, first, bones[first].solverPosition, quaternion1);
+        RotateAroundPoint(bones, first, bones[first].solverPosition, quaternion1);
         Quaternion quaternion2 = Quaternion.FromToRotation(bones[third].solverPosition - bones[second].solverPosition, targetPosition - bones[second].solverPosition);
-        if ((double) weight < 1.0)
+        if (weight < 1.0)
           quaternion2 = Quaternion.Lerp(Quaternion.identity, quaternion2, weight);
-        IKSolverVR.VirtualBone.RotateAroundPoint(bones, second, bones[second].solverPosition, quaternion2);
+        RotateAroundPoint(bones, second, bones[second].solverPosition, quaternion2);
       }
 
       private static Vector3 GetDirectionToBendPoint(
@@ -2163,13 +2160,13 @@ namespace RootMotion.FinalIK
         float sqrMag1,
         float sqrMag2)
       {
-        float z = (float) (((double) directionMag * (double) directionMag + ((double) sqrMag1 - (double) sqrMag2)) / 2.0) / directionMag;
+        float z = (float) ((directionMag * (double) directionMag + (sqrMag1 - (double) sqrMag2)) / 2.0) / directionMag;
         float y = (float) Math.Sqrt((double) Mathf.Clamp(sqrMag1 - z * z, 0.0f, float.PositiveInfinity));
         return direction == Vector3.zero ? Vector3.zero : Quaternion.LookRotation(direction, bendDirection) * new Vector3(0.0f, y, z);
       }
 
       public static void SolveFABRIK(
-        IKSolverVR.VirtualBone[] bones,
+        VirtualBone[] bones,
         Vector3 startPosition,
         Vector3 targetPosition,
         float weight,
@@ -2178,27 +2175,27 @@ namespace RootMotion.FinalIK
         float length,
         Vector3 startOffset)
       {
-        if ((double) weight <= 0.0)
+        if (weight <= 0.0)
           return;
-        if ((double) minNormalizedTargetDistance > 0.0)
+        if (minNormalizedTargetDistance > 0.0)
         {
           Vector3 vector3 = targetPosition - startPosition;
           float magnitude = vector3.magnitude;
           targetPosition = startPosition + vector3 / magnitude * Mathf.Max(length * minNormalizedTargetDistance, magnitude);
         }
-        foreach (IKSolverVR.VirtualBone bone in bones)
+        foreach (VirtualBone bone in bones)
           bone.solverPosition += startOffset;
         for (int index1 = 0; index1 < iterations; ++index1)
         {
           bones[bones.Length - 1].solverPosition = Vector3.Lerp(bones[bones.Length - 1].solverPosition, targetPosition, weight);
           for (int index2 = bones.Length - 2; index2 > -1; --index2)
-            bones[index2].solverPosition = IKSolverVR.VirtualBone.SolveFABRIKJoint(bones[index2].solverPosition, bones[index2 + 1].solverPosition, bones[index2].length);
+            bones[index2].solverPosition = SolveFABRIKJoint(bones[index2].solverPosition, bones[index2 + 1].solverPosition, bones[index2].length);
           bones[0].solverPosition = startPosition;
           for (int index3 = 1; index3 < bones.Length; ++index3)
-            bones[index3].solverPosition = IKSolverVR.VirtualBone.SolveFABRIKJoint(bones[index3].solverPosition, bones[index3 - 1].solverPosition, bones[index3 - 1].length);
+            bones[index3].solverPosition = SolveFABRIKJoint(bones[index3].solverPosition, bones[index3 - 1].solverPosition, bones[index3 - 1].length);
         }
         for (int index = 0; index < bones.Length - 1; ++index)
-          IKSolverVR.VirtualBone.SwingRotation(bones, index, bones[index + 1].solverPosition);
+          SwingRotation(bones, index, bones[index + 1].solverPosition);
       }
 
       private static Vector3 SolveFABRIKJoint(Vector3 pos1, Vector3 pos2, float length)
@@ -2207,22 +2204,22 @@ namespace RootMotion.FinalIK
       }
 
       public static void SolveCCD(
-        IKSolverVR.VirtualBone[] bones,
+        VirtualBone[] bones,
         Vector3 targetPosition,
         float weight,
         int iterations)
       {
-        if ((double) weight <= 0.0)
+        if (weight <= 0.0)
           return;
         for (int index1 = 0; index1 < iterations; ++index1)
         {
           for (int index2 = bones.Length - 2; index2 > -1; --index2)
           {
             Quaternion rotation = Quaternion.FromToRotation(bones[bones.Length - 1].solverPosition - bones[index2].solverPosition, targetPosition - bones[index2].solverPosition);
-            if ((double) weight >= 1.0)
-              IKSolverVR.VirtualBone.RotateBy(bones, index2, rotation);
+            if (weight >= 1.0)
+              RotateBy(bones, index2, rotation);
             else
-              IKSolverVR.VirtualBone.RotateBy(bones, index2, Quaternion.Lerp(Quaternion.identity, rotation, weight));
+              RotateBy(bones, index2, Quaternion.Lerp(Quaternion.identity, rotation, weight));
           }
         }
       }

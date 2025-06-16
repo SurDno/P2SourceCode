@@ -1,11 +1,11 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons;
 using Engine.Common.Commons.Converters;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Scripts.Tools.Serializations.Converters;
-using UnityEngine;
 
 namespace BehaviorDesigner.Runtime.Tasks.Pathologic
 {
@@ -15,53 +15,53 @@ namespace BehaviorDesigner.Runtime.Tasks.Pathologic
   [Factory]
   [GeneratePartial(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
   [FactoryProxy(typeof (Ragdoll))]
-  public class Ragdoll : BehaviorDesigner.Runtime.Tasks.Action, IStub, ISerializeDataWrite, ISerializeDataRead
+  public class Ragdoll : Action, IStub, ISerializeDataWrite, ISerializeDataRead
   {
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [SerializeField]
-    public SharedFloat WaitTime = (SharedFloat) 0.0f;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    public SharedFloat WaitTime = 0.0f;
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy()]
     [SerializeField]
-    public SharedBool InternalCollisions = (SharedBool) true;
+    public SharedBool InternalCollisions = true;
     private NpcState npcState;
     private float startTime;
     private float pauseTime;
 
     public override void OnAwake()
     {
-      this.npcState = this.gameObject.GetComponent<NpcState>();
-      if (!((UnityEngine.Object) this.npcState == (UnityEngine.Object) null))
+      npcState = gameObject.GetComponent<NpcState>();
+      if (!((UnityEngine.Object) npcState == (UnityEngine.Object) null))
         return;
-      Debug.LogWarning((object) (this.gameObject.name + ": doesn't contain " + typeof (NpcState).Name + " engine component"), (UnityEngine.Object) this.gameObject);
+      Debug.LogWarning((object) (gameObject.name + ": doesn't contain " + typeof (NpcState).Name + " engine component"), (UnityEngine.Object) gameObject);
     }
 
     public override void OnStart()
     {
-      if ((UnityEngine.Object) this.npcState == (UnityEngine.Object) null)
+      if ((UnityEngine.Object) npcState == (UnityEngine.Object) null)
         return;
-      this.startTime = Time.time;
-      this.npcState.Ragdoll(this.InternalCollisions.Value);
+      startTime = Time.time;
+      npcState.Ragdoll(InternalCollisions.Value);
     }
 
     public override void OnPause(bool paused)
     {
       if (paused)
-        this.pauseTime = Time.time;
+        pauseTime = Time.time;
       else
-        this.startTime += Time.time - this.pauseTime;
+        startTime += Time.time - pauseTime;
     }
 
     public override TaskStatus OnUpdate()
     {
-      if ((UnityEngine.Object) this.npcState == (UnityEngine.Object) null || this.npcState.CurrentNpcState != NpcStateEnum.Ragdoll)
+      if ((UnityEngine.Object) npcState == (UnityEngine.Object) null || npcState.CurrentNpcState != NpcStateEnum.Ragdoll)
         return TaskStatus.Failure;
-      if ((double) this.WaitTime.Value > 0.0 && (double) this.startTime + (double) this.WaitTime.Value < (double) Time.time)
+      if (WaitTime.Value > 0.0 && startTime + (double) WaitTime.Value < (double) Time.time)
         return TaskStatus.Success;
-      switch (this.npcState.Status)
+      switch (npcState.Status)
       {
         case NpcStateStatusEnum.Success:
           return TaskStatus.Success;
@@ -74,24 +74,24 @@ namespace BehaviorDesigner.Runtime.Tasks.Pathologic
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.WriteSerialize<NodeData>(writer, "NodeData", this.nodeData);
-      DefaultDataWriteUtility.Write(writer, "Id", this.id);
-      DefaultDataWriteUtility.Write(writer, "FriendlyName", this.friendlyName);
-      DefaultDataWriteUtility.Write(writer, "Instant", this.instant);
-      DefaultDataWriteUtility.Write(writer, "Disabled", this.disabled);
-      BehaviorTreeDataWriteUtility.WriteShared<SharedFloat>(writer, "WaitTime", this.WaitTime);
-      BehaviorTreeDataWriteUtility.WriteShared<SharedBool>(writer, "InternalCollisions", this.InternalCollisions);
+      DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
+      DefaultDataWriteUtility.Write(writer, "Id", id);
+      DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
+      DefaultDataWriteUtility.Write(writer, "Instant", instant);
+      DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
+      BehaviorTreeDataWriteUtility.WriteShared(writer, "WaitTime", WaitTime);
+      BehaviorTreeDataWriteUtility.WriteShared(writer, "InternalCollisions", InternalCollisions);
     }
 
-    public void DataRead(IDataReader reader, System.Type type)
+    public void DataRead(IDataReader reader, Type type)
     {
-      this.nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
-      this.id = DefaultDataReadUtility.Read(reader, "Id", this.id);
-      this.friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", this.friendlyName);
-      this.instant = DefaultDataReadUtility.Read(reader, "Instant", this.instant);
-      this.disabled = DefaultDataReadUtility.Read(reader, "Disabled", this.disabled);
-      this.WaitTime = BehaviorTreeDataReadUtility.ReadShared<SharedFloat>(reader, "WaitTime", this.WaitTime);
-      this.InternalCollisions = BehaviorTreeDataReadUtility.ReadShared<SharedBool>(reader, "InternalCollisions", this.InternalCollisions);
+      nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
+      id = DefaultDataReadUtility.Read(reader, "Id", id);
+      friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
+      instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
+      disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
+      WaitTime = BehaviorTreeDataReadUtility.ReadShared(reader, "WaitTime", WaitTime);
+      InternalCollisions = BehaviorTreeDataReadUtility.ReadShared(reader, "InternalCollisions", InternalCollisions);
     }
   }
 }

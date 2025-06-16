@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEngine;
 
 namespace RootMotion.Dynamics
 {
@@ -21,7 +20,7 @@ namespace RootMotion.Dynamics
       if (componentsInChildren.Length < 2)
         return;
       for (int index = !((UnityEngine.Object) componentInChildren != (UnityEngine.Object) null) || !componentInChildren.isHuman ? 1 : 0; index < componentsInChildren.Length; ++index)
-        RagdollCreator.ClearTransform(componentsInChildren[index]);
+        ClearTransform(componentsInChildren[index]);
     }
 
     protected static void ClearTransform(Transform transform)
@@ -46,7 +45,7 @@ namespace RootMotion.Dynamics
       Transform t,
       Vector3 startPoint,
       Vector3 endPoint,
-      RagdollCreator.ColliderType colliderType,
+      ColliderType colliderType,
       float lengthOverlap,
       float width)
     {
@@ -54,10 +53,10 @@ namespace RootMotion.Dynamics
       float num = direction.magnitude * (1f + lengthOverlap);
       Vector3 vectorToDirection = AxisTools.GetAxisVectorToDirection(t, direction);
       t.gameObject.AddComponent<Rigidbody>();
-      float scaleF = RagdollCreator.GetScaleF(t);
+      float scaleF = GetScaleF(t);
       switch (colliderType)
       {
-        case RagdollCreator.ColliderType.Box:
+        case ColliderType.Box:
           Vector3 vector3 = Vector3.Scale(vectorToDirection, new Vector3(num, num, num));
           if ((double) vector3.x == 0.0)
             vector3.x = width;
@@ -70,11 +69,11 @@ namespace RootMotion.Dynamics
           boxCollider.size = new Vector3(Mathf.Abs(boxCollider.size.x), Mathf.Abs(boxCollider.size.y), Mathf.Abs(boxCollider.size.z));
           boxCollider.center = t.InverseTransformPoint(Vector3.Lerp(startPoint, endPoint, 0.5f));
           break;
-        case RagdollCreator.ColliderType.Capsule:
+        case ColliderType.Capsule:
           CapsuleCollider capsuleCollider = t.gameObject.AddComponent<CapsuleCollider>();
           capsuleCollider.height = Mathf.Abs(num / scaleF);
           capsuleCollider.radius = Mathf.Abs(width * 0.75f / scaleF);
-          capsuleCollider.direction = RagdollCreator.DirectionVector3ToInt(vectorToDirection);
+          capsuleCollider.direction = DirectionVector3ToInt(vectorToDirection);
           capsuleCollider.center = t.InverseTransformPoint(Vector3.Lerp(startPoint, endPoint, 0.5f));
           break;
       }
@@ -84,15 +83,15 @@ namespace RootMotion.Dynamics
       Transform t,
       Vector3 startPoint,
       Vector3 endPoint,
-      RagdollCreator.ColliderType colliderType,
+      ColliderType colliderType,
       float lengthOverlap,
       float width,
       float proportionAspect,
       Vector3 widthDirection)
     {
-      if (colliderType == RagdollCreator.ColliderType.Capsule)
+      if (colliderType == ColliderType.Capsule)
       {
-        RagdollCreator.CreateCollider(t, startPoint, endPoint, colliderType, lengthOverlap, width * proportionAspect);
+        CreateCollider(t, startPoint, endPoint, colliderType, lengthOverlap, width * proportionAspect);
       }
       else
       {
@@ -114,7 +113,7 @@ namespace RootMotion.Dynamics
         if ((double) vector3.z == 0.0)
           vector3.z = width * proportionAspect;
         BoxCollider boxCollider = t.gameObject.AddComponent<BoxCollider>();
-        boxCollider.size = vector3 / RagdollCreator.GetScaleF(t);
+        boxCollider.size = vector3 / GetScaleF(t);
         boxCollider.center = t.InverseTransformPoint(Vector3.Lerp(startPoint, endPoint, 0.5f));
       }
     }
@@ -127,7 +126,7 @@ namespace RootMotion.Dynamics
 
     protected static Vector3 Abs(Vector3 v)
     {
-      RagdollCreator.Vector3Abs(ref v);
+      Vector3Abs(ref v);
       return v;
     }
 
@@ -145,11 +144,11 @@ namespace RootMotion.Dynamics
       return dir == 1 ? Vector3.up : Vector3.forward;
     }
 
-    protected static Vector3 DirectionToVector3(RagdollCreator.Direction dir)
+    protected static Vector3 DirectionToVector3(Direction dir)
     {
-      if (dir == RagdollCreator.Direction.X)
+      if (dir == Direction.X)
         return Vector3.right;
-      return dir == RagdollCreator.Direction.Y ? Vector3.up : Vector3.forward;
+      return dir == Direction.Y ? Vector3.up : Vector3.forward;
     }
 
     protected static int DirectionVector3ToInt(Vector3 dir)
@@ -161,9 +160,9 @@ namespace RootMotion.Dynamics
       float num2 = Mathf.Abs(f2);
       float num3 = Mathf.Abs(f3);
       int num4 = 0;
-      if ((double) num2 > (double) num1 && (double) num2 > (double) num3)
+      if (num2 > (double) num1 && num2 > (double) num3)
         num4 = 1;
-      if ((double) num3 > (double) num1 && (double) num3 > (double) num2)
+      if (num3 > (double) num1 && num3 > (double) num2)
         num4 = 2;
       return num4;
     }
@@ -178,9 +177,9 @@ namespace RootMotion.Dynamics
       float num2 = Mathf.Abs(f2);
       float num3 = Mathf.Abs(f3);
       Vector3 localOrthoDirection = Vector3.right;
-      if ((double) num2 > (double) num1 && (double) num2 > (double) num3)
+      if (num2 > (double) num1 && num2 > (double) num3)
         localOrthoDirection = Vector3.up;
-      if ((double) num3 > (double) num1 && (double) num3 > (double) num2)
+      if (num3 > (double) num1 && num3 > (double) num2)
         localOrthoDirection = Vector3.forward;
       if ((double) Vector3.Dot(worldDir, transform.rotation * localOrthoDirection) < 0.0)
         localOrthoDirection = -localOrthoDirection;
@@ -196,19 +195,19 @@ namespace RootMotion.Dynamics
         if ((UnityEngine.Object) bone.parent == (UnityEngine.Object) transform && (UnityEngine.Object) transform.GetComponent<Rigidbody>() != (UnityEngine.Object) null)
           return transform.GetComponent<Rigidbody>();
       }
-      return RagdollCreator.GetConnectedBody(bone.parent, ref bones);
+      return GetConnectedBody(bone.parent, ref bones);
     }
 
-    protected static void CreateJoint(RagdollCreator.CreateJointParams p)
+    protected static void CreateJoint(CreateJointParams p)
     {
-      Vector3 localOrthoDirection = RagdollCreator.GetLocalOrthoDirection(p.rigidbody.transform, p.worldSwingAxis);
+      Vector3 localOrthoDirection = GetLocalOrthoDirection(p.rigidbody.transform, p.worldSwingAxis);
       Vector3 rhs = Vector3.forward;
       if ((UnityEngine.Object) p.child != (UnityEngine.Object) null)
-        rhs = RagdollCreator.GetLocalOrthoDirection(p.rigidbody.transform, p.child.position - p.rigidbody.transform.position);
+        rhs = GetLocalOrthoDirection(p.rigidbody.transform, p.child.position - p.rigidbody.transform.position);
       else if ((UnityEngine.Object) p.connectedBody != (UnityEngine.Object) null)
-        rhs = RagdollCreator.GetLocalOrthoDirection(p.rigidbody.transform, p.rigidbody.transform.position - p.connectedBody.transform.position);
+        rhs = GetLocalOrthoDirection(p.rigidbody.transform, p.rigidbody.transform.position - p.connectedBody.transform.position);
       Vector3 vector3 = Vector3.Cross(localOrthoDirection, rhs);
-      if (p.type == RagdollCreator.JointType.Configurable)
+      if (p.type == JointType.Configurable)
       {
         ConfigurableJoint configurableJoint = p.rigidbody.gameObject.AddComponent<ConfigurableJoint>();
         configurableJoint.connectedBody = p.connectedBody;
@@ -224,10 +223,10 @@ namespace RootMotion.Dynamics
         {
           configurableJoint.axis = localOrthoDirection;
           configurableJoint.secondaryAxis = vector3;
-          configurableJoint.lowAngularXLimit = RagdollCreator.ToSoftJointLimit(p.limits.minSwing);
-          configurableJoint.highAngularXLimit = RagdollCreator.ToSoftJointLimit(p.limits.maxSwing);
-          configurableJoint.angularYLimit = RagdollCreator.ToSoftJointLimit(p.limits.swing2);
-          configurableJoint.angularZLimit = RagdollCreator.ToSoftJointLimit(p.limits.twist);
+          configurableJoint.lowAngularXLimit = ToSoftJointLimit(p.limits.minSwing);
+          configurableJoint.highAngularXLimit = ToSoftJointLimit(p.limits.maxSwing);
+          configurableJoint.angularYLimit = ToSoftJointLimit(p.limits.swing2);
+          configurableJoint.angularZLimit = ToSoftJointLimit(p.limits.twist);
         }
         configurableJoint.anchor = Vector3.zero;
       }
@@ -239,17 +238,17 @@ namespace RootMotion.Dynamics
         characterJoint.connectedBody = p.connectedBody;
         characterJoint.axis = localOrthoDirection;
         characterJoint.swingAxis = vector3;
-        characterJoint.lowTwistLimit = RagdollCreator.ToSoftJointLimit(p.limits.minSwing);
-        characterJoint.highTwistLimit = RagdollCreator.ToSoftJointLimit(p.limits.maxSwing);
-        characterJoint.swing1Limit = RagdollCreator.ToSoftJointLimit(p.limits.swing2);
-        characterJoint.swing2Limit = RagdollCreator.ToSoftJointLimit(p.limits.twist);
+        characterJoint.lowTwistLimit = ToSoftJointLimit(p.limits.minSwing);
+        characterJoint.highTwistLimit = ToSoftJointLimit(p.limits.maxSwing);
+        characterJoint.swing1Limit = ToSoftJointLimit(p.limits.swing2);
+        characterJoint.swing2Limit = ToSoftJointLimit(p.limits.twist);
         characterJoint.anchor = Vector3.zero;
       }
     }
 
     private static SoftJointLimit ToSoftJointLimit(float limit)
     {
-      return new SoftJointLimit() { limit = limit };
+      return new SoftJointLimit { limit = limit };
     }
 
     [Serializable]
@@ -280,16 +279,16 @@ namespace RootMotion.Dynamics
       public Rigidbody connectedBody;
       public Transform child;
       public Vector3 worldSwingAxis;
-      public RagdollCreator.CreateJointParams.Limits limits;
-      public RagdollCreator.JointType type;
+      public Limits limits;
+      public JointType type;
 
       public CreateJointParams(
         Rigidbody rigidbody,
         Rigidbody connectedBody,
         Transform child,
         Vector3 worldSwingAxis,
-        RagdollCreator.CreateJointParams.Limits limits,
-        RagdollCreator.JointType type)
+        Limits limits,
+        JointType type)
       {
         this.rigidbody = rigidbody;
         this.connectedBody = connectedBody;

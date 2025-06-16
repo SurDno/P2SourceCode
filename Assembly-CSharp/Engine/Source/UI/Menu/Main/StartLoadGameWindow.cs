@@ -1,5 +1,5 @@
-﻿using Engine.Impl.UI.Menu.Main;
-using System;
+﻿using System;
+using Engine.Impl.UI.Menu.Main;
 
 namespace Engine.Source.UI.Menu.Main
 {
@@ -12,7 +12,7 @@ namespace Engine.Source.UI.Menu.Main
   {
     protected override void RegisterLayer()
     {
-      this.RegisterLayer<IStartLoadGameWindow>((IStartLoadGameWindow) this);
+      RegisterLayer((IStartLoadGameWindow) this);
     }
 
     public override Type GetWindowType() => typeof (IStartLoadGameWindow);

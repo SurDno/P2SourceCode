@@ -1,7 +1,6 @@
 ﻿using Engine.Common.Services;
 using Engine.Impl.Weather.Element;
 using Engine.Services.Engine;
-using UnityEngine;
 
 namespace Engine.Proxy.Weather.Element
 {

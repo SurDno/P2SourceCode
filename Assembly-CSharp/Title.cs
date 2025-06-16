@@ -1,6 +1,4 @@
 ﻿using System.Text.RegularExpressions;
-using UnityEngine;
-using UnityEngine.UI;
 
 public class Title : MonoBehaviour
 {
@@ -15,11 +13,11 @@ public class Title : MonoBehaviour
   {
     this.text.gameObject.SetActive(text.Length > 0);
     this.text.text = text;
-    this.iconImage.sprite = icon;
-    this.holdText.gameObject.SetActive(isHold);
+    iconImage.sprite = icon;
+    holdText.gameObject.SetActive(isHold);
     if (!isHold)
       return;
-    this.holdText.text = new Regex("(<color(.*?)>)").Match(text).Groups[0].ToString() + this.holdText.text + "</color>";
+    holdText.text = new Regex("(<color(.*?)>)").Match(text).Groups[0] + holdText.text + "</color>";
     LayoutRebuilder.ForceRebuildLayoutImmediate(this.GetComponent<RectTransform>());
   }
 }

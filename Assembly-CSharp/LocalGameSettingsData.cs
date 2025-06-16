@@ -1,5 +1,4 @@
 ﻿using Scripts.Data;
-using UnityEngine;
 
 public class LocalGameSettingsData : ScriptableObjectInstance<LocalGameSettingsData>
 {

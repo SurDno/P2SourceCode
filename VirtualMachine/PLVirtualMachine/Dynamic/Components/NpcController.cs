@@ -1,9 +1,6 @@
 ﻿using Cofe.Proxies;
-using Engine.Common;
-using Engine.Common.Commons;
 using PLVirtualMachine.Common.EngineAPI.VMECS;
 using PLVirtualMachine.Objects;
-using System;
 
 namespace PLVirtualMachine.Dynamic.Components
 {
@@ -21,19 +18,19 @@ namespace PLVirtualMachine.Dynamic.Components
       switch (target.Name)
       {
         case "ActionEvent":
-          this.ActionEvent += (Action<ActionEnum>) (p1 => target.RaiseFromEngineImpl((object) p1));
+          ActionEvent += p1 => target.RaiseFromEngineImpl(p1);
           break;
         case "CombatActionEvent":
-          this.CombatActionEvent += (Action<CombatActionEnum, IEntity>) ((p1, p2) => target.RaiseFromEngineImpl((object) p1, (object) p2));
+          CombatActionEvent += (p1, p2) => target.RaiseFromEngineImpl(p1, p2);
           break;
         case "OnChangeHealth":
-          this.OnChangeHealth += (Action<float>) (p1 => target.RaiseFromEngineImpl((object) p1));
+          OnChangeHealth += p1 => target.RaiseFromEngineImpl(p1);
           break;
         case "OnChangePain":
-          this.OnChangePain += (Action<float>) (p1 => target.RaiseFromEngineImpl((object) p1));
+          OnChangePain += p1 => target.RaiseFromEngineImpl(p1);
           break;
         case "ChangeAwayEvent":
-          this.ChangeAwayEvent += (Action<bool>) (p1 => target.RaiseFromEngineImpl((object) p1));
+          ChangeAwayEvent += p1 => target.RaiseFromEngineImpl(p1);
           break;
       }
     }

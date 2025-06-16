@@ -1,27 +1,26 @@
 ﻿using Engine.Common.Services;
 using Engine.Source.Services;
-using UnityEngine;
 
 public class GroupPoint : MonoBehaviour
 {
-  private bool registered = false;
+  private bool registered;
 
-  private void OnEnable() => this.RegisterInService();
+  private void OnEnable() => RegisterInService();
 
   private void OnDisable()
   {
     GroupPointsService service = ServiceLocator.GetService<GroupPointsService>();
     if (service == null)
       return;
-    this.registered = false;
+    registered = false;
     service.RemovePoint(this);
   }
 
   private void OnUpdate()
   {
-    if (this.registered)
+    if (registered)
       return;
-    this.RegisterInService();
+    RegisterInService();
   }
 
   private void RegisterInService()
@@ -29,7 +28,7 @@ public class GroupPoint : MonoBehaviour
     GroupPointsService service = ServiceLocator.GetService<GroupPointsService>();
     if (service == null)
       return;
-    this.registered = true;
+    registered = true;
     service.AddPoint(this);
   }
 }

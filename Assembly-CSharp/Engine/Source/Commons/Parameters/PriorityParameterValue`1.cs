@@ -1,6 +1,6 @@
-﻿using Engine.Common.Components.Parameters;
+﻿using System;
+using Engine.Common.Components.Parameters;
 using Inspectors;
-using System;
 
 namespace Engine.Source.Commons.Parameters
 {
@@ -17,43 +17,43 @@ namespace Engine.Source.Commons.Parameters
     public void Set(IParameter<T> parameter)
     {
       if (this.parameter != null)
-        this.parameter.RemoveListener((IChangeParameterListener) this);
+        this.parameter.RemoveListener(this);
       this.parameter = parameter as PriorityParameter<T>;
       if (this.parameter == null)
         return;
-      this.parameter.AddListener((IChangeParameterListener) this);
+      this.parameter.AddListener(this);
     }
 
     public T Value
     {
-      get => this.parameter != null ? this.parameter.Value : default (T);
+      get => parameter != null ? parameter.Value : default (T);
       set
       {
-        if (this.parameter == null)
+        if (parameter == null)
           return;
-        this.parameter.Value = value;
+        parameter.Value = value;
       }
     }
 
     public T MinValue
     {
-      get => this.parameter != null ? this.parameter.MinValue : default (T);
+      get => parameter != null ? parameter.MinValue : default (T);
       set
       {
-        if (this.parameter == null)
+        if (parameter == null)
           return;
-        this.parameter.MinValue = value;
+        parameter.MinValue = value;
       }
     }
 
     public T MaxValue
     {
-      get => this.parameter != null ? this.parameter.MaxValue : default (T);
+      get => parameter != null ? parameter.MaxValue : default (T);
       set
       {
-        if (this.parameter == null)
+        if (parameter == null)
           return;
-        this.parameter.MaxValue = value;
+        parameter.MaxValue = value;
       }
     }
 
@@ -61,29 +61,29 @@ namespace Engine.Source.Commons.Parameters
 
     public void SetValue(PriorityParameterEnum priority, T value)
     {
-      if (this.parameter == null)
+      if (parameter == null)
         return;
-      this.parameter.SetValue(priority, value);
+      parameter.SetValue(priority, value);
     }
 
     public bool TryGetValue(PriorityParameterEnum priority, out T result)
     {
-      if (this.parameter != null)
-        return this.parameter.TryGetValue(priority, out result);
+      if (parameter != null)
+        return parameter.TryGetValue(priority, out result);
       result = default (T);
       return false;
     }
 
     public void ResetValue(PriorityParameterEnum priority)
     {
-      if (this.parameter == null)
+      if (parameter == null)
         return;
-      this.parameter.ResetValue(priority);
+      parameter.ResetValue(priority);
     }
 
     public void OnParameterChanged(IParameter parameter)
     {
-      Action<T> changeValueEvent = this.ChangeValueEvent;
+      Action<T> changeValueEvent = ChangeValueEvent;
       if (changeValueEvent == null)
         return;
       changeValueEvent(((IParameter<T>) parameter).Value);

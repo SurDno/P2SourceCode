@@ -1,4 +1,6 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using System.Collections.Generic;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common;
 using Engine.Common.Commons.Cloneable;
@@ -7,8 +9,6 @@ using Engine.Common.Components.Parameters;
 using Engine.Source.Commons.Parameters;
 using Engine.Source.Connections;
 using Scripts.Tools.Serializations.Converters;
-using System;
-using System.Collections.Generic;
 
 namespace Engine.Source.Proxies
 {
@@ -25,39 +25,39 @@ namespace Engine.Source.Proxies
     public object Clone()
     {
       ListTypedEntityPriorityItem_Generated instance = Activator.CreateInstance<ListTypedEntityPriorityItem_Generated>();
-      this.CopyTo((object) instance);
-      return (object) instance;
+      CopyTo(instance);
+      return instance;
     }
 
     public void CopyTo(object target2)
     {
       ListTypedEntityPriorityItem_Generated priorityItemGenerated = (ListTypedEntityPriorityItem_Generated) target2;
-      priorityItemGenerated.Priority = this.Priority;
-      CloneableObjectUtility.FillListTo<Typed<IEntity>>(priorityItemGenerated.Value, this.Value);
+      priorityItemGenerated.Priority = Priority;
+      CloneableObjectUtility.FillListTo(priorityItemGenerated.Value, Value);
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.WriteEnum<PriorityParameterEnum>(writer, "Priority", this.Priority);
-      UnityDataWriteUtility.WriteList<IEntity>(writer, "Value", this.Value);
+      DefaultDataWriteUtility.WriteEnum(writer, "Priority", Priority);
+      UnityDataWriteUtility.WriteList(writer, "Value", Value);
     }
 
     public void DataRead(IDataReader reader, Type type)
     {
-      this.Priority = DefaultDataReadUtility.ReadEnum<PriorityParameterEnum>(reader, "Priority");
-      this.Value = UnityDataReadUtility.ReadList<IEntity>(reader, "Value", this.Value);
+      Priority = DefaultDataReadUtility.ReadEnum<PriorityParameterEnum>(reader, "Priority");
+      Value = UnityDataReadUtility.ReadList(reader, "Value", Value);
     }
 
     public void StateSave(IDataWriter writer)
     {
-      DefaultDataWriteUtility.WriteEnum<PriorityParameterEnum>(writer, "Priority", this.Priority);
-      UnityDataWriteUtility.WriteList<IEntity>(writer, "Value", this.Value);
+      DefaultDataWriteUtility.WriteEnum(writer, "Priority", Priority);
+      UnityDataWriteUtility.WriteList(writer, "Value", Value);
     }
 
     public void StateLoad(IDataReader reader, Type type)
     {
-      this.Priority = DefaultDataReadUtility.ReadEnum<PriorityParameterEnum>(reader, "Priority");
-      this.Value = UnityDataReadUtility.ReadList<IEntity>(reader, "Value", this.Value);
+      Priority = DefaultDataReadUtility.ReadEnum<PriorityParameterEnum>(reader, "Priority");
+      Value = UnityDataReadUtility.ReadList(reader, "Value", Value);
     }
   }
 }

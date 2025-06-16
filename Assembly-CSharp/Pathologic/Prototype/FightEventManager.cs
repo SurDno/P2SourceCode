@@ -1,177 +1,176 @@
 ﻿using System.Collections.Generic;
-using UnityEngine;
 
 namespace Pathologic.Prototype
 {
   public class FightEventManager : MonoBehaviour
   {
-    private List<FightEventManager.SimpleEvent> eventHandlersOnAttackOrReactionEnds = new List<FightEventManager.SimpleEvent>();
-    private List<FightEventManager.SimpleEvent> eventHandlersOnAttackOrReactionStarts = new List<FightEventManager.SimpleEvent>();
-    private List<FightEventManager.SimpleEvent> eventHandlersOnKlubokFalldownEnd = new List<FightEventManager.SimpleEvent>();
-    private List<FightEventManager.SimpleEvent> eventHandlersOnKlubokFalldownStart = new List<FightEventManager.SimpleEvent>();
-    private List<FightEventManager.SimpleEvent> eventHandlersOnKlubokHitEnd = new List<FightEventManager.SimpleEvent>();
-    private List<FightEventManager.SimpleEvent> eventHandlersOnKlubokIdleEnter = new List<FightEventManager.SimpleEvent>();
-    private List<FightEventManager.SimpleEvent> eventHandlersOnKlubokIdleExit = new List<FightEventManager.SimpleEvent>();
-    private List<FightEventManager.SimpleEvent> eventHandlersOnKlubokJumpBackTransitionEnd = new List<FightEventManager.SimpleEvent>();
-    private List<FightEventManager.SimpleEvent> eventHandlersOnKlubokJumpTransitionEnd = new List<FightEventManager.SimpleEvent>();
-    private List<FightEventManager.SimpleEvent> eventHandlersOnLocomotionStepLastCycleEnter = new List<FightEventManager.SimpleEvent>();
-    private List<FightEventManager.SimpleEvent> eventHandlersOnLocomotionStepLastCycleExit = new List<FightEventManager.SimpleEvent>();
-    private List<FightEventManager.SimpleEvent> eventHandlersOnLocomotionStepsCycleEnter = new List<FightEventManager.SimpleEvent>();
-    private List<FightEventManager.SimpleEvent> eventHandlersOnLocomotionStepsCycleExit = new List<FightEventManager.SimpleEvent>();
+    private List<SimpleEvent> eventHandlersOnAttackOrReactionEnds = new List<SimpleEvent>();
+    private List<SimpleEvent> eventHandlersOnAttackOrReactionStarts = new List<SimpleEvent>();
+    private List<SimpleEvent> eventHandlersOnKlubokFalldownEnd = new List<SimpleEvent>();
+    private List<SimpleEvent> eventHandlersOnKlubokFalldownStart = new List<SimpleEvent>();
+    private List<SimpleEvent> eventHandlersOnKlubokHitEnd = new List<SimpleEvent>();
+    private List<SimpleEvent> eventHandlersOnKlubokIdleEnter = new List<SimpleEvent>();
+    private List<SimpleEvent> eventHandlersOnKlubokIdleExit = new List<SimpleEvent>();
+    private List<SimpleEvent> eventHandlersOnKlubokJumpBackTransitionEnd = new List<SimpleEvent>();
+    private List<SimpleEvent> eventHandlersOnKlubokJumpTransitionEnd = new List<SimpleEvent>();
+    private List<SimpleEvent> eventHandlersOnLocomotionStepLastCycleEnter = new List<SimpleEvent>();
+    private List<SimpleEvent> eventHandlersOnLocomotionStepLastCycleExit = new List<SimpleEvent>();
+    private List<SimpleEvent> eventHandlersOnLocomotionStepsCycleEnter = new List<SimpleEvent>();
+    private List<SimpleEvent> eventHandlersOnLocomotionStepsCycleExit = new List<SimpleEvent>();
 
-    public event FightEventManager.SimpleEvent OnLocomotionStepsCycleEnterEvent
+    public event SimpleEvent OnLocomotionStepsCycleEnterEvent
     {
-      add => this.eventHandlersOnLocomotionStepsCycleEnter.Add(value);
-      remove => this.eventHandlersOnLocomotionStepsCycleEnter.Remove(value);
+      add => eventHandlersOnLocomotionStepsCycleEnter.Add(value);
+      remove => eventHandlersOnLocomotionStepsCycleEnter.Remove(value);
     }
 
-    public event FightEventManager.SimpleEvent OnLocomotionStepsCycleExitEvent
+    public event SimpleEvent OnLocomotionStepsCycleExitEvent
     {
-      add => this.eventHandlersOnLocomotionStepsCycleExit.Add(value);
-      remove => this.eventHandlersOnLocomotionStepsCycleExit.Remove(value);
+      add => eventHandlersOnLocomotionStepsCycleExit.Add(value);
+      remove => eventHandlersOnLocomotionStepsCycleExit.Remove(value);
     }
 
-    public event FightEventManager.SimpleEvent OnLocomotionStepLastCycleEnterEvent
+    public event SimpleEvent OnLocomotionStepLastCycleEnterEvent
     {
-      add => this.eventHandlersOnLocomotionStepLastCycleEnter.Add(value);
-      remove => this.eventHandlersOnLocomotionStepLastCycleEnter.Remove(value);
+      add => eventHandlersOnLocomotionStepLastCycleEnter.Add(value);
+      remove => eventHandlersOnLocomotionStepLastCycleEnter.Remove(value);
     }
 
-    public event FightEventManager.SimpleEvent OnLocomotionStepLastCycleExitEvent
+    public event SimpleEvent OnLocomotionStepLastCycleExitEvent
     {
-      add => this.eventHandlersOnLocomotionStepLastCycleExit.Add(value);
-      remove => this.eventHandlersOnLocomotionStepLastCycleExit.Remove(value);
+      add => eventHandlersOnLocomotionStepLastCycleExit.Add(value);
+      remove => eventHandlersOnLocomotionStepLastCycleExit.Remove(value);
     }
 
-    public event FightEventManager.SimpleEvent OnAttackOrReactionStartsEvent
+    public event SimpleEvent OnAttackOrReactionStartsEvent
     {
-      add => this.eventHandlersOnAttackOrReactionStarts.Add(value);
-      remove => this.eventHandlersOnAttackOrReactionStarts.Remove(value);
+      add => eventHandlersOnAttackOrReactionStarts.Add(value);
+      remove => eventHandlersOnAttackOrReactionStarts.Remove(value);
     }
 
-    public event FightEventManager.SimpleEvent OnAttackOrReactionEndsEvent
+    public event SimpleEvent OnAttackOrReactionEndsEvent
     {
-      add => this.eventHandlersOnAttackOrReactionEnds.Add(value);
-      remove => this.eventHandlersOnAttackOrReactionEnds.Remove(value);
+      add => eventHandlersOnAttackOrReactionEnds.Add(value);
+      remove => eventHandlersOnAttackOrReactionEnds.Remove(value);
     }
 
-    public event FightEventManager.SimpleEvent OnKlubokIdleEnterEvent
+    public event SimpleEvent OnKlubokIdleEnterEvent
     {
-      add => this.eventHandlersOnKlubokIdleEnter.Add(value);
-      remove => this.eventHandlersOnKlubokIdleEnter.Remove(value);
+      add => eventHandlersOnKlubokIdleEnter.Add(value);
+      remove => eventHandlersOnKlubokIdleEnter.Remove(value);
     }
 
-    public event FightEventManager.SimpleEvent OnKlubokIdleExitEvent
+    public event SimpleEvent OnKlubokIdleExitEvent
     {
-      add => this.eventHandlersOnKlubokIdleExit.Add(value);
-      remove => this.eventHandlersOnKlubokIdleExit.Remove(value);
+      add => eventHandlersOnKlubokIdleExit.Add(value);
+      remove => eventHandlersOnKlubokIdleExit.Remove(value);
     }
 
-    public event FightEventManager.SimpleEvent OnKlubokJumpTransitionEndEvent
+    public event SimpleEvent OnKlubokJumpTransitionEndEvent
     {
-      add => this.eventHandlersOnKlubokJumpTransitionEnd.Add(value);
-      remove => this.eventHandlersOnKlubokJumpTransitionEnd.Remove(value);
+      add => eventHandlersOnKlubokJumpTransitionEnd.Add(value);
+      remove => eventHandlersOnKlubokJumpTransitionEnd.Remove(value);
     }
 
-    public event FightEventManager.SimpleEvent OnKlubokJumpBackTransitionEndEvent
+    public event SimpleEvent OnKlubokJumpBackTransitionEndEvent
     {
-      add => this.eventHandlersOnKlubokJumpBackTransitionEnd.Add(value);
-      remove => this.eventHandlersOnKlubokJumpBackTransitionEnd.Remove(value);
+      add => eventHandlersOnKlubokJumpBackTransitionEnd.Add(value);
+      remove => eventHandlersOnKlubokJumpBackTransitionEnd.Remove(value);
     }
 
-    public event FightEventManager.SimpleEvent OnKlubokHitEndEvent
+    public event SimpleEvent OnKlubokHitEndEvent
     {
-      add => this.eventHandlersOnKlubokHitEnd.Add(value);
-      remove => this.eventHandlersOnKlubokHitEnd.Remove(value);
+      add => eventHandlersOnKlubokHitEnd.Add(value);
+      remove => eventHandlersOnKlubokHitEnd.Remove(value);
     }
 
-    public event FightEventManager.SimpleEvent OnKlubokFalldownStartEvent
+    public event SimpleEvent OnKlubokFalldownStartEvent
     {
-      add => this.eventHandlersOnKlubokFalldownStart.Add(value);
-      remove => this.eventHandlersOnKlubokFalldownStart.Remove(value);
+      add => eventHandlersOnKlubokFalldownStart.Add(value);
+      remove => eventHandlersOnKlubokFalldownStart.Remove(value);
     }
 
-    public event FightEventManager.SimpleEvent OnKlubokFalldownEndEvent
+    public event SimpleEvent OnKlubokFalldownEndEvent
     {
-      add => this.eventHandlersOnKlubokFalldownEnd.Add(value);
-      remove => this.eventHandlersOnKlubokFalldownEnd.Remove(value);
+      add => eventHandlersOnKlubokFalldownEnd.Add(value);
+      remove => eventHandlersOnKlubokFalldownEnd.Remove(value);
     }
 
     public void OnLocomotionStepsCycleEnter()
     {
-      foreach (FightEventManager.SimpleEvent simpleEvent in new List<FightEventManager.SimpleEvent>((IEnumerable<FightEventManager.SimpleEvent>) this.eventHandlersOnLocomotionStepsCycleEnter))
+      foreach (SimpleEvent simpleEvent in new List<SimpleEvent>(eventHandlersOnLocomotionStepsCycleEnter))
         simpleEvent();
     }
 
     public void OnLocomotionStepsCycleExit()
     {
-      foreach (FightEventManager.SimpleEvent simpleEvent in new List<FightEventManager.SimpleEvent>((IEnumerable<FightEventManager.SimpleEvent>) this.eventHandlersOnLocomotionStepsCycleExit))
+      foreach (SimpleEvent simpleEvent in new List<SimpleEvent>(eventHandlersOnLocomotionStepsCycleExit))
         simpleEvent();
     }
 
     public void OnLocomotionStepLastCycleEnter()
     {
-      foreach (FightEventManager.SimpleEvent simpleEvent in new List<FightEventManager.SimpleEvent>((IEnumerable<FightEventManager.SimpleEvent>) this.eventHandlersOnLocomotionStepLastCycleEnter))
+      foreach (SimpleEvent simpleEvent in new List<SimpleEvent>(eventHandlersOnLocomotionStepLastCycleEnter))
         simpleEvent();
     }
 
     public void OnLocomotionStepLastCycleExit()
     {
-      foreach (FightEventManager.SimpleEvent simpleEvent in new List<FightEventManager.SimpleEvent>((IEnumerable<FightEventManager.SimpleEvent>) this.eventHandlersOnLocomotionStepLastCycleExit))
+      foreach (SimpleEvent simpleEvent in new List<SimpleEvent>(eventHandlersOnLocomotionStepLastCycleExit))
         simpleEvent();
     }
 
     public void OnAttackOrReactionStarts()
     {
-      foreach (FightEventManager.SimpleEvent simpleEvent in new List<FightEventManager.SimpleEvent>((IEnumerable<FightEventManager.SimpleEvent>) this.eventHandlersOnAttackOrReactionStarts))
+      foreach (SimpleEvent simpleEvent in new List<SimpleEvent>(eventHandlersOnAttackOrReactionStarts))
         simpleEvent();
     }
 
     public void OnAttackOrReactionEnds()
     {
-      foreach (FightEventManager.SimpleEvent simpleEvent in new List<FightEventManager.SimpleEvent>((IEnumerable<FightEventManager.SimpleEvent>) this.eventHandlersOnAttackOrReactionEnds))
+      foreach (SimpleEvent simpleEvent in new List<SimpleEvent>(eventHandlersOnAttackOrReactionEnds))
         simpleEvent();
     }
 
     public void OnKlubokIdleEnter()
     {
-      foreach (FightEventManager.SimpleEvent simpleEvent in new List<FightEventManager.SimpleEvent>((IEnumerable<FightEventManager.SimpleEvent>) this.eventHandlersOnKlubokIdleEnter))
+      foreach (SimpleEvent simpleEvent in new List<SimpleEvent>(eventHandlersOnKlubokIdleEnter))
         simpleEvent();
     }
 
     public void OnKlubokIdleExit()
     {
-      foreach (FightEventManager.SimpleEvent simpleEvent in new List<FightEventManager.SimpleEvent>((IEnumerable<FightEventManager.SimpleEvent>) this.eventHandlersOnKlubokIdleExit))
+      foreach (SimpleEvent simpleEvent in new List<SimpleEvent>(eventHandlersOnKlubokIdleExit))
         simpleEvent();
     }
 
     public void OnKlubokJumpTransitionEnd()
     {
-      foreach (FightEventManager.SimpleEvent simpleEvent in new List<FightEventManager.SimpleEvent>((IEnumerable<FightEventManager.SimpleEvent>) this.eventHandlersOnKlubokJumpTransitionEnd))
+      foreach (SimpleEvent simpleEvent in new List<SimpleEvent>(eventHandlersOnKlubokJumpTransitionEnd))
         simpleEvent();
     }
 
     public void OnKlubokJumpBackTransitionEnd()
     {
-      foreach (FightEventManager.SimpleEvent simpleEvent in new List<FightEventManager.SimpleEvent>((IEnumerable<FightEventManager.SimpleEvent>) this.eventHandlersOnKlubokJumpBackTransitionEnd))
+      foreach (SimpleEvent simpleEvent in new List<SimpleEvent>(eventHandlersOnKlubokJumpBackTransitionEnd))
         simpleEvent();
     }
 
     public void OnKlubokHitEnd()
     {
-      foreach (FightEventManager.SimpleEvent simpleEvent in new List<FightEventManager.SimpleEvent>((IEnumerable<FightEventManager.SimpleEvent>) this.eventHandlersOnKlubokHitEnd))
+      foreach (SimpleEvent simpleEvent in new List<SimpleEvent>(eventHandlersOnKlubokHitEnd))
         simpleEvent();
     }
 
     public void OnKlubokFalldownStart()
     {
-      foreach (FightEventManager.SimpleEvent simpleEvent in new List<FightEventManager.SimpleEvent>((IEnumerable<FightEventManager.SimpleEvent>) this.eventHandlersOnKlubokFalldownStart))
+      foreach (SimpleEvent simpleEvent in new List<SimpleEvent>(eventHandlersOnKlubokFalldownStart))
         simpleEvent();
     }
 
     public void OnKlubokFalldownEnd()
     {
-      foreach (FightEventManager.SimpleEvent simpleEvent in new List<FightEventManager.SimpleEvent>((IEnumerable<FightEventManager.SimpleEvent>) this.eventHandlersOnKlubokFalldownEnd))
+      foreach (SimpleEvent simpleEvent in new List<SimpleEvent>(eventHandlersOnKlubokFalldownEnd))
         simpleEvent();
     }
 

@@ -9,12 +9,12 @@ namespace FlowCanvas.Nodes
     protected override sealed void OnRegisterPorts(FlowNode node)
     {
       FlowOutput o = node.AddFlowOutput(" ");
-      ValueInput<T1> p1 = node.AddValueInput<T1>(this.parameters[0].Name.SplitCamelCase());
-      node.AddFlowInput(" ", (FlowHandler) (() =>
+      ValueInput<T1> p1 = node.AddValueInput<T1>(parameters[0].Name.SplitCamelCase());
+      node.AddFlowInput(" ", () =>
       {
-        this.Invoke(p1.value);
+        Invoke(p1.value);
         o.Call();
-      }));
+      });
     }
   }
 }

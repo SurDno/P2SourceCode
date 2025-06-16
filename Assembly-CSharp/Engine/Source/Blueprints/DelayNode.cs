@@ -1,8 +1,7 @@
-﻿using FlowCanvas;
+﻿using System.Collections;
+using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
-using System.Collections;
-using UnityEngine;
 
 namespace Engine.Source.Blueprints
 {
@@ -14,15 +13,15 @@ namespace Engine.Source.Blueprints
     protected override void RegisterPorts()
     {
       base.RegisterPorts();
-      FlowOutput output = this.AddFlowOutput("Out");
-      this.delay = this.AddValueInput<float>("Delay");
-      this.AddFlowInput("In", (FlowHandler) (() => this.StartCoroutine(this.Delay(this.delay.value, output))));
+      FlowOutput output = AddFlowOutput("Out");
+      delay = AddValueInput<float>("Delay");
+      AddFlowInput("In", (FlowHandler) (() => StartCoroutine(Delay(delay.value, output))));
     }
 
     private IEnumerator Delay(float delay, FlowOutput output)
     {
       yield return (object) new WaitForSeconds(delay);
-      if ((Object) this.graphAgent != (Object) null)
+      if ((Object) graphAgent != (Object) null)
         output.Call();
     }
   }

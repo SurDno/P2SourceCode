@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace Engine.Impl.UI.Controls
+﻿namespace Engine.Impl.UI.Controls
 {
   public abstract class StringView : MonoBehaviour
   {
@@ -9,13 +7,13 @@ namespace Engine.Impl.UI.Controls
 
     public string StringValue
     {
-      get => this.stringValue;
+      get => stringValue;
       set
       {
-        if (this.stringValue == value)
+        if (stringValue == value)
           return;
-        this.stringValue = value;
-        this.ApplyStringValue();
+        stringValue = value;
+        ApplyStringValue();
       }
     }
 
@@ -23,8 +21,8 @@ namespace Engine.Impl.UI.Controls
     {
       if (Application.isPlaying)
         return;
-      this.ApplyStringValue();
-      this.SkipAnimation();
+      ApplyStringValue();
+      SkipAnimation();
     }
 
     protected abstract void ApplyStringValue();

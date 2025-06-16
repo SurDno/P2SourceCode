@@ -1,8 +1,6 @@
 ﻿using Cofe.Proxies;
-using Engine.Common.Commons;
 using PLVirtualMachine.Common.EngineAPI.VMECS;
 using PLVirtualMachine.Objects;
-using System;
 
 namespace PLVirtualMachine.Dynamic.Components
 {
@@ -22,7 +20,7 @@ namespace PLVirtualMachine.Dynamic.Components
     {
       if (!(target.Name == "OnChangeBoundHealthState"))
         return;
-      this.OnChangeBoundHealthState += (Action<BoundHealthStateEnum>) (p1 => target.RaiseFromEngineImpl((object) p1));
+      OnChangeBoundHealthState += p1 => target.RaiseFromEngineImpl(p1);
     }
   }
 }

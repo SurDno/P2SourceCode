@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace Engine.Impl.UI.Controls
+﻿namespace Engine.Impl.UI.Controls
 {
   public class SplitEntityView : EntityViewBase
   {
@@ -9,20 +7,20 @@ namespace Engine.Impl.UI.Controls
 
     protected override void ApplyValue()
     {
-      if (this.views == null)
+      if (views == null)
         return;
-      foreach (EntityView view in this.views)
+      foreach (EntityView view in views)
       {
         if ((Object) view != (Object) null)
-          view.Value = this.Value;
+          view.Value = Value;
       }
     }
 
     public override void SkipAnimation()
     {
-      if (this.views == null)
+      if (views == null)
         return;
-      foreach (EntityView view in this.views)
+      foreach (EntityView view in views)
         view?.SkipAnimation();
     }
   }

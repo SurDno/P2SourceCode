@@ -1,8 +1,8 @@
-﻿using Cofe.Serializations.Data;
+﻿using System;
+using System.Xml;
+using Cofe.Serializations.Data;
 using PLVirtualMachine.Common.Data;
 using PLVirtualMachine.Common.Serialization;
-using System;
-using System.Xml;
 
 namespace PLVirtualMachine.Data.SaveLoad
 {
@@ -14,8 +14,8 @@ namespace PLVirtualMachine.Data.SaveLoad
 
     public FreeEntityInfo(Guid templateId, Guid instanceId)
     {
-      this.TemplateId = templateId;
-      this.InstanceId = instanceId;
+      TemplateId = templateId;
+      InstanceId = instanceId;
     }
 
     public Guid TemplateId { get; private set; }
@@ -24,8 +24,8 @@ namespace PLVirtualMachine.Data.SaveLoad
 
     public void StateSave(IDataWriter writer)
     {
-      SaveManagerUtility.Save(writer, "TemplateId", this.TemplateId);
-      SaveManagerUtility.Save(writer, "InstanceId", this.InstanceId);
+      SaveManagerUtility.Save(writer, "TemplateId", TemplateId);
+      SaveManagerUtility.Save(writer, "InstanceId", InstanceId);
     }
 
     public void LoadFromXML(XmlElement xmlNode)
@@ -33,9 +33,9 @@ namespace PLVirtualMachine.Data.SaveLoad
       for (int i = 0; i < xmlNode.ChildNodes.Count; ++i)
       {
         if (xmlNode.ChildNodes[i].Name == "TemplateId")
-          this.TemplateId = VMSaveLoadManager.ReadGuid(xmlNode.ChildNodes[i]);
+          TemplateId = VMSaveLoadManager.ReadGuid(xmlNode.ChildNodes[i]);
         else if (xmlNode.ChildNodes[i].Name == "InstanceId")
-          this.InstanceId = VMSaveLoadManager.ReadGuid(xmlNode.ChildNodes[i]);
+          InstanceId = VMSaveLoadManager.ReadGuid(xmlNode.ChildNodes[i]);
       }
     }
   }

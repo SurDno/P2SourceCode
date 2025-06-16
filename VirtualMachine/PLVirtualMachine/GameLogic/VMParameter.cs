@@ -1,13 +1,13 @@
-﻿using Cofe.Loggers;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Xml;
+using Cofe.Loggers;
 using Engine.Common.Commons;
 using PLVirtualMachine.Common;
 using PLVirtualMachine.Common.Data;
 using PLVirtualMachine.Common.EngineAPI;
 using PLVirtualMachine.Data;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Xml;
 using VirtualMachine.Common;
 using VirtualMachine.Common.Data;
 using VirtualMachine.Data;
@@ -27,17 +27,17 @@ namespace PLVirtualMachine.GameLogic
     IContext
   {
     private ulong guid;
-    [FieldData("Name", DataFieldType.None)]
+    [FieldData("Name")]
     private string name = "";
     [FieldData("OwnerComponent", DataFieldType.Reference)]
     private IFunctionalComponent ownerComponent;
-    [FieldData("Type", DataFieldType.None)]
+    [FieldData("Type")]
     private VMType valueType;
-    [FieldData("Value", DataFieldType.None)]
+    [FieldData("Value")]
     private object defValue;
-    [FieldData("Implicit", DataFieldType.None)]
+    [FieldData("Implicit")]
     private bool isImplicit;
-    [FieldData("Custom", DataFieldType.None)]
+    [FieldData("Custom")]
     private bool isCustom;
     [FieldData("Parent", DataFieldType.Reference)]
     private IObject parent;
@@ -46,32 +46,31 @@ namespace PLVirtualMachine.GameLogic
 
     public virtual void EditorDataRead(XmlReader xml, IDataCreator creator, string typeContext)
     {
-      while (xml.Read())
-      {
+      while (xml.Read()) {
         if (xml.NodeType == XmlNodeType.Element)
         {
           switch (xml.Name)
           {
             case "Custom":
-              this.isCustom = EditorDataReadUtility.ReadValue(xml, this.isCustom);
+              isCustom = EditorDataReadUtility.ReadValue(xml, isCustom);
               continue;
             case "Implicit":
-              this.isImplicit = EditorDataReadUtility.ReadValue(xml, this.isImplicit);
+              isImplicit = EditorDataReadUtility.ReadValue(xml, isImplicit);
               continue;
             case "Name":
-              this.name = EditorDataReadUtility.ReadValue(xml, this.name);
+              name = EditorDataReadUtility.ReadValue(xml, name);
               continue;
             case "OwnerComponent":
-              this.ownerComponent = EditorDataReadUtility.ReadReference<IFunctionalComponent>(xml, creator);
+              ownerComponent = EditorDataReadUtility.ReadReference<IFunctionalComponent>(xml, creator);
               continue;
             case "Parent":
-              this.parent = EditorDataReadUtility.ReadReference<IObject>(xml, creator);
+              parent = EditorDataReadUtility.ReadReference<IObject>(xml, creator);
               continue;
             case "Type":
-              this.valueType = EditorDataReadUtility.ReadTypeSerializable(xml);
+              valueType = EditorDataReadUtility.ReadTypeSerializable(xml);
               continue;
             case "Value":
-              this.defValue = EditorDataReadUtility.ReadObjectValue(xml);
+              defValue = EditorDataReadUtility.ReadObjectValue(xml);
               continue;
             default:
               if (XMLDataLoader.Logs.Add(typeContext + " : " + xml.Name))
@@ -80,23 +79,24 @@ namespace PLVirtualMachine.GameLogic
               continue;
           }
         }
-        else if (xml.NodeType == XmlNodeType.EndElement)
+
+        if (xml.NodeType == XmlNodeType.EndElement)
           break;
       }
     }
 
     public VMParameter(ulong guid) => this.guid = guid;
 
-    public ulong BaseGuid => this.guid;
+    public ulong BaseGuid => guid;
 
     public virtual bool IsEqual(IVariable other)
     {
-      return other != null && typeof (VMParameter) == other.GetType() && (long) this.BaseGuid == (long) ((VMParameter) other).BaseGuid;
+      return other != null && typeof (VMParameter) == other.GetType() && (long) BaseGuid == (long) ((VMParameter) other).BaseGuid;
     }
 
     public virtual bool IsEqual(IObject other)
     {
-      return other != null && typeof (VMParameter) == other.GetType() && (long) this.BaseGuid == (long) ((VMParameter) other).BaseGuid;
+      return other != null && typeof (VMParameter) == other.GetType() && (long) BaseGuid == (long) ((VMParameter) other).BaseGuid;
     }
 
     public EContextVariableCategory Category
@@ -104,40 +104,40 @@ namespace PLVirtualMachine.GameLogic
       get => EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_PARAM;
     }
 
-    public bool IsCustom => this.isCustom;
+    public bool IsCustom => isCustom;
 
-    public string Name => this.name;
+    public string Name => name;
 
-    public string ComponentName => this.ownerComponent == null ? "" : this.ownerComponent.Name;
+    public string ComponentName => ownerComponent == null ? "" : ownerComponent.Name;
 
-    public VMType Type => this.valueType;
+    public VMType Type => valueType;
 
     public object Value
     {
       get
       {
-        if (!this.isAfterLoaded)
-          this.OnAfterLoad();
-        return this.defValue;
+        if (!isAfterLoaded)
+          OnAfterLoad();
+        return defValue;
       }
       set => Logger.AddError("!!! Такого быть не должно !!!");
     }
 
-    public bool Implicit => this.isImplicit;
+    public bool Implicit => isImplicit;
 
-    public IObject Parent => this.parent;
+    public IObject Parent => parent;
 
     public void OnAfterLoad()
     {
-      if (this.isAfterLoaded)
+      if (isAfterLoaded)
         return;
-      if (this.defValue != null && this.defValue.GetType() == typeof (string))
+      if (defValue != null && defValue.GetType() == typeof (string))
       {
-        if (this.valueType.BaseType != typeof (string))
+        if (valueType.BaseType != typeof (string))
         {
           try
           {
-            this.defValue = PLVirtualMachine.Common.Data.StringSerializer.ReadValue((string) this.defValue, this.valueType.BaseType);
+            defValue = StringSerializer.ReadValue((string) defValue, valueType.BaseType);
           }
           catch (Exception ex)
           {
@@ -145,26 +145,26 @@ namespace PLVirtualMachine.GameLogic
           }
         }
       }
-      this.isAfterLoaded = true;
+      isAfterLoaded = true;
     }
 
-    public bool IsDynamicObject => typeof (IObjRef).IsAssignableFrom(this.valueType.BaseType);
+    public bool IsDynamicObject => typeof (IObjRef).IsAssignableFrom(valueType.BaseType);
 
     public IEnumerable<string> GetComponentNames()
     {
-      if (this.typeFunctionalList == null)
-        this.LoadTypeFunctionals();
-      return (IEnumerable<string>) this.typeFunctionalList;
+      if (typeFunctionalList == null)
+        LoadTypeFunctionals();
+      return typeFunctionalList;
     }
 
     public IEnumerable<IVariable> GetContextVariables(EContextVariableCategory contextVarCategory)
     {
-      return this.TypedBlueprint != null ? this.TypedBlueprint.GetContextVariables(contextVarCategory) : this.LoadContextVariables(contextVarCategory);
+      return TypedBlueprint != null ? TypedBlueprint.GetContextVariables(contextVarCategory) : LoadContextVariables(contextVarCategory);
     }
 
     public IVariable GetContextVariable(string variableName)
     {
-      foreach (string componentName in this.GetComponentNames())
+      foreach (string componentName in GetComponentNames())
       {
         foreach (IVariable contextVariable in EngineAPIManager.GetAbstractVariablesByFunctionalName(componentName, EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_APIFUNCTION))
         {
@@ -177,20 +177,20 @@ namespace PLVirtualMachine.GameLogic
             return contextVariable;
         }
       }
-      return this.TypedBlueprint != null ? this.TypedBlueprint.GetContextVariable(variableName) : (IVariable) null;
+      return TypedBlueprint != null ? TypedBlueprint.GetContextVariable(variableName) : null;
     }
 
     public bool IsFunctionalSupport(string componentName)
     {
-      return this.GetComponentNames().Contains<string>(componentName);
+      return GetComponentNames().Contains(componentName);
     }
 
     public bool IsFunctionalSupport(IEnumerable<string> functionals)
     {
-      IEnumerable<string> componentNames = this.GetComponentNames();
+      IEnumerable<string> componentNames = GetComponentNames();
       foreach (string functional in functionals)
       {
-        if (!componentNames.Contains<string>(functional))
+        if (!componentNames.Contains(functional))
           return false;
       }
       return true;
@@ -198,28 +198,28 @@ namespace PLVirtualMachine.GameLogic
 
     public IBlueprint TypedBlueprint
     {
-      get => this.Type.IsComplexSpecial ? this.Type.SpecialTypeBlueprint : (IBlueprint) null;
+      get => Type.IsComplexSpecial ? Type.SpecialTypeBlueprint : null;
     }
 
     public IGameObjectContext OwnerContext
     {
       get
       {
-        IObject parent = this.Parent;
+        IObject parent = Parent;
         while (parent != null)
         {
           if (typeof (IGameObjectContext).IsAssignableFrom(parent.GetType()))
             return (IGameObjectContext) parent;
           if (typeof (INamedElement).IsAssignableFrom(parent.GetType()))
-            parent = (IObject) ((INamedElement) parent).Parent;
+            parent = ((INamedElement) parent).Parent;
         }
-        return (IGameObjectContext) null;
+        return null;
       }
     }
 
     private IEnumerable<IVariable> LoadContextVariables(EContextVariableCategory contextVarCategory)
     {
-      foreach (string componentName in this.GetComponentNames())
+      foreach (string componentName in GetComponentNames())
       {
         foreach (IVariable variable in EngineAPIManager.GetAbstractVariablesByFunctionalName(componentName, contextVarCategory))
           yield return variable;
@@ -228,31 +228,31 @@ namespace PLVirtualMachine.GameLogic
 
     private void LoadTypeFunctionals()
     {
-      this.typeFunctionalList = new List<string>();
-      if (this.defValue != null && typeof (IObjRef).IsAssignableFrom(this.defValue.GetType()) && ((IObjRef) this.defValue).Object != null)
+      typeFunctionalList = new List<string>();
+      if (defValue != null && typeof (IObjRef).IsAssignableFrom(defValue.GetType()) && ((IObjRef) defValue).Object != null)
       {
-        this.typeFunctionalList.AddRange(((IObjRef) this.defValue).Object.GetComponentNames());
+        typeFunctionalList.AddRange(((IObjRef) defValue).Object.GetComponentNames());
       }
       else
       {
-        if (this.Type == null || !this.Type.IsFunctionalSpecial)
+        if (Type == null || !Type.IsFunctionalSpecial)
           return;
-        this.typeFunctionalList.AddRange(this.Type.GetFunctionalParts());
+        typeFunctionalList.AddRange(Type.GetFunctionalParts());
       }
     }
 
-    public string GuidStr => this.guid.ToString();
+    public string GuidStr => guid.ToString();
 
     public void Clear()
     {
-      this.ownerComponent = (IFunctionalComponent) null;
-      this.valueType.Clear();
-      this.defValue = (object) null;
-      this.parent = (IObject) null;
-      if (this.typeFunctionalList == null)
+      ownerComponent = null;
+      valueType.Clear();
+      defValue = null;
+      parent = null;
+      if (typeFunctionalList == null)
         return;
-      this.typeFunctionalList.Clear();
-      this.typeFunctionalList = (List<string>) null;
+      typeFunctionalList.Clear();
+      typeFunctionalList = null;
     }
   }
 }

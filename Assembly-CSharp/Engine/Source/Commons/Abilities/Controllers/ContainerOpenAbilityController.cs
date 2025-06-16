@@ -16,26 +16,26 @@ namespace Engine.Source.Commons.Abilities.Controllers
     public void Initialise(AbilityItem abilityItem)
     {
       this.abilityItem = abilityItem;
-      this.parameter = this.abilityItem.Ability.Owner.GetComponent<ParametersComponent>()?.GetByName<ContainerOpenStateEnum>(ParameterNameEnum.OpenState);
-      if (this.parameter == null)
+      parameter = this.abilityItem.Ability.Owner.GetComponent<ParametersComponent>()?.GetByName<ContainerOpenStateEnum>(ParameterNameEnum.OpenState);
+      if (parameter == null)
         return;
-      this.parameter.AddListener((IChangeParameterListener) this);
+      parameter.AddListener(this);
     }
 
     public void OnParameterChanged(IParameter parameter)
     {
       if (this.parameter.Value != ContainerOpenStateEnum.Open)
         return;
-      this.abilityItem.Active = true;
-      this.abilityItem.Active = false;
+      abilityItem.Active = true;
+      abilityItem.Active = false;
     }
 
     public void Shutdown()
     {
-      if (this.parameter != null)
-        this.parameter.RemoveListener((IChangeParameterListener) this);
-      this.abilityItem = (AbilityItem) null;
-      this.parameter = (IParameter<ContainerOpenStateEnum>) null;
+      if (parameter != null)
+        parameter.RemoveListener(this);
+      abilityItem = null;
+      parameter = null;
     }
   }
 }

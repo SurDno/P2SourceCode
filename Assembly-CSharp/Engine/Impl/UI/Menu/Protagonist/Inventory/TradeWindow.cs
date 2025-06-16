@@ -1,4 +1,7 @@
-﻿using Engine.Common.Components;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Engine.Common.Components;
 using Engine.Common.Components.Parameters;
 using Engine.Common.Components.Storable;
 using Engine.Common.Services;
@@ -12,14 +15,6 @@ using Engine.Source.Services.CameraServices;
 using Engine.Source.Services.Inputs;
 using Engine.Source.UI;
 using InputServices;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
-using UnityEngine.Events;
-using UnityEngine.EventSystems;
-using UnityEngine.Serialization;
-using UnityEngine.UI;
 
 namespace Engine.Impl.UI.Menu.Protagonist.Inventory
 {
@@ -49,75 +44,74 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
     private int marketPrice;
     private bool useMoney;
     private bool reputationForGifts;
-    private int protagonistCoins = 0;
-    private int marketCoins = 0;
-    private int moneyDiff = 0;
+    private int protagonistCoins;
+    private int marketCoins;
+    private int moneyDiff;
     private int currentmarketItemsIndex = -1;
     public Dictionary<StorableComponent, int> SelectedItems = new Dictionary<StorableComponent, int>();
-    private DialogModeController dialogModeController = new DialogModeController()
-    {
+    private DialogModeController dialogModeController = new DialogModeController {
       TargetCameraKind = CameraKindEnum.Trade
     };
-    private TradeWindow.Modes _currentMode = TradeWindow.Modes.None;
+    private Modes _currentMode = Modes.None;
 
     private List<StorableUI> marketItems { get; set; }
 
     public IMarketComponent Market
     {
-      get => (IMarketComponent) this.market;
-      set => this.market = (MarketComponent) value;
+      get => market;
+      set => market = (MarketComponent) value;
     }
 
     private void ClearMarketContainer()
     {
-      this.marketContainer.Clear(this.containers, this.storables);
+      marketContainer.Clear(containers, storables);
     }
 
     private void CreateMarketContainer()
     {
-      List<StorableComponent> all = this.storage.Items.Cast<StorableComponent>().ToList<StorableComponent>().FindAll((Predicate<StorableComponent>) (x =>
+      List<StorableComponent> all = storage.Items.Cast<StorableComponent>().ToList().FindAll(x =>
       {
         if (x != null)
-          return this.ValidateContainer(x.Container, x.Storage) && (this.ItemIsInteresting((IStorableComponent) x) || this.IsDebugMode());
+          return ValidateContainer(x.Container, x.Storage) && (ItemIsInteresting(x) || IsDebugMode());
         Debug.LogError((object) "x == null");
         return false;
-      }));
-      this.ClearMarketContainer();
-      this.marketContainer.CreateSlots(all, this.storage, this.containers, this.storables);
-      this.marketItems = this.marketContainer.ItemsUI;
+      });
+      ClearMarketContainer();
+      marketContainer.CreateSlots(all, storage, containers, storables);
+      marketItems = marketContainer.ItemsUI;
     }
 
     public void Accept()
     {
-      if (!this.useMoney && this.protagonistPrice < this.marketPrice || this.protagonistPrice + this.protagonistCoins < this.marketPrice)
+      if (!useMoney && protagonistPrice < marketPrice || protagonistPrice + protagonistCoins < marketPrice)
         return;
-      if (this.useMoney)
+      if (useMoney)
       {
-        int num = Mathf.Abs(this.moneyDiff);
-        if (this.moneyDiff > 0)
-          this.MoveMoney((IStorageComponent) this.storage, this.Actor, num);
-        else if (this.moneyDiff < 0)
+        int num = Mathf.Abs(moneyDiff);
+        if (moneyDiff > 0)
+          MoveMoney(storage, Actor, num);
+        else if (moneyDiff < 0)
         {
-          IStorableComponent storableComponent = this.Actor.Items.ToList<IStorableComponent>().Find((Predicate<IStorableComponent>) (x => x.Groups != null && x.Groups.Contains<StorableGroup>(StorableGroup.Money)));
+          IStorableComponent storableComponent = Actor.Items.ToList().Find(x => x.Groups != null && x.Groups.Contains(StorableGroup.Money));
           if (storableComponent != null)
             num = Mathf.Min(storableComponent.Count, num);
-          this.MoveMoney(this.Actor, (IStorageComponent) this.storage, num);
+          MoveMoney(Actor, storage, num);
         }
       }
       Dictionary<StorableComponent, int> dictionary1 = new Dictionary<StorableComponent, int>();
       Dictionary<StorableComponent, int> dictionary2 = new Dictionary<StorableComponent, int>();
-      if (this.SelectedItems.Count > 0)
+      if (SelectedItems.Count > 0)
       {
-        foreach (KeyValuePair<StorableComponent, int> selectedItem in this.SelectedItems)
+        foreach (KeyValuePair<StorableComponent, int> selectedItem in SelectedItems)
         {
           StorableComponent key = selectedItem.Key;
-          if (this.storables.ContainsKey((IStorableComponent) key))
+          if (storables.ContainsKey(key))
           {
-            if (this.storables[(IStorableComponent) key] is StorableUITrade)
-              (this.storables[(IStorableComponent) key] as StorableUITrade).SetSelectedCount(0);
-            if (key.Storage == this.Actor)
+            if (storables[key] is StorableUITrade)
+              (storables[key] as StorableUITrade).SetSelectedCount(0);
+            if (key.Storage == Actor)
               dictionary1[key] = selectedItem.Value;
-            else if (key.Storage == this.storage)
+            else if (key.Storage == storage)
               dictionary2[key] = selectedItem.Value;
           }
         }
@@ -127,12 +121,12 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
         StorableComponent key = keyValuePair.Key;
         if (key.Count == keyValuePair.Value)
         {
-          this.MoveItem((IStorableComponent) key, (IStorageComponent) this.storage, this.storage.Containers.First<IInventoryComponent>((Func<IInventoryComponent, bool>) (x => this.ValidateContainer(x, (IStorageComponent) this.storage))));
-          this.selectedStorable = (StorableUI) null;
-          this.ModeBasedSelection(TradeWindow.Modes.Inventory);
+          MoveItem(key, storage, storage.Containers.First(x => ValidateContainer(x, storage)));
+          selectedStorable = null;
+          ModeBasedSelection(Modes.Inventory);
         }
         else
-          this.storage.AddItem(key.Split(keyValuePair.Value), this.storage.Containers.First<IInventoryComponent>((Func<IInventoryComponent, bool>) (x => this.ValidateContainer(x, (IStorageComponent) this.storage))));
+          storage.AddItem(key.Split(keyValuePair.Value), storage.Containers.First(x => ValidateContainer(x, storage)));
       }
       foreach (KeyValuePair<StorableComponent, int> keyValuePair in dictionary2)
       {
@@ -144,44 +138,44 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
           storable = (StorableComponent) key.Split(keyValuePair.Value);
           flag = true;
         }
-        IStorageComponent actor = this.Actor;
-        Intersect intersect = StorageUtility.GetIntersect(this.Actor, (IInventoryComponent) null, storable, (Cell) null);
+        IStorageComponent actor = Actor;
+        Intersect intersect = StorageUtility.GetIntersect(Actor, null, storable, null);
         if (!storable.IsDisposed)
         {
           if (!intersect.IsAllowed)
           {
-            ServiceLocator.GetService<DropBagService>().DropBag((IStorableComponent) storable, this.Actor.Owner);
-            this.StartOpenAudio(this.dropItemAudio);
+            ServiceLocator.GetService<DropBagService>().DropBag(storable, Actor.Owner);
+            StartOpenAudio(dropItemAudio);
           }
           else if (flag)
           {
-            actor.AddItem((IStorableComponent) storable, (IInventoryComponent) null);
+            actor.AddItem(storable, null);
           }
           else
           {
-            this.MoveItem((IStorableComponent) storable, this.Actor);
-            this.selectedStorable = (StorableUI) null;
-            this.ModeBasedSelection(TradeWindow.Modes.Inventory);
+            MoveItem(storable, Actor);
+            selectedStorable = null;
+            ModeBasedSelection(Modes.Inventory);
           }
         }
       }
-      if (this.protagonistPrice > 0 || this.marketPrice > 0)
-        ServiceLocator.GetService<LogicEventService>().FireEntityEvent("TradeSuccesful", this.Market.Owner);
-      if (!this.useMoney && this.reputationForGifts)
+      if (protagonistPrice > 0 || marketPrice > 0)
+        ServiceLocator.GetService<LogicEventService>().FireEntityEvent("TradeSuccesful", Market.Owner);
+      if (!useMoney && reputationForGifts)
       {
-        int gift = this.protagonistPrice - this.marketPrice;
+        int gift = protagonistPrice - marketPrice;
         if (gift > 0)
-          this.Actor.GetComponent<PlayerControllerComponent>().ComputeGiftNPC(this.Market?.Owner, (float) gift);
+          Actor.GetComponent<PlayerControllerComponent>().ComputeGiftNPC(Market?.Owner, gift);
       }
-      this.ResetSelectedItems();
-      this.CalculateResult();
-      this.OnInvalidate();
-      this.ModeBasedSelection(this.CurrentMode);
+      ResetSelectedItems();
+      CalculateResult();
+      OnInvalidate();
+      ModeBasedSelection(CurrentMode);
     }
 
     private void MoveMoney(IStorageComponent from, IStorageComponent to, int count)
     {
-      List<IStorableComponent> all = from.Items.ToList<IStorableComponent>().FindAll((Predicate<IStorableComponent>) (x => x.Groups != null && x.Groups.Contains<StorableGroup>(StorableGroup.Money)));
+      List<IStorableComponent> all = from.Items.ToList().FindAll(x => x.Groups != null && x.Groups.Contains(StorableGroup.Money));
       if (all.Count == 0)
         return;
       foreach (IStorableComponent storable in all)
@@ -192,12 +186,12 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
         {
           if (storable.Count == count1)
           {
-            this.MoveItem(storable, to);
+            MoveItem(storable, to);
           }
           else
           {
             IStorableComponent storableComponent = storable.Split(count1);
-            to.AddItem(storableComponent, to.Containers.First<IInventoryComponent>((Func<IInventoryComponent, bool>) (x => x.GetLimitations().Contains<StorableGroup>(StorableGroup.Money))));
+            to.AddItem(storableComponent, to.Containers.First(x => x.GetLimitations().Contains(StorableGroup.Money)));
           }
         }
         if (count <= 0)
@@ -209,70 +203,70 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
     protected override void Update()
     {
       base.Update();
-      if (!((UnityEngine.Object) this.windowInfoNew != (UnityEngine.Object) null) || this.windowInfoNew.Target == null || this.windowInfoNew.Target.IsDisposed)
+      if (!((UnityEngine.Object) windowInfoNew != (UnityEngine.Object) null) || windowInfoNew.Target == null || windowInfoNew.Target.IsDisposed)
         return;
-      if (this.windowInfoNew.Target.Storage == this.Actor || this.windowInfoNew.Target.Storage == this.protagonistTable)
-        this.windowInfoNew.Price = (float) (int) TradeWindow.GetPrice((IMarketComponent) this.market, this.windowInfoNew.Target, false);
+      if (windowInfoNew.Target.Storage == Actor || windowInfoNew.Target.Storage == protagonistTable)
+        windowInfoNew.Price = (int) GetPrice(market, windowInfoNew.Target, false);
       else
-        this.windowInfoNew.Price = (float) (int) TradeWindow.GetPrice((IMarketComponent) this.market, this.windowInfoNew.Target, true);
+        windowInfoNew.Price = (int) GetPrice(market, windowInfoNew.Target, true);
     }
 
     private void ResetSelectedItems()
     {
-      foreach (StorableUI storableUi in this.storables.Values)
+      foreach (StorableUI storableUi in storables.Values)
       {
         if ((UnityEngine.Object) storableUi != (UnityEngine.Object) null && storableUi is StorableUITrade)
           (storableUi as StorableUITrade).SetSelectedCount(0);
       }
-      this.SelectedItems = new Dictionary<StorableComponent, int>();
+      SelectedItems = new Dictionary<StorableComponent, int>();
     }
 
     private void SelectItem(StorableComponent storable, int count)
     {
       int num1 = 0;
-      if (this.SelectedItems.ContainsKey(storable))
-        num1 = this.SelectedItems[storable];
+      if (SelectedItems.ContainsKey(storable))
+        num1 = SelectedItems[storable];
       int num2 = Mathf.Clamp(num1 + count, 0, storable.Count);
       if (num2 > num1)
-        StorableComponentUtility.PlayTakeSound((IStorableComponent) storable);
+        StorableComponentUtility.PlayTakeSound(storable);
       else if (num2 < num1)
-        StorableComponentUtility.PlayPutSound((IStorableComponent) storable);
+        StorableComponentUtility.PlayPutSound(storable);
       int count1 = num2;
-      this.SelectedItems[storable] = count1;
-      StorableUI storable1 = this.storables[(IStorableComponent) storable];
+      SelectedItems[storable] = count1;
+      StorableUI storable1 = storables[storable];
       if ((UnityEngine.Object) storable1 != (UnityEngine.Object) null && storable1 is StorableUITrade)
       {
         (storable1 as StorableUITrade).SetSelectedCount(count1);
-        if (this.marketItems.Count > 0)
-          this.currentmarketItemsIndex = this.marketItems.IndexOf(storable1);
+        if (marketItems.Count > 0)
+          currentmarketItemsIndex = marketItems.IndexOf(storable1);
       }
       if (count1 == 0)
-        this.SelectedItems.Remove(storable);
-      this.CalculateResult();
+        SelectedItems.Remove(storable);
+      CalculateResult();
     }
 
     public override void OnPointerDown(PointerEventData eventData)
     {
       if (InputService.Instance.JoystickUsed)
         return;
-      if ((UnityEngine.Object) this.windowContextMenu != (UnityEngine.Object) null)
+      if ((UnityEngine.Object) windowContextMenu != (UnityEngine.Object) null)
       {
-        this.HideContextMenu();
+        HideContextMenu();
       }
       else
       {
-        if (!this.intersect.IsIntersected)
+        if (!intersect.IsIntersected)
           return;
-        StorableComponent storable = this.intersect.Storables.FirstOrDefault<StorableComponent>();
-        if (storable == null || !this.ItemIsInteresting((IStorableComponent) storable))
+        StorableComponent storable = intersect.Storables.FirstOrDefault();
+        if (storable == null || !ItemIsInteresting(storable))
           return;
         switch (eventData.button)
         {
           case PointerEventData.InputButton.Left:
-            this.SelectItem(storable, 1);
+            SelectItem(storable, 1);
             break;
           case PointerEventData.InputButton.Right:
-            this.SelectItem(storable, -1);
+            SelectItem(storable, -1);
             break;
         }
       }
@@ -284,125 +278,124 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
 
     protected override void OnEnable()
     {
-      this.Clear();
+      Clear();
       base.OnEnable();
-      this.buttonTrade.onClick.AddListener(new UnityAction(this.Accept));
-      this.Unsubscribe();
-      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Submit, new GameActionHandle(this.MainControl), true);
-      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Context, new GameActionHandle(this.MainControl), true);
-      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Split, new GameActionHandle(this.MainControl), true);
+      buttonTrade.onClick.AddListener(new UnityAction(Accept));
+      Unsubscribe();
+      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Submit, MainControl, true);
+      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Context, MainControl, true);
+      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Split, MainControl, true);
       ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Cancel, new GameActionHandle(((UIWindow) this).CancelListener), true);
-      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.BumperSelectionLeft, new GameActionHandle(this.OnChangeInventory), true);
-      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.BumperSelectionRight, new GameActionHandle(this.OnChangeInventory), true);
-      this.storage = this.market.GetComponent<StorageComponent>();
-      this.useMoney = false;
-      this.reputationForGifts = false;
-      ParametersComponent component = this.market.GetComponent<ParametersComponent>();
+      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.BumperSelectionLeft, OnChangeInventory, true);
+      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.BumperSelectionRight, OnChangeInventory, true);
+      storage = market.GetComponent<StorageComponent>();
+      useMoney = false;
+      reputationForGifts = false;
+      ParametersComponent component = market.GetComponent<ParametersComponent>();
       if (component != null)
       {
         IParameter<bool> byName1 = component.GetByName<bool>(ParameterNameEnum.UseMoneyInTrade);
         if (byName1 != null)
-          this.useMoney = byName1.Value;
+          useMoney = byName1.Value;
         IParameter<bool> byName2 = component.GetByName<bool>(ParameterNameEnum.ReputationForGifts);
         if (byName2 != null)
-          this.reputationForGifts = byName2.Value;
+          reputationForGifts = byName2.Value;
       }
-      this.actors.Clear();
-      this.actors.Add(this.Actor);
-      this.Build2();
-      this.CreateMarketContainer();
-      this.ResetSelectedItems();
-      this.CheckInterestingItems();
-      this.meter.Reset();
-      this.meter.BarterMode(!this.useMoney);
-      this.CalculateResult();
-      this.dialogModeController.EnableCameraKind(this.Market?.Owner);
-      this.dialogModeController.SetDialogMode(this.Market?.Owner, true);
+      actors.Clear();
+      actors.Add(Actor);
+      Build2();
+      CreateMarketContainer();
+      ResetSelectedItems();
+      CheckInterestingItems();
+      meter.Reset();
+      meter.BarterMode(!useMoney);
+      CalculateResult();
+      dialogModeController.EnableCameraKind(Market?.Owner);
+      dialogModeController.SetDialogMode(Market?.Owner, true);
       if (!InputService.Instance.JoystickUsed)
         return;
-      if ((UnityEngine.Object) this.storables.Values.FirstOrDefault<StorableUI>((Func<StorableUI, bool>) (s => (UnityEngine.Object) s != (UnityEngine.Object) null && s.Internal != null && this.ItemIsInteresting(s.Internal) && this.marketItems.Contains(s))) != (UnityEngine.Object) null)
-        this.CurrentMode = TradeWindow.Modes.Market;
-      else if ((UnityEngine.Object) this.storables.Values.FirstOrDefault<StorableUI>((Func<StorableUI, bool>) (s => (UnityEngine.Object) s != (UnityEngine.Object) null && s.Internal != null && this.ItemIsInteresting(s.Internal) && !this.marketItems.Contains(s))) != (UnityEngine.Object) null)
-        this.CurrentMode = TradeWindow.Modes.Inventory;
-      this.inventoryselectTipObject.SetActive((UnityEngine.Object) this.storables.Values.FirstOrDefault<StorableUI>((Func<StorableUI, bool>) (s => (UnityEngine.Object) s != (UnityEngine.Object) null && s.Internal != null && this.ItemIsInteresting(s.Internal) && this.marketItems.Contains(s))) != (UnityEngine.Object) null && (UnityEngine.Object) this.storables.Values.FirstOrDefault<StorableUI>((Func<StorableUI, bool>) (s => (UnityEngine.Object) s != (UnityEngine.Object) null && s.Internal != null && this.ItemIsInteresting(s.Internal) && !this.marketItems.Contains(s))) != (UnityEngine.Object) null);
+      if ((UnityEngine.Object) storables.Values.FirstOrDefault(s => (UnityEngine.Object) s != (UnityEngine.Object) null && s.Internal != null && ItemIsInteresting(s.Internal) && marketItems.Contains(s)) != (UnityEngine.Object) null)
+        CurrentMode = Modes.Market;
+      else if ((UnityEngine.Object) storables.Values.FirstOrDefault(s => (UnityEngine.Object) s != (UnityEngine.Object) null && s.Internal != null && ItemIsInteresting(s.Internal) && !marketItems.Contains(s)) != (UnityEngine.Object) null)
+        CurrentMode = Modes.Inventory;
+      inventoryselectTipObject.SetActive((UnityEngine.Object) storables.Values.FirstOrDefault(s => (UnityEngine.Object) s != (UnityEngine.Object) null && s.Internal != null && ItemIsInteresting(s.Internal) && marketItems.Contains(s)) != (UnityEngine.Object) null && (UnityEngine.Object) storables.Values.FirstOrDefault(s => (UnityEngine.Object) s != (UnityEngine.Object) null && s.Internal != null && ItemIsInteresting(s.Internal) && !marketItems.Contains(s)) != (UnityEngine.Object) null);
     }
 
     protected override void OnDisable()
     {
-      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Submit, new GameActionHandle(this.MainControl));
-      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Context, new GameActionHandle(this.MainControl));
-      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Split, new GameActionHandle(this.MainControl));
+      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Submit, MainControl);
+      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Context, MainControl);
+      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Split, MainControl);
       ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Cancel, new GameActionHandle(((UIWindow) this).CancelListener));
-      this.buttonTrade.onClick.RemoveListener(new UnityAction(this.Accept));
-      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.BumperSelectionLeft, new GameActionHandle(this.OnChangeInventory));
-      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.BumperSelectionRight, new GameActionHandle(this.OnChangeInventory));
-      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.LStickUp, new GameActionHandle(this.MainControl));
-      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.LStickDown, new GameActionHandle(this.MainControl));
-      this.DestroyContainers();
-      this.dialogModeController.DisableCameraKind();
-      this.dialogModeController.SetDialogMode(this.Market?.Owner, false);
-      this.CurrentMode = TradeWindow.Modes.None;
-      this.selectedStorable = (StorableUI) null;
-      this.currentmarketItemsIndex = -1;
-      this.SelectedItems.Clear();
+      buttonTrade.onClick.RemoveListener(new UnityAction(Accept));
+      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.BumperSelectionLeft, OnChangeInventory);
+      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.BumperSelectionRight, OnChangeInventory);
+      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.LStickUp, MainControl);
+      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.LStickDown, MainControl);
+      DestroyContainers();
+      dialogModeController.DisableCameraKind();
+      dialogModeController.SetDialogMode(Market?.Owner, false);
+      CurrentMode = Modes.None;
+      selectedStorable = null;
+      currentmarketItemsIndex = -1;
+      SelectedItems.Clear();
       base.OnDisable();
     }
 
-    private void ModeBasedSelection(TradeWindow.Modes mode)
+    private void ModeBasedSelection(Modes mode)
     {
       switch (mode)
       {
-        case TradeWindow.Modes.None:
-          this.selectedStorable = (StorableUI) null;
+        case Modes.None:
+          selectedStorable = null;
           return;
-        case TradeWindow.Modes.Inventory:
-          if ((UnityEngine.Object) this.selectedStorable != (UnityEngine.Object) null)
+        case Modes.Inventory:
+          if ((UnityEngine.Object) selectedStorable != (UnityEngine.Object) null)
           {
-            if (this.selectedStorable.IsSelected())
+            if (selectedStorable.IsSelected())
               return;
-            this.selectedStorable.SetSelected(true);
+            selectedStorable.SetSelected(true);
             return;
           }
-          if (this.storables.Count > 0)
+          if (storables.Count > 0)
           {
-            StorableUI storableUi = this.storables.Values.FirstOrDefault<StorableUI>((Func<StorableUI, bool>) (s => this.ItemIsInteresting(s.Internal) && !this.marketItems.Contains(s)));
+            StorableUI storableUi = storables.Values.FirstOrDefault(s => ItemIsInteresting(s.Internal) && !marketItems.Contains(s));
             if ((UnityEngine.Object) storableUi != (UnityEngine.Object) null)
-              this.selectedStorable = storableUi;
-            break;
+              selectedStorable = storableUi;
           }
           break;
-        case TradeWindow.Modes.Market:
-          this.selectedStorable?.SetSelected(false);
-          this.marketItems = this.marketContainer.ItemsUI;
-          this.marketItems = this.marketItems.Where<StorableUI>((Func<StorableUI, bool>) (item => (UnityEngine.Object) item != (UnityEngine.Object) null)).ToList<StorableUI>();
-          if (this.marketItems.Count == 0)
+        case Modes.Market:
+          selectedStorable?.SetSelected(false);
+          marketItems = marketContainer.ItemsUI;
+          marketItems = marketItems.Where(item => (UnityEngine.Object) item != (UnityEngine.Object) null).ToList();
+          if (marketItems.Count == 0)
             return;
-          if (this.currentmarketItemsIndex < 0)
-            this.currentmarketItemsIndex = 0;
-          else if (this.currentmarketItemsIndex >= this.marketItems.Count)
-            this.currentmarketItemsIndex = 0;
-          this.selectedStorable = this.marketItems[this.currentmarketItemsIndex];
-          this.marketContainer.ScrollTo(this.currentmarketItemsIndex, this.marketItems.Count);
+          if (currentmarketItemsIndex < 0)
+            currentmarketItemsIndex = 0;
+          else if (currentmarketItemsIndex >= marketItems.Count)
+            currentmarketItemsIndex = 0;
+          selectedStorable = marketItems[currentmarketItemsIndex];
+          marketContainer.ScrollTo(currentmarketItemsIndex, marketItems.Count);
           break;
       }
-      this.selectedStorable?.SetSelected(true);
+      selectedStorable?.SetSelected(true);
     }
 
-    private TradeWindow.Modes CurrentMode
+    private Modes CurrentMode
     {
-      get => this._currentMode;
+      get => _currentMode;
       set
       {
-        if (this._currentMode == value)
+        if (_currentMode == value)
           return;
         switch (value)
         {
-          case TradeWindow.Modes.Inventory:
-            this.SetInfoWindowShowMode();
-            this.selectedStorable = (StorableUI) null;
-            if (this.marketItems != null && this.marketItems.Count != 0)
+          case Modes.Inventory:
+            SetInfoWindowShowMode();
+            selectedStorable = null;
+            if (marketItems != null && marketItems.Count != 0)
             {
-              using (List<StorableUI>.Enumerator enumerator = this.marketItems.GetEnumerator())
+              using (List<StorableUI>.Enumerator enumerator = marketItems.GetEnumerator())
               {
                 while (enumerator.MoveNext())
                 {
@@ -410,58 +403,57 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
                   if ((UnityEngine.Object) current != (UnityEngine.Object) null)
                     current.SetSelected(false);
                 }
-                break;
               }
             }
-            else
-              break;
-          case TradeWindow.Modes.Market:
-            this.SetInfoWindowShowMode(true);
-            if (this._currentMode == TradeWindow.Modes.Inventory || this._currentMode == TradeWindow.Modes.None)
+
+            break;
+          case Modes.Market:
+            SetInfoWindowShowMode(true);
+            if (_currentMode == Modes.Inventory || _currentMode == Modes.None)
             {
-              if ((UnityEngine.Object) this.selectedStorable != (UnityEngine.Object) null)
-                this.selectedStorable.SetSelected(false);
-              this.selectedStorable = (StorableUI) null;
+              if ((UnityEngine.Object) selectedStorable != (UnityEngine.Object) null)
+                selectedStorable.SetSelected(false);
+              selectedStorable = null;
             }
             break;
         }
         LayoutRebuilder.ForceRebuildLayoutImmediate(this.GetComponent<RectTransform>());
-        this._currentMode = value;
-        if (this._currentMode != 0)
-          this.ModeBasedSelection(value);
-        if (this._currentMode == TradeWindow.Modes.Market)
+        _currentMode = value;
+        if (_currentMode != 0)
+          ModeBasedSelection(value);
+        if (_currentMode == Modes.Market)
         {
-          if (this.marketItems == null)
+          if (marketItems == null)
             return;
-          this.selectedStorable = this.marketItems[this.currentmarketItemsIndex >= 0 ? this.currentmarketItemsIndex : this.marketItems.Count - 1];
-          this.selectedStorable.SetSelected(true);
-          this.ShowInfoWindow(this.selectedStorable.Internal);
+          selectedStorable = marketItems[currentmarketItemsIndex >= 0 ? currentmarketItemsIndex : marketItems.Count - 1];
+          selectedStorable.SetSelected(true);
+          ShowInfoWindow(selectedStorable.Internal);
         }
         else
         {
-          if (!((UnityEngine.Object) this.selectedStorable != (UnityEngine.Object) null))
+          if (!((UnityEngine.Object) selectedStorable != (UnityEngine.Object) null))
             return;
-          this.selectedStorable.SetSelected(true);
-          this.ShowInfoWindow(this.selectedStorable.Internal);
+          selectedStorable.SetSelected(true);
+          ShowInfoWindow(selectedStorable.Internal);
         }
       }
     }
 
     protected override void OnNavigate(
-      BaseInventoryWindow<TradeWindow>.Navigation navigation)
+      Navigation navigation)
     {
-      if (this.CurrentMode == TradeWindow.Modes.Market && (navigation == BaseInventoryWindow<TradeWindow>.Navigation.CellUp || BaseInventoryWindow<TradeWindow>.Navigation.CellDown == navigation))
+      if (CurrentMode == Modes.Market && (navigation == Navigation.CellUp || Navigation.CellDown == navigation))
       {
-        this.currentmarketItemsIndex += navigation == BaseInventoryWindow<TradeWindow>.Navigation.CellUp ? -1 : 1;
-        if (this.currentmarketItemsIndex < 0)
-          this.currentmarketItemsIndex = this.marketItems.Count - 1;
-        if (this.currentmarketItemsIndex >= this.marketItems.Count)
-          this.currentmarketItemsIndex = 0;
-        this.selectedStorable.SetSelected(false);
-        this.selectedStorable = this.marketItems[this.currentmarketItemsIndex];
-        this.selectedStorable.SetSelected(true);
-        this.marketContainer.ScrollTo(this.currentmarketItemsIndex, this.marketItems.Count);
-        this.ShowInfoWindow(this.selectedStorable.Internal);
+        currentmarketItemsIndex += navigation == Navigation.CellUp ? -1 : 1;
+        if (currentmarketItemsIndex < 0)
+          currentmarketItemsIndex = marketItems.Count - 1;
+        if (currentmarketItemsIndex >= marketItems.Count)
+          currentmarketItemsIndex = 0;
+        selectedStorable.SetSelected(false);
+        selectedStorable = marketItems[currentmarketItemsIndex];
+        selectedStorable.SetSelected(true);
+        marketContainer.ScrollTo(currentmarketItemsIndex, marketItems.Count);
+        ShowInfoWindow(selectedStorable.Internal);
       }
       else
         base.OnNavigate(navigation);
@@ -469,25 +461,25 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
 
     private bool MainControl(GameActionType type, bool down)
     {
-      if (type == GameActionType.Context & down && this.joystickAccept.activeSelf)
+      if (type == GameActionType.Context & down && joystickAccept.activeSelf)
       {
-        this.selectedStorable = (StorableUI) null;
-        this.buttonTrade?.onClick.Invoke();
-        this.HideInfoWindow();
-        this.CurrentMode = TradeWindow.Modes.None;
-        this.CurrentMode = TradeWindow.Modes.Inventory;
+        selectedStorable = null;
+        buttonTrade?.onClick.Invoke();
+        HideInfoWindow();
+        CurrentMode = Modes.None;
+        CurrentMode = Modes.Inventory;
         return true;
       }
-      if (((type == GameActionType.Submit ? 1 : (type == GameActionType.Split ? 1 : 0)) & (down ? 1 : 0)) == 0 || (UnityEngine.Object) this.selectedStorable == (UnityEngine.Object) null)
+      if (((type == GameActionType.Submit ? 1 : (type == GameActionType.Split ? 1 : 0)) & (down ? 1 : 0)) == 0 || (UnityEngine.Object) selectedStorable == (UnityEngine.Object) null)
         return false;
-      StorableComponent storableComponent = (StorableComponent) this.selectedStorable.Internal;
-      if (storableComponent == null || !this.ItemIsInteresting((IStorableComponent) storableComponent))
+      StorableComponent storableComponent = (StorableComponent) selectedStorable.Internal;
+      if (storableComponent == null || !ItemIsInteresting(storableComponent))
         return false;
-      if (this.SelectedItems.ContainsKey(storableComponent) || type == GameActionType.Submit)
+      if (SelectedItems.ContainsKey(storableComponent) || type == GameActionType.Submit)
       {
-        this.SelectItem(storableComponent, type == GameActionType.Submit ? 1 : -1);
-        if (!this.SelectedItems.ContainsKey(storableComponent))
-          this.selectedStorable.SetSelected(true);
+        SelectItem(storableComponent, type == GameActionType.Submit ? 1 : -1);
+        if (!SelectedItems.ContainsKey(storableComponent))
+          selectedStorable.SetSelected(true);
       }
       return true;
     }
@@ -498,15 +490,15 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
     {
       if (type == GameActionType.BumperSelectionLeft & down)
       {
-        if ((UnityEngine.Object) this.storables.Values.FirstOrDefault<StorableUI>((Func<StorableUI, bool>) (s => (UnityEngine.Object) s != (UnityEngine.Object) null && s.Internal != null && this.ItemIsInteresting(s.Internal) && this.marketItems.Contains(s))) != (UnityEngine.Object) null)
+        if ((UnityEngine.Object) storables.Values.FirstOrDefault(s => (UnityEngine.Object) s != (UnityEngine.Object) null && s.Internal != null && ItemIsInteresting(s.Internal) && marketItems.Contains(s)) != (UnityEngine.Object) null)
         {
-          this.CurrentMode = TradeWindow.Modes.Market;
+          CurrentMode = Modes.Market;
           return true;
         }
       }
-      else if (type == GameActionType.BumperSelectionRight & down && (UnityEngine.Object) this.storables.Values.FirstOrDefault<StorableUI>((Func<StorableUI, bool>) (s => (UnityEngine.Object) s != (UnityEngine.Object) null && s.Internal != null && this.ItemIsInteresting(s.Internal) && !this.marketItems.Contains(s))) != (UnityEngine.Object) null)
+      else if (type == GameActionType.BumperSelectionRight & down && (UnityEngine.Object) storables.Values.FirstOrDefault(s => (UnityEngine.Object) s != (UnityEngine.Object) null && s.Internal != null && ItemIsInteresting(s.Internal) && !marketItems.Contains(s)) != (UnityEngine.Object) null)
       {
-        this.CurrentMode = TradeWindow.Modes.Inventory;
+        CurrentMode = Modes.Inventory;
         return true;
       }
       return false;
@@ -514,14 +506,14 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
 
     protected override void AdditionalAfterChangeAction()
     {
-      this.CurrentMode = TradeWindow.Modes.None;
+      CurrentMode = Modes.None;
       if (InputService.Instance.JoystickUsed)
       {
-        if ((UnityEngine.Object) this.storables.Values.FirstOrDefault<StorableUI>((Func<StorableUI, bool>) (s => (UnityEngine.Object) s != (UnityEngine.Object) null && s.Internal != null && this.ItemIsInteresting(s.Internal) && !this.marketItems.Contains(s))) != (UnityEngine.Object) null)
-          this.CurrentMode = TradeWindow.Modes.Inventory;
-        else if ((UnityEngine.Object) this.storables.Values.FirstOrDefault<StorableUI>((Func<StorableUI, bool>) (s => (UnityEngine.Object) s != (UnityEngine.Object) null && s.Internal != null && this.ItemIsInteresting(s.Internal) && this.marketItems.Contains(s))) != (UnityEngine.Object) null)
-          this.CurrentMode = TradeWindow.Modes.Market;
-        this.inventoryselectTipObject.SetActive((UnityEngine.Object) this.storables.Values.FirstOrDefault<StorableUI>((Func<StorableUI, bool>) (s => (UnityEngine.Object) s != (UnityEngine.Object) null && s.Internal != null && this.ItemIsInteresting(s.Internal) && this.marketItems.Contains(s))) != (UnityEngine.Object) null && (UnityEngine.Object) this.storables.Values.FirstOrDefault<StorableUI>((Func<StorableUI, bool>) (s => (UnityEngine.Object) s != (UnityEngine.Object) null && s.Internal != null && this.ItemIsInteresting(s.Internal) && !this.marketItems.Contains(s))) != (UnityEngine.Object) null);
+        if ((UnityEngine.Object) storables.Values.FirstOrDefault(s => (UnityEngine.Object) s != (UnityEngine.Object) null && s.Internal != null && ItemIsInteresting(s.Internal) && !marketItems.Contains(s)) != (UnityEngine.Object) null)
+          CurrentMode = Modes.Inventory;
+        else if ((UnityEngine.Object) storables.Values.FirstOrDefault(s => (UnityEngine.Object) s != (UnityEngine.Object) null && s.Internal != null && ItemIsInteresting(s.Internal) && marketItems.Contains(s)) != (UnityEngine.Object) null)
+          CurrentMode = Modes.Market;
+        inventoryselectTipObject.SetActive((UnityEngine.Object) storables.Values.FirstOrDefault(s => (UnityEngine.Object) s != (UnityEngine.Object) null && s.Internal != null && ItemIsInteresting(s.Internal) && marketItems.Contains(s)) != (UnityEngine.Object) null && (UnityEngine.Object) storables.Values.FirstOrDefault(s => (UnityEngine.Object) s != (UnityEngine.Object) null && s.Internal != null && ItemIsInteresting(s.Internal) && !marketItems.Contains(s)) != (UnityEngine.Object) null);
       }
       LayoutRebuilder.ForceRebuildLayoutImmediate(this.GetComponent<RectTransform>());
     }
@@ -529,15 +521,15 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
     protected override void OnJoystick(bool joystick)
     {
       base.OnJoystick(joystick);
-      this.controlPanel.gameObject.SetActive(joystick);
-      this.buttonTrade.gameObject.SetActive(!joystick);
+      controlPanel.gameObject.SetActive(joystick);
+      buttonTrade.gameObject.SetActive(!joystick);
       ServiceLocator.GetService<GameActionService>();
-      if (this.storables != null && this.storables.Count > 0)
+      if (storables != null && storables.Count > 0)
       {
-        foreach (KeyValuePair<StorableComponent, int> selectedItem in this.SelectedItems)
+        foreach (KeyValuePair<StorableComponent, int> selectedItem in SelectedItems)
         {
           KeyValuePair<StorableComponent, int> selected = selectedItem;
-          StorableUI storableUi = this.storables.Values.FirstOrDefault<StorableUI>((Func<StorableUI, bool>) (s => s.Internal == selected.Key));
+          StorableUI storableUi = storables.Values.FirstOrDefault(s => s.Internal == selected.Key);
           if ((UnityEngine.Object) storableUi != (UnityEngine.Object) null)
             (storableUi as StorableUITrade).SetSelectedCount(selected.Value, true);
         }
@@ -545,20 +537,20 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       if (joystick)
       {
         ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Trade, new GameActionHandle(((UIWindow) this).WithoutJoystickCancelListener));
-        ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Submit, new GameActionHandle(this.MainControl), true);
-        ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Context, new GameActionHandle(this.MainControl), true);
-        ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Split, new GameActionHandle(this.MainControl), true);
-        ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.BumperSelectionLeft, new GameActionHandle(this.OnChangeInventory), true);
-        ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.BumperSelectionRight, new GameActionHandle(this.OnChangeInventory), true);
+        ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Submit, MainControl, true);
+        ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Context, MainControl, true);
+        ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Split, MainControl, true);
+        ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.BumperSelectionLeft, OnChangeInventory, true);
+        ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.BumperSelectionRight, OnChangeInventory, true);
       }
       else
       {
         ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Trade, new GameActionHandle(((UIWindow) this).WithoutJoystickCancelListener));
-        ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Submit, new GameActionHandle(this.MainControl));
-        ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Context, new GameActionHandle(this.MainControl));
-        ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Split, new GameActionHandle(this.MainControl));
-        ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.BumperSelectionLeft, new GameActionHandle(this.OnChangeInventory));
-        ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.BumperSelectionRight, new GameActionHandle(this.OnChangeInventory));
+        ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Submit, MainControl);
+        ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Context, MainControl);
+        ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Split, MainControl);
+        ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.BumperSelectionLeft, OnChangeInventory);
+        ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.BumperSelectionRight, OnChangeInventory);
       }
     }
 
@@ -566,9 +558,9 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
     {
       if (InputService.Instance.JoystickUsed)
       {
-        if (!this.storables.ContainsKey(storable))
+        if (!storables.ContainsKey(storable))
           return;
-        StorableUI storable1 = this.storables[storable];
+        StorableUI storable1 = storables[storable];
         float num1 = 20f;
         if (!((UnityEngine.Object) storable1 != (UnityEngine.Object) null))
           return;
@@ -576,13 +568,13 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
         ContainerResizableWindow componentInParent = storable1.GetComponentInParent<ContainerResizableWindow>();
         float num2 = num1 * 2f;
         if ((UnityEngine.Object) componentInParent != (UnityEngine.Object) null)
-          num2 = this.HintsBottomBorder;
+          num2 = HintsBottomBorder;
         Rect rect = storable1.Image.rectTransform.rect;
         float num3 = rect.height / 2f * storable1.Image.rectTransform.lossyScale.y;
-        double num4 = (double) storable1.Image.transform.position.y + (double) num3;
+        double num4 = (double) storable1.Image.transform.position.y + num3;
         rect = component1.rect;
         double num5 = (double) rect.height * (double) component1.lossyScale.y;
-        if (num4 - num5 < (double) num2)
+        if (num4 - num5 < num2)
         {
           rect = component1.rect;
           double height = (double) rect.height;
@@ -597,13 +589,13 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
           double x = (double) containerRect.position.x;
           rect = component1.rect;
           double num8 = (double) rect.width * (double) component1.lossyScale.x;
-          num7 = (float) (x - num8 - (double) storable1.Image.transform.position.x - (double) num1 * (double) containerRect.lossyScale.x / 2.0);
+          num7 = (float) (x - num8 - (double) storable1.Image.transform.position.x - num1 * (double) containerRect.lossyScale.x / 2.0);
         }
         else
         {
-          RectTransform component2 = this.marketContainer.GetComponent<RectTransform>();
+          RectTransform component2 = marketContainer.GetComponent<RectTransform>();
           rect = component2.rect;
-          num7 = (float) ((double) rect.width * (double) component2.lossyScale.x / 2.0 + (double) num1 * (double) component2.lossyScale.x / 2.0);
+          num7 = (float) ((double) rect.width * (double) component2.lossyScale.x / 2.0 + num1 * (double) component2.lossyScale.x / 2.0);
         }
         window.Transform.position = new Vector3(storable1.Image.transform.position.x + num7, storable1.Image.transform.position.y + num3);
       }
@@ -613,73 +605,73 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
 
     protected void CalculateResult()
     {
-      this.protagonistPrice = 0;
-      this.marketPrice = 0;
-      foreach (KeyValuePair<StorableComponent, int> selectedItem in this.SelectedItems)
+      protagonistPrice = 0;
+      marketPrice = 0;
+      foreach (KeyValuePair<StorableComponent, int> selectedItem in SelectedItems)
       {
-        if (selectedItem.Key.Storage == this.Actor)
-          this.protagonistPrice += (int) TradeWindow.GetPrice((IMarketComponent) this.market, (IStorableComponent) selectedItem.Key, false, selectedItem.Value);
+        if (selectedItem.Key.Storage == Actor)
+          protagonistPrice += (int) GetPrice(market, selectedItem.Key, false, selectedItem.Value);
         else
-          this.marketPrice += (int) TradeWindow.GetPrice((IMarketComponent) this.market, (IStorableComponent) selectedItem.Key, true, selectedItem.Value);
+          marketPrice += (int) GetPrice(market, selectedItem.Key, true, selectedItem.Value);
       }
-      this.protagonistPrice = (int) Mathf.Ceil((float) this.protagonistPrice);
-      this.marketPrice = (int) Mathf.Ceil((float) this.marketPrice);
-      this.moneyDiff = this.protagonistPrice - this.marketPrice;
-      if ((UnityEngine.Object) this.meter != (UnityEngine.Object) null)
+      protagonistPrice = (int) Mathf.Ceil((float) protagonistPrice);
+      marketPrice = (int) Mathf.Ceil((float) marketPrice);
+      moneyDiff = protagonistPrice - marketPrice;
+      if ((UnityEngine.Object) meter != (UnityEngine.Object) null)
       {
-        this.meter.TargetValue = (float) this.marketPrice;
-        this.meter.CurrentValue = (float) this.protagonistPrice;
+        meter.TargetValue = marketPrice;
+        meter.CurrentValue = protagonistPrice;
       }
-      this.UpdateCoins();
+      UpdateCoins();
     }
 
     protected override bool ItemIsInteresting(IStorableComponent item)
     {
-      bool isSeller = item.Storage != this.Actor && item.Storage != this.protagonistTable;
-      return (int) TradeWindow.GetPrice((IMarketComponent) this.market, item, isSeller) > 0;
+      bool isSeller = item.Storage != Actor && item.Storage != protagonistTable;
+      return (int) GetPrice(market, item, isSeller) > 0;
     }
 
     private void CheckInterestingItems()
     {
-      foreach (IStorableComponent key in this.storables.Keys)
+      foreach (IStorableComponent key in storables.Keys)
       {
-        bool flag = key.Storage != this.Actor && key.Storage != this.protagonistTable;
-        this.storables[key].Enable(this.ItemIsInteresting(key));
+        bool flag = key.Storage != Actor && key.Storage != protagonistTable;
+        storables[key].Enable(ItemIsInteresting(key));
       }
     }
 
     private void DestroyContainers()
     {
-      this.ClearMarketContainer();
-      this.storage = (StorageComponent) null;
+      ClearMarketContainer();
+      storage = null;
     }
 
     protected override bool ValidateContainer(
       IInventoryComponent container,
       IStorageComponent storage)
     {
-      return base.ValidateContainer(container, storage) && (container.GetGroup() == InventoryGroup.Trade || storage == this.Actor);
+      return base.ValidateContainer(container, storage) && (container.GetGroup() == InventoryGroup.Trade || storage == Actor);
     }
 
     public override void Initialize()
     {
-      this.RegisterLayer<ITradeWindow>((ITradeWindow) this);
+      RegisterLayer((ITradeWindow) this);
       base.Initialize();
     }
 
-    public override System.Type GetWindowType() => typeof (ITradeWindow);
+    public override Type GetWindowType() => typeof (ITradeWindow);
 
     protected override void OnSelectObject(GameObject selected)
     {
       base.OnSelectObject(selected);
       if (!((UnityEngine.Object) selected != (UnityEngine.Object) null))
         return;
-      this.CurrentMode = !((UnityEngine.Object) selected.GetComponentInParent<ItemsSlidingContainer>() != (UnityEngine.Object) null) ? TradeWindow.Modes.Inventory : TradeWindow.Modes.Market;
+      CurrentMode = !((UnityEngine.Object) selected.GetComponentInParent<ItemsSlidingContainer>() != (UnityEngine.Object) null) ? Modes.Inventory : Modes.Market;
     }
 
     protected override bool AdditionalConditionOfSelectableList(StorableUI storable)
     {
-      return base.AdditionalConditionOfSelectableList(storable) && this.ItemIsInteresting(storable.Internal);
+      return base.AdditionalConditionOfSelectableList(storable) && ItemIsInteresting(storable.Internal);
     }
 
     private static float GetPrice(
@@ -688,13 +680,13 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       bool isSeller,
       int count = 1)
     {
-      return isSeller ? (float) count * storable.Invoice.SellPrice : (float) count * storable.Invoice.BuyPrice * TradeWindow.GetDurabilityModifier(storable);
+      return isSeller ? count * storable.Invoice.SellPrice : count * storable.Invoice.BuyPrice * GetDurabilityModifier(storable);
     }
 
     private static float GetDurabilityModifier(IStorableComponent storable)
     {
       float durabilityModifier = 1f;
-      if (storable.Durability != null && (double) storable.Durability.MaxValue > 0.0)
+      if (storable.Durability != null && storable.Durability.MaxValue > 0.0)
         durabilityModifier = Mathf.Max(storable.Durability.Value / storable.Durability.MaxValue, 0.1f);
       return durabilityModifier;
     }
@@ -703,43 +695,43 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
 
     private void CountCoins()
     {
-      this.protagonistCoins = 0;
-      foreach (IStorableComponent storableComponent in this.Actor.Items)
+      protagonistCoins = 0;
+      foreach (IStorableComponent storableComponent in Actor.Items)
       {
-        if (storableComponent.Groups.Contains<StorableGroup>(StorableGroup.Money))
-          this.protagonistCoins += storableComponent.Count;
+        if (storableComponent.Groups.Contains(StorableGroup.Money))
+          protagonistCoins += storableComponent.Count;
       }
-      this.marketCoins = 0;
-      foreach (IStorableComponent storableComponent in this.storage.Items)
+      marketCoins = 0;
+      foreach (IStorableComponent storableComponent in storage.Items)
       {
-        if (storableComponent.Groups.Contains<StorableGroup>(StorableGroup.Money))
-          this.marketCoins += storableComponent.Count;
+        if (storableComponent.Groups.Contains(StorableGroup.Money))
+          marketCoins += storableComponent.Count;
       }
-      this.meter.StoredCoins = this.useMoney ? this.protagonistCoins : 0;
-      this.meter.MarketCoins = this.useMoney ? this.marketCoins : 0;
+      meter.StoredCoins = useMoney ? protagonistCoins : 0;
+      meter.MarketCoins = useMoney ? marketCoins : 0;
     }
 
     protected override void UpdateCoins()
     {
-      this.CountCoins();
-      this.marketMoney.gameObject.SetActive(this.useMoney);
-      if (this.useMoney)
+      CountCoins();
+      marketMoney.gameObject.SetActive(useMoney);
+      if (useMoney)
       {
-        int change = Mathf.Min(this.moneyDiff, this.marketCoins);
-        this.protagonistMoney.SetCount(this.protagonistCoins, change);
-        this.marketMoney.SetCount(this.marketCoins, -change);
+        int change = Mathf.Min(moneyDiff, marketCoins);
+        protagonistMoney.SetCount(protagonistCoins, change);
+        marketMoney.SetCount(marketCoins, -change);
       }
       else
-        this.protagonistMoney.SetCount(this.protagonistCoins, 0);
+        protagonistMoney.SetCount(protagonistCoins, 0);
       bool flag = true;
-      if (this.protagonistPrice == 0 && this.marketPrice == 0)
+      if (protagonistPrice == 0 && marketPrice == 0)
         flag = false;
-      if (!this.useMoney && this.protagonistPrice < this.marketPrice)
+      if (!useMoney && protagonistPrice < marketPrice)
         flag = false;
-      if (this.useMoney && this.protagonistPrice + this.protagonistCoins < this.marketPrice)
+      if (useMoney && protagonistPrice + protagonistCoins < marketPrice)
         flag = false;
-      this.buttonTrade.interactable = flag;
-      this.joystickAccept.SetActive(flag);
+      buttonTrade.interactable = flag;
+      joystickAccept.SetActive(flag);
     }
 
     protected override void ShowInfoWindow(IStorableComponent storable)
@@ -748,9 +740,9 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       CoroutineService.Instance.WaitFrame(1, (Action) (() =>
       {
         base.ShowInfoWindow(storable);
-        if (!((UnityEngine.Object) this.windowInfoNew != (UnityEngine.Object) null))
+        if (!((UnityEngine.Object) windowInfoNew != (UnityEngine.Object) null))
           return;
-        this.windowInfoNew.BarterMode(!this.useMoney);
+        windowInfoNew.BarterMode(!useMoney);
       }));
     }
 
@@ -760,16 +752,16 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
 
     protected override void OnInvalidate()
     {
-      this.CreateMarketContainer();
+      CreateMarketContainer();
       base.OnInvalidate();
-      this.CheckInterestingItems();
+      CheckInterestingItems();
     }
 
     protected override void AddActionsToInfoWindow(
       InfoWindowNew window,
       IStorableComponent storable)
     {
-      if (!this.ItemIsInteresting(storable))
+      if (!ItemIsInteresting(storable))
         return;
       window.AddActionTooltip(GameActionType.Submit, "{StorableTooltip.CountUp}");
       if (InputService.Instance.JoystickUsed)

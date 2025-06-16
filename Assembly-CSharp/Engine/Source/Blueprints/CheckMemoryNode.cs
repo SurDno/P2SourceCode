@@ -1,8 +1,8 @@
-﻿using Engine.Source.Otimizations;
+﻿using System.Collections;
+using Engine.Source.Otimizations;
 using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
-using System.Collections;
 
 namespace Engine.Source.Blueprints
 {
@@ -15,13 +15,13 @@ namespace Engine.Source.Blueprints
     protected override void RegisterPorts()
     {
       base.RegisterPorts();
-      FlowOutput output = this.AddFlowOutput("Out");
-      this.AddFlowInput("In", (FlowHandler) (() => this.StartCoroutine(this.Compute(output))));
+      FlowOutput output = AddFlowOutput("Out");
+      AddFlowInput("In", (FlowHandler) (() => StartCoroutine(Compute(output))));
     }
 
     private IEnumerator Compute(FlowOutput output)
     {
-      yield return (object) MemoryStrategy.Instance.Compute(this.contextInput.value);
+      yield return MemoryStrategy.Instance.Compute(contextInput.value);
       output.Call();
     }
   }

@@ -1,4 +1,5 @@
-﻿using Cofe.Loggers;
+﻿using System.Xml;
+using Cofe.Loggers;
 using Cofe.Serializations.Data;
 using Cofe.Utility;
 using Engine.Common;
@@ -6,7 +7,6 @@ using Engine.Common.Commons;
 using PLVirtualMachine.Common.Data;
 using PLVirtualMachine.Common.EngineAPI.VMECS.VMAttributes;
 using PLVirtualMachine.Common.Serialization;
-using System.Xml;
 
 namespace PLVirtualMachine.Common.EngineAPI.VMECS
 {
@@ -16,30 +16,30 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
     IRealTimeModifiable,
     INeedSave
   {
-    [Serializable(true, false)]
+    [Serializable]
     private string engineData = "";
     private VMBaseEntity parentEntity;
     private bool isModified;
 
-    public virtual void Initialize(VMBaseEntity parent) => this.parentEntity = parent;
+    public virtual void Initialize(VMBaseEntity parent) => parentEntity = parent;
 
     public virtual void Initialize(VMBaseEntity parent, IComponent component)
     {
-      this.Initialize(parent);
+      Initialize(parent);
     }
 
-    public VMBaseEntity Parent => this.parentEntity;
+    public VMBaseEntity Parent => parentEntity;
 
-    public string EngineData => this.engineData;
+    public string EngineData => engineData;
 
-    public string Name => this.GetComponentTypeName();
+    public string Name => GetComponentTypeName();
 
     public virtual void StateSave(IDataWriter writer)
     {
-      SaveManagerUtility.Save(writer, "APIName", this.Name);
+      SaveManagerUtility.Save(writer, "APIName", Name);
     }
 
-    public virtual void LoadFromXML(XmlElement xmlNode) => this.OnModify();
+    public virtual void LoadFromXML(XmlElement xmlNode) => OnModify();
 
     public virtual void OnCreate()
     {
@@ -64,13 +64,13 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
 
     public virtual string GetComponentTypeName()
     {
-      Logger.AddError(TypeUtility.GetTypeName(this.GetType()));
+      Logger.AddError(TypeUtility.GetTypeName(GetType()));
       string componentTypeName = "";
-      object[] customAttributes = this.GetType().GetCustomAttributes(typeof (InfoAttribute), true);
+      object[] customAttributes = GetType().GetCustomAttributes(typeof (InfoAttribute), true);
       if (customAttributes.Length != 0)
         componentTypeName = ((InfoAttribute) customAttributes[0]).ApiName;
       if ("" == componentTypeName)
-        Logger.AddError(string.Format("Component api name for component {0} not defined !", (object) this.GetType()));
+        Logger.AddError(string.Format("Component api name for component {0} not defined !", GetType()));
       return componentTypeName;
     }
 
@@ -80,22 +80,22 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
 
     public void OnModify()
     {
-      this.isModified = true;
-      if (this.ModifiableParent == null)
+      isModified = true;
+      if (ModifiableParent == null)
         return;
-      this.ModifiableParent.OnModify();
+      ModifiableParent.OnModify();
     }
 
-    public bool Modified => this.isModified;
+    public bool Modified => isModified;
 
     public IRealTimeModifiable ModifiableParent
     {
       get
       {
-        return this.Parent != null && typeof (IRealTimeModifiable).IsAssignableFrom(this.Parent.GetType()) ? (IRealTimeModifiable) this.Parent : (IRealTimeModifiable) null;
+        return Parent != null && typeof (IRealTimeModifiable).IsAssignableFrom(Parent.GetType()) ? (IRealTimeModifiable) Parent : null;
       }
     }
 
-    public bool NeedSave => this.Modified;
+    public bool NeedSave => Modified;
   }
 }

@@ -18,19 +18,19 @@ namespace Engine.Source.Components.Interactable.Validators
       if (component1 == null)
         return new ValidateResult(false, "IDoorComponent not found");
       if (component1.Bolted.Value)
-        return new ValidateResult(false, "Bolted " + component1.Bolted.Value.ToString());
+        return new ValidateResult(false, "Bolted " + component1.Bolted.Value);
       if (item.Type == InteractType.Outdoor)
       {
         LockState lockState;
         if (component1.LockState.TryGetValue(PriorityParameterEnum.Quest, out lockState) && lockState != 0)
-          return new ValidateResult(false, "LockState Quest " + (object) lockState);
+          return new ValidateResult(false, "LockState Quest " + lockState);
       }
       else if (component1.LockState.Value != 0)
-        return new ValidateResult(false, "LockState " + (object) component1.LockState.Value);
+        return new ValidateResult(false, "LockState " + component1.LockState.Value);
       LocationItemComponent component2 = ServiceLocator.GetService<ISimulation>().Player.GetComponent<LocationItemComponent>();
       if (item.Type == InteractType.Indoor && component2.IsIndoor)
-        return new ValidateResult(false, "Type IsIndoor " + component2.IsIndoor.ToString());
-      return item.Type == InteractType.Outdoor && !component2.IsIndoor ? new ValidateResult(false, "Type IsIndoor " + component2.IsIndoor.ToString()) : new ValidateResult(true);
+        return new ValidateResult(false, "Type IsIndoor " + component2.IsIndoor);
+      return item.Type == InteractType.Outdoor && !component2.IsIndoor ? new ValidateResult(false, "Type IsIndoor " + component2.IsIndoor) : new ValidateResult(true);
     }
   }
 }

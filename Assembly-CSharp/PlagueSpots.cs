@@ -1,6 +1,5 @@
 ﻿using Engine.Source.Behaviours;
 using Inspectors;
-using UnityEngine;
 
 public class PlagueSpots : MonoBehaviour, IValueController
 {
@@ -11,23 +10,23 @@ public class PlagueSpots : MonoBehaviour, IValueController
   [Inspected(Mutable = true, Mode = ExecuteMode.EditAndRuntime)]
   public float Value
   {
-    get => this.value;
+    get => value;
     set
     {
       this.value = Mathf.Clamp01(value);
-      this.ApplyLevel();
+      ApplyLevel();
     }
   }
 
   private void ApplyLevel()
   {
-    if (PlagueSpots.propertyBlock == null)
+    if (propertyBlock == null)
     {
-      PlagueSpots.propertyBlock = new MaterialPropertyBlock();
-      PlagueSpots.propertyID = Shader.PropertyToID("_Level");
+      propertyBlock = new MaterialPropertyBlock();
+      propertyID = Shader.PropertyToID("_Level");
     }
-    PlagueSpots.propertyBlock.SetFloat(PlagueSpots.propertyID, this.value);
+    propertyBlock.SetFloat(propertyID, value);
     foreach (Renderer componentsInChild in this.GetComponentsInChildren<MeshRenderer>())
-      componentsInChild.SetPropertyBlock(PlagueSpots.propertyBlock);
+      componentsInChild.SetPropertyBlock(propertyBlock);
   }
 }

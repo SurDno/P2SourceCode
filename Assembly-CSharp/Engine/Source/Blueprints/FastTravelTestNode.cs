@@ -1,11 +1,11 @@
-﻿using Engine.Common;
+﻿using System;
+using Engine.Common;
 using Engine.Common.Components.Regions;
 using Engine.Source.Components;
 using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
 using PLVirtualMachine.Common.EngineAPI;
-using System;
 
 namespace Engine.Source.Blueprints
 {
@@ -20,10 +20,10 @@ namespace Engine.Source.Blueprints
     [Port("In")]
     private void In()
     {
-      GameTime travelTime = new GameTime((ushort) 1, (byte) 0, (byte) 0, (byte) 0);
-      if (this.entity != null)
-        this.entity.value.GetComponent<FastTravelComponent>()?.FireTravelToPoint(FastTravelPointEnum.Zavodi, (TimeSpan) travelTime);
-      this.output.Call();
+      GameTime travelTime = new GameTime(1, 0, 0, 0);
+      if (entity != null)
+        entity.value.GetComponent<FastTravelComponent>()?.FireTravelToPoint(FastTravelPointEnum.Zavodi, (TimeSpan) travelTime);
+      output.Call();
     }
   }
 }

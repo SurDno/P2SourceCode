@@ -2,6 +2,6 @@
 
 public class FightSettingsData : ScriptableObjectInstance<FightSettingsData>
 {
-  public List<global::IndividualCombatSettings> IndividualCombatSettings;
+  public List<IndividualCombatSettings> IndividualCombatSettings;
   public FightDescription Description;
 }

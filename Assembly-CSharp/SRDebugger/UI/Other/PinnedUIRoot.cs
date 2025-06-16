@@ -1,6 +1,4 @@
 ﻿using SRF;
-using UnityEngine;
-using UnityEngine.UI;
 
 namespace SRDebugger.UI.Other
 {

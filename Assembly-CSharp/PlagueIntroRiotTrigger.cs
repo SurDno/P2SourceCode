@@ -2,10 +2,6 @@
 using Engine.Source.Commons;
 using Engine.Source.Services;
 using Inspectors;
-using System;
-using UnityEngine;
-using UnityEngine.Playables;
-using UnityEngine.SceneManagement;
 
 public class PlagueIntroRiotTrigger : MonoBehaviour
 {
@@ -17,45 +13,45 @@ public class PlagueIntroRiotTrigger : MonoBehaviour
 
   private void OnEnable()
   {
-    this.IsGame = SceneManager.GetActiveScene().name != "PlagueIntro_Riot_Loader";
-    if (!this.IsGame)
+    IsGame = SceneManager.GetActiveScene().name != "PlagueIntro_Riot_Loader";
+    if (!IsGame)
       return;
-    InstanceByRequest<EngineApplication>.Instance.OnPauseEvent += new Action(this.OnPauseEvent);
+    InstanceByRequest<EngineApplication>.Instance.OnPauseEvent += OnPauseEvent;
   }
 
   private void OnPauseEvent()
   {
-    if (!this.IsGame)
+    if (!IsGame)
       return;
     if (InstanceByRequest<EngineApplication>.Instance.IsPaused)
-      this.director.Pause();
+      director.Pause();
     else
-      this.director.Resume();
+      director.Resume();
   }
 
   private void OnDisable()
   {
-    if (!this.IsGame)
+    if (!IsGame)
       return;
-    InstanceByRequest<EngineApplication>.Instance.OnPauseEvent -= new Action(this.OnPauseEvent);
+    InstanceByRequest<EngineApplication>.Instance.OnPauseEvent -= OnPauseEvent;
   }
 
   private void OnTriggerEnter(Collider other)
   {
-    if (this.done)
+    if (done)
       return;
-    GameObject playerGameObject = this.GetPlayerGameObject();
+    GameObject playerGameObject = GetPlayerGameObject();
     if ((UnityEngine.Object) playerGameObject == (UnityEngine.Object) null || !((UnityEngine.Object) playerGameObject == (UnityEngine.Object) other.gameObject))
       return;
-    this.director.Play();
-    this.done = true;
-    if (this.IsGame)
+    director.Play();
+    done = true;
+    if (IsGame)
       ServiceLocator.GetService<LogicEventService>().FireCommonEvent("PlagueIntroRiotDone");
   }
 
   private GameObject GetPlayerGameObject()
   {
-    if (!this.IsGame)
+    if (!IsGame)
       return GameObject.Find("FPSController");
     return ((IEntityView) ServiceLocator.GetService<ISimulation>().Player)?.GameObject;
   }

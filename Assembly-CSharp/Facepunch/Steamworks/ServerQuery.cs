@@ -7,20 +7,20 @@ namespace Facepunch.Steamworks
     internal Server server;
     internal static byte[] buffer = new byte[65536];
 
-    internal ServerQuery(Server s) => this.server = s;
+    internal ServerQuery(Server s) => server = s;
 
-    public unsafe bool GetOutgoingPacket(out ServerQuery.Packet packet)
+    public unsafe bool GetOutgoingPacket(out Packet packet)
     {
-      packet = new ServerQuery.Packet();
-      fixed (byte* pOut = ServerQuery.buffer)
+      packet = new Packet();
+      fixed (byte* pOut = buffer)
       {
         uint pNetAdr = 0;
         ushort pPort = 0;
-        int nextOutgoingPacket = this.server.native.gameServer.GetNextOutgoingPacket((IntPtr) (void*) pOut, ServerQuery.buffer.Length, out pNetAdr, out pPort);
+        int nextOutgoingPacket = server.native.gameServer.GetNextOutgoingPacket((IntPtr) pOut, buffer.Length, out pNetAdr, out pPort);
         if (nextOutgoingPacket == 0)
           return false;
         packet.Size = nextOutgoingPacket;
-        packet.Data = ServerQuery.buffer;
+        packet.Data = buffer;
         packet.Address = pNetAdr;
         packet.Port = pPort;
         return true;
@@ -30,7 +30,7 @@ namespace Facepunch.Steamworks
     public unsafe void Handle(byte[] data, int size, uint address, ushort port)
     {
       fixed (byte* pData = data)
-        this.server.native.gameServer.HandleIncomingPacket((IntPtr) (void*) pData, size, address, port);
+        server.native.gameServer.HandleIncomingPacket((IntPtr) pData, size, address, port);
     }
 
     public struct Packet

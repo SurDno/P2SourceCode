@@ -15,19 +15,19 @@ namespace Facepunch.Steamworks
 
     public ServerInit(string modDir, string gameDesc)
     {
-      this.ModDir = modDir;
-      this.GameDescription = gameDesc;
+      ModDir = modDir;
+      GameDescription = gameDesc;
     }
 
     public ServerInit RandomSteamPort()
     {
-      this.SteamPort = (ushort) new Random().Next(10000, 60000);
+      SteamPort = (ushort) new Random().Next(10000, 60000);
       return this;
     }
 
     public ServerInit QueryShareGamePort()
     {
-      this.QueryPort = ushort.MaxValue;
+      QueryPort = ushort.MaxValue;
       return this;
     }
   }

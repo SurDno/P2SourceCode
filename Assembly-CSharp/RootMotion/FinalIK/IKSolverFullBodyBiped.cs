@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEngine;
 
 namespace RootMotion.FinalIK
 {
@@ -12,52 +11,52 @@ namespace RootMotion.FinalIK
     [Range(-1f, 1f)]
     public float pullBodyVertical = 0.5f;
     [Range(-1f, 1f)]
-    public float pullBodyHorizontal = 0.0f;
+    public float pullBodyHorizontal;
     private Vector3 offset;
 
-    public IKEffector bodyEffector => this.GetEffector(FullBodyBipedEffector.Body);
+    public IKEffector bodyEffector => GetEffector(FullBodyBipedEffector.Body);
 
-    public IKEffector leftShoulderEffector => this.GetEffector(FullBodyBipedEffector.LeftShoulder);
+    public IKEffector leftShoulderEffector => GetEffector(FullBodyBipedEffector.LeftShoulder);
 
     public IKEffector rightShoulderEffector
     {
-      get => this.GetEffector(FullBodyBipedEffector.RightShoulder);
+      get => GetEffector(FullBodyBipedEffector.RightShoulder);
     }
 
-    public IKEffector leftThighEffector => this.GetEffector(FullBodyBipedEffector.LeftThigh);
+    public IKEffector leftThighEffector => GetEffector(FullBodyBipedEffector.LeftThigh);
 
-    public IKEffector rightThighEffector => this.GetEffector(FullBodyBipedEffector.RightThigh);
+    public IKEffector rightThighEffector => GetEffector(FullBodyBipedEffector.RightThigh);
 
-    public IKEffector leftHandEffector => this.GetEffector(FullBodyBipedEffector.LeftHand);
+    public IKEffector leftHandEffector => GetEffector(FullBodyBipedEffector.LeftHand);
 
-    public IKEffector rightHandEffector => this.GetEffector(FullBodyBipedEffector.RightHand);
+    public IKEffector rightHandEffector => GetEffector(FullBodyBipedEffector.RightHand);
 
-    public IKEffector leftFootEffector => this.GetEffector(FullBodyBipedEffector.LeftFoot);
+    public IKEffector leftFootEffector => GetEffector(FullBodyBipedEffector.LeftFoot);
 
-    public IKEffector rightFootEffector => this.GetEffector(FullBodyBipedEffector.RightFoot);
+    public IKEffector rightFootEffector => GetEffector(FullBodyBipedEffector.RightFoot);
 
-    public FBIKChain leftArmChain => this.chain[1];
+    public FBIKChain leftArmChain => chain[1];
 
-    public FBIKChain rightArmChain => this.chain[2];
+    public FBIKChain rightArmChain => chain[2];
 
-    public FBIKChain leftLegChain => this.chain[3];
+    public FBIKChain leftLegChain => chain[3];
 
-    public FBIKChain rightLegChain => this.chain[4];
+    public FBIKChain rightLegChain => chain[4];
 
-    public IKMappingLimb leftArmMapping => this.limbMappings[0];
+    public IKMappingLimb leftArmMapping => limbMappings[0];
 
-    public IKMappingLimb rightArmMapping => this.limbMappings[1];
+    public IKMappingLimb rightArmMapping => limbMappings[1];
 
-    public IKMappingLimb leftLegMapping => this.limbMappings[2];
+    public IKMappingLimb leftLegMapping => limbMappings[2];
 
-    public IKMappingLimb rightLegMapping => this.limbMappings[3];
+    public IKMappingLimb rightLegMapping => limbMappings[3];
 
-    public IKMappingBone headMapping => this.boneMappings[0];
+    public IKMappingBone headMapping => boneMappings[0];
 
     public void SetChainWeights(FullBodyBipedChain c, float pull, float reach = 0.0f)
     {
-      this.GetChain(c).pull = pull;
-      this.GetChain(c).reach = reach;
+      GetChain(c).pull = pull;
+      GetChain(c).reach = reach;
     }
 
     public void SetEffectorWeights(
@@ -65,8 +64,8 @@ namespace RootMotion.FinalIK
       float positionWeight,
       float rotationWeight)
     {
-      this.GetEffector(effector).positionWeight = Mathf.Clamp(positionWeight, 0.0f, 1f);
-      this.GetEffector(effector).rotationWeight = Mathf.Clamp(rotationWeight, 0.0f, 1f);
+      GetEffector(effector).positionWeight = Mathf.Clamp(positionWeight, 0.0f, 1f);
+      GetEffector(effector).rotationWeight = Mathf.Clamp(rotationWeight, 0.0f, 1f);
     }
 
     public FBIKChain GetChain(FullBodyBipedChain c)
@@ -74,15 +73,15 @@ namespace RootMotion.FinalIK
       switch (c)
       {
         case FullBodyBipedChain.LeftArm:
-          return this.chain[1];
+          return chain[1];
         case FullBodyBipedChain.RightArm:
-          return this.chain[2];
+          return chain[2];
         case FullBodyBipedChain.LeftLeg:
-          return this.chain[3];
+          return chain[3];
         case FullBodyBipedChain.RightLeg:
-          return this.chain[4];
+          return chain[4];
         default:
-          return (FBIKChain) null;
+          return null;
       }
     }
 
@@ -91,25 +90,25 @@ namespace RootMotion.FinalIK
       switch (effector)
       {
         case FullBodyBipedEffector.Body:
-          return this.chain[0];
+          return chain[0];
         case FullBodyBipedEffector.LeftShoulder:
-          return this.chain[1];
+          return chain[1];
         case FullBodyBipedEffector.RightShoulder:
-          return this.chain[2];
+          return chain[2];
         case FullBodyBipedEffector.LeftThigh:
-          return this.chain[3];
+          return chain[3];
         case FullBodyBipedEffector.RightThigh:
-          return this.chain[4];
+          return chain[4];
         case FullBodyBipedEffector.LeftHand:
-          return this.chain[1];
+          return chain[1];
         case FullBodyBipedEffector.RightHand:
-          return this.chain[2];
+          return chain[2];
         case FullBodyBipedEffector.LeftFoot:
-          return this.chain[3];
+          return chain[3];
         case FullBodyBipedEffector.RightFoot:
-          return this.chain[4];
+          return chain[4];
         default:
-          return (FBIKChain) null;
+          return null;
       }
     }
 
@@ -118,25 +117,25 @@ namespace RootMotion.FinalIK
       switch (effector)
       {
         case FullBodyBipedEffector.Body:
-          return this.effectors[0];
+          return effectors[0];
         case FullBodyBipedEffector.LeftShoulder:
-          return this.effectors[1];
+          return effectors[1];
         case FullBodyBipedEffector.RightShoulder:
-          return this.effectors[2];
+          return effectors[2];
         case FullBodyBipedEffector.LeftThigh:
-          return this.effectors[3];
+          return effectors[3];
         case FullBodyBipedEffector.RightThigh:
-          return this.effectors[4];
+          return effectors[4];
         case FullBodyBipedEffector.LeftHand:
-          return this.effectors[5];
+          return effectors[5];
         case FullBodyBipedEffector.RightHand:
-          return this.effectors[6];
+          return effectors[6];
         case FullBodyBipedEffector.LeftFoot:
-          return this.effectors[7];
+          return effectors[7];
         case FullBodyBipedEffector.RightFoot:
-          return this.effectors[8];
+          return effectors[8];
         default:
-          return (IKEffector) null;
+          return null;
       }
     }
 
@@ -145,15 +144,15 @@ namespace RootMotion.FinalIK
       switch (c)
       {
         case FullBodyBipedChain.LeftArm:
-          return this.effectors[5];
+          return effectors[5];
         case FullBodyBipedChain.RightArm:
-          return this.effectors[6];
+          return effectors[6];
         case FullBodyBipedChain.LeftLeg:
-          return this.effectors[7];
+          return effectors[7];
         case FullBodyBipedChain.RightLeg:
-          return this.effectors[8];
+          return effectors[8];
         default:
-          return (IKEffector) null;
+          return null;
       }
     }
 
@@ -162,15 +161,15 @@ namespace RootMotion.FinalIK
       switch (chain)
       {
         case FullBodyBipedChain.LeftArm:
-          return this.limbMappings[0];
+          return limbMappings[0];
         case FullBodyBipedChain.RightArm:
-          return this.limbMappings[1];
+          return limbMappings[1];
         case FullBodyBipedChain.LeftLeg:
-          return this.limbMappings[2];
+          return limbMappings[2];
         case FullBodyBipedChain.RightLeg:
-          return this.limbMappings[3];
+          return limbMappings[3];
         default:
-          return (IKMappingLimb) null;
+          return null;
       }
     }
 
@@ -179,44 +178,44 @@ namespace RootMotion.FinalIK
       switch (effector)
       {
         case FullBodyBipedEffector.LeftShoulder:
-          return this.limbMappings[0];
+          return limbMappings[0];
         case FullBodyBipedEffector.RightShoulder:
-          return this.limbMappings[1];
+          return limbMappings[1];
         case FullBodyBipedEffector.LeftThigh:
-          return this.limbMappings[2];
+          return limbMappings[2];
         case FullBodyBipedEffector.RightThigh:
-          return this.limbMappings[3];
+          return limbMappings[3];
         case FullBodyBipedEffector.LeftHand:
-          return this.limbMappings[0];
+          return limbMappings[0];
         case FullBodyBipedEffector.RightHand:
-          return this.limbMappings[1];
+          return limbMappings[1];
         case FullBodyBipedEffector.LeftFoot:
-          return this.limbMappings[2];
+          return limbMappings[2];
         case FullBodyBipedEffector.RightFoot:
-          return this.limbMappings[3];
+          return limbMappings[3];
         default:
-          return (IKMappingLimb) null;
+          return null;
       }
     }
 
-    public IKMappingSpine GetSpineMapping() => this.spineMapping;
+    public IKMappingSpine GetSpineMapping() => spineMapping;
 
-    public IKMappingBone GetHeadMapping() => this.boneMappings[0];
+    public IKMappingBone GetHeadMapping() => boneMappings[0];
 
     public IKConstraintBend GetBendConstraint(FullBodyBipedChain limb)
     {
       switch (limb)
       {
         case FullBodyBipedChain.LeftArm:
-          return this.chain[1].bendConstraint;
+          return chain[1].bendConstraint;
         case FullBodyBipedChain.RightArm:
-          return this.chain[2].bendConstraint;
+          return chain[2].bendConstraint;
         case FullBodyBipedChain.LeftLeg:
-          return this.chain[3].bendConstraint;
+          return chain[3].bendConstraint;
         case FullBodyBipedChain.RightLeg:
-          return this.chain[4].bendConstraint;
+          return chain[4].bendConstraint;
         default:
-          return (IKConstraintBend) null;
+          return null;
       }
     }
 
@@ -224,12 +223,12 @@ namespace RootMotion.FinalIK
     {
       if (!base.IsValid(ref message))
         return false;
-      if ((UnityEngine.Object) this.rootNode == (UnityEngine.Object) null)
+      if ((UnityEngine.Object) rootNode == (UnityEngine.Object) null)
       {
         message = "Root Node bone is null. FBBIK will not initiate.";
         return false;
       }
-      if (this.chain.Length == 5 && this.chain[0].nodes.Length == 1 && this.chain[1].nodes.Length == 3 && this.chain[2].nodes.Length == 3 && this.chain[3].nodes.Length == 3 && this.chain[4].nodes.Length == 3 && this.effectors.Length == 9 && this.limbMappings.Length == 4)
+      if (chain.Length == 5 && chain[0].nodes.Length == 1 && chain[1].nodes.Length == 3 && chain[2].nodes.Length == 3 && chain[3].nodes.Length == 3 && chain[4].nodes.Length == 3 && effectors.Length == 9 && limbMappings.Length == 4)
         return true;
       message = "Invalid FBBIK setup. Please right-click on the component header and select 'Reinitiate'.";
       return false;
@@ -237,26 +236,26 @@ namespace RootMotion.FinalIK
 
     public void SetToReferences(BipedReferences references, Transform rootNode = null)
     {
-      this.root = references.root;
+      root = references.root;
       if ((UnityEngine.Object) rootNode == (UnityEngine.Object) null)
-        rootNode = IKSolverFullBodyBiped.DetectRootNodeBone(references);
+        rootNode = DetectRootNodeBone(references);
       this.rootNode = rootNode;
-      if (this.chain == null || this.chain.Length != 5)
-        this.chain = new FBIKChain[5];
-      for (int index = 0; index < this.chain.Length; ++index)
+      if (chain == null || chain.Length != 5)
+        chain = new FBIKChain[5];
+      for (int index = 0; index < chain.Length; ++index)
       {
-        if (this.chain[index] == null)
-          this.chain[index] = new FBIKChain();
+        if (chain[index] == null)
+          chain[index] = new FBIKChain();
       }
-      this.chain[0].pin = 0.0f;
-      this.chain[0].SetNodes(rootNode);
-      this.chain[0].children = new int[4]{ 1, 2, 3, 4 };
-      this.chain[1].SetNodes(references.leftUpperArm, references.leftForearm, references.leftHand);
-      this.chain[2].SetNodes(references.rightUpperArm, references.rightForearm, references.rightHand);
-      this.chain[3].SetNodes(references.leftThigh, references.leftCalf, references.leftFoot);
-      this.chain[4].SetNodes(references.rightThigh, references.rightCalf, references.rightFoot);
-      if (this.effectors.Length != 9)
-        this.effectors = new IKEffector[9]
+      chain[0].pin = 0.0f;
+      chain[0].SetNodes(rootNode);
+      chain[0].children = new int[4]{ 1, 2, 3, 4 };
+      chain[1].SetNodes(references.leftUpperArm, references.leftForearm, references.leftHand);
+      chain[2].SetNodes(references.rightUpperArm, references.rightForearm, references.rightHand);
+      chain[3].SetNodes(references.leftThigh, references.leftCalf, references.leftFoot);
+      chain[4].SetNodes(references.rightThigh, references.rightCalf, references.rightFoot);
+      if (effectors.Length != 9)
+        effectors = new IKEffector[9]
         {
           new IKEffector(),
           new IKEffector(),
@@ -268,33 +267,33 @@ namespace RootMotion.FinalIK
           new IKEffector(),
           new IKEffector()
         };
-      this.effectors[0].bone = rootNode;
-      this.effectors[0].childBones = new Transform[2]
+      effectors[0].bone = rootNode;
+      effectors[0].childBones = new Transform[2]
       {
         references.leftThigh,
         references.rightThigh
       };
-      this.effectors[1].bone = references.leftUpperArm;
-      this.effectors[2].bone = references.rightUpperArm;
-      this.effectors[3].bone = references.leftThigh;
-      this.effectors[4].bone = references.rightThigh;
-      this.effectors[5].bone = references.leftHand;
-      this.effectors[6].bone = references.rightHand;
-      this.effectors[7].bone = references.leftFoot;
-      this.effectors[8].bone = references.rightFoot;
-      this.effectors[5].planeBone1 = references.leftUpperArm;
-      this.effectors[5].planeBone2 = references.rightUpperArm;
-      this.effectors[5].planeBone3 = rootNode;
-      this.effectors[6].planeBone1 = references.rightUpperArm;
-      this.effectors[6].planeBone2 = references.leftUpperArm;
-      this.effectors[6].planeBone3 = rootNode;
-      this.effectors[7].planeBone1 = references.leftThigh;
-      this.effectors[7].planeBone2 = references.rightThigh;
-      this.effectors[7].planeBone3 = rootNode;
-      this.effectors[8].planeBone1 = references.rightThigh;
-      this.effectors[8].planeBone2 = references.leftThigh;
-      this.effectors[8].planeBone3 = rootNode;
-      this.chain[0].childConstraints = new FBIKChain.ChildConstraint[4]
+      effectors[1].bone = references.leftUpperArm;
+      effectors[2].bone = references.rightUpperArm;
+      effectors[3].bone = references.leftThigh;
+      effectors[4].bone = references.rightThigh;
+      effectors[5].bone = references.leftHand;
+      effectors[6].bone = references.rightHand;
+      effectors[7].bone = references.leftFoot;
+      effectors[8].bone = references.rightFoot;
+      effectors[5].planeBone1 = references.leftUpperArm;
+      effectors[5].planeBone2 = references.rightUpperArm;
+      effectors[5].planeBone3 = rootNode;
+      effectors[6].planeBone1 = references.rightUpperArm;
+      effectors[6].planeBone2 = references.leftUpperArm;
+      effectors[6].planeBone3 = rootNode;
+      effectors[7].planeBone1 = references.leftThigh;
+      effectors[7].planeBone2 = references.rightThigh;
+      effectors[7].planeBone3 = rootNode;
+      effectors[8].planeBone1 = references.rightThigh;
+      effectors[8].planeBone2 = references.leftThigh;
+      effectors[8].planeBone3 = rootNode;
+      chain[0].childConstraints = new FBIKChain.ChildConstraint[4]
       {
         new FBIKChain.ChildConstraint(references.leftUpperArm, references.rightThigh, pullElasticity: 1f),
         new FBIKChain.ChildConstraint(references.rightUpperArm, references.leftThigh, pullElasticity: 1f),
@@ -305,42 +304,42 @@ namespace RootMotion.FinalIK
       spineBones[0] = references.pelvis;
       for (int index = 0; index < references.spine.Length; ++index)
         spineBones[index + 1] = references.spine[index];
-      if (this.spineMapping == null)
+      if (spineMapping == null)
       {
-        this.spineMapping = new IKMappingSpine();
-        this.spineMapping.iterations = 3;
+        spineMapping = new IKMappingSpine();
+        spineMapping.iterations = 3;
       }
-      this.spineMapping.SetBones(spineBones, references.leftUpperArm, references.rightUpperArm, references.leftThigh, references.rightThigh);
+      spineMapping.SetBones(spineBones, references.leftUpperArm, references.rightUpperArm, references.leftThigh, references.rightThigh);
       int length = (UnityEngine.Object) references.head != (UnityEngine.Object) null ? 1 : 0;
-      if (this.boneMappings.Length != length)
+      if (boneMappings.Length != length)
       {
-        this.boneMappings = new IKMappingBone[length];
-        for (int index = 0; index < this.boneMappings.Length; ++index)
-          this.boneMappings[index] = new IKMappingBone();
+        boneMappings = new IKMappingBone[length];
+        for (int index = 0; index < boneMappings.Length; ++index)
+          boneMappings[index] = new IKMappingBone();
         if (length == 1)
-          this.boneMappings[0].maintainRotationWeight = 0.0f;
+          boneMappings[0].maintainRotationWeight = 0.0f;
       }
-      if (this.boneMappings.Length != 0)
-        this.boneMappings[0].bone = references.head;
-      if (this.limbMappings.Length != 4)
+      if (boneMappings.Length != 0)
+        boneMappings[0].bone = references.head;
+      if (limbMappings.Length != 4)
       {
-        this.limbMappings = new IKMappingLimb[4]
+        limbMappings = new IKMappingLimb[4]
         {
           new IKMappingLimb(),
           new IKMappingLimb(),
           new IKMappingLimb(),
           new IKMappingLimb()
         };
-        this.limbMappings[2].maintainRotationWeight = 1f;
-        this.limbMappings[3].maintainRotationWeight = 1f;
+        limbMappings[2].maintainRotationWeight = 1f;
+        limbMappings[3].maintainRotationWeight = 1f;
       }
-      this.limbMappings[0].SetBones(references.leftUpperArm, references.leftForearm, references.leftHand, IKSolverFullBodyBiped.GetLeftClavicle(references));
-      this.limbMappings[1].SetBones(references.rightUpperArm, references.rightForearm, references.rightHand, IKSolverFullBodyBiped.GetRightClavicle(references));
-      this.limbMappings[2].SetBones(references.leftThigh, references.leftCalf, references.leftFoot);
-      this.limbMappings[3].SetBones(references.rightThigh, references.rightCalf, references.rightFoot);
+      limbMappings[0].SetBones(references.leftUpperArm, references.leftForearm, references.leftHand, GetLeftClavicle(references));
+      limbMappings[1].SetBones(references.rightUpperArm, references.rightForearm, references.rightHand, GetRightClavicle(references));
+      limbMappings[2].SetBones(references.leftThigh, references.leftCalf, references.leftFoot);
+      limbMappings[3].SetBones(references.rightThigh, references.rightCalf, references.rightFoot);
       if (!Application.isPlaying)
         return;
-      this.Initiate(references.root);
+      Initiate(references.root);
     }
 
     public static Transform DetectRootNodeBone(BipedReferences references)
@@ -359,7 +358,7 @@ namespace RootMotion.FinalIK
       for (int index2 = 1; index2 < length; ++index2)
       {
         Vector3 vector3_2 = Vector3.Project(references.spine[index2].position - vector3_1, onNormal);
-        if ((double) Vector3.Dot(vector3_2.normalized, onNormal.normalized) > 0.0 && (double) (vector3_2.magnitude / magnitude) < 0.5)
+        if ((double) Vector3.Dot(vector3_2.normalized, onNormal.normalized) > 0.0 && vector3_2.magnitude / magnitude < 0.5)
           index1 = index2;
       }
       return references.spine[index1];
@@ -367,10 +366,10 @@ namespace RootMotion.FinalIK
 
     public void SetLimbOrientations(BipedLimbOrientations o)
     {
-      this.SetLimbOrientation(FullBodyBipedChain.LeftArm, o.leftArm);
-      this.SetLimbOrientation(FullBodyBipedChain.RightArm, o.rightArm);
-      this.SetLimbOrientation(FullBodyBipedChain.LeftLeg, o.leftLeg);
-      this.SetLimbOrientation(FullBodyBipedChain.RightLeg, o.rightLeg);
+      SetLimbOrientation(FullBodyBipedChain.LeftArm, o.leftArm);
+      SetLimbOrientation(FullBodyBipedChain.RightArm, o.rightArm);
+      SetLimbOrientation(FullBodyBipedChain.LeftLeg, o.leftLeg);
+      SetLimbOrientation(FullBodyBipedChain.RightLeg, o.rightLeg);
     }
 
     public Vector3 pullBodyOffset { get; private set; }
@@ -381,24 +380,24 @@ namespace RootMotion.FinalIK
     {
       if (chain == FullBodyBipedChain.LeftArm || chain == FullBodyBipedChain.RightArm)
       {
-        this.GetBendConstraint(chain).SetLimbOrientation(-limbOrientation.upperBoneForwardAxis, -limbOrientation.lowerBoneForwardAxis, -limbOrientation.lastBoneLeftAxis);
-        this.GetLimbMapping(chain).SetLimbOrientation(-limbOrientation.upperBoneForwardAxis, -limbOrientation.lowerBoneForwardAxis);
+        GetBendConstraint(chain).SetLimbOrientation(-limbOrientation.upperBoneForwardAxis, -limbOrientation.lowerBoneForwardAxis, -limbOrientation.lastBoneLeftAxis);
+        GetLimbMapping(chain).SetLimbOrientation(-limbOrientation.upperBoneForwardAxis, -limbOrientation.lowerBoneForwardAxis);
       }
       else
       {
-        this.GetBendConstraint(chain).SetLimbOrientation(limbOrientation.upperBoneForwardAxis, limbOrientation.lowerBoneForwardAxis, limbOrientation.lastBoneLeftAxis);
-        this.GetLimbMapping(chain).SetLimbOrientation(limbOrientation.upperBoneForwardAxis, limbOrientation.lowerBoneForwardAxis);
+        GetBendConstraint(chain).SetLimbOrientation(limbOrientation.upperBoneForwardAxis, limbOrientation.lowerBoneForwardAxis, limbOrientation.lastBoneLeftAxis);
+        GetLimbMapping(chain).SetLimbOrientation(limbOrientation.upperBoneForwardAxis, limbOrientation.lowerBoneForwardAxis);
       }
     }
 
     private static Transform GetLeftClavicle(BipedReferences references)
     {
-      return (UnityEngine.Object) references.leftUpperArm == (UnityEngine.Object) null || IKSolverFullBodyBiped.Contains(references.spine, references.leftUpperArm.parent) ? (Transform) null : references.leftUpperArm.parent;
+      return (UnityEngine.Object) references.leftUpperArm == (UnityEngine.Object) null || Contains(references.spine, references.leftUpperArm.parent) ? (Transform) null : references.leftUpperArm.parent;
     }
 
     private static Transform GetRightClavicle(BipedReferences references)
     {
-      return (UnityEngine.Object) references.rightUpperArm == (UnityEngine.Object) null || IKSolverFullBodyBiped.Contains(references.spine, references.rightUpperArm.parent) ? (Transform) null : references.rightUpperArm.parent;
+      return (UnityEngine.Object) references.rightUpperArm == (UnityEngine.Object) null || Contains(references.spine, references.rightUpperArm.parent) ? (Transform) null : references.rightUpperArm.parent;
     }
 
     private static bool Contains(Transform[] array, Transform transform)
@@ -413,28 +412,28 @@ namespace RootMotion.FinalIK
 
     protected override void ReadPose()
     {
-      for (int index = 0; index < this.effectors.Length; ++index)
-        this.effectors[index].SetToTarget();
-      this.PullBody();
-      float num = Mathf.Clamp(1f - this.spineStiffness, 0.0f, 1f);
-      this.chain[0].childConstraints[0].pushElasticity = num;
-      this.chain[0].childConstraints[1].pushElasticity = num;
+      for (int index = 0; index < effectors.Length; ++index)
+        effectors[index].SetToTarget();
+      PullBody();
+      float num = Mathf.Clamp(1f - spineStiffness, 0.0f, 1f);
+      chain[0].childConstraints[0].pushElasticity = num;
+      chain[0].childConstraints[1].pushElasticity = num;
       base.ReadPose();
     }
 
     private void PullBody()
     {
-      if (this.iterations < 1 || (double) this.pullBodyVertical == 0.0 && (double) this.pullBodyHorizontal == 0.0)
+      if (iterations < 1 || pullBodyVertical == 0.0 && pullBodyHorizontal == 0.0)
         return;
-      Vector3 bodyOffset = this.GetBodyOffset();
-      this.pullBodyOffset = V3Tools.ExtractVertical(bodyOffset, this.root.up, this.pullBodyVertical) + V3Tools.ExtractHorizontal(bodyOffset, this.root.up, this.pullBodyHorizontal);
-      this.bodyEffector.positionOffset += this.pullBodyOffset;
+      Vector3 bodyOffset = GetBodyOffset();
+      pullBodyOffset = V3Tools.ExtractVertical(bodyOffset, root.up, pullBodyVertical) + V3Tools.ExtractHorizontal(bodyOffset, root.up, pullBodyHorizontal);
+      bodyEffector.positionOffset += pullBodyOffset;
     }
 
     private Vector3 GetBodyOffset()
     {
-      Vector3 offset = Vector3.zero + this.GetHandBodyPull(this.leftHandEffector, this.leftArmChain, Vector3.zero) * Mathf.Clamp(this.leftHandEffector.positionWeight, 0.0f, 1f);
-      return offset + this.GetHandBodyPull(this.rightHandEffector, this.rightArmChain, offset) * Mathf.Clamp(this.rightHandEffector.positionWeight, 0.0f, 1f);
+      Vector3 offset = Vector3.zero + GetHandBodyPull(leftHandEffector, leftArmChain, Vector3.zero) * Mathf.Clamp(leftHandEffector.positionWeight, 0.0f, 1f);
+      return offset + GetHandBodyPull(rightHandEffector, rightArmChain, offset) * Mathf.Clamp(rightHandEffector.positionWeight, 0.0f, 1f);
     }
 
     private Vector3 GetHandBodyPull(IKEffector effector, FBIKChain arm, Vector3 offset)
@@ -442,7 +441,7 @@ namespace RootMotion.FinalIK
       Vector3 vector3 = effector.position - (arm.nodes[0].transform.position + offset);
       float num1 = arm.nodes[0].length + arm.nodes[1].length;
       float magnitude = vector3.magnitude;
-      if ((double) magnitude < (double) num1)
+      if (magnitude < (double) num1)
         return Vector3.zero;
       float num2 = magnitude - num1;
       return vector3 / magnitude * num2;
@@ -450,20 +449,20 @@ namespace RootMotion.FinalIK
 
     protected override void ApplyBendConstraints()
     {
-      if (this.iterations > 0)
+      if (iterations > 0)
       {
-        this.chain[1].bendConstraint.rotationOffset = this.leftHandEffector.planeRotationOffset;
-        this.chain[2].bendConstraint.rotationOffset = this.rightHandEffector.planeRotationOffset;
-        this.chain[3].bendConstraint.rotationOffset = this.leftFootEffector.planeRotationOffset;
-        this.chain[4].bendConstraint.rotationOffset = this.rightFootEffector.planeRotationOffset;
+        chain[1].bendConstraint.rotationOffset = leftHandEffector.planeRotationOffset;
+        chain[2].bendConstraint.rotationOffset = rightHandEffector.planeRotationOffset;
+        chain[3].bendConstraint.rotationOffset = leftFootEffector.planeRotationOffset;
+        chain[4].bendConstraint.rotationOffset = rightFootEffector.planeRotationOffset;
       }
       else
       {
-        this.offset = Vector3.Lerp(this.effectors[0].positionOffset, this.effectors[0].position - (this.effectors[0].bone.position + this.effectors[0].positionOffset), this.effectors[0].positionWeight);
+        offset = Vector3.Lerp(effectors[0].positionOffset, effectors[0].position - (effectors[0].bone.position + effectors[0].positionOffset), effectors[0].positionWeight);
         for (int index = 0; index < 5; ++index)
         {
-          IKSolver.Node node = this.effectors[index].GetNode((IKSolverFullBody) this);
-          node.solverPosition = node.solverPosition + this.offset;
+          Node node = effectors[index].GetNode(this);
+          node.solverPosition = node.solverPosition + offset;
         }
       }
       base.ApplyBendConstraints();
@@ -471,8 +470,8 @@ namespace RootMotion.FinalIK
 
     protected override void WritePose()
     {
-      if (this.iterations == 0)
-        this.spineMapping.spineBones[0].position += this.offset;
+      if (iterations == 0)
+        spineMapping.spineBones[0].position += offset;
       base.WritePose();
     }
   }

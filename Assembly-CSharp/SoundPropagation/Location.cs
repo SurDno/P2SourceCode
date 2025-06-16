@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace SoundPropagation
+﻿namespace SoundPropagation
 {
   public struct Location
   {

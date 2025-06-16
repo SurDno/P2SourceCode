@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
 
 namespace AmplifyColor
 {
@@ -10,15 +9,15 @@ namespace AmplifyColor
   {
     public List<VolumeEffectComponentFlags> components;
 
-    public VolumeEffectFlags() => this.components = new List<VolumeEffectComponentFlags>();
+    public VolumeEffectFlags() => components = new List<VolumeEffectComponentFlags>();
 
     public void AddComponent(Component c)
     {
       VolumeEffectComponentFlags effectComponentFlags;
-      if ((effectComponentFlags = this.components.Find((Predicate<VolumeEffectComponentFlags>) (s => s.componentName == string.Concat((object) ((object) c).GetType())))) != null)
+      if ((effectComponentFlags = components.Find(s => s.componentName == string.Concat(((object) c).GetType()))) != null)
         effectComponentFlags.UpdateComponentFlags(c);
       else
-        this.components.Add(new VolumeEffectComponentFlags(c));
+        components.Add(new VolumeEffectComponentFlags(c));
     }
 
     public void UpdateFlags(VolumeEffect effectVol)
@@ -27,8 +26,8 @@ namespace AmplifyColor
       {
         VolumeEffectComponent comp = component;
         VolumeEffectComponentFlags effectComponentFlags;
-        if ((effectComponentFlags = this.components.Find((Predicate<VolumeEffectComponentFlags>) (s => s.componentName == comp.componentName))) == null)
-          this.components.Add(new VolumeEffectComponentFlags(comp));
+        if ((effectComponentFlags = components.Find(s => s.componentName == comp.componentName)) == null)
+          components.Add(new VolumeEffectComponentFlags(comp));
         else
           effectComponentFlags.UpdateComponentFlags(comp);
       }
@@ -51,7 +50,7 @@ namespace AmplifyColor
     public VolumeEffect GenerateEffectData(AmplifyColorBase go)
     {
       VolumeEffect effectData = new VolumeEffect(go);
-      foreach (VolumeEffectComponentFlags component1 in this.components)
+      foreach (VolumeEffectComponentFlags component1 in components)
       {
         if (component1.blendFlag)
         {
@@ -65,17 +64,17 @@ namespace AmplifyColor
 
     public VolumeEffectComponentFlags FindComponentFlags(string compName)
     {
-      for (int index = 0; index < this.components.Count; ++index)
+      for (int index = 0; index < components.Count; ++index)
       {
-        if (this.components[index].componentName == compName)
-          return this.components[index];
+        if (components[index].componentName == compName)
+          return components[index];
       }
-      return (VolumeEffectComponentFlags) null;
+      return null;
     }
 
     public string[] GetComponentNames()
     {
-      return this.components.Where<VolumeEffectComponentFlags>((Func<VolumeEffectComponentFlags, bool>) (r => r.blendFlag)).Select<VolumeEffectComponentFlags, string>((Func<VolumeEffectComponentFlags, string>) (r => r.componentName)).ToArray<string>();
+      return components.Where(r => r.blendFlag).Select(r => r.componentName).ToArray();
     }
   }
 }

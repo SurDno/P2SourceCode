@@ -1,7 +1,7 @@
-﻿using Cofe.Serializations.Data;
+﻿using System.Xml;
+using Cofe.Serializations.Data;
 using PLVirtualMachine.Common.Data;
 using PLVirtualMachine.Common.Serialization;
-using System.Xml;
 
 namespace PLVirtualMachine.Common.EngineAPI.VMECS
 {
@@ -16,19 +16,19 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
 
     public PriceInfo(string templateName) => this.templateName = templateName;
 
-    public string TemplateName => this.templateName;
+    public string TemplateName => templateName;
 
     public float Price { get; set; } = -1f;
 
     public float BuyPrice
     {
-      get => this.buyPriceValue;
+      get => buyPriceValue;
       set
       {
-        this.buyPriceValue = value;
-        if ((double) this.buyPriceValue <= 9.9999999747524271E-07 || (double) this.BuyPriceFactor >= 9.9999999747524271E-07)
+        buyPriceValue = value;
+        if (buyPriceValue <= 9.9999999747524271E-07 || BuyPriceFactor >= 9.9999999747524271E-07)
           return;
-        this.BuyPriceFactor = 1f;
+        BuyPriceFactor = 1f;
       }
     }
 
@@ -38,11 +38,11 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
 
     public void StateSave(IDataWriter writer)
     {
-      SaveManagerUtility.Save(writer, "TemplateName", this.templateName);
-      SaveManagerUtility.Save(writer, "Price", this.Price);
-      SaveManagerUtility.Save(writer, "BuyPrice", this.buyPriceValue);
-      SaveManagerUtility.Save(writer, "PriceFactor", this.PriceFactor);
-      SaveManagerUtility.Save(writer, "BuyPriceFactor", this.BuyPriceFactor);
+      SaveManagerUtility.Save(writer, "TemplateName", templateName);
+      SaveManagerUtility.Save(writer, "Price", Price);
+      SaveManagerUtility.Save(writer, "BuyPrice", buyPriceValue);
+      SaveManagerUtility.Save(writer, "PriceFactor", PriceFactor);
+      SaveManagerUtility.Save(writer, "BuyPriceFactor", BuyPriceFactor);
     }
 
     public void LoadFromXML(XmlElement xmlNode)
@@ -50,15 +50,15 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
       foreach (XmlElement childNode in xmlNode.ChildNodes)
       {
         if (childNode.Name == "TemplateName")
-          this.templateName = childNode.InnerText;
+          templateName = childNode.InnerText;
         else if (childNode.Name == "Price")
-          this.Price = StringUtility.ToSingle(childNode.InnerText);
+          Price = StringUtility.ToSingle(childNode.InnerText);
         else if (childNode.Name == "BuyPrice")
-          this.buyPriceValue = StringUtility.ToSingle(childNode.InnerText);
+          buyPriceValue = StringUtility.ToSingle(childNode.InnerText);
         else if (childNode.Name == "PriceFactor")
-          this.PriceFactor = StringUtility.ToSingle(childNode.InnerText);
+          PriceFactor = StringUtility.ToSingle(childNode.InnerText);
         else if (childNode.Name == "BuyPriceFactor")
-          this.BuyPriceFactor = StringUtility.ToSingle(childNode.InnerText);
+          BuyPriceFactor = StringUtility.ToSingle(childNode.InnerText);
       }
     }
   }

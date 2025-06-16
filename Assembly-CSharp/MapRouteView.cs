@@ -1,6 +1,5 @@
-﻿using Engine.Common.Components.Regions;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using System.Collections.Generic;
+using Engine.Common.Components.Regions;
 
 public abstract class MapRouteView : MonoBehaviour
 {

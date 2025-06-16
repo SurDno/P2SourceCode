@@ -1,25 +1,24 @@
 ﻿using System;
-using UnityEngine;
 
 namespace Engine.Impl.UI.Controls
 {
   public class SwitchIntView : IntView
   {
     [SerializeField]
-    private SwitchIntView.ValueViewPair[] views = new SwitchIntView.ValueViewPair[0];
+    private ValueViewPair[] views = new ValueViewPair[0];
 
     protected override void ApplyIntValue()
     {
-      foreach (SwitchIntView.ValueViewPair view in this.views)
+      foreach (ValueViewPair view in views)
       {
         if ((UnityEngine.Object) view.hideableView != (UnityEngine.Object) null)
-          view.hideableView.Visible = this.IntValue == view.value;
+          view.hideableView.Visible = IntValue == view.value;
       }
     }
 
     public override void SkipAnimation()
     {
-      foreach (SwitchIntView.ValueViewPair view in this.views)
+      foreach (ValueViewPair view in views)
       {
         if ((UnityEngine.Object) view.hideableView != (UnityEngine.Object) null)
           view.hideableView.SkipAnimation();

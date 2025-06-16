@@ -1,4 +1,5 @@
-﻿using Engine.Common;
+﻿using Cofe.Serializations.Data;
+using Engine.Common;
 using Engine.Common.Commons;
 using Engine.Common.Components;
 using Engine.Common.Components.MessangerStationary;
@@ -19,28 +20,28 @@ namespace Engine.Source.Components
     IComponent,
     INeedSave
   {
-    [StateSaveProxy(MemberEnum.None)]
-    [StateLoadProxy(MemberEnum.None)]
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
+    [StateSaveProxy]
+    [StateLoadProxy]
+    [DataReadProxy]
+    [DataWriteProxy]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    [CopyableProxy(MemberEnum.None)]
+    [CopyableProxy]
     protected SpawnpointKindEnum spawnpointKindEnum;
-    [StateSaveProxy(MemberEnum.None)]
-    [StateLoadProxy(MemberEnum.None)]
+    [StateSaveProxy]
+    [StateLoadProxy()]
     [Inspected]
     protected bool registred;
 
     public SpawnpointKindEnum SpawnpointKind
     {
-      get => this.spawnpointKindEnum;
+      get => spawnpointKindEnum;
       set
       {
-        this.spawnpointKindEnum = value;
-        if (!this.registred)
+        spawnpointKindEnum = value;
+        if (!registred)
           return;
-        this.StopTeleporting();
-        this.StartTeleporting();
+        StopTeleporting();
+        StartTeleporting();
       }
     }
 
@@ -52,29 +53,29 @@ namespace Engine.Source.Components
 
     public override void OnRemoved()
     {
-      if (!this.registred)
+      if (!registred)
         return;
-      this.StopTeleporting();
+      StopTeleporting();
     }
 
     public void StartTeleporting()
     {
-      ServiceLocator.GetService<PostmanStaticTeleportService>().RegisterPostman(this.Owner, this.spawnpointKindEnum);
-      this.registred = true;
+      ServiceLocator.GetService<PostmanStaticTeleportService>().RegisterPostman(Owner, spawnpointKindEnum);
+      registred = true;
     }
 
     public void StopTeleporting()
     {
-      ServiceLocator.GetService<PostmanStaticTeleportService>().UnregisterPostman(this.Owner);
-      this.registred = false;
+      ServiceLocator.GetService<PostmanStaticTeleportService>().UnregisterPostman(Owner);
+      registred = false;
     }
 
-    [Cofe.Serializations.Data.OnLoaded]
+    [OnLoaded]
     protected void OnLoaded()
     {
-      if (!this.registred)
+      if (!registred)
         return;
-      ServiceLocator.GetService<PostmanStaticTeleportService>().RegisterPostman(this.Owner, this.spawnpointKindEnum);
+      ServiceLocator.GetService<PostmanStaticTeleportService>().RegisterPostman(Owner, spawnpointKindEnum);
     }
   }
 }

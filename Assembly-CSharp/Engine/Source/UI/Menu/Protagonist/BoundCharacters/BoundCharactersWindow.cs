@@ -1,11 +1,11 @@
-﻿using Engine.Common.Services;
+﻿using System;
+using System.Collections;
+using Engine.Common.Services;
 using Engine.Impl.UI.Menu;
 using Engine.Impl.UI.Menu.Main;
 using Engine.Source.Services;
 using Engine.Source.Services.Inputs;
 using Engine.Source.Utility;
-using System;
-using System.Collections;
 
 namespace Engine.Source.UI.Menu.Protagonist.BoundCharacters
 {
@@ -31,14 +31,14 @@ namespace Engine.Source.UI.Menu.Protagonist.BoundCharacters
 
     protected override void RegisterLayer()
     {
-      this.RegisterLayer<IBoundCharactersWindow>((IBoundCharactersWindow) this);
+      RegisterLayer((IBoundCharactersWindow) this);
     }
 
     public override Type GetWindowType() => typeof (IBoundCharactersWindow);
 
     public override IEnumerator OnOpened()
     {
-      SimplePlayerWindowSwapper.SetLastOpenedPlayerWindow<IBoundCharactersWindow>((IWindow) this);
+      SimplePlayerWindowSwapper.SetLastOpenedPlayerWindow<IBoundCharactersWindow>(this);
       return base.OnOpened();
     }
 

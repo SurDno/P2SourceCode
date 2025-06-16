@@ -10,13 +10,12 @@ using Engine.Source.Services.Inputs;
 using FlowCanvas;
 using FlowCanvas.Nodes;
 using NodeCanvas.Framework;
-using UnityEngine;
 
 namespace ParadoxNotion.AOT
 {
   public class AOTDummy
   {
-    public object o = (object) null;
+    public object o = null;
 
     public void FlowCanvas_ValueHandler_Delegate()
     {
@@ -24,72 +23,72 @@ namespace ParadoxNotion.AOT
 
     public void FlowCanvas_FlowNode_AddValueInput_1()
     {
-      FlowNode flowNode = (FlowNode) null;
-      flowNode.AddValueInput<BlockTypeEnum>((string) this.o, (string) this.o);
-      flowNode.AddValueInput<IntensityParameter<Color>>((string) this.o, (string) this.o);
-      flowNode.AddValueInput<UiEffectType>((string) this.o, (string) this.o);
-      flowNode.AddValueInput<ActionEnum>((string) this.o, (string) this.o);
-      flowNode.AddValueInput<DiseasedStateEnum>((string) this.o, (string) this.o);
-      flowNode.AddValueInput<WeaponKind>((string) this.o, (string) this.o);
-      flowNode.AddValueInput<ParameterNameEnum>((string) this.o, (string) this.o);
-      flowNode.AddValueInput<BuildingEnum>((string) this.o, (string) this.o);
-      flowNode.AddValueInput<RegionEnum>((string) this.o, (string) this.o);
-      flowNode.AddValueInput<TimesOfDay>((string) this.o, (string) this.o);
-      flowNode.AddValueInput<IEntitySerializable>((string) this.o, (string) this.o);
-      flowNode.AddValueInput<LipSyncObjectSerializable>((string) this.o, (string) this.o);
-      flowNode.AddValueInput<AbilityValueNameEnum>((string) this.o, (string) this.o);
-      flowNode.AddValueInput<CameraKindEnum>((string) this.o, (string) this.o);
-      flowNode.AddValueInput<GameActionType>((string) this.o, (string) this.o);
-      flowNode.AddValueInput<bool>((string) this.o, (string) this.o);
-      flowNode.AddValueInput<int>((string) this.o, (string) this.o);
-      flowNode.AddValueInput<float>((string) this.o, (string) this.o);
-      flowNode.AddValueInput<Bounds>((string) this.o, (string) this.o);
-      flowNode.AddValueInput<Color>((string) this.o, (string) this.o);
-      flowNode.AddValueInput<ContactPoint>((string) this.o, (string) this.o);
-      flowNode.AddValueInput<Keyframe>((string) this.o, (string) this.o);
-      flowNode.AddValueInput<LayerMask>((string) this.o, (string) this.o);
-      flowNode.AddValueInput<Quaternion>((string) this.o, (string) this.o);
-      flowNode.AddValueInput<RaycastHit>((string) this.o, (string) this.o);
-      flowNode.AddValueInput<Rect>((string) this.o, (string) this.o);
-      flowNode.AddValueInput<Space>((string) this.o, (string) this.o);
-      flowNode.AddValueInput<Vector2>((string) this.o, (string) this.o);
-      flowNode.AddValueInput<Vector3>((string) this.o, (string) this.o);
-      flowNode.AddValueInput<Vector4>((string) this.o, (string) this.o);
+      FlowNode flowNode = null;
+      flowNode.AddValueInput<BlockTypeEnum>((string) o, (string) o);
+      flowNode.AddValueInput<IntensityParameter<Color>>((string) o, (string) o);
+      flowNode.AddValueInput<UiEffectType>((string) o, (string) o);
+      flowNode.AddValueInput<ActionEnum>((string) o, (string) o);
+      flowNode.AddValueInput<DiseasedStateEnum>((string) o, (string) o);
+      flowNode.AddValueInput<WeaponKind>((string) o, (string) o);
+      flowNode.AddValueInput<ParameterNameEnum>((string) o, (string) o);
+      flowNode.AddValueInput<BuildingEnum>((string) o, (string) o);
+      flowNode.AddValueInput<RegionEnum>((string) o, (string) o);
+      flowNode.AddValueInput<TimesOfDay>((string) o, (string) o);
+      flowNode.AddValueInput<IEntitySerializable>((string) o, (string) o);
+      flowNode.AddValueInput<LipSyncObjectSerializable>((string) o, (string) o);
+      flowNode.AddValueInput<AbilityValueNameEnum>((string) o, (string) o);
+      flowNode.AddValueInput<CameraKindEnum>((string) o, (string) o);
+      flowNode.AddValueInput<GameActionType>((string) o, (string) o);
+      flowNode.AddValueInput<bool>((string) o, (string) o);
+      flowNode.AddValueInput<int>((string) o, (string) o);
+      flowNode.AddValueInput<float>((string) o, (string) o);
+      flowNode.AddValueInput<Bounds>((string) o, (string) o);
+      flowNode.AddValueInput<Color>((string) o, (string) o);
+      flowNode.AddValueInput<ContactPoint>((string) o, (string) o);
+      flowNode.AddValueInput<Keyframe>((string) o, (string) o);
+      flowNode.AddValueInput<LayerMask>((string) o, (string) o);
+      flowNode.AddValueInput<Quaternion>((string) o, (string) o);
+      flowNode.AddValueInput<RaycastHit>((string) o, (string) o);
+      flowNode.AddValueInput<Rect>((string) o, (string) o);
+      flowNode.AddValueInput<Space>((string) o, (string) o);
+      flowNode.AddValueInput<Vector2>((string) o, (string) o);
+      flowNode.AddValueInput<Vector3>((string) o, (string) o);
+      flowNode.AddValueInput<Vector4>((string) o, (string) o);
     }
 
     public void FlowCanvas_FlowNode_AddValueOutput_2()
     {
-      FlowNode flowNode = (FlowNode) null;
-      flowNode.AddValueOutput<BlockTypeEnum>((string) this.o, (ValueHandler<BlockTypeEnum>) this.o, (string) this.o);
-      flowNode.AddValueOutput<IntensityParameter<Color>>((string) this.o, (ValueHandler<IntensityParameter<Color>>) this.o, (string) this.o);
-      flowNode.AddValueOutput<UiEffectType>((string) this.o, (ValueHandler<UiEffectType>) this.o, (string) this.o);
-      flowNode.AddValueOutput<ActionEnum>((string) this.o, (ValueHandler<ActionEnum>) this.o, (string) this.o);
-      flowNode.AddValueOutput<DiseasedStateEnum>((string) this.o, (ValueHandler<DiseasedStateEnum>) this.o, (string) this.o);
-      flowNode.AddValueOutput<WeaponKind>((string) this.o, (ValueHandler<WeaponKind>) this.o, (string) this.o);
-      flowNode.AddValueOutput<ParameterNameEnum>((string) this.o, (ValueHandler<ParameterNameEnum>) this.o, (string) this.o);
-      flowNode.AddValueOutput<BuildingEnum>((string) this.o, (ValueHandler<BuildingEnum>) this.o, (string) this.o);
-      flowNode.AddValueOutput<RegionEnum>((string) this.o, (ValueHandler<RegionEnum>) this.o, (string) this.o);
-      flowNode.AddValueOutput<TimesOfDay>((string) this.o, (ValueHandler<TimesOfDay>) this.o, (string) this.o);
-      flowNode.AddValueOutput<IEntitySerializable>((string) this.o, (ValueHandler<IEntitySerializable>) this.o, (string) this.o);
-      flowNode.AddValueOutput<LipSyncObjectSerializable>((string) this.o, (ValueHandler<LipSyncObjectSerializable>) this.o, (string) this.o);
-      flowNode.AddValueOutput<AbilityValueNameEnum>((string) this.o, (ValueHandler<AbilityValueNameEnum>) this.o, (string) this.o);
-      flowNode.AddValueOutput<CameraKindEnum>((string) this.o, (ValueHandler<CameraKindEnum>) this.o, (string) this.o);
-      flowNode.AddValueOutput<GameActionType>((string) this.o, (ValueHandler<GameActionType>) this.o, (string) this.o);
-      flowNode.AddValueOutput<bool>((string) this.o, (ValueHandler<bool>) this.o, (string) this.o);
-      flowNode.AddValueOutput<int>((string) this.o, (ValueHandler<int>) this.o, (string) this.o);
-      flowNode.AddValueOutput<float>((string) this.o, (ValueHandler<float>) this.o, (string) this.o);
-      flowNode.AddValueOutput<Bounds>((string) this.o, (ValueHandler<Bounds>) this.o, (string) this.o);
-      flowNode.AddValueOutput<Color>((string) this.o, (ValueHandler<Color>) this.o, (string) this.o);
-      flowNode.AddValueOutput<ContactPoint>((string) this.o, (ValueHandler<ContactPoint>) this.o, (string) this.o);
-      flowNode.AddValueOutput<Keyframe>((string) this.o, (ValueHandler<Keyframe>) this.o, (string) this.o);
-      flowNode.AddValueOutput<LayerMask>((string) this.o, (ValueHandler<LayerMask>) this.o, (string) this.o);
-      flowNode.AddValueOutput<Quaternion>((string) this.o, (ValueHandler<Quaternion>) this.o, (string) this.o);
-      flowNode.AddValueOutput<RaycastHit>((string) this.o, (ValueHandler<RaycastHit>) this.o, (string) this.o);
-      flowNode.AddValueOutput<Rect>((string) this.o, (ValueHandler<Rect>) this.o, (string) this.o);
-      flowNode.AddValueOutput<Space>((string) this.o, (ValueHandler<Space>) this.o, (string) this.o);
-      flowNode.AddValueOutput<Vector2>((string) this.o, (ValueHandler<Vector2>) this.o, (string) this.o);
-      flowNode.AddValueOutput<Vector3>((string) this.o, (ValueHandler<Vector3>) this.o, (string) this.o);
-      flowNode.AddValueOutput<Vector4>((string) this.o, (ValueHandler<Vector4>) this.o, (string) this.o);
+      FlowNode flowNode = null;
+      flowNode.AddValueOutput((string) o, (ValueHandler<BlockTypeEnum>) o, (string) o);
+      flowNode.AddValueOutput<IntensityParameter<Color>>((string) o, (ValueHandler<IntensityParameter<Color>>) o, (string) o);
+      flowNode.AddValueOutput((string) o, (ValueHandler<UiEffectType>) o, (string) o);
+      flowNode.AddValueOutput((string) o, (ValueHandler<ActionEnum>) o, (string) o);
+      flowNode.AddValueOutput((string) o, (ValueHandler<DiseasedStateEnum>) o, (string) o);
+      flowNode.AddValueOutput((string) o, (ValueHandler<WeaponKind>) o, (string) o);
+      flowNode.AddValueOutput((string) o, (ValueHandler<ParameterNameEnum>) o, (string) o);
+      flowNode.AddValueOutput((string) o, (ValueHandler<BuildingEnum>) o, (string) o);
+      flowNode.AddValueOutput((string) o, (ValueHandler<RegionEnum>) o, (string) o);
+      flowNode.AddValueOutput((string) o, (ValueHandler<TimesOfDay>) o, (string) o);
+      flowNode.AddValueOutput((string) o, (ValueHandler<IEntitySerializable>) o, (string) o);
+      flowNode.AddValueOutput((string) o, (ValueHandler<LipSyncObjectSerializable>) o, (string) o);
+      flowNode.AddValueOutput((string) o, (ValueHandler<AbilityValueNameEnum>) o, (string) o);
+      flowNode.AddValueOutput((string) o, (ValueHandler<CameraKindEnum>) o, (string) o);
+      flowNode.AddValueOutput((string) o, (ValueHandler<GameActionType>) o, (string) o);
+      flowNode.AddValueOutput((string) o, (ValueHandler<bool>) o, (string) o);
+      flowNode.AddValueOutput((string) o, (ValueHandler<int>) o, (string) o);
+      flowNode.AddValueOutput((string) o, (ValueHandler<float>) o, (string) o);
+      flowNode.AddValueOutput((string) o, (ValueHandler<Bounds>) o, (string) o);
+      flowNode.AddValueOutput((string) o, (ValueHandler<Color>) o, (string) o);
+      flowNode.AddValueOutput((string) o, (ValueHandler<ContactPoint>) o, (string) o);
+      flowNode.AddValueOutput((string) o, (ValueHandler<Keyframe>) o, (string) o);
+      flowNode.AddValueOutput((string) o, (ValueHandler<LayerMask>) o, (string) o);
+      flowNode.AddValueOutput((string) o, (ValueHandler<Quaternion>) o, (string) o);
+      flowNode.AddValueOutput((string) o, (ValueHandler<RaycastHit>) o, (string) o);
+      flowNode.AddValueOutput((string) o, (ValueHandler<Rect>) o, (string) o);
+      flowNode.AddValueOutput((string) o, (ValueHandler<Space>) o, (string) o);
+      flowNode.AddValueOutput((string) o, (ValueHandler<Vector2>) o, (string) o);
+      flowNode.AddValueOutput((string) o, (ValueHandler<Vector3>) o, (string) o);
+      flowNode.AddValueOutput((string) o, (ValueHandler<Vector4>) o, (string) o);
     }
 
     public void CustomSpoof()

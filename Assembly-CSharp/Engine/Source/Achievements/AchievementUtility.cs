@@ -11,6 +11,6 @@ namespace Engine.Source.Achievements
       return File.Exists(path) && uint.TryParse(File.ReadAllText(path), out result) ? result : 0U;
     }
 
-    public static bool IsSteamAvailable => AchievementUtility.GetSteamAppId() > 0U;
+    public static bool IsSteamAvailable => GetSteamAppId() > 0U;
   }
 }

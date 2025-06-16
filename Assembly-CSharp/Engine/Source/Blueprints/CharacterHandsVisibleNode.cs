@@ -13,13 +13,13 @@ namespace Engine.Source.Blueprints
     protected override void RegisterPorts()
     {
       base.RegisterPorts();
-      FlowOutput output = this.AddFlowOutput("Out");
-      this.AddFlowInput("In", (FlowHandler) (() =>
+      FlowOutput output = AddFlowOutput("Out");
+      AddFlowInput("In", () =>
       {
-        PlayerUtility.ShowPlayerHands(this.valueInput.value);
+        PlayerUtility.ShowPlayerHands(valueInput.value);
         output.Call();
-      }));
-      this.valueInput = this.AddValueInput<bool>("Visible");
+      });
+      valueInput = AddValueInput<bool>("Visible");
     }
   }
 }

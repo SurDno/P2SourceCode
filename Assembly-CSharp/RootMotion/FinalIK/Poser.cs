@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace RootMotion.FinalIK
+﻿namespace RootMotion.FinalIK
 {
   public abstract class Poser : SolverManager
   {
@@ -23,26 +21,26 @@ namespace RootMotion.FinalIK
 
     protected override void UpdateSolver()
     {
-      if (!this.initiated)
-        this.InitiateSolver();
-      if (!this.initiated)
+      if (!initiated)
+        InitiateSolver();
+      if (!initiated)
         return;
-      this.UpdatePoser();
+      UpdatePoser();
     }
 
     protected override void InitiateSolver()
     {
-      if (this.initiated)
+      if (initiated)
         return;
-      this.InitiatePoser();
-      this.initiated = true;
+      InitiatePoser();
+      initiated = true;
     }
 
     protected override void FixTransforms()
     {
-      if (!this.initiated)
+      if (!initiated)
         return;
-      this.FixPoserTransforms();
+      FixPoserTransforms();
     }
   }
 }

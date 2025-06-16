@@ -1,10 +1,10 @@
-﻿using Cofe.Meta;
+﻿using System.Collections.Generic;
+using Cofe.Meta;
 using Engine.Common;
 using Engine.Common.Commons;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Inspectors;
-using System.Collections.Generic;
 
 namespace Engine.Source.Commons.Abilities
 {
@@ -12,48 +12,48 @@ namespace Engine.Source.Commons.Abilities
   [GenerateProxy(TypeEnum.Copyable | TypeEnum.EngineCloneable | TypeEnum.DataRead | TypeEnum.DataWrite)]
   public class Ability : EngineObject, IAbility, IObject
   {
-    [DataReadProxy(MemberEnum.None, Name = "AbilityItems")]
-    [DataWriteProxy(MemberEnum.None, Name = "AbilityItems")]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy(Name = "AbilityItems")]
+    [DataWriteProxy(Name = "AbilityItems")]
+    [CopyableProxy()]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected List<AbilityItem> items = new List<AbilityItem>();
     private AbilityCache abilityCache;
     private IEntity owner;
 
-    public AbilityCache AbilityCache => this.abilityCache;
+    public AbilityCache AbilityCache => abilityCache;
 
     [Inspected]
-    public List<AbilityItem> AbilityItems => this.items;
+    public List<AbilityItem> AbilityItems => items;
 
-    public IEntity Owner => this.owner;
+    public IEntity Owner => owner;
 
     public void Initialise(IEntity owner)
     {
       this.owner = owner;
-      this.abilityCache = new AbilityCache();
-      foreach (AbilityItem abilityItem in this.items)
+      abilityCache = new AbilityCache();
+      foreach (AbilityItem abilityItem in items)
         abilityItem?.Initialise(this);
     }
 
     public void Shutdown()
     {
-      this.abilityCache = (AbilityCache) null;
-      int count = this.items.Count;
+      abilityCache = null;
+      int count = items.Count;
       if (count != 0)
       {
         for (int index = count - 1; index >= 0; --index)
-          this.items[index]?.Shutdown();
+          items[index]?.Shutdown();
       }
-      this.owner = (IEntity) null;
+      owner = null;
     }
 
-    [global::ComputeBytes]
+    [ComputeBytes]
     private void ComputeBytes()
     {
-      foreach (AbilityItem target in this.items)
+      foreach (AbilityItem target in items)
       {
         if (target != null)
-          MetaService.Compute((object) target, ComputeBytesAttribute.Id);
+          MetaService.Compute(target, ComputeBytesAttribute.Id);
       }
     }
   }

@@ -1,4 +1,5 @@
-﻿using Engine.Behaviours.Components;
+﻿using System;
+using Engine.Behaviours.Components;
 using Engine.Behaviours.Unity.Mecanim;
 using Engine.Common;
 using Engine.Common.Components;
@@ -6,8 +7,6 @@ using Engine.Common.Components.AttackerPlayer;
 using Engine.Source.Commons;
 using Engine.Source.Components;
 using Engine.Source.Components.Utilities;
-using System;
-using UnityEngine;
 
 namespace Engine.Behaviours.Engines.Controllers
 {
@@ -34,28 +33,28 @@ namespace Engine.Behaviours.Engines.Controllers
     {
       set
       {
-        this.geometryVisible = value;
-        this.ApplyVisibility();
+        geometryVisible = value;
+        ApplyVisibility();
       }
-      get => this.geometryVisible;
+      get => geometryVisible;
     }
 
     private bool WeaponVisible
     {
       set
       {
-        this.weaponVisible = value;
-        this.ApplyVisibility();
+        weaponVisible = value;
+        ApplyVisibility();
       }
     }
 
     private void ApplyVisibility()
     {
-      this.pivot.HandsGeometryVisible = this.geometryVisible;
-      this.pivot.VisirGeometryVisible = this.geometryVisible && this.weaponVisible;
+      pivot.HandsGeometryVisible = geometryVisible;
+      pivot.VisirGeometryVisible = geometryVisible && weaponVisible;
     }
 
-    public void OnEnable() => this.animator.SetTrigger("Triggers/Restore");
+    public void OnEnable() => animator.SetTrigger("Triggers/Restore");
 
     public void OnDisable()
     {
@@ -64,8 +63,8 @@ namespace Engine.Behaviours.Engines.Controllers
     public void Initialise(IEntity entity, GameObject gameObject, Animator animator)
     {
       this.entity = entity;
-      this.pivot = gameObject.GetComponent<PivotPlayer>();
-      if ((UnityEngine.Object) this.pivot == (UnityEngine.Object) null)
+      pivot = gameObject.GetComponent<PivotPlayer>();
+      if ((UnityEngine.Object) pivot == (UnityEngine.Object) null)
       {
         Debug.LogErrorFormat("{0} has no {1} unity component", (object) gameObject.name, (object) typeof (PivotPlayer).Name);
       }
@@ -73,22 +72,22 @@ namespace Engine.Behaviours.Engines.Controllers
       {
         this.gameObject = gameObject;
         this.animator = animator;
-        this.animatorState = PlayerAnimatorState.GetAnimatorState(animator);
-        this.detectable = (DetectableComponent) entity.GetComponent<IDetectableComponent>();
-        if (this.detectable != null)
+        animatorState = PlayerAnimatorState.GetAnimatorState(animator);
+        detectable = (DetectableComponent) entity.GetComponent<IDetectableComponent>();
+        if (detectable != null)
           return;
         Debug.LogWarningFormat("{0} doesn't have {1} engine component", (object) gameObject.name, (object) typeof (IDetectableComponent).Name);
       }
     }
 
-    public IEntity GetItem() => this.item;
+    public IEntity GetItem() => item;
 
     public void SetItem(IEntity item) => this.item = item;
 
     public void Activate(bool geometryVisible)
     {
-      this.WeaponVisible = true;
-      Action unholsterEndEvent = this.WeaponUnholsterEndEvent;
+      WeaponVisible = true;
+      Action unholsterEndEvent = WeaponUnholsterEndEvent;
       if (unholsterEndEvent == null)
         return;
       unholsterEndEvent();
@@ -96,13 +95,13 @@ namespace Engine.Behaviours.Engines.Controllers
 
     public void Shutdown()
     {
-      Action holsterStartEvent = this.WeaponHolsterStartEvent;
+      Action holsterStartEvent = WeaponHolsterStartEvent;
       if (holsterStartEvent != null)
         holsterStartEvent();
-      this.WeaponVisible = false;
+      WeaponVisible = false;
     }
 
-    public void Reset() => this.animatorState.ResetAnimator();
+    public void Reset() => animatorState.ResetAnimator();
 
     public bool Validate(GameObject gameObject, IEntity item) => true;
 
@@ -110,19 +109,19 @@ namespace Engine.Behaviours.Engines.Controllers
     {
       if (InstanceByRequest<EngineApplication>.Instance.IsPaused)
         return;
-      this.layerWeight = Mathf.MoveTowards(this.layerWeight, 1f, Time.deltaTime / 0.5f);
-      this.animatorState.VisirLightLayerWeight = SmoothUtility.Smooth22(this.layerWeight);
+      layerWeight = Mathf.MoveTowards(layerWeight, 1f, Time.deltaTime / 0.5f);
+      animatorState.VisirLightLayerWeight = SmoothUtility.Smooth22(layerWeight);
     }
 
     public void UpdateSilent(IEntity target)
     {
       if (InstanceByRequest<EngineApplication>.Instance.IsPaused)
         return;
-      this.layerWeight = Mathf.MoveTowards(this.layerWeight, 0.0f, Time.deltaTime / 0.5f);
-      this.animatorState.VisirLightLayerWeight = SmoothUtility.Smooth22(this.layerWeight);
+      layerWeight = Mathf.MoveTowards(layerWeight, 0.0f, Time.deltaTime / 0.5f);
+      animatorState.VisirLightLayerWeight = SmoothUtility.Smooth22(layerWeight);
     }
 
-    public void LateUpdate(IEntity target) => this.pivot.ApplyWeaponTransform(WeaponKind.Visir);
+    public void LateUpdate(IEntity target) => pivot.ApplyWeaponTransform(WeaponKind.Visir);
 
     public void FixedUpdate(IEntity target)
     {

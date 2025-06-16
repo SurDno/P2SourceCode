@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-public abstract class KeyCodeViewBase : KeyCodeView
+﻿public abstract class KeyCodeViewBase : KeyCodeView
 {
   [SerializeField]
   private KeyCode value;
@@ -9,17 +7,17 @@ public abstract class KeyCodeViewBase : KeyCodeView
   {
     if (Application.isPlaying)
       return;
-    this.ApplyValue(true);
+    ApplyValue(true);
   }
 
-  public override KeyCode GetValue() => this.value;
+  public override KeyCode GetValue() => value;
 
   public override void SetValue(KeyCode value, bool instant)
   {
     if (this.value == value)
       return;
     this.value = value;
-    this.ApplyValue(instant);
+    ApplyValue(instant);
   }
 
   protected abstract void ApplyValue(bool instant);

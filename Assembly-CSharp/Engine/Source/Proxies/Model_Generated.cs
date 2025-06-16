@@ -1,12 +1,11 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons.Cloneable;
 using Engine.Common.Commons.Converters;
 using Engine.Common.Services;
 using Engine.Source.Commons;
 using Scripts.Tools.Serializations.Converters;
-using System;
-using UnityEngine;
 
 namespace Engine.Source.Proxies
 {
@@ -18,25 +17,25 @@ namespace Engine.Source.Proxies
     ISerializeDataWrite,
     ISerializeDataRead
   {
-    public object Clone() => (object) ServiceCache.Factory.Instantiate<Model_Generated>(this);
+    public object Clone() => ServiceCache.Factory.Instantiate(this);
 
     public void CopyTo(object target2)
     {
       Model_Generated modelGenerated = (Model_Generated) target2;
-      modelGenerated.name = this.name;
-      modelGenerated.connection = this.connection;
+      modelGenerated.name = name;
+      modelGenerated.connection = connection;
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.Write(writer, "Id", this.id);
-      UnityDataWriteUtility.Write<GameObject>(writer, "Connection", this.connection);
+      DefaultDataWriteUtility.Write(writer, "Id", id);
+      UnityDataWriteUtility.Write(writer, "Connection", connection);
     }
 
-    public void DataRead(IDataReader reader, System.Type type)
+    public void DataRead(IDataReader reader, Type type)
     {
-      this.id = DefaultDataReadUtility.Read(reader, "Id", this.id);
-      this.connection = UnityDataReadUtility.Read<GameObject>(reader, "Connection", this.connection);
+      id = DefaultDataReadUtility.Read(reader, "Id", id);
+      connection = UnityDataReadUtility.Read(reader, "Connection", connection);
     }
   }
 }

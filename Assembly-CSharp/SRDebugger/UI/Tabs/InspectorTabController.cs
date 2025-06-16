@@ -2,8 +2,6 @@
 using SRDebugger.Internal;
 using SRDebugger.Services;
 using SRF;
-using System;
-using UnityEngine;
 
 namespace SRDebugger.UI.Tabs
 {
@@ -12,13 +10,13 @@ namespace SRDebugger.UI.Tabs
     [SerializeField]
     private RectTransform layoutContainer;
     private Rect rect;
-    private InspectedProvider inspector = new InspectedProvider((IInspectedDrawer) RuntimeInspectedDrawer.Instance);
+    private InspectedProvider inspector = new InspectedProvider(RuntimeInspectedDrawer.Instance);
     private Vector2 scrollInspector = Vector2.zero;
     private Vector2 scrollMenu = Vector2.zero;
 
     private void Start()
     {
-      Service.Panel.VisibilityChanged += new Action<IDebugPanelService, bool>(this.PanelOnVisibilityChanged);
+      Service.Panel.VisibilityChanged += PanelOnVisibilityChanged;
     }
 
     private void PanelOnVisibilityChanged(IDebugPanelService debugPanelService, bool visible)
@@ -28,22 +26,22 @@ namespace SRDebugger.UI.Tabs
 
     private void OnGUI()
     {
-      if ((UnityEngine.Object) this.layoutContainer == (UnityEngine.Object) null)
+      if ((UnityEngine.Object) layoutContainer == (UnityEngine.Object) null)
         return;
-      this.rect = InspectorTabController.RectTransformToScreenSpace(this.layoutContainer);
+      rect = RectTransformToScreenSpace(layoutContainer);
       GUISkin skin = GUI.skin;
       GUI.skin = RuntimeInspectedDrawer.Instance.Skin;
-      GUILayout.BeginArea(this.rect);
+      GUILayout.BeginArea(rect);
       if (RuntimeInspectedDrawer.Instance.MenuVisible)
       {
-        this.scrollMenu = GUILayout.BeginScrollView(this.scrollMenu);
+        scrollMenu = GUILayout.BeginScrollView(scrollMenu);
         RuntimeInspectedDrawer.Instance.DrawContextMenu();
         GUILayout.EndScrollView();
       }
       else
       {
-        this.scrollInspector = GUILayout.BeginScrollView(this.scrollInspector);
-        this.inspector.Draw((object) MonoBehaviourInstance<EngineInspector>.Instance, (Action<object>) null);
+        scrollInspector = GUILayout.BeginScrollView(scrollInspector);
+        inspector.Draw(MonoBehaviourInstance<EngineInspector>.Instance, null);
         GUILayout.EndScrollView();
       }
       GUILayout.EndArea();

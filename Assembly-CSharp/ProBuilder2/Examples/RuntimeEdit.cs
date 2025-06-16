@@ -1,76 +1,75 @@
-﻿using ProBuilder2.Common;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using System.Collections.Generic;
+using ProBuilder2.Common;
 
 namespace ProBuilder2.Examples
 {
   public class RuntimeEdit : MonoBehaviour
   {
-    private RuntimeEdit.pb_Selection currentSelection;
-    private RuntimeEdit.pb_Selection previousSelection;
+    private pb_Selection currentSelection;
+    private pb_Selection previousSelection;
     private pb_Object preview;
     public Material previewMaterial;
     private Vector2 mousePosition_initial = Vector2.zero;
-    private bool dragging = false;
+    private bool dragging;
     public float rotateSpeed = 100f;
 
-    private void Awake() => this.SpawnCube();
+    private void Awake() => SpawnCube();
 
     private void OnGUI()
     {
       if (!GUI.Button(new Rect(5f, (float) (Screen.height - 25), 80f, 20f), "Reset"))
         return;
-      this.currentSelection.Destroy();
-      Object.Destroy((Object) this.preview.gameObject);
-      this.SpawnCube();
+      currentSelection.Destroy();
+      Object.Destroy((Object) preview.gameObject);
+      SpawnCube();
     }
 
     private void SpawnCube()
     {
       pb_Object _pb = pb_ShapeGenerator.CubeGenerator(Vector3.one);
       _pb.gameObject.AddComponent<MeshCollider>().convex = false;
-      this.currentSelection = new RuntimeEdit.pb_Selection(_pb, (pb_Face) null);
+      currentSelection = new pb_Selection(_pb, null);
     }
 
     public void LateUpdate()
     {
-      if (!this.currentSelection.HasObject())
+      if (!currentSelection.HasObject())
         return;
       if (Input.GetMouseButtonDown(1) || Input.GetMouseButtonDown(0) && Input.GetKey(KeyCode.LeftAlt))
       {
-        this.mousePosition_initial = (Vector2) Input.mousePosition;
-        this.dragging = true;
+        mousePosition_initial = (Vector2) Input.mousePosition;
+        dragging = true;
       }
-      if (this.dragging)
+      if (dragging)
       {
-        Vector2 vector2 = (Vector2) ((Vector3) this.mousePosition_initial - Input.mousePosition);
-        this.currentSelection.pb.gameObject.transform.RotateAround(Vector3.zero, new Vector3(vector2.y, vector2.x, 0.0f), this.rotateSpeed * Time.deltaTime);
-        if (this.currentSelection.IsValid())
-          this.RefreshSelectedFacePreview();
+        Vector2 vector2 = (Vector2) ((Vector3) mousePosition_initial - Input.mousePosition);
+        currentSelection.pb.gameObject.transform.RotateAround(Vector3.zero, new Vector3(vector2.y, vector2.x, 0.0f), rotateSpeed * Time.deltaTime);
+        if (currentSelection.IsValid())
+          RefreshSelectedFacePreview();
       }
       if (!Input.GetMouseButtonUp(1) && !Input.GetMouseButtonUp(0))
         return;
-      this.dragging = false;
+      dragging = false;
     }
 
     public void Update()
     {
-      if (!Input.GetMouseButtonUp(0) || Input.GetKey(KeyCode.LeftAlt) || !this.FaceCheck(Input.mousePosition) || !this.currentSelection.IsValid())
+      if (!Input.GetMouseButtonUp(0) || Input.GetKey(KeyCode.LeftAlt) || !FaceCheck(Input.mousePosition) || !currentSelection.IsValid())
         return;
-      if (!this.currentSelection.Equals(this.previousSelection))
+      if (!currentSelection.Equals(previousSelection))
       {
-        this.previousSelection = new RuntimeEdit.pb_Selection(this.currentSelection.pb, this.currentSelection.face);
-        this.RefreshSelectedFacePreview();
+        previousSelection = new pb_Selection(currentSelection.pb, currentSelection.face);
+        RefreshSelectedFacePreview();
       }
       else
       {
-        Vector3 vector3 = pb_Math.Normal((IList<Vector3>) this.currentSelection.pb.vertices.ValuesWithIndices<Vector3>(this.currentSelection.face.distinctIndices));
+        Vector3 vector3 = pb_Math.Normal((IList<Vector3>) currentSelection.pb.vertices.ValuesWithIndices<Vector3>(currentSelection.face.distinctIndices));
         if (Input.GetKey(KeyCode.LeftShift))
-          this.currentSelection.pb.TranslateVertices(this.currentSelection.face.distinctIndices, vector3.normalized * -0.5f);
+          currentSelection.pb.TranslateVertices(currentSelection.face.distinctIndices, vector3.normalized * -0.5f);
         else
-          this.currentSelection.pb.TranslateVertices(this.currentSelection.face.distinctIndices, vector3.normalized * 0.5f);
-        this.currentSelection.pb.Refresh();
-        this.RefreshSelectedFacePreview();
+          currentSelection.pb.TranslateVertices(currentSelection.face.distinctIndices, vector3.normalized * 0.5f);
+        currentSelection.pb.Refresh();
+        RefreshSelectedFacePreview();
       }
     }
 
@@ -90,28 +89,28 @@ namespace ProBuilder2.Examples
         msh.triangles[hitInfo.triangleIndex * 3 + 1],
         msh.triangles[hitInfo.triangleIndex * 3 + 2]
       };
-      this.currentSelection.pb = component;
-      return component.FaceWithTriangle(tri, out this.currentSelection.face);
+      currentSelection.pb = component;
+      return component.FaceWithTriangle(tri, out currentSelection.face);
     }
 
     private void RefreshSelectedFacePreview()
     {
-      Vector3[] v = this.currentSelection.pb.VerticesInWorldSpace(this.currentSelection.face.indices);
+      Vector3[] v = currentSelection.pb.VerticesInWorldSpace(currentSelection.face.indices);
       int[] i = new int[v.Length];
       for (int index = 0; index < i.Length; ++index)
         i[index] = index;
       Vector3 vector3 = pb_Math.Normal((IList<Vector3>) v);
       for (int index = 0; index < v.Length; ++index)
         v[index] += vector3.normalized * 0.01f;
-      if ((bool) (Object) this.preview)
-        Object.Destroy((Object) this.preview.gameObject);
-      this.preview = pb_Object.CreateInstanceWithVerticesFaces(v, new pb_Face[1]
+      if ((bool) (Object) preview)
+        Object.Destroy((Object) preview.gameObject);
+      preview = pb_Object.CreateInstanceWithVerticesFaces(v, new pb_Face[1]
       {
         new pb_Face(i)
       });
-      this.preview.SetFaceMaterial(this.preview.faces, this.previewMaterial);
-      this.preview.ToMesh();
-      this.preview.Refresh();
+      preview.SetFaceMaterial(preview.faces, previewMaterial);
+      preview.ToMesh();
+      preview.Refresh();
     }
 
     private class pb_Selection
@@ -121,29 +120,29 @@ namespace ProBuilder2.Examples
 
       public pb_Selection(pb_Object _pb, pb_Face _face)
       {
-        this.pb = _pb;
-        this.face = _face;
+        pb = _pb;
+        face = _face;
       }
 
-      public bool HasObject() => (Object) this.pb != (Object) null;
+      public bool HasObject() => (Object) pb != (Object) null;
 
-      public bool IsValid() => (Object) this.pb != (Object) null && this.face != null;
+      public bool IsValid() => (Object) pb != (Object) null && face != null;
 
-      public bool Equals(RuntimeEdit.pb_Selection sel)
+      public bool Equals(pb_Selection sel)
       {
-        return sel != null && sel.IsValid() && (Object) this.pb == (Object) sel.pb && this.face == sel.face;
+        return sel != null && sel.IsValid() && (Object) pb == (Object) sel.pb && face == sel.face;
       }
 
       public void Destroy()
       {
-        if (!((Object) this.pb != (Object) null))
+        if (!((Object) pb != (Object) null))
           return;
-        Object.Destroy((Object) this.pb.gameObject);
+        Object.Destroy((Object) pb.gameObject);
       }
 
       public override string ToString()
       {
-        return "pb_Object: " + (object) this.pb == null ? "Null" : this.pb.name + "\npb_Face: " + (this.face == null ? "Null" : ((object) this.face).ToString());
+        return "pb_Object: " + pb == null ? "Null" : pb.name + "\npb_Face: " + (face == null ? "Null" : face.ToString());
       }
     }
   }

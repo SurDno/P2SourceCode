@@ -2,7 +2,6 @@
 using Engine.Impl.Services.Factories;
 using Engine.Source.Components;
 using Inspectors;
-using System;
 
 namespace Engine.Source.Commons.Abilities.Controllers
 {
@@ -10,9 +9,9 @@ namespace Engine.Source.Commons.Abilities.Controllers
   [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
   public class BehaviorTreeAbilityController : IAbilityController
   {
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy()]
     [Inspected(Mutable = true, Mode = ExecuteMode.EditAndRuntime)]
     protected string name = "";
     private AbilityItem abilityItem;
@@ -21,25 +20,25 @@ namespace Engine.Source.Commons.Abilities.Controllers
     public void Initialise(AbilityItem abilityItem)
     {
       this.abilityItem = abilityItem;
-      this.behavior = abilityItem.Ability.Owner.GetComponent<BehaviorComponent>();
-      if (this.behavior == null)
+      behavior = abilityItem.Ability.Owner.GetComponent<BehaviorComponent>();
+      if (behavior == null)
         return;
-      this.behavior.OnAbility += new Action<string, bool>(this.OnAbility);
+      behavior.OnAbility += OnAbility;
     }
 
     public void Shutdown()
     {
-      if (this.behavior == null)
+      if (behavior == null)
         return;
-      this.behavior.OnAbility -= new Action<string, bool>(this.OnAbility);
-      this.behavior = (BehaviorComponent) null;
+      behavior.OnAbility -= OnAbility;
+      behavior = null;
     }
 
     private void OnAbility(string name, bool enable)
     {
       if (!(this.name == name))
         return;
-      this.abilityItem.Active = enable;
+      abilityItem.Active = enable;
     }
   }
 }

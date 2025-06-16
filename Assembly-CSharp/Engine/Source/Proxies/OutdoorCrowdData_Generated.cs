@@ -1,11 +1,11 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons.Cloneable;
 using Engine.Common.Commons.Converters;
 using Engine.Common.Components.Regions;
 using Engine.Common.Services;
 using Engine.Source.OutdoorCrowds;
-using System;
 
 namespace Engine.Source.Proxies
 {
@@ -19,35 +19,35 @@ namespace Engine.Source.Proxies
   {
     public object Clone()
     {
-      return (object) ServiceCache.Factory.Instantiate<OutdoorCrowdData_Generated>(this);
+      return ServiceCache.Factory.Instantiate(this);
     }
 
     public void CopyTo(object target2)
     {
       OutdoorCrowdData_Generated crowdDataGenerated = (OutdoorCrowdData_Generated) target2;
-      crowdDataGenerated.name = this.name;
-      crowdDataGenerated.TableName = this.TableName;
-      crowdDataGenerated.Region = this.Region;
-      CloneableObjectUtility.CopyListTo<OutdoorCrowdLayout>(crowdDataGenerated.Layouts, this.Layouts);
-      CloneableObjectUtility.CopyListTo<OutdoorCrowdTemplates>(crowdDataGenerated.Templates, this.Templates);
+      crowdDataGenerated.name = name;
+      crowdDataGenerated.TableName = TableName;
+      crowdDataGenerated.Region = Region;
+      CloneableObjectUtility.CopyListTo(crowdDataGenerated.Layouts, Layouts);
+      CloneableObjectUtility.CopyListTo(crowdDataGenerated.Templates, Templates);
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.Write(writer, "Id", this.id);
-      DefaultDataWriteUtility.Write(writer, "TableName", this.TableName);
-      DefaultDataWriteUtility.WriteEnum<RegionEnum>(writer, "Region", this.Region);
-      DefaultDataWriteUtility.WriteListSerialize<OutdoorCrowdLayout>(writer, "Layouts", this.Layouts);
-      DefaultDataWriteUtility.WriteListSerialize<OutdoorCrowdTemplates>(writer, "Templates", this.Templates);
+      DefaultDataWriteUtility.Write(writer, "Id", id);
+      DefaultDataWriteUtility.Write(writer, "TableName", TableName);
+      DefaultDataWriteUtility.WriteEnum(writer, "Region", Region);
+      DefaultDataWriteUtility.WriteListSerialize(writer, "Layouts", Layouts);
+      DefaultDataWriteUtility.WriteListSerialize(writer, "Templates", Templates);
     }
 
     public void DataRead(IDataReader reader, Type type)
     {
-      this.id = DefaultDataReadUtility.Read(reader, "Id", this.id);
-      this.TableName = DefaultDataReadUtility.Read(reader, "TableName", this.TableName);
-      this.Region = DefaultDataReadUtility.ReadEnum<RegionEnum>(reader, "Region");
-      this.Layouts = DefaultDataReadUtility.ReadListSerialize<OutdoorCrowdLayout>(reader, "Layouts", this.Layouts);
-      this.Templates = DefaultDataReadUtility.ReadListSerialize<OutdoorCrowdTemplates>(reader, "Templates", this.Templates);
+      id = DefaultDataReadUtility.Read(reader, "Id", id);
+      TableName = DefaultDataReadUtility.Read(reader, "TableName", TableName);
+      Region = DefaultDataReadUtility.ReadEnum<RegionEnum>(reader, "Region");
+      Layouts = DefaultDataReadUtility.ReadListSerialize(reader, "Layouts", Layouts);
+      Templates = DefaultDataReadUtility.ReadListSerialize(reader, "Templates", Templates);
     }
   }
 }

@@ -1,23 +1,22 @@
-﻿using Engine.Common.Services;
+﻿using System;
+using Engine.Common.Services;
 using Engine.Impl.Services;
-using System;
-using UnityEngine;
 
 namespace Engine.Behaviours.Localization
 {
   public class GameObjectLocalizer : EngineDependent
   {
     [SerializeField]
-    private GameObjectLocalizer.LanguageItem[] languages;
+    private LanguageItem[] languages;
     [FromLocator]
     private LocalizationService localizationService;
 
     private void Localize()
     {
-      LanguageEnum currentLanguage = this.localizationService.CurrentLanguage;
-      for (int index = 0; index < this.languages.Length; ++index)
+      LanguageEnum currentLanguage = localizationService.CurrentLanguage;
+      for (int index = 0; index < languages.Length; ++index)
       {
-        GameObjectLocalizer.LanguageItem language = this.languages[index];
+        LanguageItem language = languages[index];
         if ((UnityEngine.Object) language.GameObject != (UnityEngine.Object) null)
           language.GameObject.SetActive(language.Language == currentLanguage);
       }
@@ -25,13 +24,13 @@ namespace Engine.Behaviours.Localization
 
     protected override void OnConnectToEngine()
     {
-      this.Localize();
-      this.localizationService.LocalizationChanged += new Action(this.Localize);
+      Localize();
+      localizationService.LocalizationChanged += Localize;
     }
 
     protected override void OnDisconnectFromEngine()
     {
-      this.localizationService.LocalizationChanged -= new Action(this.Localize);
+      localizationService.LocalizationChanged -= Localize;
     }
 
     [Serializable]

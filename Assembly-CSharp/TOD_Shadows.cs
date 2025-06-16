@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-[ExecuteInEditMode]
+﻿[ExecuteInEditMode]
 [RequireComponent(typeof (Camera))]
 [AddComponentMenu("Time of Day/Camera Cloud Shadows")]
 public class TOD_Shadows : TOD_ImageEffect
@@ -17,34 +15,34 @@ public class TOD_Shadows : TOD_ImageEffect
 
   protected void OnEnable()
   {
-    if (!(bool) (Object) this.ShadowShader)
-      this.ShadowShader = Shader.Find("Hidden/Time of Day/Cloud Shadows");
-    this.shadowMaterial = this.CreateMaterial(this.ShadowShader);
+    if (!(bool) (Object) ShadowShader)
+      ShadowShader = Shader.Find("Hidden/Time of Day/Cloud Shadows");
+    shadowMaterial = CreateMaterial(ShadowShader);
   }
 
   protected void OnDisable()
   {
-    if (!(bool) (Object) this.shadowMaterial)
+    if (!(bool) (Object) shadowMaterial)
       return;
-    Object.DestroyImmediate((Object) this.shadowMaterial);
+    Object.DestroyImmediate((Object) shadowMaterial);
   }
 
   [ImageEffectOpaque]
   protected void OnRenderImage(RenderTexture source, RenderTexture destination)
   {
-    if (!this.CheckSupport(true))
+    if (!CheckSupport(true))
     {
       Graphics.Blit((Texture) source, destination);
     }
     else
     {
-      this.sky.Components.Shadows = this;
-      this.shadowMaterial.SetMatrix("_FrustumCornersWS", this.FrustumCorners());
-      this.shadowMaterial.SetTexture("_CloudTex", (Texture) this.CloudTexture);
-      this.shadowMaterial.SetFloat("_Cutoff", this.Cutoff);
-      this.shadowMaterial.SetFloat("_Fade", this.Fade);
-      this.shadowMaterial.SetFloat("_Intensity", this.Intensity * Mathf.Clamp01((float) (1.0 - (double) this.sky.SunZenith / 90.0)));
-      this.CustomBlit(source, destination, this.shadowMaterial);
+      sky.Components.Shadows = this;
+      shadowMaterial.SetMatrix("_FrustumCornersWS", FrustumCorners());
+      shadowMaterial.SetTexture("_CloudTex", (Texture) CloudTexture);
+      shadowMaterial.SetFloat("_Cutoff", Cutoff);
+      shadowMaterial.SetFloat("_Fade", Fade);
+      shadowMaterial.SetFloat("_Intensity", Intensity * Mathf.Clamp01((float) (1.0 - sky.SunZenith / 90.0)));
+      CustomBlit(source, destination, shadowMaterial);
     }
   }
 }

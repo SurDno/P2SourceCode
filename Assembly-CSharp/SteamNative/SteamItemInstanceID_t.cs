@@ -6,7 +6,7 @@
 
     public static implicit operator SteamItemInstanceID_t(ulong value)
     {
-      return new SteamItemInstanceID_t() { Value = value };
+      return new SteamItemInstanceID_t { Value = value };
     }
 
     public static implicit operator ulong(SteamItemInstanceID_t value) => value.Value;

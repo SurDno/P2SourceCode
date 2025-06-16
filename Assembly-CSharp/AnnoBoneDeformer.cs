@@ -1,24 +1,23 @@
 ﻿using System.Collections.Generic;
-using UnityEngine;
 
 public class AnnoBoneDeformer : IAnnoDeformer
 {
   private Dictionary<string, VisemeBoneDefine> boneDict;
   private VisemeBoneDefine basePose;
-  private BoneDeformMemento DeformMemory = (BoneDeformMemento) null;
+  private BoneDeformMemento DeformMemory = null;
 
   public AnnoBoneDeformer(
     Dictionary<string, VisemeBoneDefine> _labelToBoneDict,
     VisemeBoneDefine _basePose)
   {
-    this.boneDict = _labelToBoneDict;
-    this.basePose = _basePose;
+    boneDict = _labelToBoneDict;
+    basePose = _basePose;
     Dictionary<VisemeBoneDefine, bool> dictionary = new Dictionary<VisemeBoneDefine, bool>();
-    foreach (KeyValuePair<string, VisemeBoneDefine> keyValuePair in this.boneDict)
+    foreach (KeyValuePair<string, VisemeBoneDefine> keyValuePair in boneDict)
     {
-      if (keyValuePair.Value != this.basePose && !dictionary.ContainsKey(keyValuePair.Value))
+      if (keyValuePair.Value != basePose && !dictionary.ContainsKey(keyValuePair.Value))
       {
-        keyValuePair.Value.ConvertPosesToOffsetsFromBase(this.basePose);
+        keyValuePair.Value.ConvertPosesToOffsetsFromBase(basePose);
         dictionary.Add(keyValuePair.Value, true);
       }
     }
@@ -27,11 +26,11 @@ public class AnnoBoneDeformer : IAnnoDeformer
   public void Blend(string sLabel, float weight)
   {
     VisemeBoneDefine visemeBoneDefine;
-    if (this.boneDict.TryGetValue(sLabel, out visemeBoneDefine))
+    if (boneDict.TryGetValue(sLabel, out visemeBoneDefine))
     {
-      if (visemeBoneDefine == this.basePose)
+      if (visemeBoneDefine == basePose)
         return;
-      visemeBoneDefine.Deform(weight, this.DeformMemory);
+      visemeBoneDefine.Deform(weight, DeformMemory);
     }
     else
       Debug.Log((object) ("Can't find viseme " + sLabel));
@@ -39,10 +38,10 @@ public class AnnoBoneDeformer : IAnnoDeformer
 
   public void Start()
   {
-    if (this.DeformMemory != null)
-      this.DeformMemory.ResetBones();
+    if (DeformMemory != null)
+      DeformMemory.ResetBones();
     else
-      this.basePose.ResetToThisPose();
+      basePose.ResetToThisPose();
   }
 
   public void End()

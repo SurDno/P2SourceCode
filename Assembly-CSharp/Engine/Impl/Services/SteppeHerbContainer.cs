@@ -1,5 +1,6 @@
-﻿using Engine.Common;
-using Engine.Common.Components;
+﻿using System;
+using System.Collections.Generic;
+using Engine.Common;
 using Engine.Common.Components.Parameters;
 using Engine.Common.Components.Regions;
 using Engine.Common.Services;
@@ -8,9 +9,6 @@ using Engine.Source.Commons;
 using Engine.Source.Components;
 using Engine.Source.Components.Regions;
 using Inspectors;
-using System;
-using System.Collections.Generic;
-using UnityEngine;
 
 namespace Engine.Impl.Services
 {
@@ -33,11 +31,10 @@ namespace Engine.Impl.Services
       for (int index = 0; index < gameObject.transform.childCount; ++index)
       {
         Vector3 position = gameObject.transform.GetChild(index).position;
-        this.SteppeHerbIndicesLeft.Add(this.SteppeHerbEntries.Count);
-        this.SteppeHerbEntries.Add(new SteppeHerbEntry()
-        {
+        SteppeHerbIndicesLeft.Add(SteppeHerbEntries.Count);
+        SteppeHerbEntries.Add(new SteppeHerbEntry {
           Position = position,
-          Entity = (IEntity) null,
+          Entity = null,
           On = false
         });
       }
@@ -47,30 +44,30 @@ namespace Engine.Impl.Services
     [Inspected]
     public int Amount
     {
-      get => this.amount;
+      get => amount;
       set
       {
-        this.amount = Mathf.Clamp(value, 0, this.SteppeHerbEntries.Count);
-        this.Syncronize();
+        amount = Mathf.Clamp(value, 0, SteppeHerbEntries.Count);
+        Syncronize();
       }
     }
 
     [Inspected]
     public void Reset()
     {
-      foreach (SteppeHerbEntry steppeHerbEntry in this.SteppeHerbEntries)
+      foreach (SteppeHerbEntry steppeHerbEntry in SteppeHerbEntries)
         steppeHerbEntry.Collected = false;
     }
 
     public void Dispose()
     {
-      foreach (int steppeHerbIndex in this.SteppeHerbIndices)
+      foreach (int steppeHerbIndex in SteppeHerbIndices)
       {
-        SteppeHerbEntry steppeHerbEntry = this.SteppeHerbEntries[steppeHerbIndex];
+        SteppeHerbEntry steppeHerbEntry = SteppeHerbEntries[steppeHerbIndex];
         if (steppeHerbEntry.Entity != null)
         {
           steppeHerbEntry.Entity.Dispose();
-          steppeHerbEntry.Entity = (IEntity) null;
+          steppeHerbEntry.Entity = null;
           steppeHerbEntry.On = false;
         }
       }
@@ -78,37 +75,37 @@ namespace Engine.Impl.Services
 
     private void Syncronize()
     {
-      if (this.amount == this.SteppeHerbIndices.Count)
+      if (amount == SteppeHerbIndices.Count)
         return;
-      if (this.amount < this.SteppeHerbIndices.Count)
+      if (amount < SteppeHerbIndices.Count)
       {
-        int num = this.SteppeHerbIndices.Count - this.amount;
+        int num = SteppeHerbIndices.Count - amount;
         for (int index1 = 0; index1 < num; ++index1)
         {
-          int index2 = UnityEngine.Random.Range(0, this.SteppeHerbIndices.Count);
-          int steppeHerbIndex = this.SteppeHerbIndices[index2];
-          this.SteppeHerbEntries[steppeHerbIndex].On = false;
-          this.SteppeHerbIndices.RemoveAt(index2);
-          this.SteppeHerbIndicesLeft.Add(steppeHerbIndex);
+          int index2 = UnityEngine.Random.Range(0, SteppeHerbIndices.Count);
+          int steppeHerbIndex = SteppeHerbIndices[index2];
+          SteppeHerbEntries[steppeHerbIndex].On = false;
+          SteppeHerbIndices.RemoveAt(index2);
+          SteppeHerbIndicesLeft.Add(steppeHerbIndex);
         }
       }
       else
       {
-        int num = this.amount - this.SteppeHerbIndices.Count;
+        int num = amount - SteppeHerbIndices.Count;
         for (int index3 = 0; index3 < num; ++index3)
         {
-          int index4 = UnityEngine.Random.Range(0, this.SteppeHerbIndicesLeft.Count);
-          int index5 = this.SteppeHerbIndicesLeft[index4];
-          this.SteppeHerbEntries[index5].On = true;
-          this.SteppeHerbIndicesLeft.RemoveAt(index4);
-          this.SteppeHerbIndices.Add(index5);
+          int index4 = UnityEngine.Random.Range(0, SteppeHerbIndicesLeft.Count);
+          int index5 = SteppeHerbIndicesLeft[index4];
+          SteppeHerbEntries[index5].On = true;
+          SteppeHerbIndicesLeft.RemoveAt(index4);
+          SteppeHerbIndices.Add(index5);
         }
       }
     }
 
     private IEntity SpawnHerb(SteppeHerbEntry entry, LocationComponent locationComponent)
     {
-      IEntity entity = ServiceCache.Factory.Instantiate<IEntity>(this.template);
+      IEntity entity = ServiceCache.Factory.Instantiate(template);
       ((Entity) entity).DontSave = true;
       Simulation service = ServiceLocator.GetService<Simulation>();
       service.Add(entity, service.Objects);
@@ -116,7 +113,7 @@ namespace Engine.Impl.Services
       if (component != null)
       {
         Quaternion rotation = Quaternion.Euler(0.0f, UnityEngine.Random.Range(0.0f, 6.28318548f), 0.0f);
-        component.TeleportTo((ILocationComponent) locationComponent, entry.Position, rotation);
+        component.TeleportTo(locationComponent, entry.Position, rotation);
       }
       else
         Debug.LogError((object) ("NavigationComponent not found : " + entity.GetInfo()));
@@ -134,7 +131,7 @@ namespace Engine.Impl.Services
 
     public void Update(Vector3 playerPosition)
     {
-      if (this.SteppeHerbEntries.Count == 0)
+      if (SteppeHerbEntries.Count == 0)
         return;
       RegionComponent regionByName = RegionUtility.GetRegionByName(RegionEnum.Steppe);
       if (regionByName == null)
@@ -146,39 +143,39 @@ namespace Engine.Impl.Services
         LocationComponent component = regionByName.GetComponent<LocationComponent>();
         int index1 = 0;
         Vector3 vector3;
-        while (index1 < this.NearPlayerIndices.Count)
+        while (index1 < NearPlayerIndices.Count)
         {
-          vector3 = this.SteppeHerbEntries[this.NearPlayerIndices[index1]].Position - playerPosition;
+          vector3 = SteppeHerbEntries[NearPlayerIndices[index1]].Position - playerPosition;
           if ((double) vector3.magnitude > 30.0)
           {
-            SteppeHerbEntry steppeHerbEntry = this.SteppeHerbEntries[this.NearPlayerIndices[index1]];
+            SteppeHerbEntry steppeHerbEntry = SteppeHerbEntries[NearPlayerIndices[index1]];
             if (steppeHerbEntry.Entity != null)
             {
-              steppeHerbEntry.Collected = this.IsCollected(steppeHerbEntry.Entity);
+              steppeHerbEntry.Collected = IsCollected(steppeHerbEntry.Entity);
               steppeHerbEntry.Entity.Dispose();
-              steppeHerbEntry.Entity = (IEntity) null;
+              steppeHerbEntry.Entity = null;
             }
-            this.NearPlayerIndices.RemoveAt(index1);
+            NearPlayerIndices.RemoveAt(index1);
           }
           else
             ++index1;
         }
-        int num = (int) ((double) this.SteppeHerbEntries.Count * 0.10000000149011612) + 1;
+        int num = (int) (SteppeHerbEntries.Count * 0.10000000149011612) + 1;
         for (int index2 = 0; index2 < num; ++index2)
         {
-          this.processingIndex = (this.processingIndex + 1) % this.SteppeHerbEntries.Count;
-          vector3 = this.SteppeHerbEntries[this.processingIndex].Position - playerPosition;
-          if ((double) vector3.magnitude < 30.0 && !this.NearPlayerIndices.Contains(this.processingIndex))
+          processingIndex = (processingIndex + 1) % SteppeHerbEntries.Count;
+          vector3 = SteppeHerbEntries[processingIndex].Position - playerPosition;
+          if ((double) vector3.magnitude < 30.0 && !NearPlayerIndices.Contains(processingIndex))
           {
-            SteppeHerbEntry steppeHerbEntry = this.SteppeHerbEntries[this.processingIndex];
+            SteppeHerbEntry steppeHerbEntry = SteppeHerbEntries[processingIndex];
             if (steppeHerbEntry.On && !steppeHerbEntry.Collected)
             {
               if (steppeHerbEntry.Entity != null)
                 Debug.LogError((object) "Entity can't be null here");
               else
-                steppeHerbEntry.Entity = this.SpawnHerb(steppeHerbEntry, component);
+                steppeHerbEntry.Entity = SpawnHerb(steppeHerbEntry, component);
             }
-            this.NearPlayerIndices.Add(this.processingIndex);
+            NearPlayerIndices.Add(processingIndex);
           }
         }
       }

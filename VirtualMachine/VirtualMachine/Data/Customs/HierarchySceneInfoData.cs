@@ -1,9 +1,9 @@
-﻿using Cofe.Loggers;
+﻿using System.Collections.Generic;
+using System.Xml;
+using Cofe.Loggers;
 using Engine.Common.Commons;
 using PLVirtualMachine.Common.Data;
 using PLVirtualMachine.Data;
-using System.Collections.Generic;
-using System.Xml;
 using VirtualMachine.Common;
 using VirtualMachine.Common.Data;
 
@@ -12,42 +12,41 @@ namespace VirtualMachine.Data.Customs
   [DataFactory("HierarchySceneInfoData")]
   public class HierarchySceneInfoData : IStub, IEditorDataReader
   {
-    [FieldData("Scenes", DataFieldType.None)]
+    [FieldData("Scenes")]
     protected List<ulong> scenes = new List<ulong>();
-    [FieldData("Childs", DataFieldType.None)]
+    [FieldData("Childs")]
     protected List<ulong> childs = new List<ulong>();
-    [FieldData("SimpleChilds", DataFieldType.None)]
+    [FieldData("SimpleChilds")]
     protected List<ulong> simpleChilds = new List<ulong>();
 
-    public List<ulong> Scenes => this.scenes;
+    public List<ulong> Scenes => scenes;
 
-    public List<ulong> Childs => this.childs;
+    public List<ulong> Childs => childs;
 
-    public List<ulong> SimpleChilds => this.simpleChilds;
+    public List<ulong> SimpleChilds => simpleChilds;
 
     public void Clear()
     {
-      this.scenes.Clear();
-      this.childs.Clear();
-      this.simpleChilds.Clear();
+      scenes.Clear();
+      childs.Clear();
+      simpleChilds.Clear();
     }
 
     public virtual void EditorDataRead(XmlReader xml, IDataCreator creator, string typeContext)
     {
-      while (xml.Read())
-      {
+      while (xml.Read()) {
         if (xml.NodeType == XmlNodeType.Element)
         {
           switch (xml.Name)
           {
             case "Scenes":
-              this.scenes = EditorDataReadUtility.ReadValueList(xml, this.scenes);
+              scenes = EditorDataReadUtility.ReadValueList(xml, scenes);
               continue;
             case "Childs":
-              this.childs = EditorDataReadUtility.ReadValueList(xml, this.childs);
+              childs = EditorDataReadUtility.ReadValueList(xml, childs);
               continue;
             case "SimpleChilds":
-              this.simpleChilds = EditorDataReadUtility.ReadValueList(xml, this.simpleChilds);
+              simpleChilds = EditorDataReadUtility.ReadValueList(xml, simpleChilds);
               continue;
             default:
               if (XMLDataLoader.Logs.Add(typeContext + " : " + xml.Name))
@@ -56,7 +55,8 @@ namespace VirtualMachine.Data.Customs
               continue;
           }
         }
-        else if (xml.NodeType == XmlNodeType.EndElement)
+
+        if (xml.NodeType == XmlNodeType.EndElement)
           break;
       }
     }

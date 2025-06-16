@@ -1,5 +1,5 @@
-﻿using Cofe.Loggers;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Cofe.Loggers;
 
 namespace PLVirtualMachine.Common
 {
@@ -13,29 +13,29 @@ namespace PLVirtualMachine.Common
       return string.Empty;
     }
 
-    public ETagOpType TagOpType => this.tagOperationType;
+    public ETagOpType TagOpType => tagOperationType;
 
     public bool CheckTags(List<string> existTags)
     {
-      for (int index = 0; index < this.tagsList.Count; ++index)
+      for (int index = 0; index < tagsList.Count; ++index)
       {
-        if (existTags.Contains(this.tagsList[index]))
+        if (existTags.Contains(tagsList[index]))
         {
-          if (this.TagOpType == ETagOpType.TAG_OP_TYPE_OR)
+          if (TagOpType == ETagOpType.TAG_OP_TYPE_OR)
             return true;
         }
-        else if (this.TagOpType == ETagOpType.TAG_OP_TYPE_AND)
+        else if (TagOpType == ETagOpType.TAG_OP_TYPE_AND)
           return false;
       }
-      return this.TagOpType == ETagOpType.TAG_OP_TYPE_AND;
+      return TagOpType == ETagOpType.TAG_OP_TYPE_AND;
     }
 
     protected override void ReadTag(string sTagData)
     {
       if (sTagData != "&OP&AND&")
-        this.tagsList.Add(sTagData);
+        tagsList.Add(sTagData);
       else
-        this.tagOperationType = ETagOpType.TAG_OP_TYPE_AND;
+        tagOperationType = ETagOpType.TAG_OP_TYPE_AND;
     }
   }
 }

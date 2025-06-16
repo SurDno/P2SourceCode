@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEngine;
 
 namespace Cinemachine
 {
@@ -8,21 +7,21 @@ namespace Cinemachine
   {
     [SerializeField]
     [Tooltip("These are the noise channels for the virtual camera's position. Convincing noise setups typically mix low, medium and high frequencies together, so start with a size of 3")]
-    private NoiseSettings.TransformNoiseParams[] m_Position = new NoiseSettings.TransformNoiseParams[0];
+    private TransformNoiseParams[] m_Position = new TransformNoiseParams[0];
     [SerializeField]
     [Tooltip("These are the noise channels for the virtual camera's orientation. Convincing noise setups typically mix low, medium and high frequencies together, so start with a size of 3")]
-    private NoiseSettings.TransformNoiseParams[] m_Orientation = new NoiseSettings.TransformNoiseParams[0];
+    private TransformNoiseParams[] m_Orientation = new TransformNoiseParams[0];
 
-    public NoiseSettings.TransformNoiseParams[] PositionNoise => this.m_Position;
+    public TransformNoiseParams[] PositionNoise => m_Position;
 
-    public NoiseSettings.TransformNoiseParams[] OrientationNoise => this.m_Orientation;
+    public TransformNoiseParams[] OrientationNoise => m_Orientation;
 
     public void CopyFrom(NoiseSettings other)
     {
-      this.m_Position = new NoiseSettings.TransformNoiseParams[other.m_Position.Length];
-      other.m_Position.CopyTo((Array) this.m_Position, 0);
-      this.m_Orientation = new NoiseSettings.TransformNoiseParams[other.m_Orientation.Length];
-      other.m_Orientation.CopyTo((Array) this.m_Orientation, 0);
+      m_Position = new TransformNoiseParams[other.m_Position.Length];
+      other.m_Position.CopyTo(m_Position, 0);
+      m_Orientation = new TransformNoiseParams[other.m_Orientation.Length];
+      other.m_Orientation.CopyTo(m_Orientation, 0);
     }
 
     [DocumentationSorting(9.1f, DocumentationSortingAttribute.Level.UserRef)]
@@ -40,11 +39,11 @@ namespace Cinemachine
     public struct TransformNoiseParams
     {
       [Tooltip("Noise definition for X-axis")]
-      public NoiseSettings.NoiseParams X;
+      public NoiseParams X;
       [Tooltip("Noise definition for Y-axis")]
-      public NoiseSettings.NoiseParams Y;
+      public NoiseParams Y;
       [Tooltip("Noise definition for Z-axis")]
-      public NoiseSettings.NoiseParams Z;
+      public NoiseParams Z;
     }
   }
 }

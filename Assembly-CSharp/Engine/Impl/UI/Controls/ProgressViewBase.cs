@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace Engine.Impl.UI.Controls
+﻿namespace Engine.Impl.UI.Controls
 {
   public abstract class ProgressViewBase : FloatView
   {
@@ -8,8 +6,8 @@ namespace Engine.Impl.UI.Controls
 
     public override float FloatValue
     {
-      get => this.Progress;
-      set => this.Progress = Mathf.Clamp01(value);
+      get => Progress;
+      set => Progress = Mathf.Clamp01(value);
     }
   }
 }

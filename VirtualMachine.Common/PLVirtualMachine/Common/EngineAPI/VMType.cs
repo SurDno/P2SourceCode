@@ -1,11 +1,11 @@
-﻿using Cofe.Loggers;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Cofe.Loggers;
 using Engine.Common;
 using Engine.Common.Reflection;
 using PLVirtualMachine.Common.Data;
 using PLVirtualMachine.Common.EngineAPI.VMECS.VMAttributes;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace PLVirtualMachine.Common.EngineAPI
 {
@@ -23,9 +23,9 @@ namespace PLVirtualMachine.Common.EngineAPI
 
     public VMType()
     {
-      this.baseType = typeof (object);
-      this.specialType = "";
-      this.isEngineStorageMode = false;
+      baseType = typeof (object);
+      specialType = "";
+      isEngineStorageMode = false;
     }
 
     public VMType(Type baseType)
@@ -43,9 +43,9 @@ namespace PLVirtualMachine.Common.EngineAPI
       else if (typeof (ILogicMapNodeRef).IsAssignableFrom(baseType))
         baseType = typeof (ILogicMapNodeRef);
       this.baseType = baseType;
-      this.specialType = "";
-      this.isEngineStorageMode = false;
-      this.ReadSpecialPart();
+      specialType = "";
+      isEngineStorageMode = false;
+      ReadSpecialPart();
     }
 
     public VMType(Type baseType, string specialType)
@@ -59,25 +59,24 @@ namespace PLVirtualMachine.Common.EngineAPI
       }
       else
       {
-        Logger.AddError(string.Format("Invalid VMType constructor call !"));
+        Logger.AddError("Invalid VMType constructor call !");
         this.specialType = specialType;
       }
-      this.isEngineStorageMode = false;
-      this.ReadSpecialPart();
+      isEngineStorageMode = false;
+      ReadSpecialPart();
     }
 
     public VMType(Type baseType, string specialType, bool engineStorageMode)
     {
       this.baseType = baseType;
       this.specialType = specialType;
-      this.isEngineStorageMode = engineStorageMode;
-      this.ReadSpecialPart();
+      isEngineStorageMode = engineStorageMode;
+      ReadSpecialPart();
     }
 
     public static VMType CreateListTypeByElementType(VMType elemType)
     {
-      VMType typeByElementType = new VMType()
-      {
+      VMType typeByElementType = new VMType {
         baseType = typeof (ICommonList),
         listElementType = elemType
       };
@@ -100,7 +99,7 @@ namespace PLVirtualMachine.Common.EngineAPI
       if (!typeof (IState).IsAssignableFrom(state.GetType()))
         return new VMType(typeof (ILogicMapNodeRef));
       string str = state.GetType().ToString();
-      if (str.Contains<char>('.'))
+      if (str.Contains('.'))
       {
         string[] strArray = str.Split('.');
         str = strArray[strArray.Length - 1];
@@ -116,35 +115,35 @@ namespace PLVirtualMachine.Common.EngineAPI
         return;
       if (blueprint.Static)
       {
-        Logger.AddError(string.Format("Cannot specialize type by static object {0} at {1}", (object) blueprint.Name, (object) EngineAPIManager.Instance.CurrentFSMStateInfo));
-        this.specialType = "";
+        Logger.AddError(string.Format("Cannot specialize type by static object {0} at {1}", blueprint.Name, EngineAPIManager.Instance.CurrentFSMStateInfo));
+        specialType = "";
       }
       else
       {
-        this.specialTypeBlueprintId = blueprint.BaseGuid;
-        if (this.specialTypeBlueprintId == 0UL)
+        specialTypeBlueprintId = blueprint.BaseGuid;
+        if (specialTypeBlueprintId == 0UL)
           return;
-        this.specialType = "cf_" + this.specialTypeBlueprintId.ToString() + "&" + this.MakeFunctionalPart(blueprint.GetComponentNames());
-        this.ReadFunctionalPart(this.specialType.Substring("cf_".Length));
+        specialType = "cf_" + specialTypeBlueprintId + "&" + MakeFunctionalPart(blueprint.GetComponentNames());
+        ReadFunctionalPart(specialType.Substring("cf_".Length));
       }
     }
 
-    public Type BaseType => this.baseType;
+    public Type BaseType => baseType;
 
-    public string SpecialType => this.specialType;
+    public string SpecialType => specialType;
 
-    public bool IsList => this.listDepth > 0;
+    public bool IsList => listDepth > 0;
 
     public VMType GetListElementType()
     {
-      return this.listElementType == null ? new VMType(typeof (object)) : this.listElementType;
+      return listElementType == null ? new VMType(typeof (object)) : listElementType;
     }
 
     public bool IsFunctional
     {
       get
       {
-        return this.IsList ? this.listElementType != null && this.listElementType.IsFunctional : typeof (IObjRef) == this.BaseType || typeof (IBlueprintRef) == this.BaseType;
+        return IsList ? listElementType != null && listElementType.IsFunctional : typeof (IObjRef) == BaseType || typeof (IBlueprintRef) == BaseType;
       }
     }
 
@@ -152,36 +151,36 @@ namespace PLVirtualMachine.Common.EngineAPI
     {
       get
       {
-        return this.IsList ? this.listElementType != null && this.listElementType.IsFunctionalSpecial : this.functionalPartsList != null && this.functionalPartsList.Count > 0;
+        return IsList ? listElementType != null && listElementType.IsFunctionalSpecial : functionalPartsList != null && functionalPartsList.Count > 0;
       }
     }
 
-    public bool IsComplexSpecial => this.IsSpecial && this.specialTypeBlueprintId > 0UL;
+    public bool IsComplexSpecial => IsSpecial && specialTypeBlueprintId > 0UL;
 
     private void MakeSpecial(List<string> functionalsList)
     {
-      if (this.IsList)
+      if (IsList)
       {
-        if (this.listElementType != null)
+        if (listElementType != null)
         {
-          this.listElementType.MakeSpecial(functionalsList);
+          listElementType.MakeSpecial(functionalsList);
         }
         else
         {
-          this.listElementType = new VMType(typeof (IObjRef));
-          this.listElementType.MakeSpecial(functionalsList);
+          listElementType = new VMType(typeof (IObjRef));
+          listElementType.MakeSpecial(functionalsList);
         }
-        this.listDepth = 1 + this.listElementType.listDepth;
-        this.specialType = this.listElementType.Write();
+        listDepth = 1 + listElementType.listDepth;
+        specialType = listElementType.Write();
       }
       else if ((functionalsList != null ? (functionalsList.Count > 0 ? 1 : 0) : 0) != 0)
       {
-        this.specialTypeBlueprintId = 0UL;
-        this.specialType = "cf_" + this.MakeFunctionalPart((IEnumerable<string>) functionalsList);
-        this.ReadFunctionalPart(this.specialType.Substring("cf_".Length));
+        specialTypeBlueprintId = 0UL;
+        specialType = "cf_" + MakeFunctionalPart(functionalsList);
+        ReadFunctionalPart(specialType.Substring("cf_".Length));
       }
       else
-        this.specialType = "";
+        specialType = "";
     }
 
     private string MakeFunctionalPart(IEnumerable<string> functionalsList)
@@ -190,7 +189,7 @@ namespace PLVirtualMachine.Common.EngineAPI
       int num = 0;
       foreach (string functionals in functionalsList)
       {
-        if (!((Type) null == EngineAPIManager.GetComponentTypeByName(functionals)))
+        if (!(null == EngineAPIManager.GetComponentTypeByName(functionals)))
         {
           if (num > 0)
             str += "&";
@@ -203,39 +202,36 @@ namespace PLVirtualMachine.Common.EngineAPI
 
     public IEnumerable<string> GetFunctionalParts(bool withDepended = false)
     {
-      if (this.IsList)
-      {
-        if (this.listElementType == null)
+      if (IsList) {
+        if (listElementType == null)
         {
           yield break;
         }
-        else
-        {
-          foreach (string functionalPart in this.listElementType.GetFunctionalParts(withDepended))
-            yield return functionalPart;
-        }
+
+        foreach (string functionalPart in listElementType.GetFunctionalParts(withDepended))
+          yield return functionalPart;
       }
-      if (withDepended && this.functionalPartsList != null)
+      if (withDepended && functionalPartsList != null)
       {
-        for (int i = 0; i < this.functionalPartsList.Count; ++i)
+        for (int i = 0; i < functionalPartsList.Count; ++i)
         {
-          yield return this.functionalPartsList[i];
-          string dependedFunctional = EngineAPIManager.GetDependedFunctional(this.functionalPartsList[i]);
+          yield return functionalPartsList[i];
+          string dependedFunctional = EngineAPIManager.GetDependedFunctional(functionalPartsList[i]);
           if ("" != dependedFunctional)
             yield return dependedFunctional;
         }
       }
       bool isFunctionalParts = false;
-      if (this.functionalPartsList != null)
-        isFunctionalParts = this.functionalPartsList.Count > 0;
-      if (this.SpecialTypeBlueprint != null && !isFunctionalParts)
+      if (functionalPartsList != null)
+        isFunctionalParts = functionalPartsList.Count > 0;
+      if (SpecialTypeBlueprint != null && !isFunctionalParts)
       {
-        foreach (string componentName in this.SpecialTypeBlueprint.GetComponentNames())
+        foreach (string componentName in SpecialTypeBlueprint.GetComponentNames())
           yield return componentName;
       }
       if (isFunctionalParts)
       {
-        foreach (string functionalParts in this.functionalPartsList)
+        foreach (string functionalParts in functionalPartsList)
           yield return functionalParts;
       }
     }
@@ -244,7 +240,7 @@ namespace PLVirtualMachine.Common.EngineAPI
     {
       get
       {
-        return this.IsNumber || this.baseType == typeof (bool) || this.baseType == typeof (string) || this.baseType.IsEnum;
+        return IsNumber || baseType == typeof (bool) || baseType == typeof (string) || baseType.IsEnum;
       }
     }
 
@@ -252,7 +248,7 @@ namespace PLVirtualMachine.Common.EngineAPI
     {
       get
       {
-        return this.IsIntegerNumber || this.baseType == typeof (float) || this.baseType == typeof (double);
+        return IsIntegerNumber || baseType == typeof (float) || baseType == typeof (double);
       }
     }
 
@@ -260,86 +256,86 @@ namespace PLVirtualMachine.Common.EngineAPI
     {
       get
       {
-        return this.baseType == typeof (byte) || this.baseType == typeof (ushort) || this.baseType == typeof (short) || this.baseType == typeof (int) || this.baseType == typeof (uint) || this.baseType == typeof (long) || this.baseType == typeof (ulong);
+        return baseType == typeof (byte) || baseType == typeof (ushort) || baseType == typeof (short) || baseType == typeof (int) || baseType == typeof (uint) || baseType == typeof (long) || baseType == typeof (ulong);
       }
     }
 
     public bool EqualsTo(VMType otherType)
     {
-      return this.BaseType == otherType.BaseType & this.SpecialType.Equals(otherType.SpecialType);
+      return BaseType == otherType.BaseType & SpecialType.Equals(otherType.SpecialType);
     }
 
-    public string Name => this.baseType.ToString();
+    public string Name => baseType.ToString();
 
     public void Read(string data)
     {
       switch (data)
       {
         case null:
-          Logger.AddError(string.Format("Attempt to read null vmtype data at {0}", (object) EngineAPIManager.Instance.CurrentFSMStateInfo));
+          Logger.AddError(string.Format("Attempt to read null vmtype data at {0}", EngineAPIManager.Instance.CurrentFSMStateInfo));
           break;
         case "":
           break;
         default:
-          this.isEngineStorageMode = false;
+          isEngineStorageMode = false;
           string[] strArray = data.Split('%');
-          this.baseType = Type.GetType(strArray[0]);
-          if (this.baseType == (Type) null)
-            this.baseType = EngineAPIManager.GetObjectTypeByName(strArray[0]);
-          this.specialType = "";
+          baseType = Type.GetType(strArray[0]);
+          if (baseType == null)
+            baseType = EngineAPIManager.GetObjectTypeByName(strArray[0]);
+          specialType = "";
           if (strArray.Length > 1)
           {
             for (int index = 1; index < strArray.Length; ++index)
             {
               if (index > 1)
-                this.specialType += "%";
-              this.specialType += strArray[index];
+                specialType += "%";
+              specialType += strArray[index];
             }
           }
-          if (typeof (Engine.Common.IObject).IsAssignableFrom(this.baseType))
+          if (typeof (Engine.Common.IObject).IsAssignableFrom(baseType))
           {
-            if (typeof (IEntity).IsAssignableFrom(this.baseType))
+            if (typeof (IEntity).IsAssignableFrom(baseType))
             {
-              this.baseType = typeof (IObjRef);
+              baseType = typeof (IObjRef);
             }
             else
             {
-              this.baseType = typeof (ISampleRef);
-              this.specialType = data;
-              this.isEngineStorageMode = true;
+              baseType = typeof (ISampleRef);
+              specialType = data;
+              isEngineStorageMode = true;
             }
           }
-          this.ReadSpecialPart();
+          ReadSpecialPart();
           break;
       }
     }
 
     public string Write()
     {
-      if ((Type) null == this.baseType)
+      if (null == baseType)
       {
-        Logger.AddError(string.Format("Type serialization error: base type is null at {0}", (object) EngineAPIManager.Instance.CurrentFSMStateInfo));
+        Logger.AddError(string.Format("Type serialization error: base type is null at {0}", EngineAPIManager.Instance.CurrentFSMStateInfo));
         return "";
       }
       try
       {
         string str;
-        if (!this.isEngineStorageMode)
+        if (!isEngineStorageMode)
         {
-          string objectTypeNameByType = EngineAPIManager.GetObjectTypeNameByType(this.baseType);
+          string objectTypeNameByType = EngineAPIManager.GetObjectTypeNameByType(baseType);
           if ("" == objectTypeNameByType)
-            objectTypeNameByType = this.baseType.ToString();
-          if (typeof (ICommonList).IsAssignableFrom(this.baseType) && this.listElementType != null)
-            this.specialType = this.listElementType.Write();
-          str = objectTypeNameByType + "%" + this.specialType;
+            objectTypeNameByType = baseType.ToString();
+          if (typeof (ICommonList).IsAssignableFrom(baseType) && listElementType != null)
+            specialType = listElementType.Write();
+          str = objectTypeNameByType + "%" + specialType;
         }
         else
-          str = this.specialType;
+          str = specialType;
         return str;
       }
       catch (Exception ex)
       {
-        Logger.AddError(string.Format("Type serialization error: {0} at {1}", (object) ex.ToString(), (object) EngineAPIManager.Instance.CurrentFSMStateInfo));
+        Logger.AddError(string.Format("Type serialization error: {0} at {1}", ex, EngineAPIManager.Instance.CurrentFSMStateInfo));
         return "";
       }
     }
@@ -348,12 +344,12 @@ namespace PLVirtualMachine.Common.EngineAPI
     {
       get
       {
-        if (this.specialTypeBlueprintId == 0UL)
-          return (IBlueprint) null;
-        IBlueprint specialTypeBlueprint = IStaticDataContainer.StaticDataContainer.GameRoot.GetBlueprintByGuid(this.specialTypeBlueprintId);
+        if (specialTypeBlueprintId == 0UL)
+          return null;
+        IBlueprint specialTypeBlueprint = IStaticDataContainer.StaticDataContainer.GameRoot.GetBlueprintByGuid(specialTypeBlueprintId);
         if (specialTypeBlueprint == null)
         {
-          PLVirtualMachine.Common.IObject objectByGuid = IStaticDataContainer.StaticDataContainer.GetObjectByGuid(this.specialTypeBlueprintId);
+          IObject objectByGuid = IStaticDataContainer.StaticDataContainer.GetObjectByGuid(specialTypeBlueprintId);
           if (objectByGuid != null && typeof (IBlueprint).IsAssignableFrom(objectByGuid.GetType()))
             specialTypeBlueprint = (IBlueprint) objectByGuid;
         }
@@ -363,57 +359,57 @@ namespace PLVirtualMachine.Common.EngineAPI
 
     public void Clear()
     {
-      if (this.functionalPartsList != null)
+      if (functionalPartsList != null)
       {
-        this.functionalPartsList.Clear();
-        this.functionalPartsList = (List<string>) null;
+        functionalPartsList.Clear();
+        functionalPartsList = null;
       }
-      if (this.listElementType == null)
+      if (listElementType == null)
         return;
-      this.listElementType.Clear();
-      this.listElementType = (VMType) null;
+      listElementType.Clear();
+      listElementType = null;
     }
 
-    protected bool IsSpecial => this.specialType != null && this.specialType.Length > 0;
+    protected bool IsSpecial => specialType != null && specialType.Length > 0;
 
     private void ReadSpecialPart()
     {
-      this.listDepth = 0;
-      this.listElementType = (VMType) null;
-      if (this.specialType == null)
+      listDepth = 0;
+      listElementType = null;
+      if (specialType == null)
         return;
-      if (typeof (ICommonList).IsAssignableFrom(this.BaseType))
+      if (typeof (ICommonList).IsAssignableFrom(BaseType))
       {
-        if ("" != this.specialType)
+        if ("" != specialType)
         {
-          this.listElementType = VMTypePool.GetType(this.specialType);
-          this.listDepth = 1 + this.listElementType.listDepth;
+          listElementType = VMTypePool.GetType(specialType);
+          listDepth = 1 + listElementType.listDepth;
         }
         else
-          this.listDepth = 1;
+          listDepth = 1;
       }
       else
       {
-        if (!typeof (IObjRef).IsAssignableFrom(this.BaseType) && !typeof (IBlueprintRef).IsAssignableFrom(this.BaseType))
+        if (!typeof (IObjRef).IsAssignableFrom(BaseType) && !typeof (IBlueprintRef).IsAssignableFrom(BaseType))
           return;
-        if (this.specialType.StartsWith("cf_"))
+        if (specialType.StartsWith("cf_"))
         {
-          this.ReadFunctionalPart(this.specialType.Substring("cf_".Length));
+          ReadFunctionalPart(specialType.Substring("cf_".Length));
         }
         else
         {
-          this.ReadFunctionalPart(this.specialType);
-          if (!("" != this.specialType))
+          ReadFunctionalPart(specialType);
+          if (!("" != specialType))
             return;
-          this.specialType = "cf_" + this.specialType;
+          specialType = "cf_" + specialType;
         }
       }
     }
 
     private void ReadFunctionalPart(string sFuncSpecialPart)
     {
-      if (this.functionalPartsList != null)
-        this.functionalPartsList.Clear();
+      if (functionalPartsList != null)
+        functionalPartsList.Clear();
       string[] strArray = sFuncSpecialPart.Split('&');
       for (int index = 0; index < strArray.Length; ++index)
       {
@@ -421,13 +417,13 @@ namespace PLVirtualMachine.Common.EngineAPI
         {
           ulong uint64 = StringUtility.ToUInt64(strArray[index]);
           if (uint64 != 0UL)
-            this.specialTypeBlueprintId = uint64;
+            specialTypeBlueprintId = uint64;
         }
         else
         {
-          if (this.functionalPartsList == null)
-            this.functionalPartsList = new List<string>();
-          this.functionalPartsList.Add(strArray[index]);
+          if (functionalPartsList == null)
+            functionalPartsList = new List<string>();
+          functionalPartsList.Add(strArray[index]);
         }
       }
     }

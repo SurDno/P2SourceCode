@@ -1,10 +1,10 @@
-﻿using Engine.Common;
+﻿using System;
+using Engine.Common;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Engine.Source.Commons.Abilities;
 using Engine.Source.Commons.Effects;
 using Inspectors;
-using System;
 
 namespace Engine.Source.Effects
 {
@@ -12,27 +12,27 @@ namespace Engine.Source.Effects
   [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
   public class RemoveEntityEffect : IEffect
   {
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy()]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected ParameterEffectQueueEnum queue = ParameterEffectQueueEnum.None;
 
-    public string Name => this.GetType().Name;
+    public string Name => GetType().Name;
 
     [Inspected]
     public AbilityItem AbilityItem { get; set; }
 
     public IEntity Target { get; set; }
 
-    public ParameterEffectQueueEnum Queue => this.queue;
+    public ParameterEffectQueueEnum Queue => queue;
 
     public bool Prepare(float currentRealTime, float currentGameTime) => true;
 
     public bool Compute(float currentRealTime, float currentGameTime)
     {
-      CoroutineService.Instance.WaitFrame((Action) (() => this.Target.Dispose()));
+      CoroutineService.Instance.WaitFrame((Action) (() => Target.Dispose()));
       return false;
     }
 

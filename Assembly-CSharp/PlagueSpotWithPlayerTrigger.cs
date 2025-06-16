@@ -1,11 +1,8 @@
 ﻿using Engine.Common;
 using Engine.Common.Services;
-using Engine.Source.Audio;
 using Engine.Source.Commons;
 using Engine.Source.Components.Utilities;
 using Inspectors;
-using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class PlagueSpotWithPlayerTrigger : MonoBehaviour
 {
@@ -15,24 +12,24 @@ public class PlagueSpotWithPlayerTrigger : MonoBehaviour
   private bool IsGame;
   private Material plagueSpotMaterial;
   [Inspected]
-  private PlagueSpotWithPlayerTrigger.State state = PlagueSpotWithPlayerTrigger.State.Unknown;
+  private State state = State.Unknown;
   [Inspected]
-  private float level = 0.0f;
+  private float level;
   private AudioSource audioSource;
   private float volume;
 
-  private void SetState(PlagueSpotWithPlayerTrigger.State state)
+  private void SetState(State state)
   {
     switch (state)
     {
-      case PlagueSpotWithPlayerTrigger.State.Waiting:
-        this.level = 0.0f;
-        this.plagueSpotMaterial.SetFloat("_Level", 0.0f);
+      case State.Waiting:
+        level = 0.0f;
+        plagueSpotMaterial.SetFloat("_Level", 0.0f);
         break;
-      case PlagueSpotWithPlayerTrigger.State.Growing:
-        this.level = 0.0f;
-        this.audioSource.PlayAndCheck();
-        this.plagueSpotMaterial.SetFloat("_Level", 0.0f);
+      case State.Growing:
+        level = 0.0f;
+        audioSource.PlayAndCheck();
+        plagueSpotMaterial.SetFloat("_Level", 0.0f);
         break;
     }
     this.state = state;
@@ -40,46 +37,46 @@ public class PlagueSpotWithPlayerTrigger : MonoBehaviour
 
   private void UpdateState()
   {
-    switch (this.state)
+    switch (state)
     {
-      case PlagueSpotWithPlayerTrigger.State.Growing:
-        this.level = Mathf.Clamp01(this.level + Time.deltaTime / this.growTime);
-        if (Mathf.Approximately(this.level, 1f))
-          this.SetState(PlagueSpotWithPlayerTrigger.State.Done);
-        this.plagueSpotMaterial.SetFloat("_Level", Mathf.Clamp01(SmoothUtility.Smooth22(Mathf.Sqrt(this.level))));
-        if (!this.audioSource.isPlaying)
-          this.audioSource.PlayAndCheck();
-        this.volume = Mathf.MoveTowards(this.volume, 1f, Time.deltaTime / 2f);
-        this.audioSource.volume = this.volume;
+      case State.Growing:
+        level = Mathf.Clamp01(level + Time.deltaTime / growTime);
+        if (Mathf.Approximately(level, 1f))
+          SetState(State.Done);
+        plagueSpotMaterial.SetFloat("_Level", Mathf.Clamp01(SmoothUtility.Smooth22(Mathf.Sqrt(level))));
+        if (!audioSource.isPlaying)
+          audioSource.PlayAndCheck();
+        volume = Mathf.MoveTowards(volume, 1f, Time.deltaTime / 2f);
+        audioSource.volume = volume;
         break;
-      case PlagueSpotWithPlayerTrigger.State.Done:
-        this.volume = Mathf.MoveTowards(this.volume, 0.0f, Time.deltaTime / 2f);
-        this.audioSource.volume = this.volume;
+      case State.Done:
+        volume = Mathf.MoveTowards(volume, 0.0f, Time.deltaTime / 2f);
+        audioSource.volume = volume;
         break;
     }
   }
 
   private void Start()
   {
-    this.plagueSpotMaterial = this.gameObject.GetComponent<MeshRenderer>().material;
-    this.IsGame = SceneManager.GetActiveScene().name != "PlagueIntro_Riot_Loader";
-    this.audioSource = this.GetComponent<AudioSource>();
-    this.SetState(PlagueSpotWithPlayerTrigger.State.Waiting);
+    plagueSpotMaterial = this.gameObject.GetComponent<MeshRenderer>().material;
+    IsGame = SceneManager.GetActiveScene().name != "PlagueIntro_Riot_Loader";
+    audioSource = this.GetComponent<AudioSource>();
+    SetState(State.Waiting);
   }
 
-  private void Update() => this.UpdateState();
+  private void Update() => UpdateState();
 
   private void OnTriggerEnter(Collider other)
   {
-    GameObject playerGameObject = this.GetPlayerGameObject();
-    if ((Object) playerGameObject == (Object) null || !((Object) playerGameObject == (Object) other.gameObject) || this.state != PlagueSpotWithPlayerTrigger.State.Waiting)
+    GameObject playerGameObject = GetPlayerGameObject();
+    if ((Object) playerGameObject == (Object) null || !((Object) playerGameObject == (Object) other.gameObject) || state != State.Waiting)
       return;
-    this.SetState(PlagueSpotWithPlayerTrigger.State.Growing);
+    SetState(State.Growing);
   }
 
   private GameObject GetPlayerGameObject()
   {
-    if (!this.IsGame)
+    if (!IsGame)
       return GameObject.Find("FPSController");
     IEntity player = ServiceLocator.GetService<ISimulation>().Player;
     if (player == null)

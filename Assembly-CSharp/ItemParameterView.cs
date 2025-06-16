@@ -1,6 +1,5 @@
 ﻿using Engine.Impl.UI.Controls;
 using Engine.Source.Components;
-using UnityEngine;
 
 public class ItemParameterView : ItemView
 {
@@ -12,14 +11,14 @@ public class ItemParameterView : ItemView
 
   public override StorableComponent Storable
   {
-    get => this.storable;
+    get => storable;
     set
     {
-      if (this.storable == value)
+      if (storable == value)
         return;
-      this.storable = value;
-      this.nestedView.Storable = value;
-      this.parameterView.Value = value?.Owner;
+      storable = value;
+      nestedView.Storable = value;
+      parameterView.Value = value?.Owner;
     }
   }
 }

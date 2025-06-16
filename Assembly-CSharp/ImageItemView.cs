@@ -1,8 +1,6 @@
 ﻿using Engine.Source.Components;
 using Engine.Source.Inventory;
 using Engine.Source.UI.Menu.Protagonist.Inventory;
-using UnityEngine;
-using UnityEngine.UI;
 
 public class ImageItemView : ItemView
 {
@@ -14,22 +12,22 @@ public class ImageItemView : ItemView
 
   public override StorableComponent Storable
   {
-    get => this.storable;
+    get => storable;
     set
     {
-      if (this.storable == value)
+      if (storable == value)
         return;
-      this.storable = value;
-      InventoryPlaceholder placeholder = this.storable?.Placeholder;
+      storable = value;
+      InventoryPlaceholder placeholder = storable?.Placeholder;
       if (placeholder == null)
       {
-        this.image.sprite = (Sprite) null;
-        this.image.enabled = false;
+        image.sprite = (Sprite) null;
+        image.enabled = false;
       }
       else
       {
-        this.image.sprite = InventoryUtility.GetSpriteByStyle(placeholder, this.style);
-        this.image.enabled = true;
+        image.sprite = InventoryUtility.GetSpriteByStyle(placeholder, style);
+        image.enabled = true;
       }
     }
   }

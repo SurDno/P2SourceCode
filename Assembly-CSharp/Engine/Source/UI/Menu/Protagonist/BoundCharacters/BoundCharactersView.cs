@@ -1,15 +1,11 @@
-﻿using Engine.Common.BoundCharacters;
+﻿using System.Collections.Generic;
+using Engine.Common.BoundCharacters;
 using Engine.Common.Commons;
 using Engine.Common.Services;
 using Engine.Source.Components.BoundCharacters;
 using Engine.Source.Services;
 using Engine.Source.Settings.External;
 using InputServices;
-using System;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.Serialization;
-using UnityEngine.UI;
 
 namespace Engine.Source.UI.Menu.Protagonist.BoundCharacters
 {
@@ -34,7 +30,7 @@ namespace Engine.Source.UI.Menu.Protagonist.BoundCharacters
     private Scrollbar _scrollbar;
     [SerializeField]
     private GameObject controlPanel;
-    private float xPrev = 0.0f;
+    private float xPrev;
 
     private void Build()
     {
@@ -53,55 +49,55 @@ namespace Engine.Source.UI.Menu.Protagonist.BoundCharacters
         }
         characterComponentList.Add(characterComponent);
       }
-      for (int index1 = 0; index1 < this.groups.Length; ++index1)
+      for (int index1 = 0; index1 < groups.Length; ++index1)
       {
         List<BoundCharacterComponent> characterComponentList;
-        if (dictionary.TryGetValue(this.groups[index1], out characterComponentList))
+        if (dictionary.TryGetValue(groups[index1], out characterComponentList))
         {
-          characterComponentList.Sort(new Comparison<BoundCharacterComponent>(this.SortingComparison));
-          BoundCharactersGroupView charactersGroupView = UnityEngine.Object.Instantiate<BoundCharactersGroupView>(this.groupViewPrefab, (Transform) this.layout, false);
-          this.groupViews.Add(charactersGroupView);
-          charactersGroupView.SetGroup(this.groups[index1]);
+          characterComponentList.Sort(SortingComparison);
+          BoundCharactersGroupView charactersGroupView = UnityEngine.Object.Instantiate<BoundCharactersGroupView>(groupViewPrefab, (Transform) layout, false);
+          groupViews.Add(charactersGroupView);
+          charactersGroupView.SetGroup(groups[index1]);
           for (int index2 = 0; index2 < characterComponentList.Count; ++index2)
           {
             BoundCharacterView boundCharacterView = charactersGroupView.AddCharacter(characterComponentList[index2]);
             if (!boundCharacterView.IsGroupSeen())
-              this.unseenGroupViews.Add(boundCharacterView);
+              unseenGroupViews.Add(boundCharacterView);
             if (!boundCharacterView.IsStateSeen())
-              this.unseenStateViews.Add(boundCharacterView);
+              unseenStateViews.Add(boundCharacterView);
           }
         }
       }
-      if (this.unseenGroupViews.Count > 0 || this.unseenStateViews.Count > 0)
+      if (unseenGroupViews.Count > 0 || unseenStateViews.Count > 0)
       {
-        this.animationTime = Mathf.Min(this.allAnimationsTime / (float) (this.unseenGroupViews.Count + this.unseenStateViews.Count), this.singleAnimationTime);
-        this.animationPhase = this.singleAnimationTime * 0.5f;
+        animationTime = Mathf.Min(allAnimationsTime / (unseenGroupViews.Count + unseenStateViews.Count), singleAnimationTime);
+        animationPhase = singleAnimationTime * 0.5f;
       }
       ServiceLocator.GetService<NotificationService>().RemoveNotify(NotificationEnum.BoundCharacters);
-      this._scrollbar = this.GetComponent<ScrollRect>().horizontalScrollbar;
+      _scrollbar = this.GetComponent<ScrollRect>().horizontalScrollbar;
     }
 
     private void Clear()
     {
-      this.unseenGroupViews.Clear();
-      this.unseenStateViews.Clear();
-      foreach (Component groupView in this.groupViews)
+      unseenGroupViews.Clear();
+      unseenStateViews.Clear();
+      foreach (Component groupView in groupViews)
         UnityEngine.Object.Destroy((UnityEngine.Object) groupView.gameObject);
-      this.groupViews.Clear();
-      this.animationPhase = -1f;
+      groupViews.Clear();
+      animationPhase = -1f;
     }
 
     private void OnDisable()
     {
-      this.Clear();
-      InputService.Instance.onJoystickUsedChanged -= new Action<bool>(this.OnJoystick);
+      Clear();
+      InputService.Instance.onJoystickUsedChanged -= OnJoystick;
     }
 
     private void OnEnable()
     {
-      this.Build();
-      InputService.Instance.onJoystickUsedChanged += new Action<bool>(this.OnJoystick);
-      this.OnJoystick(InputService.Instance.JoystickUsed);
+      Build();
+      InputService.Instance.onJoystickUsedChanged += OnJoystick;
+      OnJoystick(InputService.Instance.JoystickUsed);
     }
 
     private int SortingComparison(BoundCharacterComponent x, BoundCharacterComponent y)
@@ -115,38 +111,38 @@ namespace Engine.Source.UI.Menu.Protagonist.BoundCharacters
         return;
       Vector2 zero = Vector2.zero;
       float axis = InputService.Instance.GetAxis("LeftStickX");
-      float num = (this.xPrev + axis) * Time.deltaTime;
-      this.xPrev = axis;
-      if ((double) num == 0.0)
+      float num = (xPrev + axis) * Time.deltaTime;
+      xPrev = axis;
+      if (num == 0.0)
         return;
-      this._scrollbar.value += num * Time.deltaTime * ExternalSettingsInstance<ExternalInputSettings>.Instance.JoystickSensitivity;
+      _scrollbar.value += num * Time.deltaTime * ExternalSettingsInstance<ExternalInputSettings>.Instance.JoystickSensitivity;
     }
 
-    private void OnJoystick(bool joystick) => this.controlPanel?.SetActive(joystick);
+    private void OnJoystick(bool joystick) => controlPanel?.SetActive(joystick);
 
     private void Update()
     {
-      this.UpdateScrollNavigation();
-      if ((double) this.animationPhase == -1.0)
+      UpdateScrollNavigation();
+      if (animationPhase == -1.0)
         return;
-      this.animationPhase += Time.deltaTime;
-      if ((double) this.animationPhase < (double) this.animationTime)
+      animationPhase += Time.deltaTime;
+      if (animationPhase < (double) animationTime)
         return;
-      this.animationPhase -= this.animationTime;
-      if (this.unseenGroupViews.Count > 0)
+      animationPhase -= animationTime;
+      if (unseenGroupViews.Count > 0)
       {
-        int index = UnityEngine.Random.Range(0, this.unseenGroupViews.Count);
-        this.unseenGroupViews[index].MakeGroupSeen();
-        this.unseenGroupViews.RemoveAt(index);
+        int index = UnityEngine.Random.Range(0, unseenGroupViews.Count);
+        unseenGroupViews[index].MakeGroupSeen();
+        unseenGroupViews.RemoveAt(index);
       }
-      else if (this.unseenStateViews.Count > 0)
+      else if (unseenStateViews.Count > 0)
       {
-        int index = UnityEngine.Random.Range(0, this.unseenStateViews.Count);
-        this.unseenStateViews[index].MakeStateSeen();
-        this.unseenStateViews.RemoveAt(index);
+        int index = UnityEngine.Random.Range(0, unseenStateViews.Count);
+        unseenStateViews[index].MakeStateSeen();
+        unseenStateViews.RemoveAt(index);
       }
       else
-        this.animationPhase = -1f;
+        animationPhase = -1f;
     }
   }
 }

@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-[ExecuteInEditMode]
+﻿[ExecuteInEditMode]
 public class MotionTrail : MonoBehaviour
 {
   [SerializeField]
@@ -8,72 +6,72 @@ public class MotionTrail : MonoBehaviour
   [SerializeField]
   [Range(0.0f, 1f)]
   [Tooltip("Approximate opacity of the previous frame at 30 fps")]
-  private float strength = 0.0f;
+  private float strength;
   private Material material = (Material) null;
-  private int propertyId = 0;
+  private int propertyId;
   private RenderTexture historyBuffer = (RenderTexture) null;
 
   public float Strength
   {
-    get => this.strength;
-    set => this.strength = Mathf.Clamp01(value);
+    get => strength;
+    set => strength = Mathf.Clamp01(value);
   }
 
   private void OnDisable()
   {
-    if (!((Object) this.historyBuffer != (Object) null))
+    if (!((Object) historyBuffer != (Object) null))
       return;
-    this.DestroyBuffer(ref this.historyBuffer);
+    DestroyBuffer(ref historyBuffer);
   }
 
   private void OnRenderImage(RenderTexture source, RenderTexture destination)
   {
-    if ((double) this.strength == 0.0 || !this.MaterialValid())
+    if (strength == 0.0 || !MaterialValid())
     {
-      if ((Object) this.historyBuffer != (Object) null)
-        this.DestroyBuffer(ref this.historyBuffer);
+      if ((Object) historyBuffer != (Object) null)
+        DestroyBuffer(ref historyBuffer);
       Graphics.Blit((Texture) source, destination);
     }
     else if ((Object) this.historyBuffer == (Object) null)
     {
-      this.CreateHistoryBuffer(source);
-      Graphics.Blit((Texture) source, this.historyBuffer);
+      CreateHistoryBuffer(source);
+      Graphics.Blit((Texture) source, historyBuffer);
       Graphics.Blit((Texture) source, destination);
     }
     else
     {
-      if (this.FramePropertiesChanged(source))
+      if (FramePropertiesChanged(source))
       {
         RenderTexture historyBuffer = this.historyBuffer;
-        this.CreateHistoryBuffer(source);
+        CreateHistoryBuffer(source);
         Graphics.Blit((Texture) historyBuffer, this.historyBuffer);
-        this.DestroyBuffer(ref historyBuffer);
+        DestroyBuffer(ref historyBuffer);
       }
-      this.material.SetFloat(this.propertyId, 1f - Mathf.Pow(this.strength, Time.deltaTime * 30f));
-      Graphics.Blit((Texture) source, this.historyBuffer, this.material);
+      material.SetFloat(propertyId, 1f - Mathf.Pow(strength, Time.deltaTime * 30f));
+      Graphics.Blit((Texture) source, this.historyBuffer, material);
       Graphics.Blit((Texture) this.historyBuffer, destination);
     }
   }
 
   private bool FramePropertiesChanged(RenderTexture source)
   {
-    return this.historyBuffer.width != source.width || this.historyBuffer.height != source.height || this.historyBuffer.format != source.format;
+    return historyBuffer.width != source.width || historyBuffer.height != source.height || historyBuffer.format != source.format;
   }
 
   private bool MaterialValid()
   {
-    if ((Object) this.material != (Object) null)
+    if ((Object) material != (Object) null)
       return true;
-    if ((Object) this.blendShader == (Object) null || !this.blendShader.isSupported)
+    if ((Object) blendShader == (Object) null || !blendShader.isSupported)
       return false;
-    this.material = new Material(this.blendShader);
-    this.propertyId = Shader.PropertyToID("_Opacity");
+    material = new Material(blendShader);
+    propertyId = Shader.PropertyToID("_Opacity");
     return true;
   }
 
   private void CreateHistoryBuffer(RenderTexture source)
   {
-    this.historyBuffer = new RenderTexture(source.width, source.height, 0, source.format, source.sRGB ? RenderTextureReadWrite.sRGB : RenderTextureReadWrite.Linear);
+    historyBuffer = new RenderTexture(source.width, source.height, 0, source.format, source.sRGB ? RenderTextureReadWrite.sRGB : RenderTextureReadWrite.Linear);
   }
 
   private void DestroyBuffer(ref RenderTexture buffer)

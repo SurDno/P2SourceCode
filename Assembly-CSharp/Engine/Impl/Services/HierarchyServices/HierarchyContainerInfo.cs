@@ -1,6 +1,6 @@
-﻿using AssetDatabases;
+﻿using System.Collections.Generic;
+using AssetDatabases;
 using Inspectors;
-using System.Collections.Generic;
 
 namespace Engine.Impl.Services.HierarchyServices
 {
@@ -9,17 +9,17 @@ namespace Engine.Impl.Services.HierarchyServices
     private HierarchyContainer container;
 
     [Inspected(Header = true)]
-    public string Name => AssetDatabaseUtility.GetFileName(this.Path);
+    public string Name => AssetDatabaseUtility.GetFileName(Path);
 
     [Inspected]
-    public string Path => AssetDatabaseService.Instance.GetPath(this.container.Id);
+    public string Path => AssetDatabaseService.Instance.GetPath(container.Id);
 
     [Inspected]
     public IEnumerable<HierarchyContainerInfo> Childs
     {
       get
       {
-        foreach (HierarchyContainerInfo container in HierarchyContainerInfo.GetContainers(this.container.Items))
+        foreach (HierarchyContainerInfo container in GetContainers(this.container.Items))
         {
           HierarchyContainerInfo child = container;
           yield return child;
@@ -37,7 +37,7 @@ namespace Engine.Impl.Services.HierarchyServices
       {
         if (item.Container != null)
           yield return new HierarchyContainerInfo(item.Container);
-        foreach (HierarchyContainerInfo container in HierarchyContainerInfo.GetContainers(item.Items))
+        foreach (HierarchyContainerInfo container in GetContainers(item.Items))
         {
           HierarchyContainerInfo scene = container;
           yield return scene;

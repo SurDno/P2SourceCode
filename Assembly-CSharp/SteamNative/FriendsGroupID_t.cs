@@ -6,7 +6,7 @@
 
     public static implicit operator FriendsGroupID_t(short value)
     {
-      return new FriendsGroupID_t() { Value = value };
+      return new FriendsGroupID_t { Value = value };
     }
 
     public static implicit operator short(FriendsGroupID_t value) => value.Value;

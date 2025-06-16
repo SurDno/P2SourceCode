@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEngine;
 
 namespace RootMotion
 {
@@ -180,28 +179,28 @@ namespace RootMotion
       "ankle"
     };
 
-    public static Transform[] GetBonesOfType(BipedNaming.BoneType boneType, Transform[] bones)
+    public static Transform[] GetBonesOfType(BoneType boneType, Transform[] bones)
     {
       Transform[] array = new Transform[0];
       foreach (Transform bone in bones)
       {
-        if ((UnityEngine.Object) bone != (UnityEngine.Object) null && BipedNaming.GetBoneType(bone.name) == boneType)
+        if ((UnityEngine.Object) bone != (UnityEngine.Object) null && GetBoneType(bone.name) == boneType)
         {
-          Array.Resize<Transform>(ref array, array.Length + 1);
+          Array.Resize(ref array, array.Length + 1);
           array[array.Length - 1] = bone;
         }
       }
       return array;
     }
 
-    public static Transform[] GetBonesOfSide(BipedNaming.BoneSide boneSide, Transform[] bones)
+    public static Transform[] GetBonesOfSide(BoneSide boneSide, Transform[] bones)
     {
       Transform[] array = new Transform[0];
       foreach (Transform bone in bones)
       {
-        if ((UnityEngine.Object) bone != (UnityEngine.Object) null && BipedNaming.GetBoneSide(bone.name) == boneSide)
+        if ((UnityEngine.Object) bone != (UnityEngine.Object) null && GetBoneSide(bone.name) == boneSide)
         {
-          Array.Resize<Transform>(ref array, array.Length + 1);
+          Array.Resize(ref array, array.Length + 1);
           array[array.Length - 1] = bone;
         }
       }
@@ -209,20 +208,20 @@ namespace RootMotion
     }
 
     public static Transform[] GetBonesOfTypeAndSide(
-      BipedNaming.BoneType boneType,
-      BipedNaming.BoneSide boneSide,
+      BoneType boneType,
+      BoneSide boneSide,
       Transform[] bones)
     {
-      Transform[] bonesOfType = BipedNaming.GetBonesOfType(boneType, bones);
-      return BipedNaming.GetBonesOfSide(boneSide, bonesOfType);
+      Transform[] bonesOfType = GetBonesOfType(boneType, bones);
+      return GetBonesOfSide(boneSide, bonesOfType);
     }
 
     public static Transform GetFirstBoneOfTypeAndSide(
-      BipedNaming.BoneType boneType,
-      BipedNaming.BoneSide boneSide,
+      BoneType boneType,
+      BoneSide boneSide,
       Transform[] bones)
     {
-      Transform[] bonesOfTypeAndSide = BipedNaming.GetBonesOfTypeAndSide(boneType, boneSide, bones);
+      Transform[] bonesOfTypeAndSide = GetBonesOfTypeAndSide(boneType, boneSide, bones);
       return bonesOfTypeAndSide.Length == 0 ? (Transform) null : bonesOfTypeAndSide[0];
     }
 
@@ -233,7 +232,7 @@ namespace RootMotion
         bool flag = true;
         foreach (string[] naming in namings)
         {
-          if (!BipedNaming.matchesNaming(transform.name, naming))
+          if (!matchesNaming(transform.name, naming))
           {
             flag = false;
             break;
@@ -245,85 +244,85 @@ namespace RootMotion
       return (Transform) null;
     }
 
-    public static BipedNaming.BoneType GetBoneType(string boneName)
+    public static BoneType GetBoneType(string boneName)
     {
-      if (BipedNaming.isSpine(boneName))
-        return BipedNaming.BoneType.Spine;
-      if (BipedNaming.isHead(boneName))
-        return BipedNaming.BoneType.Head;
-      if (BipedNaming.isArm(boneName))
-        return BipedNaming.BoneType.Arm;
-      if (BipedNaming.isLeg(boneName))
-        return BipedNaming.BoneType.Leg;
-      if (BipedNaming.isTail(boneName))
-        return BipedNaming.BoneType.Tail;
-      return BipedNaming.isEye(boneName) ? BipedNaming.BoneType.Eye : BipedNaming.BoneType.Unassigned;
+      if (isSpine(boneName))
+        return BoneType.Spine;
+      if (isHead(boneName))
+        return BoneType.Head;
+      if (isArm(boneName))
+        return BoneType.Arm;
+      if (isLeg(boneName))
+        return BoneType.Leg;
+      if (isTail(boneName))
+        return BoneType.Tail;
+      return isEye(boneName) ? BoneType.Eye : BoneType.Unassigned;
     }
 
-    public static BipedNaming.BoneSide GetBoneSide(string boneName)
+    public static BoneSide GetBoneSide(string boneName)
     {
-      if (BipedNaming.isLeft(boneName))
-        return BipedNaming.BoneSide.Left;
-      return BipedNaming.isRight(boneName) ? BipedNaming.BoneSide.Right : BipedNaming.BoneSide.Center;
+      if (isLeft(boneName))
+        return BoneSide.Left;
+      return isRight(boneName) ? BoneSide.Right : BoneSide.Center;
     }
 
     public static Transform GetBone(
       Transform[] transforms,
-      BipedNaming.BoneType boneType,
-      BipedNaming.BoneSide boneSide = BipedNaming.BoneSide.Center,
+      BoneType boneType,
+      BoneSide boneSide = BoneSide.Center,
       params string[][] namings)
     {
-      return BipedNaming.GetNamingMatch(BipedNaming.GetBonesOfTypeAndSide(boneType, boneSide, transforms), namings);
+      return GetNamingMatch(GetBonesOfTypeAndSide(boneType, boneSide, transforms), namings);
     }
 
     private static bool isLeft(string boneName)
     {
-      return BipedNaming.matchesNaming(boneName, BipedNaming.typeLeft) || BipedNaming.lastLetter(boneName) == "L" || BipedNaming.firstLetter(boneName) == "L";
+      return matchesNaming(boneName, typeLeft) || lastLetter(boneName) == "L" || firstLetter(boneName) == "L";
     }
 
     private static bool isRight(string boneName)
     {
-      return BipedNaming.matchesNaming(boneName, BipedNaming.typeRight) || BipedNaming.lastLetter(boneName) == "R" || BipedNaming.firstLetter(boneName) == "R";
+      return matchesNaming(boneName, typeRight) || lastLetter(boneName) == "R" || firstLetter(boneName) == "R";
     }
 
     private static bool isSpine(string boneName)
     {
-      return BipedNaming.matchesNaming(boneName, BipedNaming.typeSpine) && !BipedNaming.excludesNaming(boneName, BipedNaming.typeExcludeSpine);
+      return matchesNaming(boneName, typeSpine) && !excludesNaming(boneName, typeExcludeSpine);
     }
 
     private static bool isHead(string boneName)
     {
-      return BipedNaming.matchesNaming(boneName, BipedNaming.typeHead) && !BipedNaming.excludesNaming(boneName, BipedNaming.typeExcludeHead);
+      return matchesNaming(boneName, typeHead) && !excludesNaming(boneName, typeExcludeHead);
     }
 
     private static bool isArm(string boneName)
     {
-      return BipedNaming.matchesNaming(boneName, BipedNaming.typeArm) && !BipedNaming.excludesNaming(boneName, BipedNaming.typeExcludeArm);
+      return matchesNaming(boneName, typeArm) && !excludesNaming(boneName, typeExcludeArm);
     }
 
     private static bool isLeg(string boneName)
     {
-      return BipedNaming.matchesNaming(boneName, BipedNaming.typeLeg) && !BipedNaming.excludesNaming(boneName, BipedNaming.typeExcludeLeg);
+      return matchesNaming(boneName, typeLeg) && !excludesNaming(boneName, typeExcludeLeg);
     }
 
     private static bool isTail(string boneName)
     {
-      return BipedNaming.matchesNaming(boneName, BipedNaming.typeTail) && !BipedNaming.excludesNaming(boneName, BipedNaming.typeExcludeTail);
+      return matchesNaming(boneName, typeTail) && !excludesNaming(boneName, typeExcludeTail);
     }
 
     private static bool isEye(string boneName)
     {
-      return BipedNaming.matchesNaming(boneName, BipedNaming.typeEye) && !BipedNaming.excludesNaming(boneName, BipedNaming.typeExcludeEye);
+      return matchesNaming(boneName, typeEye) && !excludesNaming(boneName, typeExcludeEye);
     }
 
     private static bool isTypeExclude(string boneName)
     {
-      return BipedNaming.matchesNaming(boneName, BipedNaming.typeExclude);
+      return matchesNaming(boneName, typeExclude);
     }
 
     private static bool matchesNaming(string boneName, string[] namingConvention)
     {
-      if (BipedNaming.excludesNaming(boneName, BipedNaming.typeExclude))
+      if (excludesNaming(boneName, typeExclude))
         return false;
       foreach (string str in namingConvention)
       {
@@ -347,7 +346,7 @@ namespace RootMotion
     {
       foreach (string letter in namingConvention)
       {
-        if (BipedNaming.LastLetterIs(boneName, letter))
+        if (LastLetterIs(boneName, letter))
           return true;
       }
       return false;

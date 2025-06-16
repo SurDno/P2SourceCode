@@ -1,10 +1,10 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons;
 using Engine.Common.Commons.Cloneable;
 using Engine.Common.Commons.Converters;
 using Engine.Source.Components;
-using System;
 
 namespace Engine.Source.Proxies
 {
@@ -19,23 +19,23 @@ namespace Engine.Source.Proxies
     public object Clone()
     {
       SpreadingComponent_Generated instance = Activator.CreateInstance<SpreadingComponent_Generated>();
-      this.CopyTo((object) instance);
-      return (object) instance;
+      CopyTo(instance);
+      return instance;
     }
 
     public void CopyTo(object target2)
     {
-      ((SpreadingComponent) target2).diseasedState = this.diseasedState;
+      ((SpreadingComponent) target2).diseasedState = diseasedState;
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.WriteEnum<DiseasedStateEnum>(writer, "DiseasedState", this.diseasedState);
+      DefaultDataWriteUtility.WriteEnum(writer, "DiseasedState", diseasedState);
     }
 
     public void DataRead(IDataReader reader, Type type)
     {
-      this.diseasedState = DefaultDataReadUtility.ReadEnum<DiseasedStateEnum>(reader, "DiseasedState");
+      diseasedState = DefaultDataReadUtility.ReadEnum<DiseasedStateEnum>(reader, "DiseasedState");
     }
   }
 }

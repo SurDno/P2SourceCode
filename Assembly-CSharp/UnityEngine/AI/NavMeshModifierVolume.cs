@@ -14,7 +14,7 @@ namespace UnityEngine.AI
     [SerializeField]
     private int m_Area;
     [SerializeField]
-    private List<int> m_AffectedAgents = new List<int>((IEnumerable<int>) new int[1]
+    private List<int> m_AffectedAgents = new List<int>(new int[1]
     {
       -1
     });
@@ -22,41 +22,41 @@ namespace UnityEngine.AI
 
     public Vector3 size
     {
-      get => this.m_Size;
-      set => this.m_Size = value;
+      get => m_Size;
+      set => m_Size = value;
     }
 
     public Vector3 center
     {
-      get => this.m_Center;
-      set => this.m_Center = value;
+      get => m_Center;
+      set => m_Center = value;
     }
 
     public int area
     {
-      get => this.m_Area;
-      set => this.m_Area = value;
+      get => m_Area;
+      set => m_Area = value;
     }
 
     public static List<NavMeshModifierVolume> activeModifiers
     {
-      get => NavMeshModifierVolume.s_NavMeshModifiers;
+      get => s_NavMeshModifiers;
     }
 
     private void OnEnable()
     {
-      if (NavMeshModifierVolume.s_NavMeshModifiers.Contains(this))
+      if (s_NavMeshModifiers.Contains(this))
         return;
-      NavMeshModifierVolume.s_NavMeshModifiers.Add(this);
+      s_NavMeshModifiers.Add(this);
     }
 
-    private void OnDisable() => NavMeshModifierVolume.s_NavMeshModifiers.Remove(this);
+    private void OnDisable() => s_NavMeshModifiers.Remove(this);
 
     public bool AffectsAgentType(int agentTypeID)
     {
-      if (this.m_AffectedAgents.Count == 0)
+      if (m_AffectedAgents.Count == 0)
         return false;
-      return this.m_AffectedAgents[0] == -1 || this.m_AffectedAgents.IndexOf(agentTypeID) != -1;
+      return m_AffectedAgents[0] == -1 || m_AffectedAgents.IndexOf(agentTypeID) != -1;
     }
   }
 }

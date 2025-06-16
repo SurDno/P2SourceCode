@@ -1,6 +1,6 @@
-﻿using Cofe.Loggers;
+﻿using System;
+using Cofe.Loggers;
 using PLVirtualMachine.Common.Data;
-using System;
 
 namespace PLVirtualMachine.Common
 {
@@ -9,16 +9,16 @@ namespace PLVirtualMachine.Common
     private string tagStr;
     private int percentageValue;
 
-    public string Tag => this.tagStr;
+    public string Tag => tagStr;
 
-    public int Percentage => this.percentageValue;
+    public int Percentage => percentageValue;
 
     public void Read(string data)
     {
       switch (data)
       {
         case null:
-          Logger.AddError(string.Format("Attempt to read null tag info data"));
+          Logger.AddError("Attempt to read null tag info data");
           break;
         case "":
           break;
@@ -29,11 +29,11 @@ namespace PLVirtualMachine.Common
           string[] strArray = data.Split(separator, StringSplitOptions.RemoveEmptyEntries);
           if (strArray.Length < 2)
           {
-            Logger.AddError(string.Format("Tags distribution info data read error: {0} isn't full tag info data", (object) data));
+            Logger.AddError(string.Format("Tags distribution info data read error: {0} isn't full tag info data", data));
             break;
           }
-          this.tagStr = strArray[0];
-          this.percentageValue = StringUtility.ToInt32(strArray[1]);
+          tagStr = strArray[0];
+          percentageValue = StringUtility.ToInt32(strArray[1]);
           break;
       }
     }

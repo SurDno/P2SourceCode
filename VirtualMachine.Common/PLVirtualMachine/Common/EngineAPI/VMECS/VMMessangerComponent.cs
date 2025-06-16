@@ -9,21 +9,21 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
     public const string ComponentName = "MessangerComponent";
 
     [Method("Start teleporting", "", "")]
-    public void StartTeleporting() => this.Component.StartTeleporting();
+    public void StartTeleporting() => Component.StartTeleporting();
 
     [Method("Stop teleporting", "", "")]
-    public void StopTeleporting() => this.Component.StopTeleporting();
+    public void StopTeleporting() => Component.StopTeleporting();
 
     public override void Clear()
     {
-      if (!this.InstanceValid)
+      if (!InstanceValid)
         return;
       base.Clear();
     }
 
     protected override void Init()
     {
-      int num = this.IsTemplate ? 1 : 0;
+      int num = IsTemplate ? 1 : 0;
     }
   }
 }

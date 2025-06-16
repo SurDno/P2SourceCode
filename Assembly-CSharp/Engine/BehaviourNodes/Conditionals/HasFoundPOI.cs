@@ -1,4 +1,5 @@
-﻿using BehaviorDesigner.Runtime;
+﻿using System;
+using BehaviorDesigner.Runtime;
 using BehaviorDesigner.Runtime.Tasks;
 using Cofe.Proxies;
 using Cofe.Serializations.Data;
@@ -7,7 +8,6 @@ using Engine.Common.Commons.Converters;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Scripts.Tools.Serializations.Converters;
-using UnityEngine;
 
 namespace Engine.BehaviourNodes.Conditionals
 {
@@ -20,40 +20,40 @@ namespace Engine.BehaviourNodes.Conditionals
   {
     [DataReadProxy(MemberEnum.CustomTaskReference)]
     [DataWriteProxy(MemberEnum.CustomTaskReference)]
-    [CopyableProxy(MemberEnum.None)]
+    [CopyableProxy()]
     [SerializeField]
     public POISequence ReferencedPOISequence;
 
     public override void OnStart()
     {
-      if (this.ReferencedPOISequence != null)
+      if (ReferencedPOISequence != null)
         return;
-      Debug.LogWarning((object) ("poi sequence not connected to has found poi node! " + (object) this.Owner.gameObject));
+      Debug.LogWarning((object) ("poi sequence not connected to has found poi node! " + (object) Owner.gameObject));
     }
 
     public override TaskStatus OnUpdate()
     {
-      return this.ReferencedPOISequence != null ? ((UnityEngine.Object) this.ReferencedPOISequence.OutPOI != (UnityEngine.Object) null ? TaskStatus.Success : TaskStatus.Failure) : TaskStatus.Success;
+      return ReferencedPOISequence != null ? ((UnityEngine.Object) ReferencedPOISequence.OutPOI != (UnityEngine.Object) null ? TaskStatus.Success : TaskStatus.Failure) : TaskStatus.Success;
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.WriteSerialize<NodeData>(writer, "NodeData", this.nodeData);
-      DefaultDataWriteUtility.Write(writer, "Id", this.id);
-      DefaultDataWriteUtility.Write(writer, "FriendlyName", this.friendlyName);
-      DefaultDataWriteUtility.Write(writer, "Instant", this.instant);
-      DefaultDataWriteUtility.Write(writer, "Disabled", this.disabled);
-      BehaviorTreeDataWriteUtility.WriteTaskReference<POISequence>(writer, "ReferencedPOISequence", this.ReferencedPOISequence);
+      DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
+      DefaultDataWriteUtility.Write(writer, "Id", id);
+      DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
+      DefaultDataWriteUtility.Write(writer, "Instant", instant);
+      DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
+      BehaviorTreeDataWriteUtility.WriteTaskReference(writer, "ReferencedPOISequence", ReferencedPOISequence);
     }
 
-    public void DataRead(IDataReader reader, System.Type type)
+    public void DataRead(IDataReader reader, Type type)
     {
-      this.nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
-      this.id = DefaultDataReadUtility.Read(reader, "Id", this.id);
-      this.friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", this.friendlyName);
-      this.instant = DefaultDataReadUtility.Read(reader, "Instant", this.instant);
-      this.disabled = DefaultDataReadUtility.Read(reader, "Disabled", this.disabled);
-      this.ReferencedPOISequence = BehaviorTreeDataReadUtility.ReadTaskReference<POISequence>(reader, "ReferencedPOISequence", this.ReferencedPOISequence);
+      nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
+      id = DefaultDataReadUtility.Read(reader, "Id", id);
+      friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
+      instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
+      disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
+      ReferencedPOISequence = BehaviorTreeDataReadUtility.ReadTaskReference(reader, "ReferencedPOISequence", ReferencedPOISequence);
     }
   }
 }

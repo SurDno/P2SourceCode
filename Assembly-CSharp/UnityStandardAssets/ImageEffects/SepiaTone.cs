@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace UnityStandardAssets.ImageEffects
+﻿namespace UnityStandardAssets.ImageEffects
 {
   [ExecuteInEditMode]
   [AddComponentMenu("Image Effects/Color Adjustments/Sepia Tone")]
@@ -8,7 +6,7 @@ namespace UnityStandardAssets.ImageEffects
   {
     private void OnRenderImage(RenderTexture source, RenderTexture destination)
     {
-      Graphics.Blit((Texture) source, destination, this.material);
+      Graphics.Blit((Texture) source, destination, material);
     }
   }
 }

@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-public class PlagueWebPointSource : MonoBehaviour
+﻿public class PlagueWebPointSource : MonoBehaviour
 {
   public float Strength = 1f;
   public Vector3 Directionality;
@@ -8,30 +6,30 @@ public class PlagueWebPointSource : MonoBehaviour
 
   private void OnEnable()
   {
-    if ((double) this.Strength <= 0.0)
+    if (Strength <= 0.0)
       return;
     PlagueWeb instance = PlagueWeb.Instance;
     if ((Object) instance != (Object) null)
-      this.point = instance.AddPoint(this.transform.position, this.transform.TransformVector(this.Directionality), this.Strength);
+      point = instance.AddPoint(this.transform.position, this.transform.TransformVector(Directionality), Strength);
   }
 
-  private void OnDisable() => this.RemovePoint();
+  private void OnDisable() => RemovePoint();
 
   private void Update2()
   {
-    if ((double) this.Strength > 0.0)
+    if (Strength > 0.0)
     {
-      if (this.point != null)
+      if (point != null)
       {
-        this.point.Position = this.transform.position;
-        this.point.Directionality = this.transform.TransformVector(this.Directionality);
-        this.point.Strength = this.Strength;
+        point.Position = this.transform.position;
+        point.Directionality = this.transform.TransformVector(Directionality);
+        point.Strength = Strength;
       }
       else
-        this.AddPoint();
+        AddPoint();
     }
     else
-      this.RemovePoint();
+      RemovePoint();
   }
 
   private void AddPoint()
@@ -39,24 +37,24 @@ public class PlagueWebPointSource : MonoBehaviour
     PlagueWeb instance = PlagueWeb.Instance;
     if (!((Object) instance != (Object) null))
       return;
-    this.point = instance.AddPoint(this.transform.position, this.transform.TransformVector(this.Directionality), this.Strength);
+    point = instance.AddPoint(this.transform.position, this.transform.TransformVector(Directionality), Strength);
   }
 
   private void RemovePoint()
   {
-    if (this.point == null)
+    if (point == null)
       return;
     PlagueWeb instance = PlagueWeb.Instance;
     if (!((Object) instance != (Object) null))
       return;
-    instance.RemovePoint(this.point);
-    this.point = (IPlagueWebPoint) null;
+    instance.RemovePoint(point);
+    point = null;
   }
 
   private void OnDrawGizmosSelected()
   {
     Vector3 position = this.transform.position;
-    Vector3 vector3 = this.transform.TransformVector(this.Directionality);
+    Vector3 vector3 = this.transform.TransformVector(Directionality);
     Gizmos.DrawLine(position, position + vector3);
   }
 }

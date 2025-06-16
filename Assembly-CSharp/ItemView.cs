@@ -1,8 +1,6 @@
-﻿using Engine.Common.Components;
+﻿using System;
+using Engine.Common.Components;
 using Engine.Source.Components;
-using System;
-using UnityEngine;
-using UnityEngine.EventSystems;
 
 public abstract class ItemView : 
   MonoBehaviour,
@@ -25,37 +23,37 @@ public abstract class ItemView :
 
   void IPointerDownHandler.OnPointerDown(PointerEventData eventData)
   {
-    if (this.Storable == null)
+    if (Storable == null)
       return;
-    Action<IStorableComponent> interactEvent = this.InteractEvent;
+    Action<IStorableComponent> interactEvent = InteractEvent;
     if (interactEvent == null)
       return;
-    interactEvent((IStorableComponent) this.Storable);
+    interactEvent(Storable);
   }
 
   void IPointerEnterHandler.OnPointerEnter(PointerEventData eventData)
   {
-    if (this.Storable == null)
+    if (Storable == null)
       return;
-    Action<IStorableComponent> selectEvent = this.SelectEvent;
+    Action<IStorableComponent> selectEvent = SelectEvent;
     if (selectEvent == null)
       return;
-    selectEvent((IStorableComponent) this.Storable);
+    selectEvent(Storable);
   }
 
   void IPointerExitHandler.OnPointerExit(PointerEventData eventData)
   {
-    if (this.Storable == null)
+    if (Storable == null)
       return;
-    Action<IStorableComponent> deselectEvent = this.DeselectEvent;
+    Action<IStorableComponent> deselectEvent = DeselectEvent;
     if (deselectEvent == null)
       return;
-    deselectEvent((IStorableComponent) this.Storable);
+    deselectEvent(Storable);
   }
 
   protected void FireSelectEvent(IStorableComponent item)
   {
-    Action<IStorableComponent> selectEvent = this.SelectEvent;
+    Action<IStorableComponent> selectEvent = SelectEvent;
     if (selectEvent == null)
       return;
     selectEvent(item);
@@ -63,7 +61,7 @@ public abstract class ItemView :
 
   protected void FireDeselectEvent(IStorableComponent item)
   {
-    Action<IStorableComponent> deselectEvent = this.DeselectEvent;
+    Action<IStorableComponent> deselectEvent = DeselectEvent;
     if (deselectEvent == null)
       return;
     deselectEvent(item);
@@ -71,7 +69,7 @@ public abstract class ItemView :
 
   protected void FireInteractEvent(IStorableComponent item)
   {
-    Action<IStorableComponent> interactEvent = this.InteractEvent;
+    Action<IStorableComponent> interactEvent = InteractEvent;
     if (interactEvent == null)
       return;
     interactEvent(item);

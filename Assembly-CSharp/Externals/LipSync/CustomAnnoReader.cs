@@ -6,15 +6,15 @@ namespace Externals.LipSync
   {
     private List<PhonemeMixtureArticulationData> markers = new List<PhonemeMixtureArticulationData>();
 
-    public CustomAnnoReader(byte[] data) => LipsyncUtility.LoadAnnoFormatted(data, this.markers);
+    public CustomAnnoReader(byte[] data) => LipsyncUtility.LoadAnnoFormatted(data, markers);
 
     public PhonemeMixtureArticulationData GetLipsyncAtTime(int ms)
     {
       int num1 = 0;
       int num2 = 33;
-      for (int index = 0; index < this.markers.Count; ++index)
+      for (int index = 0; index < markers.Count; ++index)
       {
-        PhonemeMixtureArticulationData marker = this.markers[index];
+        PhonemeMixtureArticulationData marker = markers[index];
         if (ms >= num1 && ms < num2)
           return marker;
         num1 = num2;

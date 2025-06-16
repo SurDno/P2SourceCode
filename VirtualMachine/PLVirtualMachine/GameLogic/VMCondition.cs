@@ -1,11 +1,11 @@
-﻿using Cofe.Loggers;
+﻿using System.Collections.Generic;
+using System.Xml;
+using Cofe.Loggers;
 using Engine.Common.Commons;
 using PLVirtualMachine.Common;
 using PLVirtualMachine.Common.Data;
 using PLVirtualMachine.Common.EngineAPI;
 using PLVirtualMachine.Data;
-using System.Collections.Generic;
-using System.Xml;
 using VirtualMachine.Common;
 using VirtualMachine.Common.Data;
 using VirtualMachine.Data;
@@ -18,29 +18,28 @@ namespace PLVirtualMachine.GameLogic
   {
     [FieldData("Predicates", DataFieldType.Reference)]
     private List<ICondition> predicatesList = new List<ICondition>();
-    [FieldData("Operation", DataFieldType.None)]
+    [FieldData("Operation")]
     private EConditionOperation operation = EConditionOperation.COP_NONE;
     private bool isUpdated;
 
     public override void EditorDataRead(XmlReader xml, IDataCreator creator, string typeContext)
     {
-      while (xml.Read())
-      {
+      while (xml.Read()) {
         if (xml.NodeType == XmlNodeType.Element)
         {
           switch (xml.Name)
           {
             case "Predicates":
-              this.predicatesList = EditorDataReadUtility.ReadReferenceList<ICondition>(xml, creator, this.predicatesList);
+              predicatesList = EditorDataReadUtility.ReadReferenceList(xml, creator, predicatesList);
               continue;
             case "Operation":
-              this.operation = EditorDataReadUtility.ReadEnum<EConditionOperation>(xml);
+              operation = EditorDataReadUtility.ReadEnum<EConditionOperation>(xml);
               continue;
             case "Name":
-              this.name = EditorDataReadUtility.ReadValue(xml, this.name);
+              name = EditorDataReadUtility.ReadValue(xml, name);
               continue;
             case "OrderIndex":
-              this.orderIndex = EditorDataReadUtility.ReadValue(xml, this.orderIndex);
+              orderIndex = EditorDataReadUtility.ReadValue(xml, orderIndex);
               continue;
             default:
               if (XMLDataLoader.Logs.Add(typeContext + " : " + xml.Name))
@@ -49,7 +48,8 @@ namespace PLVirtualMachine.GameLogic
               continue;
           }
         }
-        else if (xml.NodeType == XmlNodeType.EndElement)
+
+        if (xml.NodeType == XmlNodeType.EndElement)
           break;
       }
     }
@@ -61,35 +61,35 @@ namespace PLVirtualMachine.GameLogic
 
     public override bool IsPart() => false;
 
-    public EConditionOperation Operation => this.operation;
+    public EConditionOperation Operation => operation;
 
-    public List<ICondition> Predicates => this.predicatesList;
+    public List<ICondition> Predicates => predicatesList;
 
     public override List<GameTime> GetCheckRaisingTimePoints()
     {
       List<GameTime> raisingTimePoints1 = new List<GameTime>();
-      int num = this.predicatesList.Count;
-      if (this.Operation == EConditionOperation.COP_ROOT)
+      int num = predicatesList.Count;
+      if (Operation == EConditionOperation.COP_ROOT)
         num = 1;
       for (int index = 0; index < num; ++index)
       {
-        List<GameTime> raisingTimePoints2 = ((VMPartCondition) this.predicatesList[index]).GetCheckRaisingTimePoints();
-        if (raisingTimePoints2.Count == 0 && (this.Operation == EConditionOperation.COP_OR || this.Operation == EConditionOperation.COP_XOR))
+        List<GameTime> raisingTimePoints2 = ((VMPartCondition) predicatesList[index]).GetCheckRaisingTimePoints();
+        if (raisingTimePoints2.Count == 0 && (Operation == EConditionOperation.COP_OR || Operation == EConditionOperation.COP_XOR))
           raisingTimePoints1.Clear();
         else if (raisingTimePoints2.Count > 0)
-          raisingTimePoints1.AddRange((IEnumerable<GameTime>) raisingTimePoints2);
+          raisingTimePoints1.AddRange(raisingTimePoints2);
       }
       return raisingTimePoints1;
     }
 
     public override bool IsConstant()
     {
-      int num = this.predicatesList.Count;
-      if (this.Operation == EConditionOperation.COP_ROOT)
+      int num = predicatesList.Count;
+      if (Operation == EConditionOperation.COP_ROOT)
         num = 1;
       for (int index = 0; index < num; ++index)
       {
-        if (!((VMPartCondition) this.predicatesList[index]).IsConstant())
+        if (!((VMPartCondition) predicatesList[index]).IsConstant())
           return false;
       }
       return true;
@@ -98,13 +98,13 @@ namespace PLVirtualMachine.GameLogic
     public override List<VMParameter> GetCheckRaisingParams()
     {
       List<VMParameter> checkRaisingParams1 = new List<VMParameter>();
-      int num = this.predicatesList.Count;
-      if (this.Operation == EConditionOperation.COP_ROOT)
+      int num = predicatesList.Count;
+      if (Operation == EConditionOperation.COP_ROOT)
         num = 1;
       for (int index = 0; index < num; ++index)
       {
-        List<VMParameter> checkRaisingParams2 = ((VMPartCondition) this.predicatesList[index]).GetCheckRaisingParams();
-        checkRaisingParams1.AddRange((IEnumerable<VMParameter>) checkRaisingParams2);
+        List<VMParameter> checkRaisingParams2 = ((VMPartCondition) predicatesList[index]).GetCheckRaisingParams();
+        checkRaisingParams1.AddRange(checkRaisingParams2);
       }
       return checkRaisingParams1;
     }
@@ -112,35 +112,35 @@ namespace PLVirtualMachine.GameLogic
     public override List<BaseFunction> GetCheckRaisingFunctions()
     {
       List<BaseFunction> raisingFunctions1 = new List<BaseFunction>();
-      int num = this.predicatesList.Count;
-      if (this.Operation == EConditionOperation.COP_ROOT)
+      int num = predicatesList.Count;
+      if (Operation == EConditionOperation.COP_ROOT)
         num = 1;
       for (int index = 0; index < num; ++index)
       {
-        List<BaseFunction> raisingFunctions2 = ((VMPartCondition) this.predicatesList[index]).GetCheckRaisingFunctions();
-        raisingFunctions1.AddRange((IEnumerable<BaseFunction>) raisingFunctions2);
+        List<BaseFunction> raisingFunctions2 = ((VMPartCondition) predicatesList[index]).GetCheckRaisingFunctions();
+        raisingFunctions1.AddRange(raisingFunctions2);
       }
       return raisingFunctions1;
     }
 
     public override void Update()
     {
-      for (int index = 0; index < this.predicatesList.Count; ++index)
-        this.predicatesList[index].Update();
-      this.isUpdated = true;
+      for (int index = 0; index < predicatesList.Count; ++index)
+        predicatesList[index].Update();
+      isUpdated = true;
     }
 
-    public override bool IsUpdated => this.isUpdated;
+    public override bool IsUpdated => isUpdated;
 
     public override void Clear()
     {
       base.Clear();
-      if (this.predicatesList == null)
+      if (predicatesList == null)
         return;
-      foreach (VMPartCondition predicates in this.predicatesList)
+      foreach (VMPartCondition predicates in predicatesList)
         predicates.Clear();
-      this.predicatesList.Clear();
-      this.predicatesList = (List<ICondition>) null;
+      predicatesList.Clear();
+      predicatesList = null;
     }
   }
 }

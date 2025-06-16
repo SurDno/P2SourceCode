@@ -1,4 +1,7 @@
-﻿using Cofe.Meta;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Cofe.Meta;
 using Cofe.Serializations.Data;
 using Cofe.Utility;
 using Engine.Common;
@@ -8,20 +11,16 @@ using Engine.Common.Services;
 using Engine.Impl.Services.Factories;
 using Engine.Impl.Services.Simulations;
 using Inspectors;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
 
 namespace Engine.Source.Commons
 {
   public class ComponentCollection : EngineObject
   {
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
     [StateSaveProxy(MemberEnum.CustomListComponent)]
     [StateLoadProxy(MemberEnum.CustomListComponent)]
-    [CopyableProxy(MemberEnum.None)]
+    [CopyableProxy()]
     protected List<IComponent> components = new List<IComponent>();
 
     [Inspected]
@@ -29,9 +28,9 @@ namespace Engine.Source.Commons
     {
       get
       {
-        if (this.IsTemplate)
+        if (IsTemplate)
           return false;
-        foreach (IComponent component in this.components)
+        foreach (IComponent component in components)
         {
           if (component is INeedSave needSave && needSave.NeedSave)
             return true;
@@ -40,30 +39,30 @@ namespace Engine.Source.Commons
       }
     }
 
-    public IEnumerable<IComponent> Components => (IEnumerable<IComponent>) this.components;
+    public IEnumerable<IComponent> Components => components;
 
-    public T Add<T>() where T : class, IComponent => (T) this.Add(typeof (T));
+    public T Add<T>() where T : class, IComponent => (T) Add(typeof (T));
 
-    public IComponent Add(System.Type type)
+    public IComponent Add(Type type)
     {
       if (!type.IsClass || !TypeUtility.IsAssignableFrom(typeof (IComponent), type))
         throw new Exception(type.ToString());
-      IComponent component1 = this.components.FirstOrDefault<IComponent>((Func<IComponent, bool>) (o => o.GetType() == type));
+      IComponent component1 = components.FirstOrDefault(o => o.GetType() == type);
       if (component1 != null)
         return component1;
       IComponent component2 = (IComponent) ServiceLocator.GetService<Factory>().Create(type, Guid.NewGuid());
       if (component2 == null)
         throw new Exception(type.ToString());
-      this.components.Add(component2);
+      components.Add(component2);
       ((IEngineComponent) component2).Owner = (IEntity) this;
-      this.ComputeRequired(type);
+      ComputeRequired(type);
       return component2;
     }
 
     public T GetComponent<T>() where T : class, IComponent
     {
-      System.Type type = typeof (T);
-      foreach (IComponent component1 in this.components)
+      Type type = typeof (T);
+      foreach (IComponent component1 in components)
       {
         if (component1 is T component2)
           return component2;
@@ -71,29 +70,29 @@ namespace Engine.Source.Commons
       return default (T);
     }
 
-    public IComponent GetComponent(System.Type type)
+    public IComponent GetComponent(Type type)
     {
-      if (type == (System.Type) null)
+      if (type == null)
         throw new Exception("Type is null");
-      foreach (IComponent component in this.components)
+      foreach (IComponent component in components)
       {
         if (TypeUtility.IsAssignableFrom(type, component.GetType()))
           return component;
       }
-      return (IComponent) null;
+      return null;
     }
 
-    public void Remove(System.Type type)
+    public void Remove(Type type)
     {
-      if (type == (System.Type) null)
+      if (type == null)
         throw new Exception();
-      for (int index = 0; index < this.components.Count; ++index)
+      for (int index = 0; index < components.Count; ++index)
       {
-        IComponent component = this.components[index];
+        IComponent component = components[index];
         if (component.GetType() == type)
         {
-          ((IEngineComponent) component).Owner = (IEntity) null;
-          this.components.RemoveAt(index);
+          ((IEngineComponent) component).Owner = null;
+          components.RemoveAt(index);
           return;
         }
       }
@@ -102,44 +101,44 @@ namespace Engine.Source.Commons
 
     protected void DisposeComponents()
     {
-      foreach (IEngineComponent component in this.components)
-        component.Owner = (IEntity) null;
-      this.components.Clear();
+      foreach (IEngineComponent component in components)
+        component.Owner = null;
+      components.Clear();
     }
 
     protected void OnAddedComponents()
     {
-      foreach (IEngineComponent component in this.components)
+      foreach (IEngineComponent component in components)
         component.PrepareAdded();
-      foreach (IInjectable component in this.components)
+      foreach (IInjectable component in components)
         component.OnAdded();
     }
 
     protected void OnRemovedComponents()
     {
-      foreach (IInjectable component in this.components)
+      foreach (IInjectable component in components)
         component.OnRemoved();
-      foreach (IEngineComponent component in this.components)
+      foreach (IEngineComponent component in components)
         component.PostRemoved();
     }
 
-    private void ComputeRequired(System.Type type)
+    private void ComputeRequired(Type type)
     {
       foreach (RequiredAttribute customAttribute in type.GetCustomAttributes(typeof (RequiredAttribute), false))
       {
         if (!customAttribute.Type.IsClass)
-          Debug.LogError((object) ("Need component type : " + (object) type + " , required : " + (object) customAttribute.Type));
+          Debug.LogError((object) ("Need component type : " + type + " , required : " + customAttribute.Type));
         else
-          this.Add(customAttribute.Type);
+          Add(customAttribute.Type);
       }
     }
 
     protected void ConstructCompleteComponents()
     {
       int index = 0;
-      while (index < this.components.Count)
+      while (index < components.Count)
       {
-        IComponent component = this.components[index];
+        IComponent component = components[index];
         if (component != null)
         {
           ((IEngineComponent) component).Owner = (IEntity) this;
@@ -147,7 +146,7 @@ namespace Engine.Source.Commons
         }
         else
         {
-          this.components.RemoveAt(index);
+          components.RemoveAt(index);
           Debug.LogError((object) ("Component not found : " + this.GetInfo()));
         }
       }
@@ -155,14 +154,14 @@ namespace Engine.Source.Commons
 
     public void Clear()
     {
-      while (this.components.Count != 0)
-        this.Remove(this.components[this.components.Count - 1].GetType());
+      while (components.Count != 0)
+        Remove(components[components.Count - 1].GetType());
     }
 
-    [Cofe.Serializations.Data.OnLoaded]
+    [OnLoaded]
     private void OnLoaded()
     {
-      foreach (object component in this.components)
+      foreach (object component in components)
         MetaService.Compute(component, OnLoadedAttribute.Id);
     }
   }

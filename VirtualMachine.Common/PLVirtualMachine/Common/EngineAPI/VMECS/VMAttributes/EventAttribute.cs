@@ -2,7 +2,7 @@
 
 namespace PLVirtualMachine.Common.EngineAPI.VMECS.VMAttributes
 {
-  [AttributeUsage(AttributeTargets.Event, AllowMultiple = false, Inherited = false)]
+  [AttributeUsage(AttributeTargets.Event)]
   public class EventAttribute : Attribute
   {
     public readonly string Name;
@@ -11,16 +11,16 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS.VMAttributes
 
     public EventAttribute(string name, string inputTypesDescription)
     {
-      this.Name = name;
-      this.InputTypesDesc = inputTypesDescription;
-      this.AtOnce = false;
+      Name = name;
+      InputTypesDesc = inputTypesDescription;
+      AtOnce = false;
     }
 
     public EventAttribute(string name, string inputTypesDescription, bool bAtOnce)
     {
-      this.Name = name;
-      this.InputTypesDesc = inputTypesDescription;
-      this.AtOnce = bAtOnce;
+      Name = name;
+      InputTypesDesc = inputTypesDescription;
+      AtOnce = bAtOnce;
     }
   }
 }

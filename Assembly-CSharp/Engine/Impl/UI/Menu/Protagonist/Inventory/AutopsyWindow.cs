@@ -1,4 +1,7 @@
-﻿using Engine.Behaviours.Localization;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Engine.Behaviours.Localization;
 using Engine.Common;
 using Engine.Common.Commons;
 using Engine.Common.Components;
@@ -19,12 +22,6 @@ using Engine.Source.UI.Controls.BoolViews;
 using InputServices;
 using Inspectors;
 using Pingle;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.UI;
 
 namespace Engine.Impl.UI.Menu.Protagonist.Inventory
 {
@@ -33,7 +30,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
     [SerializeField]
     private List<UIControl> items = new List<UIControl>();
     [SerializeField]
-    private AutopsyWindow.ContainerTarget[] containerTargets = new AutopsyWindow.ContainerTarget[0];
+    private ContainerTarget[] containerTargets = new ContainerTarget[0];
     [SerializeField]
     private IEntitySerializable bloodEntityContainerTemplate;
     [SerializeField]
@@ -75,18 +72,18 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
     [SerializeField]
     private EventView organDamagedNotification;
     private IStorageComponent itemStorage;
-    private IInventoryComponent selectedContainer = (IInventoryComponent) null;
+    private IInventoryComponent selectedContainer;
     [SerializeField]
     private GameObject drainConsoleButton;
     private bool wasDrained = false;
-    private AutopsyWindow.Modes _currentMode = AutopsyWindow.Modes.None;
-    private AutopsyWindow.Modes prevMode = AutopsyWindow.Modes.None;
+    private Modes _currentMode = Modes.None;
+    private Modes prevMode = Modes.None;
     private List<Button> SelectorButtons;
     private bool drainStarted = false;
     [SerializeField]
     private List<BodyPartSelectable> organs;
     private int currentOrganIndex = -1;
-    protected StorableUI holdSelectedStorable = (StorableUI) null;
+    protected StorableUI holdSelectedStorable;
 
     [Inspected]
     public IStorageComponent Target { get; set; }
@@ -95,140 +92,139 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       IInventoryComponent container,
       IStorageComponent storage)
     {
-      return base.ValidateContainer(container, storage) && (container.GetGroup() == InventoryGroup.Autopsy || storage == this.Actor);
+      return base.ValidateContainer(container, storage) && (container.GetGroup() == InventoryGroup.Autopsy || storage == Actor);
     }
 
     private bool ItemIsOrgan(IStorableComponent storable)
     {
-      return storable.Storage == this.Target && storable.Container.GetGroup() == InventoryGroup.Autopsy && !storable.Container.GetLimitations().Contains<StorableGroup>(StorableGroup.Autopsy_Instrument_Bottle);
+      return storable.Storage == Target && storable.Container.GetGroup() == InventoryGroup.Autopsy && !storable.Container.GetLimitations().Contains(StorableGroup.Autopsy_Instrument_Bottle);
     }
 
     protected override void OnEnable()
     {
       base.OnEnable();
-      this.Unsubscribe();
-      this.CanShowInfoWindows = false;
-      if ((UnityEngine.Object) this.selectedStorable != (UnityEngine.Object) null)
+      Unsubscribe();
+      CanShowInfoWindows = false;
+      if ((UnityEngine.Object) selectedStorable != (UnityEngine.Object) null)
       {
-        this.HideInfoWindow();
-        this.selectedStorable.SetSelected(false);
-        this.selectedStorable = (StorableUI) null;
+        HideInfoWindow();
+        selectedStorable.SetSelected(false);
+        selectedStorable = null;
       }
-      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.RStickLeft, new GameActionHandle(this.SwapScalpels));
-      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.RStickRight, new GameActionHandle(this.SwapScalpels));
-      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Context, new GameActionHandle(this.DrainListener));
+      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.RStickLeft, SwapScalpels);
+      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.RStickRight, SwapScalpels);
+      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Context, DrainListener);
       ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Cancel, new GameActionHandle(((UIWindow) this).CancelListener));
-      this.actors.Clear();
-      this.actors.Add(this.Actor);
-      this.Build2();
-      this.actors.Add(this.Target);
-      this.CreateContainers();
-      this.UpdateViews();
-      this.toolSelector.ChangeItemEvent += new Action<ItemSelector, IStorableComponent, IStorableComponent>(this.OnSelectorItemChange);
-      this.CurrentMode = AutopsyWindow.Modes.Autopsy;
+      actors.Clear();
+      actors.Add(Actor);
+      Build2();
+      actors.Add(Target);
+      CreateContainers();
+      UpdateViews();
+      toolSelector.ChangeItemEvent += OnSelectorItemChange;
+      CurrentMode = Modes.Autopsy;
     }
 
     protected override void OnDisable()
     {
       ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Autopsy, new GameActionHandle(((UIWindow) this).WithoutJoystickCancelListener));
-      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.RStickLeft, new GameActionHandle(this.SwapScalpels));
-      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.RStickRight, new GameActionHandle(this.SwapScalpels));
-      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.LStickLeft, new GameActionHandle(this.NavigateOrgans));
-      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.LStickRight, new GameActionHandle(this.NavigateOrgans));
-      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.LStickUp, new GameActionHandle(this.NavigateOrgans));
-      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.LStickDown, new GameActionHandle(this.NavigateOrgans));
-      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Context, new GameActionHandle(this.DrainListener));
+      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.RStickLeft, SwapScalpels);
+      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.RStickRight, SwapScalpels);
+      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.LStickLeft, NavigateOrgans);
+      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.LStickRight, NavigateOrgans);
+      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.LStickUp, NavigateOrgans);
+      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.LStickDown, NavigateOrgans);
+      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Context, DrainListener);
       ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Cancel, new GameActionHandle(((UIWindow) this).CancelListener));
-      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Submit, new GameActionHandle(this.SelectFromInventory));
-      foreach (AutopsyWindow.ContainerTarget containerTarget in this.containerTargets)
-        containerTarget.View.Container = (InventoryComponent) null;
-      this.toolSelector.Storage = (IStorageComponent) null;
-      this.bottleItemView.Storable = (StorableComponent) null;
-      HideableViewUtility.SetVisible(this.buttonDrain.gameObject, false);
-      HideableViewUtility.SetVisible(this.bottleItemView.gameObject, false);
-      HideableViewUtility.SetVisible(this.noBloodMessage.gameObject, false);
-      HideableViewUtility.SetVisible(this.noBottleMessage.gameObject, false);
-      this.toolSelector.ChangeItemEvent -= new Action<ItemSelector, IStorableComponent, IStorableComponent>(this.OnSelectorItemChange);
-      this.CurrentMode = AutopsyWindow.Modes.None;
-      if ((UnityEngine.Object) this.holdSelectedStorable != (UnityEngine.Object) null)
+      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Submit, SelectFromInventory);
+      foreach (ContainerTarget containerTarget in containerTargets)
+        containerTarget.View.Container = null;
+      toolSelector.Storage = null;
+      bottleItemView.Storable = null;
+      HideableViewUtility.SetVisible(buttonDrain.gameObject, false);
+      HideableViewUtility.SetVisible(bottleItemView.gameObject, false);
+      HideableViewUtility.SetVisible(noBloodMessage.gameObject, false);
+      HideableViewUtility.SetVisible(noBottleMessage.gameObject, false);
+      toolSelector.ChangeItemEvent -= OnSelectorItemChange;
+      CurrentMode = Modes.None;
+      if ((UnityEngine.Object) holdSelectedStorable != (UnityEngine.Object) null)
       {
-        this.holdSelectedStorable.HoldSelected(false);
-        this.holdSelectedStorable = (StorableUI) null;
+        holdSelectedStorable.HoldSelected(false);
+        holdSelectedStorable = null;
       }
       base.OnDisable();
     }
 
-    protected AutopsyWindow.Modes PreviousMode
+    protected Modes PreviousMode
     {
-      get => this.prevMode;
-      set => this.prevMode = value;
+      get => prevMode;
+      set => prevMode = value;
     }
 
-    protected virtual AutopsyWindow.Modes CurrentMode
+    protected virtual Modes CurrentMode
     {
-      get => this._currentMode;
+      get => _currentMode;
       set
       {
-        if (this._currentMode == value)
+        if (_currentMode == value)
           return;
-        this.HideInfoWindow();
-        this.HideContextMenu();
+        HideInfoWindow();
+        HideContextMenu();
         switch (value)
         {
-          case AutopsyWindow.Modes.None:
-            this.AutopsyWindowUnsubscribe();
-            foreach (BodyPartSelectable organ in this.organs)
+          case Modes.None:
+            AutopsyWindowUnsubscribe();
+            foreach (BodyPartSelectable organ in organs)
               organ.SetSelected(false);
-            if ((UnityEngine.Object) this.holdSelectedStorable != (UnityEngine.Object) null)
-              this.holdSelectedStorable.HoldSelected(false);
-            this.currentOrganIndex = -1;
+            if ((UnityEngine.Object) holdSelectedStorable != (UnityEngine.Object) null)
+              holdSelectedStorable.HoldSelected(false);
+            currentOrganIndex = -1;
             break;
-          case AutopsyWindow.Modes.Inventory:
+          case Modes.Inventory:
             return;
-          case AutopsyWindow.Modes.Autopsy:
-            if (this._currentMode == AutopsyWindow.Modes.Inventory || this._currentMode == AutopsyWindow.Modes.None)
+          case Modes.Autopsy:
+            if (_currentMode == Modes.Inventory || _currentMode == Modes.None)
             {
-              this.UnsubscribeNavigation();
-              this.AutopsyWindowSubscribe();
-              if ((UnityEngine.Object) this.selectedStorable != (UnityEngine.Object) null)
+              UnsubscribeNavigation();
+              AutopsyWindowSubscribe();
+              if ((UnityEngine.Object) selectedStorable != (UnityEngine.Object) null)
               {
-                this.selectedStorable.SetSelected(false);
-                this.selectedStorable = (StorableUI) null;
+                selectedStorable.SetSelected(false);
+                selectedStorable = null;
               }
-              this.selectedStorable = this.GetStorableByComponent(this.toolSelector.Item);
-              if ((UnityEngine.Object) this.selectedStorable != (UnityEngine.Object) null)
+              selectedStorable = GetStorableByComponent(toolSelector.Item);
+              if ((UnityEngine.Object) selectedStorable != (UnityEngine.Object) null)
               {
-                this.selectedStorable.SetSelected(true);
-                this.holdSelectedStorable = this.selectedStorable;
+                selectedStorable.SetSelected(true);
+                holdSelectedStorable = selectedStorable;
               }
               else
-                this.HideInfoWindow();
-              if (this.currentOrganIndex == -1)
-                this.currentOrganIndex = this.organs.Count - 1;
-              break;
+                HideInfoWindow();
+              if (currentOrganIndex == -1)
+                currentOrganIndex = organs.Count - 1;
             }
             break;
         }
-        this._currentMode = value;
+        _currentMode = value;
       }
     }
 
     private bool SwapScalpels(GameActionType type, bool down)
     {
-      if (this.toolSelector.Item == null || !down)
+      if (toolSelector.Item == null || !down)
         return false;
       if (type == GameActionType.RStickLeft)
       {
-        ExecuteEvents.Execute<ISubmitHandler>(this.toolSelector.previousButton.gameObject, (BaseEventData) new PointerEventData(EventSystem.current), ExecuteEvents.submitHandler);
-        this.OnInvalidate();
-        this.HideInfoWindow();
+        ExecuteEvents.Execute<ISubmitHandler>(toolSelector.previousButton.gameObject, (BaseEventData) new PointerEventData(EventSystem.current), ExecuteEvents.submitHandler);
+        OnInvalidate();
+        HideInfoWindow();
         return true;
       }
       if (!(type == GameActionType.RStickRight & down))
         return false;
-      ExecuteEvents.Execute<ISubmitHandler>(this.toolSelector.nextButton.gameObject, (BaseEventData) new PointerEventData(EventSystem.current), ExecuteEvents.submitHandler);
-      this.OnInvalidate();
-      this.HideInfoWindow();
+      ExecuteEvents.Execute<ISubmitHandler>(toolSelector.nextButton.gameObject, (BaseEventData) new PointerEventData(EventSystem.current), ExecuteEvents.submitHandler);
+      OnInvalidate();
+      HideInfoWindow();
       return true;
     }
 
@@ -238,37 +234,37 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
         return false;
       if (type == GameActionType.Context & down)
       {
-        this.buttonDrain.GamepadStartHold();
+        buttonDrain.GamepadStartHold();
         return true;
       }
       if (type != GameActionType.Context || down)
         return false;
-      this.buttonDrain.GamepadEndHold();
+      buttonDrain.GamepadEndHold();
       return true;
     }
 
     protected void AutopsyWindowSubscribe()
     {
-      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.LStickLeft, new GameActionHandle(this.NavigateOrgans));
-      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.LStickRight, new GameActionHandle(this.NavigateOrgans));
-      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.LStickUp, new GameActionHandle(this.NavigateOrgans));
-      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.LStickDown, new GameActionHandle(this.NavigateOrgans));
+      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.LStickLeft, NavigateOrgans);
+      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.LStickRight, NavigateOrgans);
+      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.LStickUp, NavigateOrgans);
+      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.LStickDown, NavigateOrgans);
     }
 
     protected void AutopsyWindowUnsubscribe()
     {
-      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.LStickLeft, new GameActionHandle(this.NavigateOrgans));
-      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.LStickRight, new GameActionHandle(this.NavigateOrgans));
-      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.LStickUp, new GameActionHandle(this.NavigateOrgans));
-      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.LStickDown, new GameActionHandle(this.NavigateOrgans));
+      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.LStickLeft, NavigateOrgans);
+      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.LStickRight, NavigateOrgans);
+      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.LStickUp, NavigateOrgans);
+      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.LStickDown, NavigateOrgans);
     }
 
     private bool NavigateOrgans(GameActionType type, bool down)
     {
-      if (!InputService.Instance.JoystickUsed || this.toolSelector.Item == null && this.organs.Count<BodyPartSelectable>((Func<BodyPartSelectable, bool>) (organ => organ.OrganRemoved)) == 0 || !down)
+      if (!InputService.Instance.JoystickUsed || toolSelector.Item == null && organs.Count(organ => organ.OrganRemoved) == 0 || !down)
         return false;
       Vector2 dirrection = Vector2.right;
-      Vector3 position = this.organs[this.currentOrganIndex].transform.position;
+      Vector3 position = organs[currentOrganIndex].transform.position;
       switch (type)
       {
         case GameActionType.LStickUp:
@@ -284,17 +280,17 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
           dirrection = Vector2.right;
           break;
       }
-      GameObject gameObject = this.toolSelector.Item == null ? UISelectableHelper.Select(this.organs.Where<BodyPartSelectable>((Func<BodyPartSelectable, bool>) (organ => organ.OrganRemoved && !organ.OrganTaken)).Select<BodyPartSelectable, GameObject>((Func<BodyPartSelectable, GameObject>) (organ => organ.gameObject)), position, (Vector3) dirrection, false) : UISelectableHelper.Select(this.organs.Select<BodyPartSelectable, GameObject>((Func<BodyPartSelectable, GameObject>) (organ => organ.gameObject)), position, (Vector3) dirrection, false);
+      GameObject gameObject = toolSelector.Item == null ? UISelectableHelper.Select(organs.Where(organ => organ.OrganRemoved && !organ.OrganTaken).Select((Func<BodyPartSelectable, GameObject>) (organ => organ.gameObject)), position, (Vector3) dirrection, false) : UISelectableHelper.Select(organs.Select((Func<BodyPartSelectable, GameObject>) (organ => organ.gameObject)), position, (Vector3) dirrection, false);
       if ((UnityEngine.Object) gameObject != (UnityEngine.Object) null)
       {
-        if (this.currentOrganIndex != -1 && (UnityEngine.Object) this.organs[this.currentOrganIndex] != (UnityEngine.Object) null)
+        if (currentOrganIndex != -1 && (UnityEngine.Object) organs[currentOrganIndex] != (UnityEngine.Object) null)
         {
-          this.organs[this.currentOrganIndex].SetSelected(false);
-          this.organs[this.currentOrganIndex].FireConsoleOnExitEvent();
+          organs[currentOrganIndex].SetSelected(false);
+          organs[currentOrganIndex].FireConsoleOnExitEvent();
         }
-        this.currentOrganIndex = this.organs.IndexOf(gameObject.GetComponent<BodyPartSelectable>());
-        this.organs[this.currentOrganIndex].SetSelected(true);
-        this.organs[this.currentOrganIndex].FireConsoleOnEnterEvent();
+        currentOrganIndex = organs.IndexOf(gameObject.GetComponent<BodyPartSelectable>());
+        organs[currentOrganIndex].SetSelected(true);
+        organs[currentOrganIndex].FireConsoleOnEnterEvent();
       }
       return true;
     }
@@ -303,7 +299,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
     {
       if (!InputService.Instance.JoystickUsed || !down)
         return false;
-      this.SelectItem((StorableComponent) this.selectedStorable.Internal);
+      SelectItem((StorableComponent) selectedStorable.Internal);
       return true;
     }
 
@@ -312,22 +308,22 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       IStorableComponent arg2,
       IStorableComponent arg3)
     {
-      if ((UnityEngine.Object) this.holdSelectedStorable != (UnityEngine.Object) null)
+      if ((UnityEngine.Object) holdSelectedStorable != (UnityEngine.Object) null)
       {
-        this.holdSelectedStorable.HoldSelected(false);
-        this.holdSelectedStorable = (StorableUI) null;
+        holdSelectedStorable.HoldSelected(false);
+        holdSelectedStorable = null;
       }
       if (arg3 != null)
       {
-        this.SetStorableByComponent(arg3);
-        StorableUI storableByComponent = this.GetStorableByComponent(arg3);
+        SetStorableByComponent(arg3);
+        StorableUI storableByComponent = GetStorableByComponent(arg3);
         if ((UnityEngine.Object) storableByComponent != (UnityEngine.Object) null)
         {
           storableByComponent.HoldSelected(true);
-          this.holdSelectedStorable = storableByComponent;
+          holdSelectedStorable = storableByComponent;
         }
       }
-      this.HideInfoWindow();
+      HideInfoWindow();
     }
 
     protected override void OnJoystick(bool joystick)
@@ -336,79 +332,79 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       if (joystick)
       {
         ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Autopsy, new GameActionHandle(((UIWindow) this).WithoutJoystickCancelListener));
-        this.instrumentDamageItem.transform.localPosition = new Vector3(this.instrumentDamageItem.transform.localPosition.x, -83f);
-        this.instrumentTitleText.transform.localPosition = new Vector3(this.instrumentTitleText.transform.localPosition.x, -115.5f);
-        this.instrumentErrorText.transform.localPosition = new Vector3(this.instrumentErrorText.transform.localPosition.x, -285f);
-        this.organDamageItem.transform.parent.localPosition = new Vector3(this.organDamageItem.transform.parent.localPosition.x, -325f);
-        this.buttonDrain.transform.localPosition = new Vector3(300f, this.buttonDrain.transform.localPosition.y);
+        instrumentDamageItem.transform.localPosition = new Vector3(instrumentDamageItem.transform.localPosition.x, -83f);
+        instrumentTitleText.transform.localPosition = new Vector3(instrumentTitleText.transform.localPosition.x, -115.5f);
+        instrumentErrorText.transform.localPosition = new Vector3(instrumentErrorText.transform.localPosition.x, -285f);
+        organDamageItem.transform.parent.localPosition = new Vector3(organDamageItem.transform.parent.localPosition.x, -325f);
+        buttonDrain.transform.localPosition = new Vector3(300f, buttonDrain.transform.localPosition.y);
       }
       else
       {
-        this.buttonDrain.GamepadEndHold();
+        buttonDrain.GamepadEndHold();
         ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Autopsy, new GameActionHandle(((UIWindow) this).WithoutJoystickCancelListener));
-        this.instrumentDamageItem.transform.localPosition = new Vector3(this.instrumentDamageItem.transform.localPosition.x, -485.5f);
-        this.instrumentTitleText.transform.localPosition = new Vector3(this.instrumentTitleText.transform.localPosition.x, -453f);
-        this.instrumentErrorText.transform.localPosition = new Vector3(this.instrumentErrorText.transform.localPosition.x, -453f);
-        this.organDamageItem.transform.parent.localPosition = new Vector3(this.organDamageItem.transform.parent.localPosition.x, -510f);
-        this.buttonDrain.transform.localPosition = new Vector3(275f, this.buttonDrain.transform.localPosition.y);
+        instrumentDamageItem.transform.localPosition = new Vector3(instrumentDamageItem.transform.localPosition.x, -485.5f);
+        instrumentTitleText.transform.localPosition = new Vector3(instrumentTitleText.transform.localPosition.x, -453f);
+        instrumentErrorText.transform.localPosition = new Vector3(instrumentErrorText.transform.localPosition.x, -453f);
+        organDamageItem.transform.parent.localPosition = new Vector3(organDamageItem.transform.parent.localPosition.x, -510f);
+        buttonDrain.transform.localPosition = new Vector3(275f, buttonDrain.transform.localPosition.y);
       }
-      if ((UnityEngine.Object) this.holdSelectedStorable != (UnityEngine.Object) null)
-        this.holdSelectedStorable.HoldSelected(joystick);
-      if (this.toolSelector.Item != null || this.organs.Count<BodyPartSelectable>((Func<BodyPartSelectable, bool>) (organ => organ.OrganRemoved)) > 0)
+      if ((UnityEngine.Object) holdSelectedStorable != (UnityEngine.Object) null)
+        holdSelectedStorable.HoldSelected(joystick);
+      if (toolSelector.Item != null || organs.Count(organ => organ.OrganRemoved) > 0)
       {
-        if (this.currentOrganIndex >= this.organs.Count || this.currentOrganIndex < 0)
-          this.currentOrganIndex = this.organs.Count - 1;
-        if ((UnityEngine.Object) this.organs[this.currentOrganIndex] != (UnityEngine.Object) null)
+        if (currentOrganIndex >= organs.Count || currentOrganIndex < 0)
+          currentOrganIndex = organs.Count - 1;
+        if ((UnityEngine.Object) organs[currentOrganIndex] != (UnityEngine.Object) null)
         {
-          this.organs[this.currentOrganIndex].SetSelected(joystick);
+          organs[currentOrganIndex].SetSelected(joystick);
           if (joystick)
-            this.organs[this.currentOrganIndex].FireConsoleOnEnterEvent();
+            organs[currentOrganIndex].FireConsoleOnEnterEvent();
           else
-            this.organs[this.currentOrganIndex].FireConsoleOnExitEvent();
+            organs[currentOrganIndex].FireConsoleOnExitEvent();
         }
       }
-      this.CheckDrainEnabled();
+      CheckDrainEnabled();
     }
 
     protected override void InteractItem(IStorableComponent storable)
     {
-      if (this.Actor.Items.Contains<IStorableComponent>(storable))
+      if (Actor.Items.Contains(storable))
         return;
-      this.MoveItem(storable, this.Actor);
+      MoveItem(storable, Actor);
       StorableComponentUtility.PlayTakeSound(storable);
     }
 
     private void CreateContainers()
     {
-      this.itemStorage = this.Target;
-      foreach (AutopsyWindow.ContainerTarget containerTarget in this.containerTargets)
+      itemStorage = Target;
+      foreach (ContainerTarget containerTarget in containerTargets)
       {
         if (!((UnityEngine.Object) containerTarget.View == (UnityEngine.Object) null))
-          containerTarget.View.Container = (InventoryComponent) StorageUtility.GetContainerByTemplate(this.itemStorage, containerTarget.Template.Value);
+          containerTarget.View.Container = (InventoryComponent) StorageUtility.GetContainerByTemplate(itemStorage, containerTarget.Template.Value);
       }
-      this.toolSelector.Storage = this.Actor;
-      this.OnInvalidate();
-      this.CheckDrainEnabled();
+      toolSelector.Storage = Actor;
+      OnInvalidate();
+      CheckDrainEnabled();
     }
 
     private void DestroyContainers()
     {
-      this.itemStorage.Owner.Dispose();
-      this.itemStorage = (IStorageComponent) null;
+      itemStorage.Owner.Dispose();
+      itemStorage = null;
     }
 
     private void OnContainerSelect(IInventoryComponent container)
     {
-      if (this.selectedContainer == container)
+      if (selectedContainer == container)
         return;
-      this.selectedContainer = container;
+      selectedContainer = container;
     }
 
     private void OnContainerDeselect(IInventoryComponent container)
     {
-      if (this.selectedContainer != container)
+      if (selectedContainer != container)
         return;
-      this.selectedContainer = (IInventoryComponent) null;
+      selectedContainer = null;
     }
 
     protected override void OnContainerOpenEnd(IInventoryComponent container, bool complete)
@@ -416,31 +412,31 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       base.OnContainerOpenEnd(container, complete);
       if (complete)
       {
-        this.Actor.GetComponent<PlayerControllerComponent>()?.ComputeAction(ActionEnum.Autopsy, false, this.Target.Owner);
-        this.CheckOrganDestroy(container);
+        Actor.GetComponent<PlayerControllerComponent>()?.ComputeAction(ActionEnum.Autopsy, false, Target.Owner);
+        CheckOrganDestroy(container);
       }
-      this.UpdateViews();
+      UpdateViews();
     }
 
     private void CheckOrganDestroy(IInventoryComponent container)
     {
-      if (!container.GetStorage().Items.ToList<IStorableComponent>().Exists((Predicate<IStorableComponent>) (x => x.Container == container)))
+      if (!container.GetStorage().Items.ToList().Exists(x => x.Container == container))
         return;
-      IStorableComponent storableComponent = container.GetStorage().Items.First<IStorableComponent>((Func<IStorableComponent, bool>) (x => x.Container == container));
-      float linesVision = this.GetLinesVision();
+      IStorableComponent storableComponent = container.GetStorage().Items.First(x => x.Container == container);
+      float linesVision = GetLinesVision();
       if ((double) UnityEngine.Random.value >= (double) Mathf.Max(container.GetDifficulty() - linesVision, 0.0f))
         return;
       if (storableComponent?.Owner != null)
         storableComponent.Owner.Dispose();
       container.Available.Value = false;
-      this.organDamagedNotification.Invoke();
+      organDamagedNotification.Invoke();
     }
 
     private float GetLinesVision()
     {
       float linesVision = 0.0f;
-      IStorableComponent component1 = this.toolSelector.Item;
-      ParametersComponent component2 = component1 != null ? component1.GetComponent<ParametersComponent>() : (ParametersComponent) null;
+      IStorableComponent component1 = toolSelector.Item;
+      ParametersComponent component2 = component1 != null ? component1.GetComponent<ParametersComponent>() : null;
       if (component2 != null)
       {
         IParameter<float> byName = component2.GetByName<float>(ParameterNameEnum.LinesVision);
@@ -452,70 +448,70 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
 
     protected override void ShowClosedContainerInfo(IInventoryComponent container)
     {
-      if (this.toolSelector.Item != null)
+      if (toolSelector.Item != null)
       {
-        HideableViewUtility.SetVisible(this.tooltipArea, true);
-        this.instrumentDamageDescriptionText.text = ServiceLocator.GetService<LocalizationService>().GetText("{UI.Menu.Protagonist.Autopsy.InstrumentDamage}");
-        this.instrumentDamageValueText.text = this.GetInstrumentDamageString(container.GetInstrumentDamage());
-        this.organDamageDescriptionText.text = ServiceLocator.GetService<LocalizationService>().GetText("{UI.Menu.Protagonist.Autopsy.OrganDamageChance}");
-        float linesVision = this.GetLinesVision();
-        this.organDamageValueText.text = this.GetOrganDamageString(Mathf.Max(container.GetDifficulty() - linesVision, 0.0f));
+        HideableViewUtility.SetVisible(tooltipArea, true);
+        instrumentDamageDescriptionText.text = ServiceLocator.GetService<LocalizationService>().GetText("{UI.Menu.Protagonist.Autopsy.InstrumentDamage}");
+        instrumentDamageValueText.text = GetInstrumentDamageString(container.GetInstrumentDamage());
+        organDamageDescriptionText.text = ServiceLocator.GetService<LocalizationService>().GetText("{UI.Menu.Protagonist.Autopsy.OrganDamageChance}");
+        float linesVision = GetLinesVision();
+        organDamageValueText.text = GetOrganDamageString(Mathf.Max(container.GetDifficulty() - linesVision, 0.0f));
       }
       else
-        HideableViewUtility.SetVisible(this.tooltipArea, false);
+        HideableViewUtility.SetVisible(tooltipArea, false);
     }
 
     protected override void HideClosedContainerInfo()
     {
-      HideableViewUtility.SetVisible(this.tooltipArea, false);
+      HideableViewUtility.SetVisible(tooltipArea, false);
     }
 
     public override void Initialize()
     {
-      this.RegisterLayer<IAutopsyWindow>((IAutopsyWindow) this);
-      foreach (AutopsyWindow.ContainerTarget containerTarget in this.containerTargets)
+      RegisterLayer((IAutopsyWindow) this);
+      foreach (ContainerTarget containerTarget in containerTargets)
       {
         if (!((UnityEngine.Object) containerTarget.View == (UnityEngine.Object) null))
         {
-          containerTarget.View.SelectEvent += new Action<IInventoryComponent>(this.OnContainerSelect);
-          containerTarget.View.DeselectEvent += new Action<IInventoryComponent>(this.OnContainerDeselect);
-          containerTarget.View.OpenEndEvent += new Action<IInventoryComponent, bool>(((BaseInventoryWindow<AutopsyWindow>) this).OpenEnd);
-          containerTarget.View.OpenBeginEvent += new Action<IInventoryComponent>(((BaseInventoryWindow<AutopsyWindow>) this).OpenBegin);
+          containerTarget.View.SelectEvent += OnContainerSelect;
+          containerTarget.View.DeselectEvent += OnContainerDeselect;
+          containerTarget.View.OpenEndEvent += ((BaseInventoryWindow<AutopsyWindow>) this).OpenEnd;
+          containerTarget.View.OpenBeginEvent += ((BaseInventoryWindow<AutopsyWindow>) this).OpenBegin;
           containerTarget.View.ItemInteractEvent += new Action<IStorableComponent>(((BaseInventoryWindow<AutopsyWindow>) this).InteractItem);
         }
       }
-      this.buttonDrain.OpenBeginEvent += new Action(this.DrainBegin);
-      this.buttonDrain.OpenEndEvent += new Action<bool>(this.Drain);
-      this.toolSelector.ChangeItemEvent += (Action<ItemSelector, IStorableComponent, IStorableComponent>) ((x, y, z) => this.UpdateViews());
+      buttonDrain.OpenBeginEvent += DrainBegin;
+      buttonDrain.OpenEndEvent += Drain;
+      toolSelector.ChangeItemEvent += (x, y, z) => UpdateViews();
       base.Initialize();
     }
 
-    public override System.Type GetWindowType() => typeof (IAutopsyWindow);
+    public override Type GetWindowType() => typeof (IAutopsyWindow);
 
-    private void DrainBegin() => this.StartOpenAudio(this.bloodOpenProgressAudio);
+    private void DrainBegin() => StartOpenAudio(bloodOpenProgressAudio);
 
     private IStorableComponent GetActorsBottle()
     {
-      foreach (IStorableComponent actorsBottle in this.Actor.Items)
+      foreach (IStorableComponent actorsBottle in Actor.Items)
       {
-        if (actorsBottle.Groups.Contains<StorableGroup>(StorableGroup.Autopsy_Instrument_Bottle))
+        if (actorsBottle.Groups.Contains(StorableGroup.Autopsy_Instrument_Bottle))
           return actorsBottle;
       }
-      return (IStorableComponent) null;
+      return null;
     }
 
     protected override IEntity GetInstrument(StorableGroup instrumentGroup, bool brokenEnabled = false)
     {
-      IStorableComponent component = this.toolSelector.Item;
-      if (component == null || !component.Groups.Contains<StorableGroup>(instrumentGroup))
-        return (IEntity) null;
+      IStorableComponent component = toolSelector.Item;
+      if (component == null || !component.Groups.Contains(instrumentGroup))
+        return null;
       if (!brokenEnabled)
       {
         IParameter<float> byName = component.GetComponent<ParametersComponent>()?.GetByName<float>(ParameterNameEnum.Durability);
-        if (byName != null && (double) byName.Value <= 0.0)
+        if (byName != null && byName.Value <= 0.0)
         {
-          this.OnJoystick(InputService.Instance.JoystickUsed);
-          return (IEntity) null;
+          OnJoystick(InputService.Instance.JoystickUsed);
+          return null;
         }
       }
       return component.Owner;
@@ -523,15 +519,15 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
 
     private void Drain(bool success)
     {
-      this.StopOpenAudio();
+      StopOpenAudio();
       if (!success)
         return;
-      this.StartOpenAudio(this.bloodOpenCompleteAudio);
+      StartOpenAudio(bloodOpenCompleteAudio);
       List<IStorableComponent> ingredients = new List<IStorableComponent>();
-      IStorableComponent itemInContainer = this.GetItemInContainer(StorageUtility.GetContainerByTemplate(this.itemStorage, this.bloodEntityContainerTemplate.Value), this.itemStorage);
+      IStorableComponent itemInContainer = GetItemInContainer(StorageUtility.GetContainerByTemplate(itemStorage, bloodEntityContainerTemplate.Value), itemStorage);
       if (itemInContainer != null)
         ingredients.Add(itemInContainer);
-      IStorableComponent actorsBottle = this.GetActorsBottle();
+      IStorableComponent actorsBottle = GetActorsBottle();
       if (actorsBottle != null)
         ingredients.Add(actorsBottle);
       IStorableComponent craftResult = CraftHelper.GetCraftResult(ingredients, out CraftRecipe _);
@@ -546,55 +542,55 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
           else
           {
             storable.Owner.Dispose();
-            this.RemoveItemFromView(storable);
+            RemoveItemFromView(storable);
           }
         }
-        IEntity entity = ServiceLocator.GetService<IFactory>().Instantiate<IEntity>(craftResult.Owner);
+        IEntity entity = ServiceLocator.GetService<IFactory>().Instantiate(craftResult.Owner);
         ServiceLocator.GetService<ISimulation>().Add(entity, ServiceLocator.GetService<ISimulation>().Storables);
-        this.Actor.AddItemOrDrop(entity.GetComponent<IStorableComponent>(), (IInventoryComponent) null);
+        Actor.AddItemOrDrop(entity.GetComponent<IStorableComponent>(), null);
       }
-      this.CheckDrainEnabled();
+      CheckDrainEnabled();
     }
 
     protected override void DragEnd(Intersect intersect)
     {
       base.DragEnd(intersect);
-      this.CheckDrainEnabled();
+      CheckDrainEnabled();
     }
 
     private void CheckDrainEnabled()
     {
-      IInventoryComponent containerByTemplate = StorageUtility.GetContainerByTemplate(this.itemStorage, this.bloodEntityContainerTemplate.Value);
-      IStorableComponent itemInContainer = containerByTemplate != null ? this.GetItemInContainer(containerByTemplate, this.itemStorage) : (IStorableComponent) null;
-      IStorableComponent actorsBottle = this.GetActorsBottle();
-      this.bottleItemView.Storable = (StorableComponent) actorsBottle;
-      HideableViewUtility.SetVisible(this.bottleItemView.gameObject, itemInContainer != null);
-      HideableViewUtility.SetVisible(this.noBottleMessage, itemInContainer != null && actorsBottle == null);
-      HideableViewUtility.SetVisible(this.buttonDrain.gameObject, itemInContainer != null && actorsBottle != null);
-      HideableViewUtility.SetVisible(this.noBloodMessage, itemInContainer == null);
+      IInventoryComponent containerByTemplate = StorageUtility.GetContainerByTemplate(itemStorage, bloodEntityContainerTemplate.Value);
+      IStorableComponent itemInContainer = containerByTemplate != null ? GetItemInContainer(containerByTemplate, itemStorage) : null;
+      IStorableComponent actorsBottle = GetActorsBottle();
+      bottleItemView.Storable = (StorableComponent) actorsBottle;
+      HideableViewUtility.SetVisible(bottleItemView.gameObject, itemInContainer != null);
+      HideableViewUtility.SetVisible(noBottleMessage, itemInContainer != null && actorsBottle == null);
+      HideableViewUtility.SetVisible(buttonDrain.gameObject, itemInContainer != null && actorsBottle != null);
+      HideableViewUtility.SetVisible(noBloodMessage, itemInContainer == null);
       if (InputService.Instance.JoystickUsed)
-        this.drainConsoleButton.SetActive(itemInContainer != null && actorsBottle != null);
+        drainConsoleButton.SetActive(itemInContainer != null && actorsBottle != null);
       else
-        this.drainConsoleButton.SetActive(false);
+        drainConsoleButton.SetActive(false);
     }
 
     protected override void Update()
     {
       base.Update();
-      if (this.selectedContainer == null)
+      if (selectedContainer == null)
         return;
-      this.ShowClosedContainerInfo(this.selectedContainer);
+      ShowClosedContainerInfo(selectedContainer);
     }
 
     protected override void UpdateContainerStates()
     {
       base.UpdateContainerStates();
-      foreach (KeyValuePair<IStorableComponent, StorableUI> storable in this.storables)
+      foreach (KeyValuePair<IStorableComponent, StorableUI> storable in storables)
       {
         if (storable.Key != null && (UnityEngine.Object) storable.Value != (UnityEngine.Object) null)
-          storable.Value.ShowCount(!this.ItemIsOrgan(storable.Key));
+          storable.Value.ShowCount(!ItemIsOrgan(storable.Key));
       }
-      foreach (AutopsyWindow.ContainerTarget containerTarget in this.containerTargets)
+      foreach (ContainerTarget containerTarget in containerTargets)
       {
         if (!((UnityEngine.Object) containerTarget.View == (UnityEngine.Object) null))
         {
@@ -602,57 +598,57 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
           if (container == null)
             containerTarget.View.SetCanOpen(false);
           else
-            containerTarget.View.SetCanOpen(this.CanOpenContainer((IInventoryComponent) container));
+            containerTarget.View.SetCanOpen(CanOpenContainer(container));
         }
       }
-      this.UpdateViews();
+      UpdateViews();
     }
 
     private void UpdateViews()
     {
-      IStorableComponent storableComponent = this.toolSelector.Item;
+      IStorableComponent storableComponent = toolSelector.Item;
       if (storableComponent != null)
       {
         LocalizationService service = ServiceLocator.GetService<LocalizationService>();
-        this.instrumentTitleText.GetComponent<Localizer>().Signature = service.GetText(storableComponent.Title);
-        HideableViewUtility.SetVisible(this.instrumentTitleText.gameObject, true);
-        HideableViewUtility.SetVisible(this.instrumentErrorText.gameObject, false);
+        instrumentTitleText.GetComponent<Localizer>().Signature = service.GetText(storableComponent.Title);
+        HideableViewUtility.SetVisible(instrumentTitleText.gameObject, true);
+        HideableViewUtility.SetVisible(instrumentErrorText.gameObject, false);
       }
       else
       {
-        this.instrumentErrorText.GetComponent<Localizer>().Signature = "{UI.Menu.Protagonist.Autopsy.NoInstrument}";
-        HideableViewUtility.SetVisible(this.instrumentErrorText.gameObject, true);
-        HideableViewUtility.SetVisible(this.instrumentTitleText.gameObject, false);
+        instrumentErrorText.GetComponent<Localizer>().Signature = "{UI.Menu.Protagonist.Autopsy.NoInstrument}";
+        HideableViewUtility.SetVisible(instrumentErrorText.gameObject, true);
+        HideableViewUtility.SetVisible(instrumentTitleText.gameObject, false);
       }
-      this.CheckInterestingItems();
+      CheckInterestingItems();
     }
 
     private string GetInstrumentDamageString(float damage)
     {
-      string tag = (double) damage < 0.2 ? ((double) damage < 0.15 ? "{UI.Menu.Protagonist.Autopsy.LowDamage}" : "{UI.Menu.Protagonist.Autopsy.AverageDamage}") : "{UI.Menu.Protagonist.Autopsy.HighDamage}";
+      string tag = damage < 0.2 ? (damage < 0.15 ? "{UI.Menu.Protagonist.Autopsy.LowDamage}" : "{UI.Menu.Protagonist.Autopsy.AverageDamage}") : "{UI.Menu.Protagonist.Autopsy.HighDamage}";
       return ServiceLocator.GetService<LocalizationService>().GetText(tag);
     }
 
     private string GetOrganDamageString(float damage)
     {
-      string tag = (double) damage < 0.5 ? ((double) damage < 0.25 ? "{UI.Menu.Protagonist.Autopsy.LowChance}" : "{UI.Menu.Protagonist.Autopsy.AverageChance}") : "{UI.Menu.Protagonist.Autopsy.HighChance}";
+      string tag = damage < 0.5 ? (damage < 0.25 ? "{UI.Menu.Protagonist.Autopsy.LowChance}" : "{UI.Menu.Protagonist.Autopsy.AverageChance}") : "{UI.Menu.Protagonist.Autopsy.HighChance}";
       return ServiceLocator.GetService<LocalizationService>().GetText(tag);
     }
 
     public override void OnPointerDown(PointerEventData eventData)
     {
-      if ((UnityEngine.Object) this.windowContextMenu != (UnityEngine.Object) null)
+      if ((UnityEngine.Object) windowContextMenu != (UnityEngine.Object) null)
       {
-        this.HideContextMenu();
+        HideContextMenu();
       }
       else
       {
-        if (!this.intersect.IsIntersected)
+        if (!intersect.IsIntersected)
           return;
-        StorableComponent storable = this.intersect.Storables.FirstOrDefault<StorableComponent>();
+        StorableComponent storable = intersect.Storables.FirstOrDefault();
         if (storable == null)
           return;
-        this.SelectItem(storable);
+        SelectItem(storable);
       }
     }
 
@@ -662,37 +658,37 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
 
     private void SelectItem(StorableComponent storable)
     {
-      if (this.toolSelector.Item == storable || !storable.Groups.Contains<StorableGroup>(StorableGroup.Autopsy_Instrument_Stomach))
+      if (toolSelector.Item == storable || !storable.Groups.Contains(StorableGroup.Autopsy_Instrument_Stomach))
         return;
       IParameter<float> byName = storable.GetComponent<ParametersComponent>()?.GetByName<float>(ParameterNameEnum.Durability);
-      if (byName != null && (double) byName.Value <= 0.0)
+      if (byName != null && byName.Value <= 0.0)
         return;
-      this.toolSelector.Item = (IStorableComponent) storable;
+      toolSelector.Item = storable;
     }
 
     private void CheckInterestingItems()
     {
-      foreach (IStorableComponent key in this.storables.Keys)
+      foreach (IStorableComponent key in storables.Keys)
       {
-        StorableUI storable = this.storables[key];
-        storable.Enable(this.ItemIsInteresting(key));
-        storable.SetSelected(key == this.toolSelector.Item);
+        StorableUI storable = storables[key];
+        storable.Enable(ItemIsInteresting(key));
+        storable.SetSelected(key == toolSelector.Item);
       }
     }
 
     protected override bool ItemIsInteresting(IStorableComponent item)
     {
-      if (!item.Groups.Contains<StorableGroup>(StorableGroup.Autopsy_Instrument_Stomach))
+      if (!item.Groups.Contains(StorableGroup.Autopsy_Instrument_Stomach))
         return false;
       IParameter<float> byName = item.GetComponent<ParametersComponent>()?.GetByName<float>(ParameterNameEnum.Durability);
-      return byName == null || (double) byName.Value > 0.0;
+      return byName == null || byName.Value > 0.0;
     }
 
     protected override void AddActionsToInfoWindow(
       InfoWindowNew window,
       IStorableComponent storable)
     {
-      if (!this.ItemIsInteresting(storable) || this.CurrentMode != AutopsyWindow.Modes.Inventory)
+      if (!ItemIsInteresting(storable) || CurrentMode != Modes.Inventory)
         return;
       window.AddActionTooltip(GameActionType.Submit, "{StorableTooltip.Select}");
     }

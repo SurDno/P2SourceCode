@@ -8,15 +8,15 @@ namespace Engine.Behaviours.Engines.Controllers
 
     protected override void ApplyVisibility()
     {
-      this.pivot.HandsGeometryVisible = this.geometryVisible;
-      this.pivot.LockpickGeometryVisible = this.geometryVisible && this.weaponVisible;
-      this.ApplyLayerWeight(this.geometryVisible ? 1f : 0.0f);
+      pivot.HandsGeometryVisible = geometryVisible;
+      pivot.LockpickGeometryVisible = geometryVisible && weaponVisible;
+      ApplyLayerWeight(geometryVisible ? 1f : 0.0f);
     }
 
     protected override void ApplyLayerWeight(float layerWeight)
     {
-      this.animatorState.LockpickLayerWeight = layerWeight;
-      this.animatorState.KnifeReactionLayerWeight = layerWeight;
+      animatorState.LockpickLayerWeight = layerWeight;
+      animatorState.KnifeReactionLayerWeight = layerWeight;
     }
 
     protected override WeaponKind WeaponKind => WeaponKind.Lockpick;

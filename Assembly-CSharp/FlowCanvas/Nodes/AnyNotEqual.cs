@@ -6,6 +6,6 @@ namespace FlowCanvas.Nodes
   [Name("!=")]
   public class AnyNotEqual : PureFunctionNode<bool, object, object>
   {
-    public override bool Invoke(object a, object b) => !object.Equals(a, b);
+    public override bool Invoke(object a, object b) => !Equals(a, b);
   }
 }

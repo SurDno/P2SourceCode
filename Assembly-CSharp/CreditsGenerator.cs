@@ -1,8 +1,7 @@
-﻿using Engine.Common.Services;
-using Engine.Impl.Services;
-using System;
+﻿using System;
 using System.Collections;
-using UnityEngine;
+using Engine.Common.Services;
+using Engine.Impl.Services;
 
 public class CreditsGenerator : MonoBehaviour
 {
@@ -21,37 +20,37 @@ public class CreditsGenerator : MonoBehaviour
   private CreditsItem[] items;
   private float position;
 
-  public float Size { get; private set; } = 0.0f;
+  public float Size { get; private set; }
 
   public float Position
   {
-    get => this.position;
+    get => position;
     set
     {
-      this.position = value;
-      ((RectTransform) this.transform).anchoredPosition = new Vector2(0.0f, this.position);
+      position = value;
+      ((RectTransform) this.transform).anchoredPosition = new Vector2(0.0f, position);
     }
   }
 
-  private void Start() => this.StartCoroutine(this.Generate());
+  private void Start() => this.StartCoroutine(Generate());
 
   private IEnumerator Generate()
   {
     LocalizationService localizationService = ServiceLocator.GetService<LocalizationService>();
     LanguageEnum language = localizationService != null ? localizationService.CurrentLanguage : LanguageEnum.English;
     TextAsset asset = (TextAsset) null;
-    for (int i = 0; i < this.languages.Length; ++i)
+    for (int i = 0; i < languages.Length; ++i)
     {
-      if (this.languages[i] == language)
+      if (languages[i] == language)
       {
-        asset = this.texts[i];
+        asset = texts[i];
         break;
       }
     }
     if (!((UnityEngine.Object) asset == (UnityEngine.Object) null))
     {
       string document = asset.text;
-      this.items = new CreditsItem[this.itemBufferSize];
+      items = new CreditsItem[itemBufferSize];
       int itemCount = 0;
       int i = 0;
       while (i < document.Length)
@@ -81,38 +80,38 @@ public class CreditsGenerator : MonoBehaviour
               --closeTagStart;
             if (i < closeTagStart)
             {
-              CreditsItem prefab = (CreditsItem) null;
-              for (int j = 0; j < this.itemTags.Length; ++j)
+              CreditsItem prefab = null;
+              for (int j = 0; j < itemTags.Length; ++j)
               {
-                if (this.itemTags[j].Equals(tag, StringComparison.InvariantCultureIgnoreCase))
+                if (itemTags[j].Equals(tag, StringComparison.InvariantCultureIgnoreCase))
                 {
-                  prefab = this.itemPrefabs[j];
+                  prefab = itemPrefabs[j];
                   break;
                 }
               }
               if ((UnityEngine.Object) prefab != (UnityEngine.Object) null)
               {
-                CreditsItem instance = (CreditsItem) null;
+                CreditsItem instance = null;
                 while (i < closeTagStart)
                 {
                   if ((UnityEngine.Object) instance == (UnityEngine.Object) null || instance.IsFull())
                   {
                     do
                     {
-                      yield return (object) null;
+                      yield return null;
                     }
-                    while ((double) this.Position + (double) this.extents <= (double) this.Size);
+                    while (Position + (double) extents <= Size);
                     if (itemCount > 0)
                     {
-                      int lastIndex = (itemCount - 1) % this.itemBufferSize;
-                      this.Size = this.items[lastIndex].UpdateBottomEnd();
+                      int lastIndex = (itemCount - 1) % itemBufferSize;
+                      Size = items[lastIndex].UpdateBottomEnd();
                     }
                     instance = UnityEngine.Object.Instantiate<CreditsItem>(prefab, this.transform, false);
-                    instance.SetPosition(this.Size);
-                    int index = itemCount % this.itemBufferSize;
-                    if ((UnityEngine.Object) this.items[index] != (UnityEngine.Object) null)
-                      UnityEngine.Object.Destroy((UnityEngine.Object) this.items[index].gameObject);
-                    this.items[index] = instance;
+                    instance.SetPosition(Size);
+                    int index = itemCount % itemBufferSize;
+                    if ((UnityEngine.Object) items[index] != (UnityEngine.Object) null)
+                      UnityEngine.Object.Destroy((UnityEngine.Object) items[index].gameObject);
+                    items[index] = instance;
                     ++itemCount;
                   }
                   int lineEnd = document.IndexOf('\n', i, closeTagStart - i);
@@ -126,13 +125,13 @@ public class CreditsGenerator : MonoBehaviour
                   while (i < closeTagStart && (document[i] == '\n' || document[i] == '\r'))
                     ++i;
                 }
-                instance = (CreditsItem) null;
+                instance = null;
               }
-              prefab = (CreditsItem) null;
+              prefab = null;
             }
             i = closeTagEnd;
-            tag = (string) null;
-            closeTag = (string) null;
+            tag = null;
+            closeTag = null;
           }
           else
             break;
@@ -140,9 +139,9 @@ public class CreditsGenerator : MonoBehaviour
         else
           break;
       }
-      yield return (object) null;
+      yield return null;
       if (itemCount > 0)
-        this.Size = this.items[(itemCount - 1) % this.itemBufferSize].UpdateBottomEnd();
+        Size = items[(itemCount - 1) % itemBufferSize].UpdateBottomEnd();
     }
   }
 }

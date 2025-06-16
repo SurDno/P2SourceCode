@@ -4,7 +4,6 @@ using Engine.Source.Services;
 using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
-using System;
 
 namespace Engine.Source.Blueprints
 {
@@ -18,31 +17,31 @@ namespace Engine.Source.Blueprints
     public override void OnGraphStarted()
     {
       base.OnGraphStarted();
-      ServiceLocator.GetService<WeaponVisibleListener>().OnWeaponVisibleChanged += new Action<WeaponKind, bool>(this.OnWeaponVisibleChanged);
+      ServiceLocator.GetService<WeaponVisibleListener>().OnWeaponVisibleChanged += OnWeaponVisibleChanged;
     }
 
     public override void OnGraphStoped()
     {
-      ServiceLocator.GetService<WeaponVisibleListener>().OnWeaponVisibleChanged -= new Action<WeaponKind, bool>(this.OnWeaponVisibleChanged);
+      ServiceLocator.GetService<WeaponVisibleListener>().OnWeaponVisibleChanged -= OnWeaponVisibleChanged;
       base.OnGraphStoped();
     }
 
     private void OnWeaponVisibleChanged(WeaponKind kind, bool visible)
     {
-      if (this.weaponInput.value != kind)
+      if (weaponInput.value != kind)
         return;
       if (visible)
-        this.showOutput.Call();
+        showOutput.Call();
       else
-        this.hideOutput.Call();
+        hideOutput.Call();
     }
 
     protected override void RegisterPorts()
     {
       base.RegisterPorts();
-      this.showOutput = this.AddFlowOutput("Show");
-      this.hideOutput = this.AddFlowOutput("Hide");
-      this.weaponInput = this.AddValueInput<WeaponKind>("Weapon");
+      showOutput = AddFlowOutput("Show");
+      hideOutput = AddFlowOutput("Hide");
+      weaponInput = AddValueInput<WeaponKind>("Weapon");
     }
   }
 }

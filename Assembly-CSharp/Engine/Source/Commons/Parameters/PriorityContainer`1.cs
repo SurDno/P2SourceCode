@@ -1,19 +1,19 @@
-﻿using Cofe.Proxies;
+﻿using System.Collections.Generic;
+using Cofe.Proxies;
 using Engine.Common.Commons;
 using Engine.Common.Components.Parameters;
 using Engine.Common.Generator;
 using Inspectors;
-using System.Collections.Generic;
 
 namespace Engine.Source.Commons.Parameters
 {
   public abstract class PriorityContainer<T> : INeedSave
   {
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [StateSaveProxy(MemberEnum.None)]
-    [StateLoadProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [StateSaveProxy]
+    [StateLoadProxy]
+    [CopyableProxy()]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected List<PriorityItem<T>> items = new List<PriorityItem<T>>();
@@ -24,9 +24,9 @@ namespace Engine.Source.Commons.Parameters
     {
       get
       {
-        if (this.items.Count > 0)
+        if (items.Count > 0)
         {
-          PriorityItem<T> priorityItem = this.items[this.items.Count - 1];
+          PriorityItem<T> priorityItem = items[items.Count - 1];
           if (priorityItem != null)
             return priorityItem.Priority;
         }
@@ -39,9 +39,9 @@ namespace Engine.Source.Commons.Parameters
     {
       get
       {
-        if (this.items.Count > 0)
+        if (items.Count > 0)
         {
-          PriorityItem<T> priorityItem = this.items[this.items.Count - 1];
+          PriorityItem<T> priorityItem = items[items.Count - 1];
           if (priorityItem != null)
             return priorityItem.Value;
         }
@@ -49,15 +49,15 @@ namespace Engine.Source.Commons.Parameters
       }
       set
       {
-        if (this.items.Count > 0)
+        if (items.Count > 0)
         {
-          PriorityItem<T> priorityItem = this.items[this.items.Count - 1];
+          PriorityItem<T> priorityItem = items[items.Count - 1];
           if (priorityItem == null)
             return;
           priorityItem.Value = value;
         }
         else
-          this.SetValue(PriorityParameterEnum.Default, value);
+          SetValue(PriorityParameterEnum.Default, value);
       }
     }
 
@@ -65,12 +65,12 @@ namespace Engine.Source.Commons.Parameters
     {
       get
       {
-        if (this.items.Count == 0)
+        if (items.Count == 0)
           return false;
-        if (this.items.Count == 1)
+        if (items.Count == 1)
         {
-          PriorityItem<T> priorityItem = this.items[0];
-          if (priorityItem == null || priorityItem.Priority == PriorityParameterEnum.Default && this.IsDefault(priorityItem.Value))
+          PriorityItem<T> priorityItem = items[0];
+          if (priorityItem == null || priorityItem.Priority == PriorityParameterEnum.Default && IsDefault(priorityItem.Value))
             return false;
         }
         return true;
@@ -80,9 +80,9 @@ namespace Engine.Source.Commons.Parameters
     public bool TryGetValue(PriorityParameterEnum priority, out T result)
     {
       result = default (T);
-      for (int index = 0; index < this.items.Count; ++index)
+      for (int index = 0; index < items.Count; ++index)
       {
-        PriorityItem<T> priorityItem = this.items[index];
+        PriorityItem<T> priorityItem = items[index];
         if (priorityItem.Priority == priority)
         {
           result = priorityItem.Value;
@@ -95,9 +95,9 @@ namespace Engine.Source.Commons.Parameters
     public void SetValue(PriorityParameterEnum priority, T value)
     {
       bool flag = false;
-      for (int index = 0; index < this.items.Count; ++index)
+      for (int index = 0; index < items.Count; ++index)
       {
-        PriorityItem<T> priorityItem = this.items[index];
+        PriorityItem<T> priorityItem = items[index];
         if (priorityItem.Priority == priority)
         {
           flag = true;
@@ -110,17 +110,17 @@ namespace Engine.Source.Commons.Parameters
       PriorityItem<T> priorityItem1 = ProxyFactory.Create<PriorityItem<T>>();
       priorityItem1.Priority = priority;
       priorityItem1.Value = value;
-      this.items.Add(priorityItem1);
-      this.items.Sort((IComparer<PriorityItem<T>>) PriorityContainer<T>.comparer);
+      items.Add(priorityItem1);
+      items.Sort(comparer);
     }
 
     public void ResetValue(PriorityParameterEnum priority)
     {
-      for (int index = 0; index < this.items.Count; ++index)
+      for (int index = 0; index < items.Count; ++index)
       {
-        if (this.items[index].Priority == priority)
+        if (items[index].Priority == priority)
         {
-          this.items.RemoveAt(index);
+          items.RemoveAt(index);
           break;
         }
       }

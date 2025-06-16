@@ -1,7 +1,5 @@
 ﻿using Engine.Common.Services;
 using Engine.Source.Services.Inputs;
-using UnityEngine;
-using UnityEngine.EventSystems;
 
 public class SubmitOnGameAction : MonoBehaviour
 {
@@ -25,16 +23,16 @@ public class SubmitOnGameAction : MonoBehaviour
   private void OnDisable()
   {
     GameActionService service = ServiceLocator.GetService<GameActionService>();
-    for (int index = 0; index < this.actions.Length; ++index)
-      service.RemoveListener(this.actions[index], this.onAction);
+    for (int index = 0; index < actions.Length; ++index)
+      service.RemoveListener(actions[index], onAction);
   }
 
   private void OnEnable()
   {
-    if (this.onAction == null)
-      this.onAction = new GameActionHandle(this.OnAction);
+    if (onAction == null)
+      onAction = OnAction;
     GameActionService service = ServiceLocator.GetService<GameActionService>();
-    for (int index = 0; index < this.actions.Length; ++index)
-      service.AddListener(this.actions[index], this.onAction);
+    for (int index = 0; index < actions.Length; ++index)
+      service.AddListener(actions[index], onAction);
   }
 }

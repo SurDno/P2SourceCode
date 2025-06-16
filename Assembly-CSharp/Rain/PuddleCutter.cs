@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace Rain
 {
@@ -9,7 +8,7 @@ namespace Rain
     private const string DebugPrefix = "Puddle Cutter : ";
     [Header("Source")]
     public MeshFilter SourceMeshFilter;
-    public PuddleCutter.UVSet SourceUVSet = PuddleCutter.UVSet.UV0;
+    public UVSet SourceUVSet = UVSet.UV0;
     [Header("Settings")]
     public Vector3 Size = new Vector3(5f, 1f, 5f);
     public Color ColorMask = Color.white;
@@ -36,7 +35,7 @@ namespace Rain
       for (int index = 0; index < 3; ++index)
       {
         outputVertices.Add(triangleVertices[index]);
-        outputPrimaryUV.Add(new Vector2((float) ((double) triangleVertices[index].x / (double) this.Size.x + 0.5), (float) ((double) triangleVertices[index].z / (double) this.Size.z + 0.5)));
+        outputPrimaryUV.Add(new Vector2((float) ((double) triangleVertices[index].x / (double) Size.x + 0.5), (float) ((double) triangleVertices[index].z / (double) Size.z + 0.5)));
       }
       if (outputSecondaryUV != null)
       {
@@ -51,9 +50,9 @@ namespace Rain
 
     public void Build()
     {
-      if ((double) this.Size.x * 0.5 <= 0.0 || (double) this.Size.y * 0.5 <= 0.0 || (double) this.Size.z * 0.5 <= 0.0 || (UnityEngine.Object) this.SourceMeshFilter == (UnityEngine.Object) null)
+      if ((double) Size.x * 0.5 <= 0.0 || (double) Size.y * 0.5 <= 0.0 || (double) Size.z * 0.5 <= 0.0 || (UnityEngine.Object) SourceMeshFilter == (UnityEngine.Object) null)
         return;
-      Mesh sharedMesh = this.SourceMeshFilter.sharedMesh;
+      Mesh sharedMesh = SourceMeshFilter.sharedMesh;
       if ((UnityEngine.Object) sharedMesh == (UnityEngine.Object) null)
         return;
       if (!sharedMesh.isReadable)
@@ -67,31 +66,31 @@ namespace Rain
         Vector3[] normals = sharedMesh.normals;
         if (vertices == null || vertices.Length == 0 || triangles == null || triangles.Length == 0)
           return;
-        Matrix4x4 matrix4x4 = this.transform.worldToLocalMatrix * this.SourceMeshFilter.transform.localToWorldMatrix;
+        Matrix4x4 matrix4x4 = this.transform.worldToLocalMatrix * SourceMeshFilter.transform.localToWorldMatrix;
         for (int index = 0; index < vertices.Length; ++index)
         {
           vertices[index] = matrix4x4.MultiplyPoint(vertices[index]);
-          vertices[index].y += this.Elevation;
+          vertices[index].y += Elevation;
           if (normals != null)
             normals[index] = matrix4x4.MultiplyVector(normals[index]);
         }
         Vector2[] vector2Array = (Vector2[]) null;
-        switch (this.SourceUVSet)
+        switch (SourceUVSet)
         {
-          case PuddleCutter.UVSet.UV0:
+          case UVSet.UV0:
             vector2Array = sharedMesh.uv;
             break;
-          case PuddleCutter.UVSet.UV1:
+          case UVSet.UV1:
             vector2Array = sharedMesh.uv2;
             break;
-          case PuddleCutter.UVSet.UV2:
+          case UVSet.UV2:
             vector2Array = sharedMesh.uv3;
             break;
-          case PuddleCutter.UVSet.UV3:
+          case UVSet.UV3:
             vector2Array = sharedMesh.uv4;
             break;
         }
-        if (this.SourceUVSet != PuddleCutter.UVSet.None && vector2Array == null)
+        if (SourceUVSet != UVSet.None && vector2Array == null)
           Debug.LogWarning((object) ("Puddle Cutter : UV set of mesh \"" + sharedMesh.name + "\" is empty. None will be used."));
         List<Vector3> outputVertices = new List<Vector3>();
         List<Vector2> outputPrimaryUV = new List<Vector2>();
@@ -121,7 +120,7 @@ namespace Rain
             polygonNormals.Add(normals[triangles[index + 1]]);
             polygonNormals.Add(normals[triangles[index + 2]]);
           }
-          this.ProcessTriangle(outputVertices, outputPrimaryUV, outputSecondaryUV, outputNormals, outputIndices, polygonVertices, polygonUV, polygonNormals);
+          ProcessTriangle(outputVertices, outputPrimaryUV, outputSecondaryUV, outputNormals, outputIndices, polygonVertices, polygonUV, polygonNormals);
         }
         Mesh mesh = new Mesh();
         mesh.SetVertices(outputVertices);
@@ -134,11 +133,11 @@ namespace Rain
           mesh.SetNormals(outputNormals);
           mesh.RecalculateTangents();
         }
-        if (this.ColorMask != Color.white)
+        if (ColorMask != Color.white)
         {
           Color[] colorArray = new Color[outputVertices.Count];
           for (int index = 0; index < colorArray.Length; ++index)
-            colorArray[index] = this.ColorMask;
+            colorArray[index] = ColorMask;
           mesh.colors = colorArray;
         }
         MeshFilter meshFilter = this.GetComponent<MeshFilter>();
@@ -158,10 +157,10 @@ namespace Rain
       List<Vector3> polygonNormals,
       Vector3 extents)
     {
-      this.CutPolygonSide(polygonVertices, polygonUV, polygonNormals, 0, extents.x);
+      CutPolygonSide(polygonVertices, polygonUV, polygonNormals, 0, extents.x);
       if (polygonVertices.Count == 0)
         return;
-      this.CutPolygonSide(polygonVertices, polygonUV, polygonNormals, 2, extents.z);
+      CutPolygonSide(polygonVertices, polygonUV, polygonNormals, 2, extents.z);
       if (polygonVertices.Count != 0)
         ;
     }
@@ -179,21 +178,21 @@ namespace Rain
       for (int index = 1; index < polygonVertices.Count; ++index)
       {
         polygonVertex = polygonVertices[index];
-        if ((double) polygonVertex[axisIndex] < (double) num1)
+        if ((double) polygonVertex[axisIndex] < num1)
         {
           polygonVertex = polygonVertices[index];
           num1 = polygonVertex[axisIndex];
         }
         polygonVertex = polygonVertices[index];
-        if ((double) polygonVertex[axisIndex] > (double) num2)
+        if ((double) polygonVertex[axisIndex] > num2)
         {
           polygonVertex = polygonVertices[index];
           num2 = polygonVertex[axisIndex];
         }
       }
-      if ((double) num2 <= (double) extent)
+      if (num2 <= (double) extent)
         return;
-      if ((double) num1 >= (double) extent)
+      if (num1 >= (double) extent)
       {
         polygonVertices.Clear();
         polygonUV?.Clear();
@@ -234,7 +233,7 @@ namespace Rain
         for (int index = 0; index < polygonVertices.Count; ++index)
         {
           polygonVertex = polygonVertices[index];
-          if ((double) polygonVertex[axisIndex] > (double) extent)
+          if ((double) polygonVertex[axisIndex] > extent)
           {
             polygonVertices.RemoveAt(index);
             polygonUV?.RemoveAt(index);
@@ -253,7 +252,7 @@ namespace Rain
 
     private void OnDrawGizmosSelected()
     {
-      Vector3 vector3_1 = this.Size * 0.5f;
+      Vector3 vector3_1 = Size * 0.5f;
       Vector3 point1 = new Vector3(-vector3_1.x, -vector3_1.y, -vector3_1.z);
       Vector3 point2 = new Vector3(-vector3_1.x, -vector3_1.y, vector3_1.z);
       Vector3 point3 = new Vector3(-vector3_1.x, vector3_1.y, vector3_1.z);
@@ -290,13 +289,13 @@ namespace Rain
     {
       if (this.hideFlags == HideFlags.DontSaveInBuild)
         this.hideFlags = HideFlags.None;
-      if ((double) this.Size.x < 0.0)
-        this.Size.x = 0.0f;
-      if ((double) this.Size.y < 0.0)
-        this.Size.y = 0.0f;
-      if ((double) this.Size.z >= 0.0)
+      if ((double) Size.x < 0.0)
+        Size.x = 0.0f;
+      if ((double) Size.y < 0.0)
+        Size.y = 0.0f;
+      if ((double) Size.z >= 0.0)
         return;
-      this.Size.z = 0.0f;
+      Size.z = 0.0f;
     }
 
     private void ProcessTriangle(
@@ -311,7 +310,7 @@ namespace Rain
     {
       Vector3 vector3_1 = Vector3.Cross(polygonVertices[1] - polygonVertices[0], polygonVertices[2] - polygonVertices[0]);
       vector3_1.Normalize();
-      if ((double) vector3_1.y < (double) this.MinYNormal)
+      if ((double) vector3_1.y < MinYNormal)
         return;
       Vector3 vector3_2 = new Vector3(polygonVertices[0].x, polygonVertices[0].y, polygonVertices[0].z);
       Vector3 vector3_3 = vector3_2;
@@ -325,17 +324,17 @@ namespace Rain
             vector3_3[index2] = polygonVertices[index1][index2];
         }
       }
-      if (!new Bounds((vector3_2 + vector3_3) * 0.5f, vector3_3 - vector3_2).Intersects(new Bounds(Vector3.zero, this.Size)))
+      if (!new Bounds((vector3_2 + vector3_3) * 0.5f, vector3_3 - vector3_2).Intersects(new Bounds(Vector3.zero, Size)))
         return;
-      Vector3 extents = this.Size * 0.5f;
-      this.CutPolygonPositiveSides(polygonVertices, polygonUV, polygonNormals, extents);
+      Vector3 extents = Size * 0.5f;
+      CutPolygonPositiveSides(polygonVertices, polygonUV, polygonNormals, extents);
       if (polygonVertices.Count == 0)
         return;
-      this.FlipPolygon(polygonVertices);
-      this.CutPolygonPositiveSides(polygonVertices, polygonUV, polygonNormals, extents);
+      FlipPolygon(polygonVertices);
+      CutPolygonPositiveSides(polygonVertices, polygonUV, polygonNormals, extents);
       if (polygonVertices.Count == 0)
         return;
-      this.FlipPolygon(polygonVertices);
+      FlipPolygon(polygonVertices);
       Vector3[] triangleVertices = new Vector3[3];
       Vector2[] triangleUV = outputSecondaryUV == null ? (Vector2[]) null : new Vector2[3];
       Vector3[] triangleNormals = new Vector3[3];
@@ -352,7 +351,7 @@ namespace Rain
           if (index8 == polygonVertices.Count)
             index8 = 0;
           float num2 = Vector3.Distance(polygonVertices[index7], polygonVertices[index8]);
-          if ((double) num2 < (double) num1)
+          if (num2 < (double) num1)
           {
             num1 = num2;
             index3 = index7;
@@ -378,7 +377,7 @@ namespace Rain
           triangleNormals[2] = polygonNormals[index5];
           polygonNormals.RemoveAt(index4);
         }
-        this.AddTriangle(outputVertices, outputPrimaryUV, outputSecondaryUV, outputNormals, outputIndices, triangleVertices, triangleUV, triangleNormals);
+        AddTriangle(outputVertices, outputPrimaryUV, outputSecondaryUV, outputNormals, outputIndices, triangleVertices, triangleUV, triangleNormals);
       }
       if (polygonVertices.Count != 3)
         return;
@@ -397,7 +396,7 @@ namespace Rain
         triangleNormals[1] = polygonNormals[1];
         triangleNormals[2] = polygonNormals[2];
       }
-      this.AddTriangle(outputVertices, outputPrimaryUV, outputSecondaryUV, outputNormals, outputIndices, triangleVertices, triangleUV, triangleNormals);
+      AddTriangle(outputVertices, outputPrimaryUV, outputSecondaryUV, outputNormals, outputIndices, triangleVertices, triangleUV, triangleNormals);
     }
 
     [Serializable]

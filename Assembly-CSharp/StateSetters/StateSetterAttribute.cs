@@ -1,9 +1,9 @@
-﻿using Cofe.Meta;
-using System;
+﻿using System;
+using Cofe.Meta;
 
 namespace StateSetters
 {
-  [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
+  [AttributeUsage(AttributeTargets.Class, Inherited = false)]
   public class StateSetterAttribute : TypeAttribute
   {
     private string id;
@@ -12,7 +12,7 @@ namespace StateSetters
 
     public override void ComputeType(Type type)
     {
-      StateSetterService.Register(this.id, (IStateSetterItemController) Activator.CreateInstance(type));
+      StateSetterService.Register(id, (IStateSetterItemController) Activator.CreateInstance(type));
     }
   }
 }

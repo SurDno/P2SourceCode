@@ -1,5 +1,4 @@
 ﻿using BehaviorDesigner.Runtime;
-using UnityEngine;
 
 public static class BehaviorSubtreeUtility
 {
@@ -8,15 +7,15 @@ public static class BehaviorSubtreeUtility
     if ((Object) character == (Object) null)
     {
       Debug.LogError((object) "character == null");
-      return (BehaviorTree) null;
+      return null;
     }
     BehaviorTree[] components = character.GetComponents<BehaviorTree>();
     if (components.Length < 2)
     {
-      BehaviorSubtreeUtility.PrepareCharacter(character);
+      PrepareCharacter(character);
       components = character.GetComponents<BehaviorTree>();
     }
-    return components.Length > 1 ? components[1] : (BehaviorTree) null;
+    return components.Length > 1 ? components[1] : null;
   }
 
   public static void SetCharacterSubtree(BehaviorTree tree, ExternalBehaviorTree newTree)

@@ -1,7 +1,6 @@
 ﻿using Engine.Common;
 using Engine.Common.Components;
 using Engine.Common.Generator;
-using UnityEngine;
 
 namespace Engine.Source.Components.Saves
 {
@@ -14,11 +13,11 @@ namespace Engine.Source.Components.Saves
     [StateSaveProxy(MemberEnum.CustomReference)]
     [StateLoadProxy(MemberEnum.CustomReference)]
     public IEntity Target;
-    [StateSaveProxy(MemberEnum.None)]
-    [StateLoadProxy(MemberEnum.None)]
+    [StateSaveProxy]
+    [StateLoadProxy]
     public Vector3 Position;
-    [StateSaveProxy(MemberEnum.None)]
-    [StateLoadProxy(MemberEnum.None)]
+    [StateSaveProxy]
+    [StateLoadProxy()]
     public Quaternion Rotation;
   }
 }

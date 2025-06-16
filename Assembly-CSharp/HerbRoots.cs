@@ -8,9 +8,6 @@ using Engine.Source.Components.Crowds;
 using Engine.Source.Debugs;
 using Engine.Source.Services.Gizmos;
 using Inspectors;
-using System;
-using UnityEngine;
-using UnityEngine.Audio;
 
 public class HerbRoots : MonoBehaviour, IEntityAttachable
 {
@@ -72,38 +69,38 @@ public class HerbRoots : MonoBehaviour, IEntityAttachable
   private AudioSource enterTriggerAudiosource;
   private HerbRootsTrigger trigger;
 
-  public float VerticalOffset => this.verticalOffset;
+  public float VerticalOffset => verticalOffset;
 
   [Inspected]
   public IEntity Owner { get; private set; }
 
   private void Awake()
   {
-    if (!((UnityEngine.Object) this.rootsGeometry != (UnityEngine.Object) null))
+    if (!((UnityEngine.Object) rootsGeometry != (UnityEngine.Object) null))
       return;
-    this.initialPosition = this.transform.position;
+    initialPosition = this.transform.position;
   }
 
   void IEntityAttachable.Attach(IEntity owner)
   {
-    this.Owner = owner;
-    this.herbRootsComponent = (HerbRootsComponent) owner.GetComponent<IHerbRootsComponent>();
-    if (this.herbRootsComponent == null)
+    Owner = owner;
+    herbRootsComponent = (HerbRootsComponent) owner.GetComponent<IHerbRootsComponent>();
+    if (herbRootsComponent == null)
     {
-      Debug.LogError((object) (typeof (HerbRootsComponent).Name + " : " + this.Owner.GetInfo()), (UnityEngine.Object) this.gameObject);
+      Debug.LogError((object) (typeof (HerbRootsComponent).Name + " : " + Owner.GetInfo()), (UnityEngine.Object) this.gameObject);
     }
     else
     {
-      switch (this.herbRootsComponent.State)
+      switch (herbRootsComponent.State)
       {
         case HerbRootsComponentStateEnum.Sleeping:
-          this.SetState(HerbRootsStateEnum.Sleeping);
+          SetState(HerbRootsStateEnum.Sleeping);
           break;
         case HerbRootsComponentStateEnum.Active:
-          this.SetState(HerbRootsStateEnum.Active);
+          SetState(HerbRootsStateEnum.Active);
           break;
         default:
-          this.SetState(HerbRootsStateEnum.Unknown);
+          SetState(HerbRootsStateEnum.Unknown);
           break;
       }
     }
@@ -111,8 +108,8 @@ public class HerbRoots : MonoBehaviour, IEntityAttachable
 
   void IEntityAttachable.Detach()
   {
-    this.Owner = (IEntity) null;
-    this.herbRootsComponent = (HerbRootsComponent) null;
+    Owner = null;
+    herbRootsComponent = null;
   }
 
   private void SetState(HerbRootsStateEnum state)
@@ -120,22 +117,21 @@ public class HerbRoots : MonoBehaviour, IEntityAttachable
     switch (state)
     {
       case HerbRootsStateEnum.Sleeping:
-        this.activationStayTimeLeft = this.activationStayTime;
-        if ((UnityEngine.Object) this.rootsGeometry != (UnityEngine.Object) null)
+        activationStayTimeLeft = activationStayTime;
+        if ((UnityEngine.Object) rootsGeometry != (UnityEngine.Object) null)
         {
-          this.rootsGeometry.transform.position = this.initialPosition + new Vector3(0.0f, -this.verticalOffset, 0.0f);
-          break;
+          rootsGeometry.transform.position = initialPosition + new Vector3(0.0f, -verticalOffset, 0.0f);
         }
         break;
       case HerbRootsStateEnum.MovingFromEarth:
-        this.herbRootsComponent?.FireOnActivateStartEvent();
-        this.activationTimeLeft = this.activationTime;
-        SoundUtility.PlayAudioClip3D(this.transform, this.rootReleaseOneshotSound, this.mixer, 1f, this.enterTriggerMinDistance, this.enterTriggerMaxDistance, true, 0.0f);
+        herbRootsComponent?.FireOnActivateStartEvent();
+        activationTimeLeft = activationTime;
+        SoundUtility.PlayAudioClip3D(this.transform, rootReleaseOneshotSound, mixer, 1f, enterTriggerMinDistance, enterTriggerMaxDistance, true, 0.0f);
         break;
       case HerbRootsStateEnum.Active:
-        if ((UnityEngine.Object) this.rootsGeometry != (UnityEngine.Object) null)
-          this.transform.position = this.initialPosition;
-        this.herbRootsComponent.SetState(HerbRootsComponentStateEnum.Active);
+        if ((UnityEngine.Object) rootsGeometry != (UnityEngine.Object) null)
+          this.transform.position = initialPosition;
+        herbRootsComponent.SetState(HerbRootsComponentStateEnum.Active);
         break;
     }
     this.state = state;
@@ -145,128 +141,127 @@ public class HerbRoots : MonoBehaviour, IEntityAttachable
   {
     GameObject gameObject = new GameObject("[Trigger] Player");
     gameObject.transform.SetParent(this.transform, false);
-    this.trigger = gameObject.AddComponent<HerbRootsTrigger>();
-    this.trigger.Radius = this.radius;
-    this.trigger.PlayerEnterEvent += new Action(this.OnPlayerEnter);
-    this.trigger.PlayerExitEvent += new Action(this.OnPlayerExit);
-    this.attractAudiosource = this.gameObject.AddComponent<AudioSource>();
-    this.attractAudiosource.clip = this.attractLoopSound;
-    this.attractAudiosource.outputAudioMixerGroup = this.mixer;
-    this.attractAudiosource.minDistance = this.attractMinDistance;
-    this.attractAudiosource.maxDistance = this.attractMaxDistance;
-    this.attractAudiosource.loop = true;
-    this.attractAudiosource.rolloffMode = AudioRolloffMode.Linear;
-    this.attractAudiosource.spatialBlend = 1f;
-    this.attractLoopSoundVolume = 0.0f;
-    this.attractAudiosource.Stop();
-    this.enterTriggerAudiosource = this.gameObject.AddComponent<AudioSource>();
-    this.enterTriggerAudiosource.clip = this.enterTriggerLoopSound;
-    this.enterTriggerAudiosource.outputAudioMixerGroup = this.mixer;
-    this.enterTriggerAudiosource.minDistance = this.enterTriggerMinDistance;
-    this.enterTriggerAudiosource.maxDistance = this.enterTriggerMaxDistance;
-    this.enterTriggerAudiosource.loop = true;
-    this.enterTriggerAudiosource.spatialBlend = 0.5f;
-    this.enterTriggerLoopSoundVolume = 0.0f;
-    this.enterTriggerAudiosource.Stop();
+    trigger = gameObject.AddComponent<HerbRootsTrigger>();
+    trigger.Radius = radius;
+    trigger.PlayerEnterEvent += OnPlayerEnter;
+    trigger.PlayerExitEvent += OnPlayerExit;
+    attractAudiosource = this.gameObject.AddComponent<AudioSource>();
+    attractAudiosource.clip = attractLoopSound;
+    attractAudiosource.outputAudioMixerGroup = mixer;
+    attractAudiosource.minDistance = attractMinDistance;
+    attractAudiosource.maxDistance = attractMaxDistance;
+    attractAudiosource.loop = true;
+    attractAudiosource.rolloffMode = AudioRolloffMode.Linear;
+    attractAudiosource.spatialBlend = 1f;
+    attractLoopSoundVolume = 0.0f;
+    attractAudiosource.Stop();
+    enterTriggerAudiosource = this.gameObject.AddComponent<AudioSource>();
+    enterTriggerAudiosource.clip = enterTriggerLoopSound;
+    enterTriggerAudiosource.outputAudioMixerGroup = mixer;
+    enterTriggerAudiosource.minDistance = enterTriggerMinDistance;
+    enterTriggerAudiosource.maxDistance = enterTriggerMaxDistance;
+    enterTriggerAudiosource.loop = true;
+    enterTriggerAudiosource.spatialBlend = 0.5f;
+    enterTriggerLoopSoundVolume = 0.0f;
+    enterTriggerAudiosource.Stop();
   }
 
   private void OnDisable()
   {
-    this.trigger.PlayerEnterEvent -= new Action(this.OnPlayerEnter);
-    this.trigger.PlayerExitEvent -= new Action(this.OnPlayerExit);
-    UnityEngine.Object.Destroy((UnityEngine.Object) this.trigger.gameObject);
-    UnityEngine.Object.Destroy((UnityEngine.Object) this.attractAudiosource);
-    UnityEngine.Object.Destroy((UnityEngine.Object) this.enterTriggerAudiosource);
+    trigger.PlayerEnterEvent -= OnPlayerEnter;
+    trigger.PlayerExitEvent -= OnPlayerExit;
+    UnityEngine.Object.Destroy((UnityEngine.Object) trigger.gameObject);
+    UnityEngine.Object.Destroy((UnityEngine.Object) attractAudiosource);
+    UnityEngine.Object.Destroy((UnityEngine.Object) enterTriggerAudiosource);
   }
 
   public void PlayGiveBloodSound()
   {
-    SoundUtility.PlayAudioClip2D(this.giveBloodSound, this.mixer, 1f, 0.0f);
+    SoundUtility.PlayAudioClip2D(giveBloodSound, mixer, 1f, 0.0f);
   }
 
   private void OnPlayerEnter()
   {
-    SoundUtility.PlayAudioClip3D(this.transform, this.enterTriggerOneshotSound, this.mixer, 1f, this.enterTriggerMinDistance, this.enterTriggerMaxDistance, true, 0.0f);
-    if (this.state != HerbRootsStateEnum.Sleeping)
+    SoundUtility.PlayAudioClip3D(this.transform, enterTriggerOneshotSound, mixer, 1f, enterTriggerMinDistance, enterTriggerMaxDistance, true, 0.0f);
+    if (state != HerbRootsStateEnum.Sleeping)
       return;
-    this.herbRootsComponent?.FireOnTriggerEnterEvent();
+    herbRootsComponent?.FireOnTriggerEnterEvent();
   }
 
   private void OnPlayerExit()
   {
-    this.activationStayTimeLeft = this.activationStayTime;
-    if (this.state != HerbRootsStateEnum.Sleeping)
+    activationStayTimeLeft = activationStayTime;
+    if (state != HerbRootsStateEnum.Sleeping)
       return;
-    this.herbRootsComponent?.FireOnTriggerLeaveEvent();
+    herbRootsComponent?.FireOnTriggerLeaveEvent();
   }
 
   private void Update()
   {
-    this.УбериМЕняОТсюдава_МЕнТутБытьНидолжно();
-    if (InstanceByRequest<EngineApplication>.Instance.IsPaused || this.herbRootsComponent == null)
+    УбериМЕняОТсюдава_МЕнТутБытьНидолжно();
+    if (InstanceByRequest<EngineApplication>.Instance.IsPaused || herbRootsComponent == null)
       return;
-    switch (this.state)
+    switch (state)
     {
       case HerbRootsStateEnum.Sleeping:
-        if (this.trigger.IsPlayerInside)
+        if (trigger.IsPlayerInside)
         {
-          this.activationStayTimeLeft -= Time.deltaTime;
-          if ((double) this.activationStayTimeLeft < 0.0)
-            this.SetState(HerbRootsStateEnum.MovingFromEarth);
-          this.attractLoopSoundVolume = Mathf.MoveTowards(this.attractLoopSoundVolume, 0.0f, Time.deltaTime / 2f);
-          this.attractAudiosource.volume = this.attractLoopSoundVolume;
+          activationStayTimeLeft -= Time.deltaTime;
+          if (activationStayTimeLeft < 0.0)
+            SetState(HerbRootsStateEnum.MovingFromEarth);
+          attractLoopSoundVolume = Mathf.MoveTowards(attractLoopSoundVolume, 0.0f, Time.deltaTime / 2f);
+          attractAudiosource.volume = attractLoopSoundVolume;
         }
         else
         {
-          this.activationStayTimeLeft = this.activationStayTime;
-          this.attractLoopSoundVolume = Mathf.MoveTowards(this.attractLoopSoundVolume, 1f, Time.deltaTime / 2f);
-          this.attractAudiosource.volume = this.attractLoopSoundVolume;
+          activationStayTimeLeft = activationStayTime;
+          attractLoopSoundVolume = Mathf.MoveTowards(attractLoopSoundVolume, 1f, Time.deltaTime / 2f);
+          attractAudiosource.volume = attractLoopSoundVolume;
         }
-        this.enterTriggerLoopSoundVolume = Mathf.MoveTowards(this.enterTriggerLoopSoundVolume, Mathf.Sqrt(Mathf.Clamp01((float) (1.0 - (double) this.activationStayTimeLeft / (double) this.activationStayTime))), Time.deltaTime / 2f);
-        this.enterTriggerAudiosource.volume = this.enterTriggerLoopSoundVolume;
-        if ((double) this.enterTriggerLoopSoundVolume > 0.05000000074505806 && !this.enterTriggerAudiosource.isPlaying)
+        enterTriggerLoopSoundVolume = Mathf.MoveTowards(enterTriggerLoopSoundVolume, Mathf.Sqrt(Mathf.Clamp01((float) (1.0 - activationStayTimeLeft / (double) activationStayTime))), Time.deltaTime / 2f);
+        enterTriggerAudiosource.volume = enterTriggerLoopSoundVolume;
+        if (enterTriggerLoopSoundVolume > 0.05000000074505806 && !enterTriggerAudiosource.isPlaying)
         {
-          this.enterTriggerAudiosource.PlayAndCheck();
-          break;
+          enterTriggerAudiosource.PlayAndCheck();
         }
         break;
       case HerbRootsStateEnum.MovingFromEarth:
-        this.activationTimeLeft -= Time.deltaTime;
-        if ((double) this.activationTimeLeft < 0.0)
+        activationTimeLeft -= Time.deltaTime;
+        if (activationTimeLeft < 0.0)
         {
-          this.SetState(HerbRootsStateEnum.Active);
+          SetState(HerbRootsStateEnum.Active);
           break;
         }
-        float t = (float) (1.0 - (double) this.activationTimeLeft / (double) this.activationTime);
-        if ((UnityEngine.Object) this.rootsGeometry != (UnityEngine.Object) null)
-          this.rootsGeometry.transform.position = Vector3.Lerp(this.initialPosition + new Vector3(0.0f, -this.verticalOffset, 0.0f), this.initialPosition, t);
+        float t = (float) (1.0 - activationTimeLeft / (double) activationTime);
+        if ((UnityEngine.Object) rootsGeometry != (UnityEngine.Object) null)
+          rootsGeometry.transform.position = Vector3.Lerp(initialPosition + new Vector3(0.0f, -verticalOffset, 0.0f), initialPosition, t);
         break;
       case HerbRootsStateEnum.Active:
-        this.attractLoopSoundVolume = Mathf.MoveTowards(this.attractLoopSoundVolume, 0.0f, Time.deltaTime / 2f);
-        this.attractAudiosource.volume = this.attractLoopSoundVolume;
-        this.enterTriggerLoopSoundVolume = Mathf.MoveTowards(this.enterTriggerLoopSoundVolume, 0.0f, Time.deltaTime / 2f);
-        this.enterTriggerAudiosource.volume = this.enterTriggerLoopSoundVolume;
+        attractLoopSoundVolume = Mathf.MoveTowards(attractLoopSoundVolume, 0.0f, Time.deltaTime / 2f);
+        attractAudiosource.volume = attractLoopSoundVolume;
+        enterTriggerLoopSoundVolume = Mathf.MoveTowards(enterTriggerLoopSoundVolume, 0.0f, Time.deltaTime / 2f);
+        enterTriggerAudiosource.volume = enterTriggerLoopSoundVolume;
         break;
     }
-    if (this.attractAudiosource.enabled)
+    if (attractAudiosource.enabled)
     {
-      if (this.attractAudiosource.isPlaying)
+      if (attractAudiosource.isPlaying)
       {
-        if ((double) this.attractLoopSoundVolume < 0.05000000074505806)
-          this.attractAudiosource.Stop();
+        if (attractLoopSoundVolume < 0.05000000074505806)
+          attractAudiosource.Stop();
       }
-      else if ((double) this.attractLoopSoundVolume > 0.05000000074505806)
-        this.attractAudiosource.PlayAndCheck();
+      else if (attractLoopSoundVolume > 0.05000000074505806)
+        attractAudiosource.PlayAndCheck();
     }
-    this.UpdateAudioEnable();
+    UpdateAudioEnable();
   }
 
   private void UpdateAudioEnable()
   {
-    bool flag = (double) (this.transform.position - EngineApplication.PlayerPosition).sqrMagnitude < (double) (this.attractAudiosource.maxDistance * this.attractAudiosource.maxDistance);
-    if (this.attractAudiosource.enabled == flag)
+    bool flag = (double) (this.transform.position - EngineApplication.PlayerPosition).sqrMagnitude < (double) (attractAudiosource.maxDistance * attractAudiosource.maxDistance);
+    if (attractAudiosource.enabled == flag)
       return;
-    this.attractAudiosource.enabled = flag;
+    attractAudiosource.enabled = flag;
   }
 
   private void УбериМЕняОТсюдава_МЕнТутБытьНидолжно()
@@ -275,15 +270,15 @@ public class HerbRoots : MonoBehaviour, IEntityAttachable
       return;
     HerbRootsGroupDebug.DrawHeader();
     GizmoService service = ServiceLocator.GetService<GizmoService>();
-    service.DrawCircle(this.transform.position, this.radius, Color.blue);
-    string str = string.Format("{0}: - {1}, state = {2}", (object) typeof (HerbRoots).Name, (object) this.gameObject.name, (object) this.state);
-    switch (this.state)
+    service.DrawCircle(this.transform.position, radius, Color.blue);
+    string str = string.Format("{0}: - {1}, state = {2}", typeof (HerbRoots).Name, (object) this.gameObject.name, state);
+    switch (state)
     {
       case HerbRootsStateEnum.Sleeping:
-        service.DrawText(string.Format("{0}, timeLeft = {1}", (object) str, (object) this.activationStayTimeLeft), Color.white);
+        service.DrawText(string.Format("{0}, timeLeft = {1}", str, activationStayTimeLeft), Color.white);
         break;
       case HerbRootsStateEnum.MovingFromEarth:
-        service.DrawText(string.Format("{0}, timeLeft = {1}", (object) str, (object) this.activationTimeLeft), Color.white);
+        service.DrawText(string.Format("{0}, timeLeft = {1}", str, activationTimeLeft), Color.white);
         break;
       case HerbRootsStateEnum.Active:
         service.DrawText(str ?? "", Color.white);
@@ -307,6 +302,6 @@ public class HerbRoots : MonoBehaviour, IEntityAttachable
   private void OnDrawGizmos()
   {
     UnityEngine.Gizmos.color = Color.blue;
-    UnityEngine.Gizmos.DrawWireSphere(this.transform.position, this.radius);
+    UnityEngine.Gizmos.DrawWireSphere(this.transform.position, radius);
   }
 }

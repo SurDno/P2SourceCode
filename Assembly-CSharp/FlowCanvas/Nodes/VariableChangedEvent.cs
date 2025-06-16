@@ -1,6 +1,5 @@
 ﻿using NodeCanvas.Framework;
 using ParadoxNotion.Design;
-using System;
 
 namespace FlowCanvas.Nodes
 {
@@ -15,25 +14,25 @@ namespace FlowCanvas.Nodes
 
     public override string name
     {
-      get => string.Format("{0} [{1}]", (object) base.name, (object) this.targetVariable);
+      get => string.Format("{0} [{1}]", base.name, targetVariable);
     }
 
     public override void OnGraphStarted()
     {
-      if (this.targetVariable.varRef == null)
+      if (targetVariable.varRef == null)
         return;
-      this.targetVariable.varRef.onValueChanged += new Action<string, object>(this.OnChanged);
+      targetVariable.varRef.onValueChanged += OnChanged;
     }
 
     public override void OnGraphStoped()
     {
-      if (this.targetVariable.varRef == null)
+      if (targetVariable.varRef == null)
         return;
-      this.targetVariable.varRef.onValueChanged -= new Action<string, object>(this.OnChanged);
+      targetVariable.varRef.onValueChanged -= OnChanged;
     }
 
-    protected override void RegisterPorts() => this.outFlow = this.AddFlowOutput("Out");
+    protected override void RegisterPorts() => outFlow = AddFlowOutput("Out");
 
-    private void OnChanged(string name, object value) => this.outFlow.Call();
+    private void OnChanged(string name, object value) => outFlow.Call();
   }
 }

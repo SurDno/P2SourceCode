@@ -4,7 +4,6 @@ using FlowCanvas;
 using FlowCanvas.Nodes;
 using Inspectors;
 using ParadoxNotion.Design;
-using UnityEngine.Audio;
 
 namespace Engine.Source.Blueprints.Sounds
 {
@@ -23,22 +22,22 @@ namespace Engine.Source.Blueprints.Sounds
     private ValueInput<float> maxValueInput;
 
     [Inspected]
-    public float Value => this.valueInput.value;
+    public float Value => valueInput.value;
 
     [Inspected]
-    public AudioMixerGroup Mixer => this.mixerInput.value;
+    public AudioMixerGroup Mixer => mixerInput.value;
 
     [Inspected]
-    public string Name => this.nameInput.value;
+    public string Name => nameInput.value;
 
     [Inspected]
-    public float MinValue => this.minValueInput.value;
+    public float MinValue => minValueInput.value;
 
     [Inspected]
-    public float MaxValue => this.maxValueInput.value;
+    public float MaxValue => maxValueInput.value;
 
     [Inspected]
-    public FlowScriptController Agent => this.graph.agent;
+    public FlowScriptController Agent => graph.agent;
 
     [Inspected]
     public bool Failed { get; set; }

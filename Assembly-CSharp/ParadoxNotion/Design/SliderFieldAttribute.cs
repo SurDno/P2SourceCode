@@ -2,7 +2,7 @@
 
 namespace ParadoxNotion.Design
 {
-  [AttributeUsage(AttributeTargets.Field, AllowMultiple = false, Inherited = false)]
+  [AttributeUsage(AttributeTargets.Field)]
   public class SliderFieldAttribute : Attribute
   {
     public float left;
@@ -16,8 +16,8 @@ namespace ParadoxNotion.Design
 
     public SliderFieldAttribute(int left, int right)
     {
-      this.left = (float) left;
-      this.right = (float) right;
+      this.left = left;
+      this.right = right;
     }
   }
 }

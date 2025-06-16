@@ -1,12 +1,9 @@
-﻿using Engine.Common.Components;
+﻿using System;
 using Engine.Common.Components.Parameters;
 using Engine.Common.Services;
 using Engine.Impl.Services;
 using Engine.Impl.UI.Controls;
 using Engine.Source.Components;
-using System;
-using UnityEngine;
-using UnityEngine.UI;
 
 public class ItemCraftTimeView : ItemView
 {
@@ -15,71 +12,71 @@ public class ItemCraftTimeView : ItemView
   [SerializeField]
   private HideableView busyStatus;
   private StorableComponent storable;
-  private int up = 0;
+  private int up;
 
-  public bool IsItemReady { get; private set; } = false;
+  public bool IsItemReady { get; private set; }
 
   public event Action OnItemReady;
 
   public override StorableComponent Storable
   {
-    get => this.storable;
+    get => storable;
     set
     {
-      if (this.storable == value)
+      if (storable == value)
         return;
-      this.storable = value;
-      this.UpdateText();
+      storable = value;
+      UpdateText();
     }
   }
 
   private void OnEnable()
   {
-    this.UpdateText();
-    this.up = 0;
+    UpdateText();
+    up = 0;
   }
 
   private void Update()
   {
-    ++this.up;
-    if (this.up < 10)
+    ++up;
+    if (up < 10)
       return;
-    this.up = 0;
-    this.UpdateText();
+    up = 0;
+    UpdateText();
   }
 
   private void UpdateText()
   {
-    if ((UnityEngine.Object) this.text == (UnityEngine.Object) null)
+    if ((UnityEngine.Object) text == (UnityEngine.Object) null)
       return;
-    this.text.text = this.GetTimerString(this.storable);
+    text.text = GetTimerString(storable);
   }
 
   private string GetTimerString(StorableComponent item)
   {
-    string timerString = (string) null;
+    string timerString = null;
     if (item != null)
     {
-      IParameter<TimeSpan> craftTimeParameter = CraftHelper.GetCraftTimeParameter((IStorableComponent) item);
+      IParameter<TimeSpan> craftTimeParameter = CraftHelper.GetCraftTimeParameter(item);
       if (craftTimeParameter != null)
       {
         craftTimeParameter.Value = craftTimeParameter.MaxValue - ServiceLocator.GetService<TimeService>().GameTime;
         if (craftTimeParameter.Value > TimeSpan.Zero)
         {
           TimeSpan timeSpan = craftTimeParameter.Value;
-          timerString = string.Format("{0:D2}:{1:D2}", (object) timeSpan.Hours, (object) timeSpan.Minutes);
-          if ((UnityEngine.Object) this.busyStatus != (UnityEngine.Object) null)
-            this.busyStatus.Visible = true;
-          if (this.IsItemReady)
-            this.IsItemReady = false;
+          timerString = string.Format("{0:D2}:{1:D2}", timeSpan.Hours, timeSpan.Minutes);
+          if ((UnityEngine.Object) busyStatus != (UnityEngine.Object) null)
+            busyStatus.Visible = true;
+          if (IsItemReady)
+            IsItemReady = false;
         }
         else
         {
           timerString = string.Empty;
-          if ((UnityEngine.Object) this.busyStatus != (UnityEngine.Object) null)
-            this.busyStatus.Visible = false;
-          this.IsItemReady = true;
-          Action onItemReady = this.OnItemReady;
+          if ((UnityEngine.Object) busyStatus != (UnityEngine.Object) null)
+            busyStatus.Visible = false;
+          IsItemReady = true;
+          Action onItemReady = OnItemReady;
           if (onItemReady != null)
             onItemReady();
         }
@@ -88,9 +85,9 @@ public class ItemCraftTimeView : ItemView
     else
     {
       timerString = string.Empty;
-      if ((UnityEngine.Object) this.busyStatus != (UnityEngine.Object) null)
-        this.busyStatus.Visible = false;
-      this.IsItemReady = false;
+      if ((UnityEngine.Object) busyStatus != (UnityEngine.Object) null)
+        busyStatus.Visible = false;
+      IsItemReady = false;
     }
     return timerString;
   }

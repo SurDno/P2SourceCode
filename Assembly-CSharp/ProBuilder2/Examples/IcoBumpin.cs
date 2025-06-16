@@ -1,10 +1,8 @@
-﻿using Engine.Source.Audio;
-using ProBuilder2.Common;
-using ProBuilder2.MeshOperations;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
+using ProBuilder2.Common;
+using ProBuilder2.MeshOperations;
 
 namespace ProBuilder2.Examples
 {
@@ -15,7 +13,7 @@ namespace ProBuilder2.Examples
     private Mesh icoMesh;
     private Transform icoTransform;
     private AudioSource audioSource;
-    private IcoBumpin.FaceRef[] outsides;
+    private FaceRef[] outsides;
     private Vector3[] original_vertices;
     private Vector3[] displaced_vertices;
     [Range(1f, 10f)]
@@ -48,79 +46,79 @@ namespace ProBuilder2.Examples
     private float[] fft_history = new float[4096];
     private float[] data = new float[1024];
     private float[] data_history = new float[1024];
-    private float rms = 0.0f;
-    private float rms_history = 0.0f;
+    private float rms;
+    private float rms_history;
 
     private void Start()
     {
-      this.audioSource = this.GetComponent<AudioSource>();
-      if ((UnityEngine.Object) this.audioSource.clip == (UnityEngine.Object) null)
-        this.missingClipWarning.SetActive(true);
-      this.ico = pb_ShapeGenerator.IcosahedronGenerator(this.icoRadius, this.icoSubdivisions);
-      pb_Face[] faces = this.ico.faces;
+      audioSource = this.GetComponent<AudioSource>();
+      if ((UnityEngine.Object) audioSource.clip == (UnityEngine.Object) null)
+        missingClipWarning.SetActive(true);
+      ico = pb_ShapeGenerator.IcosahedronGenerator(icoRadius, icoSubdivisions);
+      pb_Face[] faces = ico.faces;
       foreach (pb_Face pbFace in faces)
-        pbFace.material = this.material;
-      this.ico.Extrude(faces, ExtrudeMethod.IndividualFaces, this.startingExtrusion);
-      this.ico.ToMesh();
-      this.ico.Refresh();
-      this.outsides = new IcoBumpin.FaceRef[faces.Length];
-      Dictionary<int, int> dictionary = pb_IntArrayUtility.ToDictionary(this.ico.sharedIndices);
+        pbFace.material = material;
+      ico.Extrude(faces, ExtrudeMethod.IndividualFaces, startingExtrusion);
+      ico.ToMesh();
+      ico.Refresh();
+      outsides = new FaceRef[faces.Length];
+      Dictionary<int, int> dictionary = ico.sharedIndices.ToDictionary();
       for (int index = 0; index < faces.Length; ++index)
-        this.outsides[index] = new IcoBumpin.FaceRef(faces[index], pb_Math.Normal(this.ico, faces[index]), pb_IntArrayUtility.AllIndicesWithValues(this.ico.sharedIndices, dictionary, (IList<int>) faces[index].distinctIndices).ToArray<int>());
-      this.original_vertices = new Vector3[this.ico.vertices.Length];
-      Array.Copy((Array) this.ico.vertices, (Array) this.original_vertices, this.ico.vertices.Length);
-      this.displaced_vertices = this.ico.vertices;
-      this.icoMesh = this.ico.msh;
-      this.icoTransform = this.ico.transform;
-      this.faces_length = (float) this.outsides.Length;
-      this.icoPosition = this.icoTransform.position;
-      this.waveform.positionCount = 1024;
-      if (this.bounceWaveform)
-        this.waveform.transform.parent = this.icoTransform;
-      this.audioSource.PlayAndCheck();
+        outsides[index] = new FaceRef(faces[index], pb_Math.Normal(ico, faces[index]), ico.sharedIndices.AllIndicesWithValues(dictionary, faces[index].distinctIndices).ToArray());
+      original_vertices = new Vector3[ico.vertices.Length];
+      Array.Copy((Array) ico.vertices, (Array) original_vertices, ico.vertices.Length);
+      displaced_vertices = ico.vertices;
+      icoMesh = ico.msh;
+      icoTransform = ico.transform;
+      faces_length = outsides.Length;
+      icoPosition = icoTransform.position;
+      waveform.positionCount = 1024;
+      if (bounceWaveform)
+        waveform.transform.parent = icoTransform;
+      audioSource.PlayAndCheck();
     }
 
     private void Update()
     {
-      this.audioSource.GetSpectrumData(this.fft, 0, FFTWindow.BlackmanHarris);
-      this.audioSource.GetOutputData(this.data, 0);
-      this.rms = this.RMS(this.data);
-      for (int index1 = 0; index1 < this.outsides.Length; ++index1)
+      audioSource.GetSpectrumData(fft, 0, FFTWindow.BlackmanHarris);
+      audioSource.GetOutputData(data, 0);
+      rms = RMS(data);
+      for (int index1 = 0; index1 < outsides.Length; ++index1)
       {
-        float time = (float) index1 / this.faces_length;
-        int index2 = (int) ((double) time * (double) this.fftBounds);
-        Vector3 vector3 = this.outsides[index1].nrm * (float) (((double) this.fft[index2] + (double) this.fft_history[index2]) * 0.5 * ((double) this.frequencyCurve.Evaluate(time) * 0.5 + 0.5)) * this.extrusion;
-        foreach (int index3 in this.outsides[index1].indices)
-          this.displaced_vertices[index3] = this.original_vertices[index3] + vector3;
+        float time = index1 / faces_length;
+        int index2 = (int) (time * (double) fftBounds);
+        Vector3 vector3 = outsides[index1].nrm * (float) ((fft[index2] + (double) fft_history[index2]) * 0.5 * ((double) frequencyCurve.Evaluate(time) * 0.5 + 0.5)) * extrusion;
+        foreach (int index3 in outsides[index1].indices)
+          displaced_vertices[index3] = original_vertices[index3] + vector3;
       }
       Vector3 zero = Vector3.zero;
       for (int index4 = 0; index4 < 1024; ++index4)
       {
         int index5 = index4 < 1023 ? index4 : 0;
-        zero.x = Mathf.Cos((float) ((double) index5 / 1024.0 * 6.2831850051879883)) * (this.waveformRadius + (float) (((double) this.data[index5] + (double) this.data_history[index5]) * 0.5) * this.waveformHeight);
-        zero.z = Mathf.Sin((float) ((double) index5 / 1024.0 * 6.2831850051879883)) * (this.waveformRadius + (float) (((double) this.data[index5] + (double) this.data_history[index5]) * 0.5) * this.waveformHeight);
+        zero.x = Mathf.Cos((float) (index5 / 1024.0 * 6.2831850051879883)) * (waveformRadius + (float) ((data[index5] + (double) data_history[index5]) * 0.5) * waveformHeight);
+        zero.z = Mathf.Sin((float) (index5 / 1024.0 * 6.2831850051879883)) * (waveformRadius + (float) ((data[index5] + (double) data_history[index5]) * 0.5) * waveformHeight);
         zero.y = 0.0f;
-        this.waveform.SetPosition(index4, zero);
+        waveform.SetPosition(index4, zero);
       }
-      if (this.rotateWaveformRing)
-        this.waveform.transform.localRotation = Quaternion.Euler(this.waveform.transform.localRotation.eulerAngles with
+      if (rotateWaveformRing)
+        waveform.transform.localRotation = Quaternion.Euler(waveform.transform.localRotation.eulerAngles with
         {
-          x = Mathf.PerlinNoise(Time.time * this.waveformSpeed, 0.0f) * 360f,
-          y = Mathf.PerlinNoise(0.0f, Time.time * this.waveformSpeed) * 360f
+          x = Mathf.PerlinNoise(Time.time * waveformSpeed, 0.0f) * 360f,
+          y = Mathf.PerlinNoise(0.0f, Time.time * waveformSpeed) * 360f
         });
-      this.icoPosition.y = (float) (-(double) this.verticalBounce + ((double) this.rms + (double) this.rms_history) * (double) this.verticalBounce);
-      this.icoTransform.position = this.icoPosition;
-      Array.Copy((Array) this.fft, (Array) this.fft_history, 4096);
-      Array.Copy((Array) this.data, (Array) this.data_history, 1024);
-      this.rms_history = this.rms;
-      this.icoMesh.vertices = this.displaced_vertices;
+      icoPosition.y = (float) (-(double) verticalBounce + (rms + (double) rms_history) * verticalBounce);
+      icoTransform.position = icoPosition;
+      Array.Copy(fft, fft_history, 4096);
+      Array.Copy(data, data_history, 1024);
+      rms_history = rms;
+      icoMesh.vertices = displaced_vertices;
     }
 
     private float RMS(float[] arr)
     {
       float num = 0.0f;
-      float length = (float) arr.Length;
-      for (int index = 0; (double) index < (double) length; ++index)
+      float length = arr.Length;
+      for (int index = 0; index < (double) length; ++index)
         num += Mathf.Abs(arr[index]);
       return Mathf.Sqrt(num / length);
     }
@@ -133,9 +131,9 @@ namespace ProBuilder2.Examples
 
       public FaceRef(pb_Face f, Vector3 n, int[] i)
       {
-        this.face = f;
-        this.nrm = n;
-        this.indices = i;
+        face = f;
+        nrm = n;
+        indices = i;
       }
     }
   }

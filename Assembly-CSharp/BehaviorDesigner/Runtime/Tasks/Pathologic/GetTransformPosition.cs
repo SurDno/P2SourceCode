@@ -1,11 +1,11 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons;
 using Engine.Common.Commons.Converters;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Scripts.Tools.Serializations.Converters;
-using UnityEngine;
 
 namespace BehaviorDesigner.Runtime.Tasks.Pathologic
 {
@@ -15,70 +15,70 @@ namespace BehaviorDesigner.Runtime.Tasks.Pathologic
   [Factory]
   [GeneratePartial(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
   [FactoryProxy(typeof (GetTransformPosition))]
-  public class GetTransformPosition : BehaviorDesigner.Runtime.Tasks.Action, IStub, ISerializeDataWrite, ISerializeDataRead
+  public class GetTransformPosition : Action, IStub, ISerializeDataWrite, ISerializeDataRead
   {
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [SerializeField]
     public SharedTransform Target;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy()]
     [SerializeField]
     public SharedVector3 Result;
 
     public override void OnStart()
     {
-      if ((UnityEngine.Object) this.Target.Value == (UnityEngine.Object) null)
+      if ((UnityEngine.Object) Target.Value == (UnityEngine.Object) null)
       {
-        Debug.LogWarningFormat("{0}: null Target", (object) this.gameObject.name);
+        Debug.LogWarningFormat("{0}: null Target", (object) gameObject.name);
       }
       else
       {
-        Vector3 vector3 = this.Result.Value;
+        Vector3 vector3 = Result.Value;
         if (true)
           return;
-        Debug.LogWarningFormat("{0}: null Result", (object) this.gameObject.name);
+        Debug.LogWarningFormat("{0}: null Result", (object) gameObject.name);
       }
     }
 
     public override TaskStatus OnUpdate()
     {
       int num;
-      if (!((UnityEngine.Object) this.Target.Value == (UnityEngine.Object) null))
+      if (!((UnityEngine.Object) Target.Value == (UnityEngine.Object) null))
       {
-        Vector3 vector3 = this.Result.Value;
+        Vector3 vector3 = Result.Value;
         num = 0;
       }
       else
         num = 1;
       if (num != 0)
         return TaskStatus.Failure;
-      this.Result.Value = this.Target.Value.position;
+      Result.Value = Target.Value.position;
       return TaskStatus.Success;
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.WriteSerialize<NodeData>(writer, "NodeData", this.nodeData);
-      DefaultDataWriteUtility.Write(writer, "Id", this.id);
-      DefaultDataWriteUtility.Write(writer, "FriendlyName", this.friendlyName);
-      DefaultDataWriteUtility.Write(writer, "Instant", this.instant);
-      DefaultDataWriteUtility.Write(writer, "Disabled", this.disabled);
-      BehaviorTreeDataWriteUtility.WriteShared<SharedTransform>(writer, "Target", this.Target);
-      BehaviorTreeDataWriteUtility.WriteShared<SharedVector3>(writer, "Result", this.Result);
+      DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
+      DefaultDataWriteUtility.Write(writer, "Id", id);
+      DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
+      DefaultDataWriteUtility.Write(writer, "Instant", instant);
+      DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
+      BehaviorTreeDataWriteUtility.WriteShared(writer, "Target", Target);
+      BehaviorTreeDataWriteUtility.WriteShared(writer, "Result", Result);
     }
 
-    public void DataRead(IDataReader reader, System.Type type)
+    public void DataRead(IDataReader reader, Type type)
     {
-      this.nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
-      this.id = DefaultDataReadUtility.Read(reader, "Id", this.id);
-      this.friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", this.friendlyName);
-      this.instant = DefaultDataReadUtility.Read(reader, "Instant", this.instant);
-      this.disabled = DefaultDataReadUtility.Read(reader, "Disabled", this.disabled);
-      this.Target = BehaviorTreeDataReadUtility.ReadShared<SharedTransform>(reader, "Target", this.Target);
-      this.Result = BehaviorTreeDataReadUtility.ReadShared<SharedVector3>(reader, "Result", this.Result);
+      nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
+      id = DefaultDataReadUtility.Read(reader, "Id", id);
+      friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
+      instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
+      disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
+      Target = BehaviorTreeDataReadUtility.ReadShared(reader, "Target", Target);
+      Result = BehaviorTreeDataReadUtility.ReadShared(reader, "Result", Result);
     }
   }
 }

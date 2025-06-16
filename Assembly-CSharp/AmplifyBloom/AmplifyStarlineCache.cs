@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEngine;
 
 namespace AmplifyBloom
 {
@@ -11,16 +10,16 @@ namespace AmplifyBloom
 
     public AmplifyStarlineCache()
     {
-      this.Passes = new AmplifyPassCache[4];
+      Passes = new AmplifyPassCache[4];
       for (int index = 0; index < 4; ++index)
-        this.Passes[index] = new AmplifyPassCache();
+        Passes[index] = new AmplifyPassCache();
     }
 
     public void Destroy()
     {
       for (int index = 0; index < 4; ++index)
-        this.Passes[index].Destroy();
-      this.Passes = (AmplifyPassCache[]) null;
+        Passes[index].Destroy();
+      Passes = null;
     }
   }
 }

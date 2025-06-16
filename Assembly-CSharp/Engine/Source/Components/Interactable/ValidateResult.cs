@@ -4,8 +4,8 @@
   {
     public ValidateResult(bool result, string reason = "")
     {
-      this.Result = result;
-      this.Reason = reason;
+      Result = result;
+      Reason = reason;
     }
 
     public bool Result { get; private set; }

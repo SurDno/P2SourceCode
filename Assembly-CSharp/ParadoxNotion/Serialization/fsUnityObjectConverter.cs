@@ -1,19 +1,20 @@
-﻿using ParadoxNotion.Serialization.FullSerializer;
+﻿using System;
 using System.Collections.Generic;
+using ParadoxNotion.Serialization.FullSerializer;
 
 namespace ParadoxNotion.Serialization
 {
   public class fsUnityObjectConverter : fsConverter
   {
-    public override bool CanProcess(System.Type type) => typeof (UnityEngine.Object).RTIsAssignableFrom(type);
+    public override bool CanProcess(Type type) => typeof (UnityEngine.Object).RTIsAssignableFrom(type);
 
-    public override bool RequestCycleSupport(System.Type storageType) => false;
+    public override bool RequestCycleSupport(Type storageType) => false;
 
-    public override bool RequestInheritanceSupport(System.Type storageType) => false;
+    public override bool RequestInheritanceSupport(Type storageType) => false;
 
-    public override fsResult TrySerialize(object instance, out fsData serialized, System.Type storageType)
+    public override fsResult TrySerialize(object instance, out fsData serialized, Type storageType)
     {
-      List<UnityEngine.Object> objectList = this.Serializer.Context.Get<List<UnityEngine.Object>>();
+      List<UnityEngine.Object> objectList = Serializer.Context.Get<List<UnityEngine.Object>>();
       UnityEngine.Object @object = instance as UnityEngine.Object;
       if ((object) @object == null)
       {
@@ -36,13 +37,13 @@ namespace ParadoxNotion.Serialization
         i = objectList.Count;
         objectList.Add(@object);
       }
-      serialized = new fsData((long) i);
+      serialized = new fsData(i);
       return fsResult.Success;
     }
 
-    public override fsResult TryDeserialize(fsData data, ref object instance, System.Type storageType)
+    public override fsResult TryDeserialize(fsData data, ref object instance, Type storageType)
     {
-      List<UnityEngine.Object> objectList = this.Serializer.Context.Get<List<UnityEngine.Object>>();
+      List<UnityEngine.Object> objectList = Serializer.Context.Get<List<UnityEngine.Object>>();
       int asInt64 = (int) data.AsInt64;
       if (asInt64 >= objectList.Count)
         return fsResult.Warn("A Unity Object reference has not been deserialized");
@@ -50,6 +51,6 @@ namespace ParadoxNotion.Serialization
       return fsResult.Success;
     }
 
-    public override object CreateInstance(fsData data, System.Type storageType) => (object) null;
+    public override object CreateInstance(fsData data, Type storageType) => null;
   }
 }

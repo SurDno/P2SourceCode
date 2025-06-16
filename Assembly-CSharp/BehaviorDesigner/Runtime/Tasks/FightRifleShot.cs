@@ -1,4 +1,6 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using System.Collections.Generic;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Behaviours.Components;
 using Engine.Common.Commons;
@@ -6,7 +8,6 @@ using Engine.Common.Commons.Converters;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Engine.Source.Commons;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace BehaviorDesigner.Runtime.Tasks
@@ -19,79 +20,79 @@ namespace BehaviorDesigner.Runtime.Tasks
   [FactoryProxy(typeof (FightRifleShot))]
   public class FightRifleShot : FightBase, IStub, ISerializeDataWrite, ISerializeDataRead
   {
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [SerializeField]
     private float aimingTime;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [SerializeField]
     private float aimingTimeMinimum = 0.5f;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [SerializeField]
     private float attackCooldown;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy()]
     [SerializeField]
     private float cancelRange = 2f;
-    private bool attackInited = false;
-    private bool shotDone = false;
+    private bool attackInited;
+    private bool shotDone;
     private float aimingTimePassed;
     private float cooldownTimePassed;
 
     public override void OnStart()
     {
       base.OnStart();
-      this.attackInited = false;
-      this.shotDone = false;
+      attackInited = false;
+      shotDone = false;
     }
 
     public override TaskStatus DoUpdate(float deltaTime)
     {
-      if ((UnityEngine.Object) this.owner.Enemy == (UnityEngine.Object) null)
+      if ((UnityEngine.Object) owner.Enemy == (UnityEngine.Object) null)
         return TaskStatus.Failure;
       if (InstanceByRequest<EngineApplication>.Instance.IsPaused)
         return TaskStatus.Running;
-      if ((UnityEngine.Object) this.owner.gameObject == (UnityEngine.Object) null || !this.owner.gameObject.activeSelf)
+      if ((UnityEngine.Object) owner.gameObject == (UnityEngine.Object) null || !owner.gameObject.activeSelf)
         return TaskStatus.Failure;
-      Vector3 vector3 = this.owner.Enemy.transform.position - this.owner.transform.position;
-      if (this.attackInited)
-        this.aimingTimePassed += deltaTime;
-      if (this.shotDone)
-        this.cooldownTimePassed += deltaTime;
-      if ((!this.attackInited || this.shotDone && !this.owner.IsAttacking) && (double) vector3.magnitude < (double) this.cancelRange)
+      Vector3 vector3 = owner.Enemy.transform.position - owner.transform.position;
+      if (attackInited)
+        aimingTimePassed += deltaTime;
+      if (shotDone)
+        cooldownTimePassed += deltaTime;
+      if ((!attackInited || shotDone && !owner.IsAttacking) && (double) vector3.magnitude < cancelRange)
       {
-        this.owner.SetAiming(false);
+        owner.SetAiming(false);
         return TaskStatus.Success;
       }
-      if (this.shotDone && !this.owner.IsAttacking && (double) this.cooldownTimePassed >= (double) this.attackCooldown)
+      if (shotDone && !owner.IsAttacking && cooldownTimePassed >= (double) attackCooldown)
       {
-        this.owner.SetAiming(false);
+        owner.SetAiming(false);
         return TaskStatus.Success;
       }
-      if (!this.attackInited && !this.owner.IsAttacking && !this.owner.IsPushing && !this.owner.IsReacting && !this.owner.IsQuickBlock && this.CheckShootingLine())
+      if (!attackInited && !owner.IsAttacking && !owner.IsPushing && !owner.IsReacting && !owner.IsQuickBlock && CheckShootingLine())
       {
-        this.attackInited = true;
-        this.aimingTimePassed = 0.0f;
-        this.owner.SetAiming(true);
+        attackInited = true;
+        aimingTimePassed = 0.0f;
+        owner.SetAiming(true);
       }
-      if (this.attackInited && !this.shotDone && ((double) this.aimingTimePassed >= (double) this.aimingTime || (double) vector3.magnitude < (double) this.cancelRange && (double) this.aimingTimePassed > (double) this.aimingTimeMinimum))
+      if (attackInited && !shotDone && (aimingTimePassed >= (double) aimingTime || (double) vector3.magnitude < cancelRange && aimingTimePassed > (double) aimingTimeMinimum))
       {
-        this.owner.TriggerAction(WeaponActionEnum.RifleFire);
-        this.shotDone = true;
-        this.cooldownTimePassed = 0.0f;
+        owner.TriggerAction(WeaponActionEnum.RifleFire);
+        shotDone = true;
+        cooldownTimePassed = 0.0f;
       }
       return TaskStatus.Running;
     }
 
     private bool CheckShootingLine()
     {
-      if ((UnityEngine.Object) this.owner.Enemy == (UnityEngine.Object) null)
+      if ((UnityEngine.Object) owner.Enemy == (UnityEngine.Object) null)
         return false;
       Vector3 position = this.gameObject.transform.position;
       Vector3 direction = this.gameObject.transform.forward;
@@ -99,7 +100,7 @@ namespace BehaviorDesigner.Runtime.Tasks
       if ((UnityEngine.Object) component != (UnityEngine.Object) null && (UnityEngine.Object) component.ShootStart != (UnityEngine.Object) null)
       {
         position = component.ShootStart.transform.position;
-        GameObject chest = this.owner.Enemy.GetComponent<Pivot>()?.Chest;
+        GameObject chest = owner.Enemy.GetComponent<Pivot>()?.Chest;
         if ((UnityEngine.Object) chest != (UnityEngine.Object) null)
           direction = (chest.transform.position - component.ShootStart.transform.position).normalized;
       }
@@ -111,35 +112,35 @@ namespace BehaviorDesigner.Runtime.Tasks
       {
         GameObject gameObject = result[index].collider.gameObject;
         if (!((UnityEngine.Object) gameObject == (UnityEngine.Object) this.gameObject))
-          return (UnityEngine.Object) gameObject == (UnityEngine.Object) this.owner.Enemy.gameObject;
+          return (UnityEngine.Object) gameObject == (UnityEngine.Object) owner.Enemy.gameObject;
       }
       return false;
     }
 
     public new void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.WriteSerialize<NodeData>(writer, "NodeData", this.nodeData);
-      DefaultDataWriteUtility.Write(writer, "Id", this.id);
-      DefaultDataWriteUtility.Write(writer, "FriendlyName", this.friendlyName);
-      DefaultDataWriteUtility.Write(writer, "Instant", this.instant);
-      DefaultDataWriteUtility.Write(writer, "Disabled", this.disabled);
-      DefaultDataWriteUtility.Write(writer, "AimingTime", this.aimingTime);
-      DefaultDataWriteUtility.Write(writer, "AimingTimeMinimum", this.aimingTimeMinimum);
-      DefaultDataWriteUtility.Write(writer, "AttackCooldown", this.attackCooldown);
-      DefaultDataWriteUtility.Write(writer, "CancelRange", this.cancelRange);
+      DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
+      DefaultDataWriteUtility.Write(writer, "Id", id);
+      DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
+      DefaultDataWriteUtility.Write(writer, "Instant", instant);
+      DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
+      DefaultDataWriteUtility.Write(writer, "AimingTime", aimingTime);
+      DefaultDataWriteUtility.Write(writer, "AimingTimeMinimum", aimingTimeMinimum);
+      DefaultDataWriteUtility.Write(writer, "AttackCooldown", attackCooldown);
+      DefaultDataWriteUtility.Write(writer, "CancelRange", cancelRange);
     }
 
-    public new void DataRead(IDataReader reader, System.Type type)
+    public new void DataRead(IDataReader reader, Type type)
     {
-      this.nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
-      this.id = DefaultDataReadUtility.Read(reader, "Id", this.id);
-      this.friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", this.friendlyName);
-      this.instant = DefaultDataReadUtility.Read(reader, "Instant", this.instant);
-      this.disabled = DefaultDataReadUtility.Read(reader, "Disabled", this.disabled);
-      this.aimingTime = DefaultDataReadUtility.Read(reader, "AimingTime", this.aimingTime);
-      this.aimingTimeMinimum = DefaultDataReadUtility.Read(reader, "AimingTimeMinimum", this.aimingTimeMinimum);
-      this.attackCooldown = DefaultDataReadUtility.Read(reader, "AttackCooldown", this.attackCooldown);
-      this.cancelRange = DefaultDataReadUtility.Read(reader, "CancelRange", this.cancelRange);
+      nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
+      id = DefaultDataReadUtility.Read(reader, "Id", id);
+      friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
+      instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
+      disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
+      aimingTime = DefaultDataReadUtility.Read(reader, "AimingTime", aimingTime);
+      aimingTimeMinimum = DefaultDataReadUtility.Read(reader, "AimingTimeMinimum", aimingTimeMinimum);
+      attackCooldown = DefaultDataReadUtility.Read(reader, "AttackCooldown", attackCooldown);
+      cancelRange = DefaultDataReadUtility.Read(reader, "CancelRange", cancelRange);
     }
   }
 }

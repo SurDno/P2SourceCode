@@ -14,7 +14,7 @@ namespace ParadoxNotion.Serialization.FullSerializer.Internal
 
     public override fsResult TrySerialize(object instance, out fsData serialized, Type storageType)
     {
-      IList list = (IList) (Array) instance;
+      IList list = (Array) instance;
       Type elementType = storageType.GetElementType();
       fsResult success = fsResult.Success;
       serialized = fsData.CreateList(list.Count);
@@ -23,7 +23,7 @@ namespace ParadoxNotion.Serialization.FullSerializer.Internal
       {
         object instance1 = list[index];
         fsData data;
-        fsResult result = this.Serializer.TrySerialize(elementType, instance1, out data);
+        fsResult result = Serializer.TrySerialize(elementType, instance1, out data);
         success.AddMessages(result);
         if (!result.Failed)
           asList.Add(data);
@@ -34,7 +34,7 @@ namespace ParadoxNotion.Serialization.FullSerializer.Internal
     public override fsResult TryDeserialize(fsData data, ref object instance, Type storageType)
     {
       fsResult fsResult;
-      if ((fsResult = fsResult.Success + this.CheckType(data, fsDataType.Array)).Failed)
+      if ((fsResult = fsResult.Success + CheckType(data, fsDataType.Array)).Failed)
         return fsResult;
       Type elementType = storageType.GetElementType();
       List<fsData> asList = data.AsList;
@@ -43,10 +43,10 @@ namespace ParadoxNotion.Serialization.FullSerializer.Internal
       for (int index = 0; index < asList.Count; ++index)
       {
         fsData data1 = asList[index];
-        object result1 = (object) null;
+        object result1 = null;
         if (index < count)
           result1 = arrayList[index];
-        fsResult result2 = this.Serializer.TryDeserialize(data1, elementType, ref result1);
+        fsResult result2 = Serializer.TryDeserialize(data1, elementType, ref result1);
         fsResult.AddMessages(result2);
         if (!result2.Failed)
         {
@@ -56,13 +56,13 @@ namespace ParadoxNotion.Serialization.FullSerializer.Internal
             arrayList.Add(result1);
         }
       }
-      instance = (object) arrayList.ToArray(elementType);
+      instance = arrayList.ToArray(elementType);
       return fsResult;
     }
 
     public override object CreateInstance(fsData data, Type storageType)
     {
-      return fsMetaType.Get(this.Serializer.Config, storageType).CreateInstance();
+      return fsMetaType.Get(Serializer.Config, storageType).CreateInstance();
     }
   }
 }

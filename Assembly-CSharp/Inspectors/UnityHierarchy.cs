@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.SceneManagement;
 
 namespace Inspectors
 {
@@ -8,16 +6,16 @@ namespace Inspectors
   {
     private static UnityHierarchy instance = new UnityHierarchy();
 
-    public static UnityHierarchy Instance => UnityHierarchy.instance;
+    public static UnityHierarchy Instance => instance;
 
     [Inspected]
-    public IEnumerable<UnityHierarchy.SceneInfo> Scenes
+    public IEnumerable<SceneInfo> Scenes
     {
       get
       {
         int count = SceneManager.sceneCount;
         for (int index = 0; index < count; ++index)
-          yield return new UnityHierarchy.SceneInfo(SceneManager.GetSceneAt(index));
+          yield return new SceneInfo(SceneManager.GetSceneAt(index));
       }
     }
 
@@ -28,18 +26,18 @@ namespace Inspectors
       public SceneInfo(Scene scene) => this.scene = scene;
 
       [Inspected(Header = true)]
-      private string Name => this.scene.IsValid() ? this.scene.name : "null";
+      private string Name => scene.IsValid() ? scene.name : "null";
 
       [Inspected]
-      private IEnumerable<UnityHierarchy.GameObjectInfo> Childs
+      private IEnumerable<GameObjectInfo> Childs
       {
         get
         {
-          if (this.scene.IsValid())
+          if (scene.IsValid())
           {
-            GameObject[] roots = this.scene.GetRootGameObjects();
+            GameObject[] roots = scene.GetRootGameObjects();
             for (int index = 0; index < roots.Length; ++index)
-              yield return new UnityHierarchy.GameObjectInfo(roots[index]);
+              yield return new GameObjectInfo(roots[index]);
             roots = (GameObject[]) null;
           }
         }
@@ -57,7 +55,7 @@ namespace Inspectors
       {
         get
         {
-          return (Object) this.transform != (Object) null ? this.transform.localPosition : Vector3.zero;
+          return (Object) transform != (Object) null ? transform.localPosition : Vector3.zero;
         }
       }
 
@@ -66,14 +64,14 @@ namespace Inspectors
       {
         get
         {
-          return (Object) this.transform != (Object) null ? this.transform.localRotation : Quaternion.identity;
+          return (Object) transform != (Object) null ? transform.localRotation : Quaternion.identity;
         }
       }
 
       [Inspected]
       private Vector3 Scale
       {
-        get => (Object) this.transform != (Object) null ? this.transform.localScale : Vector3.one;
+        get => (Object) transform != (Object) null ? transform.localScale : Vector3.one;
       }
     }
 
@@ -84,29 +82,29 @@ namespace Inspectors
       public GameObjectInfo(GameObject gameObject) => this.gameObject = gameObject;
 
       [Inspected(Header = true)]
-      private string Name => (Object) this.gameObject != (Object) null ? this.gameObject.name : "";
+      private string Name => (Object) gameObject != (Object) null ? gameObject.name : "";
 
       [Inspected(Mutable = true)]
       public bool Enable
       {
-        get => (Object) this.gameObject != (Object) null && this.gameObject.activeSelf;
+        get => (Object) gameObject != (Object) null && gameObject.activeSelf;
         set
         {
-          if (!((Object) this.gameObject != (Object) null))
+          if (!((Object) gameObject != (Object) null))
             return;
-          this.gameObject.SetActive(value);
+          gameObject.SetActive(value);
         }
       }
 
       [Inspected]
-      public string Tag => (Object) this.gameObject != (Object) null ? this.gameObject.tag : "";
+      public string Tag => (Object) gameObject != (Object) null ? gameObject.tag : "";
 
       [Inspected]
       public string Layer
       {
         get
         {
-          return (Object) this.gameObject != (Object) null ? LayerMask.LayerToName(this.gameObject.layer) : "";
+          return (Object) gameObject != (Object) null ? LayerMask.LayerToName(gameObject.layer) : "";
         }
       }
 
@@ -115,16 +113,16 @@ namespace Inspectors
       {
         get
         {
-          if ((Object) this.gameObject != (Object) null)
+          if ((Object) gameObject != (Object) null)
           {
-            Component[] components = this.gameObject.GetComponents<Component>();
+            Component[] components = gameObject.GetComponents<Component>();
             Component[] componentArray = components;
             for (int index = 0; index < componentArray.Length; ++index)
             {
               Component component = componentArray[index];
               Transform transform = component as Transform;
               if ((Object) transform != (Object) null)
-                yield return (object) new UnityHierarchy.TransformInfo(transform);
+                yield return new TransformInfo(transform);
               else
                 yield return (object) component;
               transform = (Transform) null;
@@ -137,15 +135,15 @@ namespace Inspectors
       }
 
       [Inspected]
-      private IEnumerable<UnityHierarchy.GameObjectInfo> Childs
+      private IEnumerable<GameObjectInfo> Childs
       {
         get
         {
-          if ((Object) this.gameObject != (Object) null)
+          if ((Object) gameObject != (Object) null)
           {
-            int count = this.gameObject.transform.childCount;
+            int count = gameObject.transform.childCount;
             for (int index = 0; index < count; ++index)
-              yield return new UnityHierarchy.GameObjectInfo(this.gameObject.transform.GetChild(index).gameObject);
+              yield return new GameObjectInfo(gameObject.transform.GetChild(index).gameObject);
           }
         }
       }

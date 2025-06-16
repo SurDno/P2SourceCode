@@ -1,8 +1,7 @@
-﻿using Engine.Common;
-using Engine.Source.Commons;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using UnityEngine;
+using Engine.Common;
+using Engine.Source.Commons;
 
 public class FlockController : MonoBehaviour, IUpdatable
 {
@@ -73,32 +72,32 @@ public class FlockController : MonoBehaviour, IUpdatable
 
   private void Awake()
   {
-    InstanceByRequest<UpdateService>.Instance.FlockSpawnUpdater.AddUpdatable((IUpdatable) this);
+    InstanceByRequest<UpdateService>.Instance.FlockSpawnUpdater.AddUpdatable(this);
   }
 
   private void Start()
   {
-    if (!this._slowSpawn)
-      this.AddChild(this._childAmount);
-    if ((double) this._randomPositionTimer > 0.0)
-      this.InvokeRepeating("SetFlockRandomPosition", this._randomPositionTimer, this._randomPositionTimer);
-    this.SetFlockRandomPosition();
-    this.UpdatePlayer();
+    if (!_slowSpawn)
+      AddChild(_childAmount);
+    if (_randomPositionTimer > 0.0)
+      this.InvokeRepeating("SetFlockRandomPosition", _randomPositionTimer, _randomPositionTimer);
+    SetFlockRandomPosition();
+    UpdatePlayer();
   }
 
   private void OnDestroy()
   {
-    InstanceByRequest<UpdateService>.Instance.FlockSpawnUpdater.RemoveUpdatable((IUpdatable) this);
+    InstanceByRequest<UpdateService>.Instance.FlockSpawnUpdater.RemoveUpdatable(this);
   }
 
   private void AddChild(int amount)
   {
     for (int index = 0; index < amount; ++index)
     {
-      FlockChild flockChild = UnityEngine.Object.Instantiate<FlockChild>(this._childPrefab);
+      FlockChild flockChild = UnityEngine.Object.Instantiate<FlockChild>(_childPrefab);
       flockChild.transform.SetParent(this.transform, false);
       flockChild.Initialise(this);
-      this.childs.Add(flockChild);
+      childs.Add(flockChild);
     }
   }
 
@@ -106,67 +105,67 @@ public class FlockController : MonoBehaviour, IUpdatable
   {
     for (int index = 0; index < amount; ++index)
     {
-      FlockChild child = this.childs[this.childs.Count - 1];
-      this.childs.RemoveAt(this.childs.Count - 1);
+      FlockChild child = childs[childs.Count - 1];
+      childs.RemoveAt(childs.Count - 1);
       UnityEngine.Object.Destroy((UnityEngine.Object) child.gameObject);
     }
   }
 
   private void UpdateChildAmount()
   {
-    if (this._childAmount >= 0 && this._childAmount < this.childs.Count)
+    if (_childAmount >= 0 && _childAmount < childs.Count)
     {
-      this.RemoveChild(1);
+      RemoveChild(1);
     }
     else
     {
-      if (this._childAmount <= this.childs.Count)
+      if (_childAmount <= childs.Count)
         return;
-      this.AddChild(1);
+      AddChild(1);
     }
   }
 
   public void SetFlockRandomPosition()
   {
-    this.targetPosition.x = UnityEngine.Random.Range(-this._positionSphereWidth, this._positionSphereWidth);
-    this.targetPosition.y = UnityEngine.Random.Range(-this._positionSphereHeight, this._positionSphereHeight);
-    this.targetPosition.z = UnityEngine.Random.Range(-this._positionSphereDepth, this._positionSphereDepth);
-    this.targetPosition += this.playerOffset;
-    if (!this._forceChildWaypoints)
+    targetPosition.x = UnityEngine.Random.Range(-_positionSphereWidth, _positionSphereWidth);
+    targetPosition.y = UnityEngine.Random.Range(-_positionSphereHeight, _positionSphereHeight);
+    targetPosition.z = UnityEngine.Random.Range(-_positionSphereDepth, _positionSphereDepth);
+    targetPosition += playerOffset;
+    if (!_forceChildWaypoints)
       return;
-    for (int index = 0; index < this.childs.Count; ++index)
-      this.childs[index].Wander(UnityEngine.Random.value * this._forcedRandomDelay);
+    for (int index = 0; index < childs.Count; ++index)
+      childs[index].Wander(UnityEngine.Random.value * _forcedRandomDelay);
   }
 
   public void DestroyBirds()
   {
-    for (int index = 0; index < this.childs.Count; ++index)
-      UnityEngine.Object.Destroy((UnityEngine.Object) this.childs[index].gameObject);
-    this._childAmount = 0;
-    this.childs.Clear();
+    for (int index = 0; index < childs.Count; ++index)
+      UnityEngine.Object.Destroy((UnityEngine.Object) childs[index].gameObject);
+    _childAmount = 0;
+    childs.Clear();
   }
 
   public void ComputeUpdate()
   {
     if (this.transform.rotation != Quaternion.identity)
       this.transform.rotation = Quaternion.identity;
-    this.UpdateChildAmount();
-    this.UpdatePlayer();
+    UpdateChildAmount();
+    UpdatePlayer();
   }
 
   private void UpdatePlayer()
   {
-    if (!this._moveToPlayer)
+    if (!_moveToPlayer)
       return;
     Vector3 playerPosition = EngineApplication.PlayerPosition;
-    this.playerOffset = new Vector3(playerPosition.x - this.transform.position.x, this.playerYOffset, playerPosition.z - this.transform.position.z);
+    playerOffset = new Vector3(playerPosition.x - this.transform.position.x, playerYOffset, playerPosition.z - this.transform.position.z);
   }
 
   private void OnDrawGizmosSelected()
   {
     Gizmos.color = Color.blue;
-    Gizmos.DrawWireCube(this.transform.position + this.targetPosition, new Vector3(this._spawnSphereWidth * 2f, this._spawnSphereHeight * 2f, this._spawnSphereDepth * 2f));
+    Gizmos.DrawWireCube(this.transform.position + targetPosition, new Vector3(_spawnSphereWidth * 2f, _spawnSphereHeight * 2f, _spawnSphereDepth * 2f));
     Gizmos.color = Color.cyan;
-    Gizmos.DrawWireCube(this.transform.position + this.playerOffset, new Vector3(this._positionSphereWidth * 2f, this._positionSphereHeight * 2f, this._positionSphereDepth * 2f));
+    Gizmos.DrawWireCube(this.transform.position + playerOffset, new Vector3(_positionSphereWidth * 2f, _positionSphereHeight * 2f, _positionSphereDepth * 2f));
   }
 }

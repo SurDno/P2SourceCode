@@ -1,8 +1,4 @@
-﻿using UnityEngine;
-using UnityEngine.Serialization;
-using UnityEngine.UI;
-
-namespace Engine.Impl.UI.Controls
+﻿namespace Engine.Impl.UI.Controls
 {
   public class Progress : UIControl
   {
@@ -14,12 +10,12 @@ namespace Engine.Impl.UI.Controls
 
     public float Value
     {
-      get => (Object) this.Material == (Object) null ? 0.0f : this.Material.GetFloat("_Progress");
+      get => (Object) Material == (Object) null ? 0.0f : Material.GetFloat("_Progress");
       set
       {
-        if ((Object) this.Material == (Object) null)
+        if ((Object) Material == (Object) null)
           return;
-        this.Material.SetFloat("_Progress", value);
+        Material.SetFloat("_Progress", value);
       }
     }
 
@@ -32,13 +28,13 @@ namespace Engine.Impl.UI.Controls
     protected override void Awake()
     {
       base.Awake();
-      if ((Object) this.image == (Object) null)
+      if ((Object) image == (Object) null)
         return;
-      RawImage component = this.image.GetComponent<RawImage>();
+      RawImage component = image.GetComponent<RawImage>();
       if ((Object) component == (Object) null)
         return;
-      this.Material = Object.Instantiate<Material>(component.material);
-      component.material = this.Material;
+      Material = Object.Instantiate<Material>(component.material);
+      component.material = Material;
     }
   }
 }

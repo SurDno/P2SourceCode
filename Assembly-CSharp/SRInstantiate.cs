@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-public static class SRInstantiate
+﻿public static class SRInstantiate
 {
   public static T Instantiate<T>(T prefab) where T : Component => Object.Instantiate<T>(prefab);
 

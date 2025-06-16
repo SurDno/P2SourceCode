@@ -1,4 +1,5 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons.Cloneable;
 using Engine.Common.Commons.Converters;
@@ -6,7 +7,6 @@ using Engine.Common.Components.Parameters;
 using Engine.Source.Commons.Abilities;
 using Engine.Source.Commons.Effects;
 using Engine.Source.Effects;
-using System;
 
 namespace Engine.Source.Proxies
 {
@@ -21,63 +21,63 @@ namespace Engine.Source.Proxies
     public object Clone()
     {
       ApplyDamageToHealthEffect_Generated instance = Activator.CreateInstance<ApplyDamageToHealthEffect_Generated>();
-      this.CopyTo((object) instance);
-      return (object) instance;
+      CopyTo(instance);
+      return instance;
     }
 
     public void CopyTo(object target2)
     {
       ApplyDamageToHealthEffect_Generated healthEffectGenerated = (ApplyDamageToHealthEffect_Generated) target2;
-      healthEffectGenerated.queue = this.queue;
-      healthEffectGenerated.enable = this.enable;
-      healthEffectGenerated.healthParameterName = this.healthParameterName;
-      healthEffectGenerated.isCombatIgnoredParameterName = this.isCombatIgnoredParameterName;
-      healthEffectGenerated.immortalParameterName = this.immortalParameterName;
-      healthEffectGenerated.ballisticDamageParameterName = this.ballisticDamageParameterName;
-      healthEffectGenerated.fireDamageParameterName = this.fireDamageParameterName;
-      healthEffectGenerated.meleeDamageParameterName = this.meleeDamageParameterName;
-      healthEffectGenerated.fallDamageParameterName = this.fallDamageParameterName;
-      healthEffectGenerated.fistsDamageParameterName = this.fistsDamageParameterName;
-      healthEffectGenerated.durationType = this.durationType;
-      healthEffectGenerated.realTime = this.realTime;
-      healthEffectGenerated.duration = this.duration;
-      healthEffectGenerated.interval = this.interval;
+      healthEffectGenerated.queue = queue;
+      healthEffectGenerated.enable = enable;
+      healthEffectGenerated.healthParameterName = healthParameterName;
+      healthEffectGenerated.isCombatIgnoredParameterName = isCombatIgnoredParameterName;
+      healthEffectGenerated.immortalParameterName = immortalParameterName;
+      healthEffectGenerated.ballisticDamageParameterName = ballisticDamageParameterName;
+      healthEffectGenerated.fireDamageParameterName = fireDamageParameterName;
+      healthEffectGenerated.meleeDamageParameterName = meleeDamageParameterName;
+      healthEffectGenerated.fallDamageParameterName = fallDamageParameterName;
+      healthEffectGenerated.fistsDamageParameterName = fistsDamageParameterName;
+      healthEffectGenerated.durationType = durationType;
+      healthEffectGenerated.realTime = realTime;
+      healthEffectGenerated.duration = duration;
+      healthEffectGenerated.interval = interval;
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.WriteEnum<ParameterEffectQueueEnum>(writer, "Queue", this.queue);
-      DefaultDataWriteUtility.Write(writer, "Enable", this.enable);
-      DefaultDataWriteUtility.WriteEnum<ParameterNameEnum>(writer, "HealthParameterName", this.healthParameterName);
-      DefaultDataWriteUtility.WriteEnum<ParameterNameEnum>(writer, "IsCombatIgnoredParameterName", this.isCombatIgnoredParameterName);
-      DefaultDataWriteUtility.WriteEnum<ParameterNameEnum>(writer, "ImmortalParameterName", this.immortalParameterName);
-      DefaultDataWriteUtility.WriteEnum<ParameterNameEnum>(writer, "BallisticDamageParameterName", this.ballisticDamageParameterName);
-      DefaultDataWriteUtility.WriteEnum<ParameterNameEnum>(writer, "FireDamageParameterName", this.fireDamageParameterName);
-      DefaultDataWriteUtility.WriteEnum<ParameterNameEnum>(writer, "MeleeDamageParameterName", this.meleeDamageParameterName);
-      DefaultDataWriteUtility.WriteEnum<ParameterNameEnum>(writer, "FallDamageParameterName", this.fallDamageParameterName);
-      DefaultDataWriteUtility.WriteEnum<ParameterNameEnum>(writer, "FistsDamageParameterName", this.fistsDamageParameterName);
-      DefaultDataWriteUtility.WriteEnum<DurationTypeEnum>(writer, "DurationType", this.durationType);
-      DefaultDataWriteUtility.Write(writer, "RealTime", this.realTime);
-      DefaultDataWriteUtility.Write(writer, "Duration", this.duration);
-      DefaultDataWriteUtility.Write(writer, "Interval", this.interval);
+      DefaultDataWriteUtility.WriteEnum(writer, "Queue", queue);
+      DefaultDataWriteUtility.Write(writer, "Enable", enable);
+      DefaultDataWriteUtility.WriteEnum(writer, "HealthParameterName", healthParameterName);
+      DefaultDataWriteUtility.WriteEnum(writer, "IsCombatIgnoredParameterName", isCombatIgnoredParameterName);
+      DefaultDataWriteUtility.WriteEnum(writer, "ImmortalParameterName", immortalParameterName);
+      DefaultDataWriteUtility.WriteEnum(writer, "BallisticDamageParameterName", ballisticDamageParameterName);
+      DefaultDataWriteUtility.WriteEnum(writer, "FireDamageParameterName", fireDamageParameterName);
+      DefaultDataWriteUtility.WriteEnum(writer, "MeleeDamageParameterName", meleeDamageParameterName);
+      DefaultDataWriteUtility.WriteEnum(writer, "FallDamageParameterName", fallDamageParameterName);
+      DefaultDataWriteUtility.WriteEnum(writer, "FistsDamageParameterName", fistsDamageParameterName);
+      DefaultDataWriteUtility.WriteEnum(writer, "DurationType", durationType);
+      DefaultDataWriteUtility.Write(writer, "RealTime", realTime);
+      DefaultDataWriteUtility.Write(writer, "Duration", duration);
+      DefaultDataWriteUtility.Write(writer, "Interval", interval);
     }
 
     public void DataRead(IDataReader reader, Type type)
     {
-      this.queue = DefaultDataReadUtility.ReadEnum<ParameterEffectQueueEnum>(reader, "Queue");
-      this.enable = DefaultDataReadUtility.Read(reader, "Enable", this.enable);
-      this.healthParameterName = DefaultDataReadUtility.ReadEnum<ParameterNameEnum>(reader, "HealthParameterName");
-      this.isCombatIgnoredParameterName = DefaultDataReadUtility.ReadEnum<ParameterNameEnum>(reader, "IsCombatIgnoredParameterName");
-      this.immortalParameterName = DefaultDataReadUtility.ReadEnum<ParameterNameEnum>(reader, "ImmortalParameterName");
-      this.ballisticDamageParameterName = DefaultDataReadUtility.ReadEnum<ParameterNameEnum>(reader, "BallisticDamageParameterName");
-      this.fireDamageParameterName = DefaultDataReadUtility.ReadEnum<ParameterNameEnum>(reader, "FireDamageParameterName");
-      this.meleeDamageParameterName = DefaultDataReadUtility.ReadEnum<ParameterNameEnum>(reader, "MeleeDamageParameterName");
-      this.fallDamageParameterName = DefaultDataReadUtility.ReadEnum<ParameterNameEnum>(reader, "FallDamageParameterName");
-      this.fistsDamageParameterName = DefaultDataReadUtility.ReadEnum<ParameterNameEnum>(reader, "FistsDamageParameterName");
-      this.durationType = DefaultDataReadUtility.ReadEnum<DurationTypeEnum>(reader, "DurationType");
-      this.realTime = DefaultDataReadUtility.Read(reader, "RealTime", this.realTime);
-      this.duration = DefaultDataReadUtility.Read(reader, "Duration", this.duration);
-      this.interval = DefaultDataReadUtility.Read(reader, "Interval", this.interval);
+      queue = DefaultDataReadUtility.ReadEnum<ParameterEffectQueueEnum>(reader, "Queue");
+      enable = DefaultDataReadUtility.Read(reader, "Enable", enable);
+      healthParameterName = DefaultDataReadUtility.ReadEnum<ParameterNameEnum>(reader, "HealthParameterName");
+      isCombatIgnoredParameterName = DefaultDataReadUtility.ReadEnum<ParameterNameEnum>(reader, "IsCombatIgnoredParameterName");
+      immortalParameterName = DefaultDataReadUtility.ReadEnum<ParameterNameEnum>(reader, "ImmortalParameterName");
+      ballisticDamageParameterName = DefaultDataReadUtility.ReadEnum<ParameterNameEnum>(reader, "BallisticDamageParameterName");
+      fireDamageParameterName = DefaultDataReadUtility.ReadEnum<ParameterNameEnum>(reader, "FireDamageParameterName");
+      meleeDamageParameterName = DefaultDataReadUtility.ReadEnum<ParameterNameEnum>(reader, "MeleeDamageParameterName");
+      fallDamageParameterName = DefaultDataReadUtility.ReadEnum<ParameterNameEnum>(reader, "FallDamageParameterName");
+      fistsDamageParameterName = DefaultDataReadUtility.ReadEnum<ParameterNameEnum>(reader, "FistsDamageParameterName");
+      durationType = DefaultDataReadUtility.ReadEnum<DurationTypeEnum>(reader, "DurationType");
+      realTime = DefaultDataReadUtility.Read(reader, "RealTime", realTime);
+      duration = DefaultDataReadUtility.Read(reader, "Duration", duration);
+      interval = DefaultDataReadUtility.Read(reader, "Interval", interval);
     }
   }
 }

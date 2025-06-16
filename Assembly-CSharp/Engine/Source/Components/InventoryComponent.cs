@@ -1,4 +1,6 @@
-﻿using Engine.Common;
+﻿using System.Collections.Generic;
+using Cofe.Serializations.Data;
+using Engine.Common;
 using Engine.Common.Components;
 using Engine.Common.Components.Parameters;
 using Engine.Common.Components.Storable;
@@ -9,8 +11,6 @@ using Engine.Source.Commons;
 using Engine.Source.Connections;
 using Engine.Source.Inventory;
 using Inspectors;
-using System.Collections.Generic;
-using UnityEngine;
 
 namespace Engine.Source.Components
 {
@@ -23,9 +23,9 @@ namespace Engine.Source.Components
     IComponent,
     IChangeParameterListener
   {
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy()]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected Typed<InventoryContainerResource> containerResource;
@@ -36,28 +36,28 @@ namespace Engine.Source.Components
     {
       get
       {
-        if (this.parametersComponent == null)
-          this.parametersComponent = this.Owner.GetComponent<ParametersComponent>();
-        return this.parametersComponent;
+        if (parametersComponent == null)
+          parametersComponent = Owner.GetComponent<ParametersComponent>();
+        return parametersComponent;
       }
     }
 
     [Inspected]
     public IParameter<bool> Enabled
     {
-      get => this.ParametersComponent.GetOrCreateByName<bool>(ParameterNameEnum.Enabled);
+      get => ParametersComponent.GetOrCreateByName<bool>(ParameterNameEnum.Enabled);
     }
 
     [Inspected]
     public IParameter<bool> Available
     {
-      get => this.ParametersComponent.GetOrCreateByName<bool>(ParameterNameEnum.Available);
+      get => ParametersComponent.GetOrCreateByName<bool>(ParameterNameEnum.Available);
     }
 
     [Inspected]
     public IParameter<float> Disease
     {
-      get => this.ParametersComponent.GetOrCreateByName<float>(ParameterNameEnum.Disease);
+      get => ParametersComponent.GetOrCreateByName<float>(ParameterNameEnum.Disease);
     }
 
     [Inspected]
@@ -65,96 +65,96 @@ namespace Engine.Source.Components
     {
       get
       {
-        return this.ParametersComponent.GetOrCreateByName<ContainerOpenStateEnum>(ParameterNameEnum.OpenState);
+        return ParametersComponent.GetOrCreateByName<ContainerOpenStateEnum>(ParameterNameEnum.OpenState);
       }
     }
 
     public IStorageComponent Storage { get; private set; }
 
-    public Typed<IInventoryGridBase> TypedGrid => this.container.grid;
+    public Typed<IInventoryGridBase> TypedGrid => container.grid;
 
-    public Sprite ImageBackground => this.container.imageBackground.Value;
+    public Sprite ImageBackground => container.imageBackground.Value;
 
-    public Sprite ImageForeground => this.container.imageForeground.Value;
+    public Sprite ImageForeground => container.imageForeground.Value;
 
-    public Sprite ImageInstrument => this.container.imageInstrument.Value;
+    public Sprite ImageInstrument => container.imageInstrument.Value;
 
-    public Sprite ImageLock => this.container.imageLock.Value;
+    public Sprite ImageLock => container.imageLock.Value;
 
-    public Sprite ImageNotAvailable => this.container.imageNotAvailable.Value;
+    public Sprite ImageNotAvailable => container.imageNotAvailable.Value;
 
-    public IInventoryGridBase Grid => this.container.grid.Value;
+    public IInventoryGridBase Grid => container.grid.Value;
 
-    public ContainerCellKind Kind => this.container.kind;
+    public ContainerCellKind Kind => container.kind;
 
-    public Position Position => this.container.position;
+    public Position Position => container.position;
 
-    public Position Pivot => this.container.pivot;
+    public Position Pivot => container.pivot;
 
-    public Position Anchor => this.container.anchor;
+    public Position Anchor => container.anchor;
 
-    public SlotKind SlotKind => this.container.slotKind;
+    public SlotKind SlotKind => container.slotKind;
 
     public IEnumerable<StorableGroup> Limitations
     {
-      get => (IEnumerable<StorableGroup>) this.container.limitations;
+      get => container.limitations;
     }
 
-    public IEnumerable<StorableGroup> Except => (IEnumerable<StorableGroup>) this.container.except;
+    public IEnumerable<StorableGroup> Except => container.except;
 
-    public InventoryGroup Group => this.container.group;
+    public InventoryGroup Group => container.group;
 
-    public StorableGroup Instrument => this.container.instrument;
+    public StorableGroup Instrument => container.instrument;
 
-    public List<InventoryContainerOpenResource> OpenResources => this.container.openResources;
+    public List<InventoryContainerOpenResource> OpenResources => container.openResources;
 
-    public float Difficulty => this.container.difficulty;
+    public float Difficulty => container.difficulty;
 
-    public float InstrumentDamage => this.container.instrumentDamage;
+    public float InstrumentDamage => container.instrumentDamage;
 
-    public float OpenTime => this.container.openTime;
+    public float OpenTime => container.openTime;
 
-    public AudioClip OpenCompleteAudio => this.container.openCompleteAudio.Value;
+    public AudioClip OpenCompleteAudio => container.openCompleteAudio.Value;
 
-    public AudioClip OpenProgressAudio => this.container.openProgressAudio.Value;
+    public AudioClip OpenProgressAudio => container.openProgressAudio.Value;
 
-    public AudioClip OpenStartAudio => this.container.openStartAudio.Value;
+    public AudioClip OpenStartAudio => container.openStartAudio.Value;
 
-    public AudioClip OpenCancelAudio => this.container.openCancelAudio.Value;
+    public AudioClip OpenCancelAudio => container.openCancelAudio.Value;
 
     public override void OnAdded()
     {
       base.OnAdded();
-      this.container = this.containerResource.Value;
-      this.Storage = this.Owner.Parent.GetComponent<IStorageComponent>();
-      ((StorageComponent) this.Storage).AddContainer((IInventoryComponent) this);
-      this.Enabled?.AddListener((IChangeParameterListener) this);
-      this.Available?.AddListener((IChangeParameterListener) this);
-      this.OpenState?.AddListener((IChangeParameterListener) this);
-      this.Disease?.AddListener((IChangeParameterListener) this);
+      container = containerResource.Value;
+      Storage = Owner.Parent.GetComponent<IStorageComponent>();
+      ((StorageComponent) Storage).AddContainer(this);
+      Enabled?.AddListener(this);
+      Available?.AddListener(this);
+      OpenState?.AddListener(this);
+      Disease?.AddListener(this);
     }
 
     public override void OnRemoved()
     {
-      this.Disease?.RemoveListener((IChangeParameterListener) this);
-      this.OpenState?.RemoveListener((IChangeParameterListener) this);
-      this.Available?.RemoveListener((IChangeParameterListener) this);
-      this.Enabled?.RemoveListener((IChangeParameterListener) this);
+      Disease?.RemoveListener(this);
+      OpenState?.RemoveListener(this);
+      Available?.RemoveListener(this);
+      Enabled?.RemoveListener(this);
       base.OnRemoved();
-      ((StorageComponent) this.Storage).RemoveContainer((IInventoryComponent) this);
-      this.Storage = (IStorageComponent) null;
+      ((StorageComponent) Storage).RemoveContainer(this);
+      Storage = null;
     }
 
-    [Cofe.Serializations.Data.OnLoaded]
-    private void OnLoaded() => this.OnInvalidate();
+    [OnLoaded]
+    private void OnLoaded() => OnInvalidate();
 
     private void OnInvalidate()
     {
-      if (this.Storage == null)
+      if (Storage == null)
         return;
-      ((StorageComponent) this.Storage).FireChangeInventoryEvent((IInventoryComponent) this);
+      ((StorageComponent) Storage).FireChangeInventoryEvent(this);
     }
 
-    public void OnParameterChanged(IParameter parameter) => this.OnInvalidate();
+    public void OnParameterChanged(IParameter parameter) => OnInvalidate();
   }
 }

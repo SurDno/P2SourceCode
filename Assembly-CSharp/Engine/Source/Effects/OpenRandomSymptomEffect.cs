@@ -1,4 +1,5 @@
-﻿using Engine.Common;
+﻿using System.Collections.Generic;
+using Engine.Common;
 using Engine.Common.Components;
 using Engine.Common.Components.Parameters;
 using Engine.Common.Components.Storable;
@@ -11,8 +12,6 @@ using Engine.Source.Components.Utilities;
 using Engine.Source.Connections;
 using Engine.Source.Inventory;
 using Inspectors;
-using System;
-using System.Collections.Generic;
 
 namespace Engine.Source.Effects
 {
@@ -20,46 +19,46 @@ namespace Engine.Source.Effects
   [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
   public class OpenRandomSymptomEffect : IEffect
   {
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected ParameterEffectQueueEnum queue = ParameterEffectQueueEnum.None;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected int count = 0;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy()]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected List<Typed<IEntity>> targetSymptoms = new List<Typed<IEntity>>();
     private List<IStorableComponent> symptomsToOpen;
 
-    public string Name => this.GetType().Name;
+    public string Name => GetType().Name;
 
     [Inspected]
     public AbilityItem AbilityItem { get; set; }
 
     public IEntity Target { get; set; }
 
-    public ParameterEffectQueueEnum Queue => this.queue;
+    public ParameterEffectQueueEnum Queue => queue;
 
     public bool Prepare(float currentRealTime, float currentGameTime)
     {
-      this.symptomsToOpen = new List<IStorableComponent>();
-      List<IStorableComponent> all = new List<IStorableComponent>(this.Target?.GetComponent<StorageComponent>().Items)?.FindAll((Predicate<IStorableComponent>) (x => x.Container.GetGroup() == InventoryGroup.Symptom));
+      symptomsToOpen = new List<IStorableComponent>();
+      List<IStorableComponent> all = new List<IStorableComponent>(Target?.GetComponent<StorageComponent>().Items)?.FindAll(x => x.Container.GetGroup() == InventoryGroup.Symptom);
       List<IStorableComponent> storableComponentList = new List<IStorableComponent>();
       foreach (IStorableComponent component in all)
       {
-        bool flag = this.targetSymptoms == null || this.targetSymptoms.Count == 0;
+        bool flag = targetSymptoms == null || targetSymptoms.Count == 0;
         if (!flag)
         {
-          foreach (Typed<IEntity> targetSymptom in this.targetSymptoms)
+          foreach (Typed<IEntity> targetSymptom in targetSymptoms)
           {
             if (targetSymptom.Value != null && StorageUtility.GetItemId(targetSymptom.Value) == StorageUtility.GetItemId(component.Owner))
             {
@@ -70,15 +69,15 @@ namespace Engine.Source.Effects
         }
         if (flag)
         {
-          IParameter<bool> byName = (component != null ? component.GetComponent<ParametersComponent>() : (ParametersComponent) null)?.GetByName<bool>(ParameterNameEnum.IsOpen);
+          IParameter<bool> byName = (component != null ? component.GetComponent<ParametersComponent>() : null)?.GetByName<bool>(ParameterNameEnum.IsOpen);
           if (byName != null && !byName.Value)
             storableComponentList.Add(component);
         }
       }
-      for (int index = 0; index < this.count && storableComponentList.Count != 0; ++index)
+      for (int index = 0; index < count && storableComponentList.Count != 0; ++index)
       {
         IStorableComponent storableComponent = storableComponentList[UnityEngine.Random.Range(0, storableComponentList.Count)];
-        this.symptomsToOpen.Add(storableComponent);
+        symptomsToOpen.Add(storableComponent);
         storableComponentList.Remove(storableComponent);
       }
       return true;
@@ -86,11 +85,11 @@ namespace Engine.Source.Effects
 
     public bool Compute(float currentRealTime, float currentGameTime)
     {
-      if (this.symptomsToOpen != null)
+      if (symptomsToOpen != null)
       {
-        foreach (IStorableComponent component in this.symptomsToOpen)
+        foreach (IStorableComponent component in symptomsToOpen)
         {
-          IParameter<bool> byName = (component != null ? component.GetComponent<ParametersComponent>() : (ParametersComponent) null)?.GetByName<bool>(ParameterNameEnum.IsOpen);
+          IParameter<bool> byName = (component != null ? component.GetComponent<ParametersComponent>() : null)?.GetByName<bool>(ParameterNameEnum.IsOpen);
           if (byName != null)
             byName.Value = true;
         }

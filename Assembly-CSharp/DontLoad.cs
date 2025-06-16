@@ -2,7 +2,6 @@
 using Engine.Source.Commons;
 using Engine.Source.Components;
 using Inspectors;
-using UnityEngine;
 
 public class DontLoad : MonoBehaviour, IEntityAttachable
 {
@@ -11,11 +10,11 @@ public class DontLoad : MonoBehaviour, IEntityAttachable
 
   public void Attach(IEntity owner)
   {
-    this.model = owner.GetComponent<StaticModelComponent>();
-    if (this.model == null)
+    model = owner.GetComponent<StaticModelComponent>();
+    if (model == null)
       return;
-    this.model.NeedLoad = false;
+    model.NeedLoad = false;
   }
 
-  public void Detach() => this.model = (StaticModelComponent) null;
+  public void Detach() => model = null;
 }

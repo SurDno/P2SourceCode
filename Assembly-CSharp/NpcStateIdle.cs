@@ -6,9 +6,6 @@ using Engine.Source.Components;
 using Engine.Source.Components.Utilities;
 using Engine.Source.Settings.External;
 using Inspectors;
-using UnityEngine;
-using UnityEngine.AI;
-using UnityEngine.Profiling;
 
 public class NpcStateIdle : INpcState
 {
@@ -39,27 +36,27 @@ public class NpcStateIdle : INpcState
 
   private bool TryInit()
   {
-    if (this.inited)
+    if (inited)
       return true;
-    this.behavior = this.pivot.GetBehavior();
-    this.rigidbody = this.pivot.GetRigidbody();
-    this.weaponService = this.pivot.GetNpcWeaponService();
-    this.agent = this.pivot.GetAgent();
-    if ((Object) this.agent == (Object) null)
+    behavior = pivot.GetBehavior();
+    rigidbody = pivot.GetRigidbody();
+    weaponService = pivot.GetNpcWeaponService();
+    agent = pivot.GetAgent();
+    if ((Object) agent == (Object) null)
     {
-      Debug.LogError((object) ("No navmesh agent " + this.GameObject.name), (Object) this.GameObject);
-      this.failed = true;
+      Debug.LogError((object) ("No navmesh agent " + GameObject.name), (Object) GameObject);
+      failed = true;
       return false;
     }
-    this.animator = this.pivot.GetAnimator();
-    if ((Object) this.animator == (Object) null)
+    animator = pivot.GetAnimator();
+    if ((Object) animator == (Object) null)
     {
-      this.failed = true;
+      failed = true;
       return false;
     }
-    this.animatorState = AnimatorState45.GetAnimatorState(this.animator);
-    this.failed = false;
-    this.inited = true;
+    animatorState = AnimatorState45.GetAnimatorState(animator);
+    failed = false;
+    inited = true;
     return true;
   }
 
@@ -67,64 +64,64 @@ public class NpcStateIdle : INpcState
   {
     this.npcState = npcState;
     this.pivot = pivot;
-    this.GameObject = npcState.gameObject;
+    GameObject = npcState.gameObject;
   }
 
   public void Activate(float primaryIdleProbability, bool makeObstacle = false)
   {
-    if (!this.TryInit())
+    if (!TryInit())
       return;
-    MovementControllerUtility.SetRandomAnimation(this.animator, this.pivot.SecondaryIdleAnimationCount, this.pivot.SecondaryLowIdleAnimationCount);
+    MovementControllerUtility.SetRandomAnimation(animator, pivot.SecondaryIdleAnimationCount, pivot.SecondaryLowIdleAnimationCount);
     this.makeObstacle = makeObstacle;
-    this.animatorState.ControlMovableState = AnimatorState45.MovableState45.Idle;
-    this.animatorState.PrimaryIdleProbability = primaryIdleProbability;
-    this.agentWasEnabled = this.agent.enabled;
-    if ((Object) this.rigidbody != (Object) null)
+    animatorState.ControlMovableState = AnimatorState45.MovableState45.Idle;
+    animatorState.PrimaryIdleProbability = primaryIdleProbability;
+    agentWasEnabled = agent.enabled;
+    if ((Object) rigidbody != (Object) null)
     {
-      this.rigidbodyWasKinematic = this.rigidbody.isKinematic;
-      this.rigidbodyWasGravity = this.rigidbody.useGravity;
-      this.rigidbody.useGravity = false;
+      rigidbodyWasKinematic = rigidbody.isKinematic;
+      rigidbodyWasGravity = rigidbody.useGravity;
+      rigidbody.useGravity = false;
     }
     bool indoor = false;
-    LocationItemComponent component1 = this.npcState.Owner?.GetComponent<LocationItemComponent>();
+    LocationItemComponent component1 = npcState.Owner?.GetComponent<LocationItemComponent>();
     if (component1 == null)
     {
-      Debug.LogWarning((object) (this.GameObject.name + ": location component not found"));
+      Debug.LogWarning((object) (GameObject.name + ": location component not found"));
     }
     else
     {
       indoor = component1.IsIndoor;
-      NPCStateHelper.SetAgentAreaMask(this.agent, indoor);
+      NPCStateHelper.SetAgentAreaMask(agent, indoor);
     }
-    if (!this.agent.enabled)
-      this.agent.enabled = true;
-    this.initialAnimatorUpdateMode = this.animator.updateMode;
-    this.animator.updateMode = AnimatorUpdateMode.Normal;
-    this.initialAnimatorCullingMode = this.animator.cullingMode;
-    this.animator.cullingMode = AnimatorCullingMode.CullCompletely;
-    if (this.npcState.Owner != null)
+    if (!agent.enabled)
+      agent.enabled = true;
+    initialAnimatorUpdateMode = animator.updateMode;
+    animator.updateMode = AnimatorUpdateMode.Normal;
+    initialAnimatorCullingMode = animator.cullingMode;
+    animator.cullingMode = AnimatorCullingMode.CullCompletely;
+    if (npcState.Owner != null)
     {
-      ParametersComponent component2 = this.npcState.Owner.GetComponent<ParametersComponent>();
+      ParametersComponent component2 = npcState.Owner.GetComponent<ParametersComponent>();
       if (component2 != null)
       {
         IParameter<bool> byName = component2.GetByName<bool>(ParameterNameEnum.SayReplicsInIdle);
         if (byName != null)
         {
-          this.sayReplics = byName.Value;
-          if (this.sayReplics)
-            this.timeToNextReplic = Random.Range(ExternalSettingsInstance<ExternalCommonSettings>.Instance.IdleReplicsFrequencyMin, ExternalSettingsInstance<ExternalCommonSettings>.Instance.IdleReplicsFrequencyMax);
+          sayReplics = byName.Value;
+          if (sayReplics)
+            timeToNextReplic = Random.Range(ExternalSettingsInstance<ExternalCommonSettings>.Instance.IdleReplicsFrequencyMin, ExternalSettingsInstance<ExternalCommonSettings>.Instance.IdleReplicsFrequencyMax);
         }
       }
     }
-    if ((Object) this.weaponService != (Object) null)
-      this.weaponService.Weapon = WeaponEnum.Unknown;
-    if (this.agent.isOnNavMesh)
+    if ((Object) weaponService != (Object) null)
+      weaponService.Weapon = WeaponEnum.Unknown;
+    if (agent.isOnNavMesh)
       return;
-    Vector3 position = this.GameObject.transform.position;
-    if (NavMeshUtility.SampleRaycastPosition(ref position, indoor ? 1f : 5f, indoor ? 2f : 10f, this.agent.areaMask))
-      this.agent.Warp(position);
+    Vector3 position = GameObject.transform.position;
+    if (NavMeshUtility.SampleRaycastPosition(ref position, indoor ? 1f : 5f, indoor ? 2f : 10f, agent.areaMask))
+      agent.Warp(position);
     else
-      Debug.Log((object) "Can't sample navmesh", (Object) this.GameObject);
+      Debug.Log((object) "Can't sample navmesh", (Object) GameObject);
   }
 
   private void CreateObstacle()
@@ -133,93 +130,93 @@ public class NpcStateIdle : INpcState
 
   public void Shutdown()
   {
-    if (this.failed)
+    if (failed)
       return;
-    if (this.agent.enabled != this.agentWasEnabled)
-      this.agent.enabled = this.agentWasEnabled;
-    this.animator.updateMode = this.initialAnimatorUpdateMode;
-    this.animator.cullingMode = this.initialAnimatorCullingMode;
-    NavMeshObstacle obstacle = this.pivot.GetObstacle();
+    if (agent.enabled != agentWasEnabled)
+      agent.enabled = agentWasEnabled;
+    animator.updateMode = initialAnimatorUpdateMode;
+    animator.cullingMode = initialAnimatorCullingMode;
+    NavMeshObstacle obstacle = pivot.GetObstacle();
     if ((Object) obstacle != (Object) null)
       obstacle.enabled = false;
-    if ((bool) (Object) this.rigidbody)
+    if ((bool) (Object) rigidbody)
     {
-      this.rigidbody.isKinematic = this.rigidbodyWasKinematic;
-      this.rigidbody.useGravity = this.rigidbodyWasGravity;
+      rigidbody.isKinematic = rigidbodyWasKinematic;
+      rigidbody.useGravity = rigidbodyWasGravity;
     }
-    if (!((Object) this.weaponService != (Object) null))
+    if (!((Object) weaponService != (Object) null))
       return;
-    this.weaponService.Weapon = this.npcState.Weapon;
+    weaponService.Weapon = npcState.Weapon;
   }
 
   public void OnAnimatorMove()
   {
-    if (this.failed)
+    if (failed)
       return;
-    float num = this.animator.updateMode == AnimatorUpdateMode.AnimatePhysics ? Time.fixedDeltaTime : Time.deltaTime;
-    Vector3 vector3 = this.GameObject.transform.position + this.animator.deltaPosition;
-    if (this.agent.isActiveAndEnabled)
+    float num = animator.updateMode == AnimatorUpdateMode.AnimatePhysics ? Time.fixedDeltaTime : Time.deltaTime;
+    Vector3 vector3 = GameObject.transform.position + animator.deltaPosition;
+    if (agent.isActiveAndEnabled)
     {
       long monoHeapSizeLong1 = Profiler.GetMonoHeapSizeLong();
-      if (this.agent.isOnNavMesh)
+      if (agent.isOnNavMesh)
       {
-        this.agent.nextPosition = vector3;
-        this.GameObject.transform.position = this.agent.nextPosition;
+        agent.nextPosition = vector3;
+        GameObject.transform.position = agent.nextPosition;
       }
       else
       {
         long monoHeapSizeLong2 = Profiler.GetMonoHeapSizeLong();
         NavMeshHit hit;
-        if (NavMesh.FindClosestEdge(this.GameObject.transform.position, out hit, this.agent.areaMask))
+        if (NavMesh.FindClosestEdge(GameObject.transform.position, out hit, agent.areaMask))
         {
-          this.agent.Warp(hit.position);
-          this.GameObject.transform.position = this.agent.nextPosition;
-          Debug.Log((object) "Agent was teleported to closest edge", (Object) this.agent.gameObject);
+          agent.Warp(hit.position);
+          GameObject.transform.position = agent.nextPosition;
+          Debug.Log((object) "Agent was teleported to closest edge", (Object) agent.gameObject);
         }
         else
         {
           long monoHeapSizeLong3 = Profiler.GetMonoHeapSizeLong();
-          if (NavMesh.Raycast(this.GameObject.transform.position + new Vector3(0.0f, 20f, 0.0f), this.GameObject.transform.position + new Vector3(0.0f, -20f, 0.0f), out hit, this.agent.areaMask))
+          if (NavMesh.Raycast(GameObject.transform.position + new Vector3(0.0f, 20f, 0.0f), GameObject.transform.position + new Vector3(0.0f, -20f, 0.0f), out hit, agent.areaMask))
           {
-            this.agent.Warp(hit.position);
-            this.GameObject.transform.position = this.agent.nextPosition;
-            Debug.Log((object) "Agent was teleported (Raycast)", (Object) this.agent.gameObject);
+            agent.Warp(hit.position);
+            GameObject.transform.position = agent.nextPosition;
+            Debug.Log((object) "Agent was teleported (Raycast)", (Object) agent.gameObject);
           }
           else
           {
             long monoHeapSizeLong4 = Profiler.GetMonoHeapSizeLong();
-            Debug.LogWarning((object) ObjectInfoUtility.GetStream().Append("Agent was not able to teleport to closest edge and raycast also failed, memory : ").Append(monoHeapSizeLong1).Append(" , ").Append(monoHeapSizeLong2).Append(" , ").Append(monoHeapSizeLong3).Append(" , ").Append(monoHeapSizeLong4), (Object) this.agent.gameObject);
+            Debug.LogWarning((object) ObjectInfoUtility.GetStream().Append("Agent was not able to teleport to closest edge and raycast also failed, memory : ").Append(monoHeapSizeLong1).Append(" , ").Append(monoHeapSizeLong2).Append(" , ").Append(monoHeapSizeLong3).Append(" , ").Append(monoHeapSizeLong4), (Object) agent.gameObject);
           }
         }
       }
     }
     else
-      this.GameObject.transform.position = vector3;
-    this.GameObject.transform.rotation *= Quaternion.AngleAxis(57.29578f * this.animator.angularVelocity.y * num, Vector3.up);
+      GameObject.transform.position = vector3;
+    GameObject.transform.rotation *= Quaternion.AngleAxis(57.29578f * animator.angularVelocity.y * num, Vector3.up);
   }
 
   public void OnAnimatorEventEvent(string obj)
   {
-    if (!this.failed)
+    if (!failed)
       ;
   }
 
   public void Update()
   {
-    if (this.failed || InstanceByRequest<EngineApplication>.Instance.IsPaused || !this.sayReplics)
+    if (failed || InstanceByRequest<EngineApplication>.Instance.IsPaused || !sayReplics)
       return;
-    this.timeToNextReplic -= Time.deltaTime;
-    if ((double) this.timeToNextReplic <= 0.0)
+    timeToNextReplic -= Time.deltaTime;
+    if (timeToNextReplic <= 0.0)
     {
-      this.timeToNextReplic = Random.Range(ExternalSettingsInstance<ExternalCommonSettings>.Instance.IdleReplicsFrequencyMin, ExternalSettingsInstance<ExternalCommonSettings>.Instance.IdleReplicsFrequencyMax);
-      NPCStateHelper.SayIdleReplic(this.npcState.Owner);
+      timeToNextReplic = Random.Range(ExternalSettingsInstance<ExternalCommonSettings>.Instance.IdleReplicsFrequencyMin, ExternalSettingsInstance<ExternalCommonSettings>.Instance.IdleReplicsFrequencyMax);
+      NPCStateHelper.SayIdleReplic(npcState.Owner);
     }
   }
 
   public void OnLodStateChanged(bool inLodState)
   {
-    this.npcState.AnimatorEnabled = !inLodState;
-    EffectsComponent component = this.npcState.Owner?.GetComponent<EffectsComponent>();
+    npcState.AnimatorEnabled = !inLodState;
+    EffectsComponent component = npcState.Owner?.GetComponent<EffectsComponent>();
     if (component == null)
       return;
     component.Disabled = inLodState;

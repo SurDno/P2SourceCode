@@ -1,13 +1,13 @@
-﻿using Cofe.Loggers;
+﻿using System;
+using System.Collections.Generic;
+using System.Xml;
+using Cofe.Loggers;
 using Cofe.Serializations.Converters;
 using Cofe.Utility;
 using Engine.Common.Comparers;
 using PLVirtualMachine.Common;
 using PLVirtualMachine.Common.Data;
 using PLVirtualMachine.Common.EngineAPI;
-using System;
-using System.Collections.Generic;
-using System.Xml;
 using VirtualMachine.Common.Data;
 
 namespace VirtualMachine.Data
@@ -22,12 +22,12 @@ namespace VirtualMachine.Data
       IObject objectThreadSave = creator.GetOrCreateObjectThreadSave(id);
       if (objectThreadSave == null)
       {
-        Logger.AddError("Object id : " + (object) id + " not found");
+        Logger.AddError("Object id : " + id + " not found");
         return default (T);
       }
       if (objectThreadSave is T obj)
         return obj;
-      Logger.AddError("Object id : " + (object) id + " is not type : " + TypeUtility.GetTypeName(typeof (T)));
+      Logger.AddError("Object id : " + id + " is not type : " + TypeUtility.GetTypeName(typeof (T)));
       return default (T);
     }
 
@@ -54,7 +54,7 @@ namespace VirtualMachine.Data
         {
           if (xml.NodeType == XmlNodeType.Element)
           {
-            T obj = EditorDataReadUtility.ReadReference<T>(xml, creator);
+            T obj = ReadReference<T>(xml, creator);
             source.Add(obj);
           }
           else if (xml.NodeType == XmlNodeType.EndElement)
@@ -88,7 +88,7 @@ namespace VirtualMachine.Data
           if (xml.NodeType == XmlNodeType.Element)
           {
             T result;
-            DefaultConverter.TryParseEnum<T>(XmlReaderUtility.ReadContent(xml), out result);
+            DefaultConverter.TryParseEnum(XmlReaderUtility.ReadContent(xml), out result);
             source.Add(result);
           }
           else if (xml.NodeType == XmlNodeType.EndElement)
@@ -224,7 +224,7 @@ namespace VirtualMachine.Data
         {
           if (xml.NodeType == XmlNodeType.Element)
           {
-            T obj = EditorDataReadUtility.ReadEditorDataSerializable<T>(xml, creator, "");
+            T obj = ReadEditorDataSerializable<T>(xml, creator, "");
             source.Add(obj);
           }
           else if (xml.NodeType == XmlNodeType.EndElement)
@@ -257,7 +257,7 @@ namespace VirtualMachine.Data
         {
           if (xml.NodeType == XmlNodeType.Element)
           {
-            T obj = EditorDataReadUtility.ReadSerializable<T>(xml);
+            T obj = ReadSerializable<T>(xml);
             source.Add(obj);
           }
           else if (xml.NodeType == XmlNodeType.EndElement)
@@ -279,7 +279,7 @@ namespace VirtualMachine.Data
         xml.MoveToAttribute("count");
         capacity = DefaultConverter.ParseInt(xml.Value);
       }
-      source = new Dictionary<ulong, T>(capacity, (IEqualityComparer<ulong>) UlongComparer.Instance);
+      source = new Dictionary<ulong, T>(capacity, UlongComparer.Instance);
       if (!xml.IsEmptyElement)
       {
         while (xml.Read())
@@ -288,7 +288,7 @@ namespace VirtualMachine.Data
           {
             xml.MoveToAttribute("key");
             ulong key = DefaultConverter.ParseUlong(xml.Value);
-            T obj = EditorDataReadUtility.ReadEditorDataSerializable<T>(xml, creator, "");
+            T obj = ReadEditorDataSerializable<T>(xml, creator, "");
             source.Add(key, obj);
           }
           else if (xml.NodeType == XmlNodeType.EndElement)
@@ -319,7 +319,7 @@ namespace VirtualMachine.Data
           {
             xml.MoveToAttribute("key");
             string key = xml.Value;
-            T obj = EditorDataReadUtility.ReadReference<T>(xml, creator);
+            T obj = ReadReference<T>(xml, creator);
             source.Add(key, obj);
           }
           else if (xml.NodeType == XmlNodeType.EndElement)
@@ -393,13 +393,13 @@ namespace VirtualMachine.Data
     public static T ReadEnum<T>(XmlReader xml) where T : struct, IComparable, IConvertible, IFormattable
     {
       T result;
-      DefaultConverter.TryParseEnum<T>(XmlReaderUtility.ReadContent(xml), out result);
+      DefaultConverter.TryParseEnum(XmlReaderUtility.ReadContent(xml), out result);
       return result;
     }
 
     public static object ReadObjectValue(XmlReader xml)
     {
-      return (object) XmlReaderUtility.ReadContent(xml);
+      return XmlReaderUtility.ReadContent(xml);
     }
   }
 }

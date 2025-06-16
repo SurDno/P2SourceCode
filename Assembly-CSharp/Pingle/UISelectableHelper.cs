@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using UnityEngine;
 
 namespace Pingle
 {
@@ -12,7 +11,7 @@ namespace Pingle
       bool IsDirectionPriority = true)
     {
       RectTransform transform = origin.transform as RectTransform;
-      return UISelectableHelper.Select(objects, (Object) transform != (Object) null ? transform.TransformPoint(UISelectableHelper.GetPointOnRectEdge(transform, (Vector2) dirrection)) : origin.transform.position, dirrection, IsDirectionPriority);
+      return UISelectableHelper.Select(objects, (Object) transform != (Object) null ? transform.TransformPoint(GetPointOnRectEdge(transform, (Vector2) dirrection)) : origin.transform.position, dirrection, IsDirectionPriority);
     }
 
     public static GameObject Select(
@@ -31,12 +30,12 @@ namespace Pingle
           Vector3 position = (Object) transform != (Object) null ? (Vector3) transform.rect.center : Vector3.zero;
           Vector3 vector3 = gameObject2.transform.TransformPoint(position) - origin;
           float f = Vector3.Dot(dirrection, vector3.normalized);
-          if ((double) f > 0.0)
+          if (f > 0.0)
           {
             if (isDirectionPriority)
               f = Mathf.Pow(f, 2f);
             float num2 = f / vector3.magnitude;
-            if ((double) num2 > (double) num1)
+            if (num2 > (double) num1)
             {
               num1 = num2;
               gameObject1 = gameObject2;
@@ -54,7 +53,7 @@ namespace Pingle
       foreach (GameObject gameObject2 in objects)
       {
         float sqrMagnitude = ((Vector2) (gameObject2.transform.position - origin)).sqrMagnitude;
-        if ((double) sqrMagnitude < (double) num)
+        if (sqrMagnitude < (double) num)
         {
           gameObject1 = gameObject2;
           num = sqrMagnitude;

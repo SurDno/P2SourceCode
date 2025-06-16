@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using UnityEngine;
 
 namespace Engine.Behaviours.Unity.Mecanim
 {
@@ -11,29 +10,29 @@ namespace Engine.Behaviours.Unity.Mecanim
     public static DiseasedAnimatorState GetAnimatorState(Animator animator)
     {
       DiseasedAnimatorState animatorState;
-      if (!DiseasedAnimatorState.diseasedAnimatorStates.TryGetValue(animator, out animatorState))
+      if (!diseasedAnimatorStates.TryGetValue(animator, out animatorState))
       {
         animatorState = new DiseasedAnimatorState();
         animatorState.Animator = animator;
-        DiseasedAnimatorState.diseasedAnimatorStates[animator] = animatorState;
+        diseasedAnimatorStates[animator] = animatorState;
       }
       return animatorState;
     }
 
     public void TriggerPlayerPush()
     {
-      this.Animator.SetTrigger("AttackerDiseased.Player.Push.Trigger");
+      Animator.SetTrigger("AttackerDiseased.Player.Push.Trigger");
     }
 
     public void TriggerPlayerFendOff()
     {
-      this.Animator.SetTrigger("AttackerDiseased.Player.FendOff.Trigger");
+      Animator.SetTrigger("AttackerDiseased.Player.FendOff.Trigger");
     }
 
     public float PlayerPushAngle
     {
-      set => this.Animator.SetFloat("AttackerDiseased.Player.Push.Angle", value);
-      get => this.Animator.GetFloat("AttackerDiseased.Player.Push.Angle");
+      set => Animator.SetFloat("AttackerDiseased.Player.Push.Angle", value);
+      get => Animator.GetFloat("AttackerDiseased.Player.Push.Angle");
     }
   }
 }

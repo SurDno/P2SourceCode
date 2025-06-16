@@ -3,7 +3,7 @@ using PLVirtualMachine.Common.VMSpecialAttributes;
 
 namespace PLVirtualMachine.Common.EngineAPI.VMECS
 {
-  [Info("QuestComponent", null)]
+  [Info("QuestComponent")]
   public class VMQuestComponent : VMComponent
   {
     public const string ComponentName = "QuestComponent";

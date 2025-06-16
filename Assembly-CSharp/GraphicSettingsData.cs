@@ -1,34 +1,32 @@
-﻿using UnityEngine;
-
-public class GraphicSettingsData : ScriptableObjectInstance<GraphicSettingsData>
+﻿public class GraphicSettingsData : ScriptableObjectInstance<GraphicSettingsData>
 {
   [Space]
   [SerializeField]
-  private global::ShadowSettings[] shadowSettings;
+  private ShadowSettings[] shadowSettings;
   [Space]
   [SerializeField]
-  private global::TextureSettings[] textureSettings;
+  private TextureSettings[] textureSettings;
   [Space]
   [SerializeField]
   private int defaultPreset;
   [SerializeField]
   private GraphicSettingsPreset[] presets;
 
-  public global::ShadowSettings[] ShadowSettings => this.shadowSettings;
+  public ShadowSettings[] ShadowSettings => shadowSettings;
 
-  public global::TextureSettings[] TextureSettings => this.textureSettings;
+  public TextureSettings[] TextureSettings => textureSettings;
 
-  public GraphicSettingsPreset[] Presets => this.presets;
+  public GraphicSettingsPreset[] Presets => presets;
 
-  public GraphicSettingsPreset DefaultPreset => this.presets[this.defaultPreset];
+  public GraphicSettingsPreset DefaultPreset => presets[defaultPreset];
 
   public int MaxSupportedTextureSettings()
   {
-    for (int index = 0; index < this.textureSettings.Length; ++index)
+    for (int index = 0; index < textureSettings.Length; ++index)
     {
-      if (!this.textureSettings[index].CheckMemoryRequirement())
+      if (!textureSettings[index].CheckMemoryRequirement())
         return index == 0 ? 0 : index - 1;
     }
-    return this.textureSettings.Length - 1;
+    return textureSettings.Length - 1;
   }
 }

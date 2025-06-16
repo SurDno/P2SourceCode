@@ -1,6 +1,5 @@
-﻿using Engine.Common.Commons;
-using System;
-using UnityEngine;
+﻿using System;
+using Engine.Common.Commons;
 
 namespace Engine.Source.UI.Menu.Protagonist.HeadUpDisplay
 {

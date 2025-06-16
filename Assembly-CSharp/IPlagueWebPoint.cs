@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-public interface IPlagueWebPoint
+﻿public interface IPlagueWebPoint
 {
   Vector3 Position { get; set; }
 

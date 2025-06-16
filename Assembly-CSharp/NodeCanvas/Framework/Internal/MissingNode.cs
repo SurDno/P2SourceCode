@@ -1,7 +1,7 @@
-﻿using ParadoxNotion.Design;
+﻿using System;
+using ParadoxNotion.Design;
 using ParadoxNotion.Serialization;
 using ParadoxNotion.Serialization.FullSerializer;
-using System;
 
 namespace NodeCanvas.Framework.Internal
 {
@@ -17,7 +17,7 @@ namespace NodeCanvas.Framework.Internal
 
     public override string name => "<color=#ff6457>* Missing Node *</color>";
 
-    public override Type outConnectionType => (Type) null;
+    public override Type outConnectionType => null;
 
     public override int maxInConnections => 0;
 

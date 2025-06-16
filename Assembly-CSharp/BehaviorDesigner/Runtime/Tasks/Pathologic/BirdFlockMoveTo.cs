@@ -1,4 +1,5 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Behaviours.Components;
 using Engine.Common.Commons;
@@ -6,7 +7,6 @@ using Engine.Common.Commons.Converters;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Scripts.Tools.Serializations.Converters;
-using UnityEngine;
 
 namespace BehaviorDesigner.Runtime.Tasks.Pathologic
 {
@@ -16,58 +16,58 @@ namespace BehaviorDesigner.Runtime.Tasks.Pathologic
   [Factory]
   [GeneratePartial(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
   [FactoryProxy(typeof (BirdFlockMoveTo))]
-  public class BirdFlockMoveTo : BehaviorDesigner.Runtime.Tasks.Action, IStub, ISerializeDataWrite, ISerializeDataRead
+  public class BirdFlockMoveTo : Action, IStub, ISerializeDataWrite, ISerializeDataRead
   {
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [SerializeField]
     public SharedVector3 Target;
-    [BehaviorDesigner.Runtime.Tasks.Tooltip("Adds to target")]
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [Tooltip("Adds to target")]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy()]
     [SerializeField]
     public SharedVector3 Offset;
     protected EngineBehavior behavior;
 
     public override TaskStatus OnUpdate()
     {
-      if ((UnityEngine.Object) this.behavior == (UnityEngine.Object) null)
+      if ((UnityEngine.Object) behavior == (UnityEngine.Object) null)
       {
-        this.behavior = this.gameObject.GetComponent<EngineBehavior>();
-        if ((UnityEngine.Object) this.behavior == (UnityEngine.Object) null)
+        behavior = gameObject.GetComponent<EngineBehavior>();
+        if ((UnityEngine.Object) behavior == (UnityEngine.Object) null)
         {
-          Debug.LogWarning((object) (this.gameObject.name + ": doesn't contain " + typeof (EngineBehavior).Name + " unity component"), (UnityEngine.Object) this.gameObject);
+          Debug.LogWarning((object) (gameObject.name + ": doesn't contain " + typeof (EngineBehavior).Name + " unity component"), (UnityEngine.Object) gameObject);
           return TaskStatus.Failure;
         }
       }
-      Vector3 direction = this.Offset.Value + this.Target.Value - this.gameObject.transform.position;
+      Vector3 direction = Offset.Value + Target.Value - gameObject.transform.position;
       float magnitude = direction.magnitude;
-      this.behavior.Move(direction, magnitude);
-      return (double) magnitude < 1.0 ? TaskStatus.Success : TaskStatus.Running;
+      behavior.Move(direction, magnitude);
+      return magnitude < 1.0 ? TaskStatus.Success : TaskStatus.Running;
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.WriteSerialize<NodeData>(writer, "NodeData", this.nodeData);
-      DefaultDataWriteUtility.Write(writer, "Id", this.id);
-      DefaultDataWriteUtility.Write(writer, "FriendlyName", this.friendlyName);
-      DefaultDataWriteUtility.Write(writer, "Instant", this.instant);
-      DefaultDataWriteUtility.Write(writer, "Disabled", this.disabled);
-      BehaviorTreeDataWriteUtility.WriteShared<SharedVector3>(writer, "Target", this.Target);
-      BehaviorTreeDataWriteUtility.WriteShared<SharedVector3>(writer, "Offset", this.Offset);
+      DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
+      DefaultDataWriteUtility.Write(writer, "Id", id);
+      DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
+      DefaultDataWriteUtility.Write(writer, "Instant", instant);
+      DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
+      BehaviorTreeDataWriteUtility.WriteShared(writer, "Target", Target);
+      BehaviorTreeDataWriteUtility.WriteShared(writer, "Offset", Offset);
     }
 
-    public void DataRead(IDataReader reader, System.Type type)
+    public void DataRead(IDataReader reader, Type type)
     {
-      this.nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
-      this.id = DefaultDataReadUtility.Read(reader, "Id", this.id);
-      this.friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", this.friendlyName);
-      this.instant = DefaultDataReadUtility.Read(reader, "Instant", this.instant);
-      this.disabled = DefaultDataReadUtility.Read(reader, "Disabled", this.disabled);
-      this.Target = BehaviorTreeDataReadUtility.ReadShared<SharedVector3>(reader, "Target", this.Target);
-      this.Offset = BehaviorTreeDataReadUtility.ReadShared<SharedVector3>(reader, "Offset", this.Offset);
+      nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
+      id = DefaultDataReadUtility.Read(reader, "Id", id);
+      friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
+      instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
+      disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
+      Target = BehaviorTreeDataReadUtility.ReadShared(reader, "Target", Target);
+      Offset = BehaviorTreeDataReadUtility.ReadShared(reader, "Offset", Offset);
     }
   }
 }

@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace FlowCanvas.Nodes
+﻿namespace FlowCanvas.Nodes
 {
   public class ExtractQuaternion : ExtractorNode<Quaternion, float, float, float, float, Vector3>
   {

@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEngine;
 
 namespace SoundPropagation
 {
@@ -11,11 +10,11 @@ namespace SoundPropagation
 
     public void AddFiltering(Filtering filteringPerMeter, float distance)
     {
-      this.Occlusion += filteringPerMeter.Occlusion;
+      Occlusion += filteringPerMeter.Occlusion;
     }
 
-    public void AddOcclusion(float occlusion) => this.Occlusion += occlusion;
+    public void AddOcclusion(float occlusion) => Occlusion += occlusion;
 
-    public float Loss => this.Occlusion;
+    public float Loss => Occlusion;
   }
 }

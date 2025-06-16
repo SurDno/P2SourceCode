@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace RootMotion.FinalIK
+﻿namespace RootMotion.FinalIK
 {
   public class HandPoser : Poser
   {
@@ -12,47 +10,47 @@ namespace RootMotion.FinalIK
 
     public override void AutoMapping()
     {
-      this.poseChildren = !((Object) this.poseRoot == (Object) null) ? this.poseRoot.GetComponentsInChildren<Transform>() : new Transform[0];
-      this._poseRoot = this.poseRoot;
+      poseChildren = !((Object) poseRoot == (Object) null) ? poseRoot.GetComponentsInChildren<Transform>() : new Transform[0];
+      _poseRoot = poseRoot;
     }
 
     protected override void InitiatePoser()
     {
-      this.children = this.GetComponentsInChildren<Transform>();
-      this.StoreDefaultState();
+      children = this.GetComponentsInChildren<Transform>();
+      StoreDefaultState();
     }
 
     protected override void FixPoserTransforms()
     {
-      for (int index = 0; index < this.children.Length; ++index)
+      for (int index = 0; index < children.Length; ++index)
       {
-        this.children[index].localPosition = this.defaultLocalPositions[index];
-        this.children[index].localRotation = this.defaultLocalRotations[index];
+        children[index].localPosition = defaultLocalPositions[index];
+        children[index].localRotation = defaultLocalRotations[index];
       }
     }
 
     protected override void UpdatePoser()
     {
-      if ((double) this.weight <= 0.0 || (double) this.localPositionWeight <= 0.0 && (double) this.localRotationWeight <= 0.0)
+      if (weight <= 0.0 || localPositionWeight <= 0.0 && localRotationWeight <= 0.0)
         return;
-      if ((Object) this._poseRoot != (Object) this.poseRoot)
-        this.AutoMapping();
-      if ((Object) this.poseRoot == (Object) null)
+      if ((Object) _poseRoot != (Object) poseRoot)
+        AutoMapping();
+      if ((Object) poseRoot == (Object) null)
         return;
-      if (this.children.Length != this.poseChildren.Length)
+      if (children.Length != poseChildren.Length)
       {
         Warning.Log("Number of children does not match with the pose", this.transform);
       }
       else
       {
-        float t1 = this.localRotationWeight * this.weight;
-        float t2 = this.localPositionWeight * this.weight;
-        for (int index = 0; index < this.children.Length; ++index)
+        float t1 = localRotationWeight * weight;
+        float t2 = localPositionWeight * weight;
+        for (int index = 0; index < children.Length; ++index)
         {
-          if ((Object) this.children[index] != (Object) this.transform)
+          if ((Object) children[index] != (Object) this.transform)
           {
-            this.children[index].localRotation = Quaternion.Lerp(this.children[index].localRotation, this.poseChildren[index].localRotation, t1);
-            this.children[index].localPosition = Vector3.Lerp(this.children[index].localPosition, this.poseChildren[index].localPosition, t2);
+            children[index].localRotation = Quaternion.Lerp(children[index].localRotation, poseChildren[index].localRotation, t1);
+            children[index].localPosition = Vector3.Lerp(children[index].localPosition, poseChildren[index].localPosition, t2);
           }
         }
       }
@@ -60,12 +58,12 @@ namespace RootMotion.FinalIK
 
     private void StoreDefaultState()
     {
-      this.defaultLocalPositions = new Vector3[this.children.Length];
-      this.defaultLocalRotations = new Quaternion[this.children.Length];
-      for (int index = 0; index < this.children.Length; ++index)
+      defaultLocalPositions = new Vector3[children.Length];
+      defaultLocalRotations = new Quaternion[children.Length];
+      for (int index = 0; index < children.Length; ++index)
       {
-        this.defaultLocalPositions[index] = this.children[index].localPosition;
-        this.defaultLocalRotations[index] = this.children[index].localRotation;
+        defaultLocalPositions[index] = children[index].localPosition;
+        defaultLocalRotations[index] = children[index].localRotation;
       }
     }
   }

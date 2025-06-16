@@ -1,9 +1,9 @@
-﻿using PLVirtualMachine.Common;
+﻿using System.Collections.Generic;
+using PLVirtualMachine.Common;
 using PLVirtualMachine.Common.VMDebug;
 using PLVirtualMachine.Debug;
 using PLVirtualMachine.Dynamic;
 using PLVirtualMachine.GameLogic;
-using System.Collections.Generic;
 
 namespace PLVirtualMachine
 {
@@ -12,7 +12,7 @@ namespace PLVirtualMachine
     private static Dictionary<string, DynamicParameter> changedParamsMemoryDict = new Dictionary<string, DynamicParameter>();
     private static VMDebugger debugger = new VMDebugger();
 
-    public static VMDebugger Debugger => DebugUtility.debugger;
+    public static VMDebugger Debugger => debugger;
 
     public static bool IsDebug { get; set; } = true;
 
@@ -20,78 +20,78 @@ namespace PLVirtualMachine
     {
       get
       {
-        return DebugUtility.IsDebug && !DebugUtility.Debugger.NeedUpdateHierarchy && DebugUtility.Debugger.ControllerWorkMode != 0;
+        return IsDebug && !Debugger.NeedUpdateHierarchy && Debugger.ControllerWorkMode != 0;
       }
     }
 
     public static void Init()
     {
-      if (!DebugUtility.IsDebug)
+      if (!IsDebug)
         return;
-      DebugUtility.debugger.Init();
+      debugger.Init();
     }
 
     public static void Clear()
     {
-      DebugUtility.Debugger.Clear();
-      DebugUtility.changedParamsMemoryDict.Clear();
+      Debugger.Clear();
+      changedParamsMemoryDict.Clear();
     }
 
     private static void OnDebugParamValueChangedInner(DynamicParameter param, object value)
     {
-      if (DebugUtility.Debugger.ControllerWorkMode == EDebugIPCApplicationWorkMode.IPC_APPLICATION_WORK_MODE_DEBUG)
+      if (Debugger.ControllerWorkMode == EDebugIPCApplicationWorkMode.IPC_APPLICATION_WORK_MODE_DEBUG)
       {
-        DebugUtility.Debugger.OnParamValueChange((VMParameter) param.StaticObject, value, param.DynamicGuid);
+        Debugger.OnParamValueChange((VMParameter) param.StaticObject, value, param.DynamicGuid);
       }
       else
       {
-        string key = param.DynamicGuid.ToString() + param.StaticGuid.ToString();
-        if (DebugUtility.changedParamsMemoryDict.ContainsKey(key))
+        string key = param.DynamicGuid + param.StaticGuid.ToString();
+        if (changedParamsMemoryDict.ContainsKey(key))
           return;
-        DebugUtility.changedParamsMemoryDict.Add(key, param);
+        changedParamsMemoryDict.Add(key, param);
       }
     }
 
     private static void SendChangedParamsInfoToEditor()
     {
-      foreach (KeyValuePair<string, DynamicParameter> keyValuePair in DebugUtility.changedParamsMemoryDict)
+      foreach (KeyValuePair<string, DynamicParameter> keyValuePair in changedParamsMemoryDict)
       {
         DynamicParameter dynamicParameter = keyValuePair.Value;
         if (dynamicParameter.Entity.Instantiated)
-          DebugUtility.Debugger.OnParamValueChange((VMParameter) dynamicParameter.StaticObject, dynamicParameter.Value, dynamicParameter.DynamicGuid);
+          Debugger.OnParamValueChange((VMParameter) dynamicParameter.StaticObject, dynamicParameter.Value, dynamicParameter.DynamicGuid);
       }
-      DebugUtility.changedParamsMemoryDict.Clear();
+      changedParamsMemoryDict.Clear();
     }
 
     public static void Update()
     {
-      if (!DebugUtility.IsDebugging)
+      if (!IsDebugging)
         return;
-      if (DebugUtility.changedParamsMemoryDict.Count > 0)
-        DebugUtility.SendChangedParamsInfoToEditor();
+      if (changedParamsMemoryDict.Count > 0)
+        SendChangedParamsInfoToEditor();
       else
-        DebugUtility.debugger.OnTick();
+        debugger.OnTick();
     }
 
     public static void OnAddObject(DynamicFSM fsm)
     {
-      if (!DebugUtility.IsDebug)
+      if (!IsDebug)
         return;
-      DebugUtility.Debugger.OnAddObject(fsm);
+      Debugger.OnAddObject(fsm);
     }
 
     public static void OnStateExec(DynamicFSM fsm, IState state)
     {
-      if (!DebugUtility.IsDebug)
+      if (!IsDebug)
         return;
-      DebugUtility.Debugger.OnStateExec(fsm, state);
+      Debugger.OnStateExec(fsm, state);
     }
 
     public static void OnDebugParamValueChanged(DynamicParameter par, object value)
     {
-      if (!DebugUtility.IsDebug || value != null && typeof (ICommonList).IsAssignableFrom(value.GetType()))
+      if (!IsDebug || value != null && typeof (ICommonList).IsAssignableFrom(value.GetType()))
         return;
-      DebugUtility.OnDebugParamValueChangedInner(par, value);
+      OnDebugParamValueChangedInner(par, value);
     }
   }
 }

@@ -1,12 +1,10 @@
-﻿using Cofe.Serializations.Data;
-using Cofe.Serializations.Data.Xml;
-using Engine.Common;
-using Engine.Common.Commons.Converters;
-using System;
+﻿using System;
 using System.IO;
 using System.IO.Compression;
 using System.Xml;
-using UnityEngine;
+using Cofe.Serializations.Data.Xml;
+using Engine.Common;
+using Engine.Common.Commons.Converters;
 
 namespace AssetDatabases
 {
@@ -14,7 +12,7 @@ namespace AssetDatabases
   {
     public static bool IgnoreAsset(string path)
     {
-      if (!AssetDatabaseUtility.IsContentFolder(path))
+      if (!IsContentFolder(path))
         return true;
       foreach (string complexExt in Paths.ComplexExts)
       {
@@ -65,17 +63,17 @@ namespace AssetDatabases
       {
         using (FileStream fileStream = File.OpenRead(fileName + ".gz"))
         {
-          using (GZipStream inStream = new GZipStream((Stream) fileStream, CompressionMode.Decompress))
+          using (GZipStream inStream = new GZipStream(fileStream, CompressionMode.Decompress))
           {
             XmlDocument xmlDocument = new XmlDocument();
-            xmlDocument.Load((Stream) inStream);
-            return DefaultDataReadUtility.ReadSerialize<T>((IDataReader) new XmlNodeDataReader((XmlNode) xmlDocument.DocumentElement, fileName));
+            xmlDocument.Load(inStream);
+            return DefaultDataReadUtility.ReadSerialize<T>(new XmlNodeDataReader(xmlDocument.DocumentElement, fileName));
           }
         }
       }
       catch (Exception ex)
       {
-        Debug.LogError((object) ("Error open file : " + fileName + ".gz , error : " + (object) ex));
+        Debug.LogError((object) ("Error open file : " + fileName + ".gz , error : " + ex));
         return default (T);
       }
     }

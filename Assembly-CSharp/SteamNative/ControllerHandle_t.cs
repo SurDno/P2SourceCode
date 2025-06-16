@@ -6,7 +6,7 @@
 
     public static implicit operator ControllerHandle_t(ulong value)
     {
-      return new ControllerHandle_t() { Value = value };
+      return new ControllerHandle_t { Value = value };
     }
 
     public static implicit operator ulong(ControllerHandle_t value) => value.Value;

@@ -11,7 +11,7 @@ namespace PLVirtualMachine.Dynamic.Components
       CrowdStorageCommand crowdStorageCommand = (CrowdStorageCommand) storageCommand;
       if (crowdStorageCommand.StorageCommandType != EStorageCommandType.StorageCommandTypeAddItem)
         return;
-      this.ProcessPickUpToInentoryByTemplate(crowdStorageCommand.TargetStorage, crowdStorageCommand.TargetContainer, crowdStorageCommand.TargetItemTemplate, crowdStorageCommand.NeedItemsCount);
+      ProcessPickUpToInentoryByTemplate(crowdStorageCommand.TargetStorage, crowdStorageCommand.TargetContainer, crowdStorageCommand.TargetItemTemplate, crowdStorageCommand.NeedItemsCount);
     }
 
     private void ProcessPickUpToInentoryByTemplate(
@@ -26,7 +26,7 @@ namespace PLVirtualMachine.Dynamic.Components
       do
       {
         int iNeedCount = needItemsCount - num;
-        int inventoryByTemplate = this.DoAddItemsToInventoryByTemplate(storage, targetContainer, itemTemplate, iNeedCount);
+        int inventoryByTemplate = DoAddItemsToInventoryByTemplate(storage, targetContainer, itemTemplate, iNeedCount);
         if (inventoryByTemplate != 0)
           num += inventoryByTemplate;
         else

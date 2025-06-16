@@ -1,9 +1,9 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons.Cloneable;
 using Engine.Common.Commons.Converters;
 using Engine.Source.Commons.Abilities.Controllers;
-using System;
 
 namespace Engine.Source.Proxies
 {
@@ -18,23 +18,23 @@ namespace Engine.Source.Proxies
     public object Clone()
     {
       BehaviorTreeAbilityController_Generated instance = Activator.CreateInstance<BehaviorTreeAbilityController_Generated>();
-      this.CopyTo((object) instance);
-      return (object) instance;
+      CopyTo(instance);
+      return instance;
     }
 
     public void CopyTo(object target2)
     {
-      ((BehaviorTreeAbilityController) target2).name = this.name;
+      ((BehaviorTreeAbilityController) target2).name = name;
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.Write(writer, "Name", this.name);
+      DefaultDataWriteUtility.Write(writer, "Name", name);
     }
 
     public void DataRead(IDataReader reader, Type type)
     {
-      this.name = DefaultDataReadUtility.Read(reader, "Name", this.name);
+      name = DefaultDataReadUtility.Read(reader, "Name", name);
     }
   }
 }

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections;
-using UnityEngine;
 
 namespace RootMotion.Dynamics
 {
@@ -19,12 +18,12 @@ namespace RootMotion.Dynamics
     public float minHipHeight = 0.3f;
     public SubBehaviourCOM centerOfMass;
     [Header("Muscle Group Properties")]
-    public BehaviourAnimatedStagger.FallParams defaults;
-    public BehaviourAnimatedStagger.FallParamsGroup[] groupOverrides;
+    public FallParams defaults;
+    public FallParamsGroup[] groupOverrides;
     [Header("Events")]
-    public BehaviourBase.PuppetEvent onUngrounded;
-    public BehaviourBase.PuppetEvent onFallOver;
-    public BehaviourBase.PuppetEvent onRest;
+    public PuppetEvent onUngrounded;
+    public PuppetEvent onFallOver;
+    public PuppetEvent onRest;
     [HideInInspector]
     public Vector3 moveVector;
     [HideInInspector]
@@ -34,10 +33,10 @@ namespace RootMotion.Dynamics
 
     protected override void OnInitiate()
     {
-      this.centerOfMass.Initiate((BehaviourBase) this, this.groundLayers);
+      centerOfMass.Initiate(this, groundLayers);
     }
 
-    protected override void OnActivate() => this.StartCoroutine(this.LoseBalance());
+    protected override void OnActivate() => this.StartCoroutine(LoseBalance());
 
     public override void OnReactivate()
     {
@@ -45,96 +44,96 @@ namespace RootMotion.Dynamics
 
     private IEnumerator LoseBalance()
     {
-      Muscle[] muscleArray1 = this.puppetMaster.muscles;
+      Muscle[] muscleArray1 = puppetMaster.muscles;
       for (int index = 0; index < muscleArray1.Length; ++index)
       {
         Muscle m = muscleArray1[index];
-        BehaviourAnimatedStagger.FallParams fallParams = this.GetFallParams(m.props.group);
+        FallParams fallParams = GetFallParams(m.props.group);
         m.state.pinWeightMlp = Mathf.Min(m.state.pinWeightMlp, fallParams.startPinWeightMlp);
         m.state.muscleWeightMlp = Mathf.Min(m.state.muscleWeightMlp, fallParams.startMuscleWeightMlp);
-        m.state.muscleDamperAdd = -this.puppetMaster.muscleDamper;
-        m = (Muscle) null;
+        m.state.muscleDamperAdd = -puppetMaster.muscleDamper;
+        m = null;
       }
-      muscleArray1 = (Muscle[]) null;
-      this.puppetMaster.internalCollisions = true;
+      muscleArray1 = null;
+      puppetMaster.internalCollisions = true;
       bool done = false;
       while (!done)
       {
-        Vector3 vel = Quaternion.Inverse(this.puppetMaster.targetRoot.rotation) * this.centerOfMass.direction * this.animationMag;
-        this.moveVector = Vector3.Lerp(this.moveVector, vel, Time.deltaTime * this.animationBlendSpeed);
-        this.moveVector = Vector3.ClampMagnitude(this.moveVector, 2f);
-        Muscle[] muscleArray2 = this.puppetMaster.muscles;
+        Vector3 vel = Quaternion.Inverse(puppetMaster.targetRoot.rotation) * centerOfMass.direction * animationMag;
+        moveVector = Vector3.Lerp(moveVector, vel, Time.deltaTime * animationBlendSpeed);
+        moveVector = Vector3.ClampMagnitude(moveVector, 2f);
+        Muscle[] muscleArray2 = puppetMaster.muscles;
         for (int index = 0; index < muscleArray2.Length; ++index)
         {
           Muscle m = muscleArray2[index];
-          BehaviourAnimatedStagger.FallParams fallParams = this.GetFallParams(m.props.group);
+          FallParams fallParams = GetFallParams(m.props.group);
           m.state.pinWeightMlp = Mathf.MoveTowards(m.state.pinWeightMlp, 0.0f, Time.deltaTime * fallParams.losePinSpeed);
-          m.state.mappingWeightMlp = Mathf.MoveTowards(m.state.mappingWeightMlp, 1f, Time.deltaTime * this.animationBlendSpeed);
-          m = (Muscle) null;
+          m.state.mappingWeightMlp = Mathf.MoveTowards(m.state.mappingWeightMlp, 1f, Time.deltaTime * animationBlendSpeed);
+          m = null;
         }
-        muscleArray2 = (Muscle[]) null;
+        muscleArray2 = null;
         done = true;
-        Muscle[] muscleArray3 = this.puppetMaster.muscles;
+        Muscle[] muscleArray3 = puppetMaster.muscles;
         for (int index = 0; index < muscleArray3.Length; ++index)
         {
           Muscle m = muscleArray3[index];
-          if ((double) m.state.pinWeightMlp > 0.0 || (double) m.state.mappingWeightMlp < 1.0)
+          if (m.state.pinWeightMlp > 0.0 || m.state.mappingWeightMlp < 1.0)
           {
             done = false;
             break;
           }
-          m = (Muscle) null;
+          m = null;
         }
-        muscleArray3 = (Muscle[]) null;
-        if ((double) this.puppetMaster.muscles[0].rigidbody.position.y - (double) this.puppetMaster.targetRoot.position.y < (double) this.minHipHeight)
+        muscleArray3 = null;
+        if ((double) puppetMaster.muscles[0].rigidbody.position.y - (double) puppetMaster.targetRoot.position.y < minHipHeight)
           done = true;
-        yield return (object) null;
+        yield return null;
         vel = new Vector3();
       }
-      if (this.dropProps)
-        this.RemoveMusclesOfGroup(Muscle.Group.Prop);
-      if (!this.isGrounded)
+      if (dropProps)
+        RemoveMusclesOfGroup(Muscle.Group.Prop);
+      if (!isGrounded)
       {
-        Muscle[] muscleArray4 = this.puppetMaster.muscles;
+        Muscle[] muscleArray4 = puppetMaster.muscles;
         for (int index = 0; index < muscleArray4.Length; ++index)
         {
           Muscle m = muscleArray4[index];
           m.state.pinWeightMlp = 0.0f;
           m.state.muscleWeightMlp = 1f;
-          m = (Muscle) null;
+          m = null;
         }
-        muscleArray4 = (Muscle[]) null;
-        this.onUngrounded.Trigger(this.puppetMaster);
-        if (this.onUngrounded.switchBehaviour)
+        muscleArray4 = null;
+        onUngrounded.Trigger(puppetMaster);
+        if (onUngrounded.switchBehaviour)
           yield break;
       }
-      this.moveVector = Vector3.zero;
-      this.puppetMaster.mappingWeight = 1f;
-      Muscle[] muscleArray5 = this.puppetMaster.muscles;
+      moveVector = Vector3.zero;
+      puppetMaster.mappingWeight = 1f;
+      Muscle[] muscleArray5 = puppetMaster.muscles;
       for (int index = 0; index < muscleArray5.Length; ++index)
       {
         Muscle m = muscleArray5[index];
         m.state.pinWeightMlp = 0.0f;
-        m.state.muscleWeightMlp = this.unbalancedMuscleWeightMlp;
-        m.state.muscleDamperAdd = this.unbalancedMuscleDamperAdd;
-        m = (Muscle) null;
+        m.state.muscleWeightMlp = unbalancedMuscleWeightMlp;
+        m.state.muscleDamperAdd = unbalancedMuscleDamperAdd;
+        m = null;
       }
-      muscleArray5 = (Muscle[]) null;
-      this.onFallOver.Trigger(this.puppetMaster);
-      if (!this.onFallOver.switchBehaviour)
+      muscleArray5 = null;
+      onFallOver.Trigger(puppetMaster);
+      if (!onFallOver.switchBehaviour)
       {
         yield return (object) new WaitForSeconds(1f);
-        while ((double) this.puppetMaster.muscles[0].rigidbody.velocity.magnitude > (double) this.maxGetUpVelocity || !this.isGrounded)
-          yield return (object) null;
-        this.onRest.Trigger(this.puppetMaster);
-        if (!this.onRest.switchBehaviour)
+        while ((double) puppetMaster.muscles[0].rigidbody.velocity.magnitude > maxGetUpVelocity || !isGrounded)
+          yield return null;
+        onRest.Trigger(puppetMaster);
+        if (!onRest.switchBehaviour)
           ;
       }
     }
 
-    private BehaviourAnimatedStagger.FallParams GetFallParams(Muscle.Group group)
+    private FallParams GetFallParams(Muscle.Group group)
     {
-      foreach (BehaviourAnimatedStagger.FallParamsGroup groupOverride in this.groupOverrides)
+      foreach (FallParamsGroup groupOverride in groupOverrides)
       {
         foreach (Muscle.Group group1 in groupOverride.groups)
         {
@@ -142,7 +141,7 @@ namespace RootMotion.Dynamics
             return groupOverride.fallParams;
         }
       }
-      return this.defaults;
+      return defaults;
     }
 
     [Serializable]
@@ -157,7 +156,7 @@ namespace RootMotion.Dynamics
     public struct FallParamsGroup
     {
       public Muscle.Group[] groups;
-      public BehaviourAnimatedStagger.FallParams fallParams;
+      public FallParams fallParams;
     }
   }
 }

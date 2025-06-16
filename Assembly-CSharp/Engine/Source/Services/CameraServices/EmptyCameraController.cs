@@ -1,5 +1,4 @@
 ﻿using Engine.Common;
-using UnityEngine;
 
 namespace Engine.Source.Services.CameraServices
 {

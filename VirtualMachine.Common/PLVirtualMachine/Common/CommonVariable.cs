@@ -1,10 +1,10 @@
-﻿using Cofe.Loggers;
+﻿using System;
+using System.Collections.Generic;
+using Cofe.Loggers;
 using Cofe.Serializations.Converters;
 using Engine.Common.Types;
 using PLVirtualMachine.Common.Data;
 using PLVirtualMachine.Common.EngineAPI;
-using System;
-using System.Collections.Generic;
 
 namespace PLVirtualMachine.Common
 {
@@ -30,29 +30,29 @@ namespace PLVirtualMachine.Common
     {
       LocalVariable localVariable = new LocalVariable();
       localVariable.Initialize(name, type);
-      this.value = (object) localVariable;
-      this.commonVariableType = ECommonVariableType.CV_TYPE_CONTEXT_VARIABLE;
-      this.Initialize(this.contextData + "%" + this.variableData, ((IVariable) this.value).Type);
-      this.variableData = IVariableService.Instance.GetVariableData((IVariable) this.value);
-      this.binded = true;
+      value = localVariable;
+      commonVariableType = ECommonVariableType.CV_TYPE_CONTEXT_VARIABLE;
+      Initialize(contextData + "%" + variableData, ((IVariable) value).Type);
+      variableData = IVariableService.Instance.GetVariableData((IVariable) value);
+      binded = true;
     }
 
     public override EContextVariableCategory Category
     {
       get
       {
-        return this.commonVariableType == ECommonVariableType.CV_TYPE_CONTEXT_VARIABLE ? ((IVariable) this.value).Category : EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_ALL;
+        return commonVariableType == ECommonVariableType.CV_TYPE_CONTEXT_VARIABLE ? ((IVariable) value).Category : EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_ALL;
       }
     }
 
-    public IContext Context => this.contextObj;
+    public IContext Context => contextObj;
 
-    public object Variable => !this.binded ? (object) this.variableData : this.value;
+    public object Variable => !binded ? variableData : value;
 
     public override IEnumerable<IVariable> GetContextVariables(
       EContextVariableCategory contextVarCategory)
     {
-      return this.IsSelf ? this.contextObj.GetContextVariables(contextVarCategory) : base.GetContextVariables(contextVarCategory);
+      return IsSelf ? contextObj.GetContextVariables(contextVarCategory) : base.GetContextVariables(contextVarCategory);
     }
 
     public string Write()
@@ -68,16 +68,16 @@ namespace PLVirtualMachine.Common
         return;
       if (strArray.Length == 1)
       {
-        this.contextData = "";
-        this.variableData = strArray[0];
+        contextData = "";
+        variableData = strArray[0];
       }
       else
       {
-        this.contextData = strArray[0];
-        this.variableData = strArray[1];
+        contextData = strArray[0];
+        variableData = strArray[1];
         if (strArray.Length <= 2)
           return;
-        this.variableData = this.variableData + "%" + strArray[2];
+        variableData = variableData + "%" + strArray[2];
       }
     }
 
@@ -85,11 +85,11 @@ namespace PLVirtualMachine.Common
     {
       get
       {
-        if (this.IsNull)
+        if (IsNull)
           return false;
-        if (!this.selfInited)
-          this.CalculateSelf();
-        return this.isSelf;
+        if (!selfInited)
+          CalculateSelf();
+        return isSelf;
       }
     }
 
@@ -97,15 +97,15 @@ namespace PLVirtualMachine.Common
     {
       get
       {
-        if (this.IsDataNull(this.contextData))
+        if (IsDataNull(contextData))
           return true;
-        return this.contextData == "" && this.variableData == "";
+        return contextData == "" && variableData == "";
       }
     }
 
-    public bool IsBinded => this.binded;
+    public bool IsBinded => binded;
 
-    public ECommonVariableType CommonVariableType => this.commonVariableType;
+    public ECommonVariableType CommonVariableType => commonVariableType;
 
     public void Bind(
       IContext ownerContext,
@@ -115,131 +115,131 @@ namespace PLVirtualMachine.Common
     {
       try
       {
-        if (this.contextData == "" && this.variableData == "" && needType != null && typeof (IRef).IsAssignableFrom(needType.BaseType))
+        if (contextData == "" && variableData == "" && needType != null && typeof (IRef).IsAssignableFrom(needType.BaseType))
         {
-          this.value = BaseSerializer.GetDefaultValue(needType.BaseType);
-          this.binded = true;
-          this.commonVariableType = ECommonVariableType.CV_TYPE_CONSTANT;
+          value = BaseSerializer.GetDefaultValue(needType.BaseType);
+          binded = true;
+          commonVariableType = ECommonVariableType.CV_TYPE_CONSTANT;
         }
         IGameObjectContext globalContext = (IGameObjectContext) IStaticDataContainer.StaticDataContainer.GameRoot;
         if (ownerContext != null && typeof (IGameObjectContext).IsAssignableFrom(ownerContext.GetType()))
           globalContext = (IGameObjectContext) ownerContext;
-        if ("" != this.contextData)
+        if ("" != contextData)
         {
-          this.contextObj = IVariableService.Instance.GetContextByData(globalContext, this.contextData, localContext, contextElement);
-          if (this.contextObj != null)
+          contextObj = IVariableService.Instance.GetContextByData(globalContext, contextData, localContext, contextElement);
+          if (contextObj != null)
           {
-            if (this.contextData == this.variableData && typeof (ILogicObject).IsAssignableFrom(this.contextObj.GetType()))
+            if (contextData == variableData && typeof (ILogicObject).IsAssignableFrom(contextObj.GetType()))
             {
-              this.value = (object) ((ILogicObject) this.contextObj).GetSelf();
-              this.SetSelf();
-              this.commonVariableType = ECommonVariableType.CV_TYPE_CONTEXT_SELF;
-              this.binded = true;
+              value = ((ILogicObject) contextObj).GetSelf();
+              SetSelf();
+              commonVariableType = ECommonVariableType.CV_TYPE_CONTEXT_SELF;
+              binded = true;
             }
             else
             {
-              if ("" != this.variableData)
-                this.value = (object) IVariableService.Instance.GetContextVariableByData(this.contextObj, this.variableData, localContext, contextElement);
-              else if (typeof (ILogicObject).IsAssignableFrom(this.contextObj.GetType()))
-                this.value = (object) ((ILogicObject) this.contextObj).GetSelf();
-              if (typeof (ILogicObject).IsAssignableFrom(this.contextObj.GetType()) && !((ILogicObject) this.contextObj).Static)
+              if ("" != variableData)
+                value = IVariableService.Instance.GetContextVariableByData(contextObj, variableData, localContext, contextElement);
+              else if (typeof (ILogicObject).IsAssignableFrom(contextObj.GetType()))
+                value = ((ILogicObject) contextObj).GetSelf();
+              if (typeof (ILogicObject).IsAssignableFrom(contextObj.GetType()) && !((ILogicObject) contextObj).Static)
               {
                 bool flag = false;
-                if (ownerContext != null && ((ILogicObject) ownerContext).Blueprint.IsDerivedFrom(((ILogicObject) this.contextObj).Blueprint.BaseGuid, true))
+                if (ownerContext != null && ((ILogicObject) ownerContext).Blueprint.IsDerivedFrom(((ILogicObject) contextObj).Blueprint.BaseGuid, true))
                   flag = true;
                 if (!flag)
                 {
-                  this.binded = false;
-                  Logger.AddError(string.Format("Context {0} must be static at {1}", (object) this.contextObj.Name, (object) EngineAPIManager.Instance.CurrentFSMStateInfo));
+                  binded = false;
+                  Logger.AddError(string.Format("Context {0} must be static at {1}", contextObj.Name, EngineAPIManager.Instance.CurrentFSMStateInfo));
                   return;
                 }
               }
-              if (this.variableData == "none" && needType != null && typeof (IRef).IsAssignableFrom(needType.BaseType))
+              if (variableData == "none" && needType != null && typeof (IRef).IsAssignableFrom(needType.BaseType))
               {
-                this.value = BaseSerializer.GetDefaultValue(needType.BaseType);
-                this.binded = true;
-                this.commonVariableType = ECommonVariableType.CV_TYPE_CONSTANT;
+                value = BaseSerializer.GetDefaultValue(needType.BaseType);
+                binded = true;
+                commonVariableType = ECommonVariableType.CV_TYPE_CONSTANT;
               }
-              if (this.value == null && typeof (IParam).IsAssignableFrom(this.contextObj.GetType()) && this.contextData == this.variableData)
+              if (value == null && typeof (IParam).IsAssignableFrom(contextObj.GetType()) && contextData == variableData)
               {
-                this.value = (object) this.contextObj;
-                this.contextObj = (IContext) globalContext;
-                this.binded = true;
+                value = contextObj;
+                contextObj = globalContext;
+                binded = true;
               }
             }
           }
-          else if (this.IsSelf)
+          else if (IsSelf)
           {
-            this.commonVariableType = ECommonVariableType.CV_TYPE_CONTEXT_SELF;
-            this.binded = false;
+            commonVariableType = ECommonVariableType.CV_TYPE_CONTEXT_SELF;
+            binded = false;
             return;
           }
         }
-        else if ("" != this.variableData)
+        else if ("" != variableData)
         {
-          ILogicObject staticContextByData = this.GetStaticContextByData(this.variableData);
+          ILogicObject staticContextByData = GetStaticContextByData(variableData);
           bool flag = false;
           if (staticContextByData != null && staticContextByData.Static)
           {
-            this.contextObj = (IContext) staticContextByData;
-            this.value = (object) staticContextByData.GetSelf();
-            this.SetSelf();
+            contextObj = staticContextByData;
+            value = staticContextByData.GetSelf();
+            SetSelf();
             flag = true;
-            this.binded = true;
+            binded = true;
           }
           if (!flag)
           {
-            this.contextObj = ownerContext;
-            if (this.variableData.StartsWith("group_"))
+            contextObj = ownerContext;
+            if (variableData.StartsWith("group_"))
             {
-              this.value = (object) new LocalVariable();
-              ((ContextVariable) this.value).Initialize(this.variableData, new VMType(typeof (IObjRef), this.variableData.Substring("group_".Length)));
-              this.commonVariableType = ECommonVariableType.CV_TYPE_CONTEXT_VARIABLE;
-              this.binded = true;
+              value = new LocalVariable();
+              ((ContextVariable) value).Initialize(variableData, new VMType(typeof (IObjRef), variableData.Substring("group_".Length)));
+              commonVariableType = ECommonVariableType.CV_TYPE_CONTEXT_VARIABLE;
+              binded = true;
             }
             else
-              this.value = (object) IVariableService.Instance.GetContextVariableByData(ownerContext, this.variableData, localContext, contextElement);
-            if (this.value == null && needType != null)
+              value = IVariableService.Instance.GetContextVariableByData(ownerContext, variableData, localContext, contextElement);
+            if (value == null && needType != null)
             {
-              if (needType.IsSimple && !this.TryGetConstantValue(needType))
+              if (needType.IsSimple && !TryGetConstantValue(needType))
               {
-                this.binded = false;
+                binded = false;
                 return;
               }
-              if (this.variableData == "none")
+              if (variableData == "none")
               {
-                this.value = BaseSerializer.GetDefaultValue(needType.BaseType);
-                this.binded = true;
-                this.commonVariableType = ECommonVariableType.CV_TYPE_CONSTANT;
+                value = BaseSerializer.GetDefaultValue(needType.BaseType);
+                binded = true;
+                commonVariableType = ECommonVariableType.CV_TYPE_CONSTANT;
               }
             }
-            if (this.value == null)
+            if (value == null)
             {
-              this.contextObj = (IContext) globalContext;
-              IContext contextByData = IVariableService.Instance.GetContextByData(globalContext, this.variableData);
+              contextObj = globalContext;
+              IContext contextByData = IVariableService.Instance.GetContextByData(globalContext, variableData);
               if (contextByData != null)
               {
                 if (typeof (ILogicObject).IsAssignableFrom(contextByData.GetType()))
                 {
-                  this.contextObj = contextByData;
-                  this.value = (object) ((ILogicObject) this.contextObj).GetSelf();
-                  this.SetSelf();
-                  this.binded = true;
+                  contextObj = contextByData;
+                  value = ((ILogicObject) contextObj).GetSelf();
+                  SetSelf();
+                  binded = true;
                 }
                 else if (typeof (IParam).IsAssignableFrom(contextByData.GetType()))
                 {
                   if (ownerContext != null && typeof (IParam).IsAssignableFrom(ownerContext.GetType()))
                   {
-                    this.contextObj = ownerContext;
-                    this.value = (object) contextByData;
+                    contextObj = ownerContext;
+                    value = contextByData;
                   }
-                  if (this.value == null && ((IParam) contextByData).OwnerContext != null)
+                  if (value == null && ((IParam) contextByData).OwnerContext != null)
                   {
                     IGameObjectContext ownerContext1 = ((IParam) contextByData).OwnerContext;
                     if (ownerContext1 != null && typeof (ILogicObject).IsAssignableFrom(ownerContext1.GetType()) && ownerContext != null && typeof (ILogicObject).IsAssignableFrom(ownerContext.GetType()) && ((ILogicObject) ownerContext).Blueprint.IsDerivedFrom(ownerContext1.Blueprint.BaseGuid, true))
                     {
-                      this.contextObj = (IContext) ownerContext1;
-                      this.value = (object) contextByData;
+                      contextObj = ownerContext1;
+                      value = contextByData;
                     }
                   }
                 }
@@ -247,101 +247,101 @@ namespace PLVirtualMachine.Common
             }
           }
         }
-        if ((!this.binded || this.commonVariableType == ECommonVariableType.CV_TYPE_CONSTANT) && this.value == null && needType != null && !CommonVariableUtility.IsLocalVariableData(this.variableData) && !this.TryGetConstantValue(needType))
+        if ((!binded || commonVariableType == ECommonVariableType.CV_TYPE_CONSTANT) && value == null && needType != null && !CommonVariableUtility.IsLocalVariableData(variableData) && !TryGetConstantValue(needType))
         {
-          this.binded = false;
+          binded = false;
           return;
         }
-        if (this.value != null)
+        if (value != null)
         {
-          if (this.variableData != "none")
+          if (variableData != "none")
           {
-            if (this.commonVariableType != ECommonVariableType.CV_TYPE_CONSTANT)
-              this.commonVariableType = !this.IsSelf ? ECommonVariableType.CV_TYPE_CONTEXT_VARIABLE : ECommonVariableType.CV_TYPE_CONTEXT_SELF;
-            VMType secondType = !typeof (IVariable).IsAssignableFrom(this.value.GetType()) ? new VMType(this.value.GetType()) : ((IVariable) this.value).Type;
+            if (commonVariableType != ECommonVariableType.CV_TYPE_CONSTANT)
+              commonVariableType = !IsSelf ? ECommonVariableType.CV_TYPE_CONTEXT_VARIABLE : ECommonVariableType.CV_TYPE_CONTEXT_SELF;
+            VMType secondType = !typeof (IVariable).IsAssignableFrom(value.GetType()) ? new VMType(value.GetType()) : ((IVariable) value).Type;
             if (secondType == null)
             {
-              this.binded = false;
-              Logger.AddError(string.Format("Variable {0} value type is undefined at {1}", (object) this.ToString(), (object) EngineAPIManager.Instance.CurrentFSMStateInfo));
+              binded = false;
+              Logger.AddError(string.Format("Variable {0} value type is undefined at {1}", ToString(), EngineAPIManager.Instance.CurrentFSMStateInfo));
             }
             if (needType != null)
             {
-              bool isWeak = this.variableData == "none";
-              this.binded = VMTypeUtility.IsTypesCompatible(needType, secondType, isWeak);
+              bool isWeak = variableData == "none";
+              binded = VMTypeUtility.IsTypesCompatible(needType, secondType, isWeak);
             }
             else
-              this.binded = true;
+              binded = true;
           }
         }
       }
       catch (Exception ex)
       {
-        this.binded = false;
-        Logger.AddError(string.Format("Cannot bind common variable, error: {0}", (object) ex.ToString()));
+        binded = false;
+        Logger.AddError(string.Format("Cannot bind common variable, error: {0}", ex));
       }
-      if (!this.IsBinded)
+      if (!IsBinded)
         return;
-      this.OnInit();
+      OnInit();
     }
 
     public override IVariable GetContextVariable(string variableName)
     {
-      return this.VariableContext != null ? this.VariableContext.GetContextVariable(variableName) : (IVariable) null;
+      return VariableContext != null ? VariableContext.GetContextVariable(variableName) : null;
     }
 
     public IContext VariableContext
     {
       get
       {
-        if (this.IsSelf && this.contextObj != null)
-          return this.contextObj;
-        if (this.variableContext == null)
-          this.MakeVariableContext();
-        return this.variableContext;
+        if (IsSelf && contextObj != null)
+          return contextObj;
+        if (variableContext == null)
+          MakeVariableContext();
+        return variableContext;
       }
     }
 
     public override void Clear()
     {
       base.Clear();
-      this.contextObj = (IContext) null;
-      this.value = (object) null;
-      this.variableContext = (IContext) null;
+      contextObj = null;
+      value = null;
+      variableContext = null;
     }
 
     private bool TryGetConstantValue(VMType needType)
     {
-      if (!CommonVariableUtility.CheckParamInfo(this.variableData, needType))
+      if (!CommonVariableUtility.CheckParamInfo(variableData, needType))
       {
-        this.binded = false;
+        binded = false;
         return true;
       }
-      this.value = PLVirtualMachine.Common.Data.StringSerializer.ReadValue(this.variableData, needType.BaseType);
-      if (PLVirtualMachine.Common.Data.StringSerializer.LastError != "")
+      value = StringSerializer.ReadValue(variableData, needType.BaseType);
+      if (StringSerializer.LastError != "")
         return false;
-      if (this.value != null)
+      if (value != null)
       {
-        if (typeof (IRef).IsAssignableFrom(this.value.GetType()))
+        if (typeof (IRef).IsAssignableFrom(value.GetType()))
         {
-          this.binded = ((IRef) this.value).StaticInstance != null;
-          if (!this.binded)
+          binded = ((IRef) value).StaticInstance != null;
+          if (!binded)
             return false;
         }
         else
-          this.binded = true;
+          binded = true;
       }
-      this.commonVariableType = ECommonVariableType.CV_TYPE_CONSTANT;
+      commonVariableType = ECommonVariableType.CV_TYPE_CONSTANT;
       return true;
     }
 
     private ILogicObject GetStaticContextByData(string data = "")
     {
       if (data == "")
-        data = this.contextData;
+        data = contextData;
       EGuidFormat guidFormat = GuidUtility.GetGuidFormat(data);
       if (guidFormat == EGuidFormat.GT_BASE)
-        return this.GetTemplateByGuid(DefaultConverter.ParseUlong(data));
-      return EGuidFormat.GT_HIERARCHY == guidFormat ? (ILogicObject) IStaticDataContainer.StaticDataContainer.GameRoot.GetWorldHierarhyObjectByGuid(new HierarchyGuid(data)) : (ILogicObject) null;
+        return GetTemplateByGuid(DefaultConverter.ParseUlong(data));
+      return EGuidFormat.GT_HIERARCHY == guidFormat ? IStaticDataContainer.StaticDataContainer.GameRoot.GetWorldHierarhyObjectByGuid(new HierarchyGuid(data)) : (ILogicObject) null;
     }
 
     private ILogicObject GetTemplateByGuid(ulong baseGuid)
@@ -352,110 +352,110 @@ namespace PLVirtualMachine.Common
         if (objectByGuid != null && typeof (ILogicObject).IsAssignableFrom(objectByGuid.GetType()))
           return (ILogicObject) objectByGuid;
       }
-      return (ILogicObject) null;
+      return null;
     }
 
     private void CalculateSelf()
     {
-      this.isSelf = false;
-      if (!this.binded)
+      isSelf = false;
+      if (!binded)
       {
-        if (this.contextData == this.variableData)
+        if (contextData == variableData)
         {
-          this.isSelf = true;
-          this.selfInited = true;
+          isSelf = true;
+          selfInited = true;
         }
-        else if (this.variableData == "" || this.variableData.EndsWith("_Self"))
+        else if (variableData == "" || variableData.EndsWith("_Self"))
         {
-          this.isSelf = true;
-          this.selfInited = true;
+          isSelf = true;
+          selfInited = true;
         }
       }
-      if (!this.binded || this.isSelf)
+      if (!binded || isSelf)
         return;
-      if (this.value != null && this.contextObj != null && typeof (IGameObjectContext).IsAssignableFrom(this.contextObj.GetType()))
+      if (value != null && contextObj != null && typeof (IGameObjectContext).IsAssignableFrom(contextObj.GetType()))
       {
-        if (typeof (IRef).IsAssignableFrom(this.value.GetType()))
+        if (typeof (IRef).IsAssignableFrom(value.GetType()))
         {
-          if (((IRef) this.value).StaticInstance != null && (long) ((IRef) this.value).StaticInstance.BaseGuid == (long) ((IEditorBaseTemplate) this.contextObj).BaseGuid)
-            this.isSelf = true;
+          if (((IRef) value).StaticInstance != null && (long) ((IRef) value).StaticInstance.BaseGuid == (long) ((IEditorBaseTemplate) contextObj).BaseGuid)
+            isSelf = true;
         }
-        else if (typeof (IParam).IsAssignableFrom(this.value.GetType()) && ((INamed) this.value).Name.EndsWith("_Self"))
-          this.isSelf = true;
+        else if (typeof (IParam).IsAssignableFrom(value.GetType()) && ((INamed) value).Name.EndsWith("_Self"))
+          isSelf = true;
       }
-      this.selfInited = true;
+      selfInited = true;
     }
 
     private void MakeVariableContext()
     {
-      if (this.value == null)
+      if (value == null)
         return;
-      if (typeof (IContext).IsAssignableFrom(this.value.GetType()))
+      if (typeof (IContext).IsAssignableFrom(value.GetType()))
       {
-        this.variableContext = (IContext) this.value;
+        variableContext = (IContext) value;
       }
       else
       {
-        if (!typeof (IRef).IsAssignableFrom(this.value.GetType()))
+        if (!typeof (IRef).IsAssignableFrom(value.GetType()))
           return;
-        IObject staticInstance = ((IRef) this.value).StaticInstance;
+        IObject staticInstance = ((IRef) value).StaticInstance;
         if (staticInstance == null || !typeof (IContext).IsAssignableFrom(staticInstance.GetType()))
           return;
-        this.variableContext = (IContext) staticInstance;
+        variableContext = (IContext) staticInstance;
       }
     }
 
     private void OnInit()
     {
-      VMType type = (VMType) null;
-      if (this.value == null)
+      VMType type = null;
+      if (value == null)
       {
-        if (this.contextObj != null)
+        if (contextObj != null)
         {
-          if (!typeof (IGameRoot).IsAssignableFrom(this.contextObj.GetType()))
+          if (!typeof (IGameRoot).IsAssignableFrom(contextObj.GetType()))
           {
-            this.commonVariableType = ECommonVariableType.CV_TYPE_CONTEXT_SELF;
+            commonVariableType = ECommonVariableType.CV_TYPE_CONTEXT_SELF;
             type = new VMType(typeof (IObjRef));
           }
           else
-            this.binded = false;
+            binded = false;
         }
         else
-          Logger.AddError(string.Format("Invalid common variable creation: data are null"));
+          Logger.AddError("Invalid common variable creation: data are null");
       }
-      else if (typeof (IVariable).IsAssignableFrom(this.value.GetType()))
+      else if (typeof (IVariable).IsAssignableFrom(value.GetType()))
       {
-        this.commonVariableType = ECommonVariableType.CV_TYPE_CONTEXT_VARIABLE;
-        type = ((IVariable) this.value).Type;
+        commonVariableType = ECommonVariableType.CV_TYPE_CONTEXT_VARIABLE;
+        type = ((IVariable) value).Type;
       }
       else
       {
-        this.commonVariableType = ECommonVariableType.CV_TYPE_CONSTANT;
-        type = new VMType(this.value.GetType());
+        commonVariableType = ECommonVariableType.CV_TYPE_CONSTANT;
+        type = new VMType(value.GetType());
       }
-      if (this.IsSelf)
+      if (IsSelf)
       {
-        if (this.contextData == "" && this.variableData != "")
+        if (contextData == "" && variableData != "")
         {
-          this.Initialize(this.variableData, type);
+          Initialize(variableData, type);
         }
         else
         {
-          if (!(this.contextData != "") || !(this.variableData == ""))
+          if (!(contextData != "") || !(variableData == ""))
             return;
-          this.Initialize(this.contextData, type);
+          Initialize(contextData, type);
         }
       }
       else
-        this.Initialize(this.contextData + "%" + this.variableData, type);
+        Initialize(contextData + "%" + variableData, type);
     }
 
-    private bool IsDataNull(string data) => data == "0" || this.variableData == "none";
+    private bool IsDataNull(string data) => data == "0" || variableData == "none";
 
     private void SetSelf()
     {
-      this.isSelf = true;
-      this.selfInited = true;
+      isSelf = true;
+      selfInited = true;
     }
   }
 }

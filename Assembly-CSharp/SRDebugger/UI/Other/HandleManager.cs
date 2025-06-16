@@ -1,5 +1,4 @@
 ﻿using SRF;
-using UnityEngine;
 
 namespace SRDebugger.UI.Other
 {
@@ -18,65 +17,65 @@ namespace SRDebugger.UI.Other
 
     private void Start()
     {
-      if (this._hasSet)
+      if (_hasSet)
         return;
-      this.SetAlignment(this.DefaultAlignment);
+      SetAlignment(DefaultAlignment);
     }
 
     public void SetAlignment(PinAlignment alignment)
     {
-      this._hasSet = true;
+      _hasSet = true;
       switch (alignment)
       {
         case PinAlignment.TopLeft:
         case PinAlignment.TopRight:
-          this.SetActive(this.BottomHandle, true);
-          this.SetActive(this.TopHandle, false);
-          this.SetActive(this.TopLeftHandle, false);
-          this.SetActive(this.TopRightHandle, false);
+          SetActive(BottomHandle, true);
+          SetActive(TopHandle, false);
+          SetActive(TopLeftHandle, false);
+          SetActive(TopRightHandle, false);
           break;
         case PinAlignment.BottomLeft:
         case PinAlignment.BottomRight:
-          this.SetActive(this.BottomHandle, false);
-          this.SetActive(this.TopHandle, true);
-          this.SetActive(this.BottomLeftHandle, false);
-          this.SetActive(this.BottomRightHandle, false);
+          SetActive(BottomHandle, false);
+          SetActive(TopHandle, true);
+          SetActive(BottomLeftHandle, false);
+          SetActive(BottomRightHandle, false);
           break;
       }
       switch (alignment)
       {
         case PinAlignment.TopLeft:
         case PinAlignment.BottomLeft:
-          this.SetActive(this.LeftHandle, false);
-          this.SetActive(this.RightHandle, true);
-          this.SetActive(this.TopLeftHandle, false);
-          this.SetActive(this.BottomLeftHandle, false);
+          SetActive(LeftHandle, false);
+          SetActive(RightHandle, true);
+          SetActive(TopLeftHandle, false);
+          SetActive(BottomLeftHandle, false);
           break;
         case PinAlignment.TopRight:
         case PinAlignment.BottomRight:
-          this.SetActive(this.LeftHandle, true);
-          this.SetActive(this.RightHandle, false);
-          this.SetActive(this.TopRightHandle, false);
-          this.SetActive(this.BottomRightHandle, false);
+          SetActive(LeftHandle, true);
+          SetActive(RightHandle, false);
+          SetActive(TopRightHandle, false);
+          SetActive(BottomRightHandle, false);
           break;
       }
       switch (alignment)
       {
         case PinAlignment.TopLeft:
-          this.SetActive(this.BottomLeftHandle, false);
-          this.SetActive(this.BottomRightHandle, true);
+          SetActive(BottomLeftHandle, false);
+          SetActive(BottomRightHandle, true);
           break;
         case PinAlignment.TopRight:
-          this.SetActive(this.BottomLeftHandle, true);
-          this.SetActive(this.BottomRightHandle, false);
+          SetActive(BottomLeftHandle, true);
+          SetActive(BottomRightHandle, false);
           break;
         case PinAlignment.BottomLeft:
-          this.SetActive(this.TopLeftHandle, false);
-          this.SetActive(this.TopRightHandle, true);
+          SetActive(TopLeftHandle, false);
+          SetActive(TopRightHandle, true);
           break;
         case PinAlignment.BottomRight:
-          this.SetActive(this.TopLeftHandle, true);
-          this.SetActive(this.TopRightHandle, false);
+          SetActive(TopLeftHandle, true);
+          SetActive(TopRightHandle, false);
           break;
       }
     }

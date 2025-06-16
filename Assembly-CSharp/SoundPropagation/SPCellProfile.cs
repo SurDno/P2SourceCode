@@ -1,12 +1,10 @@
-﻿using UnityEngine;
-
-namespace SoundPropagation
+﻿namespace SoundPropagation
 {
   [CreateAssetMenu(fileName = "New Cell Profile", menuName = "Scriptable Objects/Sound Propagation Cell Profile")]
   public class SPCellProfile : ScriptableObject
   {
     public Filtering FilteringPerMeter;
 
-    public float OcclusionPerMeter => this.FilteringPerMeter.Occlusion;
+    public float OcclusionPerMeter => FilteringPerMeter.Occlusion;
   }
 }

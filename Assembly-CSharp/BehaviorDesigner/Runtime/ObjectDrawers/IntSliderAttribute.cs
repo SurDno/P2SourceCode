@@ -1,9 +1,9 @@
-﻿using BehaviorDesigner.Runtime.Tasks;
-using System;
+﻿using System;
+using BehaviorDesigner.Runtime.Tasks;
 
 namespace BehaviorDesigner.Runtime.ObjectDrawers
 {
-  [AttributeUsage(AttributeTargets.Field, AllowMultiple = false, Inherited = false)]
+  [AttributeUsage(AttributeTargets.Field)]
   public class IntSliderAttribute : ObjectDrawerAttribute
   {
     public int min;

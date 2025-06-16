@@ -7,10 +7,10 @@
 
   public ZoneHit(PlagueZone plagueZone, float opacity, byte importance, float level)
   {
-    this.PlagueZone = plagueZone;
-    this.Opacity = opacity;
-    this.Importance = importance;
-    this.Level = level;
+    PlagueZone = plagueZone;
+    Opacity = opacity;
+    Importance = importance;
+    Level = level;
   }
 
   public static int Comparison(ZoneHit x, ZoneHit y) => x.Importance.CompareTo(y.Importance);

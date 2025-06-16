@@ -1,9 +1,8 @@
 ﻿using Engine.Behaviours.Components;
-using UnityEngine;
 
 public class SetRandomDialogAnimationBehaviour : StateMachineBehaviour
 {
-  private int lastUsedAnimation = 0;
+  private int lastUsedAnimation;
 
   public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
   {
@@ -14,9 +13,9 @@ public class SetRandomDialogAnimationBehaviour : StateMachineBehaviour
       if ((Object) component == (Object) null)
         return;
     }
-    int num1 = this.lastUsedAnimation == 0 ? 1 : 0;
+    int num1 = lastUsedAnimation == 0 ? 1 : 0;
     int num2 = Random.Range(0, component.DialogIdleAnimationCount + 1);
-    this.lastUsedAnimation = num2;
+    lastUsedAnimation = num2;
     animator.SetInteger("Dialog.AnimationControl", num2);
   }
 }

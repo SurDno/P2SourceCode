@@ -1,10 +1,10 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons.Cloneable;
 using Engine.Common.Commons.Converters;
 using Engine.Source.Commons.Effects;
 using Engine.Source.Effects;
-using System;
 
 namespace Engine.Source.Proxies
 {
@@ -19,30 +19,30 @@ namespace Engine.Source.Proxies
     public object Clone()
     {
       NpcPunchEffect_Generated instance = Activator.CreateInstance<NpcPunchEffect_Generated>();
-      this.CopyTo((object) instance);
-      return (object) instance;
+      CopyTo(instance);
+      return instance;
     }
 
     public void CopyTo(object target2)
     {
       NpcPunchEffect_Generated punchEffectGenerated = (NpcPunchEffect_Generated) target2;
-      punchEffectGenerated.name = this.name;
-      punchEffectGenerated.punchEnum = this.punchEnum;
-      punchEffectGenerated.queue = this.queue;
+      punchEffectGenerated.name = name;
+      punchEffectGenerated.punchEnum = punchEnum;
+      punchEffectGenerated.queue = queue;
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.Write(writer, "Name", this.name);
-      DefaultDataWriteUtility.WriteEnum<PunchTypeEnum>(writer, "punchType", this.punchEnum);
-      DefaultDataWriteUtility.WriteEnum<ParameterEffectQueueEnum>(writer, "Queue", this.queue);
+      DefaultDataWriteUtility.Write(writer, "Name", name);
+      DefaultDataWriteUtility.WriteEnum(writer, "punchType", punchEnum);
+      DefaultDataWriteUtility.WriteEnum(writer, "Queue", queue);
     }
 
     public void DataRead(IDataReader reader, Type type)
     {
-      this.name = DefaultDataReadUtility.Read(reader, "Name", this.name);
-      this.punchEnum = DefaultDataReadUtility.ReadEnum<PunchTypeEnum>(reader, "punchType");
-      this.queue = DefaultDataReadUtility.ReadEnum<ParameterEffectQueueEnum>(reader, "Queue");
+      name = DefaultDataReadUtility.Read(reader, "Name", name);
+      punchEnum = DefaultDataReadUtility.ReadEnum<PunchTypeEnum>(reader, "punchType");
+      queue = DefaultDataReadUtility.ReadEnum<ParameterEffectQueueEnum>(reader, "Queue");
     }
   }
 }

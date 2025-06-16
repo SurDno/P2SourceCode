@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace RootMotion.FinalIK
+﻿namespace RootMotion.FinalIK
 {
   public class IKExecutionOrder : MonoBehaviour
   {
@@ -14,46 +12,46 @@ namespace RootMotion.FinalIK
     {
       get
       {
-        return !((Object) this.animator == (Object) null) && this.animator.updateMode == AnimatorUpdateMode.AnimatePhysics;
+        return !((Object) animator == (Object) null) && animator.updateMode == AnimatorUpdateMode.AnimatePhysics;
       }
     }
 
     private void Start()
     {
-      for (int index = 0; index < this.IKComponents.Length; ++index)
-        this.IKComponents[index].enabled = false;
+      for (int index = 0; index < IKComponents.Length; ++index)
+        IKComponents[index].enabled = false;
     }
 
     private void Update()
     {
-      if (this.animatePhysics)
+      if (animatePhysics)
         return;
-      this.FixTransforms();
+      FixTransforms();
     }
 
     private void FixedUpdate()
     {
-      this.fixedFrame = true;
-      if (!this.animatePhysics)
+      fixedFrame = true;
+      if (!animatePhysics)
         return;
-      this.FixTransforms();
+      FixTransforms();
     }
 
     private void LateUpdate()
     {
-      if (this.animatePhysics && !this.fixedFrame)
+      if (animatePhysics && !fixedFrame)
         return;
-      for (int index = 0; index < this.IKComponents.Length; ++index)
-        this.IKComponents[index].GetIKSolver().Update();
-      this.fixedFrame = false;
+      for (int index = 0; index < IKComponents.Length; ++index)
+        IKComponents[index].GetIKSolver().Update();
+      fixedFrame = false;
     }
 
     private void FixTransforms()
     {
-      for (int index = 0; index < this.IKComponents.Length; ++index)
+      for (int index = 0; index < IKComponents.Length; ++index)
       {
-        if (this.IKComponents[index].fixTransforms)
-          this.IKComponents[index].GetIKSolver().FixTransforms();
+        if (IKComponents[index].fixTransforms)
+          IKComponents[index].GetIKSolver().FixTransforms();
       }
     }
   }

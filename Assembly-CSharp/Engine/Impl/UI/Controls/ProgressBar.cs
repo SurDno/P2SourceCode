@@ -1,8 +1,4 @@
-﻿using UnityEngine;
-using UnityEngine.Serialization;
-using UnityEngine.UI;
-
-namespace Engine.Impl.UI.Controls
+﻿namespace Engine.Impl.UI.Controls
 {
   [DisallowMultipleComponent]
   [ExecuteInEditMode]
@@ -20,42 +16,42 @@ namespace Engine.Impl.UI.Controls
 
     public override float Progress
     {
-      get => this.progress;
+      get => progress;
       set
       {
-        this.progress = value;
-        if ((double) this.progress > 1.0)
-          this.progress = 1f;
-        else if ((double) this.progress < 0.0)
-          this.progress = 0.0f;
-        if ((Object) this.background == (Object) null)
+        progress = value;
+        if (progress > 1.0)
+          progress = 1f;
+        else if (progress < 0.0)
+          progress = 0.0f;
+        if ((Object) background == (Object) null)
           return;
-        RectTransform component = this.background.gameObject.GetComponent<RectTransform>();
-        if ((Object) this.progressSlider == (Object) null)
+        RectTransform component = background.gameObject.GetComponent<RectTransform>();
+        if ((Object) progressSlider == (Object) null)
           return;
-        this.progressSlider.gameObject.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, (component.rect.width - 2f) * this.progress);
+        progressSlider.gameObject.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, (component.rect.width - 2f) * progress);
       }
     }
 
     public Color Background
     {
-      get => (Object) this.background == (Object) null ? Color.black : this.background.color;
+      get => (Object) background == (Object) null ? Color.black : background.color;
       set
       {
-        if ((Object) this.background == (Object) null)
+        if ((Object) background == (Object) null)
           return;
-        this.background.color = value;
+        background.color = value;
       }
     }
 
     public Color Foreground
     {
-      get => (Object) this.progressSlider == (Object) null ? Color.red : this.progressSlider.color;
+      get => (Object) progressSlider == (Object) null ? Color.red : progressSlider.color;
       set
       {
-        if ((Object) this.progressSlider == (Object) null)
+        if ((Object) progressSlider == (Object) null)
           return;
-        this.progressSlider.color = value;
+        progressSlider.color = value;
       }
     }
 

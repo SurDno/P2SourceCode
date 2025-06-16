@@ -1,8 +1,6 @@
 ﻿using Engine.Behaviours.Components;
 using Engine.Source.Commons;
 using Inspectors;
-using UnityEngine;
-using UnityEngine.AI;
 
 public class NpcStateUnknown : INpcState, INpcStateRagdoll
 {
@@ -22,44 +20,44 @@ public class NpcStateUnknown : INpcState, INpcStateRagdoll
 
   private bool TryInit()
   {
-    if (this.inited)
+    if (inited)
       return true;
-    this.agent = this.pivot.GetAgent();
-    this.inited = true;
+    agent = pivot.GetAgent();
+    inited = true;
     return true;
   }
 
   public NpcStateUnknown(NpcState npcState, Pivot pivot)
   {
-    this.GameObject = npcState.gameObject;
+    GameObject = npcState.gameObject;
     this.pivot = pivot;
     this.npcState = npcState;
   }
 
   public void Activate(INpcState previousState)
   {
-    if (!this.TryInit())
+    if (!TryInit())
       return;
-    if ((bool) (Object) this.agent)
+    if ((bool) (Object) agent)
     {
-      this.agentWasEnabled = this.agent.enabled;
-      this.agent.enabled = false;
+      agentWasEnabled = agent.enabled;
+      agent.enabled = false;
     }
-    this.animatorWasEnabled = this.npcState.AnimatorEnabled;
-    this.npcState.AnimatorEnabled = false;
-    this.initialRagdollWeight = this.pivot.RagdollWeight;
+    animatorWasEnabled = npcState.AnimatorEnabled;
+    npcState.AnimatorEnabled = false;
+    initialRagdollWeight = pivot.RagdollWeight;
     if (!(previousState is INpcStateRagdoll))
       return;
-    this.pivot.RagdollWeight = (previousState as INpcStateRagdoll).GetActualRagdollWeight();
-    this.actualRagdollWeight = this.pivot.RagdollWeight;
+    pivot.RagdollWeight = (previousState as INpcStateRagdoll).GetActualRagdollWeight();
+    actualRagdollWeight = pivot.RagdollWeight;
   }
 
   public void Shutdown()
   {
-    if ((bool) (Object) this.agent)
-      this.agent.enabled = this.agentWasEnabled;
-    this.npcState.AnimatorEnabled = this.animatorWasEnabled;
-    this.pivot.RagdollWeight = this.initialRagdollWeight;
+    if ((bool) (Object) agent)
+      agent.enabled = agentWasEnabled;
+    npcState.AnimatorEnabled = animatorWasEnabled;
+    pivot.RagdollWeight = initialRagdollWeight;
   }
 
   public void OnAnimatorMove()
@@ -78,7 +76,7 @@ public class NpcStateUnknown : INpcState, INpcStateRagdoll
       ;
   }
 
-  public float GetActualRagdollWeight() => this.actualRagdollWeight;
+  public float GetActualRagdollWeight() => actualRagdollWeight;
 
   public void OnLodStateChanged(bool enabled)
   {

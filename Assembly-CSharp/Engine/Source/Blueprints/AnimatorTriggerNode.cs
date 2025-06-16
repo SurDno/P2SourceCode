@@ -1,7 +1,6 @@
 ﻿using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
-using UnityEngine;
 
 namespace Engine.Source.Blueprints
 {
@@ -18,11 +17,11 @@ namespace Engine.Source.Blueprints
     [Port("In")]
     private void In()
     {
-      Animator animator = this.animatorInput.value;
-      string name = this.triggerNameInput.value;
+      Animator animator = animatorInput.value;
+      string name = triggerNameInput.value;
       if ((Object) animator != (Object) null)
         animator.SetTrigger(name);
-      this.output.Call();
+      output.Call();
     }
   }
 }

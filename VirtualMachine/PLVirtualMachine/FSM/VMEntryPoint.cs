@@ -1,11 +1,11 @@
-﻿using Cofe.Loggers;
+﻿using System.Xml;
+using Cofe.Loggers;
 using Engine.Common.Commons;
 using PLVirtualMachine.Base;
 using PLVirtualMachine.Common;
 using PLVirtualMachine.Common.Data;
 using PLVirtualMachine.Data;
 using PLVirtualMachine.GameLogic;
-using System.Xml;
 using VirtualMachine.Common;
 using VirtualMachine.Common.Data;
 using VirtualMachine.Data;
@@ -29,23 +29,22 @@ namespace PLVirtualMachine.FSM
 
     public virtual void EditorDataRead(XmlReader xml, IDataCreator creator, string typeContext)
     {
-      while (xml.Read())
-      {
+      while (xml.Read()) {
         if (xml.NodeType == XmlNodeType.Element)
         {
           switch (xml.Name)
           {
             case "AssociatedEntryPoint":
-              this.assocEntryPoint = EditorDataReadUtility.ReadReference<VMEntryPoint>(xml, creator);
+              assocEntryPoint = EditorDataReadUtility.ReadReference<VMEntryPoint>(xml, creator);
               continue;
             case "ActionLine":
-              this.actionLine = EditorDataReadUtility.ReadReference<IActionLine>(xml, creator);
+              actionLine = EditorDataReadUtility.ReadReference<IActionLine>(xml, creator);
               continue;
             case "Name":
-              this.name = EditorDataReadUtility.ReadValue(xml, this.name);
+              name = EditorDataReadUtility.ReadValue(xml, name);
               continue;
             case "Parent":
-              this.parent = EditorDataReadUtility.ReadReference<IContainer>(xml, creator);
+              parent = EditorDataReadUtility.ReadReference<IContainer>(xml, creator);
               continue;
             default:
               if (XMLDataLoader.Logs.Add(typeContext + " : " + xml.Name))
@@ -54,7 +53,8 @@ namespace PLVirtualMachine.FSM
               continue;
           }
         }
-        else if (xml.NodeType == XmlNodeType.EndElement)
+
+        if (xml.NodeType == XmlNodeType.EndElement)
           break;
       }
     }
@@ -70,18 +70,18 @@ namespace PLVirtualMachine.FSM
     {
       get
       {
-        return this.assocEntryPoint != null && this.assocEntryPoint.ActionLine != null ? this.assocEntryPoint.ActionLine : this.actionLine;
+        return assocEntryPoint != null && assocEntryPoint.ActionLine != null ? assocEntryPoint.ActionLine : actionLine;
       }
     }
 
     public override void Clear()
     {
       base.Clear();
-      this.assocEntryPoint = (VMEntryPoint) null;
-      if (this.actionLine == null)
+      assocEntryPoint = null;
+      if (actionLine == null)
         return;
-      ((VMActionLine) this.actionLine).Clear();
-      this.actionLine = (IActionLine) null;
+      ((VMActionLine) actionLine).Clear();
+      actionLine = null;
     }
   }
 }

@@ -5,7 +5,6 @@ using Engine.Impl.Services.Factories;
 using Engine.Source.Components;
 using Engine.Source.Inventory;
 using Inspectors;
-using System;
 
 namespace Engine.Source.Commons.Abilities.Controllers
 {
@@ -14,9 +13,9 @@ namespace Engine.Source.Commons.Abilities.Controllers
   public class ItemMountAbilityController : IAbilityController
   {
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy()]
     protected InventoryGroup group;
     private AbilityItem abilityItem;
     private StorableComponent storable;
@@ -24,30 +23,30 @@ namespace Engine.Source.Commons.Abilities.Controllers
     public void Initialise(AbilityItem abilityItem)
     {
       this.abilityItem = abilityItem;
-      this.storable = this.abilityItem.Ability.Owner.GetComponent<StorableComponent>();
-      if (this.storable == null)
+      storable = this.abilityItem.Ability.Owner.GetComponent<StorableComponent>();
+      if (storable == null)
         return;
-      this.storable.ChangeStorageEvent += new Action<IStorableComponent>(this.ChangeStorageEvent);
-      this.CheckItem();
+      storable.ChangeStorageEvent += ChangeStorageEvent;
+      CheckItem();
     }
 
     public void Shutdown()
     {
-      if (this.storable != null)
+      if (storable != null)
       {
-        this.storable.ChangeStorageEvent -= new Action<IStorableComponent>(this.ChangeStorageEvent);
-        this.abilityItem.Active = false;
+        storable.ChangeStorageEvent -= ChangeStorageEvent;
+        abilityItem.Active = false;
       }
-      this.abilityItem = (AbilityItem) null;
-      this.storable = (StorableComponent) null;
+      abilityItem = null;
+      storable = null;
     }
 
     private void CheckItem()
     {
-      IInventoryComponent container = this.storable.Container;
-      this.abilityItem.Active = container != null && container.GetGroup() == this.group;
+      IInventoryComponent container = storable.Container;
+      abilityItem.Active = container != null && container.GetGroup() == group;
     }
 
-    private void ChangeStorageEvent(IStorableComponent sender) => this.CheckItem();
+    private void ChangeStorageEvent(IStorableComponent sender) => CheckItem();
   }
 }

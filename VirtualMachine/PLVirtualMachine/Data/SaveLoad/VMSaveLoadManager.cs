@@ -1,10 +1,10 @@
-﻿using Cofe.Loggers;
+﻿using System;
+using System.Collections.Generic;
+using System.Xml;
+using Cofe.Loggers;
 using Cofe.Serializations.Converters;
 using PLVirtualMachine.Common.Data;
 using PLVirtualMachine.Common.Serialization;
-using System;
-using System.Collections.Generic;
-using System.Xml;
 
 namespace PLVirtualMachine.Data.SaveLoad
 {
@@ -86,30 +86,30 @@ namespace PLVirtualMachine.Data.SaveLoad
     public static T ReadEnum<T>(XmlNode valueNode) where T : struct, IComparable, IFormattable, IConvertible
     {
       T result;
-      DefaultConverter.TryParseEnum<T>(valueNode.InnerText, out result);
+      DefaultConverter.TryParseEnum(valueNode.InnerText, out result);
       return result;
     }
 
     public static T ReadValue<T>(XmlNode valueNode)
     {
-      return (T) VMSaveLoadManager.ReadValue(valueNode, typeof (T));
+      return (T) ReadValue(valueNode, typeof (T));
     }
 
     public static object ReadValue(XmlNode valueNode, Type objType)
     {
       if (valueNode == null)
       {
-        Logger.AddError(string.Format("Saveload error: attempt to read null node!!!"));
+        Logger.AddError("Saveload error: attempt to read null node!!!");
         return Activator.CreateInstance(objType);
       }
       if (!typeof (IDynamicLoadSerializable).IsAssignableFrom(objType))
-        return PLVirtualMachine.Common.Data.StringSerializer.ReadValue(valueNode.InnerText, objType);
+        return StringSerializer.ReadValue(valueNode.InnerText, objType);
       Type type = BaseSerializer.GetRealRefType(objType);
-      if (type == (Type) null)
+      if (type == null)
         type = objType;
       IDynamicLoadSerializable instance = (IDynamicLoadSerializable) Activator.CreateInstance(type);
       instance.LoadFromXML((XmlElement) valueNode);
-      return (object) instance;
+      return instance;
     }
   }
 }

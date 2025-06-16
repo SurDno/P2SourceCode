@@ -1,6 +1,5 @@
 ﻿using Engine.Impl.UI.Controls;
 using Engine.Impl.UI.Menu.Main;
-using UnityEngine;
 
 namespace Engine.Source.UI.Menu.Main
 {
@@ -11,9 +10,9 @@ namespace Engine.Source.UI.Menu.Main
 
     protected override void RegisterLayer()
     {
-      this.RegisterLayer<IMessageWindow>((IMessageWindow) this);
+      RegisterLayer((IMessageWindow) this);
     }
 
-    public void SetMessage(string text) => this.textView.StringValue = text;
+    public void SetMessage(string text) => textView.StringValue = text;
   }
 }

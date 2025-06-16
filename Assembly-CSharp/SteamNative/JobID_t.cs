@@ -6,7 +6,7 @@
 
     public static implicit operator JobID_t(ulong value)
     {
-      return new JobID_t() { Value = value };
+      return new JobID_t { Value = value };
     }
 
     public static implicit operator ulong(JobID_t value) => value.Value;

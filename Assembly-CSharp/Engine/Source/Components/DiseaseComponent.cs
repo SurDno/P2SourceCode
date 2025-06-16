@@ -1,4 +1,6 @@
-﻿using Engine.Common;
+﻿using System;
+using Cofe.Serializations.Data;
+using Engine.Common;
 using Engine.Common.Commons;
 using Engine.Common.Components;
 using Engine.Common.Generator;
@@ -7,8 +9,6 @@ using Engine.Impl.Services;
 using Engine.Impl.Services.Factories;
 using Engine.Source.Commons;
 using Inspectors;
-using System;
-using UnityEngine;
 
 namespace Engine.Source.Components
 {
@@ -21,8 +21,8 @@ namespace Engine.Source.Components
     IUpdatable,
     INeedSave
   {
-    [StateSaveProxy(MemberEnum.None)]
-    [StateLoadProxy(MemberEnum.None)]
+    [StateSaveProxy]
+    [StateLoadProxy()]
     [Inspected]
     protected float diseaseValue;
     [Inspected]
@@ -41,104 +41,104 @@ namespace Engine.Source.Components
     public override void OnRemoved()
     {
       base.OnRemoved();
-      if (!this.update)
+      if (!update)
         return;
-      this.update = false;
-      InstanceByRequest<UpdateService>.Instance.DiseaseUpdater.RemoveUpdatable((IUpdatable) this);
+      update = false;
+      InstanceByRequest<UpdateService>.Instance.DiseaseUpdater.RemoveUpdatable(this);
     }
 
     public void SetDiseaseValue(float value, TimeSpan deltaTime)
     {
-      this.startTime = ServiceLocator.GetService<TimeService>().AbsoluteGameTime;
+      startTime = ServiceLocator.GetService<TimeService>().AbsoluteGameTime;
       if (deltaTime.Ticks <= 0L)
       {
-        this.endTime = this.startTime;
-        this.currentDiseaseValue = value;
-        this.startDiseaseValue = value;
-        if (this.update)
+        endTime = startTime;
+        currentDiseaseValue = value;
+        startDiseaseValue = value;
+        if (update)
         {
-          this.update = false;
-          InstanceByRequest<UpdateService>.Instance.DiseaseUpdater.RemoveUpdatable((IUpdatable) this);
+          update = false;
+          InstanceByRequest<UpdateService>.Instance.DiseaseUpdater.RemoveUpdatable(this);
         }
       }
       else
       {
-        this.endTime = this.startTime + deltaTime;
-        this.currentDiseaseValue = this.diseaseValue;
-        this.startDiseaseValue = this.diseaseValue;
-        if (!this.update)
+        endTime = startTime + deltaTime;
+        currentDiseaseValue = diseaseValue;
+        startDiseaseValue = diseaseValue;
+        if (!update)
         {
-          this.update = true;
-          InstanceByRequest<UpdateService>.Instance.DiseaseUpdater.AddUpdatable((IUpdatable) this);
+          update = true;
+          InstanceByRequest<UpdateService>.Instance.DiseaseUpdater.AddUpdatable(this);
         }
       }
-      this.diseaseValue = value;
-      Action<float> diseaseValueChanged = this.OnCurrentDiseaseValueChanged;
+      diseaseValue = value;
+      Action<float> diseaseValueChanged = OnCurrentDiseaseValueChanged;
       if (diseaseValueChanged == null)
         return;
-      diseaseValueChanged(this.currentDiseaseValue);
+      diseaseValueChanged(currentDiseaseValue);
     }
 
-    public float DiseaseValue => this.diseaseValue;
+    public float DiseaseValue => diseaseValue;
 
-    public float CurrentDiseaseValue => this.currentDiseaseValue;
+    public float CurrentDiseaseValue => currentDiseaseValue;
 
     public bool NeedSave
     {
       get
       {
-        if (!(this.Owner.Template is IEntity template))
+        if (!(Owner.Template is IEntity template))
         {
-          Debug.LogError((object) ("Template not found, owner : " + this.Owner.GetInfo()));
+          Debug.LogError((object) ("Template not found, owner : " + Owner.GetInfo()));
           return true;
         }
         DiseaseComponent component = template.GetComponent<DiseaseComponent>();
         if (component == null)
         {
-          Debug.LogError((object) (this.GetType().Name + " not found, owner : " + this.Owner.GetInfo()));
+          Debug.LogError((object) (GetType().Name + " not found, owner : " + Owner.GetInfo()));
           return true;
         }
-        return (double) this.diseaseValue != (double) component.diseaseValue;
+        return diseaseValue != (double) component.diseaseValue;
       }
     }
 
     public void ComputeUpdate()
     {
-      if (!this.update)
+      if (!update)
         return;
       TimeSpan absoluteGameTime = ServiceLocator.GetService<TimeService>().AbsoluteGameTime;
-      if (absoluteGameTime >= this.endTime)
+      if (absoluteGameTime >= endTime)
       {
-        this.currentDiseaseValue = this.diseaseValue;
-        this.update = false;
-        InstanceByRequest<UpdateService>.Instance.DiseaseUpdater.RemoveUpdatable((IUpdatable) this);
-        Action<float> diseaseValueChanged = this.OnCurrentDiseaseValueChanged;
+        currentDiseaseValue = diseaseValue;
+        update = false;
+        InstanceByRequest<UpdateService>.Instance.DiseaseUpdater.RemoveUpdatable(this);
+        Action<float> diseaseValueChanged = OnCurrentDiseaseValueChanged;
         if (diseaseValueChanged == null)
           return;
-        diseaseValueChanged(this.currentDiseaseValue);
+        diseaseValueChanged(currentDiseaseValue);
       }
       else
       {
-        TimeSpan timeSpan = absoluteGameTime - this.startTime;
-        double ticks1 = (double) timeSpan.Ticks;
-        timeSpan = this.endTime - this.startTime;
-        double ticks2 = (double) timeSpan.Ticks;
-        this.currentDiseaseValue = Mathf.Lerp(this.startDiseaseValue, this.diseaseValue, Mathf.Clamp01((float) (ticks1 / ticks2)));
-        Action<float> diseaseValueChanged = this.OnCurrentDiseaseValueChanged;
+        TimeSpan timeSpan = absoluteGameTime - startTime;
+        double ticks1 = timeSpan.Ticks;
+        timeSpan = endTime - startTime;
+        double ticks2 = timeSpan.Ticks;
+        currentDiseaseValue = Mathf.Lerp(startDiseaseValue, diseaseValue, Mathf.Clamp01((float) (ticks1 / ticks2)));
+        Action<float> diseaseValueChanged = OnCurrentDiseaseValueChanged;
         if (diseaseValueChanged == null)
           return;
-        diseaseValueChanged(this.currentDiseaseValue);
+        diseaseValueChanged(currentDiseaseValue);
       }
     }
 
-    [Cofe.Serializations.Data.OnLoaded]
+    [OnLoaded]
     private void OnLoaded()
     {
-      this.currentDiseaseValue = this.diseaseValue;
-      Action<float> diseaseValueChanged = this.OnCurrentDiseaseValueChanged;
+      currentDiseaseValue = diseaseValue;
+      Action<float> diseaseValueChanged = OnCurrentDiseaseValueChanged;
       if (diseaseValueChanged == null)
         return;
-      diseaseValueChanged(this.currentDiseaseValue);
+      diseaseValueChanged(currentDiseaseValue);
     }
   }
 }

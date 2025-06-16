@@ -1,14 +1,13 @@
-﻿using Engine.Common.Components.Regions;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using UnityEngine;
+using Engine.Common.Components.Regions;
 
 [CreateAssetMenu(menuName = "Data/Fast Travel Graph")]
 public class FastTravelGraph : ScriptableObject
 {
   [SerializeField]
-  private FastTravelGraph.Link[] links;
-  private List<FastTravelGraph.Link> flow;
+  private Link[] links;
+  private List<Link> flow;
   private FastTravelPointEnum lastOrigin;
   private Queue<FastTravelPointEnum> searchQueue;
 
@@ -27,14 +26,14 @@ public class FastTravelGraph : ScriptableObject
       result.Add(origin);
       return 0;
     }
-    this.CalculateFlow(origin);
-    int index = this.IndexOf(this.flow, destination);
+    CalculateFlow(origin);
+    int index = IndexOf(flow, destination);
     if (index == -1)
       return -1;
     result.Add(destination);
-    FastTravelGraph.Link link = this.flow[index];
+    Link link = flow[index];
     int time = link.Time;
-    for (FastTravelPointEnum pointB = link.PointB; pointB != origin; pointB = this.flow[this.IndexOf(this.flow, pointB)].PointB)
+    for (FastTravelPointEnum pointB = link.PointB; pointB != origin; pointB = flow[IndexOf(flow, pointB)].PointB)
       result.Insert(0, pointB);
     result.Insert(0, origin);
     return time;
@@ -42,50 +41,48 @@ public class FastTravelGraph : ScriptableObject
 
   private void CalculateFlow(FastTravelPointEnum origin)
   {
-    if (this.flow == null)
-      this.flow = new List<FastTravelGraph.Link>();
-    if (origin == this.lastOrigin)
+    if (flow == null)
+      flow = new List<Link>();
+    if (origin == lastOrigin)
       return;
-    this.flow.Clear();
-    this.flow.Add(new FastTravelGraph.Link()
-    {
+    flow.Clear();
+    flow.Add(new Link {
       PointA = origin,
       PointB = FastTravelPointEnum.None,
       Time = 0
     });
-    if (this.searchQueue == null)
-      this.searchQueue = new Queue<FastTravelPointEnum>();
-    this.searchQueue.Enqueue(origin);
-    while (this.searchQueue.Count > 0)
+    if (searchQueue == null)
+      searchQueue = new Queue<FastTravelPointEnum>();
+    searchQueue.Enqueue(origin);
+    while (searchQueue.Count > 0)
     {
-      FastTravelPointEnum point1 = this.searchQueue.Dequeue();
-      int time = this.flow[this.IndexOf(this.flow, point1)].Time;
-      for (int index1 = 0; index1 < this.links.Length; ++index1)
+      FastTravelPointEnum point1 = searchQueue.Dequeue();
+      int time = flow[IndexOf(flow, point1)].Time;
+      for (int index1 = 0; index1 < links.Length; ++index1)
       {
-        if (this.links[index1].PointA == point1 || this.links[index1].PointB == point1)
+        if (links[index1].PointA == point1 || links[index1].PointB == point1)
         {
-          FastTravelPointEnum point2 = this.links[index1].PointA != point1 ? this.links[index1].PointA : this.links[index1].PointB;
-          int num = this.links[index1].Time + time;
-          int index2 = this.IndexOf(this.flow, point2);
+          FastTravelPointEnum point2 = links[index1].PointA != point1 ? links[index1].PointA : links[index1].PointB;
+          int num = links[index1].Time + time;
+          int index2 = IndexOf(flow, point2);
           if (index2 == -1)
           {
-            this.flow.Add(new FastTravelGraph.Link()
-            {
+            flow.Add(new Link {
               PointA = point2,
               PointB = point1,
               Time = num
             });
-            this.searchQueue.Enqueue(point2);
+            searchQueue.Enqueue(point2);
           }
           else
           {
-            FastTravelGraph.Link link = this.flow[index2];
+            Link link = flow[index2];
             if (num < link.Time)
             {
               link.Time = num;
               link.PointB = point1;
-              this.flow[index2] = link;
-              this.searchQueue.Enqueue(point2);
+              flow[index2] = link;
+              searchQueue.Enqueue(point2);
             }
           }
         }
@@ -93,7 +90,7 @@ public class FastTravelGraph : ScriptableObject
     }
   }
 
-  private int IndexOf(List<FastTravelGraph.Link> list, FastTravelPointEnum point)
+  private int IndexOf(List<Link> list, FastTravelPointEnum point)
   {
     for (int index = 0; index < list.Count; ++index)
     {

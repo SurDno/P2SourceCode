@@ -8,6 +8,6 @@ namespace PLVirtualMachine.Common.EngineAPI
     public bool AtOnce;
     public List<APIParamInfo> MessageParams = new List<APIParamInfo>();
 
-    public APIEventInfo(string eventName) => this.EventName = eventName;
+    public APIEventInfo(string eventName) => EventName = eventName;
   }
 }

@@ -1,5 +1,3 @@
-﻿using UnityEngine;
-
-public class ExportObject : MonoBehaviour
+﻿public class ExportObject : MonoBehaviour
 {
 }

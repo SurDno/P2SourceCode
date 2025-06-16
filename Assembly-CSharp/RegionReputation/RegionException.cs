@@ -1,5 +1,5 @@
-﻿using Engine.Common.Components.Regions;
-using System;
+﻿using System;
+using Engine.Common.Components.Regions;
 
 namespace RegionReputation
 {

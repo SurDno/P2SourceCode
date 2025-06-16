@@ -1,9 +1,9 @@
-﻿using Engine.Common;
+﻿using System.Collections.Generic;
+using Engine.Common;
 using Engine.Source.Components;
 using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
-using System.Collections.Generic;
 
 namespace Engine.Source.Blueprints
 {
@@ -18,20 +18,20 @@ namespace Engine.Source.Blueprints
     [Port("In")]
     private void In()
     {
-      IEnumerable<DynamicModelComponent> dynamicModelComponents = this.componentsInput.value;
+      IEnumerable<DynamicModelComponent> dynamicModelComponents = componentsInput.value;
       if (dynamicModelComponents != null)
       {
         foreach (DynamicModelComponent dynamicModelComponent in dynamicModelComponents)
         {
           if (dynamicModelComponent != null)
           {
-            IModel model = dynamicModelComponent.Models.Random<IModel>();
+            IModel model = dynamicModelComponent.Models.Random();
             if (model != null)
               dynamicModelComponent.Model = model;
           }
         }
       }
-      this.output.Call();
+      output.Call();
     }
   }
 }

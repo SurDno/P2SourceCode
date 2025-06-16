@@ -1,10 +1,8 @@
-﻿using AssetDatabases;
+﻿using System.Collections;
+using AssetDatabases;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Engine.Source.Services;
-using System.Collections;
-using UnityEngine;
-using UnityEngine.Scripting;
 
 namespace Engine.Source.Otimizations
 {
@@ -19,15 +17,15 @@ namespace Engine.Source.Otimizations
       else if (context == MemoryStrategyContextEnum.StartGame || context == MemoryStrategyContextEnum.EntryToIndoor || context == MemoryStrategyContextEnum.ChangeLocation || context == MemoryStrategyContextEnum.Time)
       {
         while (!SceneController.CanLoad)
-          yield return (object) null;
+          yield return null;
         SceneController.Disabled = true;
         yield return (object) Resources.UnloadUnusedAssets();
         SceneController.Disabled = false;
         MemoryStrategyService.ResetTime();
         GarbageCollector.GCMode = GarbageCollector.Mode.Enabled;
-        yield return (object) null;
+        yield return null;
         OptimizationUtility.ForceCollect();
-        yield return (object) null;
+        yield return null;
         GarbageCollector.GCMode = GarbageCollector.Mode.Disabled;
       }
     }

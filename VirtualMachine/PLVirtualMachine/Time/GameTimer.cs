@@ -1,12 +1,12 @@
-﻿using Cofe.Loggers;
+﻿using System;
+using System.Xml;
+using Cofe.Loggers;
 using Cofe.Serializations.Data;
 using PLVirtualMachine.Common.Data;
 using PLVirtualMachine.Common.EngineAPI;
 using PLVirtualMachine.Common.Serialization;
 using PLVirtualMachine.Data.SaveLoad;
 using PLVirtualMachine.Dynamic;
-using System;
-using System.Xml;
 
 namespace PLVirtualMachine.Time
 {
@@ -29,7 +29,7 @@ namespace PLVirtualMachine.Time
     {
     }
 
-    public GameTimer(int index) => this.timerIndex = index;
+    public GameTimer(int index) => timerIndex = index;
 
     public event Action<GameTimer> OnEvent;
 
@@ -40,172 +40,172 @@ namespace PLVirtualMachine.Time
       GameTime targetTime,
       bool bRepeat)
     {
-      this.gtType = timerType;
+      gtType = timerType;
       this.targetTime = targetTime;
-      this.currentTime.Init();
-      this.eventsCutTime = new GameTime(this.currentTime);
-      this.isRepeat = bRepeat && timerType != 0;
-      this.fsmObjGuid = initiatorFSMGuid;
-      this.isActive = true;
-      this.timerSerial = GameTimer.CreateTimerSerial();
+      currentTime.Init();
+      eventsCutTime = new GameTime(currentTime);
+      isRepeat = bRepeat && timerType != 0;
+      fsmObjGuid = initiatorFSMGuid;
+      isActive = true;
+      timerSerial = CreateTimerSerial();
       if (timerType == EGameTimerType.GAME_TIMER_TYPE_ABSOLUTE)
         return;
-      Logger.AddWarning(string.Format("Test timer started, timer id={0}, hours={1}, minutes={2}, seconds={3} at {4}", (object) this.TimerGuid, (object) targetTime.Hours, (object) targetTime.Minutes, (object) targetTime.Seconds, (object) DynamicFSM.CurrentStateInfo));
+      Logger.AddWarning(string.Format("Test timer started, timer id={0}, hours={1}, minutes={2}, seconds={3} at {4}", TimerGuid, targetTime.Hours, targetTime.Minutes, targetTime.Seconds, DynamicFSM.CurrentStateInfo));
     }
 
     public void Stop()
     {
-      this.isRepeat = false;
-      this.isActive = false;
+      isRepeat = false;
+      isActive = false;
     }
 
     public void StateSave(IDataWriter writer)
     {
-      SaveManagerUtility.SaveDynamicSerializable(writer, "TargetTime", (ISerializeStateSave) this.targetTime);
-      SaveManagerUtility.SaveDynamicSerializable(writer, "CurrentTime", (ISerializeStateSave) this.currentTime);
-      SaveManagerUtility.SaveDynamicSerializable(writer, "EventsCutTime", (ISerializeStateSave) this.eventsCutTime);
-      SaveManagerUtility.Save(writer, "Repeat", this.isRepeat);
-      SaveManagerUtility.Save(writer, "FsmObjGuid", this.fsmObjGuid);
-      SaveManagerUtility.Save(writer, "Active", this.isActive);
-      SaveManagerUtility.SaveEnum<EGameTimerType>(writer, "GTType", this.gtType);
-      SaveManagerUtility.Save(writer, "StateGuid", this.stateGuid);
-      SaveManagerUtility.Save(writer, "TimerSerial", this.timerSerial);
-      SaveManagerUtility.Save(writer, "TimerIndex", this.timerIndex);
-      SaveManagerUtility.Save(writer, "Remainder", this.remainder);
+      SaveManagerUtility.SaveDynamicSerializable(writer, "TargetTime", targetTime);
+      SaveManagerUtility.SaveDynamicSerializable(writer, "CurrentTime", currentTime);
+      SaveManagerUtility.SaveDynamicSerializable(writer, "EventsCutTime", eventsCutTime);
+      SaveManagerUtility.Save(writer, "Repeat", isRepeat);
+      SaveManagerUtility.Save(writer, "FsmObjGuid", fsmObjGuid);
+      SaveManagerUtility.Save(writer, "Active", isActive);
+      SaveManagerUtility.SaveEnum(writer, "GTType", gtType);
+      SaveManagerUtility.Save(writer, "StateGuid", stateGuid);
+      SaveManagerUtility.Save(writer, "TimerSerial", timerSerial);
+      SaveManagerUtility.Save(writer, "TimerIndex", timerIndex);
+      SaveManagerUtility.Save(writer, "Remainder", remainder);
     }
 
     public void LoadFromXML(XmlElement xmlNode)
     {
       try
       {
-        this.targetTime = new GameTime();
-        this.currentTime = new GameTime();
-        this.eventsCutTime = new GameTime();
+        targetTime = new GameTime();
+        currentTime = new GameTime();
+        eventsCutTime = new GameTime();
         for (int i = 0; i < xmlNode.ChildNodes.Count; ++i)
         {
           if (xmlNode.ChildNodes[i].Name == "TargetTime")
-            VMSaveLoadManager.LoadDynamicSerializable((XmlElement) xmlNode.ChildNodes[i], (IDynamicLoadSerializable) this.targetTime);
+            VMSaveLoadManager.LoadDynamicSerializable((XmlElement) xmlNode.ChildNodes[i], targetTime);
           else if (xmlNode.ChildNodes[i].Name == "CurrentTime")
-            VMSaveLoadManager.LoadDynamicSerializable((XmlElement) xmlNode.ChildNodes[i], (IDynamicLoadSerializable) this.currentTime);
+            VMSaveLoadManager.LoadDynamicSerializable((XmlElement) xmlNode.ChildNodes[i], currentTime);
           else if (xmlNode.ChildNodes[i].Name == "EventsCutTime")
-            VMSaveLoadManager.LoadDynamicSerializable((XmlElement) xmlNode.ChildNodes[i], (IDynamicLoadSerializable) this.eventsCutTime);
+            VMSaveLoadManager.LoadDynamicSerializable((XmlElement) xmlNode.ChildNodes[i], eventsCutTime);
           else if (xmlNode.ChildNodes[i].Name == "Repeat")
-            this.isRepeat = VMSaveLoadManager.ReadBool(xmlNode.ChildNodes[i]);
+            isRepeat = VMSaveLoadManager.ReadBool(xmlNode.ChildNodes[i]);
           else if (xmlNode.ChildNodes[i].Name == "FsmObjGuid")
-            this.fsmObjGuid = VMSaveLoadManager.ReadGuid(xmlNode.ChildNodes[i]);
+            fsmObjGuid = VMSaveLoadManager.ReadGuid(xmlNode.ChildNodes[i]);
           else if (xmlNode.ChildNodes[i].Name == "Active")
-            this.isActive = VMSaveLoadManager.ReadBool(xmlNode.ChildNodes[i]);
+            isActive = VMSaveLoadManager.ReadBool(xmlNode.ChildNodes[i]);
           else if (xmlNode.ChildNodes[i].Name == "GTType")
-            this.gtType = VMSaveLoadManager.ReadEnum<EGameTimerType>(xmlNode.ChildNodes[i]);
+            gtType = VMSaveLoadManager.ReadEnum<EGameTimerType>(xmlNode.ChildNodes[i]);
           else if (xmlNode.ChildNodes[i].Name == "StateGuid")
-            this.stateGuid = VMSaveLoadManager.ReadUlong(xmlNode.ChildNodes[i]);
+            stateGuid = VMSaveLoadManager.ReadUlong(xmlNode.ChildNodes[i]);
           else if (xmlNode.ChildNodes[i].Name == "TimerSerial")
           {
-            this.timerSerial = VMSaveLoadManager.ReadInt(xmlNode.ChildNodes[i]);
-            if (this.timerSerial > GameTimer.CurrTimerSerialNumber)
-              GameTimer.CurrTimerSerialNumber = this.timerSerial;
+            timerSerial = VMSaveLoadManager.ReadInt(xmlNode.ChildNodes[i]);
+            if (timerSerial > CurrTimerSerialNumber)
+              CurrTimerSerialNumber = timerSerial;
           }
           else if (xmlNode.ChildNodes[i].Name == "TimerIndex")
-            this.timerIndex = VMSaveLoadManager.ReadInt(xmlNode.ChildNodes[i]);
+            timerIndex = VMSaveLoadManager.ReadInt(xmlNode.ChildNodes[i]);
           else if (xmlNode.ChildNodes[i].Name == "Remainder")
-            this.remainder = (double) VMSaveLoadManager.ReadFloat(xmlNode.ChildNodes[i]);
+            remainder = VMSaveLoadManager.ReadFloat(xmlNode.ChildNodes[i]);
         }
       }
       catch (Exception ex)
       {
-        Logger.AddError(string.Format("Saveload error: GameTimer loading error : {0}", (object) ex.ToString()));
+        Logger.AddError(string.Format("Saveload error: GameTimer loading error : {0}", ex));
       }
     }
 
-    public bool IsRepeat => this.isRepeat;
+    public bool IsRepeat => isRepeat;
 
-    public EGameTimerType GTType => this.gtType;
+    public EGameTimerType GTType => gtType;
 
-    public Guid FSMGuid => this.fsmObjGuid;
+    public Guid FSMGuid => fsmObjGuid;
 
-    public bool Active => this.isActive;
+    public bool Active => isActive;
 
     public ulong TimerGuid
     {
-      get => (ulong) this.timerSerial * (ulong) uint.MaxValue + (ulong) this.timerIndex;
+      get => (ulong) timerSerial * uint.MaxValue + (ulong) timerIndex;
     }
 
     public object ResultMessageValue
     {
       get
       {
-        if (this.GTType == EGameTimerType.GAME_TIMER_TYPE_RELATIVE_GLOBAL)
-          return (object) this.TimerGuid;
-        return this.GTType == EGameTimerType.GAME_TIMER_TYPE_RELATIVE_LOCAL ? (object) this.stateGuid : (object) 0;
+        if (GTType == EGameTimerType.GAME_TIMER_TYPE_RELATIVE_GLOBAL)
+          return TimerGuid;
+        return GTType == EGameTimerType.GAME_TIMER_TYPE_RELATIVE_LOCAL ? stateGuid : (object) 0;
       }
     }
 
     public bool Check(GameTime currTime, bool needForceEvent = true)
     {
-      if (currTime.TotalValue - this.targetTime.TotalValue <= 0.0)
+      if (currTime.TotalValue - targetTime.TotalValue <= 0.0)
         return false;
-      this.OnGameTime(currTime.TotalValue, needForceEvent);
+      OnGameTime(currTime.TotalValue, needForceEvent);
       return true;
     }
 
-    public bool IsElapsed(GameTime currTime) => currTime.TotalValue > this.targetTime.TotalValue;
+    public bool IsElapsed(GameTime currTime) => currTime.TotalValue > targetTime.TotalValue;
 
     public bool Check(double deltaTime, bool needForceEvent = true)
     {
-      this.currentTime.Process(deltaTime);
-      return this.Check(this.currentTime, needForceEvent);
+      currentTime.Process(deltaTime);
+      return Check(currentTime, needForceEvent);
     }
 
-    public GameTime TargetTime => this.targetTime;
+    public GameTime TargetTime => targetTime;
 
     public GameTime EventsCutTime
     {
-      get => this.eventsCutTime;
+      get => eventsCutTime;
       set
       {
         if (value != null)
-          this.eventsCutTime = new GameTime(value);
+          eventsCutTime = new GameTime(value);
         else
-          this.eventsCutTime = new GameTime();
+          eventsCutTime = new GameTime();
       }
     }
 
     private void OnGameTime(double timeElapsed, bool needForceEvents = true)
     {
       int iCount = 1;
-      if (((!this.IsRepeat ? 0 : (this.gtType != 0 ? 1 : 0)) & (needForceEvents ? 1 : 0)) != 0)
+      if (((!IsRepeat ? 0 : (gtType != 0 ? 1 : 0)) & (needForceEvents ? 1 : 0)) != 0)
       {
-        double totalValue = this.targetTime.TotalValue;
-        double d = this.remainder + timeElapsed / totalValue;
+        double totalValue = targetTime.TotalValue;
+        double d = remainder + timeElapsed / totalValue;
         iCount = (int) Math.Floor(d);
-        this.remainder = d - (double) iCount;
+        remainder = d - iCount;
       }
       if (needForceEvents)
       {
-        if (this.gtType == EGameTimerType.GAME_TIMER_TYPE_ABSOLUTE && this.targetTime.TotalSeconds >= this.eventsCutTime.TotalSeconds)
+        if (gtType == EGameTimerType.GAME_TIMER_TYPE_ABSOLUTE && targetTime.TotalSeconds >= eventsCutTime.TotalSeconds)
         {
-          Action<GameTimer> onEvent = this.OnEvent;
+          Action<GameTimer> onEvent = OnEvent;
           if (onEvent != null)
             onEvent(this);
         }
-        else if (this.gtType != EGameTimerType.GAME_TIMER_TYPE_ABSOLUTE)
+        else if (gtType != EGameTimerType.GAME_TIMER_TYPE_ABSOLUTE)
           VirtualMachine.Instance.GameRootFsm.RaiseTimerEvent(this, iCount);
       }
-      if (this.IsRepeat)
-        this.currentTime.Init();
+      if (IsRepeat)
+        currentTime.Init();
       else
-        this.Stop();
+        Stop();
     }
 
     private static int CreateTimerSerial()
     {
-      ++GameTimer.CurrTimerSerialNumber;
-      return GameTimer.CurrTimerSerialNumber;
+      ++CurrTimerSerialNumber;
+      return CurrTimerSerialNumber;
     }
 
     public ulong CalculateTimerPriority()
     {
-      return this.GTType == EGameTimerType.GAME_TIMER_TYPE_ABSOLUTE ? this.TargetTime.TotalSeconds * 1000000UL : (this.TargetTime.TotalSeconds - this.currentTime.TotalSeconds) * 1000000UL;
+      return GTType == EGameTimerType.GAME_TIMER_TYPE_ABSOLUTE ? TargetTime.TotalSeconds * 1000000UL : (TargetTime.TotalSeconds - currentTime.TotalSeconds) * 1000000UL;
     }
   }
 }

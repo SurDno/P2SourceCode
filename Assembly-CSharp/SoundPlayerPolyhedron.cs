@@ -1,11 +1,9 @@
-﻿using Engine.Common;
-using Engine.Common.Services;
-using Engine.Source.Audio;
-using Engine.Source.Commons;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
+using Engine.Common;
+using Engine.Common.Services;
+using Engine.Source.Commons;
 
 [RequireComponent(typeof (AudioSource))]
 public class SoundPlayerPolyhedron : MonoBehaviour
@@ -28,30 +26,30 @@ public class SoundPlayerPolyhedron : MonoBehaviour
   private float soundFadeSpeed = 0.2f;
   private AudioSource audioSource;
   private float wait = 0.1f;
-  private float waitingForUpdate = 0.0f;
+  private float waitingForUpdate;
 
   private void Start()
   {
-    this.audioSource = this.GetComponent<AudioSource>();
-    this.clips = ((IEnumerable<AudioClip>) this.clips).Where<AudioClip>((Func<AudioClip, bool>) (o => (UnityEngine.Object) o != (UnityEngine.Object) null)).ToArray<AudioClip>();
-    if (this.clips.Length == 0)
+    audioSource = this.GetComponent<AudioSource>();
+    clips = ((IEnumerable<AudioClip>) clips).Where((Func<AudioClip, bool>) (o => (UnityEngine.Object) o != (UnityEngine.Object) null)).ToArray();
+    if (clips.Length == 0)
       return;
-    AudioClip audioClip = ((IEnumerable<AudioClip>) this.clips).Random<AudioClip>();
-    this.audioSource.loop = true;
-    this.audioSource.clip = audioClip;
-    this.audioSource.PlayAndCheck();
-    this.audioSource.volume = 0.0f;
+    AudioClip audioClip = ((IEnumerable<AudioClip>) clips).Random();
+    audioSource.loop = true;
+    audioSource.clip = audioClip;
+    audioSource.PlayAndCheck();
+    audioSource.volume = 0.0f;
   }
 
   private void Update()
   {
-    if (this.clips.Length == 0)
+    if (clips.Length == 0)
       return;
-    this.waitingForUpdate += Time.deltaTime;
-    if ((double) this.waitingForUpdate < (double) this.wait)
+    waitingForUpdate += Time.deltaTime;
+    if (waitingForUpdate < (double) wait)
       return;
-    this.UpdateVolume();
-    this.waitingForUpdate = 0.0f;
+    UpdateVolume();
+    waitingForUpdate = 0.0f;
   }
 
   private void UpdateVolume()
@@ -59,14 +57,14 @@ public class SoundPlayerPolyhedron : MonoBehaviour
     ISimulation service = ServiceLocator.GetService<ISimulation>();
     if (service == null)
     {
-      this.audioSource.enabled = false;
+      audioSource.enabled = false;
     }
     else
     {
       IEntity player = service.Player;
       if (player == null || (UnityEngine.Object) ((IEntityView) player).GameObject == (UnityEngine.Object) null)
       {
-        this.audioSource.enabled = false;
+        audioSource.enabled = false;
       }
       else
       {
@@ -76,12 +74,12 @@ public class SoundPlayerPolyhedron : MonoBehaviour
         };
         float maxRadius = this.maxRadius;
         float magnitude = (this.transform.position - vector3).magnitude;
-        bool flag = (double) magnitude < (double) maxRadius;
-        if (this.audioSource.enabled != flag)
-          this.audioSource.enabled = flag;
-        if ((double) magnitude < (double) this.minRadius)
+        bool flag = magnitude < (double) maxRadius;
+        if (audioSource.enabled != flag)
+          audioSource.enabled = flag;
+        if (magnitude < (double) minRadius)
         {
-          this.audioSource.volume = this.baseVolume;
+          audioSource.volume = baseVolume;
         }
         else
         {
@@ -92,7 +90,7 @@ public class SoundPlayerPolyhedron : MonoBehaviour
           {
             y = 0.0f
           });
-          this.audioSource.volume = Mathf.MoveTowards(this.audioSource.volume, this.baseVolume * ((double) num < (double) this.minAngle ? 1f : 1f - Mathf.InverseLerp(this.minAngle, this.maxAngle, num)) * (1f - Mathf.InverseLerp(this.minRadius, this.maxRadius, magnitude)), this.wait * this.soundFadeSpeed);
+          audioSource.volume = Mathf.MoveTowards(audioSource.volume, baseVolume * (num < (double) minAngle ? 1f : 1f - Mathf.InverseLerp(minAngle, maxAngle, num)) * (1f - Mathf.InverseLerp(minRadius, this.maxRadius, magnitude)), wait * soundFadeSpeed);
         }
       }
     }

@@ -1,12 +1,12 @@
-﻿using Cofe.Loggers;
+﻿using System;
+using System.Collections.Generic;
+using System.Xml;
+using Cofe.Loggers;
 using Cofe.Serializations.Data;
 using PLVirtualMachine.Base;
 using PLVirtualMachine.Common;
 using PLVirtualMachine.Common.Data;
 using PLVirtualMachine.Common.Serialization;
-using System;
-using System.Collections.Generic;
-using System.Xml;
 
 namespace PLVirtualMachine.Dynamic
 {
@@ -23,30 +23,30 @@ namespace PLVirtualMachine.Dynamic
     public VMDynamicCommonList(VMCommonList copyList)
       : base(copyList)
     {
-      for (int index = 0; index < this.ObjectsCount; ++index)
-        this.realObjectsList.Add((object) null);
+      for (int index = 0; index < ObjectsCount; ++index)
+        realObjectsList.Add(null);
     }
 
     public override void Read(string data)
     {
       base.Read(data);
-      for (int index = 0; index < this.ObjectsCount; ++index)
-        this.realObjectsList.Add((object) null);
+      for (int index = 0; index < ObjectsCount; ++index)
+        realObjectsList.Add(null);
     }
 
     public override object GetObject(int objIndex)
     {
       if (objIndex < 0)
-        return (object) null;
-      if (objIndex >= this.realObjectsList.Count)
+        return null;
+      if (objIndex >= realObjectsList.Count)
       {
-        Logger.AddWarning(string.Format("Invalid list index {0} in list of {1} values", (object) objIndex, (object) this.realObjectsList.Count));
-        objIndex = this.realObjectsList.Count - 1;
+        Logger.AddWarning(string.Format("Invalid list index {0} in list of {1} values", objIndex, realObjectsList.Count));
+        objIndex = realObjectsList.Count - 1;
       }
-      if (this.realObjectsList[objIndex] != null)
-        return typeof (IParam).IsAssignableFrom(this.realObjectsList[objIndex].GetType()) ? ((IParam) this.realObjectsList[objIndex]).Value : this.realObjectsList[objIndex];
+      if (realObjectsList[objIndex] != null)
+        return typeof (IParam).IsAssignableFrom(realObjectsList[objIndex].GetType()) ? ((IParam) realObjectsList[objIndex]).Value : realObjectsList[objIndex];
       object data = base.GetObject(objIndex);
-      CommonVariable variable = (CommonVariable) null;
+      CommonVariable variable = null;
       if (data is CommonVariable)
         variable = (CommonVariable) data;
       else if (typeof (string) == data.GetType())
@@ -56,34 +56,34 @@ namespace PLVirtualMachine.Dynamic
       }
       if (variable != null)
       {
-        variable.Bind((IContext) IStaticDataContainer.StaticDataContainer.GameRoot);
+        variable.Bind(IStaticDataContainer.StaticDataContainer.GameRoot);
         if (variable.IsBinded)
         {
           IParam dynamicParam = ((VMVariableService) IVariableService.Instance).GetDynamicParam(variable, VMEngineAPIManager.LastMethodExecInitiator);
-          this.realObjectsList[objIndex] = !(typeof (DynamicParameter) == dynamicParam.GetType()) ? dynamicParam.Value : (object) (DynamicParameter) dynamicParam;
+          realObjectsList[objIndex] = !(typeof (DynamicParameter) == dynamicParam.GetType()) ? dynamicParam.Value : (DynamicParameter) dynamicParam;
           return dynamicParam.Value;
         }
       }
-      this.realObjectsList[objIndex] = data;
+      realObjectsList[objIndex] = data;
       return data;
     }
 
     public override void Clear()
     {
       base.Clear();
-      this.realObjectsList.Clear();
+      realObjectsList.Clear();
     }
 
     public override void AddObject(object obj)
     {
       if (obj == null)
       {
-        Logger.AddError(string.Format("Adding null to common list attemption!"));
+        Logger.AddError("Adding null to common list attemption!");
       }
       else
       {
         base.AddObject(obj);
-        this.realObjectsList.Add((object) null);
+        realObjectsList.Add(null);
       }
     }
 
@@ -92,35 +92,35 @@ namespace PLVirtualMachine.Dynamic
       try
       {
         base.RemoveObjectByIndex(objIndex);
-        if (objIndex < 0 || objIndex >= this.realObjectsList.Count)
+        if (objIndex < 0 || objIndex >= realObjectsList.Count)
           return;
-        this.realObjectsList.RemoveAt(objIndex);
+        realObjectsList.RemoveAt(objIndex);
       }
       catch (Exception ex)
       {
-        Logger.AddError(string.Format("Removing dynamic list object by index error: {0}!", (object) ex.ToString()));
+        Logger.AddError(string.Format("Removing dynamic list object by index error: {0}!", ex));
       }
     }
 
     public override int RemoveObjectInstanceByGuid(Guid objGuid)
     {
       int num = -1;
-      for (int index = 0; index < this.realObjectsList.Count; ++index)
+      for (int index = 0; index < realObjectsList.Count; ++index)
       {
-        IEngineInstanced engineInstanced = (IEngineInstanced) null;
-        if (this.realObjectsList[index] != null)
+        IEngineInstanced engineInstanced = null;
+        if (realObjectsList[index] != null)
         {
-          if (typeof (IParam).IsAssignableFrom(this.realObjectsList[index].GetType()))
+          if (typeof (IParam).IsAssignableFrom(realObjectsList[index].GetType()))
           {
-            if (((IParam) this.realObjectsList[index]).Value != null)
+            if (((IParam) realObjectsList[index]).Value != null)
             {
-              object obj = ((IParam) this.realObjectsList[index]).Value;
+              object obj = ((IParam) realObjectsList[index]).Value;
               if (typeof (IEngineInstanced).IsAssignableFrom(obj.GetType()))
                 engineInstanced = (IEngineInstanced) obj;
             }
           }
-          else if (typeof (IEngineInstanced).IsAssignableFrom(this.realObjectsList[index].GetType()))
-            engineInstanced = (IEngineInstanced) this.realObjectsList[index];
+          else if (typeof (IEngineInstanced).IsAssignableFrom(realObjectsList[index].GetType()))
+            engineInstanced = (IEngineInstanced) realObjectsList[index];
           if (engineInstanced != null && engineInstanced.EngineGuid == objGuid)
           {
             num = index;
@@ -128,49 +128,49 @@ namespace PLVirtualMachine.Dynamic
           }
         }
       }
-      if (num >= 0 && num < this.realObjectsList.Count)
+      if (num >= 0 && num < realObjectsList.Count)
       {
-        this.RemoveObjectByIndex(num);
+        RemoveObjectByIndex(num);
       }
       else
       {
         num = base.RemoveObjectInstanceByGuid(objGuid);
-        if (num >= 0 && num < this.realObjectsList.Count)
-          this.realObjectsList.RemoveAt(num);
+        if (num >= 0 && num < realObjectsList.Count)
+          realObjectsList.RemoveAt(num);
       }
       return num;
     }
 
     public override void Merge(ICommonList mergeList)
     {
-      int count = this.realObjectsList.Count;
+      int count = realObjectsList.Count;
       base.Merge(mergeList);
-      for (int index = count; index < this.ObjectsCount; ++index)
-        this.realObjectsList.Add((object) null);
+      for (int index = count; index < ObjectsCount; ++index)
+        realObjectsList.Add(null);
     }
 
     public void StateSave(IDataWriter writer)
     {
-      SaveManagerUtility.SaveDynamicSerializableList<ListObjectInfo>(writer, "CommonListElementsList", this.objectsList);
+      SaveManagerUtility.SaveDynamicSerializableList(writer, "CommonListElementsList", objectsList);
     }
 
     public void LoadFromXML(XmlElement objNode)
     {
-      this.objectsList.Clear();
+      objectsList.Clear();
       for (int i = 0; i < objNode.ChildNodes.Count; ++i)
       {
         if (objNode.ChildNodes[i].Name == "CommonListElementsList")
         {
           XmlElement childNode1 = (XmlElement) objNode.ChildNodes[i];
-          this.objectsList.Capacity = childNode1.ChildNodes.Count;
+          objectsList.Capacity = childNode1.ChildNodes.Count;
           foreach (XmlElement childNode2 in childNode1.ChildNodes)
           {
             ListObjectInfo listObjectInfo = new ListObjectInfo();
             listObjectInfo.LoadFromXML(childNode2);
-            this.objectsList.Add(listObjectInfo);
+            objectsList.Add(listObjectInfo);
           }
-          for (int index = 0; index < this.ObjectsCount; ++index)
-            this.realObjectsList.Add((object) null);
+          for (int index = 0; index < ObjectsCount; ++index)
+            realObjectsList.Add(null);
         }
       }
     }

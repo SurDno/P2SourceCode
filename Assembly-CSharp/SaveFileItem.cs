@@ -1,6 +1,4 @@
 ﻿using System;
-using UnityEngine;
-using UnityEngine.UI;
 
 public class SaveFileItem : MonoBehaviour
 {
@@ -12,7 +10,7 @@ public class SaveFileItem : MonoBehaviour
 
   public void OnPress()
   {
-    Action<SaveFileItem> onPressed = this.OnPressed;
+    Action<SaveFileItem> onPressed = OnPressed;
     if (onPressed == null)
       return;
     onPressed(this);

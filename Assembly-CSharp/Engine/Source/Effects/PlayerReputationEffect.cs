@@ -14,9 +14,9 @@ namespace Engine.Source.Effects
   [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
   public class PlayerReputationEffect : IEffect
   {
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy()]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected ParameterEffectQueueEnum queue = ParameterEffectQueueEnum.None;
@@ -24,42 +24,42 @@ namespace Engine.Source.Effects
     private NavigationComponent navigation;
     private PlayerControllerComponent controller;
 
-    public string Name => this.GetType().Name;
+    public string Name => GetType().Name;
 
     [Inspected]
     public AbilityItem AbilityItem { get; set; }
 
     public IEntity Target { get; set; }
 
-    public ParameterEffectQueueEnum Queue => this.queue;
+    public ParameterEffectQueueEnum Queue => queue;
 
     public bool Prepare(float currentRealTime, float currentGameTime)
     {
-      this.parameter = this.Target.GetComponent<ParametersComponent>().GetByName<float>(ParameterNameEnum.Reputation);
-      this.navigation = this.Target.GetComponent<NavigationComponent>();
-      this.controller = this.Target.GetComponent<PlayerControllerComponent>();
+      parameter = Target.GetComponent<ParametersComponent>().GetByName<float>(ParameterNameEnum.Reputation);
+      navigation = Target.GetComponent<NavigationComponent>();
+      controller = Target.GetComponent<PlayerControllerComponent>();
       return true;
     }
 
     public bool Compute(float currentRealTime, float currentGameTime)
     {
-      if (this.navigation == null || this.controller == null || this.parameter == null)
+      if (navigation == null || controller == null || parameter == null)
         return false;
-      IRegionComponent region = this.navigation.Region;
+      IRegionComponent region = navigation.Region;
       if (region == null)
       {
-        this.parameter.Value = 0.0f;
+        parameter.Value = 0.0f;
         return true;
       }
-      this.parameter.Value = region.Reputation.Value;
+      parameter.Value = region.Reputation.Value;
       return true;
     }
 
     public void Cleanup()
     {
-      this.navigation = (NavigationComponent) null;
-      this.controller = (PlayerControllerComponent) null;
-      this.parameter = (IParameter<float>) null;
+      navigation = null;
+      controller = null;
+      parameter = null;
     }
   }
 }

@@ -6,15 +6,15 @@ namespace UnityEngine.PostProcessing
   public class GrainModel : PostProcessingModel
   {
     [SerializeField]
-    private GrainModel.Settings m_Settings = GrainModel.Settings.defaultSettings;
+    private Settings m_Settings = Settings.defaultSettings;
 
-    public GrainModel.Settings settings
+    public Settings settings
     {
-      get => this.m_Settings;
-      set => this.m_Settings = value;
+      get => m_Settings;
+      set => m_Settings = value;
     }
 
-    public override void Reset() => this.m_Settings = GrainModel.Settings.defaultSettings;
+    public override void Reset() => m_Settings = Settings.defaultSettings;
 
     [Serializable]
     public struct Settings
@@ -31,12 +31,11 @@ namespace UnityEngine.PostProcessing
       [Tooltip("Controls the noisiness response curve based on scene luminance. Lower values mean less noise in dark areas.")]
       public float luminanceContribution;
 
-      public static GrainModel.Settings defaultSettings
+      public static Settings defaultSettings
       {
         get
         {
-          return new GrainModel.Settings()
-          {
+          return new Settings {
             colored = true,
             intensity = 0.5f,
             size = 1f,

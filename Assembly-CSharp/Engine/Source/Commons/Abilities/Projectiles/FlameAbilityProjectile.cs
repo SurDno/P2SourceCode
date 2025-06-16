@@ -1,15 +1,12 @@
-﻿using Engine.Behaviours.Components;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Engine.Behaviours.Components;
 using Engine.Common;
-using Engine.Common.Components;
 using Engine.Common.Components.Parameters;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Engine.Source.Components;
 using Inspectors;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
 
 namespace Engine.Source.Commons.Abilities.Projectiles
 {
@@ -17,19 +14,19 @@ namespace Engine.Source.Commons.Abilities.Projectiles
   [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
   public class FlameAbilityProjectile : IAbilityProjectile
   {
-    [DataReadProxy(MemberEnum.None, Name = "EnemyHitRadius")]
-    [DataWriteProxy(MemberEnum.None, Name = "EnemyHitRadius")]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy(Name = "EnemyHitRadius")]
+    [DataWriteProxy(Name = "EnemyHitRadius")]
+    [CopyableProxy]
     [Inspected(Mutable = true, Mode = ExecuteMode.EditAndRuntime)]
     protected float radius = 6f;
-    [DataReadProxy(MemberEnum.None, Name = "EnemyHitAngle")]
-    [DataWriteProxy(MemberEnum.None, Name = "EnemyHitAngle")]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy(Name = "EnemyHitAngle")]
+    [DataWriteProxy(Name = "EnemyHitAngle")]
+    [CopyableProxy]
     [Inspected(Mutable = true, Mode = ExecuteMode.EditAndRuntime)]
     protected float hitAngle = 10f;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy()]
     [Inspected(Mutable = true, Mode = ExecuteMode.EditAndRuntime)]
     protected float flameEffectiveTime = 0.5f;
 
@@ -38,8 +35,8 @@ namespace Engine.Source.Commons.Abilities.Projectiles
       PivotSanitar component1 = ((IEntityView) self).GameObject.GetComponent<PivotSanitar>();
       if ((UnityEngine.Object) component1 == (UnityEngine.Object) null)
         return;
-      targets.Targets = component1.Targets.Select<IEntity, EffectsComponent>((Func<IEntity, EffectsComponent>) (o => o.GetComponent<EffectsComponent>())).Where<EffectsComponent>((Func<EffectsComponent, bool>) (o => o != null)).ToList<EffectsComponent>();
-      if (component1.Flamethrower && (UnityEngine.Object) component1.TargetObject != (UnityEngine.Object) null && (double) component1.AimingTime > (double) this.flameEffectiveTime)
+      targets.Targets = component1.Targets.Select(o => o.GetComponent<EffectsComponent>()).Where(o => o != null).ToList();
+      if (component1.Flamethrower && (UnityEngine.Object) component1.TargetObject != (UnityEngine.Object) null && component1.AimingTime > (double) flameEffectiveTime)
       {
         EngineGameObject component2 = component1.TargetObject.GetComponent<EngineGameObject>();
         EffectsComponent component3 = component2?.Owner?.GetComponent<EffectsComponent>();
@@ -47,7 +44,7 @@ namespace Engine.Source.Commons.Abilities.Projectiles
         {
           Vector3 forward = ((IEntityView) self).GameObject.transform.forward;
           Vector3 to = component1.TargetObject.position - ((IEntityView) self).GameObject.transform.position;
-          if ((double) Mathf.Abs(Vector3.Angle(forward, to)) < (double) this.hitAngle && (double) to.magnitude < (double) this.radius)
+          if ((double) Mathf.Abs(Vector3.Angle(forward, to)) < hitAngle && (double) to.magnitude < radius)
           {
             DetectorComponent component4 = self?.GetComponent<DetectorComponent>();
             if (component4 == null)
@@ -57,13 +54,13 @@ namespace Engine.Source.Commons.Abilities.Projectiles
             else
             {
               DetectableComponent component5 = component2?.Owner?.GetComponent<DetectableComponent>();
-              if (component5 == null || component4.Visible.Contains((IDetectableComponent) component5))
+              if (component5 == null || component4.Visible.Contains(component5))
                 targets.Targets.Add(component3);
             }
           }
         }
       }
-      targets.Targets = this.FilterIgnoredTargets(targets.Targets);
+      targets.Targets = FilterIgnoredTargets(targets.Targets);
     }
 
     private List<EffectsComponent> FilterIgnoredTargets(List<EffectsComponent> list)

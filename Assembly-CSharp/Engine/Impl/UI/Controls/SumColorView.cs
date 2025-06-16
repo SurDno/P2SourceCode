@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace Engine.Impl.UI.Controls
+﻿namespace Engine.Impl.UI.Controls
 {
   public class SumColorView : BinaryColorView
   {
@@ -9,7 +7,7 @@ namespace Engine.Impl.UI.Controls
 
     protected override void ApplyValues(bool instant)
     {
-      this.view.SetValue(this.GetValue(0) + this.GetValue(1), instant);
+      view.SetValue(GetValue(0) + GetValue(1), instant);
     }
   }
 }

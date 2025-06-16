@@ -3,8 +3,6 @@ using Engine.Common.Components;
 using Engine.Source.Commons;
 using Inspectors;
 using StateSetters;
-using System;
-using UnityEngine;
 
 namespace Engine.Source.Controllers
 {
@@ -16,32 +14,32 @@ namespace Engine.Source.Controllers
 
     public void Attach(IEntity owner)
     {
-      this.location = owner.GetComponent<ILocationComponent>();
-      if (this.location == null)
+      location = owner.GetComponent<ILocationComponent>();
+      if (location == null)
         return;
-      this.location.OnHibernationChanged += new Action<ILocationComponent>(this.LocationOnChangeHibernation);
-      this.LocationOnChangeHibernation(this.location);
+      location.OnHibernationChanged += LocationOnChangeHibernation;
+      LocationOnChangeHibernation(location);
     }
 
     public void Detach()
     {
-      if (this.location == null)
+      if (location == null)
         return;
-      this.location.OnHibernationChanged -= new Action<ILocationComponent>(this.LocationOnChangeHibernation);
+      location.OnHibernationChanged -= LocationOnChangeHibernation;
     }
 
     private void LocationOnChangeHibernation(ILocationComponent sender)
     {
-      if (this.location.IsHibernation)
-        this.SceneLoadOff();
+      if (location.IsHibernation)
+        SceneLoadOff();
       else
-        this.SceneLoadOn();
+        SceneLoadOn();
     }
 
     [Inspected(Mode = ExecuteMode.EditAndRuntime)]
-    private void SceneLoadOn() => this.sceneLoadState.Apply(true);
+    private void SceneLoadOn() => sceneLoadState.Apply(true);
 
     [Inspected(Mode = ExecuteMode.EditAndRuntime)]
-    private void SceneLoadOff() => this.sceneLoadState.Apply(false);
+    private void SceneLoadOff() => sceneLoadState.Apply(false);
   }
 }

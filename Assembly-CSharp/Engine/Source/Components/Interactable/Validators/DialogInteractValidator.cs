@@ -20,7 +20,7 @@ namespace Engine.Source.Components.Interactable.Validators
       if (component2 == null)
         return new ValidateResult(false, "ISpeakingComponent not found");
       if (!component2.IsEnabled)
-        return new ValidateResult(false, "ISpeakingComponent IsEnabled " + component2.IsEnabled.ToString());
+        return new ValidateResult(false, "ISpeakingComponent IsEnabled " + component2.IsEnabled);
       IParameter<bool> byName1 = component1.GetByName<bool>(ParameterNameEnum.IsFighting);
       if (byName1 != null && byName1.Value)
         return new ValidateResult(false, "IsFighting is true");
@@ -28,7 +28,7 @@ namespace Engine.Source.Components.Interactable.Validators
       if (byName2 != null && byName2.Value)
         return new ValidateResult(false, "Dead is true");
       if (!component2.SpeakAvailable)
-        return new ValidateResult(false, "SpeakAvailable " + component2.SpeakAvailable.ToString());
+        return new ValidateResult(false, "SpeakAvailable " + component2.SpeakAvailable);
       ILocationItemComponent component3 = ServiceLocator.GetService<ISimulation>().Player.GetComponent<ILocationItemComponent>();
       ILocationItemComponent component4 = interactable.GetComponent<ILocationItemComponent>();
       if (component4 == null)

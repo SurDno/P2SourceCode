@@ -1,4 +1,8 @@
-﻿using Cofe.Serializations.Data;
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Xml;
+using Cofe.Serializations.Data;
 using Cofe.Serializations.Data.Xml;
 using Cofe.Utility;
 using Engine.Common;
@@ -13,15 +17,10 @@ using Engine.Source.Services.Notifications;
 using Engine.Source.Services.Saves;
 using Engine.Source.UI;
 using Inspectors;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Xml;
 
 namespace Engine.Source.Services
 {
-  [GameService(new System.Type[] {typeof (INotificationService), typeof (NotificationService)})]
+  [GameService(typeof (INotificationService), typeof (NotificationService))]
   [GenerateProxy(TypeEnum.StateSave | TypeEnum.StateLoad)]
   public class NotificationService : 
     INotificationService,
@@ -31,20 +30,19 @@ namespace Engine.Source.Services
   {
     [Inspected]
     private Dictionary<NotificationEnum, NotificationLayerItem> layers = new Dictionary<NotificationEnum, NotificationLayerItem>();
-    [StateSaveProxy(MemberEnum.None)]
-    [StateLoadProxy(MemberEnum.None)]
+    [StateSaveProxy]
+    [StateLoadProxy()]
     [Inspected]
     protected List<NotificationEnum> blockedTypes = new List<NotificationEnum>();
 
     public void AddNotify(NotificationEnum type, params object[] values)
     {
-      if (this.TypeOrLayerBlocked(type))
+      if (TypeOrLayerBlocked(type))
         return;
-      NotificationLayerItem layer = this.GetLayer(type);
-      if (this.IgnoreSimilar(type) && (layer.Notifaction != null && layer.Notifaction.Type == type || layer.Queue.Any<NotificationItem>((Func<NotificationItem, bool>) (o => o.Type == type))))
+      NotificationLayerItem layer = GetLayer(type);
+      if (IgnoreSimilar(type) && (layer.Notifaction != null && layer.Notifaction.Type == type || layer.Queue.Any(o => o.Type == type)))
         return;
-      layer.Queue.Add(new NotificationItem()
-      {
+      layer.Queue.Add(new NotificationItem {
         Type = type,
         Values = values
       });
@@ -53,23 +51,23 @@ namespace Engine.Source.Services
     public void BlockType(NotificationEnum type)
     {
       NotificationEnum notificationEnum = type;
-      if (this.blockedTypes.Contains(notificationEnum))
+      if (blockedTypes.Contains(notificationEnum))
         return;
-      this.blockedTypes.Add(notificationEnum);
+      blockedTypes.Add(notificationEnum);
     }
 
-    public void UnblockType(NotificationEnum type) => this.blockedTypes.Remove(type);
+    public void UnblockType(NotificationEnum type) => blockedTypes.Remove(type);
 
-    private bool TypeBlocked(NotificationEnum type) => this.blockedTypes.Contains(type);
+    private bool TypeBlocked(NotificationEnum type) => blockedTypes.Contains(type);
 
     public bool TypeOrLayerBlocked(NotificationEnum type)
     {
-      return this.TypeBlocked(type) || this.TypeBlocked(this.GetLayerEnum(type));
+      return TypeBlocked(type) || TypeBlocked(GetLayerEnum(type));
     }
 
     private bool IgnoreSimilar(NotificationEnum type)
     {
-      switch (this.GetLayerEnum(type))
+      switch (GetLayerEnum(type))
       {
         case NotificationEnum.Tooltip_Layer:
         case NotificationEnum.Item_Layer:
@@ -87,11 +85,11 @@ namespace Engine.Source.Services
 
     public void RemoveNotify(NotificationEnum type)
     {
-      NotificationLayerItem layer = this.GetLayer(type);
+      NotificationLayerItem layer = GetLayer(type);
       if (layer.Notifaction != null && layer.Notifaction.Type == type)
       {
         layer.Notifaction.Shutdown();
-        layer.Notifaction = (INotification) null;
+        layer.Notifaction = null;
       }
       for (int index = layer.Queue.Count - 1; index >= 0; --index)
       {
@@ -107,31 +105,31 @@ namespace Engine.Source.Services
 
     private NotificationLayerItem GetLayer(NotificationEnum type)
     {
-      NotificationEnum layerEnum = this.GetLayerEnum(type);
+      NotificationEnum layerEnum = GetLayerEnum(type);
       NotificationLayerItem layer;
-      if (!this.layers.TryGetValue(layerEnum, out layer))
+      if (!layers.TryGetValue(layerEnum, out layer))
       {
         layer = new NotificationLayerItem();
-        this.layers.Add(layerEnum, layer);
+        layers.Add(layerEnum, layer);
       }
       return layer;
     }
 
     public void Initialise()
     {
-      InstanceByRequest<UpdateService>.Instance.Updater.AddUpdatable((IUpdatable) this);
+      InstanceByRequest<UpdateService>.Instance.Updater.AddUpdatable(this);
     }
 
     public void Terminate()
     {
-      InstanceByRequest<UpdateService>.Instance.Updater.RemoveUpdatable((IUpdatable) this);
+      InstanceByRequest<UpdateService>.Instance.Updater.RemoveUpdatable(this);
     }
 
     public void ComputeUpdate()
     {
-      foreach (KeyValuePair<NotificationEnum, NotificationLayerItem> layer in this.layers)
+      foreach (KeyValuePair<NotificationEnum, NotificationLayerItem> layer in layers)
       {
-        if (!InstanceByRequest<EngineApplication>.Instance.IsPaused || this.UpdateLayerOnPause(layer.Key))
+        if (!InstanceByRequest<EngineApplication>.Instance.IsPaused || UpdateLayerOnPause(layer.Key))
         {
           NotificationLayerItem notificationLayerItem = layer.Value;
           if ((UnityEngine.Object) notificationLayerItem.Notifaction != (UnityEngine.Object) null)
@@ -139,7 +137,7 @@ namespace Engine.Source.Services
             if (notificationLayerItem.Notifaction.Complete)
             {
               notificationLayerItem.Notifaction.Shutdown();
-              notificationLayerItem.Notifaction = (INotification) null;
+              notificationLayerItem.Notifaction = null;
             }
           }
           else if (notificationLayerItem.Queue.Count != 0)
@@ -172,34 +170,34 @@ namespace Engine.Source.Services
 
     public IEnumerator Load(XmlElement element, string context, IErrorLoadingHandler errorHandler)
     {
-      XmlElement node = element[TypeUtility.GetTypeName(this.GetType())];
+      XmlElement node = element[TypeUtility.GetTypeName(GetType())];
       if (node == null)
       {
-        errorHandler.LogError(TypeUtility.GetTypeName(this.GetType()) + " node not found , context : " + context);
+        errorHandler.LogError(TypeUtility.GetTypeName(GetType()) + " node not found , context : " + context);
       }
       else
       {
-        XmlNodeDataReader reader = new XmlNodeDataReader((XmlNode) node, context);
-        ((ISerializeStateLoad) this).StateLoad((IDataReader) reader, this.GetType());
+        XmlNodeDataReader reader = new XmlNodeDataReader(node, context);
+        ((ISerializeStateLoad) this).StateLoad(reader, GetType());
         yield break;
       }
     }
 
     public void Unload()
     {
-      foreach (KeyValuePair<NotificationEnum, NotificationLayerItem> layer in this.layers)
+      foreach (KeyValuePair<NotificationEnum, NotificationLayerItem> layer in layers)
       {
         NotificationLayerItem notificationLayerItem = layer.Value;
         notificationLayerItem.Notifaction?.Shutdown();
         notificationLayerItem.Queue.Clear();
       }
-      this.layers.Clear();
-      this.blockedTypes.Clear();
+      layers.Clear();
+      blockedTypes.Clear();
     }
 
     public void Save(IDataWriter writer, string context)
     {
-      DefaultStateSaveUtility.SaveSerialize<NotificationService>(writer, TypeUtility.GetTypeName(this.GetType()), this);
+      DefaultStateSaveUtility.SaveSerialize(writer, TypeUtility.GetTypeName(GetType()), this);
     }
   }
 }

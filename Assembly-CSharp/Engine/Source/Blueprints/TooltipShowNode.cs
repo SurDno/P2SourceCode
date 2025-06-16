@@ -17,21 +17,17 @@ namespace Engine.Source.Blueprints
     protected override void RegisterPorts()
     {
       base.RegisterPorts();
-      FlowOutput output = this.AddFlowOutput("Out");
-      this.AddFlowInput("In", (FlowHandler) (() =>
+      FlowOutput output = AddFlowOutput("Out");
+      AddFlowInput("In", () =>
       {
-        string text = this.localizationTag.value;
+        string text = localizationTag.value;
         if (!string.IsNullOrEmpty(text))
           text = ServiceLocator.GetService<LocalizationService>().GetText(text);
-        ServiceLocator.GetService<NotificationService>().AddNotify(NotificationEnum.Tooltip, new object[2]
-        {
-          (object) text,
-          (object) this.timeout.value
-        });
+        ServiceLocator.GetService<NotificationService>().AddNotify(NotificationEnum.Tooltip, text, timeout.value);
         output.Call();
-      }));
-      this.localizationTag = this.AddValueInput<string>("Localization Tag");
-      this.timeout = this.AddValueInput<float>("Timeout");
+      });
+      localizationTag = AddValueInput<string>("Localization Tag");
+      timeout = AddValueInput<float>("Timeout");
     }
   }
 }

@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-public class FlamePatch : MonoBehaviour
+﻿public class FlamePatch : MonoBehaviour
 {
   [SerializeField]
   private ParticleSystem smokeSystem;
@@ -20,67 +18,67 @@ public class FlamePatch : MonoBehaviour
 
   public float Strength
   {
-    get => this.strength;
-    set => this.strength = Mathf.Clamp01(value);
+    get => strength;
+    set => strength = Mathf.Clamp01(value);
   }
 
   public float DecalOpacity
   {
-    get => this.decalOpacity;
-    set => this.decalOpacity = Mathf.Clamp01(value);
+    get => decalOpacity;
+    set => decalOpacity = Mathf.Clamp01(value);
   }
 
   public void Initialize(float strength)
   {
     this.strength = strength;
-    this.randomSeed = new Vector4(strength, Random.value, Random.value, 0.0f);
-    this.smokeMaxAlpha = this.smokeSystem.main.startColor.color.a;
-    this.sparkMaxRate = this.sparkSystem.emission.rateOverTime.constant;
-    this.mpb = new MaterialPropertyBlock();
-    this.propertyId = Shader.PropertyToID("_Strength");
-    this.ApplyStrength();
+    randomSeed = new Vector4(strength, Random.value, Random.value, 0.0f);
+    smokeMaxAlpha = smokeSystem.main.startColor.color.a;
+    sparkMaxRate = sparkSystem.emission.rateOverTime.constant;
+    mpb = new MaterialPropertyBlock();
+    propertyId = Shader.PropertyToID("_Strength");
+    ApplyStrength();
   }
 
-  private void Update() => this.ApplyStrength();
+  private void Update() => ApplyStrength();
 
   private void ApplyStrength()
   {
-    if ((double) this.Strength == 0.0)
+    if (Strength == 0.0)
     {
       this.GetComponent<MeshRenderer>().enabled = false;
-      this.smokeSystem.emission.enabled = false;
-      this.sparkSystem.emission.enabled = false;
+      smokeSystem.emission.enabled = false;
+      sparkSystem.emission.enabled = false;
     }
     else
     {
-      this.randomSeed.x = Mathf.Sqrt(this.Strength);
-      this.mpb.SetVector(this.propertyId, this.randomSeed);
-      this.GetComponent<MeshRenderer>().SetPropertyBlock(this.mpb);
+      randomSeed.x = Mathf.Sqrt(Strength);
+      mpb.SetVector(propertyId, randomSeed);
+      this.GetComponent<MeshRenderer>().SetPropertyBlock(mpb);
       this.GetComponent<MeshRenderer>().enabled = true;
-      ParticleSystem.EmissionModule emission = this.smokeSystem.emission with
+      ParticleSystem.EmissionModule emission = smokeSystem.emission with
       {
         enabled = true
       };
-      ParticleSystem.MainModule main = this.smokeSystem.main;
+      ParticleSystem.MainModule main = smokeSystem.main;
       Color color = main.startColor.color with
       {
-        a = this.Strength * this.smokeMaxAlpha
+        a = Strength * smokeMaxAlpha
       };
       main.startColor = (ParticleSystem.MinMaxGradient) color;
-      emission = this.sparkSystem.emission with
+      emission = sparkSystem.emission with
       {
         enabled = true,
-        rateOverTime = (ParticleSystem.MinMaxCurve) (this.Strength * this.sparkMaxRate)
+        rateOverTime = (ParticleSystem.MinMaxCurve) (Strength * sparkMaxRate)
       };
     }
-    if ((double) this.decalOpacity > 0.0)
+    if (decalOpacity > 0.0)
     {
-      this.decal.Properties[0].Value = this.decalOpacity;
-      if (this.decal.enabled)
+      decal.Properties[0].Value = decalOpacity;
+      if (decal.enabled)
         return;
-      this.decal.enabled = true;
+      decal.enabled = true;
     }
-    else if (this.decal.enabled)
-      this.decal.enabled = false;
+    else if (decal.enabled)
+      decal.enabled = false;
   }
 }

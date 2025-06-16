@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEngine;
 
 namespace RootMotion
 {
@@ -9,7 +8,7 @@ namespace RootMotion
     {
       for (int index = 1; index < bones.Length; ++index)
       {
-        if (!Hierarchy.IsAncestor(bones[index], bones[index - 1]))
+        if (!IsAncestor(bones[index], bones[index - 1]))
           return false;
       }
       return true;
@@ -34,7 +33,7 @@ namespace RootMotion
         return true;
       if ((UnityEngine.Object) transform.parent == (UnityEngine.Object) null)
         return false;
-      return (UnityEngine.Object) transform.parent == (UnityEngine.Object) ancestor || Hierarchy.IsAncestor(transform.parent, ancestor);
+      return (UnityEngine.Object) transform.parent == (UnityEngine.Object) ancestor || IsAncestor(transform.parent, ancestor);
     }
 
     public static bool ContainsChild(Transform transform, Transform child)
@@ -55,24 +54,24 @@ namespace RootMotion
         return;
       if (transform.parent.position != transform.position && transform.parent.position != blocker.position)
       {
-        Array.Resize<Transform>(ref array, array.Length + 1);
+        Array.Resize(ref array, array.Length + 1);
         array[array.Length - 1] = transform.parent;
       }
-      Hierarchy.AddAncestors(transform.parent, blocker, ref array);
+      AddAncestors(transform.parent, blocker, ref array);
     }
 
     public static Transform GetAncestor(Transform transform, int minChildCount)
     {
       if ((UnityEngine.Object) transform == (UnityEngine.Object) null || !((UnityEngine.Object) transform.parent != (UnityEngine.Object) null))
         return (Transform) null;
-      return transform.parent.childCount >= minChildCount ? transform.parent : Hierarchy.GetAncestor(transform.parent, minChildCount);
+      return transform.parent.childCount >= minChildCount ? transform.parent : GetAncestor(transform.parent, minChildCount);
     }
 
     public static Transform GetFirstCommonAncestor(Transform t1, Transform t2)
     {
       if ((UnityEngine.Object) t1 == (UnityEngine.Object) null || (UnityEngine.Object) t2 == (UnityEngine.Object) null || (UnityEngine.Object) t1.parent == (UnityEngine.Object) null || (UnityEngine.Object) t2.parent == (UnityEngine.Object) null)
         return (Transform) null;
-      return Hierarchy.IsAncestor(t2, t1.parent) ? t1.parent : Hierarchy.GetFirstCommonAncestor(t1.parent, t2);
+      return IsAncestor(t2, t1.parent) ? t1.parent : GetFirstCommonAncestor(t1.parent, t2);
     }
 
     public static Transform GetFirstCommonAncestor(Transform[] transforms)
@@ -91,10 +90,10 @@ namespace RootMotion
       {
         if ((UnityEngine.Object) transforms[index] == (UnityEngine.Object) null)
           return (Transform) null;
-        if (Hierarchy.IsCommonAncestor(transforms[index], transforms))
+        if (IsCommonAncestor(transforms[index], transforms))
           return transforms[index];
       }
-      return Hierarchy.GetFirstCommonAncestorRecursive(transforms[0], transforms);
+      return GetFirstCommonAncestorRecursive(transforms[0], transforms);
     }
 
     public static Transform GetFirstCommonAncestorRecursive(
@@ -116,9 +115,9 @@ namespace RootMotion
         Debug.LogWarning((object) "Transforms.Length is 0.");
         return (Transform) null;
       }
-      if (Hierarchy.IsCommonAncestor(transform, transforms))
+      if (IsCommonAncestor(transform, transforms))
         return transform;
-      return (UnityEngine.Object) transform.parent == (UnityEngine.Object) null ? (Transform) null : Hierarchy.GetFirstCommonAncestorRecursive(transform.parent, transforms);
+      return (UnityEngine.Object) transform.parent == (UnityEngine.Object) null ? (Transform) null : GetFirstCommonAncestorRecursive(transform.parent, transforms);
     }
 
     public static bool IsCommonAncestor(Transform transform, Transform[] transforms)
@@ -132,10 +131,10 @@ namespace RootMotion
       {
         if ((UnityEngine.Object) transforms[index] == (UnityEngine.Object) null)
         {
-          Debug.Log((object) ("Transforms[" + (object) index + "] is null."));
+          Debug.Log((object) ("Transforms[" + index + "] is null."));
           return false;
         }
-        if (!Hierarchy.IsAncestor(transforms[index], transform) && (UnityEngine.Object) transforms[index] != (UnityEngine.Object) transform)
+        if (!IsAncestor(transforms[index], transform) && (UnityEngine.Object) transforms[index] != (UnityEngine.Object) transform)
           return false;
       }
       return true;

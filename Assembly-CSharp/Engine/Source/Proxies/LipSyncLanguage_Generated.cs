@@ -1,10 +1,10 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons.Cloneable;
 using Engine.Common.Commons.Converters;
 using Engine.Common.Services;
 using Engine.Source.Commons;
-using System;
 
 namespace Engine.Source.Proxies
 {
@@ -19,27 +19,27 @@ namespace Engine.Source.Proxies
     public object Clone()
     {
       LipSyncLanguage_Generated instance = Activator.CreateInstance<LipSyncLanguage_Generated>();
-      this.CopyTo((object) instance);
-      return (object) instance;
+      CopyTo(instance);
+      return instance;
     }
 
     public void CopyTo(object target2)
     {
       LipSyncLanguage_Generated languageGenerated = (LipSyncLanguage_Generated) target2;
-      languageGenerated.Language = this.Language;
-      CloneableObjectUtility.CopyListTo<LipSyncInfo>(languageGenerated.LipSyncs, this.LipSyncs);
+      languageGenerated.Language = Language;
+      CloneableObjectUtility.CopyListTo(languageGenerated.LipSyncs, LipSyncs);
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.WriteEnum<LanguageEnum>(writer, "Language", this.Language);
-      DefaultDataWriteUtility.WriteListSerialize<LipSyncInfo>(writer, "LipSyncs", this.LipSyncs);
+      DefaultDataWriteUtility.WriteEnum(writer, "Language", Language);
+      DefaultDataWriteUtility.WriteListSerialize(writer, "LipSyncs", LipSyncs);
     }
 
     public void DataRead(IDataReader reader, Type type)
     {
-      this.Language = DefaultDataReadUtility.ReadEnum<LanguageEnum>(reader, "Language");
-      this.LipSyncs = DefaultDataReadUtility.ReadListSerialize<LipSyncInfo>(reader, "LipSyncs", this.LipSyncs);
+      Language = DefaultDataReadUtility.ReadEnum<LanguageEnum>(reader, "Language");
+      LipSyncs = DefaultDataReadUtility.ReadListSerialize(reader, "LipSyncs", LipSyncs);
     }
   }
 }

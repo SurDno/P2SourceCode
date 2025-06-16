@@ -1,7 +1,7 @@
-﻿using Cofe.Loggers;
-using Engine.Common;
-using System;
+﻿using System;
 using System.Reflection;
+using Cofe.Loggers;
+using Engine.Common;
 
 namespace PLVirtualMachine.Common.EngineAPI
 {
@@ -11,25 +11,25 @@ namespace PLVirtualMachine.Common.EngineAPI
     {
       if (firstValue == null)
       {
-        Logger.AddWarning(string.Format("first of IsValueLarger comparing values is null"));
+        Logger.AddWarning("first of IsValueLarger comparing values is null");
         return false;
       }
       if (secondValue == null)
       {
-        Logger.AddWarning(string.Format("second of IsValueLarger comparing values is null"));
+        Logger.AddWarning("second of IsValueLarger comparing values is null");
         return false;
       }
       try
       {
-        float num1 = !(firstValue.GetType() == typeof (float)) ? (!(firstValue.GetType() == typeof (GameTime)) ? Convert.ToSingle(firstValue) : (float) ((GameTime) firstValue).TotalSeconds) : (float) firstValue;
-        float num2 = !(secondValue.GetType() == typeof (float)) ? (!(secondValue.GetType() == typeof (GameTime)) ? Convert.ToSingle(secondValue) : (float) ((GameTime) secondValue).TotalSeconds) : (float) secondValue;
-        return !bEqual ? (double) num1 > (double) num2 : (double) num1 > (double) num2 - 9.9999997473787516E-05;
+        float num1 = !(firstValue.GetType() == typeof (float)) ? (!(firstValue.GetType() == typeof (GameTime)) ? Convert.ToSingle(firstValue) : ((GameTime) firstValue).TotalSeconds) : (float) firstValue;
+        float num2 = !(secondValue.GetType() == typeof (float)) ? (!(secondValue.GetType() == typeof (GameTime)) ? Convert.ToSingle(secondValue) : ((GameTime) secondValue).TotalSeconds) : (float) secondValue;
+        return !bEqual ? num1 > (double) num2 : num1 > num2 - 9.9999997473787516E-05;
       }
       catch (Exception ex)
       {
         firstValue.GetType();
         secondValue.GetType();
-        Logger.AddError(string.Format("Error value comparing ' IsValueLarger': {0} at {1})", (object) ex.ToString(), (object) EngineAPIManager.Instance.CurrentFSMStateInfo));
+        Logger.AddError(string.Format("Error value comparing ' IsValueLarger': {0} at {1})", ex, EngineAPIManager.Instance.CurrentFSMStateInfo));
         return false;
       }
     }
@@ -38,25 +38,25 @@ namespace PLVirtualMachine.Common.EngineAPI
     {
       if (firstValue == null)
       {
-        Logger.AddWarning(string.Format("first of IsValueLarger comparing values is null"));
+        Logger.AddWarning("first of IsValueLarger comparing values is null");
         return false;
       }
       if (secondValue == null)
       {
-        Logger.AddWarning(string.Format("second of IsValueLarger comparing values is null"));
+        Logger.AddWarning("second of IsValueLarger comparing values is null");
         return false;
       }
       try
       {
-        float num1 = !(firstValue.GetType() == typeof (GameTime)) ? Convert.ToSingle(firstValue) : (float) ((GameTime) firstValue).TotalSeconds;
-        float num2 = !(secondValue.GetType() == typeof (GameTime)) ? Convert.ToSingle(secondValue) : (float) ((GameTime) secondValue).TotalSeconds;
-        return !bEqual ? (double) num1 < (double) num2 : (double) num1 < (double) num2 + 9.9999997473787516E-05;
+        float num1 = !(firstValue.GetType() == typeof (GameTime)) ? Convert.ToSingle(firstValue) : ((GameTime) firstValue).TotalSeconds;
+        float num2 = !(secondValue.GetType() == typeof (GameTime)) ? Convert.ToSingle(secondValue) : ((GameTime) secondValue).TotalSeconds;
+        return !bEqual ? num1 < (double) num2 : num1 < num2 + 9.9999997473787516E-05;
       }
       catch (Exception ex)
       {
         firstValue.GetType();
         secondValue.GetType();
-        Logger.AddError(string.Format("Error value comparing ' IsValueLess': {0} at {1})", (object) ex.ToString(), (object) EngineAPIManager.Instance.CurrentFSMStateInfo));
+        Logger.AddError(string.Format("Error value comparing ' IsValueLess': {0} at {1})", ex, EngineAPIManager.Instance.CurrentFSMStateInfo));
         return false;
       }
     }
@@ -64,61 +64,61 @@ namespace PLVirtualMachine.Common.EngineAPI
     public static object DoMathAdd(object firstValue, object secondValue)
     {
       if (firstValue.GetType() != secondValue.GetType())
-        Logger.AddError(MethodBase.GetCurrentMethod().Name + " , type is different, first : " + (object) firstValue.GetType() + " , second : " + (object) secondValue.GetType());
+        Logger.AddError(MethodBase.GetCurrentMethod().Name + " , type is different, first : " + firstValue.GetType() + " , second : " + secondValue.GetType());
       if (firstValue.GetType() == typeof (float) && secondValue.GetType() == typeof (float))
-        return (object) (float) ((double) (float) firstValue + (double) (float) secondValue);
+        return (float) ((float) firstValue + (double) (float) secondValue);
       if (firstValue.GetType() == typeof (long) && secondValue.GetType() == typeof (long))
-        return (object) ((long) firstValue + (long) secondValue);
+        return (long) firstValue + (long) secondValue;
       if (firstValue.GetType() == typeof (int) && secondValue.GetType() == typeof (int))
-        return (object) ((int) firstValue + (int) secondValue);
+        return (int) firstValue + (int) secondValue;
       if (firstValue.GetType() == typeof (string) && secondValue.GetType() == typeof (string))
-        return (object) ((string) firstValue + (string) secondValue);
+        return (string) firstValue + (string) secondValue;
       if (firstValue.GetType() == typeof (GameTime))
-        return (object) new GameTime(((GameTime) firstValue).TotalSeconds + ((GameTime) secondValue).TotalSeconds);
-      Logger.AddError(MethodBase.GetCurrentMethod().Name + " , type is unknown, first : " + (object) firstValue.GetType() + " , second : " + (object) secondValue.GetType());
-      return (object) (float) ((double) Convert.ToSingle(firstValue) + (double) Convert.ToSingle(secondValue));
+        return new GameTime(((GameTime) firstValue).TotalSeconds + ((GameTime) secondValue).TotalSeconds);
+      Logger.AddError(MethodBase.GetCurrentMethod().Name + " , type is unknown, first : " + firstValue.GetType() + " , second : " + secondValue.GetType());
+      return (float) (Convert.ToSingle(firstValue) + (double) Convert.ToSingle(secondValue));
     }
 
     public static object DoMathSubstarct(object firstValue, object secondValue)
     {
       if (firstValue.GetType() != secondValue.GetType())
-        Logger.AddError(MethodBase.GetCurrentMethod().Name + " , type is different, first : " + (object) firstValue.GetType() + " , second : " + (object) secondValue.GetType());
+        Logger.AddError(MethodBase.GetCurrentMethod().Name + " , type is different, first : " + firstValue.GetType() + " , second : " + secondValue.GetType());
       if (firstValue.GetType() == typeof (float) && secondValue.GetType() == typeof (float))
-        return (object) (float) ((double) (float) firstValue - (double) (float) secondValue);
+        return (float) ((float) firstValue - (double) (float) secondValue);
       if (firstValue.GetType() == typeof (long) && secondValue.GetType() == typeof (long))
-        return (object) ((long) firstValue - (long) secondValue);
+        return (long) firstValue - (long) secondValue;
       if (firstValue.GetType() == typeof (int) && secondValue.GetType() == typeof (int))
-        return (object) ((int) firstValue - (int) secondValue);
-      Logger.AddError(MethodBase.GetCurrentMethod().Name + " , type is unknown, first : " + (object) firstValue.GetType() + " , second : " + (object) secondValue.GetType());
-      return (object) (float) ((double) Convert.ToSingle(firstValue) - (double) Convert.ToSingle(secondValue));
+        return (int) firstValue - (int) secondValue;
+      Logger.AddError(MethodBase.GetCurrentMethod().Name + " , type is unknown, first : " + firstValue.GetType() + " , second : " + secondValue.GetType());
+      return (float) (Convert.ToSingle(firstValue) - (double) Convert.ToSingle(secondValue));
     }
 
     public static object DoMathMultiply(object firstValue, object secondValue)
     {
       if (firstValue.GetType() != secondValue.GetType())
-        Logger.AddError(MethodBase.GetCurrentMethod().Name + " , type is different, first : " + (object) firstValue.GetType() + " , second : " + (object) secondValue.GetType());
+        Logger.AddError(MethodBase.GetCurrentMethod().Name + " , type is different, first : " + firstValue.GetType() + " , second : " + secondValue.GetType());
       if (firstValue.GetType() == typeof (float) && secondValue.GetType() == typeof (float))
-        return (object) (float) ((double) (float) firstValue * (double) (float) secondValue);
+        return (float) ((float) firstValue * (double) (float) secondValue);
       if (firstValue.GetType() == typeof (long) && secondValue.GetType() == typeof (long))
-        return (object) ((long) firstValue * (long) secondValue);
+        return (long) firstValue * (long) secondValue;
       if (firstValue.GetType() == typeof (int) && secondValue.GetType() == typeof (int))
-        return (object) ((int) firstValue * (int) secondValue);
-      Logger.AddError(MethodBase.GetCurrentMethod().Name + " , type is unknown, first : " + (object) firstValue.GetType() + " , second : " + (object) secondValue.GetType());
-      return (object) (float) ((double) Convert.ToSingle(firstValue) * (double) Convert.ToSingle(secondValue));
+        return (int) firstValue * (int) secondValue;
+      Logger.AddError(MethodBase.GetCurrentMethod().Name + " , type is unknown, first : " + firstValue.GetType() + " , second : " + secondValue.GetType());
+      return (float) (Convert.ToSingle(firstValue) * (double) Convert.ToSingle(secondValue));
     }
 
     public static object DoMathDivide(object firstValue, object secondValue)
     {
       if (firstValue.GetType() != secondValue.GetType())
-        Logger.AddError(MethodBase.GetCurrentMethod().Name + " , type is different, first : " + (object) firstValue.GetType() + " , second : " + (object) secondValue.GetType());
+        Logger.AddError(MethodBase.GetCurrentMethod().Name + " , type is different, first : " + firstValue.GetType() + " , second : " + secondValue.GetType());
       if (firstValue.GetType() == typeof (float) && secondValue.GetType() == typeof (float))
-        return (object) (float) ((double) (float) firstValue / (double) (float) secondValue);
+        return (float) ((float) firstValue / (double) (float) secondValue);
       if (firstValue.GetType() == typeof (long) && secondValue.GetType() == typeof (long))
-        return (object) ((long) firstValue / (long) secondValue);
+        return (long) firstValue / (long) secondValue;
       if (firstValue.GetType() == typeof (int) && secondValue.GetType() == typeof (int))
-        return (object) ((int) firstValue / (int) secondValue);
-      Logger.AddError(MethodBase.GetCurrentMethod().Name + " , type is unknown, first : " + (object) firstValue.GetType() + " , second : " + (object) secondValue.GetType());
-      return (object) (float) ((double) Convert.ToSingle(firstValue) / (double) Convert.ToSingle(secondValue));
+        return (int) firstValue / (int) secondValue;
+      Logger.AddError(MethodBase.GetCurrentMethod().Name + " , type is unknown, first : " + firstValue.GetType() + " , second : " + secondValue.GetType());
+      return (float) (Convert.ToSingle(firstValue) / (double) Convert.ToSingle(secondValue));
     }
 
     public static object MakeInversion(object value)
@@ -126,18 +126,18 @@ namespace PLVirtualMachine.Common.EngineAPI
       if (value == null)
         return value;
       if (value.GetType() == typeof (bool))
-        return (object) !(bool) value;
+        return !(bool) value;
       if (value.GetType() == typeof (short))
-        return (object) (int) -(short) value;
+        return -(short) value;
       if (value.GetType() == typeof (int))
-        return (object) -(int) value;
+        return -(int) value;
       if (value.GetType() == typeof (long))
-        return (object) -(long) value;
+        return -(long) value;
       if (value.GetType() == typeof (float))
-        return (object) (float) -(double) (float) value;
+        return (float) -(double) (float) value;
       if (value.GetType() == typeof (double))
-        return (object) -(double) value;
-      Logger.AddError(MethodBase.GetCurrentMethod().Name + " , type is unknown, value : " + (object) value.GetType());
+        return -(double) value;
+      Logger.AddError(MethodBase.GetCurrentMethod().Name + " , type is unknown, value : " + value.GetType());
       return value;
     }
 
@@ -147,16 +147,16 @@ namespace PLVirtualMachine.Common.EngineAPI
         return true;
       if (oldVal == null && newVal != null || oldVal != null && newVal == null)
         return false;
-      return typeof (IEntity).IsAssignableFrom(newVal.GetType()) && typeof (IObjRef).IsAssignableFrom(oldVal.GetType()) ? ((Engine.Common.IObject) newVal).Id == ((IEngineInstanced) oldVal).EngineGuid : VMTypeMathUtility.IsValueEqual(oldVal, newVal);
+      return typeof (IEntity).IsAssignableFrom(newVal.GetType()) && typeof (IObjRef).IsAssignableFrom(oldVal.GetType()) ? ((Engine.Common.IObject) newVal).Id == ((IEngineInstanced) oldVal).EngineGuid : IsValueEqual(oldVal, newVal);
     }
 
     public static bool IsValueEqual(object firstValue, object secondValue)
     {
-      if (VMTypeMathUtility.IsValueNone(firstValue) && VMTypeMathUtility.IsValueNone(secondValue))
+      if (IsValueNone(firstValue) && IsValueNone(secondValue))
         return true;
       if (firstValue == null || secondValue == null)
       {
-        Logger.AddWarning(string.Format("One from comparing values is null"));
+        Logger.AddWarning("One from comparing values is null");
         return false;
       }
       Type type1 = firstValue.GetType();
@@ -168,14 +168,14 @@ namespace PLVirtualMachine.Common.EngineAPI
       if (type1 == typeof (bool) && type2 == typeof (bool))
         return (bool) firstValue == (bool) secondValue;
       if (type1.IsValueType && type2.IsValueType)
-        return (double) Math.Abs(Convert.ToSingle(firstValue) - Convert.ToSingle(secondValue)) < 9.9999999747524271E-07;
+        return Math.Abs(Convert.ToSingle(firstValue) - Convert.ToSingle(secondValue)) < 9.9999999747524271E-07;
       if (type1.IsEnum && type2 == typeof (string))
         return firstValue.ToString() == (string) secondValue;
       if (type1 == typeof (string) && type2.IsEnum)
         return secondValue.ToString() == (string) firstValue;
       if (typeof (IRef).IsAssignableFrom(type1) && typeof (Engine.Common.IObject).IsAssignableFrom(type2))
-        return VMTypeMathUtility.CompareVMRefWithEngineObject((IRef) firstValue, (Engine.Common.IObject) secondValue);
-      return typeof (IRef).IsAssignableFrom(type2) && typeof (Engine.Common.IObject).IsAssignableFrom(type1) ? VMTypeMathUtility.CompareVMRefWithEngineObject((IRef) secondValue, (Engine.Common.IObject) firstValue) : firstValue == secondValue;
+        return CompareVMRefWithEngineObject((IRef) firstValue, (Engine.Common.IObject) secondValue);
+      return typeof (IRef).IsAssignableFrom(type2) && typeof (Engine.Common.IObject).IsAssignableFrom(type1) ? CompareVMRefWithEngineObject((IRef) secondValue, (Engine.Common.IObject) firstValue) : firstValue == secondValue;
     }
 
     private static bool CompareVMRefWithEngineObject(IRef refValue, Engine.Common.IObject engineObjValue)

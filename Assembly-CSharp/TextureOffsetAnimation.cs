@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-[RequireComponent(typeof (Renderer))]
+﻿[RequireComponent(typeof (Renderer))]
 public class TextureOffsetAnimation : MonoBehaviour
 {
   [SerializeField]
@@ -14,20 +12,20 @@ public class TextureOffsetAnimation : MonoBehaviour
 
   private void Start()
   {
-    this.renderer = this.GetComponent<Renderer>();
-    this.propertyId = Shader.PropertyToID(this.propertyName + "_ST");
-    Material sharedMaterial = this.renderer.sharedMaterial;
+    renderer = this.GetComponent<Renderer>();
+    propertyId = Shader.PropertyToID(propertyName + "_ST");
+    Material sharedMaterial = renderer.sharedMaterial;
     if ((Object) sharedMaterial != (Object) null)
-      this.tilingOffset = sharedMaterial.GetVector(this.propertyId);
-    this.propertyBlock = new MaterialPropertyBlock();
+      tilingOffset = sharedMaterial.GetVector(propertyId);
+    propertyBlock = new MaterialPropertyBlock();
   }
 
   private void Update()
   {
     float deltaTime = Time.deltaTime;
-    this.tilingOffset.z = Mathf.Repeat(this.tilingOffset.z + this.velocity.x * deltaTime, 1f);
-    this.tilingOffset.w = Mathf.Repeat(this.tilingOffset.w + this.velocity.y * deltaTime, 1f);
-    this.propertyBlock.SetVector(this.propertyId, this.tilingOffset);
-    this.renderer.SetPropertyBlock(this.propertyBlock);
+    tilingOffset.z = Mathf.Repeat(tilingOffset.z + velocity.x * deltaTime, 1f);
+    tilingOffset.w = Mathf.Repeat(tilingOffset.w + velocity.y * deltaTime, 1f);
+    propertyBlock.SetVector(propertyId, tilingOffset);
+    renderer.SetPropertyBlock(propertyBlock);
   }
 }

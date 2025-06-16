@@ -1,8 +1,7 @@
-﻿using Engine.Common.Services;
+﻿using System;
+using Engine.Common.Services;
 using Engine.Impl.UI.Controls;
 using Engine.Source.Services;
-using System;
-using UnityEngine;
 
 public class PlayerIsolatedIndoorCheck : EngineDependent
 {
@@ -18,9 +17,9 @@ public class PlayerIsolatedIndoorCheck : EngineDependent
 
   public static void Override(bool value)
   {
-    PlayerIsolatedIndoorCheck.overriden = true;
-    PlayerIsolatedIndoorCheck.overridenIsolatedIndoor = value;
-    Action overrideChangeEvent = PlayerIsolatedIndoorCheck.OverrideChangeEvent;
+    overriden = true;
+    overridenIsolatedIndoor = value;
+    Action overrideChangeEvent = OverrideChangeEvent;
     if (overrideChangeEvent == null)
       return;
     overrideChangeEvent();
@@ -28,8 +27,8 @@ public class PlayerIsolatedIndoorCheck : EngineDependent
 
   public static void ResetOverride()
   {
-    PlayerIsolatedIndoorCheck.overriden = false;
-    Action overrideChangeEvent = PlayerIsolatedIndoorCheck.OverrideChangeEvent;
+    overriden = false;
+    Action overrideChangeEvent = OverrideChangeEvent;
     if (overrideChangeEvent == null)
       return;
     overrideChangeEvent();
@@ -37,31 +36,31 @@ public class PlayerIsolatedIndoorCheck : EngineDependent
 
   private void ApplyState()
   {
-    if (!((UnityEngine.Object) this.view != (UnityEngine.Object) null))
+    if (!((UnityEngine.Object) view != (UnityEngine.Object) null))
       return;
-    this.view.Visible = PlayerIsolatedIndoorCheck.overriden ? PlayerIsolatedIndoorCheck.overridenIsolatedIndoor : this.isolatedIndoor;
+    view.Visible = overriden ? overridenIsolatedIndoor : isolatedIndoor;
   }
 
   private void SetIsolatedIndoor(bool value)
   {
-    this.isolatedIndoor = value;
-    this.ApplyState();
+    isolatedIndoor = value;
+    ApplyState();
   }
 
-  private void OnBeginExit() => this.SetIsolatedIndoor(false);
+  private void OnBeginExit() => SetIsolatedIndoor(false);
 
   protected override void OnConnectToEngine()
   {
-    this.SetIsolatedIndoor(this.insideIndoorListener.IsolatedIndoor);
-    this.insideIndoorListener.OnIsolatedIndoorChanged += new Action<bool>(this.SetIsolatedIndoor);
-    this.insideIndoorListener.OnPlayerBeginsExit += new Action(this.OnBeginExit);
-    PlayerIsolatedIndoorCheck.OverrideChangeEvent += new Action(this.ApplyState);
+    SetIsolatedIndoor(insideIndoorListener.IsolatedIndoor);
+    insideIndoorListener.OnIsolatedIndoorChanged += SetIsolatedIndoor;
+    insideIndoorListener.OnPlayerBeginsExit += OnBeginExit;
+    OverrideChangeEvent += ApplyState;
   }
 
   protected override void OnDisconnectFromEngine()
   {
-    this.insideIndoorListener.OnIsolatedIndoorChanged -= new Action<bool>(this.SetIsolatedIndoor);
-    this.insideIndoorListener.OnPlayerBeginsExit -= new Action(this.OnBeginExit);
-    PlayerIsolatedIndoorCheck.OverrideChangeEvent -= new Action(this.ApplyState);
+    insideIndoorListener.OnIsolatedIndoorChanged -= SetIsolatedIndoor;
+    insideIndoorListener.OnPlayerBeginsExit -= OnBeginExit;
+    OverrideChangeEvent -= ApplyState;
   }
 }

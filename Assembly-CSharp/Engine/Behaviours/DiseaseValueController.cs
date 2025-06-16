@@ -3,8 +3,6 @@ using Engine.Source.Commons;
 using Engine.Source.Components;
 using Inspectors;
 using StateSetters;
-using System;
-using UnityEngine;
 
 namespace Engine.Behaviours
 {
@@ -17,41 +15,41 @@ namespace Engine.Behaviours
 
     public void Attach(IEntity owner)
     {
-      this.component = owner.GetComponent<DiseaseComponent>();
-      if (this.component == null)
+      component = owner.GetComponent<DiseaseComponent>();
+      if (component == null)
         return;
-      this.component.OnCurrentDiseaseValueChanged += new Action<float>(this.OnCurrentDiseaseValueChanged);
-      this.OnCurrentDiseaseValueChanged(this.component.CurrentDiseaseValue);
+      component.OnCurrentDiseaseValueChanged += OnCurrentDiseaseValueChanged;
+      OnCurrentDiseaseValueChanged(component.CurrentDiseaseValue);
     }
 
     public void Detach()
     {
-      if (this.component == null)
+      if (component == null)
         return;
-      this.component.OnCurrentDiseaseValueChanged -= new Action<float>(this.OnCurrentDiseaseValueChanged);
-      this.component = (DiseaseComponent) null;
+      component.OnCurrentDiseaseValueChanged -= OnCurrentDiseaseValueChanged;
+      component = null;
     }
 
-    private void OnCurrentDiseaseValueChanged(float value) => this.UpdateValue();
+    private void OnCurrentDiseaseValueChanged(float value) => UpdateValue();
 
     [Inspected(Mutable = true, Mode = ExecuteMode.EditAndRuntime)]
     private float DiseaseValue
     {
       set
       {
-        this.diseaseValue = Mathf.Clamp01(value);
-        this.diseaseValueState.Apply(this.diseaseValue);
+        diseaseValue = Mathf.Clamp01(value);
+        diseaseValueState.Apply(diseaseValue);
       }
-      get => this.diseaseValue;
+      get => diseaseValue;
     }
 
-    private void VisirEnableListener_OnVisibleChanged(bool visible) => this.UpdateValue();
+    private void VisirEnableListener_OnVisibleChanged(bool visible) => UpdateValue();
 
     private void UpdateValue()
     {
-      if (this.component == null)
+      if (component == null)
         return;
-      this.DiseaseValue = this.component.CurrentDiseaseValue;
+      DiseaseValue = component.CurrentDiseaseValue;
     }
   }
 }

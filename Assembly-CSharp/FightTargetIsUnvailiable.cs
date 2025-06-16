@@ -1,4 +1,7 @@
-﻿using BehaviorDesigner.Runtime;
+﻿using System;
+using System.Collections.Generic;
+using System.Reflection;
+using BehaviorDesigner.Runtime;
 using BehaviorDesigner.Runtime.Tasks;
 using Cofe.Proxies;
 using Cofe.Serializations.Data;
@@ -11,9 +14,6 @@ using Engine.Impl.Services.Factories;
 using Engine.Source.Commons;
 using Engine.Source.Components;
 using Scripts.Tools.Serializations.Converters;
-using System.Collections.Generic;
-using System.Reflection;
-using UnityEngine;
 
 [TaskDescription("Fight target is unvailiable")]
 [TaskCategory("Pathologic")]
@@ -22,9 +22,9 @@ using UnityEngine;
 [FactoryProxy(typeof (FightTargetIsUnvailiable))]
 public class FightTargetIsUnvailiable : Conditional, IStub, ISerializeDataWrite, ISerializeDataRead
 {
-  [DataReadProxy(MemberEnum.None)]
-  [DataWriteProxy(MemberEnum.None)]
-  [CopyableProxy(MemberEnum.None)]
+  [DataReadProxy]
+  [DataWriteProxy]
+  [CopyableProxy()]
   [SerializeField]
   public SharedTransform Target;
   protected DetectorComponent detector;
@@ -32,39 +32,39 @@ public class FightTargetIsUnvailiable : Conditional, IStub, ISerializeDataWrite,
 
   public override void OnAwake()
   {
-    this.entity = EntityUtility.GetEntity(this.gameObject);
-    if (this.entity == null)
+    entity = EntityUtility.GetEntity(gameObject);
+    if (entity == null)
     {
-      Debug.LogWarning((object) (this.gameObject.name + " : entity not found, method : " + this.GetType().Name + ":" + MethodBase.GetCurrentMethod().Name), (UnityEngine.Object) this.gameObject);
+      Debug.LogWarning((object) (gameObject.name + " : entity not found, method : " + GetType().Name + ":" + MethodBase.GetCurrentMethod().Name), (UnityEngine.Object) gameObject);
     }
     else
     {
-      this.detector = this.entity.GetComponent<DetectorComponent>();
-      if (this.detector != null)
+      detector = entity.GetComponent<DetectorComponent>();
+      if (detector != null)
         return;
-      Debug.LogWarningFormat("{0}: doesn't contain {1} engine component", (object) this.gameObject.name, (object) typeof (IDetectorComponent).Name);
+      Debug.LogWarningFormat("{0}: doesn't contain {1} engine component", (object) gameObject.name, (object) typeof (IDetectorComponent).Name);
     }
   }
 
   public override TaskStatus OnUpdate()
   {
-    if ((UnityEngine.Object) this.Target.Value == (UnityEngine.Object) null)
+    if ((UnityEngine.Object) Target.Value == (UnityEngine.Object) null)
       return TaskStatus.Success;
-    if (this.entity == null || this.detector == null)
+    if (entity == null || detector == null)
       return TaskStatus.Failure;
-    if ((UnityEngine.Object) this.Target.Value == (UnityEngine.Object) this.gameObject.transform || !this.Target.Value.gameObject.activeSelf)
+    if ((UnityEngine.Object) Target.Value == (UnityEngine.Object) gameObject.transform || !Target.Value.gameObject.activeSelf)
       return TaskStatus.Success;
-    if (this.gameObject.GetComponent<EnemyBase>().IsFaint)
+    if (gameObject.GetComponent<EnemyBase>().IsFaint)
       return TaskStatus.Failure;
     List<IEntity> entityList = new List<IEntity>();
-    foreach (IDetectableComponent detectable in this.detector.Visible)
+    foreach (IDetectableComponent detectable in detector.Visible)
     {
-      if (this.DetectableIsTarget(detectable))
+      if (DetectableIsTarget(detectable))
         return TaskStatus.Failure;
     }
-    foreach (IDetectableComponent detectable in this.detector.Hearing)
+    foreach (IDetectableComponent detectable in detector.Hearing)
     {
-      if (this.DetectableIsTarget(detectable))
+      if (DetectableIsTarget(detectable))
         return TaskStatus.Failure;
     }
     return TaskStatus.Success;
@@ -78,26 +78,26 @@ public class FightTargetIsUnvailiable : Conditional, IStub, ISerializeDataWrite,
     if (owner == null)
       return false;
     GameObject gameObject = ((IEntityView) owner).GameObject;
-    return !((UnityEngine.Object) gameObject == (UnityEngine.Object) null) && (UnityEngine.Object) gameObject.transform == (UnityEngine.Object) this.Target.Value;
+    return !((UnityEngine.Object) gameObject == (UnityEngine.Object) null) && (UnityEngine.Object) gameObject.transform == (UnityEngine.Object) Target.Value;
   }
 
   public void DataWrite(IDataWriter writer)
   {
-    DefaultDataWriteUtility.WriteSerialize<NodeData>(writer, "NodeData", this.nodeData);
-    DefaultDataWriteUtility.Write(writer, "Id", this.id);
-    DefaultDataWriteUtility.Write(writer, "FriendlyName", this.friendlyName);
-    DefaultDataWriteUtility.Write(writer, "Instant", this.instant);
-    DefaultDataWriteUtility.Write(writer, "Disabled", this.disabled);
-    BehaviorTreeDataWriteUtility.WriteShared<SharedTransform>(writer, "Target", this.Target);
+    DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
+    DefaultDataWriteUtility.Write(writer, "Id", id);
+    DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
+    DefaultDataWriteUtility.Write(writer, "Instant", instant);
+    DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
+    BehaviorTreeDataWriteUtility.WriteShared(writer, "Target", Target);
   }
 
-  public void DataRead(IDataReader reader, System.Type type)
+  public void DataRead(IDataReader reader, Type type)
   {
-    this.nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
-    this.id = DefaultDataReadUtility.Read(reader, "Id", this.id);
-    this.friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", this.friendlyName);
-    this.instant = DefaultDataReadUtility.Read(reader, "Instant", this.instant);
-    this.disabled = DefaultDataReadUtility.Read(reader, "Disabled", this.disabled);
-    this.Target = BehaviorTreeDataReadUtility.ReadShared<SharedTransform>(reader, "Target", this.Target);
+    nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
+    id = DefaultDataReadUtility.Read(reader, "Id", id);
+    friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
+    instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
+    disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
+    Target = BehaviorTreeDataReadUtility.ReadShared(reader, "Target", Target);
   }
 }

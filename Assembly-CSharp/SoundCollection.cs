@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-[CreateAssetMenu(menuName = "Data/Sound Collection")]
+﻿[CreateAssetMenu(menuName = "Data/Sound Collection")]
 public class SoundCollection : ScriptableObject
 {
   [SerializeField]
@@ -9,27 +7,27 @@ public class SoundCollection : ScriptableObject
 
   public AudioClip GetClip()
   {
-    int length = this.clips.Length;
+    int length = clips.Length;
     AudioClip clip;
     switch (length)
     {
       case 0:
         return (AudioClip) null;
       case 1:
-        clip = this.clips[0];
+        clip = clips[0];
         break;
       default:
-        if (this.prevRandomClip == -1)
+        if (prevRandomClip == -1)
         {
-          this.prevRandomClip = Random.Range(0, length);
-          clip = this.clips[this.prevRandomClip];
+          prevRandomClip = Random.Range(0, length);
+          clip = clips[prevRandomClip];
           break;
         }
         int index = Random.Range(0, length - 1);
-        if (index >= this.prevRandomClip)
+        if (index >= prevRandomClip)
           ++index;
-        clip = this.clips[index];
-        this.prevRandomClip = index;
+        clip = clips[index];
+        prevRandomClip = index;
         break;
     }
     return clip;

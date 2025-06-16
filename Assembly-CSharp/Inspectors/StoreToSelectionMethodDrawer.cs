@@ -19,14 +19,14 @@ namespace Inspectors
       for (int index = 0; index < 10; ++index)
       {
         int storeIndex = index;
-        menu.AddItem("Store Object To/Slot " + (object) storeIndex, false, (Action) (() =>
+        menu.AddItem("Store Object To/Slot " + storeIndex, false, (Action) (() =>
         {
           Action<object> action = setter;
           if (action == null)
             return;
-          action((object) new object[1]
+          action(new object[1]
           {
-            (object) storeIndex
+            storeIndex
           });
         }));
       }

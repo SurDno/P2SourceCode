@@ -1,16 +1,15 @@
-﻿using Engine.Common;
+﻿using System.Collections;
+using Engine.Common;
 using Engine.Common.Services;
 using Engine.Impl.Services;
 using Engine.Source.Commons;
 using Engine.Source.Otimizations;
 using Engine.Source.Settings.External;
 using Engine.Source.Utility;
-using System.Collections;
-using UnityEngine;
 
 namespace Engine.Source.Services
 {
-  [GameService(new System.Type[] {typeof (MemoryStrategyService)})]
+  [GameService(typeof (MemoryStrategyService))]
   public class MemoryStrategyService : IInitialisable, IUpdatable
   {
     private static float timeLeft;
@@ -18,27 +17,27 @@ namespace Engine.Source.Services
 
     public static void ResetTime()
     {
-      MemoryStrategyService.timeLeft = Mathf.Max((float) ExternalSettingsInstance<ExternalOptimizationSettings>.Instance.MemoryStrategyTimeEventPeriod, 10f);
+      timeLeft = Mathf.Max((float) ExternalSettingsInstance<ExternalOptimizationSettings>.Instance.MemoryStrategyTimeEventPeriod, 10f);
     }
 
     public void ComputeUpdate()
     {
-      if (this.enumerator != null)
+      if (enumerator != null)
       {
-        if (this.enumerator.MoveNext())
+        if (enumerator.MoveNext())
           return;
-        this.StartGame();
-        this.enumerator = (IEnumerator) null;
+        StartGame();
+        enumerator = null;
       }
-      MemoryStrategyService.timeLeft -= Time.deltaTime;
-      if ((double) MemoryStrategyService.timeLeft > 0.0 || InstanceByRequest<EngineApplication>.Instance.IsPaused || !PlayerUtility.IsPlayerCanControlling)
+      timeLeft -= Time.deltaTime;
+      if (timeLeft > 0.0 || InstanceByRequest<EngineApplication>.Instance.IsPaused || !PlayerUtility.IsPlayerCanControlling)
         return;
-      MemoryStrategyService.ResetTime();
-      this.enumerator = MemoryStrategy.Instance.Compute(MemoryStrategyContextEnum.Time);
-      if (this.enumerator.MoveNext())
-        this.StopGame();
+      ResetTime();
+      enumerator = MemoryStrategy.Instance.Compute(MemoryStrategyContextEnum.Time);
+      if (enumerator.MoveNext())
+        StopGame();
       else
-        this.enumerator = (IEnumerator) null;
+        enumerator = null;
     }
 
     private void StopGame()
@@ -55,13 +54,13 @@ namespace Engine.Source.Services
 
     public void Initialise()
     {
-      MemoryStrategyService.ResetTime();
-      InstanceByRequest<UpdateService>.Instance.Updater.AddUpdatable((IUpdatable) this);
+      ResetTime();
+      InstanceByRequest<UpdateService>.Instance.Updater.AddUpdatable(this);
     }
 
     public void Terminate()
     {
-      InstanceByRequest<UpdateService>.Instance.Updater.RemoveUpdatable((IUpdatable) this);
+      InstanceByRequest<UpdateService>.Instance.Updater.RemoveUpdatable(this);
     }
   }
 }

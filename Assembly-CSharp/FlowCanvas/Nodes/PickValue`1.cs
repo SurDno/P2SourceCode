@@ -1,6 +1,6 @@
-﻿using ParadoxNotion.Design;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using ParadoxNotion.Design;
 
 namespace FlowCanvas.Nodes
 {

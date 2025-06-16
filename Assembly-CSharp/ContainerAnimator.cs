@@ -1,80 +1,79 @@
-﻿using Inspectors;
+﻿using System;
+using Inspectors;
 using Scripts.Utility;
-using System;
-using UnityEngine;
 
 public class ContainerAnimator : MonoBehaviour
 {
   [SerializeField]
-  private ContainerAnimator.TransformInfo Opened;
+  private TransformInfo Opened;
   [SerializeField]
-  private ContainerAnimator.TransformInfo Closed;
+  private TransformInfo Closed;
   private bool isOpened;
   private float progress;
   private float speed = 2f;
 
   public bool IsOpened
   {
-    get => this.isOpened;
+    get => isOpened;
     set
     {
-      if (this.isOpened == value)
+      if (isOpened == value)
         return;
-      this.isOpened = value;
+      isOpened = value;
     }
   }
 
   private void Update()
   {
-    if (this.isOpened)
+    if (isOpened)
     {
-      if ((double) this.progress == 1.0)
+      if (progress == 1.0)
         return;
-      this.progress += Time.deltaTime * this.speed;
-      if ((double) this.progress > 1.0)
-        this.progress = 1f;
+      progress += Time.deltaTime * speed;
+      if (progress > 1.0)
+        progress = 1f;
     }
     else
     {
-      if ((double) this.progress == 0.0)
+      if (progress == 0.0)
         return;
-      this.progress -= Time.deltaTime * this.speed;
-      if ((double) this.progress < 0.0)
-        this.progress = 0.0f;
+      progress -= Time.deltaTime * speed;
+      if (progress < 0.0)
+        progress = 0.0f;
     }
-    float t = EasyUtility.QuarticEaseOut(this.progress);
-    this.transform.localPosition = Vector3.LerpUnclamped(this.Closed.Position, this.Opened.Position, t);
-    this.transform.localRotation = Quaternion.LerpUnclamped(this.Closed.Rotation, this.Opened.Rotation, t);
+    float t = EasyUtility.QuarticEaseOut(progress);
+    this.transform.localPosition = Vector3.LerpUnclamped(Closed.Position, Opened.Position, t);
+    this.transform.localRotation = Quaternion.LerpUnclamped(Closed.Rotation, Opened.Rotation, t);
   }
 
   [Inspected(Mode = ExecuteMode.Edit)]
   private void SaveAsClosed()
   {
-    this.Closed.Position = this.transform.localPosition;
-    this.Closed.Rotation = this.transform.localRotation;
+    Closed.Position = this.transform.localPosition;
+    Closed.Rotation = this.transform.localRotation;
   }
 
   [Inspected(Mode = ExecuteMode.Edit)]
   private void SaveAsOpened()
   {
-    this.Opened.Position = this.transform.localPosition;
-    this.Opened.Rotation = this.transform.localRotation;
+    Opened.Position = this.transform.localPosition;
+    Opened.Rotation = this.transform.localRotation;
   }
 
   [Inspected(Mode = ExecuteMode.EditAndRuntime)]
   private void Close()
   {
-    this.progress = 0.0f;
-    this.transform.localPosition = this.Closed.Position;
-    this.transform.localRotation = this.Closed.Rotation;
+    progress = 0.0f;
+    this.transform.localPosition = Closed.Position;
+    this.transform.localRotation = Closed.Rotation;
   }
 
   [Inspected(Mode = ExecuteMode.EditAndRuntime)]
   private void Open()
   {
-    this.progress = 1f;
-    this.transform.localPosition = this.Opened.Position;
-    this.transform.localRotation = this.Opened.Rotation;
+    progress = 1f;
+    this.transform.localPosition = Opened.Position;
+    this.transform.localRotation = Opened.Rotation;
   }
 
   [Serializable]

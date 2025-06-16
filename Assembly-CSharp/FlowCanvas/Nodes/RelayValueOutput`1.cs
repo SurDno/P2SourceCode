@@ -1,7 +1,5 @@
-﻿using ParadoxNotion.Design;
-using System;
-using System.Linq;
-using UnityEngine;
+﻿using System.Linq;
+using ParadoxNotion.Design;
 
 namespace FlowCanvas.Nodes
 {
@@ -15,36 +13,36 @@ namespace FlowCanvas.Nodes
 
     private string sourceInputUID
     {
-      get => this._sourceInputUID;
-      set => this._sourceInputUID = value;
+      get => _sourceInputUID;
+      set => _sourceInputUID = value;
     }
 
     private RelayValueInput<T> sourceInput
     {
       get
       {
-        if (this._sourceInput == null)
+        if (_sourceInput == null)
         {
-          this._sourceInput = (object) this.graph.GetAllNodesOfType<RelayValueInput<T>>().FirstOrDefault<RelayValueInput<T>>((Func<RelayValueInput<T>, bool>) (i => i.UID == this.sourceInputUID));
-          if (this._sourceInput == null)
-            this._sourceInput = new object();
+          _sourceInput = graph.GetAllNodesOfType<RelayValueInput<T>>().FirstOrDefault(i => i.UID == sourceInputUID);
+          if (_sourceInput == null)
+            _sourceInput = new object();
         }
-        return this._sourceInput as RelayValueInput<T>;
+        return _sourceInput as RelayValueInput<T>;
       }
-      set => this._sourceInput = (object) value;
+      set => _sourceInput = value;
     }
 
     public override string name
     {
       get
       {
-        return string.Format("{0}", this.sourceInput != null ? (object) this.sourceInput.ToString() : (object) "@ NONE");
+        return string.Format("{0}", sourceInput != null ? sourceInput.ToString() : (object) "@ NONE");
       }
     }
 
     protected override void RegisterPorts()
     {
-      this.AddValueOutput<T>("Value", (ValueHandler<T>) (() => this.sourceInput != null ? this.sourceInput.port.value : default (T)));
+      AddValueOutput("Value", () => sourceInput != null ? sourceInput.port.value : default (T));
     }
   }
 }

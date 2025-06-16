@@ -1,10 +1,8 @@
-﻿using Engine.Source.Audio;
+﻿using System;
+using Engine.Source.Audio;
 using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
-using System;
-using UnityEngine;
-using UnityEngine.Audio;
 
 namespace Engine.Source.Blueprints
 {
@@ -15,33 +13,33 @@ namespace Engine.Source.Blueprints
     private ValueInput<AudioClip> clipInput;
     [Port("Mixer", null)]
     private ValueInput<AudioMixerGroup> mixerInput;
-    [Port("Volume", new object[] {1f})]
+    [Port("Volume", 1f)]
     private ValueInput<float> volumeInput;
-    [Port("Fade", new object[] {0.0f})]
+    [Port("Fade", 0.0f)]
     private ValueInput<float> fadeTime;
-    [Port("Use Pause", new object[] {true})]
+    [Port("Use Pause", true)]
     private ValueInput<bool> usePause;
 
     protected override void RegisterPorts()
     {
       base.RegisterPorts();
-      FlowOutput output = this.AddFlowOutput("Out");
-      this.AddFlowInput("In", (FlowHandler) (() =>
+      FlowOutput output = AddFlowOutput("Out");
+      AddFlowInput("In", () =>
       {
-        AudioClip clip = this.clipInput.value;
+        AudioClip clip = clipInput.value;
         if ((UnityEngine.Object) clip == (UnityEngine.Object) null)
         {
           output.Call();
         }
         else
         {
-          AudioMixerGroup mixer = this.mixerInput.value;
+          AudioMixerGroup mixer = mixerInput.value;
           if ((UnityEngine.Object) mixer == (UnityEngine.Object) null)
             output.Call();
           else
-            SoundUtility.PlayAudioClip2D(clip, mixer, this.volumeInput.value, this.fadeTime.value, this.usePause.value, "(blueprint) " + this.graph.agent.name, (Action) (() => output.Call()));
+            SoundUtility.PlayAudioClip2D(clip, mixer, volumeInput.value, fadeTime.value, usePause.value, "(blueprint) " + graph.agent.name, (Action) (() => output.Call()));
         }
-      }));
+      });
     }
   }
 }

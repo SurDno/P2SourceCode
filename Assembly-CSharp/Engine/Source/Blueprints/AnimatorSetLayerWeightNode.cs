@@ -1,7 +1,6 @@
 ﻿using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
-using UnityEngine;
 
 namespace Engine.Source.Blueprints
 {
@@ -20,13 +19,13 @@ namespace Engine.Source.Blueprints
     [Port("In")]
     private void In()
     {
-      Animator animator = this.animatorInput.value;
+      Animator animator = animatorInput.value;
       if ((Object) animator != (Object) null)
       {
-        int layerIndex = animator.GetLayerIndex(this.layerNameInput.value);
-        animator.SetLayerWeight(layerIndex, this.layerWeightInput.value);
+        int layerIndex = animator.GetLayerIndex(layerNameInput.value);
+        animator.SetLayerWeight(layerIndex, layerWeightInput.value);
       }
-      this.output.Call();
+      output.Call();
     }
   }
 }

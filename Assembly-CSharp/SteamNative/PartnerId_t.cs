@@ -6,7 +6,7 @@
 
     public static implicit operator PartnerId_t(uint value)
     {
-      return new PartnerId_t() { Value = value };
+      return new PartnerId_t { Value = value };
     }
 
     public static implicit operator uint(PartnerId_t value) => value.Value;

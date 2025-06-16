@@ -1,9 +1,7 @@
-﻿using Cofe.Serializations.Converters;
-using Inspectors;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.SceneManagement;
+using Cofe.Serializations.Converters;
+using Inspectors;
 
 namespace Engine.Behaviours
 {
@@ -14,12 +12,12 @@ namespace Engine.Behaviours
     private string id;
     [SerializeField]
     [HideInInspector]
-    private List<SceneObjectContainer.Element> elements = new List<SceneObjectContainer.Element>();
+    private List<Element> elements = new List<Element>();
 
     public GameObject GetGameObject(Guid id)
     {
       string str = DefaultConverter.ToString(id);
-      foreach (SceneObjectContainer.Element element in this.elements)
+      foreach (Element element in elements)
       {
         if ((UnityEngine.Object) element.Item != (UnityEngine.Object) null && element.Id == str)
           return element.Item.gameObject;
@@ -31,7 +29,7 @@ namespace Engine.Behaviours
     {
       if ((UnityEngine.Object) go != (UnityEngine.Object) null)
       {
-        foreach (SceneObjectContainer.Element element in this.elements)
+        foreach (Element element in elements)
         {
           if ((UnityEngine.Object) element.Item != (UnityEngine.Object) null && (UnityEngine.Object) element.Item.gameObject == (UnityEngine.Object) go)
             return DefaultConverter.ParseGuid(element.Id);
@@ -48,7 +46,7 @@ namespace Engine.Behaviours
         if ((UnityEngine.Object) component != (UnityEngine.Object) null)
           return component;
       }
-      return (SceneObjectContainer) null;
+      return null;
     }
 
     [Serializable]

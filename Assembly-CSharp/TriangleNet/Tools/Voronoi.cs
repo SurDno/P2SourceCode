@@ -17,25 +17,25 @@ namespace TriangleNet.Tools
     public Voronoi(Mesh mesh)
     {
       this.mesh = mesh;
-      this.Generate();
+      Generate();
     }
 
-    public Point[] Points => this.points;
+    public Point[] Points => points;
 
-    public List<VoronoiRegion> Regions => this.regions;
+    public List<VoronoiRegion> Regions => regions;
 
     private void Generate()
     {
-      this.mesh.Renumber();
-      this.mesh.MakeVertexMap();
-      this.points = new Point[this.mesh.triangles.Count + this.mesh.hullsize];
-      this.regions = new List<VoronoiRegion>(this.mesh.vertices.Count);
-      this.rayPoints = new Dictionary<int, Point>();
-      this.rayIndex = 0;
-      this.bounds = new BoundingBox();
-      this.ComputeCircumCenters();
-      foreach (Vertex vertex in this.mesh.vertices.Values)
-        this.ConstructVoronoiRegion(vertex);
+      mesh.Renumber();
+      mesh.MakeVertexMap();
+      points = new Point[mesh.triangles.Count + mesh.hullsize];
+      regions = new List<VoronoiRegion>(mesh.vertices.Count);
+      rayPoints = new Dictionary<int, Point>();
+      rayIndex = 0;
+      bounds = new BoundingBox();
+      ComputeCircumCenters();
+      foreach (Vertex vertex in mesh.vertices.Values)
+        ConstructVoronoiRegion(vertex);
     }
 
     private void ComputeCircumCenters()
@@ -43,22 +43,22 @@ namespace TriangleNet.Tools
       Otri otri = new Otri();
       double xi = 0.0;
       double eta = 0.0;
-      foreach (Triangle triangle in this.mesh.triangles.Values)
+      foreach (Triangle triangle in mesh.triangles.Values)
       {
         otri.triangle = triangle;
-        Point circumcenter = Primitives.FindCircumcenter((Point) otri.Org(), (Point) otri.Dest(), (Point) otri.Apex(), ref xi, ref eta);
+        Point circumcenter = Primitives.FindCircumcenter(otri.Org(), otri.Dest(), otri.Apex(), ref xi, ref eta);
         circumcenter.id = triangle.id;
-        this.points[triangle.id] = circumcenter;
-        this.bounds.Update(circumcenter.x, circumcenter.y);
+        points[triangle.id] = circumcenter;
+        bounds.Update(circumcenter.x, circumcenter.y);
       }
-      double num = Math.Max(this.bounds.Width, this.bounds.Height);
-      this.bounds.Scale(num, num);
+      double num = Math.Max(bounds.Width, bounds.Height);
+      bounds.Scale(num, num);
     }
 
     private void ConstructVoronoiRegion(Vertex vertex)
     {
       VoronoiRegion voronoiRegion = new VoronoiRegion(vertex);
-      this.regions.Add(voronoiRegion);
+      regions.Add(voronoiRegion);
       List<Point> points = new List<Point>();
       Otri o2_1 = new Otri();
       Otri o2_2 = new Otri();
@@ -90,26 +90,26 @@ namespace TriangleNet.Tools
         o2_3.OnextSelf();
       }
       voronoiRegion.Bounded = false;
-      int count = this.mesh.triangles.Count;
+      int count = mesh.triangles.Count;
       o2_1.Lprev(ref o2_3);
       o2_3.SegPivot(ref os);
       int hash1 = os.seg.hash;
       points.Add(this.points[o2_1.triangle.id]);
       Vertex intersect;
-      if (this.rayPoints.ContainsKey(hash1))
+      if (rayPoints.ContainsKey(hash1))
       {
-        points.Add(this.rayPoints[hash1]);
+        points.Add(rayPoints[hash1]);
       }
       else
       {
         Vertex vertex1 = o2_1.Org();
         Vertex vertex2 = o2_1.Apex();
-        this.BoxRayIntersection(this.points[o2_1.triangle.id], vertex1.y - vertex2.y, vertex2.x - vertex1.x, out intersect);
-        intersect.id = count + this.rayIndex;
-        this.points[count + this.rayIndex] = (Point) intersect;
-        ++this.rayIndex;
-        points.Add((Point) intersect);
-        this.rayPoints.Add(hash1, (Point) intersect);
+        BoxRayIntersection(this.points[o2_1.triangle.id], vertex1.y - vertex2.y, vertex2.x - vertex1.x, out intersect);
+        intersect.id = count + rayIndex;
+        this.points[count + rayIndex] = intersect;
+        ++rayIndex;
+        points.Add(intersect);
+        rayPoints.Add(hash1, intersect);
       }
       points.Reverse();
       o2_2.Copy(ref o2_1);
@@ -122,20 +122,20 @@ namespace TriangleNet.Tools
       }
       o2_1.SegPivot(ref os);
       int hash2 = os.seg.hash;
-      if (this.rayPoints.ContainsKey(hash2))
+      if (rayPoints.ContainsKey(hash2))
       {
-        points.Add(this.rayPoints[hash2]);
+        points.Add(rayPoints[hash2]);
       }
       else
       {
         Vertex vertex3 = o2_1.Org();
         Vertex vertex4 = o2_1.Dest();
-        this.BoxRayIntersection(this.points[o2_1.triangle.id], vertex4.y - vertex3.y, vertex3.x - vertex4.x, out intersect);
-        intersect.id = count + this.rayIndex;
-        this.points[count + this.rayIndex] = (Point) intersect;
-        ++this.rayIndex;
-        points.Add((Point) intersect);
-        this.rayPoints.Add(hash2, (Point) intersect);
+        BoxRayIntersection(this.points[o2_1.triangle.id], vertex4.y - vertex3.y, vertex3.x - vertex4.x, out intersect);
+        intersect.id = count + rayIndex;
+        this.points[count + rayIndex] = intersect;
+        ++rayIndex;
+        points.Add(intersect);
+        rayPoints.Add(hash2, intersect);
       }
       points.Reverse();
       voronoiRegion.Add(points);
@@ -145,13 +145,13 @@ namespace TriangleNet.Tools
     {
       double x1 = pt.X;
       double y1 = pt.Y;
-      double xmin = this.bounds.Xmin;
-      double xmax = this.bounds.Xmax;
-      double ymin = this.bounds.Ymin;
-      double ymax = this.bounds.Ymax;
+      double xmin = bounds.Xmin;
+      double xmax = bounds.Xmax;
+      double ymin = bounds.Ymin;
+      double ymax = bounds.Ymax;
       if (x1 < xmin || x1 > xmax || y1 < ymin || y1 > ymax)
       {
-        intersect = (Vertex) null;
+        intersect = null;
         return false;
       }
       double num1;

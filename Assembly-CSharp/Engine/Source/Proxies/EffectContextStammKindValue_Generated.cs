@@ -1,10 +1,10 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons.Cloneable;
 using Engine.Common.Commons.Converters;
 using Engine.Common.Components.Parameters;
 using Engine.Source.Effects.Engine;
-using System;
 
 namespace Engine.Source.Proxies
 {
@@ -19,30 +19,30 @@ namespace Engine.Source.Proxies
     public object Clone()
     {
       EffectContextStammKindValue_Generated instance = Activator.CreateInstance<EffectContextStammKindValue_Generated>();
-      this.CopyTo((object) instance);
-      return (object) instance;
+      CopyTo(instance);
+      return instance;
     }
 
     public void CopyTo(object target2)
     {
       EffectContextStammKindValue_Generated kindValueGenerated = (EffectContextStammKindValue_Generated) target2;
-      kindValueGenerated.effectContext = this.effectContext;
-      kindValueGenerated.parameterName = this.parameterName;
-      kindValueGenerated.parameterData = this.parameterData;
+      kindValueGenerated.effectContext = effectContext;
+      kindValueGenerated.parameterName = parameterName;
+      kindValueGenerated.parameterData = parameterData;
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.WriteEnum<EffectContextEnum>(writer, "EffectContext", this.effectContext);
-      DefaultDataWriteUtility.WriteEnum<ParameterNameEnum>(writer, "ParameterName", this.parameterName);
-      DefaultDataWriteUtility.WriteEnum<ParameterDataEnum>(writer, "ParameterData", this.parameterData);
+      DefaultDataWriteUtility.WriteEnum(writer, "EffectContext", effectContext);
+      DefaultDataWriteUtility.WriteEnum(writer, "ParameterName", parameterName);
+      DefaultDataWriteUtility.WriteEnum(writer, "ParameterData", parameterData);
     }
 
     public void DataRead(IDataReader reader, Type type)
     {
-      this.effectContext = DefaultDataReadUtility.ReadEnum<EffectContextEnum>(reader, "EffectContext");
-      this.parameterName = DefaultDataReadUtility.ReadEnum<ParameterNameEnum>(reader, "ParameterName");
-      this.parameterData = DefaultDataReadUtility.ReadEnum<ParameterDataEnum>(reader, "ParameterData");
+      effectContext = DefaultDataReadUtility.ReadEnum<EffectContextEnum>(reader, "EffectContext");
+      parameterName = DefaultDataReadUtility.ReadEnum<ParameterNameEnum>(reader, "ParameterName");
+      parameterData = DefaultDataReadUtility.ReadEnum<ParameterDataEnum>(reader, "ParameterData");
     }
   }
 }

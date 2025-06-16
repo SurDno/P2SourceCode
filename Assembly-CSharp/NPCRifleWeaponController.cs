@@ -1,5 +1,4 @@
 ﻿using Engine.Behaviours.Engines.Controllers;
-using UnityEngine;
 
 public class NPCRifleWeaponController : NPCWeaponControllerBase
 {
@@ -12,77 +11,77 @@ public class NPCRifleWeaponController : NPCWeaponControllerBase
     base.Initialise(service);
     if ((Object) service.Rifle != (Object) null)
     {
-      this.rifleObject = service.Rifle.GetComponent<RifleObject>();
-      this.IndoorChanged();
+      rifleObject = service.Rifle.GetComponent<RifleObject>();
+      IndoorChanged();
     }
-    this.owner = service.gameObject.GetComponent<NPCEnemy>();
-    this.ikController = service.gameObject.GetComponent<IKController>();
+    owner = service.gameObject.GetComponent<NPCEnemy>();
+    ikController = service.gameObject.GetComponent<IKController>();
   }
 
   public override void IndoorChanged()
   {
-    if (!((Object) this.rifleObject != (Object) null) || !((Object) this.service != (Object) null))
+    if (!((Object) rifleObject != (Object) null) || !((Object) service != (Object) null))
       return;
-    this.rifleObject.SetIndoor(this.service.IsIndoor);
+    rifleObject.SetIndoor(service.IsIndoor);
   }
 
   protected override void GetLayersIndices()
   {
-    if (!(bool) (Object) this.animator)
+    if (!(bool) (Object) animator)
       return;
-    this.walkLayerIndex = this.animator.GetLayerIndex("Fight Gun Walk Layer");
-    this.attackLayerIndex = this.animator.GetLayerIndex("Fight Rifle Attack Layer");
-    this.reactionLayerIndex = this.animator.GetLayerIndex("Fight Empty Reaction Layer");
+    walkLayerIndex = animator.GetLayerIndex("Fight Gun Walk Layer");
+    attackLayerIndex = animator.GetLayerIndex("Fight Rifle Attack Layer");
+    reactionLayerIndex = animator.GetLayerIndex("Fight Empty Reaction Layer");
   }
 
   protected override void SetLayers(float weight, bool immediate = false)
   {
-    if ((Object) this.service == (Object) null)
+    if ((Object) service == (Object) null)
       return;
-    if (this.walkLayerIndex != -1)
-      this.service.AddNeededLayer(this.walkLayerIndex, weight);
-    if (this.attackLayerIndex != -1)
-      this.service.AddNeededLayer(this.attackLayerIndex, weight);
-    if (this.reactionLayerIndex != -1)
-      this.service.AddNeededLayer(this.reactionLayerIndex, weight);
+    if (walkLayerIndex != -1)
+      service.AddNeededLayer(walkLayerIndex, weight);
+    if (attackLayerIndex != -1)
+      service.AddNeededLayer(attackLayerIndex, weight);
+    if (reactionLayerIndex != -1)
+      service.AddNeededLayer(reactionLayerIndex, weight);
     if (!immediate)
       return;
-    this.service.ForceUpdateLayers();
+    service.ForceUpdateLayers();
   }
 
   public override void Update()
   {
-    this.layersWeight = Mathf.MoveTowards(this.layersWeight, 1f, Time.deltaTime);
-    this.SetRiflePose();
+    layersWeight = Mathf.MoveTowards(layersWeight, 1f, Time.deltaTime);
+    SetRiflePose();
   }
 
   public override void UpdateSilent()
   {
     base.UpdateSilent();
-    this.SetRiflePose();
+    SetRiflePose();
   }
 
-  public override void Activate() => this.SetLayers(1f, false);
+  public override void Activate() => SetLayers(1f);
 
   public override bool IsChangingWeapon() => false;
 
   private void SetRiflePose()
   {
-    if (!((Object) this.animator != (Object) null))
+    if (!((Object) animator != (Object) null))
       return;
-    this.animator.SetFloat("Fight.RifleHold", this.layersWeight);
+    animator.SetFloat("Fight.RifleHold", layersWeight);
   }
 
   public override void OnAnimatorEvent(string data)
   {
     if (data.StartsWith("Rifle.Fire"))
     {
-      if ((Object) this.rifleObject != (Object) null)
-        this.rifleObject.Shoot();
-      this.owner.SetAiming(false);
+      if ((Object) rifleObject != (Object) null)
+        rifleObject.Shoot();
+      owner.SetAiming(false);
     }
-    if (data.StartsWith("Rifle.Reload") && (Object) this.rifleObject != (Object) null)
-      this.rifleObject.Reload();
+    if (data.StartsWith("Rifle.Reload") && (Object) rifleObject != (Object) null)
+      rifleObject.Reload();
     base.OnAnimatorEvent(data);
   }
 }

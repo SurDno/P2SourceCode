@@ -2,7 +2,7 @@
 
 namespace PLVirtualMachine.Common.EngineAPI.VMECS.VMAttributes
 {
-  [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = false)]
+  [AttributeUsage(AttributeTargets.Property)]
   public class PropertyAttribute : Attribute
   {
     public readonly string Name;
@@ -13,20 +13,20 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS.VMAttributes
 
     public PropertyAttribute(string name, string specialTypeInfo)
     {
-      this.Name = name;
-      this.Initial = true;
-      this.InitialInHierarchy = false;
-      this.DefValue = (object) null;
-      this.SpecialTypeInfo = specialTypeInfo;
+      Name = name;
+      Initial = true;
+      InitialInHierarchy = false;
+      DefValue = null;
+      SpecialTypeInfo = specialTypeInfo;
     }
 
     public PropertyAttribute(string name, string specialTypeInfo, bool initialInHierarchy)
     {
-      this.Name = name;
-      this.Initial = true;
-      this.InitialInHierarchy = initialInHierarchy;
-      this.DefValue = (object) null;
-      this.SpecialTypeInfo = specialTypeInfo;
+      Name = name;
+      Initial = true;
+      InitialInHierarchy = initialInHierarchy;
+      DefValue = null;
+      SpecialTypeInfo = specialTypeInfo;
     }
 
     public PropertyAttribute(
@@ -35,11 +35,11 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS.VMAttributes
       bool initialInHierarchy,
       object defValue)
     {
-      this.Name = name;
-      this.Initial = true;
-      this.InitialInHierarchy = initialInHierarchy;
-      this.DefValue = defValue;
-      this.SpecialTypeInfo = specialTypeInfo;
+      Name = name;
+      Initial = true;
+      InitialInHierarchy = initialInHierarchy;
+      DefValue = defValue;
+      SpecialTypeInfo = specialTypeInfo;
     }
 
     public PropertyAttribute(
@@ -49,11 +49,11 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS.VMAttributes
       object defValue,
       bool isInitial)
     {
-      this.Name = name;
-      this.Initial = isInitial;
-      this.InitialInHierarchy = initialInHierarchy;
-      this.DefValue = defValue;
-      this.SpecialTypeInfo = specialTypeInfo;
+      Name = name;
+      Initial = isInitial;
+      InitialInHierarchy = initialInHierarchy;
+      DefValue = defValue;
+      SpecialTypeInfo = specialTypeInfo;
     }
   }
 }

@@ -8,13 +8,13 @@
     public Vertex subsegorg;
     public Vertex subsegdest;
 
-    public BadSubseg() => this.Hash = BadSubseg.hashSeed++;
+    public BadSubseg() => Hash = hashSeed++;
 
-    public override int GetHashCode() => this.Hash;
+    public override int GetHashCode() => Hash;
 
     public override string ToString()
     {
-      return string.Format("B-SID {0}", (object) this.encsubseg.seg.hash);
+      return string.Format("B-SID {0}", encsubseg.seg.hash);
     }
   }
 }

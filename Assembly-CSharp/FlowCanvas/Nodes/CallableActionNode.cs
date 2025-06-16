@@ -7,11 +7,11 @@
     protected override sealed void OnRegisterPorts(FlowNode node)
     {
       FlowOutput o = node.AddFlowOutput(" ");
-      node.AddFlowInput(" ", (FlowHandler) (() =>
+      node.AddFlowInput(" ", () =>
       {
-        this.Invoke();
+        Invoke();
         o.Call();
-      }));
+      });
     }
   }
 }

@@ -1,9 +1,8 @@
-﻿using Engine.Common;
+﻿using System;
+using Engine.Common;
 using Engine.Common.Services;
 using Engine.Source.Commons;
 using Inspectors;
-using System;
-using UnityEngine;
 
 public class HerbRootsTrigger : MonoBehaviour
 {
@@ -15,8 +14,8 @@ public class HerbRootsTrigger : MonoBehaviour
 
   public float Radius
   {
-    get => this.trigger.radius;
-    set => this.trigger.radius = value;
+    get => trigger.radius;
+    set => trigger.radius = value;
   }
 
   [Inspected]
@@ -24,9 +23,9 @@ public class HerbRootsTrigger : MonoBehaviour
 
   private void Awake()
   {
-    this.trigger = this.gameObject.AddComponent<SphereCollider>();
-    this.trigger.isTrigger = true;
-    this.trigger.radius = 5f;
+    trigger = this.gameObject.AddComponent<SphereCollider>();
+    trigger.isTrigger = true;
+    trigger.radius = 5f;
   }
 
   private bool IsPlayer(GameObject gameObject)
@@ -37,19 +36,19 @@ public class HerbRootsTrigger : MonoBehaviour
 
   private void OnTriggerEnter(Collider collider)
   {
-    if (!this.IsPlayer(collider.gameObject))
+    if (!IsPlayer(collider.gameObject))
       return;
-    this.IsPlayerInside = true;
-    Action playerEnterEvent = this.PlayerEnterEvent;
+    IsPlayerInside = true;
+    Action playerEnterEvent = PlayerEnterEvent;
     if (playerEnterEvent != null)
       playerEnterEvent();
   }
 
   private void OnTriggerExit(Collider collider)
   {
-    if (!this.IsPlayer(collider.gameObject))
+    if (!IsPlayer(collider.gameObject))
       return;
-    this.IsPlayerInside = false;
-    this.PlayerExitEvent();
+    IsPlayerInside = false;
+    PlayerExitEvent();
   }
 }

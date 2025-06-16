@@ -8,9 +8,9 @@
     {
       get
       {
-        if (CursorService.instance == null)
-          CursorService.instance = (ICursorController) new WindowsCursorController();
-        return CursorService.instance;
+        if (instance == null)
+          instance = (ICursorController) new WindowsCursorController();
+        return instance;
       }
     }
   }

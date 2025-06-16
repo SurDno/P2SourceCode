@@ -1,8 +1,7 @@
-﻿using ParadoxNotion;
-using ParadoxNotion.Design;
-using System;
+﻿using System;
 using System.Reflection;
-using UnityEngine;
+using ParadoxNotion;
+using ParadoxNotion.Design;
 
 namespace FlowCanvas.Nodes
 {
@@ -13,51 +12,51 @@ namespace FlowCanvas.Nodes
     [SerializeField]
     private string eventName;
     [SerializeField]
-    private System.Type targetType;
+    private Type targetType;
     private FlowOutput o;
     private Action pointer;
 
     public void SetEvent(EventInfo e)
     {
-      this.targetType = e.RTReflectedType();
-      this.eventName = e.Name;
-      this.GatherPorts();
+      targetType = e.RTReflectedType();
+      eventName = e.Name;
+      GatherPorts();
     }
 
     public override void OnGraphStarted()
     {
-      if (string.IsNullOrEmpty(this.eventName))
+      if (string.IsNullOrEmpty(eventName))
       {
         Debug.LogError((object) "No Event Selected for 'Static Code Event'");
       }
       else
       {
-        EventInfo eventInfo = this.targetType.RTGetEvent(this.eventName);
-        if (eventInfo == (EventInfo) null)
+        EventInfo eventInfo = targetType.RTGetEvent(eventName);
+        if (eventInfo == null)
         {
-          Debug.LogError((object) string.Format("Event {0} is not found", (object) this.eventName));
+          Debug.LogError((object) string.Format("Event {0} is not found", eventName));
         }
         else
         {
           base.OnGraphStarted();
-          this.pointer = (Action) (() => this.o.Call());
-          eventInfo.AddEventHandler((object) null, (Delegate) this.pointer);
+          pointer = (Action) (() => o.Call());
+          eventInfo.AddEventHandler(null, pointer);
         }
       }
     }
 
     public override void OnGraphStoped()
     {
-      if (string.IsNullOrEmpty(this.eventName))
+      if (string.IsNullOrEmpty(eventName))
         return;
-      this.targetType.RTGetEvent(this.eventName).RemoveEventHandler((object) null, (Delegate) this.pointer);
+      targetType.RTGetEvent(eventName).RemoveEventHandler(null, pointer);
     }
 
     protected override void RegisterPorts()
     {
-      if (string.IsNullOrEmpty(this.eventName))
+      if (string.IsNullOrEmpty(eventName))
         return;
-      this.o = this.AddFlowOutput(this.eventName);
+      o = AddFlowOutput(eventName);
     }
   }
 }

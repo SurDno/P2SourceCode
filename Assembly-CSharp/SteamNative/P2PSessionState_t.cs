@@ -17,7 +17,7 @@ namespace SteamNative
 
     public static P2PSessionState_t FromPointer(IntPtr p)
     {
-      return Platform.PackSmall ? (P2PSessionState_t) (P2PSessionState_t.PackSmall) Marshal.PtrToStructure(p, typeof (P2PSessionState_t.PackSmall)) : (P2PSessionState_t) Marshal.PtrToStructure(p, typeof (P2PSessionState_t));
+      return Platform.PackSmall ? (PackSmall) Marshal.PtrToStructure(p, typeof (PackSmall)) : (P2PSessionState_t) Marshal.PtrToStructure(p, typeof (P2PSessionState_t));
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
@@ -32,10 +32,9 @@ namespace SteamNative
       public uint RemoteIP;
       public ushort RemotePort;
 
-      public static implicit operator P2PSessionState_t(P2PSessionState_t.PackSmall d)
+      public static implicit operator P2PSessionState_t(PackSmall d)
       {
-        return new P2PSessionState_t()
-        {
+        return new P2PSessionState_t {
           ConnectionActive = d.ConnectionActive,
           Connecting = d.Connecting,
           P2PSessionError = d.P2PSessionError,

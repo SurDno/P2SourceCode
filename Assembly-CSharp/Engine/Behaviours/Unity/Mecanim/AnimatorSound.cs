@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEngine;
 
 namespace Engine.Behaviours.Unity.Mecanim
 {
@@ -8,7 +7,7 @@ namespace Engine.Behaviours.Unity.Mecanim
   {
     public AudioClip[] Clips;
     public float Volume = 1f;
-    public float Delay = 0.0f;
+    public float Delay;
     private GameObject audioGO;
 
     public override void OnStateEnter(
@@ -17,14 +16,14 @@ namespace Engine.Behaviours.Unity.Mecanim
       int layerIndex)
     {
       PivotHead component = animator.gameObject.GetComponent<PivotHead>();
-      this.audioGO = new GameObject("Sound3D");
-      this.audioGO.transform.SetParent(component.Head, false);
-      AudioSource audioSource = this.audioGO.AddComponent<AudioSource>();
-      audioSource.clip = this.Clips[UnityEngine.Random.Range(0, this.Clips.Length)];
-      audioSource.volume = this.Volume * 0.5f;
+      audioGO = new GameObject("Sound3D");
+      audioGO.transform.SetParent(component.Head, false);
+      AudioSource audioSource = audioGO.AddComponent<AudioSource>();
+      audioSource.clip = Clips[UnityEngine.Random.Range(0, Clips.Length)];
+      audioSource.volume = Volume * 0.5f;
       audioSource.spatialBlend = 1f;
       audioSource.minDistance = 0.4f;
-      audioSource.PlayDelayed(this.Delay);
+      audioSource.PlayDelayed(Delay);
     }
 
     public override void OnStateExit(
@@ -32,7 +31,7 @@ namespace Engine.Behaviours.Unity.Mecanim
       AnimatorStateInfo animatorStateInfo,
       int layerIndex)
     {
-      UnityEngine.Object.Destroy((UnityEngine.Object) this.audioGO);
+      UnityEngine.Object.Destroy((UnityEngine.Object) audioGO);
     }
   }
 }

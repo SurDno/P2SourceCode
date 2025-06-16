@@ -7,15 +7,15 @@ namespace Engine.Source.Commons.Abilities
   [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
   public class AbilityValueInfo
   {
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
     [Inspected(Mutable = true, Mode = ExecuteMode.EditAndRuntime)]
-    [CopyableProxy(MemberEnum.None)]
+    [CopyableProxy]
     public AbilityValueNameEnum Name;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
     [Inspected(Mutable = true, Mode = ExecuteMode.EditAndRuntime)]
-    [CopyableProxy(MemberEnum.None)]
+    [CopyableProxy()]
     public IAbilityValue Value;
   }
 }

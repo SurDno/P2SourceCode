@@ -1,9 +1,9 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons.Cloneable;
 using Engine.Common.Commons.Converters;
 using Engine.Source.Otimizations;
-using System;
 
 namespace Engine.Source.Proxies
 {
@@ -18,23 +18,23 @@ namespace Engine.Source.Proxies
     public object Clone()
     {
       SequenceMemoryStrategy_Generated instance = Activator.CreateInstance<SequenceMemoryStrategy_Generated>();
-      this.CopyTo((object) instance);
-      return (object) instance;
+      CopyTo(instance);
+      return instance;
     }
 
     public void CopyTo(object target2)
     {
-      CloneableObjectUtility.CopyListTo<IMemoryStrategy>(((SequenceMemoryStrategy) target2).items, this.items);
+      CloneableObjectUtility.CopyListTo(((SequenceMemoryStrategy) target2).items, items);
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.WriteListSerialize<IMemoryStrategy>(writer, "Items", this.items);
+      DefaultDataWriteUtility.WriteListSerialize(writer, "Items", items);
     }
 
     public void DataRead(IDataReader reader, Type type)
     {
-      this.items = DefaultDataReadUtility.ReadListSerialize<IMemoryStrategy>(reader, "Items", this.items);
+      items = DefaultDataReadUtility.ReadListSerialize(reader, "Items", items);
     }
   }
 }

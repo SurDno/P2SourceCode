@@ -1,4 +1,8 @@
-﻿using Engine.Common;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Cofe.Serializations.Data;
+using Engine.Common;
 using Engine.Common.Commons;
 using Engine.Common.Components;
 using Engine.Common.Components.Parameters;
@@ -12,10 +16,6 @@ using Engine.Source.Inventory;
 using Engine.Source.Services;
 using Engine.Source.Services.Templates;
 using Inspectors;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
 
 namespace Engine.Source.Components
 {
@@ -24,20 +24,20 @@ namespace Engine.Source.Components
   [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite | TypeEnum.StateSave | TypeEnum.StateLoad)]
   public class StorageComponent : EngineComponent, IStorageComponent, IComponent, INeedSave
   {
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected string tag;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected List<TemplateInfo> inventoryTemplates = new List<TemplateInfo>();
     [StateSaveProxy(MemberEnum.CustomListReference)]
     [StateLoadProxy(MemberEnum.CustomListReference)]
-    [CopyableProxy(MemberEnum.None)]
+    [CopyableProxy()]
     [Inspected]
     protected List<IStorableComponent> items = new List<IStorableComponent>();
     [Inspected]
@@ -46,15 +46,15 @@ namespace Engine.Source.Components
     private ParametersComponent parameters;
 
     [Inspected]
-    public IParameterValue<bool> IsFree { get; } = (IParameterValue<bool>) new ParameterValue<bool>();
+    public IParameterValue<bool> IsFree { get; } = new ParameterValue<bool>();
 
-    public string Tag => this.tag;
+    public string Tag => tag;
 
-    public IEnumerable<IStorableComponent> Items => (IEnumerable<IStorableComponent>) this.items;
+    public IEnumerable<IStorableComponent> Items => items;
 
     public IEnumerable<IInventoryComponent> Containers
     {
-      get => (IEnumerable<IInventoryComponent>) this.containers;
+      get => containers;
     }
 
     public IEnumerable<IEntity> InventoryTemplates
@@ -62,22 +62,22 @@ namespace Engine.Source.Components
       get
       {
         ITemplateService templateService = ServiceLocator.GetService<ITemplateService>();
-        foreach (TemplateInfo inventoryTemplate in this.inventoryTemplates)
+        foreach (TemplateInfo inventoryTemplate in inventoryTemplates)
         {
           IEntity template = templateService.GetTemplate<IEntity>(inventoryTemplate.Id);
           if (template != null)
             yield return template;
-          template = (IEntity) null;
+          template = null;
         }
       }
     }
 
     public IEnumerable<TemplateInfo> InventoryTemplateInfos
     {
-      get => (IEnumerable<TemplateInfo>) this.inventoryTemplates;
+      get => inventoryTemplates;
     }
 
-    public bool NeedSave => this.items.Count != 0;
+    public bool NeedSave => items.Count != 0;
 
     public event Action<IStorableComponent, IInventoryComponent> OnAddItemEvent;
 
@@ -89,26 +89,26 @@ namespace Engine.Source.Components
 
     public void ClearItems()
     {
-      foreach (IStorableComponent storableComponent in this.items.ToList<IStorableComponent>())
+      foreach (IStorableComponent storableComponent in items.ToList())
       {
-        if (this.RemoveItem(storableComponent))
+        if (RemoveItem(storableComponent))
           storableComponent.Owner.Dispose();
       }
     }
 
     public void ClearItems(IInventoryComponent inventory)
     {
-      foreach (IStorableComponent storableComponent in this.items.ToList<IStorableComponent>())
+      foreach (IStorableComponent storableComponent in items.ToList())
       {
         IInventoryComponent container = ((StorableComponent) storableComponent).Container;
-        if ((inventory.Owner.Id == container.Owner.TemplateId || inventory.Owner.Template != null && inventory.Owner.Template.TemplateId == container.Owner.TemplateId || container.Owner.Template != null && inventory.Owner.Id == container.Owner.Template.TemplateId) && this.RemoveItem(storableComponent))
+        if ((inventory.Owner.Id == container.Owner.TemplateId || inventory.Owner.Template != null && inventory.Owner.Template.TemplateId == container.Owner.TemplateId || container.Owner.Template != null && inventory.Owner.Id == container.Owner.Template.TemplateId) && RemoveItem(storableComponent))
           storableComponent.Owner.Dispose();
       }
     }
 
     public bool AddItem(IStorableComponent item, IInventoryComponent container)
     {
-      return this.AddItem(item, container, (Cell) null);
+      return AddItem(item, container, null);
     }
 
     public bool AddItem(IStorableComponent item, IInventoryComponent container, Cell cellTo)
@@ -130,10 +130,10 @@ namespace Engine.Source.Components
       }
       if (item.Count <= 0)
       {
-        Debug.LogError((object) ("Item count error, count : " + (object) item.Count + " , owner : " + item.Owner.GetInfo()));
+        Debug.LogError((object) ("Item count error, count : " + item.Count + " , owner : " + item.Owner.GetInfo()));
         return false;
       }
-      Intersect intersect = StorageUtility.GetIntersect((IStorageComponent) this, container, (StorableComponent) item, cellTo);
+      Intersect intersect = StorageUtility.GetIntersect(this, container, (StorableComponent) item, cellTo);
       if (item.IsDisposed)
         return true;
       if (!intersect.IsAllowed)
@@ -141,20 +141,20 @@ namespace Engine.Source.Components
       ((StorableComponent) item).Container = intersect.Container;
       ((StorableComponent) item).Cell = intersect.Cell.To();
       ((StorableComponent) item).Storage = intersect.Storage;
-      StorableComponent storableComponent = intersect.Storables.FirstOrDefault<StorableComponent>();
+      StorableComponent storableComponent = intersect.Storables.FirstOrDefault();
       if (storableComponent == null || storableComponent.IsDisposed)
       {
-        this.items.Add(item);
-        Action<IStorableComponent, IInventoryComponent> onAddItemEvent = this.OnAddItemEvent;
+        items.Add(item);
+        Action<IStorableComponent, IInventoryComponent> onAddItemEvent = OnAddItemEvent;
         if (onAddItemEvent != null)
-          onAddItemEvent((IStorableComponent) intersect.Storable, intersect.Container);
+          onAddItemEvent(intersect.Storable, intersect.Container);
       }
       else
       {
         storableComponent.Count += item.Count;
-        Action<IStorableComponent, IInventoryComponent> onChangeItemEvent = this.OnChangeItemEvent;
+        Action<IStorableComponent, IInventoryComponent> onChangeItemEvent = OnChangeItemEvent;
         if (onChangeItemEvent != null)
-          onChangeItemEvent((IStorableComponent) intersect.Storable, intersect.Container);
+          onChangeItemEvent(intersect.Storable, intersect.Container);
         item.Owner.Dispose();
       }
       return true;
@@ -178,11 +178,11 @@ namespace Engine.Source.Components
         return false;
       }
       IInventoryComponent container = item.Container;
-      ((StorableComponent) item).Container = (IInventoryComponent) null;
-      ((StorableComponent) item).Cell = (Cell) null;
-      ((StorableComponent) item).Storage = (IStorageComponent) null;
-      this.items.Remove(item);
-      Action<IStorableComponent, IInventoryComponent> onRemoveItemEvent = this.OnRemoveItemEvent;
+      ((StorableComponent) item).Container = null;
+      ((StorableComponent) item).Cell = null;
+      ((StorableComponent) item).Storage = null;
+      items.Remove(item);
+      Action<IStorableComponent, IInventoryComponent> onRemoveItemEvent = OnRemoveItemEvent;
       if (onRemoveItemEvent != null)
         onRemoveItemEvent(item, container);
       return true;
@@ -193,7 +193,7 @@ namespace Engine.Source.Components
       IStorageComponent storage,
       IInventoryComponent container)
     {
-      return this.MoveItem(item, storage, container, (Cell) null);
+      return MoveItem(item, storage, container, null);
     }
 
     public bool MoveItem(
@@ -219,12 +219,12 @@ namespace Engine.Source.Components
       }
       if (item.Count <= 0)
       {
-        Debug.LogError((object) ("Item count error, count : " + (object) item.Count + " , owner : " + item.Owner.GetInfo()));
+        Debug.LogError((object) ("Item count error, count : " + item.Count + " , owner : " + item.Owner.GetInfo()));
         return false;
       }
-      if (!StorageUtility.GetIntersect((IStorageComponent) this, container, (StorableComponent) item, toCell).IsAllowed)
+      if (!StorageUtility.GetIntersect(this, container, (StorableComponent) item, toCell).IsAllowed)
         return false;
-      if (!this.RemoveItem(item))
+      if (!RemoveItem(item))
       {
         Debug.LogError((object) ("Error remove item : " + item.Owner.GetInfo()));
         return false;
@@ -238,52 +238,52 @@ namespace Engine.Source.Components
     public override void OnAdded()
     {
       base.OnAdded();
-      this.IsFree.Set<bool>(this.parameters.GetByName<bool>(ParameterNameEnum.IsFree));
+      IsFree.Set(parameters.GetByName<bool>(ParameterNameEnum.IsFree));
     }
 
     public override void OnRemoved()
     {
-      this.IsFree.Set<bool>((IParameter<bool>) null);
-      this.ClearItems();
+      IsFree.Set(null);
+      ClearItems();
       base.OnRemoved();
     }
 
     public void FireChangeInventoryEvent(IInventoryComponent inventory)
     {
-      Action<IStorageComponent, IInventoryComponent> changeInventoryEvent = this.ChangeInventoryEvent;
+      Action<IStorageComponent, IInventoryComponent> changeInventoryEvent = ChangeInventoryEvent;
       if (changeInventoryEvent == null)
         return;
-      changeInventoryEvent((IStorageComponent) this, inventory);
+      changeInventoryEvent(this, inventory);
     }
 
-    [Cofe.Serializations.Data.OnLoaded]
+    [OnLoaded]
     private void OnLoaded()
     {
-      foreach (IStorableComponent storableComponent in this.items.ToList<IStorableComponent>())
+      foreach (IStorableComponent storableComponent in items.ToList())
       {
-        Action<IStorableComponent, IInventoryComponent> onAddItemEvent = this.OnAddItemEvent;
+        Action<IStorableComponent, IInventoryComponent> onAddItemEvent = OnAddItemEvent;
         if (onAddItemEvent != null)
           onAddItemEvent(storableComponent, storableComponent.Container);
       }
     }
 
-    public void AddContainer(IInventoryComponent inventory) => this.containers.Add(inventory);
+    public void AddContainer(IInventoryComponent inventory) => containers.Add(inventory);
 
-    public void RemoveContainer(IInventoryComponent inventory) => this.containers.Remove(inventory);
+    public void RemoveContainer(IInventoryComponent inventory) => containers.Remove(inventory);
 
     public void AddItemOrDrop(IStorableComponent item, IInventoryComponent container)
     {
-      if (this.AddItem(item, container))
+      if (AddItem(item, container))
         return;
-      ServiceLocator.GetService<DropBagService>().DropBag(item, this.Owner);
+      ServiceLocator.GetService<DropBagService>().DropBag(item, Owner);
     }
 
     [Inspected(Mode = ExecuteMode.Edit)]
     private void RegenerateGuids()
     {
-      foreach (TemplateInfo inventoryTemplate in this.inventoryTemplates)
+      foreach (TemplateInfo inventoryTemplate in inventoryTemplates)
         inventoryTemplate.Id = Guid.NewGuid();
-      ServiceLocator.GetService<IEditorTemplateService>().SetDirty((IObject) this.Owner);
+      ServiceLocator.GetService<IEditorTemplateService>().SetDirty(Owner);
     }
   }
 }

@@ -23,12 +23,12 @@ namespace Cinemachine.Utility
 
     public static T AccessInternalField<T>(this Type type, object obj, string memberName)
     {
-      if (string.IsNullOrEmpty(memberName) || type == (Type) null)
+      if (string.IsNullOrEmpty(memberName) || type == null)
         return default (T);
       BindingFlags bindingFlags = BindingFlags.NonPublic;
       BindingFlags bindingAttr = obj == null ? bindingFlags | BindingFlags.Static : bindingFlags | BindingFlags.Instance;
       FieldInfo field = type.GetField(memberName, bindingAttr);
-      return field != (FieldInfo) null && field.FieldType == typeof (T) ? (T) field.GetValue(obj) : default (T);
+      return field != null && field.FieldType == typeof (T) ? (T) field.GetValue(obj) : default (T);
     }
 
     public static object GetParentObject(string path, object obj)
@@ -37,7 +37,7 @@ namespace Cinemachine.Utility
       if (strArray.Length == 1)
         return obj;
       obj = obj.GetType().GetField(strArray[0], BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).GetValue(obj);
-      return ReflectionHelpers.GetParentObject(string.Join(".", strArray, 1, strArray.Length - 1), obj);
+      return GetParentObject(string.Join(".", strArray, 1, strArray.Length - 1), obj);
     }
 
     public static string GetFieldPath<TType, TValue>(Expression<Func<TType, TValue>> expr)

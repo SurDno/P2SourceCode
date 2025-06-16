@@ -1,14 +1,11 @@
-﻿using Engine.Common.Services;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Engine.Common.Services;
 using Engine.Impl.UI.Controls;
 using Engine.Source.Services.Inputs;
 using Engine.Source.UI.Controls;
 using InputServices;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.UI;
 
 public class BodyPartSelectable : MonoBehaviour
 {
@@ -20,9 +17,9 @@ public class BodyPartSelectable : MonoBehaviour
   private GameObject _buttonTakeHint;
   private SwitchingItemView itemView;
   private HideableProgressFading hideableClosed;
-  private bool _OrganRemoved = false;
-  private ItemSelector toolSelector = (ItemSelector) null;
-  private bool _OrganTaken = false;
+  private bool _OrganRemoved;
+  private ItemSelector toolSelector;
+  private bool _OrganTaken;
   private PointerEventData pointerData;
   private GraphicRaycaster raycaster = (GraphicRaycaster) null;
 
@@ -30,25 +27,25 @@ public class BodyPartSelectable : MonoBehaviour
   {
     get
     {
-      if ((UnityEngine.Object) this.hideableClosed == (UnityEngine.Object) null)
-        this.hideableClosed = this.GetComponentInChildren<HideableProgressFading>();
-      this.OrganRemoved = !this.hideableClosed.Visible && !this.OrganTaken;
-      return this._OrganRemoved;
+      if ((UnityEngine.Object) hideableClosed == (UnityEngine.Object) null)
+        hideableClosed = this.GetComponentInChildren<HideableProgressFading>();
+      OrganRemoved = !hideableClosed.Visible && !OrganTaken;
+      return _OrganRemoved;
     }
-    set => this._OrganRemoved = value;
+    set => _OrganRemoved = value;
   }
 
   public bool OrganTaken
   {
     get
     {
-      if ((UnityEngine.Object) this.itemView == (UnityEngine.Object) null)
-        this.itemView = this.GetComponentInChildren<SwitchingItemView>();
-      if ((UnityEngine.Object) this.itemView != (UnityEngine.Object) null)
-        this.OrganTaken = this.itemView.Storable == null && this.itemView.IsEmptySlotActive();
-      return this._OrganTaken;
+      if ((UnityEngine.Object) itemView == (UnityEngine.Object) null)
+        itemView = this.GetComponentInChildren<SwitchingItemView>();
+      if ((UnityEngine.Object) itemView != (UnityEngine.Object) null)
+        OrganTaken = itemView.Storable == null && itemView.IsEmptySlotActive();
+      return _OrganTaken;
     }
-    set => this._OrganTaken = value;
+    set => _OrganTaken = value;
   }
 
   public HoldableButton2 uiButton { get; private set; }
@@ -57,47 +54,47 @@ public class BodyPartSelectable : MonoBehaviour
 
   public void SetSelected(bool selected)
   {
-    this._selectedFrame.SetActive(selected);
-    bool flag = selected && !this.OrganTaken;
-    this._buttonExtractHint.SetActive(flag && !this.OrganRemoved && this.toolSelector.Item != null);
-    this._buttonTakeHint.SetActive(flag && this.OrganRemoved);
-    this.IsSelected = selected;
+    _selectedFrame.SetActive(selected);
+    bool flag = selected && !OrganTaken;
+    _buttonExtractHint.SetActive(flag && !OrganRemoved && toolSelector.Item != null);
+    _buttonTakeHint.SetActive(flag && OrganRemoved);
+    IsSelected = selected;
     if (selected)
     {
-      if (!this.OrganRemoved && this.toolSelector.Item != null)
-        ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Submit, new GameActionHandle(this.AutopsyOrgan));
-      else if (this.OrganRemoved && !this.OrganTaken)
-        ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Submit, new GameActionHandle(this.TakeOrgan));
-      this._buttonExtractHint.transform.parent.position = new Vector3(this.transform.position.x, this.transform.position.y - 100f);
+      if (!OrganRemoved && toolSelector.Item != null)
+        ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Submit, AutopsyOrgan);
+      else if (OrganRemoved && !OrganTaken)
+        ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Submit, TakeOrgan);
+      _buttonExtractHint.transform.parent.position = new Vector3(this.transform.position.x, this.transform.position.y - 100f);
     }
     else
     {
-      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Submit, new GameActionHandle(this.AutopsyOrgan));
-      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Submit, new GameActionHandle(this.TakeOrgan));
-      this.uiButton?.GamepadEndHold();
+      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Submit, AutopsyOrgan);
+      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Submit, TakeOrgan);
+      uiButton?.GamepadEndHold();
     }
   }
 
   private bool AutopsyOrgan(GameActionType type, bool down)
   {
-    if (!InputService.Instance.JoystickUsed || down && this.toolSelector.Item == null)
+    if (!InputService.Instance.JoystickUsed || down && toolSelector.Item == null)
       return false;
     if (type == GameActionType.Submit & down)
     {
-      this.uiButton?.GamepadStartHold();
+      uiButton?.GamepadStartHold();
       return true;
     }
     if (type != GameActionType.Submit || down)
       return false;
-    this.uiButton?.GamepadEndHold();
-    if (this.OrganRemoved)
+    uiButton?.GamepadEndHold();
+    if (OrganRemoved)
     {
-      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Submit, new GameActionHandle(this.AutopsyOrgan));
-      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Submit, new GameActionHandle(this.TakeOrgan));
+      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Submit, AutopsyOrgan);
+      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Submit, TakeOrgan);
     }
-    else if (this.toolSelector.Item == null && ((IEnumerable<BodyPartSelectable>) this.transform.parent.GetComponentsInChildren<BodyPartSelectable>()).Count<BodyPartSelectable>((Func<BodyPartSelectable, bool>) (organ => organ.OrganRemoved)) == 0)
-      this.SetSelected(false);
-    this.OnJoystick(InputService.Instance.JoystickUsed);
+    else if (toolSelector.Item == null && ((IEnumerable<BodyPartSelectable>) this.transform.parent.GetComponentsInChildren<BodyPartSelectable>()).Count(organ => organ.OrganRemoved) == 0)
+      SetSelected(false);
+    OnJoystick(InputService.Instance.JoystickUsed);
     return true;
   }
 
@@ -106,26 +103,26 @@ public class BodyPartSelectable : MonoBehaviour
     if (!InputService.Instance.JoystickUsed || !(type == GameActionType.Submit & down))
       return false;
     List<RaycastResult> source = new List<RaycastResult>();
-    if (this.pointerData == null)
+    if (pointerData == null)
       return false;
-    this.raycaster.Raycast(this.pointerData, source);
+    raycaster.Raycast(pointerData, source);
     if (source.Count != 0)
     {
-      GameObject gameObject = source.First<RaycastResult>().gameObject;
+      GameObject gameObject = source.First().gameObject;
       if ((UnityEngine.Object) gameObject != (UnityEngine.Object) null)
       {
-        this.pointerData = new PointerEventData(EventSystem.current)
+        pointerData = new PointerEventData(EventSystem.current)
         {
           position = (Vector2) this.transform.position
         };
-        this.EmulateClickOnConsole(source.First<RaycastResult>(), gameObject);
-        ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Submit, new GameActionHandle(this.AutopsyOrgan));
-        ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Submit, new GameActionHandle(this.TakeOrgan));
+        EmulateClickOnConsole(source.First(), gameObject);
+        ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Submit, AutopsyOrgan);
+        ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Submit, TakeOrgan);
         CoroutineService.Instance.WaitFrame(1, (Action) (() =>
         {
-          if (this.toolSelector.Item == null && !this.OrganRemoved && ((IEnumerable<BodyPartSelectable>) this.transform.parent.GetComponentsInChildren<BodyPartSelectable>()).Count<BodyPartSelectable>((Func<BodyPartSelectable, bool>) (organ => organ.OrganRemoved)) == 0)
-            this.SetSelected(false);
-          this.OnJoystick(InputService.Instance.JoystickUsed);
+          if (toolSelector.Item == null && !OrganRemoved && ((IEnumerable<BodyPartSelectable>) this.transform.parent.GetComponentsInChildren<BodyPartSelectable>()).Count(organ => organ.OrganRemoved) == 0)
+            SetSelected(false);
+          OnJoystick(InputService.Instance.JoystickUsed);
         }));
         return true;
       }
@@ -135,77 +132,77 @@ public class BodyPartSelectable : MonoBehaviour
 
   private void EmulateClickOnConsole(RaycastResult raycastResult, GameObject currentOverGo)
   {
-    this.pointerData.eligibleForClick = true;
-    this.pointerData.delta = Vector2.zero;
-    this.pointerData.dragging = true;
-    this.pointerData.useDragThreshold = true;
-    this.pointerData.pressPosition = this.pointerData.position;
-    this.pointerData.pointerCurrentRaycast = raycastResult;
-    this.pointerData.pointerPressRaycast = this.pointerData.pointerCurrentRaycast;
-    GameObject gameObject = ExecuteEvents.ExecuteHierarchy<IPointerDownHandler>(currentOverGo, (BaseEventData) this.pointerData, ExecuteEvents.pointerDownHandler);
+    pointerData.eligibleForClick = true;
+    pointerData.delta = Vector2.zero;
+    pointerData.dragging = true;
+    pointerData.useDragThreshold = true;
+    pointerData.pressPosition = pointerData.position;
+    pointerData.pointerCurrentRaycast = raycastResult;
+    pointerData.pointerPressRaycast = pointerData.pointerCurrentRaycast;
+    GameObject gameObject = ExecuteEvents.ExecuteHierarchy<IPointerDownHandler>(currentOverGo, (BaseEventData) pointerData, ExecuteEvents.pointerDownHandler);
     if ((UnityEngine.Object) gameObject == (UnityEngine.Object) null)
       gameObject = ExecuteEvents.GetEventHandler<IPointerClickHandler>(currentOverGo);
-    this.pointerData.clickCount = 1;
-    this.pointerData.pointerPress = gameObject;
-    this.pointerData.rawPointerPress = currentOverGo;
-    ExecuteEvents.Execute<IPointerUpHandler>(this.pointerData.pointerPress, (BaseEventData) this.pointerData, ExecuteEvents.pointerUpHandler);
-    if (!((UnityEngine.Object) this.pointerData.pointerPress == (UnityEngine.Object) ExecuteEvents.GetEventHandler<IPointerClickHandler>(currentOverGo)) || !this.pointerData.eligibleForClick)
+    pointerData.clickCount = 1;
+    pointerData.pointerPress = gameObject;
+    pointerData.rawPointerPress = currentOverGo;
+    ExecuteEvents.Execute<IPointerUpHandler>(pointerData.pointerPress, (BaseEventData) pointerData, ExecuteEvents.pointerUpHandler);
+    if (!((UnityEngine.Object) pointerData.pointerPress == (UnityEngine.Object) ExecuteEvents.GetEventHandler<IPointerClickHandler>(currentOverGo)) || !pointerData.eligibleForClick)
       return;
-    ExecuteEvents.Execute<IPointerClickHandler>(this.pointerData.pointerPress, (BaseEventData) this.pointerData, ExecuteEvents.pointerClickHandler);
+    ExecuteEvents.Execute<IPointerClickHandler>(pointerData.pointerPress, (BaseEventData) pointerData, ExecuteEvents.pointerClickHandler);
   }
 
-  private void Start() => this.uiButton = this.GetComponentInChildren<HoldableButton2>();
+  private void Start() => uiButton = this.GetComponentInChildren<HoldableButton2>();
 
   private void OnEnable()
   {
-    InputService.Instance.onJoystickUsedChanged += new Action<bool>(this.OnJoystick);
-    this.itemView = this.GetComponentInChildren<SwitchingItemView>();
-    this.hideableClosed = this.GetComponentInChildren<HideableProgressFading>();
-    if ((UnityEngine.Object) this.raycaster == (UnityEngine.Object) null)
+    InputService.Instance.onJoystickUsedChanged += OnJoystick;
+    itemView = this.GetComponentInChildren<SwitchingItemView>();
+    hideableClosed = this.GetComponentInChildren<HideableProgressFading>();
+    if ((UnityEngine.Object) raycaster == (UnityEngine.Object) null)
     {
-      this.raycaster = this.GetComponentInParent<GraphicRaycaster>();
-      this.pointerData = new PointerEventData(EventSystem.current)
+      raycaster = this.GetComponentInParent<GraphicRaycaster>();
+      pointerData = new PointerEventData(EventSystem.current)
       {
         position = (Vector2) this.transform.position
       };
     }
-    this.toolSelector = this.transform.parent.GetComponentInChildren<ItemSelector>();
-    this.SetSelected(false);
+    toolSelector = this.transform.parent.GetComponentInChildren<ItemSelector>();
+    SetSelected(false);
   }
 
   private void OnDisable()
   {
-    InputService.Instance.onJoystickUsedChanged -= new Action<bool>(this.OnJoystick);
-    this.OrganRemoved = false;
-    this.OrganTaken = false;
+    InputService.Instance.onJoystickUsedChanged -= OnJoystick;
+    OrganRemoved = false;
+    OrganTaken = false;
   }
 
   private void OnJoystick(bool joystick)
   {
-    this._selectedFrame.SetActive(joystick && this.IsSelected);
-    if (this.IsSelected)
+    _selectedFrame.SetActive(joystick && IsSelected);
+    if (IsSelected)
     {
-      bool flag = joystick && !this.OrganTaken;
-      this._buttonExtractHint.SetActive(flag && !this.OrganRemoved && this.toolSelector.Item != null);
-      this._buttonTakeHint.SetActive(flag && this.OrganRemoved);
+      bool flag = joystick && !OrganTaken;
+      _buttonExtractHint.SetActive(flag && !OrganRemoved && toolSelector.Item != null);
+      _buttonTakeHint.SetActive(flag && OrganRemoved);
     }
     if (joystick)
       return;
-    this.uiButton?.GamepadEndHold();
+    uiButton?.GamepadEndHold();
   }
 
   public void FireConsoleOnEnterEvent()
   {
-    if (this.OrganRemoved)
+    if (OrganRemoved)
       return;
-    this.uiButton.OnPointerEnter(this.pointerData);
+    uiButton.OnPointerEnter(pointerData);
   }
 
   public void FireConsoleOnExitEvent()
   {
-    if (this.OrganRemoved)
+    if (OrganRemoved)
       return;
-    this.uiButton.OnPointerExit(this.pointerData);
+    uiButton.OnPointerExit(pointerData);
   }
 
   private void Update()

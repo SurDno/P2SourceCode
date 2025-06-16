@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace SRF
+﻿namespace SRF
 {
   public static class SRFGameObjectExtensions
   {
@@ -42,14 +40,14 @@ namespace SRF
 
     public static void SetLayerRecursive(this GameObject o, int layer)
     {
-      SRFGameObjectExtensions.SetLayerInternal(o.transform, layer);
+      SetLayerInternal(o.transform, layer);
     }
 
     private static void SetLayerInternal(Transform t, int layer)
     {
       t.gameObject.layer = layer;
       foreach (Transform t1 in t)
-        SRFGameObjectExtensions.SetLayerInternal(t1, layer);
+        SetLayerInternal(t1, layer);
     }
   }
 }

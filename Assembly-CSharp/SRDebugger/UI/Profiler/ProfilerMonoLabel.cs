@@ -1,7 +1,5 @@
 ﻿using Engine.Source.Services;
 using SRF;
-using UnityEngine;
-using UnityEngine.UI;
 
 namespace SRDebugger.UI.Profiler
 {
@@ -14,16 +12,16 @@ namespace SRDebugger.UI.Profiler
 
     private void Update()
     {
-      if ((double) Time.realtimeSinceStartup <= (double) this.nextUpdate)
+      if ((double) Time.realtimeSinceStartup <= nextUpdate)
         return;
-      this.Refresh();
+      Refresh();
     }
 
     private void Refresh()
     {
-      this.nextUpdate = Time.realtimeSinceStartup + this.updateFrequency;
+      nextUpdate = Time.realtimeSinceStartup + updateFrequency;
       long monoHeapSizeLong = UnityEngine.Profiling.Profiler.GetMonoHeapSizeLong();
-      this._text.text = "Mono : " + OptimizationUtility.GetMemoryText(UnityEngine.Profiling.Profiler.GetMonoUsedSizeLong()) + " / " + OptimizationUtility.GetMemoryText(monoHeapSizeLong);
+      _text.text = "Mono : " + OptimizationUtility.GetMemoryText(UnityEngine.Profiling.Profiler.GetMonoUsedSizeLong()) + " / " + OptimizationUtility.GetMemoryText(monoHeapSizeLong);
     }
   }
 }

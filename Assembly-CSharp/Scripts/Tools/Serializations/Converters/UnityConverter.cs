@@ -1,7 +1,6 @@
-﻿using Cofe.Serializations.Converters;
+﻿using System;
+using Cofe.Serializations.Converters;
 using Cofe.Utility;
-using System;
-using UnityEngine;
 
 namespace Scripts.Tools.Serializations.Converters
 {
@@ -12,14 +11,14 @@ namespace Scripts.Tools.Serializations.Converters
 
     public static bool TryParseComplex(string value, int count)
     {
-      if (count > UnityConverter.floatBuffer.Length || value.IsNullOrEmpty())
+      if (count > floatBuffer.Length || value.IsNullOrEmpty())
         return false;
-      string[] strArray = value.Split(UnityConverter.separator, StringSplitOptions.RemoveEmptyEntries);
+      string[] strArray = value.Split(separator, StringSplitOptions.RemoveEmptyEntries);
       if (strArray.Length != count)
         return false;
       for (int index = 0; index < count; ++index)
       {
-        if (!DefaultConverter.TryParseFloat(strArray[index], out UnityConverter.floatBuffer[index]))
+        if (!DefaultConverter.TryParseFloat(strArray[index], out floatBuffer[index]))
           return false;
       }
       return true;
@@ -27,9 +26,9 @@ namespace Scripts.Tools.Serializations.Converters
 
     public static bool TryParseVector2(string value, out Vector2 result)
     {
-      if (UnityConverter.TryParseComplex(value, 2))
+      if (TryParseComplex(value, 2))
       {
-        result = new Vector2(UnityConverter.floatBuffer[0], UnityConverter.floatBuffer[1]);
+        result = new Vector2(floatBuffer[0], floatBuffer[1]);
         return true;
       }
       result = Vector2.zero;
@@ -39,7 +38,7 @@ namespace Scripts.Tools.Serializations.Converters
     public static Vector2 ParseVector2(string value)
     {
       Vector2 result;
-      if (!UnityConverter.TryParseVector2(value, out result))
+      if (!TryParseVector2(value, out result))
         Debug.LogWarning((object) ("Error parse value : " + (value != null ? value : "null") + "\n" + ObjectInfoUtility.GetStackTrace()));
       return result;
     }
@@ -51,9 +50,9 @@ namespace Scripts.Tools.Serializations.Converters
 
     public static bool TryParseVector3(string value, out Vector3 result)
     {
-      if (UnityConverter.TryParseComplex(value, 3))
+      if (TryParseComplex(value, 3))
       {
-        result = new Vector3(UnityConverter.floatBuffer[0], UnityConverter.floatBuffer[1], UnityConverter.floatBuffer[2]);
+        result = new Vector3(floatBuffer[0], floatBuffer[1], floatBuffer[2]);
         return true;
       }
       result = Vector3.zero;
@@ -63,7 +62,7 @@ namespace Scripts.Tools.Serializations.Converters
     public static Vector3 ParseVector3(string value)
     {
       Vector3 result;
-      if (!UnityConverter.TryParseVector3(value, out result))
+      if (!TryParseVector3(value, out result))
         Debug.LogWarning((object) ("Error parse value : " + (value != null ? value : "null") + "\n" + ObjectInfoUtility.GetStackTrace()));
       return result;
     }
@@ -75,9 +74,9 @@ namespace Scripts.Tools.Serializations.Converters
 
     public static bool TryParseVector4(string value, out Vector4 result)
     {
-      if (UnityConverter.TryParseComplex(value, 4))
+      if (TryParseComplex(value, 4))
       {
-        result = new Vector4(UnityConverter.floatBuffer[0], UnityConverter.floatBuffer[1], UnityConverter.floatBuffer[2], UnityConverter.floatBuffer[3]);
+        result = new Vector4(floatBuffer[0], floatBuffer[1], floatBuffer[2], floatBuffer[3]);
         return true;
       }
       result = Vector4.zero;
@@ -87,7 +86,7 @@ namespace Scripts.Tools.Serializations.Converters
     public static Vector4 ParseVector4(string value)
     {
       Vector4 result;
-      if (!UnityConverter.TryParseVector4(value, out result))
+      if (!TryParseVector4(value, out result))
         Debug.LogWarning((object) ("Error parse value : " + (value != null ? value : "null") + "\n" + ObjectInfoUtility.GetStackTrace()));
       return result;
     }
@@ -99,9 +98,9 @@ namespace Scripts.Tools.Serializations.Converters
 
     public static bool TryParseQuaternion(string value, out Quaternion result)
     {
-      if (UnityConverter.TryParseComplex(value, 4))
+      if (TryParseComplex(value, 4))
       {
-        result = new Quaternion(UnityConverter.floatBuffer[0], UnityConverter.floatBuffer[1], UnityConverter.floatBuffer[2], UnityConverter.floatBuffer[3]);
+        result = new Quaternion(floatBuffer[0], floatBuffer[1], floatBuffer[2], floatBuffer[3]);
         return true;
       }
       result = Quaternion.identity;
@@ -111,7 +110,7 @@ namespace Scripts.Tools.Serializations.Converters
     public static Quaternion ParseQuaternion(string value)
     {
       Quaternion result;
-      if (!UnityConverter.TryParseQuaternion(value, out result))
+      if (!TryParseQuaternion(value, out result))
         Debug.LogWarning((object) ("Error parse value : " + (value != null ? value : "null") + "\n" + ObjectInfoUtility.GetStackTrace()));
       return result;
     }
@@ -123,14 +122,14 @@ namespace Scripts.Tools.Serializations.Converters
 
     public static bool TryParseColor(string value, out Color result)
     {
-      if (UnityConverter.TryParseComplex(value, 4))
+      if (TryParseComplex(value, 4))
       {
-        result = new Color(UnityConverter.floatBuffer[0], UnityConverter.floatBuffer[1], UnityConverter.floatBuffer[2], UnityConverter.floatBuffer[3]);
+        result = new Color(floatBuffer[0], floatBuffer[1], floatBuffer[2], floatBuffer[3]);
         return true;
       }
-      if (UnityConverter.TryParseComplex(value, 3))
+      if (TryParseComplex(value, 3))
       {
-        result = new Color(UnityConverter.floatBuffer[0], UnityConverter.floatBuffer[1], UnityConverter.floatBuffer[2], 1f);
+        result = new Color(floatBuffer[0], floatBuffer[1], floatBuffer[2], 1f);
         return true;
       }
       result = Color.clear;
@@ -140,7 +139,7 @@ namespace Scripts.Tools.Serializations.Converters
     public static Color ParseColor(string value)
     {
       Color result;
-      if (!UnityConverter.TryParseColor(value, out result))
+      if (!TryParseColor(value, out result))
         Debug.LogWarning((object) ("Error parse value : " + (value != null ? value : "null") + "\n" + ObjectInfoUtility.GetStackTrace()));
       return result;
     }

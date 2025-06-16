@@ -1,7 +1,4 @@
-﻿using UnityEngine;
-using UnityEngine.Rendering;
-
-[RequireComponent(typeof (ReflectionProbe))]
+﻿[RequireComponent(typeof (ReflectionProbe))]
 [ExecuteInEditMode]
 public class EnvironmentProbe : MonoBehaviour
 {
@@ -12,8 +9,8 @@ public class EnvironmentProbe : MonoBehaviour
 
   public float AmbientIntensity
   {
-    get => this.ambientIntensity;
-    set => this.ambientIntensity = value;
+    get => ambientIntensity;
+    set => ambientIntensity = value;
   }
 
   private void OnDisable()
@@ -34,8 +31,8 @@ public class EnvironmentProbe : MonoBehaviour
     else if (resolution == 2048)
       num = 3;
     Shader.SetGlobalInt("Pathologic_AmbientCubemapLod", num);
-    Shader.SetGlobalFloat("Pathologic_AmbientCubemapIntensity", this.ambientIntensity);
-    Shader.SetGlobalFloat("Pathologic_AmbientCubemapPower", this.ambientPower);
+    Shader.SetGlobalFloat("Pathologic_AmbientCubemapIntensity", ambientIntensity);
+    Shader.SetGlobalFloat("Pathologic_AmbientCubemapPower", ambientPower);
     Shader.SetGlobalTexture("Pathologic_AmbientCubemap", component.texture);
     RenderSettings.ambientMode = AmbientMode.Flat;
     RenderSettings.ambientLight = Color.blue;

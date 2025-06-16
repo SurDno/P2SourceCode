@@ -1,4 +1,6 @@
-﻿using AssetDatabases;
+﻿using System;
+using System.Collections.Generic;
+using AssetDatabases;
 using Cofe.Utility;
 using Engine.Common;
 using Engine.Common.Commons;
@@ -11,9 +13,6 @@ using Engine.Source.Connections;
 using Engine.Source.Services;
 using FlowCanvas;
 using Inspectors;
-using System;
-using System.Collections.Generic;
-using UnityEngine;
 
 namespace Engine.Source.Components
 {
@@ -30,20 +29,20 @@ namespace Engine.Source.Components
     private bool asyncStarted;
     private IEntity asyncTarget;
     private List<string> asyncEvents = new List<string>();
-    [StateSaveProxy(MemberEnum.None)]
-    [StateLoadProxy(MemberEnum.None)]
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
+    [StateSaveProxy]
+    [StateLoadProxy]
+    [DataReadProxy]
+    [DataWriteProxy]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    [CopyableProxy(MemberEnum.None)]
+    [CopyableProxy]
     protected bool isEnabled = true;
-    [DataReadProxy(MemberEnum.None, Name = "Blueprint")]
-    [DataWriteProxy(MemberEnum.None, Name = "Blueprint")]
-    [StateSaveProxy(MemberEnum.None)]
-    [StateLoadProxy(MemberEnum.None)]
+    [DataReadProxy(Name = "Blueprint")]
+    [DataWriteProxy(Name = "Blueprint")]
+    [StateSaveProxy]
+    [StateLoadProxy]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    [CopyableProxy(MemberEnum.None)]
+    [CopyableProxy()]
     protected UnityAsset<GameObject> blueprintResource;
     [Inspected]
     private FlowScriptController controller;
@@ -53,11 +52,11 @@ namespace Engine.Source.Components
     [Inspected(Mutable = true)]
     public bool IsEnabled
     {
-      get => this.isEnabled;
+      get => isEnabled;
       set
       {
-        this.isEnabled = value;
-        this.OnChangeEnabled();
+        isEnabled = value;
+        OnChangeEnabled();
       }
     }
 
@@ -72,180 +71,178 @@ namespace Engine.Source.Components
     {
       get
       {
-        return ServiceLocator.GetService<ITemplateService>().GetTemplate<IBlueprintObject>(this.blueprintResource.Id);
+        return ServiceLocator.GetService<ITemplateService>().GetTemplate<IBlueprintObject>(blueprintResource.Id);
       }
       set
       {
-        if ((UnityEngine.Object) this.controller != (UnityEngine.Object) null)
-          Debug.LogError((object) ("Instance already started : " + this.Owner.GetInfo()));
+        if ((UnityEngine.Object) controller != (UnityEngine.Object) null)
+          Debug.LogError((object) ("Instance already started : " + Owner.GetInfo()));
         else
-          this.blueprintResource = new UnityAsset<GameObject>(value != null ? value.Id : Guid.Empty);
+          blueprintResource = new UnityAsset<GameObject>(value != null ? value.Id : Guid.Empty);
       }
     }
 
     public bool IsStarted
     {
-      get => this.async ? this.asyncStarted : (UnityEngine.Object) this.controller != (UnityEngine.Object) null;
+      get => async ? asyncStarted : (UnityEngine.Object) controller != (UnityEngine.Object) null;
     }
 
     public bool NeedSave => true;
 
     public void Start(IEntity target)
     {
-      if ((UnityEngine.Object) this.controller != (UnityEngine.Object) null)
-        Debug.LogError((object) ("Instance already exist : " + this.Owner.GetInfo()));
-      else if (this.async)
+      if ((UnityEngine.Object) controller != (UnityEngine.Object) null)
+        Debug.LogError((object) ("Instance already exist : " + Owner.GetInfo()));
+      else if (async)
       {
-        if (this.asyncStarted)
+        if (asyncStarted)
         {
-          Debug.LogError((object) ("Instance already async started : " + this.Owner.GetInfo()));
+          Debug.LogError((object) ("Instance already async started : " + Owner.GetInfo()));
         }
         else
         {
           UnityAsset<GameObject> blueprintResource = this.blueprintResource;
           if (false)
           {
-            Debug.LogError((object) ("blueprintResource is null : " + this.Owner.GetInfo()));
+            Debug.LogError((object) ("blueprintResource is null : " + Owner.GetInfo()));
+          }
+
+          string resourcePath = AssetDatabaseUtility.ConvertToResourcePath(AssetDatabaseService.Instance.GetPath(this.blueprintResource.Id));
+          if (resourcePath.IsNullOrEmpty())
+          {
+            Debug.LogError((object) ("Path is null : " + Owner.GetInfo()));
           }
           else
           {
-            string resourcePath = AssetDatabaseUtility.ConvertToResourcePath(AssetDatabaseService.Instance.GetPath(this.blueprintResource.Id));
-            if (resourcePath.IsNullOrEmpty())
+            ResourceRequest resourceRequest = Resources.LoadAsync(resourcePath);
+            if (resourceRequest == null)
             {
-              Debug.LogError((object) ("Path is null : " + this.Owner.GetInfo()));
+              Debug.LogError((object) ("LoadAsync failed : " + Owner.GetInfo()));
             }
             else
             {
-              ResourceRequest resourceRequest = Resources.LoadAsync(resourcePath);
-              if (resourceRequest == null)
-              {
-                Debug.LogError((object) ("LoadAsync failed : " + this.Owner.GetInfo()));
-              }
-              else
-              {
-                this.asyncTarget = target;
-                this.asyncStarted = true;
-                this.asyncEvents.Clear();
-                resourceRequest.completed += new Action<AsyncOperation>(this.Request_completed);
-              }
+              asyncTarget = target;
+              asyncStarted = true;
+              asyncEvents.Clear();
+              resourceRequest.completed += new Action<AsyncOperation>(Request_completed);
             }
           }
         }
       }
       else
-        this.controller = BlueprintServiceUtility.Start(this.Blueprint, target, (Action) (() =>
+        controller = BlueprintServiceUtility.Start(Blueprint, target, (Action) (() =>
         {
-          if (!((UnityEngine.Object) this.controller != (UnityEngine.Object) null))
+          if (!((UnityEngine.Object) controller != (UnityEngine.Object) null))
             return;
-          Action<IBlueprintComponent> completeEvent = this.CompleteEvent;
+          Action<IBlueprintComponent> completeEvent = CompleteEvent;
           if (completeEvent != null)
-            completeEvent((IBlueprintComponent) this);
-          this.controller = (FlowScriptController) null;
-        }), this.Owner.GetInfo());
+            completeEvent(this);
+          controller = null;
+        }), Owner.GetInfo());
     }
 
     private void Request_completed(AsyncOperation async)
     {
-      async.completed -= new Action<AsyncOperation>(this.Request_completed);
-      if (!this.asyncStarted)
+      async.completed -= new Action<AsyncOperation>(Request_completed);
+      if (!asyncStarted)
         return;
-      this.controller = BlueprintServiceUtility.Start(this.Blueprint, this.asyncTarget, (Action) (() =>
+      controller = BlueprintServiceUtility.Start(Blueprint, asyncTarget, (Action) (() =>
       {
-        if (!((UnityEngine.Object) this.controller != (UnityEngine.Object) null))
+        if (!((UnityEngine.Object) controller != (UnityEngine.Object) null))
           return;
-        Action<IBlueprintComponent> completeEvent = this.CompleteEvent;
+        Action<IBlueprintComponent> completeEvent = CompleteEvent;
         if (completeEvent != null)
-          completeEvent((IBlueprintComponent) this);
-        this.controller = (FlowScriptController) null;
-        this.asyncStarted = false;
-      }), this.Owner.GetInfo());
-      foreach (string asyncEvent in this.asyncEvents)
-        this.controller.SendEvent(asyncEvent);
-      this.asyncEvents.Clear();
+          completeEvent(this);
+        controller = null;
+        asyncStarted = false;
+      }), Owner.GetInfo());
+      foreach (string asyncEvent in asyncEvents)
+        controller.SendEvent(asyncEvent);
+      asyncEvents.Clear();
     }
 
     [Inspected]
-    public void Start() => this.Start(this.Owner);
+    public void Start() => Start(Owner);
 
     public void Stop()
     {
-      if (this.async)
+      if (async)
       {
-        if (!this.asyncStarted)
-          Debug.LogError((object) ("Stop to not asyncStarted: " + this.Owner.GetInfo()));
-        else if ((UnityEngine.Object) this.controller == (UnityEngine.Object) null)
+        if (!asyncStarted)
+          Debug.LogError((object) ("Stop to not asyncStarted: " + Owner.GetInfo()));
+        else if ((UnityEngine.Object) controller == (UnityEngine.Object) null)
         {
-          this.asyncStarted = false;
-          Action<IBlueprintComponent> completeEvent = this.CompleteEvent;
+          asyncStarted = false;
+          Action<IBlueprintComponent> completeEvent = CompleteEvent;
           if (completeEvent == null)
             return;
-          completeEvent((IBlueprintComponent) this);
+          completeEvent(this);
         }
         else
         {
-          this.controller.SendEvent(nameof (Stop));
-          this.controller = (FlowScriptController) null;
-          Action<IBlueprintComponent> completeEvent = this.CompleteEvent;
+          controller.SendEvent(nameof (Stop));
+          controller = null;
+          Action<IBlueprintComponent> completeEvent = CompleteEvent;
           if (completeEvent != null)
-            completeEvent((IBlueprintComponent) this);
+            completeEvent(this);
         }
       }
-      else if ((UnityEngine.Object) this.controller == (UnityEngine.Object) null)
+      else if ((UnityEngine.Object) controller == (UnityEngine.Object) null)
       {
-        Debug.LogError((object) ("Instance already destroed: " + this.Owner.GetInfo()));
+        Debug.LogError((object) ("Instance already destroed: " + Owner.GetInfo()));
       }
       else
       {
-        this.controller.SendEvent(nameof (Stop));
-        this.controller = (FlowScriptController) null;
-        Action<IBlueprintComponent> completeEvent = this.CompleteEvent;
+        controller.SendEvent(nameof (Stop));
+        controller = null;
+        Action<IBlueprintComponent> completeEvent = CompleteEvent;
         if (completeEvent != null)
-          completeEvent((IBlueprintComponent) this);
+          completeEvent(this);
       }
     }
 
     public void SendEvent(string name)
     {
-      if (this.async)
+      if (async)
       {
-        if (!this.asyncStarted)
-          Debug.LogError((object) ("SendEvent to not asyncStarted: " + this.Owner.GetInfo()));
-        else if ((UnityEngine.Object) this.controller != (UnityEngine.Object) null)
-          this.controller.SendEvent(name);
+        if (!asyncStarted)
+          Debug.LogError((object) ("SendEvent to not asyncStarted: " + Owner.GetInfo()));
+        else if ((UnityEngine.Object) controller != (UnityEngine.Object) null)
+          controller.SendEvent(name);
         else
-          this.asyncEvents.Add(name);
+          asyncEvents.Add(name);
       }
-      else if ((UnityEngine.Object) this.controller == (UnityEngine.Object) null)
-        Debug.LogError((object) ("Instance already destroed: " + this.Owner.GetInfo()));
+      else if ((UnityEngine.Object) controller == (UnityEngine.Object) null)
+        Debug.LogError((object) ("Instance already destroed: " + Owner.GetInfo()));
       else
-        this.controller.SendEvent(name);
+        controller.SendEvent(name);
     }
 
     public override void OnAdded()
     {
       base.OnAdded();
-      InstanceByRequest<UpdateService>.Instance.Updater.AddUpdatable((IUpdatable) this);
+      InstanceByRequest<UpdateService>.Instance.Updater.AddUpdatable(this);
     }
 
     public override void OnRemoved()
     {
       base.OnRemoved();
-      InstanceByRequest<UpdateService>.Instance.Updater.RemoveUpdatable((IUpdatable) this);
-      if (!((UnityEngine.Object) this.controller != (UnityEngine.Object) null))
+      InstanceByRequest<UpdateService>.Instance.Updater.RemoveUpdatable(this);
+      if (!((UnityEngine.Object) controller != (UnityEngine.Object) null))
         return;
-      UnityEngine.Object.Destroy((UnityEngine.Object) this.controller.gameObject);
-      this.controller = (FlowScriptController) null;
+      UnityEngine.Object.Destroy((UnityEngine.Object) controller.gameObject);
+      controller = null;
     }
 
     public void ComputeUpdate()
     {
-      bool flag = this.locationItem != null && !this.locationItem.IsHibernation && ((IEntityView) this.Owner).IsAttached;
-      if (this.IsAttached == flag)
+      bool flag = locationItem != null && !locationItem.IsHibernation && ((IEntityView) Owner).IsAttached;
+      if (IsAttached == flag)
         return;
-      this.IsAttached = flag;
-      Action<IBlueprintComponent> attachEvent = this.AttachEvent;
+      IsAttached = flag;
+      Action<IBlueprintComponent> attachEvent = AttachEvent;
       if (attachEvent != null)
-        attachEvent((IBlueprintComponent) this);
+        attachEvent(this);
     }
   }
 }

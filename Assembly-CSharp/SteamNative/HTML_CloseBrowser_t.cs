@@ -10,7 +10,7 @@ namespace SteamNative
 
     public static HTML_CloseBrowser_t FromPointer(IntPtr p)
     {
-      return Platform.PackSmall ? (HTML_CloseBrowser_t) (HTML_CloseBrowser_t.PackSmall) Marshal.PtrToStructure(p, typeof (HTML_CloseBrowser_t.PackSmall)) : (HTML_CloseBrowser_t) Marshal.PtrToStructure(p, typeof (HTML_CloseBrowser_t));
+      return Platform.PackSmall ? (PackSmall) Marshal.PtrToStructure(p, typeof (PackSmall)) : (HTML_CloseBrowser_t) Marshal.PtrToStructure(p, typeof (HTML_CloseBrowser_t));
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
@@ -18,10 +18,9 @@ namespace SteamNative
     {
       public uint UnBrowserHandle;
 
-      public static implicit operator HTML_CloseBrowser_t(HTML_CloseBrowser_t.PackSmall d)
+      public static implicit operator HTML_CloseBrowser_t(PackSmall d)
       {
-        return new HTML_CloseBrowser_t()
-        {
+        return new HTML_CloseBrowser_t {
           UnBrowserHandle = d.UnBrowserHandle
         };
       }

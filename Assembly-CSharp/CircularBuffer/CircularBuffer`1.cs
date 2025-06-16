@@ -24,36 +24,36 @@ namespace CircularBuffer
         throw new ArgumentNullException(nameof (items));
       if (items.Length > capacity)
         throw new ArgumentException("Too many items to fit circular buffer", nameof (items));
-      this._buffer = new T[capacity];
-      Array.Copy((Array) items, (Array) this._buffer, items.Length);
-      this._size = items.Length;
-      this._start = 0;
-      this._end = this._size == capacity ? 0 : this._size;
+      _buffer = new T[capacity];
+      Array.Copy(items, _buffer, items.Length);
+      _size = items.Length;
+      _start = 0;
+      _end = _size == capacity ? 0 : _size;
     }
 
-    public int Capacity => this._buffer.Length;
+    public int Capacity => _buffer.Length;
 
-    public bool IsFull => this.Size == this.Capacity;
+    public bool IsFull => Size == Capacity;
 
-    public bool IsEmpty => this.Size == 0;
+    public bool IsEmpty => Size == 0;
 
-    public int Size => this._size;
+    public int Size => _size;
 
     public T this[int index]
     {
       get
       {
-        if (this.IsEmpty)
-          throw new IndexOutOfRangeException(string.Format("Cannot access index {0}. Buffer is empty", (object) index));
-        return index < this._size ? this._buffer[this.InternalIndex(index)] : throw new IndexOutOfRangeException(string.Format("Cannot access index {0}. Buffer size is {1}", (object) index, (object) this._size));
+        if (IsEmpty)
+          throw new IndexOutOfRangeException(string.Format("Cannot access index {0}. Buffer is empty", index));
+        return index < _size ? _buffer[InternalIndex(index)] : throw new IndexOutOfRangeException(string.Format("Cannot access index {0}. Buffer size is {1}", index, _size));
       }
       set
       {
-        if (this.IsEmpty)
-          throw new IndexOutOfRangeException(string.Format("Cannot access index {0}. Buffer is empty", (object) index));
-        if (index >= this._size)
-          throw new IndexOutOfRangeException(string.Format("Cannot access index {0}. Buffer size is {1}", (object) index, (object) this._size));
-        this._buffer[this.InternalIndex(index)] = value;
+        if (IsEmpty)
+          throw new IndexOutOfRangeException(string.Format("Cannot access index {0}. Buffer is empty", index));
+        if (index >= _size)
+          throw new IndexOutOfRangeException(string.Format("Cannot access index {0}. Buffer size is {1}", index, _size));
+        _buffer[InternalIndex(index)] = value;
       }
     }
 
@@ -61,8 +61,8 @@ namespace CircularBuffer
     {
       ArraySegment<T>[] arraySegmentArray = new ArraySegment<T>[2]
       {
-        this.ArrayOne(),
-        this.ArrayTwo()
+        ArrayOne(),
+        ArrayTwo()
       };
       for (int index = 0; index < arraySegmentArray.Length; ++index)
       {
@@ -71,83 +71,83 @@ namespace CircularBuffer
           yield return segment.Array[segment.Offset + i];
         segment = new ArraySegment<T>();
       }
-      arraySegmentArray = (ArraySegment<T>[]) null;
+      arraySegmentArray = null;
     }
 
-    IEnumerator IEnumerable.GetEnumerator() => (IEnumerator) this.GetEnumerator();
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
     public T Front()
     {
-      this.ThrowIfEmpty();
-      return this._buffer[this._start];
+      ThrowIfEmpty();
+      return _buffer[_start];
     }
 
     public T Back()
     {
-      this.ThrowIfEmpty();
-      return this._buffer[(this._end != 0 ? this._end : this._size) - 1];
+      ThrowIfEmpty();
+      return _buffer[(_end != 0 ? _end : _size) - 1];
     }
 
     public void PushBack(T item)
     {
-      if (this.IsFull)
+      if (IsFull)
       {
-        this._buffer[this._end] = item;
-        this.Increment(ref this._end);
-        this._start = this._end;
+        _buffer[_end] = item;
+        Increment(ref _end);
+        _start = _end;
       }
       else
       {
-        this._buffer[this._end] = item;
-        this.Increment(ref this._end);
-        ++this._size;
+        _buffer[_end] = item;
+        Increment(ref _end);
+        ++_size;
       }
     }
 
     public void PushFront(T item)
     {
-      if (this.IsFull)
+      if (IsFull)
       {
-        this.Decrement(ref this._start);
-        this._end = this._start;
-        this._buffer[this._start] = item;
+        Decrement(ref _start);
+        _end = _start;
+        _buffer[_start] = item;
       }
       else
       {
-        this.Decrement(ref this._start);
-        this._buffer[this._start] = item;
-        ++this._size;
+        Decrement(ref _start);
+        _buffer[_start] = item;
+        ++_size;
       }
     }
 
     public void PopBack()
     {
-      this.ThrowIfEmpty("Cannot take elements from an empty buffer.");
-      this.Decrement(ref this._end);
-      this._buffer[this._end] = default (T);
-      --this._size;
+      ThrowIfEmpty("Cannot take elements from an empty buffer.");
+      Decrement(ref _end);
+      _buffer[_end] = default (T);
+      --_size;
     }
 
     public void PopFront()
     {
-      this.ThrowIfEmpty("Cannot take elements from an empty buffer.");
-      this._buffer[this._start] = default (T);
-      this.Increment(ref this._start);
-      --this._size;
+      ThrowIfEmpty("Cannot take elements from an empty buffer.");
+      _buffer[_start] = default (T);
+      Increment(ref _start);
+      --_size;
     }
 
     public T[] ToArray()
     {
-      T[] destinationArray = new T[this.Size];
+      T[] destinationArray = new T[Size];
       int destinationIndex = 0;
       ArraySegment<T>[] arraySegmentArray = new ArraySegment<T>[2]
       {
-        this.ArrayOne(),
-        this.ArrayTwo()
+        ArrayOne(),
+        ArrayTwo()
       };
       foreach (ArraySegment<T> arraySegment in arraySegmentArray)
       {
-        Array.Copy((Array) arraySegment.Array, arraySegment.Offset, (Array) destinationArray, destinationIndex, arraySegment.Count);
+        Array.Copy(arraySegment.Array, arraySegment.Offset, destinationArray, destinationIndex, arraySegment.Count);
         destinationIndex += arraySegment.Count;
       }
       return destinationArray;
@@ -155,13 +155,13 @@ namespace CircularBuffer
 
     private void ThrowIfEmpty(string message = "Cannot access an empty buffer.")
     {
-      if (this.IsEmpty)
+      if (IsEmpty)
         throw new InvalidOperationException(message);
     }
 
     private void Increment(ref int index)
     {
-      if (++index != this.Capacity)
+      if (++index != Capacity)
         return;
       index = 0;
     }
@@ -169,23 +169,23 @@ namespace CircularBuffer
     private void Decrement(ref int index)
     {
       if (index == 0)
-        index = this.Capacity;
+        index = Capacity;
       --index;
     }
 
     private int InternalIndex(int index)
     {
-      return this._start + (index < this.Capacity - this._start ? index : index - this.Capacity);
+      return _start + (index < Capacity - _start ? index : index - Capacity);
     }
 
     private ArraySegment<T> ArrayOne()
     {
-      return this._start < this._end ? new ArraySegment<T>(this._buffer, this._start, this._end - this._start) : new ArraySegment<T>(this._buffer, this._start, this._buffer.Length - this._start);
+      return _start < _end ? new ArraySegment<T>(_buffer, _start, _end - _start) : new ArraySegment<T>(_buffer, _start, _buffer.Length - _start);
     }
 
     private ArraySegment<T> ArrayTwo()
     {
-      return this._start < this._end ? new ArraySegment<T>(this._buffer, this._end, 0) : new ArraySegment<T>(this._buffer, 0, this._end);
+      return _start < _end ? new ArraySegment<T>(_buffer, _end, 0) : new ArraySegment<T>(_buffer, 0, _end);
     }
   }
 }

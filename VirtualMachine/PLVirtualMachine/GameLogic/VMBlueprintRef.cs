@@ -1,9 +1,9 @@
-﻿using Cofe.Serializations.Converters;
+﻿using System;
+using Cofe.Serializations.Converters;
 using Engine.Common.Types;
 using PLVirtualMachine.Common;
 using PLVirtualMachine.Common.Data;
 using PLVirtualMachine.Common.EngineAPI;
-using System;
 
 namespace PLVirtualMachine.GameLogic
 {
@@ -22,26 +22,26 @@ namespace PLVirtualMachine.GameLogic
 
     public void Initialize(Guid dynamicGuid)
     {
-      this.engineTemplateGuid = dynamicGuid;
-      this.Load();
+      engineTemplateGuid = dynamicGuid;
+      Load();
     }
 
-    public void Initialize(IBlueprint obj) => this.LoadStaticInstance((IObject) obj);
+    public void Initialize(IBlueprint obj) => LoadStaticInstance(obj);
 
     public override EContextVariableCategory Category
     {
       get => EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_BLUEPRINT;
     }
 
-    public Guid EngineTemplateGuid => this.engineTemplateGuid;
+    public Guid EngineTemplateGuid => engineTemplateGuid;
 
     public IBlueprint Blueprint
     {
       get
       {
-        if (this.StaticInstance == null && (this.BaseGuid != 0UL || this.engineTemplateGuid != Guid.Empty))
-          this.Load();
-        return (IBlueprint) this.StaticInstance;
+        if (StaticInstance == null && (BaseGuid != 0UL || engineTemplateGuid != Guid.Empty))
+          Load();
+        return (IBlueprint) StaticInstance;
       }
     }
 
@@ -51,22 +51,22 @@ namespace PLVirtualMachine.GameLogic
         return false;
       if (!typeof (IBlueprintRef).IsAssignableFrom(other.GetType()))
         return base.IsEqual(other);
-      return this.BaseGuid != 0UL ? base.IsEqual(other) : this.engineTemplateGuid == ((VMBlueprintRef) other).engineTemplateGuid;
+      return BaseGuid != 0UL ? base.IsEqual(other) : engineTemplateGuid == ((VMBlueprintRef) other).engineTemplateGuid;
     }
 
     public override VMType Type => new VMType(typeof (IBlueprintRef));
 
-    public override bool Empty => this.Blueprint == null && base.Empty;
+    public override bool Empty => Blueprint == null && base.Empty;
 
     public override string Write()
     {
-      return this.engineTemplateGuid != Guid.Empty ? GuidUtility.GetGuidString(this.engineTemplateGuid) : base.Write();
+      return engineTemplateGuid != Guid.Empty ? GuidUtility.GetGuidString(engineTemplateGuid) : base.Write();
     }
 
     public override void Read(string data)
     {
-      if (DefaultConverter.TryParseGuid(data, out this.engineTemplateGuid))
-        this.Load();
+      if (DefaultConverter.TryParseGuid(data, out engineTemplateGuid))
+        Load();
       else
         base.Read(data);
     }
@@ -74,11 +74,11 @@ namespace PLVirtualMachine.GameLogic
     protected override void Load()
     {
       base.Load();
-      if (this.StaticInstance != null || !(this.engineTemplateGuid != Guid.Empty))
+      if (StaticInstance != null || !(engineTemplateGuid != Guid.Empty))
         return;
-      this.LoadStaticInstance(IStaticDataContainer.StaticDataContainer.GetObjectByGuid(IStaticDataContainer.StaticDataContainer.GameRoot.GetBaseGuidByEngineTemplateGuid(this.engineTemplateGuid)));
+      LoadStaticInstance(IStaticDataContainer.StaticDataContainer.GetObjectByGuid(IStaticDataContainer.StaticDataContainer.GameRoot.GetBaseGuidByEngineTemplateGuid(engineTemplateGuid)));
     }
 
-    protected override System.Type NeedInstanceType => typeof (IBlueprint);
+    protected override Type NeedInstanceType => typeof (IBlueprint);
   }
 }

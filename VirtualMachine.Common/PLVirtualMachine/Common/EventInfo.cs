@@ -7,8 +7,8 @@
 
     public EventInfo(IEvent eventInstance, CommonVariable eventOwner)
     {
-      this.EventInstance = eventInstance;
-      this.EventOwner = eventOwner;
+      EventInstance = eventInstance;
+      EventOwner = eventOwner;
     }
   }
 }

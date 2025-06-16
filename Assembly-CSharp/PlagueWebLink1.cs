@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-public class PlagueWebLink1 : PlagueWebLink
+﻿public class PlagueWebLink1 : PlagueWebLink
 {
   public float FlightTime = 1f;
   public float CancelFadeTime = 0.5f;
@@ -42,101 +40,101 @@ public class PlagueWebLink1 : PlagueWebLink
     this.manager = manager;
     this.pointA = pointA;
     this.pointB = pointB;
-    this.isCanceled = false;
-    this.time = 0.0f;
-    this.noiseSalt = new Vector3(Random.value * 10f, Random.value * 10f, Random.value * 10f);
-    if (this.baseAlphaKeys != null)
-      this.ApplyAlphaKeys(this.baseAlphaKeys);
-    this.Rebuild();
+    isCanceled = false;
+    time = 0.0f;
+    noiseSalt = new Vector3(Random.value * 10f, Random.value * 10f, Random.value * 10f);
+    if (baseAlphaKeys != null)
+      ApplyAlphaKeys(baseAlphaKeys);
+    Rebuild();
     this.gameObject.SetActive(true);
   }
 
   private void CancelLink()
   {
-    if (this.isCanceled)
+    if (isCanceled)
       return;
-    this.isCanceled = true;
-    this.cancelTime = 0.0f;
+    isCanceled = true;
+    cancelTime = 0.0f;
   }
 
   public void RemoveLink()
   {
     this.gameObject.SetActive(false);
-    this.manager.RemoveLink((PlagueWebLink) this);
+    manager.RemoveLink(this);
   }
 
   public override void OnPointDisable(PlagueWebPoint point)
   {
-    if (point == this.pointA)
+    if (point == pointA)
     {
-      this.pointA = (PlagueWebPoint) null;
-      this.CancelLink();
+      pointA = null;
+      CancelLink();
     }
-    if (point != this.pointB)
+    if (point != pointB)
       return;
-    this.pointB = (PlagueWebPoint) null;
-    this.CancelLink();
+    pointB = null;
+    CancelLink();
   }
 
   private void Rebuild()
   {
-    if (this.linePositions == null)
-      this.linePositions = new Vector3[this.TailSteps < 1 ? 2 : this.TailSteps + 1];
-    if (this.pointA != null)
+    if (linePositions == null)
+      linePositions = new Vector3[TailSteps < 1 ? 2 : TailSteps + 1];
+    if (pointA != null)
     {
-      this.p0 = this.pointA.Position;
-      this.p1 = new Vector3(this.p0.x + this.pointA.Directionality.x, this.p0.y + this.pointA.Directionality.y, this.p0.z + this.pointA.Directionality.z);
+      p0 = pointA.Position;
+      p1 = new Vector3(p0.x + pointA.Directionality.x, p0.y + pointA.Directionality.y, p0.z + pointA.Directionality.z);
     }
-    if (this.pointB != null)
+    if (pointB != null)
     {
-      this.p3 = this.pointB.Position;
-      this.p2 = new Vector3(this.p3.x + this.pointB.Directionality.x, this.p3.y + this.pointB.Directionality.y, this.p3.z + this.pointB.Directionality.z);
+      p3 = pointB.Position;
+      p2 = new Vector3(p3.x + pointB.Directionality.x, p3.y + pointB.Directionality.y, p3.z + pointB.Directionality.z);
     }
-    for (int index = 0; index < this.linePositions.Length; ++index)
-      this.linePositions[index] = this.CalculatePosition(Mathf.Clamp01((this.time - this.TailLifeTime / (float) (this.linePositions.Length - 1) * (float) index) / this.FlightTime));
+    for (int index = 0; index < linePositions.Length; ++index)
+      linePositions[index] = CalculatePosition(Mathf.Clamp01((time - TailLifeTime / (linePositions.Length - 1) * index) / FlightTime));
     LineRenderer component = this.GetComponent<LineRenderer>();
-    component.positionCount = this.linePositions.Length;
-    component.SetPositions(this.linePositions);
-    if (this.isCanceled)
+    component.positionCount = linePositions.Length;
+    component.SetPositions(linePositions);
+    if (isCanceled)
     {
-      float num = (float) (1.0 - (double) this.cancelTime / (double) this.CancelFadeTime);
-      if (this.baseAlphaKeys == null)
+      float num = (float) (1.0 - cancelTime / (double) CancelFadeTime);
+      if (baseAlphaKeys == null)
       {
-        this.baseAlphaKeys = component.colorGradient.alphaKeys;
-        this.currentAlphaKeys = new GradientAlphaKey[this.baseAlphaKeys.Length];
-        for (int index = 0; index < this.currentAlphaKeys.Length; ++index)
-          this.currentAlphaKeys[index].time = this.baseAlphaKeys[index].time;
+        baseAlphaKeys = component.colorGradient.alphaKeys;
+        currentAlphaKeys = new GradientAlphaKey[baseAlphaKeys.Length];
+        for (int index = 0; index < currentAlphaKeys.Length; ++index)
+          currentAlphaKeys[index].time = baseAlphaKeys[index].time;
       }
-      for (int index = 0; index < this.currentAlphaKeys.Length; ++index)
-        this.currentAlphaKeys[index].alpha = this.baseAlphaKeys[index].alpha * num;
-      this.ApplyAlphaKeys(this.currentAlphaKeys, component);
+      for (int index = 0; index < currentAlphaKeys.Length; ++index)
+        currentAlphaKeys[index].alpha = baseAlphaKeys[index].alpha * num;
+      ApplyAlphaKeys(currentAlphaKeys, component);
     }
-    else if (this.baseAlphaKeys != null)
-      this.ApplyAlphaKeys(this.baseAlphaKeys, component);
-    this.transform.localPosition = this.CalculatePosition(Mathf.Clamp01((this.time - this.TailLifeTime * 0.5f) / this.FlightTime));
+    else if (baseAlphaKeys != null)
+      ApplyAlphaKeys(baseAlphaKeys, component);
+    this.transform.localPosition = CalculatePosition(Mathf.Clamp01((time - TailLifeTime * 0.5f) / FlightTime));
   }
 
   private void Update()
   {
-    this.time += Time.deltaTime;
-    if ((double) this.time >= (double) this.FlightTime + (double) this.TailLifeTime)
+    time += Time.deltaTime;
+    if (time >= FlightTime + (double) TailLifeTime)
     {
-      this.RemoveLink();
+      RemoveLink();
     }
     else
     {
-      if (!this.isCanceled && this.manager.Raycast(this.pointA, this.pointB))
-        this.CancelLink();
-      if (this.isCanceled)
+      if (!isCanceled && manager.Raycast(pointA, pointB))
+        CancelLink();
+      if (isCanceled)
       {
-        this.cancelTime += Time.deltaTime;
-        if ((double) this.cancelTime >= (double) this.CancelFadeTime)
+        cancelTime += Time.deltaTime;
+        if (cancelTime >= (double) CancelFadeTime)
         {
-          this.RemoveLink();
+          RemoveLink();
           return;
         }
       }
-      this.Rebuild();
+      Rebuild();
     }
   }
 
@@ -145,12 +143,12 @@ public class PlagueWebLink1 : PlagueWebLink
     float num1 = time * time;
     float num2 = 1f - time;
     float num3 = num2 * num2;
-    Vector3 vector3_1 = num3 * num2 * this.p0 + 3f * num3 * time * this.p1 + 3f * num2 * num1 * this.p2 + num1 * time * this.p3;
+    Vector3 vector3_1 = num3 * num2 * p0 + 3f * num3 * time * p1 + 3f * num2 * num1 * p2 + num1 * time * p3;
     time = Mathf.Abs(time - 0.5f) * 2f;
-    time = (float) (1.0 - (double) time * (double) time);
-    Vector3 vector3_2 = new Vector3((vector3_1.x + this.noiseSalt.x) * this.NoiseFrequency, (vector3_1.y + this.noiseSalt.y) * this.NoiseFrequency, (vector3_1.z + this.noiseSalt.z) * this.NoiseFrequency);
+    time = (float) (1.0 - time * (double) time);
+    Vector3 vector3_2 = new Vector3((vector3_1.x + noiseSalt.x) * NoiseFrequency, (vector3_1.y + noiseSalt.y) * NoiseFrequency, (vector3_1.z + noiseSalt.z) * NoiseFrequency);
     vector3_2 = new Vector3((float) ((double) Mathf.PerlinNoise(vector3_2.z, vector3_2.y) * 2.0 - 1.0), (float) ((double) Mathf.PerlinNoise(vector3_2.x, vector3_2.z) * 2.0 - 1.0), (float) ((double) Mathf.PerlinNoise(vector3_2.y, vector3_2.x) * 2.0 - 1.0));
-    Vector3 vector3_3 = vector3_2 * (time * this.NoiseAmplitude);
+    Vector3 vector3_3 = vector3_2 * (time * NoiseAmplitude);
     return new Vector3(vector3_1.x + vector3_3.x, vector3_1.y + vector3_3.y, vector3_1.z + vector3_3.z);
   }
 }

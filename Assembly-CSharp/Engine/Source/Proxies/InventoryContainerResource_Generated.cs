@@ -1,12 +1,11 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons.Cloneable;
 using Engine.Common.Commons.Converters;
 using Engine.Common.Components.Storable;
 using Engine.Source.Inventory;
 using Scripts.Tools.Serializations.Converters;
-using System;
-using UnityEngine;
 
 namespace Engine.Source.Proxies
 {
@@ -21,93 +20,93 @@ namespace Engine.Source.Proxies
     public object Clone()
     {
       InventoryContainerResource_Generated instance = Activator.CreateInstance<InventoryContainerResource_Generated>();
-      this.CopyTo((object) instance);
-      return (object) instance;
+      CopyTo(instance);
+      return instance;
     }
 
     public void CopyTo(object target2)
     {
       InventoryContainerResource_Generated resourceGenerated = (InventoryContainerResource_Generated) target2;
-      resourceGenerated.name = this.name;
-      resourceGenerated.kind = this.kind;
-      resourceGenerated.slotKind = this.slotKind;
-      resourceGenerated.grid = this.grid;
-      resourceGenerated.group = this.group;
-      resourceGenerated.instrument = this.instrument;
-      CloneableObjectUtility.CopyListTo<InventoryContainerOpenResource>(resourceGenerated.openResources, this.openResources);
-      resourceGenerated.difficulty = this.difficulty;
-      resourceGenerated.instrumentDamage = this.instrumentDamage;
-      resourceGenerated.position = this.position;
-      resourceGenerated.anchor = this.anchor;
-      resourceGenerated.pivot = this.pivot;
-      resourceGenerated.imageBackground = this.imageBackground;
-      resourceGenerated.imageInstrument = this.imageInstrument;
-      resourceGenerated.imageLock = this.imageLock;
-      resourceGenerated.imageNotAvailable = this.imageNotAvailable;
-      CloneableObjectUtility.FillListTo<StorableGroup>(resourceGenerated.limitations, this.limitations);
-      CloneableObjectUtility.FillListTo<StorableGroup>(resourceGenerated.except, this.except);
-      resourceGenerated.openTime = this.openTime;
-      resourceGenerated.imageForeground = this.imageForeground;
-      resourceGenerated.openStartAudio = this.openStartAudio;
-      resourceGenerated.openProgressAudio = this.openProgressAudio;
-      resourceGenerated.openCompleteAudio = this.openCompleteAudio;
-      resourceGenerated.openCancelAudio = this.openCancelAudio;
+      resourceGenerated.name = name;
+      resourceGenerated.kind = kind;
+      resourceGenerated.slotKind = slotKind;
+      resourceGenerated.grid = grid;
+      resourceGenerated.group = group;
+      resourceGenerated.instrument = instrument;
+      CloneableObjectUtility.CopyListTo(resourceGenerated.openResources, openResources);
+      resourceGenerated.difficulty = difficulty;
+      resourceGenerated.instrumentDamage = instrumentDamage;
+      resourceGenerated.position = position;
+      resourceGenerated.anchor = anchor;
+      resourceGenerated.pivot = pivot;
+      resourceGenerated.imageBackground = imageBackground;
+      resourceGenerated.imageInstrument = imageInstrument;
+      resourceGenerated.imageLock = imageLock;
+      resourceGenerated.imageNotAvailable = imageNotAvailable;
+      CloneableObjectUtility.FillListTo(resourceGenerated.limitations, limitations);
+      CloneableObjectUtility.FillListTo(resourceGenerated.except, except);
+      resourceGenerated.openTime = openTime;
+      resourceGenerated.imageForeground = imageForeground;
+      resourceGenerated.openStartAudio = openStartAudio;
+      resourceGenerated.openProgressAudio = openProgressAudio;
+      resourceGenerated.openCompleteAudio = openCompleteAudio;
+      resourceGenerated.openCancelAudio = openCancelAudio;
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.Write(writer, "Id", this.id);
-      DefaultDataWriteUtility.WriteEnum<ContainerCellKind>(writer, "Kind", this.kind);
-      DefaultDataWriteUtility.WriteEnum<SlotKind>(writer, "SlotKind", this.slotKind);
-      UnityDataWriteUtility.Write<IInventoryGridBase>(writer, "Grid", this.grid);
-      DefaultDataWriteUtility.WriteEnum<InventoryGroup>(writer, "Group", this.group);
-      DefaultDataWriteUtility.WriteEnum<StorableGroup>(writer, "Instrument", this.instrument);
-      DefaultDataWriteUtility.WriteListSerialize<InventoryContainerOpenResource>(writer, "OpenResources", this.openResources);
-      DefaultDataWriteUtility.Write(writer, "Difficulty", this.difficulty);
-      DefaultDataWriteUtility.Write(writer, "InstrumentDamage", this.instrumentDamage);
-      EngineDataWriteUtility.Write(writer, "Position", this.position);
-      EngineDataWriteUtility.Write(writer, "Anchor", this.anchor);
-      EngineDataWriteUtility.Write(writer, "Pivot", this.pivot);
-      UnityDataWriteUtility.Write<Sprite>(writer, "ImageBackground", this.imageBackground);
-      UnityDataWriteUtility.Write<Sprite>(writer, "ImageInstrument", this.imageInstrument);
-      UnityDataWriteUtility.Write<Sprite>(writer, "ImageLock", this.imageLock);
-      UnityDataWriteUtility.Write<Sprite>(writer, "ImageNotAvailable", this.imageNotAvailable);
-      DefaultDataWriteUtility.WriteListEnum<StorableGroup>(writer, "Limitations", this.limitations);
-      DefaultDataWriteUtility.WriteListEnum<StorableGroup>(writer, "Except", this.except);
-      DefaultDataWriteUtility.Write(writer, "OpenTime", this.openTime);
-      UnityDataWriteUtility.Write<Sprite>(writer, "ImageForeground", this.imageForeground);
-      UnityDataWriteUtility.Write<AudioClip>(writer, "OpenStartAudio", this.openStartAudio);
-      UnityDataWriteUtility.Write<AudioClip>(writer, "OpenProgressAudio", this.openProgressAudio);
-      UnityDataWriteUtility.Write<AudioClip>(writer, "OpenCompleteAudio", this.openCompleteAudio);
-      UnityDataWriteUtility.Write<AudioClip>(writer, "OpenCancelAudio", this.openCancelAudio);
+      DefaultDataWriteUtility.Write(writer, "Id", id);
+      DefaultDataWriteUtility.WriteEnum(writer, "Kind", kind);
+      DefaultDataWriteUtility.WriteEnum(writer, "SlotKind", slotKind);
+      UnityDataWriteUtility.Write(writer, "Grid", grid);
+      DefaultDataWriteUtility.WriteEnum(writer, "Group", group);
+      DefaultDataWriteUtility.WriteEnum(writer, "Instrument", instrument);
+      DefaultDataWriteUtility.WriteListSerialize(writer, "OpenResources", openResources);
+      DefaultDataWriteUtility.Write(writer, "Difficulty", difficulty);
+      DefaultDataWriteUtility.Write(writer, "InstrumentDamage", instrumentDamage);
+      EngineDataWriteUtility.Write(writer, "Position", position);
+      EngineDataWriteUtility.Write(writer, "Anchor", anchor);
+      EngineDataWriteUtility.Write(writer, "Pivot", pivot);
+      UnityDataWriteUtility.Write(writer, "ImageBackground", imageBackground);
+      UnityDataWriteUtility.Write(writer, "ImageInstrument", imageInstrument);
+      UnityDataWriteUtility.Write(writer, "ImageLock", imageLock);
+      UnityDataWriteUtility.Write(writer, "ImageNotAvailable", imageNotAvailable);
+      DefaultDataWriteUtility.WriteListEnum(writer, "Limitations", limitations);
+      DefaultDataWriteUtility.WriteListEnum(writer, "Except", except);
+      DefaultDataWriteUtility.Write(writer, "OpenTime", openTime);
+      UnityDataWriteUtility.Write(writer, "ImageForeground", imageForeground);
+      UnityDataWriteUtility.Write(writer, "OpenStartAudio", openStartAudio);
+      UnityDataWriteUtility.Write(writer, "OpenProgressAudio", openProgressAudio);
+      UnityDataWriteUtility.Write(writer, "OpenCompleteAudio", openCompleteAudio);
+      UnityDataWriteUtility.Write(writer, "OpenCancelAudio", openCancelAudio);
     }
 
-    public void DataRead(IDataReader reader, System.Type type)
+    public void DataRead(IDataReader reader, Type type)
     {
-      this.id = DefaultDataReadUtility.Read(reader, "Id", this.id);
-      this.kind = DefaultDataReadUtility.ReadEnum<ContainerCellKind>(reader, "Kind");
-      this.slotKind = DefaultDataReadUtility.ReadEnum<SlotKind>(reader, "SlotKind");
-      this.grid = UnityDataReadUtility.Read<IInventoryGridBase>(reader, "Grid", this.grid);
-      this.group = DefaultDataReadUtility.ReadEnum<InventoryGroup>(reader, "Group");
-      this.instrument = DefaultDataReadUtility.ReadEnum<StorableGroup>(reader, "Instrument");
-      this.openResources = DefaultDataReadUtility.ReadListSerialize<InventoryContainerOpenResource>(reader, "OpenResources", this.openResources);
-      this.difficulty = DefaultDataReadUtility.Read(reader, "Difficulty", this.difficulty);
-      this.instrumentDamage = DefaultDataReadUtility.Read(reader, "InstrumentDamage", this.instrumentDamage);
-      this.position = EngineDataReadUtility.Read(reader, "Position", this.position);
-      this.anchor = EngineDataReadUtility.Read(reader, "Anchor", this.anchor);
-      this.pivot = EngineDataReadUtility.Read(reader, "Pivot", this.pivot);
-      this.imageBackground = UnityDataReadUtility.Read<Sprite>(reader, "ImageBackground", this.imageBackground);
-      this.imageInstrument = UnityDataReadUtility.Read<Sprite>(reader, "ImageInstrument", this.imageInstrument);
-      this.imageLock = UnityDataReadUtility.Read<Sprite>(reader, "ImageLock", this.imageLock);
-      this.imageNotAvailable = UnityDataReadUtility.Read<Sprite>(reader, "ImageNotAvailable", this.imageNotAvailable);
-      this.limitations = DefaultDataReadUtility.ReadListEnum<StorableGroup>(reader, "Limitations", this.limitations);
-      this.except = DefaultDataReadUtility.ReadListEnum<StorableGroup>(reader, "Except", this.except);
-      this.openTime = DefaultDataReadUtility.Read(reader, "OpenTime", this.openTime);
-      this.imageForeground = UnityDataReadUtility.Read<Sprite>(reader, "ImageForeground", this.imageForeground);
-      this.openStartAudio = UnityDataReadUtility.Read<AudioClip>(reader, "OpenStartAudio", this.openStartAudio);
-      this.openProgressAudio = UnityDataReadUtility.Read<AudioClip>(reader, "OpenProgressAudio", this.openProgressAudio);
-      this.openCompleteAudio = UnityDataReadUtility.Read<AudioClip>(reader, "OpenCompleteAudio", this.openCompleteAudio);
-      this.openCancelAudio = UnityDataReadUtility.Read<AudioClip>(reader, "OpenCancelAudio", this.openCancelAudio);
+      id = DefaultDataReadUtility.Read(reader, "Id", id);
+      kind = DefaultDataReadUtility.ReadEnum<ContainerCellKind>(reader, "Kind");
+      slotKind = DefaultDataReadUtility.ReadEnum<SlotKind>(reader, "SlotKind");
+      grid = UnityDataReadUtility.Read(reader, "Grid", grid);
+      group = DefaultDataReadUtility.ReadEnum<InventoryGroup>(reader, "Group");
+      instrument = DefaultDataReadUtility.ReadEnum<StorableGroup>(reader, "Instrument");
+      openResources = DefaultDataReadUtility.ReadListSerialize(reader, "OpenResources", openResources);
+      difficulty = DefaultDataReadUtility.Read(reader, "Difficulty", difficulty);
+      instrumentDamage = DefaultDataReadUtility.Read(reader, "InstrumentDamage", instrumentDamage);
+      position = EngineDataReadUtility.Read(reader, "Position", position);
+      anchor = EngineDataReadUtility.Read(reader, "Anchor", anchor);
+      pivot = EngineDataReadUtility.Read(reader, "Pivot", pivot);
+      imageBackground = UnityDataReadUtility.Read(reader, "ImageBackground", imageBackground);
+      imageInstrument = UnityDataReadUtility.Read(reader, "ImageInstrument", imageInstrument);
+      imageLock = UnityDataReadUtility.Read(reader, "ImageLock", imageLock);
+      imageNotAvailable = UnityDataReadUtility.Read(reader, "ImageNotAvailable", imageNotAvailable);
+      limitations = DefaultDataReadUtility.ReadListEnum(reader, "Limitations", limitations);
+      except = DefaultDataReadUtility.ReadListEnum(reader, "Except", except);
+      openTime = DefaultDataReadUtility.Read(reader, "OpenTime", openTime);
+      imageForeground = UnityDataReadUtility.Read(reader, "ImageForeground", imageForeground);
+      openStartAudio = UnityDataReadUtility.Read(reader, "OpenStartAudio", openStartAudio);
+      openProgressAudio = UnityDataReadUtility.Read(reader, "OpenProgressAudio", openProgressAudio);
+      openCompleteAudio = UnityDataReadUtility.Read(reader, "OpenCompleteAudio", openCompleteAudio);
+      openCancelAudio = UnityDataReadUtility.Read(reader, "OpenCancelAudio", openCancelAudio);
     }
   }
 }

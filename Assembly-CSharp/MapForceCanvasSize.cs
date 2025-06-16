@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-public class MapForceCanvasSize : MonoBehaviour
+﻿public class MapForceCanvasSize : MonoBehaviour
 {
   [SerializeField]
   private Vector2 size = new Vector2(1920f, 1080f);
@@ -12,6 +10,6 @@ public class MapForceCanvasSize : MonoBehaviour
     transform.anchorMax = Vector2.zero;
     transform.pivot = Vector2.zero;
     transform.anchoredPosition = Vector2.zero;
-    transform.sizeDelta = this.size;
+    transform.sizeDelta = size;
   }
 }

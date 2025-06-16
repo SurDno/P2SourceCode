@@ -1,8 +1,6 @@
 ﻿using Cofe.Meta;
 using Engine.Common.Services;
 using Engine.Source.Commons;
-using System;
-using UnityEngine;
 
 public abstract class EngineDependent : MonoBehaviour
 {
@@ -13,49 +11,49 @@ public abstract class EngineDependent : MonoBehaviour
   protected virtual void OnEnable()
   {
     if (InstanceByRequest<EngineApplication>.Instance.IsInitialized)
-      this.Connect();
+      Connect();
     else
-      this.BeginWaiting();
+      BeginWaiting();
   }
 
   private void Disconnect()
   {
-    if (!this.Connected)
+    if (!Connected)
       return;
-    this.Connected = false;
-    this.OnDisconnectFromEngine();
+    Connected = false;
+    OnDisconnectFromEngine();
   }
 
   private void Connect()
   {
-    if (this.Connected)
+    if (Connected)
       return;
-    this.Connected = true;
-    MetaService.GetContainer(((object) this).GetType()).GetHandler(FromLocatorAttribute.Id).Compute((object) this, (object) null);
-    this.EndWaiting();
-    this.OnConnectToEngine();
+    Connected = true;
+    MetaService.GetContainer(GetType()).GetHandler(FromLocatorAttribute.Id).Compute(this, null);
+    EndWaiting();
+    OnConnectToEngine();
   }
 
   private void EndWaiting()
   {
-    if (!this.waiting)
+    if (!waiting)
       return;
-    this.waiting = false;
-    InstanceByRequest<EngineApplication>.Instance.OnInitialized -= new Action(this.Connect);
+    waiting = false;
+    InstanceByRequest<EngineApplication>.Instance.OnInitialized -= Connect;
   }
 
   private void BeginWaiting()
   {
-    if (this.waiting)
+    if (waiting)
       return;
-    this.waiting = true;
-    InstanceByRequest<EngineApplication>.Instance.OnInitialized += new Action(this.Connect);
+    waiting = true;
+    InstanceByRequest<EngineApplication>.Instance.OnInitialized += Connect;
   }
 
   protected virtual void OnDisable()
   {
-    this.EndWaiting();
-    this.Disconnect();
+    EndWaiting();
+    Disconnect();
   }
 
   protected abstract void OnConnectToEngine();

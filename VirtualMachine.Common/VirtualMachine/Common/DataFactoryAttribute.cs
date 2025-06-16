@@ -1,6 +1,6 @@
-﻿using Cofe.Meta;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using Cofe.Meta;
 
 namespace VirtualMachine.Common
 {
@@ -11,23 +11,23 @@ namespace VirtualMachine.Common
 
     public string TypeName { get; set; }
 
-    public DataFactoryAttribute(string typeName) => this.TypeName = typeName;
+    public DataFactoryAttribute(string typeName) => TypeName = typeName;
 
     public override void ComputeType(Type type)
     {
-      DataFactoryAttribute.types.Add(this.TypeName, type);
+      types.Add(TypeName, type);
     }
 
     public static Type GetTypeByName(string typeName)
     {
       Type typeByName;
-      DataFactoryAttribute.types.TryGetValue(typeName, out typeByName);
+      types.TryGetValue(typeName, out typeByName);
       return typeByName;
     }
 
     public static IEnumerable<KeyValuePair<string, Type>> Items
     {
-      get => (IEnumerable<KeyValuePair<string, Type>>) DataFactoryAttribute.types;
+      get => types;
     }
   }
 }

@@ -1,6 +1,6 @@
-﻿using Engine.Common.Generator;
+﻿using System;
 using System.Collections;
-using UnityEngine;
+using Engine.Common.Generator;
 
 namespace BehaviorDesigner.Runtime.Tasks
 {
@@ -8,31 +8,31 @@ namespace BehaviorDesigner.Runtime.Tasks
   {
     protected GameObject gameObject;
     protected Transform transform;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [SerializeField]
-    protected NodeData nodeData = (NodeData) null;
-    private BehaviorTree owner = (BehaviorTree) null;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    protected NodeData nodeData;
+    private BehaviorTree owner;
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [SerializeField]
     protected int id = -1;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [SerializeField]
     protected string friendlyName = "";
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [SerializeField]
     protected bool instant = true;
     private int referenceID = -1;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy()]
     protected bool disabled;
 
     public virtual void OnAwake()
@@ -75,81 +75,81 @@ namespace BehaviorDesigner.Runtime.Tasks
 
     protected void StartCoroutine(string methodName)
     {
-      this.Owner.StartTaskCoroutine(this, methodName);
+      Owner.StartTaskCoroutine(this, methodName);
     }
 
-    protected Coroutine StartCoroutine(IEnumerator routine) => this.Owner.StartCoroutine(routine);
+    protected Coroutine StartCoroutine(IEnumerator routine) => Owner.StartCoroutine(routine);
 
     protected Coroutine StartCoroutine(string methodName, object value)
     {
-      return this.Owner.StartTaskCoroutine(this, methodName, value);
+      return Owner.StartTaskCoroutine(this, methodName, value);
     }
 
-    protected void StopCoroutine(string methodName) => this.Owner.StopTaskCoroutine(methodName);
+    protected void StopCoroutine(string methodName) => Owner.StopTaskCoroutine(methodName);
 
-    protected void StopCoroutine(IEnumerator routine) => this.Owner.StopCoroutine(routine);
+    protected void StopCoroutine(IEnumerator routine) => Owner.StopCoroutine(routine);
 
-    protected void StopAllCoroutines() => this.Owner.StopAllTaskCoroutines();
+    protected void StopAllCoroutines() => Owner.StopAllTaskCoroutines();
 
     public GameObject GameObject
     {
-      set => this.gameObject = value;
+      set => gameObject = value;
     }
 
     public Transform Transform
     {
-      set => this.transform = value;
+      set => transform = value;
     }
 
-    protected T GetComponent<T>() where T : Component => this.gameObject.GetComponent<T>();
+    protected T GetComponent<T>() where T : Component => gameObject.GetComponent<T>();
 
-    protected Component GetComponent(System.Type type) => this.gameObject.GetComponent(type);
+    protected Component GetComponent(Type type) => gameObject.GetComponent(type);
 
     protected GameObject GetDefaultGameObject(GameObject go)
     {
-      return (UnityEngine.Object) go == (UnityEngine.Object) null ? this.gameObject : go;
+      return (UnityEngine.Object) go == (UnityEngine.Object) null ? gameObject : go;
     }
 
     public NodeData NodeData
     {
-      get => this.nodeData;
-      set => this.nodeData = value;
+      get => nodeData;
+      set => nodeData = value;
     }
 
     public BehaviorTree Owner
     {
-      get => this.owner;
-      set => this.owner = value;
+      get => owner;
+      set => owner = value;
     }
 
     public int Id
     {
-      get => this.id;
-      set => this.id = value;
+      get => id;
+      set => id = value;
     }
 
     public string FriendlyName
     {
-      get => this.friendlyName;
-      set => this.friendlyName = value;
+      get => friendlyName;
+      set => friendlyName = value;
     }
 
     public bool IsInstant
     {
-      get => this.instant;
-      set => this.instant = value;
+      get => instant;
+      set => instant = value;
     }
 
     public int ReferenceID
     {
-      get => this.referenceID;
-      set => this.referenceID = value;
+      get => referenceID;
+      set => referenceID = value;
     }
 
     public bool Disabled
     {
-      get => this.disabled;
-      set => this.disabled = value;
+      get => disabled;
+      set => disabled = value;
     }
   }
 }

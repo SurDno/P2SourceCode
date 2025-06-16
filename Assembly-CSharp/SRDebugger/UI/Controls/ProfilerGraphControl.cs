@@ -1,10 +1,8 @@
-﻿using SRDebugger.Services;
+﻿using System;
+using System.Collections.Generic;
+using SRDebugger.Services;
 using SRF;
 using SRF.Service;
-using System;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UI;
 
 namespace SRDebugger.UI.Controls
 {
@@ -13,7 +11,7 @@ namespace SRDebugger.UI.Controls
   [RequireComponent(typeof (CanvasRenderer))]
   public class ProfilerGraphControl : Graphic
   {
-    public ProfilerGraphControl.VerticalAlignments VerticalAlignment = ProfilerGraphControl.VerticalAlignments.Bottom;
+    public VerticalAlignments VerticalAlignment = VerticalAlignments.Bottom;
     private static readonly float[] ScaleSteps = new float[9]
     {
       0.005f,
@@ -47,7 +45,7 @@ namespace SRDebugger.UI.Controls
     protected override void Awake()
     {
       base.Awake();
-      this._profilerService = SRServiceManager.GetService<IProfilerService>();
+      _profilerService = SRServiceManager.GetService<IProfilerService>();
     }
 
     protected void Update() => this.SetVerticesDirty();
@@ -55,24 +53,24 @@ namespace SRDebugger.UI.Controls
     [Obsolete]
     protected override void OnPopulateMesh(Mesh m)
     {
-      this._meshVertices.Clear();
-      this._meshVertexColors.Clear();
-      this._meshTriangles.Clear();
+      _meshVertices.Clear();
+      _meshVertexColors.Clear();
+      _meshTriangles.Clear();
       float width = this.rectTransform.rect.width;
       float height = this.rectTransform.rect.height;
-      this._clipBounds = new Rect(0.0f, 0.0f, width, height);
-      int num1 = this.TargetFps;
-      if (Application.isPlaying && this.TargetFpsUseApplication && Application.targetFrameRate > 0)
+      _clipBounds = new Rect(0.0f, 0.0f, width, height);
+      int num1 = TargetFps;
+      if (Application.isPlaying && TargetFpsUseApplication && Application.targetFrameRate > 0)
         num1 = Application.targetFrameRate;
-      float frameTime = 1f / (float) num1;
+      float frameTime = 1f / num1;
       int index1 = -1;
-      float num2 = this.FloatingScale ? this.CalculateMaxFrameTime() : 1f / (float) num1;
-      if (this.FloatingScale)
+      float num2 = FloatingScale ? CalculateMaxFrameTime() : 1f / num1;
+      if (FloatingScale)
       {
-        for (int index2 = 0; index2 < ProfilerGraphControl.ScaleSteps.Length; ++index2)
+        for (int index2 = 0; index2 < ScaleSteps.Length; ++index2)
         {
-          float scaleStep = ProfilerGraphControl.ScaleSteps[index2];
-          if ((double) num2 < (double) scaleStep * 1.1000000238418579)
+          float scaleStep = ScaleSteps[index2];
+          if (num2 < scaleStep * 1.1000000238418579)
           {
             frameTime = scaleStep;
             index1 = index2;
@@ -81,50 +79,50 @@ namespace SRDebugger.UI.Controls
         }
         if (index1 < 0)
         {
-          index1 = ProfilerGraphControl.ScaleSteps.Length - 1;
-          frameTime = ProfilerGraphControl.ScaleSteps[index1];
+          index1 = ScaleSteps.Length - 1;
+          frameTime = ScaleSteps[index1];
         }
       }
       else
       {
-        for (int index3 = 0; index3 < ProfilerGraphControl.ScaleSteps.Length; ++index3)
+        for (int index3 = 0; index3 < ScaleSteps.Length; ++index3)
         {
-          float scaleStep = ProfilerGraphControl.ScaleSteps[index3];
-          if ((double) num2 > (double) scaleStep)
+          float scaleStep = ScaleSteps[index3];
+          if (num2 > (double) scaleStep)
             index1 = index3;
         }
       }
-      float verticalScale = (height - (float) (this.VerticalPadding * 2)) / frameTime;
-      int visibleDataPointCount = this.CalculateVisibleDataPointCount();
-      int bufferCurrentSize = this.GetFrameBufferCurrentSize();
+      float verticalScale = (height - VerticalPadding * 2) / frameTime;
+      int visibleDataPointCount = CalculateVisibleDataPointCount();
+      int bufferCurrentSize = GetFrameBufferCurrentSize();
       for (int index4 = 0; index4 < bufferCurrentSize && index4 < visibleDataPointCount; ++index4)
       {
-        ProfilerFrame frame = this.GetFrame(bufferCurrentSize - index4 - 1);
-        this.DrawDataPoint((float) ((double) width - 4.0 * (double) index4 - 4.0 - (double) width / 2.0), verticalScale, frame);
+        ProfilerFrame frame = GetFrame(bufferCurrentSize - index4 - 1);
+        DrawDataPoint((float) (width - 4.0 * index4 - 4.0 - width / 2.0), verticalScale, frame);
       }
-      if (this.DrawAxes)
+      if (DrawAxes)
       {
-        if (!this.FloatingScale)
-          this.DrawAxis(frameTime, frameTime * verticalScale, this.GetAxisLabel(0));
+        if (!FloatingScale)
+          DrawAxis(frameTime, frameTime * verticalScale, GetAxisLabel(0));
         int num3 = 2;
         int index5 = 0;
-        if (!this.FloatingScale)
+        if (!FloatingScale)
           ++index5;
         for (int index6 = index1; index6 >= 0 && index5 < num3; --index6)
         {
-          this.DrawAxis(ProfilerGraphControl.ScaleSteps[index6], ProfilerGraphControl.ScaleSteps[index6] * verticalScale, this.GetAxisLabel(index5));
+          DrawAxis(ScaleSteps[index6], ScaleSteps[index6] * verticalScale, GetAxisLabel(index5));
           ++index5;
         }
       }
       m.Clear();
-      m.SetVertices(this._meshVertices);
-      m.SetColors(this._meshVertexColors);
-      m.SetTriangles(this._meshTriangles, 0);
+      m.SetVertices(_meshVertices);
+      m.SetColors(_meshVertexColors);
+      m.SetTriangles(_meshTriangles, 0);
     }
 
     protected void DrawDataPoint(float xPosition, float verticalScale, ProfilerFrame frame)
     {
-      float x = Mathf.Min(this._clipBounds.width / 2f, (float) ((double) xPosition + 4.0 - 2.0));
+      float x = Mathf.Min(_clipBounds.width / 2f, (float) (xPosition + 4.0 - 2.0));
       float num1 = 0.0f;
       for (int index1 = 0; index1 < 4; ++index1)
       {
@@ -139,16 +137,16 @@ namespace SRDebugger.UI.Controls
         else if (index1 == 3)
           num2 = (float) frame.OtherTime;
         float f = num2 * verticalScale;
-        if (!f.ApproxZero() && (double) f - 4.0 >= 0.0)
+        if (!f.ApproxZero() && f - 4.0 >= 0.0)
         {
-          float y1 = (float) ((double) num1 + 2.0 - (double) this.rectTransform.rect.height / 2.0);
-          if (this.VerticalAlignment == ProfilerGraphControl.VerticalAlignments.Top)
-            y1 = (float) ((double) this.rectTransform.rect.height / 2.0 - (double) num1 - 2.0);
-          float y2 = (float) ((double) y1 + (double) f - 2.0);
-          if (this.VerticalAlignment == ProfilerGraphControl.VerticalAlignments.Top)
-            y2 = (float) ((double) y1 - (double) f + 2.0);
-          Color lineColour = this.LineColours[index2];
-          this.AddRect(new Vector3(Mathf.Max((float) (-(double) this._clipBounds.width / 2.0), xPosition), y1), new Vector3(Mathf.Max((float) (-(double) this._clipBounds.width / 2.0), xPosition), y2), new Vector3(x, y2), new Vector3(x, y1), lineColour);
+          float y1 = (float) (num1 + 2.0 - (double) this.rectTransform.rect.height / 2.0);
+          if (VerticalAlignment == VerticalAlignments.Top)
+            y1 = (float) ((double) this.rectTransform.rect.height / 2.0 - num1 - 2.0);
+          float y2 = (float) (y1 + (double) f - 2.0);
+          if (VerticalAlignment == VerticalAlignments.Top)
+            y2 = (float) (y1 - (double) f + 2.0);
+          Color lineColour = LineColours[index2];
+          AddRect(new Vector3(Mathf.Max((float) (-(double) _clipBounds.width / 2.0), xPosition), y1), new Vector3(Mathf.Max((float) (-(double) _clipBounds.width / 2.0), xPosition), y2), new Vector3(x, y2), new Vector3(x, y1), lineColour);
           num1 += f;
         }
       }
@@ -158,10 +156,10 @@ namespace SRDebugger.UI.Controls
     {
       float x1 = (float) (-(double) this.rectTransform.rect.width * 0.5);
       float x2 = -x1;
-      float y1 = (float) ((double) yPosition - (double) this.rectTransform.rect.height * 0.5 + 0.5);
-      float y2 = (float) ((double) yPosition - (double) this.rectTransform.rect.height * 0.5 - 0.5);
+      float y1 = (float) (yPosition - (double) this.rectTransform.rect.height * 0.5 + 0.5);
+      float y2 = (float) (yPosition - (double) this.rectTransform.rect.height * 0.5 - 0.5);
       Color c = new Color(1f, 1f, 1f, 0.4f);
-      this.AddRect(new Vector3(x1, y2), new Vector3(x1, y1), new Vector3(x2, y1), new Vector3(x2, y2), c);
+      AddRect(new Vector3(x1, y2), new Vector3(x1, y1), new Vector3(x2, y1), new Vector3(x2, y2), c);
       if (!((UnityEngine.Object) label != (UnityEngine.Object) null))
         return;
       label.SetValue(frameTime, yPosition);
@@ -169,41 +167,41 @@ namespace SRDebugger.UI.Controls
 
     protected void AddRect(Vector3 tl, Vector3 tr, Vector3 bl, Vector3 br, Color c)
     {
-      this._meshVertices.Add(tl);
-      this._meshVertices.Add(tr);
-      this._meshVertices.Add(bl);
-      this._meshVertices.Add(br);
-      this._meshTriangles.Add(this._meshVertices.Count - 4);
-      this._meshTriangles.Add(this._meshVertices.Count - 3);
-      this._meshTriangles.Add(this._meshVertices.Count - 1);
-      this._meshTriangles.Add(this._meshVertices.Count - 2);
-      this._meshTriangles.Add(this._meshVertices.Count - 1);
-      this._meshTriangles.Add(this._meshVertices.Count - 3);
-      this._meshVertexColors.Add((Color32) c);
-      this._meshVertexColors.Add((Color32) c);
-      this._meshVertexColors.Add((Color32) c);
-      this._meshVertexColors.Add((Color32) c);
+      _meshVertices.Add(tl);
+      _meshVertices.Add(tr);
+      _meshVertices.Add(bl);
+      _meshVertices.Add(br);
+      _meshTriangles.Add(_meshVertices.Count - 4);
+      _meshTriangles.Add(_meshVertices.Count - 3);
+      _meshTriangles.Add(_meshVertices.Count - 1);
+      _meshTriangles.Add(_meshVertices.Count - 2);
+      _meshTriangles.Add(_meshVertices.Count - 1);
+      _meshTriangles.Add(_meshVertices.Count - 3);
+      _meshVertexColors.Add((Color32) c);
+      _meshVertexColors.Add((Color32) c);
+      _meshVertexColors.Add((Color32) c);
+      _meshVertexColors.Add((Color32) c);
     }
 
-    protected ProfilerFrame GetFrame(int i) => this._profilerService.FrameBuffer[i];
+    protected ProfilerFrame GetFrame(int i) => _profilerService.FrameBuffer[i];
 
     protected int CalculateVisibleDataPointCount()
     {
       return Mathf.RoundToInt(this.rectTransform.rect.width / 4f);
     }
 
-    protected int GetFrameBufferCurrentSize() => this._profilerService.FrameBuffer.Size;
+    protected int GetFrameBufferCurrentSize() => _profilerService.FrameBuffer.Size;
 
-    protected int GetFrameBufferMaxSize() => this._profilerService.FrameBuffer.Capacity;
+    protected int GetFrameBufferMaxSize() => _profilerService.FrameBuffer.Capacity;
 
     protected float CalculateMaxFrameTime()
     {
-      int bufferCurrentSize = this.GetFrameBufferCurrentSize();
-      int num = Mathf.Min(this.CalculateVisibleDataPointCount(), bufferCurrentSize);
+      int bufferCurrentSize = GetFrameBufferCurrentSize();
+      int num = Mathf.Min(CalculateVisibleDataPointCount(), bufferCurrentSize);
       double maxFrameTime = 0.0;
       for (int index = 0; index < num; ++index)
       {
-        ProfilerFrame frame = this.GetFrame(bufferCurrentSize - index - 1);
+        ProfilerFrame frame = GetFrame(bufferCurrentSize - index - 1);
         if (frame.FrameTime > maxFrameTime)
           maxFrameTime = frame.FrameTime;
       }
@@ -212,12 +210,12 @@ namespace SRDebugger.UI.Controls
 
     private ProfilerGraphAxisLabel GetAxisLabel(int index)
     {
-      if (this._axisLabels == null || !Application.isPlaying)
-        this._axisLabels = this.GetComponentsInChildren<ProfilerGraphAxisLabel>();
-      if (this._axisLabels.Length > index)
-        return this._axisLabels[index];
+      if (_axisLabels == null || !Application.isPlaying)
+        _axisLabels = this.GetComponentsInChildren<ProfilerGraphAxisLabel>();
+      if (_axisLabels.Length > index)
+        return _axisLabels[index];
       Debug.LogWarning((object) "[SRDebugger.Profiler] Not enough axis labels in pool");
-      return (ProfilerGraphAxisLabel) null;
+      return null;
     }
 
     public enum VerticalAlignments

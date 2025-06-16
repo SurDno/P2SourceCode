@@ -1,14 +1,11 @@
-﻿using UnityEngine;
-using UnityEngine.Rendering;
-
-public class DeferredShadingSetup : MonoBehaviour
+﻿public class DeferredShadingSetup : MonoBehaviour
 {
   [SerializeField]
   private Shader deferredShader;
 
   private void OnEnable()
   {
-    GraphicsSettings.SetCustomShader(BuiltinShaderType.DeferredShading, this.deferredShader);
+    GraphicsSettings.SetCustomShader(BuiltinShaderType.DeferredShading, deferredShader);
     GraphicsSettings.SetShaderMode(BuiltinShaderType.DeferredShading, BuiltinShaderMode.UseCustom);
   }
 

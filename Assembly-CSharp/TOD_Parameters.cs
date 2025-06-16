@@ -23,35 +23,35 @@ public class TOD_Parameters
 
   public TOD_Parameters(TOD_Sky sky)
   {
-    this.Cycle = sky.Cycle;
-    this.World = sky.World;
-    this.Atmosphere = sky.Atmosphere;
-    this.Day = sky.Day;
-    this.Night = sky.Night;
-    this.Sun = sky.Sun;
-    this.Moon = sky.Moon;
-    this.Light = sky.Light;
-    this.Stars = sky.Stars;
-    this.Clouds = sky.Clouds;
-    this.Fog = sky.Fog;
-    this.Ambient = sky.Ambient;
-    this.Reflection = sky.Reflection;
+    Cycle = sky.Cycle;
+    World = sky.World;
+    Atmosphere = sky.Atmosphere;
+    Day = sky.Day;
+    Night = sky.Night;
+    Sun = sky.Sun;
+    Moon = sky.Moon;
+    Light = sky.Light;
+    Stars = sky.Stars;
+    Clouds = sky.Clouds;
+    Fog = sky.Fog;
+    Ambient = sky.Ambient;
+    Reflection = sky.Reflection;
   }
 
   public void ToSky(TOD_Sky sky)
   {
-    sky.Cycle = this.Cycle;
-    sky.World = this.World;
-    sky.Atmosphere = this.Atmosphere;
-    sky.Day = this.Day;
-    sky.Night = this.Night;
-    sky.Sun = this.Sun;
-    sky.Moon = this.Moon;
-    sky.Light = this.Light;
-    sky.Stars = this.Stars;
-    sky.Clouds = this.Clouds;
-    sky.Fog = this.Fog;
-    sky.Ambient = this.Ambient;
-    sky.Reflection = this.Reflection;
+    sky.Cycle = Cycle;
+    sky.World = World;
+    sky.Atmosphere = Atmosphere;
+    sky.Day = Day;
+    sky.Night = Night;
+    sky.Sun = Sun;
+    sky.Moon = Moon;
+    sky.Light = Light;
+    sky.Stars = Stars;
+    sky.Clouds = Clouds;
+    sky.Fog = Fog;
+    sky.Ambient = Ambient;
+    sky.Reflection = Reflection;
   }
 }

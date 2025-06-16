@@ -1,10 +1,10 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons;
 using Engine.Common.Commons.Converters;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
-using UnityEngine;
 
 namespace BehaviorDesigner.Runtime.Tasks
 {
@@ -20,9 +20,9 @@ namespace BehaviorDesigner.Runtime.Tasks
     ISerializeDataWrite,
     ISerializeDataRead
   {
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy()]
     [SerializeField]
     public WeaponEnum Weapon = WeaponEnum.Hands;
     private NpcState npcState;
@@ -30,46 +30,46 @@ namespace BehaviorDesigner.Runtime.Tasks
 
     public override TaskStatus OnUpdate()
     {
-      if ((UnityEngine.Object) this.npcState == (UnityEngine.Object) null)
+      if ((UnityEngine.Object) npcState == (UnityEngine.Object) null)
       {
-        this.npcState = this.gameObject.GetComponentNonAlloc<NpcState>();
-        if ((UnityEngine.Object) this.npcState == (UnityEngine.Object) null)
+        npcState = gameObject.GetComponentNonAlloc<NpcState>();
+        if ((UnityEngine.Object) npcState == (UnityEngine.Object) null)
         {
-          Debug.LogWarning((object) (this.gameObject.name + ": doesn't contain " + typeof (NpcState).Name + " engine component"), (UnityEngine.Object) this.gameObject);
+          Debug.LogWarning((object) (gameObject.name + ": doesn't contain " + typeof (NpcState).Name + " engine component"), (UnityEngine.Object) gameObject);
           return TaskStatus.Failure;
         }
-        this.weaponService = this.gameObject.GetComponent<NPCWeaponService>();
-        if ((UnityEngine.Object) this.weaponService == (UnityEngine.Object) null)
+        weaponService = gameObject.GetComponent<NPCWeaponService>();
+        if ((UnityEngine.Object) weaponService == (UnityEngine.Object) null)
         {
-          Debug.LogWarning((object) (this.gameObject.name + ": doesn't contain " + typeof (NPCWeaponService).Name + " engine component"), (UnityEngine.Object) this.gameObject);
+          Debug.LogWarning((object) (gameObject.name + ": doesn't contain " + typeof (NPCWeaponService).Name + " engine component"), (UnityEngine.Object) gameObject);
           return TaskStatus.Failure;
         }
       }
-      if (this.npcState.Weapon != this.Weapon)
-        this.npcState.Weapon = this.Weapon;
-      this.weaponService.Weapon = this.Weapon;
-      this.weaponService.SwitchWeaponOnImmediate();
+      if (npcState.Weapon != Weapon)
+        npcState.Weapon = Weapon;
+      weaponService.Weapon = Weapon;
+      weaponService.SwitchWeaponOnImmediate();
       return TaskStatus.Success;
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.WriteSerialize<NodeData>(writer, "NodeData", this.nodeData);
-      DefaultDataWriteUtility.Write(writer, "Id", this.id);
-      DefaultDataWriteUtility.Write(writer, "FriendlyName", this.friendlyName);
-      DefaultDataWriteUtility.Write(writer, "Instant", this.instant);
-      DefaultDataWriteUtility.Write(writer, "Disabled", this.disabled);
-      DefaultDataWriteUtility.WriteEnum<WeaponEnum>(writer, "Weapon", this.Weapon);
+      DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
+      DefaultDataWriteUtility.Write(writer, "Id", id);
+      DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
+      DefaultDataWriteUtility.Write(writer, "Instant", instant);
+      DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
+      DefaultDataWriteUtility.WriteEnum(writer, "Weapon", Weapon);
     }
 
-    public void DataRead(IDataReader reader, System.Type type)
+    public void DataRead(IDataReader reader, Type type)
     {
-      this.nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
-      this.id = DefaultDataReadUtility.Read(reader, "Id", this.id);
-      this.friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", this.friendlyName);
-      this.instant = DefaultDataReadUtility.Read(reader, "Instant", this.instant);
-      this.disabled = DefaultDataReadUtility.Read(reader, "Disabled", this.disabled);
-      this.Weapon = DefaultDataReadUtility.ReadEnum<WeaponEnum>(reader, "Weapon");
+      nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
+      id = DefaultDataReadUtility.Read(reader, "Id", id);
+      friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
+      instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
+      disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
+      Weapon = DefaultDataReadUtility.ReadEnum<WeaponEnum>(reader, "Weapon");
     }
   }
 }

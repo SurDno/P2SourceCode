@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEngine;
 
 namespace RootMotion.FinalIK
 {
@@ -13,7 +12,7 @@ namespace RootMotion.FinalIK
     public float spineBend = 2f;
     [Tooltip("The interpolation speed of spine bending.")]
     public float spineSpeed = 3f;
-    public GrounderFBBIK.SpineEffector[] spine = new GrounderFBBIK.SpineEffector[0];
+    public SpineEffector[] spine = new SpineEffector[0];
     private Transform[] feet = new Transform[2];
     private Vector3 spineOffset;
     private bool firstSolve;
@@ -38,90 +37,90 @@ namespace RootMotion.FinalIK
 
     public override void ResetPosition()
     {
-      this.solver.Reset();
-      this.spineOffset = Vector3.zero;
+      solver.Reset();
+      spineOffset = Vector3.zero;
     }
 
     private bool IsReadyToInitiate()
     {
-      return !((UnityEngine.Object) this.ik == (UnityEngine.Object) null) && this.ik.solver.initiated;
+      return !((UnityEngine.Object) ik == (UnityEngine.Object) null) && ik.solver.initiated;
     }
 
     private void Update()
     {
-      this.firstSolve = true;
-      this.weight = Mathf.Clamp(this.weight, 0.0f, 1f);
-      if ((double) this.weight <= 0.0 || this.initiated || !this.IsReadyToInitiate())
+      firstSolve = true;
+      weight = Mathf.Clamp(weight, 0.0f, 1f);
+      if (weight <= 0.0 || initiated || !IsReadyToInitiate())
         return;
-      this.Initiate();
+      Initiate();
     }
 
-    private void FixedUpdate() => this.firstSolve = true;
+    private void FixedUpdate() => firstSolve = true;
 
-    private void LateUpdate() => this.firstSolve = true;
+    private void LateUpdate() => firstSolve = true;
 
     private void Initiate()
     {
-      this.ik.solver.leftLegMapping.maintainRotationWeight = 1f;
-      this.ik.solver.rightLegMapping.maintainRotationWeight = 1f;
-      this.feet = new Transform[2];
-      this.feet[0] = this.ik.solver.leftFootEffector.bone;
-      this.feet[1] = this.ik.solver.rightFootEffector.bone;
-      IKSolverFullBodyBiped solver = this.ik.solver;
-      solver.OnPreUpdate = solver.OnPreUpdate + new IKSolver.UpdateDelegate(this.OnSolverUpdate);
-      this.solver.Initiate(this.ik.references.root, this.feet);
-      this.initiated = true;
+      ik.solver.leftLegMapping.maintainRotationWeight = 1f;
+      ik.solver.rightLegMapping.maintainRotationWeight = 1f;
+      feet = new Transform[2];
+      feet[0] = ik.solver.leftFootEffector.bone;
+      feet[1] = ik.solver.rightFootEffector.bone;
+      IKSolverFullBodyBiped solver = ik.solver;
+      solver.OnPreUpdate = solver.OnPreUpdate + OnSolverUpdate;
+      this.solver.Initiate(ik.references.root, feet);
+      initiated = true;
     }
 
     private void OnSolverUpdate()
     {
-      if (!this.firstSolve)
+      if (!firstSolve)
         return;
-      this.firstSolve = false;
-      if (!this.enabled || (double) this.weight <= 0.0)
+      firstSolve = false;
+      if (!this.enabled || weight <= 0.0)
         return;
-      if (this.OnPreGrounder != null)
-        this.OnPreGrounder();
-      this.solver.Update();
-      this.ik.references.pelvis.position += this.solver.pelvis.IKOffset * this.weight;
-      this.SetLegIK(this.ik.solver.leftFootEffector, this.solver.legs[0]);
-      this.SetLegIK(this.ik.solver.rightFootEffector, this.solver.legs[1]);
-      if ((double) this.spineBend != 0.0)
+      if (OnPreGrounder != null)
+        OnPreGrounder();
+      solver.Update();
+      ik.references.pelvis.position += solver.pelvis.IKOffset * weight;
+      SetLegIK(ik.solver.leftFootEffector, solver.legs[0]);
+      SetLegIK(ik.solver.rightFootEffector, solver.legs[1]);
+      if (spineBend != 0.0)
       {
-        this.spineSpeed = Mathf.Clamp(this.spineSpeed, 0.0f, this.spineSpeed);
-        this.spineOffset = Vector3.Lerp(this.spineOffset, this.GetSpineOffsetTarget() * this.weight * this.spineBend, Time.deltaTime * this.spineSpeed);
-        Vector3 vector3 = this.ik.references.root.up * this.spineOffset.magnitude;
-        for (int index = 0; index < this.spine.Length; ++index)
-          this.ik.solver.GetEffector(this.spine[index].effectorType).positionOffset += this.spineOffset * this.spine[index].horizontalWeight + vector3 * this.spine[index].verticalWeight;
+        spineSpeed = Mathf.Clamp(spineSpeed, 0.0f, spineSpeed);
+        spineOffset = Vector3.Lerp(spineOffset, GetSpineOffsetTarget() * weight * spineBend, Time.deltaTime * spineSpeed);
+        Vector3 vector3 = ik.references.root.up * spineOffset.magnitude;
+        for (int index = 0; index < spine.Length; ++index)
+          ik.solver.GetEffector(spine[index].effectorType).positionOffset += spineOffset * spine[index].horizontalWeight + vector3 * spine[index].verticalWeight;
       }
-      if (this.OnPostGrounder == null)
+      if (OnPostGrounder == null)
         return;
-      this.OnPostGrounder();
+      OnPostGrounder();
     }
 
     private void SetLegIK(IKEffector effector, Grounding.Leg leg)
     {
-      effector.positionOffset += (leg.IKPosition - effector.bone.position) * this.weight;
-      effector.bone.rotation = Quaternion.Slerp(Quaternion.identity, leg.rotationOffset, this.weight) * effector.bone.rotation;
+      effector.positionOffset += (leg.IKPosition - effector.bone.position) * weight;
+      effector.bone.rotation = Quaternion.Slerp(Quaternion.identity, leg.rotationOffset, weight) * effector.bone.rotation;
     }
 
     private void OnDrawGizmosSelected()
     {
-      if ((UnityEngine.Object) this.ik == (UnityEngine.Object) null)
-        this.ik = this.GetComponent<FullBodyBipedIK>();
-      if ((UnityEngine.Object) this.ik == (UnityEngine.Object) null)
-        this.ik = this.GetComponentInParent<FullBodyBipedIK>();
-      if (!((UnityEngine.Object) this.ik == (UnityEngine.Object) null))
+      if ((UnityEngine.Object) ik == (UnityEngine.Object) null)
+        ik = this.GetComponent<FullBodyBipedIK>();
+      if ((UnityEngine.Object) ik == (UnityEngine.Object) null)
+        ik = this.GetComponentInParent<FullBodyBipedIK>();
+      if (!((UnityEngine.Object) ik == (UnityEngine.Object) null))
         return;
-      this.ik = this.GetComponentInChildren<FullBodyBipedIK>();
+      ik = this.GetComponentInChildren<FullBodyBipedIK>();
     }
 
     private void OnDestroy()
     {
-      if (!this.initiated || !((UnityEngine.Object) this.ik != (UnityEngine.Object) null))
+      if (!initiated || !((UnityEngine.Object) ik != (UnityEngine.Object) null))
         return;
-      IKSolverFullBodyBiped solver = this.ik.solver;
-      solver.OnPreUpdate = solver.OnPreUpdate - new IKSolver.UpdateDelegate(this.OnSolverUpdate);
+      IKSolverFullBodyBiped solver = ik.solver;
+      solver.OnPreUpdate = solver.OnPreUpdate - OnSolverUpdate;
     }
 
     [Serializable]

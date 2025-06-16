@@ -1,4 +1,5 @@
-﻿using Engine.Common;
+﻿using System;
+using Engine.Common;
 using Engine.Common.Components.Parameters;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
@@ -8,9 +9,6 @@ using Engine.Source.Commons.Effects;
 using Engine.Source.Components;
 using Engine.Source.Connections;
 using Inspectors;
-using System;
-using UnityEngine;
-using UnityEngine.Audio;
 
 namespace Engine.Source.Effects
 {
@@ -18,56 +16,56 @@ namespace Engine.Source.Effects
   [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
   public class RemoveEntityIfDurabilityZeroEffect : IEffect
   {
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected ParameterEffectQueueEnum queue = ParameterEffectQueueEnum.None;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected UnityAsset<AudioClip> removeSound;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy()]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected UnitySubAsset<AudioMixerGroup> removeSoundMixer;
 
-    public string Name => this.GetType().Name;
+    public string Name => GetType().Name;
 
     [Inspected]
     public AbilityItem AbilityItem { get; set; }
 
     public IEntity Target { get; set; }
 
-    public ParameterEffectQueueEnum Queue => this.queue;
+    public ParameterEffectQueueEnum Queue => queue;
 
     public bool Prepare(float currentRealTime, float currentGameTime) => true;
 
     public bool Compute(float currentRealTime, float currentGameTime)
     {
-      IEntity item = this.AbilityItem.Item;
+      IEntity item = AbilityItem.Item;
       ParametersComponent component = item.GetComponent<ParametersComponent>();
       if (component == null)
       {
-        Debug.LogWarning((object) string.Format("{0} has no {1}", (object) typeof (RemoveEntityIfDurabilityZeroEffect), (object) typeof (ParametersComponent).Name));
+        Debug.LogWarning((object) string.Format("{0} has no {1}", typeof (RemoveEntityIfDurabilityZeroEffect), typeof (ParametersComponent).Name));
         return false;
       }
       IParameter<float> byName = component.GetByName<float>(ParameterNameEnum.Durability);
       if (byName == null)
       {
-        Debug.LogWarning((object) string.Format("{0} has no durability parameter", (object) typeof (RemoveEntityIfDurabilityZeroEffect)));
+        Debug.LogWarning((object) string.Format("{0} has no durability parameter", typeof (RemoveEntityIfDurabilityZeroEffect)));
         return false;
       }
-      if ((double) byName.Value <= 0.0)
+      if (byName.Value <= 0.0)
         CoroutineService.Instance.WaitFrame((Action) (() =>
         {
-          if ((bool) (UnityEngine.Object) this.removeSound.Value)
-            SoundUtility.PlayAudioClip2D(this.removeSound.Value, this.removeSoundMixer.Value, 1f, 0.0f);
+          if ((bool) (UnityEngine.Object) removeSound.Value)
+            SoundUtility.PlayAudioClip2D(removeSound.Value, removeSoundMixer.Value, 1f, 0.0f);
           item.Dispose();
         }));
       return false;

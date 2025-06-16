@@ -1,8 +1,7 @@
-﻿using NodeCanvas.Framework;
+﻿using System;
+using NodeCanvas.Framework;
 using ParadoxNotion;
 using ParadoxNotion.Design;
-using System;
-using UnityEngine;
 
 namespace FlowCanvas.Nodes
 {
@@ -24,39 +23,39 @@ namespace FlowCanvas.Nodes
     {
       get
       {
-        return string.Format("{0}{1}{2}", (object) this.targetVariable.ToString(), (object) OperationTools.GetOperationString(this.operation), (object) "Value");
+        return string.Format("{0}{1}{2}", targetVariable, OperationTools.GetOperationString(operation), "Value");
       }
     }
 
     protected override void RegisterPorts()
     {
-      FlowOutput o = this.AddFlowOutput("Out");
-      ValueInput<T> v = this.AddValueInput<T>("Value");
-      this.AddValueOutput<T>("Value", (ValueHandler<T>) (() => this.targetVariable.value));
-      this.AddFlowInput("In", (FlowHandler) (() =>
+      FlowOutput o = AddFlowOutput("Out");
+      ValueInput<T> v = AddValueInput<T>("Value");
+      AddValueOutput("Value", () => targetVariable.value);
+      AddFlowInput("In", () =>
       {
-        this.DoSet(v.value);
+        DoSet(v.value);
         o.Call();
-      }));
+      });
     }
 
     private void DoSet(T value)
     {
-      if (this.operation != 0)
+      if (operation != 0)
       {
         if (typeof (T) == typeof (float))
-          this.targetVariable.value = (T) (ValueType) OperationTools.Operate((float) (object) this.targetVariable.value, (float) (object) value, this.operation);
+          targetVariable.value = (T) (ValueType) OperationTools.Operate((float) (object) targetVariable.value, (float) (object) value, operation);
         else if (typeof (T) == typeof (int))
-          this.targetVariable.value = (T) (ValueType) OperationTools.Operate((int) (object) this.targetVariable.value, (int) (object) value, this.operation);
+          targetVariable.value = (T) (ValueType) OperationTools.Operate((int) (object) targetVariable.value, (int) (object) value, operation);
         else if (typeof (T) == typeof (Vector3))
-          this.targetVariable.value = (T) (ValueType) OperationTools.Operate((Vector3) (object) this.targetVariable.value, (Vector3) (object) value, this.operation);
+          targetVariable.value = (T) (ValueType) OperationTools.Operate((Vector3) (object) targetVariable.value, (Vector3) (object) value, operation);
         else
-          this.targetVariable.value = value;
+          targetVariable.value = value;
       }
       else
-        this.targetVariable.value = value;
+        targetVariable.value = value;
     }
 
-    public void SetTargetVariableName(string name) => this.targetVariable.name = name;
+    public void SetTargetVariableName(string name) => targetVariable.name = name;
   }
 }

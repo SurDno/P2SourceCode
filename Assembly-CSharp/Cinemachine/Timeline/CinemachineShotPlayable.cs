@@ -1,6 +1,4 @@
-﻿using UnityEngine.Playables;
-
-namespace Cinemachine.Timeline
+﻿namespace Cinemachine.Timeline
 {
   internal sealed class CinemachineShotPlayable : PlayableBehaviour
   {

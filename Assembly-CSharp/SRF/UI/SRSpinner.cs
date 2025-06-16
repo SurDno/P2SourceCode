@@ -1,8 +1,4 @@
 ﻿using System;
-using UnityEngine;
-using UnityEngine.Events;
-using UnityEngine.EventSystems;
-using UnityEngine.UI;
 
 namespace SRF.UI
 {
@@ -11,51 +7,51 @@ namespace SRF.UI
   {
     private float _dragDelta;
     [SerializeField]
-    private SRSpinner.SpinEvent _onSpinDecrement = new SRSpinner.SpinEvent();
+    private SpinEvent _onSpinDecrement = new SpinEvent();
     [SerializeField]
-    private SRSpinner.SpinEvent _onSpinIncrement = new SRSpinner.SpinEvent();
+    private SpinEvent _onSpinIncrement = new SpinEvent();
     public float DragThreshold = 20f;
 
-    public SRSpinner.SpinEvent OnSpinIncrement
+    public SpinEvent OnSpinIncrement
     {
-      get => this._onSpinIncrement;
-      set => this._onSpinIncrement = value;
+      get => _onSpinIncrement;
+      set => _onSpinIncrement = value;
     }
 
-    public SRSpinner.SpinEvent OnSpinDecrement
+    public SpinEvent OnSpinDecrement
     {
-      get => this._onSpinDecrement;
-      set => this._onSpinDecrement = value;
+      get => _onSpinDecrement;
+      set => _onSpinDecrement = value;
     }
 
-    public void OnBeginDrag(PointerEventData eventData) => this._dragDelta = 0.0f;
+    public void OnBeginDrag(PointerEventData eventData) => _dragDelta = 0.0f;
 
     public void OnDrag(PointerEventData eventData)
     {
       if (!this.interactable)
         return;
-      this._dragDelta += eventData.delta.x;
-      if ((double) Mathf.Abs(this._dragDelta) <= (double) this.DragThreshold)
+      _dragDelta += eventData.delta.x;
+      if ((double) Mathf.Abs(_dragDelta) <= DragThreshold)
         return;
-      float num = Mathf.Sign(this._dragDelta);
-      int amount = Mathf.FloorToInt(Mathf.Abs(this._dragDelta) / this.DragThreshold);
-      if ((double) num > 0.0)
-        this.OnIncrement(amount);
+      float num = Mathf.Sign(_dragDelta);
+      int amount = Mathf.FloorToInt(Mathf.Abs(_dragDelta) / DragThreshold);
+      if (num > 0.0)
+        OnIncrement(amount);
       else
-        this.OnDecrement(amount);
-      this._dragDelta -= (float) amount * this.DragThreshold * num;
+        OnDecrement(amount);
+      _dragDelta -= amount * DragThreshold * num;
     }
 
     private void OnIncrement(int amount)
     {
       for (int index = 0; index < amount; ++index)
-        this.OnSpinIncrement.Invoke();
+        OnSpinIncrement.Invoke();
     }
 
     private void OnDecrement(int amount)
     {
       for (int index = 0; index < amount; ++index)
-        this.OnSpinDecrement.Invoke();
+        OnSpinDecrement.Invoke();
     }
 
     [Serializable]

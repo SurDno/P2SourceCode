@@ -3,7 +3,6 @@ using Engine.Impl.Services;
 using Engine.Impl.UI.Controls;
 using Engine.Source.Components;
 using Engine.Source.Components.Repairing;
-using UnityEngine;
 
 public class RepairableVerbEntityView : EntityViewBase
 {
@@ -14,21 +13,21 @@ public class RepairableVerbEntityView : EntityViewBase
 
   protected override void ApplyValue()
   {
-    if ((Object) this.view == (Object) null)
+    if ((Object) view == (Object) null)
       return;
-    if (this.Value == null)
+    if (Value == null)
     {
-      this.view.StringValue = (string) null;
+      view.StringValue = null;
     }
     else
     {
-      RepairableSettings settings = this.Value.GetComponent<RepairableComponent>()?.Settings;
+      RepairableSettings settings = Value.GetComponent<RepairableComponent>()?.Settings;
       if (settings != null && !string.IsNullOrEmpty(settings.VerbOverride))
-        this.view.StringValue = ServiceLocator.GetService<LocalizationService>().GetText(settings.VerbOverride);
+        view.StringValue = ServiceLocator.GetService<LocalizationService>().GetText(settings.VerbOverride);
       else
-        this.view.StringValue = this.defaultVerb;
+        view.StringValue = defaultVerb;
     }
   }
 
-  public override void SkipAnimation() => this.view?.SkipAnimation();
+  public override void SkipAnimation() => view?.SkipAnimation();
 }

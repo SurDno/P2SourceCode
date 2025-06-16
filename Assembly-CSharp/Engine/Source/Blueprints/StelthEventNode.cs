@@ -3,7 +3,6 @@ using Engine.Source.Services;
 using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
-using System;
 
 namespace Engine.Source.Blueprints
 {
@@ -16,28 +15,28 @@ namespace Engine.Source.Blueprints
     public override void OnGraphStarted()
     {
       base.OnGraphStarted();
-      ServiceLocator.GetService<StelthEnableListener>().OnVisibleChanged += new Action<bool>(this.OnVisibleChanged);
+      ServiceLocator.GetService<StelthEnableListener>().OnVisibleChanged += OnVisibleChanged;
     }
 
     public override void OnGraphStoped()
     {
-      ServiceLocator.GetService<StelthEnableListener>().OnVisibleChanged -= new Action<bool>(this.OnVisibleChanged);
+      ServiceLocator.GetService<StelthEnableListener>().OnVisibleChanged -= OnVisibleChanged;
       base.OnGraphStoped();
     }
 
     private void OnVisibleChanged(bool visible)
     {
       if (visible)
-        this.showOutput.Call();
+        showOutput.Call();
       else
-        this.hideOutput.Call();
+        hideOutput.Call();
     }
 
     protected override void RegisterPorts()
     {
       base.RegisterPorts();
-      this.showOutput = this.AddFlowOutput("Show");
-      this.hideOutput = this.AddFlowOutput("Hide");
+      showOutput = AddFlowOutput("Show");
+      hideOutput = AddFlowOutput("Hide");
     }
   }
 }

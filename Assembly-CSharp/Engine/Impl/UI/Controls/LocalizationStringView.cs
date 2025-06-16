@@ -1,6 +1,5 @@
 ﻿using Engine.Common.Services;
 using Engine.Impl.Services;
-using UnityEngine;
 
 namespace Engine.Impl.UI.Controls
 {
@@ -11,25 +10,25 @@ namespace Engine.Impl.UI.Controls
 
     public override void SkipAnimation()
     {
-      if (!((Object) this.view != (Object) null))
+      if (!((Object) view != (Object) null))
         return;
-      this.view.SkipAnimation();
+      view.SkipAnimation();
     }
 
     protected override void ApplyStringValue()
     {
-      if ((Object) this.view == (Object) null)
+      if ((Object) view == (Object) null)
         return;
       if (Application.isPlaying)
       {
         LocalizationService service = ServiceLocator.GetService<LocalizationService>();
         if (service != null)
         {
-          this.view.StringValue = service.GetText(this.StringValue);
+          view.StringValue = service.GetText(StringValue);
           return;
         }
       }
-      this.view.StringValue = this.StringValue;
+      view.StringValue = StringValue;
     }
   }
 }

@@ -1,13 +1,12 @@
-﻿using FlowCanvas;
+﻿using System.Collections.Generic;
+using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
-using System.Collections.Generic;
-using UnityEngine;
 
 namespace Engine.Source.Blueprints.Sounds
 {
   [Category("Sounds")]
-  [ContextDefinedInputs(new System.Type[] {typeof (bool)})]
+  [ContextDefinedInputs(typeof (bool))]
   public class OrNode : FlowControlNode, IMultiPortNode
   {
     [SerializeField]
@@ -16,23 +15,23 @@ namespace Engine.Source.Blueprints.Sounds
 
     public int portCount
     {
-      get => this._portCount;
-      set => this._portCount = value;
+      get => _portCount;
+      set => _portCount = value;
     }
 
     protected override void RegisterPorts()
     {
       base.RegisterPorts();
-      this.inputs.Clear();
-      for (int index = 0; index < this._portCount; ++index)
-        this.inputs.Add(this.AddValueInput<bool>((index + 1).ToString()));
+      inputs.Clear();
+      for (int index = 0; index < _portCount; ++index)
+        inputs.Add(AddValueInput<bool>((index + 1).ToString()));
     }
 
     [Port("Value")]
     private bool Value()
     {
       bool flag = false;
-      foreach (ValueInput<bool> input in this.inputs)
+      foreach (ValueInput<bool> input in inputs)
       {
         if (input.isConnected && input.value)
         {

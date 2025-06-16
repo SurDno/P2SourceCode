@@ -8,15 +8,15 @@ namespace Engine.Source.Components.Crowds
   [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite | TypeEnum.StateSave | TypeEnum.StateLoad)]
   public class HerbRootsTemplate
   {
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
     [Inspected(Mutable = true, Header = true, Mode = ExecuteMode.EditAndRuntime)]
-    [CopyableProxy(MemberEnum.None)]
+    [CopyableProxy]
     public Typed<IEntity> Template;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
     [Inspected(Mutable = true, Header = true, Mode = ExecuteMode.EditAndRuntime)]
-    [CopyableProxy(MemberEnum.None)]
+    [CopyableProxy()]
     public float Weight = 1f;
   }
 }

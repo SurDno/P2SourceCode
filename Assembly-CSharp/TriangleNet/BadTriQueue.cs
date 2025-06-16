@@ -11,20 +11,20 @@ namespace TriangleNet
     private BadTriangle[] queuefront;
     private BadTriangle[] queuetail;
 
-    public int Count => this.count;
+    public int Count => count;
 
     public BadTriQueue()
     {
-      this.queuefront = new BadTriangle[4096];
-      this.queuetail = new BadTriangle[4096];
-      this.nextnonemptyq = new int[4096];
-      this.firstnonemptyq = -1;
-      this.count = 0;
+      queuefront = new BadTriangle[4096];
+      queuetail = new BadTriangle[4096];
+      nextnonemptyq = new int[4096];
+      firstnonemptyq = -1;
+      count = 0;
     }
 
     public void Enqueue(BadTriangle badtri)
     {
-      ++this.count;
+      ++count;
       double num1;
       int num2;
       if (badtri.key >= 1.0)
@@ -46,29 +46,29 @@ namespace TriangleNet
           num5 *= 2;
         num3 += num5;
       }
-      int num6 = 2 * num3 + (num1 > BadTriQueue.SQRT2 ? 1 : 0);
+      int num6 = 2 * num3 + (num1 > SQRT2 ? 1 : 0);
       int index1 = num2 <= 0 ? 2048 + num6 : 2047 - num6;
-      if (this.queuefront[index1] == null)
+      if (queuefront[index1] == null)
       {
-        if (index1 > this.firstnonemptyq)
+        if (index1 > firstnonemptyq)
         {
-          this.nextnonemptyq[index1] = this.firstnonemptyq;
-          this.firstnonemptyq = index1;
+          nextnonemptyq[index1] = firstnonemptyq;
+          firstnonemptyq = index1;
         }
         else
         {
           int index2 = index1 + 1;
-          while (this.queuefront[index2] == null)
+          while (queuefront[index2] == null)
             ++index2;
-          this.nextnonemptyq[index1] = this.nextnonemptyq[index2];
-          this.nextnonemptyq[index2] = index1;
+          nextnonemptyq[index1] = nextnonemptyq[index2];
+          nextnonemptyq[index2] = index1;
         }
-        this.queuefront[index1] = badtri;
+        queuefront[index1] = badtri;
       }
       else
-        this.queuetail[index1].nexttriang = badtri;
-      this.queuetail[index1] = badtri;
-      badtri.nexttriang = (BadTriangle) null;
+        queuetail[index1].nexttriang = badtri;
+      queuetail[index1] = badtri;
+      badtri.nexttriang = null;
     }
 
     public void Enqueue(
@@ -78,8 +78,7 @@ namespace TriangleNet
       Vertex enqorg,
       Vertex enqdest)
     {
-      this.Enqueue(new BadTriangle()
-      {
+      Enqueue(new BadTriangle {
         poortri = enqtri,
         key = minedge,
         triangapex = enqapex,
@@ -90,13 +89,13 @@ namespace TriangleNet
 
     public BadTriangle Dequeue()
     {
-      if (this.firstnonemptyq < 0)
-        return (BadTriangle) null;
-      --this.count;
-      BadTriangle badTriangle = this.queuefront[this.firstnonemptyq];
-      this.queuefront[this.firstnonemptyq] = badTriangle.nexttriang;
-      if (badTriangle == this.queuetail[this.firstnonemptyq])
-        this.firstnonemptyq = this.nextnonemptyq[this.firstnonemptyq];
+      if (firstnonemptyq < 0)
+        return null;
+      --count;
+      BadTriangle badTriangle = queuefront[firstnonemptyq];
+      queuefront[firstnonemptyq] = badTriangle.nexttriang;
+      if (badTriangle == queuetail[firstnonemptyq])
+        firstnonemptyq = nextnonemptyq[firstnonemptyq];
       return badTriangle;
     }
   }

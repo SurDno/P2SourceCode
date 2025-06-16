@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEngine;
 
 namespace RootMotion.FinalIK
 {
@@ -16,18 +15,18 @@ namespace RootMotion.FinalIK
     [Range(0.0f, 1f)]
     public float twistWeight = 1f;
     private int rootNodeIndex;
-    private IKMapping.BoneMap[] spine = new IKMapping.BoneMap[0];
-    private IKMapping.BoneMap leftUpperArm = new IKMapping.BoneMap();
-    private IKMapping.BoneMap rightUpperArm = new IKMapping.BoneMap();
-    private IKMapping.BoneMap leftThigh = new IKMapping.BoneMap();
-    private IKMapping.BoneMap rightThigh = new IKMapping.BoneMap();
+    private BoneMap[] spine = new BoneMap[0];
+    private BoneMap leftUpperArm = new BoneMap();
+    private BoneMap rightUpperArm = new BoneMap();
+    private BoneMap leftThigh = new BoneMap();
+    private BoneMap rightThigh = new BoneMap();
     private bool useFABRIK;
 
     public override bool IsValid(IKSolver solver, ref string message)
     {
       if (!base.IsValid(solver, ref message))
         return false;
-      foreach (UnityEngine.Object spineBone in this.spineBones)
+      foreach (UnityEngine.Object spineBone in spineBones)
       {
         if (spineBone == (UnityEngine.Object) null)
         {
@@ -36,9 +35,9 @@ namespace RootMotion.FinalIK
         }
       }
       int num = 0;
-      for (int index = 0; index < this.spineBones.Length; ++index)
+      for (int index = 0; index < spineBones.Length; ++index)
       {
-        if (solver.GetPoint(this.spineBones[index]) != null)
+        if (solver.GetPoint(spineBones[index]) != null)
           ++num;
       }
       if (num == 0)
@@ -46,42 +45,42 @@ namespace RootMotion.FinalIK
         message = "IKMappingSpine does not contain any nodes.";
         return false;
       }
-      if ((UnityEngine.Object) this.leftUpperArmBone == (UnityEngine.Object) null)
+      if ((UnityEngine.Object) leftUpperArmBone == (UnityEngine.Object) null)
       {
         message = "IKMappingSpine is missing the left upper arm bone.";
         return false;
       }
-      if ((UnityEngine.Object) this.rightUpperArmBone == (UnityEngine.Object) null)
+      if ((UnityEngine.Object) rightUpperArmBone == (UnityEngine.Object) null)
       {
         message = "IKMappingSpine is missing the right upper arm bone.";
         return false;
       }
-      if ((UnityEngine.Object) this.leftThighBone == (UnityEngine.Object) null)
+      if ((UnityEngine.Object) leftThighBone == (UnityEngine.Object) null)
       {
         message = "IKMappingSpine is missing the left thigh bone.";
         return false;
       }
-      if ((UnityEngine.Object) this.rightThighBone == (UnityEngine.Object) null)
+      if ((UnityEngine.Object) rightThighBone == (UnityEngine.Object) null)
       {
         message = "IKMappingSpine is missing the right thigh bone.";
         return false;
       }
-      if (solver.GetPoint(this.leftUpperArmBone) == null)
+      if (solver.GetPoint(leftUpperArmBone) == null)
       {
         message = "Full Body IK is missing the left upper arm node.";
         return false;
       }
-      if (solver.GetPoint(this.rightUpperArmBone) == null)
+      if (solver.GetPoint(rightUpperArmBone) == null)
       {
         message = "Full Body IK is missing the right upper arm node.";
         return false;
       }
-      if (solver.GetPoint(this.leftThighBone) == null)
+      if (solver.GetPoint(leftThighBone) == null)
       {
         message = "Full Body IK is missing the left thigh node.";
         return false;
       }
-      if (solver.GetPoint(this.rightThighBone) != null)
+      if (solver.GetPoint(rightThighBone) != null)
         return true;
       message = "Full Body IK is missing the right thigh node.";
       return false;
@@ -98,7 +97,7 @@ namespace RootMotion.FinalIK
       Transform leftThighBone,
       Transform rightThighBone)
     {
-      this.SetBones(spineBones, leftUpperArmBone, rightUpperArmBone, leftThighBone, rightThighBone);
+      SetBones(spineBones, leftUpperArmBone, rightUpperArmBone, leftThighBone, rightThighBone);
     }
 
     public void SetBones(
@@ -117,129 +116,129 @@ namespace RootMotion.FinalIK
 
     public void StoreDefaultLocalState()
     {
-      for (int index = 0; index < this.spine.Length; ++index)
-        this.spine[index].StoreDefaultLocalState();
+      for (int index = 0; index < spine.Length; ++index)
+        spine[index].StoreDefaultLocalState();
     }
 
     public void FixTransforms()
     {
-      for (int index = 0; index < this.spine.Length; ++index)
-        this.spine[index].FixTransform(index == 0 || index == this.spine.Length - 1);
+      for (int index = 0; index < spine.Length; ++index)
+        spine[index].FixTransform(index == 0 || index == spine.Length - 1);
     }
 
     public override void Initiate(IKSolverFullBody solver)
     {
-      if (this.iterations <= 0)
-        this.iterations = 3;
-      if (this.spine == null || this.spine.Length != this.spineBones.Length)
-        this.spine = new IKMapping.BoneMap[this.spineBones.Length];
-      this.rootNodeIndex = -1;
-      for (int index = 0; index < this.spineBones.Length; ++index)
+      if (iterations <= 0)
+        iterations = 3;
+      if (spine == null || spine.Length != spineBones.Length)
+        spine = new BoneMap[spineBones.Length];
+      rootNodeIndex = -1;
+      for (int index = 0; index < spineBones.Length; ++index)
       {
-        if (this.spine[index] == null)
-          this.spine[index] = new IKMapping.BoneMap();
-        this.spine[index].Initiate(this.spineBones[index], solver);
-        if (this.spine[index].isNodeBone)
-          this.rootNodeIndex = index;
+        if (spine[index] == null)
+          spine[index] = new BoneMap();
+        spine[index].Initiate(spineBones[index], solver);
+        if (spine[index].isNodeBone)
+          rootNodeIndex = index;
       }
-      if (this.leftUpperArm == null)
-        this.leftUpperArm = new IKMapping.BoneMap();
-      if (this.rightUpperArm == null)
-        this.rightUpperArm = new IKMapping.BoneMap();
-      if (this.leftThigh == null)
-        this.leftThigh = new IKMapping.BoneMap();
-      if (this.rightThigh == null)
-        this.rightThigh = new IKMapping.BoneMap();
-      this.leftUpperArm.Initiate(this.leftUpperArmBone, solver);
-      this.rightUpperArm.Initiate(this.rightUpperArmBone, solver);
-      this.leftThigh.Initiate(this.leftThighBone, solver);
-      this.rightThigh.Initiate(this.rightThighBone, solver);
-      for (int index = 0; index < this.spine.Length; ++index)
-        this.spine[index].SetIKPosition();
-      this.spine[0].SetPlane(solver, this.spine[this.rootNodeIndex].transform, this.leftThigh.transform, this.rightThigh.transform);
-      for (int index = 0; index < this.spine.Length - 1; ++index)
+      if (leftUpperArm == null)
+        leftUpperArm = new BoneMap();
+      if (rightUpperArm == null)
+        rightUpperArm = new BoneMap();
+      if (leftThigh == null)
+        leftThigh = new BoneMap();
+      if (rightThigh == null)
+        rightThigh = new BoneMap();
+      leftUpperArm.Initiate(leftUpperArmBone, solver);
+      rightUpperArm.Initiate(rightUpperArmBone, solver);
+      leftThigh.Initiate(leftThighBone, solver);
+      rightThigh.Initiate(rightThighBone, solver);
+      for (int index = 0; index < spine.Length; ++index)
+        spine[index].SetIKPosition();
+      spine[0].SetPlane(solver, spine[rootNodeIndex].transform, leftThigh.transform, rightThigh.transform);
+      for (int index = 0; index < spine.Length - 1; ++index)
       {
-        this.spine[index].SetLength(this.spine[index + 1]);
-        this.spine[index].SetLocalSwingAxis(this.spine[index + 1]);
-        this.spine[index].SetLocalTwistAxis(this.leftUpperArm.transform.position - this.rightUpperArm.transform.position, this.spine[index + 1].transform.position - this.spine[index].transform.position);
+        spine[index].SetLength(spine[index + 1]);
+        spine[index].SetLocalSwingAxis(spine[index + 1]);
+        spine[index].SetLocalTwistAxis(leftUpperArm.transform.position - rightUpperArm.transform.position, spine[index + 1].transform.position - spine[index].transform.position);
       }
-      this.spine[this.spine.Length - 1].SetPlane(solver, this.spine[this.rootNodeIndex].transform, this.leftUpperArm.transform, this.rightUpperArm.transform);
-      this.spine[this.spine.Length - 1].SetLocalSwingAxis(this.leftUpperArm, this.rightUpperArm);
-      this.useFABRIK = this.UseFABRIK();
+      spine[spine.Length - 1].SetPlane(solver, spine[rootNodeIndex].transform, leftUpperArm.transform, rightUpperArm.transform);
+      spine[spine.Length - 1].SetLocalSwingAxis(leftUpperArm, rightUpperArm);
+      useFABRIK = UseFABRIK();
     }
 
-    private bool UseFABRIK() => this.spine.Length > 3 || this.rootNodeIndex != 1;
+    private bool UseFABRIK() => spine.Length > 3 || rootNodeIndex != 1;
 
     public void ReadPose()
     {
-      this.spine[0].UpdatePlane(true, true);
-      for (int index = 0; index < this.spine.Length - 1; ++index)
+      spine[0].UpdatePlane(true, true);
+      for (int index = 0; index < spine.Length - 1; ++index)
       {
-        this.spine[index].SetLength(this.spine[index + 1]);
-        this.spine[index].SetLocalSwingAxis(this.spine[index + 1]);
-        this.spine[index].SetLocalTwistAxis(this.leftUpperArm.transform.position - this.rightUpperArm.transform.position, this.spine[index + 1].transform.position - this.spine[index].transform.position);
+        spine[index].SetLength(spine[index + 1]);
+        spine[index].SetLocalSwingAxis(spine[index + 1]);
+        spine[index].SetLocalTwistAxis(leftUpperArm.transform.position - rightUpperArm.transform.position, spine[index + 1].transform.position - spine[index].transform.position);
       }
-      this.spine[this.spine.Length - 1].UpdatePlane(true, true);
-      this.spine[this.spine.Length - 1].SetLocalSwingAxis(this.leftUpperArm, this.rightUpperArm);
+      spine[spine.Length - 1].UpdatePlane(true, true);
+      spine[spine.Length - 1].SetLocalSwingAxis(leftUpperArm, rightUpperArm);
     }
 
     public void WritePose(IKSolverFullBody solver)
     {
-      Vector3 planePosition1 = this.spine[0].GetPlanePosition(solver);
-      Vector3 solverPosition = solver.GetNode(this.spine[this.rootNodeIndex].chainIndex, this.spine[this.rootNodeIndex].nodeIndex).solverPosition;
-      Vector3 planePosition2 = this.spine[this.spine.Length - 1].GetPlanePosition(solver);
-      if (this.useFABRIK)
+      Vector3 planePosition1 = spine[0].GetPlanePosition(solver);
+      Vector3 solverPosition = solver.GetNode(spine[rootNodeIndex].chainIndex, spine[rootNodeIndex].nodeIndex).solverPosition;
+      Vector3 planePosition2 = spine[spine.Length - 1].GetPlanePosition(solver);
+      if (useFABRIK)
       {
-        Vector3 vector3 = solver.GetNode(this.spine[this.rootNodeIndex].chainIndex, this.spine[this.rootNodeIndex].nodeIndex).solverPosition - this.spine[this.rootNodeIndex].transform.position;
-        for (int index = 0; index < this.spine.Length; ++index)
-          this.spine[index].ikPosition = this.spine[index].transform.position + vector3;
-        for (int index = 0; index < this.iterations; ++index)
+        Vector3 vector3 = solver.GetNode(spine[rootNodeIndex].chainIndex, spine[rootNodeIndex].nodeIndex).solverPosition - spine[rootNodeIndex].transform.position;
+        for (int index = 0; index < spine.Length; ++index)
+          spine[index].ikPosition = spine[index].transform.position + vector3;
+        for (int index = 0; index < iterations; ++index)
         {
-          this.ForwardReach(planePosition2);
-          this.BackwardReach(planePosition1);
-          this.spine[this.rootNodeIndex].ikPosition = solverPosition;
+          ForwardReach(planePosition2);
+          BackwardReach(planePosition1);
+          spine[rootNodeIndex].ikPosition = solverPosition;
         }
       }
       else
       {
-        this.spine[0].ikPosition = planePosition1;
-        this.spine[this.rootNodeIndex].ikPosition = solverPosition;
+        spine[0].ikPosition = planePosition1;
+        spine[rootNodeIndex].ikPosition = solverPosition;
       }
-      this.spine[this.spine.Length - 1].ikPosition = planePosition2;
-      this.MapToSolverPositions(solver);
+      spine[spine.Length - 1].ikPosition = planePosition2;
+      MapToSolverPositions(solver);
     }
 
     public void ForwardReach(Vector3 position)
     {
-      this.spine[this.spineBones.Length - 1].ikPosition = position;
-      for (int index = this.spine.Length - 2; index > -1; --index)
-        this.spine[index].ikPosition = this.SolveFABRIKJoint(this.spine[index].ikPosition, this.spine[index + 1].ikPosition, this.spine[index].length);
+      spine[spineBones.Length - 1].ikPosition = position;
+      for (int index = spine.Length - 2; index > -1; --index)
+        spine[index].ikPosition = SolveFABRIKJoint(spine[index].ikPosition, spine[index + 1].ikPosition, spine[index].length);
     }
 
     private void BackwardReach(Vector3 position)
     {
-      this.spine[0].ikPosition = position;
-      for (int index = 1; index < this.spine.Length; ++index)
-        this.spine[index].ikPosition = this.SolveFABRIKJoint(this.spine[index].ikPosition, this.spine[index - 1].ikPosition, this.spine[index - 1].length);
+      spine[0].ikPosition = position;
+      for (int index = 1; index < spine.Length; ++index)
+        spine[index].ikPosition = SolveFABRIKJoint(spine[index].ikPosition, spine[index - 1].ikPosition, spine[index - 1].length);
     }
 
     private void MapToSolverPositions(IKSolverFullBody solver)
     {
-      this.spine[0].SetToIKPosition();
-      this.spine[0].RotateToPlane(solver, 1f);
-      for (int index = 1; index < this.spine.Length - 1; ++index)
+      spine[0].SetToIKPosition();
+      spine[0].RotateToPlane(solver, 1f);
+      for (int index = 1; index < spine.Length - 1; ++index)
       {
-        this.spine[index].Swing(this.spine[index + 1].ikPosition, 1f);
-        if ((double) this.twistWeight > 0.0)
+        spine[index].Swing(spine[index + 1].ikPosition, 1f);
+        if (twistWeight > 0.0)
         {
-          float num = (float) index / ((float) this.spine.Length - 2f);
-          Vector3 solverPosition1 = solver.GetNode(this.leftUpperArm.chainIndex, this.leftUpperArm.nodeIndex).solverPosition;
-          Vector3 solverPosition2 = solver.GetNode(this.rightUpperArm.chainIndex, this.rightUpperArm.nodeIndex).solverPosition;
-          this.spine[index].Twist(solverPosition1 - solverPosition2, this.spine[index + 1].ikPosition - this.spine[index].transform.position, num * this.twistWeight);
+          float num = index / (spine.Length - 2f);
+          Vector3 solverPosition1 = solver.GetNode(leftUpperArm.chainIndex, leftUpperArm.nodeIndex).solverPosition;
+          Vector3 solverPosition2 = solver.GetNode(rightUpperArm.chainIndex, rightUpperArm.nodeIndex).solverPosition;
+          spine[index].Twist(solverPosition1 - solverPosition2, spine[index + 1].ikPosition - spine[index].transform.position, num * twistWeight);
         }
       }
-      this.spine[this.spine.Length - 1].SetToIKPosition();
-      this.spine[this.spine.Length - 1].RotateToPlane(solver, 1f);
+      spine[spine.Length - 1].SetToIKPosition();
+      spine[spine.Length - 1].RotateToPlane(solver, 1f);
     }
   }
 }

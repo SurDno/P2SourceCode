@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-using UnityEngine.Playables;
-using UnityEngine.Timeline;
+﻿using UnityEngine.Timeline;
 
 namespace Cinemachine.Timeline
 {
@@ -11,7 +9,7 @@ namespace Cinemachine.Timeline
     public override Playable CreatePlayable(PlayableGraph graph, GameObject owner)
     {
       ScriptPlayable<CinemachineShotPlayable> playable = ScriptPlayable<CinemachineShotPlayable>.Create(graph);
-      playable.GetBehaviour().VirtualCamera = this.VirtualCamera.Resolve(graph.GetResolver());
+      playable.GetBehaviour().VirtualCamera = VirtualCamera.Resolve(graph.GetResolver());
       return (Playable) playable;
     }
 

@@ -1,7 +1,7 @@
-﻿using Facepunch.Steamworks;
-using System;
+﻿using System;
 using System.Runtime.InteropServices;
 using System.Text;
+using Facepunch.Steamworks;
 
 namespace SteamNative
 {
@@ -14,47 +14,47 @@ namespace SteamNative
     {
       this.steamworks = steamworks;
       if (Platform.IsWindows64)
-        this.platform = (Platform.Interface) new Platform.Win64(pointer);
+        platform = (Platform.Interface) new Platform.Win64(pointer);
       else if (Platform.IsWindows32)
-        this.platform = (Platform.Interface) new Platform.Win32(pointer);
+        platform = (Platform.Interface) new Platform.Win32(pointer);
       else if (Platform.IsLinux32)
-        this.platform = (Platform.Interface) new Platform.Linux32(pointer);
+        platform = (Platform.Interface) new Platform.Linux32(pointer);
       else if (Platform.IsLinux64)
       {
-        this.platform = (Platform.Interface) new Platform.Linux64(pointer);
+        platform = (Platform.Interface) new Platform.Linux64(pointer);
       }
       else
       {
         if (!Platform.IsOsx)
           return;
-        this.platform = (Platform.Interface) new Platform.Mac(pointer);
+        platform = (Platform.Interface) new Platform.Mac(pointer);
       }
     }
 
-    public bool IsValid => this.platform != null && this.platform.IsValid;
+    public bool IsValid => platform != null && platform.IsValid;
 
     public virtual void Dispose()
     {
-      if (this.platform == null)
+      if (platform == null)
         return;
-      this.platform.Dispose();
-      this.platform = (Platform.Interface) null;
+      platform.Dispose();
+      platform = (Platform.Interface) null;
     }
 
-    public bool BOverlayNeedsPresent() => this.platform.ISteamUtils_BOverlayNeedsPresent();
+    public bool BOverlayNeedsPresent() => platform.ISteamUtils_BOverlayNeedsPresent();
 
     public CallbackHandle CheckFileSignature(
       string szFileName,
       Action<CheckFileSignature_t, bool> CallbackFunction = null)
     {
-      SteamAPICall_t steamApiCallT = (SteamAPICall_t) 0UL;
-      SteamAPICall_t call = this.platform.ISteamUtils_CheckFileSignature(szFileName);
-      return CallbackFunction == null ? (CallbackHandle) null : CheckFileSignature_t.CallResult(this.steamworks, call, CallbackFunction);
+      SteamAPICall_t steamApiCallT = 0UL;
+      SteamAPICall_t call = platform.ISteamUtils_CheckFileSignature(szFileName);
+      return CallbackFunction == null ? null : CheckFileSignature_t.CallResult(steamworks, call, CallbackFunction);
     }
 
     public SteamAPICallFailure GetAPICallFailureReason(SteamAPICall_t hSteamAPICall)
     {
-      return this.platform.ISteamUtils_GetAPICallFailureReason(hSteamAPICall.Value);
+      return platform.ISteamUtils_GetAPICallFailureReason(hSteamAPICall.Value);
     }
 
     public bool GetAPICallResult(
@@ -64,97 +64,97 @@ namespace SteamNative
       int iCallbackExpected,
       ref bool pbFailed)
     {
-      return this.platform.ISteamUtils_GetAPICallResult(hSteamAPICall.Value, pCallback, cubCallback, iCallbackExpected, ref pbFailed);
+      return platform.ISteamUtils_GetAPICallResult(hSteamAPICall.Value, pCallback, cubCallback, iCallbackExpected, ref pbFailed);
     }
 
-    public uint GetAppID() => this.platform.ISteamUtils_GetAppID();
+    public uint GetAppID() => platform.ISteamUtils_GetAppID();
 
-    public Universe GetConnectedUniverse() => this.platform.ISteamUtils_GetConnectedUniverse();
+    public Universe GetConnectedUniverse() => platform.ISteamUtils_GetConnectedUniverse();
 
     public bool GetCSERIPPort(out uint unIP, out ushort usPort)
     {
-      return this.platform.ISteamUtils_GetCSERIPPort(out unIP, out usPort);
+      return platform.ISteamUtils_GetCSERIPPort(out unIP, out usPort);
     }
 
-    public byte GetCurrentBatteryPower() => this.platform.ISteamUtils_GetCurrentBatteryPower();
+    public byte GetCurrentBatteryPower() => platform.ISteamUtils_GetCurrentBatteryPower();
 
     public string GetEnteredGamepadTextInput()
     {
       StringBuilder stringBuilder = Helpers.TakeStringBuilder();
       uint cchText = 4096;
-      return !this.platform.ISteamUtils_GetEnteredGamepadTextInput(stringBuilder, cchText) ? (string) null : stringBuilder.ToString();
+      return !platform.ISteamUtils_GetEnteredGamepadTextInput(stringBuilder, cchText) ? null : stringBuilder.ToString();
     }
 
     public uint GetEnteredGamepadTextLength()
     {
-      return this.platform.ISteamUtils_GetEnteredGamepadTextLength();
+      return platform.ISteamUtils_GetEnteredGamepadTextLength();
     }
 
     public bool GetImageRGBA(int iImage, IntPtr pubDest, int nDestBufferSize)
     {
-      return this.platform.ISteamUtils_GetImageRGBA(iImage, pubDest, nDestBufferSize);
+      return platform.ISteamUtils_GetImageRGBA(iImage, pubDest, nDestBufferSize);
     }
 
     public bool GetImageSize(int iImage, out uint pnWidth, out uint pnHeight)
     {
-      return this.platform.ISteamUtils_GetImageSize(iImage, out pnWidth, out pnHeight);
+      return platform.ISteamUtils_GetImageSize(iImage, out pnWidth, out pnHeight);
     }
 
-    public uint GetIPCCallCount() => this.platform.ISteamUtils_GetIPCCallCount();
+    public uint GetIPCCallCount() => platform.ISteamUtils_GetIPCCallCount();
 
     public string GetIPCountry()
     {
-      return Marshal.PtrToStringAnsi(this.platform.ISteamUtils_GetIPCountry());
+      return Marshal.PtrToStringAnsi(platform.ISteamUtils_GetIPCountry());
     }
 
-    public uint GetSecondsSinceAppActive() => this.platform.ISteamUtils_GetSecondsSinceAppActive();
+    public uint GetSecondsSinceAppActive() => platform.ISteamUtils_GetSecondsSinceAppActive();
 
     public uint GetSecondsSinceComputerActive()
     {
-      return this.platform.ISteamUtils_GetSecondsSinceComputerActive();
+      return platform.ISteamUtils_GetSecondsSinceComputerActive();
     }
 
-    public uint GetServerRealTime() => this.platform.ISteamUtils_GetServerRealTime();
+    public uint GetServerRealTime() => platform.ISteamUtils_GetServerRealTime();
 
     public string GetSteamUILanguage()
     {
-      return Marshal.PtrToStringAnsi(this.platform.ISteamUtils_GetSteamUILanguage());
+      return Marshal.PtrToStringAnsi(platform.ISteamUtils_GetSteamUILanguage());
     }
 
     public bool IsAPICallCompleted(SteamAPICall_t hSteamAPICall, ref bool pbFailed)
     {
-      return this.platform.ISteamUtils_IsAPICallCompleted(hSteamAPICall.Value, ref pbFailed);
+      return platform.ISteamUtils_IsAPICallCompleted(hSteamAPICall.Value, ref pbFailed);
     }
 
-    public bool IsOverlayEnabled() => this.platform.ISteamUtils_IsOverlayEnabled();
+    public bool IsOverlayEnabled() => platform.ISteamUtils_IsOverlayEnabled();
 
-    public bool IsSteamInBigPictureMode() => this.platform.ISteamUtils_IsSteamInBigPictureMode();
+    public bool IsSteamInBigPictureMode() => platform.ISteamUtils_IsSteamInBigPictureMode();
 
-    public bool IsSteamRunningInVR() => this.platform.ISteamUtils_IsSteamRunningInVR();
+    public bool IsSteamRunningInVR() => platform.ISteamUtils_IsSteamRunningInVR();
 
     public bool IsVRHeadsetStreamingEnabled()
     {
-      return this.platform.ISteamUtils_IsVRHeadsetStreamingEnabled();
+      return platform.ISteamUtils_IsVRHeadsetStreamingEnabled();
     }
 
     public void SetOverlayNotificationInset(int nHorizontalInset, int nVerticalInset)
     {
-      this.platform.ISteamUtils_SetOverlayNotificationInset(nHorizontalInset, nVerticalInset);
+      platform.ISteamUtils_SetOverlayNotificationInset(nHorizontalInset, nVerticalInset);
     }
 
     public void SetOverlayNotificationPosition(NotificationPosition eNotificationPosition)
     {
-      this.platform.ISteamUtils_SetOverlayNotificationPosition(eNotificationPosition);
+      platform.ISteamUtils_SetOverlayNotificationPosition(eNotificationPosition);
     }
 
     public void SetVRHeadsetStreamingEnabled(bool bEnabled)
     {
-      this.platform.ISteamUtils_SetVRHeadsetStreamingEnabled(bEnabled);
+      platform.ISteamUtils_SetVRHeadsetStreamingEnabled(bEnabled);
     }
 
     public void SetWarningMessageHook(IntPtr pFunction)
     {
-      this.platform.ISteamUtils_SetWarningMessageHook(pFunction);
+      platform.ISteamUtils_SetWarningMessageHook(pFunction);
     }
 
     public bool ShowGamepadTextInput(
@@ -164,9 +164,9 @@ namespace SteamNative
       uint unCharMax,
       string pchExistingText)
     {
-      return this.platform.ISteamUtils_ShowGamepadTextInput(eInputMode, eLineInputMode, pchDescription, unCharMax, pchExistingText);
+      return platform.ISteamUtils_ShowGamepadTextInput(eInputMode, eLineInputMode, pchDescription, unCharMax, pchExistingText);
     }
 
-    public void StartVRDashboard() => this.platform.ISteamUtils_StartVRDashboard();
+    public void StartVRDashboard() => platform.ISteamUtils_StartVRDashboard();
   }
 }

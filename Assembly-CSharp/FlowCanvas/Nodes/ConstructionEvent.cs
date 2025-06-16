@@ -8,16 +8,16 @@ namespace FlowCanvas.Nodes
   public class ConstructionEvent : EventNode
   {
     private FlowOutput awake;
-    private bool called = false;
+    private bool called;
 
     public override void OnGraphStarted()
     {
-      if (this.called)
+      if (called)
         return;
-      this.called = true;
-      this.awake.Call();
+      called = true;
+      awake.Call();
     }
 
-    protected override void RegisterPorts() => this.awake = this.AddFlowOutput("Once");
+    protected override void RegisterPorts() => awake = AddFlowOutput("Once");
   }
 }

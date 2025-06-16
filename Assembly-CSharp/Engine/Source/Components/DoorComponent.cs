@@ -1,7 +1,11 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using System.Collections.Generic;
+using Cofe.Proxies;
+using Cofe.Serializations.Data;
 using Engine.Common;
 using Engine.Common.Commons;
 using Engine.Common.Components;
+using Engine.Common.Components.Gate;
 using Engine.Common.Components.Parameters;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
@@ -9,8 +13,6 @@ using Engine.Source.Commons;
 using Engine.Source.Commons.Parameters;
 using Engine.Source.Connections;
 using Inspectors;
-using System;
-using System.Collections.Generic;
 
 namespace Engine.Source.Components
 {
@@ -19,83 +21,83 @@ namespace Engine.Source.Components
   [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite | TypeEnum.StateSave | TypeEnum.StateLoad)]
   public class DoorComponent : EngineComponent, IDoorComponent, IComponent, INeedSave
   {
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [StateSaveProxy(MemberEnum.None)]
-    [StateLoadProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [StateSaveProxy]
+    [StateLoadProxy]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    [CopyableProxy(MemberEnum.None)]
+    [CopyableProxy]
     protected PriorityContainer<List<Typed<IEntity>>> picklocks = ProxyFactory.Create<PriorityContainer<List<Typed<IEntity>>>>();
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [StateSaveProxy(MemberEnum.None)]
-    [StateLoadProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [StateSaveProxy]
+    [StateLoadProxy]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    [CopyableProxy(MemberEnum.None)]
+    [CopyableProxy]
     protected PriorityContainer<List<Typed<IEntity>>> keys = ProxyFactory.Create<PriorityContainer<List<Typed<IEntity>>>>();
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    [CopyableProxy(MemberEnum.None)]
+    [CopyableProxy()]
     protected bool isOutdoor;
     [FromThis]
     private ParametersComponent parameters;
 
     [Inspected]
-    public IPriorityParameterValue<bool> IsFree { get; } = (IPriorityParameterValue<bool>) new PriorityParameterValue<bool>();
+    public IPriorityParameterValue<bool> IsFree { get; } = new PriorityParameterValue<bool>();
 
     [Inspected]
-    public IPriorityParameterValue<bool> Opened { get; } = (IPriorityParameterValue<bool>) new PriorityParameterValue<bool>();
+    public IPriorityParameterValue<bool> Opened { get; } = new PriorityParameterValue<bool>();
 
     [Inspected]
-    public IPriorityParameterValue<bool> Bolted { get; } = (IPriorityParameterValue<bool>) new PriorityParameterValue<bool>();
+    public IPriorityParameterValue<bool> Bolted { get; } = new PriorityParameterValue<bool>();
 
     [Inspected]
-    public IPriorityParameterValue<bool> Marked { get; } = (IPriorityParameterValue<bool>) new PriorityParameterValue<bool>();
+    public IPriorityParameterValue<bool> Marked { get; } = new PriorityParameterValue<bool>();
 
     [Inspected]
-    public IPriorityParameterValue<bool> SendEnterWithoutKnock { get; } = (IPriorityParameterValue<bool>) new PriorityParameterValue<bool>();
+    public IPriorityParameterValue<bool> SendEnterWithoutKnock { get; } = new PriorityParameterValue<bool>();
 
     [Inspected]
-    public IPriorityParameterValue<Engine.Common.Components.Gate.LockState> LockState { get; } = (IPriorityParameterValue<Engine.Common.Components.Gate.LockState>) new PriorityParameterValue<Engine.Common.Components.Gate.LockState>();
+    public IPriorityParameterValue<LockState> LockState { get; } = new PriorityParameterValue<LockState>();
 
     [Inspected]
-    public IParameterValue<bool> CanBeMarked { get; } = (IParameterValue<bool>) new ParameterValue<bool>();
+    public IParameterValue<bool> CanBeMarked { get; } = new ParameterValue<bool>();
 
     [Inspected]
-    public IParameterValue<bool> Knockable { get; } = (IParameterValue<bool>) new ParameterValue<bool>();
+    public IParameterValue<bool> Knockable { get; } = new ParameterValue<bool>();
 
     [Inspected]
-    public IParameterValue<bool> Pickable { get; } = (IParameterValue<bool>) new ParameterValue<bool>();
+    public IParameterValue<bool> Pickable { get; } = new ParameterValue<bool>();
 
     [Inspected]
-    public IParameterValue<int> Difficulty { get; } = (IParameterValue<int>) new ParameterValue<int>();
+    public IParameterValue<int> Difficulty { get; } = new ParameterValue<int>();
 
     public event Action<IDoorComponent> OnInvalidate;
 
     [Slider]
-    [StateSaveProxy(MemberEnum.None)]
-    [StateLoadProxy(MemberEnum.None)]
+    [StateSaveProxy]
+    [StateLoadProxy]
     [Inspected(Mutable = true)]
     public float MinReputation { get; set; }
 
     [Slider]
-    [StateSaveProxy(MemberEnum.None)]
-    [StateLoadProxy(MemberEnum.None)]
+    [StateSaveProxy]
+    [StateLoadProxy]
     [Inspected(Mutable = true)]
     public float MaxReputation { get; set; } = 1f;
 
-    public bool IsOutdoor => this.isOutdoor;
+    public bool IsOutdoor => isOutdoor;
 
     [Inspected]
     public IEnumerable<IEntity> Picklocks
     {
       get
       {
-        List<Typed<IEntity>> items = this.picklocks.Value;
+        List<Typed<IEntity>> items = picklocks.Value;
         if (items != null)
         {
           foreach (Typed<IEntity> typed in items)
@@ -104,48 +106,48 @@ namespace Engine.Source.Components
             IEntity value = item.Value;
             if (value != null)
               yield return value;
-            value = (IEntity) null;
+            value = null;
             item = new Typed<IEntity>();
           }
         }
       }
     }
 
-    public void AddPicklock(IEntity item) => this.AddPicklock(PriorityParameterEnum.Default, item);
+    public void AddPicklock(IEntity item) => AddPicklock(PriorityParameterEnum.Default, item);
 
     public void RemovePicklock(IEntity item)
     {
-      this.RemovePicklock(PriorityParameterEnum.Default, item);
+      RemovePicklock(PriorityParameterEnum.Default, item);
     }
 
     public void AddPicklock(PriorityParameterEnum priority, IEntity item)
     {
       List<Typed<IEntity>> result;
-      if (!this.picklocks.TryGetValue(priority, out result))
+      if (!picklocks.TryGetValue(priority, out result))
       {
         result = new List<Typed<IEntity>>();
-        this.picklocks.SetValue(priority, result);
+        picklocks.SetValue(priority, result);
       }
       result.Add(new Typed<IEntity>(item.Id));
-      this.FireInvalidate();
+      FireInvalidate();
     }
 
     public void RemovePicklock(PriorityParameterEnum priority, IEntity item)
     {
       List<Typed<IEntity>> result;
-      if (!this.picklocks.TryGetValue(priority, out result))
+      if (!picklocks.TryGetValue(priority, out result))
       {
         result = new List<Typed<IEntity>>();
-        this.picklocks.SetValue(priority, result);
+        picklocks.SetValue(priority, result);
       }
       result.Remove(new Typed<IEntity>(item.Id));
-      this.FireInvalidate();
+      FireInvalidate();
     }
 
     public void ResetPicklocks(PriorityParameterEnum priority)
     {
-      this.picklocks.ResetValue(priority);
-      this.FireInvalidate();
+      picklocks.ResetValue(priority);
+      FireInvalidate();
     }
 
     [Inspected]
@@ -153,7 +155,7 @@ namespace Engine.Source.Components
     {
       get
       {
-        List<Typed<IEntity>> items = this.keys.Value;
+        List<Typed<IEntity>> items = keys.Value;
         if (items != null)
         {
           foreach (Typed<IEntity> typed in items)
@@ -162,7 +164,7 @@ namespace Engine.Source.Components
             IEntity value = item.Value;
             if (value != null)
               yield return value;
-            value = (IEntity) null;
+            value = null;
             item = new Typed<IEntity>();
           }
         }
@@ -171,110 +173,110 @@ namespace Engine.Source.Components
 
     public bool NeedSave => true;
 
-    public void AddKey(IEntity item) => this.AddKey(PriorityParameterEnum.Default, item);
+    public void AddKey(IEntity item) => AddKey(PriorityParameterEnum.Default, item);
 
-    public void RemoveKey(IEntity item) => this.RemoveKey(PriorityParameterEnum.Default, item);
+    public void RemoveKey(IEntity item) => RemoveKey(PriorityParameterEnum.Default, item);
 
     public void AddKey(PriorityParameterEnum priority, IEntity item)
     {
       List<Typed<IEntity>> result;
-      if (!this.keys.TryGetValue(priority, out result))
+      if (!keys.TryGetValue(priority, out result))
       {
         result = new List<Typed<IEntity>>();
-        this.keys.SetValue(priority, result);
+        keys.SetValue(priority, result);
       }
       result.Add(new Typed<IEntity>(item.Id));
-      this.FireInvalidate();
+      FireInvalidate();
     }
 
     public void RemoveKey(PriorityParameterEnum priority, IEntity item)
     {
       List<Typed<IEntity>> result;
-      if (!this.keys.TryGetValue(priority, out result))
+      if (!keys.TryGetValue(priority, out result))
       {
         result = new List<Typed<IEntity>>();
-        this.keys.SetValue(priority, result);
+        keys.SetValue(priority, result);
       }
       result.Remove(new Typed<IEntity>(item.Id));
-      this.FireInvalidate();
+      FireInvalidate();
     }
 
     public void ResetKeys(PriorityParameterEnum priority)
     {
-      this.keys.ResetValue(priority);
-      this.FireInvalidate();
+      keys.ResetValue(priority);
+      FireInvalidate();
     }
 
-    [Cofe.Serializations.Data.OnLoaded]
-    private void OnLoaded() => this.FireInvalidate();
+    [OnLoaded]
+    private void OnLoaded() => FireInvalidate();
 
     private void FireInvalidate()
     {
-      Action<IDoorComponent> onInvalidate = this.OnInvalidate;
+      Action<IDoorComponent> onInvalidate = OnInvalidate;
       if (onInvalidate == null)
         return;
-      onInvalidate((IDoorComponent) this);
+      onInvalidate(this);
     }
 
     public override void OnAdded()
     {
       base.OnAdded();
-      this.IsFree.Set<bool>(this.parameters.GetByName<bool>(ParameterNameEnum.IsFree));
-      this.IsFree.ChangeValueEvent += new Action<bool>(this.ChangeBoolValueEvent);
-      this.Opened.Set<bool>(this.parameters.GetByName<bool>(ParameterNameEnum.Opened));
-      this.Opened.ChangeValueEvent += new Action<bool>(this.ChangeBoolValueEvent);
-      this.Bolted.Set<bool>(this.parameters.GetByName<bool>(ParameterNameEnum.Bolted));
-      this.Bolted.ChangeValueEvent += new Action<bool>(this.ChangeBoolValueEvent);
-      this.Marked.Set<bool>(this.parameters.GetByName<bool>(ParameterNameEnum.Marked));
-      this.Marked.ChangeValueEvent += new Action<bool>(this.ChangeBoolValueEvent);
-      this.CanBeMarked.Set<bool>(this.parameters.GetByName<bool>(ParameterNameEnum.CanBeMarked));
-      this.CanBeMarked.ChangeValueEvent += new Action<bool>(this.ChangeBoolValueEvent);
-      this.SendEnterWithoutKnock.Set<bool>(this.parameters.GetByName<bool>(ParameterNameEnum.SendEnterWithoutKnock));
-      this.SendEnterWithoutKnock.ChangeValueEvent += new Action<bool>(this.ChangeBoolValueEvent);
-      this.LockState.Set<Engine.Common.Components.Gate.LockState>(this.parameters.GetByName<Engine.Common.Components.Gate.LockState>(ParameterNameEnum.LockState));
-      this.LockState.ChangeValueEvent += new Action<Engine.Common.Components.Gate.LockState>(this.ChangeLockStateValueEvent);
-      this.Knockable.Set<bool>(this.parameters.GetByName<bool>(ParameterNameEnum.DoorKnockable));
-      this.Knockable.ChangeValueEvent += new Action<bool>(this.ChangeBoolValueEvent);
-      this.Pickable.Set<bool>(this.parameters.GetByName<bool>(ParameterNameEnum.DoorPickable));
-      this.Pickable.ChangeValueEvent += new Action<bool>(this.ChangeBoolValueEvent);
-      this.Difficulty.Set<int>(this.parameters.GetByName<int>(ParameterNameEnum.DoorDifficulty));
-      this.Difficulty.ChangeValueEvent += new Action<int>(this.ChangeIntValueEvent);
+      IsFree.Set(parameters.GetByName<bool>(ParameterNameEnum.IsFree));
+      IsFree.ChangeValueEvent += ChangeBoolValueEvent;
+      Opened.Set(parameters.GetByName<bool>(ParameterNameEnum.Opened));
+      Opened.ChangeValueEvent += ChangeBoolValueEvent;
+      Bolted.Set(parameters.GetByName<bool>(ParameterNameEnum.Bolted));
+      Bolted.ChangeValueEvent += ChangeBoolValueEvent;
+      Marked.Set(parameters.GetByName<bool>(ParameterNameEnum.Marked));
+      Marked.ChangeValueEvent += ChangeBoolValueEvent;
+      CanBeMarked.Set(parameters.GetByName<bool>(ParameterNameEnum.CanBeMarked));
+      CanBeMarked.ChangeValueEvent += ChangeBoolValueEvent;
+      SendEnterWithoutKnock.Set(parameters.GetByName<bool>(ParameterNameEnum.SendEnterWithoutKnock));
+      SendEnterWithoutKnock.ChangeValueEvent += ChangeBoolValueEvent;
+      LockState.Set(parameters.GetByName<LockState>(ParameterNameEnum.LockState));
+      LockState.ChangeValueEvent += ChangeLockStateValueEvent;
+      Knockable.Set(parameters.GetByName<bool>(ParameterNameEnum.DoorKnockable));
+      Knockable.ChangeValueEvent += ChangeBoolValueEvent;
+      Pickable.Set(parameters.GetByName<bool>(ParameterNameEnum.DoorPickable));
+      Pickable.ChangeValueEvent += ChangeBoolValueEvent;
+      Difficulty.Set(parameters.GetByName<int>(ParameterNameEnum.DoorDifficulty));
+      Difficulty.ChangeValueEvent += ChangeIntValueEvent;
     }
 
     public override void OnRemoved()
     {
-      this.Opened.Set<bool>((IParameter<bool>) null);
-      this.Opened.ChangeValueEvent -= new Action<bool>(this.ChangeBoolValueEvent);
-      this.Bolted.Set<bool>((IParameter<bool>) null);
-      this.Bolted.ChangeValueEvent -= new Action<bool>(this.ChangeBoolValueEvent);
-      this.Marked.Set<bool>((IParameter<bool>) null);
-      this.Marked.ChangeValueEvent -= new Action<bool>(this.ChangeBoolValueEvent);
-      this.CanBeMarked.Set<bool>((IParameter<bool>) null);
-      this.CanBeMarked.ChangeValueEvent -= new Action<bool>(this.ChangeBoolValueEvent);
-      this.SendEnterWithoutKnock.Set<bool>((IParameter<bool>) null);
-      this.SendEnterWithoutKnock.ChangeValueEvent -= new Action<bool>(this.ChangeBoolValueEvent);
-      this.LockState.Set<Engine.Common.Components.Gate.LockState>((IParameter<Engine.Common.Components.Gate.LockState>) null);
-      this.LockState.ChangeValueEvent -= new Action<Engine.Common.Components.Gate.LockState>(this.ChangeLockStateValueEvent);
-      this.IsFree.Set<bool>((IParameter<bool>) null);
-      this.IsFree.ChangeValueEvent -= new Action<bool>(this.ChangeBoolValueEvent);
-      this.Knockable.Set<bool>((IParameter<bool>) null);
-      this.Knockable.ChangeValueEvent -= new Action<bool>(this.ChangeBoolValueEvent);
-      this.Pickable.Set<bool>((IParameter<bool>) null);
-      this.Pickable.ChangeValueEvent -= new Action<bool>(this.ChangeBoolValueEvent);
-      this.Difficulty.Set<int>((IParameter<int>) null);
-      this.Difficulty.ChangeValueEvent -= new Action<int>(this.ChangeIntValueEvent);
+      Opened.Set(null);
+      Opened.ChangeValueEvent -= ChangeBoolValueEvent;
+      Bolted.Set(null);
+      Bolted.ChangeValueEvent -= ChangeBoolValueEvent;
+      Marked.Set(null);
+      Marked.ChangeValueEvent -= ChangeBoolValueEvent;
+      CanBeMarked.Set(null);
+      CanBeMarked.ChangeValueEvent -= ChangeBoolValueEvent;
+      SendEnterWithoutKnock.Set(null);
+      SendEnterWithoutKnock.ChangeValueEvent -= ChangeBoolValueEvent;
+      LockState.Set(null);
+      LockState.ChangeValueEvent -= ChangeLockStateValueEvent;
+      IsFree.Set(null);
+      IsFree.ChangeValueEvent -= ChangeBoolValueEvent;
+      Knockable.Set(null);
+      Knockable.ChangeValueEvent -= ChangeBoolValueEvent;
+      Pickable.Set(null);
+      Pickable.ChangeValueEvent -= ChangeBoolValueEvent;
+      Difficulty.Set(null);
+      Difficulty.ChangeValueEvent -= ChangeIntValueEvent;
       base.OnRemoved();
     }
 
-    private void ChangeValueEvent(bool value) => this.FireInvalidate();
+    private void ChangeValueEvent(bool value) => FireInvalidate();
 
-    private void ChangeLockStateValueEvent(Engine.Common.Components.Gate.LockState value)
+    private void ChangeLockStateValueEvent(LockState value)
     {
-      this.FireInvalidate();
+      FireInvalidate();
     }
 
-    private void ChangeBoolValueEvent(bool value) => this.FireInvalidate();
+    private void ChangeBoolValueEvent(bool value) => FireInvalidate();
 
-    private void ChangeIntValueEvent(int value) => this.FireInvalidate();
+    private void ChangeIntValueEvent(int value) => FireInvalidate();
   }
 }

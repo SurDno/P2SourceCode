@@ -15,7 +15,7 @@ namespace SteamNative
 
     public static HTML_StartRequest_t FromPointer(IntPtr p)
     {
-      return Platform.PackSmall ? (HTML_StartRequest_t) (HTML_StartRequest_t.PackSmall) Marshal.PtrToStructure(p, typeof (HTML_StartRequest_t.PackSmall)) : (HTML_StartRequest_t) Marshal.PtrToStructure(p, typeof (HTML_StartRequest_t));
+      return Platform.PackSmall ? (PackSmall) Marshal.PtrToStructure(p, typeof (PackSmall)) : (HTML_StartRequest_t) Marshal.PtrToStructure(p, typeof (HTML_StartRequest_t));
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
@@ -28,10 +28,9 @@ namespace SteamNative
       [MarshalAs(UnmanagedType.I1)]
       public bool BIsRedirect;
 
-      public static implicit operator HTML_StartRequest_t(HTML_StartRequest_t.PackSmall d)
+      public static implicit operator HTML_StartRequest_t(PackSmall d)
       {
-        return new HTML_StartRequest_t()
-        {
+        return new HTML_StartRequest_t {
           UnBrowserHandle = d.UnBrowserHandle,
           PchURL = d.PchURL,
           PchTarget = d.PchTarget,

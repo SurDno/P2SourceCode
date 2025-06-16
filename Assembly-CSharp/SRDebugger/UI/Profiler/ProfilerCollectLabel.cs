@@ -1,7 +1,5 @@
-﻿using SRF;
-using System;
-using UnityEngine;
-using UnityEngine.UI;
+﻿using System;
+using SRF;
 
 namespace SRDebugger.UI.Profiler
 {
@@ -14,15 +12,15 @@ namespace SRDebugger.UI.Profiler
 
     private void Update()
     {
-      if ((double) Time.realtimeSinceStartup <= (double) this.nextUpdate)
+      if ((double) Time.realtimeSinceStartup <= nextUpdate)
         return;
-      this.Refresh();
+      Refresh();
     }
 
     private void Refresh()
     {
-      this.nextUpdate = Time.realtimeSinceStartup + this.updateFrequency;
-      this._text.text = "Collect : " + (object) GC.CollectionCount(0);
+      nextUpdate = Time.realtimeSinceStartup + updateFrequency;
+      _text.text = "Collect : " + GC.CollectionCount(0);
     }
   }
 }

@@ -1,7 +1,4 @@
-﻿using Engine.Source.Audio;
-using UnityEngine;
-
-[RequireComponent(typeof (AudioSource))]
+﻿[RequireComponent(typeof (AudioSource))]
 public class FlockChildSound : MonoBehaviour
 {
   public AudioClip[] _idleSounds;
@@ -19,10 +16,10 @@ public class FlockChildSound : MonoBehaviour
 
   public void Start()
   {
-    this._flockChild = this.GetComponent<FlockChild>();
-    this._audio = this.GetComponent<AudioSource>();
+    _flockChild = this.GetComponent<FlockChild>();
+    _audio = this.GetComponent<AudioSource>();
     this.InvokeRepeating("PlayRandomSound", Random.value + 1f, 1f);
-    if (this._scareSounds.Length == 0)
+    if (_scareSounds.Length == 0)
       return;
     this.InvokeRepeating("ScareSound", 1f, 0.01f);
   }
@@ -31,30 +28,30 @@ public class FlockChildSound : MonoBehaviour
   {
     if (!this.gameObject.activeInHierarchy)
       return;
-    if (!this._audio.isPlaying && this._flightSounds.Length != 0 && (double) this._flightSoundRandomChance > (double) Random.value && !this._flockChild.landing)
+    if (!_audio.isPlaying && _flightSounds.Length != 0 && _flightSoundRandomChance > (double) Random.value && !_flockChild.landing)
     {
-      this._audio.clip = this._flightSounds[Random.Range(0, this._flightSounds.Length)];
-      this._audio.pitch = Random.Range(this._pitchMin, this._pitchMax);
-      this._audio.volume = Random.Range(this._volumeMin, this._volumeMax);
-      this._audio.PlayAndCheck();
+      _audio.clip = _flightSounds[Random.Range(0, _flightSounds.Length)];
+      _audio.pitch = Random.Range(_pitchMin, _pitchMax);
+      _audio.volume = Random.Range(_volumeMin, _volumeMax);
+      _audio.PlayAndCheck();
     }
-    else if (!this._audio.isPlaying && this._idleSounds.Length != 0 && (double) this._idleSoundRandomChance > (double) Random.value && this._flockChild.landing)
+    else if (!_audio.isPlaying && _idleSounds.Length != 0 && _idleSoundRandomChance > (double) Random.value && _flockChild.landing)
     {
-      this._audio.clip = this._idleSounds[Random.Range(0, this._idleSounds.Length)];
-      this._audio.pitch = Random.Range(this._pitchMin, this._pitchMax);
-      this._audio.volume = Random.Range(this._volumeMin, this._volumeMax);
-      this._audio.PlayAndCheck();
-      this._hasLanded = true;
+      _audio.clip = _idleSounds[Random.Range(0, _idleSounds.Length)];
+      _audio.pitch = Random.Range(_pitchMin, _pitchMax);
+      _audio.volume = Random.Range(_volumeMin, _volumeMax);
+      _audio.PlayAndCheck();
+      _hasLanded = true;
     }
   }
 
   public void ScareSound()
   {
-    if (!this.gameObject.activeInHierarchy || !this._hasLanded || this._flockChild.landing || (double) this._idleSoundRandomChance * 2.0 <= (double) Random.value)
+    if (!this.gameObject.activeInHierarchy || !_hasLanded || _flockChild.landing || _idleSoundRandomChance * 2.0 <= (double) Random.value)
       return;
-    this._audio.clip = this._scareSounds[Random.Range(0, this._scareSounds.Length)];
-    this._audio.volume = Random.Range(this._volumeMin, this._volumeMax);
-    this._audio.PlayDelayed(Random.value * 0.2f);
-    this._hasLanded = false;
+    _audio.clip = _scareSounds[Random.Range(0, _scareSounds.Length)];
+    _audio.volume = Random.Range(_volumeMin, _volumeMax);
+    _audio.PlayDelayed(Random.value * 0.2f);
+    _hasLanded = false;
   }
 }

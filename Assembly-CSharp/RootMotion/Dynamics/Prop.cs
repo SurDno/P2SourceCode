@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace RootMotion.Dynamics
+﻿namespace RootMotion.Dynamics
 {
   public abstract class Prop : MonoBehaviour
   {
@@ -29,32 +27,32 @@ namespace RootMotion.Dynamics
     private ConfigurableJointMotion angularZMotion;
     private Collider[] colliders = new Collider[0];
 
-    public bool isPickedUp => (Object) this.propRoot != (Object) null;
+    public bool isPickedUp => (Object) propRoot != (Object) null;
 
     public PropRoot propRoot { get; private set; }
 
     public void PickUp(PropRoot propRoot)
     {
-      this.muscle.xMotion = this.xMotion;
-      this.muscle.yMotion = this.yMotion;
-      this.muscle.zMotion = this.zMotion;
-      this.muscle.angularXMotion = this.angularXMotion;
-      this.muscle.angularYMotion = this.angularYMotion;
-      this.muscle.angularZMotion = this.angularZMotion;
+      muscle.xMotion = xMotion;
+      muscle.yMotion = yMotion;
+      muscle.zMotion = zMotion;
+      muscle.angularXMotion = angularXMotion;
+      muscle.angularYMotion = angularYMotion;
+      muscle.angularZMotion = angularZMotion;
       this.propRoot = propRoot;
-      this.muscle.gameObject.layer = propRoot.puppetMaster.gameObject.layer;
-      foreach (Collider collider in this.colliders)
+      muscle.gameObject.layer = propRoot.puppetMaster.gameObject.layer;
+      foreach (Collider collider in colliders)
       {
         if (!collider.isTrigger)
-          collider.gameObject.layer = this.muscle.gameObject.layer;
+          collider.gameObject.layer = muscle.gameObject.layer;
       }
-      this.OnPickUp(propRoot);
+      OnPickUp(propRoot);
     }
 
     public void Drop()
     {
-      this.propRoot = (PropRoot) null;
-      this.OnDrop();
+      propRoot = null;
+      OnDrop();
     }
 
     public void StartPickedUp(PropRoot propRoot) => this.propRoot = propRoot;
@@ -73,49 +71,48 @@ namespace RootMotion.Dynamics
 
     protected virtual void Awake()
     {
-      if (this.transform.position != this.muscle.transform.position)
+      if (this.transform.position != muscle.transform.position)
         Debug.LogError((object) "Prop target position must match exactly with it's muscle's position!", (Object) this.transform);
-      this.xMotion = this.muscle.xMotion;
-      this.yMotion = this.muscle.yMotion;
-      this.zMotion = this.muscle.zMotion;
-      this.angularXMotion = this.muscle.angularXMotion;
-      this.angularYMotion = this.muscle.angularYMotion;
-      this.angularZMotion = this.muscle.angularZMotion;
-      this.colliders = this.muscle.GetComponentsInChildren<Collider>();
+      xMotion = muscle.xMotion;
+      yMotion = muscle.yMotion;
+      zMotion = muscle.zMotion;
+      angularXMotion = muscle.angularXMotion;
+      angularYMotion = muscle.angularYMotion;
+      angularZMotion = muscle.angularZMotion;
+      colliders = muscle.GetComponentsInChildren<Collider>();
     }
 
     private void Start()
     {
-      if (!this.isPickedUp)
-        this.ReleaseJoint();
-      this.OnStart();
+      if (!isPickedUp)
+        ReleaseJoint();
+      OnStart();
     }
 
     private void ReleaseJoint()
     {
-      this.muscle.connectedBody = (Rigidbody) null;
-      this.muscle.targetRotation = Quaternion.identity;
-      this.muscle.slerpDrive = new JointDrive()
-      {
+      muscle.connectedBody = (Rigidbody) null;
+      muscle.targetRotation = Quaternion.identity;
+      muscle.slerpDrive = new JointDrive {
         positionSpring = 0.0f
       };
-      this.muscle.xMotion = ConfigurableJointMotion.Free;
-      this.muscle.yMotion = ConfigurableJointMotion.Free;
-      this.muscle.zMotion = ConfigurableJointMotion.Free;
-      this.muscle.angularXMotion = ConfigurableJointMotion.Free;
-      this.muscle.angularYMotion = ConfigurableJointMotion.Free;
-      this.muscle.angularZMotion = ConfigurableJointMotion.Free;
+      muscle.xMotion = ConfigurableJointMotion.Free;
+      muscle.yMotion = ConfigurableJointMotion.Free;
+      muscle.zMotion = ConfigurableJointMotion.Free;
+      muscle.angularXMotion = ConfigurableJointMotion.Free;
+      muscle.angularYMotion = ConfigurableJointMotion.Free;
+      muscle.angularZMotion = ConfigurableJointMotion.Free;
     }
 
     private void OnDrawGizmos()
     {
-      if ((Object) this.muscle == (Object) null || Application.isPlaying)
+      if ((Object) muscle == (Object) null || Application.isPlaying)
         return;
-      this.transform.position = this.muscle.transform.position;
-      this.transform.rotation = this.muscle.transform.rotation;
-      if ((Object) this.additionalPinTarget != (Object) null && (Object) this.additionalPin != (Object) null)
-        this.additionalPinTarget.position = this.additionalPin.transform.position;
-      this.muscleProps.group = Muscle.Group.Prop;
+      this.transform.position = muscle.transform.position;
+      this.transform.rotation = muscle.transform.rotation;
+      if ((Object) additionalPinTarget != (Object) null && (Object) additionalPin != (Object) null)
+        additionalPinTarget.position = additionalPin.transform.position;
+      muscleProps.group = Muscle.Group.Prop;
     }
   }
 }

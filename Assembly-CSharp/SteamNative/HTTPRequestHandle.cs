@@ -6,7 +6,7 @@
 
     public static implicit operator HTTPRequestHandle(uint value)
     {
-      return new HTTPRequestHandle() { Value = value };
+      return new HTTPRequestHandle { Value = value };
     }
 
     public static implicit operator uint(HTTPRequestHandle value) => value.Value;

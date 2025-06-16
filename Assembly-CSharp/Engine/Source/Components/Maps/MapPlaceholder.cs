@@ -5,7 +5,6 @@ using Engine.Impl.Services.Factories;
 using Engine.Source.Commons;
 using Engine.Source.Connections;
 using Inspectors;
-using UnityEngine;
 
 namespace Engine.Source.Components.Maps
 {
@@ -13,85 +12,85 @@ namespace Engine.Source.Components.Maps
   [GenerateProxy(TypeEnum.Copyable | TypeEnum.EngineCloneable | TypeEnum.DataRead | TypeEnum.DataWrite)]
   public class MapPlaceholder : EngineObject, IMapPlaceholder, IObject
   {
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected MapPlaceholderKind kind = MapPlaceholderKind.Building;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected UnitySubAsset<Sprite> mainSprite;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected UnitySubAsset<Sprite> hoverSprite;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected UnitySubAsset<Sprite> normalSprite;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected UnitySubAsset<Sprite> shadowSprite;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected bool alphaRaycast = false;
-    [DataReadProxy(MemberEnum.None, Name = "NPCSprite")]
-    [DataWriteProxy(MemberEnum.None, Name = "NPCSprite")]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy(Name = "NPCSprite")]
+    [DataWriteProxy(Name = "NPCSprite")]
+    [CopyableProxy()]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected UnitySubAsset<Sprite> npcSprite;
-    private bool cached = false;
+    private bool cached;
     private Sprite cachedMainSprite = (Sprite) null;
     private Sprite cachedHoverSprite = (Sprite) null;
     private Sprite cachedNormalSprite = (Sprite) null;
     private Sprite cachedShadowSprite = (Sprite) null;
 
-    public MapPlaceholderKind Kind => this.kind;
+    public MapPlaceholderKind Kind => kind;
 
-    public Sprite MainSprite => this.GetSprite(ref this.mainSprite, ref this.cachedMainSprite);
+    public Sprite MainSprite => GetSprite(ref mainSprite, ref cachedMainSprite);
 
-    public Sprite HoverSprite => this.GetSprite(ref this.hoverSprite, ref this.cachedHoverSprite);
+    public Sprite HoverSprite => GetSprite(ref hoverSprite, ref cachedHoverSprite);
 
     public Sprite NormalSprite
     {
-      get => this.GetSprite(ref this.normalSprite, ref this.cachedNormalSprite);
+      get => GetSprite(ref normalSprite, ref cachedNormalSprite);
     }
 
     public Sprite ShadowSprite
     {
-      get => this.GetSprite(ref this.shadowSprite, ref this.cachedShadowSprite);
+      get => GetSprite(ref shadowSprite, ref cachedShadowSprite);
     }
 
-    public bool AlphaRaycast => this.alphaRaycast;
+    public bool AlphaRaycast => alphaRaycast;
 
-    public Sprite NPCSprite => this.npcSprite.Value;
+    public Sprite NPCSprite => npcSprite.Value;
 
     public Sprite GetSprite(ref UnitySubAsset<Sprite> resource, ref Sprite cache)
     {
       if (!Application.isPlaying)
         return resource.Value;
-      if (!this.cached)
+      if (!cached)
       {
-        this.cachedMainSprite = this.mainSprite.Value;
-        this.cachedHoverSprite = this.hoverSprite.Value;
-        this.cachedNormalSprite = this.normalSprite.Value;
-        this.cachedShadowSprite = this.shadowSprite.Value;
-        this.cached = true;
+        cachedMainSprite = mainSprite.Value;
+        cachedHoverSprite = hoverSprite.Value;
+        cachedNormalSprite = normalSprite.Value;
+        cachedShadowSprite = shadowSprite.Value;
+        cached = true;
       }
       return cache;
     }

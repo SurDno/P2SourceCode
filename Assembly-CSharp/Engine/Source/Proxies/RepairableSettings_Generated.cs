@@ -1,12 +1,11 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons.Cloneable;
 using Engine.Common.Commons.Converters;
 using Engine.Common.Services;
 using Engine.Source.Components.Repairing;
 using Scripts.Tools.Serializations.Converters;
-using System;
-using UnityEngine;
 
 namespace Engine.Source.Proxies
 {
@@ -20,35 +19,35 @@ namespace Engine.Source.Proxies
   {
     public object Clone()
     {
-      return (object) ServiceCache.Factory.Instantiate<RepairableSettings_Generated>(this);
+      return ServiceCache.Factory.Instantiate(this);
     }
 
     public void CopyTo(object target2)
     {
       RepairableSettings_Generated settingsGenerated = (RepairableSettings_Generated) target2;
-      settingsGenerated.name = this.name;
-      CloneableObjectUtility.CopyListTo<RepairableLevel>(settingsGenerated.levels, this.levels);
-      settingsGenerated.nonItemImage = this.nonItemImage;
-      settingsGenerated.repairSound = this.repairSound;
-      settingsGenerated.verbOverride = this.verbOverride;
+      settingsGenerated.name = name;
+      CloneableObjectUtility.CopyListTo(settingsGenerated.levels, levels);
+      settingsGenerated.nonItemImage = nonItemImage;
+      settingsGenerated.repairSound = repairSound;
+      settingsGenerated.verbOverride = verbOverride;
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.Write(writer, "Id", this.id);
-      DefaultDataWriteUtility.WriteListSerialize<RepairableLevel>(writer, "Levels", this.levels);
-      UnityDataWriteUtility.Write<Sprite>(writer, "NonItemImage", this.nonItemImage);
-      UnityDataWriteUtility.Write<AudioClip>(writer, "RepairSound", this.repairSound);
-      DefaultDataWriteUtility.Write(writer, "VerbOverride", this.verbOverride);
+      DefaultDataWriteUtility.Write(writer, "Id", id);
+      DefaultDataWriteUtility.WriteListSerialize(writer, "Levels", levels);
+      UnityDataWriteUtility.Write(writer, "NonItemImage", nonItemImage);
+      UnityDataWriteUtility.Write(writer, "RepairSound", repairSound);
+      DefaultDataWriteUtility.Write(writer, "VerbOverride", verbOverride);
     }
 
-    public void DataRead(IDataReader reader, System.Type type)
+    public void DataRead(IDataReader reader, Type type)
     {
-      this.id = DefaultDataReadUtility.Read(reader, "Id", this.id);
-      this.levels = DefaultDataReadUtility.ReadListSerialize<RepairableLevel>(reader, "Levels", this.levels);
-      this.nonItemImage = UnityDataReadUtility.Read<Sprite>(reader, "NonItemImage", this.nonItemImage);
-      this.repairSound = UnityDataReadUtility.Read<AudioClip>(reader, "RepairSound", this.repairSound);
-      this.verbOverride = DefaultDataReadUtility.Read(reader, "VerbOverride", this.verbOverride);
+      id = DefaultDataReadUtility.Read(reader, "Id", id);
+      levels = DefaultDataReadUtility.ReadListSerialize(reader, "Levels", levels);
+      nonItemImage = UnityDataReadUtility.Read(reader, "NonItemImage", nonItemImage);
+      repairSound = UnityDataReadUtility.Read(reader, "RepairSound", repairSound);
+      verbOverride = DefaultDataReadUtility.Read(reader, "VerbOverride", verbOverride);
     }
   }
 }

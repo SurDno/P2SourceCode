@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace Engine.Unity
+﻿namespace Engine.Unity
 {
   public static class CurveUtility
   {
@@ -20,7 +18,7 @@ namespace Engine.Unity
       if (keys.Length < 2)
         return (AnimationCurve) null;
       Keyframe key1 = main.keys[keys.Length - 1];
-      for (float time = 0.0f; (double) time < (double) key1.time; time += 0.01f)
+      for (float time = 0.0f; time < (double) key1.time; time += 0.01f)
       {
         Keyframe key2 = new Keyframe();
         key2.time = main.Evaluate(time);

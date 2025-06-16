@@ -1,4 +1,8 @@
-﻿using Engine.Common;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using Engine.Common;
 using Engine.Common.Commons;
 using Engine.Common.Components;
 using Engine.Common.Components.Parameters;
@@ -14,13 +18,6 @@ using Engine.Source.Services.Inputs;
 using Engine.Source.UI;
 using Engine.Source.UI.Controls;
 using InputServices;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.UI;
 
 namespace Engine.Impl.UI.Menu.Protagonist.Inventory
 {
@@ -95,65 +92,65 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
     [SerializeField]
     private List<HideableView> strainsEntities;
     private Coroutine scrollCoroutine = (Coroutine) null;
-    private bool IsHealingEnded = false;
-    private bool IsHealingPerformed = false;
-    private StorableUI ItemToUse = (StorableUI) null;
+    private bool IsHealingEnded;
+    private bool IsHealingPerformed;
+    private StorableUI ItemToUse;
 
     public IStorageComponent Target { get; set; }
 
     private void SelectItem(StorableComponent storable)
     {
-      if (this.selectedItem != null)
+      if (selectedItem != null)
       {
-        StorableUI storable1 = this.storables[(IStorableComponent) this.selectedItem];
+        StorableUI storable1 = storables[selectedItem];
         if ((UnityEngine.Object) storable1 != (UnityEngine.Object) null)
           storable1.SetSelected(false);
       }
-      this.selectedItem = storable;
-      StorableUI storable2 = this.storables[(IStorableComponent) storable];
+      selectedItem = storable;
+      StorableUI storable2 = storables[storable];
       if ((UnityEngine.Object) storable2 != (UnityEngine.Object) null)
         storable2.SetSelected(true);
-      StorableComponentUtility.PlayTakeSound((IStorableComponent) storable);
-      this.SetSelectedItemInfo();
-      this.HandleHealingHintsVisibility(InputService.Instance.JoystickUsed);
+      StorableComponentUtility.PlayTakeSound(storable);
+      SetSelectedItemInfo();
+      HandleHealingHintsVisibility(InputService.Instance.JoystickUsed);
     }
 
     private void SetSelectedItemInfo()
     {
-      this.selectedItemUI.Storable = this.selectedItem;
-      if (this.selectedItem == null)
+      selectedItemUI.Storable = selectedItem;
+      if (selectedItem == null)
       {
-        this.buttonUse.interactable = false;
+        buttonUse.interactable = false;
         if (!InputService.Instance.JoystickUsed)
           return;
-        this._administerHealingHint.SetActive(false);
+        _administerHealingHint.SetActive(false);
       }
       else
       {
-        this.buttonUse.interactable = true;
+        buttonUse.interactable = true;
         if (InputService.Instance.JoystickUsed)
-          this._administerHealingHint.SetActive(true);
+          _administerHealingHint.SetActive(true);
       }
     }
 
     public override void OnPointerDown(PointerEventData eventData)
     {
-      if ((UnityEngine.Object) this.windowContextMenu != (UnityEngine.Object) null)
+      if ((UnityEngine.Object) windowContextMenu != (UnityEngine.Object) null)
       {
-        this.HideContextMenu();
+        HideContextMenu();
       }
       else
       {
-        if (!this.intersect.IsIntersected)
+        if (!intersect.IsIntersected)
           return;
-        StorableComponent storableComponent = this.intersect.Storables.FirstOrDefault<StorableComponent>();
+        StorableComponent storableComponent = intersect.Storables.FirstOrDefault();
         if (storableComponent == null || eventData.button != PointerEventData.InputButton.Left)
           return;
-        this.SelectItem(storableComponent);
-        this.ItemToUse = this.GetStorableByComponent((IStorableComponent) storableComponent);
-        if (!((UnityEngine.Object) this.ItemToUse != (UnityEngine.Object) null))
+        SelectItem(storableComponent);
+        ItemToUse = GetStorableByComponent(storableComponent);
+        if (!((UnityEngine.Object) ItemToUse != (UnityEngine.Object) null))
           return;
-        this.currentSliderIndex = this.SliderItems.IndexOf(this.ItemToUse);
+        currentSliderIndex = SliderItems.IndexOf(ItemToUse);
       }
     }
 
@@ -163,7 +160,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
 
     private void SubscribeToParameters(bool subscribe)
     {
-      IEntity owner = this.Target?.Owner;
+      IEntity owner = Target?.Owner;
       if (owner == null)
         return;
       ParametersComponent component = owner.GetComponent<ParametersComponent>();
@@ -172,19 +169,19 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
         IParameter<float> byName1 = component.GetByName<float>(ParameterNameEnum.Pain);
         if (byName1 != null)
         {
-          byName1.RemoveListener((IChangeParameterListener) this);
+          byName1.RemoveListener(this);
           if (subscribe)
           {
-            byName1.AddListener((IChangeParameterListener) this);
-            this.oldPain = byName1.Value;
+            byName1.AddListener(this);
+            oldPain = byName1.Value;
           }
         }
         IParameter<float> byName2 = component.GetByName<float>(ParameterNameEnum.Infection);
-        byName2.RemoveListener((IChangeParameterListener) this);
+        byName2.RemoveListener(this);
         if (subscribe)
         {
-          byName2.AddListener((IChangeParameterListener) this);
-          this.oldInfection = byName2.Value;
+          byName2.AddListener(this);
+          oldInfection = byName2.Value;
         }
       }
     }
@@ -192,165 +189,165 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
     protected override void OnEnable()
     {
       base.OnEnable();
-      this.Unsubscribe();
-      this.UnsubscribeNavigation();
-      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.LStickUp, new GameActionHandle(this.MedicineNavigation));
-      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.LStickDown, new GameActionHandle(this.MedicineNavigation));
-      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Submit, new GameActionHandle(this.AdministerHealing));
+      Unsubscribe();
+      UnsubscribeNavigation();
+      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.LStickUp, MedicineNavigation);
+      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.LStickDown, MedicineNavigation);
+      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Submit, AdministerHealing);
       ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Cancel, new GameActionHandle(((UIWindow) this).CancelListener));
-      this.buttonUse.OpenEndEvent += new Action<bool>(this.OnUseButtonEnd);
-      if (this.symptomTemplates == null)
-        this.symptomTemplates = new IEntitySerializable[7]
+      buttonUse.OpenEndEvent += OnUseButtonEnd;
+      if (symptomTemplates == null)
+        symptomTemplates = new IEntitySerializable[7]
         {
-          this.symptom1,
-          this.symptom2,
-          this.symptom3,
-          this.symptom4,
-          this.symptom5,
-          this.symptom6,
-          this.symptom7
+          symptom1,
+          symptom2,
+          symptom3,
+          symptom4,
+          symptom5,
+          symptom6,
+          symptom7
         };
-      this.selectedItem = (StorableComponent) null;
-      this.CountSymptoms();
-      this.actors.Clear();
-      this.Build2();
-      IEntity owner = this.Target?.Owner;
-      foreach (EntityView parameterView in this.parameterViews)
+      selectedItem = null;
+      CountSymptoms();
+      actors.Clear();
+      Build2();
+      IEntity owner = Target?.Owner;
+      foreach (EntityView parameterView in parameterViews)
       {
         parameterView.Value = owner;
         parameterView.SkipAnimation();
       }
-      this.ShowSymptoms();
-      this.CreateSlideContainers();
-      this.SetSelectedItemInfo();
-      this.selectedItemUI.SkipAnimation();
-      this.SubscribeToParameters(true);
-      foreach (HideableView strainsEntity in this.strainsEntities)
-        strainsEntity.OnVisibilityChanged += new HideableView.VisibilityChanged(this.OnHideableVisibleChanged);
-      this.currentSliderIndex = 0;
-      this.SetInfoWindowShowMode(true, false);
+      ShowSymptoms();
+      CreateSlideContainers();
+      SetSelectedItemInfo();
+      selectedItemUI.SkipAnimation();
+      SubscribeToParameters(true);
+      foreach (HideableView strainsEntity in strainsEntities)
+        strainsEntity.OnVisibilityChanged += OnHideableVisibleChanged;
+      currentSliderIndex = 0;
+      SetInfoWindowShowMode(true, false);
     }
 
     private void OnUseButtonEnd(bool success)
     {
       if (!success)
         return;
-      this.UseItemOnTarget();
+      UseItemOnTarget();
     }
 
     protected override void OnDisable()
     {
-      this.SubscribeToParameters(false);
-      this.buttonUse.OpenEndEvent -= new Action<bool>(this.OnUseButtonEnd);
+      SubscribeToParameters(false);
+      buttonUse.OpenEndEvent -= OnUseButtonEnd;
       ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Heal, new GameActionHandle(((UIWindow) this).WithoutJoystickCancelListener));
-      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.LStickUp, new GameActionHandle(this.MedicineNavigation));
-      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.LStickDown, new GameActionHandle(this.MedicineNavigation));
-      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Submit, new GameActionHandle(this.AdministerHealing));
+      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.LStickUp, MedicineNavigation);
+      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.LStickDown, MedicineNavigation);
+      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Submit, AdministerHealing);
       ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Cancel, new GameActionHandle(((UIWindow) this).CancelListener));
-      if ((UnityEngine.Object) this.selectedStorable != (UnityEngine.Object) null)
+      if ((UnityEngine.Object) selectedStorable != (UnityEngine.Object) null)
       {
-        this.selectedStorable.HoldSelected(false);
-        this.selectedStorable.SetSelected(false);
-        this.selectedStorable = (StorableUI) null;
+        selectedStorable.HoldSelected(false);
+        selectedStorable.SetSelected(false);
+        selectedStorable = null;
       }
-      this.ItemToUse = (StorableUI) null;
-      this.IsHealingEnded = false;
-      this.IsHealingPerformed = false;
-      foreach (HideableView strainsEntity in this.strainsEntities)
-        strainsEntity.OnVisibilityChanged -= new HideableView.VisibilityChanged(this.OnHideableVisibleChanged);
-      foreach (GameObject gameObject in this.consoleStrainsTextInfo)
+      ItemToUse = null;
+      IsHealingEnded = false;
+      IsHealingPerformed = false;
+      foreach (HideableView strainsEntity in strainsEntities)
+        strainsEntity.OnVisibilityChanged -= OnHideableVisibleChanged;
+      foreach (GameObject gameObject in consoleStrainsTextInfo)
         gameObject.SetActive(false);
-      foreach (EntityView parameterView in this.parameterViews)
+      foreach (EntityView parameterView in parameterViews)
       {
-        parameterView.Value = (IEntity) null;
+        parameterView.Value = null;
         parameterView.SkipAnimation();
       }
-      foreach (IEntity targetSymptom in this.targetSymptoms)
-        targetSymptom?.GetComponent<ParametersComponent>()?.GetByName<bool>(ParameterNameEnum.IsOpen)?.RemoveListener((IChangeParameterListener) this);
-      this.clearMessages?.Invoke();
-      this.ClearSlideContainers();
+      foreach (IEntity targetSymptom in targetSymptoms)
+        targetSymptom?.GetComponent<ParametersComponent>()?.GetByName<bool>(ParameterNameEnum.IsOpen)?.RemoveListener(this);
+      clearMessages?.Invoke();
+      ClearSlideContainers();
       base.OnDisable();
     }
 
     private void OnHideableVisibleChanged(bool value, HideableView view)
     {
-      int index = this.strainsEntities.IndexOf(view);
+      int index = strainsEntities.IndexOf(view);
       if (index == -1)
         return;
-      this.consoleStrainsTextInfo[index].SetActive(value);
+      consoleStrainsTextInfo[index].SetActive(value);
     }
 
     private List<StorableUI> SliderItems { get; set; }
 
     private void HandleHealingHintsVisibility(bool visible)
     {
-      Text componentInChildren = this.buttonHealingHints.Where<GameObject>((Func<GameObject, bool>) (hint => hint.GetComponent<HideableView>().Visible)).First<GameObject>()?.GetComponentInChildren<Text>();
-      if ((UnityEngine.Object) componentInChildren != (UnityEngine.Object) null && this.buttonUse.interactable)
+      Text componentInChildren = buttonHealingHints.Where((Func<GameObject, bool>) (hint => hint.GetComponent<HideableView>().Visible)).First()?.GetComponentInChildren<Text>();
+      if ((UnityEngine.Object) componentInChildren != (UnityEngine.Object) null && buttonUse.interactable)
       {
-        this._administerHealingHint.transform.parent = componentInChildren.transform;
-        this._administerHealingHint.transform.localPosition = Vector3.zero;
-        this._administerHealingHint.transform.localPosition = new Vector3((float) ((double) componentInChildren.transform.localPosition.x - (double) componentInChildren.preferredWidth / 2.0 - 15.0), this._administerHealingHint.transform.localPosition.y);
-        this._administerHealingHint.SetActive(visible);
+        _administerHealingHint.transform.parent = componentInChildren.transform;
+        _administerHealingHint.transform.localPosition = Vector3.zero;
+        _administerHealingHint.transform.localPosition = new Vector3((float) ((double) componentInChildren.transform.localPosition.x - (double) componentInChildren.preferredWidth / 2.0 - 15.0), _administerHealingHint.transform.localPosition.y);
+        _administerHealingHint.SetActive(visible);
       }
       else
-        this._administerHealingHint.SetActive(false);
+        _administerHealingHint.SetActive(false);
     }
 
     protected override void OnJoystick(bool joystick)
     {
       base.OnJoystick(joystick);
-      this.controlPanel.SetActive(joystick && !this.IsHealingEnded && this.SliderItems.Count > 0);
-      this.HandleHealingHintsVisibility(joystick);
+      controlPanel.SetActive(joystick && !IsHealingEnded && SliderItems.Count > 0);
+      HandleHealingHintsVisibility(joystick);
       if (joystick)
       {
         ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Heal, new GameActionHandle(((UIWindow) this).WithoutJoystickCancelListener));
-        if (this.IsHealingEnded)
+        if (IsHealingEnded)
           return;
-        if (this.SliderItems.Count == 0)
-          this.SliderItems = (List<StorableUI>) null;
-        else if ((UnityEngine.Object) this.ItemToUse == (UnityEngine.Object) null && this.SliderItems.Count > 0)
-          this.ItemToUse = this.SliderItems.First<StorableUI>();
-        if (this.currentSliderIndex < 0)
-          this.currentSliderIndex = 0;
-        if ((UnityEngine.Object) this.ItemToUse != (UnityEngine.Object) null)
-          this.ItemToUse.HoldSelected(true);
-        if ((UnityEngine.Object) this.selectedStorable != (UnityEngine.Object) this.ItemToUse && (UnityEngine.Object) this.ItemToUse != (UnityEngine.Object) null)
+        if (SliderItems.Count == 0)
+          SliderItems = null;
+        else if ((UnityEngine.Object) ItemToUse == (UnityEngine.Object) null && SliderItems.Count > 0)
+          ItemToUse = SliderItems.First();
+        if (currentSliderIndex < 0)
+          currentSliderIndex = 0;
+        if ((UnityEngine.Object) ItemToUse != (UnityEngine.Object) null)
+          ItemToUse.HoldSelected(true);
+        if ((UnityEngine.Object) selectedStorable != (UnityEngine.Object) ItemToUse && (UnityEngine.Object) ItemToUse != (UnityEngine.Object) null)
         {
-          this.selectedStorable = this.ItemToUse;
-          this.currentSliderIndex = this.SliderItems.IndexOf(this.selectedStorable);
+          selectedStorable = ItemToUse;
+          currentSliderIndex = SliderItems.IndexOf(selectedStorable);
         }
-        if ((UnityEngine.Object) this.selectedStorable == (UnityEngine.Object) null && this.SliderItems.Count > 0)
-          this.selectedStorable = this.SliderItems.First<StorableUI>();
-        this.slidingContainer.ScrollTo(this.currentSliderIndex, this.SliderItems.Count);
-        if ((UnityEngine.Object) this.selectedStorable != (UnityEngine.Object) null)
+        if ((UnityEngine.Object) selectedStorable == (UnityEngine.Object) null && SliderItems.Count > 0)
+          selectedStorable = SliderItems.First();
+        slidingContainer.ScrollTo(currentSliderIndex, SliderItems.Count);
+        if ((UnityEngine.Object) selectedStorable != (UnityEngine.Object) null)
         {
-          this.selectedStorable.SetSelected(true);
-          this.SelectItemFromSlider();
+          selectedStorable.SetSelected(true);
+          SelectItemFromSlider();
         }
-        for (int index = 0; index < this.strainsEntities.Count; ++index)
+        for (int index = 0; index < strainsEntities.Count; ++index)
         {
-          if (this.strainsEntities[index].Visible)
-            this.consoleStrainsTextInfo[index].SetActive(joystick);
+          if (strainsEntities[index].Visible)
+            consoleStrainsTextInfo[index].SetActive(joystick);
         }
       }
       else
       {
-        this.buttonUse.GamepadEndHold();
+        buttonUse.GamepadEndHold();
         ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Heal, new GameActionHandle(((UIWindow) this).WithoutJoystickCancelListener));
-        if ((UnityEngine.Object) this.selectedStorable != (UnityEngine.Object) null)
+        if ((UnityEngine.Object) selectedStorable != (UnityEngine.Object) null)
         {
-          this.selectedStorable?.SetSelected(false);
-          this.selectedStorable?.HoldSelected(false);
+          selectedStorable?.SetSelected(false);
+          selectedStorable?.HoldSelected(false);
         }
-        if ((UnityEngine.Object) this.ItemToUse != (UnityEngine.Object) null)
-          this.ItemToUse.HoldSelected(false);
-        foreach (GameObject gameObject in this.consoleStrainsTextInfo)
+        if ((UnityEngine.Object) ItemToUse != (UnityEngine.Object) null)
+          ItemToUse.HoldSelected(false);
+        foreach (GameObject gameObject in consoleStrainsTextInfo)
           gameObject.SetActive(false);
       }
     }
 
     private IEnumerator ScrollCoroutine(
-      HealingWindow.ScrollHandle handle,
+      ScrollHandle handle,
       GameActionType type,
       bool down)
     {
@@ -368,54 +365,54 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
     {
       if (down)
       {
-        if (this.scrollCoroutine != null)
-          this.StopCoroutine(this.scrollCoroutine);
-        this.scrollCoroutine = this.StartCoroutine(this.ScrollCoroutine(new HealingWindow.ScrollHandle(this.OnMedicineNavigation), type, down));
+        if (scrollCoroutine != null)
+          this.StopCoroutine(scrollCoroutine);
+        scrollCoroutine = this.StartCoroutine(ScrollCoroutine(OnMedicineNavigation, type, down));
         return true;
       }
-      if (this.scrollCoroutine != null)
+      if (scrollCoroutine != null)
       {
-        this.StopCoroutine(this.scrollCoroutine);
-        this.scrollCoroutine = (Coroutine) null;
+        this.StopCoroutine(scrollCoroutine);
+        scrollCoroutine = (Coroutine) null;
       }
       return false;
     }
 
     private bool OnMedicineNavigation(GameActionType type, bool down)
     {
-      if (!InputService.Instance.JoystickUsed || ((type == GameActionType.LStickUp ? 1 : (type == GameActionType.LStickDown ? 1 : 0)) & (down ? 1 : 0)) == 0 || this.IsHealingEnded)
+      if (!InputService.Instance.JoystickUsed || ((type == GameActionType.LStickUp ? 1 : (type == GameActionType.LStickDown ? 1 : 0)) & (down ? 1 : 0)) == 0 || IsHealingEnded)
         return false;
-      if (this.SliderItems.Count == 0)
-        this.SliderItems = (List<StorableUI>) null;
-      if (this.SliderItems.Count < 1)
+      if (SliderItems.Count == 0)
+        SliderItems = null;
+      if (SliderItems.Count < 1)
         return false;
-      this.currentSliderIndex += type == GameActionType.LStickUp ? -1 : 1;
-      if (this.currentSliderIndex < 0)
-        this.currentSliderIndex = this.SliderItems.Count - 1;
-      if (this.currentSliderIndex >= this.SliderItems.Count)
-        this.currentSliderIndex = 0;
-      if ((UnityEngine.Object) this.selectedStorable != (UnityEngine.Object) null && (UnityEngine.Object) this.selectedStorable != (UnityEngine.Object) this.ItemToUse)
-        this.selectedStorable?.SetSelected(false);
-      this.selectedStorable = this.SliderItems[this.currentSliderIndex];
-      if ((UnityEngine.Object) this.selectedStorable != (UnityEngine.Object) null)
-        this.selectedStorable?.SetSelected(true);
-      this.slidingContainer.ScrollTo(this.currentSliderIndex, this.SliderItems.Count);
-      return this.SelectItemFromSlider();
+      currentSliderIndex += type == GameActionType.LStickUp ? -1 : 1;
+      if (currentSliderIndex < 0)
+        currentSliderIndex = SliderItems.Count - 1;
+      if (currentSliderIndex >= SliderItems.Count)
+        currentSliderIndex = 0;
+      if ((UnityEngine.Object) selectedStorable != (UnityEngine.Object) null && (UnityEngine.Object) selectedStorable != (UnityEngine.Object) ItemToUse)
+        selectedStorable?.SetSelected(false);
+      selectedStorable = SliderItems[currentSliderIndex];
+      if ((UnityEngine.Object) selectedStorable != (UnityEngine.Object) null)
+        selectedStorable?.SetSelected(true);
+      slidingContainer.ScrollTo(currentSliderIndex, SliderItems.Count);
+      return SelectItemFromSlider();
     }
 
     private bool SelectItemFromSlider()
     {
-      if ((UnityEngine.Object) this.selectedStorable != (UnityEngine.Object) null)
+      if ((UnityEngine.Object) selectedStorable != (UnityEngine.Object) null)
       {
-        this.HideInfoWindow();
-        this.SelectItem((StorableComponent) this.selectedStorable.Internal);
-        this.buttonUse.GamepadEndHold();
-        if ((UnityEngine.Object) this.ItemToUse != (UnityEngine.Object) null && (UnityEngine.Object) this.ItemToUse != (UnityEngine.Object) this.selectedStorable)
-          this.ItemToUse.HoldSelected(false);
-        this.ItemToUse = this.selectedStorable;
-        this.ItemToUse.HoldSelected(true);
-        StorableUI cachedItemToUse = this.ItemToUse;
-        CoroutineService.Instance.WaitFrame(1, (Action) (() => this.ShowInfoWindow(cachedItemToUse.Internal)));
+        HideInfoWindow();
+        SelectItem((StorableComponent) selectedStorable.Internal);
+        buttonUse.GamepadEndHold();
+        if ((UnityEngine.Object) ItemToUse != (UnityEngine.Object) null && (UnityEngine.Object) ItemToUse != (UnityEngine.Object) selectedStorable)
+          ItemToUse.HoldSelected(false);
+        ItemToUse = selectedStorable;
+        ItemToUse.HoldSelected(true);
+        StorableUI cachedItemToUse = ItemToUse;
+        CoroutineService.Instance.WaitFrame(1, (Action) (() => ShowInfoWindow(cachedItemToUse.Internal)));
       }
       return true;
     }
@@ -425,18 +422,18 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       base.PositionWindow(window, storable);
       if (!InputService.Instance.JoystickUsed)
         return;
-      StorableUI itemToUse = this.ItemToUse;
+      StorableUI itemToUse = ItemToUse;
       if ((UnityEngine.Object) itemToUse == (UnityEngine.Object) null)
         return;
       RectTransform component1 = window.GetComponent<RectTransform>();
-      RectTransform component2 = this.slidingContainer.GetComponent<RectTransform>();
+      RectTransform component2 = slidingContainer.GetComponent<RectTransform>();
       float num1 = 20f;
-      float hintsBottomBorder = this.HintsBottomBorder;
+      float hintsBottomBorder = HintsBottomBorder;
       float num2 = itemToUse.Image.rectTransform.rect.height / 2f * itemToUse.Image.rectTransform.lossyScale.y;
-      double num3 = (double) itemToUse.Image.transform.position.y + (double) num2;
+      double num3 = (double) itemToUse.Image.transform.position.y + num2;
       Rect rect = component1.rect;
       double num4 = (double) rect.height * (double) component1.lossyScale.y;
-      if (num3 - num4 < (double) hintsBottomBorder)
+      if (num3 - num4 < hintsBottomBorder)
       {
         rect = component1.rect;
         double height = (double) rect.height;
@@ -448,7 +445,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       double num6 = -(double) rect.width * (double) component1.lossyScale.x;
       rect = component2.rect;
       double num7 = (double) rect.width * (double) component2.lossyScale.x / 2.0;
-      float num8 = (float) (num6 - num7 - (double) num1 * (double) component2.lossyScale.x / 2.0);
+      float num8 = (float) (num6 - num7 - num1 * (double) component2.lossyScale.x / 2.0);
       window.Transform.position = new Vector3(itemToUse.Image.transform.position.x + num8, itemToUse.Image.transform.position.y + num2);
     }
 
@@ -458,28 +455,28 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
         return false;
       if (type == GameActionType.Submit & down)
       {
-        this.buttonUse.GamepadStartHold();
+        buttonUse.GamepadStartHold();
         return true;
       }
       if (type != GameActionType.Submit || down)
         return false;
-      this.buttonUse.GamepadEndHold();
+      buttonUse.GamepadEndHold();
       return true;
     }
 
     private void CountSymptoms()
     {
-      this.targetSymptoms.Clear();
-      foreach (IStorableComponent storableComponent in this.Target.Items)
+      targetSymptoms.Clear();
+      foreach (IStorableComponent storableComponent in Target.Items)
       {
-        if (storableComponent.Groups.Contains<StorableGroup>(StorableGroup.Symptom))
+        if (storableComponent.Groups.Contains(StorableGroup.Symptom))
         {
-          this.targetSymptoms.Add(storableComponent.Owner);
+          targetSymptoms.Add(storableComponent.Owner);
           IParameter<bool> byName = storableComponent.Owner?.GetComponent<ParametersComponent>()?.GetByName<bool>(ParameterNameEnum.IsOpen);
           if (byName != null)
           {
-            byName.RemoveListener((IChangeParameterListener) this);
-            byName.AddListener((IChangeParameterListener) this);
+            byName.RemoveListener(this);
+            byName.AddListener(this);
           }
         }
       }
@@ -487,17 +484,17 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
 
     private void ShowSymptoms()
     {
-      for (int i = 0; i < this.symptomTemplates.Length; i++)
+      for (int i = 0; i < symptomTemplates.Length; i++)
       {
         bool flag = false;
-        IEntity entity = this.targetSymptoms.Find((Predicate<IEntity>) (x => StorageUtility.GetItemId(x) == StorageUtility.GetItemId(this.symptomTemplates[i].Value)));
+        IEntity entity = targetSymptoms.Find(x => StorageUtility.GetItemId(x) == StorageUtility.GetItemId(symptomTemplates[i].Value));
         if (entity != null)
         {
           IParameter<bool> byName = entity?.GetComponent<ParametersComponent>()?.GetByName<bool>(ParameterNameEnum.IsOpen);
           if (byName != null)
             flag = byName.Value;
         }
-        HideableView component = this.symptomsImages[i]?.GetComponent<HideableView>();
+        HideableView component = symptomsImages[i]?.GetComponent<HideableView>();
         if ((UnityEngine.Object) component != (UnityEngine.Object) null)
           component.Visible = flag;
       }
@@ -505,21 +502,21 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
 
     public override void Initialize()
     {
-      this.RegisterLayer<IHealingWindow>((IHealingWindow) this);
+      RegisterLayer((IHealingWindow) this);
       base.Initialize();
     }
 
-    public override System.Type GetWindowType() => typeof (IHealingWindow);
+    public override Type GetWindowType() => typeof (IHealingWindow);
 
     private void UseItemOnTarget()
     {
-      if (this.selectedItem == null)
+      if (selectedItem == null)
         return;
-      IParameter<BoundHealthStateEnum> byName1 = this.Target.Owner.GetComponent<ParametersComponent>()?.GetByName<BoundHealthStateEnum>(ParameterNameEnum.BoundHealthState);
+      IParameter<BoundHealthStateEnum> byName1 = Target.Owner.GetComponent<ParametersComponent>()?.GetByName<BoundHealthStateEnum>(ParameterNameEnum.BoundHealthState);
       if (byName1 == null || byName1.Value != BoundHealthStateEnum.Diseased && byName1.Value != BoundHealthStateEnum.Danger && byName1.Value != BoundHealthStateEnum.TutorialPain && byName1.Value != BoundHealthStateEnum.TutorialDiagnostics)
         return;
       StorableGroup storableGroup = StorableGroup.None;
-      foreach (StorableGroup group in this.selectedItem.Groups)
+      foreach (StorableGroup group in selectedItem.Groups)
       {
         if ((byName1.Value == BoundHealthStateEnum.Diseased || byName1.Value == BoundHealthStateEnum.TutorialPain || byName1.Value == BoundHealthStateEnum.TutorialDiagnostics) && (group == StorableGroup.Diagnostic || group == StorableGroup.Antibiotic || group == StorableGroup.Painkiller || group == StorableGroup.Miracle))
         {
@@ -535,94 +532,93 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       if (storableGroup == StorableGroup.None)
         return;
       LogicEventService service = ServiceLocator.GetService<LogicEventService>();
-      IEntity template = (IEntity) this.selectedItem.Owner.Template;
-      service.FireEntityEvent(storableGroup == StorableGroup.Diagnostic ? "WillSpendDiagnosticOn" : "WillSpendMedicineOn", this.Target.Owner);
-      StorableComponentUtility.Use((IStorableComponent) this.selectedItem);
+      IEntity template = (IEntity) selectedItem.Owner.Template;
+      service.FireEntityEvent(storableGroup == StorableGroup.Diagnostic ? "WillSpendDiagnosticOn" : "WillSpendMedicineOn", Target.Owner);
+      StorableComponentUtility.Use(selectedItem);
       service.FireEntityEvent(storableGroup == StorableGroup.Diagnostic ? "SpendDiagnostic" : "SpendMedicine", template);
       switch (storableGroup)
       {
         case StorableGroup.Antibiotic:
-          IParameter<StammKind> byName2 = this.Target.Owner.GetComponent<ParametersComponent>()?.GetByName<StammKind>(ParameterNameEnum.StammKind);
+          IParameter<StammKind> byName2 = Target.Owner.GetComponent<ParametersComponent>()?.GetByName<StammKind>(ParameterNameEnum.StammKind);
           IParameter<StammKind> byName3 = template.GetComponent<ParametersComponent>()?.GetByName<StammKind>(ParameterNameEnum.StammKind);
           if (byName2 != null && byName3 != null)
           {
             if (byName3.Value == byName2.Value)
             {
-              this.usedCorrectAntibioticMessage?.Invoke();
-              service.FireEntityEvent("HealingAntibioticCorrect", this.Target.Owner);
+              usedCorrectAntibioticMessage?.Invoke();
+              service.FireEntityEvent("HealingAntibioticCorrect", Target.Owner);
             }
             else
             {
-              this.usedWrongAntibioticMessage?.Invoke();
-              service.FireEntityEvent("HealingAntibioticWrong", this.Target.Owner);
+              usedWrongAntibioticMessage?.Invoke();
+              service.FireEntityEvent("HealingAntibioticWrong", Target.Owner);
             }
-            this.IsHealingPerformed = true;
-            break;
+            IsHealingPerformed = true;
           }
           break;
         case StorableGroup.Painkiller:
-          this.usedPainkillerMessage?.Invoke();
-          service.FireEntityEvent("UsedPainkiller", this.Target.Owner);
+          usedPainkillerMessage?.Invoke();
+          service.FireEntityEvent("UsedPainkiller", Target.Owner);
           break;
         case StorableGroup.ImmuneBooster:
-          this.usedImmuneBoosterMessage?.Invoke();
-          service.FireEntityEvent("UsedImmuneBooster", this.Target.Owner);
+          usedImmuneBoosterMessage?.Invoke();
+          service.FireEntityEvent("UsedImmuneBooster", Target.Owner);
           break;
         case StorableGroup.Miracle:
-          this.usedMaracleMessage?.Invoke();
-          if (StorageUtility.GetItemId(template) == StorageUtility.GetItemId(this.shmowder.Value))
-            service.FireEntityEvent("HealingPowder", this.Target.Owner);
-          else if (StorageUtility.GetItemId(template) == StorageUtility.GetItemId(this.backerShmowder.Value))
-            service.FireEntityEvent("HealingPowder", this.Target.Owner);
-          else if (StorageUtility.GetItemId(template) == StorageUtility.GetItemId(this.panacea.Value))
-            service.FireEntityEvent("HealingPanacea", this.Target.Owner);
-          this.IsHealingEnded = true;
+          usedMaracleMessage?.Invoke();
+          if (StorageUtility.GetItemId(template) == StorageUtility.GetItemId(shmowder.Value))
+            service.FireEntityEvent("HealingPowder", Target.Owner);
+          else if (StorageUtility.GetItemId(template) == StorageUtility.GetItemId(backerShmowder.Value))
+            service.FireEntityEvent("HealingPowder", Target.Owner);
+          else if (StorageUtility.GetItemId(template) == StorageUtility.GetItemId(panacea.Value))
+            service.FireEntityEvent("HealingPanacea", Target.Owner);
+          IsHealingEnded = true;
           break;
       }
-      IParameter<float> byName4 = this.Target.Owner.GetComponent<ParametersComponent>()?.GetByName<float>(ParameterNameEnum.Pain);
-      if (byName4 != null && (double) byName4.Value >= (double) byName4.MaxValue)
-        service.FireEntityEvent("HealingPainMax", this.Target.Owner);
-      this.ItemToUse = (StorableUI) null;
-      this.selectedItem = (StorableComponent) null;
-      this.SetSelectedItemInfo();
-      this.CreateSlideContainers();
-      if (!this.IsHealingEnded)
+      IParameter<float> byName4 = Target.Owner.GetComponent<ParametersComponent>()?.GetByName<float>(ParameterNameEnum.Pain);
+      if (byName4 != null && byName4.Value >= (double) byName4.MaxValue)
+        service.FireEntityEvent("HealingPainMax", Target.Owner);
+      ItemToUse = null;
+      selectedItem = null;
+      SetSelectedItemInfo();
+      CreateSlideContainers();
+      if (!IsHealingEnded)
       {
-        this.currentSliderIndex = 0;
-        if (this.SliderItems.Count != 0)
+        currentSliderIndex = 0;
+        if (SliderItems.Count != 0)
         {
-          this.selectedStorable = this.SliderItems[this.currentSliderIndex];
-          this.slidingContainer.ScrollTo(this.currentSliderIndex, this.SliderItems.Count);
-          this.SelectItemFromSlider();
+          selectedStorable = SliderItems[currentSliderIndex];
+          slidingContainer.ScrollTo(currentSliderIndex, SliderItems.Count);
+          SelectItemFromSlider();
         }
       }
       else
       {
-        foreach (StorableUI sliderItem in this.SliderItems)
+        foreach (StorableUI sliderItem in SliderItems)
           sliderItem.SetSelected(false);
       }
-      this.HandleHealingHintsVisibility(InputService.Instance.JoystickUsed);
+      HandleHealingHintsVisibility(InputService.Instance.JoystickUsed);
     }
 
-    public override IEntity GetUseTarget() => this.Target.Owner;
+    public override IEntity GetUseTarget() => Target.Owner;
 
     private void ClearSlideContainers()
     {
-      this.slidingContainer.Clear(this.containers, this.storables);
+      slidingContainer.Clear(containers, storables);
     }
 
     private void CreateSlideContainers()
     {
-      ParametersComponent component = this.Target.Owner.GetComponent<ParametersComponent>();
+      ParametersComponent component = Target.Owner.GetComponent<ParametersComponent>();
       IParameter<BoundHealthStateEnum> byName1 = component?.GetByName<BoundHealthStateEnum>(ParameterNameEnum.BoundHealthState);
-      this.ClearSlideContainers();
+      ClearSlideContainers();
       if (byName1 == null || byName1.Value == BoundHealthStateEnum.None || byName1.Value == BoundHealthStateEnum.Normal || byName1.Value == BoundHealthStateEnum.Dead)
       {
-        this.slidingContainer.gameObject.SetActive(false);
+        slidingContainer.gameObject.SetActive(false);
       }
       else
       {
-        List<StorableComponent> list = this.Actor.Items.Cast<StorableComponent>().ToList<StorableComponent>();
+        List<StorableComponent> list = Actor.Items.Cast<StorableComponent>().ToList();
         List<List<StorableComponent>> itemsList = new List<List<StorableComponent>>();
         List<string> groupSignatures = new List<string>();
         switch (byName1.Value)
@@ -631,33 +627,31 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
             IParameter<bool> byName2 = component?.GetByName<bool>(ParameterNameEnum.ImmuneBoostAttempted);
             if (byName2 == null || !byName2.Value)
             {
-              List<StorableComponent> all = list.FindAll((Predicate<StorableComponent>) (x => x.Groups.Contains<StorableGroup>(StorableGroup.ImmuneBooster)));
+              List<StorableComponent> all = list.FindAll(x => x.Groups.Contains(StorableGroup.ImmuneBooster));
               if (all != null && all.Count > 0)
               {
                 itemsList.Add(all);
                 groupSignatures.Add("{UI.Menu.Protagonist.Healing.ItemGroup.ImmuneBoosters}");
-                break;
               }
-              break;
             }
             break;
           case BoundHealthStateEnum.Diseased:
-            List<StorableComponent> miracles = list.FindAll((Predicate<StorableComponent>) (x => x.Groups.Contains<StorableGroup>(StorableGroup.Miracle)));
+            List<StorableComponent> miracles = list.FindAll(x => x.Groups.Contains(StorableGroup.Miracle));
             IParameter<bool> byName3 = component?.GetByName<bool>(ParameterNameEnum.HealingAttempted);
             bool flag = byName3 != null && byName3.Value;
-            if (flag && !this.IsHealingPerformed)
-              this.IsHealingPerformed = true;
+            if (flag && !IsHealingPerformed)
+              IsHealingPerformed = true;
             if (!flag)
             {
-              List<StorableComponent> diagnostics = list.FindAll((Predicate<StorableComponent>) (x => x.Groups.Contains<StorableGroup>(StorableGroup.Diagnostic)));
-              List<StorableComponent> antibiotics = list.FindAll((Predicate<StorableComponent>) (x => x.Groups.Contains<StorableGroup>(StorableGroup.Antibiotic)));
-              List<StorableComponent> all = list.FindAll((Predicate<StorableComponent>) (x => x.Groups.Contains<StorableGroup>(StorableGroup.Painkiller)));
-              diagnostics.RemoveAll((Predicate<StorableComponent>) (x => miracles.Contains(x)));
-              antibiotics.RemoveAll((Predicate<StorableComponent>) (x => miracles.Contains(x)));
-              antibiotics.RemoveAll((Predicate<StorableComponent>) (x => diagnostics.Contains(x)));
-              all.RemoveAll((Predicate<StorableComponent>) (x => miracles.Contains(x)));
-              all.RemoveAll((Predicate<StorableComponent>) (x => diagnostics.Contains(x)));
-              all.RemoveAll((Predicate<StorableComponent>) (x => antibiotics.Contains(x)));
+              List<StorableComponent> diagnostics = list.FindAll(x => x.Groups.Contains(StorableGroup.Diagnostic));
+              List<StorableComponent> antibiotics = list.FindAll(x => x.Groups.Contains(StorableGroup.Antibiotic));
+              List<StorableComponent> all = list.FindAll(x => x.Groups.Contains(StorableGroup.Painkiller));
+              diagnostics.RemoveAll(x => miracles.Contains(x));
+              antibiotics.RemoveAll(x => miracles.Contains(x));
+              antibiotics.RemoveAll(x => diagnostics.Contains(x));
+              all.RemoveAll(x => miracles.Contains(x));
+              all.RemoveAll(x => diagnostics.Contains(x));
+              all.RemoveAll(x => antibiotics.Contains(x));
               if (all != null && all.Count > 0)
               {
                 itemsList.Add(all);
@@ -682,23 +676,21 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
             }
             if (flag)
             {
-              this.IsHealingEnded = true;
-              break;
+              IsHealingEnded = true;
             }
             break;
           case BoundHealthStateEnum.TutorialPain:
-            List<StorableComponent> all1 = list.FindAll((Predicate<StorableComponent>) (x => x.Groups.Contains<StorableGroup>(StorableGroup.Painkiller)));
+            List<StorableComponent> all1 = list.FindAll(x => x.Groups.Contains(StorableGroup.Painkiller));
             if (all1 != null && all1.Count > 0)
             {
               itemsList.Add(all1);
               groupSignatures.Add("{UI.Menu.Protagonist.Healing.ItemGroup.Painkillers}");
-              break;
             }
             break;
           case BoundHealthStateEnum.TutorialDiagnostics:
-            List<StorableComponent> diagnostics1 = list.FindAll((Predicate<StorableComponent>) (x => x.Groups.Contains<StorableGroup>(StorableGroup.Diagnostic)));
-            List<StorableComponent> all2 = list.FindAll((Predicate<StorableComponent>) (x => x.Groups.Contains<StorableGroup>(StorableGroup.Painkiller)));
-            all2.RemoveAll((Predicate<StorableComponent>) (x => diagnostics1.Contains(x)));
+            List<StorableComponent> diagnostics1 = list.FindAll(x => x.Groups.Contains(StorableGroup.Diagnostic));
+            List<StorableComponent> all2 = list.FindAll(x => x.Groups.Contains(StorableGroup.Painkiller));
+            all2.RemoveAll(x => diagnostics1.Contains(x));
             if (all2 != null && all2.Count > 0)
             {
               itemsList.Add(all2);
@@ -708,30 +700,29 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
             {
               itemsList.Add(diagnostics1);
               groupSignatures.Add("{UI.Menu.Protagonist.Healing.ItemGroup.Diagnostics}");
-              break;
             }
             break;
         }
-        this.hasValidItems.Visible = itemsList.Count > 0;
-        this.slidingContainer.CreateSlots(itemsList, groupSignatures, (StorageComponent) this.Actor, this.containers, this.storables);
-        this.slidingContainer.gameObject.SetActive(true);
-        this.controlPanel.SetActive(!this.IsHealingEnded && InputService.Instance.JoystickUsed);
-        this.HideInfoWindow();
-        this.SliderItems = this.slidingContainer.ItemsUI;
+        hasValidItems.Visible = itemsList.Count > 0;
+        slidingContainer.CreateSlots(itemsList, groupSignatures, (StorageComponent) Actor, containers, storables);
+        slidingContainer.gameObject.SetActive(true);
+        controlPanel.SetActive(!IsHealingEnded && InputService.Instance.JoystickUsed);
+        HideInfoWindow();
+        SliderItems = slidingContainer.ItemsUI;
       }
     }
 
     protected override void OnInvalidate()
     {
       base.OnInvalidate();
-      this.CreateSlideContainers();
+      CreateSlideContainers();
     }
 
     protected override void AddActionsToInfoWindow(
       InfoWindowNew window,
       IStorableComponent storable)
     {
-      if (!this.ItemIsInteresting(storable))
+      if (!ItemIsInteresting(storable))
         return;
       window.AddActionTooltip(GameActionType.Submit, "{StorableTooltip.Select}");
     }
@@ -740,28 +731,28 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
     {
       if (parameter.Name == ParameterNameEnum.Pain)
       {
-        if ((double) ((IParameter<float>) parameter).Value < (double) this.oldPain)
-          this.Actor.GetComponent<PlayerControllerComponent>().ComputeHealPain(this.Target?.Owner, this.oldPain - ((IParameter<float>) parameter).Value);
-        this.oldPain = ((IParameter<float>) parameter).Value;
+        if (((IParameter<float>) parameter).Value < (double) oldPain)
+          Actor.GetComponent<PlayerControllerComponent>().ComputeHealPain(Target?.Owner, oldPain - ((IParameter<float>) parameter).Value);
+        oldPain = ((IParameter<float>) parameter).Value;
       }
       else if (parameter.Name == ParameterNameEnum.Infection)
       {
-        if ((double) ((IParameter<float>) parameter).Value < (double) this.oldInfection)
+        if (((IParameter<float>) parameter).Value < (double) oldInfection)
         {
-          PlayerControllerComponent component = this.Actor.GetComponent<PlayerControllerComponent>();
-          component.ComputeHealInfection(this.Target?.Owner, this.oldInfection - ((IParameter<float>) parameter).Value);
-          if ((double) ((IParameter<float>) parameter).Value == 0.0)
-            component.ComputeCureInfection(this.Target?.Owner);
+          PlayerControllerComponent component = Actor.GetComponent<PlayerControllerComponent>();
+          component.ComputeHealInfection(Target?.Owner, oldInfection - ((IParameter<float>) parameter).Value);
+          if (((IParameter<float>) parameter).Value == 0.0)
+            component.ComputeCureInfection(Target?.Owner);
         }
-        this.oldInfection = ((IParameter<float>) parameter).Value;
+        oldInfection = ((IParameter<float>) parameter).Value;
       }
       else
       {
         if (parameter.Name != ParameterNameEnum.IsOpen)
           return;
-        this.ShowSymptoms();
-        if ((UnityEngine.Object) this.definitiveDiagnosisCheck != (UnityEngine.Object) null && this.definitiveDiagnosisCheck.Visible)
-          ServiceLocator.GetService<LogicEventService>().FireEntityEvent("DefinitiveDiagnosis", this.Target.Owner);
+        ShowSymptoms();
+        if ((UnityEngine.Object) definitiveDiagnosisCheck != (UnityEngine.Object) null && definitiveDiagnosisCheck.Visible)
+          ServiceLocator.GetService<LogicEventService>().FireEntityEvent("DefinitiveDiagnosis", Target.Owner);
       }
     }
 

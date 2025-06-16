@@ -1,14 +1,14 @@
-﻿using BehaviorDesigner.Runtime.Tasks;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using BehaviorDesigner.Runtime.Tasks;
 
 namespace BehaviorDesigner.Runtime
 {
   public static class TaskUtility
   {
     private static Dictionary<string, Type> typeLookup = new Dictionary<string, Type>();
-    private static List<string> loadedAssemblies = (List<string>) null;
+    private static List<string> loadedAssemblies = null;
     private static Dictionary<Type, FieldInfo[]> allFieldsLookup = new Dictionary<Type, FieldInfo[]>();
     private static Dictionary<Type, FieldInfo[]> publicFieldsLookup = new Dictionary<Type, FieldInfo[]>();
     private static Dictionary<FieldInfo, Dictionary<Type, bool>> hasFieldLookup = new Dictionary<FieldInfo, Dictionary<Type, bool>>();
@@ -23,84 +23,84 @@ namespace BehaviorDesigner.Runtime
 
     public static FieldInfo[] GetAllFields(Type t)
     {
-      FieldInfo[] allFields = (FieldInfo[]) null;
-      if (!TaskUtility.allFieldsLookup.TryGetValue(t, out allFields))
+      FieldInfo[] allFields = null;
+      if (!allFieldsLookup.TryGetValue(t, out allFields))
       {
-        TaskUtility.tmp.Clear();
+        tmp.Clear();
         BindingFlags flags = BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
-        TaskUtility.GetFields(t, ref TaskUtility.tmp, (int) flags);
-        allFields = TaskUtility.tmp.ToArray();
-        TaskUtility.allFieldsLookup.Add(t, allFields);
+        GetFields(t, ref tmp, (int) flags);
+        allFields = tmp.ToArray();
+        allFieldsLookup.Add(t, allFields);
       }
       return allFields;
     }
 
     public static FieldInfo[] GetPublicFields(Type t)
     {
-      FieldInfo[] publicFields = (FieldInfo[]) null;
-      if (!TaskUtility.publicFieldsLookup.TryGetValue(t, out publicFields))
+      FieldInfo[] publicFields = null;
+      if (!publicFieldsLookup.TryGetValue(t, out publicFields))
       {
-        TaskUtility.tmp.Clear();
+        tmp.Clear();
         BindingFlags flags = BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public;
-        TaskUtility.GetFields(t, ref TaskUtility.tmp, (int) flags);
-        publicFields = TaskUtility.tmp.ToArray();
-        TaskUtility.publicFieldsLookup.Add(t, publicFields);
+        GetFields(t, ref tmp, (int) flags);
+        publicFields = tmp.ToArray();
+        publicFieldsLookup.Add(t, publicFields);
       }
       return publicFields;
     }
 
     private static void GetFields(Type t, ref List<FieldInfo> fieldList, int flags)
     {
-      if (t == (Type) null || t.Equals(typeof (ParentTask)) || t.Equals(typeof (Task)) || t.Equals(typeof (SharedVariable)))
+      if (t == null || t.Equals(typeof (ParentTask)) || t.Equals(typeof (Task)) || t.Equals(typeof (SharedVariable)))
         return;
       foreach (FieldInfo field in t.GetFields((BindingFlags) flags))
         fieldList.Add(field);
-      TaskUtility.GetFields(t.BaseType, ref fieldList, flags);
+      GetFields(t.BaseType, ref fieldList, flags);
     }
 
     public static Type GetTypeWithinAssembly(string typeName)
     {
       Type typeWithinAssembly;
-      if (TaskUtility.typeLookup.TryGetValue(typeName, out typeWithinAssembly))
+      if (typeLookup.TryGetValue(typeName, out typeWithinAssembly))
         return typeWithinAssembly;
       Type type = Type.GetType(typeName);
-      if (type == (Type) null)
+      if (type == null)
       {
-        if (TaskUtility.loadedAssemblies == null)
+        if (loadedAssemblies == null)
         {
-          TaskUtility.loadedAssemblies = new List<string>();
+          loadedAssemblies = new List<string>();
           foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
-            TaskUtility.loadedAssemblies.Add(assembly.FullName);
+            loadedAssemblies.Add(assembly.FullName);
         }
-        for (int index = 0; index < TaskUtility.loadedAssemblies.Count; ++index)
+        for (int index = 0; index < loadedAssemblies.Count; ++index)
         {
-          type = Type.GetType(typeName + "," + TaskUtility.loadedAssemblies[index]);
-          if (type != (Type) null)
+          type = Type.GetType(typeName + "," + loadedAssemblies[index]);
+          if (type != null)
             break;
         }
       }
-      if (type != (Type) null)
-        TaskUtility.typeLookup.Add(typeName, type);
+      if (type != null)
+        typeLookup.Add(typeName, type);
       return type;
     }
 
     public static bool CompareType(Type t, string typeName)
     {
       Type type = Type.GetType(typeName + ", Assembly-CSharp");
-      if (type == (Type) null)
+      if (type == null)
         type = Type.GetType(typeName + ", Assembly-CSharp-firstpass");
       return t.Equals(type);
     }
 
     public static bool HasAttribute(FieldInfo field, Type attribute)
     {
-      if (field == (FieldInfo) null)
+      if (field == null)
         return false;
       Dictionary<Type, bool> dictionary;
-      if (!TaskUtility.hasFieldLookup.TryGetValue(field, out dictionary))
+      if (!hasFieldLookup.TryGetValue(field, out dictionary))
       {
         dictionary = new Dictionary<Type, bool>();
-        TaskUtility.hasFieldLookup.Add(field, dictionary);
+        hasFieldLookup.Add(field, dictionary);
       }
       bool flag;
       if (!dictionary.TryGetValue(attribute, out flag))

@@ -1,11 +1,11 @@
-﻿using AssetDatabases;
+﻿using System.Collections.Generic;
+using AssetDatabases;
 using Engine.Common;
 using Engine.Common.Services;
 using Engine.Source.Commons;
 using InputServices;
 using Inspectors;
 using Scripts.Inspectors;
-using System.Collections.Generic;
 
 public class EngineInspector : MonoBehaviourInstance<EngineInspector>
 {

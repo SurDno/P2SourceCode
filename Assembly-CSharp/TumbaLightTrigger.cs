@@ -1,8 +1,6 @@
 ﻿using Engine.Common.Services;
-using Engine.Source.Audio;
 using Engine.Source.Commons;
 using Inspectors;
-using UnityEngine;
 
 public class TumbaLightTrigger : MonoBehaviour
 {
@@ -14,28 +12,28 @@ public class TumbaLightTrigger : MonoBehaviour
     return ((IEntityView) ServiceLocator.GetService<ISimulation>().Player)?.GameObject;
   }
 
-  private void OnEnable() => this.EnabledLights(false);
+  private void OnEnable() => EnabledLights(false);
 
   private void OnDisable()
   {
-    this.enabledLights = false;
-    this.EnabledLights(false);
+    enabledLights = false;
+    EnabledLights(false);
   }
 
   private void OnTriggerEnter(Collider other)
   {
-    if (this.enabledLights)
+    if (enabledLights)
       return;
     AudioSource component = this.GetComponent<AudioSource>();
     if ((Object) component != (Object) null)
       component.PlayAndCheck();
     else
       Debug.LogWarning((object) "No audio source", (Object) this.gameObject);
-    GameObject playerGameObject = this.GetPlayerGameObject();
+    GameObject playerGameObject = GetPlayerGameObject();
     if ((Object) playerGameObject == (Object) null || !((Object) other.gameObject == (Object) playerGameObject))
       return;
-    this.enabledLights = true;
-    this.EnabledLights(true);
+    enabledLights = true;
+    EnabledLights(true);
   }
 
   private void EnabledLights(bool enable)

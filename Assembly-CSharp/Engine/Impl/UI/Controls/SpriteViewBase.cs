@@ -1,19 +1,17 @@
-﻿using UnityEngine;
-
-namespace Engine.Impl.UI.Controls
+﻿namespace Engine.Impl.UI.Controls
 {
   public abstract class SpriteViewBase : SpriteView
   {
     [SerializeField]
     private Sprite value;
 
-    public override Sprite GetValue() => this.value;
+    public override Sprite GetValue() => value;
 
     private void OnValidate()
     {
       if (Application.isPlaying)
         return;
-      this.ApplyValue(true);
+      ApplyValue(true);
     }
 
     public override void SetValue(Sprite value, bool instant)
@@ -21,7 +19,7 @@ namespace Engine.Impl.UI.Controls
       if ((Object) this.value == (Object) value)
         return;
       this.value = value;
-      this.ApplyValue(instant);
+      ApplyValue(instant);
     }
 
     protected abstract void ApplyValue(bool instant);

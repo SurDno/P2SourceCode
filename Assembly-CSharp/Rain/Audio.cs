@@ -1,49 +1,48 @@
 ﻿using System;
-using UnityEngine;
 
 namespace Rain
 {
   public class Audio : MonoBehaviour
   {
-    public Audio.Source[] sources;
+    public Source[] sources;
     private bool disabled;
 
     private void Disable()
     {
-      if (this.disabled)
+      if (disabled)
         return;
-      for (int index = 0; index < this.sources.Length; ++index)
-        this.sources[index].source.enabled = false;
-      this.disabled = true;
+      for (int index = 0; index < sources.Length; ++index)
+        sources[index].source.enabled = false;
+      disabled = true;
     }
 
-    private void Awake() => this.Disable();
+    private void Awake() => Disable();
 
     private void Update()
     {
       RainManager instance = RainManager.Instance;
       float num1 = !((UnityEngine.Object) instance == (UnityEngine.Object) null) ? instance.actualRainIntensity : 0.0f;
-      if ((double) num1 == 0.0)
+      if (num1 == 0.0)
       {
-        this.Disable();
+        Disable();
       }
       else
       {
-        this.disabled = false;
-        for (int index = 0; index < this.sources.Length; ++index)
+        disabled = false;
+        for (int index = 0; index < sources.Length; ++index)
         {
-          float num2 = index < 1 ? 0.0f : this.sources[index - 1].threshold;
-          float threshold = this.sources[index].threshold;
-          float num3 = index == this.sources.Length - 1 ? float.MaxValue : this.sources[index + 1].threshold;
-          float num4 = (double) num1 > (double) num2 && (double) num1 < (double) num3 ? ((double) num1 >= (double) threshold ? (index != this.sources.Length - 1 && (double) num1 != (double) threshold ? (float) (((double) num3 - (double) num1) / ((double) num3 - (double) threshold)) : 1f) : (float) (((double) num1 - (double) num2) / ((double) threshold - (double) num2))) : 0.0f;
-          if ((double) num4 == 0.0)
+          float num2 = index < 1 ? 0.0f : sources[index - 1].threshold;
+          float threshold = sources[index].threshold;
+          float num3 = index == sources.Length - 1 ? float.MaxValue : sources[index + 1].threshold;
+          float num4 = num1 > (double) num2 && num1 < (double) num3 ? (num1 >= (double) threshold ? (index != sources.Length - 1 && num1 != (double) threshold ? (float) ((num3 - (double) num1) / (num3 - (double) threshold)) : 1f) : (float) ((num1 - (double) num2) / (threshold - (double) num2))) : 0.0f;
+          if (num4 == 0.0)
           {
-            this.sources[index].source.enabled = false;
+            sources[index].source.enabled = false;
           }
           else
           {
-            this.sources[index].source.volume = num4;
-            this.sources[index].source.enabled = true;
+            sources[index].source.volume = num4;
+            sources[index].source.enabled = true;
           }
         }
       }
@@ -51,10 +50,10 @@ namespace Rain
 
     private void OnValidate()
     {
-      for (int index = 1; index < this.sources.Length; ++index)
+      for (int index = 1; index < sources.Length; ++index)
       {
-        if ((double) this.sources[index - 1].threshold > (double) this.sources[index].threshold)
-          this.sources[index].threshold = this.sources[index - 1].threshold;
+        if (sources[index - 1].threshold > (double) sources[index].threshold)
+          sources[index].threshold = sources[index - 1].threshold;
       }
     }
 

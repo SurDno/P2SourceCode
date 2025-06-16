@@ -1,4 +1,6 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using System.Collections.Generic;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Behaviours.Components;
 using Engine.Common.Commons;
@@ -7,9 +9,6 @@ using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Engine.Source.Components.Utilities;
 using Scripts.Tools.Serializations.Converters;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.AI;
 
 namespace BehaviorDesigner.Runtime.Tasks.Pathologic
 {
@@ -19,87 +18,87 @@ namespace BehaviorDesigner.Runtime.Tasks.Pathologic
   [Factory]
   [GeneratePartial(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
   [FactoryProxy(typeof (MoveByPath))]
-  public class MoveByPath : BehaviorDesigner.Runtime.Tasks.Action, IStub, ISerializeDataWrite, ISerializeDataRead
+  public class MoveByPath : Action, IStub, ISerializeDataWrite, ISerializeDataRead
   {
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [SerializeField]
     public SharedTransformList Path;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy()]
     [SerializeField]
-    public SharedBool InversePath = (SharedBool) false;
+    public SharedBool InversePath = false;
     protected EngineBehavior behavior;
     protected NpcState npcState;
     protected NavMeshAgent agent;
-    protected bool inited = false;
+    protected bool inited;
     private bool canInvert = false;
 
     public override void OnStart()
     {
-      if (!this.inited)
+      if (!inited)
       {
-        this.agent = this.gameObject.GetComponent<NavMeshAgent>();
-        if ((UnityEngine.Object) this.agent == (UnityEngine.Object) null)
+        agent = gameObject.GetComponent<NavMeshAgent>();
+        if ((UnityEngine.Object) agent == (UnityEngine.Object) null)
         {
-          Debug.LogWarning((object) (this.gameObject.name + ": doesn't contain NavMeshAgent unity component"), (UnityEngine.Object) this.gameObject);
+          Debug.LogWarning((object) (gameObject.name + ": doesn't contain NavMeshAgent unity component"), (UnityEngine.Object) gameObject);
           return;
         }
-        this.behavior = this.gameObject.GetComponent<EngineBehavior>();
-        if ((UnityEngine.Object) this.behavior == (UnityEngine.Object) null)
+        behavior = gameObject.GetComponent<EngineBehavior>();
+        if ((UnityEngine.Object) behavior == (UnityEngine.Object) null)
         {
-          Debug.LogWarning((object) (this.gameObject.name + ": doesn't contain " + typeof (EngineBehavior).Name + " unity component"), (UnityEngine.Object) this.gameObject);
+          Debug.LogWarning((object) (gameObject.name + ": doesn't contain " + typeof (EngineBehavior).Name + " unity component"), (UnityEngine.Object) gameObject);
           return;
         }
-        this.npcState = this.gameObject.GetComponent<NpcState>();
-        if ((UnityEngine.Object) this.npcState == (UnityEngine.Object) null)
+        npcState = gameObject.GetComponent<NpcState>();
+        if ((UnityEngine.Object) npcState == (UnityEngine.Object) null)
         {
-          Debug.LogWarning((object) (this.gameObject.name + ": doesn't contain " + typeof (NpcState).Name + " engine component"), (UnityEngine.Object) this.gameObject);
+          Debug.LogWarning((object) (gameObject.name + ": doesn't contain " + typeof (NpcState).Name + " engine component"), (UnityEngine.Object) gameObject);
           return;
         }
-        this.inited = true;
+        inited = true;
       }
       List<Vector3> path = new List<Vector3>();
-      foreach (Transform transform in this.Path.Value)
+      foreach (Transform transform in Path.Value)
         path.Add(transform.position);
-      this.npcState.MoveByPath(path);
+      npcState.MoveByPath(path);
     }
 
     public override TaskStatus OnUpdate()
     {
-      if (!this.inited || this.npcState.Status == NpcStateStatusEnum.Failed)
+      if (!inited || npcState.Status == NpcStateStatusEnum.Failed)
         return TaskStatus.Failure;
-      if (this.npcState.Status != NpcStateStatusEnum.Success)
+      if (npcState.Status != NpcStateStatusEnum.Success)
         return TaskStatus.Running;
-      if (this.canInvert)
-        this.InversePath.Value = !this.InversePath.Value;
+      if (canInvert)
+        InversePath.Value = !InversePath.Value;
       return TaskStatus.Success;
     }
 
-    public override void OnDrawGizmos() => NavMeshUtility.DrawPath(this.agent);
+    public override void OnDrawGizmos() => NavMeshUtility.DrawPath(agent);
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.WriteSerialize<NodeData>(writer, "NodeData", this.nodeData);
-      DefaultDataWriteUtility.Write(writer, "Id", this.id);
-      DefaultDataWriteUtility.Write(writer, "FriendlyName", this.friendlyName);
-      DefaultDataWriteUtility.Write(writer, "Instant", this.instant);
-      DefaultDataWriteUtility.Write(writer, "Disabled", this.disabled);
-      BehaviorTreeDataWriteUtility.WriteShared<SharedTransformList>(writer, "Path", this.Path);
-      BehaviorTreeDataWriteUtility.WriteShared<SharedBool>(writer, "InversePath", this.InversePath);
+      DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
+      DefaultDataWriteUtility.Write(writer, "Id", id);
+      DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
+      DefaultDataWriteUtility.Write(writer, "Instant", instant);
+      DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
+      BehaviorTreeDataWriteUtility.WriteShared(writer, "Path", Path);
+      BehaviorTreeDataWriteUtility.WriteShared(writer, "InversePath", InversePath);
     }
 
-    public void DataRead(IDataReader reader, System.Type type)
+    public void DataRead(IDataReader reader, Type type)
     {
-      this.nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
-      this.id = DefaultDataReadUtility.Read(reader, "Id", this.id);
-      this.friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", this.friendlyName);
-      this.instant = DefaultDataReadUtility.Read(reader, "Instant", this.instant);
-      this.disabled = DefaultDataReadUtility.Read(reader, "Disabled", this.disabled);
-      this.Path = BehaviorTreeDataReadUtility.ReadShared<SharedTransformList>(reader, "Path", this.Path);
-      this.InversePath = BehaviorTreeDataReadUtility.ReadShared<SharedBool>(reader, "InversePath", this.InversePath);
+      nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
+      id = DefaultDataReadUtility.Read(reader, "Id", id);
+      friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
+      instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
+      disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
+      Path = BehaviorTreeDataReadUtility.ReadShared(reader, "Path", Path);
+      InversePath = BehaviorTreeDataReadUtility.ReadShared(reader, "InversePath", InversePath);
     }
   }
 }

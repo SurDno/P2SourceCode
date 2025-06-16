@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace UnityStandardAssets.CinematicEffects
+﻿namespace UnityStandardAssets.CinematicEffects
 {
   public sealed class MinAttribute : PropertyAttribute
   {

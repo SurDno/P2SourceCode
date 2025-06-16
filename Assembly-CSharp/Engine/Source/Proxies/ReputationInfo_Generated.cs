@@ -1,10 +1,10 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons;
 using Engine.Common.Commons.Cloneable;
 using Engine.Common.Commons.Converters;
 using Engine.Source.Reputations;
-using System;
 
 namespace Engine.Source.Proxies
 {
@@ -19,36 +19,36 @@ namespace Engine.Source.Proxies
     public object Clone()
     {
       ReputationInfo_Generated instance = Activator.CreateInstance<ReputationInfo_Generated>();
-      this.CopyTo((object) instance);
-      return (object) instance;
+      CopyTo(instance);
+      return instance;
     }
 
     public void CopyTo(object target2)
     {
       ReputationInfo_Generated reputationInfoGenerated = (ReputationInfo_Generated) target2;
-      reputationInfoGenerated.Action = this.Action;
-      CloneableObjectUtility.FillListTo<FractionEnum>(reputationInfoGenerated.Fractions, this.Fractions);
-      reputationInfoGenerated.Visible = this.Visible;
-      reputationInfoGenerated.Invisible = this.Invisible;
-      reputationInfoGenerated.AffectNearRegions = this.AffectNearRegions;
+      reputationInfoGenerated.Action = Action;
+      CloneableObjectUtility.FillListTo(reputationInfoGenerated.Fractions, Fractions);
+      reputationInfoGenerated.Visible = Visible;
+      reputationInfoGenerated.Invisible = Invisible;
+      reputationInfoGenerated.AffectNearRegions = AffectNearRegions;
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.WriteEnum<ActionEnum>(writer, "Action", this.Action);
-      DefaultDataWriteUtility.WriteListEnum<FractionEnum>(writer, "Fractions", this.Fractions);
-      DefaultDataWriteUtility.Write(writer, "Visible", this.Visible);
-      DefaultDataWriteUtility.Write(writer, "Invisible", this.Invisible);
-      DefaultDataWriteUtility.Write(writer, "AffectNearRegions", this.AffectNearRegions);
+      DefaultDataWriteUtility.WriteEnum(writer, "Action", Action);
+      DefaultDataWriteUtility.WriteListEnum(writer, "Fractions", Fractions);
+      DefaultDataWriteUtility.Write(writer, "Visible", Visible);
+      DefaultDataWriteUtility.Write(writer, "Invisible", Invisible);
+      DefaultDataWriteUtility.Write(writer, "AffectNearRegions", AffectNearRegions);
     }
 
     public void DataRead(IDataReader reader, Type type)
     {
-      this.Action = DefaultDataReadUtility.ReadEnum<ActionEnum>(reader, "Action");
-      this.Fractions = DefaultDataReadUtility.ReadListEnum<FractionEnum>(reader, "Fractions", this.Fractions);
-      this.Visible = DefaultDataReadUtility.Read(reader, "Visible", this.Visible);
-      this.Invisible = DefaultDataReadUtility.Read(reader, "Invisible", this.Invisible);
-      this.AffectNearRegions = DefaultDataReadUtility.Read(reader, "AffectNearRegions", this.AffectNearRegions);
+      Action = DefaultDataReadUtility.ReadEnum<ActionEnum>(reader, "Action");
+      Fractions = DefaultDataReadUtility.ReadListEnum(reader, "Fractions", Fractions);
+      Visible = DefaultDataReadUtility.Read(reader, "Visible", Visible);
+      Invisible = DefaultDataReadUtility.Read(reader, "Invisible", Invisible);
+      AffectNearRegions = DefaultDataReadUtility.Read(reader, "AffectNearRegions", AffectNearRegions);
     }
   }
 }

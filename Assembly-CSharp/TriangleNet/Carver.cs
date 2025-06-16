@@ -13,7 +13,7 @@ namespace TriangleNet
     public Carver(Mesh mesh)
     {
       this.mesh = mesh;
-      this.viri = new List<Triangle>();
+      viri = new List<Triangle>();
     }
 
     private void InfectHull()
@@ -36,7 +36,7 @@ namespace TriangleNet
             if (!o2_1.IsInfected())
             {
               o2_1.Infect();
-              this.viri.Add(o2_1.triangle);
+              viri.Add(o2_1.triangle);
             }
           }
           else if (os.seg.boundary == 0)
@@ -66,9 +66,9 @@ namespace TriangleNet
       Otri o2_1 = new Otri();
       Otri o2_2 = new Otri();
       Osub os = new Osub();
-      for (int index = 0; index < this.viri.Count; ++index)
+      for (int index = 0; index < viri.Count; ++index)
       {
-        o2_1.triangle = this.viri[index];
+        o2_1.triangle = viri[index];
         o2_1.Uninfect();
         for (o2_1.orient = 0; o2_1.orient < 3; ++o2_1.orient)
         {
@@ -78,7 +78,7 @@ namespace TriangleNet
           {
             if (os.seg != Mesh.dummysub)
             {
-              this.mesh.SubsegDealloc(os.seg);
+              mesh.SubsegDealloc(os.seg);
               if (o2_2.triangle != Mesh.dummytri)
               {
                 o2_2.Uninfect();
@@ -90,7 +90,7 @@ namespace TriangleNet
           else if (os.seg == Mesh.dummysub)
           {
             o2_2.Infect();
-            this.viri.Add(o2_2.triangle);
+            viri.Add(o2_2.triangle);
           }
           else
           {
@@ -107,21 +107,21 @@ namespace TriangleNet
         }
         o2_1.Infect();
       }
-      foreach (Triangle triangle in this.viri)
+      foreach (Triangle triangle in viri)
       {
         o2_1.triangle = triangle;
         for (o2_1.orient = 0; o2_1.orient < 3; ++o2_1.orient)
         {
           Vertex vertex = o2_1.Org();
-          if ((Point) vertex != (Point) null)
+          if (vertex != null)
           {
             bool flag = true;
-            o2_1.SetOrg((Vertex) null);
+            o2_1.SetOrg(null);
             o2_1.Onext(ref o2_2);
             while (o2_2.triangle != Mesh.dummytri && !o2_2.Equal(o2_1))
             {
               if (o2_2.IsInfected())
-                o2_2.SetOrg((Vertex) null);
+                o2_2.SetOrg(null);
               else
                 flag = false;
               o2_2.OnextSelf();
@@ -132,7 +132,7 @@ namespace TriangleNet
               while (o2_2.triangle != Mesh.dummytri)
               {
                 if (o2_2.IsInfected())
-                  o2_2.SetOrg((Vertex) null);
+                  o2_2.SetOrg(null);
                 else
                   flag = false;
                 o2_2.OprevSelf();
@@ -141,7 +141,7 @@ namespace TriangleNet
             if (flag)
             {
               vertex.type = VertexType.UndeadVertex;
-              ++this.mesh.undeads;
+              ++mesh.undeads;
             }
           }
         }
@@ -150,55 +150,55 @@ namespace TriangleNet
           o2_1.Sym(ref o2_2);
           if (o2_2.triangle == Mesh.dummytri)
           {
-            --this.mesh.hullsize;
+            --mesh.hullsize;
           }
           else
           {
             o2_2.Dissolve();
-            ++this.mesh.hullsize;
+            ++mesh.hullsize;
           }
         }
-        this.mesh.TriangleDealloc(o2_1.triangle);
+        mesh.TriangleDealloc(o2_1.triangle);
       }
-      this.viri.Clear();
+      viri.Clear();
     }
 
     public void CarveHoles()
     {
       Otri searchtri = new Otri();
-      Triangle[] triangleArray = (Triangle[]) null;
-      if (!this.mesh.behavior.Convex)
-        this.InfectHull();
-      if (!this.mesh.behavior.NoHoles)
+      Triangle[] triangleArray = null;
+      if (!mesh.behavior.Convex)
+        InfectHull();
+      if (!mesh.behavior.NoHoles)
       {
-        foreach (Point hole in this.mesh.holes)
+        foreach (Point hole in mesh.holes)
         {
-          if (this.mesh.bounds.Contains(hole))
+          if (mesh.bounds.Contains(hole))
           {
             searchtri.triangle = Mesh.dummytri;
             searchtri.orient = 0;
             searchtri.SymSelf();
-            if (Primitives.CounterClockwise((Point) searchtri.Org(), (Point) searchtri.Dest(), hole) > 0.0 && this.mesh.locator.Locate(hole, ref searchtri) != LocateResult.Outside && !searchtri.IsInfected())
+            if (Primitives.CounterClockwise(searchtri.Org(), searchtri.Dest(), hole) > 0.0 && mesh.locator.Locate(hole, ref searchtri) != LocateResult.Outside && !searchtri.IsInfected())
             {
               searchtri.Infect();
-              this.viri.Add(searchtri.triangle);
+              viri.Add(searchtri.triangle);
             }
           }
         }
       }
-      if (this.mesh.regions.Count > 0)
+      if (mesh.regions.Count > 0)
       {
         int index = 0;
-        triangleArray = new Triangle[this.mesh.regions.Count];
-        foreach (RegionPointer region in this.mesh.regions)
+        triangleArray = new Triangle[mesh.regions.Count];
+        foreach (RegionPointer region in mesh.regions)
         {
           triangleArray[index] = Mesh.dummytri;
-          if (this.mesh.bounds.Contains(region.point))
+          if (mesh.bounds.Contains(region.point))
           {
             searchtri.triangle = Mesh.dummytri;
             searchtri.orient = 0;
             searchtri.SymSelf();
-            if (Primitives.CounterClockwise((Point) searchtri.Org(), (Point) searchtri.Dest(), region.point) > 0.0 && this.mesh.locator.Locate(region.point, ref searchtri) != LocateResult.Outside && !searchtri.IsInfected())
+            if (Primitives.CounterClockwise(searchtri.Org(), searchtri.Dest(), region.point) > 0.0 && mesh.locator.Locate(region.point, ref searchtri) != LocateResult.Outside && !searchtri.IsInfected())
             {
               triangleArray[index] = searchtri.triangle;
               triangleArray[index].region = region.id;
@@ -207,18 +207,18 @@ namespace TriangleNet
           ++index;
         }
       }
-      if (this.viri.Count > 0)
-        this.Plague();
+      if (viri.Count > 0)
+        Plague();
       if (triangleArray != null)
       {
-        RegionIterator regionIterator = new RegionIterator(this.mesh);
+        RegionIterator regionIterator = new RegionIterator(mesh);
         for (int index = 0; index < triangleArray.Length; ++index)
         {
           if (triangleArray[index] != Mesh.dummytri && !Otri.IsDead(triangleArray[index]))
             regionIterator.Process(triangleArray[index]);
         }
       }
-      this.viri.Clear();
+      viri.Clear();
     }
   }
 }

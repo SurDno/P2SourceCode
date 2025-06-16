@@ -1,26 +1,24 @@
-﻿using UnityEngine;
-
-namespace Engine.Impl.UI.Controls
+﻿namespace Engine.Impl.UI.Controls
 {
   public class CurveFloatView : FloatViewBase
   {
     [SerializeField]
-    private FloatView view = (FloatView) null;
+    private FloatView view = null;
     [SerializeField]
     private AnimationCurve curve = new AnimationCurve();
 
     public override void SkipAnimation()
     {
-      if (!((Object) this.view != (Object) null))
+      if (!((Object) view != (Object) null))
         return;
-      this.view.SkipAnimation();
+      view.SkipAnimation();
     }
 
     protected override void ApplyFloatValue()
     {
-      if (!((Object) this.view != (Object) null))
+      if (!((Object) view != (Object) null))
         return;
-      this.view.FloatValue = this.curve.Evaluate(this.FloatValue);
+      view.FloatValue = curve.Evaluate(FloatValue);
     }
   }
 }

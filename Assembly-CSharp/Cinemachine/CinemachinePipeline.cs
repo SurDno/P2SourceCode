@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace Cinemachine
+﻿namespace Cinemachine
 {
   [AddComponentMenu("")]
   public sealed class CinemachinePipeline : MonoBehaviour

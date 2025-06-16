@@ -2,7 +2,7 @@
 
 namespace ParadoxNotion.Design
 {
-  [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
+  [AttributeUsage(AttributeTargets.Class, Inherited = false)]
   public class ColorAttribute : Attribute
   {
     public string hexColor;

@@ -1,4 +1,5 @@
-﻿using Engine.Common;
+﻿using System;
+using Engine.Common;
 using Engine.Common.Components;
 using Engine.Common.Services;
 using Engine.Impl.Services;
@@ -11,9 +12,6 @@ using Engine.Source.Services.Inputs;
 using Engine.Source.UI;
 using Engine.Source.Utility;
 using InputServices;
-using UnityEngine;
-using UnityEngine.Serialization;
-using UnityEngine.UI;
 
 namespace Engine.Impl.UI.Menu.Protagonist.Investigation
 {
@@ -38,38 +36,38 @@ namespace Engine.Impl.UI.Menu.Protagonist.Investigation
 
     private void Clear()
     {
-      this.image.sprite = (Sprite) null;
-      this.textTitle.StringValue = (string) null;
-      this.textInformation.StringValue = (string) null;
+      image.sprite = (Sprite) null;
+      textTitle.StringValue = null;
+      textInformation.StringValue = null;
     }
 
     protected override void OnEnable()
     {
       base.OnEnable();
-      this.lastCameraKind = ServiceLocator.GetService<CameraService>().Kind;
+      lastCameraKind = ServiceLocator.GetService<CameraService>().Kind;
       ServiceLocator.GetService<CameraService>().Kind = CameraKindEnum.Unknown;
       CursorService.Instance.Free = CursorService.Instance.Visible = true;
       ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Cancel, new GameActionHandle(((UIWindow) this).CancelListener));
       PlayerUtility.ShowPlayerHands(false);
       InstanceByRequest<EngineApplication>.Instance.IsPaused = true;
-      this.Clear();
-      if (this.Target == null || this.Target.IsDisposed)
+      Clear();
+      if (Target == null || Target.IsDisposed)
         return;
       LocalizationService service = ServiceLocator.GetService<LocalizationService>();
-      service.GetText(this.Target.Title);
-      this.textTitle.StringValue = service.GetText(this.Target.Title);
-      this.textInformation.StringValue = service.GetText(this.Target.Description);
+      service.GetText(Target.Title);
+      textTitle.StringValue = service.GetText(Target.Title);
+      textInformation.StringValue = service.GetText(Target.Description);
       Sprite sprite = (Sprite) null;
-      if (((StorableComponent) this.Target).Placeholder != null)
-        sprite = ((StorableComponent) this.Target).Placeholder.ImageInformation.Value;
-      this.image.sprite = sprite;
-      ServiceLocator.GetService<LogicEventService>().FireEntityEvent("Investigation", (IEntity) this.Target.Owner.Template);
+      if (((StorableComponent) Target).Placeholder != null)
+        sprite = ((StorableComponent) Target).Placeholder.ImageInformation.Value;
+      image.sprite = sprite;
+      ServiceLocator.GetService<LogicEventService>().FireEntityEvent("Investigation", (IEntity) Target.Owner.Template);
     }
 
     protected override void OnDisable()
     {
-      this.Clear();
-      ServiceLocator.GetService<CameraService>().Kind = this.lastCameraKind;
+      Clear();
+      ServiceLocator.GetService<CameraService>().Kind = lastCameraKind;
       ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Cancel, new GameActionHandle(((UIWindow) this).CancelListener));
       InstanceByRequest<EngineApplication>.Instance.IsPaused = false;
       PlayerUtility.ShowPlayerHands(true);
@@ -78,10 +76,10 @@ namespace Engine.Impl.UI.Menu.Protagonist.Investigation
 
     public override void Initialize()
     {
-      this.RegisterLayer<IInvestigationWindow>((IInvestigationWindow) this);
+      RegisterLayer((IInvestigationWindow) this);
       base.Initialize();
     }
 
-    public override System.Type GetWindowType() => typeof (IInvestigationWindow);
+    public override Type GetWindowType() => typeof (IInvestigationWindow);
   }
 }

@@ -2,7 +2,6 @@
 using PLVirtualMachine.Common;
 using PLVirtualMachine.Common.EngineAPI.VMECS;
 using PLVirtualMachine.Objects;
-using System;
 
 namespace PLVirtualMachine.Dynamic.Components
 {
@@ -16,7 +15,7 @@ namespace PLVirtualMachine.Dynamic.Components
       IParam obj;
       if (!((IBlueprint) templateObject).TryGetProperty("Region.RegionIndex", out obj))
         return;
-      this.RegionIndex = (int) obj.Value;
+      RegionIndex = (int) obj.Value;
     }
 
     public void InitialiseEvent(DynamicEvent target)
@@ -24,10 +23,10 @@ namespace PLVirtualMachine.Dynamic.Components
       switch (target.Name)
       {
         case "ReputationChanged":
-          this.ReputationChanged += (Action<float>) (p1 => target.RaiseFromEngineImpl((object) p1));
+          ReputationChanged += p1 => target.RaiseFromEngineImpl(p1);
           break;
         case "DiseaseLevelChanged":
-          this.DiseaseLevelChanged += (Action<int>) (p1 => target.RaiseFromEngineImpl((object) p1));
+          DiseaseLevelChanged += p1 => target.RaiseFromEngineImpl(p1);
           break;
       }
     }

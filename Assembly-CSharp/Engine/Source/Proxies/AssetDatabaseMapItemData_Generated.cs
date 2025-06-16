@@ -1,9 +1,9 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons.Cloneable;
 using Engine.Common.Commons.Converters;
 using Scripts.AssetDatabaseService;
-using System;
 
 namespace Engine.Source.Proxies
 {
@@ -18,27 +18,27 @@ namespace Engine.Source.Proxies
     public object Clone()
     {
       AssetDatabaseMapItemData_Generated instance = Activator.CreateInstance<AssetDatabaseMapItemData_Generated>();
-      this.CopyTo((object) instance);
-      return (object) instance;
+      CopyTo(instance);
+      return instance;
     }
 
     public void CopyTo(object target2)
     {
       AssetDatabaseMapItemData_Generated itemDataGenerated = (AssetDatabaseMapItemData_Generated) target2;
-      itemDataGenerated.Id = this.Id;
-      itemDataGenerated.Name = this.Name;
+      itemDataGenerated.Id = Id;
+      itemDataGenerated.Name = Name;
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.Write(writer, "Id", this.Id);
-      DefaultDataWriteUtility.Write(writer, "Name", this.Name);
+      DefaultDataWriteUtility.Write(writer, "Id", Id);
+      DefaultDataWriteUtility.Write(writer, "Name", Name);
     }
 
     public void DataRead(IDataReader reader, Type type)
     {
-      this.Id = DefaultDataReadUtility.Read(reader, "Id", this.Id);
-      this.Name = DefaultDataReadUtility.Read(reader, "Name", this.Name);
+      Id = DefaultDataReadUtility.Read(reader, "Id", Id);
+      Name = DefaultDataReadUtility.Read(reader, "Name", Name);
     }
   }
 }

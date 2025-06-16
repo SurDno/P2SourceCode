@@ -11,9 +11,9 @@ namespace PLVirtualMachine.Dynamic
 
     public OwnHashInfo(Guid ownerId, ulong eventId, Guid sendingFSMGuid)
     {
-      this.OwnerId = ownerId;
-      this.EventId = eventId;
-      this.SendingFSMGuid = sendingFSMGuid;
+      OwnerId = ownerId;
+      EventId = eventId;
+      SendingFSMGuid = sendingFSMGuid;
     }
   }
 }

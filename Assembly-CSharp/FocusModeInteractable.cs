@@ -1,12 +1,11 @@
-﻿using Engine.Common;
+﻿using System;
+using Engine.Common;
 using Engine.Common.Services;
 using Engine.Source.Commons;
 using Engine.Source.Components;
 using Engine.Source.Components.Interactable;
 using Engine.Source.Services;
 using Inspectors;
-using System;
-using UnityEngine;
 
 [DisallowMultipleComponent]
 public class FocusModeInteractable : MonoBehaviour, IEntityAttachable
@@ -20,17 +19,17 @@ public class FocusModeInteractable : MonoBehaviour, IEntityAttachable
   private bool compassEnabled = true;
   private bool visible = true;
 
-  void IEntityAttachable.Attach(IEntity owner) => this.SetOwner(owner);
+  void IEntityAttachable.Attach(IEntity owner) => SetOwner(owner);
 
-  void IEntityAttachable.Detach() => this.SetOwner((IEntity) null);
+  void IEntityAttachable.Detach() => SetOwner(null);
 
   private void OnEnable()
   {
     QuestCompassService service = ServiceLocator.GetService<QuestCompassService>();
     if (service == null)
       return;
-    this.OnEnableChanged(service.IsEnabled);
-    service.OnEnableChanged += new Action<bool>(this.OnEnableChanged);
+    OnEnableChanged(service.IsEnabled);
+    service.OnEnableChanged += OnEnableChanged;
   }
 
   private void OnDisable()
@@ -38,43 +37,43 @@ public class FocusModeInteractable : MonoBehaviour, IEntityAttachable
     QuestCompassService service = ServiceLocator.GetService<QuestCompassService>();
     if (service == null)
       return;
-    service.OnEnableChanged -= new Action<bool>(this.OnEnableChanged);
-    this.OnEnableChanged(false);
+    service.OnEnableChanged -= OnEnableChanged;
+    OnEnableChanged(false);
   }
 
   private void SetOwner(IEntity value)
   {
-    if (this.owner == value)
+    if (owner == value)
       return;
-    this.owner = value;
-    this.SetInteractableComponent(this.owner?.GetComponent<InteractableComponent>());
+    owner = value;
+    SetInteractableComponent(owner?.GetComponent<InteractableComponent>());
   }
 
   private void SetInteractableComponent(InteractableComponent value)
   {
-    if (this.interactableComponent == value)
+    if (interactableComponent == value)
       return;
-    this.interactableComponent = value;
-    this.CheckInteraction();
+    interactableComponent = value;
+    CheckInteraction();
   }
 
   private void CheckInteraction()
   {
-    if (this.interactableComponent == null || !this.interactableComponent.IsEnabled || !this.interactableComponent.Owner.IsEnabledInHierarchy)
+    if (interactableComponent == null || !interactableComponent.IsEnabled || !interactableComponent.Owner.IsEnabledInHierarchy)
     {
-      this.SetInteractionAvailable(false);
+      SetInteractionAvailable(false);
     }
     else
     {
       IEntity player = ServiceLocator.GetService<ISimulation>()?.Player;
       if (player == null)
       {
-        this.SetInteractionAvailable(false);
+        SetInteractionAvailable(false);
       }
       else
       {
         bool flag = false;
-        foreach (InteractItemInfo validateItem in this.interactableComponent.GetValidateItems(player))
+        foreach (InteractItemInfo validateItem in interactableComponent.GetValidateItems(player))
         {
           if (!validateItem.Invalid && !(validateItem.Item.Blueprint.Id == Guid.Empty))
           {
@@ -82,56 +81,56 @@ public class FocusModeInteractable : MonoBehaviour, IEntityAttachable
             break;
           }
         }
-        this.SetInteractionAvailable(flag);
+        SetInteractionAvailable(flag);
       }
     }
   }
 
   private void SetInteractionAvailable(bool value)
   {
-    if (this.interactionAvailable == value)
+    if (interactionAvailable == value)
       return;
-    this.interactionAvailable = value;
-    this.UpdateVisibility();
+    interactionAvailable = value;
+    UpdateVisibility();
   }
 
   private void OnEnableChanged(bool value)
   {
-    if (this.compassEnabled == value)
+    if (compassEnabled == value)
       return;
-    this.compassEnabled = value;
+    compassEnabled = value;
     if (value)
-      this.CheckInteraction();
-    this.UpdateVisibility();
+      CheckInteraction();
+    UpdateVisibility();
   }
 
   private void SetVisibility(bool value)
   {
-    if (this.visible == value)
+    if (visible == value)
       return;
-    this.visible = value;
-    if ((UnityEngine.Object) this.effect == (UnityEngine.Object) null)
+    visible = value;
+    if ((UnityEngine.Object) effect == (UnityEngine.Object) null)
     {
-      this.effect = this.GetComponent<FocusEffect>();
-      if (this.visible)
+      effect = this.GetComponent<FocusEffect>();
+      if (visible)
       {
-        if (!((UnityEngine.Object) this.effect == (UnityEngine.Object) null))
+        if (!((UnityEngine.Object) effect == (UnityEngine.Object) null))
           return;
-        this.effect = this.gameObject.AddComponent<FocusEffect>();
+        effect = this.gameObject.AddComponent<FocusEffect>();
       }
       else
       {
-        if (!((UnityEngine.Object) this.effect != (UnityEngine.Object) null))
+        if (!((UnityEngine.Object) effect != (UnityEngine.Object) null))
           return;
-        this.effect.SetActive(false);
+        effect.SetActive(false);
       }
     }
     else
-      this.effect.SetActive(this.visible);
+      effect.SetActive(visible);
   }
 
   private void UpdateVisibility()
   {
-    this.SetVisibility(this.interactionAvailable && this.compassEnabled);
+    SetVisibility(interactionAvailable && compassEnabled);
   }
 }

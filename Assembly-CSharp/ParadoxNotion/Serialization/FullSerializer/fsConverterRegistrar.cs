@@ -1,8 +1,8 @@
-﻿using ParadoxNotion.Serialization.FullSerializer.Internal;
-using ParadoxNotion.Serialization.FullSerializer.Internal.DirectConverters;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using ParadoxNotion.Serialization.FullSerializer.Internal;
+using ParadoxNotion.Serialization.FullSerializer.Internal.DirectConverters;
 
 namespace ParadoxNotion.Serialization.FullSerializer
 {
@@ -24,12 +24,12 @@ namespace ParadoxNotion.Serialization.FullSerializer
       foreach (FieldInfo declaredField in typeof (fsConverterRegistrar).GetDeclaredFields())
       {
         if (declaredField.Name.StartsWith("Register_"))
-          fsConverterRegistrar.Converters.Add(declaredField.FieldType);
+          Converters.Add(declaredField.FieldType);
       }
       foreach (MethodInfo declaredMethod in typeof (fsConverterRegistrar).GetDeclaredMethods())
       {
         if (declaredMethod.Name.StartsWith("Register_"))
-          declaredMethod.Invoke((object) null, (object[]) null);
+          declaredMethod.Invoke(null, null);
       }
     }
   }

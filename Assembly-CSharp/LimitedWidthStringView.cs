@@ -1,6 +1,4 @@
 ﻿using Engine.Impl.UI.Controls;
-using UnityEngine;
-using UnityEngine.UI;
 
 public class LimitedWidthStringView : StringView
 {
@@ -19,10 +17,10 @@ public class LimitedWidthStringView : StringView
 
   protected override void ApplyStringValue()
   {
-    if (!((Object) this.view != (Object) null))
+    if (!((Object) view != (Object) null))
       return;
-    this.view.StringValue = this.StringValue;
-    if ((Object) this.layout != (Object) null && (Object) this.text != (Object) null)
-      this.layout.preferredWidth = (double) this.text.preferredWidth > (double) this.maxWidth ? this.maxWidth : -1f;
+    view.StringValue = StringValue;
+    if ((Object) layout != (Object) null && (Object) text != (Object) null)
+      layout.preferredWidth = (double) text.preferredWidth > maxWidth ? maxWidth : -1f;
   }
 }

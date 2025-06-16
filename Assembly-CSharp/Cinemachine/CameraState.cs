@@ -1,18 +1,17 @@
-﻿using Cinemachine.Utility;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using UnityEngine;
+using Cinemachine.Utility;
 
 namespace Cinemachine
 {
   public struct CameraState
   {
     public static Vector3 kNoPoint = new Vector3(float.NaN, float.NaN, float.NaN);
-    private CameraState.CustomBlendable mCustom0;
-    private CameraState.CustomBlendable mCustom1;
-    private CameraState.CustomBlendable mCustom2;
-    private CameraState.CustomBlendable mCustom3;
-    private List<CameraState.CustomBlendable> m_CustomOverflow;
+    private CustomBlendable mCustom0;
+    private CustomBlendable mCustom1;
+    private CustomBlendable mCustom2;
+    private CustomBlendable mCustom3;
+    private List<CustomBlendable> m_CustomOverflow;
 
     public LensSettings Lens { get; set; }
 
@@ -20,7 +19,7 @@ namespace Cinemachine
 
     public Vector3 ReferenceLookAt { get; set; }
 
-    public bool HasLookAt => this.ReferenceLookAt == this.ReferenceLookAt;
+    public bool HasLookAt => ReferenceLookAt == ReferenceLookAt;
 
     public Vector3 RawPosition { get; set; }
 
@@ -34,17 +33,17 @@ namespace Cinemachine
 
     public Quaternion OrientationCorrection { get; set; }
 
-    public Vector3 CorrectedPosition => this.RawPosition + this.PositionCorrection;
+    public Vector3 CorrectedPosition => RawPosition + PositionCorrection;
 
-    public Quaternion CorrectedOrientation => this.RawOrientation * this.OrientationCorrection;
+    public Quaternion CorrectedOrientation => RawOrientation * OrientationCorrection;
 
-    public Vector3 FinalPosition => this.RawPosition + this.PositionCorrection;
+    public Vector3 FinalPosition => RawPosition + PositionCorrection;
 
     public Quaternion FinalOrientation
     {
       get
       {
-        return (double) Mathf.Abs(this.Lens.Dutch) > 9.9999997473787516E-05 ? this.CorrectedOrientation * Quaternion.AngleAxis(this.Lens.Dutch, Vector3.forward) : this.CorrectedOrientation;
+        return (double) Mathf.Abs(Lens.Dutch) > 9.9999997473787516E-05 ? CorrectedOrientation * Quaternion.AngleAxis(Lens.Dutch, Vector3.forward) : CorrectedOrientation;
       }
     }
 
@@ -52,11 +51,10 @@ namespace Cinemachine
     {
       get
       {
-        return new CameraState()
-        {
+        return new CameraState {
           Lens = LensSettings.Default,
           ReferenceUp = Vector3.up,
-          ReferenceLookAt = CameraState.kNoPoint,
+          ReferenceLookAt = kNoPoint,
           RawPosition = Vector3.zero,
           RawOrientation = Quaternion.identity,
           ShotQuality = 1f,
@@ -69,70 +67,70 @@ namespace Cinemachine
 
     public int NumCustomBlendables { get; private set; }
 
-    public CameraState.CustomBlendable GetCustomBlendable(int index)
+    public CustomBlendable GetCustomBlendable(int index)
     {
       switch (index)
       {
         case 0:
-          return this.mCustom0;
+          return mCustom0;
         case 1:
-          return this.mCustom1;
+          return mCustom1;
         case 2:
-          return this.mCustom2;
+          return mCustom2;
         case 3:
-          return this.mCustom3;
+          return mCustom3;
         default:
           index -= 4;
-          return this.m_CustomOverflow != null && index < this.m_CustomOverflow.Count ? this.m_CustomOverflow[index] : new CameraState.CustomBlendable((UnityEngine.Object) null, 0.0f);
+          return m_CustomOverflow != null && index < m_CustomOverflow.Count ? m_CustomOverflow[index] : new CustomBlendable((UnityEngine.Object) null, 0.0f);
       }
     }
 
     private int FindCustomBlendable(UnityEngine.Object custom)
     {
-      if (this.mCustom0.m_Custom == custom)
+      if (mCustom0.m_Custom == custom)
         return 0;
-      if (this.mCustom1.m_Custom == custom)
+      if (mCustom1.m_Custom == custom)
         return 1;
-      if (this.mCustom2.m_Custom == custom)
+      if (mCustom2.m_Custom == custom)
         return 2;
-      if (this.mCustom3.m_Custom == custom)
+      if (mCustom3.m_Custom == custom)
         return 3;
-      if (this.m_CustomOverflow != null)
+      if (m_CustomOverflow != null)
       {
-        for (int index = 0; index < this.m_CustomOverflow.Count; ++index)
+        for (int index = 0; index < m_CustomOverflow.Count; ++index)
         {
-          if (this.m_CustomOverflow[index].m_Custom == custom)
+          if (m_CustomOverflow[index].m_Custom == custom)
             return index + 4;
         }
       }
       return -1;
     }
 
-    public void AddCustomBlendable(CameraState.CustomBlendable b)
+    public void AddCustomBlendable(CustomBlendable b)
     {
-      int index = this.FindCustomBlendable(b.m_Custom);
+      int index = FindCustomBlendable(b.m_Custom);
       if (index >= 0)
-        b.m_Weight += this.GetCustomBlendable(index).m_Weight;
+        b.m_Weight += GetCustomBlendable(index).m_Weight;
       else
-        index = this.NumCustomBlendables++;
+        index = NumCustomBlendables++;
       switch (index)
       {
         case 0:
-          this.mCustom0 = b;
+          mCustom0 = b;
           break;
         case 1:
-          this.mCustom1 = b;
+          mCustom1 = b;
           break;
         case 2:
-          this.mCustom2 = b;
+          mCustom2 = b;
           break;
         case 3:
-          this.mCustom3 = b;
+          mCustom3 = b;
           break;
         default:
-          if (this.m_CustomOverflow == null)
-            this.m_CustomOverflow = new List<CameraState.CustomBlendable>();
-          this.m_CustomOverflow.Add(b);
+          if (m_CustomOverflow == null)
+            m_CustomOverflow = new List<CustomBlendable>();
+          m_CustomOverflow.Add(b);
           break;
       }
     }
@@ -151,7 +149,7 @@ namespace Cinemachine
       Vector3 vector3 = Vector3.zero;
       if (!stateA.HasLookAt || !stateB.HasLookAt)
       {
-        cameraState.ReferenceLookAt = CameraState.kNoPoint;
+        cameraState.ReferenceLookAt = kNoPoint;
       }
       else
       {
@@ -164,7 +162,7 @@ namespace Cinemachine
             FieldOfView = cameraState.InterpolateFOV(fieldOfView1, fieldOfView2, Mathf.Max((stateA.ReferenceLookAt - stateA.CorrectedPosition).magnitude, stateA.Lens.NearClipPlane), Mathf.Max((stateB.ReferenceLookAt - stateB.CorrectedPosition).magnitude, stateB.Lens.NearClipPlane), t)
           };
           cameraState.Lens = lens;
-          t1 = Mathf.Abs((float) (((double) lens.FieldOfView - (double) fieldOfView1) / ((double) fieldOfView2 - (double) fieldOfView1)));
+          t1 = Mathf.Abs((float) ((lens.FieldOfView - (double) fieldOfView1) / (fieldOfView2 - (double) fieldOfView1)));
         }
         cameraState.ReferenceLookAt = Vector3.Lerp(stateA.ReferenceLookAt, stateB.ReferenceLookAt, t1);
         if ((double) Quaternion.Angle(stateA.RawOrientation, stateB.RawOrientation) > 9.9999997473787516E-05)
@@ -191,16 +189,16 @@ namespace Cinemachine
       }
       for (int index = 0; index < stateA.NumCustomBlendables; ++index)
       {
-        CameraState.CustomBlendable customBlendable = stateA.GetCustomBlendable(index);
+        CustomBlendable customBlendable = stateA.GetCustomBlendable(index);
         customBlendable.m_Weight *= 1f - t;
-        if ((double) customBlendable.m_Weight > 9.9999997473787516E-05)
+        if (customBlendable.m_Weight > 9.9999997473787516E-05)
           cameraState.AddCustomBlendable(customBlendable);
       }
       for (int index = 0; index < stateB.NumCustomBlendables; ++index)
       {
-        CameraState.CustomBlendable customBlendable = stateB.GetCustomBlendable(index);
+        CustomBlendable customBlendable = stateB.GetCustomBlendable(index);
         customBlendable.m_Weight *= t;
-        if ((double) customBlendable.m_Weight > 9.9999997473787516E-05)
+        if (customBlendable.m_Weight > 9.9999997473787516E-05)
           cameraState.AddCustomBlendable(customBlendable);
       }
       return cameraState;
@@ -208,10 +206,10 @@ namespace Cinemachine
 
     private float InterpolateFOV(float fovA, float fovB, float dA, float dB, float t)
     {
-      float num1 = Mathf.Lerp(dA * 2f * Mathf.Tan((float) ((double) fovA * (Math.PI / 180.0) / 2.0)), dB * 2f * Mathf.Tan((float) ((double) fovB * (Math.PI / 180.0) / 2.0)), t);
+      float num1 = Mathf.Lerp(dA * 2f * Mathf.Tan((float) (fovA * (Math.PI / 180.0) / 2.0)), dB * 2f * Mathf.Tan((float) (fovB * (Math.PI / 180.0) / 2.0)), t);
       float num2 = 179f;
       float num3 = Mathf.Lerp(dA, dB, t);
-      if ((double) num3 > 9.9999997473787516E-05)
+      if (num3 > 9.9999997473787516E-05)
         num2 = (float) (2.0 * (double) Mathf.Atan(num1 / (2f * num3)) * 57.295780181884766);
       return Mathf.Clamp(num2, Mathf.Min(fovA, fovB), Mathf.Max(fovA, fovB));
     }
@@ -223,8 +221,8 @@ namespace Cinemachine
 
       public CustomBlendable(UnityEngine.Object custom, float weight)
       {
-        this.m_Custom = custom;
-        this.m_Weight = weight;
+        m_Custom = custom;
+        m_Weight = weight;
       }
     }
   }

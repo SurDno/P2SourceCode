@@ -1,6 +1,5 @@
 ﻿using Engine.Common.Generator;
 using Inspectors;
-using UnityEngine;
 
 namespace Engine.Source.Effects.Engine
 {
@@ -14,7 +13,7 @@ namespace Engine.Source.Effects.Engine
     {
       get
       {
-        return (this.a != null ? this.a.ValueView : "null") + " ^= " + (this.b != null ? this.b.ValueView : "null");
+        return (a != null ? a.ValueView : "null") + " ^= " + (b != null ? b.ValueView : "null");
       }
     }
 
@@ -22,7 +21,7 @@ namespace Engine.Source.Effects.Engine
     {
       get
       {
-        return (this.a != null ? this.a.TypeView : "null") + " ^= " + (this.b != null ? this.b.TypeView : "null");
+        return (a != null ? a.TypeView : "null") + " ^= " + (b != null ? b.TypeView : "null");
       }
     }
   }

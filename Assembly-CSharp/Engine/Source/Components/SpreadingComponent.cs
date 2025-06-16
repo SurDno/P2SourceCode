@@ -13,25 +13,25 @@ namespace Engine.Source.Components
   [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
   public class SpreadingComponent : EngineComponent
   {
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy()]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected DiseasedStateEnum diseasedState;
     [FromLocator]
     private SpreadingService spreadingService;
 
-    public DiseasedStateEnum DiseasedState => this.diseasedState;
+    public DiseasedStateEnum DiseasedState => diseasedState;
 
     public override void OnAdded()
     {
       base.OnAdded();
-      this.spreadingService.AddSpreading(this);
+      spreadingService.AddSpreading(this);
     }
 
     public override void OnRemoved()
     {
-      this.spreadingService.RemoveSpreading(this);
+      spreadingService.RemoveSpreading(this);
       base.OnRemoved();
     }
   }

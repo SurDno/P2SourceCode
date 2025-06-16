@@ -20,12 +20,12 @@ namespace FlowCanvas
       this.getter = getter as ValueHandler<T>;
       if (this.getter != null)
         return;
-      this.getter = (ValueHandler<T>) (() => (T) getter());
+      this.getter = () => (T) getter();
     }
 
     public ValueHandler<T> getter { get; set; }
 
-    public override object GetValue() => (object) this.getter();
+    public override object GetValue() => getter();
 
     public override Type type => typeof (T);
   }

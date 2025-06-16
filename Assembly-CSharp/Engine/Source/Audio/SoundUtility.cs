@@ -1,8 +1,6 @@
-﻿using Engine.Source.Commons;
-using System;
+﻿using System;
 using System.Collections;
-using UnityEngine;
-using UnityEngine.Audio;
+using Engine.Source.Commons;
 
 namespace Engine.Source.Audio
 {
@@ -18,7 +16,7 @@ namespace Engine.Source.Audio
     public static void SetTime(AudioSource source, float time)
     {
       int samples = source.clip.samples;
-      int num = Mathf.Clamp((int) ((double) time * (double) samples / (double) source.clip.length), 0, samples - 1);
+      int num = Mathf.Clamp((int) (time * (double) samples / (double) source.clip.length), 0, samples - 1);
       source.timeSamples = num;
     }
 
@@ -35,7 +33,7 @@ namespace Engine.Source.Audio
       string context = "",
       Action complete = null)
     {
-      return SoundUtility.PlayAudioClip(target, clip, mixer, volume, 1f, minDistance, maxDistance, spatialize, fadeTime, usePause, context, complete);
+      return PlayAudioClip(target, clip, mixer, volume, 1f, minDistance, maxDistance, spatialize, fadeTime, usePause, context, complete);
     }
 
     public static AudioState PlayAudioClip3D(
@@ -50,7 +48,7 @@ namespace Engine.Source.Audio
       string context = "",
       Action complete = null)
     {
-      return SoundUtility.PlayAudioClip(target, clip, mixer, volume, 1f, spatialize, fadeTime, customSource, usePause, context, complete);
+      return PlayAudioClip(target, clip, mixer, volume, 1f, spatialize, fadeTime, customSource, usePause, context, complete);
     }
 
     public static AudioState PlayAudioClip2D(
@@ -62,18 +60,18 @@ namespace Engine.Source.Audio
       string context = "",
       Action complete = null)
     {
-      return SoundUtility.PlayAudioClip((Transform) null, clip, mixer, volume, 0.0f, 0.0f, 0.0f, false, fadeTime, usePause, context, complete);
+      return PlayAudioClip((Transform) null, clip, mixer, volume, 0.0f, 0.0f, 0.0f, false, fadeTime, usePause, context, complete);
     }
 
     public static float ComputeFade(float progress, float length, float fade)
     {
-      return SoundUtility.ComputeFade(progress, length, fade, fade);
+      return ComputeFade(progress, length, fade, fade);
     }
 
     public static float ComputeFade(float progress, float length, float fadeIn, float fideOut)
     {
       progress = Mathf.Min(progress, length);
-      return Mathf.Clamp01(Mathf.Min((double) fadeIn > 0.0 ? Mathf.Clamp01(progress / fadeIn) : 1f, (double) fideOut > 0.0 ? 1f - Mathf.Clamp01((progress - (length - fideOut)) / fideOut) : 1f));
+      return Mathf.Clamp01(Mathf.Min(fadeIn > 0.0 ? Mathf.Clamp01(progress / fadeIn) : 1f, fideOut > 0.0 ? 1f - Mathf.Clamp01((progress - (length - fideOut)) / fideOut) : 1f));
     }
 
     public static AudioState PlayAudioClip(
@@ -100,13 +98,13 @@ namespace Engine.Source.Audio
       audioState.AudioSource = component;
       component.clip = clip;
       float length = clip.length;
-      float fade = SoundUtility.ComputeFade(0.0f, length, fadeTime);
+      float fade = ComputeFade(0.0f, length, fadeTime);
       component.volume = fade * volume;
       component.outputAudioMixerGroup = mixer;
       component.loop = false;
       component.PlayAndCheck();
       Debug.Log((object) ObjectInfoUtility.GetStream().Append("[Sounds]").Append(" Play sound, name : ").Append(clip.name).Append(" , volume : ").Append(volume).Append(" , target : ").Append((UnityEngine.Object) target != (UnityEngine.Object) null ? target.name : "null").Append(" , context : ").Append(context));
-      CoroutineService.Instance.Route(SoundUtility.ComputeVolume(target, audioState, volume, fadeTime, length, usePause, complete));
+      CoroutineService.Instance.Route(ComputeVolume(target, audioState, volume, fadeTime, length, usePause, complete));
       return audioState;
     }
 
@@ -135,7 +133,7 @@ namespace Engine.Source.Audio
       audioState.AudioSource = source;
       source.clip = clip;
       float length = clip.length;
-      float fade = SoundUtility.ComputeFade(0.0f, length, fadeTime);
+      float fade = ComputeFade(0.0f, length, fadeTime);
       source.volume = fade * volume;
       source.rolloffMode = AudioRolloffMode.Linear;
       source.spatialBlend = spatialBlend;
@@ -147,7 +145,7 @@ namespace Engine.Source.Audio
       source.spatialize = spatialize;
       source.PlayAndCheck();
       Debug.Log((object) ObjectInfoUtility.GetStream().Append("[Sounds]").Append(" Play sound, name : ").Append(clip.name).Append(" , volume : ").Append(volume).Append(" , target : ").Append((UnityEngine.Object) target != (UnityEngine.Object) null ? target.name : "null").Append(" , context : ").Append(context));
-      CoroutineService.Instance.Route(SoundUtility.ComputeVolume(target, audioState, volume, fadeTime, length, usePause, complete));
+      CoroutineService.Instance.Route(ComputeVolume(target, audioState, volume, fadeTime, length, usePause, complete));
       return audioState;
     }
 
@@ -175,7 +173,7 @@ namespace Engine.Source.Audio
       audioState.AudioSource = component;
       component.clip = clip;
       float length = clip.length;
-      float fade = SoundUtility.ComputeFade(0.0f, length, fadeTime);
+      float fade = ComputeFade(0.0f, length, fadeTime);
       component.volume = fade * volume;
       component.spatialBlend = spatialBlend;
       component.outputAudioMixerGroup = mixer;
@@ -184,7 +182,7 @@ namespace Engine.Source.Audio
       component.spatialize = spatialize;
       component.PlayAndCheck();
       Debug.Log((object) ObjectInfoUtility.GetStream().Append("[Sounds]").Append(" Play sound, name : ").Append(clip.name).Append(" , volume : ").Append(volume).Append(" , target : ").Append((UnityEngine.Object) target != (UnityEngine.Object) null ? target.name : "null").Append(" , mixer : ").Append(mixer.name).Append(" , context : ").Append(context));
-      CoroutineService.Instance.Route(SoundUtility.ComputeVolume(target, audioState, volume, fadeTime, length, usePause, complete));
+      CoroutineService.Instance.Route(ComputeVolume(target, audioState, volume, fadeTime, length, usePause, complete));
       return audioState;
     }
 
@@ -201,7 +199,7 @@ namespace Engine.Source.Audio
       {
         do
         {
-          yield return (object) null;
+          yield return null;
           if (audioState != null)
           {
             if (InstanceByRequest<EngineApplication>.Instance.ViewEnabled && usePause)
@@ -231,7 +229,7 @@ namespace Engine.Source.Audio
             audioState.AudioSource.transform.rotation = target.rotation;
           }
           float advance = audioState.AudioSource.time;
-          float fade = SoundUtility.ComputeFade(advance, length, fadeTime);
+          float fade = ComputeFade(advance, length, fadeTime);
           audioState.AudioSource.volume = fade * volume;
         }
         else

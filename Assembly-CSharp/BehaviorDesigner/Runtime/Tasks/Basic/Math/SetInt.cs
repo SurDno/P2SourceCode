@@ -1,11 +1,11 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons;
 using Engine.Common.Commons.Converters;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Scripts.Tools.Serializations.Converters;
-using UnityEngine;
 
 namespace BehaviorDesigner.Runtime.Tasks.Basic.Math
 {
@@ -14,53 +14,53 @@ namespace BehaviorDesigner.Runtime.Tasks.Basic.Math
   [TaskDescription("Sets an int value")]
   [Factory]
   [GeneratePartial(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
-  public class SetInt : BehaviorDesigner.Runtime.Tasks.Action, IStub, ISerializeDataWrite, ISerializeDataRead
+  public class SetInt : Action, IStub, ISerializeDataWrite, ISerializeDataRead
   {
-    [BehaviorDesigner.Runtime.Tasks.Tooltip("The int value to set")]
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [Tooltip("The int value to set")]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [SerializeField]
     public SharedInt intValue;
-    [BehaviorDesigner.Runtime.Tasks.Tooltip("The variable to store the result")]
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [Tooltip("The variable to store the result")]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy()]
     [SerializeField]
     public SharedInt storeResult;
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.WriteSerialize<NodeData>(writer, "NodeData", this.nodeData);
-      DefaultDataWriteUtility.Write(writer, "Id", this.id);
-      DefaultDataWriteUtility.Write(writer, "FriendlyName", this.friendlyName);
-      DefaultDataWriteUtility.Write(writer, "Instant", this.instant);
-      DefaultDataWriteUtility.Write(writer, "Disabled", this.disabled);
-      BehaviorTreeDataWriteUtility.WriteShared<SharedInt>(writer, "IntValue", this.intValue);
-      BehaviorTreeDataWriteUtility.WriteShared<SharedInt>(writer, "StoreResult", this.storeResult);
+      DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
+      DefaultDataWriteUtility.Write(writer, "Id", id);
+      DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
+      DefaultDataWriteUtility.Write(writer, "Instant", instant);
+      DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
+      BehaviorTreeDataWriteUtility.WriteShared(writer, "IntValue", intValue);
+      BehaviorTreeDataWriteUtility.WriteShared(writer, "StoreResult", storeResult);
     }
 
-    public void DataRead(IDataReader reader, System.Type type)
+    public void DataRead(IDataReader reader, Type type)
     {
-      this.nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
-      this.id = DefaultDataReadUtility.Read(reader, "Id", this.id);
-      this.friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", this.friendlyName);
-      this.instant = DefaultDataReadUtility.Read(reader, "Instant", this.instant);
-      this.disabled = DefaultDataReadUtility.Read(reader, "Disabled", this.disabled);
-      this.intValue = BehaviorTreeDataReadUtility.ReadShared<SharedInt>(reader, "IntValue", this.intValue);
-      this.storeResult = BehaviorTreeDataReadUtility.ReadShared<SharedInt>(reader, "StoreResult", this.storeResult);
+      nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
+      id = DefaultDataReadUtility.Read(reader, "Id", id);
+      friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
+      instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
+      disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
+      intValue = BehaviorTreeDataReadUtility.ReadShared(reader, "IntValue", intValue);
+      storeResult = BehaviorTreeDataReadUtility.ReadShared(reader, "StoreResult", storeResult);
     }
 
     public override TaskStatus OnUpdate()
     {
-      this.storeResult.Value = this.intValue.Value;
+      storeResult.Value = intValue.Value;
       return TaskStatus.Success;
     }
 
     public override void OnReset()
     {
-      this.intValue.Value = 0;
-      this.storeResult.Value = 0;
+      intValue.Value = 0;
+      storeResult.Value = 0;
     }
   }
 }

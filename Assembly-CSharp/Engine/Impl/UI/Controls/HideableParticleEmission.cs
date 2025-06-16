@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace Engine.Impl.UI.Controls
+﻿namespace Engine.Impl.UI.Controls
 {
   public class HideableParticleEmission : HideableView
   {
@@ -9,9 +7,9 @@ namespace Engine.Impl.UI.Controls
 
     protected override void ApplyVisibility()
     {
-      if (!((Object) this.particleSystem != (Object) null))
+      if (!((Object) particleSystem != (Object) null))
         return;
-      this.particleSystem.emission.enabled = this.Visible;
+      particleSystem.emission.enabled = Visible;
     }
   }
 }

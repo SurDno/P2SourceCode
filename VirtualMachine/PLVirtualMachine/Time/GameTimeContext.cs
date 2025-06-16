@@ -1,4 +1,7 @@
-﻿using Cofe.Loggers;
+﻿using System;
+using System.Collections.Generic;
+using System.Xml;
+using Cofe.Loggers;
 using Cofe.Serializations.Data;
 using Engine.Common.Comparers;
 using Engine.Common.Services;
@@ -8,9 +11,6 @@ using PLVirtualMachine.Common.EngineAPI;
 using PLVirtualMachine.Common.Serialization;
 using PLVirtualMachine.Data.SaveLoad;
 using PLVirtualMachine.Dynamic;
-using System;
-using System.Collections.Generic;
-using System.Xml;
 
 namespace PLVirtualMachine.Time
 {
@@ -26,7 +26,7 @@ namespace PLVirtualMachine.Time
     private int currProcTimerIndex = -1;
     private List<GameTimer> gameTimerList = new List<GameTimer>();
     private Stack<int> freeTimersIndexesStack = new Stack<int>();
-    private Dictionary<ulong, int> loadingTimersIdIndexesDict = new Dictionary<ulong, int>((IEqualityComparer<ulong>) UlongComparer.Instance);
+    private Dictionary<ulong, int> loadingTimersIdIndexesDict = new Dictionary<ulong, int>(UlongComparer.Instance);
     private SortedList<ulong, int> timerPriorityList = new SortedList<ulong, int>();
     private IGameMode gameMode;
     private static bool isUpdateMode;
@@ -47,76 +47,76 @@ namespace PLVirtualMachine.Time
         if (gameMode.StartGameTime == null)
           Logger.AddError(" Invalid game time context creation: start time not defined! : " + DynamicFSM.CurrentStateInfo);
         this.gameMode = gameMode;
-        this.Init();
+        Init();
       }
     }
 
-    public IGameMode StaticGameMode => this.gameMode;
+    public IGameMode StaticGameMode => gameMode;
 
-    public bool IsMain => this.isMain;
+    public bool IsMain => isMain;
 
     public GameTime GameTime
     {
-      get => this.gameTime;
+      get => gameTime;
       set
       {
         if (value == null)
         {
-          Logger.AddError("Invalid game time value received at game time context " + this.Name);
+          Logger.AddError("Invalid game time value received at game time context " + Name);
         }
         else
         {
-          this.gameTime = new GameTime(value);
-          this.gameDayTime.CopyFrom((object) this.gameTime);
-          this.gameDayTime.Days = (ushort) 0;
+          gameTime = new GameTime(value);
+          gameDayTime.CopyFrom(gameTime);
+          gameDayTime.Days = 0;
         }
       }
     }
 
-    public GameTime GameDayTime => this.gameDayTime;
+    public GameTime GameDayTime => gameDayTime;
 
     public GameTime SolarTime
     {
-      get => this.solarTime;
-      set => this.solarTime = value;
+      get => solarTime;
+      set => solarTime = value;
     }
 
     public float GameTimeSpeed
     {
-      get => this.gameTimeSpeedFactor;
-      set => this.gameTimeSpeedFactor = value;
+      get => gameTimeSpeedFactor;
+      set => gameTimeSpeedFactor = value;
     }
 
     public float SolarTimeSpeed
     {
-      get => this.solarTimeSpeedFactor;
-      set => this.solarTimeSpeedFactor = value;
+      get => solarTimeSpeedFactor;
+      set => solarTimeSpeedFactor = value;
     }
 
-    public string Name => this.contextName;
+    public string Name => contextName;
 
     public void Update(double fDtime, bool bForceEvents = true)
     {
-      this.gameTime.Process(fDtime);
+      gameTime.Process(fDtime);
       ServiceLocator.GetService<ITimeService>();
-      GameTimeContext.TIMERS_LIST_PROCESSIN_ON = true;
-      foreach (KeyValuePair<ulong, int> timerPriority in this.timerPriorityList)
+      TIMERS_LIST_PROCESSIN_ON = true;
+      foreach (KeyValuePair<ulong, int> timerPriority in timerPriorityList)
       {
         int index = timerPriority.Value;
-        if (this.gameTimerList[index].Active)
+        if (gameTimerList[index].Active)
         {
           if (!bForceEvents)
-            this.gameTimerList[index].EventsCutTime = this.gameTime;
-          if (this.gameTimerList[index].GTType == EGameTimerType.GAME_TIMER_TYPE_ABSOLUTE)
-            this.gameTimerList[index].Check(this.gameTime);
+            gameTimerList[index].EventsCutTime = gameTime;
+          if (gameTimerList[index].GTType == EGameTimerType.GAME_TIMER_TYPE_ABSOLUTE)
+            gameTimerList[index].Check(gameTime);
           else
-            this.gameTimerList[index].Check(fDtime, bForceEvents);
+            gameTimerList[index].Check(fDtime, bForceEvents);
         }
       }
-      GameTimeContext.TIMERS_LIST_PROCESSIN_ON = false;
-      this.gameDayTime.CopyFrom((object) this.gameTime);
-      this.gameDayTime.Days = (ushort) 0;
-      this.currProcTimerIndex = -1;
+      TIMERS_LIST_PROCESSIN_ON = false;
+      gameDayTime.CopyFrom(gameTime);
+      gameDayTime.Days = 0;
+      currProcTimerIndex = -1;
     }
 
     public GameTimer StartTimer(
@@ -126,99 +126,99 @@ namespace PLVirtualMachine.Time
       GameTime targetTime,
       bool bIsRepeat)
     {
-      if (this.freeTimersIndexesStack.Count > 0)
+      if (freeTimersIndexesStack.Count > 0)
       {
-        int index = this.freeTimersIndexesStack.Pop();
-        if (index < 0 || index >= this.gameTimerList.Count)
+        int index = freeTimersIndexesStack.Pop();
+        if (index < 0 || index >= gameTimerList.Count)
         {
-          Logger.AddError(string.Format("Invalid free timer index {0}, timers list count = {1} at {2}", (object) index, (object) this.gameTimerList.Count, (object) DynamicFSM.CurrentStateInfo));
+          Logger.AddError(string.Format("Invalid free timer index {0}, timers list count = {1} at {2}", index, gameTimerList.Count, DynamicFSM.CurrentStateInfo));
         }
         else
         {
-          if (this.currProcTimerIndex < 0 || index < this.currProcTimerIndex)
+          if (currProcTimerIndex < 0 || index < currProcTimerIndex)
           {
-            this.gameTimerList[index].Start(timerType, initiatorFSMGuid, stateId, targetTime, bIsRepeat);
-            return this.gameTimerList[index];
+            gameTimerList[index].Start(timerType, initiatorFSMGuid, stateId, targetTime, bIsRepeat);
+            return gameTimerList[index];
           }
-          this.freeTimersIndexesStack.Push(index);
+          freeTimersIndexesStack.Push(index);
         }
       }
-      int count = this.gameTimerList.Count;
+      int count = gameTimerList.Count;
       GameTimer gameTimer = new GameTimer(count);
       gameTimer.Start(timerType, initiatorFSMGuid, stateId, targetTime, bIsRepeat);
-      this.gameTimerList.Add(gameTimer);
-      this.OnNewTimer(count);
+      gameTimerList.Add(gameTimer);
+      OnNewTimer(count);
       int dynamicFsmObjectsCount = VirtualMachine.Instance.DynamicFSMObjectsCount;
-      if (VirtualMachine.Instance.IsLoaded && this.gameTimerList.Count > dynamicFsmObjectsCount * 4)
+      if (VirtualMachine.Instance.IsLoaded && gameTimerList.Count > dynamicFsmObjectsCount * 4)
         Logger.AddError("Warning: on start game timer too many timers created!!! at " + DynamicFSM.CurrentStateInfo);
       return gameTimer;
     }
 
     public void StopTimer(ulong timerID)
     {
-      int timerIndexById = this.GetTimerIndexByID(timerID);
-      if (timerIndexById < 0 || timerIndexById >= this.gameTimerList.Count)
+      int timerIndexById = GetTimerIndexByID(timerID);
+      if (timerIndexById < 0 || timerIndexById >= gameTimerList.Count)
       {
-        Logger.AddWarning(string.Format("Invalid stopping game timer index {0} at {1}", (object) timerIndexById, (object) DynamicFSM.CurrentStateInfo));
+        Logger.AddWarning(string.Format("Invalid stopping game timer index {0} at {1}", timerIndexById, DynamicFSM.CurrentStateInfo));
       }
       else
       {
-        if ((long) this.gameTimerList[timerIndexById].TimerGuid != (long) timerID)
+        if ((long) gameTimerList[timerIndexById].TimerGuid != (long) timerID)
           return;
-        this.gameTimerList[timerIndexById].Stop();
-        if (this.freeTimersIndexesStack.Contains(timerIndexById))
+        gameTimerList[timerIndexById].Stop();
+        if (freeTimersIndexesStack.Contains(timerIndexById))
           return;
-        this.freeTimersIndexesStack.Push(timerIndexById);
+        freeTimersIndexesStack.Push(timerIndexById);
       }
     }
 
     private int GetTimerIndexByID(ulong timerID)
     {
       if (timerID == 0UL)
-        return this.gameTimerList.Count - 1;
-      return this.loadingTimersIdIndexesDict.ContainsKey(timerID) ? this.loadingTimersIdIndexesDict[timerID] : (int) (timerID % (ulong) uint.MaxValue);
+        return gameTimerList.Count - 1;
+      return loadingTimersIdIndexesDict.ContainsKey(timerID) ? loadingTimersIdIndexesDict[timerID] : (int) (timerID % uint.MaxValue);
     }
 
     public void RevertEventsCutTime(GameTime newTime)
     {
-      for (int index = 0; index < this.gameTimerList.Count; ++index)
+      for (int index = 0; index < gameTimerList.Count; ++index)
       {
-        if (newTime.TotalValue < this.gameTimerList[index].EventsCutTime.TotalValue)
-          this.gameTimerList[index].EventsCutTime = newTime;
+        if (newTime.TotalValue < gameTimerList[index].EventsCutTime.TotalValue)
+          gameTimerList[index].EventsCutTime = newTime;
       }
     }
 
     public void LoadFromXML(XmlElement xmlNode)
     {
-      this.loadingTimersIdIndexesDict.Clear();
+      loadingTimersIdIndexesDict.Clear();
       for (int i = 0; i < xmlNode.ChildNodes.Count; ++i)
       {
         XmlElement childNode = (XmlElement) xmlNode.ChildNodes[i];
         if (childNode.Name == "TimeContextName")
-          this.contextName = childNode.InnerText;
+          contextName = childNode.InnerText;
         else if (childNode.Name == "CurrentGameTime")
-          this.gameTime.LoadFromXML(childNode);
+          gameTime.LoadFromXML(childNode);
         else if (childNode.Name == "CurrentSolarTime")
-          this.solarTime.LoadFromXML(childNode);
+          solarTime.LoadFromXML(childNode);
         else if (childNode.Name == "CurrentGameSpeed")
-          this.gameTimeSpeedFactor = VMSaveLoadManager.ReadFloat((XmlNode) childNode);
+          gameTimeSpeedFactor = VMSaveLoadManager.ReadFloat(childNode);
         else if (childNode.Name == "CurrentSolarSpeed")
-          this.solarTimeSpeedFactor = VMSaveLoadManager.ReadFloat((XmlNode) childNode);
+          solarTimeSpeedFactor = VMSaveLoadManager.ReadFloat(childNode);
         else if (childNode.Name == "GameTimerList")
-          this.LoadTimers(childNode);
+          LoadTimers(childNode);
       }
-      this.gameDayTime.CopyFrom((object) this.gameTime);
-      this.gameDayTime.Days = (ushort) 0;
+      gameDayTime.CopyFrom(gameTime);
+      gameDayTime.Days = 0;
     }
 
     public void StateSave(IDataWriter writer)
     {
-      SaveManagerUtility.Save(writer, "TimeContextName", this.contextName);
-      SaveManagerUtility.SaveDynamicSerializable(writer, "CurrentGameTime", (ISerializeStateSave) this.gameTime);
-      SaveManagerUtility.SaveDynamicSerializable(writer, "CurrentSolarTime", (ISerializeStateSave) this.solarTime);
-      SaveManagerUtility.Save(writer, "CurrentGameSpeed", this.gameTimeSpeedFactor);
-      SaveManagerUtility.Save(writer, "CurrentSolarSpeed", this.solarTimeSpeedFactor);
-      this.SaveTimers(writer);
+      SaveManagerUtility.Save(writer, "TimeContextName", contextName);
+      SaveManagerUtility.SaveDynamicSerializable(writer, "CurrentGameTime", gameTime);
+      SaveManagerUtility.SaveDynamicSerializable(writer, "CurrentSolarTime", solarTime);
+      SaveManagerUtility.Save(writer, "CurrentGameSpeed", gameTimeSpeedFactor);
+      SaveManagerUtility.Save(writer, "CurrentSolarSpeed", solarTimeSpeedFactor);
+      SaveTimers(writer);
     }
 
     private void SaveTimers(IDataWriter writer)
@@ -229,7 +229,7 @@ namespace PLVirtualMachine.Time
         if (this.gameTimerList[index].GTType != EGameTimerType.GAME_TIMER_TYPE_ABSOLUTE && this.gameTimerList[index].Active)
           gameTimerList.Add(this.gameTimerList[index]);
       }
-      SaveManagerUtility.SaveDynamicSerializableList<GameTimer>(writer, "GameTimerList", gameTimerList);
+      SaveManagerUtility.SaveDynamicSerializableList(writer, "GameTimerList", gameTimerList);
     }
 
     private void LoadTimers(XmlElement xmlNode)
@@ -240,26 +240,26 @@ namespace PLVirtualMachine.Time
         gameTimer.LoadFromXML(childNode);
         if (gameTimer.GTType != EGameTimerType.GAME_TIMER_TYPE_ABSOLUTE && gameTimer.Active)
         {
-          this.gameTimerList.Add(gameTimer);
-          this.OnNewTimer(this.gameTimerList.Count - 1);
-          if (this.loadingTimersIdIndexesDict.ContainsKey(gameTimer.TimerGuid))
-            Logger.AddError(string.Format("SaveLoad error: loading timer id {0} dublication", (object) gameTimer.TimerGuid));
+          gameTimerList.Add(gameTimer);
+          OnNewTimer(gameTimerList.Count - 1);
+          if (loadingTimersIdIndexesDict.ContainsKey(gameTimer.TimerGuid))
+            Logger.AddError(string.Format("SaveLoad error: loading timer id {0} dublication", gameTimer.TimerGuid));
           else
-            this.loadingTimersIdIndexesDict.Add(gameTimer.TimerGuid, this.gameTimerList.Count - 1);
+            loadingTimersIdIndexesDict.Add(gameTimer.TimerGuid, gameTimerList.Count - 1);
         }
       }
     }
 
     public void Clear()
     {
-      this.timerPriorityList.Clear();
-      this.Init();
+      timerPriorityList.Clear();
+      Init();
     }
 
     public static bool UpdateMode
     {
-      get => GameTimeContext.isUpdateMode;
-      set => GameTimeContext.isUpdateMode = value;
+      get => isUpdateMode;
+      set => isUpdateMode = value;
     }
 
     public void OnModify()
@@ -268,36 +268,36 @@ namespace PLVirtualMachine.Time
 
     private void Init()
     {
-      this.contextName = this.gameMode.Name;
-      this.isMain = this.contextName == "common";
-      this.gameTime = this.gameMode.StartGameTime == null ? new GameTime() : new GameTime(this.gameMode.StartGameTime);
-      this.solarTime = this.gameMode.StartSolarTime == null ? new GameTime() : new GameTime(this.gameMode.StartSolarTime);
-      this.gameDayTime = new GameTime(this.gameTime);
-      this.gameDayTime.Days = (ushort) 0;
-      this.gameTimeSpeedFactor = this.gameMode.GameTimeSpeed;
-      this.solarTimeSpeedFactor = this.gameMode.SolarTimeSpeed;
-      this.gameTimerList.Clear();
-      this.freeTimersIndexesStack.Clear();
-      if (!this.IsMain)
+      contextName = gameMode.Name;
+      isMain = contextName == "common";
+      gameTime = gameMode.StartGameTime == null ? new GameTime() : new GameTime(gameMode.StartGameTime);
+      solarTime = gameMode.StartSolarTime == null ? new GameTime() : new GameTime(gameMode.StartSolarTime);
+      gameDayTime = new GameTime(gameTime);
+      gameDayTime.Days = 0;
+      gameTimeSpeedFactor = gameMode.GameTimeSpeed;
+      solarTimeSpeedFactor = gameMode.SolarTimeSpeed;
+      gameTimerList.Clear();
+      freeTimersIndexesStack.Clear();
+      if (!IsMain)
         return;
       ITimeService service = ServiceLocator.GetService<ITimeService>();
-      if (this.gameMode.StartSolarTime != null)
+      if (gameMode.StartSolarTime != null)
       {
-        service.SolarTime = new TimeSpan((int) this.solarTime.Days, (int) this.solarTime.Hours, (int) this.solarTime.Minutes, (int) this.solarTime.Seconds);
-        service.SolarTimeFactor = this.solarTimeSpeedFactor;
+        service.SolarTime = new TimeSpan(solarTime.Days, solarTime.Hours, solarTime.Minutes, solarTime.Seconds);
+        service.SolarTimeFactor = solarTimeSpeedFactor;
       }
-      if (this.gameMode.StartGameTime == null)
+      if (gameMode.StartGameTime == null)
         return;
-      service.GameTime = new TimeSpan((int) this.gameTime.Days, (int) this.gameTime.Hours, (int) this.gameTime.Minutes, (int) this.gameTime.Seconds);
-      service.GameTimeFactor = this.gameTimeSpeedFactor;
+      service.GameTime = new TimeSpan(gameTime.Days, gameTime.Hours, gameTime.Minutes, gameTime.Seconds);
+      service.GameTimeFactor = gameTimeSpeedFactor;
     }
 
     private void OnNewTimer(int timerIndex)
     {
-      if (GameTimeContext.TIMERS_LIST_PROCESSIN_ON)
-        Logger.AddError("Invalid timer creation: timers are being processed now at " + this.gameMode.Name + " game mode! Probably incorrect non-queue event rising");
+      if (TIMERS_LIST_PROCESSIN_ON)
+        Logger.AddError("Invalid timer creation: timers are being processed now at " + gameMode.Name + " game mode! Probably incorrect non-queue event rising");
       else
-        this.timerPriorityList.Add(this.gameTimerList[timerIndex].CalculateTimerPriority() + (ulong) timerIndex, timerIndex);
+        timerPriorityList.Add(gameTimerList[timerIndex].CalculateTimerPriority() + (ulong) timerIndex, timerIndex);
     }
   }
 }

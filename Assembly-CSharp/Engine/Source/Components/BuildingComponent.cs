@@ -12,13 +12,13 @@ namespace Engine.Source.Components
   [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
   public class BuildingComponent : EngineComponent, IBuildingComponent, IComponent
   {
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    [CopyableProxy(MemberEnum.None)]
+    [CopyableProxy()]
     protected BuildingEnum building;
 
-    public BuildingEnum Building => this.building;
+    public BuildingEnum Building => building;
   }
 }

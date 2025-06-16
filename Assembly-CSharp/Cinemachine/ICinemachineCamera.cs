@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace Cinemachine
+﻿namespace Cinemachine
 {
   public interface ICinemachineCamera
   {

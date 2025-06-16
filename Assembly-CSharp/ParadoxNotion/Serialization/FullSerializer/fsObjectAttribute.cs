@@ -2,7 +2,7 @@
 
 namespace ParadoxNotion.Serialization.FullSerializer
 {
-  [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct, AllowMultiple = false, Inherited = false)]
+  [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct, Inherited = false)]
   public sealed class fsObjectAttribute : Attribute
   {
     public Type[] PreviousModels;
@@ -17,8 +17,8 @@ namespace ParadoxNotion.Serialization.FullSerializer
 
     public fsObjectAttribute(string versionString, params Type[] previousModels)
     {
-      this.VersionString = versionString;
-      this.PreviousModels = previousModels;
+      VersionString = versionString;
+      PreviousModels = previousModels;
     }
   }
 }

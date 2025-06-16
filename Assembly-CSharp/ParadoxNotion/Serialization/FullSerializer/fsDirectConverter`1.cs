@@ -13,7 +13,7 @@ namespace ParadoxNotion.Serialization.FullSerializer
       Type storageType)
     {
       Dictionary<string, fsData> dictionary = new Dictionary<string, fsData>();
-      fsResult fsResult = this.DoSerialize((TModel) instance, dictionary);
+      fsResult fsResult = DoSerialize((TModel) instance, dictionary);
       serialized = new fsData(dictionary);
       return fsResult;
     }
@@ -24,11 +24,11 @@ namespace ParadoxNotion.Serialization.FullSerializer
       Type storageType)
     {
       fsResult fsResult1;
-      if ((fsResult1 = fsResult.Success + this.CheckType(data, fsDataType.Object)).Failed)
+      if ((fsResult1 = fsResult.Success + CheckType(data, fsDataType.Object)).Failed)
         return fsResult1;
       TModel model = (TModel) instance;
-      fsResult fsResult2 = fsResult1 + this.DoDeserialize(data.AsDictionary, ref model);
-      instance = (object) model;
+      fsResult fsResult2 = fsResult1 + DoDeserialize(data.AsDictionary, ref model);
+      instance = model;
       return fsResult2;
     }
 

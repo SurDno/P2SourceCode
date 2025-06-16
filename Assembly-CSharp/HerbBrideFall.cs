@@ -1,13 +1,9 @@
 ﻿using Engine.Behaviours.Components;
 using Engine.Common.Services;
-using Engine.Source.Audio;
 using Engine.Source.Commons;
 using Engine.Source.Services;
 using Engine.Source.Services.CameraServices;
 using Inspectors;
-using System;
-using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class HerbBrideFall : MonoBehaviour
 {
@@ -22,7 +18,7 @@ public class HerbBrideFall : MonoBehaviour
   [Inspected]
   private bool IsGame;
   private Animator animator;
-  private HerbBrideFall.StateEnum state;
+  private StateEnum state;
   private Quaternion initialRotation;
   private Vector3 initialPosition;
   private Pivot pivot;
@@ -32,48 +28,48 @@ public class HerbBrideFall : MonoBehaviour
   private Collider collider;
   private Collider[] colliders = new Collider[64];
 
-  public void Wait() => this.SetState(HerbBrideFall.StateEnum.Waiting);
+  public void Wait() => SetState(StateEnum.Waiting);
 
-  public void Jump() => this.SetState(HerbBrideFall.StateEnum.Falling);
+  public void Jump() => SetState(StateEnum.Falling);
 
   private void Start()
   {
-    this.IsGame = SceneManager.GetActiveScene().name != "TermitnikFall";
-    this.initialRotation = this.transform.rotation;
-    this.initialPosition = this.transform.position;
-    this.pivot = this.GetComponent<Pivot>();
-    this.animator = this.pivot.GetAnimator();
-    this.audioSource = this.GetComponent<AudioSource>();
-    this.pivot.GetAnimatorEventProxy().AnimatorMoveEvent += new Action(this.HerbBrideFall_AnimatorMoveEvent);
-    this.collider = this.GetComponent<Collider>();
-    this.SetState(HerbBrideFall.StateEnum.Waiting);
+    IsGame = SceneManager.GetActiveScene().name != "TermitnikFall";
+    initialRotation = this.transform.rotation;
+    initialPosition = this.transform.position;
+    pivot = this.GetComponent<Pivot>();
+    animator = pivot.GetAnimator();
+    audioSource = this.GetComponent<AudioSource>();
+    pivot.GetAnimatorEventProxy().AnimatorMoveEvent += HerbBrideFall_AnimatorMoveEvent;
+    collider = this.GetComponent<Collider>();
+    SetState(StateEnum.Waiting);
   }
 
   private void HerbBrideFall_AnimatorMoveEvent()
   {
-    this.transform.position += this.animator.deltaPosition;
-    this.transform.rotation *= this.animator.deltaRotation;
+    this.transform.position += animator.deltaPosition;
+    this.transform.rotation *= animator.deltaRotation;
   }
 
-  private void SetState(HerbBrideFall.StateEnum state)
+  private void SetState(StateEnum state)
   {
     switch (state)
     {
-      case HerbBrideFall.StateEnum.Waiting:
-        this.animator.SetTrigger("Triggers/Reset");
-        this.animator.ResetTrigger("Triggers/Fall");
-        this.transform.SetPositionAndRotation(this.initialPosition, this.initialRotation);
+      case StateEnum.Waiting:
+        animator.SetTrigger("Triggers/Reset");
+        animator.ResetTrigger("Triggers/Fall");
+        this.transform.SetPositionAndRotation(initialPosition, initialRotation);
         break;
-      case HerbBrideFall.StateEnum.Falling:
-        if (this.IsGame)
+      case StateEnum.Falling:
+        if (IsGame)
           ServiceLocator.GetService<LogicEventService>().FireCommonEvent("Termitnik_Jump");
-        this.animator.ResetTrigger("Triggers/Reset");
-        this.animator.SetTrigger("Triggers/Fall");
-        this.audioSource.PlayAndCheck();
+        animator.ResetTrigger("Triggers/Reset");
+        animator.SetTrigger("Triggers/Fall");
+        audioSource.PlayAndCheck();
         break;
-      case HerbBrideFall.StateEnum.Dead:
-        this.audioSource.Stop();
-        this.audioSource.PlayOneShot(this.impactAudioClip);
+      case StateEnum.Dead:
+        audioSource.Stop();
+        audioSource.PlayOneShot(impactAudioClip);
         break;
     }
     this.state = state;
@@ -81,88 +77,86 @@ public class HerbBrideFall : MonoBehaviour
 
   private void Update()
   {
-    switch (this.state)
+    switch (state)
     {
-      case HerbBrideFall.StateEnum.Waiting:
-        this.UpdatePlayerSeesHerbBride();
-        this.collider.enabled = true;
+      case StateEnum.Waiting:
+        UpdatePlayerSeesHerbBride();
+        collider.enabled = true;
         break;
-      case HerbBrideFall.StateEnum.Falling:
-        this.collider.enabled = false;
-        this.lookTime = 0.0f;
-        if (this.IsAboutToCollideWithTerrain())
+      case StateEnum.Falling:
+        collider.enabled = false;
+        lookTime = 0.0f;
+        if (IsAboutToCollideWithTerrain())
         {
-          this.SetState(HerbBrideFall.StateEnum.Dead);
-          break;
+          SetState(StateEnum.Dead);
         }
         break;
-      case HerbBrideFall.StateEnum.Dead:
-        this.collider.enabled = false;
-        this.lookTime = 0.0f;
-        if (!this.IsGame && Input.GetKeyDown(KeyCode.E))
+      case StateEnum.Dead:
+        collider.enabled = false;
+        lookTime = 0.0f;
+        if (!IsGame && Input.GetKeyDown(KeyCode.E))
         {
-          this.SetState(HerbBrideFall.StateEnum.Waiting);
-          break;
+          SetState(StateEnum.Waiting);
         }
         break;
     }
-    this.UpdateTermitnikAudio();
-    this.UpdateCryingAudio();
+    UpdateTermitnikAudio();
+    UpdateCryingAudio();
   }
 
   private void UpdateTermitnikAudio()
   {
-    if ((UnityEngine.Object) this.termitnikAudiosource == (UnityEngine.Object) null)
+    if ((UnityEngine.Object) termitnikAudiosource == (UnityEngine.Object) null)
       return;
-    GameObject playerGameObject = this.GetPlayerGameObject();
+    GameObject playerGameObject = GetPlayerGameObject();
     if ((UnityEngine.Object) playerGameObject == (UnityEngine.Object) null)
       return;
     float magnitude = (playerGameObject.transform.position - this.transform.position).magnitude;
-    if (this.state == HerbBrideFall.StateEnum.Waiting)
+    if (state == StateEnum.Waiting)
     {
-      this.termitnikAudiosource.spatialBlend = Mathf.Clamp01(magnitude / 50f);
-      this.termitnikVolume = Mathf.MoveTowards(this.termitnikVolume, 1f, Time.deltaTime / 4f);
-      this.termitnikAudiosource.volume = this.termitnikVolume;
-      if (this.termitnikAudiosource.isPlaying)
+      termitnikAudiosource.spatialBlend = Mathf.Clamp01(magnitude / 50f);
+      termitnikVolume = Mathf.MoveTowards(termitnikVolume, 1f, Time.deltaTime / 4f);
+      termitnikAudiosource.volume = termitnikVolume;
+      if (termitnikAudiosource.isPlaying)
         return;
-      this.termitnikAudiosource.PlayAndCheck();
+      termitnikAudiosource.PlayAndCheck();
     }
     else
     {
-      this.termitnikVolume = Mathf.MoveTowards(this.termitnikVolume, 0.0f, Time.deltaTime / 4f);
-      this.termitnikAudiosource.volume = this.termitnikVolume;
+      termitnikVolume = Mathf.MoveTowards(termitnikVolume, 0.0f, Time.deltaTime / 4f);
+      termitnikAudiosource.volume = termitnikVolume;
     }
   }
 
   private void UpdateCryingAudio()
   {
-    if ((UnityEngine.Object) this.womanCryAudiosource == (UnityEngine.Object) null)
+    if ((UnityEngine.Object) womanCryAudiosource == (UnityEngine.Object) null)
       return;
-    GameObject playerGameObject = this.GetPlayerGameObject();
+    GameObject playerGameObject = GetPlayerGameObject();
     if ((UnityEngine.Object) playerGameObject == (UnityEngine.Object) null)
       return;
     float magnitude = (playerGameObject.transform.position - this.transform.position).magnitude;
-    if (this.state == HerbBrideFall.StateEnum.Waiting)
+    if (state == StateEnum.Waiting)
     {
-      this.womanCryAudiosource.volume = 1f;
-      if (this.womanCryAudiosource.isPlaying)
+      womanCryAudiosource.volume = 1f;
+      if (womanCryAudiosource.isPlaying)
         return;
-      this.womanCryAudiosource.PlayAndCheck();
+      womanCryAudiosource.PlayAndCheck();
     }
     else
     {
-      if (!this.womanCryAudiosource.isPlaying)
+      if (!womanCryAudiosource.isPlaying)
         return;
-      this.womanCryAudiosource.Stop();
+      womanCryAudiosource.Stop();
     }
   }
 
   private bool IsAboutToCollideWithTerrain()
   {
-    int num = Physics.OverlapSphereNonAlloc(this.animator.gameObject.transform.position, 3f, this.colliders);
+    int num = Physics.OverlapSphereNonAlloc(animator.gameObject.transform.position, 3f, colliders);
     for (int index = 0; index < num; ++index)
     {
-      if ((UnityEngine.Object) this.colliders[index].gameObject.GetComponent<TerrainCollider>() != (UnityEngine.Object) null)
+      if ((UnityEngine.Object) colliders[index].gameObject.GetComponent<TerrainCollider>() != (UnityEngine.Object) null)
         return true;
     }
     return false;
@@ -170,22 +164,22 @@ public class HerbBrideFall : MonoBehaviour
 
   private Camera GetCamera()
   {
-    if (!this.IsGame)
+    if (!IsGame)
       return Camera.main;
     return ServiceLocator.GetService<CameraService>().Kind != CameraKindEnum.FirstPerson_Controlling ? (Camera) null : GameCamera.Instance.Camera;
   }
 
   private GameObject GetPlayerGameObject()
   {
-    if (!this.IsGame)
+    if (!IsGame)
       return GameObject.Find("FPSController");
     return ((IEntityView) ServiceLocator.GetService<ISimulation>().Player)?.GameObject;
   }
 
   private void OnDrawGizmos()
   {
-    Camera camera = this.GetCamera();
-    GameObject playerGameObject = this.GetPlayerGameObject();
+    Camera camera = GetCamera();
+    GameObject playerGameObject = GetPlayerGameObject();
     if ((UnityEngine.Object) camera == (UnityEngine.Object) null || (UnityEngine.Object) playerGameObject == (UnityEngine.Object) null)
       return;
     Vector3 forward = camera.transform.forward;
@@ -198,13 +192,13 @@ public class HerbBrideFall : MonoBehaviour
     Gizmos.DrawSphere(vector3_1, 0.2f);
     Gizmos.DrawSphere(vector3_2 + forward * 2f, 0.2f);
     Gizmos.color = Color.green;
-    Gizmos.DrawLine(vector3_1, vector3_1 + this.maxPlayerDistance * vector3_4);
+    Gizmos.DrawLine(vector3_1, vector3_1 + maxPlayerDistance * vector3_4);
   }
 
   private void UpdatePlayerSeesHerbBride()
   {
-    Camera camera = this.GetCamera();
-    GameObject playerGameObject = this.GetPlayerGameObject();
+    Camera camera = GetCamera();
+    GameObject playerGameObject = GetPlayerGameObject();
     if ((UnityEngine.Object) camera == (UnityEngine.Object) null || (UnityEngine.Object) playerGameObject == (UnityEngine.Object) null)
       return;
     Vector3 forward = camera.transform.forward;
@@ -212,11 +206,11 @@ public class HerbBrideFall : MonoBehaviour
     Vector3 vector3 = playerGameObject.transform.position + Vector3.up + forward * 1f - origin;
     float magnitude = vector3.magnitude;
     Vector3 direction = vector3 / magnitude;
-    if ((double) magnitude > (double) this.maxPlayerDistance)
-      this.lookTime = 0.0f;
+    if (magnitude > (double) maxPlayerDistance)
+      lookTime = 0.0f;
     else if ((double) Vector3.Dot(-direction, forward) < (double) Mathf.Cos(0.5235988f))
     {
-      this.lookTime = 0.0f;
+      lookTime = 0.0f;
     }
     else
     {
@@ -224,14 +218,14 @@ public class HerbBrideFall : MonoBehaviour
       if (Physics.Raycast(origin, direction, out hitInfo, magnitude))
       {
         Debug.Log((object) hitInfo.collider.gameObject);
-        this.lookTime = 0.0f;
+        lookTime = 0.0f;
       }
       else
       {
-        this.lookTime += Time.deltaTime;
-        if ((double) this.lookTime <= (double) this.jumpTime)
+        lookTime += Time.deltaTime;
+        if (lookTime <= (double) jumpTime)
           return;
-        this.Jump();
+        Jump();
       }
     }
   }

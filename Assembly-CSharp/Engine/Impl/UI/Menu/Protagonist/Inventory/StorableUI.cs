@@ -1,4 +1,6 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using System.Collections.Generic;
+using Cofe.Proxies;
 using Engine.Common.Components;
 using Engine.Common.Services;
 using Engine.Source.Components;
@@ -6,11 +8,6 @@ using Engine.Source.Inventory;
 using Engine.Source.UI.Menu.Protagonist.Inventory;
 using Engine.Source.UI.Menu.Protagonist.Inventory.Grid;
 using InputServices;
-using System;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.Serialization;
-using UnityEngine.UI;
 
 namespace Engine.Impl.UI.Menu.Protagonist.Inventory
 {
@@ -41,15 +38,15 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
     protected IStorableComponent internalStorable;
     protected InventoryCellStyle cellStyle;
     protected bool isEnabled = true;
-    protected bool isSelected = false;
+    protected bool isSelected;
     private bool showCount = true;
     [SerializeField]
     protected GameObject _selectedBackground;
     private ItemsSlidingContainer _sliderParent;
-    private bool _wasAttemptedToGetSlider = false;
-    private bool dragging = false;
+    private bool _wasAttemptedToGetSlider;
+    private bool dragging;
 
-    public bool IsSelected() => this.isSelected;
+    public bool IsSelected() => isSelected;
 
     private void Start()
     {
@@ -57,25 +54,25 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
 
     public IStorableComponent Internal
     {
-      get => this.internalStorable;
+      get => internalStorable;
       set
       {
-        this.internalStorable = value;
-        this.CalculatePosition();
+        internalStorable = value;
+        CalculatePosition();
       }
     }
 
-    public Image Image => this.image;
+    public Image Image => image;
 
-    public Image ImageBackground => this.imageBackground;
+    public Image ImageBackground => imageBackground;
 
     public InventoryCellStyle Style
     {
-      get => this.cellStyle;
+      get => cellStyle;
       set
       {
-        this.cellStyle = value;
-        this.CalculatePosition();
+        cellStyle = value;
+        CalculatePosition();
       }
     }
 
@@ -83,19 +80,19 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
     {
       get
       {
-        return !this.cellStyle.IsSlot ? InventoryUtility.CalculateInnerSize((IInventoryGridBase) ((StorableComponent) this.internalStorable).Placeholder.Grid, this.cellStyle) : InventoryUtility.CalculateInnerSize((IInventoryGridBase) StorableUI.gridSlot, this.cellStyle);
+        return !cellStyle.IsSlot ? InventoryUtility.CalculateInnerSize(((StorableComponent) internalStorable).Placeholder.Grid, cellStyle) : InventoryUtility.CalculateInnerSize(gridSlot, cellStyle);
       }
     }
 
     protected virtual void CalculatePosition()
     {
-      if (this.internalStorable == null || this.internalStorable.IsDisposed)
+      if (internalStorable == null || internalStorable.IsDisposed)
         return;
-      Vector2 size = this.Size;
-      this.Transform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, size.x);
-      this.Transform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, size.y);
-      this.ImageBackground.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, size.x + this.cellStyle.BackgroundImageOffset.x * 2f);
-      this.ImageBackground.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, size.y + this.cellStyle.BackgroundImageOffset.x * 2f);
+      Vector2 size = Size;
+      Transform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, size.x);
+      Transform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, size.y);
+      ImageBackground.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, size.x + cellStyle.BackgroundImageOffset.x * 2f);
+      ImageBackground.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, size.y + cellStyle.BackgroundImageOffset.x * 2f);
     }
 
     public static StorableUI Instantiate(
@@ -105,10 +102,10 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
     {
       if (storable == null || storable.IsDisposed)
         throw new Exception();
-      if (StorableUI.gridSlot == null)
+      if (gridSlot == null)
       {
-        StorableUI.gridSlot = ServiceLocator.GetService<IFactory>().Create<IInventoryGridLimited>();
-        ((InventoryGridLimited) StorableUI.gridSlot).Add(ProxyFactory.Create<Cell>());
+        gridSlot = ServiceLocator.GetService<IFactory>().Create<IInventoryGridLimited>();
+        ((InventoryGridLimited) gridSlot).Add(ProxyFactory.Create<Cell>());
       }
       GameObject gameObject = UnityEngine.Object.Instantiate<GameObject>(prefab);
       gameObject.name = "[Storable] " + storable.Owner.Name;
@@ -127,75 +124,75 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
     protected override void Awake()
     {
       base.Awake();
-      StorableUI.s_List.Add(this);
+      s_List.Add(this);
     }
 
-    private void OnDestroy() => StorableUI.s_List.Remove(this);
+    private void OnDestroy() => s_List.Remove(this);
 
     protected virtual void Update()
     {
-      if (this.internalStorable == null || this.internalStorable.IsDisposed)
+      if (internalStorable == null || internalStorable.IsDisposed)
         return;
-      if ((UnityEngine.Object) this.textCount != (UnityEngine.Object) null)
+      if ((UnityEngine.Object) textCount != (UnityEngine.Object) null)
       {
-        if (this.internalStorable.Max > 1)
+        if (internalStorable.Max > 1)
         {
-          this.textCount.text = this.internalStorable.Count.ToString();
-          this.textCount.gameObject?.SetActive(this.showCount);
+          textCount.text = internalStorable.Count.ToString();
+          textCount.gameObject?.SetActive(showCount);
         }
         else
         {
-          this.textCount.text = (string) null;
-          this.textCount.gameObject?.SetActive(false);
+          textCount.text = (string) null;
+          textCount.gameObject?.SetActive(false);
         }
       }
-      this.selectedImage.gameObject?.SetActive(this.isSelected && (InputService.Instance.JoystickUsed || this.IsSliderItem));
+      selectedImage.gameObject?.SetActive(isSelected && (InputService.Instance.JoystickUsed || IsSliderItem));
     }
 
     public void Enable(bool active)
     {
-      this.isEnabled = active;
-      Color color1 = this.enabledImageColor;
-      Color color2 = this.enabledBackgroundColor;
+      isEnabled = active;
+      Color color1 = enabledImageColor;
+      Color color2 = enabledBackgroundColor;
       if (!active)
       {
-        color1 = this.disabledImageColor;
-        color2 = this.disabledBackgroundColor;
+        color1 = disabledImageColor;
+        color2 = disabledBackgroundColor;
       }
-      this.image.color = color1;
-      this.ImageBackground.color = color2;
+      image.color = color1;
+      ImageBackground.color = color2;
     }
 
-    public bool IsElementHoldSelected { get; private set; } = false;
+    public bool IsElementHoldSelected { get; private set; }
 
     public void HoldSelected(bool b)
     {
       if (InputService.Instance.JoystickUsed)
       {
-        if ((UnityEngine.Object) this._selectedBackground != (UnityEngine.Object) null)
-          this._selectedBackground.SetActive(b);
+        if ((UnityEngine.Object) _selectedBackground != (UnityEngine.Object) null)
+          _selectedBackground.SetActive(b);
       }
-      else if ((UnityEngine.Object) this._selectedBackground != (UnityEngine.Object) null)
-        this._selectedBackground.SetActive(false);
-      this.IsElementHoldSelected = b;
+      else if ((UnityEngine.Object) _selectedBackground != (UnityEngine.Object) null)
+        _selectedBackground.SetActive(false);
+      IsElementHoldSelected = b;
     }
 
     public virtual void SetSelected(bool b)
     {
-      this.isSelected = b;
-      this.Update();
+      isSelected = b;
+      Update();
     }
 
     public bool IsSliderItem
     {
       get
       {
-        if ((UnityEngine.Object) this._sliderParent == (UnityEngine.Object) null && !this._wasAttemptedToGetSlider)
+        if ((UnityEngine.Object) _sliderParent == (UnityEngine.Object) null && !_wasAttemptedToGetSlider)
         {
-          this._sliderParent = this.GetComponentInParent<ItemsSlidingContainer>();
-          this._wasAttemptedToGetSlider = true;
+          _sliderParent = this.GetComponentInParent<ItemsSlidingContainer>();
+          _wasAttemptedToGetSlider = true;
         }
-        return this is StorableUITrade || (UnityEngine.Object) this._sliderParent != (UnityEngine.Object) null;
+        return this is StorableUITrade || (UnityEngine.Object) _sliderParent != (UnityEngine.Object) null;
       }
     }
 
@@ -203,60 +200,60 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
     {
       set
       {
-        if (value == this.dragging)
+        if (value == dragging)
           return;
-        this.dragging = value;
-        Vector2 size = this.Size;
+        dragging = value;
+        Vector2 size = Size;
         float num = Math.Min(size.x, size.y);
         Vector3 vector3 = new Vector3((float) (-(double) num * 0.10000000149011612), num * 0.1f);
-        if (this.dragging && !this.IsSelected())
-          this.SetSelected(this.dragging);
-        this.HoldSelected(this.dragging);
-        if (this.dragging)
+        if (dragging && !IsSelected())
+          SetSelected(dragging);
+        HoldSelected(dragging);
+        if (dragging)
         {
-          this.image.transform.position = this.image.transform.position + vector3;
-          this.textCount.transform.position = this.textCount.transform.position + vector3;
+          image.transform.position = image.transform.position + vector3;
+          textCount.transform.position = textCount.transform.position + vector3;
         }
         else
         {
-          this.image.transform.position = this.image.transform.position - vector3;
-          this.textCount.transform.position = this.textCount.transform.position - vector3;
+          image.transform.position = image.transform.position - vector3;
+          textCount.transform.position = textCount.transform.position - vector3;
         }
       }
     }
 
     public void ShowCount(bool b)
     {
-      this.showCount = b;
-      this.Update();
+      showCount = b;
+      Update();
     }
 
-    public StorableUI FindSelectableOnDown() => this.FindSelectable(Vector2.down);
+    public StorableUI FindSelectableOnDown() => FindSelectable(Vector2.down);
 
-    public StorableUI FindSelectableOnUp() => this.FindSelectable(Vector2.up);
+    public StorableUI FindSelectableOnUp() => FindSelectable(Vector2.up);
 
-    public StorableUI FindSelectableOnLeft() => this.FindSelectable(Vector2.left);
+    public StorableUI FindSelectableOnLeft() => FindSelectable(Vector2.left);
 
-    public StorableUI FindSelectableOnRight() => this.FindSelectable(Vector2.right);
+    public StorableUI FindSelectableOnRight() => FindSelectable(Vector2.right);
 
     private StorableUI FindSelectable(Vector2 dir)
     {
-      Vector3 vector3 = this.transform.TransformPoint(StorableUI.GetPointOnRectEdge(this.transform as RectTransform, dir));
+      Vector3 vector3 = this.transform.TransformPoint(GetPointOnRectEdge(this.transform as RectTransform, dir));
       float num1 = float.NegativeInfinity;
-      StorableUI selectable = (StorableUI) null;
-      for (int index = 0; index < StorableUI.s_List.Count; ++index)
+      StorableUI selectable = null;
+      for (int index = 0; index < s_List.Count; ++index)
       {
-        StorableUI storableUi = StorableUI.s_List[index];
+        StorableUI storableUi = s_List[index];
         if (!((UnityEngine.Object) storableUi == (UnityEngine.Object) this) && !((UnityEngine.Object) storableUi == (UnityEngine.Object) null) && storableUi.gameObject.activeInHierarchy)
         {
           RectTransform transform = storableUi.transform as RectTransform;
           Vector3 position = (UnityEngine.Object) transform != (UnityEngine.Object) null ? (Vector3) transform.rect.center : Vector3.zero;
           Vector3 rhs = storableUi.transform.TransformPoint(position) - vector3;
           float num2 = Vector3.Dot((Vector3) dir, rhs);
-          if ((double) num2 > 0.0)
+          if (num2 > 0.0)
           {
             float num3 = num2 / rhs.sqrMagnitude;
-            if ((double) num3 > (double) num1)
+            if (num3 > (double) num1)
             {
               num1 = num3;
               selectable = storableUi;

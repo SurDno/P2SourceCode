@@ -1,7 +1,4 @@
-﻿using UnityEngine;
-using UnityEngine.EventSystems;
-
-public class TextTooltip : 
+﻿public class TextTooltip : 
   MonoBehaviour,
   IPointerEnterHandler,
   IEventSystemHandler,
@@ -13,19 +10,19 @@ public class TextTooltip :
 
   public string Text
   {
-    get => this.text;
-    set => this.text = value;
+    get => text;
+    set => text = value;
   }
 
   public void OnPointerEnter(PointerEventData eventData)
   {
-    this.view = TextTooltipView.Current;
-    this.view?.Show(eventData.position, this.text);
+    view = TextTooltipView.Current;
+    view?.Show(eventData.position, text);
   }
 
   public void OnPointerExit(PointerEventData eventData)
   {
-    this.view?.Hide();
-    this.view = (TextTooltipView) null;
+    view?.Hide();
+    view = null;
   }
 }

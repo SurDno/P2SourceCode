@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace UnityStandardAssets.ImageEffects
+﻿namespace UnityStandardAssets.ImageEffects
 {
   [ImageEffectAllowedInSceneView]
   [ExecuteInEditMode]
@@ -8,8 +6,8 @@ namespace UnityStandardAssets.ImageEffects
   [AddComponentMenu("Image Effects/Color Adjustments/Tonemapping")]
   public class Tonemapping : PostEffectsBase
   {
-    public Tonemapping.TonemapperType type = Tonemapping.TonemapperType.Photographic;
-    public Tonemapping.AdaptiveTexSize adaptiveTextureSize = Tonemapping.AdaptiveTexSize.Square256;
+    public TonemapperType type = TonemapperType.Photographic;
+    public AdaptiveTexSize adaptiveTextureSize = AdaptiveTexSize.Square256;
     public AnimationCurve remapCurve;
     private Texture2D curveTex = (Texture2D) null;
     public float exposureAdjustment = 1.5f;
@@ -24,131 +22,131 @@ namespace UnityStandardAssets.ImageEffects
 
     public override bool CheckResources()
     {
-      this.CheckSupport(false, true);
-      this.tonemapMaterial = this.CheckShaderAndCreateMaterial(this.tonemapper, this.tonemapMaterial);
-      if (!(bool) (Object) this.curveTex && this.type == Tonemapping.TonemapperType.UserCurve)
+      CheckSupport(false, true);
+      tonemapMaterial = CheckShaderAndCreateMaterial(tonemapper, tonemapMaterial);
+      if (!(bool) (Object) curveTex && type == TonemapperType.UserCurve)
       {
-        this.curveTex = new Texture2D(256, 1, TextureFormat.ARGB32, false, true);
-        this.curveTex.filterMode = FilterMode.Bilinear;
-        this.curveTex.wrapMode = TextureWrapMode.Clamp;
-        this.curveTex.hideFlags = HideFlags.DontSave;
+        curveTex = new Texture2D(256, 1, TextureFormat.ARGB32, false, true);
+        curveTex.filterMode = FilterMode.Bilinear;
+        curveTex.wrapMode = TextureWrapMode.Clamp;
+        curveTex.hideFlags = HideFlags.DontSave;
       }
-      if (!this.isSupported)
-        this.ReportAutoDisable();
-      return this.isSupported;
+      if (!isSupported)
+        ReportAutoDisable();
+      return isSupported;
     }
 
     public float UpdateCurve()
     {
       float num1 = 1f;
-      if (this.remapCurve.keys.Length < 1)
-        this.remapCurve = new AnimationCurve(new Keyframe[2]
+      if (remapCurve.keys.Length < 1)
+        remapCurve = new AnimationCurve(new Keyframe[2]
         {
           new Keyframe(0.0f, 0.0f),
           new Keyframe(2f, 1f)
         });
-      if (this.remapCurve != null)
+      if (remapCurve != null)
       {
-        if (this.remapCurve.length > 0)
-          num1 = this.remapCurve[this.remapCurve.length - 1].time;
-        for (float num2 = 0.0f; (double) num2 <= 1.0; num2 += 0.003921569f)
+        if (remapCurve.length > 0)
+          num1 = remapCurve[remapCurve.length - 1].time;
+        for (float num2 = 0.0f; num2 <= 1.0; num2 += 0.003921569f)
         {
-          float num3 = this.remapCurve.Evaluate(num2 * 1f * num1);
-          this.curveTex.SetPixel((int) Mathf.Floor(num2 * (float) byte.MaxValue), 0, new Color(num3, num3, num3));
+          float num3 = remapCurve.Evaluate(num2 * 1f * num1);
+          curveTex.SetPixel((int) Mathf.Floor(num2 * byte.MaxValue), 0, new Color(num3, num3, num3));
         }
-        this.curveTex.Apply();
+        curveTex.Apply();
       }
       return 1f / num1;
     }
 
     private void OnDisable()
     {
-      if ((bool) (Object) this.rt)
+      if ((bool) (Object) rt)
       {
-        Object.DestroyImmediate((Object) this.rt);
-        this.rt = (RenderTexture) null;
+        Object.DestroyImmediate((Object) rt);
+        rt = (RenderTexture) null;
       }
-      if ((bool) (Object) this.tonemapMaterial)
+      if ((bool) (Object) tonemapMaterial)
       {
-        Object.DestroyImmediate((Object) this.tonemapMaterial);
-        this.tonemapMaterial = (Material) null;
+        Object.DestroyImmediate((Object) tonemapMaterial);
+        tonemapMaterial = (Material) null;
       }
-      if (!(bool) (Object) this.curveTex)
+      if (!(bool) (Object) curveTex)
         return;
-      Object.DestroyImmediate((Object) this.curveTex);
-      this.curveTex = (Texture2D) null;
+      Object.DestroyImmediate((Object) curveTex);
+      curveTex = (Texture2D) null;
     }
 
     private bool CreateInternalRenderTexture()
     {
-      if ((bool) (Object) this.rt)
+      if ((bool) (Object) rt)
         return false;
-      this.rtFormat = SystemInfo.SupportsRenderTextureFormat(RenderTextureFormat.RGHalf) ? RenderTextureFormat.RGHalf : RenderTextureFormat.ARGBHalf;
-      this.rt = new RenderTexture(1, 1, 0, this.rtFormat);
-      this.rt.hideFlags = HideFlags.DontSave;
+      rtFormat = SystemInfo.SupportsRenderTextureFormat(RenderTextureFormat.RGHalf) ? RenderTextureFormat.RGHalf : RenderTextureFormat.ARGBHalf;
+      rt = new RenderTexture(1, 1, 0, rtFormat);
+      rt.hideFlags = HideFlags.DontSave;
       return true;
     }
 
     [ImageEffectTransformsToLDR]
     private void OnRenderImage(RenderTexture source, RenderTexture destination)
     {
-      if (!this.CheckResources())
+      if (!CheckResources())
       {
         Graphics.Blit((Texture) source, destination);
       }
       else
       {
-        this.exposureAdjustment = (double) this.exposureAdjustment < 1.0 / 1000.0 ? 1f / 1000f : this.exposureAdjustment;
-        if (this.type == Tonemapping.TonemapperType.UserCurve)
+        exposureAdjustment = exposureAdjustment < 1.0 / 1000.0 ? 1f / 1000f : exposureAdjustment;
+        if (type == TonemapperType.UserCurve)
         {
-          this.tonemapMaterial.SetFloat("_RangeScale", this.UpdateCurve());
-          this.tonemapMaterial.SetTexture("_Curve", (Texture) this.curveTex);
-          Graphics.Blit((Texture) source, destination, this.tonemapMaterial, 4);
+          tonemapMaterial.SetFloat("_RangeScale", UpdateCurve());
+          tonemapMaterial.SetTexture("_Curve", (Texture) curveTex);
+          Graphics.Blit((Texture) source, destination, tonemapMaterial, 4);
         }
-        else if (this.type == Tonemapping.TonemapperType.SimpleReinhard)
+        else if (type == TonemapperType.SimpleReinhard)
         {
-          this.tonemapMaterial.SetFloat("_ExposureAdjustment", this.exposureAdjustment);
-          Graphics.Blit((Texture) source, destination, this.tonemapMaterial, 6);
+          tonemapMaterial.SetFloat("_ExposureAdjustment", exposureAdjustment);
+          Graphics.Blit((Texture) source, destination, tonemapMaterial, 6);
         }
-        else if (this.type == Tonemapping.TonemapperType.Hable)
+        else if (type == TonemapperType.Hable)
         {
-          this.tonemapMaterial.SetFloat("_ExposureAdjustment", this.exposureAdjustment);
-          Graphics.Blit((Texture) source, destination, this.tonemapMaterial, 5);
+          tonemapMaterial.SetFloat("_ExposureAdjustment", exposureAdjustment);
+          Graphics.Blit((Texture) source, destination, tonemapMaterial, 5);
         }
-        else if (this.type == Tonemapping.TonemapperType.Photographic)
+        else if (type == TonemapperType.Photographic)
         {
-          this.tonemapMaterial.SetFloat("_ExposureAdjustment", this.exposureAdjustment);
-          Graphics.Blit((Texture) source, destination, this.tonemapMaterial, 8);
+          tonemapMaterial.SetFloat("_ExposureAdjustment", exposureAdjustment);
+          Graphics.Blit((Texture) source, destination, tonemapMaterial, 8);
         }
-        else if (this.type == Tonemapping.TonemapperType.OptimizedHejiDawson)
+        else if (type == TonemapperType.OptimizedHejiDawson)
         {
-          this.tonemapMaterial.SetFloat("_ExposureAdjustment", 0.5f * this.exposureAdjustment);
-          Graphics.Blit((Texture) source, destination, this.tonemapMaterial, 7);
+          tonemapMaterial.SetFloat("_ExposureAdjustment", 0.5f * exposureAdjustment);
+          Graphics.Blit((Texture) source, destination, tonemapMaterial, 7);
         }
         else
         {
-          bool internalRenderTexture = this.CreateInternalRenderTexture();
-          RenderTexture temporary = RenderTexture.GetTemporary((int) this.adaptiveTextureSize, (int) this.adaptiveTextureSize, 0, this.rtFormat);
+          bool internalRenderTexture = CreateInternalRenderTexture();
+          RenderTexture temporary = RenderTexture.GetTemporary((int) adaptiveTextureSize, (int) adaptiveTextureSize, 0, rtFormat);
           Graphics.Blit((Texture) source, temporary);
           int length = (int) Mathf.Log((float) temporary.width * 1f, 2f);
           int num = 2;
           RenderTexture[] renderTextureArray = new RenderTexture[length];
           for (int index = 0; index < length; ++index)
           {
-            renderTextureArray[index] = RenderTexture.GetTemporary(temporary.width / num, temporary.width / num, 0, this.rtFormat);
+            renderTextureArray[index] = RenderTexture.GetTemporary(temporary.width / num, temporary.width / num, 0, rtFormat);
             num *= 2;
           }
           RenderTexture source1 = renderTextureArray[length - 1];
-          Graphics.Blit((Texture) temporary, renderTextureArray[0], this.tonemapMaterial, 1);
-          if (this.type == Tonemapping.TonemapperType.AdaptiveReinhardAutoWhite)
+          Graphics.Blit((Texture) temporary, renderTextureArray[0], tonemapMaterial, 1);
+          if (type == TonemapperType.AdaptiveReinhardAutoWhite)
           {
             for (int index = 0; index < length - 1; ++index)
             {
-              Graphics.Blit((Texture) renderTextureArray[index], renderTextureArray[index + 1], this.tonemapMaterial, 9);
+              Graphics.Blit((Texture) renderTextureArray[index], renderTextureArray[index + 1], tonemapMaterial, 9);
               source1 = renderTextureArray[index + 1];
             }
           }
-          else if (this.type == Tonemapping.TonemapperType.AdaptiveReinhard)
+          else if (type == TonemapperType.AdaptiveReinhard)
           {
             for (int index = 0; index < length - 1; ++index)
             {
@@ -156,18 +154,18 @@ namespace UnityStandardAssets.ImageEffects
               source1 = renderTextureArray[index + 1];
             }
           }
-          this.adaptionSpeed = (double) this.adaptionSpeed < 1.0 / 1000.0 ? 1f / 1000f : this.adaptionSpeed;
-          this.tonemapMaterial.SetFloat("_AdaptionSpeed", this.adaptionSpeed);
-          this.rt.MarkRestoreExpected();
-          Graphics.Blit((Texture) source1, this.rt, this.tonemapMaterial, internalRenderTexture ? 3 : 2);
-          this.middleGrey = (double) this.middleGrey < 1.0 / 1000.0 ? 1f / 1000f : this.middleGrey;
-          this.tonemapMaterial.SetVector("_HdrParams", new Vector4(this.middleGrey, this.middleGrey, this.middleGrey, this.white * this.white));
-          this.tonemapMaterial.SetTexture("_SmallTex", (Texture) this.rt);
-          if (this.type == Tonemapping.TonemapperType.AdaptiveReinhard)
-            Graphics.Blit((Texture) source, destination, this.tonemapMaterial, 0);
-          else if (this.type == Tonemapping.TonemapperType.AdaptiveReinhardAutoWhite)
+          adaptionSpeed = adaptionSpeed < 1.0 / 1000.0 ? 1f / 1000f : adaptionSpeed;
+          tonemapMaterial.SetFloat("_AdaptionSpeed", adaptionSpeed);
+          rt.MarkRestoreExpected();
+          Graphics.Blit((Texture) source1, rt, tonemapMaterial, internalRenderTexture ? 3 : 2);
+          middleGrey = middleGrey < 1.0 / 1000.0 ? 1f / 1000f : middleGrey;
+          tonemapMaterial.SetVector("_HdrParams", new Vector4(middleGrey, middleGrey, middleGrey, white * white));
+          tonemapMaterial.SetTexture("_SmallTex", (Texture) rt);
+          if (type == TonemapperType.AdaptiveReinhard)
+            Graphics.Blit((Texture) source, destination, tonemapMaterial, 0);
+          else if (type == TonemapperType.AdaptiveReinhardAutoWhite)
           {
-            Graphics.Blit((Texture) source, destination, this.tonemapMaterial, 10);
+            Graphics.Blit((Texture) source, destination, tonemapMaterial, 10);
           }
           else
           {

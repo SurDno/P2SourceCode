@@ -1,5 +1,5 @@
-﻿using Engine.Common.DateTime;
-using System;
+﻿using System;
+using Engine.Common.DateTime;
 
 public static class TimerUtility
 {

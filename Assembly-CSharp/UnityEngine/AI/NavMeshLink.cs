@@ -31,154 +31,153 @@ namespace UnityEngine.AI
 
     public int agentTypeID
     {
-      get => this.m_AgentTypeID;
+      get => m_AgentTypeID;
       set
       {
-        this.m_AgentTypeID = value;
-        this.UpdateLink();
+        m_AgentTypeID = value;
+        UpdateLink();
       }
     }
 
     public Vector3 startPoint
     {
-      get => this.m_StartPoint;
+      get => m_StartPoint;
       set
       {
-        this.m_StartPoint = value;
-        this.UpdateLink();
+        m_StartPoint = value;
+        UpdateLink();
       }
     }
 
     public Vector3 endPoint
     {
-      get => this.m_EndPoint;
+      get => m_EndPoint;
       set
       {
-        this.m_EndPoint = value;
-        this.UpdateLink();
+        m_EndPoint = value;
+        UpdateLink();
       }
     }
 
     public float width
     {
-      get => this.m_Width;
+      get => m_Width;
       set
       {
-        this.m_Width = value;
-        this.UpdateLink();
+        m_Width = value;
+        UpdateLink();
       }
     }
 
     public int costModifier
     {
-      get => this.m_CostModifier;
+      get => m_CostModifier;
       set
       {
-        this.m_CostModifier = value;
-        this.UpdateLink();
+        m_CostModifier = value;
+        UpdateLink();
       }
     }
 
     public bool bidirectional
     {
-      get => this.m_Bidirectional;
+      get => m_Bidirectional;
       set
       {
-        this.m_Bidirectional = value;
-        this.UpdateLink();
+        m_Bidirectional = value;
+        UpdateLink();
       }
     }
 
     public bool autoUpdate
     {
-      get => this.m_AutoUpdatePosition;
-      set => this.SetAutoUpdate(value);
+      get => m_AutoUpdatePosition;
+      set => SetAutoUpdate(value);
     }
 
     public int area
     {
-      get => this.m_Area;
+      get => m_Area;
       set
       {
-        this.m_Area = value;
-        this.UpdateLink();
+        m_Area = value;
+        UpdateLink();
       }
     }
 
     private void OnEnable()
     {
-      this.AddLink();
-      if (!this.m_AutoUpdatePosition || !this.m_LinkInstance.valid)
+      AddLink();
+      if (!m_AutoUpdatePosition || !m_LinkInstance.valid)
         return;
-      NavMeshLink.AddTracking(this);
+      AddTracking(this);
     }
 
     private void OnDisable()
     {
-      NavMeshLink.RemoveTracking(this);
-      this.m_LinkInstance.Remove();
+      RemoveTracking(this);
+      m_LinkInstance.Remove();
     }
 
     public void UpdateLink()
     {
-      this.m_LinkInstance.Remove();
-      this.AddLink();
+      m_LinkInstance.Remove();
+      AddLink();
     }
 
     private static void AddTracking(NavMeshLink link)
     {
-      if (NavMeshLink.s_Tracked.Count == 0)
-        NavMesh.onPreUpdate += new NavMesh.OnNavMeshPreUpdate(NavMeshLink.UpdateTrackedInstances);
-      NavMeshLink.s_Tracked.Add(link);
+      if (s_Tracked.Count == 0)
+        NavMesh.onPreUpdate += new NavMesh.OnNavMeshPreUpdate(UpdateTrackedInstances);
+      s_Tracked.Add(link);
     }
 
     private static void RemoveTracking(NavMeshLink link)
     {
-      NavMeshLink.s_Tracked.Remove(link);
-      if (NavMeshLink.s_Tracked.Count != 0)
+      s_Tracked.Remove(link);
+      if (s_Tracked.Count != 0)
         return;
-      NavMesh.onPreUpdate -= new NavMesh.OnNavMeshPreUpdate(NavMeshLink.UpdateTrackedInstances);
+      NavMesh.onPreUpdate -= new NavMesh.OnNavMeshPreUpdate(UpdateTrackedInstances);
     }
 
     private void SetAutoUpdate(bool value)
     {
-      if (this.m_AutoUpdatePosition == value)
+      if (m_AutoUpdatePosition == value)
         return;
-      this.m_AutoUpdatePosition = value;
+      m_AutoUpdatePosition = value;
       if (value)
-        NavMeshLink.AddTracking(this);
+        AddTracking(this);
       else
-        NavMeshLink.RemoveTracking(this);
+        RemoveTracking(this);
     }
 
     private void AddLink()
     {
-      this.m_LinkInstance = NavMesh.AddLink(new NavMeshLinkData()
-      {
-        startPosition = this.m_StartPoint,
-        endPosition = this.m_EndPoint,
-        width = this.m_Width,
-        costModifier = (float) this.m_CostModifier,
-        bidirectional = this.m_Bidirectional,
-        area = this.m_Area,
-        agentTypeID = this.m_AgentTypeID
+      m_LinkInstance = NavMesh.AddLink(new NavMeshLinkData {
+        startPosition = m_StartPoint,
+        endPosition = m_EndPoint,
+        width = m_Width,
+        costModifier = (float) m_CostModifier,
+        bidirectional = m_Bidirectional,
+        area = m_Area,
+        agentTypeID = m_AgentTypeID
       }, this.transform.position, this.transform.rotation);
-      if (this.m_LinkInstance.valid)
-        this.m_LinkInstance.owner = (Object) this;
-      this.m_LastPosition = this.transform.position;
-      this.m_LastRotation = this.transform.rotation;
+      if (m_LinkInstance.valid)
+        m_LinkInstance.owner = (Object) this;
+      m_LastPosition = this.transform.position;
+      m_LastRotation = this.transform.rotation;
     }
 
     private bool HasTransformChanged()
     {
-      return this.m_LastPosition != this.transform.position || this.m_LastRotation != this.transform.rotation;
+      return m_LastPosition != this.transform.position || m_LastRotation != this.transform.rotation;
     }
 
-    private void OnDidApplyAnimationProperties() => this.UpdateLink();
+    private void OnDidApplyAnimationProperties() => UpdateLink();
 
     private static void UpdateTrackedInstances()
     {
-      foreach (NavMeshLink navMeshLink in NavMeshLink.s_Tracked)
+      foreach (NavMeshLink navMeshLink in s_Tracked)
       {
         if (navMeshLink.HasTransformChanged())
           navMeshLink.UpdateLink();

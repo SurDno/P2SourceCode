@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace RootMotion.FinalIK
+﻿namespace RootMotion.FinalIK
 {
   [AddComponentMenu("Scripts/RootMotion.FinalIK/Grounder/Grounder VRIK")]
   public class GrounderVRIK : Grounder
@@ -24,47 +22,47 @@ namespace RootMotion.FinalIK
     {
     }
 
-    public override void ResetPosition() => this.solver.Reset();
+    public override void ResetPosition() => solver.Reset();
 
     private bool IsReadyToInitiate()
     {
-      return !((Object) this.ik == (Object) null) && this.ik.solver.initiated;
+      return !((Object) ik == (Object) null) && ik.solver.initiated;
     }
 
     private void Update()
     {
-      this.weight = Mathf.Clamp(this.weight, 0.0f, 1f);
-      if ((double) this.weight <= 0.0 || this.initiated || !this.IsReadyToInitiate())
+      weight = Mathf.Clamp(weight, 0.0f, 1f);
+      if (weight <= 0.0 || initiated || !IsReadyToInitiate())
         return;
-      this.Initiate();
+      Initiate();
     }
 
     private void Initiate()
     {
-      this.feet = new Transform[2];
-      this.feet[0] = this.ik.references.leftFoot;
-      this.feet[1] = this.ik.references.rightFoot;
-      IKSolverVR solver1 = this.ik.solver;
-      solver1.OnPreUpdate = solver1.OnPreUpdate + new IKSolver.UpdateDelegate(this.OnSolverUpdate);
-      IKSolverVR solver2 = this.ik.solver;
-      solver2.OnPostUpdate = solver2.OnPostUpdate + new IKSolver.UpdateDelegate(this.OnPostSolverUpdate);
-      this.solver.Initiate(this.ik.references.root, this.feet);
-      this.initiated = true;
+      feet = new Transform[2];
+      feet[0] = ik.references.leftFoot;
+      feet[1] = ik.references.rightFoot;
+      IKSolverVR solver1 = ik.solver;
+      solver1.OnPreUpdate = solver1.OnPreUpdate + OnSolverUpdate;
+      IKSolverVR solver2 = ik.solver;
+      solver2.OnPostUpdate = solver2.OnPostUpdate + OnPostSolverUpdate;
+      solver.Initiate(ik.references.root, feet);
+      initiated = true;
     }
 
     private void OnSolverUpdate()
     {
-      if (!this.enabled || (double) this.weight <= 0.0)
+      if (!this.enabled || weight <= 0.0)
         return;
-      if (this.OnPreGrounder != null)
-        this.OnPreGrounder();
-      this.solver.Update();
-      this.ik.references.pelvis.position += this.solver.pelvis.IKOffset * this.weight;
-      this.ik.solver.AddPositionOffset(IKSolverVR.PositionOffset.LeftFoot, (this.solver.legs[0].IKPosition - this.ik.references.leftFoot.position) * this.weight);
-      this.ik.solver.AddPositionOffset(IKSolverVR.PositionOffset.RightFoot, (this.solver.legs[1].IKPosition - this.ik.references.rightFoot.position) * this.weight);
-      if (this.OnPostGrounder == null)
+      if (OnPreGrounder != null)
+        OnPreGrounder();
+      solver.Update();
+      ik.references.pelvis.position += solver.pelvis.IKOffset * weight;
+      ik.solver.AddPositionOffset(IKSolverVR.PositionOffset.LeftFoot, (solver.legs[0].IKPosition - ik.references.leftFoot.position) * weight);
+      ik.solver.AddPositionOffset(IKSolverVR.PositionOffset.RightFoot, (solver.legs[1].IKPosition - ik.references.rightFoot.position) * weight);
+      if (OnPostGrounder == null)
         return;
-      this.OnPostGrounder();
+      OnPostGrounder();
     }
 
     private void SetLegIK(
@@ -72,34 +70,34 @@ namespace RootMotion.FinalIK
       Transform bone,
       Grounding.Leg leg)
     {
-      this.ik.solver.AddPositionOffset(positionOffset, (leg.IKPosition - bone.position) * this.weight);
+      ik.solver.AddPositionOffset(positionOffset, (leg.IKPosition - bone.position) * weight);
     }
 
     private void OnPostSolverUpdate()
     {
-      this.ik.references.leftFoot.rotation = Quaternion.Slerp(Quaternion.identity, this.solver.legs[0].rotationOffset, this.weight) * this.ik.references.leftFoot.rotation;
-      this.ik.references.rightFoot.rotation = Quaternion.Slerp(Quaternion.identity, this.solver.legs[1].rotationOffset, this.weight) * this.ik.references.rightFoot.rotation;
+      ik.references.leftFoot.rotation = Quaternion.Slerp(Quaternion.identity, solver.legs[0].rotationOffset, weight) * ik.references.leftFoot.rotation;
+      ik.references.rightFoot.rotation = Quaternion.Slerp(Quaternion.identity, solver.legs[1].rotationOffset, weight) * ik.references.rightFoot.rotation;
     }
 
     private void OnDrawGizmosSelected()
     {
-      if ((Object) this.ik == (Object) null)
-        this.ik = this.GetComponent<VRIK>();
-      if ((Object) this.ik == (Object) null)
-        this.ik = this.GetComponentInParent<VRIK>();
-      if (!((Object) this.ik == (Object) null))
+      if ((Object) ik == (Object) null)
+        ik = this.GetComponent<VRIK>();
+      if ((Object) ik == (Object) null)
+        ik = this.GetComponentInParent<VRIK>();
+      if (!((Object) ik == (Object) null))
         return;
-      this.ik = this.GetComponentInChildren<VRIK>();
+      ik = this.GetComponentInChildren<VRIK>();
     }
 
     private void OnDestroy()
     {
-      if (!this.initiated || !((Object) this.ik != (Object) null))
+      if (!initiated || !((Object) ik != (Object) null))
         return;
-      IKSolverVR solver1 = this.ik.solver;
-      solver1.OnPreUpdate = solver1.OnPreUpdate - new IKSolver.UpdateDelegate(this.OnSolverUpdate);
-      IKSolverVR solver2 = this.ik.solver;
-      solver2.OnPostUpdate = solver2.OnPostUpdate - new IKSolver.UpdateDelegate(this.OnPostSolverUpdate);
+      IKSolverVR solver1 = ik.solver;
+      solver1.OnPreUpdate = solver1.OnPreUpdate - OnSolverUpdate;
+      IKSolverVR solver2 = ik.solver;
+      solver2.OnPostUpdate = solver2.OnPostUpdate - OnPostSolverUpdate;
     }
   }
 }

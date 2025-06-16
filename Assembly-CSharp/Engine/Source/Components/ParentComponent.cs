@@ -15,19 +15,19 @@ namespace Engine.Source.Components
     public void SetParent(IEntity parent)
     {
       this.parent = parent;
-      this.rootParent = this.FindRootParent();
+      rootParent = FindRootParent();
     }
 
     private IEntity FindRootParent()
     {
-      if (this.parent == null)
-        return this.Owner;
-      ParentComponent component = this.parent.GetComponent<ParentComponent>();
-      return component == null ? this.parent : component.GetRootParent();
+      if (parent == null)
+        return Owner;
+      ParentComponent component = parent.GetComponent<ParentComponent>();
+      return component == null ? parent : component.GetRootParent();
     }
 
-    public IEntity GetParent() => this.parent;
+    public IEntity GetParent() => parent;
 
-    public IEntity GetRootParent() => this.rootParent;
+    public IEntity GetRootParent() => rootParent;
   }
 }

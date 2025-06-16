@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace UnityStandardAssets.ImageEffects
+﻿namespace UnityStandardAssets.ImageEffects
 {
   [ExecuteInEditMode]
   [RequireComponent(typeof (Camera))]
@@ -19,18 +17,18 @@ namespace UnityStandardAssets.ImageEffects
 
     public override bool CheckResources()
     {
-      this.CheckSupport(true);
-      this.blurMaterial = this.CheckShaderAndCreateMaterial(this.blurShader, this.blurMaterial);
-      this.depthFetchMaterial = this.CheckShaderAndCreateMaterial(this.depthFetchShader, this.depthFetchMaterial);
-      this.creaseApplyMaterial = this.CheckShaderAndCreateMaterial(this.creaseApplyShader, this.creaseApplyMaterial);
-      if (!this.isSupported)
-        this.ReportAutoDisable();
-      return this.isSupported;
+      CheckSupport(true);
+      blurMaterial = CheckShaderAndCreateMaterial(blurShader, blurMaterial);
+      depthFetchMaterial = CheckShaderAndCreateMaterial(depthFetchShader, depthFetchMaterial);
+      creaseApplyMaterial = CheckShaderAndCreateMaterial(creaseApplyShader, creaseApplyMaterial);
+      if (!isSupported)
+        ReportAutoDisable();
+      return isSupported;
     }
 
     private void OnRenderImage(RenderTexture source, RenderTexture destination)
     {
-      if (!this.CheckResources())
+      if (!CheckResources())
       {
         Graphics.Blit((Texture) source, destination);
       }
@@ -38,29 +36,29 @@ namespace UnityStandardAssets.ImageEffects
       {
         int width = source.width;
         int height = source.height;
-        float num1 = (float) (1.0 * (double) width / (1.0 * (double) height));
+        float num1 = (float) (1.0 * width / (1.0 * height));
         float num2 = 1f / 512f;
         RenderTexture temporary1 = RenderTexture.GetTemporary(width, height, 0);
         RenderTexture renderTexture1 = RenderTexture.GetTemporary(width / 2, height / 2, 0);
-        Graphics.Blit((Texture) source, temporary1, this.depthFetchMaterial);
+        Graphics.Blit((Texture) source, temporary1, depthFetchMaterial);
         Graphics.Blit((Texture) temporary1, renderTexture1);
-        for (int index = 0; index < this.softness; ++index)
+        for (int index = 0; index < softness; ++index)
         {
           RenderTexture temporary2 = RenderTexture.GetTemporary(width / 2, height / 2, 0);
-          this.blurMaterial.SetVector("offsets", new Vector4(0.0f, this.spread * num2, 0.0f, 0.0f));
-          Graphics.Blit((Texture) renderTexture1, temporary2, this.blurMaterial);
+          blurMaterial.SetVector("offsets", new Vector4(0.0f, spread * num2, 0.0f, 0.0f));
+          Graphics.Blit((Texture) renderTexture1, temporary2, blurMaterial);
           RenderTexture.ReleaseTemporary(renderTexture1);
           RenderTexture renderTexture2 = temporary2;
           RenderTexture temporary3 = RenderTexture.GetTemporary(width / 2, height / 2, 0);
-          this.blurMaterial.SetVector("offsets", new Vector4(this.spread * num2 / num1, 0.0f, 0.0f, 0.0f));
-          Graphics.Blit((Texture) renderTexture2, temporary3, this.blurMaterial);
+          blurMaterial.SetVector("offsets", new Vector4(spread * num2 / num1, 0.0f, 0.0f, 0.0f));
+          Graphics.Blit((Texture) renderTexture2, temporary3, blurMaterial);
           RenderTexture.ReleaseTemporary(renderTexture2);
           renderTexture1 = temporary3;
         }
-        this.creaseApplyMaterial.SetTexture("_HrDepthTex", (Texture) temporary1);
-        this.creaseApplyMaterial.SetTexture("_LrDepthTex", (Texture) renderTexture1);
-        this.creaseApplyMaterial.SetFloat("intensity", this.intensity);
-        Graphics.Blit((Texture) source, destination, this.creaseApplyMaterial);
+        creaseApplyMaterial.SetTexture("_HrDepthTex", (Texture) temporary1);
+        creaseApplyMaterial.SetTexture("_LrDepthTex", (Texture) renderTexture1);
+        creaseApplyMaterial.SetFloat("intensity", intensity);
+        Graphics.Blit((Texture) source, destination, creaseApplyMaterial);
         RenderTexture.ReleaseTemporary(temporary1);
         RenderTexture.ReleaseTemporary(renderTexture1);
       }

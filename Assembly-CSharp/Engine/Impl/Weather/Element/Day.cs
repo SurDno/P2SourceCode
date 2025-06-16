@@ -10,168 +10,168 @@ namespace Engine.Impl.Weather.Element
   public class Day : IBlendable<Day>
   {
     [DataReadProxy(MemberEnum.OnlyCopy)]
-    [DataWriteProxy(MemberEnum.None)]
+    [DataWriteProxy]
     [CopyableProxy(MemberEnum.OnlyCopy)]
     protected ColorGradient ambientColor = ProxyFactory.Create<ColorGradient>();
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     protected float ambientMultiplier;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     protected float brightness;
     [DataReadProxy(MemberEnum.OnlyCopy)]
-    [DataWriteProxy(MemberEnum.None)]
+    [DataWriteProxy]
     [CopyableProxy(MemberEnum.OnlyCopy)]
     protected ColorGradient cloudColor = ProxyFactory.Create<ColorGradient>();
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     protected float contrast;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     protected float directionality;
     [DataReadProxy(MemberEnum.OnlyCopy)]
-    [DataWriteProxy(MemberEnum.None)]
+    [DataWriteProxy]
     [CopyableProxy(MemberEnum.OnlyCopy)]
     protected ColorGradient fogColor = ProxyFactory.Create<ColorGradient>();
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     protected float fogginess;
     [DataReadProxy(MemberEnum.OnlyCopy)]
-    [DataWriteProxy(MemberEnum.None)]
+    [DataWriteProxy]
     [CopyableProxy(MemberEnum.OnlyCopy)]
     protected ColorGradient lightColor = ProxyFactory.Create<ColorGradient>();
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     protected float lightIntensity;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     protected float mieMultiplier;
     [DataReadProxy(MemberEnum.OnlyCopy)]
-    [DataWriteProxy(MemberEnum.None)]
+    [DataWriteProxy]
     [CopyableProxy(MemberEnum.OnlyCopy)]
     protected ColorGradient rayColor = ProxyFactory.Create<ColorGradient>();
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     protected float rayleighMultiplier;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     protected float reflectionMultiplier;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     protected float shadowStrength;
     [DataReadProxy(MemberEnum.OnlyCopy)]
-    [DataWriteProxy(MemberEnum.None)]
+    [DataWriteProxy]
     [CopyableProxy(MemberEnum.OnlyCopy)]
     protected ColorGradient skyColor = ProxyFactory.Create<ColorGradient>();
     [DataReadProxy(MemberEnum.OnlyCopy)]
-    [DataWriteProxy(MemberEnum.None)]
+    [DataWriteProxy()]
     [CopyableProxy(MemberEnum.OnlyCopy)]
     protected ColorGradient sunColor = ProxyFactory.Create<ColorGradient>();
 
-    public ColorGradient SunColor => this.sunColor;
+    public ColorGradient SunColor => sunColor;
 
-    public ColorGradient LightColor => this.lightColor;
+    public ColorGradient LightColor => lightColor;
 
-    public ColorGradient RayColor => this.rayColor;
+    public ColorGradient RayColor => rayColor;
 
-    public ColorGradient SkyColor => this.skyColor;
+    public ColorGradient SkyColor => skyColor;
 
-    public ColorGradient CloudColor => this.cloudColor;
+    public ColorGradient CloudColor => cloudColor;
 
-    public ColorGradient FogColor => this.fogColor;
+    public ColorGradient FogColor => fogColor;
 
-    public ColorGradient AmbientColor => this.ambientColor;
+    public ColorGradient AmbientColor => ambientColor;
 
     public float RayleighMultiplier
     {
-      get => this.rayleighMultiplier;
-      set => this.rayleighMultiplier = value;
+      get => rayleighMultiplier;
+      set => rayleighMultiplier = value;
     }
 
     public float MieMultiplier
     {
-      get => this.mieMultiplier;
-      set => this.mieMultiplier = value;
+      get => mieMultiplier;
+      set => mieMultiplier = value;
     }
 
     public float Brightness
     {
-      get => this.brightness;
-      set => this.brightness = value;
+      get => brightness;
+      set => brightness = value;
     }
 
     public float Contrast
     {
-      get => this.contrast;
-      set => this.contrast = value;
+      get => contrast;
+      set => contrast = value;
     }
 
     public float Directionality
     {
-      get => this.directionality;
-      set => this.directionality = value;
+      get => directionality;
+      set => directionality = value;
     }
 
     public float Fogginess
     {
-      get => this.fogginess;
-      set => this.fogginess = value;
+      get => fogginess;
+      set => fogginess = value;
     }
 
     public float LightIntensity
     {
-      get => this.lightIntensity;
-      set => this.lightIntensity = value;
+      get => lightIntensity;
+      set => lightIntensity = value;
     }
 
     public float ShadowStrength
     {
-      get => this.shadowStrength;
-      set => this.shadowStrength = value;
+      get => shadowStrength;
+      set => shadowStrength = value;
     }
 
     public float AmbientMultiplier
     {
-      get => this.ambientMultiplier;
-      set => this.ambientMultiplier = value;
+      get => ambientMultiplier;
+      set => ambientMultiplier = value;
     }
 
     public float ReflectionMultiplier
     {
-      get => this.reflectionMultiplier;
-      set => this.reflectionMultiplier = value;
+      get => reflectionMultiplier;
+      set => reflectionMultiplier = value;
     }
 
     public void Blend(Day a, Day b, IPureBlendOperation opp)
     {
       IBlendOperation blendOperation = (IBlendOperation) opp;
-      this.SunColor.Blend(a.SunColor, b.SunColor, opp);
-      this.LightColor.Blend(a.LightColor, b.LightColor, opp);
-      this.RayColor.Blend(a.RayColor, b.RayColor, opp);
-      this.SkyColor.Blend(a.SkyColor, b.SkyColor, opp);
-      this.CloudColor.Blend(a.CloudColor, b.CloudColor, opp);
-      this.FogColor.Blend(a.FogColor, b.FogColor, opp);
-      this.AmbientColor.Blend(a.AmbientColor, b.AmbientColor, opp);
-      this.RayleighMultiplier = blendOperation.Blend(a.RayleighMultiplier, b.RayleighMultiplier);
-      this.MieMultiplier = blendOperation.Blend(a.MieMultiplier, b.MieMultiplier);
-      this.Brightness = blendOperation.Blend(a.Brightness, b.Brightness);
-      this.Contrast = blendOperation.Blend(a.Contrast, b.Contrast);
-      this.Directionality = blendOperation.Blend(a.Directionality, b.Directionality);
-      this.Fogginess = blendOperation.Blend(a.Fogginess, b.Fogginess);
-      this.LightIntensity = blendOperation.Blend(a.LightIntensity, b.LightIntensity);
-      this.ShadowStrength = blendOperation.Blend(a.ShadowStrength, b.ShadowStrength);
-      this.AmbientMultiplier = blendOperation.Blend(a.AmbientMultiplier, b.AmbientMultiplier);
-      this.ReflectionMultiplier = blendOperation.Blend(a.ReflectionMultiplier, b.ReflectionMultiplier);
+      SunColor.Blend(a.SunColor, b.SunColor, opp);
+      LightColor.Blend(a.LightColor, b.LightColor, opp);
+      RayColor.Blend(a.RayColor, b.RayColor, opp);
+      SkyColor.Blend(a.SkyColor, b.SkyColor, opp);
+      CloudColor.Blend(a.CloudColor, b.CloudColor, opp);
+      FogColor.Blend(a.FogColor, b.FogColor, opp);
+      AmbientColor.Blend(a.AmbientColor, b.AmbientColor, opp);
+      RayleighMultiplier = blendOperation.Blend(a.RayleighMultiplier, b.RayleighMultiplier);
+      MieMultiplier = blendOperation.Blend(a.MieMultiplier, b.MieMultiplier);
+      Brightness = blendOperation.Blend(a.Brightness, b.Brightness);
+      Contrast = blendOperation.Blend(a.Contrast, b.Contrast);
+      Directionality = blendOperation.Blend(a.Directionality, b.Directionality);
+      Fogginess = blendOperation.Blend(a.Fogginess, b.Fogginess);
+      LightIntensity = blendOperation.Blend(a.LightIntensity, b.LightIntensity);
+      ShadowStrength = blendOperation.Blend(a.ShadowStrength, b.ShadowStrength);
+      AmbientMultiplier = blendOperation.Blend(a.AmbientMultiplier, b.AmbientMultiplier);
+      ReflectionMultiplier = blendOperation.Blend(a.ReflectionMultiplier, b.ReflectionMultiplier);
     }
   }
 }

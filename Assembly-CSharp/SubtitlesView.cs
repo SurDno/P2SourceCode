@@ -1,12 +1,11 @@
-﻿using Engine.Common;
+﻿using System;
+using System.Collections.Generic;
+using Engine.Common;
 using Engine.Common.Services;
 using Engine.Impl.Services;
 using Engine.Source.Audio;
 using Engine.Source.Services;
 using Engine.Source.UI;
-using System;
-using System.Collections.Generic;
-using UnityEngine;
 
 public class SubtitlesView : EngineDependent
 {
@@ -22,40 +21,40 @@ public class SubtitlesView : EngineDependent
   private List<GameObject> lineViewPool;
   private bool initialized;
 
-  public float FadeTime => this.fadeTime;
+  public float FadeTime => fadeTime;
 
   public void AddSubtitles(IEntity actor, string tag, AudioState audioState, UnityEngine.Object context)
   {
-    if (!this.service.SubtitlesEnabled || !this.service.DialogSubtitlesEnabled && ServiceLocator.GetService<UIService>().Active is IDialogWindow)
+    if (!service.SubtitlesEnabled || !service.DialogSubtitlesEnabled && ServiceLocator.GetService<UIService>().Active is IDialogWindow)
       return;
     string text = ServiceLocator.GetService<LocalizationService>().GetSubTitlesText(tag).Replace("<empty>", "").Trim();
     if (text == "")
       return;
-    SubtitlesItem subtitlesItem = this.FindItem(actor);
+    SubtitlesItem subtitlesItem = FindItem(actor);
     if (subtitlesItem == null)
     {
-      if (this.itemPool.Count == 0)
+      if (itemPool.Count == 0)
       {
         subtitlesItem = new SubtitlesItem(this);
       }
       else
       {
-        int index = this.itemPool.Count - 1;
-        subtitlesItem = this.itemPool[index];
-        this.itemPool.RemoveAt(index);
+        int index = itemPool.Count - 1;
+        subtitlesItem = itemPool[index];
+        itemPool.RemoveAt(index);
       }
-      this.items.Add(subtitlesItem);
+      items.Add(subtitlesItem);
     }
     subtitlesItem.Start(actor, text, audioState, context);
   }
 
   public GameObject CreateLineView()
   {
-    if (this.lineViewPool.Count == 0)
-      return UnityEngine.Object.Instantiate<GameObject>(this.lineViewPrefab, (Transform) this.layout, false);
-    int index = this.lineViewPool.Count - 1;
-    GameObject lineView = this.lineViewPool[index];
-    this.lineViewPool.RemoveAt(index);
+    if (lineViewPool.Count == 0)
+      return UnityEngine.Object.Instantiate<GameObject>(lineViewPrefab, (Transform) layout, false);
+    int index = lineViewPool.Count - 1;
+    GameObject lineView = lineViewPool[index];
+    lineViewPool.RemoveAt(index);
     lineView.transform.SetAsLastSibling();
     lineView.SetActive(true);
     return lineView;
@@ -63,66 +62,66 @@ public class SubtitlesView : EngineDependent
 
   private SubtitlesItem FindItem(IEntity actor)
   {
-    for (int index = 0; index < this.items.Count; ++index)
+    for (int index = 0; index < items.Count; ++index)
     {
-      if (this.items[index].Actor == actor)
-        return this.items[index];
+      if (items[index].Actor == actor)
+        return items[index];
     }
-    return (SubtitlesItem) null;
+    return null;
   }
 
   protected override void OnConnectToEngine()
   {
-    if (!this.initialized)
+    if (!initialized)
     {
-      this.service = ServiceLocator.GetService<SubtitlesService>();
-      this.service.AddSubtitlesEvent += new Action<IEntity, string, AudioState, UnityEngine.Object>(this.AddSubtitles);
-      this.service.RemoveSubtitlesEvent += new Action<IEntity>(this.RemoveSubtitles);
-      this.items = new List<SubtitlesItem>();
-      this.itemPool = new List<SubtitlesItem>();
-      this.lineViewPool = new List<GameObject>();
-      this.initialized = true;
+      service = ServiceLocator.GetService<SubtitlesService>();
+      service.AddSubtitlesEvent += new Action<IEntity, string, AudioState, UnityEngine.Object>(AddSubtitles);
+      service.RemoveSubtitlesEvent += RemoveSubtitles;
+      items = new List<SubtitlesItem>();
+      itemPool = new List<SubtitlesItem>();
+      lineViewPool = new List<GameObject>();
+      initialized = true;
     }
-    this.UpdateItems();
+    UpdateItems();
   }
 
   private void OnDestroy()
   {
-    if (!this.initialized)
+    if (!initialized)
       return;
-    this.service.AddSubtitlesEvent -= new Action<IEntity, string, AudioState, UnityEngine.Object>(this.AddSubtitles);
-    this.service.RemoveSubtitlesEvent -= new Action<IEntity>(this.RemoveSubtitles);
+    service.AddSubtitlesEvent -= new Action<IEntity, string, AudioState, UnityEngine.Object>(AddSubtitles);
+    service.RemoveSubtitlesEvent -= RemoveSubtitles;
   }
 
   protected override void OnDisconnectFromEngine()
   {
   }
 
-  public void RemoveSubtitles(IEntity actor) => this.FindItem(actor)?.End();
+  public void RemoveSubtitles(IEntity actor) => FindItem(actor)?.End();
 
   public void ReleaseLineView(GameObject itemView)
   {
     itemView.SetActive(false);
-    this.lineViewPool.Add(itemView);
+    lineViewPool.Add(itemView);
   }
 
   private void Update()
   {
-    if (!this.initialized)
+    if (!initialized)
       return;
-    this.UpdateItems();
+    UpdateItems();
   }
 
   private void UpdateItems()
   {
-    for (int index = this.items.Count - 1; index >= 0; --index)
+    for (int index = items.Count - 1; index >= 0; --index)
     {
-      SubtitlesItem subtitlesItem = this.items[index];
+      SubtitlesItem subtitlesItem = items[index];
       subtitlesItem.Update();
       if (subtitlesItem.Ended)
       {
-        this.items.RemoveAt(index);
-        this.itemPool.Add(subtitlesItem);
+        items.RemoveAt(index);
+        itemPool.Add(subtitlesItem);
       }
     }
   }

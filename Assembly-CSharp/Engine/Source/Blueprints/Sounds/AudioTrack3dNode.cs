@@ -5,8 +5,6 @@ using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
 using SoundPropagation;
-using UnityEngine;
-using UnityEngine.Audio;
 
 namespace Engine.Source.Blueprints.Sounds
 {
@@ -15,15 +13,15 @@ namespace Engine.Source.Blueprints.Sounds
   {
     [Port("Value")]
     private ValueInput<bool> valueInput;
-    [Port("Volume", new object[] {1f})]
+    [Port("Volume", 1f)]
     private ValueInput<float> volumeInput;
     [Port("Spatialize")]
     private ValueInput<bool> spatializeInput;
-    [Port("FadeTime", new object[] {0.5f})]
+    [Port("FadeTime", 0.5f)]
     private ValueInput<float> fadeTimeInput;
-    [Port("MinDistance", new object[] {1f})]
+    [Port("MinDistance", 1f)]
     private ValueInput<float> minDistance;
-    [Port("MaxDistance", new object[] {10f})]
+    [Port("MaxDistance", 10f)]
     private ValueInput<float> maxDistance;
     [Port("Loop")]
     private ValueInput<bool> loopInput;
@@ -43,146 +41,146 @@ namespace Engine.Source.Blueprints.Sounds
     private float lastTime;
     private const float delayDestroy = 10f;
 
-    public bool Play => this.valueInput.value;
+    public bool Play => valueInput.value;
 
     private void ComputeDestroy(float deltaTime)
     {
-      if (!((Object) this.source != (Object) null))
+      if (!((Object) source != (Object) null))
         return;
-      this.sleep += deltaTime;
-      if ((double) this.sleep > 10.0)
+      sleep += deltaTime;
+      if (sleep > 10.0)
       {
-        this.sleep = 0.0f;
-        Object.Destroy((Object) this.source.gameObject);
-        this.source = (AudioSource) null;
+        sleep = 0.0f;
+        Object.Destroy((Object) source.gameObject);
+        source = (AudioSource) null;
       }
     }
 
     public override void OnGraphStarted()
     {
       base.OnGraphStarted();
-      this.lastTime = Time.time;
-      InstanceByRequest<UpdateService>.Instance.BlueprintSoundsUpdater.AddUpdatable((IUpdatable) this);
+      lastTime = Time.time;
+      InstanceByRequest<UpdateService>.Instance.BlueprintSoundsUpdater.AddUpdatable(this);
     }
 
     public override void OnGraphStoped()
     {
-      InstanceByRequest<UpdateService>.Instance.BlueprintSoundsUpdater.RemoveUpdatable((IUpdatable) this);
+      InstanceByRequest<UpdateService>.Instance.BlueprintSoundsUpdater.RemoveUpdatable(this);
       base.OnGraphStoped();
-      if (!((Object) this.source != (Object) null))
+      if (!((Object) source != (Object) null))
         return;
-      Object.Destroy((Object) this.source.gameObject);
-      this.source = (AudioSource) null;
+      Object.Destroy((Object) source.gameObject);
+      source = (AudioSource) null;
     }
 
     public bool Complete { get; private set; }
 
     public void Reset()
     {
-      if ((Object) this.source == (Object) null || !this.Complete)
+      if ((Object) source == (Object) null || !Complete)
         return;
-      this.Complete = false;
-      this.progress = 0.0f;
+      Complete = false;
+      progress = 0.0f;
     }
 
     public void ComputeUpdate()
     {
-      float deltaTime = Time.time - this.lastTime;
-      this.lastTime = Time.time;
-      this.Update(deltaTime);
+      float deltaTime = Time.time - lastTime;
+      lastTime = Time.time;
+      Update(deltaTime);
     }
 
     private void Update(float deltaTime)
     {
-      if (this.Complete)
+      if (Complete)
       {
-        this.ComputeDestroy(deltaTime);
+        ComputeDestroy(deltaTime);
       }
       else
       {
-        bool loop = this.loopInput.value;
-        float fade = this.fadeTimeInput.value;
-        if (this.Play)
+        bool loop = loopInput.value;
+        float fade = fadeTimeInput.value;
+        if (Play)
         {
-          if ((Object) this.source == (Object) null)
+          if ((Object) source == (Object) null)
           {
-            AudioClip clip = this.clipInput.value;
+            AudioClip clip = clipInput.value;
             if ((Object) clip == (Object) null)
               return;
-            AudioMixerGroup mixer = this.mixerInput.value;
+            AudioMixerGroup mixer = mixerInput.value;
             if ((Object) mixer == (Object) null)
               return;
-            this.currentVolume = 0.0f;
-            this.source = AudioTrack3dNode.CreateAudioSource(clip, mixer, 0.0f, this.spatializeInput.value, loop, this.targetInput.value, this.minDistance.value, this.maxDistance.value);
-            if (this.propagationInput.value && (Object) this.targetInput.value != (Object) null)
-              this.source.gameObject.AddComponent<SPAudioSource>().Origin = this.targetInput.value;
-            this.source.PlayAndCheck();
-            Debug.Log((object) ObjectInfoUtility.GetStream().Append("[Sounds]").Append(" Play sound, name : ").Append(clip.name).Append(" , context : ").Append("(blueprint) ").Append(this.graph.agent.name));
+            currentVolume = 0.0f;
+            source = CreateAudioSource(clip, mixer, 0.0f, spatializeInput.value, loop, targetInput.value, minDistance.value, maxDistance.value);
+            if (propagationInput.value && (Object) targetInput.value != (Object) null)
+              source.gameObject.AddComponent<SPAudioSource>().Origin = targetInput.value;
+            source.PlayAndCheck();
+            Debug.Log((object) ObjectInfoUtility.GetStream().Append("[Sounds]").Append(" Play sound, name : ").Append(clip.name).Append(" , context : ").Append("(blueprint) ").Append(graph.agent.name));
           }
-          else if ((Object) this.targetInput.value != (Object) null)
+          else if ((Object) targetInput.value != (Object) null)
           {
-            this.source.transform.position = this.targetInput.value.position;
-            this.source.transform.rotation = this.targetInput.value.rotation;
+            source.transform.position = targetInput.value.position;
+            source.transform.rotation = targetInput.value.rotation;
           }
         }
-        if ((Object) this.source == (Object) null)
+        if ((Object) source == (Object) null)
           return;
-        if (this.run)
+        if (run)
         {
-          this.progress += deltaTime;
+          progress += deltaTime;
           if (loop)
           {
-            this.progress %= this.source.clip.length;
+            progress %= source.clip.length;
           }
           else
           {
-            if ((double) this.progress >= (double) this.source.clip.length)
+            if (progress >= (double) source.clip.length)
             {
-              this.Complete = true;
-              this.run = false;
-              this.source.Stop();
+              Complete = true;
+              run = false;
+              source.Stop();
               return;
             }
-            SoundUtility.ComputeFade(this.progress, this.source.clip.length, fade);
-            this.source.volume = this.currentVolume * this.volumeInput.value;
+            SoundUtility.ComputeFade(progress, source.clip.length, fade);
+            source.volume = currentVolume * volumeInput.value;
           }
         }
-        if (this.Play)
+        if (Play)
         {
-          if (this.run)
+          if (run)
           {
-            if ((double) this.currentVolume != 1.0)
+            if (currentVolume != 1.0)
             {
-              this.currentVolume = Mathf.Clamp01(this.currentVolume + deltaTime / fade);
-              this.source.volume = this.currentVolume * this.volumeInput.value;
+              currentVolume = Mathf.Clamp01(currentVolume + deltaTime / fade);
+              source.volume = currentVolume * volumeInput.value;
             }
           }
           else
           {
-            this.run = true;
-            this.currentVolume = 0.0f;
-            this.source.volume = this.currentVolume * this.volumeInput.value;
-            this.source.PlayAndCheck();
-            SoundUtility.SetTime(this.source, this.progress);
+            run = true;
+            currentVolume = 0.0f;
+            source.volume = currentVolume * volumeInput.value;
+            source.PlayAndCheck();
+            SoundUtility.SetTime(source, progress);
           }
         }
-        else if (this.run)
+        else if (run)
         {
-          if ((double) this.currentVolume != 0.0)
+          if (currentVolume != 0.0)
           {
-            this.currentVolume = Mathf.Clamp01(this.currentVolume - deltaTime / fade);
-            this.source.volume = this.currentVolume * this.volumeInput.value;
+            currentVolume = Mathf.Clamp01(currentVolume - deltaTime / fade);
+            source.volume = currentVolume * volumeInput.value;
           }
           else
           {
-            this.run = false;
-            this.source.Stop();
+            run = false;
+            source.Stop();
           }
         }
-        if (this.run)
-          this.sleep = 0.0f;
+        if (run)
+          sleep = 0.0f;
         else
-          this.ComputeDestroy(deltaTime);
+          ComputeDestroy(deltaTime);
       }
     }
 

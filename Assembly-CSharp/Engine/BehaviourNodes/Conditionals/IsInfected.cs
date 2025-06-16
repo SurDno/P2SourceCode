@@ -1,4 +1,6 @@
-﻿using BehaviorDesigner.Runtime;
+﻿using System;
+using System.Reflection;
+using BehaviorDesigner.Runtime;
 using BehaviorDesigner.Runtime.Tasks;
 using Cofe.Proxies;
 using Cofe.Serializations.Data;
@@ -10,8 +12,6 @@ using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Engine.Source.Components;
 using Scripts.Tools.Serializations.Converters;
-using System.Reflection;
-using UnityEngine;
 
 namespace Engine.BehaviourNodes.Conditionals
 {
@@ -22,23 +22,23 @@ namespace Engine.BehaviourNodes.Conditionals
   [FactoryProxy(typeof (IsInfected))]
   public class IsInfected : Conditional, IStub, ISerializeDataWrite, ISerializeDataRead
   {
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [SerializeField]
     public SharedTransform Target;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy()]
     [SerializeField]
-    public SharedFloat Threshold = (SharedFloat) 0.0f;
+    public SharedFloat Threshold = 0.0f;
 
     public override TaskStatus OnUpdate()
     {
-      IEntity entity = !((UnityEngine.Object) this.Target.Value == (UnityEngine.Object) null) ? EntityUtility.GetEntity(this.Target.Value.gameObject) : EntityUtility.GetEntity(this.gameObject);
+      IEntity entity = !((UnityEngine.Object) Target.Value == (UnityEngine.Object) null) ? EntityUtility.GetEntity(Target.Value.gameObject) : EntityUtility.GetEntity(gameObject);
       if (entity == null)
       {
-        Debug.LogWarning((object) (this.gameObject.name + " : entity not found, method : " + this.GetType().Name + ":" + MethodBase.GetCurrentMethod().Name), (UnityEngine.Object) this.gameObject);
+        Debug.LogWarning((object) (gameObject.name + " : entity not found, method : " + GetType().Name + ":" + MethodBase.GetCurrentMethod().Name), (UnityEngine.Object) gameObject);
         return TaskStatus.Failure;
       }
       ParametersComponent component = entity.GetComponent<ParametersComponent>();
@@ -46,31 +46,31 @@ namespace Engine.BehaviourNodes.Conditionals
       {
         IParameter<float> byName = component.GetByName<float>(ParameterNameEnum.Infection);
         if (byName != null)
-          return (double) byName.Value > (double) this.Threshold.Value ? TaskStatus.Success : TaskStatus.Failure;
+          return byName.Value > (double) Threshold.Value ? TaskStatus.Success : TaskStatus.Failure;
       }
       return TaskStatus.Failure;
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.WriteSerialize<NodeData>(writer, "NodeData", this.nodeData);
-      DefaultDataWriteUtility.Write(writer, "Id", this.id);
-      DefaultDataWriteUtility.Write(writer, "FriendlyName", this.friendlyName);
-      DefaultDataWriteUtility.Write(writer, "Instant", this.instant);
-      DefaultDataWriteUtility.Write(writer, "Disabled", this.disabled);
-      BehaviorTreeDataWriteUtility.WriteShared<SharedTransform>(writer, "Target", this.Target);
-      BehaviorTreeDataWriteUtility.WriteShared<SharedFloat>(writer, "Threshold", this.Threshold);
+      DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
+      DefaultDataWriteUtility.Write(writer, "Id", id);
+      DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
+      DefaultDataWriteUtility.Write(writer, "Instant", instant);
+      DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
+      BehaviorTreeDataWriteUtility.WriteShared(writer, "Target", Target);
+      BehaviorTreeDataWriteUtility.WriteShared(writer, "Threshold", Threshold);
     }
 
-    public void DataRead(IDataReader reader, System.Type type)
+    public void DataRead(IDataReader reader, Type type)
     {
-      this.nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
-      this.id = DefaultDataReadUtility.Read(reader, "Id", this.id);
-      this.friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", this.friendlyName);
-      this.instant = DefaultDataReadUtility.Read(reader, "Instant", this.instant);
-      this.disabled = DefaultDataReadUtility.Read(reader, "Disabled", this.disabled);
-      this.Target = BehaviorTreeDataReadUtility.ReadShared<SharedTransform>(reader, "Target", this.Target);
-      this.Threshold = BehaviorTreeDataReadUtility.ReadShared<SharedFloat>(reader, "Threshold", this.Threshold);
+      nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
+      id = DefaultDataReadUtility.Read(reader, "Id", id);
+      friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
+      instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
+      disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
+      Target = BehaviorTreeDataReadUtility.ReadShared(reader, "Target", Target);
+      Threshold = BehaviorTreeDataReadUtility.ReadShared(reader, "Threshold", Threshold);
     }
   }
 }

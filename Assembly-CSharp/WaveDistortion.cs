@@ -1,11 +1,10 @@
-﻿using UnityEngine;
-using UnityStandardAssets.ImageEffects;
+﻿using UnityStandardAssets.ImageEffects;
 
 [ExecuteInEditMode]
 public class WaveDistortion : ImageEffectBase
 {
   [SerializeField]
-  private float intensity = 0.0f;
+  private float intensity;
   [SerializeField]
   private float noiseScale = 1f;
   [SerializeField]
@@ -13,22 +12,22 @@ public class WaveDistortion : ImageEffectBase
 
   public float Intensity
   {
-    get => this.intensity;
-    set => this.intensity = value;
+    get => intensity;
+    set => intensity = value;
   }
 
   private void OnRenderImage(RenderTexture source, RenderTexture destination)
   {
-    if ((double) this.intensity == 0.0)
+    if (intensity == 0.0)
     {
       Graphics.Blit((Texture) source, destination);
     }
     else
     {
-      this.material.SetFloat("_Intensity", this.intensity);
-      this.material.SetFloat("_NoiseScale", this.noiseScale);
-      this.material.SetFloat("_NoiseSpeed", this.noiseSpeed);
-      Graphics.Blit((Texture) source, destination, this.material);
+      material.SetFloat("_Intensity", intensity);
+      material.SetFloat("_NoiseScale", noiseScale);
+      material.SetFloat("_NoiseSpeed", noiseSpeed);
+      Graphics.Blit((Texture) source, destination, material);
     }
   }
 }

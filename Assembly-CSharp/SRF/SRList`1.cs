@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using UnityEngine;
 
 namespace SRF
 {
@@ -18,66 +17,66 @@ namespace SRF
     private T[] _buffer;
     [SerializeField]
     private int _count;
-    private System.Collections.Generic.EqualityComparer<T> _equalityComparer;
+    private EqualityComparer<T> _equalityComparer;
     private ReadOnlyCollection<T> _readOnlyWrapper;
 
     public SRList()
     {
     }
 
-    public SRList(int capacity) => this.Buffer = new T[capacity];
+    public SRList(int capacity) => Buffer = new T[capacity];
 
-    public SRList(IEnumerable<T> source) => this.AddRange(source);
+    public SRList(IEnumerable<T> source) => AddRange(source);
 
     public T[] Buffer
     {
-      get => this._buffer;
-      private set => this._buffer = value;
+      get => _buffer;
+      private set => _buffer = value;
     }
 
-    private System.Collections.Generic.EqualityComparer<T> EqualityComparer
+    private EqualityComparer<T> EqualityComparer
     {
       get
       {
-        if (this._equalityComparer == null)
-          this._equalityComparer = System.Collections.Generic.EqualityComparer<T>.Default;
-        return this._equalityComparer;
+        if (_equalityComparer == null)
+          _equalityComparer = EqualityComparer<T>.Default;
+        return _equalityComparer;
       }
     }
 
     public int Count
     {
-      get => this._count;
-      private set => this._count = value;
+      get => _count;
+      private set => _count = value;
     }
 
     public IEnumerator<T> GetEnumerator()
     {
-      if (this.Buffer != null)
+      if (Buffer != null)
       {
-        for (int i = 0; i < this.Count; ++i)
-          yield return this.Buffer[i];
+        for (int i = 0; i < Count; ++i)
+          yield return Buffer[i];
       }
     }
 
-    IEnumerator IEnumerable.GetEnumerator() => (IEnumerator) this.GetEnumerator();
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
     public void Add(T item)
     {
-      if (this.Buffer == null || this.Count == this.Buffer.Length)
-        this.Expand();
-      this.Buffer[this.Count++] = item;
+      if (Buffer == null || Count == Buffer.Length)
+        Expand();
+      Buffer[Count++] = item;
     }
 
-    public void Clear() => this.Count = 0;
+    public void Clear() => Count = 0;
 
     public bool Contains(T item)
     {
-      if (this.Buffer == null)
+      if (Buffer == null)
         return false;
-      for (int index = 0; index < this.Count; ++index)
+      for (int index = 0; index < Count; ++index)
       {
-        if (this.EqualityComparer.Equals(this.Buffer[index], item))
+        if (EqualityComparer.Equals(Buffer[index], item))
           return true;
       }
       return false;
@@ -85,18 +84,18 @@ namespace SRF
 
     public void CopyTo(T[] array, int arrayIndex)
     {
-      this.Trim();
-      this.Buffer.CopyTo((Array) array, arrayIndex);
+      Trim();
+      Buffer.CopyTo(array, arrayIndex);
     }
 
     public bool Remove(T item)
     {
-      if (this.Buffer == null)
+      if (Buffer == null)
         return false;
-      int index = this.IndexOf(item);
+      int index = IndexOf(item);
       if (index < 0)
         return false;
-      this.RemoveAt(index);
+      RemoveAt(index);
       return true;
     }
 
@@ -104,11 +103,11 @@ namespace SRF
 
     public int IndexOf(T item)
     {
-      if (this.Buffer == null)
+      if (Buffer == null)
         return -1;
-      for (int index = 0; index < this.Count; ++index)
+      for (int index = 0; index < Count; ++index)
       {
-        if (this.EqualityComparer.Equals(this.Buffer[index], item))
+        if (EqualityComparer.Equals(Buffer[index], item))
           return index;
       }
       return -1;
@@ -116,101 +115,101 @@ namespace SRF
 
     public void Insert(int index, T item)
     {
-      if (this.Buffer == null || this.Count == this.Buffer.Length)
-        this.Expand();
-      if (index < this.Count)
+      if (Buffer == null || Count == Buffer.Length)
+        Expand();
+      if (index < Count)
       {
-        for (int count = this.Count; count > index; --count)
-          this.Buffer[count] = this.Buffer[count - 1];
-        this.Buffer[index] = item;
-        ++this.Count;
+        for (int count = Count; count > index; --count)
+          Buffer[count] = Buffer[count - 1];
+        Buffer[index] = item;
+        ++Count;
       }
       else
-        this.Add(item);
+        Add(item);
     }
 
     public void RemoveAt(int index)
     {
-      if (this.Buffer == null || index >= this.Count)
+      if (Buffer == null || index >= Count)
         return;
-      --this.Count;
-      this.Buffer[index] = default (T);
-      for (int index1 = index; index1 < this.Count; ++index1)
-        this.Buffer[index1] = this.Buffer[index1 + 1];
+      --Count;
+      Buffer[index] = default (T);
+      for (int index1 = index; index1 < Count; ++index1)
+        Buffer[index1] = Buffer[index1 + 1];
     }
 
     public T this[int index]
     {
-      get => this.Buffer != null ? this.Buffer[index] : throw new IndexOutOfRangeException();
+      get => Buffer != null ? Buffer[index] : throw new IndexOutOfRangeException();
       set
       {
-        if (this.Buffer == null)
+        if (Buffer == null)
           throw new IndexOutOfRangeException();
-        this.Buffer[index] = value;
+        Buffer[index] = value;
       }
     }
 
     public void OnBeforeSerialize()
     {
-      Debug.Log((object) "[OnBeforeSerialize] Count: {0}".Fmt((object) this._count));
-      this.Clean();
+      Debug.Log((object) "[OnBeforeSerialize] Count: {0}".Fmt(_count));
+      Clean();
     }
 
     public void OnAfterDeserialize()
     {
-      Debug.Log((object) "[OnAfterDeserialize] Count: {0}".Fmt((object) this._count));
+      Debug.Log((object) "[OnAfterDeserialize] Count: {0}".Fmt(_count));
     }
 
     public void AddRange(IEnumerable<T> range)
     {
       foreach (T obj in range)
-        this.Add(obj);
+        Add(obj);
     }
 
     public void Clear(bool clean)
     {
-      this.Clear();
+      Clear();
       if (!clean)
         return;
-      this.Clean();
+      Clean();
     }
 
     public void Clean()
     {
-      if (this.Buffer == null)
+      if (Buffer == null)
         return;
-      for (int count = this.Count; count < this._buffer.Length; ++count)
-        this._buffer[count] = default (T);
+      for (int count = Count; count < _buffer.Length; ++count)
+        _buffer[count] = default (T);
     }
 
     public ReadOnlyCollection<T> AsReadOnly()
     {
-      if (this._readOnlyWrapper == null)
-        this._readOnlyWrapper = new ReadOnlyCollection<T>((IList<T>) this);
-      return this._readOnlyWrapper;
+      if (_readOnlyWrapper == null)
+        _readOnlyWrapper = new ReadOnlyCollection<T>(this);
+      return _readOnlyWrapper;
     }
 
     private void Expand()
     {
-      T[] objArray = this.Buffer != null ? new T[Mathf.Max(this.Buffer.Length << 1, 32)] : new T[32];
-      if (this.Buffer != null && this.Count > 0)
-        this.Buffer.CopyTo((Array) objArray, 0);
-      this.Buffer = objArray;
+      T[] objArray = Buffer != null ? new T[Mathf.Max(Buffer.Length << 1, 32)] : new T[32];
+      if (Buffer != null && Count > 0)
+        Buffer.CopyTo(objArray, 0);
+      Buffer = objArray;
     }
 
     public void Trim()
     {
-      if (this.Count > 0)
+      if (Count > 0)
       {
-        if (this.Count >= this.Buffer.Length)
+        if (Count >= Buffer.Length)
           return;
-        T[] objArray = new T[this.Count];
-        for (int index = 0; index < this.Count; ++index)
-          objArray[index] = this.Buffer[index];
-        this.Buffer = objArray;
+        T[] objArray = new T[Count];
+        for (int index = 0; index < Count; ++index)
+          objArray[index] = Buffer[index];
+        Buffer = objArray;
       }
       else
-        this.Buffer = new T[0];
+        Buffer = new T[0];
     }
 
     public void Sort(Comparison<T> comparer)
@@ -219,13 +218,13 @@ namespace SRF
       while (flag)
       {
         flag = false;
-        for (int index = 1; index < this.Count; ++index)
+        for (int index = 1; index < Count; ++index)
         {
-          if (comparer(this.Buffer[index - 1], this.Buffer[index]) > 0)
+          if (comparer(Buffer[index - 1], Buffer[index]) > 0)
           {
-            T obj = this.Buffer[index];
-            this.Buffer[index] = this.Buffer[index - 1];
-            this.Buffer[index - 1] = obj;
+            T obj = Buffer[index];
+            Buffer[index] = Buffer[index - 1];
+            Buffer[index - 1] = obj;
             flag = true;
           }
         }

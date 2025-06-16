@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace Engine.Impl.UI.Controls
+﻿namespace Engine.Impl.UI.Controls
 {
   public class HideableSplited : HideableView
   {
@@ -9,7 +7,7 @@ namespace Engine.Impl.UI.Controls
 
     public override void SkipAnimation()
     {
-      foreach (HideableView view in this.views)
+      foreach (HideableView view in views)
       {
         if ((Object) view != (Object) null)
           view.SkipAnimation();
@@ -18,10 +16,10 @@ namespace Engine.Impl.UI.Controls
 
     protected override void ApplyVisibility()
     {
-      foreach (HideableView view in this.views)
+      foreach (HideableView view in views)
       {
         if ((Object) view != (Object) null)
-          view.Visible = this.Visible;
+          view.Visible = Visible;
       }
     }
   }

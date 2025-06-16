@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 public class AnimationClipOverrides : List<KeyValuePair<AnimationClip, AnimationClip>>
 {
@@ -13,11 +12,11 @@ public class AnimationClipOverrides : List<KeyValuePair<AnimationClip, Animation
   {
     get
     {
-      return this.Find((Predicate<KeyValuePair<AnimationClip, AnimationClip>>) (x => x.Key.name.Equals(name))).Value;
+      return Find((Predicate<KeyValuePair<AnimationClip, AnimationClip>>) (x => x.Key.name.Equals(name))).Value;
     }
     set
     {
-      int index = this.FindIndex((Predicate<KeyValuePair<AnimationClip, AnimationClip>>) (x => x.Key.name.Equals(name)));
+      int index = FindIndex((Predicate<KeyValuePair<AnimationClip, AnimationClip>>) (x => x.Key.name.Equals(name)));
       if (index == -1)
         return;
       this[index] = new KeyValuePair<AnimationClip, AnimationClip>(this[index].Key, value);

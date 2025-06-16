@@ -1,5 +1,4 @@
-﻿using SteamNative;
-using System;
+﻿using System;
 
 namespace Facepunch.Steamworks
 {
@@ -7,30 +6,30 @@ namespace Facepunch.Steamworks
   {
     internal Client client;
 
-    internal App(Client c) => this.client = c;
+    internal App(Client c) => client = c;
 
-    public void Dispose() => this.client = (Client) null;
+    public void Dispose() => client = null;
 
     public void MarkContentCorrupt(bool missingFilesOnly = false)
     {
-      this.client.native.apps.MarkContentCorrupt(missingFilesOnly);
+      client.native.apps.MarkContentCorrupt(missingFilesOnly);
     }
 
-    public void InstallDlc(uint appId) => this.client.native.apps.InstallDLC((AppId_t) appId);
+    public void InstallDlc(uint appId) => client.native.apps.InstallDLC(appId);
 
-    public void UninstallDlc(uint appId) => this.client.native.apps.UninstallDLC((AppId_t) appId);
+    public void UninstallDlc(uint appId) => client.native.apps.UninstallDLC(appId);
 
     public DateTime PurchaseTime(uint appId)
     {
-      uint purchaseUnixTime = this.client.native.apps.GetEarliestPurchaseUnixTime((AppId_t) appId);
-      return purchaseUnixTime == 0U ? DateTime.MinValue : Utility.Epoch.ToDateTime((Decimal) purchaseUnixTime);
+      uint purchaseUnixTime = client.native.apps.GetEarliestPurchaseUnixTime(appId);
+      return purchaseUnixTime == 0U ? DateTime.MinValue : Utility.Epoch.ToDateTime(purchaseUnixTime);
     }
 
     public bool IsSubscribed(uint appId)
     {
-      return this.client.native.apps.BIsSubscribedApp((AppId_t) appId);
+      return client.native.apps.BIsSubscribedApp(appId);
     }
 
-    public bool IsInstalled(uint appId) => this.client.native.apps.BIsAppInstalled((AppId_t) appId);
+    public bool IsInstalled(uint appId) => client.native.apps.BIsAppInstalled(appId);
   }
 }

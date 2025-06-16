@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-public class HerbRootsSpawnPoint : MonoBehaviour
+﻿public class HerbRootsSpawnPoint : MonoBehaviour
 {
   private void OnDrawGizmos()
   {

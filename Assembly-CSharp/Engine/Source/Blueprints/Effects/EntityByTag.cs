@@ -13,6 +13,6 @@ namespace Engine.Source.Blueprints.Effects
     private ValueInput<string> tagInput;
 
     [Port("Value")]
-    private IEntity Value() => RegisterComponent.GetByTag(this.tagInput.value);
+    private IEntity Value() => RegisterComponent.GetByTag(tagInput.value);
   }
 }

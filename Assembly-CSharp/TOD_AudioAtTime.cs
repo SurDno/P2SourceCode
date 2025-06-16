@@ -1,10 +1,7 @@
-﻿using UnityEngine;
-
-[RequireComponent(typeof (AudioSource))]
+﻿[RequireComponent(typeof (AudioSource))]
 public class TOD_AudioAtTime : MonoBehaviour
 {
-  public AnimationCurve Volume = new AnimationCurve()
-  {
+  public AnimationCurve Volume = new AnimationCurve {
     keys = new Keyframe[3]
     {
       new Keyframe(0.0f, 0.0f),
@@ -14,11 +11,11 @@ public class TOD_AudioAtTime : MonoBehaviour
   };
   private AudioSource audioComponent;
 
-  protected void Start() => this.audioComponent = this.GetComponent<AudioSource>();
+  protected void Start() => audioComponent = this.GetComponent<AudioSource>();
 
   protected void Update()
   {
-    this.audioComponent.volume = this.Volume.Evaluate(TOD_Sky.Instance.Cycle.Hour);
-    this.audioComponent.enabled = (double) this.audioComponent.volume > 0.0;
+    audioComponent.volume = Volume.Evaluate(TOD_Sky.Instance.Cycle.Hour);
+    audioComponent.enabled = (double) audioComponent.volume > 0.0;
   }
 }

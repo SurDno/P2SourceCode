@@ -1,94 +1,93 @@
 ﻿using Engine.Common.Generator;
-using UnityEngine;
 
 namespace BehaviorDesigner.Runtime.Tasks.Pathologic
 {
   public abstract class IdleBase : Action
   {
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [SerializeField]
-    public SharedFloat primaryIdleProbability = (SharedFloat) 0.7f;
-    [BehaviorDesigner.Runtime.Tasks.Tooltip("The amount of time to wait. Use 0 for infinite idle.")]
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    public SharedFloat primaryIdleProbability = 0.7f;
+    [Tooltip("The amount of time to wait. Use 0 for infinite idle.")]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [SerializeField]
-    public SharedFloat idleTime = (SharedFloat) 1f;
-    [BehaviorDesigner.Runtime.Tasks.Tooltip("Should the wait be randomized?")]
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    public SharedFloat idleTime = 1f;
+    [Tooltip("Should the wait be randomized?")]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [SerializeField]
-    public SharedBool randomIdle = (SharedBool) false;
-    [BehaviorDesigner.Runtime.Tasks.Tooltip("The minimum wait time if random wait is enabled")]
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    public SharedBool randomIdle = false;
+    [Tooltip("The minimum wait time if random wait is enabled")]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [SerializeField]
-    public SharedFloat randomIdleMin = (SharedFloat) 1f;
-    [BehaviorDesigner.Runtime.Tasks.Tooltip("The maximum wait time if random wait is enabled")]
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    public SharedFloat randomIdleMin = 1f;
+    [Tooltip("The maximum wait time if random wait is enabled")]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [SerializeField]
-    public SharedFloat randomIdleMax = (SharedFloat) 1f;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    public SharedFloat randomIdleMax = 1f;
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy()]
     [SerializeField]
-    public SharedBool MakeObstacle = (SharedBool) false;
+    public SharedBool MakeObstacle = false;
     private float waitDuration;
     private float startTime;
     private float pauseTime;
-    private bool infinite = false;
+    private bool infinite;
     private NpcState npcState;
 
     protected abstract void DoIdle(NpcState state, float primaryIdleProbability);
 
     public override void OnAwake()
     {
-      this.npcState = this.gameObject.GetComponent<NpcState>();
-      if (!((Object) this.npcState == (Object) null))
+      npcState = gameObject.GetComponent<NpcState>();
+      if (!((Object) npcState == (Object) null))
         return;
-      Debug.LogWarning((object) (this.gameObject.name + ": doesn't contain " + typeof (NpcState).Name + " engine component"));
+      Debug.LogWarning((object) (gameObject.name + ": doesn't contain " + typeof (NpcState).Name + " engine component"));
     }
 
     public override void OnStart()
     {
-      if ((Object) this.npcState == (Object) null)
+      if ((Object) npcState == (Object) null)
         return;
-      this.infinite = (double) this.idleTime.Value == 0.0 && !this.randomIdle.Value;
-      this.DoIdle(this.npcState, this.primaryIdleProbability.Value);
-      this.startTime = Time.time;
-      if (this.randomIdle.Value)
-        this.waitDuration = Random.Range(this.randomIdleMin.Value, this.randomIdleMax.Value);
+      infinite = idleTime.Value == 0.0 && !randomIdle.Value;
+      DoIdle(npcState, primaryIdleProbability.Value);
+      startTime = Time.time;
+      if (randomIdle.Value)
+        waitDuration = Random.Range(randomIdleMin.Value, randomIdleMax.Value);
       else
-        this.waitDuration = this.idleTime.Value;
+        waitDuration = idleTime.Value;
     }
 
     public override TaskStatus OnUpdate()
     {
-      if ((Object) this.npcState == (Object) null)
+      if ((Object) npcState == (Object) null)
         return TaskStatus.Failure;
-      return this.infinite || (double) this.startTime + (double) this.waitDuration >= (double) Time.time ? TaskStatus.Running : TaskStatus.Success;
+      return infinite || startTime + (double) waitDuration >= (double) Time.time ? TaskStatus.Running : TaskStatus.Success;
     }
 
     public override void OnPause(bool paused)
     {
       if (paused)
-        this.pauseTime = Time.time;
+        pauseTime = Time.time;
       else
-        this.startTime += Time.time - this.pauseTime;
+        startTime += Time.time - pauseTime;
     }
 
     public override void OnReset()
     {
-      this.idleTime = (SharedFloat) 1f;
-      this.randomIdle = (SharedBool) false;
-      this.randomIdleMin = (SharedFloat) 1f;
-      this.randomIdleMax = (SharedFloat) 1f;
+      idleTime = 1f;
+      randomIdle = false;
+      randomIdleMin = 1f;
+      randomIdleMax = 1f;
     }
   }
 }

@@ -1,4 +1,5 @@
-﻿using Engine.Common;
+﻿using System;
+using Engine.Common;
 using Engine.Common.Components;
 using Engine.Common.Services;
 using Engine.Source.Services.Utilities;
@@ -6,7 +7,6 @@ using Engine.Source.UI;
 using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
-using System;
 
 namespace Engine.Source.Blueprints
 {
@@ -18,19 +18,19 @@ namespace Engine.Source.Blueprints
     protected override void RegisterPorts()
     {
       base.RegisterPorts();
-      FlowOutput output = this.AddFlowOutput("Out");
-      this.AddFlowInput("In", (FlowHandler) (() =>
+      FlowOutput output = AddFlowOutput("Out");
+      AddFlowInput("In", () =>
       {
-        IEntity target = this.targetInput.value;
+        IEntity target = targetInput.value;
         if (target == null)
           return;
-        UIServiceUtility.PushWindow<IRepairingWindow>(output, (Action<IRepairingWindow>) (window =>
+        UIServiceUtility.PushWindow(output, (Action<IRepairingWindow>) (window =>
         {
           window.Actor = ServiceLocator.GetService<ISimulation>().Player.GetComponent<IStorageComponent>();
           window.Target = target;
         }));
-      }));
-      this.targetInput = this.AddValueInput<IEntity>("Target");
+      });
+      targetInput = AddValueInput<IEntity>("Target");
     }
   }
 }

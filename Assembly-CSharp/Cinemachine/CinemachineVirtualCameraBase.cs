@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEngine;
 
 namespace Cinemachine
 {
@@ -8,7 +7,7 @@ namespace Cinemachine
   {
     [HideInInspector]
     [NoSaveDuringPlay]
-    public Action CinemachineGUIDebuggerCallback = (Action) null;
+    public Action CinemachineGUIDebuggerCallback = null;
     [HideInInspector]
     [SerializeField]
     [NoSaveDuringPlay]
@@ -20,8 +19,8 @@ namespace Cinemachine
     [SerializeField]
     [NoSaveDuringPlay]
     public CinemachineCore.Stage[] m_LockStageInInspector;
-    private int m_ValidatingStreamVersion = 0;
-    private bool m_OnValidateCalled = false;
+    private int m_ValidatingStreamVersion;
+    private bool m_OnValidateCalled;
     [HideInInspector]
     [SerializeField]
     [NoSaveDuringPlay]
@@ -29,34 +28,34 @@ namespace Cinemachine
     [NoSaveDuringPlay]
     [Tooltip("The priority will determine which camera becomes active based on the state of other cameras and this camera.  Higher numbers have greater priority.")]
     public int m_Priority = 10;
-    protected CinemachineVirtualCameraBase.OnPostPipelineStageDelegate OnPostPipelineStage;
+    protected OnPostPipelineStageDelegate OnPostPipelineStage;
     private bool m_previousStateIsValid;
     private Transform m_previousLookAtTarget;
     private Transform m_previousFollowTarget;
-    private bool mSlaveStatusUpdated = false;
-    private CinemachineVirtualCameraBase m_parentVcam = (CinemachineVirtualCameraBase) null;
+    private bool mSlaveStatusUpdated;
+    private CinemachineVirtualCameraBase m_parentVcam = null;
     private int m_QueuePriority = int.MaxValue;
 
     public int ValidatingStreamVersion
     {
       get
       {
-        return this.m_OnValidateCalled ? this.m_ValidatingStreamVersion : CinemachineCore.kStreamingVersion;
+        return m_OnValidateCalled ? m_ValidatingStreamVersion : CinemachineCore.kStreamingVersion;
       }
-      private set => this.m_ValidatingStreamVersion = value;
+      private set => m_ValidatingStreamVersion = value;
     }
 
     public virtual void AddPostPipelineStageHook(
-      CinemachineVirtualCameraBase.OnPostPipelineStageDelegate d)
+      OnPostPipelineStageDelegate d)
     {
-      this.OnPostPipelineStage -= d;
-      this.OnPostPipelineStage += d;
+      OnPostPipelineStage -= d;
+      OnPostPipelineStage += d;
     }
 
     public virtual void RemovePostPipelineStageHook(
-      CinemachineVirtualCameraBase.OnPostPipelineStageDelegate d)
+      OnPostPipelineStageDelegate d)
     {
-      this.OnPostPipelineStage -= d;
+      OnPostPipelineStage -= d;
     }
 
     protected void InvokePostPipelineStageCallback(
@@ -65,9 +64,9 @@ namespace Cinemachine
       ref CameraState newState,
       float deltaTime)
     {
-      if (this.OnPostPipelineStage != null)
-        this.OnPostPipelineStage(vcam, stage, ref newState, deltaTime);
-      CinemachineVirtualCameraBase parentCamera = this.ParentCamera as CinemachineVirtualCameraBase;
+      if (OnPostPipelineStage != null)
+        OnPostPipelineStage(vcam, stage, ref newState, deltaTime);
+      CinemachineVirtualCameraBase parentCamera = ParentCamera as CinemachineVirtualCameraBase;
       if (!((UnityEngine.Object) parentCamera != (UnityEngine.Object) null))
         return;
       parentCamera.InvokePostPipelineStageCallback(vcam, stage, ref newState, deltaTime);
@@ -79,8 +78,8 @@ namespace Cinemachine
 
     public int Priority
     {
-      get => this.m_Priority;
-      set => this.m_Priority = value;
+      get => m_Priority;
+      set => m_Priority = value;
     }
 
     public GameObject VirtualCameraGameObject
@@ -90,15 +89,15 @@ namespace Cinemachine
 
     public abstract CameraState State { get; }
 
-    public virtual ICinemachineCamera LiveChildOrSelf => (ICinemachineCamera) this;
+    public virtual ICinemachineCamera LiveChildOrSelf => this;
 
     public ICinemachineCamera ParentCamera
     {
       get
       {
-        if (!this.mSlaveStatusUpdated || !Application.isPlaying)
-          this.UpdateSlaveStatus();
-        return (ICinemachineCamera) this.m_parentVcam;
+        if (!mSlaveStatusUpdated || !Application.isPlaying)
+          UpdateSlaveStatus();
+        return m_parentVcam;
       }
     }
 
@@ -112,19 +111,19 @@ namespace Cinemachine
     {
       get
       {
-        if ((UnityEngine.Object) this.LookAt != (UnityEngine.Object) this.m_previousLookAtTarget)
+        if ((UnityEngine.Object) LookAt != (UnityEngine.Object) m_previousLookAtTarget)
         {
-          this.m_previousLookAtTarget = this.LookAt;
-          this.m_previousStateIsValid = false;
+          m_previousLookAtTarget = LookAt;
+          m_previousStateIsValid = false;
         }
-        if ((UnityEngine.Object) this.Follow != (UnityEngine.Object) this.m_previousFollowTarget)
+        if ((UnityEngine.Object) Follow != (UnityEngine.Object) m_previousFollowTarget)
         {
-          this.m_previousFollowTarget = this.Follow;
-          this.m_previousStateIsValid = false;
+          m_previousFollowTarget = Follow;
+          m_previousStateIsValid = false;
         }
-        return this.m_previousStateIsValid;
+        return m_previousStateIsValid;
       }
-      set => this.m_previousStateIsValid = value;
+      set => m_previousStateIsValid = value;
     }
 
     public abstract void UpdateCameraState(Vector3 worldUp, float deltaTime);
@@ -136,7 +135,7 @@ namespace Cinemachine
     {
       if (this.gameObject.activeInHierarchy)
         return;
-      this.PreviousStateIsValid = false;
+      PreviousStateIsValid = false;
     }
 
     protected virtual void Start()
@@ -145,14 +144,14 @@ namespace Cinemachine
 
     protected virtual void OnDestroy()
     {
-      CinemachineCore.Instance.RemoveActiveCamera((ICinemachineCamera) this);
+      CinemachineCore.Instance.RemoveActiveCamera(this);
     }
 
     protected virtual void OnValidate()
     {
-      this.m_OnValidateCalled = true;
-      this.ValidatingStreamVersion = this.m_StreamingVersion;
-      this.m_StreamingVersion = CinemachineCore.kStreamingVersion;
+      m_OnValidateCalled = true;
+      ValidatingStreamVersion = m_StreamingVersion;
+      m_StreamingVersion = CinemachineCore.kStreamingVersion;
     }
 
     protected virtual void OnEnable()
@@ -162,73 +161,73 @@ namespace Cinemachine
       {
         if (components[index].enabled && (UnityEngine.Object) components[index] != (UnityEngine.Object) this)
         {
-          Debug.LogError((object) (this.Name + " has multiple CinemachineVirtualCameraBase-derived components.  Disabling " + ((object) this).GetType().Name + "."));
+          Debug.LogError((object) (Name + " has multiple CinemachineVirtualCameraBase-derived components.  Disabling " + this.GetType().Name + "."));
           this.enabled = false;
         }
       }
-      this.UpdateSlaveStatus();
-      this.UpdateVcamPoolStatus();
-      this.PreviousStateIsValid = false;
+      UpdateSlaveStatus();
+      UpdateVcamPoolStatus();
+      PreviousStateIsValid = false;
     }
 
-    protected virtual void OnDisable() => this.UpdateVcamPoolStatus();
+    protected virtual void OnDisable() => UpdateVcamPoolStatus();
 
     protected virtual void Update()
     {
-      if (this.m_Priority == this.m_QueuePriority)
+      if (m_Priority == m_QueuePriority)
         return;
-      this.UpdateVcamPoolStatus();
+      UpdateVcamPoolStatus();
     }
 
     protected virtual void OnTransformParentChanged()
     {
-      this.UpdateSlaveStatus();
-      this.UpdateVcamPoolStatus();
+      UpdateSlaveStatus();
+      UpdateVcamPoolStatus();
     }
 
     private void UpdateSlaveStatus()
     {
-      this.mSlaveStatusUpdated = true;
-      this.m_parentVcam = (CinemachineVirtualCameraBase) null;
+      mSlaveStatusUpdated = true;
+      m_parentVcam = null;
       Transform parent = this.transform.parent;
       if (!((UnityEngine.Object) parent != (UnityEngine.Object) null))
         return;
-      this.m_parentVcam = parent.GetComponent<CinemachineVirtualCameraBase>();
+      m_parentVcam = parent.GetComponent<CinemachineVirtualCameraBase>();
     }
 
     protected Transform ResolveLookAt(Transform localLookAt)
     {
       Transform transform = localLookAt;
-      if ((UnityEngine.Object) transform == (UnityEngine.Object) null && this.ParentCamera != null)
-        transform = this.ParentCamera.LookAt;
+      if ((UnityEngine.Object) transform == (UnityEngine.Object) null && ParentCamera != null)
+        transform = ParentCamera.LookAt;
       return transform;
     }
 
     protected Transform ResolveFollow(Transform localFollow)
     {
       Transform transform = localFollow;
-      if ((UnityEngine.Object) transform == (UnityEngine.Object) null && this.ParentCamera != null)
-        transform = this.ParentCamera.Follow;
+      if ((UnityEngine.Object) transform == (UnityEngine.Object) null && ParentCamera != null)
+        transform = ParentCamera.Follow;
       return transform;
     }
 
     private void UpdateVcamPoolStatus()
     {
-      this.m_QueuePriority = int.MaxValue;
-      CinemachineCore.Instance.RemoveActiveCamera((ICinemachineCamera) this);
-      CinemachineCore.Instance.RemoveChildCamera((ICinemachineCamera) this);
-      if ((UnityEngine.Object) this.m_parentVcam == (UnityEngine.Object) null)
+      m_QueuePriority = int.MaxValue;
+      CinemachineCore.Instance.RemoveActiveCamera(this);
+      CinemachineCore.Instance.RemoveChildCamera(this);
+      if ((UnityEngine.Object) m_parentVcam == (UnityEngine.Object) null)
       {
         if (!this.isActiveAndEnabled)
           return;
-        CinemachineCore.Instance.AddActiveCamera((ICinemachineCamera) this);
-        this.m_QueuePriority = this.m_Priority;
+        CinemachineCore.Instance.AddActiveCamera(this);
+        m_QueuePriority = m_Priority;
       }
       else if (this.isActiveAndEnabled)
-        CinemachineCore.Instance.AddChildCamera((ICinemachineCamera) this);
+        CinemachineCore.Instance.AddChildCamera(this);
     }
 
-    public void MoveToTopOfPrioritySubqueue() => this.UpdateVcamPoolStatus();
+    public void MoveToTopOfPrioritySubqueue() => UpdateVcamPoolStatus();
 
     public delegate void OnPostPipelineStageDelegate(
       CinemachineVirtualCameraBase vcam,

@@ -1,10 +1,10 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons.Cloneable;
 using Engine.Common.Commons.Converters;
 using Engine.Source.Effects.Engine;
 using Expressions;
-using System;
 
 namespace Engine.Source.Proxies
 {
@@ -19,27 +19,27 @@ namespace Engine.Source.Proxies
     public object Clone()
     {
       EffectContextTimeSpanValueAdditionAssignment_Generated instance = Activator.CreateInstance<EffectContextTimeSpanValueAdditionAssignment_Generated>();
-      this.CopyTo((object) instance);
-      return (object) instance;
+      CopyTo(instance);
+      return instance;
     }
 
     public void CopyTo(object target2)
     {
       EffectContextTimeSpanValueAdditionAssignment_Generated assignmentGenerated = (EffectContextTimeSpanValueAdditionAssignment_Generated) target2;
-      assignmentGenerated.a = CloneableObjectUtility.Clone<IValueSetter<TimeSpan>>(this.a);
-      assignmentGenerated.b = CloneableObjectUtility.Clone<IValue<TimeSpan>>(this.b);
+      assignmentGenerated.a = CloneableObjectUtility.Clone(a);
+      assignmentGenerated.b = CloneableObjectUtility.Clone(b);
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.WriteSerialize<IValueSetter<TimeSpan>>(writer, "A", this.a);
-      DefaultDataWriteUtility.WriteSerialize<IValue<TimeSpan>>(writer, "Source", this.b);
+      DefaultDataWriteUtility.WriteSerialize(writer, "A", a);
+      DefaultDataWriteUtility.WriteSerialize(writer, "Source", b);
     }
 
     public void DataRead(IDataReader reader, Type type)
     {
-      this.a = DefaultDataReadUtility.ReadSerialize<IValueSetter<TimeSpan>>(reader, "A");
-      this.b = DefaultDataReadUtility.ReadSerialize<IValue<TimeSpan>>(reader, "Source");
+      a = DefaultDataReadUtility.ReadSerialize<IValueSetter<TimeSpan>>(reader, "A");
+      b = DefaultDataReadUtility.ReadSerialize<IValue<TimeSpan>>(reader, "Source");
     }
   }
 }

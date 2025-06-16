@@ -1,4 +1,5 @@
-﻿using Engine.Common.Components;
+﻿using System;
+using Engine.Common.Components;
 using Engine.Common.Components.Gate;
 using Engine.Common.Components.Parameters;
 using Engine.Common.Services;
@@ -10,12 +11,6 @@ using Engine.Source.Components;
 using Engine.Source.Services.CameraServices;
 using Engine.Source.Services.Inputs;
 using InputServices;
-using System;
-using UnityEngine;
-using UnityEngine.Audio;
-using UnityEngine.Events;
-using UnityEngine.EventSystems;
-using UnityEngine.UI;
 
 namespace Engine.Source.UI.Menu.Protagonist.LockPicking
 {
@@ -55,9 +50,9 @@ namespace Engine.Source.UI.Menu.Protagonist.LockPicking
     private Vector2 durabilityBarSize;
     private CameraKindEnum lastCameraKind;
     private LockPickingSettings settings;
-    private LockPickingWindow.State state;
+    private State state;
     private float stateTimer;
-    private bool isInteractive = false;
+    private bool isInteractive;
     [SerializeField]
     private GameObject controlPanel;
 
@@ -67,44 +62,44 @@ namespace Engine.Source.UI.Menu.Protagonist.LockPicking
 
     private bool IsInteractive
     {
-      get => this.isInteractive;
+      get => isInteractive;
       set
       {
-        if (this.isInteractive == value)
+        if (isInteractive == value)
           return;
-        this.isInteractive = value;
-        this.actionPrompts.Visible = this.isInteractive;
+        isInteractive = value;
+        actionPrompts.Visible = isInteractive;
       }
     }
 
-    private void SetState(LockPickingWindow.State value)
+    private void SetState(State value)
     {
-      this.state = value;
-      this.stateTimer = 0.0f;
-      this.successMessage.SetActive(this.state == LockPickingWindow.State.Success);
-      if (this.state != LockPickingWindow.State.Success)
+      state = value;
+      stateTimer = 0.0f;
+      successMessage.SetActive(state == State.Success);
+      if (state != State.Success)
         return;
-      this.Actor.GetComponent<PlayerControllerComponent>().ComputePicklock(this.Target.Owner);
+      Actor.GetComponent<PlayerControllerComponent>().ComputePicklock(Target.Owner);
     }
 
     private float ToolDurability
     {
-      get => this.ToolParameterValue(ParameterNameEnum.Durability, 0.0f);
+      get => ToolParameterValue(ParameterNameEnum.Durability, 0.0f);
       set
       {
-        if (this.toolSelector.Item == null)
+        if (toolSelector.Item == null)
           return;
-        ParametersComponent component = this.toolSelector.Item.GetComponent<ParametersComponent>();
+        ParametersComponent component = toolSelector.Item.GetComponent<ParametersComponent>();
         if (component == null)
           return;
         IParameter<float> byName = component.GetByName<float>(ParameterNameEnum.Durability);
         if (byName == null)
           return;
         byName.Value = value;
-        if ((double) value == 0.0)
+        if (value == 0.0)
         {
-          SoundUtility.PlayAudioClip2D(this.failureSound, this.mixerGroup, 1f, 0.0f);
-          StorableComponentUtility.Use(this.toolSelector.Item);
+          SoundUtility.PlayAudioClip2D(failureSound, mixerGroup, 1f, 0.0f);
+          StorableComponentUtility.Use(toolSelector.Item);
         }
       }
     }
@@ -112,64 +107,64 @@ namespace Engine.Source.UI.Menu.Protagonist.LockPicking
     protected override void OnJoystick(bool joystick)
     {
       base.OnJoystick(joystick);
-      this.controlPanel.SetActive(joystick);
+      controlPanel.SetActive(joystick);
     }
 
     protected override void OnEnable()
     {
       base.OnEnable();
-      this.lastCameraKind = ServiceLocator.GetService<CameraService>().Kind;
+      lastCameraKind = ServiceLocator.GetService<CameraService>().Kind;
       ServiceLocator.GetService<CameraService>().Kind = CameraKindEnum.Unknown;
       CursorService.Instance.Free = CursorService.Instance.Visible = true;
       GameActionService service = ServiceLocator.GetService<GameActionService>();
       service.AddListener(GameActionType.Cancel, new GameActionHandle(((UIWindow) this).CancelListener));
-      service.AddListener(GameActionType.RStickRight, new GameActionHandle(this.NextLockPick));
-      service.AddListener(GameActionType.RStickLeft, new GameActionHandle(this.PreviousLockPick));
-      service.AddListener(GameActionType.LTrigger, new GameActionHandle(this.BumpLeft), true);
-      service.AddListener(GameActionType.RTrigger, new GameActionHandle(this.BumpRight), true);
-      this.Clear();
-      if (this.Actor == null || this.Target == null)
+      service.AddListener(GameActionType.RStickRight, NextLockPick);
+      service.AddListener(GameActionType.RStickLeft, PreviousLockPick);
+      service.AddListener(GameActionType.LTrigger, BumpLeft, true);
+      service.AddListener(GameActionType.RTrigger, BumpRight, true);
+      Clear();
+      if (Actor == null || Target == null)
         return;
-      this.toolSelector.Storage = this.Actor;
-      this.settings = this.defaultSettings.Settings;
+      toolSelector.Storage = Actor;
+      settings = defaultSettings.Settings;
       UnityEngine.Random.State state = UnityEngine.Random.state;
-      UnityEngine.Random.InitState(this.Target.Owner.Id.GetHashCode());
-      this.leftPin.Build(this.settings);
-      this.rightPin.Build(this.settings);
+      UnityEngine.Random.InitState(Target.Owner.Id.GetHashCode());
+      leftPin.Build(settings);
+      rightPin.Build(settings);
       UnityEngine.Random.state = state;
-      this.SetState(LockPickingWindow.State.Idle);
+      SetState(State.Idle);
     }
 
     private bool BumpRight(GameActionType type, bool down)
     {
-      if (!this.IsInteractive || !down)
+      if (!IsInteractive || !down)
         return false;
-      float toolDurability = this.ToolDurability;
+      float toolDurability = ToolDurability;
       float durability = toolDurability;
-      float quality = this.ToolParameterValue(ParameterNameEnum.Quality, 1f);
-      this.Bump(this.rightPin, ref durability, quality);
-      if ((double) durability != (double) toolDurability)
+      float quality = ToolParameterValue(ParameterNameEnum.Quality, 1f);
+      Bump(rightPin, ref durability, quality);
+      if (durability != (double) toolDurability)
       {
-        if ((double) durability < 0.0)
+        if (durability < 0.0)
           durability = 0.0f;
-        this.ToolDurability = durability;
+        ToolDurability = durability;
       }
       return true;
     }
 
     private bool BumpLeft(GameActionType type, bool down)
     {
-      if (!this.IsInteractive || !down)
+      if (!IsInteractive || !down)
         return false;
-      float toolDurability = this.ToolDurability;
+      float toolDurability = ToolDurability;
       float durability = toolDurability;
-      float quality = this.ToolParameterValue(ParameterNameEnum.Quality, 1f);
-      this.Bump(this.leftPin, ref durability, quality);
-      if ((double) durability != (double) toolDurability)
+      float quality = ToolParameterValue(ParameterNameEnum.Quality, 1f);
+      Bump(leftPin, ref durability, quality);
+      if (durability != (double) toolDurability)
       {
-        if ((double) durability < 0.0)
+        if (durability < 0.0)
           durability = 0.0f;
-        this.ToolDurability = durability;
+        ToolDurability = durability;
       }
       return true;
     }
@@ -178,7 +173,7 @@ namespace Engine.Source.UI.Menu.Protagonist.LockPicking
     {
       if (!down)
         return false;
-      ExecuteEvents.Execute<ISubmitHandler>(this.toolSelector.previousButton.gameObject, (BaseEventData) new PointerEventData(EventSystem.current), ExecuteEvents.submitHandler);
+      ExecuteEvents.Execute<ISubmitHandler>(toolSelector.previousButton.gameObject, (BaseEventData) new PointerEventData(EventSystem.current), ExecuteEvents.submitHandler);
       return true;
     }
 
@@ -186,68 +181,68 @@ namespace Engine.Source.UI.Menu.Protagonist.LockPicking
     {
       if (!down)
         return false;
-      ExecuteEvents.Execute<ISubmitHandler>(this.toolSelector.nextButton.gameObject, (BaseEventData) new PointerEventData(EventSystem.current), ExecuteEvents.submitHandler);
+      ExecuteEvents.Execute<ISubmitHandler>(toolSelector.nextButton.gameObject, (BaseEventData) new PointerEventData(EventSystem.current), ExecuteEvents.submitHandler);
       return true;
     }
 
     protected override void OnDisable()
     {
-      this.Clear();
-      ServiceLocator.GetService<CameraService>().Kind = this.lastCameraKind;
+      Clear();
+      ServiceLocator.GetService<CameraService>().Kind = lastCameraKind;
       GameActionService service = ServiceLocator.GetService<GameActionService>();
       service.RemoveListener(GameActionType.Cancel, new GameActionHandle(((UIWindow) this).CancelListener));
-      service.RemoveListener(GameActionType.RStickRight, new GameActionHandle(this.NextLockPick));
-      service.RemoveListener(GameActionType.RStickLeft, new GameActionHandle(this.PreviousLockPick));
-      service.RemoveListener(GameActionType.LTrigger, new GameActionHandle(this.BumpLeft));
-      service.RemoveListener(GameActionType.RTrigger, new GameActionHandle(this.BumpRight));
+      service.RemoveListener(GameActionType.RStickRight, NextLockPick);
+      service.RemoveListener(GameActionType.RStickLeft, PreviousLockPick);
+      service.RemoveListener(GameActionType.LTrigger, BumpLeft);
+      service.RemoveListener(GameActionType.RTrigger, BumpRight);
       base.OnDisable();
     }
 
     public override void Initialize()
     {
-      this.RegisterLayer<ILockPickingWindow>((ILockPickingWindow) this);
-      this.closeButton.onClick.AddListener(new UnityAction(this.CloseWindow));
-      this.toolSelector.ChangeItemEvent += new Action<ItemSelector, IStorableComponent, IStorableComponent>(this.OnItemChange);
+      RegisterLayer((ILockPickingWindow) this);
+      closeButton.onClick.AddListener(new UnityAction(CloseWindow));
+      toolSelector.ChangeItemEvent += OnItemChange;
       base.Initialize();
     }
 
-    public override System.Type GetWindowType() => typeof (ILockPickingWindow);
+    public override Type GetWindowType() => typeof (ILockPickingWindow);
 
     public void CloseWindow() => ServiceLocator.GetService<UIService>().Pop();
 
     void IPointerDownHandler.OnPointerDown(PointerEventData eventData)
     {
-      if (!this.IsInteractive)
+      if (!IsInteractive)
         return;
-      float toolDurability = this.ToolDurability;
+      float toolDurability = ToolDurability;
       float durability = toolDurability;
-      float quality = this.ToolParameterValue(ParameterNameEnum.Quality, 1f);
+      float quality = ToolParameterValue(ParameterNameEnum.Quality, 1f);
       if (eventData.button == PointerEventData.InputButton.Left)
-        this.Bump(this.leftPin, ref durability, quality);
+        Bump(leftPin, ref durability, quality);
       else if (eventData.button == PointerEventData.InputButton.Right)
-        this.Bump(this.rightPin, ref durability, quality);
-      if ((double) durability == (double) toolDurability)
+        Bump(rightPin, ref durability, quality);
+      if (durability == (double) toolDurability)
         return;
-      if ((double) durability < 0.0)
+      if (durability < 0.0)
         durability = 0.0f;
-      this.ToolDurability = durability;
+      ToolDurability = durability;
     }
 
     private void Bump(LockPickingPin pin, ref float durability, float quality)
     {
-      if ((double) quality <= 0.0)
+      if (quality <= 0.0)
         durability = 0.0f;
       else
-        durability -= this.settings.DurabilityCost / quality;
-      SoundUtility.PlayAudioClip2D(this.bumpSound, this.mixerGroup, 1f, 0.0f);
+        durability -= settings.DurabilityCost / quality;
+      SoundUtility.PlayAudioClip2D(bumpSound, mixerGroup, 1f, 0.0f);
       pin.Bump();
     }
 
     private void Clear()
     {
-      this.leftPin.Clear();
-      this.rightPin.Clear();
-      this.toolSelector.Storage = (IStorageComponent) null;
+      leftPin.Clear();
+      rightPin.Clear();
+      toolSelector.Storage = null;
     }
 
     private void OnItemChange(
@@ -264,9 +259,9 @@ namespace Engine.Source.UI.Menu.Protagonist.LockPicking
 
     private float ToolParameterValue(ParameterNameEnum name, float defaultValue)
     {
-      if (this.toolSelector.Item == null)
+      if (toolSelector.Item == null)
         return defaultValue;
-      ParametersComponent component = this.toolSelector.Item.GetComponent<ParametersComponent>();
+      ParametersComponent component = toolSelector.Item.GetComponent<ParametersComponent>();
       if (component == null)
         return defaultValue;
       IParameter<float> byName = component.GetByName<float>(name);
@@ -275,22 +270,22 @@ namespace Engine.Source.UI.Menu.Protagonist.LockPicking
 
     private void Update()
     {
-      float toolDurability = this.ToolDurability;
-      if (this.state != LockPickingWindow.State.Success && this.leftPin.InSweetSpot && this.rightPin.InSweetSpot)
+      float toolDurability = ToolDurability;
+      if (state != State.Success && leftPin.InSweetSpot && rightPin.InSweetSpot)
       {
-        SoundUtility.PlayAudioClip2D(this.successSound, this.mixerGroup, 1f, 0.0f);
-        this.leftPin.Locked = true;
-        this.rightPin.Locked = true;
-        this.Target.LockState.Value = LockState.Unlocked;
-        this.SetState(LockPickingWindow.State.Success);
+        SoundUtility.PlayAudioClip2D(successSound, mixerGroup, 1f, 0.0f);
+        leftPin.Locked = true;
+        rightPin.Locked = true;
+        Target.LockState.Value = LockState.Unlocked;
+        SetState(State.Success);
       }
-      this.IsInteractive = !this.toolSwitchingView.IsAnimated && this.toolSelector.Item != null && this.state == LockPickingWindow.State.Idle;
-      if (this.state != LockPickingWindow.State.Success)
+      IsInteractive = !toolSwitchingView.IsAnimated && toolSelector.Item != null && state == State.Idle;
+      if (state != State.Success)
         return;
-      this.stateTimer += Time.deltaTime;
-      if ((double) this.stateTimer < (double) this.messageTime)
+      stateTimer += Time.deltaTime;
+      if (stateTimer < (double) messageTime)
         return;
-      this.CloseWindow();
+      CloseWindow();
     }
 
     private enum State

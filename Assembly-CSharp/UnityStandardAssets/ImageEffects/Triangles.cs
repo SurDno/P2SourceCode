@@ -1,19 +1,17 @@
-﻿using UnityEngine;
-
-namespace UnityStandardAssets.ImageEffects
+﻿namespace UnityStandardAssets.ImageEffects
 {
   internal class Triangles
   {
     private static Mesh[] meshes;
-    private static int currentTris = 0;
+    private static int currentTris;
 
     private static bool HasMeshes()
     {
-      if (Triangles.meshes == null)
+      if (meshes == null)
         return false;
-      for (int index = 0; index < Triangles.meshes.Length; ++index)
+      for (int index = 0; index < meshes.Length; ++index)
       {
-        if ((Object) null == (Object) Triangles.meshes[index])
+        if ((Object) null == (Object) meshes[index])
           return false;
       }
       return true;
@@ -21,35 +19,35 @@ namespace UnityStandardAssets.ImageEffects
 
     private static void Cleanup()
     {
-      if (Triangles.meshes == null)
+      if (meshes == null)
         return;
-      for (int index = 0; index < Triangles.meshes.Length; ++index)
+      for (int index = 0; index < meshes.Length; ++index)
       {
-        if ((Object) null != (Object) Triangles.meshes[index])
+        if ((Object) null != (Object) meshes[index])
         {
-          Object.DestroyImmediate((Object) Triangles.meshes[index]);
-          Triangles.meshes[index] = (Mesh) null;
+          Object.DestroyImmediate((Object) meshes[index]);
+          meshes[index] = (Mesh) null;
         }
       }
-      Triangles.meshes = (Mesh[]) null;
+      meshes = (Mesh[]) null;
     }
 
     private static Mesh[] GetMeshes(int totalWidth, int totalHeight)
     {
-      if (Triangles.HasMeshes() && Triangles.currentTris == totalWidth * totalHeight)
-        return Triangles.meshes;
+      if (HasMeshes() && currentTris == totalWidth * totalHeight)
+        return meshes;
       int max = 21666;
       int num = totalWidth * totalHeight;
-      Triangles.currentTris = num;
-      Triangles.meshes = new Mesh[Mathf.CeilToInt((float) (1.0 * (double) num / (1.0 * (double) max)))];
+      currentTris = num;
+      meshes = new Mesh[Mathf.CeilToInt((float) (1.0 * num / (1.0 * max)))];
       int index = 0;
       for (int triOffset = 0; triOffset < num; triOffset += max)
       {
         int triCount = Mathf.FloorToInt((float) Mathf.Clamp(num - triOffset, 0, max));
-        Triangles.meshes[index] = Triangles.GetMesh(triCount, triOffset, totalWidth, totalHeight);
+        meshes[index] = GetMesh(triCount, triOffset, totalWidth, totalHeight);
         ++index;
       }
-      return Triangles.meshes;
+      return meshes;
     }
 
     private static Mesh GetMesh(int triCount, int triOffset, int totalWidth, int totalHeight)
@@ -66,7 +64,7 @@ namespace UnityStandardAssets.ImageEffects
         int num = triOffset + index1;
         float x = Mathf.Floor((float) (num % totalWidth)) / (float) totalWidth;
         float y = Mathf.Floor((float) (num / totalWidth)) / (float) totalHeight;
-        Vector3 vector3 = new Vector3((float) ((double) x * 2.0 - 1.0), (float) ((double) y * 2.0 - 1.0), 1f);
+        Vector3 vector3 = new Vector3((float) (x * 2.0 - 1.0), (float) (y * 2.0 - 1.0), 1f);
         vector3Array[index2] = vector3;
         vector3Array[index2 + 1] = vector3;
         vector3Array[index2 + 2] = vector3;

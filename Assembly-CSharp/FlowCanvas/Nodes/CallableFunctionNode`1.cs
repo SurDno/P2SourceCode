@@ -9,12 +9,12 @@
     protected override sealed void OnRegisterPorts(FlowNode node)
     {
       FlowOutput o = node.AddFlowOutput(" ");
-      node.AddValueOutput<TResult>("Value", (ValueHandler<TResult>) (() => this.result));
-      node.AddFlowInput(" ", (FlowHandler) (() =>
+      node.AddValueOutput("Value", () => result);
+      node.AddFlowInput(" ", () =>
       {
-        this.result = this.Invoke();
+        result = Invoke();
         o.Call();
-      }));
+      });
     }
   }
 }

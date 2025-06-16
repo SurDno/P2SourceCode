@@ -6,15 +6,15 @@ namespace UnityEngine.PostProcessing
   public class UserLutModel : PostProcessingModel
   {
     [SerializeField]
-    private UserLutModel.Settings m_Settings = UserLutModel.Settings.defaultSettings;
+    private Settings m_Settings = Settings.defaultSettings;
 
-    public UserLutModel.Settings settings
+    public Settings settings
     {
-      get => this.m_Settings;
-      set => this.m_Settings = value;
+      get => m_Settings;
+      set => m_Settings = value;
     }
 
-    public override void Reset() => this.m_Settings = UserLutModel.Settings.defaultSettings;
+    public override void Reset() => m_Settings = Settings.defaultSettings;
 
     [Serializable]
     public struct Settings
@@ -25,12 +25,11 @@ namespace UnityEngine.PostProcessing
       [Tooltip("Blending factor.")]
       public float contribution;
 
-      public static UserLutModel.Settings defaultSettings
+      public static Settings defaultSettings
       {
         get
         {
-          return new UserLutModel.Settings()
-          {
+          return new Settings {
             lut = (Texture2D) null,
             contribution = 1f
           };

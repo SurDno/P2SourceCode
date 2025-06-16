@@ -1,7 +1,7 @@
-﻿using Engine.Common.Commons.Cloneable;
-using Engine.Common.Components.Parameters;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using Engine.Common.Commons.Cloneable;
+using Engine.Common.Components.Parameters;
 
 namespace Engine.Source.Components.Crowds
 {
@@ -19,7 +19,7 @@ namespace Engine.Source.Components.Crowds
         IParameter byName = parameters.GetByName(name);
         if (byName != null)
         {
-          IParameter parameter = CloneableObjectUtility.Clone<IParameter>(byName);
+          IParameter parameter = CloneableObjectUtility.Clone(byName);
           states.Add(parameter);
         }
       }
@@ -34,11 +34,11 @@ namespace Engine.Source.Components.Crowds
         return;
       foreach (IParameter state in states)
       {
-        if (((IEnumerable<ParameterNameEnum>) names).Contains<ParameterNameEnum>(state.Name))
+        if (names.Contains(state.Name))
         {
           IParameter byName = parameters.GetByName(state.Name);
           if (byName != null && byName.GetType() == state.GetType())
-            ((ICopyable) state).CopyTo((object) byName);
+            ((ICopyable) state).CopyTo(byName);
         }
       }
     }

@@ -6,7 +6,6 @@ using Engine.Source.Commons.Abilities;
 using Engine.Source.Commons.Effects;
 using Engine.Source.Components;
 using Inspectors;
-using UnityEngine;
 
 namespace Engine.Source.Effects
 {
@@ -14,49 +13,49 @@ namespace Engine.Source.Effects
   [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
   public class NpcReduceDamageByArmorEffect : IEffect
   {
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected ParameterEffectQueueEnum queue = ParameterEffectQueueEnum.None;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected(Mutable = true, Mode = ExecuteMode.EditAndRuntime)]
     protected bool enable = true;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected DurationTypeEnum durationType = DurationTypeEnum.None;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected bool realTime;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected float duration;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected float interval;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected ParameterNameEnum damageParameterName;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy()]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected ParameterNameEnum armorParameterName;
@@ -68,45 +67,45 @@ namespace Engine.Source.Effects
 
     public IEntity Target { get; set; }
 
-    public string Name => this.GetType().Name;
+    public string Name => GetType().Name;
 
-    public ParameterEffectQueueEnum Queue => this.queue;
+    public ParameterEffectQueueEnum Queue => queue;
 
     public bool Prepare(float currentRealTime, float currentGameTime)
     {
-      float num = this.realTime ? currentRealTime : currentGameTime;
-      if (this.durationType == DurationTypeEnum.ByAbility)
-        this.AbilityItem.AddDependEffect((IEffect) this);
-      this.startTime = num;
-      this.lastTime = num;
+      float num = realTime ? currentRealTime : currentGameTime;
+      if (durationType == DurationTypeEnum.ByAbility)
+        AbilityItem.AddDependEffect(this);
+      startTime = num;
+      lastTime = num;
       return true;
     }
 
     public bool Compute(float currentRealTime, float currentGameTime)
     {
-      float num = this.realTime ? currentRealTime : currentGameTime;
-      if (this.durationType == DurationTypeEnum.ByDuration && (double) num - (double) this.startTime > (double) this.duration || this.durationType == DurationTypeEnum.ByAbility && (this.AbilityItem == null || !this.AbilityItem.Active))
+      float num = realTime ? currentRealTime : currentGameTime;
+      if (durationType == DurationTypeEnum.ByDuration && num - (double) startTime > duration || durationType == DurationTypeEnum.ByAbility && (AbilityItem == null || !AbilityItem.Active))
         return false;
-      if ((double) this.interval == 0.0)
+      if (interval == 0.0)
       {
-        this.lastTime = num;
-        this.ComputeEffect();
+        lastTime = num;
+        ComputeEffect();
       }
       else
       {
-        while ((double) num - (double) this.lastTime >= (double) this.interval)
+        while (num - (double) this.lastTime >= interval)
         {
           float lastTime = this.lastTime;
-          this.lastTime += this.interval;
-          if ((double) lastTime == (double) this.lastTime)
+          this.lastTime += interval;
+          if (lastTime == (double) this.lastTime)
           {
-            Debug.LogError((object) ("Error compute effects, effect name : " + this.Name + " , target : " + this.Target.GetInfo()));
+            Debug.LogError((object) ("Error compute effects, effect name : " + Name + " , target : " + Target.GetInfo()));
             break;
           }
-          this.ComputeEffect();
+          ComputeEffect();
         }
       }
-      return this.durationType != DurationTypeEnum.None && this.durationType != DurationTypeEnum.Once;
+      return durationType != DurationTypeEnum.None && durationType != DurationTypeEnum.Once;
     }
 
     public void Cleanup()
@@ -115,13 +114,13 @@ namespace Engine.Source.Effects
 
     private void ComputeEffect()
     {
-      if (!this.enable)
+      if (!enable)
         return;
-      ParametersComponent component = this.Target?.GetComponent<ParametersComponent>();
-      IParameter<float> byName1 = component?.GetByName<float>(this.damageParameterName);
+      ParametersComponent component = Target?.GetComponent<ParametersComponent>();
+      IParameter<float> byName1 = component?.GetByName<float>(damageParameterName);
       if (byName1 == null)
         return;
-      IParameter<float> byName2 = component?.GetByName<float>(this.armorParameterName);
+      IParameter<float> byName2 = component?.GetByName<float>(armorParameterName);
       if (byName2 == null)
         return;
       byName1.Value -= byName1.Value * byName2.Value;

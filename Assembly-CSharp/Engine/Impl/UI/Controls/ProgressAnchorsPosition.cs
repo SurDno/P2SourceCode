@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace Engine.Impl.UI.Controls
+﻿namespace Engine.Impl.UI.Controls
 {
   public class ProgressAnchorsPosition : ProgressView
   {
@@ -15,11 +13,11 @@ namespace Engine.Impl.UI.Controls
 
     protected override void ApplyProgress()
     {
-      if (!((Object) this.minAnchor != (Object) null) || !((Object) this.maxAnchor != (Object) null))
+      if (!((Object) minAnchor != (Object) null) || !((Object) maxAnchor != (Object) null))
         return;
-      this.transform.position = Vector3.Lerp(this.minAnchor.position, this.maxAnchor.position, this.Progress);
+      this.transform.position = Vector3.Lerp(minAnchor.position, maxAnchor.position, Progress);
     }
 
-    private void LateUpdate() => this.ApplyProgress();
+    private void LateUpdate() => ApplyProgress();
   }
 }

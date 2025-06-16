@@ -1,10 +1,10 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons;
 using Engine.Common.Commons.Converters;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
-using UnityEngine;
 
 namespace BehaviorDesigner.Runtime.Tasks
 {
@@ -25,41 +25,41 @@ namespace BehaviorDesigner.Runtime.Tasks
     public override void OnStart()
     {
       base.OnStart();
-      this.nextAttackTime = Time.time;
+      nextAttackTime = Time.time;
     }
 
     public override TaskStatus OnUpdate()
     {
-      if ((UnityEngine.Object) this.owner.gameObject == (UnityEngine.Object) null || !this.owner.gameObject.activeSelf || (UnityEngine.Object) this.owner?.Enemy == (UnityEngine.Object) null || this.owner.IsReacting)
+      if ((UnityEngine.Object) owner.gameObject == (UnityEngine.Object) null || !owner.gameObject.activeSelf || (UnityEngine.Object) owner?.Enemy == (UnityEngine.Object) null || owner.IsReacting)
         return TaskStatus.Failure;
-      if ((double) Time.time < (double) this.nextAttackTime || (double) (this.owner.Enemy.transform.position - this.owner.transform.position).magnitude >= 2.0 || !(this.owner.Enemy is PlayerEnemy))
+      if ((double) Time.time < nextAttackTime || (double) (owner.Enemy.transform.position - owner.transform.position).magnitude >= 2.0 || !(owner.Enemy is PlayerEnemy))
         return TaskStatus.Running;
-      PlayerEnemy enemy = (PlayerEnemy) this.owner.Enemy;
-      if (this.owner.IsPushing || this.owner.IsReacting || this.owner.IsAttacking)
+      PlayerEnemy enemy = (PlayerEnemy) owner.Enemy;
+      if (owner.IsPushing || owner.IsReacting || owner.IsAttacking)
         return TaskStatus.Running;
-      this.nextAttackTime = Time.time + UnityEngine.Random.Range(4f, 6f);
-      this.owner.TriggerAction(WeaponActionEnum.Uppercut);
-      this.owner.RotationTarget = (Transform) null;
-      this.owner.RotateByPath = false;
+      nextAttackTime = Time.time + UnityEngine.Random.Range(4f, 6f);
+      owner.TriggerAction(WeaponActionEnum.Uppercut);
+      owner.RotationTarget = (Transform) null;
+      owner.RotateByPath = false;
       return TaskStatus.Running;
     }
 
     public new void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.WriteSerialize<NodeData>(writer, "NodeData", this.nodeData);
-      DefaultDataWriteUtility.Write(writer, "Id", this.id);
-      DefaultDataWriteUtility.Write(writer, "FriendlyName", this.friendlyName);
-      DefaultDataWriteUtility.Write(writer, "Instant", this.instant);
-      DefaultDataWriteUtility.Write(writer, "Disabled", this.disabled);
+      DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
+      DefaultDataWriteUtility.Write(writer, "Id", id);
+      DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
+      DefaultDataWriteUtility.Write(writer, "Instant", instant);
+      DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
     }
 
-    public new void DataRead(IDataReader reader, System.Type type)
+    public new void DataRead(IDataReader reader, Type type)
     {
-      this.nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
-      this.id = DefaultDataReadUtility.Read(reader, "Id", this.id);
-      this.friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", this.friendlyName);
-      this.instant = DefaultDataReadUtility.Read(reader, "Instant", this.instant);
-      this.disabled = DefaultDataReadUtility.Read(reader, "Disabled", this.disabled);
+      nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
+      id = DefaultDataReadUtility.Read(reader, "Id", id);
+      friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
+      instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
+      disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
     }
   }
 }

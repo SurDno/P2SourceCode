@@ -2,7 +2,6 @@
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Engine.Source.Effects.Values;
-using UnityEngine;
 
 namespace Engine.Source.Commons.Abilities.Controllers
 {
@@ -17,28 +16,28 @@ namespace Engine.Source.Commons.Abilities.Controllers
     {
       this.abilityItem = abilityItem;
       abilityItem.Active = true;
-      InstanceByRequest<UpdateService>.Instance.Updater.AddUpdatable((IUpdatable) this);
+      InstanceByRequest<UpdateService>.Instance.Updater.AddUpdatable(this);
     }
 
     public void Shutdown()
     {
-      InstanceByRequest<UpdateService>.Instance.Updater.RemoveUpdatable((IUpdatable) this);
+      InstanceByRequest<UpdateService>.Instance.Updater.RemoveUpdatable(this);
     }
 
     public void ComputeUpdate()
     {
-      if (((IEntityView) this.abilityItem.Self).IsAttached)
+      if (((IEntityView) abilityItem.Self).IsAttached)
       {
-        Vector3 position = ((IEntityView) this.abilityItem.Self).Position;
-        this.abilityValue.Value = PlagueZone.GetLevel(new Vector2(position.x, position.z));
+        Vector3 position = ((IEntityView) abilityItem.Self).Position;
+        abilityValue.Value = PlagueZone.GetLevel(new Vector2(position.x, position.z));
       }
       else
-        this.abilityValue.Value = 0.0f;
+        abilityValue.Value = 0.0f;
     }
 
     public IAbilityValue<T> GetAbilityValue<T>(AbilityValueNameEnum parameter) where T : struct
     {
-      return parameter == AbilityValueNameEnum.PlagueZoneLevel ? (IAbilityValue<T>) (this.abilityValue as AbilityValue<T>) : (IAbilityValue<T>) null;
+      return parameter == AbilityValueNameEnum.PlagueZoneLevel ? abilityValue as AbilityValue<T> : (IAbilityValue<T>) null;
     }
   }
 }

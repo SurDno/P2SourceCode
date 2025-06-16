@@ -1,8 +1,8 @@
-﻿using Cofe.Loggers;
+﻿using System;
+using System.Collections.Generic;
+using Cofe.Loggers;
 using PLVirtualMachine.Common.Data;
 using PLVirtualMachine.Common.EngineAPI;
-using System;
-using System.Collections.Generic;
 
 namespace PLVirtualMachine.Common
 {
@@ -27,50 +27,50 @@ namespace PLVirtualMachine.Common
     public ActionDataStruct(string data, ILocalContext localContext)
     {
       this.localContext = localContext;
-      this.actionInfo = new AbstractActionInfo((IAbstractAction) this);
-      this.Read(data);
-      this.MakeTarget();
+      actionInfo = new AbstractActionInfo(this);
+      Read(data);
+      MakeTarget();
     }
 
-    public ILocalContext LocalContext => this.localContext;
+    public ILocalContext LocalContext => localContext;
 
-    public EActionType ActionType => this.type;
+    public EActionType ActionType => type;
 
-    public EMathOperationType MathOperationType => this.mathOperationType;
+    public EMathOperationType MathOperationType => mathOperationType;
 
-    public string TargetFunction => this.targetFunctionName;
+    public string TargetFunction => targetFunctionName;
 
-    public string TargetEvent => this.targetFunctionName;
+    public string TargetEvent => targetFunctionName;
 
-    public BaseFunction TargetFunctionInstance => this.actionInfo.TargetFunctionInstance;
+    public BaseFunction TargetFunctionInstance => actionInfo.TargetFunctionInstance;
 
-    public IParam SourceConstant => (IParam) null;
+    public IParam SourceConstant => null;
 
-    public CommonVariable TargetObject => this.targetObject;
+    public CommonVariable TargetObject => targetObject;
 
-    public CommonVariable TargetParam => this.targetParam;
+    public CommonVariable TargetParam => targetParam;
 
-    public List<CommonVariable> SourceParams => this.sourceParams;
+    public List<CommonVariable> SourceParams => sourceParams;
 
-    public bool IsValid => this.actionInfo.IsValid;
+    public bool IsValid => actionInfo.IsValid;
 
     public void Update()
     {
-      if (this.targetObject == null)
-        this.MakeTarget();
-      if (this.actionInfo == null)
+      if (targetObject == null)
+        MakeTarget();
+      if (actionInfo == null)
         return;
-      this.actionInfo.Update();
+      actionInfo.Update();
     }
 
-    public bool IsUpdated => this.actionInfo == null || this.actionInfo.IsValid;
+    public bool IsUpdated => actionInfo == null || actionInfo.IsValid;
 
     public void Read(string data)
     {
       switch (data)
       {
         case null:
-          Logger.AddError(string.Format("Attempt to read null abstract action info data at {0}", (object) EngineAPIManager.Instance.CurrentFSMStateInfo));
+          Logger.AddError(string.Format("Attempt to read null abstract action info data at {0}", EngineAPIManager.Instance.CurrentFSMStateInfo));
           break;
         case "":
           break;
@@ -82,7 +82,7 @@ namespace PLVirtualMachine.Common
           string[] strArray = data.Split(separator, StringSplitOptions.None);
           if (strArray.Length < 4)
           {
-            Logger.AddError(string.Format("Cannot read abstract action info: {0} isn't valid abstract action serialize data at {1}", (object) data, (object) EngineAPIManager.Instance.CurrentFSMStateInfo));
+            Logger.AddError(string.Format("Cannot read abstract action info: {0} isn't valid abstract action serialize data at {1}", data, EngineAPIManager.Instance.CurrentFSMStateInfo));
             break;
           }
           string str1 = strArray[0];
@@ -93,25 +93,25 @@ namespace PLVirtualMachine.Common
           {
             if (obj.ToString() == str1)
             {
-              this.type = (EActionType) obj;
+              type = (EActionType) obj;
               break;
             }
           }
-          this.targetObjFunctionalName = str2;
-          this.targetFunctionName = str3;
-          if (this.type == EActionType.ACTION_TYPE_SET_PARAM)
-            this.targetParamName = str3;
-          this.sourceParams.Clear();
+          targetObjFunctionalName = str2;
+          targetFunctionName = str3;
+          if (type == EActionType.ACTION_TYPE_SET_PARAM)
+            targetParamName = str3;
+          sourceParams.Clear();
           string str5 = str4;
           char[] chArray = new char[1]{ ',' };
           foreach (string sourceParam in str5.Split(chArray))
           {
-            string data1 = ActionDataStruct.DeserializeSrcParam(sourceParam);
+            string data1 = DeserializeSrcParam(sourceParam);
             CommonVariable commonVariable = new CommonVariable();
             commonVariable.Read(data1);
-            this.sourceParams.Add(commonVariable);
+            sourceParams.Add(commonVariable);
           }
-          this.MakeTarget();
+          MakeTarget();
           break;
       }
     }
@@ -124,13 +124,13 @@ namespace PLVirtualMachine.Common
 
     private void MakeTarget()
     {
-      this.targetObject = new CommonVariable();
-      this.targetObject.InitialiseFromLocalVariable("group_" + this.targetObjFunctionalName, new VMType(typeof (IObjRef), this.targetObjFunctionalName));
-      if (this.type != EActionType.ACTION_TYPE_SET_PARAM)
+      targetObject = new CommonVariable();
+      targetObject.InitialiseFromLocalVariable("group_" + targetObjFunctionalName, new VMType(typeof (IObjRef), targetObjFunctionalName));
+      if (type != EActionType.ACTION_TYPE_SET_PARAM)
         return;
-      string data = ActionDataStruct.DeserializeSrcParam(this.targetParamName);
-      this.targetParam = new CommonVariable();
-      this.targetParam.Read(data);
+      string data = DeserializeSrcParam(targetParamName);
+      targetParam = new CommonVariable();
+      targetParam.Read(data);
     }
 
     private static string DeserializeSrcParam(string sourceParam)

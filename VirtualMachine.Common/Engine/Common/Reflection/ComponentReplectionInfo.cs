@@ -1,7 +1,7 @@
-﻿using PLVirtualMachine.Common.EngineAPI.VMECS.VMAttributes;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using PLVirtualMachine.Common.EngineAPI.VMECS.VMAttributes;
 
 namespace Engine.Common.Reflection
 {
@@ -14,43 +14,43 @@ namespace Engine.Common.Reflection
     private Dictionary<string, MethodInfo> methods = new Dictionary<string, MethodInfo>();
     private Dictionary<string, PropertyInfo> properties = new Dictionary<string, PropertyInfo>();
 
-    public Type Type => this.type;
+    public Type Type => type;
 
-    public string Name => this.name;
+    public string Name => name;
 
-    public string DependedComponentName => this.dependedComponentName;
+    public string DependedComponentName => dependedComponentName;
 
     public IDictionary<string, MethodInfo> Methods
     {
-      get => (IDictionary<string, MethodInfo>) this.methods;
+      get => methods;
     }
 
-    public IDictionary<string, EventInfo> Events => (IDictionary<string, EventInfo>) this.events;
+    public IDictionary<string, EventInfo> Events => events;
 
     public IDictionary<string, PropertyInfo> Properties
     {
-      get => (IDictionary<string, PropertyInfo>) this.properties;
+      get => properties;
     }
 
     public ComponentReplectionInfo(Type type, string name, string dependedComponent = "")
     {
       this.type = type;
       this.name = name;
-      this.dependedComponentName = dependedComponent;
+      dependedComponentName = dependedComponent;
       foreach (MethodInfo method in type.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy))
       {
         if (method.GetCustomAttributes(typeof (MethodAttribute), true).Length != 0)
-          this.methods.Add(method.Name, method);
+          methods.Add(method.Name, method);
       }
       foreach (EventInfo eventInfo in type.GetEvents(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy))
       {
         if (eventInfo.GetCustomAttributes(typeof (EventAttribute), true).Length != 0)
-          this.events.Add(eventInfo.Name, eventInfo);
+          events.Add(eventInfo.Name, eventInfo);
       }
       foreach (PropertyInfo property in type.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy))
       {
         if (property.GetCustomAttributes(typeof (PropertyAttribute), true).Length != 0)
-          this.properties.Add(property.Name, property);
+          properties.Add(property.Name, property);
       }
     }
   }

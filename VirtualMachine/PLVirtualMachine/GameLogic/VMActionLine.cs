@@ -1,12 +1,12 @@
-﻿using Cofe.Loggers;
+﻿using System.Collections.Generic;
+using System.Xml;
+using Cofe.Loggers;
 using Engine.Common.Commons;
 using PLVirtualMachine.Base;
 using PLVirtualMachine.Common;
 using PLVirtualMachine.Common.Data;
 using PLVirtualMachine.Common.EngineAPI;
 using PLVirtualMachine.Data;
-using System.Collections.Generic;
-using System.Xml;
 using VirtualMachine.Common;
 using VirtualMachine.Common.Data;
 using VirtualMachine.Data;
@@ -31,21 +31,21 @@ namespace PLVirtualMachine.GameLogic
     IActionLoop
   {
     private ulong guid;
-    [FieldData("Name", DataFieldType.None)]
+    [FieldData("Name")]
     private string name = "";
     [FieldData("Actions", DataFieldType.Reference)]
     private List<IGameAction> actionsList = new List<IGameAction>();
     [FieldData("LocalContext", DataFieldType.Reference)]
     private ILocalContext localContext;
-    [FieldData("ActionLineType", DataFieldType.None)]
+    [FieldData("ActionLineType")]
     private EActionLineType actionLineType;
-    [FieldData("OrderIndex", DataFieldType.None)]
+    [FieldData("OrderIndex")]
     private int orderIndex;
-    [FieldData("ActionLoopInfo", DataFieldType.None)]
+    [FieldData("ActionLoopInfo")]
     private ActionLoopInfoData actionLoopInfo;
     private CommonVariable loopListParam;
-    private object startLoopIndexParam = (object) 0;
-    private object endLoopIndexParam = (object) 1;
+    private object startLoopIndexParam = 0;
+    private object endLoopIndexParam = 1;
     private IVariable loopListParamInstance;
     private List<IVariable> loopLocalVariables = new List<IVariable>();
     private bool loopRandomIndexing;
@@ -53,29 +53,28 @@ namespace PLVirtualMachine.GameLogic
 
     public virtual void EditorDataRead(XmlReader xml, IDataCreator creator, string typeContext)
     {
-      while (xml.Read())
-      {
+      while (xml.Read()) {
         if (xml.NodeType == XmlNodeType.Element)
         {
           switch (xml.Name)
           {
             case "Name":
-              this.name = EditorDataReadUtility.ReadValue(xml, this.name);
+              name = EditorDataReadUtility.ReadValue(xml, name);
               continue;
             case "Actions":
-              this.actionsList = EditorDataReadUtility.ReadReferenceList<IGameAction>(xml, creator, this.actionsList);
+              actionsList = EditorDataReadUtility.ReadReferenceList(xml, creator, actionsList);
               continue;
             case "LocalContext":
-              this.localContext = EditorDataReadUtility.ReadReference<ILocalContext>(xml, creator);
+              localContext = EditorDataReadUtility.ReadReference<ILocalContext>(xml, creator);
               continue;
             case "ActionLineType":
-              this.actionLineType = EditorDataReadUtility.ReadEnum<EActionLineType>(xml);
+              actionLineType = EditorDataReadUtility.ReadEnum<EActionLineType>(xml);
               continue;
             case "OrderIndex":
-              this.orderIndex = EditorDataReadUtility.ReadValue(xml, this.orderIndex);
+              orderIndex = EditorDataReadUtility.ReadValue(xml, orderIndex);
               continue;
             case "ActionLoopInfo":
-              this.actionLoopInfo = EditorDataReadUtility.ReadEditorDataSerializable<ActionLoopInfoData>(xml, creator, typeContext);
+              actionLoopInfo = EditorDataReadUtility.ReadEditorDataSerializable<ActionLoopInfoData>(xml, creator, typeContext);
               continue;
             default:
               if (XMLDataLoader.Logs.Add(typeContext + " : " + xml.Name))
@@ -84,174 +83,175 @@ namespace PLVirtualMachine.GameLogic
               continue;
           }
         }
-        else if (xml.NodeType == XmlNodeType.EndElement)
+
+        if (xml.NodeType == XmlNodeType.EndElement)
           break;
       }
     }
 
     public VMActionLine(ulong guid) => this.guid = guid;
 
-    public ulong BaseGuid => this.guid;
+    public ulong BaseGuid => guid;
 
-    public string Name => this.name;
+    public string Name => name;
 
-    public int Order => this.orderIndex;
+    public int Order => orderIndex;
 
-    public ILocalContext LocalContext => this.localContext;
+    public ILocalContext LocalContext => localContext;
 
     public bool IsValid
     {
       get
       {
-        for (int index = 0; index < this.actionsList.Count; ++index)
+        for (int index = 0; index < actionsList.Count; ++index)
         {
-          if (!this.actionsList[index].IsValid)
+          if (!actionsList[index].IsValid)
             return false;
         }
         return true;
       }
     }
 
-    public EActionLineType ActionLineType => this.actionLineType;
+    public EActionLineType ActionLineType => actionLineType;
 
-    public List<IGameAction> Actions => this.actionsList;
+    public List<IGameAction> Actions => actionsList;
 
-    public List<IVariable> LocalContextVariables => this.loopLocalVariables;
+    public List<IVariable> LocalContextVariables => loopLocalVariables;
 
     public IVariable GetLocalContextVariable(string name)
     {
-      foreach (IVariable loopLocalVariable in this.loopLocalVariables)
+      foreach (IVariable loopLocalVariable in loopLocalVariables)
       {
         if (loopLocalVariable.Name == name)
           return loopLocalVariable;
       }
-      return (IVariable) null;
+      return null;
     }
 
-    public CommonVariable LoopListParam => this.loopListParam;
+    public CommonVariable LoopListParam => loopListParam;
 
-    public object StartIndexParam => this.startLoopIndexParam;
+    public object StartIndexParam => startLoopIndexParam;
 
-    public object EndIndexParam => this.endLoopIndexParam;
+    public object EndIndexParam => endLoopIndexParam;
 
     public IVariable LoopListParamInstance
     {
       get
       {
-        if (this.loopListParam == null)
-          return (IVariable) null;
-        if (this.loopListParamInstance == null)
+        if (loopListParam == null)
+          return null;
+        if (loopListParamInstance == null)
         {
-          IContext ownerContext = (IContext) IStaticDataContainer.StaticDataContainer.GameRoot;
-          if (this.localContext != null && this.localContext.Owner != null && typeof (IContext).IsAssignableFrom(this.localContext.Owner.GetType()))
-            ownerContext = (IContext) this.localContext.Owner;
-          this.loopListParam.Bind(ownerContext, localContext: this.localContext);
-          if (this.loopListParam.Variable != null && typeof (IVariable).IsAssignableFrom(this.loopListParam.Variable.GetType()))
-            this.loopListParamInstance = (IVariable) this.loopListParam.Variable;
+          IContext ownerContext = IStaticDataContainer.StaticDataContainer.GameRoot;
+          if (localContext != null && localContext.Owner != null && typeof (IContext).IsAssignableFrom(localContext.Owner.GetType()))
+            ownerContext = (IContext) localContext.Owner;
+          loopListParam.Bind(ownerContext, localContext: localContext);
+          if (loopListParam.Variable != null && typeof (IVariable).IsAssignableFrom(loopListParam.Variable.GetType()))
+            loopListParamInstance = (IVariable) loopListParam.Variable;
         }
-        return this.loopListParamInstance;
+        return loopListParamInstance;
       }
     }
 
-    public bool LoopRandomIndexing => this.loopRandomIndexing;
+    public bool LoopRandomIndexing => loopRandomIndexing;
 
     public bool IsEqual(IObject other)
     {
-      return other != null && typeof (VMActionLine) == other.GetType() && (long) this.BaseGuid == (long) ((VMActionLine) other).BaseGuid;
+      return other != null && typeof (VMActionLine) == other.GetType() && (long) BaseGuid == (long) ((VMActionLine) other).BaseGuid;
     }
 
     public void Update()
     {
-      if (!VMBaseObjectUtility.CheckOrders<IGameAction>(this.actionsList))
-        Logger.AddError(string.Format("Action line id={0} has invalid actions ordering", (object) this.BaseGuid));
-      if (this.ActionLineType == EActionLineType.ACTION_LINE_TYPE_LOOP)
+      if (!VMBaseObjectUtility.CheckOrders(actionsList))
+        Logger.AddError(string.Format("Action line id={0} has invalid actions ordering", BaseGuid));
+      if (ActionLineType == EActionLineType.ACTION_LINE_TYPE_LOOP)
       {
-        this.startLoopIndexParam = (object) 0;
-        this.loopListParam = (CommonVariable) null;
-        if (this.actionLoopInfo != null)
+        startLoopIndexParam = 0;
+        loopListParam = null;
+        if (actionLoopInfo != null)
         {
-          string start = this.actionLoopInfo.Start;
-          string end = this.actionLoopInfo.End;
-          if ("none" != this.name.ToLower())
+          string start = actionLoopInfo.Start;
+          string end = actionLoopInfo.End;
+          if ("none" != name.ToLower())
           {
-            this.loopListParam = new CommonVariable();
-            this.loopListParam.Read(this.actionLoopInfo.Name);
+            loopListParam = new CommonVariable();
+            loopListParam.Read(actionLoopInfo.Name);
           }
           string str = "const_";
           if (start.StartsWith(str))
           {
-            this.startLoopIndexParam = (object) StringUtility.ToInt32(start.Substring(str.Length));
+            startLoopIndexParam = StringUtility.ToInt32(start.Substring(str.Length));
           }
           else
           {
-            this.startLoopIndexParam = (object) new CommonVariable();
-            ((CommonVariable) this.startLoopIndexParam).Read(start);
+            startLoopIndexParam = new CommonVariable();
+            ((CommonVariable) startLoopIndexParam).Read(start);
           }
           if (end.StartsWith(str))
           {
-            this.endLoopIndexParam = (object) StringUtility.ToInt32(end.Substring(str.Length));
+            endLoopIndexParam = StringUtility.ToInt32(end.Substring(str.Length));
           }
           else
           {
-            this.endLoopIndexParam = (object) new CommonVariable();
-            ((CommonVariable) this.endLoopIndexParam).Read(end);
+            endLoopIndexParam = new CommonVariable();
+            ((CommonVariable) endLoopIndexParam).Read(end);
           }
-          this.loopRandomIndexing = this.actionLoopInfo.Random;
-          this.actionLoopInfo = (ActionLoopInfoData) null;
+          loopRandomIndexing = actionLoopInfo.Random;
+          actionLoopInfo = null;
         }
         else
           Logger.AddError("Invalid action line info for action loop");
-        this.MakeLoopLocalVariables();
+        MakeLoopLocalVariables();
       }
-      for (int index = 0; index < this.actionsList.Count; ++index)
-        this.actionsList[index].Update();
-      this.updated = true;
+      for (int index = 0; index < actionsList.Count; ++index)
+        actionsList[index].Update();
+      updated = true;
     }
 
-    public bool IsUpdated => this.updated;
+    public bool IsUpdated => updated;
 
     public void Clear()
     {
-      if (this.actionsList != null)
+      if (actionsList != null)
       {
-        foreach (IGameAction actions in this.actionsList)
+        foreach (IGameAction actions in actionsList)
         {
           if (typeof (VMGameAction) == actions.GetType())
             ((VMGameAction) actions).Clear();
         }
-        this.actionsList.Clear();
-        this.actionsList = (List<IGameAction>) null;
+        actionsList.Clear();
+        actionsList = null;
       }
-      this.actionLoopInfo = (ActionLoopInfoData) null;
-      this.localContext = (ILocalContext) null;
-      if (this.loopListParam != null)
+      actionLoopInfo = null;
+      localContext = null;
+      if (loopListParam != null)
       {
-        this.loopListParam.Clear();
-        this.loopListParam = (CommonVariable) null;
+        loopListParam.Clear();
+        loopListParam = null;
       }
-      this.startLoopIndexParam = (object) null;
-      this.endLoopIndexParam = (object) null;
-      this.loopListParamInstance = (IVariable) null;
+      startLoopIndexParam = null;
+      endLoopIndexParam = null;
+      loopListParamInstance = null;
     }
 
     private void MakeLoopLocalVariables()
     {
-      this.loopLocalVariables.Clear();
-      IVariable listParamInstance = this.LoopListParamInstance;
+      loopLocalVariables.Clear();
+      IVariable listParamInstance = LoopListParamInstance;
       if (listParamInstance != null)
       {
-        string name = "local_" + (object) this.BaseGuid + "_Loop_List_" + listParamInstance.Name + "_Element";
+        string name = "local_" + BaseGuid + "_Loop_List_" + listParamInstance.Name + "_Element";
         VMType listElementType = listParamInstance.Type.GetListElementType();
         LocalVariable localVariable = new LocalVariable();
         localVariable.Initialize(name, listElementType);
-        this.loopLocalVariables.Add((IVariable) localVariable);
+        loopLocalVariables.Add(localVariable);
       }
-      string name1 = "local_" + (object) this.BaseGuid + "_Loop_Index";
+      string name1 = "local_" + BaseGuid + "_Loop_Index";
       LocalVariable localVariable1 = new LocalVariable();
       localVariable1.Initialize(name1, new VMType(typeof (int)));
-      this.loopLocalVariables.Add((IVariable) localVariable1);
+      loopLocalVariables.Add(localVariable1);
     }
 
-    public string GuidStr => this.guid.ToString();
+    public string GuidStr => guid.ToString();
   }
 }

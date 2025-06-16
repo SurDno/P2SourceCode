@@ -1,4 +1,5 @@
-﻿using BehaviorDesigner.Runtime;
+﻿using System;
+using BehaviorDesigner.Runtime;
 using BehaviorDesigner.Runtime.Tasks;
 using Cofe.Proxies;
 using Cofe.Serializations.Data;
@@ -8,7 +9,6 @@ using Engine.Common.Commons.Converters;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Scripts.Tools.Serializations.Converters;
-using UnityEngine;
 
 namespace Engine.BehaviourNodes.Conditionals
 {
@@ -19,52 +19,52 @@ namespace Engine.BehaviourNodes.Conditionals
   [FactoryProxy(typeof (IsReactingToHit))]
   public class IsReactingToHit : Conditional, IStub, ISerializeDataWrite, ISerializeDataRead
   {
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy()]
     [SerializeField]
     public SharedTransform Target;
-    private bool inited = false;
+    private bool inited;
     private FightAnimatorBehavior.AnimatorState fightAnimatorState;
 
     public override void OnStart()
     {
-      this.inited = false;
-      Pivot component = this.Owner.GetComponent<Pivot>();
+      inited = false;
+      Pivot component = Owner.GetComponent<Pivot>();
       if ((UnityEngine.Object) component == (UnityEngine.Object) null)
         return;
       Animator animator = component.GetAnimator();
       if ((UnityEngine.Object) animator == (UnityEngine.Object) null)
         return;
-      this.fightAnimatorState = FightAnimatorBehavior.GetAnimatorState(animator);
-      if (this.fightAnimatorState == null)
+      fightAnimatorState = FightAnimatorBehavior.GetAnimatorState(animator);
+      if (fightAnimatorState == null)
         return;
-      this.inited = true;
+      inited = true;
     }
 
     public override TaskStatus OnUpdate()
     {
-      return !this.inited ? TaskStatus.Failure : (this.fightAnimatorState.IsReaction ? TaskStatus.Success : TaskStatus.Failure);
+      return !inited ? TaskStatus.Failure : (fightAnimatorState.IsReaction ? TaskStatus.Success : TaskStatus.Failure);
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.WriteSerialize<NodeData>(writer, "NodeData", this.nodeData);
-      DefaultDataWriteUtility.Write(writer, "Id", this.id);
-      DefaultDataWriteUtility.Write(writer, "FriendlyName", this.friendlyName);
-      DefaultDataWriteUtility.Write(writer, "Instant", this.instant);
-      DefaultDataWriteUtility.Write(writer, "Disabled", this.disabled);
-      BehaviorTreeDataWriteUtility.WriteShared<SharedTransform>(writer, "Target", this.Target);
+      DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
+      DefaultDataWriteUtility.Write(writer, "Id", id);
+      DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
+      DefaultDataWriteUtility.Write(writer, "Instant", instant);
+      DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
+      BehaviorTreeDataWriteUtility.WriteShared(writer, "Target", Target);
     }
 
-    public void DataRead(IDataReader reader, System.Type type)
+    public void DataRead(IDataReader reader, Type type)
     {
-      this.nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
-      this.id = DefaultDataReadUtility.Read(reader, "Id", this.id);
-      this.friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", this.friendlyName);
-      this.instant = DefaultDataReadUtility.Read(reader, "Instant", this.instant);
-      this.disabled = DefaultDataReadUtility.Read(reader, "Disabled", this.disabled);
-      this.Target = BehaviorTreeDataReadUtility.ReadShared<SharedTransform>(reader, "Target", this.Target);
+      nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
+      id = DefaultDataReadUtility.Read(reader, "Id", id);
+      friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
+      instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
+      disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
+      Target = BehaviorTreeDataReadUtility.ReadShared(reader, "Target", Target);
     }
   }
 }

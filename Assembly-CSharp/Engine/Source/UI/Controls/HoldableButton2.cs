@@ -1,19 +1,16 @@
-﻿using Engine.Impl.UI.Controls;
-using System;
-using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.UI;
+﻿using System;
+using Engine.Impl.UI.Controls;
 
 namespace Engine.Source.UI.Controls
 {
   public class HoldableButton2 : Selectable
   {
     [SerializeField]
-    private ProgressViewBase progressView = (ProgressViewBase) null;
+    private ProgressViewBase progressView = null;
     [SerializeField]
-    private HideableView holdView = (HideableView) null;
+    private HideableView holdView = null;
     [SerializeField]
-    private EventView cancelView = (EventView) null;
+    private EventView cancelView = null;
     private float currentHoldTime = -1f;
 
     public float HoldTime { get; set; } = 2f;
@@ -28,56 +25,56 @@ namespace Engine.Source.UI.Controls
 
     private float CurrentHoldTime
     {
-      get => this.currentHoldTime;
+      get => currentHoldTime;
       set
       {
-        this.currentHoldTime = value;
-        if (!((UnityEngine.Object) this.progressView != (UnityEngine.Object) null))
+        currentHoldTime = value;
+        if (!((UnityEngine.Object) progressView != (UnityEngine.Object) null))
           return;
-        this.progressView.Progress = (double) this.currentHoldTime >= 0.0 && (double) this.currentHoldTime <= (double) this.HoldTime ? this.currentHoldTime / this.HoldTime : 0.0f;
+        progressView.Progress = currentHoldTime >= 0.0 && currentHoldTime <= (double) HoldTime ? currentHoldTime / HoldTime : 0.0f;
       }
     }
 
     private void Cancel()
     {
-      this.CurrentHoldTime = -1f;
-      Action<bool> openEndEvent = this.OpenEndEvent;
+      CurrentHoldTime = -1f;
+      Action<bool> openEndEvent = OpenEndEvent;
       if (openEndEvent != null)
         openEndEvent(false);
-      if ((UnityEngine.Object) this.holdView != (UnityEngine.Object) null)
-        this.holdView.Visible = false;
-      if (!((UnityEngine.Object) this.cancelView != (UnityEngine.Object) null))
+      if ((UnityEngine.Object) holdView != (UnityEngine.Object) null)
+        holdView.Visible = false;
+      if (!((UnityEngine.Object) cancelView != (UnityEngine.Object) null))
         return;
-      this.cancelView.Invoke();
+      cancelView.Invoke();
     }
 
     private void EndHold()
     {
-      if (!this.IsTimerRunning())
+      if (!IsTimerRunning())
         return;
-      this.Cancel();
+      Cancel();
     }
 
     private void Finish()
     {
-      this.CurrentHoldTime = this.HoldTime + 1f;
-      Action<bool> openEndEvent = this.OpenEndEvent;
+      CurrentHoldTime = HoldTime + 1f;
+      Action<bool> openEndEvent = OpenEndEvent;
       if (openEndEvent != null)
         openEndEvent(true);
-      if (!((UnityEngine.Object) this.holdView != (UnityEngine.Object) null))
+      if (!((UnityEngine.Object) holdView != (UnityEngine.Object) null))
         return;
-      this.holdView.Visible = false;
+      holdView.Visible = false;
     }
 
     private bool IsTimerRunning()
     {
-      return (double) this.CurrentHoldTime >= 0.0 && (double) this.CurrentHoldTime <= (double) this.HoldTime;
+      return CurrentHoldTime >= 0.0 && CurrentHoldTime <= (double) HoldTime;
     }
 
     public override void OnPointerExit(PointerEventData eventData)
     {
       base.OnPointerExit(eventData);
-      Action deselectEvent = this.DeselectEvent;
+      Action deselectEvent = DeselectEvent;
       if (deselectEvent == null)
         return;
       deselectEvent();
@@ -88,7 +85,7 @@ namespace Engine.Source.UI.Controls
       base.OnPointerDown(eventData);
       if (!this.IsActive() || !this.IsInteractable() || eventData.button != 0)
         return;
-      this.StartHold();
+      StartHold();
     }
 
     public override void OnPointerUp(PointerEventData eventData)
@@ -96,13 +93,13 @@ namespace Engine.Source.UI.Controls
       base.OnPointerUp(eventData);
       if (eventData.button != 0)
         return;
-      this.EndHold();
+      EndHold();
     }
 
     public override void OnPointerEnter(PointerEventData eventData)
     {
       base.OnPointerEnter(eventData);
-      Action selectEvent = this.SelectEvent;
+      Action selectEvent = SelectEvent;
       if (selectEvent == null)
         return;
       selectEvent();
@@ -110,43 +107,43 @@ namespace Engine.Source.UI.Controls
 
     private void StartHold()
     {
-      if (this.IsTimerRunning())
+      if (IsTimerRunning())
         return;
-      this.CurrentHoldTime = Time.deltaTime;
-      Action openBeginEvent = this.OpenBeginEvent;
+      CurrentHoldTime = Time.deltaTime;
+      Action openBeginEvent = OpenBeginEvent;
       if (openBeginEvent != null)
         openBeginEvent();
-      if (!((UnityEngine.Object) this.holdView != (UnityEngine.Object) null))
+      if (!((UnityEngine.Object) holdView != (UnityEngine.Object) null))
         return;
-      this.holdView.Visible = true;
+      holdView.Visible = true;
     }
 
     private void Update()
     {
-      if (!this.IsTimerRunning())
+      if (!IsTimerRunning())
         return;
       if (!this.IsInteractable())
       {
-        this.Cancel();
+        Cancel();
       }
       else
       {
-        float num = this.CurrentHoldTime + Time.deltaTime;
-        if ((double) num >= (double) this.HoldTime)
-          this.Finish();
+        float num = CurrentHoldTime + Time.deltaTime;
+        if (num >= (double) HoldTime)
+          Finish();
         else
-          this.CurrentHoldTime = num;
+          CurrentHoldTime = num;
       }
     }
 
     protected override void OnDisable()
     {
       base.OnDisable();
-      this.EndHold();
+      EndHold();
     }
 
-    public void GamepadStartHold() => this.StartHold();
+    public void GamepadStartHold() => StartHold();
 
-    public void GamepadEndHold() => this.EndHold();
+    public void GamepadEndHold() => EndHold();
   }
 }

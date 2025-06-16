@@ -7,7 +7,7 @@ namespace FlowCanvas.Nodes
   [Description("Use this for organization. It returns exactly what is provided in the input.")]
   public class Identity<T> : PureFunctionNode<T, T>
   {
-    public override string name => (string) null;
+    public override string name => null;
 
     public override T Invoke(T value) => value;
   }

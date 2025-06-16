@@ -1,9 +1,7 @@
-﻿using BehaviorDesigner.Runtime.Tasks;
-using Engine.Common.Services;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.Serialization;
+using BehaviorDesigner.Runtime.Tasks;
+using Engine.Common.Services;
 
 namespace BehaviorDesigner.Runtime
 {
@@ -11,12 +9,12 @@ namespace BehaviorDesigner.Runtime
   public class BehaviorSource
   {
     private int behaviorId = -1;
-    protected Task entryTask = (Task) null;
-    protected Task rootTask = (Task) null;
-    protected List<Task> detachedTasks = (List<Task>) null;
-    private List<SharedVariable> variables = (List<SharedVariable>) null;
+    protected Task entryTask;
+    protected Task rootTask;
+    protected List<Task> detachedTasks;
+    private List<SharedVariable> variables;
     private Dictionary<string, int> sharedVariableIndex;
-    private bool hasSerialized = false;
+    private bool hasSerialized;
     private IBehaviorTree owner;
     [SerializeField]
     [FormerlySerializedAs("mTaskData")]
@@ -24,65 +22,65 @@ namespace BehaviorDesigner.Runtime
 
     public int BehaviorId
     {
-      get => this.behaviorId;
-      set => this.behaviorId = value;
+      get => behaviorId;
+      set => behaviorId = value;
     }
 
     public Task EntryTask
     {
-      get => this.entryTask;
-      set => this.entryTask = value;
+      get => entryTask;
+      set => entryTask = value;
     }
 
     public Task RootTask
     {
-      get => this.rootTask;
-      set => this.rootTask = value;
+      get => rootTask;
+      set => rootTask = value;
     }
 
     public List<Task> DetachedTasks
     {
-      get => this.detachedTasks;
-      set => this.detachedTasks = value;
+      get => detachedTasks;
+      set => detachedTasks = value;
     }
 
     public List<SharedVariable> Variables
     {
       get
       {
-        this.CheckForSerialization(false, (BehaviorSource) null, this.Name);
-        return this.variables;
+        CheckForSerialization(false, null, Name);
+        return variables;
       }
       set
       {
-        this.variables = value;
-        this.UpdateVariablesIndex();
+        variables = value;
+        UpdateVariablesIndex();
       }
     }
 
     public bool HasSerialized
     {
-      get => this.hasSerialized;
-      set => this.hasSerialized = value;
+      get => hasSerialized;
+      set => hasSerialized = value;
     }
 
     public TaskSerializationData TaskData
     {
-      get => this.taskData;
-      set => this.taskData = value;
+      get => taskData;
+      set => taskData = value;
     }
 
     public IBehaviorTree Owner
     {
-      get => this.owner;
-      set => this.owner = value;
+      get => owner;
+      set => owner = value;
     }
 
     public BehaviorSource()
     {
     }
 
-    public BehaviorSource(IBehaviorTree owner) => this.Initialize(owner);
+    public BehaviorSource(IBehaviorTree owner) => Initialize(owner);
 
     public void Initialize(IBehaviorTree owner) => this.owner = owner;
 
@@ -106,9 +104,9 @@ namespace BehaviorDesigner.Runtime
       if (!(!behaviorSource1.HasSerialized | force))
         return false;
       behaviorSource1.HasSerialized = true;
-      if (this.taskData != null && !string.IsNullOrEmpty(this.taskData.XmlData))
+      if (taskData != null && !string.IsNullOrEmpty(taskData.XmlData))
       {
-        XmlDeserialization.LoadXml(this.taskData, behaviorSource1, context);
+        XmlDeserialization.LoadXml(taskData, behaviorSource1, context);
         IOptimizationService optimizationService = ServiceCache.OptimizationService;
         if (optimizationService != null)
           optimizationService.FrameHasSpike = true;
@@ -119,83 +117,83 @@ namespace BehaviorDesigner.Runtime
     public SharedVariable GetVariable(string name)
     {
       if (name == null)
-        return (SharedVariable) null;
-      this.CheckForSerialization(false, (BehaviorSource) null, this.Name);
-      if (this.variables != null)
+        return null;
+      CheckForSerialization(false, null, Name);
+      if (variables != null)
       {
-        if (this.sharedVariableIndex == null || this.sharedVariableIndex.Count != this.variables.Count)
-          this.UpdateVariablesIndex();
+        if (sharedVariableIndex == null || sharedVariableIndex.Count != variables.Count)
+          UpdateVariablesIndex();
         int index;
-        if (this.sharedVariableIndex.TryGetValue(name, out index))
-          return this.variables[index];
+        if (sharedVariableIndex.TryGetValue(name, out index))
+          return variables[index];
       }
-      return (SharedVariable) null;
+      return null;
     }
 
     public List<SharedVariable> GetAllVariables()
     {
-      this.CheckForSerialization(false, (BehaviorSource) null, this.Name);
-      return this.variables;
+      CheckForSerialization(false, null, Name);
+      return variables;
     }
 
     public void SetVariable(string name, SharedVariable sharedVariable)
     {
-      if (this.variables == null)
-        this.variables = new List<SharedVariable>();
-      else if (this.sharedVariableIndex == null)
-        this.UpdateVariablesIndex();
+      if (variables == null)
+        variables = new List<SharedVariable>();
+      else if (sharedVariableIndex == null)
+        UpdateVariablesIndex();
       sharedVariable.Name = name;
       int index;
-      if (this.sharedVariableIndex != null && this.sharedVariableIndex.TryGetValue(name, out index))
+      if (sharedVariableIndex != null && sharedVariableIndex.TryGetValue(name, out index))
       {
-        SharedVariable variable = this.variables[index];
+        SharedVariable variable = variables[index];
         if (!variable.GetType().Equals(typeof (SharedVariable)) && !variable.GetType().Equals(sharedVariable.GetType()))
-          Debug.LogError((object) string.Format("Error: Unable to set SharedVariable {0} - the variable type {1} does not match the existing type {2}", (object) name, (object) variable.GetType(), (object) sharedVariable.GetType()));
+          Debug.LogError((object) string.Format("Error: Unable to set SharedVariable {0} - the variable type {1} does not match the existing type {2}", name, variable.GetType(), sharedVariable.GetType()));
         else
           variable.SetValue(sharedVariable.GetValue());
       }
       else
       {
-        this.variables.Add(sharedVariable);
-        this.UpdateVariablesIndex();
+        variables.Add(sharedVariable);
+        UpdateVariablesIndex();
       }
     }
 
     public void UpdateVariableName(SharedVariable sharedVariable, string name)
     {
-      this.CheckForSerialization(false, (BehaviorSource) null, this.Name);
+      CheckForSerialization(false, null, Name);
       sharedVariable.Name = name;
-      this.UpdateVariablesIndex();
+      UpdateVariablesIndex();
     }
 
     public void SetAllVariables(List<SharedVariable> variables)
     {
       this.variables = variables;
-      this.UpdateVariablesIndex();
+      UpdateVariablesIndex();
     }
 
     private void UpdateVariablesIndex()
     {
-      if (this.variables == null)
+      if (variables == null)
       {
-        if (this.sharedVariableIndex == null)
+        if (sharedVariableIndex == null)
           return;
-        this.sharedVariableIndex = (Dictionary<string, int>) null;
+        sharedVariableIndex = null;
       }
       else
       {
-        if (this.sharedVariableIndex == null)
-          this.sharedVariableIndex = new Dictionary<string, int>(this.variables.Count);
+        if (sharedVariableIndex == null)
+          sharedVariableIndex = new Dictionary<string, int>(variables.Count);
         else
-          this.sharedVariableIndex.Clear();
-        for (int index = 0; index < this.variables.Count; ++index)
+          sharedVariableIndex.Clear();
+        for (int index = 0; index < variables.Count; ++index)
         {
-          if (this.variables[index] != null)
-            this.sharedVariableIndex.Add(this.variables[index].Name, index);
+          if (variables[index] != null)
+            sharedVariableIndex.Add(variables[index].Name, index);
         }
       }
     }
 
-    public string Name => this.Owner != null ? this.Owner.GetOwnerName() : "Unknown";
+    public string Name => Owner != null ? Owner.GetOwnerName() : "Unknown";
   }
 }

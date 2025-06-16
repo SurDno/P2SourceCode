@@ -18,7 +18,7 @@ namespace PLVirtualMachine.Common
     {
       this.name = name;
       this.componentName = componentName;
-      this.paramType = type;
+      paramType = type;
     }
 
     public EContextVariableCategory Category
@@ -28,31 +28,31 @@ namespace PLVirtualMachine.Common
 
     public string Name
     {
-      get => this.componentName != "" ? this.componentName + "." + this.name : this.name;
+      get => componentName != "" ? componentName + "." + name : name;
     }
 
     public object Value
     {
-      get => this.defaultValue;
+      get => defaultValue;
       set
       {
       }
     }
 
-    public VMType Type => this.paramType;
+    public VMType Type => paramType;
 
     public bool Implicit => false;
 
-    public IGameObjectContext OwnerContext => (IGameObjectContext) null;
+    public IGameObjectContext OwnerContext => null;
 
     public virtual bool IsEqual(IVariable other)
     {
       if (!typeof (AbstractParameter).IsAssignableFrom(other.GetType()))
         return false;
       AbstractParameter abstractParameter = (AbstractParameter) other;
-      return (!("" != this.componentName) || !(this.componentName != abstractParameter.componentName)) && this.Name == abstractParameter.Name;
+      return (!("" != componentName) || !(componentName != abstractParameter.componentName)) && Name == abstractParameter.Name;
     }
 
-    public void Clear() => this.defaultValue = (object) null;
+    public void Clear() => defaultValue = null;
   }
 }

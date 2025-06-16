@@ -1,7 +1,6 @@
-﻿using ParadoxNotion.Design;
-using System.Collections;
+﻿using System.Collections;
 using System.Linq;
-using UnityEngine;
+using ParadoxNotion.Design;
 
 namespace FlowCanvas.Nodes
 {
@@ -10,7 +9,7 @@ namespace FlowCanvas.Nodes
   {
     public override Transform[] Invoke(Transform parent)
     {
-      return ((IEnumerable) parent.transform).Cast<Transform>().ToArray<Transform>();
+      return ((IEnumerable) parent.transform).Cast<Transform>().ToArray();
     }
   }
 }

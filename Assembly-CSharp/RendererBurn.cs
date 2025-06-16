@@ -1,7 +1,4 @@
-﻿using UnityEngine;
-using UnityEngine.Serialization;
-
-public class RendererBurn : MonoBehaviour
+﻿public class RendererBurn : MonoBehaviour
 {
   [SerializeField]
   [FormerlySerializedAs("FlameSystem")]
@@ -27,169 +24,169 @@ public class RendererBurn : MonoBehaviour
   private Renderer lastBurningRenderer = (Renderer) null;
   private float lastStrength = 1f;
   private float lastSizeMultiplier = 1f;
-  private bool meshAssigned = false;
+  private bool meshAssigned;
 
   private void Awake()
   {
-    if ((Object) this.flameSystem != (Object) null)
+    if ((Object) flameSystem != (Object) null)
     {
-      ParticleSystem.MinMaxCurve minMaxCurve = this.flameSystem.emission.rateOverTime;
-      this.flameMaxRate = minMaxCurve.constant;
-      ParticleSystem.MainModule main = this.flameSystem.main;
+      ParticleSystem.MinMaxCurve minMaxCurve = flameSystem.emission.rateOverTime;
+      flameMaxRate = minMaxCurve.constant;
+      ParticleSystem.MainModule main = flameSystem.main;
       minMaxCurve = main.startSize;
-      this.flameMaxSize = minMaxCurve.constant;
-      this.flameMaxTime = main.startLifetime.constant;
+      flameMaxSize = minMaxCurve.constant;
+      flameMaxTime = main.startLifetime.constant;
     }
-    if ((Object) this.smokeSystem != (Object) null)
+    if ((Object) smokeSystem != (Object) null)
     {
-      this.smokeMaxRate = this.smokeSystem.emission.rateOverTime.constant;
-      this.smokeMaxAlpha = this.smokeSystem.main.startColor.color.a;
+      smokeMaxRate = smokeSystem.emission.rateOverTime.constant;
+      smokeMaxAlpha = smokeSystem.main.startColor.color.a;
     }
-    if ((Object) this.sparkSystem != (Object) null)
-      this.sparkMaxRate = this.sparkSystem.emission.rateOverTime.constant;
-    this.UpdateSystems();
+    if ((Object) sparkSystem != (Object) null)
+      sparkMaxRate = sparkSystem.emission.rateOverTime.constant;
+    UpdateSystems();
   }
 
-  private void Update() => this.UpdateSystems();
+  private void Update() => UpdateSystems();
 
   private void UpdateSystems()
   {
-    if ((Object) this.lastBurningRenderer != (Object) this.BurningRenderer || this.meshAssigned && (Object) this.BurningRenderer == (Object) null)
+    if ((Object) lastBurningRenderer != (Object) BurningRenderer || meshAssigned && (Object) BurningRenderer == (Object) null)
     {
-      if ((Object) this.BurningRenderer == (Object) null)
-        this.BurningRenderer = (Renderer) null;
-      if (this.BurningRenderer is MeshRenderer)
+      if ((Object) BurningRenderer == (Object) null)
+        BurningRenderer = (Renderer) null;
+      if (BurningRenderer is MeshRenderer)
       {
         ParticleSystem.ShapeModule shape;
-        if ((Object) this.flameSystem != (Object) null)
-          shape = this.flameSystem.shape with
+        if ((Object) flameSystem != (Object) null)
+          shape = flameSystem.shape with
           {
             shapeType = ParticleSystemShapeType.MeshRenderer,
-            meshRenderer = (MeshRenderer) this.BurningRenderer,
+            meshRenderer = (MeshRenderer) BurningRenderer,
             skinnedMeshRenderer = (SkinnedMeshRenderer) null
           };
-        if ((Object) this.smokeSystem != (Object) null)
-          shape = this.smokeSystem.shape with
+        if ((Object) smokeSystem != (Object) null)
+          shape = smokeSystem.shape with
           {
             shapeType = ParticleSystemShapeType.MeshRenderer,
-            meshRenderer = (MeshRenderer) this.BurningRenderer,
+            meshRenderer = (MeshRenderer) BurningRenderer,
             skinnedMeshRenderer = (SkinnedMeshRenderer) null
           };
-        if ((Object) this.sparkSystem != (Object) null)
-          shape = this.sparkSystem.shape with
+        if ((Object) sparkSystem != (Object) null)
+          shape = sparkSystem.shape with
           {
             shapeType = ParticleSystemShapeType.MeshRenderer,
-            meshRenderer = (MeshRenderer) this.BurningRenderer,
+            meshRenderer = (MeshRenderer) BurningRenderer,
             skinnedMeshRenderer = (SkinnedMeshRenderer) null
           };
-        this.meshAssigned = true;
+        meshAssigned = true;
       }
-      else if (this.BurningRenderer is SkinnedMeshRenderer)
+      else if (BurningRenderer is SkinnedMeshRenderer)
       {
         ParticleSystem.ShapeModule shape;
-        if ((Object) this.flameSystem != (Object) null)
-          shape = this.flameSystem.shape with
+        if ((Object) flameSystem != (Object) null)
+          shape = flameSystem.shape with
           {
             shapeType = ParticleSystemShapeType.SkinnedMeshRenderer,
-            skinnedMeshRenderer = (SkinnedMeshRenderer) this.BurningRenderer,
+            skinnedMeshRenderer = (SkinnedMeshRenderer) BurningRenderer,
             meshRenderer = (MeshRenderer) null
           };
-        if ((Object) this.smokeSystem != (Object) null)
-          shape = this.smokeSystem.shape with
+        if ((Object) smokeSystem != (Object) null)
+          shape = smokeSystem.shape with
           {
             shapeType = ParticleSystemShapeType.SkinnedMeshRenderer,
-            skinnedMeshRenderer = (SkinnedMeshRenderer) this.BurningRenderer,
+            skinnedMeshRenderer = (SkinnedMeshRenderer) BurningRenderer,
             meshRenderer = (MeshRenderer) null
           };
-        if ((Object) this.sparkSystem != (Object) null)
-          shape = this.sparkSystem.shape with
+        if ((Object) sparkSystem != (Object) null)
+          shape = sparkSystem.shape with
           {
             shapeType = ParticleSystemShapeType.SkinnedMeshRenderer,
-            skinnedMeshRenderer = (SkinnedMeshRenderer) this.BurningRenderer,
+            skinnedMeshRenderer = (SkinnedMeshRenderer) BurningRenderer,
             meshRenderer = (MeshRenderer) null
           };
-        this.meshAssigned = true;
+        meshAssigned = true;
       }
       else
       {
-        if ((Object) this.BurningRenderer != (Object) null)
-          Debug.LogError((object) ("BurningRenderer can only be null, MeshRenderer or SkinnedMeshRenderer, : " + this.BurningRenderer.GetInfo()));
-        this.BurningRenderer = (Renderer) null;
+        if ((Object) BurningRenderer != (Object) null)
+          Debug.LogError((object) ("BurningRenderer can only be null, MeshRenderer or SkinnedMeshRenderer, : " + BurningRenderer.GetInfo()));
+        BurningRenderer = (Renderer) null;
         ParticleSystem.ShapeModule shape;
-        if ((Object) this.flameSystem != (Object) null)
-          shape = this.flameSystem.shape with
+        if ((Object) flameSystem != (Object) null)
+          shape = flameSystem.shape with
           {
             shapeType = ParticleSystemShapeType.Sphere,
             meshRenderer = (MeshRenderer) null,
             skinnedMeshRenderer = (SkinnedMeshRenderer) null
           };
-        if ((Object) this.smokeSystem != (Object) null)
-          shape = this.smokeSystem.shape with
+        if ((Object) smokeSystem != (Object) null)
+          shape = smokeSystem.shape with
           {
             shapeType = ParticleSystemShapeType.Sphere,
             meshRenderer = (MeshRenderer) null,
             skinnedMeshRenderer = (SkinnedMeshRenderer) null
           };
-        if ((Object) this.sparkSystem != (Object) null)
-          shape = this.sparkSystem.shape with
+        if ((Object) sparkSystem != (Object) null)
+          shape = sparkSystem.shape with
           {
             shapeType = ParticleSystemShapeType.Sphere,
             meshRenderer = (MeshRenderer) null,
             skinnedMeshRenderer = (SkinnedMeshRenderer) null
           };
-        this.meshAssigned = false;
+        meshAssigned = false;
       }
-      this.lastBurningRenderer = this.BurningRenderer;
+      lastBurningRenderer = BurningRenderer;
     }
-    float num1 = (Object) this.lastBurningRenderer != (Object) null ? this.Strength : 0.0f;
-    if ((double) num1 == (double) this.lastStrength && (double) this.lastSizeMultiplier == (double) this.SizeMultiplier)
+    float num1 = (Object) lastBurningRenderer != (Object) null ? Strength : 0.0f;
+    if (num1 == (double) lastStrength && lastSizeMultiplier == (double) SizeMultiplier)
       return;
-    this.lastStrength = num1;
-    this.lastSizeMultiplier = this.SizeMultiplier;
-    if ((double) this.lastStrength == 0.0)
+    lastStrength = num1;
+    lastSizeMultiplier = SizeMultiplier;
+    if (lastStrength == 0.0)
     {
-      if ((Object) this.flameSystem != (Object) null)
-        this.flameSystem.emission.enabled = false;
-      if ((Object) this.smokeSystem != (Object) null)
-        this.smokeSystem.emission.enabled = false;
-      if ((Object) this.sparkSystem != (Object) null)
-        this.sparkSystem.emission.enabled = false;
+      if ((Object) flameSystem != (Object) null)
+        flameSystem.emission.enabled = false;
+      if ((Object) smokeSystem != (Object) null)
+        smokeSystem.emission.enabled = false;
+      if ((Object) sparkSystem != (Object) null)
+        sparkSystem.emission.enabled = false;
     }
     else
     {
       ParticleSystem.EmissionModule emission;
       ParticleSystem.MainModule main;
-      if ((Object) this.flameSystem != (Object) null)
+      if ((Object) flameSystem != (Object) null)
       {
-        emission = this.flameSystem.emission with
+        emission = flameSystem.emission with
         {
           enabled = true,
-          rateOverTime = (ParticleSystem.MinMaxCurve) (this.lastStrength * this.flameMaxRate * this.lastSizeMultiplier)
+          rateOverTime = (ParticleSystem.MinMaxCurve) (lastStrength * flameMaxRate * lastSizeMultiplier)
         };
-        main = this.flameSystem.main;
-        float num2 = (float) (0.25 + (double) this.lastStrength * 0.75);
-        main.startSize = (ParticleSystem.MinMaxCurve) (num2 * this.flameMaxSize);
-        main.startLifetime = (ParticleSystem.MinMaxCurve) (num2 * this.flameMaxTime);
+        main = flameSystem.main;
+        float num2 = (float) (0.25 + lastStrength * 0.75);
+        main.startSize = (ParticleSystem.MinMaxCurve) (num2 * flameMaxSize);
+        main.startLifetime = (ParticleSystem.MinMaxCurve) (num2 * flameMaxTime);
       }
-      if ((Object) this.smokeSystem != (Object) null)
+      if ((Object) smokeSystem != (Object) null)
       {
-        emission = this.smokeSystem.emission with
+        emission = smokeSystem.emission with
         {
           enabled = true,
-          rateOverTime = (ParticleSystem.MinMaxCurve) (this.smokeMaxRate * this.lastSizeMultiplier)
+          rateOverTime = (ParticleSystem.MinMaxCurve) (smokeMaxRate * lastSizeMultiplier)
         };
-        main = this.smokeSystem.main;
+        main = smokeSystem.main;
         Color color = main.startColor.color with
         {
-          a = this.lastStrength * this.smokeMaxAlpha
+          a = lastStrength * smokeMaxAlpha
         };
         main.startColor = (ParticleSystem.MinMaxGradient) color;
       }
-      if ((Object) this.sparkSystem != (Object) null)
-        emission = this.sparkSystem.emission with
+      if ((Object) sparkSystem != (Object) null)
+        emission = sparkSystem.emission with
         {
           enabled = true,
-          rateOverTime = (ParticleSystem.MinMaxCurve) (this.lastStrength * this.sparkMaxRate * this.lastSizeMultiplier)
+          rateOverTime = (ParticleSystem.MinMaxCurve) (lastStrength * sparkMaxRate * lastSizeMultiplier)
         };
     }
   }

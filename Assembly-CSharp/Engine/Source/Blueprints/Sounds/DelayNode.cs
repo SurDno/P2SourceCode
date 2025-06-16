@@ -1,7 +1,6 @@
 ﻿using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
-using UnityEngine;
 
 namespace Engine.Source.Blueprints.Sounds
 {
@@ -18,38 +17,38 @@ namespace Engine.Source.Blueprints.Sounds
     private float accumulate;
 
     [Port("Value")]
-    private bool Value() => this.Compute(this.valueInput.value);
+    private bool Value() => Compute(valueInput.value);
 
     public bool Compute(bool value)
     {
       if (value)
       {
-        if (this.prevValue)
+        if (prevValue)
         {
-          this.accumulate = 0.0f;
+          accumulate = 0.0f;
         }
         else
         {
-          this.accumulate += Time.deltaTime;
-          if ((double) this.accumulate >= (double) this.startDelayInput.value)
+          accumulate += Time.deltaTime;
+          if (accumulate >= (double) startDelayInput.value)
           {
-            this.prevValue = true;
-            this.accumulate = 0.0f;
+            prevValue = true;
+            accumulate = 0.0f;
           }
         }
       }
-      else if (this.prevValue)
+      else if (prevValue)
       {
-        this.accumulate += Time.deltaTime;
-        if ((double) this.accumulate >= (double) this.endDelayInput.value)
+        accumulate += Time.deltaTime;
+        if (accumulate >= (double) endDelayInput.value)
         {
-          this.prevValue = false;
-          this.accumulate = 0.0f;
+          prevValue = false;
+          accumulate = 0.0f;
         }
       }
       else
-        this.accumulate = 0.0f;
-      return this.prevValue;
+        accumulate = 0.0f;
+      return prevValue;
     }
   }
 }

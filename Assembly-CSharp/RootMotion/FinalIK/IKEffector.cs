@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEngine;
 
 namespace RootMotion.FinalIK
 {
@@ -43,16 +42,16 @@ namespace RootMotion.FinalIK
 
     public IKSolver.Node GetNode(IKSolverFullBody solver)
     {
-      return solver.chain[this.chainIndex].nodes[this.nodeIndex];
+      return solver.chain[chainIndex].nodes[nodeIndex];
     }
 
     public bool isEndEffector { get; private set; }
 
     public void PinToBone(float positionWeight, float rotationWeight)
     {
-      this.position = this.bone.position;
+      position = bone.position;
       this.positionWeight = Mathf.Clamp(positionWeight, 0.0f, 1f);
-      this.rotation = this.bone.rotation;
+      rotation = bone.rotation;
       this.rotationWeight = Mathf.Clamp(rotationWeight, 0.0f, 1f);
     }
 
@@ -68,17 +67,17 @@ namespace RootMotion.FinalIK
 
     public bool IsValid(IKSolver solver, ref string message)
     {
-      if ((UnityEngine.Object) this.bone == (UnityEngine.Object) null)
+      if ((UnityEngine.Object) bone == (UnityEngine.Object) null)
       {
         message = "IK Effector bone is null.";
         return false;
       }
-      if (solver.GetPoint(this.bone) == null)
+      if (solver.GetPoint(bone) == null)
       {
-        message = "IK Effector is referencing to a bone '" + this.bone.name + "' that does not excist in the Node Chain.";
+        message = "IK Effector is referencing to a bone '" + bone.name + "' that does not excist in the Node Chain.";
         return false;
       }
-      foreach (UnityEngine.Object childBone in this.childBones)
+      foreach (UnityEngine.Object childBone in childBones)
       {
         if (childBone == (UnityEngine.Object) null)
         {
@@ -86,7 +85,7 @@ namespace RootMotion.FinalIK
           return false;
         }
       }
-      foreach (Transform childBone in this.childBones)
+      foreach (Transform childBone in childBones)
       {
         if (solver.GetPoint(childBone) == null)
         {
@@ -94,140 +93,140 @@ namespace RootMotion.FinalIK
           return false;
         }
       }
-      if ((UnityEngine.Object) this.planeBone1 != (UnityEngine.Object) null && solver.GetPoint(this.planeBone1) == null)
+      if ((UnityEngine.Object) planeBone1 != (UnityEngine.Object) null && solver.GetPoint(planeBone1) == null)
       {
-        message = "IK Effector is referencing to a bone '" + this.planeBone1.name + "' that does not excist in the Node Chain.";
+        message = "IK Effector is referencing to a bone '" + planeBone1.name + "' that does not excist in the Node Chain.";
         return false;
       }
-      if ((UnityEngine.Object) this.planeBone2 != (UnityEngine.Object) null && solver.GetPoint(this.planeBone2) == null)
+      if ((UnityEngine.Object) planeBone2 != (UnityEngine.Object) null && solver.GetPoint(planeBone2) == null)
       {
-        message = "IK Effector is referencing to a bone '" + this.planeBone2.name + "' that does not excist in the Node Chain.";
+        message = "IK Effector is referencing to a bone '" + planeBone2.name + "' that does not excist in the Node Chain.";
         return false;
       }
-      if (!((UnityEngine.Object) this.planeBone3 != (UnityEngine.Object) null) || solver.GetPoint(this.planeBone3) != null)
+      if (!((UnityEngine.Object) planeBone3 != (UnityEngine.Object) null) || solver.GetPoint(planeBone3) != null)
         return true;
-      message = "IK Effector is referencing to a bone '" + this.planeBone3.name + "' that does not excist in the Node Chain.";
+      message = "IK Effector is referencing to a bone '" + planeBone3.name + "' that does not excist in the Node Chain.";
       return false;
     }
 
     public void Initiate(IKSolverFullBody solver)
     {
-      this.position = this.bone.position;
-      this.rotation = this.bone.rotation;
-      this.animatedPlaneRotation = Quaternion.identity;
-      solver.GetChainAndNodeIndexes(this.bone, out this.chainIndex, out this.nodeIndex);
-      this.childChainIndexes = new int[this.childBones.Length];
-      this.childNodeIndexes = new int[this.childBones.Length];
-      for (int index = 0; index < this.childBones.Length; ++index)
-        solver.GetChainAndNodeIndexes(this.childBones[index], out this.childChainIndexes[index], out this.childNodeIndexes[index]);
-      this.localPositions = new Vector3[this.childBones.Length];
-      this.usePlaneNodes = false;
-      if ((UnityEngine.Object) this.planeBone1 != (UnityEngine.Object) null)
+      position = bone.position;
+      rotation = bone.rotation;
+      animatedPlaneRotation = Quaternion.identity;
+      solver.GetChainAndNodeIndexes(bone, out chainIndex, out nodeIndex);
+      childChainIndexes = new int[childBones.Length];
+      childNodeIndexes = new int[childBones.Length];
+      for (int index = 0; index < childBones.Length; ++index)
+        solver.GetChainAndNodeIndexes(childBones[index], out childChainIndexes[index], out childNodeIndexes[index]);
+      localPositions = new Vector3[childBones.Length];
+      usePlaneNodes = false;
+      if ((UnityEngine.Object) planeBone1 != (UnityEngine.Object) null)
       {
-        solver.GetChainAndNodeIndexes(this.planeBone1, out this.plane1ChainIndex, out this.plane1NodeIndex);
-        if ((UnityEngine.Object) this.planeBone2 != (UnityEngine.Object) null)
+        solver.GetChainAndNodeIndexes(planeBone1, out plane1ChainIndex, out plane1NodeIndex);
+        if ((UnityEngine.Object) planeBone2 != (UnityEngine.Object) null)
         {
-          solver.GetChainAndNodeIndexes(this.planeBone2, out this.plane2ChainIndex, out this.plane2NodeIndex);
-          if ((UnityEngine.Object) this.planeBone3 != (UnityEngine.Object) null)
+          solver.GetChainAndNodeIndexes(planeBone2, out plane2ChainIndex, out plane2NodeIndex);
+          if ((UnityEngine.Object) planeBone3 != (UnityEngine.Object) null)
           {
-            solver.GetChainAndNodeIndexes(this.planeBone3, out this.plane3ChainIndex, out this.plane3NodeIndex);
-            this.usePlaneNodes = true;
+            solver.GetChainAndNodeIndexes(planeBone3, out plane3ChainIndex, out plane3NodeIndex);
+            usePlaneNodes = true;
           }
         }
-        this.isEndEffector = true;
+        isEndEffector = true;
       }
       else
-        this.isEndEffector = false;
+        isEndEffector = false;
     }
 
     public void ResetOffset(IKSolverFullBody solver)
     {
-      solver.GetNode(this.chainIndex, this.nodeIndex).offset = Vector3.zero;
-      for (int index = 0; index < this.childChainIndexes.Length; ++index)
-        solver.GetNode(this.childChainIndexes[index], this.childNodeIndexes[index]).offset = Vector3.zero;
+      solver.GetNode(chainIndex, nodeIndex).offset = Vector3.zero;
+      for (int index = 0; index < childChainIndexes.Length; ++index)
+        solver.GetNode(childChainIndexes[index], childNodeIndexes[index]).offset = Vector3.zero;
     }
 
     public void SetToTarget()
     {
-      if ((UnityEngine.Object) this.target == (UnityEngine.Object) null)
+      if ((UnityEngine.Object) target == (UnityEngine.Object) null)
         return;
-      this.position = this.target.position;
-      this.rotation = this.target.rotation;
+      position = target.position;
+      rotation = target.rotation;
     }
 
     public void OnPreSolve(IKSolverFullBody solver)
     {
-      this.positionWeight = Mathf.Clamp(this.positionWeight, 0.0f, 1f);
-      this.rotationWeight = Mathf.Clamp(this.rotationWeight, 0.0f, 1f);
-      this.maintainRelativePositionWeight = Mathf.Clamp(this.maintainRelativePositionWeight, 0.0f, 1f);
-      this.posW = this.positionWeight * solver.IKPositionWeight;
-      this.rotW = this.rotationWeight * solver.IKPositionWeight;
-      solver.GetNode(this.chainIndex, this.nodeIndex).effectorPositionWeight = this.posW;
-      solver.GetNode(this.chainIndex, this.nodeIndex).effectorRotationWeight = this.rotW;
-      solver.GetNode(this.chainIndex, this.nodeIndex).solverRotation = this.rotation;
-      if (float.IsInfinity(this.positionOffset.x) || float.IsInfinity(this.positionOffset.y) || float.IsInfinity(this.positionOffset.z))
-        Debug.LogError((object) "Invalid IKEffector.positionOffset (contains Infinity)! Please make sure not to set IKEffector.positionOffset to infinite values.", (UnityEngine.Object) this.bone);
-      if (float.IsNaN(this.positionOffset.x) || float.IsNaN(this.positionOffset.y) || float.IsNaN(this.positionOffset.z))
-        Debug.LogError((object) "Invalid IKEffector.positionOffset (contains NaN)! Please make sure not to set IKEffector.positionOffset to NaN values.", (UnityEngine.Object) this.bone);
-      if ((double) this.positionOffset.sqrMagnitude > 10000000000.0)
-        Debug.LogError((object) "Additive effector positionOffset detected in Full Body IK (extremely large value). Make sure you are not circularily adding to effector positionOffset each frame.", (UnityEngine.Object) this.bone);
-      if (float.IsInfinity(this.position.x) || float.IsInfinity(this.position.y) || float.IsInfinity(this.position.z))
+      positionWeight = Mathf.Clamp(positionWeight, 0.0f, 1f);
+      rotationWeight = Mathf.Clamp(rotationWeight, 0.0f, 1f);
+      maintainRelativePositionWeight = Mathf.Clamp(maintainRelativePositionWeight, 0.0f, 1f);
+      posW = positionWeight * solver.IKPositionWeight;
+      rotW = rotationWeight * solver.IKPositionWeight;
+      solver.GetNode(chainIndex, nodeIndex).effectorPositionWeight = posW;
+      solver.GetNode(chainIndex, nodeIndex).effectorRotationWeight = rotW;
+      solver.GetNode(chainIndex, nodeIndex).solverRotation = rotation;
+      if (float.IsInfinity(positionOffset.x) || float.IsInfinity(positionOffset.y) || float.IsInfinity(positionOffset.z))
+        Debug.LogError((object) "Invalid IKEffector.positionOffset (contains Infinity)! Please make sure not to set IKEffector.positionOffset to infinite values.", (UnityEngine.Object) bone);
+      if (float.IsNaN(positionOffset.x) || float.IsNaN(positionOffset.y) || float.IsNaN(positionOffset.z))
+        Debug.LogError((object) "Invalid IKEffector.positionOffset (contains NaN)! Please make sure not to set IKEffector.positionOffset to NaN values.", (UnityEngine.Object) bone);
+      if ((double) positionOffset.sqrMagnitude > 10000000000.0)
+        Debug.LogError((object) "Additive effector positionOffset detected in Full Body IK (extremely large value). Make sure you are not circularily adding to effector positionOffset each frame.", (UnityEngine.Object) bone);
+      if (float.IsInfinity(position.x) || float.IsInfinity(position.y) || float.IsInfinity(position.z))
         Debug.LogError((object) "Invalid IKEffector.position (contains Infinity)!");
-      solver.GetNode(this.chainIndex, this.nodeIndex).offset += this.positionOffset * solver.IKPositionWeight;
-      if (this.effectChildNodes && solver.iterations > 0)
+      solver.GetNode(chainIndex, nodeIndex).offset += positionOffset * solver.IKPositionWeight;
+      if (effectChildNodes && solver.iterations > 0)
       {
-        for (int index = 0; index < this.childBones.Length; ++index)
+        for (int index = 0; index < childBones.Length; ++index)
         {
-          this.localPositions[index] = this.childBones[index].transform.position - this.bone.transform.position;
-          solver.GetNode(this.childChainIndexes[index], this.childNodeIndexes[index]).offset += this.positionOffset * solver.IKPositionWeight;
+          localPositions[index] = childBones[index].transform.position - bone.transform.position;
+          solver.GetNode(childChainIndexes[index], childNodeIndexes[index]).offset += positionOffset * solver.IKPositionWeight;
         }
       }
-      if (this.usePlaneNodes && (double) this.maintainRelativePositionWeight > 0.0)
-        this.animatedPlaneRotation = Quaternion.LookRotation(this.planeBone2.position - this.planeBone1.position, this.planeBone3.position - this.planeBone1.position);
-      this.firstUpdate = true;
+      if (usePlaneNodes && maintainRelativePositionWeight > 0.0)
+        animatedPlaneRotation = Quaternion.LookRotation(planeBone2.position - planeBone1.position, planeBone3.position - planeBone1.position);
+      firstUpdate = true;
     }
 
-    public void OnPostWrite() => this.positionOffset = Vector3.zero;
+    public void OnPostWrite() => positionOffset = Vector3.zero;
 
     private Quaternion GetPlaneRotation(IKSolverFullBody solver)
     {
-      Vector3 solverPosition1 = solver.GetNode(this.plane1ChainIndex, this.plane1NodeIndex).solverPosition;
-      Vector3 solverPosition2 = solver.GetNode(this.plane2ChainIndex, this.plane2NodeIndex).solverPosition;
-      Vector3 solverPosition3 = solver.GetNode(this.plane3ChainIndex, this.plane3NodeIndex).solverPosition;
+      Vector3 solverPosition1 = solver.GetNode(plane1ChainIndex, plane1NodeIndex).solverPosition;
+      Vector3 solverPosition2 = solver.GetNode(plane2ChainIndex, plane2NodeIndex).solverPosition;
+      Vector3 solverPosition3 = solver.GetNode(plane3ChainIndex, plane3NodeIndex).solverPosition;
       Vector3 forward = solverPosition2 - solverPosition1;
       Vector3 upwards = solverPosition3 - solverPosition1;
       if (!(forward == Vector3.zero))
         return Quaternion.LookRotation(forward, upwards);
-      Warning.Log("Make sure you are not placing 2 or more FBBIK effectors of the same chain to exactly the same position.", this.bone);
+      Warning.Log("Make sure you are not placing 2 or more FBBIK effectors of the same chain to exactly the same position.", bone);
       return Quaternion.identity;
     }
 
     public void Update(IKSolverFullBody solver)
     {
-      if (this.firstUpdate)
+      if (firstUpdate)
       {
-        this.animatedPosition = this.bone.position + solver.GetNode(this.chainIndex, this.nodeIndex).offset;
-        this.firstUpdate = false;
+        animatedPosition = bone.position + solver.GetNode(chainIndex, nodeIndex).offset;
+        firstUpdate = false;
       }
-      solver.GetNode(this.chainIndex, this.nodeIndex).solverPosition = Vector3.Lerp(this.GetPosition(solver, out this.planeRotationOffset), this.position, this.posW);
-      if (!this.effectChildNodes)
+      solver.GetNode(chainIndex, nodeIndex).solverPosition = Vector3.Lerp(GetPosition(solver, out planeRotationOffset), position, posW);
+      if (!effectChildNodes)
         return;
-      for (int index = 0; index < this.childBones.Length; ++index)
-        solver.GetNode(this.childChainIndexes[index], this.childNodeIndexes[index]).solverPosition = Vector3.Lerp(solver.GetNode(this.childChainIndexes[index], this.childNodeIndexes[index]).solverPosition, solver.GetNode(this.chainIndex, this.nodeIndex).solverPosition + this.localPositions[index], this.posW);
+      for (int index = 0; index < childBones.Length; ++index)
+        solver.GetNode(childChainIndexes[index], childNodeIndexes[index]).solverPosition = Vector3.Lerp(solver.GetNode(childChainIndexes[index], childNodeIndexes[index]).solverPosition, solver.GetNode(chainIndex, nodeIndex).solverPosition + localPositions[index], posW);
     }
 
     private Vector3 GetPosition(IKSolverFullBody solver, out Quaternion planeRotationOffset)
     {
       planeRotationOffset = Quaternion.identity;
-      if (!this.isEndEffector)
-        return solver.GetNode(this.chainIndex, this.nodeIndex).solverPosition;
-      if ((double) this.maintainRelativePositionWeight <= 0.0)
-        return this.animatedPosition;
-      Vector3 vector3_1 = this.bone.position - this.planeBone1.position;
-      planeRotationOffset = this.GetPlaneRotation(solver) * Quaternion.Inverse(this.animatedPlaneRotation);
-      Vector3 vector3_2 = solver.GetNode(this.plane1ChainIndex, this.plane1NodeIndex).solverPosition + planeRotationOffset * vector3_1;
-      planeRotationOffset = Quaternion.Lerp(Quaternion.identity, planeRotationOffset, this.maintainRelativePositionWeight);
-      return Vector3.Lerp(this.animatedPosition, vector3_2 + solver.GetNode(this.chainIndex, this.nodeIndex).offset, this.maintainRelativePositionWeight);
+      if (!isEndEffector)
+        return solver.GetNode(chainIndex, nodeIndex).solverPosition;
+      if (maintainRelativePositionWeight <= 0.0)
+        return animatedPosition;
+      Vector3 vector3_1 = bone.position - planeBone1.position;
+      planeRotationOffset = GetPlaneRotation(solver) * Quaternion.Inverse(animatedPlaneRotation);
+      Vector3 vector3_2 = solver.GetNode(plane1ChainIndex, plane1NodeIndex).solverPosition + planeRotationOffset * vector3_1;
+      planeRotationOffset = Quaternion.Lerp(Quaternion.identity, planeRotationOffset, maintainRelativePositionWeight);
+      return Vector3.Lerp(animatedPosition, vector3_2 + solver.GetNode(chainIndex, nodeIndex).offset, maintainRelativePositionWeight);
     }
   }
 }

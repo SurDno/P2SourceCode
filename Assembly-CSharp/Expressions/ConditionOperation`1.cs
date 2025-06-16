@@ -6,35 +6,35 @@ namespace Expressions
 {
   public abstract class ConditionOperation<T> : IValue<T> where T : struct
   {
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected]
     [Inspected(Name = "condition", Mutable = true, Mode = ExecuteMode.Edit)]
     protected IValue<bool> condition;
-    [DataReadProxy(MemberEnum.None, Name = "True")]
-    [DataWriteProxy(MemberEnum.None, Name = "True")]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy(Name = "True")]
+    [DataWriteProxy(Name = "True")]
+    [CopyableProxy]
     [Inspected]
     [Inspected(Name = "true", Mutable = true, Mode = ExecuteMode.Edit)]
     protected IValue<T> trueResult;
-    [DataReadProxy(MemberEnum.None, Name = "False")]
-    [DataWriteProxy(MemberEnum.None, Name = "False")]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy(Name = "False")]
+    [DataWriteProxy(Name = "False")]
+    [CopyableProxy()]
     [Inspected]
     [Inspected(Name = "false", Mutable = true, Mode = ExecuteMode.Edit)]
     protected IValue<T> falseResult;
 
     public T GetValue(IEffect context)
     {
-      return this.condition != null && this.trueResult != null && this.falseResult != null ? (this.condition.GetValue(context) ? this.trueResult.GetValue(context) : this.falseResult.GetValue(context)) : default (T);
+      return condition != null && trueResult != null && falseResult != null ? (condition.GetValue(context) ? trueResult.GetValue(context) : falseResult.GetValue(context)) : default (T);
     }
 
     public string ValueView
     {
       get
       {
-        return "(" + (this.condition != null ? this.condition.ValueView : "null") + " ? " + (this.trueResult != null ? this.trueResult.ValueView : "null") + " : " + (this.falseResult != null ? this.falseResult.ValueView : "null") + ")";
+        return "(" + (condition != null ? condition.ValueView : "null") + " ? " + (trueResult != null ? trueResult.ValueView : "null") + " : " + (falseResult != null ? falseResult.ValueView : "null") + ")";
       }
     }
 
@@ -42,7 +42,7 @@ namespace Expressions
     {
       get
       {
-        return "(" + (this.condition != null ? this.condition.TypeView : "null") + " ? " + (this.trueResult != null ? this.trueResult.TypeView : "null") + " : " + (this.falseResult != null ? this.falseResult.TypeView : "null") + ")";
+        return "(" + (condition != null ? condition.TypeView : "null") + " ? " + (trueResult != null ? trueResult.TypeView : "null") + " : " + (falseResult != null ? falseResult.TypeView : "null") + ")";
       }
     }
   }

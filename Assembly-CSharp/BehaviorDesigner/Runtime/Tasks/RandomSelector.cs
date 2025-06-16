@@ -1,12 +1,12 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using System.Collections.Generic;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons;
 using Engine.Common.Commons.Converters;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Scripts.Tools.Serializations.Converters;
-using System.Collections.Generic;
-using UnityEngine;
 
 namespace BehaviorDesigner.Runtime.Tasks
 {
@@ -19,100 +19,100 @@ namespace BehaviorDesigner.Runtime.Tasks
   public class RandomSelector : Composite, IStub, ISerializeDataWrite, ISerializeDataRead
   {
     [Tooltip("Seed the random number generator to make things easier to debug")]
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [SerializeField]
-    public int seed = 0;
+    public int seed;
     [Tooltip("Do we want to use the seed?")]
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy()]
     [SerializeField]
-    public bool useSeed = false;
+    public bool useSeed;
     private List<int> childIndexList = new List<int>();
     private Stack<int> childrenExecutionOrder = new Stack<int>();
     private TaskStatus executionStatus = TaskStatus.Inactive;
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.WriteSerialize<NodeData>(writer, "NodeData", this.nodeData);
-      DefaultDataWriteUtility.Write(writer, "Id", this.id);
-      DefaultDataWriteUtility.Write(writer, "FriendlyName", this.friendlyName);
-      DefaultDataWriteUtility.Write(writer, "Instant", this.instant);
-      DefaultDataWriteUtility.Write(writer, "Disabled", this.disabled);
-      BehaviorTreeDataWriteUtility.WriteTaskList<Task>(writer, "Children", this.children);
-      DefaultDataWriteUtility.WriteEnum<AbortType>(writer, "AbortType", this.abortType);
-      DefaultDataWriteUtility.Write(writer, "Seed", this.seed);
-      DefaultDataWriteUtility.Write(writer, "UseSeed", this.useSeed);
+      DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
+      DefaultDataWriteUtility.Write(writer, "Id", id);
+      DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
+      DefaultDataWriteUtility.Write(writer, "Instant", instant);
+      DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
+      BehaviorTreeDataWriteUtility.WriteTaskList(writer, "Children", children);
+      DefaultDataWriteUtility.WriteEnum(writer, "AbortType", abortType);
+      DefaultDataWriteUtility.Write(writer, "Seed", seed);
+      DefaultDataWriteUtility.Write(writer, "UseSeed", useSeed);
     }
 
-    public void DataRead(IDataReader reader, System.Type type)
+    public void DataRead(IDataReader reader, Type type)
     {
-      this.nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
-      this.id = DefaultDataReadUtility.Read(reader, "Id", this.id);
-      this.friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", this.friendlyName);
-      this.instant = DefaultDataReadUtility.Read(reader, "Instant", this.instant);
-      this.disabled = DefaultDataReadUtility.Read(reader, "Disabled", this.disabled);
-      this.children = BehaviorTreeDataReadUtility.ReadTaskList<Task>(reader, "Children", this.children);
-      this.abortType = DefaultDataReadUtility.ReadEnum<AbortType>(reader, "AbortType");
-      this.seed = DefaultDataReadUtility.Read(reader, "Seed", this.seed);
-      this.useSeed = DefaultDataReadUtility.Read(reader, "UseSeed", this.useSeed);
+      nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
+      id = DefaultDataReadUtility.Read(reader, "Id", id);
+      friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
+      instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
+      disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
+      children = BehaviorTreeDataReadUtility.ReadTaskList(reader, "Children", children);
+      abortType = DefaultDataReadUtility.ReadEnum<AbortType>(reader, "AbortType");
+      seed = DefaultDataReadUtility.Read(reader, "Seed", seed);
+      useSeed = DefaultDataReadUtility.Read(reader, "UseSeed", useSeed);
     }
 
     public override void OnAwake()
     {
-      if (this.useSeed)
-        UnityEngine.Random.InitState(this.seed);
-      this.childIndexList.Clear();
-      for (int index = 0; index < this.children.Count; ++index)
-        this.childIndexList.Add(index);
+      if (useSeed)
+        UnityEngine.Random.InitState(seed);
+      childIndexList.Clear();
+      for (int index = 0; index < children.Count; ++index)
+        childIndexList.Add(index);
     }
 
-    public override void OnStart() => this.ShuffleChilden();
+    public override void OnStart() => ShuffleChilden();
 
-    public override int CurrentChildIndex() => this.childrenExecutionOrder.Peek();
+    public override int CurrentChildIndex() => childrenExecutionOrder.Peek();
 
     public override bool CanExecute()
     {
-      return this.childrenExecutionOrder.Count > 0 && this.executionStatus != TaskStatus.Success;
+      return childrenExecutionOrder.Count > 0 && executionStatus != TaskStatus.Success;
     }
 
     public override void OnChildExecuted(TaskStatus childStatus)
     {
-      if (this.childrenExecutionOrder.Count > 0)
-        this.childrenExecutionOrder.Pop();
-      this.executionStatus = childStatus;
+      if (childrenExecutionOrder.Count > 0)
+        childrenExecutionOrder.Pop();
+      executionStatus = childStatus;
     }
 
     public override void OnConditionalAbort(int childIndex)
     {
-      this.childrenExecutionOrder.Clear();
-      this.executionStatus = TaskStatus.Inactive;
-      this.ShuffleChilden();
+      childrenExecutionOrder.Clear();
+      executionStatus = TaskStatus.Inactive;
+      ShuffleChilden();
     }
 
     public override void OnEnd()
     {
-      this.executionStatus = TaskStatus.Inactive;
-      this.childrenExecutionOrder.Clear();
+      executionStatus = TaskStatus.Inactive;
+      childrenExecutionOrder.Clear();
     }
 
     public override void OnReset()
     {
-      this.seed = 0;
-      this.useSeed = false;
+      seed = 0;
+      useSeed = false;
     }
 
     private void ShuffleChilden()
     {
-      for (int count = this.childIndexList.Count; count > 0; --count)
+      for (int count = childIndexList.Count; count > 0; --count)
       {
         int index = UnityEngine.Random.Range(0, count);
-        int childIndex = this.childIndexList[index];
-        this.childrenExecutionOrder.Push(childIndex);
-        this.childIndexList[index] = this.childIndexList[count - 1];
-        this.childIndexList[count - 1] = childIndex;
+        int childIndex = childIndexList[index];
+        childrenExecutionOrder.Push(childIndex);
+        childIndexList[index] = childIndexList[count - 1];
+        childIndexList[count - 1] = childIndex;
       }
     }
   }

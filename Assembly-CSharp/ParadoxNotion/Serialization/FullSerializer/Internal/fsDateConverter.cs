@@ -8,7 +8,7 @@ namespace ParadoxNotion.Serialization.FullSerializer.Internal
     private const string DefaultDateTimeFormatString = "o";
     private const string DateTimeOffsetFormatString = "o";
 
-    private string DateTimeFormatString => this.Serializer.Config.CustomDateTimeFormatString ?? "o";
+    private string DateTimeFormatString => Serializer.Config.CustomDateTimeFormatString ?? "o";
 
     public override bool CanProcess(Type type)
     {
@@ -20,7 +20,7 @@ namespace ParadoxNotion.Serialization.FullSerializer.Internal
       switch (instance)
       {
         case DateTime dateTime:
-          serialized = new fsData(dateTime.ToString(this.DateTimeFormatString));
+          serialized = new fsData(dateTime.ToString(DateTimeFormatString));
           return fsResult.Success;
         case DateTimeOffset dateTimeOffset:
           serialized = new fsData(dateTimeOffset.ToString("o"));
@@ -36,45 +36,43 @@ namespace ParadoxNotion.Serialization.FullSerializer.Internal
     public override fsResult TryDeserialize(fsData data, ref object instance, Type storageType)
     {
       if (!data.IsString)
-        return fsResult.Fail("Date deserialization requires a string, not " + (object) data.Type);
+        return fsResult.Fail("Date deserialization requires a string, not " + data.Type);
       if (storageType == typeof (DateTime))
       {
         DateTime result;
-        if (DateTime.TryParse(data.AsString, (IFormatProvider) null, DateTimeStyles.RoundtripKind, out result))
+        if (DateTime.TryParse(data.AsString, null, DateTimeStyles.RoundtripKind, out result))
         {
-          instance = (object) result;
+          instance = result;
           return fsResult.Success;
         }
         if (!fsGlobalConfig.AllowInternalExceptions)
           return fsResult.Fail("Unable to parse " + data.AsString + " into a DateTime");
         try
         {
-          instance = (object) Convert.ToDateTime(data.AsString);
+          instance = Convert.ToDateTime(data.AsString);
           return fsResult.Success;
         }
         catch (Exception ex)
         {
-          return fsResult.Fail("Unable to parse " + data.AsString + " into a DateTime; got exception " + (object) ex);
+          return fsResult.Fail("Unable to parse " + data.AsString + " into a DateTime; got exception " + ex);
         }
       }
-      else
+
+      if (storageType == typeof (DateTimeOffset))
       {
-        if (storageType == typeof (DateTimeOffset))
-        {
-          DateTimeOffset result;
-          if (!DateTimeOffset.TryParse(data.AsString, (IFormatProvider) null, DateTimeStyles.RoundtripKind, out result))
-            return fsResult.Fail("Unable to parse " + data.AsString + " into a DateTimeOffset");
-          instance = (object) result;
-          return fsResult.Success;
-        }
-        if (!(storageType == typeof (TimeSpan)))
-          throw new InvalidOperationException("FullSerializer Internal Error -- Unexpected deserialization type");
-        TimeSpan result1;
-        if (!TimeSpan.TryParse(data.AsString, out result1))
-          return fsResult.Fail("Unable to parse " + data.AsString + " into a TimeSpan");
-        instance = (object) result1;
+        DateTimeOffset result;
+        if (!DateTimeOffset.TryParse(data.AsString, null, DateTimeStyles.RoundtripKind, out result))
+          return fsResult.Fail("Unable to parse " + data.AsString + " into a DateTimeOffset");
+        instance = result;
         return fsResult.Success;
       }
+      if (!(storageType == typeof (TimeSpan)))
+        throw new InvalidOperationException("FullSerializer Internal Error -- Unexpected deserialization type");
+      TimeSpan result1;
+      if (!TimeSpan.TryParse(data.AsString, out result1))
+        return fsResult.Fail("Unable to parse " + data.AsString + " into a TimeSpan");
+      instance = result1;
+      return fsResult.Success;
     }
   }
 }

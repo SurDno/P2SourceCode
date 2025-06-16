@@ -1,9 +1,9 @@
-﻿using Cofe.Loggers;
+﻿using System;
+using Cofe.Loggers;
 using Engine.Common;
 using Engine.Common.Commons;
 using Engine.Common.Components;
 using PLVirtualMachine.Common.EngineAPI.VMECS.VMAttributes;
-using System;
 
 namespace PLVirtualMachine.Common.EngineAPI.VMECS
 {
@@ -15,26 +15,26 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
     [Property("BlueprintObject", "", false)]
     public IBlueprintObject Blueprint
     {
-      get => this.Component.Blueprint;
-      set => this.Component.Blueprint = value;
+      get => Component.Blueprint;
+      set => Component.Blueprint = value;
     }
 
     [Property("Is Started", "", false)]
-    public bool IsStarted => this.Component.IsStarted;
+    public bool IsStarted => Component.IsStarted;
 
     [Property("Is Attached", "", false)]
-    public bool IsAttached => this.Component.IsAttached;
+    public bool IsAttached => Component.IsAttached;
 
     [Method("Start", "", "")]
     public void Start()
     {
       try
       {
-        this.Component.Start();
+        Component.Start();
       }
       catch (Exception ex)
       {
-        Logger.AddError(string.Format("Blueprint component start method error: {0} in object {1} at {2}", (object) ex.ToString(), (object) this.Parent.Name, (object) EngineAPIManager.Instance.CurrentFSMStateInfo));
+        Logger.AddError(string.Format("Blueprint component start method error: {0} in object {1} at {2}", ex, Parent.Name, EngineAPIManager.Instance.CurrentFSMStateInfo));
       }
     }
 
@@ -43,50 +43,50 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
     {
       try
       {
-        this.Component.Start(target);
+        Component.Start(target);
       }
       catch (Exception ex)
       {
-        Logger.AddError(string.Format("Blueprint component start method error: {0} in object {1} at {2}", (object) ex.ToString(), (object) this.Parent.Name, (object) EngineAPIManager.Instance.CurrentFSMStateInfo));
+        Logger.AddError(string.Format("Blueprint component start method error: {0} in object {1} at {2}", ex, Parent.Name, EngineAPIManager.Instance.CurrentFSMStateInfo));
       }
     }
 
     [Method("Stop", "", "")]
-    public void Stop() => this.Component.Stop();
+    public void Stop() => Component.Stop();
 
     [Method("Send event", "name", "")]
     public void SendEvent(string name)
     {
       try
       {
-        this.Component.SendEvent(name);
+        Component.SendEvent(name);
       }
       catch (Exception ex)
       {
-        Logger.AddError(string.Format("Blueprint component send event method error: {0} in object {1} at {2}", (object) ex.ToString(), (object) this.Parent.Name, (object) EngineAPIManager.Instance.CurrentFSMStateInfo));
+        Logger.AddError(string.Format("Blueprint component send event method error: {0} in object {1} at {2}", ex, Parent.Name, EngineAPIManager.Instance.CurrentFSMStateInfo));
       }
     }
 
     public override void Clear()
     {
-      if (!this.InstanceValid)
+      if (!InstanceValid)
         return;
-      this.Component.CompleteEvent -= new Action<IBlueprintComponent>(this.CompleteEvent);
-      this.Component.AttachEvent -= new Action<IBlueprintComponent>(this.AttachEvent);
+      Component.CompleteEvent -= CompleteEvent;
+      Component.AttachEvent -= AttachEvent;
       base.Clear();
     }
 
     protected override void Init()
     {
-      if (this.IsTemplate)
+      if (IsTemplate)
         return;
-      this.Component.CompleteEvent += new Action<IBlueprintComponent>(this.CompleteEvent);
-      this.Component.AttachEvent += new Action<IBlueprintComponent>(this.AttachEvent);
+      Component.CompleteEvent += CompleteEvent;
+      Component.AttachEvent += AttachEvent;
     }
 
     private void CompleteEvent(IBlueprintComponent target)
     {
-      Action complete = this.Complete;
+      Action complete = Complete;
       if (complete == null)
         return;
       complete();
@@ -94,7 +94,7 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
 
     private void AttachEvent(IBlueprintComponent target)
     {
-      Action attach = this.Attach;
+      Action attach = Attach;
       if (attach == null)
         return;
       attach();

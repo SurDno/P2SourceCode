@@ -1,7 +1,6 @@
 ﻿using Cofe.Proxies;
 using PLVirtualMachine.Common.EngineAPI.VMECS;
 using PLVirtualMachine.Objects;
-using System;
 
 namespace PLVirtualMachine.Dynamic.Components
 {
@@ -18,7 +17,7 @@ namespace PLVirtualMachine.Dynamic.Components
     {
       if (!(target.Name == "OnChangeDurability"))
         return;
-      this.OnChangeDurability += (Action<float>) (p1 => target.RaiseFromEngineImpl((object) p1));
+      OnChangeDurability += p1 => target.RaiseFromEngineImpl(p1);
     }
   }
 }

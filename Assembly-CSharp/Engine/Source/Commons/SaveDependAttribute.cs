@@ -2,7 +2,7 @@
 
 namespace Engine.Source.Commons
 {
-  [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = true)]
+  [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
   public class SaveDependAttribute : BaseDependAttribute
   {
     public SaveDependAttribute(Type type)

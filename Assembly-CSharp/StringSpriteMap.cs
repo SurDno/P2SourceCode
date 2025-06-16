@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-[CreateAssetMenu(menuName = "Data/String Sprite Map")]
+﻿[CreateAssetMenu(menuName = "Data/String Sprite Map")]
 public class StringSpriteMap : ScriptableObject
 {
   [SerializeField]
@@ -10,15 +8,15 @@ public class StringSpriteMap : ScriptableObject
   {
     if (!string.IsNullOrEmpty(key))
     {
-      for (int index = 0; index < this.map.Length; ++index)
+      for (int index = 0; index < map.Length; ++index)
       {
-        if (key == this.map[index].Key)
-          return this.map[index].Value;
+        if (key == map[index].Key)
+          return map[index].Value;
       }
-      for (int index = 0; index < this.map.Length; ++index)
+      for (int index = 0; index < map.Length; ++index)
       {
-        if (key.Replace(" ", "").Contains(this.map[index].Key.Replace(" ", "")))
-          return this.map[index].Value;
+        if (key.Replace(" ", "").Contains(map[index].Key.Replace(" ", "")))
+          return map[index].Value;
       }
     }
     return (Sprite) null;

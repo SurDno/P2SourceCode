@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-[AddComponentMenu("")]
+﻿[AddComponentMenu("")]
 public class AmplifyColorTriggerProxyBase : MonoBehaviour
 {
   public Transform Reference;

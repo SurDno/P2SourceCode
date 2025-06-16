@@ -1,5 +1,5 @@
-﻿using SRF;
-using System;
+﻿using System;
+using SRF;
 
 namespace SRDebugger.Services
 {
@@ -15,11 +15,11 @@ namespace SRDebugger.Services
       {
         try
         {
-          return this._valueGetter();
+          return _valueGetter();
         }
         catch (Exception ex)
         {
-          return (object) "Error ({0})".Fmt((object) ex.GetType().Name);
+          return "Error ({0})".Fmt(ex.GetType().Name);
         }
       }
     }
@@ -28,8 +28,7 @@ namespace SRDebugger.Services
 
     public static Info Create(string name, Func<object> getter, bool isPrivate = false)
     {
-      return new Info()
-      {
+      return new Info {
         Title = name,
         _valueGetter = getter,
         IsPrivate = isPrivate
@@ -38,10 +37,9 @@ namespace SRDebugger.Services
 
     public static Info Create(string name, object value, bool isPrivate = false)
     {
-      return new Info()
-      {
+      return new Info {
         Title = name,
-        _valueGetter = (Func<object>) (() => value),
+        _valueGetter = () => value,
         IsPrivate = isPrivate
       };
     }

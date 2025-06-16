@@ -1,4 +1,6 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using System.Collections.Generic;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons;
 using Engine.Common.Commons.Converters;
@@ -6,9 +8,6 @@ using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Engine.Source.Components.Utilities;
 using Scripts.Tools.Serializations.Converters;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.AI;
 
 namespace BehaviorDesigner.Runtime.Tasks.Pathologic
 {
@@ -18,21 +17,21 @@ namespace BehaviorDesigner.Runtime.Tasks.Pathologic
   [Factory]
   [GeneratePartial(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
   [FactoryProxy(typeof (GetClosestPatrolPoint))]
-  public class GetClosestPatrolPoint : BehaviorDesigner.Runtime.Tasks.Action, IStub, ISerializeDataWrite, ISerializeDataRead
+  public class GetClosestPatrolPoint : Action, IStub, ISerializeDataWrite, ISerializeDataRead
   {
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [SerializeField]
     public SharedTransform PatrolTransform;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [SerializeField]
     public SharedInt CurrentIndex;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy()]
     [SerializeField]
     public SharedTransform Result;
     private bool inited;
@@ -41,33 +40,33 @@ namespace BehaviorDesigner.Runtime.Tasks.Pathologic
 
     public override void OnStart()
     {
-      this.inited = false;
-      this.patrolPath = this.PatrolTransform.Value.GetComponent<PatrolPath>();
-      if ((UnityEngine.Object) this.patrolPath == (UnityEngine.Object) null)
+      inited = false;
+      patrolPath = PatrolTransform.Value.GetComponent<PatrolPath>();
+      if ((UnityEngine.Object) patrolPath == (UnityEngine.Object) null)
       {
-        Debug.LogErrorFormat("{0} has no patrol path", (object) this.gameObject.name);
+        Debug.LogErrorFormat("{0} has no patrol path", (object) gameObject.name);
       }
       else
       {
-        this.patrolPoints = this.patrolPath.PointsList;
-        if (!this.patrolPath.RestartFromClosestPoint)
+        patrolPoints = patrolPath.PointsList;
+        if (!patrolPath.RestartFromClosestPoint)
         {
-          this.inited = true;
+          inited = true;
         }
         else
         {
           float num1 = float.PositiveInfinity;
           int num2 = 0;
-          for (int index = 0; index < this.patrolPoints.Count; ++index)
+          for (int index = 0; index < patrolPoints.Count; ++index)
           {
             NavMeshHit hit;
-            if (NavMesh.SamplePosition(this.patrolPoints[index].position, out hit, 1f, -1))
+            if (NavMesh.SamplePosition(patrolPoints[index].position, out hit, 1f, -1))
             {
               NavMeshPath path = new NavMeshPath();
-              if (NavMesh.CalculatePath(hit.position, this.Owner.transform.position, -1, path))
+              if (NavMesh.CalculatePath(hit.position, Owner.transform.position, -1, path))
               {
                 float pathLength = NavMeshUtility.GetPathLength(path);
-                if ((double) pathLength < (double) num1)
+                if (pathLength < (double) num1)
                 {
                   num1 = pathLength;
                   num2 = index;
@@ -75,49 +74,49 @@ namespace BehaviorDesigner.Runtime.Tasks.Pathologic
               }
             }
           }
-          this.CurrentIndex.Value = num2;
-          this.inited = true;
+          CurrentIndex.Value = num2;
+          inited = true;
         }
       }
     }
 
     public override TaskStatus OnUpdate()
     {
-      if (!this.inited || this.patrolPoints == null)
+      if (!inited || patrolPoints == null)
         return TaskStatus.Failure;
-      if (this.patrolPoints.Count == 0)
+      if (patrolPoints.Count == 0)
       {
-        Debug.LogErrorFormat("{0} has wrong patrol path in {1}", (object) this.gameObject.name, (object) this.PatrolTransform.Value.name);
+        Debug.LogErrorFormat("{0} has wrong patrol path in {1}", (object) gameObject.name, (object) PatrolTransform.Value.name);
         return TaskStatus.Failure;
       }
-      if (this.CurrentIndex.Value >= this.patrolPoints.Count)
-        this.CurrentIndex.Value = this.patrolPoints.Count - 1;
-      this.Result.Value = this.patrolPoints[this.CurrentIndex.Value];
+      if (CurrentIndex.Value >= patrolPoints.Count)
+        CurrentIndex.Value = patrolPoints.Count - 1;
+      Result.Value = patrolPoints[CurrentIndex.Value];
       return TaskStatus.Success;
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.WriteSerialize<NodeData>(writer, "NodeData", this.nodeData);
-      DefaultDataWriteUtility.Write(writer, "Id", this.id);
-      DefaultDataWriteUtility.Write(writer, "FriendlyName", this.friendlyName);
-      DefaultDataWriteUtility.Write(writer, "Instant", this.instant);
-      DefaultDataWriteUtility.Write(writer, "Disabled", this.disabled);
-      BehaviorTreeDataWriteUtility.WriteShared<SharedTransform>(writer, "PatrolTransform", this.PatrolTransform);
-      BehaviorTreeDataWriteUtility.WriteShared<SharedInt>(writer, "CurrentIndex", this.CurrentIndex);
-      BehaviorTreeDataWriteUtility.WriteShared<SharedTransform>(writer, "Result", this.Result);
+      DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
+      DefaultDataWriteUtility.Write(writer, "Id", id);
+      DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
+      DefaultDataWriteUtility.Write(writer, "Instant", instant);
+      DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
+      BehaviorTreeDataWriteUtility.WriteShared(writer, "PatrolTransform", PatrolTransform);
+      BehaviorTreeDataWriteUtility.WriteShared(writer, "CurrentIndex", CurrentIndex);
+      BehaviorTreeDataWriteUtility.WriteShared(writer, "Result", Result);
     }
 
-    public void DataRead(IDataReader reader, System.Type type)
+    public void DataRead(IDataReader reader, Type type)
     {
-      this.nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
-      this.id = DefaultDataReadUtility.Read(reader, "Id", this.id);
-      this.friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", this.friendlyName);
-      this.instant = DefaultDataReadUtility.Read(reader, "Instant", this.instant);
-      this.disabled = DefaultDataReadUtility.Read(reader, "Disabled", this.disabled);
-      this.PatrolTransform = BehaviorTreeDataReadUtility.ReadShared<SharedTransform>(reader, "PatrolTransform", this.PatrolTransform);
-      this.CurrentIndex = BehaviorTreeDataReadUtility.ReadShared<SharedInt>(reader, "CurrentIndex", this.CurrentIndex);
-      this.Result = BehaviorTreeDataReadUtility.ReadShared<SharedTransform>(reader, "Result", this.Result);
+      nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
+      id = DefaultDataReadUtility.Read(reader, "Id", id);
+      friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
+      instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
+      disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
+      PatrolTransform = BehaviorTreeDataReadUtility.ReadShared(reader, "PatrolTransform", PatrolTransform);
+      CurrentIndex = BehaviorTreeDataReadUtility.ReadShared(reader, "CurrentIndex", CurrentIndex);
+      Result = BehaviorTreeDataReadUtility.ReadShared(reader, "Result", Result);
     }
   }
 }

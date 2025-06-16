@@ -36,14 +36,14 @@ namespace ParadoxNotion.Serialization.FullSerializer
       if (type.IsGenericParameter)
         return type.ToString();
       string str1 = "";
-      IEnumerable<Type> source = (IEnumerable<Type>) type.GetGenericArguments();
+      IEnumerable<Type> source = type.GetGenericArguments();
       if (type.IsNested)
       {
         str1 = str1 + type.DeclaringType.CSharpName() + ".";
         if (type.DeclaringType.GetGenericArguments().Length != 0)
-          source = source.Skip<Type>(type.DeclaringType.GetGenericArguments().Length);
+          source = source.Skip(type.DeclaringType.GetGenericArguments().Length);
       }
-      string str2 = source.Any<Type>() ? str1 + type.Name.Substring(0, type.Name.IndexOf('`')) + "<" + string.Join(",", source.Select<Type, string>((Func<Type, string>) (t => t.CSharpName(includeNamespace))).ToArray<string>()) + ">" : str1 + type.Name;
+      string str2 = source.Any() ? str1 + type.Name.Substring(0, type.Name.IndexOf('`')) + "<" + string.Join(",", source.Select(t => t.CSharpName(includeNamespace)).ToArray()) + ">" : str1 + type.Name;
       if (includeNamespace && type.Namespace != null)
         str2 = type.Namespace + "." + str2;
       return str2;

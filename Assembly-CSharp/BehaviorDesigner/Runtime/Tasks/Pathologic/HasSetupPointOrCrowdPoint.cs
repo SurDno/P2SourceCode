@@ -1,4 +1,5 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common;
 using Engine.Common.Commons;
@@ -7,7 +8,6 @@ using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Engine.Source.Commons;
 using Engine.Source.Components;
-using UnityEngine;
 
 namespace BehaviorDesigner.Runtime.Tasks.Pathologic
 {
@@ -23,15 +23,15 @@ namespace BehaviorDesigner.Runtime.Tasks.Pathologic
     ISerializeDataWrite,
     ISerializeDataRead
   {
-    private bool success = false;
+    private bool success;
 
     public override void OnStart()
     {
-      IEntity owner = this.Owner.GetComponent<EngineGameObject>().Owner;
+      IEntity owner = Owner.GetComponent<EngineGameObject>().Owner;
       if (owner == null)
-        Debug.LogWarningFormat("{0} has no entity", (object) this.gameObject.name);
+        Debug.LogWarningFormat("{0} has no entity", (object) gameObject.name);
       else
-        this.success = this.HasSetupPoint(owner) || this.HasCrowdPoint(owner);
+        success = HasSetupPoint(owner) || HasCrowdPoint(owner);
     }
 
     private bool HasSetupPoint(IEntity entity)
@@ -52,24 +52,24 @@ namespace BehaviorDesigner.Runtime.Tasks.Pathologic
       return entityPoint != null && (UnityEngine.Object) ((IEntityView) entityPoint).GameObject != (UnityEngine.Object) null;
     }
 
-    public override TaskStatus OnUpdate() => this.success ? TaskStatus.Success : TaskStatus.Failure;
+    public override TaskStatus OnUpdate() => success ? TaskStatus.Success : TaskStatus.Failure;
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.WriteSerialize<NodeData>(writer, "NodeData", this.nodeData);
-      DefaultDataWriteUtility.Write(writer, "Id", this.id);
-      DefaultDataWriteUtility.Write(writer, "FriendlyName", this.friendlyName);
-      DefaultDataWriteUtility.Write(writer, "Instant", this.instant);
-      DefaultDataWriteUtility.Write(writer, "Disabled", this.disabled);
+      DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
+      DefaultDataWriteUtility.Write(writer, "Id", id);
+      DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
+      DefaultDataWriteUtility.Write(writer, "Instant", instant);
+      DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
     }
 
-    public void DataRead(IDataReader reader, System.Type type)
+    public void DataRead(IDataReader reader, Type type)
     {
-      this.nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
-      this.id = DefaultDataReadUtility.Read(reader, "Id", this.id);
-      this.friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", this.friendlyName);
-      this.instant = DefaultDataReadUtility.Read(reader, "Instant", this.instant);
-      this.disabled = DefaultDataReadUtility.Read(reader, "Disabled", this.disabled);
+      nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
+      id = DefaultDataReadUtility.Read(reader, "Id", id);
+      friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
+      instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
+      disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
     }
   }
 }

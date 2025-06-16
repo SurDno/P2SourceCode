@@ -1,4 +1,9 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Xml;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Cofe.Serializations.Data.Xml;
 using Cofe.Utility;
@@ -19,11 +24,6 @@ using Engine.Source.Services.Saves;
 using Engine.Source.Services.Utilities;
 using Inspectors;
 using Scripts.Data;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Xml;
 
 namespace Engine.Impl.Services
 {
@@ -31,7 +31,7 @@ namespace Engine.Impl.Services
   [Depend(typeof (ITimeService))]
   [Depend(typeof (EnvironmentService))]
   [Depend(typeof (FogController))]
-  [RuntimeService(new Type[] {typeof (WeatherController), typeof (IWeatherController)})]
+  [RuntimeService(typeof (WeatherController), typeof (IWeatherController))]
   [GenerateProxy(TypeEnum.StateSave | TypeEnum.StateLoad)]
   public class WeatherController : IWeatherController, IUpdatable, IInitialisable, ISavesController
   {
@@ -45,77 +45,77 @@ namespace Engine.Impl.Services
     [Inspected(Mutable = true)]
     public bool IsEnabled
     {
-      get => this.isEnabled;
+      get => isEnabled;
       set
       {
-        this.isEnabled = value;
-        this.invalidate = true;
+        isEnabled = value;
+        invalidate = true;
       }
     }
 
-    public IWeatherLayerBlender Blender => this.blender;
+    public IWeatherLayerBlender Blender => blender;
 
     public IWeatherLayerBlenderItem GetItem(WeatherLayer layer)
     {
       IWeatherLayerBlenderItem layerBlenderItem;
-      this.layers.TryGetValue(layer, out layerBlenderItem);
+      layers.TryGetValue(layer, out layerBlenderItem);
       return layerBlenderItem;
     }
 
     public void Initialise()
     {
-      this.blender = ServiceLocator.GetService<IFactory>().Create<IWeatherLayerBlender>();
-      this.blender.OnChanged += new Action<ILayerBlender<IWeatherSnapshot>>(this.BlenderOnChanged);
-      this.updater = InstanceByRequest<UpdateService>.Instance.WeatherUpdater;
-      this.updater.AddUpdatable((IUpdatable) this);
-      this.AddWeatherLayer(WeatherLayer.BaseLayer, 1f);
-      this.AddWeatherLayer(WeatherLayer.PlannedEventsLayer, 0.0f);
-      this.AddWeatherLayer(WeatherLayer.DistrictLayer, 0.0f);
-      this.AddWeatherLayer(WeatherLayer.CutSceneLayer, 0.0f);
-      ServiceLocator.GetService<EnvironmentService>().OnInvalidate += new Action(this.EnvironmentService_OnInvalidate);
+      blender = ServiceLocator.GetService<IFactory>().Create<IWeatherLayerBlender>();
+      blender.OnChanged += BlenderOnChanged;
+      updater = InstanceByRequest<UpdateService>.Instance.WeatherUpdater;
+      updater.AddUpdatable(this);
+      AddWeatherLayer(WeatherLayer.BaseLayer, 1f);
+      AddWeatherLayer(WeatherLayer.PlannedEventsLayer, 0.0f);
+      AddWeatherLayer(WeatherLayer.DistrictLayer, 0.0f);
+      AddWeatherLayer(WeatherLayer.CutSceneLayer, 0.0f);
+      ServiceLocator.GetService<EnvironmentService>().OnInvalidate += EnvironmentService_OnInvalidate;
     }
 
     public void Terminate()
     {
-      ServiceLocator.GetService<EnvironmentService>().OnInvalidate -= new Action(this.EnvironmentService_OnInvalidate);
-      this.updater.RemoveUpdatable((IUpdatable) this);
-      this.blender.OnChanged -= new Action<ILayerBlender<IWeatherSnapshot>>(this.BlenderOnChanged);
-      ((IDisposable) this.blender).Dispose();
-      this.blender = (IWeatherLayerBlender) null;
-      this.layers.Clear();
+      ServiceLocator.GetService<EnvironmentService>().OnInvalidate -= EnvironmentService_OnInvalidate;
+      updater.RemoveUpdatable(this);
+      blender.OnChanged -= BlenderOnChanged;
+      ((IDisposable) blender).Dispose();
+      blender = null;
+      layers.Clear();
     }
 
     private void AddWeatherLayer(WeatherLayer weatherLayer, float weight)
     {
       IWeatherSmoothBlender weatherSmoothBlender = ServiceLocator.GetService<IFactory>().Create<IWeatherSmoothBlender>();
       IWeatherLayerBlenderItem layerBlenderItem = ServiceLocator.GetService<IFactory>().Create<IWeatherLayerBlenderItem>();
-      layerBlenderItem.Blender = (ISmoothBlender<IWeatherSnapshot>) weatherSmoothBlender;
+      layerBlenderItem.Blender = weatherSmoothBlender;
       layerBlenderItem.SetOpacity(weight);
-      this.blender.AddItem((ILayerBlenderItem<IWeatherSnapshot>) layerBlenderItem);
-      this.layers.Add(weatherLayer, layerBlenderItem);
+      blender.AddItem(layerBlenderItem);
+      layers.Add(weatherLayer, layerBlenderItem);
     }
 
     public void ComputeUpdate()
     {
-      if (!InstanceByRequest<EngineApplication>.Instance.ViewEnabled || !this.isEnabled || !this.invalidate)
+      if (!InstanceByRequest<EngineApplication>.Instance.ViewEnabled || !isEnabled || !invalidate)
         return;
-      this.invalidate = false;
-      WeatherSnapshotUtility.CopyFrom((WeatherSnapshot) this.blender.Current);
+      invalidate = false;
+      WeatherSnapshotUtility.CopyFrom((WeatherSnapshot) blender.Current);
     }
 
-    private void BlenderOnChanged(ILayerBlender<IWeatherSnapshot> layer) => this.invalidate = true;
+    private void BlenderOnChanged(ILayerBlender<IWeatherSnapshot> layer) => invalidate = true;
 
-    private void EnvironmentService_OnInvalidate() => this.invalidate = true;
+    private void EnvironmentService_OnInvalidate() => invalidate = true;
 
-    [StateSaveProxy(MemberEnum.None)]
-    [StateLoadProxy(MemberEnum.None)]
+    [StateSaveProxy]
+    [StateLoadProxy()]
     [Inspected]
     protected WeatherInfo WeatherInfo
     {
       get
       {
         WeatherInfo weatherInfo = ProxyFactory.Create<WeatherInfo>();
-        foreach (KeyValuePair<WeatherLayer, IWeatherLayerBlenderItem> layer in this.layers)
+        foreach (KeyValuePair<WeatherLayer, IWeatherLayerBlenderItem> layer in layers)
         {
           WeatherLayerInfo weatherLayerInfo = ProxyFactory.Create<WeatherLayerInfo>();
           weatherLayerInfo.Layer = layer.Key;
@@ -130,10 +130,10 @@ namespace Engine.Impl.Services
         if (value == null)
           return;
         ITemplateService service = ServiceLocator.GetService<ITemplateService>();
-        foreach (KeyValuePair<WeatherLayer, IWeatherLayerBlenderItem> layer1 in this.layers)
+        foreach (KeyValuePair<WeatherLayer, IWeatherLayerBlenderItem> layer1 in layers)
         {
           KeyValuePair<WeatherLayer, IWeatherLayerBlenderItem> layer = layer1;
-          WeatherLayerInfo weatherLayerInfo = value.Layers.FirstOrDefault<WeatherLayerInfo>((Func<WeatherLayerInfo, bool>) (o => o.Layer == layer.Key));
+          WeatherLayerInfo weatherLayerInfo = value.Layers.FirstOrDefault(o => o.Layer == layer.Key);
           if (weatherLayerInfo != null)
           {
             layer.Value.SetOpacity(weatherLayerInfo.Opacity);
@@ -148,21 +148,21 @@ namespace Engine.Impl.Services
     public IEnumerator Load(IErrorLoadingHandler errorHandler)
     {
       GameDataInfo data = InstanceByRequest<GameDataService>.Instance.GetCurrentGameData();
-      WeatherUtility.SetDefaultWeather((IWeatherController) this, data.WeatherSnapshot.Value);
+      WeatherUtility.SetDefaultWeather(this, data.WeatherSnapshot.Value);
       yield break;
     }
 
     public IEnumerator Load(XmlElement element, string context, IErrorLoadingHandler errorHandler)
     {
-      XmlElement node = element[TypeUtility.GetTypeName(this.GetType())];
+      XmlElement node = element[TypeUtility.GetTypeName(GetType())];
       if (node == null)
       {
-        errorHandler.LogError(TypeUtility.GetTypeName(this.GetType()) + " node not found , context : " + context);
+        errorHandler.LogError(TypeUtility.GetTypeName(GetType()) + " node not found , context : " + context);
       }
       else
       {
-        XmlNodeDataReader reader = new XmlNodeDataReader((XmlNode) node, context);
-        ((ISerializeStateLoad) this).StateLoad((IDataReader) reader, this.GetType());
+        XmlNodeDataReader reader = new XmlNodeDataReader(node, context);
+        ((ISerializeStateLoad) this).StateLoad(reader, GetType());
         yield break;
       }
     }
@@ -173,7 +173,7 @@ namespace Engine.Impl.Services
 
     public void Save(IDataWriter writer, string context)
     {
-      DefaultStateSaveUtility.SaveSerialize<WeatherController>(writer, TypeUtility.GetTypeName(this.GetType()), this);
+      DefaultStateSaveUtility.SaveSerialize(writer, TypeUtility.GetTypeName(GetType()), this);
     }
   }
 }

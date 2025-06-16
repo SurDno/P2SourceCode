@@ -6,8 +6,7 @@
 
     public static implicit operator PublishedFileUpdateHandle_t(ulong value)
     {
-      return new PublishedFileUpdateHandle_t()
-      {
+      return new PublishedFileUpdateHandle_t {
         Value = value
       };
     }

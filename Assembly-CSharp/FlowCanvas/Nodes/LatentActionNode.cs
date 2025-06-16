@@ -9,8 +9,8 @@ namespace FlowCanvas.Nodes
     protected override sealed void OnRegisterPorts(FlowNode node)
     {
       base.OnRegisterPorts(node);
-      node.AddFlowInput("In", (FlowHandler) (() => this.Begin(this.Invoke())));
-      node.AddFlowInput("Break", (FlowHandler) (() => this.Break()));
+      node.AddFlowInput("In", () => Begin(Invoke()));
+      node.AddFlowInput("Break", () => Break());
     }
   }
 }

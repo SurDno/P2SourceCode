@@ -1,8 +1,8 @@
-﻿using Engine.Common;
+﻿using System;
+using Engine.Common;
 using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
-using System;
 
 namespace Engine.Source.Blueprints
 {
@@ -14,13 +14,13 @@ namespace Engine.Source.Blueprints
     protected override void RegisterPorts()
     {
       base.RegisterPorts();
-      FlowOutput output = this.AddFlowOutput("Out");
-      this.AddFlowInput("In", (FlowHandler) (() =>
+      FlowOutput output = AddFlowOutput("Out");
+      AddFlowInput("In", () =>
       {
-        ((IDisposable) this.instanceValue.value)?.Dispose();
+        ((IDisposable) instanceValue.value)?.Dispose();
         output.Call();
-      }));
-      this.instanceValue = this.AddValueInput<IObject>("Instance");
+      });
+      instanceValue = AddValueInput<IObject>("Instance");
     }
   }
 }

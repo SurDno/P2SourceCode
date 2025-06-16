@@ -12,16 +12,16 @@ namespace FlowCanvas.Nodes
     protected override sealed void OnRegisterPorts(FlowNode node)
     {
       ValueInput<TInstance> i = node.AddValueInput<TInstance>(typeof (TInstance).FriendlyName());
-      node.AddValueOutput<T1>(this.parameters[1].Name.SplitCamelCase(), (ValueHandler<T1>) (() =>
+      node.AddValueOutput(parameters[1].Name.SplitCamelCase(), () =>
       {
-        this.Invoke(i.value, out this.a, out this.b);
-        return this.a;
-      }));
-      node.AddValueOutput<T2>(this.parameters[2].Name.SplitCamelCase(), (ValueHandler<T2>) (() =>
+        Invoke(i.value, out a, out b);
+        return a;
+      });
+      node.AddValueOutput(parameters[2].Name.SplitCamelCase(), () =>
       {
-        this.Invoke(i.value, out this.a, out this.b);
-        return this.b;
-      }));
+        Invoke(i.value, out a, out b);
+        return b;
+      });
     }
   }
 }

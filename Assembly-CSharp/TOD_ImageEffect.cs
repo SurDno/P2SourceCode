@@ -1,24 +1,23 @@
 ﻿using System;
-using UnityEngine;
 
 [ExecuteInEditMode]
 [RequireComponent(typeof (Camera))]
 public abstract class TOD_ImageEffect : MonoBehaviour
 {
-  public TOD_Sky sky = (TOD_Sky) null;
+  public TOD_Sky sky;
   protected Camera cam = (Camera) null;
 
   protected Material CreateMaterial(Shader shader)
   {
     if (!(bool) (UnityEngine.Object) shader)
     {
-      Debug.Log((object) ("Missing shader in " + ((object) this).ToString()));
+      Debug.Log((object) ("Missing shader in " + ToString()));
       this.enabled = false;
       return (Material) null;
     }
     if (!shader.isSupported)
     {
-      Debug.LogError((object) ("The shader " + ((object) shader).ToString() + " on effect " + ((object) this).ToString() + " is not supported on this platform!"));
+      Debug.LogError((object) ("The shader " + ((object) shader) + " on effect " + ToString() + " is not supported on this platform!"));
       this.enabled = false;
       return (Material) null;
     }
@@ -29,45 +28,45 @@ public abstract class TOD_ImageEffect : MonoBehaviour
 
   protected void Awake()
   {
-    if (!(bool) (UnityEngine.Object) this.cam)
-      this.cam = this.GetComponent<Camera>();
-    if ((bool) (UnityEngine.Object) this.sky)
+    if (!(bool) (UnityEngine.Object) cam)
+      cam = this.GetComponent<Camera>();
+    if ((bool) (UnityEngine.Object) sky)
       return;
-    this.sky = UnityEngine.Object.FindObjectOfType(typeof (TOD_Sky)) as TOD_Sky;
+    sky = UnityEngine.Object.FindObjectOfType(typeof (TOD_Sky)) as TOD_Sky;
   }
 
   protected bool CheckSupport(bool needDepth = false, bool needHdr = false)
   {
-    if (!(bool) (UnityEngine.Object) this.cam)
-      this.cam = this.GetComponent<Camera>();
-    if (!(bool) (UnityEngine.Object) this.cam)
+    if (!(bool) (UnityEngine.Object) cam)
+      cam = this.GetComponent<Camera>();
+    if (!(bool) (UnityEngine.Object) cam)
       return false;
-    if (!(bool) (UnityEngine.Object) this.sky)
-      this.sky = UnityEngine.Object.FindObjectOfType(typeof (TOD_Sky)) as TOD_Sky;
-    if (!(bool) (UnityEngine.Object) this.sky || !this.sky.Initialized)
+    if (!(bool) (UnityEngine.Object) sky)
+      sky = UnityEngine.Object.FindObjectOfType(typeof (TOD_Sky)) as TOD_Sky;
+    if (!(bool) (UnityEngine.Object) sky || !sky.Initialized)
       return false;
     if (!SystemInfo.supportsImageEffects || !SystemInfo.supportsRenderTextures)
     {
-      Debug.LogWarning((object) ("The image effect " + ((object) this).ToString() + " has been disabled as it's not supported on the current platform."));
+      Debug.LogWarning((object) ("The image effect " + ToString() + " has been disabled as it's not supported on the current platform."));
       this.enabled = false;
       return false;
     }
     if (needDepth && !SystemInfo.SupportsRenderTextureFormat(RenderTextureFormat.Depth))
     {
-      Debug.LogWarning((object) ("The image effect " + ((object) this).ToString() + " has been disabled as it requires a depth texture."));
+      Debug.LogWarning((object) ("The image effect " + ToString() + " has been disabled as it requires a depth texture."));
       this.enabled = false;
       return false;
     }
     if (needHdr && !SystemInfo.SupportsRenderTextureFormat(RenderTextureFormat.ARGBHalf))
     {
-      Debug.LogWarning((object) ("The image effect " + ((object) this).ToString() + " has been disabled as it requires HDR."));
+      Debug.LogWarning((object) ("The image effect " + ToString() + " has been disabled as it requires HDR."));
       this.enabled = false;
       return false;
     }
     if (needDepth)
-      this.cam.depthTextureMode |= DepthTextureMode.Depth;
+      cam.depthTextureMode |= DepthTextureMode.Depth;
     if (needHdr)
-      this.cam.allowHDR = true;
+      cam.allowHDR = true;
     return true;
   }
 
@@ -172,13 +171,13 @@ public abstract class TOD_ImageEffect : MonoBehaviour
 
   protected Matrix4x4 FrustumCorners()
   {
-    float nearClipPlane = this.cam.nearClipPlane;
-    float farClipPlane = this.cam.farClipPlane;
-    float fieldOfView = this.cam.fieldOfView;
-    float aspect = this.cam.aspect;
-    Vector3 forward = this.cam.transform.forward;
-    Vector3 right = this.cam.transform.right;
-    Vector3 up = this.cam.transform.up;
+    float nearClipPlane = cam.nearClipPlane;
+    float farClipPlane = cam.farClipPlane;
+    float fieldOfView = cam.fieldOfView;
+    float aspect = cam.aspect;
+    Vector3 forward = cam.transform.forward;
+    Vector3 right = cam.transform.right;
+    Vector3 up = cam.transform.up;
     Matrix4x4 identity = Matrix4x4.identity;
     float num1 = fieldOfView * 0.5f;
     Vector3 vector3_1 = right * nearClipPlane * Mathf.Tan(num1 * ((float) Math.PI / 180f)) * aspect;

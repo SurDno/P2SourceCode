@@ -1,6 +1,6 @@
-﻿using PLVirtualMachine.Common.EngineAPI;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using PLVirtualMachine.Common.EngineAPI;
 
 namespace PLVirtualMachine.Common
 {
@@ -15,16 +15,16 @@ namespace PLVirtualMachine.Common
     public BaseFunction(string name, string componentName)
     {
       this.name = name;
-      this.parentComponentName = componentName;
-      this.parentComponent = (IFunctionalComponent) null;
+      parentComponentName = componentName;
+      parentComponent = null;
     }
 
     public BaseFunction(BaseFunction func)
     {
-      this.name = func.name;
-      this.parentComponent = func.ParentComponent;
-      this.inputParams = func.inputParams;
-      this.outputParam = func.outputParam;
+      name = func.name;
+      parentComponent = func.ParentComponent;
+      inputParams = func.inputParams;
+      outputParam = func.outputParam;
     }
 
     public BaseFunction(string name, IFunctionalComponent parentComponent)
@@ -42,30 +42,30 @@ namespace PLVirtualMachine.Common
     {
       get
       {
-        if (this.parentComponent != null)
-          return this.parentComponent.Name + "." + this.name;
-        return this.parentComponentName == null || "" == this.parentComponentName ? this.name : this.parentComponentName + "." + this.name;
+        if (parentComponent != null)
+          return parentComponent.Name + "." + name;
+        return parentComponentName == null || "" == parentComponentName ? name : parentComponentName + "." + name;
       }
     }
 
-    public string APIName => this.name;
+    public string APIName => name;
 
-    public IFunctionalComponent ParentComponent => this.parentComponent;
+    public IFunctionalComponent ParentComponent => parentComponent;
 
     public VMType Type
     {
-      get => this.outputParam != null ? this.outputParam.Type : new VMType(typeof (Nullable));
+      get => outputParam != null ? outputParam.Type : new VMType(typeof (Nullable));
     }
 
-    public virtual List<APIParamInfo> InputParams => this.inputParams;
+    public virtual List<APIParamInfo> InputParams => inputParams;
 
-    public virtual APIParamInfo OutputParam => this.outputParam;
+    public virtual APIParamInfo OutputParam => outputParam;
 
     public bool HasOutput
     {
       get
       {
-        return this.OutputParam != null && this.OutputParam.Type != null && (System.Type) null != this.OutputParam.Type.BaseType && this.OutputParam.Type.BaseType != typeof (void);
+        return OutputParam != null && OutputParam.Type != null && null != OutputParam.Type.BaseType && OutputParam.Type.BaseType != typeof (void);
       }
     }
 
@@ -74,7 +74,7 @@ namespace PLVirtualMachine.Common
       if (!typeof (BaseFunction).IsAssignableFrom(other.GetType()))
         return false;
       BaseFunction baseFunction = (BaseFunction) other;
-      return (this.parentComponentName == null || !("" != this.parentComponentName) || !(this.parentComponentName != baseFunction.parentComponentName)) && this.Name == baseFunction.Name;
+      return (parentComponentName == null || !("" != parentComponentName) || !(parentComponentName != baseFunction.parentComponentName)) && Name == baseFunction.Name;
     }
 
     public void InitParams(List<APIParamInfo> inputParams, APIParamInfo outputParam)
@@ -85,10 +85,10 @@ namespace PLVirtualMachine.Common
 
     public virtual void Clear()
     {
-      this.parentComponent = (IFunctionalComponent) null;
-      if (this.inputParams != null)
-        this.inputParams = (List<APIParamInfo>) null;
-      this.outputParam = (APIParamInfo) null;
+      parentComponent = null;
+      if (inputParams != null)
+        inputParams = null;
+      outputParam = null;
     }
   }
 }

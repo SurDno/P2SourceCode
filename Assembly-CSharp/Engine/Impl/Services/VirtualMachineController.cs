@@ -1,4 +1,11 @@
-﻿using Cofe.Serializations.Converters;
+﻿using System;
+using System.Collections;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Xml;
+using Cofe.Serializations.Converters;
 using Cofe.Serializations.Data;
 using Cofe.Utility;
 using Engine.Common;
@@ -16,13 +23,6 @@ using Engine.Source.Services.Saves;
 using Engine.Source.Settings.External;
 using Inspectors;
 using Scripts.Data;
-using System;
-using System.Collections;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Xml;
 
 namespace Engine.Impl.Services
 {
@@ -36,7 +36,7 @@ namespace Engine.Impl.Services
   [SaveDepend(typeof (ITimeService))]
   [SaveDepend(typeof (ITemplateService))]
   [SaveDepend(typeof (IProfilesService))]
-  [RuntimeService(new System.Type[] {typeof (VirtualMachineController)})]
+  [RuntimeService(typeof (VirtualMachineController))]
   public class VirtualMachineController : 
     IUpdatable,
     IInitialisable,
@@ -58,22 +58,22 @@ namespace Engine.Impl.Services
     private string projectName = "";
     private int dataVersion;
 
-    public string ProjectName => this.projectName;
+    public string ProjectName => projectName;
 
-    public int DataVersion => this.dataVersion;
+    public int DataVersion => dataVersion;
 
     public bool OriginalExperienceSession { get; set; } = true;
 
-    public bool IsInitialized => this.virtualMachine != null && this.virtualMachine.IsInitialized;
+    public bool IsInitialized => virtualMachine != null && virtualMachine.IsInitialized;
 
-    public bool IsLoaded => this.virtualMachine != null && this.virtualMachine.IsLoaded;
+    public bool IsLoaded => virtualMachine != null && virtualMachine.IsLoaded;
 
     [Inspected]
-    public IVirtualMachine VirtualMachine => this.virtualMachine;
+    public IVirtualMachine VirtualMachine => virtualMachine;
 
     public void Initialise()
     {
-      IEnumerator enumerator = this.AsyncInitialize();
+      IEnumerator enumerator = AsyncInitialize();
       while (enumerator.MoveNext())
       {
         object current = enumerator.Current;
@@ -84,54 +84,54 @@ namespace Engine.Impl.Services
 
     public IEnumerator AsyncInitialize()
     {
-      this.virtualMachine = WorldUtility.CreateVirtualMachine();
-      if (this.virtualMachine == null)
+      virtualMachine = WorldUtility.CreateVirtualMachine();
+      if (virtualMachine == null)
       {
         UnityEngine.Debug.LogError((object) "Virtual Machine implement not found");
       }
       else
       {
-        yield return (object) this.InitializeVirtualMachine();
-        if (!this.virtualMachine.IsInitialized)
-          UnityEngine.Debug.Log((object) ObjectInfoUtility.GetStream().Append(TypeUtility.GetTypeName(this.GetType())).Append(" : ").Append(MethodBase.GetCurrentMethod().Name).Append(" , is not inited"));
-        this.timeService = ServiceLocator.GetService<TimeService>();
-        this.updater = InstanceByRequest<UpdateService>.Instance.VirtualMachineUpdater;
-        this.updater.AddUpdatable((IUpdatable) this);
-        InstanceByRequest<DifficultySettings>.Instance.OnApply += new Action(this.DifficultySettings_OnApply);
+        yield return InitializeVirtualMachine();
+        if (!virtualMachine.IsInitialized)
+          UnityEngine.Debug.Log((object) ObjectInfoUtility.GetStream().Append(TypeUtility.GetTypeName(GetType())).Append(" : ").Append(MethodBase.GetCurrentMethod().Name).Append(" , is not inited"));
+        timeService = ServiceLocator.GetService<TimeService>();
+        updater = InstanceByRequest<UpdateService>.Instance.VirtualMachineUpdater;
+        updater.AddUpdatable(this);
+        InstanceByRequest<DifficultySettings>.Instance.OnApply += DifficultySettings_OnApply;
       }
     }
 
     public void Terminate()
     {
-      InstanceByRequest<DifficultySettings>.Instance.OnApply -= new Action(this.DifficultySettings_OnApply);
-      this.updater.RemoveUpdatable((IUpdatable) this);
-      if (this.virtualMachine == null || !this.virtualMachine.IsInitialized)
+      InstanceByRequest<DifficultySettings>.Instance.OnApply -= DifficultySettings_OnApply;
+      updater.RemoveUpdatable(this);
+      if (virtualMachine == null || !virtualMachine.IsInitialized)
         return;
-      if (this.virtualMachine.IsLoaded)
-        this.virtualMachine.Unload();
-      if (this.virtualMachine.IsDataLoaded)
-        this.virtualMachine.UnloadData();
-      this.virtualMachine.Terminate();
-      this.virtualMachine = (IVirtualMachine) null;
+      if (virtualMachine.IsLoaded)
+        virtualMachine.Unload();
+      if (virtualMachine.IsDataLoaded)
+        virtualMachine.UnloadData();
+      virtualMachine.Terminate();
+      virtualMachine = null;
     }
 
     private IEnumerator InitializeVirtualMachine()
     {
       bool debug = ExternalSettingsInstance<ExternalOptimizationSettings>.Instance.VirtualMachineDebug;
-      yield return (object) this.virtualMachine.Initialize(debug, ExternalSettingsInstance<ExternalOptimizationSettings>.Instance.VMEventsQueuePerFrameTimeMax);
+      yield return virtualMachine.Initialize(debug, ExternalSettingsInstance<ExternalOptimizationSettings>.Instance.VMEventsQueuePerFrameTimeMax);
     }
 
     public void ComputeUpdate()
     {
-      if (!InstanceByRequest<EngineApplication>.Instance.ViewEnabled || this.virtualMachine == null || !this.virtualMachine.IsInitialized || !this.virtualMachine.IsLoaded)
+      if (!InstanceByRequest<EngineApplication>.Instance.ViewEnabled || virtualMachine == null || !virtualMachine.IsInitialized || !virtualMachine.IsLoaded)
         return;
-      this.virtualMachine.Update(this.timeService.Delta);
+      virtualMachine.Update(timeService.Delta);
     }
 
     public IEnumerator Load(IErrorLoadingHandler errorHandler)
     {
       UnityEngine.Debug.Log((object) ObjectInfoUtility.GetStream().Append("IVirtualMachine").Append(" load\n").GetStackTrace());
-      IVirtualMachine vm = this.VirtualMachine;
+      IVirtualMachine vm = VirtualMachine;
       if (vm == null)
         errorHandler.LogError("IVirtualMachine not found");
       else if (!vm.IsInitialized)
@@ -142,16 +142,16 @@ namespace Engine.Impl.Services
       }
       else
       {
-        yield return (object) this.ComputeData(errorHandler);
+        yield return ComputeData(errorHandler);
         if (!errorHandler.HasErrorLoading)
         {
-          this.OriginalExperienceSession = true;
-          this.DifficultySettings_OnApply();
+          OriginalExperienceSession = true;
+          DifficultySettings_OnApply();
           Stopwatch sw = new Stopwatch();
           sw.Restart();
-          yield return (object) vm.Load();
+          yield return vm.Load();
           sw.Stop();
-          UnityEngine.Debug.Log((object) ObjectInfoUtility.GetStream().Append("Load, elapsed : ").Append((object) sw.Elapsed));
+          UnityEngine.Debug.Log((object) ObjectInfoUtility.GetStream().Append("Load, elapsed : ").Append(sw.Elapsed));
         }
       }
     }
@@ -159,7 +159,7 @@ namespace Engine.Impl.Services
     public IEnumerator Load(XmlElement element, string context, IErrorLoadingHandler errorHandler)
     {
       UnityEngine.Debug.Log((object) ObjectInfoUtility.GetStream().Append("IVirtualMachine").Append(" load, context : ").Append(context).Append("\n").GetStackTrace());
-      IVirtualMachine vm = this.VirtualMachine;
+      IVirtualMachine vm = VirtualMachine;
       if (vm == null)
         errorHandler.LogError("IVirtualMachine not found");
       else if (!vm.IsInitialized)
@@ -186,7 +186,7 @@ namespace Engine.Impl.Services
           {
             InstanceByRequest<GameDataService>.Instance.SetCurrentGameData(storedDataName);
             LoadWindow.Instance.Mode = LoadWindowMode.LoadSavedGame;
-            yield return (object) this.ComputeData(errorHandler);
+            yield return ComputeData(errorHandler);
             if (!errorHandler.HasErrorLoading)
             {
               string storedDataVersionText = element[nameof (VirtualMachineController)]?["DataVersion"]?.InnerText;
@@ -196,20 +196,20 @@ namespace Engine.Impl.Services
                 storedDataVersionText = "0";
               }
               int saveVersion = DefaultConverter.ParseInt(storedDataVersionText);
-              if (this.dataVersion < saveVersion)
+              if (dataVersion < saveVersion)
               {
-                errorHandler.LogError("Error save version, current data version : " + (object) this.dataVersion + " , save version : " + (object) saveVersion + " , context : " + context);
+                errorHandler.LogError("Error save version, current data version : " + dataVersion + " , save version : " + saveVersion + " , context : " + context);
               }
               else
               {
                 string originalExperienceSessionText = element[nameof (VirtualMachineController)]?["OriginalExperienceSession"]?.InnerText;
-                this.OriginalExperienceSession = originalExperienceSessionText == null || DefaultConverter.ParseBool(originalExperienceSessionText);
-                this.DifficultySettings_OnApply();
+                OriginalExperienceSession = originalExperienceSessionText == null || DefaultConverter.ParseBool(originalExperienceSessionText);
+                DifficultySettings_OnApply();
                 Stopwatch sw = new Stopwatch();
                 sw.Restart();
-                yield return (object) vm.Load(vmNode);
+                yield return vm.Load(vmNode);
                 sw.Stop();
-                UnityEngine.Debug.Log((object) ObjectInfoUtility.GetStream().Append("Load, elapsed : ").Append((object) sw.Elapsed));
+                UnityEngine.Debug.Log((object) ObjectInfoUtility.GetStream().Append("Load, elapsed : ").Append(sw.Elapsed));
               }
             }
           }
@@ -220,7 +220,7 @@ namespace Engine.Impl.Services
     public void Unload()
     {
       UnityEngine.Debug.Log((object) ObjectInfoUtility.GetStream().Append("IVirtualMachine").Append(" unload\n").GetStackTrace());
-      IVirtualMachine virtualMachine = this.VirtualMachine;
+      IVirtualMachine virtualMachine = VirtualMachine;
       if (virtualMachine == null)
         UnityEngine.Debug.LogError((object) "IVirtualMachine not found");
       else if (!virtualMachine.IsInitialized)
@@ -233,7 +233,7 @@ namespace Engine.Impl.Services
 
     public void Save(IDataWriter writer, string context)
     {
-      IVirtualMachine virtualMachine = this.VirtualMachine;
+      IVirtualMachine virtualMachine = VirtualMachine;
       if (virtualMachine == null)
         UnityEngine.Debug.LogError((object) "IVirtualMachine not found");
       else if (!virtualMachine.IsInitialized)
@@ -244,20 +244,20 @@ namespace Engine.Impl.Services
       }
       else
       {
-        writer.Begin(nameof (VirtualMachineController), (System.Type) null, true);
-        writer.WriteSimple("Data", this.projectName);
-        writer.WriteSimple("DataVersion", DefaultConverter.ToString(this.dataVersion));
-        writer.WriteSimple("OriginalExperienceSession", DefaultConverter.ToString(this.OriginalExperienceSession));
+        writer.Begin(nameof (VirtualMachineController), null, true);
+        writer.WriteSimple("Data", projectName);
+        writer.WriteSimple("DataVersion", DefaultConverter.ToString(dataVersion));
+        writer.WriteSimple("OriginalExperienceSession", DefaultConverter.ToString(OriginalExperienceSession));
         writer.End(nameof (VirtualMachineController), true);
         try
         {
-          writer.Begin("VirtualMachine", (System.Type) null, true);
+          writer.Begin("VirtualMachine", null, true);
           virtualMachine.Save(writer);
           writer.End("VirtualMachine", true);
         }
         catch (Exception ex)
         {
-          UnityEngine.Debug.LogError((object) ("Error save vm to file : " + context + " , error : " + (object) ex));
+          UnityEngine.Debug.LogError((object) ("Error save vm to file : " + context + " , error : " + ex));
         }
       }
     }
@@ -265,17 +265,17 @@ namespace Engine.Impl.Services
     private IEnumerator ComputeData(IErrorLoadingHandler errorHandler)
     {
       string requiredProjectName = InstanceByRequest<GameDataService>.Instance.GetCurrentGameData().Name;
-      if (this.projectName != requiredProjectName)
+      if (projectName != requiredProjectName)
       {
-        if (this.virtualMachine.IsDataLoaded)
+        if (virtualMachine.IsDataLoaded)
         {
-          this.virtualMachine.UnloadData();
+          virtualMachine.UnloadData();
           OptimizationUtility.ForceCollect();
-          yield return (object) null;
+          yield return null;
         }
-        yield return (object) this.LoadData(requiredProjectName, errorHandler);
+        yield return LoadData(requiredProjectName, errorHandler);
         OptimizationUtility.ForceCollect();
-        yield return (object) null;
+        yield return null;
         InstanceByRequest<LabelService>.Instance.Invalidate();
       }
     }
@@ -283,7 +283,7 @@ namespace Engine.Impl.Services
     private static void SetFirstScene(string projectName)
     {
       StaticModelComponent component = ServiceLocator.GetService<ITemplateService>().GetTemplate<IEntity>(Ids.PathologicId).GetComponent<StaticModelComponent>();
-      Guid id = (BuildSettingsUtility.GetAllGameData().FirstOrDefault<GameDataInfo>((Func<GameDataInfo, bool>) (o => o.Name == projectName)) ?? throw new Exception("Project not found : " + projectName)).Scene.Id;
+      Guid id = (BuildSettingsUtility.GetAllGameData().FirstOrDefault(o => o.Name == projectName) ?? throw new Exception("Project not found : " + projectName)).Scene.Id;
       component.Connection = new Typed<IScene>(id);
       HierarchyService service = ServiceLocator.GetService<HierarchyService>();
       service.CreateMainContainer();
@@ -292,9 +292,9 @@ namespace Engine.Impl.Services
 
     public IEnumerator LoadData(string projectName, IErrorLoadingHandler errorHandler)
     {
-      this.dataVersion = 0;
+      dataVersion = 0;
       int dataCapacity = 0;
-      VirtualMachineController.SetFirstScene(projectName);
+      SetFirstScene(projectName);
       this.projectName = projectName;
       string dataFileName = PlatformUtility.GetPath("Data/VirtualMachine/{ProjectName}".Replace("{ProjectName}", projectName));
       string versionFileName = dataFileName + "/Version.xml";
@@ -307,7 +307,7 @@ namespace Engine.Impl.Services
           XmlDocument doc = new XmlDocument();
           doc.LoadXml(data);
           string text = doc["Root"]["ProjectVersion"].InnerText;
-          this.dataVersion = DefaultConverter.ParseInt(text);
+          dataVersion = DefaultConverter.ParseInt(text);
           int formatVersion = 0;
           text = doc["Root"]["XmlDataFormatVersion"].InnerText;
           formatVersion = DefaultConverter.ParseInt(text);
@@ -315,27 +315,25 @@ namespace Engine.Impl.Services
           dataCapacity = DefaultConverter.ParseInt(text);
           if (formatVersion != 14)
           {
-            errorHandler.LogError("Wrong format data version file : " + versionFileName + " , data version : " + (object) formatVersion + " , parser version : " + (object) 14);
+            errorHandler.LogError("Wrong format data version file : " + versionFileName + " , data version : " + formatVersion + " , parser version : " + 14);
             yield break;
           }
-          else
-          {
-            doc = (XmlDocument) null;
-            text = (string) null;
-          }
+
+          doc = null;
+          text = null;
         }
         catch (Exception ex)
         {
-          errorHandler.LogError("Error load data version file : " + versionFileName + " , ex : " + (object) ex);
+          errorHandler.LogError("Error load data version file : " + versionFileName + " , ex : " + ex);
           yield break;
         }
-        data = (string) null;
+        data = null;
         Stopwatch sw = new Stopwatch();
         sw.Restart();
         int threadCount = ExternalSettingsInstance<ExternalOptimizationSettings>.Instance.ThreadCount;
-        yield return (object) this.VirtualMachine.LoadData(dataFileName, threadCount, dataCapacity);
+        yield return VirtualMachine.LoadData(dataFileName, threadCount, dataCapacity);
         sw.Stop();
-        UnityEngine.Debug.Log((object) ObjectInfoUtility.GetStream().Append("Load data, elapsed : ").Append((object) sw.Elapsed));
+        UnityEngine.Debug.Log((object) ObjectInfoUtility.GetStream().Append("Load data, elapsed : ").Append(sw.Elapsed));
       }
       else
         errorHandler.LogError("Data version not found : " + versionFileName);
@@ -345,7 +343,7 @@ namespace Engine.Impl.Services
     {
       if (InstanceByRequest<DifficultySettings>.Instance.OriginalExperience.Value)
         return;
-      this.OriginalExperienceSession = false;
+      OriginalExperienceSession = false;
     }
   }
 }

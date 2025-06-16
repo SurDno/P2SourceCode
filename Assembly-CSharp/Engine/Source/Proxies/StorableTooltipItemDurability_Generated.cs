@@ -1,9 +1,9 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons.Cloneable;
 using Engine.Common.Commons.Converters;
 using Engine.Common.Components.Parameters;
-using System;
 
 namespace Engine.Source.Proxies
 {
@@ -18,33 +18,33 @@ namespace Engine.Source.Proxies
     public object Clone()
     {
       StorableTooltipItemDurability_Generated instance = Activator.CreateInstance<StorableTooltipItemDurability_Generated>();
-      this.CopyTo((object) instance);
-      return (object) instance;
+      CopyTo(instance);
+      return instance;
     }
 
     public void CopyTo(object target2)
     {
       StorableTooltipItemDurability_Generated durabilityGenerated = (StorableTooltipItemDurability_Generated) target2;
-      durabilityGenerated.isEnabled = this.isEnabled;
-      durabilityGenerated.name = this.name;
-      durabilityGenerated.parameter = this.parameter;
-      durabilityGenerated.isFood = this.isFood;
+      durabilityGenerated.isEnabled = isEnabled;
+      durabilityGenerated.name = name;
+      durabilityGenerated.parameter = parameter;
+      durabilityGenerated.isFood = isFood;
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.Write(writer, "IsEnabled", this.isEnabled);
-      DefaultDataWriteUtility.WriteEnum<StorableTooltipNameEnum>(writer, "Name", this.name);
-      DefaultDataWriteUtility.WriteEnum<ParameterNameEnum>(writer, "Parameter", this.parameter);
-      DefaultDataWriteUtility.Write(writer, "IsFood", this.isFood);
+      DefaultDataWriteUtility.Write(writer, "IsEnabled", isEnabled);
+      DefaultDataWriteUtility.WriteEnum(writer, "Name", name);
+      DefaultDataWriteUtility.WriteEnum(writer, "Parameter", parameter);
+      DefaultDataWriteUtility.Write(writer, "IsFood", isFood);
     }
 
     public void DataRead(IDataReader reader, Type type)
     {
-      this.isEnabled = DefaultDataReadUtility.Read(reader, "IsEnabled", this.isEnabled);
-      this.name = DefaultDataReadUtility.ReadEnum<StorableTooltipNameEnum>(reader, "Name");
-      this.parameter = DefaultDataReadUtility.ReadEnum<ParameterNameEnum>(reader, "Parameter");
-      this.isFood = DefaultDataReadUtility.Read(reader, "IsFood", this.isFood);
+      isEnabled = DefaultDataReadUtility.Read(reader, "IsEnabled", isEnabled);
+      name = DefaultDataReadUtility.ReadEnum<StorableTooltipNameEnum>(reader, "Name");
+      parameter = DefaultDataReadUtility.ReadEnum<ParameterNameEnum>(reader, "Parameter");
+      isFood = DefaultDataReadUtility.Read(reader, "IsFood", isFood);
     }
   }
 }

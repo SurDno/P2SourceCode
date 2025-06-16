@@ -1,7 +1,7 @@
-﻿using Engine.Common;
+﻿using System;
+using Engine.Common;
 using Engine.Common.Services;
 using Engine.Services;
-using System;
 
 namespace Inspectors
 {
@@ -24,9 +24,9 @@ namespace Inspectors
         Action<object> action = setter;
         if (action == null)
           return;
-        action((object) new object[1]
+        action(new object[1]
         {
-          (object) ServiceLocator.GetService<ISimulation>().Player
+          ServiceLocator.GetService<ISimulation>().Player
         });
       }));
       menu.AddSeparator("Execute With Object/");
@@ -34,12 +34,12 @@ namespace Inspectors
       {
         int index2 = index1;
         IObject item = ServiceLocator.GetService<SelectionService>().GetSelection(index2) as IObject;
-        menu.AddItem("Execute With Object/From Slot " + (object) index2 + " : " + (item != null ? (object) item.Name : (object) "null"), false, (Action) (() =>
+        menu.AddItem("Execute With Object/From Slot " + index2 + " : " + (item != null ? item.Name : (object) "null"), false, (Action) (() =>
         {
           Action<object> action = setter;
           if (action == null)
             return;
-          action((object) new object[1]{ (object) item });
+          action(new object[1] { item });
         }));
       }
       menu.Show();

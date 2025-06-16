@@ -10,7 +10,7 @@ namespace PLVirtualMachine
     public static void Begin(TimeSpan delay)
     {
       DelayTimer.delay = delay;
-      DelayTimer.time = DateTime.UtcNow;
+      time = DateTime.UtcNow;
     }
 
     public static bool Check
@@ -18,9 +18,9 @@ namespace PLVirtualMachine
       get
       {
         DateTime utcNow = DateTime.UtcNow;
-        if (!(DelayTimer.time + DelayTimer.delay < utcNow))
+        if (!(time + delay < utcNow))
           return false;
-        DelayTimer.time = utcNow;
+        time = utcNow;
         return true;
       }
     }

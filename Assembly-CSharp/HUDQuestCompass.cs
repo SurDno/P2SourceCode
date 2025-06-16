@@ -1,9 +1,7 @@
-﻿using Engine.Common.Services;
+﻿using System.Collections.Generic;
+using Engine.Common.Services;
 using Engine.Impl.UI.Controls;
 using Engine.Source.Services;
-using System;
-using System.Collections.Generic;
-using UnityEngine;
 
 public class HUDQuestCompass : MonoBehaviour
 {
@@ -19,55 +17,55 @@ public class HUDQuestCompass : MonoBehaviour
   {
     if (mapItem == null)
       return;
-    for (int index = 0; index < this.markers.Count; ++index)
+    for (int index = 0; index < markers.Count; ++index)
     {
-      if (this.markers[index].MapItem == mapItem)
+      if (markers[index].MapItem == mapItem)
         return;
     }
-    HUDQuestMarker hudQuestMarker = UnityEngine.Object.Instantiate<HUDQuestMarker>(this.markerPrototype, (Transform) this.anchor, false);
+    HUDQuestMarker hudQuestMarker = UnityEngine.Object.Instantiate<HUDQuestMarker>(markerPrototype, (Transform) anchor, false);
     hudQuestMarker.MapItem = mapItem;
-    this.markers.Add(hudQuestMarker);
+    markers.Add(hudQuestMarker);
     hudQuestMarker.gameObject.SetActive(true);
   }
 
   private void OnEnable()
   {
     MapService service = ServiceLocator.GetService<MapService>();
-    service.HUDItemAddEvent += new Action<IMapItem>(this.AddMarker);
-    service.HUDItemRemoveEvent += new Action<IMapItem>(this.RemoveMarker);
-    ServiceLocator.GetService<QuestCompassService>().OnEnableChanged += new Action<bool>(this.OnFocusEnableChanged);
-    ServiceLocator.GetService<InterfaceBlockingService>().OnBlockChanged += new Action(this.UpdateVisibility);
+    service.HUDItemAddEvent += AddMarker;
+    service.HUDItemRemoveEvent += RemoveMarker;
+    ServiceLocator.GetService<QuestCompassService>().OnEnableChanged += OnFocusEnableChanged;
+    ServiceLocator.GetService<InterfaceBlockingService>().OnBlockChanged += UpdateVisibility;
     foreach (IMapItem questItem in service.QuestItems)
-      this.AddMarker(questItem);
-    this.UpdateVisibility();
+      AddMarker(questItem);
+    UpdateVisibility();
   }
 
   private void OnDisable()
   {
     MapService service = ServiceLocator.GetService<MapService>();
-    service.HUDItemAddEvent -= new Action<IMapItem>(this.AddMarker);
-    service.HUDItemRemoveEvent -= new Action<IMapItem>(this.RemoveMarker);
-    ServiceLocator.GetService<QuestCompassService>().OnEnableChanged -= new Action<bool>(this.OnFocusEnableChanged);
-    ServiceLocator.GetService<InterfaceBlockingService>().OnBlockChanged -= new Action(this.UpdateVisibility);
-    for (int index = 0; index < this.markers.Count; ++index)
-      UnityEngine.Object.Destroy((UnityEngine.Object) this.markers[index].gameObject);
-    this.markers.Clear();
-    this.visible.Visible = false;
+    service.HUDItemAddEvent -= AddMarker;
+    service.HUDItemRemoveEvent -= RemoveMarker;
+    ServiceLocator.GetService<QuestCompassService>().OnEnableChanged -= OnFocusEnableChanged;
+    ServiceLocator.GetService<InterfaceBlockingService>().OnBlockChanged -= UpdateVisibility;
+    for (int index = 0; index < markers.Count; ++index)
+      UnityEngine.Object.Destroy((UnityEngine.Object) markers[index].gameObject);
+    markers.Clear();
+    visible.Visible = false;
   }
 
-  private void OnFocusEnableChanged(bool value) => this.UpdateVisibility();
+  private void OnFocusEnableChanged(bool value) => UpdateVisibility();
 
   private void RemoveMarker(IMapItem mapItem)
   {
     if (mapItem == null)
       return;
-    for (int index = 0; index < this.markers.Count; ++index)
+    for (int index = 0; index < markers.Count; ++index)
     {
-      HUDQuestMarker marker = this.markers[index];
+      HUDQuestMarker marker = markers[index];
       if (marker.MapItem == mapItem)
       {
         UnityEngine.Object.Destroy((UnityEngine.Object) marker.gameObject);
-        this.markers.RemoveAt(index);
+        markers.RemoveAt(index);
         break;
       }
     }
@@ -75,6 +73,6 @@ public class HUDQuestCompass : MonoBehaviour
 
   private void UpdateVisibility()
   {
-    this.visible.Visible = ServiceLocator.GetService<QuestCompassService>().IsEnabled && !ServiceLocator.GetService<InterfaceBlockingService>().BlockMapInterface;
+    visible.Visible = ServiceLocator.GetService<QuestCompassService>().IsEnabled && !ServiceLocator.GetService<InterfaceBlockingService>().BlockMapInterface;
   }
 }

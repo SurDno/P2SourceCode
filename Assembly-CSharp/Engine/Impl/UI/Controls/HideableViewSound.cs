@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace Engine.Impl.UI.Controls
+﻿namespace Engine.Impl.UI.Controls
 {
   public class HideableViewSound : HideableView
   {
@@ -11,10 +9,10 @@ namespace Engine.Impl.UI.Controls
     {
       if (!Application.isPlaying)
         return;
-      if (this.Visible)
-        this.source?.Play();
+      if (Visible)
+        source?.Play();
       else
-        this.source?.Stop();
+        source?.Stop();
     }
   }
 }

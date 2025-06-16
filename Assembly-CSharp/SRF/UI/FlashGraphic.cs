@@ -1,8 +1,4 @@
-﻿using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.UI;
-
-namespace SRF.UI
+﻿namespace SRF.UI
 {
   [AddComponentMenu("SRF/UI/Flash Graphic")]
   [ExecuteInEditMode]
@@ -19,18 +15,18 @@ namespace SRF.UI
 
     public void OnPointerDown(PointerEventData eventData)
     {
-      this.Target.CrossFadeColor(this.FlashColor, 0.0f, true, true);
+      Target.CrossFadeColor(FlashColor, 0.0f, true, true);
     }
 
     public void OnPointerUp(PointerEventData eventData)
     {
-      this.Target.CrossFadeColor(this.DefaultColor, this.DecayTime, true, true);
+      Target.CrossFadeColor(DefaultColor, DecayTime, true, true);
     }
 
     protected override void OnEnable()
     {
       base.OnEnable();
-      this.Target.CrossFadeColor(this.DefaultColor, 0.0f, true, true);
+      Target.CrossFadeColor(DefaultColor, 0.0f, true, true);
     }
 
     protected void Update()
@@ -39,8 +35,8 @@ namespace SRF.UI
 
     public void Flash()
     {
-      this.Target.CrossFadeColor(this.FlashColor, 0.0f, true, true);
-      this.Target.CrossFadeColor(this.DefaultColor, this.DecayTime, true, true);
+      Target.CrossFadeColor(FlashColor, 0.0f, true, true);
+      Target.CrossFadeColor(DefaultColor, DecayTime, true, true);
     }
   }
 }

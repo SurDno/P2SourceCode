@@ -14,37 +14,37 @@ namespace TriangleNet
 
     public void Reset()
     {
-      this.samples = 1;
-      this.triangleCount = 0;
+      samples = 1;
+      triangleCount = 0;
     }
 
-    public void Update(Mesh mesh) => this.Update(mesh, false);
+    public void Update(Mesh mesh) => Update(mesh, false);
 
     public void Update(Mesh mesh, bool forceUpdate)
     {
       int count = mesh.triangles.Count;
-      if (!(this.triangleCount != count | forceUpdate))
+      if (!(triangleCount != count | forceUpdate))
         return;
-      this.triangleCount = count;
-      while (Sampler.samplefactor * this.samples * this.samples * this.samples < count)
-        ++this.samples;
-      this.keys = mesh.triangles.Keys.ToArray<int>();
+      triangleCount = count;
+      while (samplefactor * samples * samples * samples < count)
+        ++samples;
+      keys = mesh.triangles.Keys.ToArray();
     }
 
     public int[] GetSamples(Mesh mesh)
     {
-      List<int> intList = new List<int>(this.samples);
-      int num = this.triangleCount / this.samples;
-      for (int index1 = 0; index1 < this.samples; ++index1)
+      List<int> intList = new List<int>(samples);
+      int num = triangleCount / samples;
+      for (int index1 = 0; index1 < samples; ++index1)
       {
-        int index2 = Sampler.rand.Next(index1 * num, (index1 + 1) * num - 1);
-        if (!mesh.triangles.Keys.Contains<int>(this.keys[index2]))
+        int index2 = rand.Next(index1 * num, (index1 + 1) * num - 1);
+        if (!mesh.triangles.Keys.Contains(keys[index2]))
         {
-          this.Update(mesh, true);
+          Update(mesh, true);
           --index1;
         }
         else
-          intList.Add(this.keys[index2]);
+          intList.Add(keys[index2]);
       }
       return intList.ToArray();
     }

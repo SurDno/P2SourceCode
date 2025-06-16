@@ -10,9 +10,9 @@ namespace Engine.Source.Settings
     {
       get
       {
-        if (PlayerSettings.settings == null)
-          PlayerSettings.settings = !ExternalSettingsInstance<ExternalOptimizationSettings>.Instance.UsePlayerPrefs ? (IPlayerSettings) new PlayerFileSettings() : (IPlayerSettings) new PlayerPrefsSettings();
-        return PlayerSettings.settings;
+        if (settings == null)
+          settings = !ExternalSettingsInstance<ExternalOptimizationSettings>.Instance.UsePlayerPrefs ? new PlayerFileSettings() : new PlayerPrefsSettings();
+        return settings;
       }
     }
   }

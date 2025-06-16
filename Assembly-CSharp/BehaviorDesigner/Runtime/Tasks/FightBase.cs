@@ -1,11 +1,11 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Behaviours.Components;
 using Engine.Common.Commons;
 using Engine.Common.Commons.Converters;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
-using UnityEngine;
 
 namespace BehaviorDesigner.Runtime.Tasks
 {
@@ -27,43 +27,43 @@ namespace BehaviorDesigner.Runtime.Tasks
     {
       if (paused)
       {
-        this.pauseTime = Time.time;
+        pauseTime = Time.time;
       }
       else
       {
-        this.startTime += Time.time - this.pauseTime;
-        this.lastTime += Time.time - this.pauseTime;
+        startTime += Time.time - pauseTime;
+        lastTime += Time.time - pauseTime;
       }
     }
 
     public override void OnStart()
     {
-      if (!this.initialized)
+      if (!initialized)
       {
         Pivot component = this.GetComponent<Pivot>();
         if ((UnityEngine.Object) component == (UnityEngine.Object) null)
         {
-          Debug.LogWarning((object) (this.gameObject.name + ": doesn't contain " + typeof (Pivot).Name + " engine component"), (UnityEngine.Object) this.gameObject);
+          Debug.LogWarning((object) (gameObject.name + ": doesn't contain " + typeof (Pivot).Name + " engine component"), (UnityEngine.Object) gameObject);
           return;
         }
-        this.owner = component.GetNpcEnemy();
-        if ((UnityEngine.Object) this.owner == (UnityEngine.Object) null)
+        owner = component.GetNpcEnemy();
+        if ((UnityEngine.Object) owner == (UnityEngine.Object) null)
         {
-          Debug.LogWarning((object) (this.gameObject.name + ": doesn't contain " + typeof (NPCEnemy).Name + " engine component"), (UnityEngine.Object) this.gameObject);
+          Debug.LogWarning((object) (gameObject.name + ": doesn't contain " + typeof (NPCEnemy).Name + " engine component"), (UnityEngine.Object) gameObject);
           return;
         }
-        this.initialized = true;
+        initialized = true;
       }
-      this.lastTime = this.startTime = Time.time;
+      lastTime = startTime = Time.time;
     }
 
     public override TaskStatus OnUpdate()
     {
-      if (!this.initialized || (UnityEngine.Object) this.owner.Enemy == (UnityEngine.Object) null)
+      if (!initialized || (UnityEngine.Object) owner.Enemy == (UnityEngine.Object) null)
         return TaskStatus.Failure;
-      float deltaTime = Time.time - this.lastTime;
-      this.lastTime = Time.time;
-      return this.DoUpdate(deltaTime);
+      float deltaTime = Time.time - lastTime;
+      lastTime = Time.time;
+      return DoUpdate(deltaTime);
     }
 
     public override void OnReset()
@@ -76,20 +76,20 @@ namespace BehaviorDesigner.Runtime.Tasks
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.WriteSerialize<NodeData>(writer, "NodeData", this.nodeData);
-      DefaultDataWriteUtility.Write(writer, "Id", this.id);
-      DefaultDataWriteUtility.Write(writer, "FriendlyName", this.friendlyName);
-      DefaultDataWriteUtility.Write(writer, "Instant", this.instant);
-      DefaultDataWriteUtility.Write(writer, "Disabled", this.disabled);
+      DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
+      DefaultDataWriteUtility.Write(writer, "Id", id);
+      DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
+      DefaultDataWriteUtility.Write(writer, "Instant", instant);
+      DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
     }
 
-    public void DataRead(IDataReader reader, System.Type type)
+    public void DataRead(IDataReader reader, Type type)
     {
-      this.nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
-      this.id = DefaultDataReadUtility.Read(reader, "Id", this.id);
-      this.friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", this.friendlyName);
-      this.instant = DefaultDataReadUtility.Read(reader, "Instant", this.instant);
-      this.disabled = DefaultDataReadUtility.Read(reader, "Disabled", this.disabled);
+      nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
+      id = DefaultDataReadUtility.Read(reader, "Id", id);
+      friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
+      instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
+      disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
     }
   }
 }

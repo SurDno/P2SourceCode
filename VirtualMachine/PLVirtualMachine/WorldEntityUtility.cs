@@ -1,4 +1,6 @@
-﻿using Cofe.Loggers;
+﻿using System;
+using System.Collections.Generic;
+using Cofe.Loggers;
 using Cofe.Serializations.Converters;
 using Engine.Common;
 using Engine.Common.Comparers;
@@ -9,50 +11,48 @@ using PLVirtualMachine.Common.Data;
 using PLVirtualMachine.Common.EngineAPI.VMECS;
 using PLVirtualMachine.Dynamic;
 using PLVirtualMachine.Objects;
-using System;
-using System.Collections.Generic;
 
 namespace PLVirtualMachine
 {
   public static class WorldEntityUtility
   {
-    private static Dictionary<Guid, ILogicObject> dynamicGuidsToStaticWorldTemplatesDict = new Dictionary<Guid, ILogicObject>((IEqualityComparer<Guid>) GuidComparer.Instance);
+    private static Dictionary<Guid, ILogicObject> dynamicGuidsToStaticWorldTemplatesDict = new Dictionary<Guid, ILogicObject>(GuidComparer.Instance);
     private static List<VMWorldObject> staticWorldTemplatesList = new List<VMWorldObject>();
-    private static Dictionary<Guid, VMEntity> dynamicEntityByEngineGuidDict = new Dictionary<Guid, VMEntity>((IEqualityComparer<Guid>) GuidComparer.Instance);
-    private static Dictionary<HierarchyGuid, VMEntity> hierarchyGuidsToDynamicEntityDict = new Dictionary<HierarchyGuid, VMEntity>((IEqualityComparer<HierarchyGuid>) HierarchyGuidComparer.Instance);
-    private static Dictionary<ulong, VMEntity> staticObjGuidsToDynamicEntityDict = new Dictionary<ulong, VMEntity>((IEqualityComparer<ulong>) UlongComparer.Instance);
+    private static Dictionary<Guid, VMEntity> dynamicEntityByEngineGuidDict = new Dictionary<Guid, VMEntity>(GuidComparer.Instance);
+    private static Dictionary<HierarchyGuid, VMEntity> hierarchyGuidsToDynamicEntityDict = new Dictionary<HierarchyGuid, VMEntity>(HierarchyGuidComparer.Instance);
+    private static Dictionary<ulong, VMEntity> staticObjGuidsToDynamicEntityDict = new Dictionary<ulong, VMEntity>(UlongComparer.Instance);
     private static Dictionary<string, VMEntity> dynamicEntityByUniNameCache = new Dictionary<string, VMEntity>();
 
     public static bool IsDynamicGuidExist(Guid dynGuid)
     {
-      return WorldEntityUtility.dynamicEntityByEngineGuidDict.ContainsKey(dynGuid);
+      return dynamicEntityByEngineGuidDict.ContainsKey(dynGuid);
     }
 
     public static void AddDynamicObjectEntityByEngineGuid(Guid engGuid, VMEntity entity)
     {
-      if (!WorldEntityUtility.dynamicEntityByEngineGuidDict.ContainsKey(engGuid))
-        WorldEntityUtility.dynamicEntityByEngineGuidDict.Add(engGuid, entity);
+      if (!dynamicEntityByEngineGuidDict.ContainsKey(engGuid))
+        dynamicEntityByEngineGuidDict.Add(engGuid, entity);
       else
-        Logger.AddError(string.Format("Error: Dynamic object guid duplication in dynamic fsm dict"));
+        Logger.AddError("Error: Dynamic object guid duplication in dynamic fsm dict");
     }
 
     public static VMEntity GetDynamicObjectEntityByEngineGuid(Guid engGuid)
     {
       VMEntity vmEntity;
-      return WorldEntityUtility.dynamicEntityByEngineGuidDict.TryGetValue(engGuid, out vmEntity) ? vmEntity : (VMEntity) null;
+      return dynamicEntityByEngineGuidDict.TryGetValue(engGuid, out vmEntity) ? vmEntity : null;
     }
 
     public static VMEntity GetDynamicObjectEntityByHierarchyGuid(HierarchyGuid hGuid)
     {
       VMEntity entityByHierarchyGuid;
-      WorldEntityUtility.hierarchyGuidsToDynamicEntityDict.TryGetValue(hGuid, out entityByHierarchyGuid);
+      hierarchyGuidsToDynamicEntityDict.TryGetValue(hGuid, out entityByHierarchyGuid);
       return entityByHierarchyGuid;
     }
 
     public static VMEntity GetDynamicObjectEntityByUniName(string uniName)
     {
-      VMEntity objectEntityByUniName = (VMEntity) null;
-      if (WorldEntityUtility.dynamicEntityByUniNameCache.TryGetValue(uniName, out objectEntityByUniName))
+      VMEntity objectEntityByUniName = null;
+      if (dynamicEntityByUniNameCache.TryGetValue(uniName, out objectEntityByUniName))
         return objectEntityByUniName;
       switch (GuidUtility.GetGuidFormat(uniName))
       {
@@ -60,50 +60,48 @@ namespace PLVirtualMachine
           ulong stguid = DefaultConverter.ParseUlong(uniName);
           if (stguid > 0UL)
           {
-            objectEntityByUniName = WorldEntityUtility.GetDynamicObjectEntityByStaticGuid(stguid);
-            break;
+            objectEntityByUniName = GetDynamicObjectEntityByStaticGuid(stguid);
           }
           break;
         case EGuidFormat.GT_HIERARCHY:
-          objectEntityByUniName = WorldEntityUtility.GetDynamicObjectEntityByHierarchyGuid(new HierarchyGuid(uniName));
+          objectEntityByUniName = GetDynamicObjectEntityByHierarchyGuid(new HierarchyGuid(uniName));
           break;
         case EGuidFormat.GT_ENGINE:
           Guid guid = DefaultConverter.ParseGuid(uniName);
           if (guid != Guid.Empty)
           {
-            objectEntityByUniName = WorldEntityUtility.GetDynamicObjectEntityByEngineGuid(guid);
-            break;
+            objectEntityByUniName = GetDynamicObjectEntityByEngineGuid(guid);
           }
           break;
       }
       if (objectEntityByUniName == null)
-        return (VMEntity) null;
-      WorldEntityUtility.dynamicEntityByUniNameCache.Add(uniName, objectEntityByUniName);
+        return null;
+      dynamicEntityByUniNameCache.Add(uniName, objectEntityByUniName);
       return objectEntityByUniName;
     }
 
     public static VMEntity GetDynamicObjectEntityByStaticGuid(ulong stguid)
     {
       VMEntity vmEntity;
-      return WorldEntityUtility.staticObjGuidsToDynamicEntityDict.TryGetValue(stguid, out vmEntity) ? vmEntity : (VMEntity) null;
+      return staticObjGuidsToDynamicEntityDict.TryGetValue(stguid, out vmEntity) ? vmEntity : null;
     }
 
     public static void AddDynamicObjectEntityByHierarchyGuid(
       HierarchyGuid hierarchyGuid,
       VMEntity entity)
     {
-      if (!WorldEntityUtility.hierarchyGuidsToDynamicEntityDict.ContainsKey(hierarchyGuid))
-        WorldEntityUtility.hierarchyGuidsToDynamicEntityDict.Add(hierarchyGuid, entity);
+      if (!hierarchyGuidsToDynamicEntityDict.ContainsKey(hierarchyGuid))
+        hierarchyGuidsToDynamicEntityDict.Add(hierarchyGuid, entity);
       else
-        Logger.AddError(string.Format("Duplicate hierarchy guid {0} during registration dynamic object by template", (object) hierarchyGuid));
+        Logger.AddError(string.Format("Duplicate hierarchy guid {0} during registration dynamic object by template", hierarchyGuid));
     }
 
     public static void AddDynamicObjectEntityByStaticGuid(ulong stguid, VMEntity entity)
     {
-      if (!WorldEntityUtility.staticObjGuidsToDynamicEntityDict.ContainsKey(stguid))
-        WorldEntityUtility.staticObjGuidsToDynamicEntityDict.Add(stguid, entity);
+      if (!staticObjGuidsToDynamicEntityDict.ContainsKey(stguid))
+        staticObjGuidsToDynamicEntityDict.Add(stguid, entity);
       else
-        Logger.AddError(string.Format("Duplicate static object creation"));
+        Logger.AddError("Duplicate static object creation");
     }
 
     public static VMBaseEntity CreateWorldTemplateDynamicChildInstance(
@@ -113,25 +111,25 @@ namespace PLVirtualMachine
     {
       if (template == null)
       {
-        Logger.AddWarning(string.Format("Template for creating dynamic instance in {0} not defined", (object) parentEntity.Name));
-        return (VMBaseEntity) null;
+        Logger.AddWarning(string.Format("Template for creating dynamic instance in {0} not defined", parentEntity.Name));
+        return null;
       }
-      IEntity entity = ServiceCache.Factory.Instantiate<IEntity>(template);
+      IEntity entity = ServiceCache.Factory.Instantiate(template);
       ServiceCache.Simulation.Add(entity, parentInstance);
       IWorldBlueprint engineTemplateByGuid = ((VMGameRoot) IStaticDataContainer.StaticDataContainer.GameRoot).GetEngineTemplateByGuid(template.Id);
       if (engineTemplateByGuid == null)
       {
-        Logger.AddWarning(string.Format("Template with engine guid = {0} not registered", (object) GuidUtility.GetGuidString(template.Id)));
-        return (VMBaseEntity) null;
+        Logger.AddWarning(string.Format("Template with engine guid = {0} not registered", GuidUtility.GetGuidString(template.Id)));
+        return null;
       }
       Guid id = entity.Id;
       VMEntity dynamicChildInstance = new VMEntity();
-      dynamicChildInstance.Initialize((ILogicObject) engineTemplateByGuid, entity, true);
-      parentEntity?.AddChildEntity((VMBaseEntity) dynamicChildInstance);
+      dynamicChildInstance.Initialize(engineTemplateByGuid, entity, true);
+      parentEntity?.AddChildEntity(dynamicChildInstance);
       CreateEntityUtility.InitializeObject(dynamicChildInstance, (VMLogicObject) engineTemplateByGuid);
       IWorldBlueprint editorTemplate = engineTemplateByGuid;
-      WorldEntityUtility.AddDynamicGuidsToStaticWorldTemplate(id, (ILogicObject) editorTemplate);
-      return (VMBaseEntity) dynamicChildInstance;
+      AddDynamicGuidsToStaticWorldTemplate(id, editorTemplate);
+      return dynamicChildInstance;
     }
 
     public static VMBaseEntity CreateWorldTemplateDynamicChildInstance(
@@ -141,68 +139,68 @@ namespace PLVirtualMachine
     {
       if (template == null)
       {
-        Logger.AddError(string.Format("Template of created instance {0} not defined at {1}", (object) instance.Id, (object) DynamicFSM.CurrentStateInfo));
-        return (VMBaseEntity) null;
+        Logger.AddError(string.Format("Template of created instance {0} not defined at {1}", instance.Id, DynamicFSM.CurrentStateInfo));
+        return null;
       }
       IWorldBlueprint engineTemplateByGuid = ((VMGameRoot) IStaticDataContainer.StaticDataContainer.GameRoot).GetEngineTemplateByGuid(template.Id);
       if (engineTemplateByGuid == null)
       {
-        Logger.AddError(string.Format("Template with engine guid = {0} not registered at {1}", (object) GuidUtility.GetGuidString(template.Id), (object) DynamicFSM.CurrentStateInfo));
-        return (VMBaseEntity) null;
+        Logger.AddError(string.Format("Template with engine guid = {0} not registered at {1}", GuidUtility.GetGuidString(template.Id), DynamicFSM.CurrentStateInfo));
+        return null;
       }
       VMEntity dynamicChildInstance = new VMEntity();
-      dynamicChildInstance.Initialize((ILogicObject) engineTemplateByGuid, instance, true);
+      dynamicChildInstance.Initialize(engineTemplateByGuid, instance, true);
       if (!bOnSaveLoad)
         CreateEntityUtility.InitializeObject(dynamicChildInstance, (VMLogicObject) engineTemplateByGuid);
-      WorldEntityUtility.OnCreateWorldTemplateDynamicChildInstance(dynamicChildInstance, (IBlueprint) engineTemplateByGuid);
-      return (VMBaseEntity) dynamicChildInstance;
+      OnCreateWorldTemplateDynamicChildInstance(dynamicChildInstance, engineTemplateByGuid);
+      return dynamicChildInstance;
     }
 
     public static IBlueprint GetEditorTemplateByEngineGuid(Guid engGuid)
     {
       ILogicObject logicObject;
-      WorldEntityUtility.dynamicGuidsToStaticWorldTemplatesDict.TryGetValue(engGuid, out logicObject);
+      dynamicGuidsToStaticWorldTemplatesDict.TryGetValue(engGuid, out logicObject);
       return logicObject?.Blueprint;
     }
 
     public static void RegistrStaticWorldTemplate(VMWorldObject template)
     {
-      WorldEntityUtility.staticWorldTemplatesList.Add(template);
+      staticWorldTemplatesList.Add(template);
     }
 
     public static void ClearStatic()
     {
-      WorldEntityUtility.dynamicGuidsToStaticWorldTemplatesDict.Clear();
-      WorldEntityUtility.staticWorldTemplatesList.Clear();
+      dynamicGuidsToStaticWorldTemplatesDict.Clear();
+      staticWorldTemplatesList.Clear();
     }
 
     public static void Clear()
     {
-      foreach (KeyValuePair<Guid, VMEntity> keyValuePair in WorldEntityUtility.dynamicEntityByEngineGuidDict)
+      foreach (KeyValuePair<Guid, VMEntity> keyValuePair in dynamicEntityByEngineGuidDict)
         keyValuePair.Value.PreLoading();
-      WorldEntityUtility.dynamicEntityByEngineGuidDict.Clear();
-      WorldEntityUtility.hierarchyGuidsToDynamicEntityDict.Clear();
-      WorldEntityUtility.staticObjGuidsToDynamicEntityDict.Clear();
-      WorldEntityUtility.dynamicEntityByUniNameCache.Clear();
-      WorldEntityUtility.dynamicGuidsToStaticWorldTemplatesDict.Clear();
+      dynamicEntityByEngineGuidDict.Clear();
+      hierarchyGuidsToDynamicEntityDict.Clear();
+      staticObjGuidsToDynamicEntityDict.Clear();
+      dynamicEntityByUniNameCache.Clear();
+      dynamicGuidsToStaticWorldTemplatesDict.Clear();
     }
 
     public static void AddDynamicGuidsToStaticWorldTemplate(
       Guid engGuid,
       ILogicObject editorTemplate)
     {
-      if (WorldEntityUtility.dynamicGuidsToStaticWorldTemplatesDict.ContainsKey(engGuid))
+      if (dynamicGuidsToStaticWorldTemplatesDict.ContainsKey(engGuid))
         return;
-      WorldEntityUtility.dynamicGuidsToStaticWorldTemplatesDict.Add(engGuid, editorTemplate);
+      dynamicGuidsToStaticWorldTemplatesDict.Add(engGuid, editorTemplate);
     }
 
     public static void OnCreateWorldTemplateDynamicChildInstance(
       VMEntity dynChildEntity,
       IBlueprint dynChildEditorTemplate)
     {
-      if (WorldEntityUtility.dynamicGuidsToStaticWorldTemplatesDict.ContainsKey(dynChildEntity.EngineGuid))
+      if (dynamicGuidsToStaticWorldTemplatesDict.ContainsKey(dynChildEntity.EngineGuid))
         return;
-      WorldEntityUtility.dynamicGuidsToStaticWorldTemplatesDict.Add(dynChildEntity.EngineGuid, (ILogicObject) dynChildEditorTemplate);
+      dynamicGuidsToStaticWorldTemplatesDict.Add(dynChildEntity.EngineGuid, dynChildEditorTemplate);
     }
   }
 }

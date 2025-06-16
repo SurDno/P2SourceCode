@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEngine;
 
 namespace Engine.Source.UI.Menu.Protagonist.LockPicking
 {
@@ -19,7 +18,7 @@ namespace Engine.Source.UI.Menu.Protagonist.LockPicking
     public float SweetSpotSize = 0.12f;
     public float SourSpotMinSize = 0.05f;
     public float SourSpotMaxSize = 0.1f;
-    public LockPickingSettings.Pattern[] Patterns;
+    public Pattern[] Patterns;
 
     [Serializable]
     public struct Pattern

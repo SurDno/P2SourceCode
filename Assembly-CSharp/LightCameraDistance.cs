@@ -1,7 +1,4 @@
-﻿using UnityEngine;
-using UnityEngine.Profiling;
-
-[RequireComponent(typeof (Light))]
+﻿[RequireComponent(typeof (Light))]
 public class LightCameraDistance : MonoBehaviour
 {
   [SerializeField]
@@ -15,7 +12,7 @@ public class LightCameraDistance : MonoBehaviour
   {
     if (Profiler.enabled)
       Profiler.BeginSample(nameof (LightCameraDistance));
-    this.OnPreCullEvent2(camera);
+    OnPreCullEvent2(camera);
     if (!Profiler.enabled)
       return;
     Profiler.EndSample();
@@ -23,26 +20,26 @@ public class LightCameraDistance : MonoBehaviour
 
   private void OnPreCullEvent2(Camera camera)
   {
-    float num = this.rangeCurve.Evaluate(Vector3.Distance(camera.transform.position, this.cachedTransform.position));
-    this.cachedLight.range = num * this.baseRange;
-    this.cachedLight.shadows = (double) num < 0.3 ? LightShadows.None : this.shadows;
+    float num = rangeCurve.Evaluate(Vector3.Distance(camera.transform.position, cachedTransform.position));
+    cachedLight.range = num * baseRange;
+    cachedLight.shadows = num < 0.3 ? LightShadows.None : shadows;
   }
 
   private void OnEnable()
   {
-    this.cachedTransform = this.transform;
-    this.cachedLight = this.GetComponent<Light>();
-    this.baseRange = this.cachedLight.range;
-    this.shadows = this.cachedLight.shadows;
-    Camera.onPreCull += new Camera.CameraCallback(this.OnPreCullEvent);
+    cachedTransform = this.transform;
+    cachedLight = this.GetComponent<Light>();
+    baseRange = cachedLight.range;
+    shadows = cachedLight.shadows;
+    Camera.onPreCull += new Camera.CameraCallback(OnPreCullEvent);
   }
 
   private void OnDisable()
   {
-    Camera.onPreCull -= new Camera.CameraCallback(this.OnPreCullEvent);
-    this.cachedLight.range = this.baseRange;
-    this.cachedLight.shadows = this.shadows;
-    this.cachedLight = (Light) null;
-    this.cachedTransform = (Transform) null;
+    Camera.onPreCull -= new Camera.CameraCallback(OnPreCullEvent);
+    cachedLight.range = baseRange;
+    cachedLight.shadows = shadows;
+    cachedLight = (Light) null;
+    cachedTransform = (Transform) null;
   }
 }

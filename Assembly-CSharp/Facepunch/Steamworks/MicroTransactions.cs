@@ -1,5 +1,5 @@
-﻿using SteamNative;
-using System;
+﻿using System;
+using SteamNative;
 
 namespace Facepunch.Steamworks
 {
@@ -7,22 +7,22 @@ namespace Facepunch.Steamworks
   {
     internal Client client;
 
-    public event MicroTransactions.AuthorizationResponse OnAuthorizationResponse;
+    public event AuthorizationResponse OnAuthorizationResponse;
 
     internal MicroTransactions(Client c)
     {
-      this.client = c;
-      MicroTxnAuthorizationResponse_t.RegisterCallback((BaseSteamworks) this.client, new Action<MicroTxnAuthorizationResponse_t, bool>(this.onMicroTxnAuthorizationResponse));
+      client = c;
+      MicroTxnAuthorizationResponse_t.RegisterCallback(client, onMicroTxnAuthorizationResponse);
     }
 
     private void onMicroTxnAuthorizationResponse(MicroTxnAuthorizationResponse_t arg1, bool arg2)
     {
-      if (this.OnAuthorizationResponse == null)
+      if (OnAuthorizationResponse == null)
         return;
-      this.OnAuthorizationResponse(arg1.Authorized == (byte) 1, (int) arg1.AppID, arg1.OrderID);
+      OnAuthorizationResponse(arg1.Authorized == 1, (int) arg1.AppID, arg1.OrderID);
     }
 
-    public void Dispose() => this.client = (Client) null;
+    public void Dispose() => client = null;
 
     public delegate void AuthorizationResponse(bool authorized, int appId, ulong orderId);
   }

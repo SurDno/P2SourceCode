@@ -1,6 +1,4 @@
 ﻿using System;
-using UnityEngine;
-using UnityEngine.Playables;
 using UnityEngine.Timeline;
 
 namespace Cinemachine.Timeline
@@ -14,7 +12,7 @@ namespace Cinemachine.Timeline
   {
     public override Playable CreateTrackMixer(PlayableGraph graph, GameObject go, int inputCount)
     {
-      foreach (TimelineClip clip in this.GetClips())
+      foreach (TimelineClip clip in GetClips())
       {
         CinemachineVirtualCameraBase virtualCameraBase = ((CinemachineShot) clip.asset).VirtualCamera.Resolve(graph.GetResolver());
         if ((UnityEngine.Object) virtualCameraBase != (UnityEngine.Object) null)

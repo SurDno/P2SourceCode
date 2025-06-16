@@ -1,10 +1,7 @@
 ﻿using Cofe.Proxies;
-using Engine.Common;
-using Engine.Common.Components.Interactable;
 using PLVirtualMachine.Common;
 using PLVirtualMachine.Common.EngineAPI.VMECS;
 using PLVirtualMachine.Objects;
-using System;
 
 namespace PLVirtualMachine.Dynamic.Components
 {
@@ -18,7 +15,7 @@ namespace PLVirtualMachine.Dynamic.Components
       IParam obj;
       if (!((IBlueprint) templateObject).TryGetProperty("Interactive.ObjectName", out obj))
         return;
-      this.ObjectName = (ITextRef) obj.Value;
+      ObjectName = (ITextRef) obj.Value;
     }
 
     public void InitialiseEvent(DynamicEvent target)
@@ -26,10 +23,10 @@ namespace PLVirtualMachine.Dynamic.Components
       switch (target.Name)
       {
         case "BeginIteractEvent":
-          this.BeginIteractEvent += (Action<IEntity, IEntity, InteractType>) ((p1, p2, p3) => target.RaiseFromEngineImpl((object) p1, (object) p2, (object) p3));
+          BeginIteractEvent += (p1, p2, p3) => target.RaiseFromEngineImpl(p1, p2, p3);
           break;
         case "EndIteractEvent":
-          this.EndIteractEvent += (Action<IEntity, IEntity, InteractType>) ((p1, p2, p3) => target.RaiseFromEngineImpl((object) p1, (object) p2, (object) p3));
+          EndIteractEvent += (p1, p2, p3) => target.RaiseFromEngineImpl(p1, p2, p3);
           break;
       }
     }

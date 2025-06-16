@@ -1,6 +1,5 @@
-﻿using ParadoxNotion.Design;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using System.Collections.Generic;
+using ParadoxNotion.Design;
 
 namespace FlowCanvas.Nodes
 {
@@ -20,20 +19,20 @@ namespace FlowCanvas.Nodes
 
     protected override void RegisterPorts()
     {
-      this.collisionOut = this.AddFlowOutput("On Particle Collision");
-      this.AddValueOutput<ParticleSystem>("Particle System", (ValueHandler<ParticleSystem>) (() => this.particle));
-      this.AddValueOutput<Vector3>("Collision Point", (ValueHandler<Vector3>) (() => this.collisionEvents[0].intersection));
-      this.AddValueOutput<Vector3>("Collision Normal", (ValueHandler<Vector3>) (() => this.collisionEvents[0].normal));
-      this.AddValueOutput<Vector3>("Collision Velocity", (ValueHandler<Vector3>) (() => this.collisionEvents[0].velocity));
+      collisionOut = AddFlowOutput("On Particle Collision");
+      AddValueOutput("Particle System", (ValueHandler<ParticleSystem>) (() => particle));
+      AddValueOutput("Collision Point", (ValueHandler<Vector3>) (() => collisionEvents[0].intersection));
+      AddValueOutput("Collision Normal", (ValueHandler<Vector3>) (() => collisionEvents[0].normal));
+      AddValueOutput("Collision Velocity", (ValueHandler<Vector3>) (() => collisionEvents[0].velocity));
     }
 
     private void OnParticleCollision(GameObject other)
     {
-      this.particle = other.GetComponent<ParticleSystem>();
-      this.collisionEvents = new List<ParticleCollisionEvent>();
-      if ((Object) this.particle != (Object) null)
-        ParticlePhysicsExtensions.GetCollisionEvents(this.particle, this.target.value.gameObject, this.collisionEvents);
-      this.collisionOut.Call();
+      particle = other.GetComponent<ParticleSystem>();
+      collisionEvents = new List<ParticleCollisionEvent>();
+      if ((Object) particle != (Object) null)
+        ParticlePhysicsExtensions.GetCollisionEvents(particle, target.value.gameObject, collisionEvents);
+      collisionOut.Call();
     }
   }
 }

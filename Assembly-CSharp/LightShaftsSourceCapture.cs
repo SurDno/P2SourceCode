@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-[ExecuteInEditMode]
+﻿[ExecuteInEditMode]
 [RequireComponent(typeof (Light))]
 public class LightShaftsSourceCapture : MonoBehaviour
 {
@@ -17,7 +15,7 @@ public class LightShaftsSourceCapture : MonoBehaviour
     Light component = this.GetComponent<Light>();
     LightShafts.isLightActive = (double) component.intensity > 0.0;
     LightShafts.LightDirection = this.transform.forward;
-    LightShafts.shadowCastingColliders = this.shadowCastingLayers;
+    LightShafts.shadowCastingColliders = shadowCastingLayers;
     Shader.SetGlobalColor("_SunlightColor", (component.color * component.intensity) with
     {
       a = 1f

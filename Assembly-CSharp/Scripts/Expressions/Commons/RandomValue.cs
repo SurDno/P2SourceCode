@@ -3,7 +3,6 @@ using Engine.Common.Generator;
 using Engine.Source.Commons.Effects;
 using Expressions;
 using Inspectors;
-using UnityEngine;
 
 namespace Scripts.Expressions.Commons
 {
@@ -15,6 +14,6 @@ namespace Scripts.Expressions.Commons
 
     public string ValueView => "random";
 
-    public string TypeView => TypeUtility.GetTypeName(this.GetType());
+    public string TypeView => TypeUtility.GetTypeName(GetType());
   }
 }

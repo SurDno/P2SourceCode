@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace Engine.Impl.UI.Controls
+﻿namespace Engine.Impl.UI.Controls
 {
   public class ProgressCanvasAlpha : ProgressView
   {
@@ -13,12 +11,12 @@ namespace Engine.Impl.UI.Controls
 
     protected override void ApplyProgress()
     {
-      if (!((Object) this.canvasGroup != (Object) null))
+      if (!((Object) canvasGroup != (Object) null))
         return;
-      this.canvasGroup.alpha = this.Progress;
-      bool flag = (double) this.Progress > 0.0;
-      this.canvasGroup.interactable = flag;
-      this.canvasGroup.blocksRaycasts = flag;
+      canvasGroup.alpha = Progress;
+      bool flag = Progress > 0.0;
+      canvasGroup.interactable = flag;
+      canvasGroup.blocksRaycasts = flag;
     }
   }
 }

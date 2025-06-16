@@ -1,7 +1,6 @@
 ﻿using Engine.Common.Services;
 using Engine.Impl.Services;
 using Engine.Source.UI;
-using UnityEngine;
 
 public class MainMenuPrefabAnchor : EngineDependent
 {
@@ -14,42 +13,42 @@ public class MainMenuPrefabAnchor : EngineDependent
 
   private void Spawn()
   {
-    if (this.spawned)
+    if (spawned)
       return;
-    this.spawned = true;
-    if ((Object) this.prefab == (Object) null)
+    spawned = true;
+    if ((Object) prefab == (Object) null)
       return;
-    this.instance = Object.Instantiate<GameObject>(this.prefab, this.transform, false);
-    this.instance.name = this.prefab.name;
+    instance = Object.Instantiate<GameObject>(prefab, this.transform, false);
+    instance.name = prefab.name;
   }
 
   private void Despawn()
   {
-    if (!this.spawned)
+    if (!spawned)
       return;
-    this.spawned = false;
-    if ((Object) this.instance == (Object) null)
+    spawned = false;
+    if ((Object) instance == (Object) null)
       return;
-    Object.Destroy((Object) this.instance);
-    this.instance = (GameObject) null;
+    Object.Destroy((Object) instance);
+    instance = (GameObject) null;
   }
 
-  protected override void OnConnectToEngine() => this.CheckMainMenu();
+  protected override void OnConnectToEngine() => CheckMainMenu();
 
-  protected override void OnDisconnectFromEngine() => this.Despawn();
+  protected override void OnDisconnectFromEngine() => Despawn();
 
   private void Update()
   {
-    if (!this.Connected)
+    if (!Connected)
       return;
-    this.CheckMainMenu();
+    CheckMainMenu();
   }
 
   private void CheckMainMenu()
   {
-    if (this.uiService?.Active is IMainMenu)
-      this.Spawn();
+    if (uiService?.Active is IMainMenu)
+      Spawn();
     else
-      this.Despawn();
+      Despawn();
   }
 }

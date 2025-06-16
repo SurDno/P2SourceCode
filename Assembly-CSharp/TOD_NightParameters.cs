@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEngine;
 
 [Serializable]
 public class TOD_NightParameters
@@ -21,10 +20,9 @@ public class TOD_NightParameters
   public float Directionality = 0.7f;
   [Tooltip("Density of the fog covering the sky.")]
   [TOD_Range(0.0f, 1f)]
-  public float Fogginess = 0.0f;
+  public float Fogginess;
   [Tooltip("Color of the moon mesh.\nLeft value: Sun at horizon.\nRight value: Sun opposite to zenith.")]
-  public Gradient MoonColor = new Gradient()
-  {
+  public Gradient MoonColor = new Gradient {
     alphaKeys = new GradientAlphaKey[3]
     {
       new GradientAlphaKey(1f, 0.0f),
@@ -39,8 +37,7 @@ public class TOD_NightParameters
     }
   };
   [Tooltip("Color of the light that hits the ground.\nLeft value: Sun at horizon.\nRight value: Sun opposite to zenith.")]
-  public Gradient LightColor = new Gradient()
-  {
+  public Gradient LightColor = new Gradient {
     alphaKeys = new GradientAlphaKey[3]
     {
       new GradientAlphaKey(1f, 0.0f),
@@ -55,8 +52,7 @@ public class TOD_NightParameters
     }
   };
   [Tooltip("Color of the god rays.\nLeft value: Sun at horizon.\nRight value: Sun opposite to zenith.")]
-  public Gradient RayColor = new Gradient()
-  {
+  public Gradient RayColor = new Gradient {
     alphaKeys = new GradientAlphaKey[3]
     {
       new GradientAlphaKey(1f, 0.0f),
@@ -71,8 +67,7 @@ public class TOD_NightParameters
     }
   };
   [Tooltip("Color of the light that hits the atmosphere.\nLeft value: Sun at horizon.\nRight value: Sun opposite to zenith.")]
-  public Gradient SkyColor = new Gradient()
-  {
+  public Gradient SkyColor = new Gradient {
     alphaKeys = new GradientAlphaKey[3]
     {
       new GradientAlphaKey(1f, 0.0f),
@@ -87,8 +82,7 @@ public class TOD_NightParameters
     }
   };
   [Tooltip("Color of the clouds.\nLeft value: Sun at horizon.\nRight value: Sun opposite to zenith.")]
-  public Gradient CloudColor = new Gradient()
-  {
+  public Gradient CloudColor = new Gradient {
     alphaKeys = new GradientAlphaKey[3]
     {
       new GradientAlphaKey(1f, 0.0f),
@@ -103,8 +97,7 @@ public class TOD_NightParameters
     }
   };
   [Tooltip("Color of the atmosphere fog.\nLeft value: Sun at horizon.\nRight value: Sun opposite to zenith.")]
-  public Gradient FogColor = new Gradient()
-  {
+  public Gradient FogColor = new Gradient {
     alphaKeys = new GradientAlphaKey[3]
     {
       new GradientAlphaKey(1f, 0.0f),
@@ -119,8 +112,7 @@ public class TOD_NightParameters
     }
   };
   [Tooltip("Color of the ambient light.\nLeft value: Sun at horizon.\nRight value: Sun opposite to zenith.")]
-  public Gradient AmbientColor = new Gradient()
-  {
+  public Gradient AmbientColor = new Gradient {
     alphaKeys = new GradientAlphaKey[3]
     {
       new GradientAlphaKey(1f, 0.0f),

@@ -19,7 +19,7 @@ namespace Engine.Source.Components.Interactable.Validators
         return new ValidateResult(false, "IDoorComponent not found");
       if (component.Bolted.Value != (item.Type == InteractType.Block))
         return new ValidateResult(true);
-      return new ValidateResult(false, "Bolted " + component.Bolted.Value.ToString() + " == " + (object) item.Type);
+      return new ValidateResult(false, "Bolted " + component.Bolted.Value + " == " + item.Type);
     }
   }
 }

@@ -1,16 +1,15 @@
-﻿using Engine.Behaviours.Components;
+﻿using System;
+using Engine.Behaviours.Components;
 using Engine.Behaviours.Unity.Mecanim;
 using Engine.Common;
 using Engine.Common.Components.AttackerPlayer;
-using System;
-using UnityEngine;
 
 public class NPCWeaponControllerBase : INPCWeaponController
 {
   protected Animator animator;
   protected AnimatorState45 animatorState;
   private FightAnimatorBehavior.AnimatorState fightAnimatorState;
-  protected float layersWeight = 0.0f;
+  protected float layersWeight;
   protected int walkLayerIndex;
   protected int attackLayerIndex;
   protected int reactionLayerIndex;
@@ -24,12 +23,12 @@ public class NPCWeaponControllerBase : INPCWeaponController
   public virtual void Initialise(NPCWeaponService service)
   {
     this.service = service;
-    this.animator = service.gameObject.GetComponent<Pivot>().GetAnimator();
-    this.animatorState = AnimatorState45.GetAnimatorState(this.animator);
-    this.fightAnimatorState = FightAnimatorBehavior.GetAnimatorState(this.animator);
-    this.GetLayersIndices();
-    this.layersWeight = 0.0f;
-    this.SetLayers(0.0f);
+    animator = service.gameObject.GetComponent<Pivot>().GetAnimator();
+    animatorState = AnimatorState45.GetAnimatorState(animator);
+    fightAnimatorState = FightAnimatorBehavior.GetAnimatorState(animator);
+    GetLayersIndices();
+    layersWeight = 0.0f;
+    SetLayers(0.0f);
   }
 
   public virtual void IndoorChanged()
@@ -38,93 +37,93 @@ public class NPCWeaponControllerBase : INPCWeaponController
 
   protected virtual void SetLayers(float weight, bool immediate = false)
   {
-    if ((UnityEngine.Object) this.service == (UnityEngine.Object) null)
+    if ((UnityEngine.Object) service == (UnityEngine.Object) null)
       return;
-    if (this.walkLayerIndex != -1)
-      this.service.AddNeededLayer(this.walkLayerIndex, weight);
-    if (this.attackLayerIndex != -1)
-      this.service.AddNeededLayer(this.attackLayerIndex, weight);
-    if (this.reactionLayerIndex != -1)
-      this.service.AddNeededLayer(this.reactionLayerIndex, weight);
+    if (walkLayerIndex != -1)
+      service.AddNeededLayer(walkLayerIndex, weight);
+    if (attackLayerIndex != -1)
+      service.AddNeededLayer(attackLayerIndex, weight);
+    if (reactionLayerIndex != -1)
+      service.AddNeededLayer(reactionLayerIndex, weight);
     if (!immediate)
       return;
-    this.service.ForceUpdateLayers();
+    service.ForceUpdateLayers();
   }
 
   protected virtual void GetLayersIndices()
   {
   }
 
-  protected virtual void ShowWeapon(bool show) => this.weaponIsShown = show;
+  protected virtual void ShowWeapon(bool show) => weaponIsShown = show;
 
   public virtual void Activate()
   {
-    this.animatorState.SetTrigger("Fight.Triggers/WeaponPrepare");
-    this.SetLayers(1f);
+    animatorState.SetTrigger("Fight.Triggers/WeaponPrepare");
+    SetLayers(1f);
   }
 
-  public virtual void Shutdown() => this.SetLayers(0.0f);
+  public virtual void Shutdown() => SetLayers(0.0f);
 
-  public virtual bool IsChangingWeapon() => (double) this.layersWeight < 1.0 || !this.weaponIsShown;
+  public virtual bool IsChangingWeapon() => layersWeight < 1.0 || !weaponIsShown;
 
   protected void Drop()
   {
-    if (!this.droped)
+    if (!droped)
     {
-      Action<IEntity, ShotType, ReactionType> weaponShootEvent = this.WeaponShootEvent;
+      Action<IEntity, ShotType, ReactionType> weaponShootEvent = WeaponShootEvent;
       if (weaponShootEvent != null)
-        weaponShootEvent(this.item, ShotType.Drop, ReactionType.None);
+        weaponShootEvent(item, ShotType.Drop, ReactionType.None);
     }
-    this.droped = true;
+    droped = true;
   }
 
   protected void BombHit()
   {
-    Action<IEntity, ShotType, ReactionType> weaponShootEvent = this.WeaponShootEvent;
+    Action<IEntity, ShotType, ReactionType> weaponShootEvent = WeaponShootEvent;
     if (weaponShootEvent == null)
       return;
-    weaponShootEvent(this.item, ShotType.Drop, ReactionType.None);
+    weaponShootEvent(item, ShotType.Drop, ReactionType.None);
   }
 
   public void ActivateImmediate()
   {
-    this.animatorState.SetTrigger("Fight.Triggers/CancelWeaponPrepare");
-    this.layersWeight = 1f;
-    this.SetLayers(1f, true);
-    this.ShowWeapon(true);
+    animatorState.SetTrigger("Fight.Triggers/CancelWeaponPrepare");
+    layersWeight = 1f;
+    SetLayers(1f, true);
+    ShowWeapon(true);
   }
 
   public void ShutdownImmediate()
   {
-    this.layersWeight = 0.0f;
-    this.SetLayers(0.0f, true);
-    this.ShowWeapon(false);
+    layersWeight = 0.0f;
+    SetLayers(0.0f, true);
+    ShowWeapon(false);
   }
 
   public bool Validate(GameObject gameObject) => throw new NotImplementedException();
 
   public virtual void Update()
   {
-    float num = Mathf.MoveTowards(this.layersWeight, 1f, Time.deltaTime * 5f);
-    if ((double) this.layersWeight == 0.0 && (double) num > 0.0)
-      this.animatorState.SetTrigger("Fight.Triggers/WeaponPrepare");
-    if ((double) this.layersWeight < 1.0 && (double) num >= 1.0)
-      this.animatorState.SetTrigger("Fight.Triggers/WeaponOn");
-    this.layersWeight = num;
+    float num = Mathf.MoveTowards(layersWeight, 1f, Time.deltaTime * 5f);
+    if (layersWeight == 0.0 && num > 0.0)
+      animatorState.SetTrigger("Fight.Triggers/WeaponPrepare");
+    if (layersWeight < 1.0 && num >= 1.0)
+      animatorState.SetTrigger("Fight.Triggers/WeaponOn");
+    layersWeight = num;
   }
 
   public virtual void UpdateSilent()
   {
-    float num = Mathf.MoveTowards(this.layersWeight, 0.0f, Time.deltaTime / 0.5f);
-    if ((double) this.layersWeight > 0.5 && (double) num <= 0.5)
-      this.ShowWeapon(false);
-    this.layersWeight = num;
+    float num = Mathf.MoveTowards(layersWeight, 0.0f, Time.deltaTime / 0.5f);
+    if (layersWeight > 0.5 && num <= 0.5)
+      ShowWeapon(false);
+    layersWeight = num;
   }
 
   public void SetItem(IEntity item)
   {
     this.item = item;
-    this.droped = false;
+    droped = false;
   }
 
   public void TriggerAction(WeaponActionEnum weaponAction)
@@ -132,153 +131,153 @@ public class NPCWeaponControllerBase : INPCWeaponController
     switch (weaponAction)
     {
       case WeaponActionEnum.Uppercut:
-        this.animatorState.SetTrigger("Fight.Triggers/Attack");
-        this.animator.SetInteger("Fight.AttackType", 8);
+        animatorState.SetTrigger("Fight.Triggers/Attack");
+        animator.SetInteger("Fight.AttackType", 8);
         break;
       case WeaponActionEnum.JabAttack:
-        this.animatorState.SetTrigger("Fight.Triggers/Attack");
-        this.animator.SetInteger("Fight.AttackType", 0);
+        animatorState.SetTrigger("Fight.Triggers/Attack");
+        animator.SetInteger("Fight.AttackType", 0);
         break;
       case WeaponActionEnum.StepAttack:
-        this.animatorState.SetTrigger("Fight.Triggers/Attack");
-        this.animator.SetInteger("Fight.AttackType", 1);
+        animatorState.SetTrigger("Fight.Triggers/Attack");
+        animator.SetInteger("Fight.AttackType", 1);
         break;
       case WeaponActionEnum.TelegraphAttack:
-        this.animatorState.SetTrigger("Fight.Triggers/Attack");
-        this.animator.SetInteger("Fight.AttackType", 2);
+        animatorState.SetTrigger("Fight.Triggers/Attack");
+        animator.SetInteger("Fight.AttackType", 2);
         break;
       case WeaponActionEnum.RunAttack:
-        this.animatorState.SetTrigger("Fight.Triggers/RunPunch");
+        animatorState.SetTrigger("Fight.Triggers/RunPunch");
         break;
       case WeaponActionEnum.Push:
-        this.animatorState.SetTrigger("Fight.Triggers/Push");
+        animatorState.SetTrigger("Fight.Triggers/Push");
         break;
       case WeaponActionEnum.KnockDown:
-        Action<IEntity, ShotType, ReactionType> weaponShootEvent = this.WeaponShootEvent;
+        Action<IEntity, ShotType, ReactionType> weaponShootEvent = WeaponShootEvent;
         if (weaponShootEvent == null)
           break;
-        weaponShootEvent(this.item, ShotType.KnockDown, ReactionType.None);
+        weaponShootEvent(item, ShotType.KnockDown, ReactionType.None);
         break;
       case WeaponActionEnum.SamopalAim:
-        this.animatorState.SetTrigger("Fight.Triggers/AimSamopal");
+        animatorState.SetTrigger("Fight.Triggers/AimSamopal");
         break;
       case WeaponActionEnum.SamopalFire:
-        this.animatorState.SetTrigger("Fight.Triggers/FireSamopal");
+        animatorState.SetTrigger("Fight.Triggers/FireSamopal");
         break;
       case WeaponActionEnum.RifleAim:
-        this.animatorState.SetTrigger("Fight.Triggers/AimRifle");
+        animatorState.SetTrigger("Fight.Triggers/AimRifle");
         break;
       case WeaponActionEnum.RifleFire:
-        this.animatorState.SetTrigger("Fight.Triggers/FireRifle");
+        animatorState.SetTrigger("Fight.Triggers/FireRifle");
         break;
       case WeaponActionEnum.ForcedSamopalDrop:
-        this.animatorState.SetTrigger("Fight.Triggers/DropSamopal");
+        animatorState.SetTrigger("Fight.Triggers/DropSamopal");
         break;
     }
   }
 
   public virtual void OnAnimatorEvent(string data)
   {
-    if ((double) this.layersWeight < 0.5)
+    if (layersWeight < 0.5)
       return;
     ReactionType reactionType = !data.EndsWith(" Left") ? (!data.EndsWith(" Right") ? (!data.EndsWith(" Front") ? (!data.EndsWith(" Uppercut") ? ReactionType.Front : ReactionType.Uppercut) : ReactionType.Front) : ReactionType.Right) : ReactionType.Left;
     if (data.StartsWith("Hands.Punch.UltraLight"))
     {
-      if (this.IsReactingToHit())
+      if (IsReactingToHit())
         return;
-      Action<IEntity, ShotType, ReactionType> weaponShootEvent = this.WeaponShootEvent;
+      Action<IEntity, ShotType, ReactionType> weaponShootEvent = WeaponShootEvent;
       if (weaponShootEvent == null)
         return;
-      weaponShootEvent(this.item, ShotType.UltraLight, reactionType);
+      weaponShootEvent(item, ShotType.UltraLight, reactionType);
     }
     else if (data.StartsWith("Hands.Punch.Light"))
     {
-      if (this.IsReactingToHit())
+      if (IsReactingToHit())
         return;
-      Action<IEntity, ShotType, ReactionType> weaponShootEvent = this.WeaponShootEvent;
+      Action<IEntity, ShotType, ReactionType> weaponShootEvent = WeaponShootEvent;
       if (weaponShootEvent == null)
         return;
-      weaponShootEvent(this.item, ShotType.Light, reactionType);
+      weaponShootEvent(item, ShotType.Light, reactionType);
     }
     else if (data.StartsWith("Hands.Punch.Moderate"))
     {
-      if (this.IsReactingToHit())
+      if (IsReactingToHit())
         return;
-      Action<IEntity, ShotType, ReactionType> weaponShootEvent = this.WeaponShootEvent;
+      Action<IEntity, ShotType, ReactionType> weaponShootEvent = WeaponShootEvent;
       if (weaponShootEvent == null)
         return;
-      weaponShootEvent(this.item, ShotType.Moderate, reactionType);
+      weaponShootEvent(item, ShotType.Moderate, reactionType);
     }
     else if (data.StartsWith("Hands.Punch.Strong"))
     {
-      if (this.IsReactingToHit())
+      if (IsReactingToHit())
         return;
-      Action<IEntity, ShotType, ReactionType> weaponShootEvent = this.WeaponShootEvent;
+      Action<IEntity, ShotType, ReactionType> weaponShootEvent = WeaponShootEvent;
       if (weaponShootEvent == null)
         return;
-      weaponShootEvent(this.item, ShotType.Strong, reactionType);
+      weaponShootEvent(item, ShotType.Strong, reactionType);
     }
     else if (data.StartsWith("Hands.Uppercut"))
     {
-      if (this.IsReactingToHit())
+      if (IsReactingToHit())
         return;
-      Action<IEntity, ShotType, ReactionType> weaponShootEvent = this.WeaponShootEvent;
+      Action<IEntity, ShotType, ReactionType> weaponShootEvent = WeaponShootEvent;
       if (weaponShootEvent == null)
         return;
-      weaponShootEvent(this.item, ShotType.Uppercut, ReactionType.Uppercut);
+      weaponShootEvent(item, ShotType.Uppercut, ReactionType.Uppercut);
     }
     else if (data.StartsWith("Hands.Push"))
     {
-      Action<IEntity, ShotType, ReactionType> weaponShootEvent = this.WeaponShootEvent;
+      Action<IEntity, ShotType, ReactionType> weaponShootEvent = WeaponShootEvent;
       if (weaponShootEvent == null)
         return;
-      weaponShootEvent(this.item, ShotType.Push, ReactionType.None);
+      weaponShootEvent(item, ShotType.Push, ReactionType.None);
     }
     else if (data.StartsWith("Hands.Prepunch"))
     {
-      Action<IEntity, ShotType, ReactionType> weaponShootEvent = this.WeaponShootEvent;
+      Action<IEntity, ShotType, ReactionType> weaponShootEvent = WeaponShootEvent;
       if (weaponShootEvent == null)
         return;
-      weaponShootEvent(this.item, ShotType.Prepunch, ReactionType.None);
+      weaponShootEvent(item, ShotType.Prepunch, ReactionType.None);
     }
     else if (data.StartsWith("Bomb.Throw"))
     {
-      Action<IEntity, ShotType, ReactionType> weaponShootEvent = this.WeaponShootEvent;
+      Action<IEntity, ShotType, ReactionType> weaponShootEvent = WeaponShootEvent;
       if (weaponShootEvent == null)
         return;
-      weaponShootEvent(this.item, ShotType.Throw, ReactionType.None);
+      weaponShootEvent(item, ShotType.Throw, ReactionType.None);
     }
     else if (data.StartsWith("Samopal.Hit"))
     {
-      Action<IEntity, ShotType, ReactionType> weaponShootEvent = this.WeaponShootEvent;
+      Action<IEntity, ShotType, ReactionType> weaponShootEvent = WeaponShootEvent;
       if (weaponShootEvent == null)
         return;
-      weaponShootEvent(this.item, ShotType.Fire, ReactionType.None);
+      weaponShootEvent(item, ShotType.Fire, ReactionType.None);
     }
     else if (data.StartsWith("Samopal.Drop"))
-      this.Drop();
+      Drop();
     else if (data.StartsWith("Rifle.Hit"))
     {
-      if (this.IsReactingToHit())
+      if (IsReactingToHit())
         return;
-      Action<IEntity, ShotType, ReactionType> weaponShootEvent = this.WeaponShootEvent;
+      Action<IEntity, ShotType, ReactionType> weaponShootEvent = WeaponShootEvent;
       if (weaponShootEvent == null)
         return;
-      weaponShootEvent(this.item, ShotType.Fire, ReactionType.None);
+      weaponShootEvent(item, ShotType.Fire, ReactionType.None);
     }
     else
     {
       if (!data.StartsWith("Rifle.Punch"))
         return;
-      Action<IEntity, ShotType, ReactionType> weaponShootEvent = this.WeaponShootEvent;
+      Action<IEntity, ShotType, ReactionType> weaponShootEvent = WeaponShootEvent;
       if (weaponShootEvent != null)
-        weaponShootEvent(this.item, ShotType.Moderate, ReactionType.Front);
+        weaponShootEvent(item, ShotType.Moderate, ReactionType.Front);
     }
   }
 
   private bool IsReactingToHit()
   {
-    return this.fightAnimatorState != null && (this.fightAnimatorState.IsReaction || this.fightAnimatorState.IsStagger);
+    return fightAnimatorState != null && (fightAnimatorState.IsReaction || fightAnimatorState.IsStagger);
   }
 
   public virtual void PunchReaction(ReactionType reactionType)

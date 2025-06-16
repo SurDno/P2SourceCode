@@ -1,14 +1,14 @@
-﻿using Cofe.Loggers;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Xml;
+using Cofe.Loggers;
 using Engine.Common.Commons;
 using PLVirtualMachine.Base;
 using PLVirtualMachine.Common;
 using PLVirtualMachine.Common.Data;
 using PLVirtualMachine.Data;
 using PLVirtualMachine.GameLogic;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Xml;
 using VirtualMachine.Common;
 using VirtualMachine.Common.Data;
 using VirtualMachine.Data;
@@ -35,52 +35,51 @@ namespace PLVirtualMachine.FSM
   {
     [FieldData("BranchConditions", DataFieldType.Reference)]
     private List<ICondition> branchesConditions = new List<ICondition>();
-    [FieldData("BranchType", DataFieldType.None)]
+    [FieldData("BranchType")]
     private EStateType branchType;
-    [FieldData("BranchVariantInfo", DataFieldType.None)]
+    [FieldData("BranchVariantInfo")]
     private List<NameTypeData> branchVariantInfos;
     private List<VMMessageCastInfo> messageCastInfo;
 
     public override void EditorDataRead(XmlReader xml, IDataCreator creator, string typeContext)
     {
-      while (xml.Read())
-      {
+      while (xml.Read()) {
         if (xml.NodeType == XmlNodeType.Element)
         {
           switch (xml.Name)
           {
             case "BranchConditions":
-              this.branchesConditions = EditorDataReadUtility.ReadReferenceList<ICondition>(xml, creator, this.branchesConditions);
+              branchesConditions = EditorDataReadUtility.ReadReferenceList(xml, creator, branchesConditions);
               continue;
             case "BranchType":
-              this.branchType = EditorDataReadUtility.ReadEnum<EStateType>(xml);
+              branchType = EditorDataReadUtility.ReadEnum<EStateType>(xml);
               continue;
             case "BranchVariantInfo":
-              this.branchVariantInfos = EditorDataReadUtility.ReadEditorDataSerializableList<NameTypeData>(xml, creator, this.branchVariantInfos);
+              branchVariantInfos = EditorDataReadUtility.ReadEditorDataSerializableList(xml, creator, branchVariantInfos);
               continue;
             case "EntryPoints":
-              this.entryPoints = EditorDataReadUtility.ReadReferenceList<IEntryPoint>(xml, creator, this.entryPoints);
+              entryPoints = EditorDataReadUtility.ReadReferenceList(xml, creator, entryPoints);
               continue;
             case "IgnoreBlock":
-              this.ignoreBlock = EditorDataReadUtility.ReadValue(xml, this.ignoreBlock);
+              ignoreBlock = EditorDataReadUtility.ReadValue(xml, ignoreBlock);
               continue;
             case "Initial":
-              this.initial = EditorDataReadUtility.ReadValue(xml, this.initial);
+              initial = EditorDataReadUtility.ReadValue(xml, initial);
               continue;
             case "InputLinks":
-              this.inputLinks = EditorDataReadUtility.ReadReferenceList<VMEventLink>(xml, creator, this.inputLinks);
+              inputLinks = EditorDataReadUtility.ReadReferenceList(xml, creator, inputLinks);
               continue;
             case "Name":
-              this.name = EditorDataReadUtility.ReadValue(xml, this.name);
+              name = EditorDataReadUtility.ReadValue(xml, name);
               continue;
             case "OutputLinks":
-              this.outputLinks = EditorDataReadUtility.ReadReferenceList<ILink>(xml, creator, this.outputLinks);
+              outputLinks = EditorDataReadUtility.ReadReferenceList(xml, creator, outputLinks);
               continue;
             case "Owner":
-              this.owner = EditorDataReadUtility.ReadReference<IContainer>(xml, creator);
+              owner = EditorDataReadUtility.ReadReference<IContainer>(xml, creator);
               continue;
             case "Parent":
-              this.parent = EditorDataReadUtility.ReadReference<IContainer>(xml, creator);
+              parent = EditorDataReadUtility.ReadReference<IContainer>(xml, creator);
               continue;
             default:
               if (XMLDataLoader.Logs.Add(typeContext + " : " + xml.Name))
@@ -89,7 +88,8 @@ namespace PLVirtualMachine.FSM
               continue;
           }
         }
-        else if (xml.NodeType == XmlNodeType.EndElement)
+
+        if (xml.NodeType == XmlNodeType.EndElement)
           break;
       }
     }
@@ -99,44 +99,44 @@ namespace PLVirtualMachine.FSM
     {
     }
 
-    public override EStateType StateType => this.branchType;
+    public override EStateType StateType => branchType;
 
     public ICondition GetBranchCondition(int exitPntIndex)
     {
-      return exitPntIndex >= 0 && exitPntIndex < this.branchesConditions.Count ? this.branchesConditions[exitPntIndex] : (ICondition) null;
+      return exitPntIndex >= 0 && exitPntIndex < branchesConditions.Count ? branchesConditions[exitPntIndex] : null;
     }
 
-    public override int GetExitPointsCount() => this.branchesConditions.Count + 1;
+    public override int GetExitPointsCount() => branchesConditions.Count + 1;
 
     public VMMessageCastInfo GetBranchVariantCastInfo(int varIndex)
     {
-      if (this.branchType != EStateType.STATE_TYPE_MESSAGE_CAST_BRANCH)
+      if (branchType != EStateType.STATE_TYPE_MESSAGE_CAST_BRANCH)
       {
         Logger.AddError("Invalid branch type for cast info get");
-        return (VMMessageCastInfo) null;
+        return null;
       }
-      if (this.messageCastInfo == null)
+      if (messageCastInfo == null)
       {
-        Logger.AddError(string.Format("Message cast info in branch {0} not loaded", (object) this.BaseGuid));
-        this.LoadMessageCastInfo();
+        Logger.AddError(string.Format("Message cast info in branch {0} not loaded", BaseGuid));
+        LoadMessageCastInfo();
       }
-      if (varIndex >= 0 && varIndex < this.messageCastInfo.Count<VMMessageCastInfo>())
-        return this.messageCastInfo[varIndex];
+      if (varIndex >= 0 && varIndex < messageCastInfo.Count())
+        return messageCastInfo[varIndex];
       Logger.AddError("Invalid branch variant index");
-      return (VMMessageCastInfo) null;
+      return null;
     }
 
     public IVariable MakeCastedVariable(IVariable prevVariable, int varIndex)
     {
-      if (this.messageCastInfo == null)
+      if (messageCastInfo == null)
       {
-        Logger.AddError(string.Format("Message cast info in branch {0} not loaded", (object) this.BaseGuid));
-        this.LoadMessageCastInfo();
+        Logger.AddError(string.Format("Message cast info in branch {0} not loaded", BaseGuid));
+        LoadMessageCastInfo();
       }
       IVariable variable = prevVariable;
-      if (this.branchType == EStateType.STATE_TYPE_MESSAGE_CAST_BRANCH && varIndex < this.messageCastInfo.Count<VMMessageCastInfo>())
+      if (branchType == EStateType.STATE_TYPE_MESSAGE_CAST_BRANCH && varIndex < messageCastInfo.Count())
       {
-        VMMessageCastInfo branchVariantCastInfo = this.GetBranchVariantCastInfo(varIndex);
+        VMMessageCastInfo branchVariantCastInfo = GetBranchVariantCastInfo(varIndex);
         if (branchVariantCastInfo.Message != null && branchVariantCastInfo.CastType != null && branchVariantCastInfo.Message.Name == prevVariable.Name)
         {
           string name = prevVariable.Name;
@@ -151,48 +151,48 @@ namespace PLVirtualMachine.FSM
 
     public override void OnAfterLoad()
     {
-      if (!VMBaseObjectUtility.CheckOrders<ICondition>(this.branchesConditions))
-        Logger.AddError(string.Format("Branch line id={0} has invalid conditions ordering", (object) this.BaseGuid));
-      this.UpdateLinks();
+      if (!VMBaseObjectUtility.CheckOrders(branchesConditions))
+        Logger.AddError(string.Format("Branch line id={0} has invalid conditions ordering", BaseGuid));
+      UpdateLinks();
     }
 
     public override void OnPostLoad()
     {
-      if (this.messageCastInfo != null)
+      if (messageCastInfo != null)
         return;
-      this.LoadMessageCastInfo();
+      LoadMessageCastInfo();
     }
 
     public override void Clear()
     {
       base.Clear();
-      if (this.branchesConditions != null)
+      if (branchesConditions != null)
       {
-        foreach (VMPartCondition branchesCondition in this.branchesConditions)
+        foreach (VMPartCondition branchesCondition in branchesConditions)
           branchesCondition.Clear();
-        this.branchesConditions.Clear();
-        this.branchesConditions = (List<ICondition>) null;
+        branchesConditions.Clear();
+        branchesConditions = null;
       }
-      if (this.branchVariantInfos != null)
+      if (branchVariantInfos != null)
       {
-        this.branchVariantInfos.Clear();
-        this.branchVariantInfos = (List<NameTypeData>) null;
+        branchVariantInfos.Clear();
+        branchVariantInfos = null;
       }
-      if (this.messageCastInfo == null)
+      if (messageCastInfo == null)
         return;
-      this.messageCastInfo.Clear();
-      this.messageCastInfo = (List<VMMessageCastInfo>) null;
+      messageCastInfo.Clear();
+      messageCastInfo = null;
     }
 
     private void LoadMessageCastInfo()
     {
-      this.messageCastInfo = new List<VMMessageCastInfo>();
-      if (this.branchVariantInfos == null)
+      messageCastInfo = new List<VMMessageCastInfo>();
+      if (branchVariantInfos == null)
         return;
-      foreach (NameTypeData branchVariantInfo in this.branchVariantInfos)
+      foreach (NameTypeData branchVariantInfo in branchVariantInfos)
       {
-        List<IVariable> contextVariables = this.GetLocalContextVariables(EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_MESSAGE, (IContextElement) null, 0);
-        ContextVariable message = (ContextVariable) null;
+        List<IVariable> contextVariables = GetLocalContextVariables(EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_MESSAGE, null);
+        ContextVariable message = null;
         for (int index = 0; index < contextVariables.Count; ++index)
         {
           if (contextVariables[index] is ContextVariable contextVariable && contextVariable.Name == branchVariantInfo.Name)
@@ -202,11 +202,11 @@ namespace PLVirtualMachine.FSM
           }
         }
         if (message == null)
-          Logger.AddError(string.Format("Branch variant info {0} not loaded", (object) branchVariantInfo.Name));
+          Logger.AddError(string.Format("Branch variant info {0} not loaded", branchVariantInfo.Name));
         else
-          this.messageCastInfo.Add(new VMMessageCastInfo(message, branchVariantInfo.Type));
+          messageCastInfo.Add(new VMMessageCastInfo(message, branchVariantInfo.Type));
       }
-      this.branchVariantInfos = (List<NameTypeData>) null;
+      branchVariantInfos = null;
     }
   }
 }

@@ -10,12 +10,12 @@ namespace ParadoxNotion.Serialization.FullSerializer.Internal
 
     public object Migrate(object ancestorInstance)
     {
-      return Activator.CreateInstance(this.ModelType, ancestorInstance);
+      return Activator.CreateInstance(ModelType, ancestorInstance);
     }
 
     public override string ToString()
     {
-      return "fsVersionedType [ModelType=" + (object) this.ModelType + ", VersionString=" + this.VersionString + ", Ancestors.Length=" + (object) this.Ancestors.Length + "]";
+      return "fsVersionedType [ModelType=" + ModelType + ", VersionString=" + VersionString + ", Ancestors.Length=" + Ancestors.Length + "]";
     }
 
     public static bool operator ==(fsVersionedType a, fsVersionedType b)
@@ -30,9 +30,9 @@ namespace ParadoxNotion.Serialization.FullSerializer.Internal
 
     public override bool Equals(object obj)
     {
-      return obj is fsVersionedType fsVersionedType && this.ModelType == fsVersionedType.ModelType;
+      return obj is fsVersionedType fsVersionedType && ModelType == fsVersionedType.ModelType;
     }
 
-    public override int GetHashCode() => this.ModelType.GetHashCode();
+    public override int GetHashCode() => ModelType.GetHashCode();
   }
 }

@@ -1,21 +1,20 @@
 ﻿using System;
-using UnityEngine;
 
 namespace RootMotion
 {
   [Serializable]
   public class BipedLimbOrientations
   {
-    public BipedLimbOrientations.LimbOrientation leftArm;
-    public BipedLimbOrientations.LimbOrientation rightArm;
-    public BipedLimbOrientations.LimbOrientation leftLeg;
-    public BipedLimbOrientations.LimbOrientation rightLeg;
+    public LimbOrientation leftArm;
+    public LimbOrientation rightArm;
+    public LimbOrientation leftLeg;
+    public LimbOrientation rightLeg;
 
     public BipedLimbOrientations(
-      BipedLimbOrientations.LimbOrientation leftArm,
-      BipedLimbOrientations.LimbOrientation rightArm,
-      BipedLimbOrientations.LimbOrientation leftLeg,
-      BipedLimbOrientations.LimbOrientation rightLeg)
+      LimbOrientation leftArm,
+      LimbOrientation rightArm,
+      LimbOrientation leftLeg,
+      LimbOrientation rightLeg)
     {
       this.leftArm = leftArm;
       this.rightArm = rightArm;
@@ -27,7 +26,7 @@ namespace RootMotion
     {
       get
       {
-        return new BipedLimbOrientations(new BipedLimbOrientations.LimbOrientation(Vector3.forward, Vector3.forward, Vector3.forward), new BipedLimbOrientations.LimbOrientation(Vector3.forward, Vector3.forward, Vector3.back), new BipedLimbOrientations.LimbOrientation(Vector3.forward, Vector3.forward, Vector3.down), new BipedLimbOrientations.LimbOrientation(Vector3.forward, Vector3.forward, Vector3.down));
+        return new BipedLimbOrientations(new LimbOrientation(Vector3.forward, Vector3.forward, Vector3.forward), new LimbOrientation(Vector3.forward, Vector3.forward, Vector3.back), new LimbOrientation(Vector3.forward, Vector3.forward, Vector3.down), new LimbOrientation(Vector3.forward, Vector3.forward, Vector3.down));
       }
     }
 
@@ -35,7 +34,7 @@ namespace RootMotion
     {
       get
       {
-        return new BipedLimbOrientations(new BipedLimbOrientations.LimbOrientation(Vector3.down, Vector3.down, Vector3.down), new BipedLimbOrientations.LimbOrientation(Vector3.down, Vector3.down, Vector3.up), new BipedLimbOrientations.LimbOrientation(Vector3.up, Vector3.up, Vector3.back), new BipedLimbOrientations.LimbOrientation(Vector3.up, Vector3.up, Vector3.back));
+        return new BipedLimbOrientations(new LimbOrientation(Vector3.down, Vector3.down, Vector3.down), new LimbOrientation(Vector3.down, Vector3.down, Vector3.up), new LimbOrientation(Vector3.up, Vector3.up, Vector3.back), new LimbOrientation(Vector3.up, Vector3.up, Vector3.back));
       }
     }
 

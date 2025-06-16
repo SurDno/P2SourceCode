@@ -15,7 +15,7 @@ namespace Inspectors
     {
       if (!drawer.ButtonField(name) || setter == null)
         return;
-      setter((object) null);
+      setter(null);
     }
   }
 }

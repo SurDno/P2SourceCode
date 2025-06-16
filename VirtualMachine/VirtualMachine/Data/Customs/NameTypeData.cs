@@ -1,9 +1,9 @@
-﻿using Cofe.Loggers;
+﻿using System.Xml;
+using Cofe.Loggers;
 using Engine.Common.Commons;
 using PLVirtualMachine.Common.Data;
 using PLVirtualMachine.Common.EngineAPI;
 using PLVirtualMachine.Data;
-using System.Xml;
 using VirtualMachine.Common;
 using VirtualMachine.Common.Data;
 
@@ -12,28 +12,27 @@ namespace VirtualMachine.Data.Customs
   [DataFactory("NameTypeData")]
   public class NameTypeData : IStub, IEditorDataReader
   {
-    [FieldData("Name", DataFieldType.None)]
+    [FieldData("Name")]
     protected string name = "";
-    [FieldData("Type", DataFieldType.None)]
+    [FieldData("Type")]
     protected VMType type;
 
-    public string Name => this.name;
+    public string Name => name;
 
-    public VMType Type => this.type;
+    public VMType Type => type;
 
     public virtual void EditorDataRead(XmlReader xml, IDataCreator creator, string typeContext)
     {
-      while (xml.Read())
-      {
+      while (xml.Read()) {
         if (xml.NodeType == XmlNodeType.Element)
         {
           switch (xml.Name)
           {
             case "Name":
-              this.name = EditorDataReadUtility.ReadValue(xml, this.name);
+              name = EditorDataReadUtility.ReadValue(xml, name);
               continue;
             case "Type":
-              this.type = EditorDataReadUtility.ReadTypeSerializable(xml);
+              type = EditorDataReadUtility.ReadTypeSerializable(xml);
               continue;
             default:
               if (XMLDataLoader.Logs.Add(typeContext + " : " + xml.Name))
@@ -42,7 +41,8 @@ namespace VirtualMachine.Data.Customs
               continue;
           }
         }
-        else if (xml.NodeType == XmlNodeType.EndElement)
+
+        if (xml.NodeType == XmlNodeType.EndElement)
           break;
       }
     }

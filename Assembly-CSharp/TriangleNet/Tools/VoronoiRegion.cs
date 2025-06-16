@@ -11,30 +11,30 @@ namespace TriangleNet.Tools
     private int id;
     private List<Point> vertices;
 
-    public int ID => this.id;
+    public int ID => id;
 
-    public Point Generator => this.generator;
+    public Point Generator => generator;
 
-    public ICollection<Point> Vertices => (ICollection<Point>) this.vertices;
+    public ICollection<Point> Vertices => vertices;
 
     public bool Bounded
     {
-      get => this.bounded;
-      set => this.bounded = value;
+      get => bounded;
+      set => bounded = value;
     }
 
     public VoronoiRegion(Vertex generator)
     {
-      this.id = generator.id;
-      this.generator = (Point) generator;
-      this.vertices = new List<Point>();
-      this.bounded = true;
+      id = generator.id;
+      this.generator = generator;
+      vertices = new List<Point>();
+      bounded = true;
     }
 
-    public void Add(Point point) => this.vertices.Add(point);
+    public void Add(Point point) => vertices.Add(point);
 
-    public void Add(List<Point> points) => this.vertices.AddRange((IEnumerable<Point>) points);
+    public void Add(List<Point> points) => vertices.AddRange(points);
 
-    public override string ToString() => string.Format("R-ID {0}", (object) this.id);
+    public override string ToString() => string.Format("R-ID {0}", id);
   }
 }

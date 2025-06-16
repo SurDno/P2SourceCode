@@ -1,17 +1,15 @@
-﻿using Engine.Common;
+﻿using System;
+using System.Linq;
+using Engine.Common;
 using Engine.Common.Components.Parameters;
 using Engine.Source.Commons;
 using Engine.Source.Components;
 using Inspectors;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
 
 public class CustomizableObject : MonoBehaviour, IEntityAttachable, IChangeParameterListener
 {
   [SerializeField]
-  private CustomizableObject.Preset[] presets;
+  private Preset[] presets;
   private int presetIndex;
   private IParameter<int> parameter;
 
@@ -19,24 +17,24 @@ public class CustomizableObject : MonoBehaviour, IEntityAttachable, IChangeParam
   [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
   public int PresetIndex
   {
-    get => this.presetIndex;
+    get => presetIndex;
     set
     {
-      this.presetIndex = value;
+      presetIndex = value;
       if (!Application.isPlaying)
         return;
-      this.OnInvalidate();
+      OnInvalidate();
     }
   }
 
   private void OnInvalidate()
   {
-    CustomizableObject.Preset preset = ((IEnumerable<CustomizableObject.Preset>) this.presets).ElementAtOrDefault<CustomizableObject.Preset>(this.presetIndex);
+    Preset preset = presets.ElementAtOrDefault(presetIndex);
     if (preset == null)
       return;
     for (int index = 0; index < preset.Infos.Length; ++index)
     {
-      CustomizableObject.SubMeshInfo info = preset.Infos[index];
+      SubMeshInfo info = preset.Infos[index];
       if (!((UnityEngine.Object) info.Renderer == (UnityEngine.Object) null) && info.Materials != null)
         info.Renderer.materials = info.Materials;
     }
@@ -50,24 +48,24 @@ public class CustomizableObject : MonoBehaviour, IEntityAttachable, IChangeParam
     IParameter<int> byName = component.GetByName<int>(ParameterNameEnum.Customization);
     if (byName != null)
     {
-      byName.AddListener((IChangeParameterListener) this);
-      this.OnParameterChanged((IParameter) byName);
+      byName.AddListener(this);
+      OnParameterChanged(byName);
     }
   }
 
   public void Detach()
   {
-    if (this.parameter == null)
+    if (parameter == null)
       return;
-    this.parameter.RemoveListener((IChangeParameterListener) this);
-    this.parameter = (IParameter<int>) null;
+    parameter.RemoveListener(this);
+    parameter = null;
   }
 
   public void OnParameterChanged(IParameter parameter)
   {
-    if (this.presets.Length == 0)
+    if (presets.Length == 0)
       return;
-    this.PresetIndex = ((IParameter<int>) parameter).Value % this.presets.Length;
+    PresetIndex = ((IParameter<int>) parameter).Value % presets.Length;
   }
 
   [Serializable]
@@ -80,6 +78,6 @@ public class CustomizableObject : MonoBehaviour, IEntityAttachable, IChangeParam
   [Serializable]
   public class Preset
   {
-    public CustomizableObject.SubMeshInfo[] Infos;
+    public SubMeshInfo[] Infos;
   }
 }

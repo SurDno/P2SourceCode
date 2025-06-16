@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEngine;
 
 namespace AmplifyBloom
 {
@@ -13,14 +12,14 @@ namespace AmplifyBloom
 
     public AmplifyPassCache()
     {
-      this.Offsets = new Vector4[16];
-      this.Weights = new Vector4[16];
+      Offsets = new Vector4[16];
+      Weights = new Vector4[16];
     }
 
     public void Destroy()
     {
-      this.Offsets = (Vector4[]) null;
-      this.Weights = (Vector4[]) null;
+      Offsets = (Vector4[]) null;
+      Weights = (Vector4[]) null;
     }
   }
 }

@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace StateSetters
+﻿namespace StateSetters
 {
   public abstract class MaterialPropertyItemController : IStateSetterItemController
   {
@@ -20,7 +18,7 @@ namespace StateSetters
       for (int index = intValue1; index <= intValue2; ++index)
       {
         Material material = materialArray[index];
-        this.SetParameter(item, material, stringValue1, value);
+        SetParameter(item, material, stringValue1, value);
       }
     }
 

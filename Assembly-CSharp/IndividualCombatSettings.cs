@@ -1,7 +1,6 @@
-﻿using BehaviorDesigner.Runtime;
+﻿using System;
+using BehaviorDesigner.Runtime;
 using Engine.Common.Commons;
-using System;
-using UnityEngine;
 
 [Serializable]
 public class IndividualCombatSettings

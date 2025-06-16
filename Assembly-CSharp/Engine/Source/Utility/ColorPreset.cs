@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace Engine.Source.Utility
+﻿namespace Engine.Source.Utility
 {
   public static class ColorPreset
   {

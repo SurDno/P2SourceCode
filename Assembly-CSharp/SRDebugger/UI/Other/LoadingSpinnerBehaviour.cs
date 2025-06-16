@@ -1,5 +1,4 @@
 ﻿using SRF;
-using UnityEngine;
 
 namespace SRDebugger.UI.Other
 {
@@ -11,20 +10,20 @@ namespace SRDebugger.UI.Other
 
     private void Update()
     {
-      this._dt += Time.unscaledDeltaTime;
-      Vector3 eulerAngles = this.CachedTransform.localRotation.eulerAngles;
+      _dt += Time.unscaledDeltaTime;
+      Vector3 eulerAngles = CachedTransform.localRotation.eulerAngles;
       float z = eulerAngles.z;
-      float num = this.SpinDuration / (float) this.FrameCount;
+      float num = SpinDuration / FrameCount;
       bool flag = false;
-      while ((double) this._dt > (double) num)
+      while (_dt > (double) num)
       {
-        z -= 360f / (float) this.FrameCount;
-        this._dt -= num;
+        z -= 360f / FrameCount;
+        _dt -= num;
         flag = true;
       }
       if (!flag)
         return;
-      this.CachedTransform.localRotation = Quaternion.Euler(eulerAngles.x, eulerAngles.y, z);
+      CachedTransform.localRotation = Quaternion.Euler(eulerAngles.x, eulerAngles.y, z);
     }
   }
 }

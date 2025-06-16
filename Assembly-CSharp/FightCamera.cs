@@ -1,5 +1,4 @@
 ﻿using Inspectors;
-using UnityEngine;
 using UnityEngine.PostProcessing;
 
 public class FightCamera : MonoBehaviour
@@ -17,15 +16,15 @@ public class FightCamera : MonoBehaviour
   private float currentFOVOffset;
   private float FOVK = 150f;
   private float FOVDump = 10f;
-  private float FOVVelocity = 0.0f;
+  private float FOVVelocity;
   private float currentVignetteOffset;
   private float vignetteK = 7f;
   private float vignetteDump = 2f;
-  private float vignetteVelocity = 0.0f;
+  private float vignetteVelocity;
   private float currentBlackAndWhiteOffset;
   private float blackAndWhiteK = 3f;
   private float blackAndWhiteDump = 1.5f;
-  private float BlackAndWhiteVelocity = 0.0f;
+  private float BlackAndWhiteVelocity;
   private Vector3 localEulerAngles;
   private float playerPunchFOVAmplitude;
   private float playerPunchTimeLeft;
@@ -35,37 +34,37 @@ public class FightCamera : MonoBehaviour
 
   public void PlayerPunchFOV(float amplitudeInDegrees, float timeOfMaximum)
   {
-    this.playerPunchAmplitudeSpeed = amplitudeInDegrees / timeOfMaximum;
-    this.playerPunchTimeLeft = timeOfMaximum;
-    this.playerPunchFOV = 0.0f;
+    playerPunchAmplitudeSpeed = amplitudeInDegrees / timeOfMaximum;
+    playerPunchTimeLeft = timeOfMaximum;
+    playerPunchFOV = 0.0f;
   }
 
   private void FixedUpdatePlayerPunchFOV()
   {
-    this.playerPunchTimeLeft -= Time.fixedDeltaTime;
-    if ((double) this.playerPunchTimeLeft > 0.0)
-      this.playerPunchFOV += this.playerPunchAmplitudeSpeed * Time.fixedDeltaTime;
+    playerPunchTimeLeft -= Time.fixedDeltaTime;
+    if (playerPunchTimeLeft > 0.0)
+      playerPunchFOV += playerPunchAmplitudeSpeed * Time.fixedDeltaTime;
     else
-      this.playerPunchFOV -= 2f * this.playerPunchAmplitudeSpeed * Time.fixedDeltaTime;
+      playerPunchFOV -= 2f * playerPunchAmplitudeSpeed * Time.fixedDeltaTime;
   }
 
-  public void PushFOV(float strengthInDegrees) => this.currentFOVOffset = strengthInDegrees;
+  public void PushFOV(float strengthInDegrees) => currentFOVOffset = strengthInDegrees;
 
   public void PushVignette(float strengthFromZeroToOne)
   {
-    this.currentVignetteOffset = strengthFromZeroToOne;
+    currentVignetteOffset = strengthFromZeroToOne;
   }
 
   public void PushBlackAndWhite(float strengthFromZeroToOne)
   {
-    this.currentBlackAndWhiteOffset = strengthFromZeroToOne;
+    currentBlackAndWhiteOffset = strengthFromZeroToOne;
   }
 
   public void PushDirectional(Vector3 direction, float strengthInDegrees)
   {
     direction.Normalize();
-    this.currentEulerYOffset = strengthInDegrees * Vector3.Dot(direction, Vector3.right);
-    this.currentEulerXOffset = strengthInDegrees * Vector3.Dot(direction, Vector3.forward);
+    currentEulerYOffset = strengthInDegrees * Vector3.Dot(direction, Vector3.right);
+    currentEulerXOffset = strengthInDegrees * Vector3.Dot(direction, Vector3.forward);
   }
 
   public void PushKnifeStab(
@@ -73,15 +72,15 @@ public class FightCamera : MonoBehaviour
     Vector3 positionInWorldSpace,
     float strength)
   {
-    this.knifePostProcess.AddScar(speedInWorldSpace, positionInWorldSpace, strength * 2f, (float) (0.75 + (double) strength * 1.25));
+    knifePostProcess.AddScar(speedInWorldSpace, positionInWorldSpace, strength * 2f, (float) (0.75 + strength * 1.25));
   }
 
   private void Start()
   {
-    this.camera = this.GetComponent<Camera>();
-    this.initialFOV = this.camera.fieldOfView;
-    this.postProcessing = this.GetComponent<PostProcessingBehaviour>();
-    this.knifePostProcess = this.GetComponent<KnifePostProcessEffect>();
+    camera = this.GetComponent<Camera>();
+    initialFOV = camera.fieldOfView;
+    postProcessing = this.GetComponent<PostProcessingBehaviour>();
+    knifePostProcess = this.GetComponent<KnifePostProcessEffect>();
   }
 
   private void LateUpdate()
@@ -90,55 +89,55 @@ public class FightCamera : MonoBehaviour
 
   private void FixedUpdate()
   {
-    this.FixedUpdatePlayerPunchFOV();
-    this.UpdateCameraFOV();
-    this.UpdateCameraVignette();
-    this.UpdateCameraAngles();
-    this.UpdateCameraBlackAndWhite();
-    this.camera.fieldOfView = (float) ((double) this.initialFOV + (double) this.currentFOVOffset - ((double) this.playerPunchFOV > 0.0 ? (double) this.playerPunchFOV : 0.0));
+    FixedUpdatePlayerPunchFOV();
+    UpdateCameraFOV();
+    UpdateCameraVignette();
+    UpdateCameraAngles();
+    UpdateCameraBlackAndWhite();
+    camera.fieldOfView = (float) (initialFOV + (double) currentFOVOffset - (playerPunchFOV > 0.0 ? playerPunchFOV : 0.0));
   }
 
   [Inspected]
-  public void TestVignettePush() => this.PushVignette(0.5f);
+  public void TestVignettePush() => PushVignette(0.5f);
 
   [Inspected]
-  public void TestFOVPush() => this.PushFOV(5f);
+  public void TestFOVPush() => PushFOV(5f);
 
   [Inspected]
-  public void TestDirectionalPush() => this.PushDirectional(new Vector3(1f, 1f, 0.0f), 30f);
+  public void TestDirectionalPush() => PushDirectional(new Vector3(1f, 1f, 0.0f), 30f);
 
   private void UpdateCameraFOV()
   {
-    this.FOVVelocity += (float) (-(double) this.currentFOVOffset * (double) this.FOVK - (double) this.FOVVelocity * (double) this.FOVDump) * Time.fixedDeltaTime;
-    this.currentFOVOffset += this.FOVVelocity * Time.fixedDeltaTime;
+    FOVVelocity += (float) (-(double) currentFOVOffset * FOVK - FOVVelocity * (double) FOVDump) * Time.fixedDeltaTime;
+    currentFOVOffset += FOVVelocity * Time.fixedDeltaTime;
   }
 
   private void UpdateCameraVignette()
   {
-    this.vignetteVelocity += (float) (-(double) this.currentVignetteOffset * (double) this.vignetteK - (double) this.vignetteVelocity * (double) this.vignetteDump) * Time.fixedDeltaTime;
-    this.currentVignetteOffset += this.vignetteVelocity * Time.fixedDeltaTime;
-    this.postProcessing.profile.vignette.settings = this.postProcessing.profile.vignette.settings with
+    vignetteVelocity += (float) (-(double) currentVignetteOffset * vignetteK - vignetteVelocity * (double) vignetteDump) * Time.fixedDeltaTime;
+    currentVignetteOffset += vignetteVelocity * Time.fixedDeltaTime;
+    postProcessing.profile.vignette.settings = postProcessing.profile.vignette.settings with
     {
       color = Color.red,
-      intensity = Mathf.Abs(this.currentVignetteOffset)
+      intensity = Mathf.Abs(currentVignetteOffset)
     };
   }
 
   private void UpdateCameraBlackAndWhite()
   {
-    this.BlackAndWhiteVelocity += (float) (-(double) this.currentBlackAndWhiteOffset * (double) this.blackAndWhiteK - (double) this.BlackAndWhiteVelocity * (double) this.blackAndWhiteDump) * Time.fixedDeltaTime;
-    this.currentBlackAndWhiteOffset += this.BlackAndWhiteVelocity * Time.fixedDeltaTime;
-    ColorGradingModel.Settings settings = this.postProcessing.profile.colorGrading.settings;
-    settings.basic.saturation = (float) (1.0 - 0.699999988079071 * (double) Mathf.Clamp01(this.currentBlackAndWhiteOffset));
-    this.postProcessing.profile.colorGrading.settings = settings;
+    BlackAndWhiteVelocity += (float) (-(double) currentBlackAndWhiteOffset * blackAndWhiteK - BlackAndWhiteVelocity * (double) blackAndWhiteDump) * Time.fixedDeltaTime;
+    currentBlackAndWhiteOffset += BlackAndWhiteVelocity * Time.fixedDeltaTime;
+    ColorGradingModel.Settings settings = postProcessing.profile.colorGrading.settings;
+    settings.basic.saturation = (float) (1.0 - 0.699999988079071 * (double) Mathf.Clamp01(currentBlackAndWhiteOffset));
+    postProcessing.profile.colorGrading.settings = settings;
   }
 
   private void UpdateCameraAngles()
   {
-    this.velocityEulerY += (float) (-(double) this.currentEulerYOffset * (double) this.EulerK - (double) this.velocityEulerY * (double) this.EulerDump) * Time.fixedDeltaTime;
-    this.currentEulerYOffset += this.velocityEulerY * Time.fixedDeltaTime;
-    this.velocityEulerX += (float) (-(double) this.currentEulerXOffset * (double) this.EulerK - (double) this.velocityEulerX * (double) this.EulerDump) * Time.fixedDeltaTime;
-    this.currentEulerXOffset += this.velocityEulerX * Time.fixedDeltaTime;
-    this.localEulerAngles = new Vector3(this.currentEulerXOffset, this.currentEulerYOffset, 0.0f);
+    velocityEulerY += (float) (-(double) currentEulerYOffset * EulerK - velocityEulerY * (double) EulerDump) * Time.fixedDeltaTime;
+    currentEulerYOffset += velocityEulerY * Time.fixedDeltaTime;
+    velocityEulerX += (float) (-(double) currentEulerXOffset * EulerK - velocityEulerX * (double) EulerDump) * Time.fixedDeltaTime;
+    currentEulerXOffset += velocityEulerX * Time.fixedDeltaTime;
+    localEulerAngles = new Vector3(currentEulerXOffset, currentEulerYOffset, 0.0f);
   }
 }

@@ -11,19 +11,19 @@ namespace TriangleNet.Algorithm
     private void GetBoundingBox()
     {
       Otri newotri = new Otri();
-      BoundingBox bounds = this.mesh.bounds;
+      BoundingBox bounds = mesh.bounds;
       double num = bounds.Width;
       if (bounds.Height > num)
         num = bounds.Height;
       if (num == 0.0)
         num = 1.0;
-      this.mesh.infvertex1 = new Vertex(bounds.Xmin - 50.0 * num, bounds.Ymin - 40.0 * num);
-      this.mesh.infvertex2 = new Vertex(bounds.Xmax + 50.0 * num, bounds.Ymin - 40.0 * num);
-      this.mesh.infvertex3 = new Vertex(0.5 * (bounds.Xmin + bounds.Xmax), bounds.Ymax + 60.0 * num);
-      this.mesh.MakeTriangle(ref newotri);
-      newotri.SetOrg(this.mesh.infvertex1);
-      newotri.SetDest(this.mesh.infvertex2);
-      newotri.SetApex(this.mesh.infvertex3);
+      mesh.infvertex1 = new Vertex(bounds.Xmin - 50.0 * num, bounds.Ymin - 40.0 * num);
+      mesh.infvertex2 = new Vertex(bounds.Xmax + 50.0 * num, bounds.Ymin - 40.0 * num);
+      mesh.infvertex3 = new Vertex(0.5 * (bounds.Xmin + bounds.Xmax), bounds.Ymax + 60.0 * num);
+      mesh.MakeTriangle(ref newotri);
+      newotri.SetOrg(mesh.infvertex1);
+      newotri.SetDest(mesh.infvertex2);
+      newotri.SetApex(mesh.infvertex3);
       Mesh.dummytri.neighbors[0] = newotri;
     }
 
@@ -35,7 +35,7 @@ namespace TriangleNet.Algorithm
       Otri o2_4 = new Otri();
       Otri o2_5 = new Otri();
       Otri o2_6 = new Otri();
-      bool flag = !this.mesh.behavior.Poly;
+      bool flag = !mesh.behavior.Poly;
       o2_4.triangle = Mesh.dummytri;
       o2_4.orient = 0;
       o2_4.SymSelf();
@@ -67,11 +67,11 @@ namespace TriangleNet.Algorithm
         o2_6.Dissolve();
         o2_4.Lnext(ref o2_1);
         o2_1.Sym(ref o2_4);
-        this.mesh.TriangleDealloc(o2_1.triangle);
+        mesh.TriangleDealloc(o2_1.triangle);
         if (o2_4.triangle == Mesh.dummytri)
           o2_6.Copy(ref o2_4);
       }
-      this.mesh.TriangleDealloc(o2_5.triangle);
+      mesh.TriangleDealloc(o2_5.triangle);
       return num;
     }
 
@@ -79,7 +79,7 @@ namespace TriangleNet.Algorithm
     {
       this.mesh = mesh;
       Otri searchtri = new Otri();
-      this.GetBoundingBox();
+      GetBoundingBox();
       foreach (Vertex newvertex in mesh.vertices.Values)
       {
         searchtri.triangle = Mesh.dummytri;
@@ -92,7 +92,7 @@ namespace TriangleNet.Algorithm
           ++mesh.undeads;
         }
       }
-      return this.RemoveBox();
+      return RemoveBox();
     }
   }
 }

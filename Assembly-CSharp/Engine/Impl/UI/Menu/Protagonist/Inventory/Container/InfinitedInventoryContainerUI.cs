@@ -1,13 +1,10 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Engine.Common.Components;
 using Engine.Impl.UI.Menu.Protagonist.Inventory.Grid;
 using Engine.Source.Inventory;
 using Engine.Source.UI.Menu.Protagonist.Inventory;
 using Engine.Source.UI.Menu.Protagonist.Inventory.Grid;
-using System;
-using UnityEngine;
-using UnityEngine.Serialization;
-using UnityEngine.UI;
 
 namespace Engine.Impl.UI.Menu.Protagonist.Inventory.Container
 {
@@ -47,7 +44,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory.Container
           }
         }
         RectTransform component2 = component1.content.GetComponent<RectTransform>();
-        Vector2 outerSize = InventoryUtility.CalculateOuterSize((IInventoryGridBase) grid, style);
+        Vector2 outerSize = InventoryUtility.CalculateOuterSize(grid, style);
         component1.Transform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, outerSize.x);
         component1.Transform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, outerSize.y);
         component2.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, outerSize.x);

@@ -1,4 +1,7 @@
-﻿using Cofe.Loggers;
+﻿using System;
+using System.Collections.Generic;
+using System.Xml;
+using Cofe.Loggers;
 using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common;
@@ -15,9 +18,6 @@ using PLVirtualMachine.Common.Serialization;
 using PLVirtualMachine.Data.SaveLoad;
 using PLVirtualMachine.Objects;
 using PLVirtualMachine.Time;
-using System;
-using System.Collections.Generic;
-using System.Xml;
 
 namespace PLVirtualMachine.Dynamic
 {
@@ -39,7 +39,7 @@ namespace PLVirtualMachine.Dynamic
     {
       if (templateObj == null)
       {
-        Logger.AddError(string.Format("Creating object template not defined !"));
+        Logger.AddError("Creating object template not defined !");
       }
       else
       {
@@ -48,11 +48,11 @@ namespace PLVirtualMachine.Dynamic
         {
           IWorldObject worldObject = (IWorldObject) templateObj;
           if (worldObject.IsPhysic)
-            this.Instantiated = worldObject.Instantiated;
+            Instantiated = worldObject.Instantiated;
           if (worldObject.IsEngineRoot)
-            this.RegistrAsEngineRoot();
+            RegistrAsEngineRoot();
         }
-        this.FinishCreateObject();
+        FinishCreateObject();
       }
     }
 
@@ -62,10 +62,10 @@ namespace PLVirtualMachine.Dynamic
       if (!typeof (VMWorldObject).IsAssignableFrom(templateObj.GetType()))
         return;
       if (((VMWorldObject) templateObj).IsPhysic)
-        this.Instantiated = ((VMWorldObject) templateObj).Instantiated;
+        Instantiated = ((VMWorldObject) templateObj).Instantiated;
       if (!((VMWorldObject) templateObj).IsEngineRoot)
         return;
-      this.RegistrAsEngineRoot();
+      RegistrAsEngineRoot();
     }
 
     public override void Initialize(
@@ -83,20 +83,20 @@ namespace PLVirtualMachine.Dynamic
 
     public virtual void LoadFromXML(XmlElement xmlNode)
     {
-      this.modified = true;
+      modified = true;
       bool flag = false;
-      XmlElement xmlNode1 = (XmlElement) null;
-      XmlElement xmlElement = (XmlElement) null;
-      XmlElement listNode = (XmlElement) null;
+      XmlElement xmlNode1 = null;
+      XmlElement xmlElement = null;
+      XmlElement listNode = null;
       for (int i = 0; i < xmlNode.ChildNodes.Count; ++i)
       {
         XmlElement childNode = (XmlElement) xmlNode.ChildNodes[i];
         if (childNode.Name == "Instantiated")
-          this.Instantiated = VMSaveLoadManager.ReadBool((XmlNode) childNode);
+          Instantiated = VMSaveLoadManager.ReadBool(childNode);
         else if (childNode.Name == "Positioned")
-          this.positioned = VMSaveLoadManager.ReadBool((XmlNode) childNode);
+          positioned = VMSaveLoadManager.ReadBool(childNode);
         else if (childNode.Name == "Removed")
-          flag = VMSaveLoadManager.ReadBool((XmlNode) childNode);
+          flag = VMSaveLoadManager.ReadBool(childNode);
         else if (childNode.Name == "Components")
           xmlElement = childNode;
         else if (childNode.Name == "StateMachine")
@@ -104,138 +104,138 @@ namespace PLVirtualMachine.Dynamic
         else if (childNode.Name == "DynamicChildList")
           listNode = childNode;
         else if (childNode.Name == "TemplateId")
-          this.engineEntityTemplate = ServiceCache.TemplateService.GetTemplate<IEntity>(VMSaveLoadManager.ReadGuid((XmlNode) childNode));
+          engineEntityTemplate = ServiceCache.TemplateService.GetTemplate<IEntity>(VMSaveLoadManager.ReadGuid(childNode));
         else if (childNode.Name == "InstanceId")
         {
-          this.Instantiated = true;
-          this.isDynamicChild = true;
-          this.engineEntity = ServiceCache.Factory.Instantiate<IEntity>(this.engineEntityTemplate, VMSaveLoadManager.ReadGuid((XmlNode) childNode));
+          Instantiated = true;
+          isDynamicChild = true;
+          engineEntity = ServiceCache.Factory.Instantiate(engineEntityTemplate, VMSaveLoadManager.ReadGuid(childNode));
         }
       }
-      this.saveLoadInstantiated = true;
-      if (flag || this.isDynamicChild)
+      saveLoadInstantiated = true;
+      if (flag || isDynamicChild)
         return;
       if (xmlElement != null)
       {
         foreach (XmlElement childNode in xmlElement.ChildNodes)
-          this.GetComponentByName(childNode.FirstChild.InnerText)?.LoadFromXML(childNode);
+          GetComponentByName(childNode.FirstChild.InnerText)?.LoadFromXML(childNode);
       }
-      if (typeof (IWorldObject).IsAssignableFrom(this.editorTemplate.GetType()))
+      if (typeof (IWorldObject).IsAssignableFrom(editorTemplate.GetType()))
       {
         try
         {
           IEntity objects = ServiceCache.Simulation.Objects;
-          if (!typeof (IWorldHierarchyObject).IsAssignableFrom(this.editorTemplate.GetType()))
-            ServiceCache.Simulation.Add(this.Instance, objects);
+          if (!typeof (IWorldHierarchyObject).IsAssignableFrom(editorTemplate.GetType()))
+            ServiceCache.Simulation.Add(Instance, objects);
         }
         catch (Exception ex)
         {
-          Logger.AddError(string.Format("Saveload error: adding engine instance of {0} to simulation failed: {1}", (object) this.Name, (object) ex.ToString()));
+          Logger.AddError(string.Format("Saveload error: adding engine instance of {0} to simulation failed: {1}", Name, ex));
         }
       }
-      if (!this.IsSimple)
+      if (!IsSimple)
       {
-        if (this.FSM == null)
+        if (FSM == null)
         {
-          if (this.GetComponentByName("Speaking") != null)
-            this.FSM = (DynamicFSM) new DynamicTalkingFSM(this, (VMLogicObject) this.editorTemplate);
-          else if (xmlNode1 != null || this.NeedCreateFSM)
-            this.FSM = new DynamicFSM(this, (VMLogicObject) this.editorTemplate);
+          if (GetComponentByName("Speaking") != null)
+            FSM = new DynamicTalkingFSM(this, (VMLogicObject) editorTemplate);
+          else if (xmlNode1 != null || NeedCreateFSM)
+            FSM = new DynamicFSM(this, (VMLogicObject) editorTemplate);
           if (xmlNode1 != null)
-            this.FSM.LoadFromXML(xmlNode1);
+            FSM.LoadFromXML(xmlNode1);
         }
         else if (xmlNode1 != null)
-          this.FSM.LoadFromXML(xmlNode1);
+          FSM.LoadFromXML(xmlNode1);
       }
       if (listNode == null || listNode.ChildNodes.Count <= 0)
         return;
       List<VMEntity> list = new List<VMEntity>();
-      VMSaveLoadManager.LoadDynamiSerializableList<VMEntity>(listNode, list);
-      VMStorage componentByName = (VMStorage) this.GetComponentByName("Storage");
+      VMSaveLoadManager.LoadDynamiSerializableList(listNode, list);
+      VMStorage componentByName = (VMStorage) GetComponentByName("Storage");
       for (int index = 0; index < list.Count; ++index)
-        this.OnLoadDynamicChildEntity(list[index], componentByName);
+        OnLoadDynamicChildEntity(list[index], componentByName);
       componentByName?.CheckInventoryTagsConsistensy();
     }
 
     public bool Enabled
     {
-      get => ((VMCommon) this.GetComponentByName("Common")).ObjectEnabled;
-      set => ((VMCommon) this.GetComponentByName("Common")).ObjectEnabled = value;
+      get => ((VMCommon) GetComponentByName("Common")).ObjectEnabled;
+      set => ((VMCommon) GetComponentByName("Common")).ObjectEnabled = value;
     }
 
     public override void DisposeInstance(bool bClear = false)
     {
-      if (this.FSM != null)
-        this.FSM.Clear();
+      if (FSM != null)
+        FSM.Clear();
       base.DisposeInstance(bClear);
     }
 
     public void StateSave(IDataWriter writer)
     {
-      if (this.IsDisposed)
+      if (IsDisposed)
         return;
-      if (this.Instance == null)
-        Logger.AddError(string.Format("Saveload error: cannot save entity {0}, because it's engine instance not created!", (object) this.Name));
-      else if (this.IsDynamicChild)
+      if (Instance == null)
+        Logger.AddError(string.Format("Saveload error: cannot save entity {0}, because it's engine instance not created!", Name));
+      else if (IsDynamicChild)
       {
-        SaveManagerUtility.Save(writer, "TemplateId", this.Instance.Template.Id);
-        SaveManagerUtility.Save(writer, "InstanceId", this.Instance.Id);
+        SaveManagerUtility.Save(writer, "TemplateId", Instance.Template.Id);
+        SaveManagerUtility.Save(writer, "InstanceId", Instance.Id);
       }
       else
       {
-        string saveLoadKeyGuid = this.GetSaveLoadKeyGuid();
+        string saveLoadKeyGuid = GetSaveLoadKeyGuid();
         SaveManagerUtility.Save(writer, "Id", saveLoadKeyGuid);
-        ulong baseGuid = this.editorTemplate.Blueprint.BaseGuid;
+        ulong baseGuid = editorTemplate.Blueprint.BaseGuid;
         SaveManagerUtility.Save(writer, "StaticId", baseGuid);
-        SaveManagerUtility.Save(writer, "EngineId", this.Instance.Id);
-        SaveManagerUtility.Save(writer, "Name", this.Name);
-        SaveManagerUtility.Save(writer, "Removed", this.Instance.IsDisposed);
-        SaveManagerUtility.Save(writer, "Instantiated", this.Instantiated);
-        SaveManagerUtility.Save(writer, "Positioned", this.positioned);
-        if (this.FSM != null && this.FSM.NeedSave)
-          SaveManagerUtility.SaveDynamicSerializable(writer, "StateMachine", (ISerializeStateSave) this.FSM);
-        SaveManagerUtility.SaveDynamicSerializableList<VMComponent>(writer, "Components", this.Components);
-        if (this.dynamicChilds == null)
+        SaveManagerUtility.Save(writer, "EngineId", Instance.Id);
+        SaveManagerUtility.Save(writer, "Name", Name);
+        SaveManagerUtility.Save(writer, "Removed", Instance.IsDisposed);
+        SaveManagerUtility.Save(writer, "Instantiated", Instantiated);
+        SaveManagerUtility.Save(writer, "Positioned", positioned);
+        if (FSM != null && FSM.NeedSave)
+          SaveManagerUtility.SaveDynamicSerializable(writer, "StateMachine", FSM);
+        SaveManagerUtility.SaveDynamicSerializableList(writer, "Components", Components);
+        if (dynamicChilds == null)
           return;
-        SaveManagerUtility.SaveDynamicSerializableList<VMBaseEntity>(writer, "DynamicChildList", this.dynamicChilds);
+        SaveManagerUtility.SaveDynamicSerializableList(writer, "DynamicChildList", dynamicChilds);
       }
     }
 
     public override void OnCreate(bool afterLoad = false)
     {
-      if (!afterLoad && typeof (IWorldHierarchyObject).IsAssignableFrom(this.editorTemplate.GetType()))
+      if (!afterLoad && typeof (IWorldHierarchyObject).IsAssignableFrom(editorTemplate.GetType()))
       {
-        foreach (IHierarchyObject simpleChild in ((IWorldHierarchyObject) this.editorTemplate).SimpleChilds)
-          this.CreateSimpleChild(simpleChild);
+        foreach (IHierarchyObject simpleChild in ((IWorldHierarchyObject) editorTemplate).SimpleChilds)
+          CreateSimpleChild(simpleChild);
       }
       base.OnCreate();
-      if (WorldEntityUtility.IsDynamicGuidExist(this.EngineGuid))
+      if (WorldEntityUtility.IsDynamicGuidExist(EngineGuid))
         return;
-      VirtualMachine.Instance.RegisterDynamicObject(this, this.editorTemplate);
+      VirtualMachine.Instance.RegisterDynamicObject(this, editorTemplate);
     }
 
     public void AfterSaveLoading()
     {
-      if (this.FSM != null && this.Instantiated)
-        this.FSM.AfterSaveLoading();
-      if (this.childs != null)
+      if (FSM != null && Instantiated)
+        FSM.AfterSaveLoading();
+      if (childs != null)
       {
-        for (int index = 0; index < this.childs.Count; ++index)
-          ((VMEntity) this.childs[index]).AfterSaveLoading();
+        for (int index = 0; index < childs.Count; ++index)
+          ((VMEntity) childs[index]).AfterSaveLoading();
       }
-      foreach (VMComponent component in this.Components)
+      foreach (VMComponent component in Components)
         component.AfterSaveLoading();
     }
 
-    public void InitFSM(DynamicFSM fsm) => this.FSM = fsm;
+    public void InitFSM(DynamicFSM fsm) => FSM = fsm;
 
-    public bool FSMExist => this.FSM != null;
+    public bool FSMExist => FSM != null;
 
     public DynamicFSM GetFSM()
     {
-      if (this.FSM == null)
-        this.FSM = DynamicFSM.CreateEntityFSM(this);
-      return this.FSM;
+      if (FSM == null)
+        FSM = DynamicFSM.CreateEntityFSM(this);
+      return FSM;
     }
 
     protected DynamicFSM FSM { get; set; }
@@ -244,32 +244,32 @@ namespace PLVirtualMachine.Dynamic
     {
       get
       {
-        return VirtualMachine.Instance.ForceCreateFSM || this.editorTemplate.Blueprint.StateGraph != null || typeof (IWorldObject).IsAssignableFrom(this.editorTemplate.GetType()) && !((IWorldObject) this.editorTemplate).DirectEngineCreated;
+        return VirtualMachine.Instance.ForceCreateFSM || editorTemplate.Blueprint.StateGraph != null || typeof (IWorldObject).IsAssignableFrom(editorTemplate.GetType()) && !((IWorldObject) editorTemplate).DirectEngineCreated;
       }
     }
 
     public void RegistrAsEngineRoot()
     {
-      this.isEngineRoot = true;
+      isEngineRoot = true;
       if (VMEntityUtility.RegisteredEngineRoot == null)
         VMEntityUtility.RegisteredEngineRoot = this;
       else
-        Logger.AddError(string.Format("Engine root {0} already registered !", (object) VMEntityUtility.RegisteredEngineRoot.Name));
+        Logger.AddError(string.Format("Engine root {0} already registered !", VMEntityUtility.RegisteredEngineRoot.Name));
     }
 
     public override void SetPosition(IEntity positionMileStoneEngEntity, AreaEnum NOT_USED_areaType = AreaEnum.Unknown)
     {
       try
       {
-        INavigationComponent component = this.Instance.GetComponent<INavigationComponent>();
+        INavigationComponent component = Instance.GetComponent<INavigationComponent>();
         if (component != null)
           component.TeleportTo(positionMileStoneEngEntity);
         else
-          Logger.AddError(typeof (INavigationComponent).ToString() + " not found in " + this.Instance.Name);
+          Logger.AddError(typeof (INavigationComponent) + " not found in " + Instance.Name);
       }
       catch (Exception ex)
       {
-        Logger.AddError(string.Format("Entity {0} set position error: {1}", (object) this.Name, (object) ex.ToString()));
+        Logger.AddError(string.Format("Entity {0} set position error: {1}", Name, ex));
       }
     }
 
@@ -277,12 +277,12 @@ namespace PLVirtualMachine.Dynamic
     {
       get
       {
-        IEntity instance = this.Instance;
+        IEntity instance = Instance;
         return instance != null ? instance.Context : "";
       }
       set
       {
-        IEntity instance = this.Instance;
+        IEntity instance = Instance;
         if (instance == null)
           return;
         instance.Context = value;
@@ -292,32 +292,32 @@ namespace PLVirtualMachine.Dynamic
     public override void Remove()
     {
       base.Remove();
-      if (this.FSM == null || !this.FSM.Active)
+      if (FSM == null || !FSM.Active)
         return;
-      Logger.AddError(string.Format("Invalid object {0} removing: FSM is active !!!", (object) this.Name));
+      Logger.AddError(string.Format("Invalid object {0} removing: FSM is active !!!", Name));
     }
 
     public string GetSaveLoadKeyGuid()
     {
       try
       {
-        return this.IsHierarchy ? this.HierarchyGuid.Write() : GuidUtility.GetGuidString(this.EngineGuid);
+        return IsHierarchy ? HierarchyGuid.Write() : GuidUtility.GetGuidString(EngineGuid);
       }
       catch (Exception ex)
       {
-        Logger.AddError(string.Format("Saveload key guid get error at {0} Entity: {1}", (object) this.Name, (object) ex.ToString()));
+        Logger.AddError(string.Format("Saveload key guid get error at {0} Entity: {1}", Name, ex));
       }
       return "";
     }
 
     public void PreLoading()
     {
-      if (this.FSM == null)
+      if (FSM == null)
         return;
-      this.FSM.PreLoading();
+      FSM.PreLoading();
     }
 
-    public bool SaveLoadInstantiated => this.saveLoadInstantiated;
+    public bool SaveLoadInstantiated => saveLoadInstantiated;
 
     public static IEnumerable<FreeEntityInfo> GetFreeEntities()
     {
@@ -335,38 +335,38 @@ namespace PLVirtualMachine.Dynamic
     public static void LoadFreeEntities(List<FreeEntityInfo> freeEntities)
     {
       for (int index = 0; index < freeEntities.Count; ++index)
-        ServiceCache.Simulation.Add(ServiceCache.Factory.Instantiate<IEntity>(ServiceCache.TemplateService.GetTemplate<IEntity>(freeEntities[index].TemplateId), freeEntities[index].InstanceId), ServiceCache.Simulation.Storables);
+        ServiceCache.Simulation.Add(ServiceCache.Factory.Instantiate(ServiceCache.TemplateService.GetTemplate<IEntity>(freeEntities[index].TemplateId), freeEntities[index].InstanceId), ServiceCache.Simulation.Storables);
     }
 
     public bool IsPlayerControllable(bool bMain = false)
     {
-      if (this.GetComponentByName("PlayerControllerComponent") != null)
+      if (GetComponentByName("PlayerControllerComponent") != null)
       {
         if (!bMain)
           return true;
-        if (this.editorTemplate != null)
-          return GameTimeManager.MainContextPlayingCharacter == null || (long) this.editorTemplate.Blueprint.BaseGuid == (long) GameTimeManager.MainContextPlayingCharacter.BaseGuid;
+        if (editorTemplate != null)
+          return GameTimeManager.MainContextPlayingCharacter == null || (long) editorTemplate.Blueprint.BaseGuid == (long) GameTimeManager.MainContextPlayingCharacter.BaseGuid;
       }
       return false;
     }
 
     public bool Positioned
     {
-      get => this.positioned;
-      set => this.positioned = value;
+      get => positioned;
+      set => positioned = value;
     }
 
-    public bool IsCrowdItem => this.isCrowdItem;
+    public bool IsCrowdItem => isCrowdItem;
 
-    public bool Modified => this.modified;
+    public bool Modified => modified;
 
-    public void OnModify() => this.modified = true;
+    public void OnModify() => modified = true;
 
     public void CreateSimpleChild(IHierarchyObject simpleChildTemplate)
     {
-      if (this.Instance == null)
+      if (Instance == null)
       {
-        Logger.AddError(string.Format("Cannot create simple child entity: owner engine instance not defined in {0}", (object) this.Name));
+        Logger.AddError(string.Format("Cannot create simple child entity: owner engine instance not defined in {0}", Name));
       }
       else
       {
@@ -374,66 +374,66 @@ namespace PLVirtualMachine.Dynamic
         childEntity.InitSimpleChild(simpleChildTemplate);
         if (childEntity.Instance == null)
         {
-          Logger.AddError(string.Format("Cannot create simple child entity by template id={0}: engine instance not created", (object) simpleChildTemplate.EngineTemplateGuid));
+          Logger.AddError(string.Format("Cannot create simple child entity by template id={0}: engine instance not created", simpleChildTemplate.EngineTemplateGuid));
         }
         else
         {
-          this.AddChildEntity((VMBaseEntity) childEntity);
-          ServiceCache.Simulation.Add(childEntity.Instance, this.Instance);
+          AddChildEntity(childEntity);
+          ServiceCache.Simulation.Add(childEntity.Instance, Instance);
         }
       }
     }
 
-    public IRealTimeModifiable ModifiableParent => (IRealTimeModifiable) this.ParentEntity;
+    public IRealTimeModifiable ModifiableParent => (IRealTimeModifiable) ParentEntity;
 
     public bool NeedSave
     {
       get
       {
-        if (this.IsDisposed)
+        if (IsDisposed)
           return false;
-        if (this.IsHierarchy)
-          return this.Modified;
-        return this.positioned || this.editorTemplate != null && this.editorTemplate.Static || !this.IsCrowdItem;
+        if (IsHierarchy)
+          return Modified;
+        return positioned || editorTemplate != null && editorTemplate.Static || !IsCrowdItem;
       }
     }
 
     public void TestHierarchyConsistency()
     {
-      if (this.Instance != null && this.editorTemplate != null && !this.IsSimple && this.editorTemplate.Name != this.Instance.Name)
-        VirtualMachine.SetFatalError(string.Format("SAVE LOAD CRITICAL ERROR: HIERARCHY INCONSISTENCY AT OBJECT {0}, ENGINE_GUID={1}, ENGINE_NAME={2} !!!", (object) this.editorTemplate.Name, (object) this.Instance.Id, (object) this.Instance.Name));
-      if (this.childs == null)
+      if (Instance != null && editorTemplate != null && !IsSimple && editorTemplate.Name != Instance.Name)
+        VirtualMachine.SetFatalError(string.Format("SAVE LOAD CRITICAL ERROR: HIERARCHY INCONSISTENCY AT OBJECT {0}, ENGINE_GUID={1}, ENGINE_NAME={2} !!!", editorTemplate.Name, Instance.Id, Instance.Name));
+      if (childs == null)
         return;
-      for (int index = 0; index < this.childs.Count; ++index)
-        ((VMEntity) this.childs[index]).TestHierarchyConsistency();
+      for (int index = 0; index < childs.Count; ++index)
+        ((VMEntity) childs[index]).TestHierarchyConsistency();
     }
 
     protected override void AddAggregateChild(VMBaseEntity childEntity)
     {
-      if (this.EngineGuid == VirtualMachine.Instance.WorldHierarchyRootEntity.EngineGuid && !childEntity.IsHierarchy)
-        VirtualMachine.SetFatalError(string.Format("UNUSUAL HIERARCHY SYSTEM ERROR: INCORRECT OBJECT {0} WORLD ADDING !!!", (object) childEntity.Name));
+      if (EngineGuid == VirtualMachine.Instance.WorldHierarchyRootEntity.EngineGuid && !childEntity.IsHierarchy)
+        VirtualMachine.SetFatalError(string.Format("UNUSUAL HIERARCHY SYSTEM ERROR: INCORRECT OBJECT {0} WORLD ADDING !!!", childEntity.Name));
       base.AddAggregateChild(childEntity);
     }
 
     protected override Type GetComponentTypeByName(string componentName)
     {
       Type componentTypeByName = EngineAPIManager.GetComponentTypeByName(componentName);
-      return componentTypeByName != (Type) null ? ProxyFactory.GetProxyType(componentTypeByName) : (Type) null;
+      return componentTypeByName != null ? ProxyFactory.GetProxyType(componentTypeByName) : null;
     }
 
     protected override void MakeEngineData()
     {
-      if (!this.IsWorldEntity)
+      if (!IsWorldEntity)
         return;
-      if (this.engineEntityTemplate == null)
+      if (engineEntityTemplate == null)
       {
-        if (this.Instance != null)
+        if (Instance != null)
         {
-          this.engineEntityTemplate = (IEntity) this.Instance.Template;
+          engineEntityTemplate = (IEntity) Instance.Template;
         }
         else
         {
-          Logger.AddError(string.Format("Cannot get engine data for entity with editor template id = {0}: Engine entity and template are not defined", (object) this.EngineBaseTemplateGuid));
+          Logger.AddError(string.Format("Cannot get engine data for entity with editor template id = {0}: Engine entity and template are not defined", EngineBaseTemplateGuid));
           return;
         }
       }
@@ -443,32 +443,32 @@ namespace PLVirtualMachine.Dynamic
     protected void FinishCreateObject(bool bWorldObject = true)
     {
       if (bWorldObject)
-        this.CreateEntityByEngineTemplate(this.engineEntity);
+        CreateEntityByEngineTemplate(engineEntity);
       else
-        this.AddNewComponent("Common");
-      this.LoadComponentsFromVMTemplate(this.editorTemplate.Blueprint);
-      if (this.engineEntity == null)
+        AddNewComponent("Common");
+      LoadComponentsFromVMTemplate(editorTemplate.Blueprint);
+      if (engineEntity == null)
         return;
-      this.engineEntity.Name = this.editorTemplate.Name;
+      engineEntity.Name = editorTemplate.Name;
     }
 
     private void OnLoadDynamicChildEntity(VMEntity dynamicChild, VMStorage storageContainer)
     {
       IWorldBlueprint engineTemplateByGuid = ((VMGameRoot) IStaticDataContainer.StaticDataContainer.GameRoot).GetEngineTemplateByGuid(dynamicChild.EngineTemplateGuid);
       if (engineTemplateByGuid == null)
-        Logger.AddError(string.Format("Saveload error: dynamic child template with engine guid = {0} not registered", (object) GuidUtility.GetGuidString(dynamicChild.EngineTemplateGuid)));
+        Logger.AddError(string.Format("Saveload error: dynamic child template with engine guid = {0} not registered", GuidUtility.GetGuidString(dynamicChild.EngineTemplateGuid)));
       else if (dynamicChild.Instance == null)
       {
-        Logger.AddError(string.Format("SaveLoad error: Cannot load dynamic child with template {0}, instance not created", (object) dynamicChild.EngineTemplateGuid));
+        Logger.AddError(string.Format("SaveLoad error: Cannot load dynamic child with template {0}, instance not created", dynamicChild.EngineTemplateGuid));
       }
       else
       {
         IEntity instance1 = dynamicChild.Instance;
-        IEntity instance2 = this.Instance;
+        IEntity instance2 = Instance;
         ServiceCache.Simulation.Add(instance1, instance2);
-        dynamicChild.Initialize((ILogicObject) engineTemplateByGuid, dynamicChild.Instance, true);
-        WorldEntityUtility.OnCreateWorldTemplateDynamicChildInstance(dynamicChild, (IBlueprint) engineTemplateByGuid);
-        this.AddChildEntity((VMBaseEntity) dynamicChild);
+        dynamicChild.Initialize(engineTemplateByGuid, dynamicChild.Instance, true);
+        WorldEntityUtility.OnCreateWorldTemplateDynamicChildInstance(dynamicChild, engineTemplateByGuid);
+        AddChildEntity(dynamicChild);
         if (storageContainer == null || dynamicChild.GetComponentByName("Inventory") == null)
           return;
         storageContainer.OnLoadInventory(instance1);

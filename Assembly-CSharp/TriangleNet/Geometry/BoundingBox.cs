@@ -9,24 +9,24 @@ namespace TriangleNet.Geometry
     private double xmax;
     private double ymax;
 
-    public double Xmin => this.xmin;
+    public double Xmin => xmin;
 
-    public double Ymin => this.ymin;
+    public double Ymin => ymin;
 
-    public double Xmax => this.xmax;
+    public double Xmax => xmax;
 
-    public double Ymax => this.ymax;
+    public double Ymax => ymax;
 
-    public double Width => this.xmax - this.xmin;
+    public double Width => xmax - xmin;
 
-    public double Height => this.ymax - this.ymin;
+    public double Height => ymax - ymin;
 
     public BoundingBox()
     {
-      this.xmin = double.MaxValue;
-      this.ymin = double.MaxValue;
-      this.xmax = double.MinValue;
-      this.ymax = double.MinValue;
+      xmin = double.MaxValue;
+      ymin = double.MaxValue;
+      xmax = double.MinValue;
+      ymax = double.MinValue;
     }
 
     public BoundingBox(double xmin, double ymin, double xmax, double ymax)
@@ -39,23 +39,23 @@ namespace TriangleNet.Geometry
 
     public void Update(double x, double y)
     {
-      this.xmin = Math.Min(this.xmin, x);
-      this.ymin = Math.Min(this.ymin, y);
-      this.xmax = Math.Max(this.xmax, x);
-      this.ymax = Math.Max(this.ymax, y);
+      xmin = Math.Min(xmin, x);
+      ymin = Math.Min(ymin, y);
+      xmax = Math.Max(xmax, x);
+      ymax = Math.Max(ymax, y);
     }
 
     public void Scale(double dx, double dy)
     {
-      this.xmin -= dx;
-      this.xmax += dx;
-      this.ymin -= dy;
-      this.ymax += dy;
+      xmin -= dx;
+      xmax += dx;
+      ymin -= dy;
+      ymax += dy;
     }
 
     public bool Contains(Point pt)
     {
-      return pt.x >= this.xmin && pt.x <= this.xmax && pt.y >= this.ymin && pt.y <= this.ymax;
+      return pt.x >= xmin && pt.x <= xmax && pt.y >= ymin && pt.y <= ymax;
     }
   }
 }

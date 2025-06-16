@@ -1,5 +1,4 @@
 ﻿using Inspectors;
-using UnityEngine;
 
 namespace Engine.Source.Settings
 {
@@ -21,29 +20,29 @@ namespace Engine.Source.Settings
       this.defaultValue = defaultValue;
       this.minValue = minValue;
       this.maxValue = maxValue;
-      this.value = PlayerSettings.Instance.GetFloat(name, defaultValue);
-      this.value = Mathf.Clamp(this.value, minValue, maxValue);
+      value = PlayerSettings.Instance.GetFloat(name, defaultValue);
+      value = Mathf.Clamp(value, minValue, maxValue);
     }
 
     [Inspected(Mutable = true)]
     public float Value
     {
-      get => this.value;
+      get => value;
       set
       {
-        if ((double) this.value == (double) value)
+        if (this.value == (double) value)
           return;
         this.value = value;
-        this.value = Mathf.Clamp(this.value, this.minValue, this.maxValue);
-        PlayerSettings.Instance.SetFloat(this.name, this.value);
+        this.value = Mathf.Clamp(this.value, minValue, maxValue);
+        PlayerSettings.Instance.SetFloat(name, this.value);
         PlayerSettings.Instance.Save();
       }
     }
 
-    public float DefaultValue => this.defaultValue;
+    public float DefaultValue => defaultValue;
 
-    public float MinValue => this.minValue;
+    public float MinValue => minValue;
 
-    public float MaxValue => this.maxValue;
+    public float MaxValue => maxValue;
   }
 }

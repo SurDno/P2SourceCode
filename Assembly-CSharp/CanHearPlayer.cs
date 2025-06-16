@@ -1,4 +1,5 @@
-﻿using BehaviorDesigner.Runtime;
+﻿using System;
+using BehaviorDesigner.Runtime;
 using BehaviorDesigner.Runtime.Tasks;
 using Cofe.Proxies;
 using Cofe.Serializations.Data;
@@ -10,7 +11,6 @@ using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Engine.Source.Components;
 using Scripts.Tools.Serializations.Converters;
-using System;
 
 [TaskDescription("Can hear Player")]
 [TaskCategory("Pathologic")]
@@ -23,30 +23,30 @@ public class CanHearPlayer : CanHear, IStub, ISerializeDataWrite, ISerializeData
   {
     if (detectable.IsDisposed || detectable.Owner.GetComponent<IAttackerPlayerComponent>() == null)
       return false;
-    return this.DetectType == DetectType.None || detectable.NoiseDetectType == this.DetectType;
+    return DetectType == DetectType.None || detectable.NoiseDetectType == DetectType;
   }
 
   public new void DataWrite(IDataWriter writer)
   {
-    DefaultDataWriteUtility.WriteSerialize<NodeData>(writer, "NodeData", this.nodeData);
-    DefaultDataWriteUtility.Write(writer, "Id", this.id);
-    DefaultDataWriteUtility.Write(writer, "FriendlyName", this.friendlyName);
-    DefaultDataWriteUtility.Write(writer, "Instant", this.instant);
-    DefaultDataWriteUtility.Write(writer, "Disabled", this.disabled);
-    BehaviorTreeDataWriteUtility.WriteShared<SharedTransform>(writer, "Result", this.Result);
-    BehaviorTreeDataWriteUtility.WriteShared<SharedTransformList>(writer, "ResultList", this.ResultList);
-    DefaultDataWriteUtility.WriteEnum<DetectType>(writer, "DetectType", this.DetectType);
+    DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
+    DefaultDataWriteUtility.Write(writer, "Id", id);
+    DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
+    DefaultDataWriteUtility.Write(writer, "Instant", instant);
+    DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
+    BehaviorTreeDataWriteUtility.WriteShared(writer, "Result", Result);
+    BehaviorTreeDataWriteUtility.WriteShared(writer, "ResultList", ResultList);
+    DefaultDataWriteUtility.WriteEnum(writer, "DetectType", DetectType);
   }
 
   public new void DataRead(IDataReader reader, Type type)
   {
-    this.nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
-    this.id = DefaultDataReadUtility.Read(reader, "Id", this.id);
-    this.friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", this.friendlyName);
-    this.instant = DefaultDataReadUtility.Read(reader, "Instant", this.instant);
-    this.disabled = DefaultDataReadUtility.Read(reader, "Disabled", this.disabled);
-    this.Result = BehaviorTreeDataReadUtility.ReadShared<SharedTransform>(reader, "Result", this.Result);
-    this.ResultList = BehaviorTreeDataReadUtility.ReadShared<SharedTransformList>(reader, "ResultList", this.ResultList);
-    this.DetectType = DefaultDataReadUtility.ReadEnum<DetectType>(reader, "DetectType");
+    nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
+    id = DefaultDataReadUtility.Read(reader, "Id", id);
+    friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
+    instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
+    disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
+    Result = BehaviorTreeDataReadUtility.ReadShared(reader, "Result", Result);
+    ResultList = BehaviorTreeDataReadUtility.ReadShared(reader, "ResultList", ResultList);
+    DetectType = DefaultDataReadUtility.ReadEnum<DetectType>(reader, "DetectType");
   }
 }

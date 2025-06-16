@@ -1,14 +1,13 @@
-﻿using Engine.Common.Components;
+﻿using System.Collections.Generic;
+using Engine.Common.Components;
 using Engine.Source.Commons;
 using Engine.Source.Components;
 using Engine.Source.Services.Detectablies;
 using Inspectors;
-using System.Collections.Generic;
-using UnityEngine;
 
 namespace Engine.Source.Services
 {
-  [GameService(new System.Type[] {typeof (DetectorService)})]
+  [GameService(typeof (DetectorService))]
   public class DetectorService
   {
     [Inspected]
@@ -20,20 +19,20 @@ namespace Engine.Source.Services
     {
       get
       {
-        if (this.invalidate)
+        if (invalidate)
         {
-          this.invalidate = false;
-          this.cache.Clear();
-          foreach (KeyValuePair<DetectableComponent, DetectableCandidatInfo> detectably in this.detectablies)
-            this.cache.Add(detectably.Value);
+          invalidate = false;
+          cache.Clear();
+          foreach (KeyValuePair<DetectableComponent, DetectableCandidatInfo> detectably in detectablies)
+            cache.Add(detectably.Value);
         }
-        return this.cache;
+        return cache;
       }
     }
 
     public void AddDetectable(DetectableComponent detectable)
     {
-      this.invalidate = true;
+      invalidate = true;
       ILocationItemComponent component = detectable.GetComponent<ILocationItemComponent>();
       if (component == null)
       {
@@ -44,8 +43,7 @@ namespace Engine.Source.Services
         GameObject gameObject = ((IEntityView) detectable.Owner).GameObject;
         gameObject.GetComponent<Collider>();
         Vector3 up = Vector3.up;
-        this.detectablies[detectable] = new DetectableCandidatInfo()
-        {
+        detectablies[detectable] = new DetectableCandidatInfo {
           Detectable = detectable,
           LocationItem = component,
           GameObject = gameObject,
@@ -56,8 +54,8 @@ namespace Engine.Source.Services
 
     public void RemoveDetectable(DetectableComponent detectable)
     {
-      this.invalidate = true;
-      this.detectablies.Remove(detectable);
+      invalidate = true;
+      detectablies.Remove(detectable);
     }
   }
 }

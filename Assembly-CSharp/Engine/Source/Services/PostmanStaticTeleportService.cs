@@ -1,4 +1,7 @@
-﻿using Engine.Common;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Engine.Common;
 using Engine.Common.Components;
 using Engine.Common.Components.MessangerStationary;
 using Engine.Common.Services;
@@ -6,14 +9,10 @@ using Engine.Source.Commons;
 using Engine.Source.Components;
 using Engine.Source.Settings;
 using Inspectors;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
 
 namespace Engine.Source.Services
 {
-  [GameService(new System.Type[] {typeof (PostmanStaticTeleportService)})]
+  [GameService(typeof (PostmanStaticTeleportService))]
   public class PostmanStaticTeleportService : IInitialisable, IUpdatable
   {
     private const float hibernateTrialTime = 0.5f;
@@ -22,44 +21,43 @@ namespace Engine.Source.Services
     [Inspected]
     private HashSet<Spawnpoint> spawnpoints = new HashSet<Spawnpoint>();
     [Inspected]
-    private List<PostmanStaticTeleportService.Slot> postmans = new List<PostmanStaticTeleportService.Slot>();
+    private List<Slot> postmans = new List<Slot>();
     [Inspected]
-    private List<PostmanStaticTeleportService.Slot> teleports = new List<PostmanStaticTeleportService.Slot>();
+    private List<Slot> teleports = new List<Slot>();
 
-    public IEnumerable<Spawnpoint> Spawnpoints => (IEnumerable<Spawnpoint>) this.spawnpoints;
+    public IEnumerable<Spawnpoint> Spawnpoints => spawnpoints;
 
-    public void AddSpawnpoints(Spawnpoint point) => this.spawnpoints.Add(point);
+    public void AddSpawnpoints(Spawnpoint point) => spawnpoints.Add(point);
 
-    public void RemoveSpawnpoints(Spawnpoint point) => this.spawnpoints.Remove(point);
+    public void RemoveSpawnpoints(Spawnpoint point) => spawnpoints.Remove(point);
 
     public void Initialise()
     {
-      InstanceByRequest<UpdateService>.Instance.Updater.AddUpdatable((IUpdatable) this);
+      InstanceByRequest<UpdateService>.Instance.Updater.AddUpdatable(this);
     }
 
     public void Terminate()
     {
-      this.spawnpoints.Clear();
-      this.postmans.Clear();
-      this.teleports.Clear();
-      InstanceByRequest<UpdateService>.Instance.Updater.RemoveUpdatable((IUpdatable) this);
+      spawnpoints.Clear();
+      postmans.Clear();
+      teleports.Clear();
+      InstanceByRequest<UpdateService>.Instance.Updater.RemoveUpdatable(this);
     }
 
     private bool IsRegistered(IEntity owner)
     {
-      return this.postmans.FindIndex((Predicate<PostmanStaticTeleportService.Slot>) (s => s.Owner == owner)) != -1;
+      return postmans.FindIndex(s => s.Owner == owner) != -1;
     }
 
     public void RegisterPostman(IEntity owner, SpawnpointKindEnum spawnpointKind)
     {
-      Debug.Log((object) ObjectInfoUtility.GetStream().Append("Register static postman, kind : ").Append((object) spawnpointKind).Append(" , owner : ").GetInfo((object) owner));
+      Debug.Log((object) ObjectInfoUtility.GetStream().Append("Register static postman, kind : ").Append(spawnpointKind).Append(" , owner : ").GetInfo(owner));
       if (spawnpointKind == SpawnpointKindEnum.None)
-        Debug.LogError((object) string.Format("Adding static postman with {0} {1}", (object) SpawnpointKindEnum.None, (object) owner.GetInfo()));
-      if (this.IsRegistered(owner))
+        Debug.LogError((object) string.Format("Adding static postman with {0} {1}", SpawnpointKindEnum.None, owner.GetInfo()));
+      if (IsRegistered(owner))
         Debug.LogError((object) ("Postman already register, owner : " + owner.GetInfo()));
       else
-        this.postmans.Add(new PostmanStaticTeleportService.Slot()
-        {
+        postmans.Add(new Slot {
           Owner = owner,
           TimeLeft = 0.0f,
           SpawnpointKind = spawnpointKind
@@ -68,23 +66,23 @@ namespace Engine.Source.Services
 
     public void UnregisterPostman(IEntity owner)
     {
-      Debug.Log((object) ObjectInfoUtility.GetStream().Append("Unregister static postman, owner : ").GetInfo((object) owner));
-      if (!this.IsRegistered(owner))
+      Debug.Log((object) ObjectInfoUtility.GetStream().Append("Unregister static postman, owner : ").GetInfo(owner));
+      if (!IsRegistered(owner))
       {
         Debug.LogError((object) ("Postman already unregister, owner : " + owner.GetInfo()));
       }
       else
       {
-        int index = this.postmans.FindIndex((Predicate<PostmanStaticTeleportService.Slot>) (s => s.Owner == owner));
-        if ((UnityEngine.Object) this.postmans[index].Spawnpoint != (UnityEngine.Object) null)
-          this.postmans[index].Spawnpoint.Locked = false;
-        this.postmans.RemoveAt(index);
+        int index = postmans.FindIndex(s => s.Owner == owner);
+        if ((UnityEngine.Object) postmans[index].Spawnpoint != (UnityEngine.Object) null)
+          postmans[index].Spawnpoint.Locked = false;
+        postmans.RemoveAt(index);
       }
     }
 
     public void ComputeUpdate()
     {
-      if (InstanceByRequest<EngineApplication>.Instance.IsPaused || this.postmans.Count == 0)
+      if (InstanceByRequest<EngineApplication>.Instance.IsPaused || postmans.Count == 0)
         return;
       IEntity player = ServiceLocator.GetService<ISimulation>().Player;
       if (player == null)
@@ -98,7 +96,7 @@ namespace Engine.Source.Services
       PlayerControllerComponent component2 = player.GetComponent<PlayerControllerComponent>();
       if (component2 != null && !component2.CanReceiveMail.Value)
         return;
-      this.UpdatePostmans(Time.deltaTime, gameObject, component1);
+      UpdatePostmans(Time.deltaTime, gameObject, component1);
     }
 
     private void UpdatePostmans(
@@ -106,8 +104,8 @@ namespace Engine.Source.Services
       GameObject playerGameObject,
       LocationItemComponent playerLocation)
     {
-      this.teleports.Clear();
-      foreach (PostmanStaticTeleportService.Slot postman in this.postmans)
+      teleports.Clear();
+      foreach (Slot postman in postmans)
       {
         ILocationComponent location = postman.Owner.GetComponent<LocationItemComponent>()?.Location;
         if (location != null)
@@ -126,14 +124,14 @@ namespace Engine.Source.Services
               continue;
             }
           }
-          if ((double) postman.TimeLeft <= 0.0)
-            this.teleports.Add(postman);
+          if (postman.TimeLeft <= 0.0)
+            teleports.Add(postman);
         }
       }
-      foreach (PostmanStaticTeleportService.Slot teleport in this.teleports)
+      foreach (Slot teleport in teleports)
       {
         Spawnpoint spawnpoint;
-        if (this.GetRandomPoint(false, playerGameObject, out spawnpoint, teleport.SpawnpointKind))
+        if (GetRandomPoint(false, playerGameObject, out spawnpoint, teleport.SpawnpointKind))
         {
           teleport.Owner.GetComponent<NavigationComponent>().TeleportTo(playerLocation.Location, spawnpoint.transform.position, spawnpoint.transform.rotation);
           teleport.TimeLeft = 30f;
@@ -151,13 +149,13 @@ namespace Engine.Source.Services
       out Spawnpoint spawnpoint,
       SpawnpointKindEnum kind)
     {
-      if (this.spawnpoints.Count == 0)
+      if (spawnpoints.Count == 0)
       {
-        spawnpoint = (Spawnpoint) null;
+        spawnpoint = null;
         return false;
       }
       float num = InstanceByRequest<GraphicsGameSettings>.Instance.FieldOfView.Value * GameCamera.Instance.Camera.aspect;
-      foreach (Spawnpoint spawnpoint1 in (IEnumerable<Spawnpoint>) this.spawnpoints.OrderBy<Spawnpoint, float>((Func<Spawnpoint, float>) (p => Vector3.Distance(playerGameObject.transform.position, p.transform.position))))
+      foreach (Spawnpoint spawnpoint1 in spawnpoints.OrderBy((Func<Spawnpoint, float>) (p => Vector3.Distance(playerGameObject.transform.position, p.transform.position))))
       {
         if (spawnpoint1.SpawnpointKind == kind && !spawnpoint1.Locked)
         {
@@ -167,14 +165,14 @@ namespace Engine.Source.Services
             {
               y = 0.0f
             };
-            if ((double) to.magnitude < 30.0 && (double) Vector3.Angle(playerGameObject.transform.forward, to) < (double) num / 2.0)
+            if ((double) to.magnitude < 30.0 && (double) Vector3.Angle(playerGameObject.transform.forward, to) < num / 2.0)
               continue;
           }
           spawnpoint = spawnpoint1;
           return true;
         }
       }
-      spawnpoint = (Spawnpoint) null;
+      spawnpoint = null;
       return false;
     }
 
@@ -190,7 +188,7 @@ namespace Engine.Source.Services
       public Spawnpoint Spawnpoint;
 
       [Inspected(Header = true)]
-      private string Header => this.Owner != null ? this.Owner.Name : (string) null;
+      private string Header => Owner != null ? Owner.Name : null;
     }
   }
 }

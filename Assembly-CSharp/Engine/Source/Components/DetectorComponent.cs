@@ -1,4 +1,6 @@
-﻿using Engine.Behaviours.Components;
+﻿using System;
+using System.Collections.Generic;
+using Engine.Behaviours.Components;
 using Engine.Common;
 using Engine.Common.Commons;
 using Engine.Common.Components;
@@ -12,8 +14,6 @@ using Engine.Source.Services.Detectablies;
 using Engine.Source.Settings.External;
 using Engine.Source.Utility;
 using Inspectors;
-using System;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace Engine.Source.Components
@@ -28,12 +28,12 @@ namespace Engine.Source.Components
     IUpdatable,
     INeedSave
   {
-    [StateSaveProxy(MemberEnum.None)]
-    [StateLoadProxy(MemberEnum.None)]
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
+    [StateSaveProxy]
+    [StateLoadProxy]
+    [DataReadProxy]
+    [DataWriteProxy]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    [CopyableProxy(MemberEnum.None)]
+    [CopyableProxy()]
     protected bool isEnabled = true;
     [Inspected]
     private List<DetectableCandidatInfo> eyeCandidates = new List<DetectableCandidatInfo>();
@@ -59,63 +59,63 @@ namespace Engine.Source.Components
     [Inspected(Mutable = true)]
     public bool IsEnabled
     {
-      get => this.isEnabled;
+      get => isEnabled;
       set
       {
-        this.isEnabled = value;
-        this.OnChangeEnabled();
+        isEnabled = value;
+        OnChangeEnabled();
       }
     }
 
     [Inspected]
-    public HashSet<IDetectableComponent> Visible => this.visible;
+    public HashSet<IDetectableComponent> Visible => visible;
 
     [Inspected]
-    public HashSet<IDetectableComponent> Hearing => this.hearing;
+    public HashSet<IDetectableComponent> Hearing => hearing;
 
     [Inspected]
     public float EyeDistance
     {
-      get => this.eyeDistanceParameter != null ? this.eyeDistanceParameter.Value : 0.0f;
+      get => eyeDistanceParameter != null ? eyeDistanceParameter.Value : 0.0f;
     }
 
     [Inspected]
     public float BaseEyeDistance
     {
-      get => this.eyeDistanceParameter != null ? this.eyeDistanceParameter.BaseValue : 0.0f;
+      get => eyeDistanceParameter != null ? eyeDistanceParameter.BaseValue : 0.0f;
     }
 
     [Inspected]
-    public float EyeAngle => this.eyeAngleParameter != null ? this.eyeAngleParameter.Value : 0.0f;
+    public float EyeAngle => eyeAngleParameter != null ? eyeAngleParameter.Value : 0.0f;
 
     [Inspected]
     public float HearingDistance
     {
-      get => this.hearingDistanceParameter != null ? this.hearingDistanceParameter.Value : 0.0f;
+      get => hearingDistanceParameter != null ? hearingDistanceParameter.Value : 0.0f;
     }
 
     [Inspected]
     public float BaseHearingDistance
     {
-      get => this.hearingDistanceParameter != null ? this.hearingDistanceParameter.BaseValue : 0.0f;
+      get => hearingDistanceParameter != null ? hearingDistanceParameter.BaseValue : 0.0f;
     }
 
     public bool NeedSave
     {
       get
       {
-        if (!(this.Owner.Template is IEntity template))
+        if (!(Owner.Template is IEntity template))
         {
-          Debug.LogError((object) ("Template not found, owner : " + this.Owner.GetInfo()));
+          Debug.LogError((object) ("Template not found, owner : " + Owner.GetInfo()));
           return true;
         }
         DetectorComponent component = template.GetComponent<DetectorComponent>();
         if (component == null)
         {
-          Debug.LogError((object) (this.GetType().Name + " not found, owner : " + this.Owner.GetInfo()));
+          Debug.LogError((object) (GetType().Name + " not found, owner : " + Owner.GetInfo()));
           return true;
         }
-        return this.isEnabled != component.isEnabled;
+        return isEnabled != component.isEnabled;
       }
     }
 
@@ -130,197 +130,197 @@ namespace Engine.Source.Components
     public override void OnAdded()
     {
       base.OnAdded();
-      if (this.parametersComponent != null)
+      if (parametersComponent != null)
       {
-        this.eyeDistanceParameter = this.parametersComponent.GetByName<float>(ParameterNameEnum.EyeDistance);
-        this.eyeAngleParameter = this.parametersComponent.GetByName<float>(ParameterNameEnum.EyeAngle);
-        this.hearingDistanceParameter = this.parametersComponent.GetByName<float>(ParameterNameEnum.HearingDistance);
+        eyeDistanceParameter = parametersComponent.GetByName<float>(ParameterNameEnum.EyeDistance);
+        eyeAngleParameter = parametersComponent.GetByName<float>(ParameterNameEnum.EyeAngle);
+        hearingDistanceParameter = parametersComponent.GetByName<float>(ParameterNameEnum.HearingDistance);
       }
-      this.locationItem.OnHibernationChanged += new Action<ILocationItemComponent>(this.LocationItemOnChangeHibernation);
-      this.locationItem.OnChangeLocation += new Action<ILocationItemComponent, ILocationComponent>(this.LocationItemOnLocationChanged);
-      this.isIndoor = this.locationItem.IsIndoor;
-      InstanceByRequest<UpdateService>.Instance.DetectorUpdater.AddUpdatable((IUpdatable) this);
-      ((IEntityView) this.Owner).OnGameObjectChangedEvent += new Action(this.Owner_OnGameObjectChangedEvent);
+      locationItem.OnHibernationChanged += LocationItemOnChangeHibernation;
+      locationItem.OnChangeLocation += LocationItemOnLocationChanged;
+      isIndoor = locationItem.IsIndoor;
+      InstanceByRequest<UpdateService>.Instance.DetectorUpdater.AddUpdatable(this);
+      ((IEntityView) Owner).OnGameObjectChangedEvent += Owner_OnGameObjectChangedEvent;
     }
 
     public override void OnRemoved()
     {
-      ((IEntityView) this.Owner).OnGameObjectChangedEvent -= new Action(this.Owner_OnGameObjectChangedEvent);
-      this.locationItem.OnHibernationChanged -= new Action<ILocationItemComponent>(this.LocationItemOnChangeHibernation);
-      this.locationItem.OnChangeLocation -= new Action<ILocationItemComponent, ILocationComponent>(this.LocationItemOnLocationChanged);
-      this.locationItem = (ILocationItemComponent) null;
-      InstanceByRequest<UpdateService>.Instance.DetectorUpdater.RemoveUpdatable((IUpdatable) this);
+      ((IEntityView) Owner).OnGameObjectChangedEvent -= Owner_OnGameObjectChangedEvent;
+      locationItem.OnHibernationChanged -= LocationItemOnChangeHibernation;
+      locationItem.OnChangeLocation -= LocationItemOnLocationChanged;
+      locationItem = null;
+      InstanceByRequest<UpdateService>.Instance.DetectorUpdater.RemoveUpdatable(this);
       base.OnRemoved();
     }
 
     private void Owner_OnGameObjectChangedEvent()
     {
-      this.gameObject = ((IEntityView) this.Owner).GameObject;
-      this.pivot = (UnityEngine.Object) this.gameObject != (UnityEngine.Object) null ? this.gameObject.GetComponent<Pivot>() : (Pivot) null;
+      gameObject = ((IEntityView) Owner).GameObject;
+      pivot = (UnityEngine.Object) gameObject != (UnityEngine.Object) null ? gameObject.GetComponent<Pivot>() : (Pivot) null;
     }
 
     public void ComputeUpdate()
     {
-      if (InstanceByRequest<EngineApplication>.Instance.IsPaused || !this.Owner.IsEnabledInHierarchy || !this.IsEnabled || this.locationItem.IsHibernation)
+      if (InstanceByRequest<EngineApplication>.Instance.IsPaused || !Owner.IsEnabledInHierarchy || !IsEnabled || locationItem.IsHibernation)
         return;
-      IEntityView owner = (IEntityView) this.Owner;
+      IEntityView owner = (IEntityView) Owner;
       if (!owner.IsAttached)
         return;
-      if ((UnityEngine.Object) this.gameObject == (UnityEngine.Object) null)
-        throw new Exception("gameObject == null , owner : " + this.Owner.GetInfo());
+      if ((UnityEngine.Object) gameObject == (UnityEngine.Object) null)
+        throw new Exception("gameObject == null , owner : " + Owner.GetInfo());
       if (ExternalSettingsInstance<ExternalOptimizationSettings>.Instance.ReduceUpdateFarObjects && !DetectorUtility.CheckDistance(owner.Position, EngineApplication.PlayerPosition, ExternalSettingsInstance<ExternalOptimizationSettings>.Instance.ReduceUpdateFarObjectsDistance))
       {
-        this.updateSkipped = !this.updateSkipped;
-        if (this.updateSkipped)
+        updateSkipped = !updateSkipped;
+        if (updateSkipped)
           return;
       }
-      this.ComputeCandidats();
-      this.ComputeEye();
-      this.ComputeHearing();
+      ComputeCandidats();
+      ComputeEye();
+      ComputeHearing();
     }
 
-    private void ComputeHearing() => this.ComputeHearing(this.hearingCandidates);
+    private void ComputeHearing() => ComputeHearing(hearingCandidates);
 
-    private void ComputeEye() => this.ComputeEye(this.eyeCandidates);
+    private void ComputeEye() => ComputeEye(eyeCandidates);
 
     private void ComputeEye(List<DetectableCandidatInfo> candidates)
     {
-      if ((UnityEngine.Object) this.pivot == (UnityEngine.Object) null || (UnityEngine.Object) this.pivot.Head == (UnityEngine.Object) null)
+      if ((UnityEngine.Object) pivot == (UnityEngine.Object) null || (UnityEngine.Object) pivot.Head == (UnityEngine.Object) null)
         return;
-      DetectorComponent.tmps.Clear();
-      float eyeAngle = this.EyeAngle;
-      float eyeDistance = this.EyeDistance;
+      tmps.Clear();
+      float eyeAngle = EyeAngle;
+      float eyeDistance = EyeDistance;
       for (int index1 = 0; index1 < candidates.Count; ++index1)
       {
         DetectableCandidatInfo candidate = candidates[index1];
         Vector3 position = ((IEntityView) candidate.Detectable.Owner).Position;
-        Vector3 forward = position - ((IEntityView) this.Owner).Position;
+        Vector3 forward = position - ((IEntityView) Owner).Position;
         float magnitude1 = forward.magnitude;
-        Quaternion rotation = ((IEntityView) this.Owner).Rotation;
+        Quaternion rotation = ((IEntityView) Owner).Rotation;
         Quaternion quaternion = Quaternion.identity;
         if (!Mathf.Approximately(magnitude1, 0.0f))
           quaternion = rotation * Quaternion.Inverse(Quaternion.LookRotation(forward));
         float f = Mathf.DeltaAngle(quaternion.eulerAngles.y, 0.0f);
-        if ((double) Mathf.Abs(f) < (double) eyeAngle * 0.5)
+        if ((double) Mathf.Abs(f) < eyeAngle * 0.5)
         {
           float num1 = FunctionUtility.EyeFunction(f + eyeAngle * 0.5f, eyeAngle);
           float num2 = candidate.Detectable.VisibleDistance + eyeDistance * num1;
-          if ((double) magnitude1 <= (double) num2)
+          if (magnitude1 <= (double) num2)
           {
-            Vector3 direction = position + candidate.Offset - this.pivot.Head.transform.position;
+            Vector3 direction = position + candidate.Offset - pivot.Head.transform.position;
             float magnitude2 = direction.magnitude;
             RaycastHit raycastHit1 = new RaycastHit();
             float num3 = float.MaxValue;
             LayerMask triggerInteractLayer = ScriptableObjectInstance<GameSettingsData>.Instance.TriggerInteractLayer;
-            PhysicsUtility.Raycast(DetectorComponent.raycastBuffer, this.pivot.Head.transform.position, direction, magnitude2, -1 ^ (int) triggerInteractLayer);
-            for (int index2 = 0; index2 < DetectorComponent.raycastBuffer.Count; ++index2)
+            PhysicsUtility.Raycast(raycastBuffer, pivot.Head.transform.position, direction, magnitude2, -1 ^ (int) triggerInteractLayer);
+            for (int index2 = 0; index2 < raycastBuffer.Count; ++index2)
             {
-              RaycastHit raycastHit2 = DetectorComponent.raycastBuffer[index2];
-              if (!raycastHit2.collider.isTrigger && (double) raycastHit2.distance < (double) num3)
+              RaycastHit raycastHit2 = raycastBuffer[index2];
+              if (!raycastHit2.collider.isTrigger && (double) raycastHit2.distance < num3)
               {
                 raycastHit1 = raycastHit2;
                 num3 = raycastHit2.distance;
               }
             }
-            if ((double) num3 <= (double) magnitude2 && !((UnityEngine.Object) raycastHit1.collider == (UnityEngine.Object) null) && !((UnityEngine.Object) raycastHit1.collider.gameObject != (UnityEngine.Object) candidate.GameObject))
-              DetectorComponent.tmps.Add((IDetectableComponent) candidate.Detectable);
+            if (num3 <= (double) magnitude2 && !((UnityEngine.Object) raycastHit1.collider == (UnityEngine.Object) null) && !((UnityEngine.Object) raycastHit1.collider.gameObject != (UnityEngine.Object) candidate.GameObject))
+              tmps.Add(candidate.Detectable);
           }
         }
       }
-      foreach (IDetectableComponent tmp in DetectorComponent.tmps)
+      foreach (IDetectableComponent tmp in tmps)
       {
-        if (this.visible.Add(tmp))
+        if (visible.Add(tmp))
         {
-          Action<IDetectableComponent> onSee = this.OnSee;
+          Action<IDetectableComponent> onSee = OnSee;
           if (onSee != null)
             onSee(tmp);
         }
       }
-      DetectorComponent.tmps2.Clear();
-      foreach (IDetectableComponent detectableComponent in this.visible)
+      tmps2.Clear();
+      foreach (IDetectableComponent detectableComponent in visible)
       {
-        if (!DetectorComponent.tmps.Contains(detectableComponent))
+        if (!tmps.Contains(detectableComponent))
         {
-          DetectorComponent.tmps2.Add(detectableComponent);
-          Action<IDetectableComponent> onStopSee = this.OnStopSee;
+          tmps2.Add(detectableComponent);
+          Action<IDetectableComponent> onStopSee = OnStopSee;
           if (onStopSee != null)
             onStopSee(detectableComponent);
         }
       }
-      foreach (IDetectableComponent detectableComponent in DetectorComponent.tmps2)
-        this.visible.Remove(detectableComponent);
+      foreach (IDetectableComponent detectableComponent in tmps2)
+        visible.Remove(detectableComponent);
     }
 
     private void ComputeHearing(List<DetectableCandidatInfo> candidates)
     {
-      DetectorComponent.tmps.Clear();
-      float hearingDistance = this.HearingDistance;
+      tmps.Clear();
+      float hearingDistance = HearingDistance;
       for (int index = 0; index < candidates.Count; ++index)
       {
         DetectableCandidatInfo candidate = candidates[index];
-        if (this.isIndoor)
+        if (isIndoor)
         {
-          if (!DetectorUtility.CanHear(this.gameObject, ((IEntityView) this.Owner).Position, candidate.GameObject, ((IEntityView) candidate.Detectable.Owner).Position, hearingDistance, candidate.Detectable.NoiseDistance))
+          if (!DetectorUtility.CanHear(gameObject, ((IEntityView) Owner).Position, candidate.GameObject, ((IEntityView) candidate.Detectable.Owner).Position, hearingDistance, candidate.Detectable.NoiseDistance))
             continue;
         }
-        else if ((double) (((IEntityView) candidate.Detectable.Owner).Position - ((IEntityView) this.Owner).Position).magnitude > (double) hearingDistance + (double) candidate.Detectable.NoiseDistance)
+        else if ((double) (((IEntityView) candidate.Detectable.Owner).Position - ((IEntityView) Owner).Position).magnitude > hearingDistance + (double) candidate.Detectable.NoiseDistance)
           continue;
-        DetectorComponent.tmps.Add((IDetectableComponent) candidate.Detectable);
+        tmps.Add(candidate.Detectable);
       }
-      foreach (IDetectableComponent tmp in DetectorComponent.tmps)
+      foreach (IDetectableComponent tmp in tmps)
       {
-        if (this.hearing.Add(tmp))
+        if (hearing.Add(tmp))
         {
-          Action<IDetectableComponent> onHear = this.OnHear;
+          Action<IDetectableComponent> onHear = OnHear;
           if (onHear != null)
             onHear(tmp);
         }
       }
-      DetectorComponent.tmps2.Clear();
-      foreach (IDetectableComponent detectableComponent in this.hearing)
+      tmps2.Clear();
+      foreach (IDetectableComponent detectableComponent in hearing)
       {
-        if (!DetectorComponent.tmps.Contains(detectableComponent))
-          DetectorComponent.tmps2.Add(detectableComponent);
+        if (!tmps.Contains(detectableComponent))
+          tmps2.Add(detectableComponent);
       }
-      foreach (IDetectableComponent detectableComponent in DetectorComponent.tmps2)
+      foreach (IDetectableComponent detectableComponent in tmps2)
       {
-        Action<IDetectableComponent> onStopHear = this.OnStopHear;
+        Action<IDetectableComponent> onStopHear = OnStopHear;
         if (onStopHear != null)
           onStopHear(detectableComponent);
-        this.hearing.Remove(detectableComponent);
+        hearing.Remove(detectableComponent);
       }
     }
 
     private void LocationItemOnChangeHibernation(ILocationItemComponent sender)
     {
-      if (!this.locationItem.IsHibernation)
+      if (!locationItem.IsHibernation)
         return;
-      this.Cleanup();
+      Cleanup();
     }
 
     private void LocationItemOnLocationChanged(
       ILocationItemComponent locationItem,
       ILocationComponent location)
     {
-      this.isIndoor = locationItem.IsIndoor;
+      isIndoor = locationItem.IsIndoor;
     }
 
     private void Cleanup()
     {
-      foreach (IDetectableComponent detectableComponent in this.visible)
+      foreach (IDetectableComponent detectableComponent in visible)
       {
-        Action<IDetectableComponent> onStopSee = this.OnStopSee;
+        Action<IDetectableComponent> onStopSee = OnStopSee;
         if (onStopSee != null)
           onStopSee(detectableComponent);
       }
-      this.visible.Clear();
-      this.hearing.Clear();
+      visible.Clear();
+      hearing.Clear();
     }
 
     public void ComputeCandidats()
     {
-      this.eyeCandidates.Clear();
-      this.hearingCandidates.Clear();
+      eyeCandidates.Clear();
+      hearingCandidates.Clear();
       if (ExternalSettingsInstance<ExternalOptimizationSettings>.Instance.DisableDetectors)
         return;
       List<DetectableCandidatInfo> detectablies = ServiceLocator.GetService<DetectorService>().Detectablies;
@@ -331,8 +331,8 @@ namespace Engine.Source.Components
       IEntityView owner1 = (IEntityView) detectorComponent.Owner;
       if (!owner1.IsAttached)
         return;
-      float eyeDistance = this.EyeDistance;
-      float hearingDistance = this.HearingDistance;
+      float eyeDistance = EyeDistance;
+      float hearingDistance = HearingDistance;
       Vector3 position1 = owner1.Position;
       foreach (DetectableCandidatInfo detectableCandidatInfo1 in detectablies)
       {
@@ -346,9 +346,9 @@ namespace Engine.Source.Components
           if ((flag1 || flag2) && detectableCandidatInfo1.Detectable.Owner.IsEnabledInHierarchy && detectableCandidatInfo1.Detectable.IsEnabled && !detectableCandidatInfo2.LocationItem.IsHibernation && LocationItemUtility.CheckLocation(locationItem, detectableCandidatInfo2.LocationItem) && detectorComponent.Owner != detectableCandidatInfo1.Detectable.Owner)
           {
             if (flag1)
-              this.eyeCandidates.Add(detectableCandidatInfo2);
+              eyeCandidates.Add(detectableCandidatInfo2);
             if (flag2)
-              this.hearingCandidates.Add(detectableCandidatInfo2);
+              hearingCandidates.Add(detectableCandidatInfo2);
           }
         }
       }

@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using UnityEngine;
 
 namespace SoundPropagation
 {
@@ -15,25 +14,24 @@ namespace SoundPropagation
     {
       get
       {
-        if (Locator.main == null)
-          Locator.main = new Locator();
-        return Locator.main;
+        if (main == null)
+          main = new Locator();
+        return main;
       }
-      set => Locator.main = value;
+      set => main = value;
     }
 
     public Pathfinder ActivePathfinder
     {
-      get => this.customPathfinder == null ? Pathfinder.Main : this.customPathfinder;
-      set => this.customPathfinder = value;
+      get => customPathfinder == null ? Pathfinder.Main : customPathfinder;
+      set => customPathfinder = value;
     }
 
-    public List<PathPoint> Path => this.path;
+    public List<PathPoint> Path => path;
 
     private Location LocationFromPath(List<PathPoint> path, Vector3 destDirectionality)
     {
-      Location location = new Location()
-      {
+      Location location = new Location {
         Filtering = new Filtering(),
         NearestCorner = path[path.Count - 1].Position,
         PathLength = 0.0f,
@@ -52,7 +50,7 @@ namespace SoundPropagation
         if ((Object) pathPoint2.Portal != (Object) null)
           location.Filtering.AddOcclusion(pathPoint2.Portal.Occlusion);
         Vector3 vector3 = pathPoint2.Direction - pathPoint3.Direction;
-        location.Filtering.AddOcclusion(vector3.magnitude * this.OcclusionPerTurn);
+        location.Filtering.AddOcclusion(vector3.magnitude * OcclusionPerTurn);
         if (index > 0)
         {
           Vector3 lhs = pathPoint2.Position - pathPoint1.Position;
@@ -64,15 +62,15 @@ namespace SoundPropagation
           }
         }
       }
-      float occlusion = Math.Normalize(ref destDirectionality) * (Vector3.Distance(destDirectionality, pathPoint1.Direction) * this.OcclusionPerTurn);
+      float occlusion = Math.Normalize(ref destDirectionality) * (Vector3.Distance(destDirectionality, pathPoint1.Direction) * OcclusionPerTurn);
       location.Filtering.AddOcclusion(occlusion);
       return location;
     }
 
     public Locator(Pathfinder pathfinder = null)
     {
-      this.customPathfinder = pathfinder;
-      this.path = new List<PathPoint>();
+      customPathfinder = pathfinder;
+      path = new List<PathPoint>();
     }
 
     public Location GetLocation(
@@ -85,13 +83,13 @@ namespace SoundPropagation
       float roughMaxCost,
       bool logPathfinding = false)
     {
-      this.path.Clear();
-      Pathfinder activePathfinder = this.ActivePathfinder;
-      activePathfinder.MaxTurnPerDistance = this.MaxTurnPerDistance;
-      activePathfinder.LossPerTurn = this.OcclusionPerTurn;
-      if (activePathfinder.GetReversedPath(originCell, originPosition, originDirectionality, destCell, destPosition, destDirectionality, this.path, roughMaxCost, logPathfinding))
-        return this.LocationFromPath(this.path, destDirectionality);
-      return new Location() { PathFound = false };
+      path.Clear();
+      Pathfinder activePathfinder = ActivePathfinder;
+      activePathfinder.MaxTurnPerDistance = MaxTurnPerDistance;
+      activePathfinder.LossPerTurn = OcclusionPerTurn;
+      if (activePathfinder.GetReversedPath(originCell, originPosition, originDirectionality, destCell, destPosition, destDirectionality, path, roughMaxCost, logPathfinding))
+        return LocationFromPath(path, destDirectionality);
+      return new Location { PathFound = false };
     }
   }
 }

@@ -1,10 +1,9 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons.Cloneable;
 using Engine.Common.Commons.Converters;
-using Engine.Common.Components.Storable;
 using Engine.Source.Components;
-using System;
 
 namespace Engine.Source.Proxies
 {
@@ -19,23 +18,23 @@ namespace Engine.Source.Proxies
     public object Clone()
     {
       RepairerComponent_Generated instance = Activator.CreateInstance<RepairerComponent_Generated>();
-      this.CopyTo((object) instance);
-      return (object) instance;
+      CopyTo(instance);
+      return instance;
     }
 
     public void CopyTo(object target2)
     {
-      CloneableObjectUtility.FillListTo<StorableGroup>(((RepairerComponent) target2).repairableGroups, this.repairableGroups);
+      CloneableObjectUtility.FillListTo(((RepairerComponent) target2).repairableGroups, repairableGroups);
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.WriteListEnum<StorableGroup>(writer, "RepairableGroups", this.repairableGroups);
+      DefaultDataWriteUtility.WriteListEnum(writer, "RepairableGroups", repairableGroups);
     }
 
     public void DataRead(IDataReader reader, Type type)
     {
-      this.repairableGroups = DefaultDataReadUtility.ReadListEnum<StorableGroup>(reader, "RepairableGroups", this.repairableGroups);
+      repairableGroups = DefaultDataReadUtility.ReadListEnum(reader, "RepairableGroups", repairableGroups);
     }
   }
 }

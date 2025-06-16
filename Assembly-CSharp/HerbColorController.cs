@@ -1,7 +1,6 @@
 ﻿using Engine.Common;
 using Engine.Common.Services;
 using Engine.Source.Commons;
-using UnityEngine;
 
 public class HerbColorController : MonoBehaviour
 {
@@ -12,23 +11,23 @@ public class HerbColorController : MonoBehaviour
   [SerializeField]
   private float colorChangeSpeed = 0.1f;
   private MaterialPropertyBlock block;
-  private float currentAlpha = 0.0f;
+  private float currentAlpha;
 
-  private void Start() => this.CountColor();
+  private void Start() => CountColor();
 
   private void Update()
   {
     IEntity player = ServiceLocator.GetService<ISimulation>().Player;
-    this.currentAlpha = Mathf.MoveTowards(this.currentAlpha, (double) (this.transform.position - (player != null ? ((IEntityView) player).Position : Vector3.zero)).magnitude < (double) this.maxDistance ? 1f : 0.0f, this.colorChangeSpeed * Time.deltaTime);
-    this.CountColor();
-    this.GetComponent<MeshRenderer>().SetPropertyBlock((double) this.currentAlpha > 0.0 ? this.block : (MaterialPropertyBlock) null);
+    currentAlpha = Mathf.MoveTowards(currentAlpha, (double) (this.transform.position - (player != null ? ((IEntityView) player).Position : Vector3.zero)).magnitude < maxDistance ? 1f : 0.0f, colorChangeSpeed * Time.deltaTime);
+    CountColor();
+    this.GetComponent<MeshRenderer>().SetPropertyBlock(currentAlpha > 0.0 ? block : (MaterialPropertyBlock) null);
   }
 
   private void CountColor()
   {
-    this.emissionColor.a = Mathf.Lerp(0.0f, Mathf.Clamp01(Mathf.PingPong(Time.time, 2f) - 0.5f), this.currentAlpha);
-    if (this.block == null)
-      this.block = new MaterialPropertyBlock();
-    this.block.SetColor("_EmissionColor", this.emissionColor);
+    emissionColor.a = Mathf.Lerp(0.0f, Mathf.Clamp01(Mathf.PingPong(Time.time, 2f) - 0.5f), currentAlpha);
+    if (block == null)
+      block = new MaterialPropertyBlock();
+    block.SetColor("_EmissionColor", emissionColor);
   }
 }

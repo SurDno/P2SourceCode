@@ -1,7 +1,6 @@
-﻿using Engine.Common.Components;
+﻿using System;
+using Engine.Common.Components;
 using Engine.Source.Components;
-using System;
-using UnityEngine;
 
 public class SplittedItemView : ItemView
 {
@@ -11,31 +10,31 @@ public class SplittedItemView : ItemView
 
   public override StorableComponent Storable
   {
-    get => this.storable;
+    get => storable;
     set
     {
-      if (this.storable == value)
+      if (storable == value)
         return;
-      this.storable = value;
-      if (this.nestedViews == null)
+      storable = value;
+      if (nestedViews == null)
         return;
-      foreach (ItemView nestedView in this.nestedViews)
+      foreach (ItemView nestedView in nestedViews)
       {
         if ((UnityEngine.Object) nestedView != (UnityEngine.Object) null)
-          nestedView.Storable = this.storable;
+          nestedView.Storable = storable;
       }
     }
   }
 
   public override void SkipAnimation()
   {
-    foreach (ItemView nestedView in this.nestedViews)
+    foreach (ItemView nestedView in nestedViews)
       nestedView?.SkipAnimation();
   }
 
   private void Start()
   {
-    foreach (ItemView nestedView in this.nestedViews)
+    foreach (ItemView nestedView in nestedViews)
     {
       if (!((UnityEngine.Object) nestedView == (UnityEngine.Object) null))
       {

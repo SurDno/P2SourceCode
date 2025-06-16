@@ -1,6 +1,5 @@
-﻿using Engine.Source.Connections;
-using System;
-using UnityEngine;
+﻿using System;
+using Engine.Source.Connections;
 
 [Serializable]
 public class CraftRecipe

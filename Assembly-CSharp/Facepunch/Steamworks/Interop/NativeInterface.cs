@@ -1,5 +1,5 @@
-﻿using SteamNative;
-using System;
+﻿using System;
+using SteamNative;
 
 namespace Facepunch.Steamworks.Interop
 {
@@ -29,27 +29,27 @@ namespace Facepunch.Steamworks.Interop
     {
       if (Server.Instance != null)
         throw new Exception("Steam client should be initialized before steam server - or there's big trouble.");
-      this.isServer = false;
-      this.api = new SteamApi();
-      if (!this.api.SteamAPI_Init())
+      isServer = false;
+      api = new SteamApi();
+      if (!api.SteamAPI_Init())
       {
         Console.Error.WriteLine("InitClient: SteamAPI_Init returned false");
         return false;
       }
-      HSteamUser hsteamUser = this.api.SteamAPI_GetHSteamUser();
-      HSteamPipe hsteamPipe = this.api.SteamAPI_GetHSteamPipe();
-      if ((int) hsteamPipe == 0)
+      HSteamUser hsteamUser = api.SteamAPI_GetHSteamUser();
+      HSteamPipe hsteamPipe = api.SteamAPI_GetHSteamPipe();
+      if (hsteamPipe == 0)
       {
         Console.Error.WriteLine("InitClient: hPipe == 0");
         return false;
       }
-      this.FillInterfaces(steamworks, (int) hsteamUser, (int) hsteamPipe);
-      if (!this.user.IsValid)
+      FillInterfaces(steamworks, hsteamUser, hsteamPipe);
+      if (!user.IsValid)
       {
         Console.Error.WriteLine("InitClient: ISteamUser is null");
         return false;
       }
-      if (this.user.BLoggedOn())
+      if (user.BLoggedOn())
         return true;
       Console.Error.WriteLine("InitClient: Not Logged On");
       return false;
@@ -64,24 +64,24 @@ namespace Facepunch.Steamworks.Interop
       int eServerMode,
       string pchVersionString)
     {
-      this.isServer = true;
-      this.api = new SteamApi();
-      if (!this.api.SteamInternal_GameServer_Init(IpAddress, usPort, GamePort, QueryPort, eServerMode, pchVersionString))
+      isServer = true;
+      api = new SteamApi();
+      if (!api.SteamInternal_GameServer_Init(IpAddress, usPort, GamePort, QueryPort, eServerMode, pchVersionString))
       {
         Console.Error.WriteLine("InitServer: GameServer_Init returned false");
         return false;
       }
-      HSteamUser hsteamUser = this.api.SteamGameServer_GetHSteamUser();
-      HSteamPipe hsteamPipe = this.api.SteamGameServer_GetHSteamPipe();
-      if ((int) hsteamPipe == 0)
+      HSteamUser hsteamUser = api.SteamGameServer_GetHSteamUser();
+      HSteamPipe hsteamPipe = api.SteamGameServer_GetHSteamPipe();
+      if (hsteamPipe == 0)
       {
         Console.Error.WriteLine("InitServer: hPipe == 0");
         return false;
       }
-      this.FillInterfaces(steamworks, (int) hsteamPipe, (int) hsteamUser);
-      if (!this.gameServer.IsValid)
+      FillInterfaces(steamworks, hsteamPipe, hsteamUser);
+      if (!gameServer.IsValid)
       {
-        this.gameServer = (SteamGameServer) null;
+        gameServer = null;
         throw new Exception("Steam Server: Couldn't load SteamGameServer012");
       }
       return true;
@@ -89,121 +89,121 @@ namespace Facepunch.Steamworks.Interop
 
     public void FillInterfaces(BaseSteamworks steamworks, int hpipe, int huser)
     {
-      IntPtr pointer = this.api.SteamInternal_CreateInterface("SteamClient017");
-      this.client = !(pointer == IntPtr.Zero) ? new SteamClient(steamworks, pointer) : throw new Exception("Steam Server: Couldn't load SteamClient017");
-      this.user = this.client.GetISteamUser((HSteamUser) huser, (HSteamPipe) hpipe, "SteamUser019");
-      this.utils = this.client.GetISteamUtils((HSteamPipe) hpipe, "SteamUtils009");
-      this.networking = this.client.GetISteamNetworking((HSteamUser) huser, (HSteamPipe) hpipe, "SteamNetworking005");
-      this.gameServerStats = this.client.GetISteamGameServerStats((HSteamUser) huser, (HSteamPipe) hpipe, "SteamGameServerStats001");
-      this.http = this.client.GetISteamHTTP((HSteamUser) huser, (HSteamPipe) hpipe, "STEAMHTTP_INTERFACE_VERSION002");
-      this.inventory = this.client.GetISteamInventory((HSteamUser) huser, (HSteamPipe) hpipe, "STEAMINVENTORY_INTERFACE_V002");
-      this.ugc = this.client.GetISteamUGC((HSteamUser) huser, (HSteamPipe) hpipe, "STEAMUGC_INTERFACE_VERSION010");
-      this.apps = this.client.GetISteamApps((HSteamUser) huser, (HSteamPipe) hpipe, "STEAMAPPS_INTERFACE_VERSION008");
-      this.gameServer = this.client.GetISteamGameServer((HSteamUser) huser, (HSteamPipe) hpipe, "SteamGameServer012");
-      this.friends = this.client.GetISteamFriends((HSteamUser) huser, (HSteamPipe) hpipe, "SteamFriends015");
-      this.servers = this.client.GetISteamMatchmakingServers((HSteamUser) huser, (HSteamPipe) hpipe, "SteamMatchMakingServers002");
-      this.userstats = this.client.GetISteamUserStats((HSteamUser) huser, (HSteamPipe) hpipe, "STEAMUSERSTATS_INTERFACE_VERSION011");
-      this.screenshots = this.client.GetISteamScreenshots((HSteamUser) huser, (HSteamPipe) hpipe, "STEAMSCREENSHOTS_INTERFACE_VERSION003");
-      this.remoteStorage = this.client.GetISteamRemoteStorage((HSteamUser) huser, (HSteamPipe) hpipe, "STEAMREMOTESTORAGE_INTERFACE_VERSION014");
-      this.matchmaking = this.client.GetISteamMatchmaking((HSteamUser) huser, (HSteamPipe) hpipe, "SteamMatchMaking009");
-      this.applist = this.client.GetISteamAppList((HSteamUser) huser, (HSteamPipe) hpipe, "STEAMAPPLIST_INTERFACE_VERSION001");
+      IntPtr pointer = api.SteamInternal_CreateInterface("SteamClient017");
+      client = !(pointer == IntPtr.Zero) ? new SteamClient(steamworks, pointer) : throw new Exception("Steam Server: Couldn't load SteamClient017");
+      user = client.GetISteamUser(huser, hpipe, "SteamUser019");
+      utils = client.GetISteamUtils(hpipe, "SteamUtils009");
+      networking = client.GetISteamNetworking(huser, hpipe, "SteamNetworking005");
+      gameServerStats = client.GetISteamGameServerStats(huser, hpipe, "SteamGameServerStats001");
+      http = client.GetISteamHTTP(huser, hpipe, "STEAMHTTP_INTERFACE_VERSION002");
+      inventory = client.GetISteamInventory(huser, hpipe, "STEAMINVENTORY_INTERFACE_V002");
+      ugc = client.GetISteamUGC(huser, hpipe, "STEAMUGC_INTERFACE_VERSION010");
+      apps = client.GetISteamApps(huser, hpipe, "STEAMAPPS_INTERFACE_VERSION008");
+      gameServer = client.GetISteamGameServer(huser, hpipe, "SteamGameServer012");
+      friends = client.GetISteamFriends(huser, hpipe, "SteamFriends015");
+      servers = client.GetISteamMatchmakingServers(huser, hpipe, "SteamMatchMakingServers002");
+      userstats = client.GetISteamUserStats(huser, hpipe, "STEAMUSERSTATS_INTERFACE_VERSION011");
+      screenshots = client.GetISteamScreenshots(huser, hpipe, "STEAMSCREENSHOTS_INTERFACE_VERSION003");
+      remoteStorage = client.GetISteamRemoteStorage(huser, hpipe, "STEAMREMOTESTORAGE_INTERFACE_VERSION014");
+      matchmaking = client.GetISteamMatchmaking(huser, hpipe, "SteamMatchMaking009");
+      applist = client.GetISteamAppList(huser, hpipe, "STEAMAPPLIST_INTERFACE_VERSION001");
     }
 
     public void Dispose()
     {
-      if (this.user != null)
+      if (user != null)
       {
-        this.user.Dispose();
-        this.user = (SteamUser) null;
+        user.Dispose();
+        user = null;
       }
-      if (this.utils != null)
+      if (utils != null)
       {
-        this.utils.Dispose();
-        this.utils = (SteamUtils) null;
+        utils.Dispose();
+        utils = null;
       }
-      if (this.networking != null)
+      if (networking != null)
       {
-        this.networking.Dispose();
-        this.networking = (SteamNetworking) null;
+        networking.Dispose();
+        networking = null;
       }
-      if (this.gameServerStats != null)
+      if (gameServerStats != null)
       {
-        this.gameServerStats.Dispose();
-        this.gameServerStats = (SteamGameServerStats) null;
+        gameServerStats.Dispose();
+        gameServerStats = null;
       }
-      if (this.http != null)
+      if (http != null)
       {
-        this.http.Dispose();
-        this.http = (SteamHTTP) null;
+        http.Dispose();
+        http = null;
       }
-      if (this.inventory != null)
+      if (inventory != null)
       {
-        this.inventory.Dispose();
-        this.inventory = (SteamInventory) null;
+        inventory.Dispose();
+        inventory = null;
       }
-      if (this.ugc != null)
+      if (ugc != null)
       {
-        this.ugc.Dispose();
-        this.ugc = (SteamUGC) null;
+        ugc.Dispose();
+        ugc = null;
       }
-      if (this.apps != null)
+      if (apps != null)
       {
-        this.apps.Dispose();
-        this.apps = (SteamApps) null;
+        apps.Dispose();
+        apps = null;
       }
-      if (this.gameServer != null)
+      if (gameServer != null)
       {
-        this.gameServer.Dispose();
-        this.gameServer = (SteamGameServer) null;
+        gameServer.Dispose();
+        gameServer = null;
       }
-      if (this.friends != null)
+      if (friends != null)
       {
-        this.friends.Dispose();
-        this.friends = (SteamFriends) null;
+        friends.Dispose();
+        friends = null;
       }
-      if (this.servers != null)
+      if (servers != null)
       {
-        this.servers.Dispose();
-        this.servers = (SteamMatchmakingServers) null;
+        servers.Dispose();
+        servers = null;
       }
-      if (this.userstats != null)
+      if (userstats != null)
       {
-        this.userstats.Dispose();
-        this.userstats = (SteamUserStats) null;
+        userstats.Dispose();
+        userstats = null;
       }
-      if (this.screenshots != null)
+      if (screenshots != null)
       {
-        this.screenshots.Dispose();
-        this.screenshots = (SteamScreenshots) null;
+        screenshots.Dispose();
+        screenshots = null;
       }
-      if (this.remoteStorage != null)
+      if (remoteStorage != null)
       {
-        this.remoteStorage.Dispose();
-        this.remoteStorage = (SteamRemoteStorage) null;
+        remoteStorage.Dispose();
+        remoteStorage = null;
       }
-      if (this.matchmaking != null)
+      if (matchmaking != null)
       {
-        this.matchmaking.Dispose();
-        this.matchmaking = (SteamMatchmaking) null;
+        matchmaking.Dispose();
+        matchmaking = null;
       }
-      if (this.applist != null)
+      if (applist != null)
       {
-        this.applist.Dispose();
-        this.applist = (SteamAppList) null;
+        applist.Dispose();
+        applist = null;
       }
-      if (this.client != null)
+      if (client != null)
       {
-        this.client.Dispose();
-        this.client = (SteamClient) null;
+        client.Dispose();
+        client = null;
       }
-      if (this.api == null)
+      if (api == null)
         return;
-      if (this.isServer)
-        this.api.SteamGameServer_Shutdown();
+      if (isServer)
+        api.SteamGameServer_Shutdown();
       else
-        this.api.SteamAPI_Shutdown();
-      this.api.Dispose();
-      this.api = (SteamApi) null;
+        api.SteamAPI_Shutdown();
+      api.Dispose();
+      api = null;
     }
   }
 }

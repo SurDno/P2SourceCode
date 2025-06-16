@@ -1,11 +1,11 @@
-﻿using Cofe.Loggers;
+﻿using System;
+using System.Collections.Generic;
+using Cofe.Loggers;
 using Cofe.Serializations.Converters;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons;
 using PLVirtualMachine.Common.EngineAPI;
 using PLVirtualMachine.Common.EngineAPI.VMECS;
-using System;
-using System.Collections.Generic;
 
 namespace PLVirtualMachine.Common.Data
 {
@@ -93,7 +93,7 @@ namespace PLVirtualMachine.Common.Data
     {
       if (value == null)
         return;
-      writer.Begin(name, (Type) null, true);
+      writer.Begin(name, null, true);
       value.StateSave(writer);
       writer.End(name, true);
     }
@@ -106,16 +106,16 @@ namespace PLVirtualMachine.Common.Data
       if (value == null)
         return;
       string str = value.Write();
-      SaveManagerUtility.Save(writer, name, str);
+      Save(writer, name, str);
     }
 
     public static void SaveList(IDataWriter writer, string name, List<string> value)
     {
       if (value == null)
         return;
-      writer.Begin(name, (Type) null, true);
+      writer.Begin(name, null, true);
       for (int index = 0; index < value.Count; ++index)
-        SaveManagerUtility.Save(writer, "Item", value[index]);
+        Save(writer, "Item", value[index]);
       writer.End(name, true);
     }
 
@@ -123,9 +123,9 @@ namespace PLVirtualMachine.Common.Data
     {
       if (value == null)
         return;
-      writer.Begin(name, (Type) null, true);
+      writer.Begin(name, null, true);
       foreach (int num in value)
-        SaveManagerUtility.Save(writer, "Item", num);
+        Save(writer, "Item", num);
       writer.End(name, true);
     }
 
@@ -133,9 +133,9 @@ namespace PLVirtualMachine.Common.Data
     {
       if (value == null)
         return;
-      writer.Begin(name, (Type) null, true);
+      writer.Begin(name, null, true);
       for (int index = 0; index < value.Count; ++index)
-        SaveManagerUtility.Save(writer, "Item", value[index]);
+        Save(writer, "Item", value[index]);
       writer.End(name, true);
     }
 
@@ -143,9 +143,9 @@ namespace PLVirtualMachine.Common.Data
     {
       if (value == null)
         return;
-      writer.Begin(name, (Type) null, true);
+      writer.Begin(name, null, true);
       foreach (ulong num in value)
-        SaveManagerUtility.Save(writer, "Item", num);
+        Save(writer, "Item", num);
       writer.End(name, true);
     }
 
@@ -157,17 +157,17 @@ namespace PLVirtualMachine.Common.Data
     {
       if (value == null)
         return;
-      writer.Begin(name, (Type) null, true);
+      writer.Begin(name, null, true);
       for (int index = 0; index < value.Count; ++index)
       {
         T obj = value[index];
-        if ((object) obj != null)
+        if (obj != null)
         {
           if (obj is ISerializeStateSave serializeStateSave)
           {
             if (!(serializeStateSave is INeedSave needSave) || needSave.NeedSave)
             {
-              writer.Begin("Item", (Type) null, true);
+              writer.Begin("Item", null, true);
               serializeStateSave.StateSave(writer);
               writer.End("Item", true);
             }
@@ -189,10 +189,10 @@ namespace PLVirtualMachine.Common.Data
     {
       if (value == null)
         return;
-      writer.Begin(name, (Type) null, true);
+      writer.Begin(name, null, true);
       foreach (T obj in value)
       {
-        if ((object) obj != null)
+        if (obj != null)
         {
           if (obj is ISerializeStateSave serializeStateSave)
           {
@@ -200,11 +200,11 @@ namespace PLVirtualMachine.Common.Data
             {
               VMBaseEntity vmBaseEntity = (VMBaseEntity) serializeStateSave;
               if (!vmBaseEntity.IsHierarchy && !vmBaseEntity.IsEngineRoot)
-                EngineAPIManager.Instance.SetFatalError(string.Format("UNUSUAL HIERARCHY SYSTEM ERROR: INCORRECT OBJECT {0} WORLD ADDING !!!", (object) vmBaseEntity.Name));
+                EngineAPIManager.Instance.SetFatalError(string.Format("UNUSUAL HIERARCHY SYSTEM ERROR: INCORRECT OBJECT {0} WORLD ADDING !!!", vmBaseEntity.Name));
             }
             if (!(serializeStateSave is INeedSave needSave) || needSave.NeedSave)
             {
-              writer.Begin("Item", (Type) null, true);
+              writer.Begin("Item", null, true);
               serializeStateSave.StateSave(writer);
               writer.End("Item", true);
             }
@@ -225,12 +225,12 @@ namespace PLVirtualMachine.Common.Data
     {
       if (value == null)
         return;
-      writer.Begin(name, (Type) null, true);
+      writer.Begin(name, null, true);
       foreach (KeyValuePair<ulong, int> keyValuePair in value)
       {
-        writer.Begin("Item", (Type) null, true);
-        SaveManagerUtility.Save(writer, "Key", keyValuePair.Key);
-        SaveManagerUtility.Save(writer, "Value", keyValuePair.Value);
+        writer.Begin("Item", null, true);
+        Save(writer, "Key", keyValuePair.Key);
+        Save(writer, "Value", keyValuePair.Value);
         writer.End("Item", true);
       }
       writer.End(name, true);
@@ -244,12 +244,12 @@ namespace PLVirtualMachine.Common.Data
     {
       if (value == null)
         return;
-      writer.Begin(name, (Type) null, true);
+      writer.Begin(name, null, true);
       foreach (KeyValuePair<string, T> keyValuePair in value)
       {
-        writer.Begin("Item", (Type) null, true);
-        SaveManagerUtility.Save(writer, "Key", keyValuePair.Key);
-        SaveManagerUtility.SaveCommon(writer, "Value", (object) keyValuePair.Value);
+        writer.Begin("Item", null, true);
+        Save(writer, "Key", keyValuePair.Key);
+        SaveCommon(writer, "Value", keyValuePair.Value);
         writer.End("Item", true);
       }
       writer.End(name, true);
@@ -262,14 +262,14 @@ namespace PLVirtualMachine.Common.Data
         case null:
           break;
         case ISerializeStateSave serializeStateSave:
-          SaveManagerUtility.SaveDynamicSerializable(writer, name, serializeStateSave);
+          SaveDynamicSerializable(writer, name, serializeStateSave);
           break;
         case IVMStringSerializable stringSerializable:
-          SaveManagerUtility.SaveSerializable(writer, name, stringSerializable);
+          SaveSerializable(writer, name, stringSerializable);
           break;
         default:
           string str = StringSerializer.WriteValue(value);
-          SaveManagerUtility.Save(writer, name, str);
+          Save(writer, name, str);
           break;
       }
     }

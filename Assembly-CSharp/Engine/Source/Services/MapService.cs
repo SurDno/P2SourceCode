@@ -1,4 +1,9 @@
-﻿using Cofe.Serializations.Data;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Xml;
+using Cofe.Serializations.Data;
 using Cofe.Serializations.Data.Xml;
 using Cofe.Utility;
 using Engine.Common;
@@ -10,15 +15,10 @@ using Engine.Source.Components;
 using Engine.Source.Saves;
 using Engine.Source.Services.Saves;
 using Inspectors;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Xml;
 
 namespace Engine.Source.Services
 {
-  [GameService(new Type[] {typeof (MapService)})]
+  [GameService(typeof (MapService))]
   [GenerateProxy(TypeEnum.StateSave | TypeEnum.StateLoad)]
   public class MapService : ISavesController
   {
@@ -32,28 +32,28 @@ namespace Engine.Source.Services
     {
       get
       {
-        return this.items.Where<IMapItem>((Func<IMapItem, bool>) (o => o.Resource != null && o.Text != LocalizedText.Empty || o.Nodes.Any<IMMNode>() || o.TooltipResource != null));
+        return items.Where(o => o.Resource != null && o.Text != LocalizedText.Empty || o.Nodes.Any() || o.TooltipResource != null);
       }
     }
 
-    [StateSaveProxy(MemberEnum.None)]
-    [StateLoadProxy(MemberEnum.None)]
+    [StateSaveProxy]
+    [StateLoadProxy]
     [Inspected(Mutable = true)]
-    public bool BullModeAvailable { get; set; } = false;
+    public bool BullModeAvailable { get; set; }
 
-    [StateSaveProxy(MemberEnum.None)]
-    [StateLoadProxy(MemberEnum.None)]
+    [StateSaveProxy]
+    [StateLoadProxy]
     [Inspected(Mutable = true)]
-    public bool BullModeForced { get; set; } = false;
+    public bool BullModeForced { get; set; }
 
     [Inspected]
-    public FastTravelComponent FastTravelOrigin { get; set; } = (FastTravelComponent) null;
+    public FastTravelComponent FastTravelOrigin { get; set; } = null;
 
     [Inspected]
-    public IMapItem FocusedItem { get; set; } = (IMapItem) null;
+    public IMapItem FocusedItem { get; set; } = null;
 
     [Inspected]
-    public IMMNode FocusedNode { get; set; } = (IMMNode) null;
+    public IMMNode FocusedNode { get; set; } = null;
 
     public event Action<IMapItem> HUDItemAddEvent;
 
@@ -62,22 +62,22 @@ namespace Engine.Source.Services
     [Inspected]
     public IEntity CustomMarker { get; set; }
 
-    public IEnumerable<IMapItem> Items => (IEnumerable<IMapItem>) this.items;
+    public IEnumerable<IMapItem> Items => items;
 
-    public IEnumerable<IMapItem> QuestItems => (IEnumerable<IMapItem>) this.hudItems;
+    public IEnumerable<IMapItem> QuestItems => hudItems;
 
     public IEntity Current { get; set; }
 
-    public void AddMapItem(IMapItem item) => this.items.Add(item);
+    public void AddMapItem(IMapItem item) => items.Add(item);
 
-    public void RemoveMapItem(IMapItem item) => this.items.Remove(item);
+    public void RemoveMapItem(IMapItem item) => items.Remove(item);
 
     public void AddHUDItem(IMapItem item)
     {
-      if (this.hudItems.Contains(item))
+      if (hudItems.Contains(item))
         return;
-      this.hudItems.Add(item);
-      Action<IMapItem> hudItemAddEvent = this.HUDItemAddEvent;
+      hudItems.Add(item);
+      Action<IMapItem> hudItemAddEvent = HUDItemAddEvent;
       if (hudItemAddEvent == null)
         return;
       hudItemAddEvent(item);
@@ -85,10 +85,10 @@ namespace Engine.Source.Services
 
     public void RemoveHUDItem(IMapItem item)
     {
-      if (!this.hudItems.Contains(item))
+      if (!hudItems.Contains(item))
         return;
-      this.hudItems.Remove(item);
-      Action<IMapItem> hudItemRemoveEvent = this.HUDItemRemoveEvent;
+      hudItems.Remove(item);
+      Action<IMapItem> hudItemRemoveEvent = HUDItemRemoveEvent;
       if (hudItemRemoveEvent == null)
         return;
       hudItemRemoveEvent(item);
@@ -101,28 +101,28 @@ namespace Engine.Source.Services
 
     public IEnumerator Load(XmlElement element, string context, IErrorLoadingHandler errorHandler)
     {
-      XmlElement node = element[TypeUtility.GetTypeName(this.GetType())];
+      XmlElement node = element[TypeUtility.GetTypeName(GetType())];
       if (node == null)
       {
-        errorHandler.LogError(TypeUtility.GetTypeName(this.GetType()) + " node not found , context : " + context);
+        errorHandler.LogError(TypeUtility.GetTypeName(GetType()) + " node not found , context : " + context);
       }
       else
       {
-        XmlNodeDataReader reader = new XmlNodeDataReader((XmlNode) node, context);
-        ((ISerializeStateLoad) this).StateLoad((IDataReader) reader, this.GetType());
+        XmlNodeDataReader reader = new XmlNodeDataReader(node, context);
+        ((ISerializeStateLoad) this).StateLoad(reader, GetType());
         yield break;
       }
     }
 
     public void Unload()
     {
-      this.BullModeAvailable = false;
-      this.BullModeForced = false;
+      BullModeAvailable = false;
+      BullModeForced = false;
     }
 
     public void Save(IDataWriter writer, string context)
     {
-      DefaultStateSaveUtility.SaveSerialize<MapService>(writer, TypeUtility.GetTypeName(this.GetType()), this);
+      DefaultStateSaveUtility.SaveSerialize(writer, TypeUtility.GetTypeName(GetType()), this);
     }
   }
 }

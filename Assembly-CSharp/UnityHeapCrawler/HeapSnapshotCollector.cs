@@ -1,12 +1,9 @@
-﻿using Cofe.Utility;
-using JetBrains.Annotations;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using UnityEngine;
-using UnityEngine.Profiling;
+using Cofe.Utility;
 
 namespace UnityHeapCrawler
 {
@@ -26,15 +23,15 @@ namespace UnityHeapCrawler
     [NotNull]
     private readonly List<CrawlSettings> crawlOrder = new List<CrawlSettings>();
     [NotNull]
-    private readonly List<System.Type> rootTypes = new List<System.Type>();
+    private readonly List<Type> rootTypes = new List<Type>();
     [NotNull]
-    private readonly List<System.Type> forbiddenTypes = new List<System.Type>();
+    private readonly List<Type> forbiddenTypes = new List<Type>();
     [NotNull]
-    private readonly List<System.Type> staticTypes = new List<System.Type>();
+    private readonly List<Type> staticTypes = new List<Type>();
     [NotNull]
-    private readonly HashSet<object> unityObjects = new HashSet<object>((IEqualityComparer<object>) ReferenceEqualityComparer.Instance);
+    private readonly HashSet<object> unityObjects = new HashSet<object>(ReferenceEqualityComparer.Instance);
     [NotNull]
-    private readonly HashSet<object> visitedObjects = new HashSet<object>((IEqualityComparer<object>) ReferenceEqualityComparer.Instance);
+    private readonly HashSet<object> visitedObjects = new HashSet<object>(ReferenceEqualityComparer.Instance);
     [NotNull]
     private readonly Queue<CrawlItem> rootsQueue = new Queue<CrawlItem>();
     [NotNull]
@@ -45,82 +42,75 @@ namespace UnityHeapCrawler
 
     public HeapSnapshotCollector()
     {
-      this.StaticFieldsSettings = CrawlSettings.CreateStaticFields(new Action(this.CollectStaticFields));
-      this.HierarchySettings = CrawlSettings.CreateHierarchy(new Action(this.CollectRootHierarchyGameObjects));
-      this.ScriptableObjectsSettings = CrawlSettings.CreateScriptableObjects((Action) (() => this.CollectUnityObjects(typeof (ScriptableObject))));
-      this.PrefabsSettings = CrawlSettings.CreatePrefabs(new Action(this.CollectPrefabs));
-      this.UnityObjectsSettings = CrawlSettings.CreateUnityObjects((Action) (() => this.CollectUnityObjects(typeof (UnityEngine.Object))));
-      this.forbiddenTypes.Add(typeof (TypeData));
-      this.forbiddenTypes.Add(typeof (TypeStats));
+      StaticFieldsSettings = CrawlSettings.CreateStaticFields(CollectStaticFields);
+      HierarchySettings = CrawlSettings.CreateHierarchy(CollectRootHierarchyGameObjects);
+      ScriptableObjectsSettings = CrawlSettings.CreateScriptableObjects((Action) (() => CollectUnityObjects(typeof (ScriptableObject))));
+      PrefabsSettings = CrawlSettings.CreatePrefabs(CollectPrefabs);
+      UnityObjectsSettings = CrawlSettings.CreateUnityObjects((Action) (() => CollectUnityObjects(typeof (UnityEngine.Object))));
+      forbiddenTypes.Add(typeof (TypeData));
+      forbiddenTypes.Add(typeof (TypeStats));
     }
 
-    public void Start()
-    {
-      try
+    public void Start() {
+      TypeData.Start();
+      TypeStats.Init();
+      output = "snapshot " + DateTime.Now.ToString("yyyy-MM-dd HH_mm_ss") + "/";
+      Directory.CreateDirectory(output);
+      using (StreamWriter streamWriter = new StreamWriter(output + "profiler.txt"))
       {
-        TypeData.Start();
-        TypeStats.Init();
-        this.output = "snapshot " + DateTime.Now.ToString("yyyy-MM-dd HH_mm_ss") + "/";
-        Directory.CreateDirectory(this.output);
-        using (StreamWriter streamWriter = new StreamWriter(this.output + "profiler.txt"))
-        {
-          streamWriter.WriteLine("Mono Size Min: " + this.sizeFormat.Format(Profiler.GetMonoUsedSizeLong()));
-          streamWriter.WriteLine("Mono Size Max: " + this.sizeFormat.Format(Profiler.GetMonoHeapSizeLong()));
-          streamWriter.WriteLine("Total Allocated: " + this.sizeFormat.Format(Profiler.GetTotalAllocatedMemoryLong()));
-          streamWriter.WriteLine("Total Reserved: " + this.sizeFormat.Format(Profiler.GetTotalReservedMemoryLong()));
-        }
-        using (StreamWriter streamWriter = new StreamWriter(this.output + "log.txt"))
-        {
-          streamWriter.AutoFlush = true;
-          GC.Collect();
-          GC.Collect();
-          this.crawlOrder.Add(this.StaticFieldsSettings);
-          if (this.HierarchySettings != null)
-            this.crawlOrder.Add(this.HierarchySettings);
-          if (this.ScriptableObjectsSettings != null)
-            this.crawlOrder.Add(this.ScriptableObjectsSettings);
-          if (this.PrefabsSettings != null)
-            this.crawlOrder.Add(this.PrefabsSettings);
-          if (this.UnityObjectsSettings != null)
-            this.crawlOrder.Add(this.UnityObjectsSettings);
-          this.crawlOrder.RemoveAll((Predicate<CrawlSettings>) (cs => !cs.Enabled));
-          this.crawlOrder.Sort(CrawlSettings.PriorityComparer);
-          this.unityObjects.Clear();
-          if (this.UnityObjectsSettings != null)
-          {
-            foreach (object obj in Resources.FindObjectsOfTypeAll<UnityEngine.Object>())
-              this.unityObjects.Add(obj);
-          }
-          int size1 = 0;
-          float num = 0.8f / (float) this.crawlOrder.Count;
-          for (int index = 0; index < this.crawlOrder.Count; ++index)
-          {
-            float startProgress = (float) (0.10000000149011612 + (double) num * (double) index);
-            float endProgress = (float) (0.10000000149011612 + (double) num * (double) (index + 1));
-            CrawlSettings crawlSettings = this.crawlOrder[index];
-            crawlSettings.RootsCollector();
-            int crawlIndex = index + 1;
-            int size2 = this.CrawlRoots(crawlSettings, crawlIndex, startProgress, endProgress);
-            streamWriter.WriteLine(crawlSettings.Caption + " size: " + this.sizeFormat.Format((long) size2));
-            size1 += size2;
-          }
-          streamWriter.WriteLine("Total size: " + this.sizeFormat.Format((long) size1));
-        }
-        this.PrintTypeStats(TypeSizeMode.Self, "types-self.txt");
-        this.PrintTypeStats(TypeSizeMode.Total, "types-total.txt");
-        this.PrintTypeStats(TypeSizeMode.Native, "types-native.txt");
-        Debug.Log((object) ("Heap snapshot created: " + this.output));
+        streamWriter.WriteLine("Mono Size Min: " + sizeFormat.Format(Profiler.GetMonoUsedSizeLong()));
+        streamWriter.WriteLine("Mono Size Max: " + sizeFormat.Format(Profiler.GetMonoHeapSizeLong()));
+        streamWriter.WriteLine("Total Allocated: " + sizeFormat.Format(Profiler.GetTotalAllocatedMemoryLong()));
+        streamWriter.WriteLine("Total Reserved: " + sizeFormat.Format(Profiler.GetTotalReservedMemoryLong()));
       }
-      finally
+      using (StreamWriter streamWriter = new StreamWriter(output + "log.txt"))
       {
+        streamWriter.AutoFlush = true;
+        GC.Collect();
+        GC.Collect();
+        crawlOrder.Add(StaticFieldsSettings);
+        if (HierarchySettings != null)
+          crawlOrder.Add(HierarchySettings);
+        if (ScriptableObjectsSettings != null)
+          crawlOrder.Add(ScriptableObjectsSettings);
+        if (PrefabsSettings != null)
+          crawlOrder.Add(PrefabsSettings);
+        if (UnityObjectsSettings != null)
+          crawlOrder.Add(UnityObjectsSettings);
+        crawlOrder.RemoveAll(cs => !cs.Enabled);
+        crawlOrder.Sort(CrawlSettings.PriorityComparer);
+        unityObjects.Clear();
+        if (UnityObjectsSettings != null)
+        {
+          foreach (object obj in Resources.FindObjectsOfTypeAll<UnityEngine.Object>())
+            unityObjects.Add(obj);
+        }
+        int size1 = 0;
+        float num = 0.8f / crawlOrder.Count;
+        for (int index = 0; index < crawlOrder.Count; ++index)
+        {
+          float startProgress = (float) (0.10000000149011612 + num * (double) index);
+          float endProgress = (float) (0.10000000149011612 + num * (double) (index + 1));
+          CrawlSettings crawlSettings = crawlOrder[index];
+          crawlSettings.RootsCollector();
+          int crawlIndex = index + 1;
+          int size2 = CrawlRoots(crawlSettings, crawlIndex, startProgress, endProgress);
+          streamWriter.WriteLine(crawlSettings.Caption + " size: " + sizeFormat.Format(size2));
+          size1 += size2;
+        }
+        streamWriter.WriteLine("Total size: " + sizeFormat.Format(size1));
       }
+      PrintTypeStats(TypeSizeMode.Self, "types-self.txt");
+      PrintTypeStats(TypeSizeMode.Total, "types-total.txt");
+      PrintTypeStats(TypeSizeMode.Native, "types-native.txt");
+      Debug.Log((object) ("Heap snapshot created: " + output));
     }
 
     private void PrintTypeStats(TypeSizeMode mode, string filename)
     {
-      using (StreamWriter streamWriter = new StreamWriter(this.output + filename))
+      using (StreamWriter streamWriter = new StreamWriter(output + filename))
       {
-        List<TypeStats> list = TypeStats.Data.Values.OrderByDescending<TypeStats, long>((Func<TypeStats, long>) (ts => mode.GetSize(ts))).ToList<TypeStats>();
+        List<TypeStats> list = TypeStats.Data.Values.OrderByDescending(ts => mode.GetSize(ts)).ToList();
         streamWriter.Write("Size".PadLeft(14));
         streamWriter.Write("Size".PadLeft(14));
         streamWriter.Write("Count".PadLeft(14));
@@ -129,10 +119,10 @@ namespace UnityHeapCrawler
         streamWriter.WriteLine();
         foreach (TypeStats typeStats in list)
         {
-          if (typeStats.SelfSize >= (long) this.minTypeSize)
+          if (typeStats.SelfSize >= minTypeSize)
           {
             long size = mode.GetSize(typeStats);
-            streamWriter.Write(this.sizeFormat.Format(size).PadLeft(14));
+            streamWriter.Write(sizeFormat.Format(size).PadLeft(14));
             streamWriter.Write(size.ToString().PadLeft(14));
             streamWriter.Write(typeStats.Count.ToString().PadLeft(14));
             streamWriter.Write("    ");
@@ -145,26 +135,26 @@ namespace UnityHeapCrawler
 
     private void CollectStaticFields()
     {
-      IEnumerable<System.Type> types = this.staticTypes.Concat<System.Type>(((IEnumerable<Assembly>) AppDomain.CurrentDomain.GetAssemblies()).Where<Assembly>(new Func<Assembly, bool>(HeapSnapshotCollector.IsValidAssembly)).SelectMany<Assembly, System.Type>((Func<Assembly, IEnumerable<System.Type>>) (a => (IEnumerable<System.Type>) a.GetTypes())));
+      IEnumerable<Type> types = staticTypes.Concat(AppDomain.CurrentDomain.GetAssemblies().Where(IsValidAssembly).SelectMany(a => a.GetTypes()));
       HashSet<string> stringSet = new HashSet<string>();
-      foreach (System.Type type in types)
-        this.AddStaticFields(type, stringSet);
+      foreach (Type type in types)
+        AddStaticFields(type, stringSet);
       if (stringSet.Count <= 0)
         return;
-      List<string> list = stringSet.ToList<string>();
+      List<string> list = stringSet.ToList();
       list.Sort();
-      using (StreamWriter streamWriter = new StreamWriter(this.output + "generic-static-fields.txt"))
+      using (StreamWriter streamWriter = new StreamWriter(output + "generic-static-fields.txt"))
       {
         foreach (string str in list)
           streamWriter.WriteLine(str);
       }
     }
 
-    private void AddStaticFields([NotNull] System.Type type, [NotNull] HashSet<string> genericStaticFields)
+    private void AddStaticFields([NotNull] Type type, [NotNull] HashSet<string> genericStaticFields)
     {
-      if (this.IsForbiddenType(type))
+      if (IsForbiddenType(type))
         return;
-      for (System.Type type1 = type; type1 != (System.Type) null && type1 != typeof (object); type1 = type1.BaseType)
+      for (Type type1 = type; type1 != null && type1 != typeof (object); type1 = type1.BaseType)
       {
         foreach (FieldInfo field in type1.GetFields(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic))
         {
@@ -177,17 +167,17 @@ namespace UnityHeapCrawler
             object root;
             try
             {
-              root = field.GetValue((object) null);
+              root = field.GetValue(null);
             }
             catch (Exception ex)
             {
-              Debug.LogError((object) ("Error get value from type : " + (object) type1 + "\r\n" + ex.ToString()));
+              Debug.LogError((object) ("Error get value from type : " + type1 + "\r\n" + ex));
               continue;
             }
             if (root != null)
             {
               string name = TypeUtility.GetTypeName(type1) + "." + field.Name;
-              this.EnqueueRoot(root, name, false);
+              EnqueueRoot(root, name, false);
             }
           }
         }
@@ -196,32 +186,32 @@ namespace UnityHeapCrawler
 
     private void CollectRootHierarchyGameObjects()
     {
-      foreach (object unityObject in this.unityObjects)
+      foreach (object unityObject in unityObjects)
       {
         GameObject root = unityObject as GameObject;
         if (!((UnityEngine.Object) root == (UnityEngine.Object) null) && root.scene.IsValid() && !((UnityEngine.Object) root.transform.parent != (UnityEngine.Object) null))
-          this.EnqueueRoot((object) root, root.name, false);
+          EnqueueRoot((object) root, root.name, false);
       }
     }
 
     private void CollectPrefabs()
     {
-      foreach (object unityObject in this.unityObjects)
+      foreach (object unityObject in unityObjects)
       {
         GameObject root = unityObject as GameObject;
         if (!((UnityEngine.Object) root == (UnityEngine.Object) null) && !root.scene.IsValid() && !((UnityEngine.Object) root.transform.parent != (UnityEngine.Object) null))
-          this.EnqueueRoot((object) root, root.name, false);
+          EnqueueRoot((object) root, root.name, false);
       }
     }
 
-    private void CollectUnityObjects(System.Type type)
+    private void CollectUnityObjects(Type type)
     {
-      foreach (object unityObject in this.unityObjects)
+      foreach (object unityObject in unityObjects)
       {
         if (type.IsInstanceOfType(unityObject))
         {
           UnityEngine.Object root = (UnityEngine.Object) unityObject;
-          this.EnqueueRoot((object) root, root.name, false);
+          EnqueueRoot((object) root, root.name, false);
         }
       }
     }
@@ -232,18 +222,18 @@ namespace UnityHeapCrawler
       float startProgress,
       float endProgress)
     {
-      if (this.rootsQueue.Count <= 0)
+      if (rootsQueue.Count <= 0)
         return 0;
       int num1 = 0;
       int num2 = 0;
       List<CrawlItem> crawlItemList = new List<CrawlItem>();
-      while (this.rootsQueue.Count > 0)
+      while (rootsQueue.Count > 0)
       {
-        this.localRootsQueue.Enqueue(this.rootsQueue.Dequeue());
-        while (this.localRootsQueue.Count > 0)
+        localRootsQueue.Enqueue(rootsQueue.Dequeue());
+        while (localRootsQueue.Count > 0)
         {
-          CrawlItem root = this.localRootsQueue.Dequeue();
-          this.CrawlRoot(root, crawlSettings);
+          CrawlItem root = localRootsQueue.Dequeue();
+          CrawlRoot(root, crawlSettings);
           num2 += root.TotalSize;
           root.Cleanup(crawlSettings);
           ++num1;
@@ -254,10 +244,10 @@ namespace UnityHeapCrawler
       crawlItemList.Sort();
       if (crawlItemList.Count > 0)
       {
-        using (StreamWriter w = new StreamWriter(string.Format("{0}{1}-{2}.txt", (object) this.output, (object) crawlIndex, (object) crawlSettings.Filename)))
+        using (StreamWriter w = new StreamWriter(string.Format("{0}{1}-{2}.txt", output, crawlIndex, crawlSettings.Filename)))
         {
           foreach (CrawlItem crawlItem in crawlItemList)
-            crawlItem.Print(w, this.sizeFormat);
+            crawlItem.Print(w, sizeFormat);
         }
       }
       return num2;
@@ -270,18 +260,18 @@ namespace UnityHeapCrawler
       while (queue.Count > 0)
       {
         CrawlItem parent = queue.Dequeue();
-        System.Type type = parent.Object.GetType();
+        Type type = parent.Object.GetType();
         TypeData typeData = TypeData.Get(type);
         if (type.IsArray)
-          this.QueueArrayElements(parent, queue, parent.Object, crawlSettings);
+          QueueArrayElements(parent, queue, parent.Object, crawlSettings);
         if (type == typeof (GameObject))
-          this.QueueHierarchy(parent, queue, parent.Object, crawlSettings);
+          QueueHierarchy(parent, queue, parent.Object, crawlSettings);
         if (typeData.DynamicSizedFields != null)
         {
           foreach (FieldInfo dynamicSizedField in typeData.DynamicSizedFields)
           {
             object v = dynamicSizedField.GetValue(parent.Object);
-            this.QueueValue(parent, queue, v, dynamicSizedField.Name, crawlSettings);
+            QueueValue(parent, queue, v, dynamicSizedField.Name, crawlSettings);
           }
         }
       }
@@ -290,14 +280,14 @@ namespace UnityHeapCrawler
 
     private void EnqueueRoot([NotNull] object root, [NotNull] string name, bool local)
     {
-      if (this.IsForbidden(root) || this.visitedObjects.Contains(root))
+      if (IsForbidden(root) || visitedObjects.Contains(root))
         return;
-      this.visitedObjects.Add(root);
-      CrawlItem crawlItem = new CrawlItem((CrawlItem) null, root, name);
+      visitedObjects.Add(root);
+      CrawlItem crawlItem = new CrawlItem(null, root, name);
       if (local)
-        this.localRootsQueue.Enqueue(crawlItem);
+        localRootsQueue.Enqueue(crawlItem);
       else
-        this.rootsQueue.Enqueue(crawlItem);
+        rootsQueue.Enqueue(crawlItem);
     }
 
     private void QueueValue(
@@ -307,19 +297,19 @@ namespace UnityHeapCrawler
       [NotNull] string name,
       [NotNull] CrawlSettings crawlSettings)
     {
-      if (v == null || this.IsForbidden(v))
+      if (v == null || IsForbidden(v))
         return;
       TypeStats.RegisterInstance(parent, name, v);
-      if (this.visitedObjects.Contains(v) || this.unityObjects.Contains(v) && !crawlSettings.IsUnityTypeAllowed(v.GetType()))
+      if (visitedObjects.Contains(v) || unityObjects.Contains(v) && !crawlSettings.IsUnityTypeAllowed(v.GetType()))
         return;
-      if (this.IsRoot(v))
+      if (IsRoot(v))
       {
         string name1 = TypeUtility.GetTypeName(parent.Object.GetType()) + "." + name;
-        this.EnqueueRoot(v, name1, true);
+        EnqueueRoot(v, name1, true);
       }
       else
       {
-        this.visitedObjects.Add(v);
+        visitedObjects.Add(v);
         CrawlItem child = new CrawlItem(parent, v, name);
         queue.Enqueue(child);
         parent.AddChild(child);
@@ -332,12 +322,12 @@ namespace UnityHeapCrawler
       [CanBeNull] object array,
       [NotNull] CrawlSettings crawlSettings)
     {
-      if (array == null || !array.GetType().IsArray || array.GetType().GetElementType() == (System.Type) null)
+      if (array == null || !array.GetType().IsArray || array.GetType().GetElementType() == null)
         return;
       int num = 0;
       foreach (object v in (Array) array)
       {
-        this.QueueValue(parent, queue, v, string.Format("[{0}]", (object) num), crawlSettings);
+        QueueValue(parent, queue, v, string.Format("[{0}]", num), crawlSettings);
         ++num;
       }
     }
@@ -354,29 +344,29 @@ namespace UnityHeapCrawler
       foreach (Component component in gameObject1.GetComponents<Component>())
       {
         if (component != null)
-          this.QueueValue(parent, queue, (object) component, TypeUtility.GetTypeName(((object) component).GetType()), crawlSettings);
+          QueueValue(parent, queue, (object) component, TypeUtility.GetTypeName(((object) component).GetType()), crawlSettings);
       }
       Transform transform = gameObject1.transform;
       for (int index = 0; index < transform.childCount; ++index)
       {
         GameObject gameObject2 = transform.GetChild(index).gameObject;
-        this.QueueValue(parent, queue, (object) gameObject2, gameObject2.name, crawlSettings);
+        QueueValue(parent, queue, (object) gameObject2, gameObject2.name, crawlSettings);
       }
     }
 
     private bool IsRoot([NotNull] object o)
     {
-      return this.rootTypes.Any<System.Type>((Func<System.Type, bool>) (t => t.IsInstanceOfType(o)));
+      return rootTypes.Any(t => t.IsInstanceOfType(o));
     }
 
     private bool IsForbidden([NotNull] object o)
     {
-      return this.forbiddenTypes.Any<System.Type>((Func<System.Type, bool>) (t => t.IsInstanceOfType(o)));
+      return forbiddenTypes.Any(t => t.IsInstanceOfType(o));
     }
 
-    private bool IsForbiddenType([NotNull] System.Type type)
+    private bool IsForbiddenType([NotNull] Type type)
     {
-      return this.forbiddenTypes.Any<System.Type>((Func<System.Type, bool>) (t => t.IsAssignableFrom(type)));
+      return forbiddenTypes.Any(t => t.IsAssignableFrom(type));
     }
 
     private static bool IsValidAssembly(Assembly assembly)

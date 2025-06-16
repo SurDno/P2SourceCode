@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-public class FightAnimator_WalkEscapeBegin : StateMachineBehaviour
+﻿public class FightAnimator_WalkEscapeBegin : StateMachineBehaviour
 {
   public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
   {

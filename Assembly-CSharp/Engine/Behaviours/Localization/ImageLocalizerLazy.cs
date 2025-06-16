@@ -1,22 +1,20 @@
-﻿using Assets.Engine.Source.Utility;
+﻿using System;
+using Assets.Engine.Source.Utility;
 using Engine.Common.Services;
-using System;
-using UnityEngine;
-using UnityEngine.UI;
 
 namespace Engine.Behaviours.Localization
 {
   public class ImageLocalizerLazy : ImageLocalizerBase
   {
     [SerializeField]
-    private ImageLocalizerLazy.LanguageSprite[] sprites;
+    private LanguageSprite[] sprites;
 
     protected override Sprite GetSprite(LanguageEnum language)
     {
       Sprite sprite1 = (Sprite) null;
-      for (int index = 0; index < this.sprites.Length; ++index)
+      for (int index = 0; index < sprites.Length; ++index)
       {
-        ImageLocalizerLazy.LanguageSprite sprite2 = this.sprites[index];
+        LanguageSprite sprite2 = sprites[index];
         if (sprite2.Language == language)
         {
           sprite1 = sprite2.Sprite;
@@ -29,8 +27,8 @@ namespace Engine.Behaviours.Localization
     protected override void OnDisconnectFromEngine()
     {
       base.OnDisconnectFromEngine();
-      for (int index = 0; index < this.sprites.Length; ++index)
-        this.sprites[index].Dispose();
+      for (int index = 0; index < sprites.Length; ++index)
+        sprites[index].Dispose();
       UnityEngine.Object.Destroy((UnityEngine.Object) this.GetComponent<Image>().sprite);
     }
 
@@ -43,23 +41,23 @@ namespace Engine.Behaviours.Localization
       private ObjectReference spriteReference;
       private Sprite sprite;
 
-      public LanguageEnum Language => this.language;
+      public LanguageEnum Language => language;
 
       public Sprite Sprite
       {
         get
         {
-          if ((UnityEngine.Object) this.sprite == (UnityEngine.Object) null)
-            this.sprite = ObjectCreator.InstantiateFromResources<Sprite>(this.spriteReference.Path);
-          return this.sprite;
+          if ((UnityEngine.Object) sprite == (UnityEngine.Object) null)
+            sprite = ObjectCreator.InstantiateFromResources<Sprite>(spriteReference.Path);
+          return sprite;
         }
       }
 
       public void Dispose()
       {
-        if (!((UnityEngine.Object) this.sprite != (UnityEngine.Object) null))
+        if (!((UnityEngine.Object) sprite != (UnityEngine.Object) null))
           return;
-        this.sprite = (Sprite) null;
+        sprite = (Sprite) null;
       }
     }
   }

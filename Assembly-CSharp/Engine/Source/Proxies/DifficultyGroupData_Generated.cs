@@ -1,9 +1,9 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons.Cloneable;
 using Engine.Common.Commons.Converters;
 using Engine.Source.Difficulties;
-using System;
 
 namespace Engine.Source.Proxies
 {
@@ -18,27 +18,27 @@ namespace Engine.Source.Proxies
     public object Clone()
     {
       DifficultyGroupData_Generated instance = Activator.CreateInstance<DifficultyGroupData_Generated>();
-      this.CopyTo((object) instance);
-      return (object) instance;
+      CopyTo(instance);
+      return instance;
     }
 
     public void CopyTo(object target2)
     {
       DifficultyGroupData_Generated groupDataGenerated = (DifficultyGroupData_Generated) target2;
-      groupDataGenerated.Name = this.Name;
-      CloneableObjectUtility.CopyListTo<DifficultyGroupItemData>(groupDataGenerated.Items, this.Items);
+      groupDataGenerated.Name = Name;
+      CloneableObjectUtility.CopyListTo(groupDataGenerated.Items, Items);
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.Write(writer, "Name", this.Name);
-      DefaultDataWriteUtility.WriteListSerialize<DifficultyGroupItemData>(writer, "Items", this.Items);
+      DefaultDataWriteUtility.Write(writer, "Name", Name);
+      DefaultDataWriteUtility.WriteListSerialize(writer, "Items", Items);
     }
 
     public void DataRead(IDataReader reader, Type type)
     {
-      this.Name = DefaultDataReadUtility.Read(reader, "Name", this.Name);
-      this.Items = DefaultDataReadUtility.ReadListSerialize<DifficultyGroupItemData>(reader, "Items", this.Items);
+      Name = DefaultDataReadUtility.Read(reader, "Name", Name);
+      Items = DefaultDataReadUtility.ReadListSerialize(reader, "Items", Items);
     }
   }
 }

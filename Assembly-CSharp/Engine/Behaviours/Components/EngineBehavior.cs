@@ -1,9 +1,8 @@
-﻿using Engine.Behaviours.Engines.Controllers;
+﻿using System;
+using System.Runtime.CompilerServices;
+using Engine.Behaviours.Engines.Controllers;
 using Engine.Source.Commons;
 using Inspectors;
-using System;
-using System.Runtime.CompilerServices;
-using UnityEngine;
 
 namespace Engine.Behaviours.Components
 {
@@ -16,71 +15,71 @@ namespace Engine.Behaviours.Components
     private MovementControllerEnum movementControllerKind = MovementControllerEnum.Rootmotion45;
 
     [Inspected]
-    public EngineBehavior.GaitType Gait { get; set; }
+    public GaitType Gait { get; set; }
 
     public bool IsPaused
     {
-      get => this.movementController.IsPaused;
-      set => this.movementController.IsPaused = value;
+      get => movementController.IsPaused;
+      set => movementController.IsPaused = value;
     }
 
     private void OnEnable()
     {
-      this.IsPaused = InstanceByRequest<EngineApplication>.Instance.IsPaused;
+      IsPaused = InstanceByRequest<EngineApplication>.Instance.IsPaused;
     }
 
     protected virtual void Awake()
     {
-      this.Gait = EngineBehavior.GaitType.Walk;
-      if (this.movementControllerKind == MovementControllerEnum.PlagueCloud)
-        this.movementController = (IMovementController) new PlagueCloudMovementController();
-      else if (this.movementControllerKind == MovementControllerEnum.Player)
-        this.movementController = (IMovementController) new PlayerMovementController();
-      else if (this.movementControllerKind == MovementControllerEnum.InteractiveCutsceneActor)
-        this.movementController = (IMovementController) new InteractiveCutsceneActorMovementController();
-      else if (this.movementControllerKind == MovementControllerEnum.BirdFlock)
-        this.movementController = (IMovementController) new BirdFlockMovementController();
-      else if (this.movementControllerKind == MovementControllerEnum.Rootmotion45)
-        this.movementController = (IMovementController) new Rootmotion45MovementController();
-      else if (this.movementControllerKind == MovementControllerEnum.DeprecatedChangeToRootmotion45)
+      Gait = GaitType.Walk;
+      if (movementControllerKind == MovementControllerEnum.PlagueCloud)
+        movementController = new PlagueCloudMovementController();
+      else if (movementControllerKind == MovementControllerEnum.Player)
+        movementController = new PlayerMovementController();
+      else if (movementControllerKind == MovementControllerEnum.InteractiveCutsceneActor)
+        movementController = new InteractiveCutsceneActorMovementController();
+      else if (movementControllerKind == MovementControllerEnum.BirdFlock)
+        movementController = new BirdFlockMovementController();
+      else if (movementControllerKind == MovementControllerEnum.Rootmotion45)
+        movementController = new Rootmotion45MovementController();
+      else if (movementControllerKind == MovementControllerEnum.DeprecatedChangeToRootmotion45)
       {
-        Debug.LogError((object) string.Format("Deprecated movement controller type {0}", (object) this.movementControllerKind), (UnityEngine.Object) this.gameObject);
-        this.movementController = (IMovementController) new Rootmotion45MovementController();
+        Debug.LogError((object) string.Format("Deprecated movement controller type {0}", movementControllerKind), (UnityEngine.Object) this.gameObject);
+        movementController = new Rootmotion45MovementController();
       }
       else
       {
-        Debug.LogError((object) string.Format("Wrong movement controller type {0}", (object) this.movementControllerKind), (UnityEngine.Object) this.gameObject);
+        Debug.LogError((object) string.Format("Wrong movement controller type {0}", movementControllerKind), (UnityEngine.Object) this.gameObject);
         return;
       }
-      this.movementController.Initialize(this.gameObject);
+      movementController.Initialize(this.gameObject);
     }
 
-    private void Update() => this.movementController.Update();
+    private void Update() => movementController.Update();
 
-    protected void FixedUpdate() => this.movementController.FixedUpdate();
+    protected void FixedUpdate() => movementController.FixedUpdate();
 
     public bool GeometryVisible
     {
-      set => this.movementController.GeometryVisible = value;
+      set => movementController.GeometryVisible = value;
     }
 
     public void StartMovement(Vector3 direction)
     {
-      this.movementController.StartMovement(direction, this.Gait);
+      movementController.StartMovement(direction, Gait);
     }
 
     public bool Move(Vector3 direction, float remainingDistance)
     {
-      return this.movementController.Move(direction, remainingDistance, this.Gait);
+      return movementController.Move(direction, remainingDistance, Gait);
     }
 
-    public bool Rotate(Vector3 direction) => this.movementController.Rotate(direction);
+    public bool Rotate(Vector3 direction) => movementController.Rotate(direction);
 
     public void OnExternalAnimatorMove()
     {
-      if (this.movementController == null)
+      if (movementController == null)
         return;
-      this.movementController.OnAnimatorMove();
+      movementController.OnAnimatorMove();
     }
 
     [SpecialName]

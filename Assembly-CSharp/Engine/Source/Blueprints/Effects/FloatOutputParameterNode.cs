@@ -22,53 +22,53 @@ namespace Engine.Source.Blueprints.Effects
     private bool created;
     private bool destroed;
 
-    public float Value => this.valueInput.value;
+    public float Value => valueInput.value;
 
     public override void OnGraphStarted()
     {
       base.OnGraphStarted();
-      InstanceByRequest<UpdateService>.Instance.BlueprintEffectsUpdater.AddUpdatable((IUpdatable) this);
+      InstanceByRequest<UpdateService>.Instance.BlueprintEffectsUpdater.AddUpdatable(this);
     }
 
     public override void OnGraphStoped()
     {
-      InstanceByRequest<UpdateService>.Instance.BlueprintEffectsUpdater.RemoveUpdatable((IUpdatable) this);
+      InstanceByRequest<UpdateService>.Instance.BlueprintEffectsUpdater.RemoveUpdatable(this);
       base.OnGraphStoped();
     }
 
     public void ComputeUpdate()
     {
-      float num = this.valueInput.value;
-      if ((double) this.prevValue == (double) num)
+      float num = valueInput.value;
+      if (prevValue == (double) num)
         return;
-      this.prevValue = num;
-      if ((double) num != 0.0)
-        this.CreateEffect();
+      prevValue = num;
+      if (num != 0.0)
+        CreateEffect();
       else
-        this.DestroyEffect();
+        DestroyEffect();
     }
 
     public override void OnDestroy()
     {
-      this.destroed = true;
-      this.DestroyEffect();
+      destroed = true;
+      DestroyEffect();
       base.OnDestroy();
     }
 
     protected void CreateEffect()
     {
-      if (this.destroed || this.created)
+      if (destroed || created)
         return;
-      this.created = true;
-      this.effects.AddParameter(this.nameInput.value, (IParameter) this);
+      created = true;
+      effects.AddParameter(nameInput.value, this);
     }
 
     protected void DestroyEffect()
     {
-      if (!this.created)
+      if (!created)
         return;
-      this.created = false;
-      this.effects.RemoveParameter(this.nameInput.value, (IParameter) this);
+      created = false;
+      effects.RemoveParameter(nameInput.value, this);
     }
   }
 }

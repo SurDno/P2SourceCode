@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-public class PlagueWebPoint : IPlagueWebPoint
+﻿public class PlagueWebPoint : IPlagueWebPoint
 {
   public PlagueWebCell Cell;
   private Vector3 position;
@@ -11,14 +9,14 @@ public class PlagueWebPoint : IPlagueWebPoint
 
   public Vector3 Position
   {
-    get => this.position;
+    get => position;
     set
     {
-      if (!(this.position != value))
+      if (!(position != value))
         return;
-      this.position = value;
-      if (this.Cell != null)
-        this.Cell.PlacePoint(this);
+      position = value;
+      if (Cell != null)
+        Cell.PlacePoint(this);
     }
   }
 }

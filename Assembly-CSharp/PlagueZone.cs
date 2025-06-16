@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof (MeshCollider), typeof (LODGroup))]
@@ -16,39 +15,39 @@ public class PlagueZone : MonoBehaviour
   private static void GetSortedZoneHits(Vector2 worldPosition, List<ZoneHit> result)
   {
     result.Clear();
-    PhysicsUtility.Raycast(PlagueZone.hits, new Vector3(worldPosition.x, 1000f, worldPosition.y), Vector3.down, 2000f);
-    if (PlagueZone.hits.Count <= 0)
+    PhysicsUtility.Raycast(hits, new Vector3(worldPosition.x, 1000f, worldPosition.y), Vector3.down, 2000f);
+    if (hits.Count <= 0)
       return;
-    for (int index = 0; index < PlagueZone.hits.Count; ++index)
+    for (int index = 0; index < hits.Count; ++index)
     {
-      PlagueZone componentNonAlloc = PlagueZone.hits[index].collider.GetComponentNonAlloc<PlagueZone>();
+      PlagueZone componentNonAlloc = hits[index].collider.GetComponentNonAlloc<PlagueZone>();
       if ((UnityEngine.Object) componentNonAlloc != (UnityEngine.Object) null)
-        result.Add(new ZoneHit(componentNonAlloc, PlagueZone.hits[index].textureCoord.x, componentNonAlloc.importance, componentNonAlloc._level));
+        result.Add(new ZoneHit(componentNonAlloc, hits[index].textureCoord.x, componentNonAlloc.importance, componentNonAlloc._level));
     }
-    result.Sort(new Comparison<ZoneHit>(ZoneHit.Comparison));
+    result.Sort(ZoneHit.Comparison);
   }
 
   public static float GetLevel(Vector2 worldPosition)
   {
     float level = 0.0f;
     float num = 1f;
-    PlagueZone.GetSortedZoneHits(worldPosition, PlagueZone.tmp);
-    for (int index = 0; index < PlagueZone.tmp.Count; ++index)
+    GetSortedZoneHits(worldPosition, tmp);
+    for (int index = 0; index < tmp.Count; ++index)
     {
-      ZoneHit zoneHit = PlagueZone.tmp[index];
+      ZoneHit zoneHit = tmp[index];
       level += zoneHit.Level * zoneHit.Opacity * num;
       num *= 1f - zoneHit.Opacity;
-      if ((double) num == 0.0)
+      if (num == 0.0)
         break;
     }
-    PlagueZone.tmp.Clear();
+    tmp.Clear();
     return level;
   }
 
   public void ApplyLevel()
   {
     LOD[] loDs = this.GetComponent<LODGroup>().GetLODs();
-    if ((double) this._level == 0.0)
+    if (_level == 0.0)
     {
       for (int index1 = 0; index1 < loDs.Length; ++index1)
       {
@@ -59,7 +58,7 @@ public class PlagueZone : MonoBehaviour
     else
     {
       MaterialPropertyBlock properties = new MaterialPropertyBlock();
-      properties.SetFloat("_Level", this._level);
+      properties.SetFloat("_Level", _level);
       for (int index3 = 0; index3 < loDs.Length; ++index3)
       {
         for (int index4 = 0; index4 < loDs[index3].renderers.Length; ++index4)
@@ -72,5 +71,5 @@ public class PlagueZone : MonoBehaviour
     }
   }
 
-  private void OnEnable() => this.ApplyLevel();
+  private void OnEnable() => ApplyLevel();
 }

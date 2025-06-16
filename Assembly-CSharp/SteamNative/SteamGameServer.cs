@@ -1,5 +1,5 @@
-﻿using Facepunch.Steamworks;
-using System;
+﻿using System;
+using Facepunch.Steamworks;
 
 namespace SteamNative
 {
@@ -12,40 +12,40 @@ namespace SteamNative
     {
       this.steamworks = steamworks;
       if (Platform.IsWindows64)
-        this.platform = (Platform.Interface) new Platform.Win64(pointer);
+        platform = (Platform.Interface) new Platform.Win64(pointer);
       else if (Platform.IsWindows32)
-        this.platform = (Platform.Interface) new Platform.Win32(pointer);
+        platform = (Platform.Interface) new Platform.Win32(pointer);
       else if (Platform.IsLinux32)
-        this.platform = (Platform.Interface) new Platform.Linux32(pointer);
+        platform = (Platform.Interface) new Platform.Linux32(pointer);
       else if (Platform.IsLinux64)
       {
-        this.platform = (Platform.Interface) new Platform.Linux64(pointer);
+        platform = (Platform.Interface) new Platform.Linux64(pointer);
       }
       else
       {
         if (!Platform.IsOsx)
           return;
-        this.platform = (Platform.Interface) new Platform.Mac(pointer);
+        platform = (Platform.Interface) new Platform.Mac(pointer);
       }
     }
 
-    public bool IsValid => this.platform != null && this.platform.IsValid;
+    public bool IsValid => platform != null && platform.IsValid;
 
     public virtual void Dispose()
     {
-      if (this.platform == null)
+      if (platform == null)
         return;
-      this.platform.Dispose();
-      this.platform = (Platform.Interface) null;
+      platform.Dispose();
+      platform = (Platform.Interface) null;
     }
 
     public CallbackHandle AssociateWithClan(
       CSteamID steamIDClan,
       Action<AssociateWithClanResult_t, bool> CallbackFunction = null)
     {
-      SteamAPICall_t steamApiCallT = (SteamAPICall_t) 0UL;
-      SteamAPICall_t call = this.platform.ISteamGameServer_AssociateWithClan(steamIDClan.Value);
-      return CallbackFunction == null ? (CallbackHandle) null : AssociateWithClanResult_t.CallResult(this.steamworks, call, CallbackFunction);
+      SteamAPICall_t steamApiCallT = 0UL;
+      SteamAPICall_t call = platform.ISteamGameServer_AssociateWithClan(steamIDClan.Value);
+      return CallbackFunction == null ? null : AssociateWithClanResult_t.CallResult(steamworks, call, CallbackFunction);
     }
 
     public BeginAuthSessionResult BeginAuthSession(
@@ -53,57 +53,57 @@ namespace SteamNative
       int cbAuthTicket,
       CSteamID steamID)
     {
-      return this.platform.ISteamGameServer_BeginAuthSession(pAuthTicket, cbAuthTicket, steamID.Value);
+      return platform.ISteamGameServer_BeginAuthSession(pAuthTicket, cbAuthTicket, steamID.Value);
     }
 
-    public bool BLoggedOn() => this.platform.ISteamGameServer_BLoggedOn();
+    public bool BLoggedOn() => platform.ISteamGameServer_BLoggedOn();
 
-    public bool BSecure() => this.platform.ISteamGameServer_BSecure();
+    public bool BSecure() => platform.ISteamGameServer_BSecure();
 
     public bool BUpdateUserData(CSteamID steamIDUser, string pchPlayerName, uint uScore)
     {
-      return this.platform.ISteamGameServer_BUpdateUserData(steamIDUser.Value, pchPlayerName, uScore);
+      return platform.ISteamGameServer_BUpdateUserData(steamIDUser.Value, pchPlayerName, uScore);
     }
 
     public void CancelAuthTicket(HAuthTicket hAuthTicket)
     {
-      this.platform.ISteamGameServer_CancelAuthTicket(hAuthTicket.Value);
+      platform.ISteamGameServer_CancelAuthTicket(hAuthTicket.Value);
     }
 
-    public void ClearAllKeyValues() => this.platform.ISteamGameServer_ClearAllKeyValues();
+    public void ClearAllKeyValues() => platform.ISteamGameServer_ClearAllKeyValues();
 
     public CallbackHandle ComputeNewPlayerCompatibility(
       CSteamID steamIDNewPlayer,
       Action<ComputeNewPlayerCompatibilityResult_t, bool> CallbackFunction = null)
     {
-      SteamAPICall_t steamApiCallT = (SteamAPICall_t) 0UL;
-      SteamAPICall_t playerCompatibility = this.platform.ISteamGameServer_ComputeNewPlayerCompatibility(steamIDNewPlayer.Value);
-      return CallbackFunction == null ? (CallbackHandle) null : ComputeNewPlayerCompatibilityResult_t.CallResult(this.steamworks, playerCompatibility, CallbackFunction);
+      SteamAPICall_t steamApiCallT = 0UL;
+      SteamAPICall_t playerCompatibility = platform.ISteamGameServer_ComputeNewPlayerCompatibility(steamIDNewPlayer.Value);
+      return CallbackFunction == null ? null : ComputeNewPlayerCompatibilityResult_t.CallResult(steamworks, playerCompatibility, CallbackFunction);
     }
 
     public ulong CreateUnauthenticatedUserConnection()
     {
-      return (ulong) this.platform.ISteamGameServer_CreateUnauthenticatedUserConnection();
+      return (ulong) platform.ISteamGameServer_CreateUnauthenticatedUserConnection();
     }
 
     public void EnableHeartbeats(bool bActive)
     {
-      this.platform.ISteamGameServer_EnableHeartbeats(bActive);
+      platform.ISteamGameServer_EnableHeartbeats(bActive);
     }
 
     public void EndAuthSession(CSteamID steamID)
     {
-      this.platform.ISteamGameServer_EndAuthSession(steamID.Value);
+      platform.ISteamGameServer_EndAuthSession(steamID.Value);
     }
 
-    public void ForceHeartbeat() => this.platform.ISteamGameServer_ForceHeartbeat();
+    public void ForceHeartbeat() => platform.ISteamGameServer_ForceHeartbeat();
 
     public HAuthTicket GetAuthSessionTicket(IntPtr pTicket, int cbMaxTicket, out uint pcbTicket)
     {
-      return this.platform.ISteamGameServer_GetAuthSessionTicket(pTicket, cbMaxTicket, out pcbTicket);
+      return platform.ISteamGameServer_GetAuthSessionTicket(pTicket, cbMaxTicket, out pcbTicket);
     }
 
-    public void GetGameplayStats() => this.platform.ISteamGameServer_GetGameplayStats();
+    public void GetGameplayStats() => platform.ISteamGameServer_GetGameplayStats();
 
     public int GetNextOutgoingPacket(
       IntPtr pOut,
@@ -111,23 +111,23 @@ namespace SteamNative
       out uint pNetAdr,
       out ushort pPort)
     {
-      return this.platform.ISteamGameServer_GetNextOutgoingPacket(pOut, cbMaxOut, out pNetAdr, out pPort);
+      return platform.ISteamGameServer_GetNextOutgoingPacket(pOut, cbMaxOut, out pNetAdr, out pPort);
     }
 
-    public uint GetPublicIP() => this.platform.ISteamGameServer_GetPublicIP();
+    public uint GetPublicIP() => platform.ISteamGameServer_GetPublicIP();
 
     public CallbackHandle GetServerReputation(Action<GSReputation_t, bool> CallbackFunction = null)
     {
-      SteamAPICall_t steamApiCallT = (SteamAPICall_t) 0UL;
-      SteamAPICall_t serverReputation = this.platform.ISteamGameServer_GetServerReputation();
-      return CallbackFunction == null ? (CallbackHandle) null : GSReputation_t.CallResult(this.steamworks, serverReputation, CallbackFunction);
+      SteamAPICall_t steamApiCallT = 0UL;
+      SteamAPICall_t serverReputation = platform.ISteamGameServer_GetServerReputation();
+      return CallbackFunction == null ? null : GSReputation_t.CallResult(steamworks, serverReputation, CallbackFunction);
     }
 
-    public ulong GetSteamID() => (ulong) this.platform.ISteamGameServer_GetSteamID();
+    public ulong GetSteamID() => (ulong) platform.ISteamGameServer_GetSteamID();
 
     public bool HandleIncomingPacket(IntPtr pData, int cbData, uint srcIP, ushort srcPort)
     {
-      return this.platform.ISteamGameServer_HandleIncomingPacket(pData, cbData, srcIP, srcPort);
+      return platform.ISteamGameServer_HandleIncomingPacket(pData, cbData, srcIP, srcPort);
     }
 
     public bool InitGameServer(
@@ -138,18 +138,18 @@ namespace SteamNative
       AppId_t nGameAppId,
       string pchVersionString)
     {
-      return this.platform.ISteamGameServer_InitGameServer(unIP, usGamePort, usQueryPort, unFlags, nGameAppId.Value, pchVersionString);
+      return platform.ISteamGameServer_InitGameServer(unIP, usGamePort, usQueryPort, unFlags, nGameAppId.Value, pchVersionString);
     }
 
-    public void LogOff() => this.platform.ISteamGameServer_LogOff();
+    public void LogOff() => platform.ISteamGameServer_LogOff();
 
-    public void LogOn(string pszToken) => this.platform.ISteamGameServer_LogOn(pszToken);
+    public void LogOn(string pszToken) => platform.ISteamGameServer_LogOn(pszToken);
 
-    public void LogOnAnonymous() => this.platform.ISteamGameServer_LogOnAnonymous();
+    public void LogOnAnonymous() => platform.ISteamGameServer_LogOnAnonymous();
 
     public bool RequestUserGroupStatus(CSteamID steamIDUser, CSteamID steamIDGroup)
     {
-      return this.platform.ISteamGameServer_RequestUserGroupStatus(steamIDUser.Value, steamIDGroup.Value);
+      return platform.ISteamGameServer_RequestUserGroupStatus(steamIDUser.Value, steamIDGroup.Value);
     }
 
     public bool SendUserConnectAndAuthenticate(
@@ -158,93 +158,93 @@ namespace SteamNative
       uint cubAuthBlobSize,
       out CSteamID pSteamIDUser)
     {
-      return this.platform.ISteamGameServer_SendUserConnectAndAuthenticate(unIPClient, pvAuthBlob, cubAuthBlobSize, out pSteamIDUser.Value);
+      return platform.ISteamGameServer_SendUserConnectAndAuthenticate(unIPClient, pvAuthBlob, cubAuthBlobSize, out pSteamIDUser.Value);
     }
 
     public void SendUserDisconnect(CSteamID steamIDUser)
     {
-      this.platform.ISteamGameServer_SendUserDisconnect(steamIDUser.Value);
+      platform.ISteamGameServer_SendUserDisconnect(steamIDUser.Value);
     }
 
     public void SetBotPlayerCount(int cBotplayers)
     {
-      this.platform.ISteamGameServer_SetBotPlayerCount(cBotplayers);
+      platform.ISteamGameServer_SetBotPlayerCount(cBotplayers);
     }
 
     public void SetDedicatedServer(bool bDedicated)
     {
-      this.platform.ISteamGameServer_SetDedicatedServer(bDedicated);
+      platform.ISteamGameServer_SetDedicatedServer(bDedicated);
     }
 
     public void SetGameData(string pchGameData)
     {
-      this.platform.ISteamGameServer_SetGameData(pchGameData);
+      platform.ISteamGameServer_SetGameData(pchGameData);
     }
 
     public void SetGameDescription(string pszGameDescription)
     {
-      this.platform.ISteamGameServer_SetGameDescription(pszGameDescription);
+      platform.ISteamGameServer_SetGameDescription(pszGameDescription);
     }
 
     public void SetGameTags(string pchGameTags)
     {
-      this.platform.ISteamGameServer_SetGameTags(pchGameTags);
+      platform.ISteamGameServer_SetGameTags(pchGameTags);
     }
 
     public void SetHeartbeatInterval(int iHeartbeatInterval)
     {
-      this.platform.ISteamGameServer_SetHeartbeatInterval(iHeartbeatInterval);
+      platform.ISteamGameServer_SetHeartbeatInterval(iHeartbeatInterval);
     }
 
     public void SetKeyValue(string pKey, string pValue)
     {
-      this.platform.ISteamGameServer_SetKeyValue(pKey, pValue);
+      platform.ISteamGameServer_SetKeyValue(pKey, pValue);
     }
 
     public void SetMapName(string pszMapName)
     {
-      this.platform.ISteamGameServer_SetMapName(pszMapName);
+      platform.ISteamGameServer_SetMapName(pszMapName);
     }
 
     public void SetMaxPlayerCount(int cPlayersMax)
     {
-      this.platform.ISteamGameServer_SetMaxPlayerCount(cPlayersMax);
+      platform.ISteamGameServer_SetMaxPlayerCount(cPlayersMax);
     }
 
-    public void SetModDir(string pszModDir) => this.platform.ISteamGameServer_SetModDir(pszModDir);
+    public void SetModDir(string pszModDir) => platform.ISteamGameServer_SetModDir(pszModDir);
 
     public void SetPasswordProtected(bool bPasswordProtected)
     {
-      this.platform.ISteamGameServer_SetPasswordProtected(bPasswordProtected);
+      platform.ISteamGameServer_SetPasswordProtected(bPasswordProtected);
     }
 
     public void SetProduct(string pszProduct)
     {
-      this.platform.ISteamGameServer_SetProduct(pszProduct);
+      platform.ISteamGameServer_SetProduct(pszProduct);
     }
 
-    public void SetRegion(string pszRegion) => this.platform.ISteamGameServer_SetRegion(pszRegion);
+    public void SetRegion(string pszRegion) => platform.ISteamGameServer_SetRegion(pszRegion);
 
     public void SetServerName(string pszServerName)
     {
-      this.platform.ISteamGameServer_SetServerName(pszServerName);
+      platform.ISteamGameServer_SetServerName(pszServerName);
     }
 
     public void SetSpectatorPort(ushort unSpectatorPort)
     {
-      this.platform.ISteamGameServer_SetSpectatorPort(unSpectatorPort);
+      platform.ISteamGameServer_SetSpectatorPort(unSpectatorPort);
     }
 
     public void SetSpectatorServerName(string pszSpectatorServerName)
     {
-      this.platform.ISteamGameServer_SetSpectatorServerName(pszSpectatorServerName);
+      platform.ISteamGameServer_SetSpectatorServerName(pszSpectatorServerName);
     }
 
     public UserHasLicenseForAppResult UserHasLicenseForApp(CSteamID steamID, AppId_t appID)
     {
-      return this.platform.ISteamGameServer_UserHasLicenseForApp(steamID.Value, appID.Value);
+      return platform.ISteamGameServer_UserHasLicenseForApp(steamID.Value, appID.Value);
     }
 
-    public bool WasRestartRequested() => this.platform.ISteamGameServer_WasRestartRequested();
+    public bool WasRestartRequested() => platform.ISteamGameServer_WasRestartRequested();
   }
 }

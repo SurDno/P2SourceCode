@@ -5,8 +5,6 @@ using Engine.Impl.UI.Menu.Protagonist.HeadUpDisplay;
 using Engine.Source.Audio;
 using Engine.Source.Services.Notifications;
 using Inspectors;
-using UnityEngine;
-using UnityEngine.Audio;
 
 namespace Engine.Impl.UI.Controls
 {
@@ -35,49 +33,49 @@ namespace Engine.Impl.UI.Controls
 
     private void Update()
     {
-      if (this.Complete || !(this.ui.Active is HudWindow))
+      if (Complete || !(ui.Active is HudWindow))
         return;
-      if (!this.play)
+      if (!play)
       {
-        SimplePlayerWindowSwapper.SetNotificationTempWindow(this.Type);
-        this.Play();
-        this.play = true;
+        SimplePlayerWindowSwapper.SetNotificationTempWindow(Type);
+        Play();
+        play = true;
       }
-      this.progress += Time.deltaTime;
-      if ((double) this.progress >= (double) this.time)
+      progress += Time.deltaTime;
+      if (progress >= (double) time)
       {
-        this.SetAlpha(0.0f);
-        this.Complete = true;
+        SetAlpha(0.0f);
+        Complete = true;
         SimplePlayerWindowSwapper.SetNotificationTempWindow(NotificationEnum.None);
       }
       else
-        this.SetAlpha(SoundUtility.ComputeFade(this.progress, this.time, this.fade));
+        SetAlpha(SoundUtility.ComputeFade(progress, time, fade));
     }
 
     private void Play()
     {
-      if ((Object) this.clip == (Object) null || (Object) this.mixer == (Object) null)
+      if ((Object) clip == (Object) null || (Object) mixer == (Object) null)
         return;
-      SoundUtility.PlayAudioClip2D(this.clip, this.mixer, 1f, 0.0f, context: this.gameObject.GetFullName());
+      SoundUtility.PlayAudioClip2D(clip, mixer, 1f, 0.0f, context: this.gameObject.GetFullName());
     }
 
     protected override void Awake()
     {
       base.Awake();
-      this.ui = ServiceLocator.GetService<UIService>();
-      this.SetAlpha(0.0f);
+      ui = ServiceLocator.GetService<UIService>();
+      SetAlpha(0.0f);
     }
 
-    public void Initialise(NotificationEnum type, object[] values) => this.Type = type;
+    public void Initialise(NotificationEnum type, object[] values) => Type = type;
 
     public void Shutdown() => Object.Destroy((Object) this.gameObject);
 
     private void SetAlpha(float value)
     {
-      if ((double) this.alpha == (double) value)
+      if (alpha == (double) value)
         return;
-      this.alpha = value;
-      this.canvasGroup.alpha = value;
+      alpha = value;
+      canvasGroup.alpha = value;
     }
   }
 }

@@ -1,4 +1,6 @@
-﻿using BehaviorDesigner.Runtime;
+﻿using System;
+using System.Collections.Generic;
+using BehaviorDesigner.Runtime;
 using BehaviorDesigner.Runtime.Tasks;
 using Cofe.Proxies;
 using Cofe.Serializations.Data;
@@ -10,8 +12,6 @@ using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Engine.Source.Components;
 using Scripts.Tools.Serializations.Converters;
-using System.Collections.Generic;
-using UnityEngine;
 
 [TaskDescription("Can see member of related fraction")]
 [TaskCategory("Pathologic")]
@@ -20,50 +20,50 @@ using UnityEngine;
 [FactoryProxy(typeof (CanHearRelatedFraction))]
 public class CanHearRelatedFraction : CanHear, IStub, ISerializeDataWrite, ISerializeDataRead
 {
-  [DataReadProxy(MemberEnum.None)]
-  [DataWriteProxy(MemberEnum.None)]
-  [CopyableProxy(MemberEnum.None)]
+  [DataReadProxy]
+  [DataWriteProxy]
+  [CopyableProxy()]
   [SerializeField]
   public FractionRelationEnum Relation;
   private List<FractionEnum> relatedFractions;
 
   public override TaskStatus OnUpdate()
   {
-    this.relatedFractions = RelatedFractionUtility.GetFraction(this.entity, this.Relation);
+    relatedFractions = RelatedFractionUtility.GetFraction(entity, Relation);
     return base.OnUpdate();
   }
 
   protected override bool Filter(DetectableComponent detectable)
   {
-    if (detectable.IsDisposed || this.relatedFractions == null)
+    if (detectable.IsDisposed || relatedFractions == null)
       return false;
     IParameter<bool> byName = detectable?.Owner?.GetComponent<ParametersComponent>()?.GetByName<bool>(ParameterNameEnum.Dead);
-    return (byName == null || !byName.Value) && this.relatedFractions.Contains(FractionsHelper.GetTargetFraction(detectable.Owner, this.entity));
+    return (byName == null || !byName.Value) && relatedFractions.Contains(FractionsHelper.GetTargetFraction(detectable.Owner, entity));
   }
 
   public new void DataWrite(IDataWriter writer)
   {
-    DefaultDataWriteUtility.WriteSerialize<NodeData>(writer, "NodeData", this.nodeData);
-    DefaultDataWriteUtility.Write(writer, "Id", this.id);
-    DefaultDataWriteUtility.Write(writer, "FriendlyName", this.friendlyName);
-    DefaultDataWriteUtility.Write(writer, "Instant", this.instant);
-    DefaultDataWriteUtility.Write(writer, "Disabled", this.disabled);
-    BehaviorTreeDataWriteUtility.WriteShared<SharedTransform>(writer, "Result", this.Result);
-    BehaviorTreeDataWriteUtility.WriteShared<SharedTransformList>(writer, "ResultList", this.ResultList);
-    DefaultDataWriteUtility.WriteEnum<DetectType>(writer, "DetectType", this.DetectType);
-    DefaultDataWriteUtility.WriteEnum<FractionRelationEnum>(writer, "Relation", this.Relation);
+    DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
+    DefaultDataWriteUtility.Write(writer, "Id", id);
+    DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
+    DefaultDataWriteUtility.Write(writer, "Instant", instant);
+    DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
+    BehaviorTreeDataWriteUtility.WriteShared(writer, "Result", Result);
+    BehaviorTreeDataWriteUtility.WriteShared(writer, "ResultList", ResultList);
+    DefaultDataWriteUtility.WriteEnum(writer, "DetectType", DetectType);
+    DefaultDataWriteUtility.WriteEnum(writer, "Relation", Relation);
   }
 
-  public new void DataRead(IDataReader reader, System.Type type)
+  public new void DataRead(IDataReader reader, Type type)
   {
-    this.nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
-    this.id = DefaultDataReadUtility.Read(reader, "Id", this.id);
-    this.friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", this.friendlyName);
-    this.instant = DefaultDataReadUtility.Read(reader, "Instant", this.instant);
-    this.disabled = DefaultDataReadUtility.Read(reader, "Disabled", this.disabled);
-    this.Result = BehaviorTreeDataReadUtility.ReadShared<SharedTransform>(reader, "Result", this.Result);
-    this.ResultList = BehaviorTreeDataReadUtility.ReadShared<SharedTransformList>(reader, "ResultList", this.ResultList);
-    this.DetectType = DefaultDataReadUtility.ReadEnum<DetectType>(reader, "DetectType");
-    this.Relation = DefaultDataReadUtility.ReadEnum<FractionRelationEnum>(reader, "Relation");
+    nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
+    id = DefaultDataReadUtility.Read(reader, "Id", id);
+    friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
+    instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
+    disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
+    Result = BehaviorTreeDataReadUtility.ReadShared(reader, "Result", Result);
+    ResultList = BehaviorTreeDataReadUtility.ReadShared(reader, "ResultList", ResultList);
+    DetectType = DefaultDataReadUtility.ReadEnum<DetectType>(reader, "DetectType");
+    Relation = DefaultDataReadUtility.ReadEnum<FractionRelationEnum>(reader, "Relation");
   }
 }

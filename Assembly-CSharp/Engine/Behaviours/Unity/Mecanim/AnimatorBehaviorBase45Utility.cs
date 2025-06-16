@@ -1,19 +1,17 @@
-﻿using UnityEngine;
-
-namespace Engine.Behaviours.Unity.Mecanim
+﻿namespace Engine.Behaviours.Unity.Mecanim
 {
   public static class AnimatorBehaviorBase45Utility
   {
     public static float LeftLegStopDistance(Rootmotion45 pivot, float speed)
     {
       float num = speed - 1f;
-      return pivot.RetargetLegScale * (float) ((double) pivot.WalkLeftLegStopLength * (1.0 - (double) num) + (double) pivot.RunLeftLegStopLength * (double) num);
+      return pivot.RetargetLegScale * (float) (pivot.WalkLeftLegStopLength * (1.0 - num) + pivot.RunLeftLegStopLength * (double) num);
     }
 
     public static float RightLegStopDistance(Rootmotion45 pivot, float speed)
     {
       float num = speed - 1f;
-      return pivot.RetargetLegScale * (float) ((double) pivot.WalkRightLegStopLength * (1.0 - (double) num) + (double) pivot.RunRightLegStopLength * (double) num);
+      return pivot.RetargetLegScale * (float) (pivot.WalkRightLegStopLength * (1.0 - num) + pivot.RunRightLegStopLength * (double) num);
     }
 
     public static bool NeedToStopEnterLeftLeg(
@@ -23,11 +21,11 @@ namespace Engine.Behaviours.Unity.Mecanim
       out float scale)
     {
       float num1 = speed - 1f;
-      float num2 = pivot.RetargetLegScale * (float) ((double) pivot.WalkCycleLength * (1.0 - (double) num1) + (double) pivot.RunCycleLength * (double) num1);
-      float num3 = AnimatorBehaviorBase45Utility.RightLegStopDistance(pivot, speed);
-      float num4 = AnimatorBehaviorBase45Utility.LeftLegStopDistance(pivot, speed);
+      float num2 = pivot.RetargetLegScale * (float) (pivot.WalkCycleLength * (1.0 - num1) + pivot.RunCycleLength * (double) num1);
+      float num3 = RightLegStopDistance(pivot, speed);
+      float num4 = LeftLegStopDistance(pivot, speed);
       float f = remainingDistance - (num2 / 2f + num4);
-      if ((double) Mathf.Abs((float) ((double) remainingDistance - (double) num2 / 2.0 - ((double) num2 / 2.0 + (double) num3))) > (double) Mathf.Abs(f))
+      if ((double) Mathf.Abs((float) (remainingDistance - num2 / 2.0 - (num2 / 2.0 + num3))) > (double) Mathf.Abs(f))
       {
         scale = remainingDistance / (num2 / 2f + num4);
         return true;
@@ -43,11 +41,11 @@ namespace Engine.Behaviours.Unity.Mecanim
       out float scale)
     {
       float num1 = speed - 1f;
-      float num2 = pivot.RetargetLegScale * (float) ((double) pivot.WalkCycleLength * (1.0 - (double) num1) + (double) pivot.RunCycleLength * (double) num1);
-      float num3 = AnimatorBehaviorBase45Utility.RightLegStopDistance(pivot, speed);
-      float num4 = AnimatorBehaviorBase45Utility.LeftLegStopDistance(pivot, speed);
+      float num2 = pivot.RetargetLegScale * (float) (pivot.WalkCycleLength * (1.0 - num1) + pivot.RunCycleLength * (double) num1);
+      float num3 = RightLegStopDistance(pivot, speed);
+      float num4 = LeftLegStopDistance(pivot, speed);
       float f = remainingDistance - (num2 / 2f + num3);
-      if ((double) Mathf.Abs((float) ((double) remainingDistance - (double) num2 / 2.0 - ((double) num2 / 2.0 + (double) num4))) > (double) Mathf.Abs(f))
+      if ((double) Mathf.Abs((float) (remainingDistance - num2 / 2.0 - (num2 / 2.0 + num4))) > (double) Mathf.Abs(f))
       {
         scale = remainingDistance / (num2 / 2f + num3);
         return true;

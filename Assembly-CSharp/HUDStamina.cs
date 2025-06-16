@@ -1,15 +1,15 @@
-﻿using UnityEngine;
+﻿using Engine.Impl.UI.Controls;
 
 public class HUDStamina : MonoBehaviour
 {
   [SerializeField]
   private CanvasGroup canvasGroup;
   [SerializeField]
-  private Engine.Impl.UI.Controls.Gradient leftBar;
+  private Gradient leftBar;
   [SerializeField]
-  private Engine.Impl.UI.Controls.Gradient middleBar;
+  private Gradient middleBar;
   [SerializeField]
-  private Engine.Impl.UI.Controls.Gradient rightBar;
+  private Gradient rightBar;
   [SerializeField]
   private CanvasGroup marker;
   [SerializeField]
@@ -34,61 +34,61 @@ public class HUDStamina : MonoBehaviour
 
   public bool Alert { get; set; }
 
-  private void Start() => this.baseColor = this.rightBar.color;
+  private void Start() => baseColor = rightBar.color;
 
   private void Update()
   {
-    bool flag1 = (double) this.Value < (double) this.MaxValue;
-    this.canvasGroup.alpha = Mathf.MoveTowards(this.canvasGroup.alpha, flag1 ? 1f : 0.0f, Time.unscaledDeltaTime / (flag1 ? this.mainFade.x : this.mainFade.y));
-    if ((double) this.canvasGroup.alpha > 0.0)
+    bool flag1 = Value < (double) MaxValue;
+    canvasGroup.alpha = Mathf.MoveTowards(canvasGroup.alpha, flag1 ? 1f : 0.0f, Time.unscaledDeltaTime / (flag1 ? mainFade.x : mainFade.y));
+    if ((double) canvasGroup.alpha > 0.0)
     {
-      this.canvasGroup.gameObject.SetActive(true);
-      float x = 1f - this.MaxValue;
-      this.leftBar.EndPosition = x;
-      this.middleBar.StartPosition = x;
+      canvasGroup.gameObject.SetActive(true);
+      float x = 1f - MaxValue;
+      leftBar.EndPosition = x;
+      middleBar.StartPosition = x;
       Vector2 vector2 = new Vector2(x, 0.5f);
-      RectTransform transform = (RectTransform) this.marker.transform;
+      RectTransform transform = (RectTransform) marker.transform;
       transform.anchorMin = vector2;
       transform.anchorMax = vector2;
-      this.middleBar.EndPosition = x + this.Value;
-      bool flag2 = (double) this.MaxValue < (double) this.markerVisibilityThreshold;
-      this.marker.alpha = Mathf.MoveTowards(this.marker.alpha, flag2 ? 1f : 0.0f, Time.unscaledDeltaTime / (flag2 ? this.mainFade.x : this.mainFade.y));
-      bool flag3 = (double) this.lastMaxValue != (double) this.MaxValue;
-      this.lastMaxValue = this.MaxValue;
+      middleBar.EndPosition = x + Value;
+      bool flag2 = MaxValue < (double) markerVisibilityThreshold;
+      marker.alpha = Mathf.MoveTowards(marker.alpha, flag2 ? 1f : 0.0f, Time.unscaledDeltaTime / (flag2 ? mainFade.x : mainFade.y));
+      bool flag3 = lastMaxValue != (double) MaxValue;
+      lastMaxValue = MaxValue;
       if (flag3)
-        this.labelFadingIn = true;
-      this.markerLabel.alpha = Mathf.MoveTowards(this.markerLabel.alpha, this.labelFadingIn ? 1f : 0.0f, Time.unscaledDeltaTime / (this.labelFadingIn ? this.mainFade.x : this.mainFade.y));
-      if ((double) this.markerLabel.alpha == 1.0)
-        this.labelFadingIn = false;
-      if (this.Alert)
-        this.SetBlinkPhase(this.blinkPhase + Time.deltaTime * this.blinkRate);
-      else if ((double) this.blinkPhase > 1.0)
+        labelFadingIn = true;
+      markerLabel.alpha = Mathf.MoveTowards(markerLabel.alpha, labelFadingIn ? 1f : 0.0f, Time.unscaledDeltaTime / (labelFadingIn ? mainFade.x : mainFade.y));
+      if ((double) markerLabel.alpha == 1.0)
+        labelFadingIn = false;
+      if (Alert)
+        SetBlinkPhase(blinkPhase + Time.deltaTime * blinkRate);
+      else if (blinkPhase > 1.0)
       {
-        this.SetBlinkPhase(Mathf.MoveTowards(this.blinkPhase, 2f, Time.deltaTime * this.blinkRate));
+        SetBlinkPhase(Mathf.MoveTowards(blinkPhase, 2f, Time.deltaTime * blinkRate));
       }
       else
       {
-        if ((double) this.blinkPhase <= 0.0)
+        if (blinkPhase <= 0.0)
           return;
-        this.SetBlinkPhase(Mathf.MoveTowards(this.blinkPhase, 0.0f, Time.deltaTime * this.blinkRate));
+        SetBlinkPhase(Mathf.MoveTowards(blinkPhase, 0.0f, Time.deltaTime * blinkRate));
       }
     }
     else
     {
-      this.marker.alpha = 0.0f;
-      this.markerLabel.alpha = 0.0f;
-      this.labelFadingIn = false;
-      this.canvasGroup.gameObject.SetActive(false);
+      marker.alpha = 0.0f;
+      markerLabel.alpha = 0.0f;
+      labelFadingIn = false;
+      canvasGroup.gameObject.SetActive(false);
     }
   }
 
   private void SetBlinkPhase(float value)
   {
-    if ((double) value >= 2.0)
+    if (value >= 2.0)
       value %= 2f;
-    if ((double) this.blinkPhase == (double) value)
+    if (blinkPhase == (double) value)
       return;
-    this.blinkPhase = value;
-    this.rightBar.color = Color.Lerp(this.blinkColor, this.baseColor, Mathf.Abs(1f - value));
+    blinkPhase = value;
+    rightBar.color = Color.Lerp(blinkColor, baseColor, Mathf.Abs(1f - value));
   }
 }

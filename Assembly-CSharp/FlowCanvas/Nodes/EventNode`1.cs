@@ -1,5 +1,4 @@
 ﻿using NodeCanvas.Framework;
-using UnityEngine;
 
 namespace FlowCanvas.Nodes
 {
@@ -11,32 +10,32 @@ namespace FlowCanvas.Nodes
     {
       get
       {
-        return string.Format("{0} ({1})", (object) base.name.ToUpper(), !this.target.isNull || this.target.useBlackboard ? (object) this.target.ToString() : (object) "Self");
+        return string.Format("{0} ({1})", base.name.ToUpper(), !target.isNull || target.useBlackboard ? target.ToString() : (object) "Self");
       }
     }
 
-    protected virtual string[] GetTargetMessageEvents() => (string[]) null;
+    protected virtual string[] GetTargetMessageEvents() => null;
 
     public override void OnGraphStarted()
     {
-      if (this.target.isNull && !this.target.useBlackboard)
-        this.target.value = this.graphAgent.GetComponent<T>();
-      if (this.target.isNull)
+      if (target.isNull && !target.useBlackboard)
+        target.value = graphAgent.GetComponent<T>();
+      if (target.isNull)
       {
-        this.Fail(string.Format("Target is missing component of type '{0}'", (object) typeof (T).Name));
+        Fail(string.Format("Target is missing component of type '{0}'", typeof (T).Name));
       }
       else
       {
-        string[] targetMessageEvents = this.GetTargetMessageEvents();
+        string[] targetMessageEvents = GetTargetMessageEvents();
         if (targetMessageEvents == null || targetMessageEvents.Length == 0)
           return;
-        this.RegisterEvents((Component) this.target.value, targetMessageEvents);
+        RegisterEvents((Component) target.value, targetMessageEvents);
       }
     }
 
     public override void OnGraphStoped()
     {
-      this.UnRegisterEvents((Component) this.target.value, this.GetTargetMessageEvents());
+      UnRegisterEvents((Component) target.value, GetTargetMessageEvents());
     }
   }
 }

@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-public class XMLMarker
+﻿public class XMLMarker
 {
   private int msStart;
   private int msEnd;
@@ -11,77 +9,77 @@ public class XMLMarker
 
   public XMLMarker(string _label, int _start, int _end, float _weight)
   {
-    this.msStart = _start;
-    this.msPreFadeStart = _start;
-    this.msEnd = _end;
-    this.msPostFadeEnd = _end;
-    this.anim = _label;
-    this.weight = _weight;
+    msStart = _start;
+    msPreFadeStart = _start;
+    msEnd = _end;
+    msPostFadeEnd = _end;
+    anim = _label;
+    weight = _weight;
   }
 
   public int StartMilli
   {
-    get => this.msStart;
+    get => msStart;
     set
     {
-      int num = this.msStart - this.msPreFadeStart;
-      this.msStart = value;
-      this.msPreFadeStart = this.msStart - num;
+      int num = msStart - msPreFadeStart;
+      msStart = value;
+      msPreFadeStart = msStart - num;
     }
   }
 
   public int EndMilli
   {
-    get => this.msEnd;
+    get => msEnd;
     set
     {
-      int num = this.msPostFadeEnd - this.msEnd;
-      this.msEnd = value;
-      this.msPostFadeEnd = this.msEnd + num;
+      int num = msPostFadeEnd - msEnd;
+      msEnd = value;
+      msPostFadeEnd = msEnd + num;
     }
   }
 
   public int PostFadeEnd
   {
-    get => this.msPostFadeEnd;
-    set => this.msPostFadeEnd = value;
+    get => msPostFadeEnd;
+    set => msPostFadeEnd = value;
   }
 
   public int PreFadeStart
   {
-    get => this.msPreFadeStart;
-    set => this.msPreFadeStart = value;
+    get => msPreFadeStart;
+    set => msPreFadeStart = value;
   }
 
   public string AnimLabel
   {
-    get => this.anim;
-    set => this.anim = value;
+    get => anim;
+    set => anim = value;
   }
 
   public float Weight
   {
-    get => this.weight;
-    set => this.weight = value;
+    get => weight;
+    set => weight = value;
   }
 
   public float MakeLinearBlend(float msTime)
   {
     float num1 = msTime;
     float num2 = 0.0f;
-    if ((double) msTime < (double) this.StartMilli)
+    if (msTime < (double) StartMilli)
     {
-      float preFadeStart = (float) this.PreFadeStart;
-      float startMilli = (float) this.StartMilli;
-      num2 = this.Weight * (float) (((double) num1 - (double) preFadeStart) / ((double) startMilli - (double) preFadeStart));
+      float preFadeStart = PreFadeStart;
+      float startMilli = StartMilli;
+      num2 = Weight * (float) ((num1 - (double) preFadeStart) / (startMilli - (double) preFadeStart));
     }
-    else if ((double) msTime < (double) this.EndMilli)
-      num2 = this.Weight;
-    else if ((double) msTime < (double) this.PostFadeEnd)
+    else if (msTime < (double) EndMilli)
+      num2 = Weight;
+    else if (msTime < (double) PostFadeEnd)
     {
-      float endMilli = (float) this.EndMilli;
-      float postFadeEnd = (float) this.PostFadeEnd;
-      num2 = this.Weight * (float) (((double) postFadeEnd - (double) num1) / ((double) postFadeEnd - (double) endMilli));
+      float endMilli = EndMilli;
+      float postFadeEnd = PostFadeEnd;
+      num2 = Weight * (float) ((postFadeEnd - (double) num1) / (postFadeEnd - (double) endMilli));
     }
     return num2;
   }
@@ -90,19 +88,19 @@ public class XMLMarker
   {
     float num1 = msTime;
     float num2 = 0.0f;
-    if ((double) msTime < (double) this.StartMilli)
+    if (msTime < (double) StartMilli)
     {
-      float preFadeStart = (float) this.PreFadeStart;
-      float startMilli = (float) this.StartMilli;
-      num2 = this.Weight * Mathf.Sin((float) (((double) num1 - (double) preFadeStart) / ((double) startMilli - (double) preFadeStart)) * 1.57079637f);
+      float preFadeStart = PreFadeStart;
+      float startMilli = StartMilli;
+      num2 = Weight * Mathf.Sin((float) ((num1 - (double) preFadeStart) / (startMilli - (double) preFadeStart)) * 1.57079637f);
     }
-    else if ((double) msTime < (double) this.EndMilli)
-      num2 = this.Weight;
-    else if ((double) msTime < (double) this.PostFadeEnd)
+    else if (msTime < (double) EndMilli)
+      num2 = Weight;
+    else if (msTime < (double) PostFadeEnd)
     {
-      float endMilli = (float) this.EndMilli;
-      float postFadeEnd = (float) this.PostFadeEnd;
-      num2 = this.Weight * Mathf.Sin((float) (((double) postFadeEnd - (double) num1) / ((double) postFadeEnd - (double) endMilli)) * 1.57079637f);
+      float endMilli = EndMilli;
+      float postFadeEnd = PostFadeEnd;
+      num2 = Weight * Mathf.Sin((float) ((postFadeEnd - (double) num1) / (postFadeEnd - (double) endMilli)) * 1.57079637f);
     }
     return num2;
   }

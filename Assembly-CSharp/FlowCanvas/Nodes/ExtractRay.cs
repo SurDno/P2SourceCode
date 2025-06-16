@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace FlowCanvas.Nodes
+﻿namespace FlowCanvas.Nodes
 {
   public class ExtractRay : ExtractorNode<Ray, Vector3, Vector3>
   {

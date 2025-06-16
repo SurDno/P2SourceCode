@@ -1,34 +1,32 @@
-﻿using Engine.Common;
+﻿using System.Collections.Generic;
+using Engine.Common;
 using Engine.Source.Blueprints.Sounds;
 using Engine.Source.Commons;
 using Engine.Source.Settings.External;
 using Inspectors;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.Audio;
 
 namespace Engine.Source.Services
 {
-  [RuntimeService(new System.Type[] {typeof (AudioMixerValueService)})]
+  [RuntimeService(typeof (AudioMixerValueService))]
   public class AudioMixerValueService : 
     IInitialisable,
     IUpdateItem<AudioMixerValueService.ItemInfo>,
     IUpdatable
   {
     [Inspected]
-    private List<AudioMixerValueService.ItemInfo> items = new List<AudioMixerValueService.ItemInfo>();
+    private List<ItemInfo> items = new List<ItemInfo>();
     [Inspected]
-    private ReduceUpdateProxy<AudioMixerValueService.ItemInfo> updater;
+    private ReduceUpdateProxy<ItemInfo> updater;
 
     public void Initialise()
     {
-      this.updater = new ReduceUpdateProxy<AudioMixerValueService.ItemInfo>(this.items, (IUpdateItem<AudioMixerValueService.ItemInfo>) this, ExternalSettingsInstance<ExternalOptimizationSettings>.Instance.BlueprintSoundsDelay);
-      InstanceByRequest<UpdateService>.Instance.Updater.AddUpdatable((IUpdatable) this);
+      updater = new ReduceUpdateProxy<ItemInfo>(items, this, ExternalSettingsInstance<ExternalOptimizationSettings>.Instance.BlueprintSoundsDelay);
+      InstanceByRequest<UpdateService>.Instance.Updater.AddUpdatable(this);
     }
 
     public void Terminate()
     {
-      InstanceByRequest<UpdateService>.Instance.Updater.RemoveUpdatable((IUpdatable) this);
+      InstanceByRequest<UpdateService>.Instance.Updater.RemoveUpdatable(this);
     }
 
     public void AddNode(AudioMixerValueNode node)
@@ -41,8 +39,8 @@ namespace Engine.Source.Services
       else
       {
         string str = mixer.name + "   [" + node.Name + "]";
-        AudioMixerValueService.ItemInfo itemInfo1 = (AudioMixerValueService.ItemInfo) null;
-        foreach (AudioMixerValueService.ItemInfo itemInfo2 in this.items)
+        ItemInfo itemInfo1 = null;
+        foreach (ItemInfo itemInfo2 in items)
         {
           if (itemInfo2.Name == str)
           {
@@ -52,14 +50,14 @@ namespace Engine.Source.Services
         }
         if (itemInfo1 == null)
         {
-          itemInfo1 = new AudioMixerValueService.ItemInfo();
+          itemInfo1 = new ItemInfo();
           itemInfo1.Name = str;
           if (!node.Mixer.audioMixer.GetFloat(node.Name, out itemInfo1.DefaultValue))
           {
             Debug.LogError((object) ("Parameter not found : " + node.Name + " , graph : " + node.Agent.GetInfo()));
             node.Failed = true;
           }
-          this.items.Add(itemInfo1);
+          items.Add(itemInfo1);
         }
         itemInfo1.Nodes.Add(node);
       }
@@ -71,8 +69,8 @@ namespace Engine.Source.Services
       if ((UnityEngine.Object) mixer == (UnityEngine.Object) null)
         return;
       string str = mixer.name + "   [" + node.Name + "]";
-      AudioMixerValueService.ItemInfo itemInfo1 = (AudioMixerValueService.ItemInfo) null;
-      foreach (AudioMixerValueService.ItemInfo itemInfo2 in this.items)
+      ItemInfo itemInfo1 = null;
+      foreach (ItemInfo itemInfo2 in items)
       {
         if (itemInfo2.Name == str)
         {
@@ -94,9 +92,9 @@ namespace Engine.Source.Services
       }
     }
 
-    public void ComputeUpdate() => this.updater.Update();
+    public void ComputeUpdate() => updater.Update();
 
-    public void ComputeUpdateItem(AudioMixerValueService.ItemInfo item)
+    public void ComputeUpdateItem(ItemInfo item)
     {
       List<AudioMixerValueNode> nodes = item.Nodes;
       if (nodes.Count == 0)
@@ -107,7 +105,7 @@ namespace Engine.Source.Services
       {
         AudioMixerValueNode audioMixerValueNode2 = nodes[index];
         float num = audioMixerValueNode2.Value;
-        if ((double) num > (double) t)
+        if (num > (double) t)
         {
           audioMixerValueNode1 = audioMixerValueNode2;
           t = num;
@@ -133,7 +131,7 @@ namespace Engine.Source.Services
       public List<AudioMixerValueNode> Nodes = new List<AudioMixerValueNode>();
 
       [Inspected(Header = true)]
-      public int Count => this.Nodes.Count;
+      public int Count => Nodes.Count;
     }
   }
 }

@@ -1,25 +1,23 @@
-﻿using UnityEngine;
-
-public static class TOD_Util
+﻿public static class TOD_Util
 {
   public static Color MulRGB(Color color, float multiplier)
   {
-    return (double) multiplier == 1.0 ? color : new Color(color.r * multiplier, color.g * multiplier, color.b * multiplier, color.a);
+    return multiplier == 1.0 ? color : new Color(color.r * multiplier, color.g * multiplier, color.b * multiplier, color.a);
   }
 
   public static Color MulRGBA(Color color, float multiplier)
   {
-    return (double) multiplier == 1.0 ? color : new Color(color.r * multiplier, color.g * multiplier, color.b * multiplier, color.a * multiplier);
+    return multiplier == 1.0 ? color : new Color(color.r * multiplier, color.g * multiplier, color.b * multiplier, color.a * multiplier);
   }
 
   public static Color PowRGB(Color color, float power)
   {
-    return (double) power == 1.0 ? color : new Color(Mathf.Pow(color.r, power), Mathf.Pow(color.g, power), Mathf.Pow(color.b, power), color.a);
+    return power == 1.0 ? color : new Color(Mathf.Pow(color.r, power), Mathf.Pow(color.g, power), Mathf.Pow(color.b, power), color.a);
   }
 
   public static Color PowRGBA(Color color, float power)
   {
-    return (double) power == 1.0 ? color : new Color(Mathf.Pow(color.r, power), Mathf.Pow(color.g, power), Mathf.Pow(color.b, power), Mathf.Pow(color.a, power));
+    return power == 1.0 ? color : new Color(Mathf.Pow(color.r, power), Mathf.Pow(color.g, power), Mathf.Pow(color.b, power), Mathf.Pow(color.a, power));
   }
 
   public static Color ApplyAlpha(Color color)

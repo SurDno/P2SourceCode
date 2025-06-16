@@ -1,8 +1,8 @@
-﻿using Engine.Common;
+﻿using System.Collections.Generic;
+using Engine.Common;
 using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
-using System.Collections.Generic;
 
 namespace Engine.Source.Blueprints
 {
@@ -19,13 +19,13 @@ namespace Engine.Source.Blueprints
     [Port("In")]
     private void In()
     {
-      IEnumerable<IEntity> entities = this.entitiesInput.value;
+      IEnumerable<IEntity> entities = entitiesInput.value;
       if (entities != null)
       {
         foreach (IEntity entity in entities)
-          entity.IsEnabled = this.enableInput.value;
+          entity.IsEnabled = enableInput.value;
       }
-      this.output.Call();
+      output.Call();
     }
   }
 }

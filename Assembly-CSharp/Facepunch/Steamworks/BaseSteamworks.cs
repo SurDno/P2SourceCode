@@ -1,8 +1,8 @@
-﻿using Facepunch.Steamworks.Interop;
-using SteamNative;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading;
+using Facepunch.Steamworks.Interop;
+using SteamNative;
 
 namespace Facepunch.Steamworks
 {
@@ -23,62 +23,62 @@ namespace Facepunch.Steamworks
 
     public virtual void Dispose()
     {
-      foreach (CallbackHandle callbackHandle in this.CallbackHandles)
+      foreach (CallbackHandle callbackHandle in CallbackHandles)
         callbackHandle.Dispose();
-      this.CallbackHandles.Clear();
-      if (this.Workshop != null)
+      CallbackHandles.Clear();
+      if (Workshop != null)
       {
-        this.Workshop.Dispose();
-        this.Workshop = (Workshop) null;
+        Workshop.Dispose();
+        Workshop = null;
       }
-      if (this.Inventory != null)
+      if (Inventory != null)
       {
-        this.Inventory.Dispose();
-        this.Inventory = (Inventory) null;
+        Inventory.Dispose();
+        Inventory = null;
       }
-      if (this.Networking != null)
+      if (Networking != null)
       {
-        this.Networking.Dispose();
-        this.Networking = (Networking) null;
+        Networking.Dispose();
+        Networking = null;
       }
-      if (this.native == null)
+      if (native == null)
         return;
-      this.native.Dispose();
-      this.native = (NativeInterface) null;
+      native.Dispose();
+      native = null;
     }
 
     protected void SetupCommonInterfaces()
     {
-      this.Networking = new Networking(this, this.native.networking);
-      this.Inventory = new Inventory(this, this.native.inventory, this.IsGameServer);
-      this.Workshop = new Workshop(this, this.native.ugc, this.native.remoteStorage);
+      Networking = new Networking(this, native.networking);
+      Inventory = new Inventory(this, native.inventory, IsGameServer);
+      Workshop = new Workshop(this, native.ugc, native.remoteStorage);
     }
 
-    public bool IsValid => this.native != null;
+    public bool IsValid => native != null;
 
     internal virtual bool IsGameServer => false;
 
-    internal void RegisterCallbackHandle(CallbackHandle handle) => this.CallbackHandles.Add(handle);
+    internal void RegisterCallbackHandle(CallbackHandle handle) => CallbackHandles.Add(handle);
 
     public virtual void Update()
     {
-      this.Inventory.Update();
-      this.Networking.Update();
-      this.RunUpdateCallbacks();
+      Inventory.Update();
+      Networking.Update();
+      RunUpdateCallbacks();
     }
 
     public void RunUpdateCallbacks()
     {
-      if (this.OnUpdate == null)
+      if (OnUpdate == null)
         return;
-      this.OnUpdate();
+      OnUpdate();
     }
 
     public void UpdateWhile(Func<bool> func)
     {
       while (func())
       {
-        this.Update();
+        Update();
         Thread.Sleep(1);
       }
     }

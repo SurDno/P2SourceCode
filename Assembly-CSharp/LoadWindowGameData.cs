@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-[CreateAssetMenu(menuName = "Data/Load Window Game Data")]
+﻿[CreateAssetMenu(menuName = "Data/Load Window Game Data")]
 public class LoadWindowGameData : ScriptableObject
 {
   [SerializeField]
@@ -8,10 +6,10 @@ public class LoadWindowGameData : ScriptableObject
 
   public LoadWindowGameDataItem GetItem(string gameDataName)
   {
-    for (int index = 0; index < this.items.Length; ++index)
+    for (int index = 0; index < items.Length; ++index)
     {
-      LoadWindowGameDataItem windowGameDataItem = this.items[index];
-      if (this.items[index].GameDataName == gameDataName)
+      LoadWindowGameDataItem windowGameDataItem = items[index];
+      if (items[index].GameDataName == gameDataName)
         return windowGameDataItem;
     }
     return LoadWindowGameDataItem.Null;

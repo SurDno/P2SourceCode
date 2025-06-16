@@ -1,5 +1,5 @@
-﻿using Facepunch.Steamworks;
-using System;
+﻿using System;
+using Facepunch.Steamworks;
 
 namespace SteamNative
 {
@@ -12,31 +12,31 @@ namespace SteamNative
     {
       this.steamworks = steamworks;
       if (Platform.IsWindows64)
-        this.platform = (Platform.Interface) new Platform.Win64(pointer);
+        platform = (Platform.Interface) new Platform.Win64(pointer);
       else if (Platform.IsWindows32)
-        this.platform = (Platform.Interface) new Platform.Win32(pointer);
+        platform = (Platform.Interface) new Platform.Win32(pointer);
       else if (Platform.IsLinux32)
-        this.platform = (Platform.Interface) new Platform.Linux32(pointer);
+        platform = (Platform.Interface) new Platform.Linux32(pointer);
       else if (Platform.IsLinux64)
       {
-        this.platform = (Platform.Interface) new Platform.Linux64(pointer);
+        platform = (Platform.Interface) new Platform.Linux64(pointer);
       }
       else
       {
         if (!Platform.IsOsx)
           return;
-        this.platform = (Platform.Interface) new Platform.Mac(pointer);
+        platform = (Platform.Interface) new Platform.Mac(pointer);
       }
     }
 
-    public bool IsValid => this.platform != null && this.platform.IsValid;
+    public bool IsValid => platform != null && platform.IsValid;
 
     public virtual void Dispose()
     {
-      if (this.platform == null)
+      if (platform == null)
         return;
-      this.platform.Dispose();
-      this.platform = (Platform.Interface) null;
+      platform.Dispose();
+      platform = (Platform.Interface) null;
     }
 
     public bool GetMethodResponseData(
@@ -45,7 +45,7 @@ namespace SteamNative
       uint unResponseBufferSize,
       bool bAutoRelease)
     {
-      return this.platform.ISteamUnifiedMessages_GetMethodResponseData(hHandle.Value, pResponseBuffer, unResponseBufferSize, bAutoRelease);
+      return platform.ISteamUnifiedMessages_GetMethodResponseData(hHandle.Value, pResponseBuffer, unResponseBufferSize, bAutoRelease);
     }
 
     public bool GetMethodResponseInfo(
@@ -53,12 +53,12 @@ namespace SteamNative
       out uint punResponseSize,
       out Result peResult)
     {
-      return this.platform.ISteamUnifiedMessages_GetMethodResponseInfo(hHandle.Value, out punResponseSize, out peResult);
+      return platform.ISteamUnifiedMessages_GetMethodResponseInfo(hHandle.Value, out punResponseSize, out peResult);
     }
 
     public bool ReleaseMethod(ClientUnifiedMessageHandle hHandle)
     {
-      return this.platform.ISteamUnifiedMessages_ReleaseMethod(hHandle.Value);
+      return platform.ISteamUnifiedMessages_ReleaseMethod(hHandle.Value);
     }
 
     public ClientUnifiedMessageHandle SendMethod(
@@ -67,7 +67,7 @@ namespace SteamNative
       uint unRequestBufferSize,
       ulong unContext)
     {
-      return this.platform.ISteamUnifiedMessages_SendMethod(pchServiceMethod, pRequestBuffer, unRequestBufferSize, unContext);
+      return platform.ISteamUnifiedMessages_SendMethod(pchServiceMethod, pRequestBuffer, unRequestBufferSize, unContext);
     }
 
     public bool SendNotification(
@@ -75,7 +75,7 @@ namespace SteamNative
       IntPtr pNotificationBuffer,
       uint unNotificationBufferSize)
     {
-      return this.platform.ISteamUnifiedMessages_SendNotification(pchServiceNotification, pNotificationBuffer, unNotificationBufferSize);
+      return platform.ISteamUnifiedMessages_SendNotification(pchServiceNotification, pNotificationBuffer, unNotificationBufferSize);
     }
   }
 }

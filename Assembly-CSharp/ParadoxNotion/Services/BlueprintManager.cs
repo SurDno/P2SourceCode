@@ -1,12 +1,10 @@
-﻿using Engine.Common;
+﻿using System;
+using System.Collections.Generic;
+using Engine.Common;
 using Engine.Source.Commons;
 using Engine.Source.Settings.External;
 using FlowCanvas;
 using Inspectors;
-using System;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.Profiling;
 
 namespace ParadoxNotion.Services
 {
@@ -19,13 +17,13 @@ namespace ParadoxNotion.Services
     private ReduceUpdateProxy<Graph> updater;
     private static BlueprintManager _current;
 
-    public static BlueprintManager.UpdateMode updateMode
+    public static UpdateMode updateMode
     {
       get
       {
-        return BlueprintManager.current.enabled ? BlueprintManager.UpdateMode.Auto : BlueprintManager.UpdateMode.Manual;
+        return current.enabled ? UpdateMode.Auto : UpdateMode.Manual;
       }
-      set => BlueprintManager.current.enabled = value == BlueprintManager.UpdateMode.Auto;
+      set => current.enabled = value == UpdateMode.Auto;
     }
 
     public event Action onLateUpdate;
@@ -40,19 +38,19 @@ namespace ParadoxNotion.Services
     {
       get
       {
-        if ((UnityEngine.Object) BlueprintManager._current == (UnityEngine.Object) null && !BlueprintManager.isQuiting)
+        if ((UnityEngine.Object) _current == (UnityEngine.Object) null && !isQuiting)
         {
-          BlueprintManager._current = UnityEngine.Object.FindObjectOfType<BlueprintManager>();
-          if ((UnityEngine.Object) BlueprintManager._current == (UnityEngine.Object) null)
-            BlueprintManager._current = UnityFactory.GetOrCreateGroup("[Blueprints]").AddComponent<BlueprintManager>();
+          _current = UnityEngine.Object.FindObjectOfType<BlueprintManager>();
+          if ((UnityEngine.Object) _current == (UnityEngine.Object) null)
+            _current = UnityFactory.GetOrCreateGroup("[Blueprints]").AddComponent<BlueprintManager>();
         }
-        return BlueprintManager._current;
+        return _current;
       }
     }
 
     private void OnApplicationQuit()
     {
-      BlueprintManager.isQuiting = true;
+      isQuiting = true;
       Action onApplicationQuit = this.onApplicationQuit;
       if (onApplicationQuit == null)
         return;
@@ -61,7 +59,7 @@ namespace ParadoxNotion.Services
 
     private void OnApplicationPause(bool isPause)
     {
-      Action<bool> applicationPause = this.onApplicationPause;
+      Action<bool> applicationPause = onApplicationPause;
       if (applicationPause == null)
         return;
       applicationPause(isPause);
@@ -69,22 +67,22 @@ namespace ParadoxNotion.Services
 
     private void Awake()
     {
-      this.updater = new ReduceUpdateProxy<Graph>(this.graphs, (IUpdateItem<Graph>) this, ExternalSettingsInstance<ExternalOptimizationSettings>.Instance.BlueprintUpdateDelay);
-      if ((UnityEngine.Object) BlueprintManager._current != (UnityEngine.Object) null && (UnityEngine.Object) BlueprintManager._current != (UnityEngine.Object) this)
+      updater = new ReduceUpdateProxy<Graph>(graphs, this, ExternalSettingsInstance<ExternalOptimizationSettings>.Instance.BlueprintUpdateDelay);
+      if ((UnityEngine.Object) _current != (UnityEngine.Object) null && (UnityEngine.Object) _current != (UnityEngine.Object) this)
       {
         UnityEngine.Object.DestroyImmediate((UnityEngine.Object) this.gameObject);
       }
       else
       {
-        InstanceByRequest<UpdateService>.Instance.BlueprintUpdater.AddUpdatable((IUpdatable) this);
-        BlueprintManager._current = this;
+        InstanceByRequest<UpdateService>.Instance.BlueprintUpdater.AddUpdatable(this);
+        _current = this;
       }
     }
 
     private void OnDestroy()
     {
-      BlueprintManager._current = (BlueprintManager) null;
-      InstanceByRequest<UpdateService>.Instance.BlueprintUpdater.RemoveUpdatable((IUpdatable) this);
+      _current = null;
+      InstanceByRequest<UpdateService>.Instance.BlueprintUpdater.RemoveUpdatable(this);
     }
 
     private void LateUpdate()
@@ -117,7 +115,7 @@ namespace ParadoxNotion.Services
     {
       if (ExternalSettingsInstance<ExternalOptimizationSettings>.Instance.DisableBlueprints)
         return;
-      this.updater.Update();
+      updater.Update();
     }
 
     public enum UpdateMode

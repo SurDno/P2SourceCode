@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace NodeCanvas.Framework
+﻿namespace NodeCanvas.Framework
 {
   public class GUIPort
   {
@@ -10,7 +8,7 @@ namespace NodeCanvas.Framework
 
     public GUIPort(int index, Node parent, Vector2 pos)
     {
-      this.portIndex = index;
+      portIndex = index;
       this.parent = parent;
       this.pos = pos;
     }

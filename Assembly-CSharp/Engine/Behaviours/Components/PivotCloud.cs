@@ -1,7 +1,4 @@
-﻿using Engine.Source.Audio;
-using UnityEngine;
-
-namespace Engine.Behaviours.Components
+﻿namespace Engine.Behaviours.Components
 {
   [DisallowMultipleComponent]
   public class PivotCloud : MonoBehaviour
@@ -9,23 +6,23 @@ namespace Engine.Behaviours.Components
     [Header("Audio")]
     public AudioSource AudioSource = (AudioSource) null;
 
-    private void Awake() => this.EnableSound(false);
+    private void Awake() => EnableSound(false);
 
     public void EnableSound(bool enabled)
     {
-      if (!((Object) this.AudioSource != (Object) null))
+      if (!((Object) AudioSource != (Object) null))
         return;
       if (enabled)
-        this.AudioSource.PlayAndCheck();
+        AudioSource.PlayAndCheck();
       else
-        this.AudioSource.Stop();
+        AudioSource.Stop();
     }
 
     public void SetSoundMaxDistance(float distance)
     {
-      if (!((Object) this.AudioSource != (Object) null))
+      if (!((Object) AudioSource != (Object) null))
         return;
-      this.AudioSource.maxDistance = distance;
+      AudioSource.maxDistance = distance;
     }
   }
 }

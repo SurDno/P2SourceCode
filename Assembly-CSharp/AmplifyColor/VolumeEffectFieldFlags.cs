@@ -8,19 +8,19 @@ namespace AmplifyColor
   {
     public string fieldName;
     public string fieldType;
-    public bool blendFlag = false;
+    public bool blendFlag;
 
     public VolumeEffectFieldFlags(FieldInfo pi)
     {
-      this.fieldName = pi.Name;
-      this.fieldType = pi.FieldType.FullName;
+      fieldName = pi.Name;
+      fieldType = pi.FieldType.FullName;
     }
 
     public VolumeEffectFieldFlags(VolumeEffectField field)
     {
-      this.fieldName = field.fieldName;
-      this.fieldType = field.fieldType;
-      this.blendFlag = true;
+      fieldName = field.fieldName;
+      fieldType = field.fieldType;
+      blendFlag = true;
     }
   }
 }

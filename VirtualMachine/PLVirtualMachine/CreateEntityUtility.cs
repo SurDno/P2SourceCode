@@ -1,4 +1,7 @@
-﻿using Cofe.Loggers;
+﻿using System;
+using System.Collections.Generic;
+using System.Reflection;
+using Cofe.Loggers;
 using Engine.Common;
 using Engine.Common.Services;
 using PLVirtualMachine.Common;
@@ -8,9 +11,6 @@ using PLVirtualMachine.Common.EngineAPI.VMECS.VMAttributes;
 using PLVirtualMachine.Dynamic;
 using PLVirtualMachine.GameLogic;
 using PLVirtualMachine.Objects;
-using System;
-using System.Collections.Generic;
-using System.Reflection;
 
 namespace PLVirtualMachine
 {
@@ -21,10 +21,10 @@ namespace PLVirtualMachine
       bool flag1 = false;
       VMEntity vmEntity = new VMEntity();
       if (flag1)
-        vmEntity.Initialize((ILogicObject) templateObject, parentEntity, false);
+        vmEntity.Initialize(templateObject, parentEntity);
       else
-        vmEntity.Initialize((ILogicObject) templateObject, new Guid());
-      IEntity spawnMilestoneRealEntity = (IEntity) null;
+        vmEntity.Initialize(templateObject);
+      IEntity spawnMilestoneRealEntity = null;
       bool flag2 = typeof (VMWorldObject).IsAssignableFrom(templateObject.GetType());
       if (flag2 && vmEntity.IsWorldEntity)
       {
@@ -37,14 +37,14 @@ namespace PLVirtualMachine
           bool flag3 = true;
           if (vmEntity.Instance == null)
           {
-            Logger.AddError(string.Format("Cannot add created entity {0} to simulation: entity engine instance is null at {1}!", (object) templateObject.Name, (object) EngineAPIManager.Instance.CurrentFSMStateInfo));
+            Logger.AddError(string.Format("Cannot add created entity {0} to simulation: entity engine instance is null at {1}!", templateObject.Name, EngineAPIManager.Instance.CurrentFSMStateInfo));
             flag3 = false;
           }
           if (flag1 && parentEntity != null)
           {
             if (parentEntity.Instance == null)
             {
-              Logger.AddError(string.Format("Cannot add created entity {0} to hierarchy in simulation: parent entity instance is null at {1}!", (object) templateObject.Name, (object) EngineAPIManager.Instance.CurrentFSMStateInfo));
+              Logger.AddError(string.Format("Cannot add created entity {0} to hierarchy in simulation: parent entity instance is null at {1}!", templateObject.Name, EngineAPIManager.Instance.CurrentFSMStateInfo));
               flag3 = false;
             }
             else
@@ -55,14 +55,14 @@ namespace PLVirtualMachine
             try
             {
               if (parentEntity != null & flag1)
-                parentEntity.AddChildEntity((VMBaseEntity) vmEntity);
+                parentEntity.AddChildEntity(vmEntity);
               else if (!flag1)
-                VirtualMachine.Instance.GameRootEntity.AddChildEntity((VMBaseEntity) vmEntity);
+                VirtualMachine.Instance.GameRootEntity.AddChildEntity(vmEntity);
               ServiceCache.Simulation.Add(vmEntity.Instance, parent);
             }
             catch (Exception ex)
             {
-              Logger.AddError(string.Format("Cannot add created entity {0} to simulation: {1} at {2}", (object) templateObject.Name, (object) ex.ToString(), (object) EngineAPIManager.Instance.CurrentFSMStateInfo));
+              Logger.AddError(string.Format("Cannot add created entity {0} to simulation: {1} at {2}", templateObject.Name, ex, EngineAPIManager.Instance.CurrentFSMStateInfo));
             }
             bool flag4 = true;
             if (!flag1 && ((VMLogicObject) templateObject).Static && !((VMWorldObject) templateObject).Instantiated)
@@ -80,10 +80,10 @@ namespace PLVirtualMachine
         }
       }
       else if (VirtualMachine.Instance.GameRootEntity != null)
-        VirtualMachine.Instance.GameRootEntity.AddChildEntity((VMBaseEntity) vmEntity);
+        VirtualMachine.Instance.GameRootEntity.AddChildEntity(vmEntity);
       else
-        Logger.AddError(string.Format("Entity {0} creation error: this entity must be creating as game object (not hierarchy)!", (object) vmEntity.Name));
-      vmEntity.OnCreate(false);
+        Logger.AddError(string.Format("Entity {0} creation error: this entity must be creating as game object (not hierarchy)!", vmEntity.Name));
+      vmEntity.OnCreate();
       bool flag5 = ((VMLogicObject) templateObject).StateGraph != null;
       if (flag5 || flag2 && vmEntity != null)
       {
@@ -93,14 +93,14 @@ namespace PLVirtualMachine
           if (flag5 & flag1)
             entityFsm.Active = true;
           else if (vmEntity.Instantiated)
-            CreateEntityUtility.InitializeObject(vmEntity, (VMLogicObject) templateObject, entityFsm);
+            InitializeObject(vmEntity, (VMLogicObject) templateObject, entityFsm);
         }
         if (flag2 && vmEntity.IsWorldEntity && vmEntity.Instantiated)
           VirtualMachine.Instance.SpawnObject(vmEntity, spawnMilestoneRealEntity);
-        return (VMBaseEntity) vmEntity;
+        return vmEntity;
       }
-      CreateEntityUtility.InitializeObject(vmEntity, (VMLogicObject) templateObject);
-      return (VMBaseEntity) null;
+      InitializeObject(vmEntity, (VMLogicObject) templateObject);
+      return null;
     }
 
     public static void InitializeObject(
@@ -119,10 +119,10 @@ namespace PLVirtualMachine
         if (entity == null)
           return;
         if (!entity.Instantiated)
-          Logger.AddError(string.Format("{0} initialize error: Initializing not instantiated objects not allowed at {1}!", (object) templateObject.Name, (object) EngineAPIManager.Instance.CurrentFSMStateInfo));
+          Logger.AddError(string.Format("{0} initialize error: Initializing not instantiated objects not allowed at {1}!", templateObject.Name, EngineAPIManager.Instance.CurrentFSMStateInfo));
         else if (typeof (IWorldObject).IsAssignableFrom(templateObject.GetType()) && entity.Instance == null)
         {
-          Logger.AddError(string.Format(" Object {0} hasn't engine instance at {1}", (object) entity.Name, (object) EngineAPIManager.Instance.CurrentFSMStateInfo));
+          Logger.AddError(string.Format(" Object {0} hasn't engine instance at {1}", entity.Name, EngineAPIManager.Instance.CurrentFSMStateInfo));
         }
         else
         {
@@ -131,16 +131,16 @@ namespace PLVirtualMachine
             flag = entity.IsEngineRoot;
           if (flag)
             return;
-          IBlueprint template = (IBlueprint) null;
+          IBlueprint template = null;
           if (templateObject.IsVirtual)
             template = VirtualMachine.Instance.GetVirtualObjectBaseTemplate(entity);
           foreach (VMComponent component in entity.Components)
-            CreateEntityUtility.ComputeComponent(entity, templateObject, fsm, template, component);
+            ComputeComponent(entity, templateObject, fsm, template, component);
         }
       }
       catch (Exception ex)
       {
-        Logger.AddError(string.Format("Initialization object {0}  error: {1} at {2} !", (object) entity.Name, (object) ex, (object) EngineAPIManager.Instance.CurrentFSMStateInfo));
+        Logger.AddError(string.Format("Initialization object {0}  error: {1} at {2} !", entity.Name, ex, EngineAPIManager.Instance.CurrentFSMStateInfo));
       }
     }
 
@@ -152,7 +152,7 @@ namespace PLVirtualMachine
       VMComponent component)
     {
       Dictionary<string, IFunctionalComponent> functionalComponents = templateObject.FunctionalComponents;
-      IFunctionalComponent staticComponent = (IFunctionalComponent) null;
+      IFunctionalComponent staticComponent = null;
       foreach (KeyValuePair<string, IFunctionalComponent> keyValuePair in functionalComponents)
       {
         IFunctionalComponent functionalComponent = keyValuePair.Value;
@@ -164,7 +164,7 @@ namespace PLVirtualMachine
       }
       if (staticComponent == null)
         return;
-      CreateEntityUtility.ComputeProperties(entity, templateObject, fsm, template, component, staticComponent);
+      ComputeProperties(entity, templateObject, fsm, template, component, staticComponent);
     }
 
     private static void ComputeProperties(
@@ -180,7 +180,7 @@ namespace PLVirtualMachine
       for (int index = 0; index < functionalComponentByName.Properties.Count; ++index)
       {
         APIPropertyInfo property = functionalComponentByName.Properties[index];
-        CreateEntityUtility.ComputeProperty(entity, templateObject, fsm, property.Attribute, property.PropertyInfo, staticComponent, template, component);
+        ComputeProperty(entity, templateObject, fsm, property.Attribute, property.PropertyInfo, staticComponent, template, component);
       }
     }
 
@@ -218,28 +218,28 @@ namespace PLVirtualMachine
           object obj = CreateHierarchyHelper.ConvertEditorTypeToEngineType(property.Value, propertyInfo.PropertyType, property.Type);
           if (VMGlobalStorageManager.Instance != null)
           {
-            string fieldKey = templateObject.BaseGuid.ToString() + property.Name;
+            string fieldKey = templateObject.BaseGuid + property.Name;
             if (VMGlobalStorageManager.Instance.TemplateRTDataUpdated)
             {
               ITextRef templateRtFieldValue = VMGlobalStorageManager.Instance.GetTemplateRTFieldValue(fieldKey);
               if (templateRtFieldValue != null)
-                obj = (object) templateRtFieldValue;
+                obj = templateRtFieldValue;
             }
           }
           try
           {
             if (obj == null)
               return;
-            propertyInfo.SetValue((object) component, obj, (object[]) null);
+            propertyInfo.SetValue(component, obj, null);
           }
           catch (Exception ex)
           {
-            Logger.AddError(string.Format("Object {0} property {1} set error: {2} at {3}", (object) entity.Name, (object) propertyInfo.Name, (object) ex, (object) EngineAPIManager.Instance.CurrentFSMStateInfo));
+            Logger.AddError(string.Format("Object {0} property {1} set error: {2} at {3}", entity.Name, propertyInfo.Name, ex, EngineAPIManager.Instance.CurrentFSMStateInfo));
           }
         }
         catch (Exception ex)
         {
-          Logger.AddError(string.Format("Object {0} property {1} init error: {2} at {3}", (object) entity.Name, (object) propertyInfo.Name, (object) ex, (object) EngineAPIManager.Instance.CurrentFSMStateInfo));
+          Logger.AddError(string.Format("Object {0} property {1} init error: {2} at {3}", entity.Name, propertyInfo.Name, ex, EngineAPIManager.Instance.CurrentFSMStateInfo));
         }
       }
       else
@@ -252,7 +252,7 @@ namespace PLVirtualMachine
         }
         catch (Exception ex)
         {
-          Logger.AddError(string.Format("Object {0} property {1} set error: {2} at {3}", (object) entity.Name, (object) propertyInfo.Name, (object) ex, (object) EngineAPIManager.Instance.CurrentFSMStateInfo));
+          Logger.AddError(string.Format("Object {0} property {1} set error: {2} at {3}", entity.Name, propertyInfo.Name, ex, EngineAPIManager.Instance.CurrentFSMStateInfo));
         }
       }
     }

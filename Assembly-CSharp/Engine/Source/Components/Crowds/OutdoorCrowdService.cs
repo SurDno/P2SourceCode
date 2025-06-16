@@ -2,11 +2,10 @@
 using Engine.Source.Services;
 using Engine.Source.Settings.External;
 using Inspectors;
-using UnityEngine;
 
 namespace Engine.Source.Components.Crowds
 {
-  [GameService(new System.Type[] {typeof (OutdoorCrowdService)})]
+  [GameService(typeof (OutdoorCrowdService))]
   public class OutdoorCrowdService
   {
     [Inspected]
@@ -30,27 +29,27 @@ namespace Engine.Source.Components.Crowds
 
     private int GetMaxEntities(AreaEnum area)
     {
-      return this.IsLimit(area) ? this.MaxLimitEntityCount : int.MaxValue;
+      return IsLimit(area) ? MaxLimitEntityCount : int.MaxValue;
     }
 
-    public bool CanCreateEntity(AreaEnum area) => this.limitEntityCount < this.GetMaxEntities(area);
+    public bool CanCreateEntity(AreaEnum area) => limitEntityCount < GetMaxEntities(area);
 
     public void OnCreateEntity(AreaEnum area)
     {
-      if (!this.CanCreateEntity(area))
+      if (!CanCreateEntity(area))
         Debug.LogError((object) "Error crowd entity count, context : Outdoor");
-      if (this.IsLimit(area))
-        ++this.limitEntityCount;
+      if (IsLimit(area))
+        ++limitEntityCount;
       else
-        ++this.entityCount;
+        ++entityCount;
     }
 
     public void OnDestroyEntity(AreaEnum area)
     {
-      if (this.IsLimit(area))
-        --this.limitEntityCount;
+      if (IsLimit(area))
+        --limitEntityCount;
       else
-        --this.entityCount;
+        --entityCount;
     }
   }
 }

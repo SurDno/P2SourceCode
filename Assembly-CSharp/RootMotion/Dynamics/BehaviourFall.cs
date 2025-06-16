@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using UnityEngine;
 
 namespace RootMotion.Dynamics
 {
@@ -37,7 +36,7 @@ namespace RootMotion.Dynamics
     [Tooltip("If the velocity of the pelvis falls below this value, can end the behaviour.")]
     public float maxEndVelocity = 0.5f;
     [Tooltip("Event triggered when all end conditions are met.")]
-    public BehaviourBase.PuppetEvent onEnd;
+    public PuppetEvent onEnd;
     private float timer;
     private bool endTriggered;
 
@@ -55,91 +54,91 @@ namespace RootMotion.Dynamics
 
     protected override void OnActivate()
     {
-      this.forceActive = true;
+      forceActive = true;
       this.StopAllCoroutines();
-      this.StartCoroutine(this.SmoothActivate());
+      this.StartCoroutine(SmoothActivate());
     }
 
-    protected override void OnDeactivate() => this.forceActive = false;
+    protected override void OnDeactivate() => forceActive = false;
 
     public override void OnReactivate()
     {
-      this.timer = 0.0f;
-      this.endTriggered = false;
+      timer = 0.0f;
+      endTriggered = false;
     }
 
     private IEnumerator SmoothActivate()
     {
-      this.timer = 0.0f;
-      this.endTriggered = false;
-      this.puppetMaster.targetAnimator.CrossFadeInFixedTime(this.stateName, this.transitionDuration, this.layer, this.fixedTime);
-      Muscle[] muscleArray1 = this.puppetMaster.muscles;
+      timer = 0.0f;
+      endTriggered = false;
+      puppetMaster.targetAnimator.CrossFadeInFixedTime(stateName, transitionDuration, layer, fixedTime);
+      Muscle[] muscleArray1 = puppetMaster.muscles;
       for (int index = 0; index < muscleArray1.Length; ++index)
       {
         Muscle m = muscleArray1[index];
         m.state.pinWeightMlp = 0.0f;
         m.rigidbody.velocity = m.mappedVelocity;
         m.rigidbody.angularVelocity = m.mappedAngularVelocity;
-        m = (Muscle) null;
+        m = null;
       }
-      muscleArray1 = (Muscle[]) null;
+      muscleArray1 = null;
       float fader = 0.0f;
-      while ((double) fader < 1.0)
+      while (fader < 1.0)
       {
         fader += Time.deltaTime;
-        Muscle[] muscleArray2 = this.puppetMaster.muscles;
+        Muscle[] muscleArray2 = puppetMaster.muscles;
         for (int index = 0; index < muscleArray2.Length; ++index)
         {
           Muscle m = muscleArray2[index];
           m.state.pinWeightMlp -= Time.deltaTime;
-          m.state.mappingWeightMlp += Time.deltaTime * this.blendMappingSpeed;
-          m = (Muscle) null;
+          m.state.mappingWeightMlp += Time.deltaTime * blendMappingSpeed;
+          m = null;
         }
-        muscleArray2 = (Muscle[]) null;
-        yield return (object) null;
+        muscleArray2 = null;
+        yield return null;
       }
     }
 
     protected override void OnFixedUpdate()
     {
-      if ((int) this.raycastLayers == -1)
+      if ((int) raycastLayers == -1)
         Debug.LogWarning((object) "BehaviourFall has no layers to raycast to.", (Object) this.transform);
-      float blendTarget = this.GetBlendTarget(this.GetGroundHeight());
-      this.puppetMaster.targetAnimator.SetFloat(this.blendParameter, Mathf.MoveTowards(this.puppetMaster.targetAnimator.GetFloat(this.blendParameter), blendTarget, Time.deltaTime * this.blendSpeed));
-      this.timer += Time.deltaTime;
-      if (this.endTriggered || !this.canEnd || (double) this.timer < (double) this.minTime || this.puppetMaster.isBlending || (double) this.puppetMaster.muscles[0].rigidbody.velocity.magnitude >= (double) this.maxEndVelocity)
+      float blendTarget = GetBlendTarget(GetGroundHeight());
+      puppetMaster.targetAnimator.SetFloat(blendParameter, Mathf.MoveTowards(puppetMaster.targetAnimator.GetFloat(blendParameter), blendTarget, Time.deltaTime * blendSpeed));
+      timer += Time.deltaTime;
+      if (endTriggered || !canEnd || timer < (double) minTime || puppetMaster.isBlending || (double) puppetMaster.muscles[0].rigidbody.velocity.magnitude >= maxEndVelocity)
         return;
-      this.endTriggered = true;
-      this.onEnd.Trigger(this.puppetMaster);
+      endTriggered = true;
+      onEnd.Trigger(puppetMaster);
     }
 
     protected override void OnLateUpdate()
     {
-      this.puppetMaster.targetRoot.position += this.puppetMaster.muscles[0].transform.position - this.puppetMaster.muscles[0].target.position;
-      this.GroundTarget(this.raycastLayers);
+      puppetMaster.targetRoot.position += puppetMaster.muscles[0].transform.position - puppetMaster.muscles[0].target.position;
+      GroundTarget(raycastLayers);
     }
 
     public override void Resurrect()
     {
-      foreach (Muscle muscle in this.puppetMaster.muscles)
+      foreach (Muscle muscle in puppetMaster.muscles)
         muscle.state.pinWeightMlp = 0.0f;
     }
 
     private float GetBlendTarget(float groundHeight)
     {
-      if ((double) groundHeight > (double) this.writheHeight)
+      if (groundHeight > (double) writheHeight)
         return 1f;
-      Vector3 vertical = V3Tools.ExtractVertical(this.puppetMaster.muscles[0].rigidbody.velocity, this.puppetMaster.targetRoot.up, 1f);
+      Vector3 vertical = V3Tools.ExtractVertical(puppetMaster.muscles[0].rigidbody.velocity, puppetMaster.targetRoot.up, 1f);
       float num = vertical.magnitude;
-      if ((double) Vector3.Dot(vertical, this.puppetMaster.targetRoot.up) < 0.0)
+      if ((double) Vector3.Dot(vertical, puppetMaster.targetRoot.up) < 0.0)
         num = -num;
-      return (double) num > (double) this.writheYVelocity ? 1f : 0.0f;
+      return num > (double) writheYVelocity ? 1f : 0.0f;
     }
 
     private float GetGroundHeight()
     {
       RaycastHit hitInfo = new RaycastHit();
-      return Physics.Raycast(this.puppetMaster.muscles[0].rigidbody.position, -this.puppetMaster.targetRoot.up, out hitInfo, 100f, (int) this.raycastLayers) ? hitInfo.distance : float.PositiveInfinity;
+      return Physics.Raycast(puppetMaster.muscles[0].rigidbody.position, -puppetMaster.targetRoot.up, out hitInfo, 100f, (int) raycastLayers) ? hitInfo.distance : float.PositiveInfinity;
     }
   }
 }

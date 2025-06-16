@@ -6,15 +6,15 @@ namespace UnityEngine.PostProcessing
   public class MotionBlurModel : PostProcessingModel
   {
     [SerializeField]
-    private MotionBlurModel.Settings m_Settings = MotionBlurModel.Settings.defaultSettings;
+    private Settings m_Settings = Settings.defaultSettings;
 
-    public MotionBlurModel.Settings settings
+    public Settings settings
     {
-      get => this.m_Settings;
-      set => this.m_Settings = value;
+      get => m_Settings;
+      set => m_Settings = value;
     }
 
-    public override void Reset() => this.m_Settings = MotionBlurModel.Settings.defaultSettings;
+    public override void Reset() => m_Settings = Settings.defaultSettings;
 
     [Serializable]
     public struct Settings
@@ -29,12 +29,11 @@ namespace UnityEngine.PostProcessing
       [Tooltip("The strength of multiple frame blending. The opacity of preceding frames are determined from this coefficient and time differences.")]
       public float frameBlending;
 
-      public static MotionBlurModel.Settings defaultSettings
+      public static Settings defaultSettings
       {
         get
         {
-          return new MotionBlurModel.Settings()
-          {
+          return new Settings {
             shutterAngle = 270f,
             sampleCount = 10,
             frameBlending = 0.0f

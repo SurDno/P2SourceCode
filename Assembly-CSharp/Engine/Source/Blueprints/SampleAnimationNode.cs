@@ -1,8 +1,7 @@
-﻿using FlowCanvas;
+﻿using System.Collections;
+using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
-using System.Collections;
-using UnityEngine;
 
 namespace Engine.Source.Blueprints
 {
@@ -16,30 +15,30 @@ namespace Engine.Source.Blueprints
     protected override void RegisterPorts()
     {
       base.RegisterPorts();
-      FlowOutput output = this.AddFlowOutput("Out");
-      this.AddFlowInput("In", (FlowHandler) (() =>
+      FlowOutput output = AddFlowOutput("Out");
+      AddFlowInput("In", () =>
       {
-        AnimationClip animationClip = this.animationClipInput.value;
-        GameObject go = this.goInput.value;
+        AnimationClip animationClip = animationClipInput.value;
+        GameObject go = goInput.value;
         Debug.LogError((object) ("TEST, before : " + (object) go.transform.position));
-        animationClip.SampleAnimation(go, this.timeInput.value);
-        this.StartCoroutine(this.Delay(output));
-      }));
-      this.animationClipInput = this.AddValueInput<AnimationClip>("AnimationClip");
-      this.goInput = this.AddValueInput<GameObject>("Target");
-      this.timeInput = this.AddValueInput<float>("Time");
+        animationClip.SampleAnimation(go, timeInput.value);
+        StartCoroutine(Delay(output));
+      });
+      animationClipInput = AddValueInput<AnimationClip>("AnimationClip");
+      goInput = AddValueInput<GameObject>("Target");
+      timeInput = AddValueInput<float>("Time");
     }
 
     private IEnumerator Delay(FlowOutput output)
     {
-      yield return (object) null;
-      yield return (object) null;
-      yield return (object) null;
-      yield return (object) null;
-      yield return (object) null;
-      yield return (object) null;
-      yield return (object) null;
-      Debug.LogError((object) ("TEST, after : " + (object) this.goInput.value.transform.position));
+      yield return null;
+      yield return null;
+      yield return null;
+      yield return null;
+      yield return null;
+      yield return null;
+      yield return null;
+      Debug.LogError((object) ("TEST, after : " + (object) goInput.value.transform.position));
       output.Call();
     }
   }

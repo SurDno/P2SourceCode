@@ -1,20 +1,18 @@
 ﻿using Engine.Impl.UI.Controls;
-using UnityEngine;
-using UnityEngine.UI;
 
 public class CreditsItem : MonoBehaviour
 {
   [SerializeField]
   private StringView[] lineViews;
-  private int count = 0;
+  private int count;
 
   public void AddLine(string line)
   {
     line = line.Replace("\\n", "\n");
-    StringView lineView = this.lineViews[this.count];
+    StringView lineView = lineViews[count];
     lineView.StringValue = line;
     lineView.gameObject.SetActive(true);
-    ++this.count;
+    ++count;
   }
 
   public float UpdateBottomEnd()
@@ -29,7 +27,7 @@ public class CreditsItem : MonoBehaviour
     return preferredHeight - transform.anchoredPosition.y;
   }
 
-  public bool IsFull() => this.count >= this.lineViews.Length;
+  public bool IsFull() => count >= lineViews.Length;
 
   public void SetPosition(float value)
   {

@@ -3,7 +3,6 @@ using Engine.Common.Types;
 using Engine.Impl.Services;
 using Engine.Impl.UI.Controls;
 using Engine.Source.Components;
-using UnityEngine;
 
 public class TitleItemView : ItemView
 {
@@ -13,15 +12,15 @@ public class TitleItemView : ItemView
 
   public override StorableComponent Storable
   {
-    get => this.storable;
+    get => storable;
     set
     {
-      if (this.storable == value)
+      if (storable == value)
         return;
-      this.storable = value;
-      if (!((Object) this.view != (Object) null))
+      storable = value;
+      if (!((Object) view != (Object) null))
         return;
-      this.view.StringValue = ServiceLocator.GetService<LocalizationService>().GetText(this.storable != null ? this.storable.Title : LocalizedText.Empty);
+      view.StringValue = ServiceLocator.GetService<LocalizationService>().GetText(storable != null ? storable.Title : LocalizedText.Empty);
     }
   }
 }

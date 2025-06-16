@@ -1,4 +1,5 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons.Cloneable;
 using Engine.Common.Commons.Converters;
@@ -6,7 +7,6 @@ using Engine.Common.Components.Parameters;
 using Engine.Source.Commons.Abilities;
 using Engine.Source.Commons.Effects;
 using Engine.Source.Effects;
-using System;
 
 namespace Engine.Source.Proxies
 {
@@ -21,57 +21,57 @@ namespace Engine.Source.Proxies
     public object Clone()
     {
       IncreaseThirstEffect_Generated instance = Activator.CreateInstance<IncreaseThirstEffect_Generated>();
-      this.CopyTo((object) instance);
-      return (object) instance;
+      CopyTo(instance);
+      return instance;
     }
 
     public void CopyTo(object target2)
     {
       IncreaseThirstEffect_Generated thirstEffectGenerated = (IncreaseThirstEffect_Generated) target2;
-      thirstEffectGenerated.queue = this.queue;
-      thirstEffectGenerated.enable = this.enable;
-      thirstEffectGenerated.staminaParameterName = this.staminaParameterName;
-      thirstEffectGenerated.thirstParameterName = this.thirstParameterName;
-      thirstEffectGenerated.runParameterName = this.runParameterName;
-      thirstEffectGenerated.lowStaminaParameterName = this.lowStaminaParameterName;
-      thirstEffectGenerated.durationType = this.durationType;
-      thirstEffectGenerated.realTime = this.realTime;
-      thirstEffectGenerated.duration = this.duration;
-      thirstEffectGenerated.interval = this.interval;
-      thirstEffectGenerated.increaseThirstStepLowStaminaValue = this.increaseThirstStepLowStaminaValue;
-      thirstEffectGenerated.increaseThirstStepMiddleStaminaValue = this.increaseThirstStepMiddleStaminaValue;
+      thirstEffectGenerated.queue = queue;
+      thirstEffectGenerated.enable = enable;
+      thirstEffectGenerated.staminaParameterName = staminaParameterName;
+      thirstEffectGenerated.thirstParameterName = thirstParameterName;
+      thirstEffectGenerated.runParameterName = runParameterName;
+      thirstEffectGenerated.lowStaminaParameterName = lowStaminaParameterName;
+      thirstEffectGenerated.durationType = durationType;
+      thirstEffectGenerated.realTime = realTime;
+      thirstEffectGenerated.duration = duration;
+      thirstEffectGenerated.interval = interval;
+      thirstEffectGenerated.increaseThirstStepLowStaminaValue = increaseThirstStepLowStaminaValue;
+      thirstEffectGenerated.increaseThirstStepMiddleStaminaValue = increaseThirstStepMiddleStaminaValue;
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.WriteEnum<ParameterEffectQueueEnum>(writer, "Queue", this.queue);
-      DefaultDataWriteUtility.Write(writer, "Enable", this.enable);
-      DefaultDataWriteUtility.WriteEnum<ParameterNameEnum>(writer, "StaminaParameterName", this.staminaParameterName);
-      DefaultDataWriteUtility.WriteEnum<ParameterNameEnum>(writer, "ThirstParameterName", this.thirstParameterName);
-      DefaultDataWriteUtility.WriteEnum<ParameterNameEnum>(writer, "RunParameterName", this.runParameterName);
-      DefaultDataWriteUtility.WriteEnum<ParameterNameEnum>(writer, "LowStaminaParameterName", this.lowStaminaParameterName);
-      DefaultDataWriteUtility.WriteEnum<DurationTypeEnum>(writer, "DurationType", this.durationType);
-      DefaultDataWriteUtility.Write(writer, "RealTime", this.realTime);
-      DefaultDataWriteUtility.Write(writer, "Duration", this.duration);
-      DefaultDataWriteUtility.Write(writer, "Interval", this.interval);
-      DefaultDataWriteUtility.Write(writer, "IncreaseThirstStepLowStaminaValue", this.increaseThirstStepLowStaminaValue);
-      DefaultDataWriteUtility.Write(writer, "IncreaseThirstStepMiddleStaminaValue", this.increaseThirstStepMiddleStaminaValue);
+      DefaultDataWriteUtility.WriteEnum(writer, "Queue", queue);
+      DefaultDataWriteUtility.Write(writer, "Enable", enable);
+      DefaultDataWriteUtility.WriteEnum(writer, "StaminaParameterName", staminaParameterName);
+      DefaultDataWriteUtility.WriteEnum(writer, "ThirstParameterName", thirstParameterName);
+      DefaultDataWriteUtility.WriteEnum(writer, "RunParameterName", runParameterName);
+      DefaultDataWriteUtility.WriteEnum(writer, "LowStaminaParameterName", lowStaminaParameterName);
+      DefaultDataWriteUtility.WriteEnum(writer, "DurationType", durationType);
+      DefaultDataWriteUtility.Write(writer, "RealTime", realTime);
+      DefaultDataWriteUtility.Write(writer, "Duration", duration);
+      DefaultDataWriteUtility.Write(writer, "Interval", interval);
+      DefaultDataWriteUtility.Write(writer, "IncreaseThirstStepLowStaminaValue", increaseThirstStepLowStaminaValue);
+      DefaultDataWriteUtility.Write(writer, "IncreaseThirstStepMiddleStaminaValue", increaseThirstStepMiddleStaminaValue);
     }
 
     public void DataRead(IDataReader reader, Type type)
     {
-      this.queue = DefaultDataReadUtility.ReadEnum<ParameterEffectQueueEnum>(reader, "Queue");
-      this.enable = DefaultDataReadUtility.Read(reader, "Enable", this.enable);
-      this.staminaParameterName = DefaultDataReadUtility.ReadEnum<ParameterNameEnum>(reader, "StaminaParameterName");
-      this.thirstParameterName = DefaultDataReadUtility.ReadEnum<ParameterNameEnum>(reader, "ThirstParameterName");
-      this.runParameterName = DefaultDataReadUtility.ReadEnum<ParameterNameEnum>(reader, "RunParameterName");
-      this.lowStaminaParameterName = DefaultDataReadUtility.ReadEnum<ParameterNameEnum>(reader, "LowStaminaParameterName");
-      this.durationType = DefaultDataReadUtility.ReadEnum<DurationTypeEnum>(reader, "DurationType");
-      this.realTime = DefaultDataReadUtility.Read(reader, "RealTime", this.realTime);
-      this.duration = DefaultDataReadUtility.Read(reader, "Duration", this.duration);
-      this.interval = DefaultDataReadUtility.Read(reader, "Interval", this.interval);
-      this.increaseThirstStepLowStaminaValue = DefaultDataReadUtility.Read(reader, "IncreaseThirstStepLowStaminaValue", this.increaseThirstStepLowStaminaValue);
-      this.increaseThirstStepMiddleStaminaValue = DefaultDataReadUtility.Read(reader, "IncreaseThirstStepMiddleStaminaValue", this.increaseThirstStepMiddleStaminaValue);
+      queue = DefaultDataReadUtility.ReadEnum<ParameterEffectQueueEnum>(reader, "Queue");
+      enable = DefaultDataReadUtility.Read(reader, "Enable", enable);
+      staminaParameterName = DefaultDataReadUtility.ReadEnum<ParameterNameEnum>(reader, "StaminaParameterName");
+      thirstParameterName = DefaultDataReadUtility.ReadEnum<ParameterNameEnum>(reader, "ThirstParameterName");
+      runParameterName = DefaultDataReadUtility.ReadEnum<ParameterNameEnum>(reader, "RunParameterName");
+      lowStaminaParameterName = DefaultDataReadUtility.ReadEnum<ParameterNameEnum>(reader, "LowStaminaParameterName");
+      durationType = DefaultDataReadUtility.ReadEnum<DurationTypeEnum>(reader, "DurationType");
+      realTime = DefaultDataReadUtility.Read(reader, "RealTime", realTime);
+      duration = DefaultDataReadUtility.Read(reader, "Duration", duration);
+      interval = DefaultDataReadUtility.Read(reader, "Interval", interval);
+      increaseThirstStepLowStaminaValue = DefaultDataReadUtility.Read(reader, "IncreaseThirstStepLowStaminaValue", increaseThirstStepLowStaminaValue);
+      increaseThirstStepMiddleStaminaValue = DefaultDataReadUtility.Read(reader, "IncreaseThirstStepMiddleStaminaValue", increaseThirstStepMiddleStaminaValue);
     }
   }
 }

@@ -1,9 +1,9 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons.Cloneable;
 using Engine.Source.Components;
 using Scripts.Tools.Serializations.Converters;
-using System;
 
 namespace Engine.Source.Proxies
 {
@@ -18,27 +18,27 @@ namespace Engine.Source.Proxies
     public object Clone()
     {
       PositionComponent_Generated instance = Activator.CreateInstance<PositionComponent_Generated>();
-      this.CopyTo((object) instance);
-      return (object) instance;
+      CopyTo(instance);
+      return instance;
     }
 
     public void CopyTo(object target2)
     {
       PositionComponent_Generated componentGenerated = (PositionComponent_Generated) target2;
-      componentGenerated.position = this.position;
-      componentGenerated.rotation = this.rotation;
+      componentGenerated.position = position;
+      componentGenerated.rotation = rotation;
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      UnityDataWriteUtility.Write(writer, "Position", this.position);
-      UnityDataWriteUtility.Write(writer, "Rotation", this.rotation);
+      UnityDataWriteUtility.Write(writer, "Position", position);
+      UnityDataWriteUtility.Write(writer, "Rotation", rotation);
     }
 
     public void DataRead(IDataReader reader, Type type)
     {
-      this.position = UnityDataReadUtility.Read(reader, "Position", this.position);
-      this.rotation = UnityDataReadUtility.Read(reader, "Rotation", this.rotation);
+      position = UnityDataReadUtility.Read(reader, "Position", position);
+      rotation = UnityDataReadUtility.Read(reader, "Rotation", rotation);
     }
   }
 }

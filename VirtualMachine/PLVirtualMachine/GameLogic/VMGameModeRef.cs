@@ -1,4 +1,5 @@
-﻿using PLVirtualMachine.Common;
+﻿using System;
+using PLVirtualMachine.Common;
 using PLVirtualMachine.Common.Data;
 using PLVirtualMachine.Common.EngineAPI;
 
@@ -8,7 +9,7 @@ namespace PLVirtualMachine.GameLogic
   [VMFactory(typeof (IGameModeRef))]
   public class VMGameModeRef : BaseRef, IGameModeRef, IRef, IVariable, INamed, IVMStringSerializable
   {
-    public void Initialize(IGameMode gameMode) => this.LoadStaticInstance((IObject) gameMode);
+    public void Initialize(IGameMode gameMode) => LoadStaticInstance(gameMode);
 
     public override EContextVariableCategory Category
     {
@@ -19,16 +20,16 @@ namespace PLVirtualMachine.GameLogic
     {
       get
       {
-        if (this.StaticInstance == null && this.BaseGuid > 0UL)
-          this.LoadStaticInstance(IStaticDataContainer.StaticDataContainer.GetObjectByGuid(this.BaseGuid));
-        return (IGameMode) this.StaticInstance;
+        if (StaticInstance == null && BaseGuid > 0UL)
+          LoadStaticInstance(IStaticDataContainer.StaticDataContainer.GetObjectByGuid(BaseGuid));
+        return (IGameMode) StaticInstance;
       }
     }
 
     public override VMType Type => new VMType(typeof (IGameModeRef));
 
-    public override bool Empty => this.GameMode == null && base.Empty;
+    public override bool Empty => GameMode == null && base.Empty;
 
-    protected override System.Type NeedInstanceType => typeof (IGameMode);
+    protected override Type NeedInstanceType => typeof (IGameMode);
   }
 }

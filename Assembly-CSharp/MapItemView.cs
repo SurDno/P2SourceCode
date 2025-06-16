@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.UI;
+﻿using System;
 
 public class MapItemView : 
   MonoBehaviour,
@@ -21,41 +19,41 @@ public class MapItemView :
   private Image hoverImage;
   private float zoom;
 
-  public IMapItem Item => this.item;
+  public IMapItem Item => item;
 
-  public bool IsRegion => this.isRegion;
+  public bool IsRegion => isRegion;
 
   public Vector2 WorldPosition => (Vector2) this.transform.TransformPoint(Vector3.zero);
 
   public void SetHightlight(bool value)
   {
-    if (this.highlighted == value)
+    if (highlighted == value)
       return;
-    this.highlighted = value;
-    if (this.highlighted)
-      this.CreateHoverImage();
-    else if ((UnityEngine.Object) this.hoverImage != (UnityEngine.Object) null)
+    highlighted = value;
+    if (highlighted)
+      CreateHoverImage();
+    else if ((UnityEngine.Object) hoverImage != (UnityEngine.Object) null)
     {
-      UnityEngine.Object.Destroy((UnityEngine.Object) this.hoverImage.gameObject);
-      this.hoverImage = (Image) null;
+      UnityEngine.Object.Destroy((UnityEngine.Object) hoverImage.gameObject);
+      hoverImage = (Image) null;
     }
-    this.UpdateColors();
+    UpdateColors();
   }
 
   private void HoverEnd()
   {
-    if (!this.active)
+    if (!active)
       return;
-    this.mapView.HideInfo(this);
-    this.active = false;
+    mapView.HideInfo(this);
+    active = false;
   }
 
   private void HoverStart()
   {
-    if (this.active)
+    if (active)
       return;
-    this.mapView.ShowInfo(this);
-    this.active = true;
+    mapView.ShowInfo(this);
+    active = true;
   }
 
   public void Initialize(
@@ -67,9 +65,9 @@ public class MapItemView :
     Color nearBaseColor,
     Color nearActiveColor)
   {
-    this.active = false;
-    this.isRegion = item.Resource.Kind == MapPlaceholderKind.Region;
-    this.zoom = 0.0f;
+    active = false;
+    isRegion = item.Resource.Kind == MapPlaceholderKind.Region;
+    zoom = 0.0f;
     this.mapView = mapView;
     this.item = item;
     this.activeSprite = activeSprite;
@@ -81,39 +79,39 @@ public class MapItemView :
 
   public void Initialize(MapWindow mapView, IMapItem item, Color baseColor, Color activeColor)
   {
-    this.Initialize(mapView, item, (Sprite) null, baseColor, activeColor, baseColor, activeColor);
+    Initialize(mapView, item, (Sprite) null, baseColor, activeColor, baseColor, activeColor);
   }
 
   public void OnZoomChange(float value)
   {
-    this.zoom = value;
-    this.UpdateColors();
+    zoom = value;
+    UpdateColors();
   }
 
   public void UpdateColors()
   {
-    if (this.isRegion)
+    if (isRegion)
     {
-      this.GetComponent<Image>().color = Color.Lerp(this.baseColor, this.nearBaseColor, this.zoom);
-      if (!((UnityEngine.Object) this.hoverImage != (UnityEngine.Object) null))
+      this.GetComponent<Image>().color = Color.Lerp(baseColor, nearBaseColor, zoom);
+      if (!((UnityEngine.Object) hoverImage != (UnityEngine.Object) null))
         return;
-      this.hoverImage.color = Color.Lerp(this.activeColor, this.nearActiveColor, this.zoom);
+      hoverImage.color = Color.Lerp(activeColor, nearActiveColor, zoom);
     }
     else
-      this.GetComponent<Image>().color = this.highlighted ? Color.Lerp(this.activeColor, this.nearActiveColor, this.zoom) : Color.Lerp(this.baseColor, this.nearBaseColor, this.zoom);
+      this.GetComponent<Image>().color = highlighted ? Color.Lerp(activeColor, nearActiveColor, zoom) : Color.Lerp(baseColor, nearBaseColor, zoom);
   }
 
-  public void OnPointerEnter(PointerEventData eventData) => this.HoverStart();
+  public void OnPointerEnter(PointerEventData eventData) => HoverStart();
 
-  public void OnPointerExit(PointerEventData eventData) => this.HoverEnd();
+  public void OnPointerExit(PointerEventData eventData) => HoverEnd();
 
-  private void OnDisable() => this.HoverEnd();
+  private void OnDisable() => HoverEnd();
 
   private void CreateHoverImage()
   {
-    if ((UnityEngine.Object) this.activeSprite == (UnityEngine.Object) null)
+    if ((UnityEngine.Object) activeSprite == (UnityEngine.Object) null)
       return;
-    GameObject gameObject = new GameObject("Hover", new System.Type[2]
+    GameObject gameObject = new GameObject("Hover", new Type[2]
     {
       typeof (RectTransform),
       typeof (Image)
@@ -126,9 +124,9 @@ public class MapItemView :
     transform.anchorMax = Vector2.one;
     transform.offsetMin = Vector2.zero;
     transform.offsetMax = Vector2.zero;
-    this.hoverImage = gameObject.GetComponent<Image>();
-    this.hoverImage.raycastTarget = false;
-    this.hoverImage.sprite = this.activeSprite;
-    this.hoverImage.color = this.activeColor;
+    hoverImage = gameObject.GetComponent<Image>();
+    hoverImage.raycastTarget = false;
+    hoverImage.sprite = activeSprite;
+    hoverImage.color = activeColor;
   }
 }

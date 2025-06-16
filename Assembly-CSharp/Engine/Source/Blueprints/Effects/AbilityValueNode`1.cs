@@ -15,10 +15,10 @@ namespace Engine.Source.Blueprints.Effects
     [Port("Value")]
     private T Value()
     {
-      IAbilityValueContainer abilityValueContainer = this.abilityControllerInput.value;
+      IAbilityValueContainer abilityValueContainer = abilityControllerInput.value;
       if (abilityValueContainer == null)
         return default (T);
-      IAbilityValue<T> abilityValue = abilityValueContainer.GetAbilityValue<T>(this.valueNameInput.value);
+      IAbilityValue<T> abilityValue = abilityValueContainer.GetAbilityValue<T>(valueNameInput.value);
       return abilityValue == null ? default (T) : abilityValue.Value;
     }
   }

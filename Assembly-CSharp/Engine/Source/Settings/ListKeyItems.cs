@@ -1,8 +1,7 @@
-﻿using Cofe.Serializations.Converters;
-using Inspectors;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using UnityEngine;
+using Cofe.Serializations.Converters;
+using Inspectors;
 
 namespace Engine.Source.Settings
 {
@@ -15,24 +14,24 @@ namespace Engine.Source.Settings
     private static readonly char separator = '|';
     private static readonly char[] separators = new char[1]
     {
-      ListKeyItems.separator
+      separator
     };
 
     public ListKeyItems(string name)
     {
       this.name = name;
-      string[] strArray = PlayerSettings.Instance.GetString(name).Split(ListKeyItems.separators, StringSplitOptions.RemoveEmptyEntries);
+      string[] strArray = PlayerSettings.Instance.GetString(name).Split(separators, StringSplitOptions.RemoveEmptyEntries);
       for (int index = 0; index < strArray.Length; index += 2)
       {
         KeyCode result;
         DefaultConverter.TryParseEnum<KeyCode>(strArray[index + 1], out result);
-        this.value.Add(new KeyValuePair<string, KeyCode>(strArray[index], result));
+        value.Add(new KeyValuePair<string, KeyCode>(strArray[index], result));
       }
     }
 
     public List<KeyValuePair<string, KeyCode>> Value
     {
-      get => this.value;
+      get => value;
       set
       {
         this.value = value;
@@ -40,11 +39,11 @@ namespace Engine.Source.Settings
         foreach (KeyValuePair<string, KeyCode> keyValuePair in value)
         {
           str += keyValuePair.Key;
-          str += ListKeyItems.separator.ToString();
+          str += separator.ToString();
           str += keyValuePair.Value.ToString();
-          str += ListKeyItems.separator.ToString();
+          str += separator.ToString();
         }
-        PlayerSettings.Instance.SetString(this.name, str);
+        PlayerSettings.Instance.SetString(name, str);
         PlayerSettings.Instance.Save();
       }
     }

@@ -1,6 +1,6 @@
-﻿using Engine.Common.Generator;
+﻿using System;
+using Engine.Common.Generator;
 using Inspectors;
-using System;
 
 namespace Expressions
 {

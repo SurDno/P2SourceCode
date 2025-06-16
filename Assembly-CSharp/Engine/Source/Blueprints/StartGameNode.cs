@@ -18,9 +18,9 @@ namespace Engine.Source.Blueprints
     [Port("In")]
     private void In()
     {
-      InstanceByRequest<GameDataService>.Instance.SetCurrentGameData(this.projectNameInput.value);
+      InstanceByRequest<GameDataService>.Instance.SetCurrentGameData(projectNameInput.value);
       ServiceLocator.GetService<GameLauncher>().RestartGame();
-      this.output.Call();
+      output.Call();
     }
   }
 }

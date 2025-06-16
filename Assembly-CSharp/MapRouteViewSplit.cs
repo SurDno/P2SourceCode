@@ -1,6 +1,5 @@
-﻿using Engine.Common.Components.Regions;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using System.Collections.Generic;
+using Engine.Common.Components.Regions;
 
 public class MapRouteViewSplit : MapRouteView
 {
@@ -9,7 +8,7 @@ public class MapRouteViewSplit : MapRouteView
 
   public override void SetRoute(IList<FastTravelPointEnum> route)
   {
-    for (int index = 0; index < this.views.Length; ++index)
-      this.views[index]?.SetRoute(route);
+    for (int index = 0; index < views.Length; ++index)
+      views[index]?.SetRoute(route);
   }
 }

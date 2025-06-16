@@ -1,6 +1,4 @@
 ﻿using System;
-using UnityEngine;
-using UnityEngine.Events;
 
 namespace RootMotion.Dynamics
 {
@@ -8,35 +6,35 @@ namespace RootMotion.Dynamics
   {
     [HideInInspector]
     public PuppetMaster puppetMaster;
-    public BehaviourBase.BehaviourDelegate OnPreActivate;
-    public BehaviourBase.BehaviourDelegate OnPreInitiate;
-    public BehaviourBase.BehaviourDelegate OnPreFixedUpdate;
-    public BehaviourBase.BehaviourDelegate OnPreUpdate;
-    public BehaviourBase.BehaviourDelegate OnPreLateUpdate;
-    public BehaviourBase.BehaviourDelegate OnPreDeactivate;
-    public BehaviourBase.BehaviourDelegate OnPreFixTransforms;
-    public BehaviourBase.BehaviourDelegate OnPreRead;
-    public BehaviourBase.BehaviourDelegate OnPreWrite;
-    public BehaviourBase.HitDelegate OnPreMuscleHit;
-    public BehaviourBase.CollisionDelegate OnPreMuscleCollision;
-    public BehaviourBase.CollisionDelegate OnPreMuscleCollisionExit;
-    public BehaviourBase.BehaviourDelegate OnHierarchyChanged;
-    public BehaviourBase.BehaviourDelegate OnPostActivate;
-    public BehaviourBase.BehaviourDelegate OnPostInitiate;
-    public BehaviourBase.BehaviourDelegate OnPostFixedUpdate;
-    public BehaviourBase.BehaviourDelegate OnPostUpdate;
-    public BehaviourBase.BehaviourDelegate OnPostLateUpdate;
-    public BehaviourBase.BehaviourDelegate OnPostDeactivate;
-    public BehaviourBase.BehaviourDelegate OnPostDrawGizmos;
-    public BehaviourBase.BehaviourDelegate OnPostFixTransforms;
-    public BehaviourBase.BehaviourDelegate OnPostRead;
-    public BehaviourBase.BehaviourDelegate OnPostWrite;
-    public BehaviourBase.HitDelegate OnPostMuscleHit;
-    public BehaviourBase.CollisionDelegate OnPostMuscleCollision;
-    public BehaviourBase.CollisionDelegate OnPostMuscleCollisionExit;
+    public BehaviourDelegate OnPreActivate;
+    public BehaviourDelegate OnPreInitiate;
+    public BehaviourDelegate OnPreFixedUpdate;
+    public BehaviourDelegate OnPreUpdate;
+    public BehaviourDelegate OnPreLateUpdate;
+    public BehaviourDelegate OnPreDeactivate;
+    public BehaviourDelegate OnPreFixTransforms;
+    public BehaviourDelegate OnPreRead;
+    public BehaviourDelegate OnPreWrite;
+    public HitDelegate OnPreMuscleHit;
+    public CollisionDelegate OnPreMuscleCollision;
+    public CollisionDelegate OnPreMuscleCollisionExit;
+    public BehaviourDelegate OnHierarchyChanged;
+    public BehaviourDelegate OnPostActivate;
+    public BehaviourDelegate OnPostInitiate;
+    public BehaviourDelegate OnPostFixedUpdate;
+    public BehaviourDelegate OnPostUpdate;
+    public BehaviourDelegate OnPostLateUpdate;
+    public BehaviourDelegate OnPostDeactivate;
+    public BehaviourDelegate OnPostDrawGizmos;
+    public BehaviourDelegate OnPostFixTransforms;
+    public BehaviourDelegate OnPostRead;
+    public BehaviourDelegate OnPostWrite;
+    public HitDelegate OnPostMuscleHit;
+    public CollisionDelegate OnPostMuscleCollision;
+    public CollisionDelegate OnPostMuscleCollisionExit;
     [HideInInspector]
     public bool deactivated;
-    private bool initiated = false;
+    private bool initiated;
 
     public abstract void OnReactivate();
 
@@ -70,16 +68,16 @@ namespace RootMotion.Dynamics
 
     public virtual void OnMuscleAdded(Muscle m)
     {
-      if (this.OnHierarchyChanged == null)
+      if (OnHierarchyChanged == null)
         return;
-      this.OnHierarchyChanged();
+      OnHierarchyChanged();
     }
 
     public virtual void OnMuscleRemoved(Muscle m)
     {
-      if (this.OnHierarchyChanged == null)
+      if (OnHierarchyChanged == null)
         return;
-      this.OnHierarchyChanged();
+      OnHierarchyChanged();
     }
 
     protected virtual void OnActivate()
@@ -138,167 +136,167 @@ namespace RootMotion.Dynamics
 
     public void Initiate()
     {
-      this.initiated = true;
-      if (this.OnPreInitiate != null)
-        this.OnPreInitiate();
-      this.OnInitiate();
-      if (this.OnPostInitiate == null)
+      initiated = true;
+      if (OnPreInitiate != null)
+        OnPreInitiate();
+      OnInitiate();
+      if (OnPostInitiate == null)
         return;
-      this.OnPostInitiate();
+      OnPostInitiate();
     }
 
     public void OnFixTransforms()
     {
-      if (!this.initiated || !this.enabled)
+      if (!initiated || !this.enabled)
         return;
-      if (this.OnPreFixTransforms != null)
-        this.OnPreFixTransforms();
-      this.OnFixTransformsBehaviour();
-      if (this.OnPostFixTransforms == null)
+      if (OnPreFixTransforms != null)
+        OnPreFixTransforms();
+      OnFixTransformsBehaviour();
+      if (OnPostFixTransforms == null)
         return;
-      this.OnPostFixTransforms();
+      OnPostFixTransforms();
     }
 
     public void OnRead()
     {
-      if (!this.initiated || !this.enabled)
+      if (!initiated || !this.enabled)
         return;
-      if (this.OnPreRead != null)
-        this.OnPreRead();
-      this.OnReadBehaviour();
-      if (this.OnPostRead == null)
+      if (OnPreRead != null)
+        OnPreRead();
+      OnReadBehaviour();
+      if (OnPostRead == null)
         return;
-      this.OnPostRead();
+      OnPostRead();
     }
 
     public void OnWrite()
     {
-      if (!this.initiated || !this.enabled)
+      if (!initiated || !this.enabled)
         return;
-      if (this.OnPreWrite != null)
-        this.OnPreWrite();
-      this.OnWriteBehaviour();
-      if (this.OnPostWrite == null)
+      if (OnPreWrite != null)
+        OnPreWrite();
+      OnWriteBehaviour();
+      if (OnPostWrite == null)
         return;
-      this.OnPostWrite();
+      OnPostWrite();
     }
 
     public void OnMuscleHit(MuscleHit hit)
     {
-      if (!this.initiated)
+      if (!initiated)
         return;
-      if (this.OnPreMuscleHit != null)
-        this.OnPreMuscleHit(hit);
-      this.OnMuscleHitBehaviour(hit);
-      if (this.OnPostMuscleHit == null)
+      if (OnPreMuscleHit != null)
+        OnPreMuscleHit(hit);
+      OnMuscleHitBehaviour(hit);
+      if (OnPostMuscleHit == null)
         return;
-      this.OnPostMuscleHit(hit);
+      OnPostMuscleHit(hit);
     }
 
     public void OnMuscleCollision(MuscleCollision collision)
     {
-      if (!this.initiated)
+      if (!initiated)
         return;
-      if (this.OnPreMuscleCollision != null)
-        this.OnPreMuscleCollision(collision);
-      this.OnMuscleCollisionBehaviour(collision);
-      if (this.OnPostMuscleCollision == null)
+      if (OnPreMuscleCollision != null)
+        OnPreMuscleCollision(collision);
+      OnMuscleCollisionBehaviour(collision);
+      if (OnPostMuscleCollision == null)
         return;
-      this.OnPostMuscleCollision(collision);
+      OnPostMuscleCollision(collision);
     }
 
     public void OnMuscleCollisionExit(MuscleCollision collision)
     {
-      if (!this.initiated)
+      if (!initiated)
         return;
-      if (this.OnPreMuscleCollisionExit != null)
-        this.OnPreMuscleCollisionExit(collision);
-      this.OnMuscleCollisionExitBehaviour(collision);
-      if (this.OnPostMuscleCollisionExit == null)
+      if (OnPreMuscleCollisionExit != null)
+        OnPreMuscleCollisionExit(collision);
+      OnMuscleCollisionExitBehaviour(collision);
+      if (OnPostMuscleCollisionExit == null)
         return;
-      this.OnPostMuscleCollisionExit(collision);
+      OnPostMuscleCollisionExit(collision);
     }
 
     private void OnEnable()
     {
-      if (!this.initiated)
+      if (!initiated)
         return;
-      this.Activate();
+      Activate();
     }
 
     public void Activate()
     {
-      foreach (BehaviourBase behaviour in this.puppetMaster.behaviours)
+      foreach (BehaviourBase behaviour in puppetMaster.behaviours)
         behaviour.enabled = (UnityEngine.Object) behaviour == (UnityEngine.Object) this;
-      if (this.OnPreActivate != null)
-        this.OnPreActivate();
-      this.OnActivate();
-      if (this.OnPostActivate == null)
+      if (OnPreActivate != null)
+        OnPreActivate();
+      OnActivate();
+      if (OnPostActivate == null)
         return;
-      this.OnPostActivate();
+      OnPostActivate();
     }
 
     private void OnDisable()
     {
-      if (!this.initiated)
+      if (!initiated)
         return;
-      if (this.OnPreDeactivate != null)
-        this.OnPreDeactivate();
-      this.OnDeactivate();
-      if (this.OnPostDeactivate == null)
+      if (OnPreDeactivate != null)
+        OnPreDeactivate();
+      OnDeactivate();
+      if (OnPostDeactivate == null)
         return;
-      this.OnPostDeactivate();
+      OnPostDeactivate();
     }
 
     private void FixedUpdate()
     {
-      if (!this.initiated || this.puppetMaster.muscles.Length == 0)
+      if (!initiated || puppetMaster.muscles.Length == 0)
         return;
-      if (this.OnPreFixedUpdate != null && this.enabled)
-        this.OnPreFixedUpdate();
-      this.OnFixedUpdate();
-      if (this.OnPostFixedUpdate == null || !this.enabled)
+      if (OnPreFixedUpdate != null && this.enabled)
+        OnPreFixedUpdate();
+      OnFixedUpdate();
+      if (OnPostFixedUpdate == null || !this.enabled)
         return;
-      this.OnPostFixedUpdate();
+      OnPostFixedUpdate();
     }
 
     private void Update()
     {
-      if (!this.initiated || this.puppetMaster.muscles.Length == 0)
+      if (!initiated || puppetMaster.muscles.Length == 0)
         return;
-      if (this.OnPreUpdate != null && this.enabled)
-        this.OnPreUpdate();
-      this.OnUpdate();
-      if (this.OnPostUpdate == null || !this.enabled)
+      if (OnPreUpdate != null && this.enabled)
+        OnPreUpdate();
+      OnUpdate();
+      if (OnPostUpdate == null || !this.enabled)
         return;
-      this.OnPostUpdate();
+      OnPostUpdate();
     }
 
     private void LateUpdate()
     {
-      if (!this.initiated || this.puppetMaster.muscles.Length == 0)
+      if (!initiated || puppetMaster.muscles.Length == 0)
         return;
-      if (this.OnPreLateUpdate != null && this.enabled)
-        this.OnPreLateUpdate();
-      this.OnLateUpdate();
-      if (this.OnPostLateUpdate == null || !this.enabled)
+      if (OnPreLateUpdate != null && this.enabled)
+        OnPreLateUpdate();
+      OnLateUpdate();
+      if (OnPostLateUpdate == null || !this.enabled)
         return;
-      this.OnPostLateUpdate();
+      OnPostLateUpdate();
     }
 
     protected virtual void OnDrawGizmos()
     {
-      if (!this.initiated)
+      if (!initiated)
         return;
-      this.OnDrawGizmosBehaviour();
-      if (this.OnPostDrawGizmos == null)
+      OnDrawGizmosBehaviour();
+      if (OnPostDrawGizmos == null)
         return;
-      this.OnPostDrawGizmos();
+      OnPostDrawGizmos();
     }
 
     protected void RotateTargetToRootMuscle()
     {
-      this.puppetMaster.targetRoot.rotation = Quaternion.LookRotation((this.puppetMaster.muscles[0].rigidbody.rotation * (Quaternion.Inverse(this.puppetMaster.muscles[0].target.rotation) * this.puppetMaster.targetRoot.forward)) with
+      puppetMaster.targetRoot.rotation = Quaternion.LookRotation((puppetMaster.muscles[0].rigidbody.rotation * (Quaternion.Inverse(puppetMaster.muscles[0].target.rotation) * puppetMaster.targetRoot.forward)) with
       {
         y = 0.0f
       });
@@ -306,18 +304,18 @@ namespace RootMotion.Dynamics
 
     protected void TranslateTargetToRootMuscle(float maintainY)
     {
-      this.puppetMaster.muscles[0].target.position = new Vector3(this.puppetMaster.muscles[0].transform.position.x, Mathf.Lerp(this.puppetMaster.muscles[0].transform.position.y, this.puppetMaster.muscles[0].target.position.y, maintainY), this.puppetMaster.muscles[0].transform.position.z);
+      puppetMaster.muscles[0].target.position = new Vector3(puppetMaster.muscles[0].transform.position.x, Mathf.Lerp(puppetMaster.muscles[0].transform.position.y, puppetMaster.muscles[0].target.position.y, maintainY), puppetMaster.muscles[0].transform.position.z);
     }
 
     protected void RemoveMusclesOfGroup(Muscle.Group group)
     {
-      while (this.MusclesContainsGroup(group))
+      while (MusclesContainsGroup(group))
       {
-        for (int index = 0; index < this.puppetMaster.muscles.Length; ++index)
+        for (int index = 0; index < puppetMaster.muscles.Length; ++index)
         {
-          if (this.puppetMaster.muscles[index].props.group == group)
+          if (puppetMaster.muscles[index].props.group == group)
           {
-            this.puppetMaster.RemoveMuscleRecursive(this.puppetMaster.muscles[index].joint, true);
+            puppetMaster.RemoveMuscleRecursive(puppetMaster.muscles[index].joint, true);
             break;
           }
         }
@@ -327,14 +325,14 @@ namespace RootMotion.Dynamics
     protected virtual void GroundTarget(LayerMask layers)
     {
       RaycastHit hitInfo;
-      if (!Physics.Raycast(new Ray(this.puppetMaster.targetRoot.position + this.puppetMaster.targetRoot.up, -this.puppetMaster.targetRoot.up), out hitInfo, 4f, (int) layers))
+      if (!Physics.Raycast(new Ray(puppetMaster.targetRoot.position + puppetMaster.targetRoot.up, -puppetMaster.targetRoot.up), out hitInfo, 4f, (int) layers))
         return;
-      this.puppetMaster.targetRoot.position = hitInfo.point;
+      puppetMaster.targetRoot.position = hitInfo.point;
     }
 
     protected bool MusclesContainsGroup(Muscle.Group group)
     {
-      foreach (Muscle muscle in this.puppetMaster.muscles)
+      foreach (Muscle muscle in puppetMaster.muscles)
       {
         if (muscle.props.group == group)
           return true;
@@ -354,27 +352,27 @@ namespace RootMotion.Dynamics
       [Tooltip("Another Puppet Behaviour to switch to on this event. This must be the exact Type of the the Behaviour, careful with spelling.")]
       public string switchToBehaviour;
       [Tooltip("Animations to cross-fade to on this event. This is separate from the UnityEvent below because UnityEvents can't handle calls with more than one parameter such as Animator.CrossFade.")]
-      public BehaviourBase.AnimatorEvent[] animations;
+      public AnimatorEvent[] animations;
       [Tooltip("The UnityEvent to invoke on this event.")]
       public UnityEvent unityEvent;
       private const string empty = "";
 
       public bool switchBehaviour
       {
-        get => this.switchToBehaviour != string.Empty && this.switchToBehaviour != "";
+        get => switchToBehaviour != string.Empty && switchToBehaviour != "";
       }
 
       public void Trigger(PuppetMaster puppetMaster, bool switchBehaviourEnabled = true)
       {
-        this.unityEvent.Invoke();
-        foreach (BehaviourBase.AnimatorEvent animation in this.animations)
+        unityEvent.Invoke();
+        foreach (AnimatorEvent animation in animations)
           animation.Activate(puppetMaster.targetAnimator, puppetMaster.targetAnimation);
-        if (!this.switchBehaviour)
+        if (!switchBehaviour)
           return;
         bool flag = false;
         foreach (BehaviourBase behaviour in puppetMaster.behaviours)
         {
-          if ((UnityEngine.Object) behaviour != (UnityEngine.Object) null && ((object) behaviour).GetType().ToString() == "RootMotion.Dynamics." + this.switchToBehaviour)
+          if ((UnityEngine.Object) behaviour != (UnityEngine.Object) null && behaviour.GetType().ToString() == "RootMotion.Dynamics." + switchToBehaviour)
           {
             flag = true;
             behaviour.enabled = true;
@@ -382,7 +380,7 @@ namespace RootMotion.Dynamics
           }
         }
         if (!flag)
-          Debug.LogWarning((object) ("No Puppet Behaviour of type '" + this.switchToBehaviour + "' was found. Can not switch to the behaviour, please check the spelling (also for empty spaces)."));
+          Debug.LogWarning((object) ("No Puppet Behaviour of type '" + switchToBehaviour + "' was found. Can not switch to the behaviour, please check the spelling (also for empty spaces)."));
       }
     }
 
@@ -406,29 +404,29 @@ namespace RootMotion.Dynamics
 
       private void Activate(Animator animator)
       {
-        if (this.animationState == "")
+        if (animationState == "")
           return;
-        if (this.resetNormalizedTime)
+        if (resetNormalizedTime)
         {
-          if ((double) this.crossfadeTime > 0.0)
-            animator.CrossFadeInFixedTime(this.animationState, this.crossfadeTime, this.layer, 0.0f);
+          if (crossfadeTime > 0.0)
+            animator.CrossFadeInFixedTime(animationState, crossfadeTime, layer, 0.0f);
           else
-            animator.Play(this.animationState, this.layer, 0.0f);
+            animator.Play(animationState, layer, 0.0f);
         }
-        else if ((double) this.crossfadeTime > 0.0)
-          animator.CrossFadeInFixedTime(this.animationState, this.crossfadeTime, this.layer);
+        else if (crossfadeTime > 0.0)
+          animator.CrossFadeInFixedTime(animationState, crossfadeTime, layer);
         else
-          animator.Play(this.animationState, this.layer);
+          animator.Play(animationState, layer);
       }
 
       private void Activate(Animation animation)
       {
-        if (this.animationState == "")
+        if (animationState == "")
           return;
-        if (this.resetNormalizedTime)
-          animation[this.animationState].normalizedTime = 0.0f;
-        animation[this.animationState].layer = this.layer;
-        animation.CrossFade(this.animationState, this.crossfadeTime);
+        if (resetNormalizedTime)
+          animation[animationState].normalizedTime = 0.0f;
+        animation[animationState].layer = layer;
+        animation.CrossFade(animationState, crossfadeTime);
       }
     }
   }

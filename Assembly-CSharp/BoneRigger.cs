@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using UnityEngine;
 
 public class BoneRigger : MonoBehaviour
 {
@@ -12,33 +11,33 @@ public class BoneRigger : MonoBehaviour
   public VisemeBoneDefine[] Poses;
   [HideInInspector]
   public string editorSelected;
-  private AnnoBoneDeformer rtBoneDeformer = (AnnoBoneDeformer) null;
+  private AnnoBoneDeformer rtBoneDeformer = null;
 
-  private void Start() => this.InitializeRuntimeDeformer();
+  private void Start() => InitializeRuntimeDeformer();
 
   private void InitializeRuntimeDeformer()
   {
-    if (this.rtBoneDeformer != null || this.Poses.Length == 0)
+    if (rtBoneDeformer != null || Poses.Length == 0)
       return;
     Dictionary<string, VisemeBoneDefine> _labelToBoneDict = new Dictionary<string, VisemeBoneDefine>();
-    VisemeBoneDefine _basePose = (VisemeBoneDefine) null;
-    foreach (VisemeBoneDefine pose in this.Poses)
+    VisemeBoneDefine _basePose = null;
+    foreach (VisemeBoneDefine pose in Poses)
     {
       _labelToBoneDict.Add(pose.Name, pose);
-      if (pose.Name == this.basePose)
+      if (pose.Name == basePose)
         _basePose = pose;
     }
     if (_basePose != null && _labelToBoneDict.Count > 0)
-      this.rtBoneDeformer = new AnnoBoneDeformer(_labelToBoneDict, _basePose);
+      rtBoneDeformer = new AnnoBoneDeformer(_labelToBoneDict, _basePose);
   }
 
   public IAnnoDeformer BoneDeformer
   {
     get
     {
-      if (this.rtBoneDeformer == null)
-        this.InitializeRuntimeDeformer();
-      return (IAnnoDeformer) this.rtBoneDeformer;
+      if (rtBoneDeformer == null)
+        InitializeRuntimeDeformer();
+      return rtBoneDeformer;
     }
   }
 
@@ -46,68 +45,68 @@ public class BoneRigger : MonoBehaviour
   {
     get
     {
-      if (this.editorSelected == null || this.editorSelected.Length == 0)
-        this.editorSelected = this.basePose;
-      if ((this.editorSelected == null || this.editorSelected.Length == 0) && this.poseNames != null && this.poseNames.Length != 0)
-        this.editorSelected = this.poseNames[0];
-      return this.editorSelected;
+      if (editorSelected == null || editorSelected.Length == 0)
+        editorSelected = basePose;
+      if ((editorSelected == null || editorSelected.Length == 0) && poseNames != null && poseNames.Length != 0)
+        editorSelected = poseNames[0];
+      return editorSelected;
     }
-    set => this.editorSelected = value;
+    set => editorSelected = value;
   }
 
   public int SelectedIndex
   {
     get
     {
-      string selected = this.Selected;
-      for (int selectedIndex = 0; this.poseNames != null && selectedIndex < this.poseNames.Length; ++selectedIndex)
+      string selected = Selected;
+      for (int selectedIndex = 0; poseNames != null && selectedIndex < poseNames.Length; ++selectedIndex)
       {
-        if (this.poseNames[selectedIndex] == selected)
+        if (poseNames[selectedIndex] == selected)
           return selectedIndex;
       }
       return -1;
     }
     set
     {
-      if (value < 0 || value >= this.poseNames.Length)
+      if (value < 0 || value >= poseNames.Length)
         return;
-      this.Selected = this.poseNames[value];
+      Selected = poseNames[value];
     }
   }
 
   public void RefreshPoseList()
   {
-    VisemeBoneDefine[] visemeBoneDefineArray = new VisemeBoneDefine[this.poseNames.Length];
-    for (int index = 0; index < this.poseNames.Length; ++index)
+    VisemeBoneDefine[] visemeBoneDefineArray = new VisemeBoneDefine[poseNames.Length];
+    for (int index = 0; index < poseNames.Length; ++index)
     {
-      VisemeBoneDefine visemeBoneDefine = this.GetPose(this.poseNames[index]) ?? new VisemeBoneDefine(this.poseNames[index]);
+      VisemeBoneDefine visemeBoneDefine = GetPose(poseNames[index]) ?? new VisemeBoneDefine(poseNames[index]);
       visemeBoneDefineArray[index] = visemeBoneDefine;
     }
-    this.Poses = visemeBoneDefineArray;
+    Poses = visemeBoneDefineArray;
   }
 
   public VisemeBoneDefine GetPose(string which)
   {
-    if (this.Poses == null)
+    if (Poses == null)
     {
       Debug.Log((object) "GetPose problem: no poses?");
-      return (VisemeBoneDefine) null;
+      return null;
     }
-    foreach (VisemeBoneDefine pose in this.Poses)
+    foreach (VisemeBoneDefine pose in Poses)
     {
       if (pose != null && pose.m_visemeLabel == which)
         return pose;
     }
-    return (VisemeBoneDefine) null;
+    return null;
   }
 
-  public void CommitSelected() => this.GetPose(this.Selected).RecordBonePositions(this.BoneList);
+  public void CommitSelected() => GetPose(Selected).RecordBonePositions(BoneList);
 
-  public void ShowSelected() => this.GetPose(this.Selected).ResetToThisPose();
+  public void ShowSelected() => GetPose(Selected).ResetToThisPose();
 
   public bool HasBonedPose(string which)
   {
-    VisemeBoneDefine pose = this.GetPose(which);
+    VisemeBoneDefine pose = GetPose(which);
     return pose != null && pose != null && pose.HasPose;
   }
 

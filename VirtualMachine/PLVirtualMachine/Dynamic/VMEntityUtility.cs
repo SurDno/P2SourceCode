@@ -8,7 +8,7 @@ namespace PLVirtualMachine.Dynamic
 
     public static void ResetRoot()
     {
-      VMEntityUtility.RegisteredEngineRoot = (VMEntity) null;
+      RegisteredEngineRoot = null;
       GameComponent.ResetInstance();
       GlobalMarketManager.ResetInstance();
       GlobalStorageManager.ResetInstance();

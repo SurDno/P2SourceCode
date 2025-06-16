@@ -1,73 +1,72 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-using UnityEngine;
 
 namespace Inspectors
 {
   public static class InspectedDrawerService
   {
-    private static Dictionary<System.Type, InspectedDrawerService.DrawerHandle> drawers = new Dictionary<System.Type, InspectedDrawerService.DrawerHandle>();
-    private static List<KeyValuePair<Func<System.Type, bool>, InspectedDrawerService.DrawerHandle>> conditionalDrawer = new List<KeyValuePair<Func<System.Type, bool>, InspectedDrawerService.DrawerHandle>>();
-    private static Dictionary<System.Type, System.Type> elementTypes = new Dictionary<System.Type, System.Type>();
+    private static Dictionary<Type, DrawerHandle> drawers = new Dictionary<Type, DrawerHandle>();
+    private static List<KeyValuePair<Func<Type, bool>, DrawerHandle>> conditionalDrawer = new List<KeyValuePair<Func<Type, bool>, DrawerHandle>>();
+    private static Dictionary<Type, Type> elementTypes = new Dictionary<Type, Type>();
 
     public static object CopyPasteObject { get; set; }
 
-    public static void Add(System.Type type, InspectedDrawerService.DrawerHandle action)
+    public static void Add(Type type, DrawerHandle action)
     {
-      if (!InspectedDrawerService.drawers.ContainsKey(type))
-        InspectedDrawerService.drawers.Add(type, (InspectedDrawerService.DrawerHandle) ((name, type2, value, mutable, context, drawer, target, member, setter) => action(name, type2, value, mutable, context, drawer, target, member, setter)));
+      if (!drawers.ContainsKey(type))
+        drawers.Add(type, (name, type2, value, mutable, context, drawer, target, member, setter) => action(name, type2, value, mutable, context, drawer, target, member, setter));
       else
-        Debug.LogError((object) ("Drawer type already exist : " + (object) type));
+        Debug.LogError((object) ("Drawer type already exist : " + type));
     }
 
-    public static void Add<T>(InspectedDrawerService.DrawerHandle action)
+    public static void Add<T>(DrawerHandle action)
     {
-      InspectedDrawerService.Add(typeof (T), action);
+      Add(typeof (T), action);
     }
 
     public static void AddConditional(
-      Func<System.Type, bool> condition,
-      InspectedDrawerService.DrawerHandle action)
+      Func<Type, bool> condition,
+      DrawerHandle action)
     {
-      InspectedDrawerService.conditionalDrawer.Add(new KeyValuePair<Func<System.Type, bool>, InspectedDrawerService.DrawerHandle>(condition, action));
+      conditionalDrawer.Add(new KeyValuePair<Func<Type, bool>, DrawerHandle>(condition, action));
     }
 
-    public static System.Type GetElementType(System.Type type)
+    public static Type GetElementType(Type type)
     {
-      System.Type elementType;
-      if (InspectedDrawerService.elementTypes.TryGetValue(type, out elementType))
+      Type elementType;
+      if (elementTypes.TryGetValue(type, out elementType))
         return elementType;
       if (type.HasElementType)
         return type.GetElementType();
-      System.Type[] genericArguments = type.GetGenericArguments();
+      Type[] genericArguments = type.GetGenericArguments();
       if (genericArguments.Length == 1)
         return genericArguments[0];
       return genericArguments.Length == 2 && type.IsGenericType && (typeof (Dictionary<,>) == type.GetGenericTypeDefinition() || typeof (IDictionary<,>) == type.GetGenericTypeDefinition()) ? typeof (KeyValuePair<,>).MakeGenericType(genericArguments) : typeof (object);
     }
 
-    public static InspectedDrawerService.DrawerHandle GetDrawer(System.Type type)
+    public static DrawerHandle GetDrawer(Type type)
     {
-      InspectedDrawerService.DrawerHandle drawer;
-      InspectedDrawerService.drawers.TryGetValue(type, out drawer);
+      DrawerHandle drawer;
+      drawers.TryGetValue(type, out drawer);
       if (drawer != null)
         return drawer;
-      foreach (KeyValuePair<Func<System.Type, bool>, InspectedDrawerService.DrawerHandle> keyValuePair in InspectedDrawerService.conditionalDrawer)
+      foreach (KeyValuePair<Func<Type, bool>, DrawerHandle> keyValuePair in conditionalDrawer)
       {
         if (keyValuePair.Key(type))
           return keyValuePair.Value;
       }
-      return (InspectedDrawerService.DrawerHandle) null;
+      return null;
     }
 
-    public static void AddElementType(System.Type container, System.Type element)
+    public static void AddElementType(Type container, Type element)
     {
-      InspectedDrawerService.elementTypes.Add(container, element);
+      elementTypes.Add(container, element);
     }
 
     public delegate void DrawerHandle(
       string name,
-      System.Type type,
+      Type type,
       object value,
       bool mutable,
       IInspectedProvider context,

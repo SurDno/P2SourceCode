@@ -1,23 +1,23 @@
-﻿using Engine.Common.Generator;
+﻿using System;
+using Engine.Common.Generator;
 using Engine.Common.Weather;
 using Inspectors;
-using System;
 
 namespace Engine.Source.Services
 {
   [GenerateProxy(TypeEnum.StateSave | TypeEnum.StateLoad)]
   public class WeatherLayerInfo
   {
-    [StateSaveProxy(MemberEnum.None)]
-    [StateLoadProxy(MemberEnum.None)]
+    [StateSaveProxy]
+    [StateLoadProxy]
     [Inspected]
     public WeatherLayer Layer;
-    [StateSaveProxy(MemberEnum.None)]
-    [StateLoadProxy(MemberEnum.None)]
+    [StateSaveProxy]
+    [StateLoadProxy]
     [Inspected]
     public float Opacity;
-    [StateSaveProxy(MemberEnum.None)]
-    [StateLoadProxy(MemberEnum.None)]
+    [StateSaveProxy]
+    [StateLoadProxy()]
     [Inspected]
     public Guid SnapshotTemplateId;
   }

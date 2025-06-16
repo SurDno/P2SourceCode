@@ -1,4 +1,10 @@
-﻿using Cofe.Meta;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Xml;
+using Cofe.Meta;
 using Cofe.Serializations.Converters;
 using Cofe.Serializations.Data;
 using Cofe.Serializations.Data.Xml;
@@ -14,19 +20,12 @@ using Engine.Source.Saves;
 using Engine.Source.Services;
 using Engine.Source.Services.Saves;
 using Inspectors;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Xml;
-using UnityEngine;
 
 namespace Engine.Impl.Services.Simulations
 {
   [Depend(typeof (IFactory))]
   [Depend(typeof (HierarchyService))]
-  [RuntimeService(new System.Type[] {typeof (Simulation), typeof (ISimulation)})]
+  [RuntimeService(typeof (Simulation), typeof (ISimulation))]
   [SaveDepend(typeof (VirtualMachineController))]
   [SaveDepend(typeof (ISteppeHerbService))]
   public class Simulation : ISimulation, IInitialisable, ISavesController
@@ -36,7 +35,7 @@ namespace Engine.Impl.Services.Simulations
     private const string idName = "Id";
     private const string pathName = "HierarchyPath";
     [Inspected]
-    private Dictionary<Guid, IEntity> entities = new Dictionary<Guid, IEntity>((IEqualityComparer<Guid>) GuidComparer.Instance);
+    private Dictionary<Guid, IEntity> entities = new Dictionary<Guid, IEntity>(GuidComparer.Instance);
     private IEntity hierarchy;
     private IEntity objects;
     private IEntity storables;
@@ -48,10 +47,10 @@ namespace Engine.Impl.Services.Simulations
 
     public IEntity Get(Guid id)
     {
-      if (!this.initialise)
-        throw new Exception(this.GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
+      if (!initialise)
+        throw new Exception(GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
       IEntity entity;
-      this.entities.TryGetValue(id, out entity);
+      entities.TryGetValue(id, out entity);
       return entity;
     }
 
@@ -60,9 +59,9 @@ namespace Engine.Impl.Services.Simulations
     {
       get
       {
-        if (!this.initialise)
-          throw new Exception(this.GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
-        return this.hierarchy;
+        if (!initialise)
+          throw new Exception(GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
+        return hierarchy;
       }
     }
 
@@ -71,9 +70,9 @@ namespace Engine.Impl.Services.Simulations
     {
       get
       {
-        if (!this.initialise)
-          throw new Exception(this.GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
-        return this.objects;
+        if (!initialise)
+          throw new Exception(GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
+        return objects;
       }
     }
 
@@ -82,9 +81,9 @@ namespace Engine.Impl.Services.Simulations
     {
       get
       {
-        if (!this.initialise)
-          throw new Exception(this.GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
-        return this.storables;
+        if (!initialise)
+          throw new Exception(GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
+        return storables;
       }
     }
 
@@ -93,31 +92,31 @@ namespace Engine.Impl.Services.Simulations
     {
       get
       {
-        if (!this.initialise)
-          throw new Exception(this.GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
-        return this.others;
+        if (!initialise)
+          throw new Exception(GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
+        return others;
       }
     }
 
     [Inspected]
     public IEntity Player
     {
-      get => this.player;
+      get => player;
       set
       {
-        if (!this.initialise)
-          throw new Exception(this.GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
-        if (this.player == value)
+        if (!initialise)
+          throw new Exception(GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
+        if (player == value)
           return;
-        if (this.player != null)
-          this.DeactivatePlayer(this.player);
-        this.player = value;
-        if (this.player != null)
-          this.ActivatePlayer(this.player);
-        Action<IEntity> onPlayerChanged = this.OnPlayerChanged;
+        if (player != null)
+          DeactivatePlayer(player);
+        player = value;
+        if (player != null)
+          ActivatePlayer(player);
+        Action<IEntity> onPlayerChanged = OnPlayerChanged;
         if (onPlayerChanged == null)
           return;
-        onPlayerChanged(this.player);
+        onPlayerChanged(player);
       }
     }
 
@@ -125,65 +124,65 @@ namespace Engine.Impl.Services.Simulations
 
     public void Initialise()
     {
-      this.initialise = true;
-      this.hierarchy = this.CreateObject("Hierarchy", Ids.HierarchyId);
-      ((ComponentCollection) this.Hierarchy).Add<LocationComponent>().IsHibernation = false;
-      this.objects = this.CreateObject("Objects", Ids.ObjectsId);
-      this.storables = this.CreateObject("Storables", Ids.StorablesId);
-      this.others = this.CreateObject("Others", Ids.OthersId);
+      initialise = true;
+      hierarchy = CreateObject("Hierarchy", Ids.HierarchyId);
+      ((ComponentCollection) Hierarchy).Add<LocationComponent>().IsHibernation = false;
+      objects = CreateObject("Objects", Ids.ObjectsId);
+      storables = CreateObject("Storables", Ids.StorablesId);
+      others = CreateObject("Others", Ids.OthersId);
     }
 
     public void Terminate()
     {
-      this.DisposeRoot(this.Storables);
-      this.storables = (IEntity) null;
-      this.DisposeRoot(this.Objects);
-      this.objects = (IEntity) null;
-      this.DisposeRoot(this.Others);
-      this.others = (IEntity) null;
-      this.DisposeRoot(this.Hierarchy);
-      this.hierarchy = (IEntity) null;
-      if (this.entities.Count != 0)
+      DisposeRoot(Storables);
+      storables = null;
+      DisposeRoot(Objects);
+      objects = null;
+      DisposeRoot(Others);
+      others = null;
+      DisposeRoot(Hierarchy);
+      hierarchy = null;
+      if (entities.Count != 0)
       {
-        Debug.LogError((object) ("Simulation is not empty, count : " + (object) this.entities.Count));
-        this.entities.Clear();
+        Debug.LogError((object) ("Simulation is not empty, count : " + entities.Count));
+        entities.Clear();
       }
-      this.initialise = false;
+      initialise = false;
     }
 
     private IEntity CreateObject(string name, Guid id)
     {
-      if (!this.initialise)
-        throw new Exception(this.GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
+      if (!initialise)
+        throw new Exception(GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
       IEntity entity = ServiceCache.Factory.Create<IEntity>(id);
       entity.Name = name;
-      this.entities.Add(entity.Id, entity);
+      entities.Add(entity.Id, entity);
       ((Entity) entity).OnAdded();
       return entity;
     }
 
     public void Add(IEntity entity, IEntity parent)
     {
-      if (!this.initialise)
-        throw new Exception(this.GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
+      if (!initialise)
+        throw new Exception(GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
       if (entity.IsTemplate)
         Debug.LogError((object) ("Add template to simulation : " + entity.GetInfo()));
       ServiceCache.OptimizationService.FrameHasSpike = true;
-      this.entities.Add(entity.Id, entity);
+      entities.Add(entity.Id, entity);
       ((IEntityHierarchy) parent).Add(entity);
       ((Entity) entity).OnAdded();
     }
 
     public void Remove(IEntity entity)
     {
-      if (!this.initialise)
-        throw new Exception(this.GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
+      if (!initialise)
+        throw new Exception(GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
       ((Entity) entity).OnRemoved();
       IEntity parent = entity.Parent;
       if (parent != null)
       {
         ((IEntityHierarchy) parent).Remove(entity);
-        this.entities.Remove(entity.Id);
+        entities.Remove(entity.Id);
       }
       else if (!Ids.IsRoot(entity.Id))
         throw new Exception(entity.GetInfo());
@@ -191,11 +190,11 @@ namespace Engine.Impl.Services.Simulations
 
     private void DisposeRoot(IEntity entity)
     {
-      if (!this.initialise)
-        throw new Exception(this.GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
+      if (!initialise)
+        throw new Exception(GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
       ((Entity) entity).OnRemoved();
       entity.Dispose();
-      this.entities.Remove(entity.Id);
+      entities.Remove(entity.Id);
     }
 
     public IEnumerator Load(IErrorLoadingHandler errorHandler)
@@ -232,34 +231,34 @@ namespace Engine.Impl.Services.Simulations
             {
               Guid id = DefaultConverter.ParseGuid(idNode.InnerText);
               IEntity entity;
-              if (!this.entities.TryGetValue(id, out entity))
+              if (!entities.TryGetValue(id, out entity))
               {
                 XmlElement pathNode = item["HierarchyPath"];
-                Debug.LogError((object) ("Entity " + (object) id + " not found , path : " + (pathNode != null ? (object) pathNode.InnerText : (object) "null") + " , count : " + (object) this.entities.Count + " , context : " + context));
+                Debug.LogError((object) ("Entity " + id + " not found , path : " + (pathNode != null ? pathNode.InnerText : (object) "null") + " , count : " + entities.Count + " , context : " + context));
               }
               else
               {
-                XmlNodeDataReader reader = new XmlNodeDataReader((XmlNode) item, context);
-                ((ISerializeStateLoad) entity).StateLoad((IDataReader) reader, typeof (Entity));
+                XmlNodeDataReader reader = new XmlNodeDataReader(item, context);
+                ((ISerializeStateLoad) entity).StateLoad(reader, typeof (Entity));
                 DateTime currentTime = DateTime.UtcNow;
                 if (time + minTime < currentTime)
                 {
                   time = currentTime;
-                  yield return (object) null;
+                  yield return null;
                 }
-                idNode = (XmlElement) null;
+                idNode = null;
                 id = new Guid();
-                entity = (IEntity) null;
-                reader = (XmlNodeDataReader) null;
-                item = (XmlElement) null;
+                entity = null;
+                reader = null;
+                item = null;
               }
             }
           }
         }
-        foreach (KeyValuePair<Guid, IEntity> entity1 in this.entities)
+        foreach (KeyValuePair<Guid, IEntity> entity1 in entities)
         {
           KeyValuePair<Guid, IEntity> entity = entity1;
-          MetaService.Compute((object) entity.Value, OnLoadedAttribute.Id);
+          MetaService.Compute(entity.Value, OnLoadedAttribute.Id);
           entity = new KeyValuePair<Guid, IEntity>();
         }
       }
@@ -267,14 +266,14 @@ namespace Engine.Impl.Services.Simulations
 
     public void Unload()
     {
-      List<KeyValuePair<Guid, IEntity>> list = this.entities.ToList<KeyValuePair<Guid, IEntity>>();
+      List<KeyValuePair<Guid, IEntity>> list = entities.ToList();
       for (int index = 0; index < list.Count; ++index)
       {
         KeyValuePair<Guid, IEntity> keyValuePair = list[index];
         if (!Ids.IsRoot(keyValuePair.Value.Id))
         {
           Debug.LogError((object) ("Wrong clenup simulation, entity not unloaded : " + keyValuePair.Value.GetInfo()));
-          this.Remove(keyValuePair.Value);
+          Remove(keyValuePair.Value);
           keyValuePair.Value.Dispose();
         }
       }
@@ -282,12 +281,12 @@ namespace Engine.Impl.Services.Simulations
 
     public void Save(IDataWriter writer, string context)
     {
-      writer.Begin(nameof (Simulation), (System.Type) null, true);
-      foreach (KeyValuePair<Guid, IEntity> entity1 in this.entities)
+      writer.Begin(nameof (Simulation), null, true);
+      foreach (KeyValuePair<Guid, IEntity> entity1 in entities)
       {
         Entity entity2 = (Entity) entity1.Value;
         if (entity2.NeedSave)
-          DefaultStateSaveUtility.SaveSerialize<Entity>(writer, "Entity", entity2);
+          DefaultStateSaveUtility.SaveSerialize(writer, "Entity", entity2);
       }
       writer.End(nameof (Simulation), true);
     }
@@ -295,15 +294,15 @@ namespace Engine.Impl.Services.Simulations
     public void AddPlayer(IEntity owner)
     {
       ((Entity) owner).IsPlayer = true;
-      this.players.Remove(owner);
-      this.players.Add(owner);
-      this.Player = this.players.FirstOrDefault<IEntity>();
+      players.Remove(owner);
+      players.Add(owner);
+      Player = players.FirstOrDefault();
     }
 
     public void RemovePlayer(IEntity owner)
     {
-      this.players.Remove(owner);
-      this.Player = this.players.FirstOrDefault<IEntity>();
+      players.Remove(owner);
+      Player = players.FirstOrDefault();
     }
 
     private void ActivatePlayer(IEntity player)

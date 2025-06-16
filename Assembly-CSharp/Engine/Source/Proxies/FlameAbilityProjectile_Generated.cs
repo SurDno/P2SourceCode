@@ -1,9 +1,9 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons.Cloneable;
 using Engine.Common.Commons.Converters;
 using Engine.Source.Commons.Abilities.Projectiles;
-using System;
 
 namespace Engine.Source.Proxies
 {
@@ -18,30 +18,30 @@ namespace Engine.Source.Proxies
     public object Clone()
     {
       FlameAbilityProjectile_Generated instance = Activator.CreateInstance<FlameAbilityProjectile_Generated>();
-      this.CopyTo((object) instance);
-      return (object) instance;
+      CopyTo(instance);
+      return instance;
     }
 
     public void CopyTo(object target2)
     {
       FlameAbilityProjectile_Generated projectileGenerated = (FlameAbilityProjectile_Generated) target2;
-      projectileGenerated.radius = this.radius;
-      projectileGenerated.hitAngle = this.hitAngle;
-      projectileGenerated.flameEffectiveTime = this.flameEffectiveTime;
+      projectileGenerated.radius = radius;
+      projectileGenerated.hitAngle = hitAngle;
+      projectileGenerated.flameEffectiveTime = flameEffectiveTime;
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.Write(writer, "EnemyHitRadius", this.radius);
-      DefaultDataWriteUtility.Write(writer, "EnemyHitAngle", this.hitAngle);
-      DefaultDataWriteUtility.Write(writer, "FlameEffectiveTime", this.flameEffectiveTime);
+      DefaultDataWriteUtility.Write(writer, "EnemyHitRadius", radius);
+      DefaultDataWriteUtility.Write(writer, "EnemyHitAngle", hitAngle);
+      DefaultDataWriteUtility.Write(writer, "FlameEffectiveTime", flameEffectiveTime);
     }
 
     public void DataRead(IDataReader reader, Type type)
     {
-      this.radius = DefaultDataReadUtility.Read(reader, "EnemyHitRadius", this.radius);
-      this.hitAngle = DefaultDataReadUtility.Read(reader, "EnemyHitAngle", this.hitAngle);
-      this.flameEffectiveTime = DefaultDataReadUtility.Read(reader, "FlameEffectiveTime", this.flameEffectiveTime);
+      radius = DefaultDataReadUtility.Read(reader, "EnemyHitRadius", radius);
+      hitAngle = DefaultDataReadUtility.Read(reader, "EnemyHitAngle", hitAngle);
+      flameEffectiveTime = DefaultDataReadUtility.Read(reader, "FlameEffectiveTime", flameEffectiveTime);
     }
   }
 }

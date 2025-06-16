@@ -4,13 +4,13 @@
   {
     public SubscribtionInfo(DynamicFSM fsm)
     {
-      this.SubscribingFSM = fsm;
-      this.Count = 1;
+      SubscribingFSM = fsm;
+      Count = 1;
     }
 
-    public void Add() => ++this.Count;
+    public void Add() => ++Count;
 
-    public void Remove() => --this.Count;
+    public void Remove() => --Count;
 
     public DynamicFSM SubscribingFSM { get; private set; }
 

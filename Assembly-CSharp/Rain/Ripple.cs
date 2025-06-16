@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace Rain
+﻿namespace Rain
 {
   public class Ripple
   {
@@ -18,31 +16,31 @@ namespace Rain
       float startRadius,
       float endRadius)
     {
-      this.nextNode = currentRootNode;
-      this.material = new Material(puddleMaterial);
-      this.material.SetVector("_RippleOrigin", new Vector4(worldPosition.x, worldPosition.y, worldPosition.z, 0.0f));
-      this._radius = startRadius;
-      this._strength = (float) (((double) endRadius - (double) startRadius) * 0.5 / 0.5);
-      this.UpdateMaterial();
+      nextNode = currentRootNode;
+      material = new Material(puddleMaterial);
+      material.SetVector("_RippleOrigin", new Vector4(worldPosition.x, worldPosition.y, worldPosition.z, 0.0f));
+      _radius = startRadius;
+      _strength = (float) ((endRadius - (double) startRadius) * 0.5 / 0.5);
+      UpdateMaterial();
     }
 
     public bool Update()
     {
-      this._strength -= Time.deltaTime * 0.5f;
-      if ((double) this._strength <= 0.0)
+      _strength -= Time.deltaTime * 0.5f;
+      if (_strength <= 0.0)
       {
-        Object.Destroy((Object) this.material);
+        Object.Destroy((Object) material);
         return true;
       }
-      this._radius += Time.deltaTime * 0.5f;
-      this.UpdateMaterial();
+      _radius += Time.deltaTime * 0.5f;
+      UpdateMaterial();
       return false;
     }
 
     private void UpdateMaterial()
     {
-      this.material.SetFloat("_RippleStrength", Mathf.Min(Mathf.Sqrt(this._strength), 1f));
-      this.material.SetFloat("_RippleRadius", this._radius);
+      material.SetFloat("_RippleStrength", Mathf.Min(Mathf.Sqrt(_strength), 1f));
+      material.SetFloat("_RippleRadius", _radius);
     }
   }
 }

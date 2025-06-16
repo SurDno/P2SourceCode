@@ -5,15 +5,15 @@ namespace Engine.Source.Effects.Values
 {
   public class AbilityValue<T> : IAbilityValue<T>, IAbilityValue where T : struct
   {
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
     [Inspected(Mutable = true, Mode = ExecuteMode.EditAndRuntime)]
-    [CopyableProxy(MemberEnum.None)]
+    [CopyableProxy()]
     protected T value;
 
     public T Value
     {
-      get => this.value;
+      get => value;
       set => this.value = value;
     }
   }

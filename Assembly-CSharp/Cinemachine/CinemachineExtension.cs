@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using UnityEngine;
 
 namespace Cinemachine
 {
@@ -14,28 +13,28 @@ namespace Cinemachine
     {
       get
       {
-        if ((Object) this.m_vcamOwner == (Object) null)
-          this.m_vcamOwner = this.GetComponent<CinemachineVirtualCameraBase>();
-        return this.m_vcamOwner;
+        if ((Object) m_vcamOwner == (Object) null)
+          m_vcamOwner = this.GetComponent<CinemachineVirtualCameraBase>();
+        return m_vcamOwner;
       }
     }
 
-    protected virtual void Awake() => this.ConnectToVcam();
+    protected virtual void Awake() => ConnectToVcam();
 
     protected virtual void OnDestroy()
     {
-      if (!((Object) this.VirtualCamera != (Object) null))
+      if (!((Object) VirtualCamera != (Object) null))
         return;
-      this.VirtualCamera.RemovePostPipelineStageHook(new CinemachineVirtualCameraBase.OnPostPipelineStageDelegate(this.PostPipelineStageCallback));
+      VirtualCamera.RemovePostPipelineStageHook(PostPipelineStageCallback);
     }
 
     private void ConnectToVcam()
     {
-      if ((Object) this.VirtualCamera == (Object) null)
+      if ((Object) VirtualCamera == (Object) null)
         Debug.LogError((object) "CinemachineExtension requires a Cinemachine Virtual Camera component");
       else
-        this.VirtualCamera.AddPostPipelineStageHook(new CinemachineVirtualCameraBase.OnPostPipelineStageDelegate(this.PostPipelineStageCallback));
-      this.mExtraState = (Dictionary<ICinemachineCamera, object>) null;
+        VirtualCamera.AddPostPipelineStageHook(PostPipelineStageCallback);
+      mExtraState = null;
     }
 
     protected abstract void PostPipelineStageCallback(
@@ -46,20 +45,20 @@ namespace Cinemachine
 
     protected T GetExtraState<T>(ICinemachineCamera vcam) where T : class, new()
     {
-      if (this.mExtraState == null)
-        this.mExtraState = new Dictionary<ICinemachineCamera, object>();
-      object extraState = (object) null;
-      if (!this.mExtraState.TryGetValue(vcam, out extraState))
-        extraState = this.mExtraState[vcam] = (object) new T();
+      if (mExtraState == null)
+        mExtraState = new Dictionary<ICinemachineCamera, object>();
+      object extraState = null;
+      if (!mExtraState.TryGetValue(vcam, out extraState))
+        extraState = mExtraState[vcam] = new T();
       return extraState as T;
     }
 
     protected List<T> GetAllExtraStates<T>() where T : class, new()
     {
       List<T> allExtraStates = new List<T>();
-      if (this.mExtraState != null)
+      if (mExtraState != null)
       {
-        foreach (KeyValuePair<ICinemachineCamera, object> keyValuePair in this.mExtraState)
+        foreach (KeyValuePair<ICinemachineCamera, object> keyValuePair in mExtraState)
           allExtraStates.Add(keyValuePair.Value as T);
       }
       return allExtraStates;

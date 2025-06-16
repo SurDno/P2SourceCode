@@ -1,10 +1,10 @@
-﻿using Cofe.Loggers;
+﻿using System;
+using Cofe.Loggers;
 using Engine.Common;
 using Engine.Common.Commons;
 using Engine.Common.Components;
 using Engine.Common.Services;
 using PLVirtualMachine.Common.EngineAPI.VMECS.VMAttributes;
-using System;
 
 namespace PLVirtualMachine.Common.EngineAPI.VMECS
 {
@@ -18,17 +18,17 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
     {
       get
       {
-        if (this.Component != null)
-          return this.Component.IsDead.Value;
-        Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", (object) this.Name, (object) this.Parent.Name));
+        if (Component != null)
+          return Component.IsDead.Value;
+        Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", Name, Parent.Name));
         return false;
       }
       set
       {
-        if (this.Component == null)
-          Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", (object) this.Name, (object) this.Parent.Name));
+        if (Component == null)
+          Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", Name, Parent.Name));
         else
-          this.Component.IsDead.Value = value;
+          Component.IsDead.Value = value;
       }
     }
 
@@ -37,17 +37,17 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
     {
       get
       {
-        if (this.Component != null)
-          return this.Component.IsImmortal.Value;
-        Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", (object) this.Name, (object) this.Parent.Name));
+        if (Component != null)
+          return Component.IsImmortal.Value;
+        Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", Name, Parent.Name));
         return false;
       }
       set
       {
-        if (this.Component == null)
-          Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", (object) this.Name, (object) this.Parent.Name));
+        if (Component == null)
+          Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", Name, Parent.Name));
         else
-          this.Component.IsImmortal.Value = value;
+          Component.IsImmortal.Value = value;
       }
     }
 
@@ -56,17 +56,17 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
     {
       get
       {
-        if (this.Component != null)
-          return this.Component.Health.Value;
-        Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", (object) this.Name, (object) this.Parent.Name));
+        if (Component != null)
+          return Component.Health.Value;
+        Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", Name, Parent.Name));
         return 0.0f;
       }
       set
       {
-        if (this.Component == null)
-          Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", (object) this.Name, (object) this.Parent.Name));
+        if (Component == null)
+          Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", Name, Parent.Name));
         else
-          this.Component.Health.Value = value;
+          Component.Health.Value = value;
       }
     }
 
@@ -75,17 +75,17 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
     {
       get
       {
-        if (this.Component != null)
-          return this.Component.CanAutopsy.Value;
-        Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", (object) this.Name, (object) this.Parent.Name));
+        if (Component != null)
+          return Component.CanAutopsy.Value;
+        Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", Name, Parent.Name));
         return false;
       }
       set
       {
-        if (this.Component == null)
-          Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", (object) this.Name, (object) this.Parent.Name));
+        if (Component == null)
+          Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", Name, Parent.Name));
         else
-          this.Component.CanAutopsy.Value = value;
+          Component.CanAutopsy.Value = value;
       }
     }
 
@@ -94,17 +94,17 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
     {
       get
       {
-        if (this.Component != null)
-          return this.Component.CanTrade.Value;
-        Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", (object) this.Name, (object) this.Parent.Name));
+        if (Component != null)
+          return Component.CanTrade.Value;
+        Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", Name, Parent.Name));
         return false;
       }
       set
       {
-        if (this.Component == null)
-          Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", (object) this.Name, (object) this.Parent.Name));
+        if (Component == null)
+          Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", Name, Parent.Name));
         else
-          this.Component.CanTrade.Value = value;
+          Component.CanTrade.Value = value;
       }
     }
 
@@ -113,17 +113,17 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
     {
       get
       {
-        if (this.Component != null)
-          return this.Component.ForceTrade.Value;
-        Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", (object) this.Name, (object) this.Parent.Name));
+        if (Component != null)
+          return Component.ForceTrade.Value;
+        Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", Name, Parent.Name));
         return false;
       }
       set
       {
-        if (this.Component == null)
-          Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", (object) this.Name, (object) this.Parent.Name));
+        if (Component == null)
+          Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", Name, Parent.Name));
         else
-          this.Component.ForceTrade.Value = value;
+          Component.ForceTrade.Value = value;
       }
     }
 
@@ -132,17 +132,17 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
     {
       get
       {
-        if (this.Component != null)
-          return this.Component.CanHeal.Value;
-        Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", (object) this.Name, (object) this.Parent.Name));
+        if (Component != null)
+          return Component.CanHeal.Value;
+        Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", Name, Parent.Name));
         return false;
       }
       set
       {
-        if (this.Component == null)
-          Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", (object) this.Name, (object) this.Parent.Name));
+        if (Component == null)
+          Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", Name, Parent.Name));
         else
-          this.Component.CanHeal.Value = value;
+          Component.CanHeal.Value = value;
       }
     }
 
@@ -151,17 +151,17 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
     {
       get
       {
-        if (this.Component != null)
-          return this.Component.Infection.Value;
-        Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", (object) this.Name, (object) this.Parent.Name));
+        if (Component != null)
+          return Component.Infection.Value;
+        Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", Name, Parent.Name));
         return 0.0f;
       }
       set
       {
-        if (this.Component == null)
-          Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", (object) this.Name, (object) this.Parent.Name));
+        if (Component == null)
+          Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", Name, Parent.Name));
         else
-          this.Component.Infection.Value = value;
+          Component.Infection.Value = value;
       }
     }
 
@@ -170,17 +170,17 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
     {
       get
       {
-        if (this.Component != null)
-          return this.Component.PreInfection.Value;
-        Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", (object) this.Name, (object) this.Parent.Name));
+        if (Component != null)
+          return Component.PreInfection.Value;
+        Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", Name, Parent.Name));
         return 0.0f;
       }
       set
       {
-        if (this.Component == null)
-          Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", (object) this.Name, (object) this.Parent.Name));
+        if (Component == null)
+          Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", Name, Parent.Name));
         else
-          this.Component.PreInfection.Value = value;
+          Component.PreInfection.Value = value;
       }
     }
 
@@ -189,17 +189,17 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
     {
       get
       {
-        if (this.Component != null)
-          return this.Component.Pain.Value;
-        Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", (object) this.Name, (object) this.Parent.Name));
+        if (Component != null)
+          return Component.Pain.Value;
+        Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", Name, Parent.Name));
         return 0.0f;
       }
       set
       {
-        if (this.Component == null)
-          Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", (object) this.Name, (object) this.Parent.Name));
+        if (Component == null)
+          Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", Name, Parent.Name));
         else
-          this.Component.Pain.Value = value;
+          Component.Pain.Value = value;
       }
     }
 
@@ -208,39 +208,39 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
     {
       get
       {
-        if (this.Component != null)
-          return this.Component.Immunity.Value;
-        Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", (object) this.Name, (object) this.Parent.Name));
+        if (Component != null)
+          return Component.Immunity.Value;
+        Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", Name, Parent.Name));
         return 0.0f;
       }
       set
       {
-        if (this.Component == null)
-          Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", (object) this.Name, (object) this.Parent.Name));
+        if (Component == null)
+          Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", Name, Parent.Name));
         else
-          this.Component.Immunity.Value = value;
+          Component.Immunity.Value = value;
       }
     }
 
     [Property("Is away", "")]
-    public bool IsAway => this.Component.IsAway.Value;
+    public bool IsAway => Component.IsAway.Value;
 
     [Property("Stamm Kind", "")]
     public StammKind StammKind
     {
       get
       {
-        if (this.Component != null)
-          return this.Component.StammKind.Value;
-        Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", (object) this.Name, (object) this.Parent.Name));
+        if (Component != null)
+          return Component.StammKind.Value;
+        Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", Name, Parent.Name));
         return StammKind.Unknown;
       }
       set
       {
-        if (this.Component == null)
-          Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", (object) this.Name, (object) this.Parent.Name));
+        if (Component == null)
+          Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", Name, Parent.Name));
         else
-          this.Component.StammKind.Value = value;
+          Component.StammKind.Value = value;
       }
     }
 
@@ -249,17 +249,17 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
     {
       get
       {
-        if (this.Component != null)
-          return this.Component.Fraction.Value;
-        Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", (object) this.Name, (object) this.Parent.Name));
+        if (Component != null)
+          return Component.Fraction.Value;
+        Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", Name, Parent.Name));
         return FractionEnum.None;
       }
       set
       {
-        if (this.Component == null)
-          Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", (object) this.Name, (object) this.Parent.Name));
+        if (Component == null)
+          Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", Name, Parent.Name));
         else
-          this.Component.Fraction.Value = value;
+          Component.Fraction.Value = value;
       }
     }
 
@@ -268,17 +268,17 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
     {
       get
       {
-        if (this.Component != null)
-          return this.Component.CombatStyle.Value;
-        Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", (object) this.Name, (object) this.Parent.Name));
+        if (Component != null)
+          return Component.CombatStyle.Value;
+        Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", Name, Parent.Name));
         return CombatStyleEnum.None;
       }
       set
       {
-        if (this.Component == null)
-          Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", (object) this.Name, (object) this.Parent.Name));
+        if (Component == null)
+          Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", Name, Parent.Name));
         else
-          this.Component.CombatStyle.Value = value;
+          Component.CombatStyle.Value = value;
       }
     }
 
@@ -287,17 +287,17 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
     {
       get
       {
-        if (this.Component != null)
-          return this.Component.BoundHealthState.Value;
-        Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", (object) this.Name, (object) this.Parent.Name));
+        if (Component != null)
+          return Component.BoundHealthState.Value;
+        Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", Name, Parent.Name));
         return BoundHealthStateEnum.None;
       }
       set
       {
-        if (this.Component == null)
-          Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", (object) this.Name, (object) this.Parent.Name));
+        if (Component == null)
+          Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", Name, Parent.Name));
         else
-          this.Component.BoundHealthState.Value = value;
+          Component.BoundHealthState.Value = value;
       }
     }
 
@@ -306,17 +306,17 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
     {
       get
       {
-        if (this.Component != null)
-          return this.Component.HealingAttempted.Value;
-        Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", (object) this.Name, (object) this.Parent.Name));
+        if (Component != null)
+          return Component.HealingAttempted.Value;
+        Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", Name, Parent.Name));
         return false;
       }
       set
       {
-        if (this.Component == null)
-          Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", (object) this.Name, (object) this.Parent.Name));
+        if (Component == null)
+          Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", Name, Parent.Name));
         else
-          this.Component.HealingAttempted.Value = value;
+          Component.HealingAttempted.Value = value;
       }
     }
 
@@ -325,17 +325,17 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
     {
       get
       {
-        if (this.Component != null)
-          return this.Component.ImmuneBoostAttempted.Value;
-        Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", (object) this.Name, (object) this.Parent.Name));
+        if (Component != null)
+          return Component.ImmuneBoostAttempted.Value;
+        Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", Name, Parent.Name));
         return false;
       }
       set
       {
-        if (this.Component == null)
-          Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", (object) this.Name, (object) this.Parent.Name));
+        if (Component == null)
+          Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", Name, Parent.Name));
         else
-          this.Component.ImmuneBoostAttempted.Value = value;
+          Component.ImmuneBoostAttempted.Value = value;
       }
     }
 
@@ -344,17 +344,17 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
     {
       get
       {
-        if (this.Component != null)
-          return this.Component.IsCombatIgnored.Value;
-        Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", (object) this.Name, (object) this.Parent.Name));
+        if (Component != null)
+          return Component.IsCombatIgnored.Value;
+        Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", Name, Parent.Name));
         return false;
       }
       set
       {
-        if (this.Component == null)
-          Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", (object) this.Name, (object) this.Parent.Name));
+        if (Component == null)
+          Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", Name, Parent.Name));
         else
-          this.Component.IsCombatIgnored.Value = value;
+          Component.IsCombatIgnored.Value = value;
       }
     }
 
@@ -363,58 +363,58 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
     {
       get
       {
-        if (this.Component != null)
-          return this.Component.SayReplicsInIdle.Value;
-        Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", (object) this.Name, (object) this.Parent.Name));
+        if (Component != null)
+          return Component.SayReplicsInIdle.Value;
+        Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", Name, Parent.Name));
         return false;
       }
       set
       {
-        if (this.Component == null)
-          Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", (object) this.Name, (object) this.Parent.Name));
+        if (Component == null)
+          Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", Name, Parent.Name));
         else
-          this.Component.SayReplicsInIdle.Value = value;
+          Component.SayReplicsInIdle.Value = value;
       }
     }
 
     [Method("Add Personal Enemy", "target", "")]
     public void AddPersonalEnemy(IEntity target)
     {
-      ServiceLocator.GetService<ICombatService>().AddPersonalEnemy(this.Component.Owner, target);
+      ServiceLocator.GetService<ICombatService>().AddPersonalEnemy(Component.Owner, target);
     }
 
     [Method("Remove Personal Enemy", "target", "")]
     public void RemovePersonalEnemy(IEntity target)
     {
-      ServiceLocator.GetService<ICombatService>().RemovePersonalEnemy(this.Component.Owner, target);
+      ServiceLocator.GetService<ICombatService>().RemovePersonalEnemy(Component.Owner, target);
     }
 
     public override void Clear()
     {
-      if (!this.InstanceValid)
+      if (!InstanceValid)
         return;
-      this.Component.ActionEvent -= new Action<ActionEnum>(this.OnActionEvent);
-      this.Component.CombatActionEvent -= new Action<CombatActionEnum, IEntity>(this.OnCombatActionEvent);
-      this.Component.Health.ChangeValueEvent -= new Action<float>(this.ChangeHealthValueEvent);
-      this.Component.Pain.ChangeValueEvent -= new Action<float>(this.ChangePainValueEvent);
-      this.Component.IsAway.ChangeValueEvent -= new Action<bool>(this.ChangeIsAwayValueEvent);
+      Component.ActionEvent -= OnActionEvent;
+      Component.CombatActionEvent -= OnCombatActionEvent;
+      Component.Health.ChangeValueEvent -= ChangeHealthValueEvent;
+      Component.Pain.ChangeValueEvent -= ChangePainValueEvent;
+      Component.IsAway.ChangeValueEvent -= ChangeIsAwayValueEvent;
       base.Clear();
     }
 
     protected override void Init()
     {
-      if (this.IsTemplate)
+      if (IsTemplate)
         return;
-      this.Component.ActionEvent += new Action<ActionEnum>(this.OnActionEvent);
-      this.Component.CombatActionEvent += new Action<CombatActionEnum, IEntity>(this.OnCombatActionEvent);
-      this.Component.Health.ChangeValueEvent += new Action<float>(this.ChangeHealthValueEvent);
-      this.Component.Pain.ChangeValueEvent += new Action<float>(this.ChangePainValueEvent);
-      this.Component.IsAway.ChangeValueEvent += new Action<bool>(this.ChangeIsAwayValueEvent);
+      Component.ActionEvent += OnActionEvent;
+      Component.CombatActionEvent += OnCombatActionEvent;
+      Component.Health.ChangeValueEvent += ChangeHealthValueEvent;
+      Component.Pain.ChangeValueEvent += ChangePainValueEvent;
+      Component.IsAway.ChangeValueEvent += ChangeIsAwayValueEvent;
     }
 
     private void ChangeIsAwayValueEvent(bool value)
     {
-      Action<bool> changeAwayEvent = this.ChangeAwayEvent;
+      Action<bool> changeAwayEvent = ChangeAwayEvent;
       if (changeAwayEvent == null)
         return;
       changeAwayEvent(value);
@@ -422,7 +422,7 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
 
     private void ChangePainValueEvent(float value)
     {
-      Action<float> onChangePain = this.OnChangePain;
+      Action<float> onChangePain = OnChangePain;
       if (onChangePain == null)
         return;
       onChangePain(value);
@@ -430,7 +430,7 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
 
     private void ChangeHealthValueEvent(float value)
     {
-      Action<float> onChangeHealth = this.OnChangeHealth;
+      Action<float> onChangeHealth = OnChangeHealth;
       if (onChangeHealth == null)
         return;
       onChangeHealth(value);
@@ -438,7 +438,7 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
 
     private void OnActionEvent(ActionEnum action)
     {
-      Action<ActionEnum> actionEvent = this.ActionEvent;
+      Action<ActionEnum> actionEvent = ActionEvent;
       if (actionEvent == null)
         return;
       actionEvent(action);
@@ -446,7 +446,7 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
 
     private void OnCombatActionEvent(CombatActionEnum action, IEntity target)
     {
-      Action<CombatActionEnum, IEntity> combatActionEvent = this.CombatActionEvent;
+      Action<CombatActionEnum, IEntity> combatActionEvent = CombatActionEvent;
       if (combatActionEvent == null)
         return;
       combatActionEvent(action, target);

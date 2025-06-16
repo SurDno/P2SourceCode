@@ -1,7 +1,7 @@
-﻿using Cofe.Meta;
-using Cofe.Utility;
-using System;
+﻿using System;
 using System.Reflection;
+using Cofe.Meta;
+using Cofe.Utility;
 
 namespace Inspectors
 {
@@ -24,44 +24,44 @@ namespace Inspectors
 
     public ExecuteMode Mode
     {
-      get => this.mode;
-      set => this.mode = value;
+      get => mode;
+      set => mode = value;
     }
 
     public override void ComputeMember(Container container, MemberInfo member)
     {
-      container.GetHandler(InspectedAttribute.HasInspectedId).AddHandle((ComputeHandle) ((target, data) => ((IHasInspected) data).HasInspected(this.mode)));
+      container.GetHandler(HasInspectedId).AddHandle((target, data) => ((IHasInspected) data).HasInspected(mode));
       FieldInfo field = member as FieldInfo;
-      if (field != (FieldInfo) null)
+      if (field != null)
       {
-        this.ComputeField(container, field);
+        ComputeField(container, field);
       }
       else
       {
         PropertyInfo property = member as PropertyInfo;
-        if (property != (PropertyInfo) null)
+        if (property != null)
         {
-          this.ComputeProperty(container, property);
+          ComputeProperty(container, property);
         }
         else
         {
           MethodInfo method = member as MethodInfo;
-          if (!(method != (MethodInfo) null))
+          if (!(method != null))
             return;
-          this.ComputeMethod(container, method);
+          ComputeMethod(container, method);
         }
       }
     }
 
     private void ComputeMethod(Container container, MethodInfo method)
     {
-      ComputeHandle handle = (ComputeHandle) ((target, data) =>
+      ComputeHandle handle = (target, data) =>
       {
         InspectedContext inspectedContext = (InspectedContext) data;
         string name1;
-        if (!this.Name.IsNullOrEmpty())
+        if (!Name.IsNullOrEmpty())
         {
-          name1 = this.Name;
+          name1 = Name;
         }
         else
         {
@@ -70,41 +70,41 @@ namespace Inspectors
             name2 = name2.Substring(1);
           name1 = name2.ToUpperFirstCharacter();
         }
-        Type type1 = this.Type;
+        Type type1 = Type;
         if ((object) type1 == null)
           type1 = typeof (DefaultMethodDrawer);
         Type type2 = type1;
-        inspectedContext.Provider.DrawInspected(name1, type2, (object) null, true, target, (MemberInfo) method, (Action<object>) (parameters => method.Invoke(target, (object[]) parameters)));
-      });
-      if ((this.mode & ExecuteMode.Runtime) != 0)
-        container.GetHandler(InspectedAttribute.DrawRuntimeInspectedId).AddHandle(handle);
-      if ((this.mode & ExecuteMode.Edit) == 0)
+        inspectedContext.Provider.DrawInspected(name1, type2, null, true, target, method, parameters => method.Invoke(target, (object[]) parameters));
+      };
+      if ((mode & ExecuteMode.Runtime) != 0)
+        container.GetHandler(DrawRuntimeInspectedId).AddHandle(handle);
+      if ((mode & ExecuteMode.Edit) == 0)
         return;
-      container.GetHandler(InspectedAttribute.DrawEditInspectedId).AddHandle(handle);
+      container.GetHandler(DrawEditInspectedId).AddHandle(handle);
     }
 
     private void ComputeProperty(Container container, PropertyInfo property)
     {
-      if (property.GetGetMethod(true) == (MethodInfo) null)
+      if (property.GetGetMethod(true) == null)
         return;
-      if (this.Header)
-        container.GetHandler(InspectedAttribute.HeaderInspectedId).AddHandle((ComputeHandle) ((target, data) =>
+      if (Header)
+        container.GetHandler(HeaderInspectedId).AddHandle((target, data) =>
         {
           IInspectedProvider inspectedProvider = (IInspectedProvider) data;
-          object obj = property.GetValue(target, (object[]) null);
+          object obj = property.GetValue(target, null);
           if (obj == null)
             return;
           inspectedProvider.SetHeader(obj.ToString());
-        }));
-      bool hasMutator = property.GetSetMethod(true) != (MethodInfo) null;
-      ComputeHandle handle = (ComputeHandle) ((target, data) =>
+        });
+      bool hasMutator = property.GetSetMethod(true) != null;
+      ComputeHandle handle = (target, data) =>
       {
         InspectedContext provider = (InspectedContext) data;
-        object obj = property.GetValue(target, (object[]) null);
+        object obj = property.GetValue(target, null);
         string name1;
-        if (!this.Name.IsNullOrEmpty())
+        if (!Name.IsNullOrEmpty())
         {
-          name1 = this.Name;
+          name1 = Name;
         }
         else
         {
@@ -113,42 +113,42 @@ namespace Inspectors
             name2 = name2.Substring(1);
           name1 = name2.ToUpperFirstCharacter();
         }
-        provider.Provider.DrawInspected(name1, property.PropertyType, obj, this.Mutable & hasMutator, target, (MemberInfo) property, (Action<object>) (value2 =>
+        provider.Provider.DrawInspected(name1, property.PropertyType, obj, Mutable & hasMutator, target, property, value2 =>
         {
           if (property.CanWrite)
-            property.SetValue(target, value2, (object[]) null);
+            property.SetValue(target, value2, null);
           Action<object> setter = provider.Setter;
           if (setter == null)
             return;
           setter(target);
-        }));
-      });
-      if ((this.mode & ExecuteMode.Runtime) != 0)
-        container.GetHandler(InspectedAttribute.DrawRuntimeInspectedId).AddHandle(handle);
-      if ((this.mode & ExecuteMode.Edit) == 0)
+        });
+      };
+      if ((mode & ExecuteMode.Runtime) != 0)
+        container.GetHandler(DrawRuntimeInspectedId).AddHandle(handle);
+      if ((mode & ExecuteMode.Edit) == 0)
         return;
-      container.GetHandler(InspectedAttribute.DrawEditInspectedId).AddHandle(handle);
+      container.GetHandler(DrawEditInspectedId).AddHandle(handle);
     }
 
     private void ComputeField(Container container, FieldInfo field)
     {
-      if (this.Header)
-        container.GetHandler(InspectedAttribute.HeaderInspectedId).AddHandle((ComputeHandle) ((target, data) =>
+      if (Header)
+        container.GetHandler(HeaderInspectedId).AddHandle((target, data) =>
         {
           IInspectedProvider inspectedProvider = (IInspectedProvider) data;
           object obj = field.GetValue(target);
           if (obj == null)
             return;
           inspectedProvider.SetHeader(obj.ToString());
-        }));
-      ComputeHandle handle = (ComputeHandle) ((target, data) =>
+        });
+      ComputeHandle handle = (target, data) =>
       {
         InspectedContext provider = (InspectedContext) data;
         object obj = field.GetValue(target);
         string name1;
-        if (!this.Name.IsNullOrEmpty())
+        if (!Name.IsNullOrEmpty())
         {
-          name1 = this.Name;
+          name1 = Name;
         }
         else
         {
@@ -157,20 +157,20 @@ namespace Inspectors
             name2 = name2.Substring(1);
           name1 = name2.ToUpperFirstCharacter();
         }
-        provider.Provider.DrawInspected(name1, field.FieldType, obj, this.Mutable, target, (MemberInfo) field, (Action<object>) (value2 =>
+        provider.Provider.DrawInspected(name1, field.FieldType, obj, Mutable, target, field, value2 =>
         {
           field.SetValue(target, value2);
           Action<object> setter = provider.Setter;
           if (setter == null)
             return;
           setter(target);
-        }));
-      });
-      if ((this.mode & ExecuteMode.Runtime) != 0)
-        container.GetHandler(InspectedAttribute.DrawRuntimeInspectedId).AddHandle(handle);
-      if ((this.mode & ExecuteMode.Edit) == 0)
+        });
+      };
+      if ((mode & ExecuteMode.Runtime) != 0)
+        container.GetHandler(DrawRuntimeInspectedId).AddHandle(handle);
+      if ((mode & ExecuteMode.Edit) == 0)
         return;
-      container.GetHandler(InspectedAttribute.DrawEditInspectedId).AddHandle(handle);
+      container.GetHandler(DrawEditInspectedId).AddHandle(handle);
     }
   }
 }

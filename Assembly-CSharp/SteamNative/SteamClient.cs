@@ -1,5 +1,5 @@
-﻿using Facepunch.Steamworks;
-using System;
+﻿using System;
+using Facepunch.Steamworks;
 
 namespace SteamNative
 {
@@ -12,68 +12,68 @@ namespace SteamNative
     {
       this.steamworks = steamworks;
       if (Platform.IsWindows64)
-        this.platform = (Platform.Interface) new Platform.Win64(pointer);
+        platform = (Platform.Interface) new Platform.Win64(pointer);
       else if (Platform.IsWindows32)
-        this.platform = (Platform.Interface) new Platform.Win32(pointer);
+        platform = (Platform.Interface) new Platform.Win32(pointer);
       else if (Platform.IsLinux32)
-        this.platform = (Platform.Interface) new Platform.Linux32(pointer);
+        platform = (Platform.Interface) new Platform.Linux32(pointer);
       else if (Platform.IsLinux64)
       {
-        this.platform = (Platform.Interface) new Platform.Linux64(pointer);
+        platform = (Platform.Interface) new Platform.Linux64(pointer);
       }
       else
       {
         if (!Platform.IsOsx)
           return;
-        this.platform = (Platform.Interface) new Platform.Mac(pointer);
+        platform = (Platform.Interface) new Platform.Mac(pointer);
       }
     }
 
-    public bool IsValid => this.platform != null && this.platform.IsValid;
+    public bool IsValid => platform != null && platform.IsValid;
 
     public virtual void Dispose()
     {
-      if (this.platform == null)
+      if (platform == null)
         return;
-      this.platform.Dispose();
-      this.platform = (Platform.Interface) null;
+      platform.Dispose();
+      platform = (Platform.Interface) null;
     }
 
     public bool BReleaseSteamPipe(HSteamPipe hSteamPipe)
     {
-      return this.platform.ISteamClient_BReleaseSteamPipe(hSteamPipe.Value);
+      return platform.ISteamClient_BReleaseSteamPipe(hSteamPipe.Value);
     }
 
     public bool BShutdownIfAllPipesClosed()
     {
-      return this.platform.ISteamClient_BShutdownIfAllPipesClosed();
+      return platform.ISteamClient_BShutdownIfAllPipesClosed();
     }
 
     public HSteamUser ConnectToGlobalUser(HSteamPipe hSteamPipe)
     {
-      return this.platform.ISteamClient_ConnectToGlobalUser(hSteamPipe.Value);
+      return platform.ISteamClient_ConnectToGlobalUser(hSteamPipe.Value);
     }
 
     public HSteamUser CreateLocalUser(out HSteamPipe phSteamPipe, AccountType eAccountType)
     {
-      return this.platform.ISteamClient_CreateLocalUser(out phSteamPipe.Value, eAccountType);
+      return platform.ISteamClient_CreateLocalUser(out phSteamPipe.Value, eAccountType);
     }
 
-    public HSteamPipe CreateSteamPipe() => this.platform.ISteamClient_CreateSteamPipe();
+    public HSteamPipe CreateSteamPipe() => platform.ISteamClient_CreateSteamPipe();
 
-    public uint GetIPCCallCount() => this.platform.ISteamClient_GetIPCCallCount();
+    public uint GetIPCCallCount() => platform.ISteamClient_GetIPCCallCount();
 
     public SteamAppList GetISteamAppList(
       HSteamUser hSteamUser,
       HSteamPipe hSteamPipe,
       string pchVersion)
     {
-      return new SteamAppList(this.steamworks, this.platform.ISteamClient_GetISteamAppList(hSteamUser.Value, hSteamPipe.Value, pchVersion));
+      return new SteamAppList(steamworks, platform.ISteamClient_GetISteamAppList(hSteamUser.Value, hSteamPipe.Value, pchVersion));
     }
 
     public SteamApps GetISteamApps(HSteamUser hSteamUser, HSteamPipe hSteamPipe, string pchVersion)
     {
-      return new SteamApps(this.steamworks, this.platform.ISteamClient_GetISteamApps(hSteamUser.Value, hSteamPipe.Value, pchVersion));
+      return new SteamApps(steamworks, platform.ISteamClient_GetISteamApps(hSteamUser.Value, hSteamPipe.Value, pchVersion));
     }
 
     public SteamController GetISteamController(
@@ -81,7 +81,7 @@ namespace SteamNative
       HSteamPipe hSteamPipe,
       string pchVersion)
     {
-      return new SteamController(this.steamworks, this.platform.ISteamClient_GetISteamController(hSteamUser.Value, hSteamPipe.Value, pchVersion));
+      return new SteamController(steamworks, platform.ISteamClient_GetISteamController(hSteamUser.Value, hSteamPipe.Value, pchVersion));
     }
 
     public SteamFriends GetISteamFriends(
@@ -89,7 +89,7 @@ namespace SteamNative
       HSteamPipe hSteamPipe,
       string pchVersion)
     {
-      return new SteamFriends(this.steamworks, this.platform.ISteamClient_GetISteamFriends(hSteamUser.Value, hSteamPipe.Value, pchVersion));
+      return new SteamFriends(steamworks, platform.ISteamClient_GetISteamFriends(hSteamUser.Value, hSteamPipe.Value, pchVersion));
     }
 
     public SteamGameServer GetISteamGameServer(
@@ -97,7 +97,7 @@ namespace SteamNative
       HSteamPipe hSteamPipe,
       string pchVersion)
     {
-      return new SteamGameServer(this.steamworks, this.platform.ISteamClient_GetISteamGameServer(hSteamUser.Value, hSteamPipe.Value, pchVersion));
+      return new SteamGameServer(steamworks, platform.ISteamClient_GetISteamGameServer(hSteamUser.Value, hSteamPipe.Value, pchVersion));
     }
 
     public SteamGameServerStats GetISteamGameServerStats(
@@ -105,7 +105,7 @@ namespace SteamNative
       HSteamPipe hSteamPipe,
       string pchVersion)
     {
-      return new SteamGameServerStats(this.steamworks, this.platform.ISteamClient_GetISteamGameServerStats(hSteamuser.Value, hSteamPipe.Value, pchVersion));
+      return new SteamGameServerStats(steamworks, platform.ISteamClient_GetISteamGameServerStats(hSteamuser.Value, hSteamPipe.Value, pchVersion));
     }
 
     public IntPtr GetISteamGenericInterface(
@@ -113,7 +113,7 @@ namespace SteamNative
       HSteamPipe hSteamPipe,
       string pchVersion)
     {
-      return this.platform.ISteamClient_GetISteamGenericInterface(hSteamUser.Value, hSteamPipe.Value, pchVersion);
+      return platform.ISteamClient_GetISteamGenericInterface(hSteamUser.Value, hSteamPipe.Value, pchVersion);
     }
 
     public SteamHTMLSurface GetISteamHTMLSurface(
@@ -121,12 +121,12 @@ namespace SteamNative
       HSteamPipe hSteamPipe,
       string pchVersion)
     {
-      return new SteamHTMLSurface(this.steamworks, this.platform.ISteamClient_GetISteamHTMLSurface(hSteamuser.Value, hSteamPipe.Value, pchVersion));
+      return new SteamHTMLSurface(steamworks, platform.ISteamClient_GetISteamHTMLSurface(hSteamuser.Value, hSteamPipe.Value, pchVersion));
     }
 
     public SteamHTTP GetISteamHTTP(HSteamUser hSteamuser, HSteamPipe hSteamPipe, string pchVersion)
     {
-      return new SteamHTTP(this.steamworks, this.platform.ISteamClient_GetISteamHTTP(hSteamuser.Value, hSteamPipe.Value, pchVersion));
+      return new SteamHTTP(steamworks, platform.ISteamClient_GetISteamHTTP(hSteamuser.Value, hSteamPipe.Value, pchVersion));
     }
 
     public SteamInventory GetISteamInventory(
@@ -134,7 +134,7 @@ namespace SteamNative
       HSteamPipe hSteamPipe,
       string pchVersion)
     {
-      return new SteamInventory(this.steamworks, this.platform.ISteamClient_GetISteamInventory(hSteamuser.Value, hSteamPipe.Value, pchVersion));
+      return new SteamInventory(steamworks, platform.ISteamClient_GetISteamInventory(hSteamuser.Value, hSteamPipe.Value, pchVersion));
     }
 
     public SteamMatchmaking GetISteamMatchmaking(
@@ -142,7 +142,7 @@ namespace SteamNative
       HSteamPipe hSteamPipe,
       string pchVersion)
     {
-      return new SteamMatchmaking(this.steamworks, this.platform.ISteamClient_GetISteamMatchmaking(hSteamUser.Value, hSteamPipe.Value, pchVersion));
+      return new SteamMatchmaking(steamworks, platform.ISteamClient_GetISteamMatchmaking(hSteamUser.Value, hSteamPipe.Value, pchVersion));
     }
 
     public SteamMatchmakingServers GetISteamMatchmakingServers(
@@ -150,7 +150,7 @@ namespace SteamNative
       HSteamPipe hSteamPipe,
       string pchVersion)
     {
-      return new SteamMatchmakingServers(this.steamworks, this.platform.ISteamClient_GetISteamMatchmakingServers(hSteamUser.Value, hSteamPipe.Value, pchVersion));
+      return new SteamMatchmakingServers(steamworks, platform.ISteamClient_GetISteamMatchmakingServers(hSteamUser.Value, hSteamPipe.Value, pchVersion));
     }
 
     public SteamMusic GetISteamMusic(
@@ -158,7 +158,7 @@ namespace SteamNative
       HSteamPipe hSteamPipe,
       string pchVersion)
     {
-      return new SteamMusic(this.steamworks, this.platform.ISteamClient_GetISteamMusic(hSteamuser.Value, hSteamPipe.Value, pchVersion));
+      return new SteamMusic(steamworks, platform.ISteamClient_GetISteamMusic(hSteamuser.Value, hSteamPipe.Value, pchVersion));
     }
 
     public SteamMusicRemote GetISteamMusicRemote(
@@ -166,7 +166,7 @@ namespace SteamNative
       HSteamPipe hSteamPipe,
       string pchVersion)
     {
-      return new SteamMusicRemote(this.steamworks, this.platform.ISteamClient_GetISteamMusicRemote(hSteamuser.Value, hSteamPipe.Value, pchVersion));
+      return new SteamMusicRemote(steamworks, platform.ISteamClient_GetISteamMusicRemote(hSteamuser.Value, hSteamPipe.Value, pchVersion));
     }
 
     public SteamNetworking GetISteamNetworking(
@@ -174,7 +174,7 @@ namespace SteamNative
       HSteamPipe hSteamPipe,
       string pchVersion)
     {
-      return new SteamNetworking(this.steamworks, this.platform.ISteamClient_GetISteamNetworking(hSteamUser.Value, hSteamPipe.Value, pchVersion));
+      return new SteamNetworking(steamworks, platform.ISteamClient_GetISteamNetworking(hSteamUser.Value, hSteamPipe.Value, pchVersion));
     }
 
     public SteamRemoteStorage GetISteamRemoteStorage(
@@ -182,7 +182,7 @@ namespace SteamNative
       HSteamPipe hSteamPipe,
       string pchVersion)
     {
-      return new SteamRemoteStorage(this.steamworks, this.platform.ISteamClient_GetISteamRemoteStorage(hSteamuser.Value, hSteamPipe.Value, pchVersion));
+      return new SteamRemoteStorage(steamworks, platform.ISteamClient_GetISteamRemoteStorage(hSteamuser.Value, hSteamPipe.Value, pchVersion));
     }
 
     public SteamScreenshots GetISteamScreenshots(
@@ -190,12 +190,12 @@ namespace SteamNative
       HSteamPipe hSteamPipe,
       string pchVersion)
     {
-      return new SteamScreenshots(this.steamworks, this.platform.ISteamClient_GetISteamScreenshots(hSteamuser.Value, hSteamPipe.Value, pchVersion));
+      return new SteamScreenshots(steamworks, platform.ISteamClient_GetISteamScreenshots(hSteamuser.Value, hSteamPipe.Value, pchVersion));
     }
 
     public SteamUGC GetISteamUGC(HSteamUser hSteamUser, HSteamPipe hSteamPipe, string pchVersion)
     {
-      return new SteamUGC(this.steamworks, this.platform.ISteamClient_GetISteamUGC(hSteamUser.Value, hSteamPipe.Value, pchVersion));
+      return new SteamUGC(steamworks, platform.ISteamClient_GetISteamUGC(hSteamUser.Value, hSteamPipe.Value, pchVersion));
     }
 
     public SteamUnifiedMessages GetISteamUnifiedMessages(
@@ -203,12 +203,12 @@ namespace SteamNative
       HSteamPipe hSteamPipe,
       string pchVersion)
     {
-      return new SteamUnifiedMessages(this.steamworks, this.platform.ISteamClient_GetISteamUnifiedMessages(hSteamuser.Value, hSteamPipe.Value, pchVersion));
+      return new SteamUnifiedMessages(steamworks, platform.ISteamClient_GetISteamUnifiedMessages(hSteamuser.Value, hSteamPipe.Value, pchVersion));
     }
 
     public SteamUser GetISteamUser(HSteamUser hSteamUser, HSteamPipe hSteamPipe, string pchVersion)
     {
-      return new SteamUser(this.steamworks, this.platform.ISteamClient_GetISteamUser(hSteamUser.Value, hSteamPipe.Value, pchVersion));
+      return new SteamUser(steamworks, platform.ISteamClient_GetISteamUser(hSteamUser.Value, hSteamPipe.Value, pchVersion));
     }
 
     public SteamUserStats GetISteamUserStats(
@@ -216,12 +216,12 @@ namespace SteamNative
       HSteamPipe hSteamPipe,
       string pchVersion)
     {
-      return new SteamUserStats(this.steamworks, this.platform.ISteamClient_GetISteamUserStats(hSteamUser.Value, hSteamPipe.Value, pchVersion));
+      return new SteamUserStats(steamworks, platform.ISteamClient_GetISteamUserStats(hSteamUser.Value, hSteamPipe.Value, pchVersion));
     }
 
     public SteamUtils GetISteamUtils(HSteamPipe hSteamPipe, string pchVersion)
     {
-      return new SteamUtils(this.steamworks, this.platform.ISteamClient_GetISteamUtils(hSteamPipe.Value, pchVersion));
+      return new SteamUtils(steamworks, platform.ISteamClient_GetISteamUtils(hSteamPipe.Value, pchVersion));
     }
 
     public SteamVideo GetISteamVideo(
@@ -229,22 +229,22 @@ namespace SteamNative
       HSteamPipe hSteamPipe,
       string pchVersion)
     {
-      return new SteamVideo(this.steamworks, this.platform.ISteamClient_GetISteamVideo(hSteamuser.Value, hSteamPipe.Value, pchVersion));
+      return new SteamVideo(steamworks, platform.ISteamClient_GetISteamVideo(hSteamuser.Value, hSteamPipe.Value, pchVersion));
     }
 
     public void ReleaseUser(HSteamPipe hSteamPipe, HSteamUser hUser)
     {
-      this.platform.ISteamClient_ReleaseUser(hSteamPipe.Value, hUser.Value);
+      platform.ISteamClient_ReleaseUser(hSteamPipe.Value, hUser.Value);
     }
 
     public void SetLocalIPBinding(uint unIP, ushort usPort)
     {
-      this.platform.ISteamClient_SetLocalIPBinding(unIP, usPort);
+      platform.ISteamClient_SetLocalIPBinding(unIP, usPort);
     }
 
     public void SetWarningMessageHook(IntPtr pFunction)
     {
-      this.platform.ISteamClient_SetWarningMessageHook(pFunction);
+      platform.ISteamClient_SetWarningMessageHook(pFunction);
     }
   }
 }

@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace SRF.UI
+﻿namespace SRF.UI
 {
   [ExecuteInEditMode]
   [RequireComponent(typeof (RectTransform))]
@@ -8,23 +6,23 @@ namespace SRF.UI
   {
     private bool _queueRefresh;
 
-    protected RectTransform RectTransform => (RectTransform) this.CachedTransform;
+    protected RectTransform RectTransform => (RectTransform) CachedTransform;
 
-    protected void OnEnable() => this._queueRefresh = true;
+    protected void OnEnable() => _queueRefresh = true;
 
-    protected void OnRectTransformDimensionsChange() => this._queueRefresh = true;
+    protected void OnRectTransformDimensionsChange() => _queueRefresh = true;
 
     protected void Update()
     {
-      if (!this._queueRefresh)
+      if (!_queueRefresh)
         return;
-      this.Refresh();
-      this._queueRefresh = false;
+      Refresh();
+      _queueRefresh = false;
     }
 
     protected abstract void Refresh();
 
     [ContextMenu("Refresh")]
-    private void DoRefresh() => this.Refresh();
+    private void DoRefresh() => Refresh();
   }
 }

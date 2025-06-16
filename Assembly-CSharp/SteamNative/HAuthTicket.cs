@@ -6,7 +6,7 @@
 
     public static implicit operator HAuthTicket(uint value)
     {
-      return new HAuthTicket() { Value = value };
+      return new HAuthTicket { Value = value };
     }
 
     public static implicit operator uint(HAuthTicket value) => value.Value;

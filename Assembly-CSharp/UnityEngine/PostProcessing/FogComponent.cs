@@ -1,6 +1,4 @@
-﻿using UnityEngine.Rendering;
-
-namespace UnityEngine.PostProcessing
+﻿namespace UnityEngine.PostProcessing
 {
   public sealed class FogComponent : PostProcessingComponentCommandBuffer<FogModel>
   {
@@ -10,7 +8,7 @@ namespace UnityEngine.PostProcessing
     {
       get
       {
-        return this.model.enabled && this.context.isGBufferAvailable && RenderSettings.fog && !this.context.interrupted;
+        return model.enabled && context.isGBufferAvailable && RenderSettings.fog && !context.interrupted;
       }
     }
 
@@ -22,14 +20,14 @@ namespace UnityEngine.PostProcessing
 
     public override void PopulateCommandBuffer(CommandBuffer cb)
     {
-      FogModel.Settings settings = this.model.settings;
-      Material mat = this.context.materialFactory.Get("Hidden/Post FX/Fog");
+      FogModel.Settings settings = model.settings;
+      Material mat = context.materialFactory.Get("Hidden/Post FX/Fog");
       mat.shaderKeywords = (string[]) null;
       Color color = GraphicsUtils.isLinearColorSpace ? RenderSettings.fogColor.linear : RenderSettings.fogColor;
-      mat.SetColor(FogComponent.Uniforms._FogColor, color);
-      mat.SetFloat(FogComponent.Uniforms._Density, RenderSettings.fogDensity);
-      mat.SetFloat(FogComponent.Uniforms._Start, RenderSettings.fogStartDistance);
-      mat.SetFloat(FogComponent.Uniforms._End, RenderSettings.fogEndDistance);
+      mat.SetColor(Uniforms._FogColor, color);
+      mat.SetFloat(Uniforms._Density, RenderSettings.fogDensity);
+      mat.SetFloat(Uniforms._Start, RenderSettings.fogStartDistance);
+      mat.SetFloat(Uniforms._End, RenderSettings.fogEndDistance);
       switch (RenderSettings.fogMode)
       {
         case FogMode.Linear:
@@ -42,11 +40,11 @@ namespace UnityEngine.PostProcessing
           mat.EnableKeyword("FOG_EXP2");
           break;
       }
-      RenderTextureFormat format = this.context.isHdr ? RenderTextureFormat.DefaultHDR : RenderTextureFormat.Default;
-      cb.GetTemporaryRT(FogComponent.Uniforms._TempRT, this.context.width, this.context.height, 24, FilterMode.Bilinear, format);
-      cb.Blit((RenderTargetIdentifier) BuiltinRenderTextureType.CameraTarget, (RenderTargetIdentifier) FogComponent.Uniforms._TempRT);
-      cb.Blit((RenderTargetIdentifier) FogComponent.Uniforms._TempRT, (RenderTargetIdentifier) BuiltinRenderTextureType.CameraTarget, mat, settings.excludeSkybox ? 1 : 0);
-      cb.ReleaseTemporaryRT(FogComponent.Uniforms._TempRT);
+      RenderTextureFormat format = context.isHdr ? RenderTextureFormat.DefaultHDR : RenderTextureFormat.Default;
+      cb.GetTemporaryRT(Uniforms._TempRT, context.width, context.height, 24, FilterMode.Bilinear, format);
+      cb.Blit((RenderTargetIdentifier) BuiltinRenderTextureType.CameraTarget, (RenderTargetIdentifier) Uniforms._TempRT);
+      cb.Blit((RenderTargetIdentifier) Uniforms._TempRT, (RenderTargetIdentifier) BuiltinRenderTextureType.CameraTarget, mat, settings.excludeSkybox ? 1 : 0);
+      cb.ReleaseTemporaryRT(Uniforms._TempRT);
     }
 
     private static class Uniforms

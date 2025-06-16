@@ -1,9 +1,8 @@
-﻿using Engine.Source.VisualEffects;
+﻿using System.Collections.Generic;
+using Engine.Source.VisualEffects;
 using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
-using System.Collections.Generic;
-using UnityEngine;
 
 namespace Engine.Source.Blueprints.Effects
 {
@@ -19,7 +18,7 @@ namespace Engine.Source.Blueprints.Effects
       float num1 = 0.0f;
       float num2 = 0.0f;
       float num3 = 0.0f;
-      IList<IParameter<float>> parameterList = this.parametersInput.value;
+      IList<IParameter<float>> parameterList = parametersInput.value;
       if (parameterList != null)
       {
         for (int index = 0; index < parameterList.Count; ++index)

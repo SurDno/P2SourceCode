@@ -1,13 +1,12 @@
-﻿using FlowCanvas;
+﻿using System.Collections.Generic;
+using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
-using System.Collections.Generic;
-using UnityEngine;
 
 namespace Engine.Source.Blueprints.Sounds
 {
   [Category("Sounds")]
-  [ContextDefinedInputs(new System.Type[] {typeof (AudioClip)})]
+  [ContextDefinedInputs(typeof (AudioClip))]
   public class RandomTrackSelectorNode : FlowControlNode, IMultiPortNode
   {
     [SerializeField]
@@ -16,19 +15,19 @@ namespace Engine.Source.Blueprints.Sounds
 
     public int portCount
     {
-      get => this._portCount;
-      set => this._portCount = value;
+      get => _portCount;
+      set => _portCount = value;
     }
 
     protected override void RegisterPorts()
     {
       base.RegisterPorts();
-      this.inputs.Clear();
-      for (int index = 0; index < this._portCount; ++index)
-        this.inputs.Add(this.AddValueInput<AudioClip>((index + 1).ToString()));
+      inputs.Clear();
+      for (int index = 0; index < _portCount; ++index)
+        inputs.Add(AddValueInput<AudioClip>((index + 1).ToString()));
     }
 
     [Port("Value")]
-    private AudioClip Value() => this.inputs[UnityEngine.Random.Range(0, this.inputs.Count)].value;
+    private AudioClip Value() => inputs[UnityEngine.Random.Range(0, inputs.Count)].value;
   }
 }

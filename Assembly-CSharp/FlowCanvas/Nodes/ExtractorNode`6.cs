@@ -21,31 +21,31 @@ namespace FlowCanvas.Nodes
     protected override sealed void OnRegisterPorts(FlowNode node)
     {
       ValueInput<TInstance> i = node.AddValueInput<TInstance>(typeof (TInstance).FriendlyName());
-      node.AddValueOutput<T1>(this.parameters[1].Name.SplitCamelCase(), (ValueHandler<T1>) (() =>
+      node.AddValueOutput(parameters[1].Name.SplitCamelCase(), () =>
       {
-        this.Invoke(i.value, out this.a, out this.b, out this.c, out this.d, out this.e);
-        return this.a;
-      }));
-      node.AddValueOutput<T2>(this.parameters[2].Name.SplitCamelCase(), (ValueHandler<T2>) (() =>
+        Invoke(i.value, out a, out b, out c, out d, out e);
+        return a;
+      });
+      node.AddValueOutput(parameters[2].Name.SplitCamelCase(), () =>
       {
-        this.Invoke(i.value, out this.a, out this.b, out this.c, out this.d, out this.e);
-        return this.b;
-      }));
-      node.AddValueOutput<T3>(this.parameters[3].Name.SplitCamelCase(), (ValueHandler<T3>) (() =>
+        Invoke(i.value, out a, out b, out c, out d, out e);
+        return b;
+      });
+      node.AddValueOutput(parameters[3].Name.SplitCamelCase(), () =>
       {
-        this.Invoke(i.value, out this.a, out this.b, out this.c, out this.d, out this.e);
-        return this.c;
-      }));
-      node.AddValueOutput<T4>(this.parameters[4].Name.SplitCamelCase(), (ValueHandler<T4>) (() =>
+        Invoke(i.value, out a, out b, out c, out d, out e);
+        return c;
+      });
+      node.AddValueOutput(parameters[4].Name.SplitCamelCase(), () =>
       {
-        this.Invoke(i.value, out this.a, out this.b, out this.c, out this.d, out this.e);
-        return this.d;
-      }));
-      node.AddValueOutput<T5>(this.parameters[5].Name.SplitCamelCase(), (ValueHandler<T5>) (() =>
+        Invoke(i.value, out a, out b, out c, out d, out e);
+        return d;
+      });
+      node.AddValueOutput(parameters[5].Name.SplitCamelCase(), () =>
       {
-        this.Invoke(i.value, out this.a, out this.b, out this.c, out this.d, out this.e);
-        return this.e;
-      }));
+        Invoke(i.value, out a, out b, out c, out d, out e);
+        return e;
+      });
     }
   }
 }

@@ -1,8 +1,7 @@
-﻿using FlowCanvas;
+﻿using System.Collections;
+using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
-using System.Collections;
-using UnityEngine;
 
 namespace Engine.Source.Blueprints
 {
@@ -21,36 +20,36 @@ namespace Engine.Source.Blueprints
     protected override void RegisterPorts()
     {
       base.RegisterPorts();
-      FlowOutput output = this.AddFlowOutput("Out");
-      this.AddFlowInput("In", (FlowHandler) (() =>
+      FlowOutput output = AddFlowOutput("Out");
+      AddFlowInput("In", () =>
       {
-        Transform target = this.targetInput.value;
+        Transform target = targetInput.value;
         if (!((Object) target != (Object) null))
           return;
-        Transform from = this.fromInput.value;
+        Transform from = fromInput.value;
         if ((Object) from != (Object) null)
         {
-          Transform to = this.toInput.value;
+          Transform to = toInput.value;
           if ((Object) to != (Object) null)
           {
             target.position = from.position;
             target.rotation = from.rotation;
-            this.StartCoroutine(this.Move(target, from, to, this.speedInput.value, output, this.characterSpeedInput.value, this.curveInput.value, this.speedOutInput.value));
+            StartCoroutine(Move(target, from, to, speedInput.value, output, characterSpeedInput.value, curveInput.value, speedOutInput.value));
           }
         }
-      }));
-      this.fromInput = this.AddValueInput<Transform>("From");
-      this.toInput = this.AddValueInput<Transform>("To");
-      this.targetInput = this.AddValueInput<Transform>("Target");
-      this.speedInput = this.AddValueInput<float>("Speed");
-      this.curveInput = this.AddValueInput<AnimationCurve>("Curve");
-      this.characterSpeedInput = this.AddValueInput<Vector3>("Character Speed");
-      this.speedOutInput = this.AddValueInput<float>("Speed Out");
+      });
+      fromInput = AddValueInput<Transform>("From");
+      toInput = AddValueInput<Transform>("To");
+      targetInput = AddValueInput<Transform>("Target");
+      speedInput = AddValueInput<float>("Speed");
+      curveInput = AddValueInput<AnimationCurve>("Curve");
+      characterSpeedInput = AddValueInput<Vector3>("Character Speed");
+      speedOutInput = AddValueInput<float>("Speed Out");
     }
 
     private Vector3 EvaluateCubicBezier(Vector3 p0, Vector3 p1, Vector3 p2, Vector3 p3, float t)
     {
-      return (float) ((1.0 - (double) t) * (1.0 - (double) t) * (1.0 - (double) t)) * p0 + (float) (3.0 * (double) t * (1.0 - (double) t) * (1.0 - (double) t)) * p1 + (float) (3.0 * (double) t * (double) t * (1.0 - (double) t)) * p2 + t * t * t * p3;
+      return (float) ((1.0 - t) * (1.0 - t) * (1.0 - t)) * p0 + (float) (3.0 * t * (1.0 - t) * (1.0 - t)) * p1 + (float) (3.0 * t * t * (1.0 - t)) * p2 + t * t * t * p3;
     }
 
     private Vector3 EvaluateCubicBezierDerivative(
@@ -60,7 +59,7 @@ namespace Engine.Source.Blueprints
       Vector3 p3,
       float t)
     {
-      return (float) (-3.0 * (1.0 - (double) t) * (1.0 - (double) t)) * p0 + (float) (3.0 * (1.0 - (double) t) * (1.0 - (double) t) - 6.0 * (1.0 - (double) t) * (double) t) * p1 + (float) (6.0 * (1.0 - (double) t) * (double) t - 3.0 * (double) t * (double) t) * p2 + 3f * t * t * p3;
+      return (float) (-3.0 * (1.0 - t) * (1.0 - t)) * p0 + (float) (3.0 * (1.0 - t) * (1.0 - t) - 6.0 * (1.0 - t) * t) * p1 + (float) (6.0 * (1.0 - t) * t - 3.0 * t * t) * p2 + 3f * t * t * p3;
     }
 
     private Vector3 EvaluateCubicBezierDerivative2(
@@ -70,17 +69,17 @@ namespace Engine.Source.Blueprints
       Vector3 p3,
       float t)
     {
-      return (float) (6.0 * (1.0 - (double) t)) * p0 + (float) (-6.0 * (1.0 - (double) t) - 6.0 * (1.0 - 2.0 * (double) t)) * p1 + (float) (6.0 * (1.0 - 2.0 * (double) t) - 6.0 * (double) t) * p2 + 6f * t * p3;
+      return (float) (6.0 * (1.0 - t)) * p0 + (float) (-6.0 * (1.0 - t) - 6.0 * (1.0 - 2.0 * t)) * p1 + (float) (6.0 * (1.0 - 2.0 * t) - 6.0 * t) * p2 + 6f * t * p3;
     }
 
     private Vector3 EvaluateQuadraticBezier(Vector3 p0, Vector3 p1, Vector3 p2, float t)
     {
-      return (float) ((1.0 - (double) t) * (1.0 - (double) t)) * p0 + (float) (2.0 * (double) t * (1.0 - (double) t)) * p1 + t * t * p2;
+      return (float) ((1.0 - t) * (1.0 - t)) * p0 + (float) (2.0 * t * (1.0 - t)) * p1 + t * t * p2;
     }
 
     private Vector3 EvaluateQuadraticBezierDerivative(Vector3 p0, Vector3 p1, Vector3 p2, float t)
     {
-      return (float) (-2.0 * (1.0 - (double) t)) * p0 + (float) (2.0 * (1.0 - 2.0 * (double) t)) * p1 + 2f * t * p2;
+      return (float) (-2.0 * (1.0 - t)) * p0 + (float) (2.0 * (1.0 - 2.0 * t)) * p1 + 2f * t * p2;
     }
 
     private IEnumerator Move(
@@ -97,26 +96,26 @@ namespace Engine.Source.Blueprints
       Vector3 vector3 = to.position - from.position;
       float distance = vector3.magnitude;
       float enterTime = distance / speed;
-      if ((double) enterTime < 0.30000001192092896)
+      if (enterTime < 0.30000001192092896)
         enterTime = 0.3f;
       enterTime *= 5f;
       Vector3 p0 = from.transform.position;
       Vector3 p1 = p0 + from.transform.forward * 0.3f * distance;
       Vector3 p3 = to.transform.position;
       Vector3 p2 = p3 - to.transform.forward * 0.3f * distance;
-      vector3 = this.EvaluateCubicBezierDerivative(p0, p1, p2, p3, 0.0f);
+      vector3 = EvaluateCubicBezierDerivative(p0, p1, p2, p3, 0.0f);
       float derivative0 = vector3.magnitude;
       float scale = characterSpeedInput.magnitude / derivative0;
       float currentSpeed = characterSpeedInput.magnitude;
       while (true)
       {
-        yield return (object) null;
-        float derivative = this.EvaluateCubicBezierDerivative(p0, p1, p2, p3, progress).magnitude;
+        yield return null;
+        float derivative = EvaluateCubicBezierDerivative(p0, p1, p2, p3, progress).magnitude;
         currentSpeed += 5f * Time.deltaTime;
         progress += Time.deltaTime / enterTime;
-        if ((double) progress < 1.0)
+        if (progress < 1.0)
         {
-          target.position = this.EvaluateCubicBezier(p0, p1, p2, p3, progress);
+          target.position = EvaluateCubicBezier(p0, p1, p2, p3, progress);
           target.rotation = Quaternion.LerpUnclamped(from.rotation, to.rotation, progress);
         }
         else

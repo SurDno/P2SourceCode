@@ -1,7 +1,9 @@
-﻿using AssetDatabases;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using AssetDatabases;
 using Cofe.Meta;
 using Engine.Common;
-using Engine.Common.Components;
 using Engine.Common.Components.Locations;
 using Engine.Common.Components.Movable;
 using Engine.Common.Components.Regions;
@@ -11,10 +13,6 @@ using Engine.Source.Commons;
 using Engine.Source.Components;
 using Engine.Source.Components.Regions;
 using Engine.Source.Components.Utilities;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 
 namespace Engine.Source.Services.Consoles.Binds
 {
@@ -26,28 +24,28 @@ namespace Engine.Source.Services.Consoles.Binds
     [ConsoleCommand("tour_regions")]
     private static string TourRegionsCommand(string command, ConsoleParameter[] parameters)
     {
-      CoroutineService.Instance.Route(BindTourConsoleCommands.TourRegions());
+      CoroutineService.Instance.Route(TourRegions());
       return command;
     }
 
     [ConsoleCommand("tour_indoors")]
     private static string TourIndoorsCommand(string command, ConsoleParameter[] parameters)
     {
-      CoroutineService.Instance.Route(BindTourConsoleCommands.TourIndoors());
+      CoroutineService.Instance.Route(TourIndoors());
       return command;
     }
 
     [ConsoleCommand("tour_all")]
     private static string TourAllCommand(string command, ConsoleParameter[] parameters)
     {
-      CoroutineService.Instance.Route(BindTourConsoleCommands.TourAll());
+      CoroutineService.Instance.Route(TourAll());
       return command;
     }
 
     private static IEnumerator TourAll()
     {
-      yield return (object) BindTourConsoleCommands.TourRegions();
-      yield return (object) BindTourConsoleCommands.TourIndoors();
+      yield return TourRegions();
+      yield return TourIndoors();
     }
 
     private static IEnumerator TourRegions()
@@ -67,14 +65,14 @@ namespace Engine.Source.Services.Consoles.Binds
           RegionComponent region = RegionUtility.GetRegionByName(regionValue);
           if (region != null && !region.IsDisposed)
             regions.Add(region);
-          region = (RegionComponent) null;
+          region = null;
         }
         for (int index = 0; index < regions.Count; ++index)
         {
           RegionComponent region = regions[index];
-          Debug.LogError((object) ("Region : " + region.Owner.Name + "   ( " + (object) index + " / " + (object) regions.Count + " )"));
-          yield return (object) BindTourConsoleCommands.ComputeRegion(region, player);
-          region = (RegionComponent) null;
+          Debug.LogError((object) ("Region : " + region.Owner.Name + "   ( " + index + " / " + regions.Count + " )"));
+          yield return ComputeRegion(region, player);
+          region = null;
         }
         Debug.LogError((object) "Regions Complete");
       }
@@ -87,15 +85,15 @@ namespace Engine.Source.Services.Consoles.Binds
       NavMeshUtility.SamplePosition(ref position, AreaEnum.All.ToMask());
       NavigationComponent navigation = player.GetComponent<NavigationComponent>();
       LocationComponent location = region.GetComponent<LocationComponent>();
-      navigation.TeleportTo((ILocationComponent) location, position, Quaternion.identity);
+      navigation.TeleportTo(location, position, Quaternion.identity);
       while (navigation.WaitTeleport)
-        yield return (object) BindTourConsoleCommands.wait;
+        yield return (object) wait;
       LocationItemComponent locationItem = player.GetComponent<LocationItemComponent>();
       while (locationItem.IsHibernation)
-        yield return (object) BindTourConsoleCommands.wait;
+        yield return (object) wait;
       while (!SceneController.CanLoad)
-        yield return (object) BindTourConsoleCommands.wait;
-      yield return (object) BindTourConsoleCommands.wait;
+        yield return (object) wait;
+      yield return (object) wait;
     }
 
     private static IEnumerator TourIndoors()
@@ -110,7 +108,7 @@ namespace Engine.Source.Services.Consoles.Binds
       {
         List<LocationComponent> indoors = new List<LocationComponent>();
         LocationComponent location = simulation.Hierarchy.GetComponent<LocationComponent>();
-        BindTourConsoleCommands.ComputeLocation(location, indoors);
+        ComputeLocation(location, indoors);
         for (int index = 0; index < indoors.Count; ++index)
         {
           LocationComponent indoor = indoors[index];
@@ -121,13 +119,13 @@ namespace Engine.Source.Services.Consoles.Binds
             IScene connection = model.Connection.Value;
             if (connection != null)
               name = connection.Name;
-            connection = (IScene) null;
+            connection = null;
           }
-          Debug.LogError((object) ("Indoor : " + name + "   ( " + (object) index + " / " + (object) indoors.Count + " )"));
-          yield return (object) BindTourConsoleCommands.ComputeIndoor(indoor, player);
-          indoor = (LocationComponent) null;
-          name = (string) null;
-          model = (StaticModelComponent) null;
+          Debug.LogError((object) ("Indoor : " + name + "   ( " + index + " / " + indoors.Count + " )"));
+          yield return ComputeIndoor(indoor, player);
+          indoor = null;
+          name = null;
+          model = null;
         }
         Debug.LogError((object) "Indoors Complete");
       }
@@ -142,7 +140,7 @@ namespace Engine.Source.Services.Consoles.Binds
       else
       {
         foreach (LocationComponent child in location.Childs)
-          BindTourConsoleCommands.ComputeLocation(child, indoors);
+          ComputeLocation(child, indoors);
       }
     }
 
@@ -153,15 +151,15 @@ namespace Engine.Source.Services.Consoles.Binds
       if (positionComponent != null)
         position = positionComponent.Position;
       NavigationComponent navigation = player.GetComponent<NavigationComponent>();
-      navigation.TeleportTo((ILocationComponent) indoor, position, Quaternion.identity);
+      navigation.TeleportTo(indoor, position, Quaternion.identity);
       while (navigation.WaitTeleport)
-        yield return (object) BindTourConsoleCommands.wait;
+        yield return (object) wait;
       LocationItemComponent locationItem = player.GetComponent<LocationItemComponent>();
       while (locationItem.IsHibernation)
-        yield return (object) BindTourConsoleCommands.wait;
+        yield return (object) wait;
       while (!SceneController.CanLoad)
-        yield return (object) BindTourConsoleCommands.wait;
-      yield return (object) BindTourConsoleCommands.wait;
+        yield return (object) wait;
+      yield return (object) wait;
     }
   }
 }

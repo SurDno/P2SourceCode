@@ -11,36 +11,36 @@ namespace Engine.Source.Commons.Abilities.Controllers
   [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
   public class TimerAbilityController : IAbilityController, IUpdatable
   {
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected bool realTime = false;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected double interval = 0.0;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected double timeout = 0.0;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    protected double intervalTime = 0.0;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    protected double intervalTime;
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy()]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    protected double timeoutTime = 0.0;
+    protected double timeoutTime;
     private IEntity owner;
     private AbilityItem abilityItem;
     private bool timeOutWorked;
@@ -48,34 +48,34 @@ namespace Engine.Source.Commons.Abilities.Controllers
     public void Initialise(AbilityItem abilityItem)
     {
       this.abilityItem = abilityItem;
-      InstanceByRequest<UpdateService>.Instance.Updater.AddUpdatable((IUpdatable) this);
-      if (this.timeout == 0.0)
+      InstanceByRequest<UpdateService>.Instance.Updater.AddUpdatable(this);
+      if (timeout == 0.0)
         return;
-      this.timeOutWorked = false;
+      timeOutWorked = false;
       TimeService service = ServiceLocator.GetService<TimeService>();
-      this.timeoutTime = this.realTime ? service.RealTime.TotalSeconds : service.AbsoluteGameTime.TotalSeconds;
+      timeoutTime = realTime ? service.RealTime.TotalSeconds : service.AbsoluteGameTime.TotalSeconds;
     }
 
     public void Shutdown()
     {
-      InstanceByRequest<UpdateService>.Instance.Updater.RemoveUpdatable((IUpdatable) this);
+      InstanceByRequest<UpdateService>.Instance.Updater.RemoveUpdatable(this);
     }
 
     public void ComputeUpdate()
     {
       TimeService service = ServiceLocator.GetService<TimeService>();
-      double num = this.realTime ? service.RealTime.TotalSeconds : service.AbsoluteGameTime.TotalSeconds;
-      if (this.interval > 0.0 && this.intervalTime + this.interval <= num)
+      double num = realTime ? service.RealTime.TotalSeconds : service.AbsoluteGameTime.TotalSeconds;
+      if (interval > 0.0 && intervalTime + interval <= num)
       {
-        this.intervalTime = num;
-        this.abilityItem.Active = true;
-        this.abilityItem.Active = false;
+        intervalTime = num;
+        abilityItem.Active = true;
+        abilityItem.Active = false;
       }
-      if (this.timeout <= 0.0 || this.timeoutTime + this.timeout > num || this.timeOutWorked)
+      if (timeout <= 0.0 || timeoutTime + timeout > num || timeOutWorked)
         return;
-      this.timeOutWorked = true;
-      this.abilityItem.Active = true;
-      this.abilityItem.Active = false;
+      timeOutWorked = true;
+      abilityItem.Active = true;
+      abilityItem.Active = false;
     }
   }
 }

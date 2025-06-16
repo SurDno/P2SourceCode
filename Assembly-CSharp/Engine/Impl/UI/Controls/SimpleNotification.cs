@@ -5,7 +5,6 @@ using Engine.Impl.UI.Menu.Protagonist.HeadUpDisplay;
 using Engine.Source.Audio;
 using Engine.Source.Services.Notifications;
 using Inspectors;
-using UnityEngine;
 
 namespace Engine.Impl.UI.Controls
 {
@@ -29,32 +28,32 @@ namespace Engine.Impl.UI.Controls
 
     private void Update()
     {
-      if (!(this.ui.Active is HudWindow))
+      if (!(ui.Active is HudWindow))
         return;
-      this.progress += Time.deltaTime;
-      if ((double) this.progress > (double) this.time)
-        this.Complete = true;
+      progress += Time.deltaTime;
+      if (progress > (double) time)
+        Complete = true;
       else
-        this.SetAlpha(SoundUtility.ComputeFade(this.progress, this.time, this.fade));
+        SetAlpha(SoundUtility.ComputeFade(progress, time, fade));
     }
 
     protected override void Awake()
     {
       base.Awake();
-      this.ui = ServiceLocator.GetService<UIService>();
-      this.SetAlpha(0.0f);
+      ui = ServiceLocator.GetService<UIService>();
+      SetAlpha(0.0f);
     }
 
-    public void Initialise(NotificationEnum type, object[] values) => this.Type = type;
+    public void Initialise(NotificationEnum type, object[] values) => Type = type;
 
     public void Shutdown() => Object.Destroy((Object) this.gameObject);
 
     private void SetAlpha(float value)
     {
-      if ((double) this.alpha == (double) value)
+      if (alpha == (double) value)
         return;
-      this.alpha = value;
-      this.canvasGroup.alpha = value;
+      alpha = value;
+      canvasGroup.alpha = value;
     }
   }
 }

@@ -1,4 +1,5 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Behaviours.Components;
 using Engine.Common.Commons;
@@ -6,8 +7,6 @@ using Engine.Common.Commons.Converters;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Scripts.Tools.Serializations.Converters;
-using UnityEngine;
-using UnityEngine.AI;
 
 namespace BehaviorDesigner.Runtime.Tasks.Pathologic
 {
@@ -17,70 +16,70 @@ namespace BehaviorDesigner.Runtime.Tasks.Pathologic
   [Factory]
   [GeneratePartial(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
   [FactoryProxy(typeof (MoveToCloud))]
-  public class MoveToCloud : BehaviorDesigner.Runtime.Tasks.Action, IStub, ISerializeDataWrite, ISerializeDataRead
+  public class MoveToCloud : Action, IStub, ISerializeDataWrite, ISerializeDataRead
   {
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy()]
     [SerializeField]
     public SharedVector3 Target;
     protected EngineBehavior behavior;
     protected NpcState npcState;
     protected NavMeshAgent agent;
-    protected bool inited = false;
+    protected bool inited;
 
     public override void OnStart()
     {
-      if (!this.inited)
+      if (!inited)
       {
-        this.agent = this.gameObject.GetComponent<NavMeshAgent>();
-        if ((UnityEngine.Object) this.agent == (UnityEngine.Object) null)
+        agent = gameObject.GetComponent<NavMeshAgent>();
+        if ((UnityEngine.Object) agent == (UnityEngine.Object) null)
         {
-          Debug.LogWarning((object) (this.gameObject.name + ": doesn't contain NavMeshAgent unity component"), (UnityEngine.Object) this.gameObject);
+          Debug.LogWarning((object) (gameObject.name + ": doesn't contain NavMeshAgent unity component"), (UnityEngine.Object) gameObject);
           return;
         }
-        this.npcState = this.gameObject.GetComponent<NpcState>();
-        if ((UnityEngine.Object) this.npcState == (UnityEngine.Object) null)
+        npcState = gameObject.GetComponent<NpcState>();
+        if ((UnityEngine.Object) npcState == (UnityEngine.Object) null)
         {
-          Debug.LogWarning((object) (this.gameObject.name + ": doesn't contain " + typeof (NpcState).Name + " engine component"));
+          Debug.LogWarning((object) (gameObject.name + ": doesn't contain " + typeof (NpcState).Name + " engine component"));
           return;
         }
-        this.inited = true;
+        inited = true;
       }
-      Vector3 vector3 = this.Target.Value;
+      Vector3 vector3 = Target.Value;
       if (false)
         return;
-      this.npcState.MoveCloud(this.Target.Value);
+      npcState.MoveCloud(Target.Value);
     }
 
     public override TaskStatus OnUpdate()
     {
-      if (!this.inited)
+      if (!inited)
         return TaskStatus.Failure;
-      Vector3 vector3 = this.Target.Value;
-      if (this.npcState.Status == NpcStateStatusEnum.Failed)
+      Vector3 vector3 = Target.Value;
+      if (npcState.Status == NpcStateStatusEnum.Failed)
         return TaskStatus.Failure;
-      return this.npcState.Status == NpcStateStatusEnum.Success ? TaskStatus.Success : TaskStatus.Running;
+      return npcState.Status == NpcStateStatusEnum.Success ? TaskStatus.Success : TaskStatus.Running;
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.WriteSerialize<NodeData>(writer, "NodeData", this.nodeData);
-      DefaultDataWriteUtility.Write(writer, "Id", this.id);
-      DefaultDataWriteUtility.Write(writer, "FriendlyName", this.friendlyName);
-      DefaultDataWriteUtility.Write(writer, "Instant", this.instant);
-      DefaultDataWriteUtility.Write(writer, "Disabled", this.disabled);
-      BehaviorTreeDataWriteUtility.WriteShared<SharedVector3>(writer, "Target", this.Target);
+      DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
+      DefaultDataWriteUtility.Write(writer, "Id", id);
+      DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
+      DefaultDataWriteUtility.Write(writer, "Instant", instant);
+      DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
+      BehaviorTreeDataWriteUtility.WriteShared(writer, "Target", Target);
     }
 
-    public void DataRead(IDataReader reader, System.Type type)
+    public void DataRead(IDataReader reader, Type type)
     {
-      this.nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
-      this.id = DefaultDataReadUtility.Read(reader, "Id", this.id);
-      this.friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", this.friendlyName);
-      this.instant = DefaultDataReadUtility.Read(reader, "Instant", this.instant);
-      this.disabled = DefaultDataReadUtility.Read(reader, "Disabled", this.disabled);
-      this.Target = BehaviorTreeDataReadUtility.ReadShared<SharedVector3>(reader, "Target", this.Target);
+      nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
+      id = DefaultDataReadUtility.Read(reader, "Id", id);
+      friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
+      instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
+      disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
+      Target = BehaviorTreeDataReadUtility.ReadShared(reader, "Target", Target);
     }
   }
 }

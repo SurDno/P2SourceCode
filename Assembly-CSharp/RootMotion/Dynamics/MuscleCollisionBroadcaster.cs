@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace RootMotion.Dynamics
+﻿namespace RootMotion.Dynamics
 {
   [AddComponentMenu("Scripts/RootMotion.Dynamics/PuppetMaster/Muscle Collision Broadcaster")]
   public class MuscleCollisionBroadcaster : MonoBehaviour
@@ -20,32 +18,32 @@ namespace RootMotion.Dynamics
     {
       if (!this.enabled)
         return;
-      foreach (BehaviourBase behaviour in this.puppetMaster.behaviours)
-        behaviour.OnMuscleHit(new MuscleHit(this.muscleIndex, unPin, force, position));
+      foreach (BehaviourBase behaviour in puppetMaster.behaviours)
+        behaviour.OnMuscleHit(new MuscleHit(muscleIndex, unPin, force, position));
     }
 
     private void OnCollisionEnter(Collision collision)
     {
-      if (!this.enabled || (Object) this.puppetMaster == (Object) null || (Object) collision.collider.transform.root == (Object) this.transform.root)
+      if (!this.enabled || (Object) puppetMaster == (Object) null || (Object) collision.collider.transform.root == (Object) this.transform.root)
         return;
-      foreach (BehaviourBase behaviour in this.puppetMaster.behaviours)
-        behaviour.OnMuscleCollision(new MuscleCollision(this.muscleIndex, collision));
+      foreach (BehaviourBase behaviour in puppetMaster.behaviours)
+        behaviour.OnMuscleCollision(new MuscleCollision(muscleIndex, collision));
     }
 
     private void OnCollisionStay(Collision collision)
     {
-      if (!this.enabled || (Object) this.puppetMaster == (Object) null || (Object) Singleton<PuppetMasterSettings>.instance != (Object) null && !Singleton<PuppetMasterSettings>.instance.collisionStayMessages || (Object) collision.collider.transform.root == (Object) this.transform.root)
+      if (!this.enabled || (Object) puppetMaster == (Object) null || (Object) Singleton<PuppetMasterSettings>.instance != (Object) null && !Singleton<PuppetMasterSettings>.instance.collisionStayMessages || (Object) collision.collider.transform.root == (Object) this.transform.root)
         return;
-      foreach (BehaviourBase behaviour in this.puppetMaster.behaviours)
-        behaviour.OnMuscleCollision(new MuscleCollision(this.muscleIndex, collision, true));
+      foreach (BehaviourBase behaviour in puppetMaster.behaviours)
+        behaviour.OnMuscleCollision(new MuscleCollision(muscleIndex, collision, true));
     }
 
     private void OnCollisionExit(Collision collision)
     {
-      if (!this.enabled || (Object) this.puppetMaster == (Object) null || (Object) Singleton<PuppetMasterSettings>.instance != (Object) null && !Singleton<PuppetMasterSettings>.instance.collisionExitMessages || (Object) collision.collider.transform.root == (Object) this.transform.root)
+      if (!this.enabled || (Object) puppetMaster == (Object) null || (Object) Singleton<PuppetMasterSettings>.instance != (Object) null && !Singleton<PuppetMasterSettings>.instance.collisionExitMessages || (Object) collision.collider.transform.root == (Object) this.transform.root)
         return;
-      foreach (BehaviourBase behaviour in this.puppetMaster.behaviours)
-        behaviour.OnMuscleCollisionExit(new MuscleCollision(this.muscleIndex, collision));
+      foreach (BehaviourBase behaviour in puppetMaster.behaviours)
+        behaviour.OnMuscleCollisionExit(new MuscleCollision(muscleIndex, collision));
     }
   }
 }

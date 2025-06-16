@@ -1,11 +1,11 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons;
 using Engine.Common.Commons.Converters;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Scripts.Tools.Serializations.Converters;
-using UnityEngine;
 
 namespace BehaviorDesigner.Runtime.Tasks.Basic.SharedVariables
 {
@@ -14,63 +14,63 @@ namespace BehaviorDesigner.Runtime.Tasks.Basic.SharedVariables
   [TaskDescription("Sets the SharedGameObject variable to the specified object. Returns Success.")]
   [Factory]
   [GeneratePartial(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
-  public class SetSharedGameObject : BehaviorDesigner.Runtime.Tasks.Action, IStub, ISerializeDataWrite, ISerializeDataRead
+  public class SetSharedGameObject : Action, IStub, ISerializeDataWrite, ISerializeDataRead
   {
-    [BehaviorDesigner.Runtime.Tasks.Tooltip("The value to set the SharedGameObject to. If null the variable will be set to the current GameObject")]
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [Tooltip("The value to set the SharedGameObject to. If null the variable will be set to the current GameObject")]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [SerializeField]
     public SharedGameObject targetValue;
     [RequiredField]
-    [BehaviorDesigner.Runtime.Tasks.Tooltip("The SharedGameObject to set")]
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [Tooltip("The SharedGameObject to set")]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [SerializeField]
     public SharedGameObject targetVariable;
-    [BehaviorDesigner.Runtime.Tasks.Tooltip("Can the target value be null?")]
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [Tooltip("Can the target value be null?")]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy()]
     [SerializeField]
     public SharedBool valueCanBeNull;
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.WriteSerialize<NodeData>(writer, "NodeData", this.nodeData);
-      DefaultDataWriteUtility.Write(writer, "Id", this.id);
-      DefaultDataWriteUtility.Write(writer, "FriendlyName", this.friendlyName);
-      DefaultDataWriteUtility.Write(writer, "Instant", this.instant);
-      DefaultDataWriteUtility.Write(writer, "Disabled", this.disabled);
-      BehaviorTreeDataWriteUtility.WriteShared<SharedGameObject>(writer, "TargetValue", this.targetValue);
-      BehaviorTreeDataWriteUtility.WriteShared<SharedGameObject>(writer, "TargetVariable", this.targetVariable);
-      BehaviorTreeDataWriteUtility.WriteShared<SharedBool>(writer, "ValueCanBeNull", this.valueCanBeNull);
+      DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
+      DefaultDataWriteUtility.Write(writer, "Id", id);
+      DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
+      DefaultDataWriteUtility.Write(writer, "Instant", instant);
+      DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
+      BehaviorTreeDataWriteUtility.WriteShared(writer, "TargetValue", targetValue);
+      BehaviorTreeDataWriteUtility.WriteShared(writer, "TargetVariable", targetVariable);
+      BehaviorTreeDataWriteUtility.WriteShared(writer, "ValueCanBeNull", valueCanBeNull);
     }
 
-    public void DataRead(IDataReader reader, System.Type type)
+    public void DataRead(IDataReader reader, Type type)
     {
-      this.nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
-      this.id = DefaultDataReadUtility.Read(reader, "Id", this.id);
-      this.friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", this.friendlyName);
-      this.instant = DefaultDataReadUtility.Read(reader, "Instant", this.instant);
-      this.disabled = DefaultDataReadUtility.Read(reader, "Disabled", this.disabled);
-      this.targetValue = BehaviorTreeDataReadUtility.ReadShared<SharedGameObject>(reader, "TargetValue", this.targetValue);
-      this.targetVariable = BehaviorTreeDataReadUtility.ReadShared<SharedGameObject>(reader, "TargetVariable", this.targetVariable);
-      this.valueCanBeNull = BehaviorTreeDataReadUtility.ReadShared<SharedBool>(reader, "ValueCanBeNull", this.valueCanBeNull);
+      nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
+      id = DefaultDataReadUtility.Read(reader, "Id", id);
+      friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
+      instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
+      disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
+      targetValue = BehaviorTreeDataReadUtility.ReadShared(reader, "TargetValue", targetValue);
+      targetVariable = BehaviorTreeDataReadUtility.ReadShared(reader, "TargetVariable", targetVariable);
+      valueCanBeNull = BehaviorTreeDataReadUtility.ReadShared(reader, "ValueCanBeNull", valueCanBeNull);
     }
 
     public override TaskStatus OnUpdate()
     {
-      this.targetVariable.Value = (UnityEngine.Object) this.targetValue.Value != (UnityEngine.Object) null || this.valueCanBeNull.Value ? this.targetValue.Value : this.gameObject;
+      targetVariable.Value = (UnityEngine.Object) targetValue.Value != (UnityEngine.Object) null || valueCanBeNull.Value ? targetValue.Value : gameObject;
       return TaskStatus.Success;
     }
 
     public override void OnReset()
     {
-      this.valueCanBeNull = (SharedBool) false;
-      this.targetValue = (SharedGameObject) null;
-      this.targetVariable = (SharedGameObject) null;
+      valueCanBeNull = false;
+      targetValue = null;
+      targetVariable = null;
     }
   }
 }

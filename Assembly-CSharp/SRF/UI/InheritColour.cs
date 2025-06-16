@@ -1,7 +1,4 @@
-﻿using UnityEngine;
-using UnityEngine.UI;
-
-namespace SRF.UI
+﻿namespace SRF.UI
 {
   [RequireComponent(typeof (Graphic))]
   [ExecuteInEditMode]
@@ -15,21 +12,21 @@ namespace SRF.UI
     {
       get
       {
-        if ((Object) this._graphic == (Object) null)
-          this._graphic = this.GetComponent<Graphic>();
-        return this._graphic;
+        if ((Object) _graphic == (Object) null)
+          _graphic = this.GetComponent<Graphic>();
+        return _graphic;
       }
     }
 
     private void Refresh()
     {
-      if ((Object) this.From == (Object) null)
+      if ((Object) From == (Object) null)
         return;
-      this.Graphic.color = this.From.canvasRenderer.GetColor();
+      Graphic.color = From.canvasRenderer.GetColor();
     }
 
-    private void Update() => this.Refresh();
+    private void Update() => Refresh();
 
-    private void Start() => this.Refresh();
+    private void Start() => Refresh();
   }
 }

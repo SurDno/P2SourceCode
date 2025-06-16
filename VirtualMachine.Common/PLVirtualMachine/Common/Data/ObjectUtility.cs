@@ -1,73 +1,71 @@
-﻿using Cofe.Loggers;
-using System;
+﻿using System;
 using System.Globalization;
 using System.Reflection;
 using System.Text;
+using Cofe.Loggers;
 
 namespace PLVirtualMachine.Common.Data
 {
   public static class ObjectUtility
   {
-    public static T To<T>(object obj) => (T) ObjectUtility.To(obj, typeof (T));
+    public static T To<T>(object obj) => (T) To(obj, typeof (T));
 
     public static object To(object obj, Type type)
     {
       if (type == typeof (ulong))
-        return (object) Convert.ToUInt64(obj);
+        return Convert.ToUInt64(obj);
       if (type == typeof (long))
-        return (object) Convert.ToInt64(obj);
+        return Convert.ToInt64(obj);
       if (type == typeof (uint))
-        return (object) Convert.ToUInt32(obj);
+        return Convert.ToUInt32(obj);
       if (type == typeof (int))
-        return (object) Convert.ToInt32(obj);
+        return Convert.ToInt32(obj);
       if (type == typeof (ushort))
-        return (object) Convert.ToUInt16(obj);
+        return Convert.ToUInt16(obj);
       if (type == typeof (short))
-        return (object) Convert.ToInt16(obj);
+        return Convert.ToInt16(obj);
       if (type == typeof (byte))
-        return (object) Convert.ToByte(obj);
+        return Convert.ToByte(obj);
       if (type == typeof (sbyte))
-        return (object) Convert.ToSByte(obj);
+        return Convert.ToSByte(obj);
       if (type == typeof (double))
-        return (object) Convert.ToDouble(obj);
+        return Convert.ToDouble(obj);
       if (type == typeof (float))
       {
         string s = obj as string;
         if (!string.IsNullOrEmpty(s))
         {
           float result;
-          if (float.TryParse(s, NumberStyles.Any, (IFormatProvider) CultureInfo.InvariantCulture, out result))
-            return (object) result;
+          if (float.TryParse(s, NumberStyles.Any, CultureInfo.InvariantCulture, out result))
+            return result;
           Logger.AddWarning("Error parse , method : " + MethodBase.GetCurrentMethod().Name + " , value : " + s);
         }
-        return (object) 0.0f;
+        return 0.0f;
       }
       if (type == typeof (bool))
-        return (object) Convert.ToBoolean(obj);
+        return Convert.ToBoolean(obj);
       if (type == typeof (DateTime))
-        return (object) Convert.ToDateTime(obj);
+        return Convert.ToDateTime(obj);
       if (type == typeof (string))
       {
         switch (obj)
         {
           case byte[] _:
-            return (object) ObjectUtility.To<string>((object) (byte[]) obj);
+            return To<string>((byte[]) obj);
           case double num1:
-            return (object) num1.ToString("");
+            return num1.ToString("");
           case float num2:
-            return (object) num2.ToString("");
+            return num2.ToString("");
           default:
-            return (object) obj.ToString();
+            return obj.ToString();
         }
       }
-      else
-      {
-        if (type == typeof (byte[]))
-          return (object) ObjectUtility.ToByteArray(obj);
-        if (!(type == typeof (Enum)))
-          throw new Exception("Error: Type " + type.Name + " == typeof not supported!");
-        return obj is string ? Enum.Parse(type, (string) obj) : Convert.ChangeType(obj, type);
-      }
+
+      if (type == typeof (byte[]))
+        return ToByteArray(obj);
+      if (!(type == typeof (Enum)))
+        throw new Exception("Error: Type " + type.Name + " == typeof not supported!");
+      return obj is string ? Enum.Parse(type, (string) obj) : Convert.ChangeType(obj, type);
     }
 
     public static byte[] ToByteArray(object obj)
@@ -78,7 +76,7 @@ namespace PLVirtualMachine.Common.Data
         case DBNull _:
           throw new Exception("Error: Object == typeof(null!");
         default:
-          byte[] byteArray = (byte[]) null;
+          byte[] byteArray = null;
           if (obj.GetType() == typeof (byte[]))
             byteArray = (byte[]) obj;
           else if (obj.GetType() == typeof (object))
@@ -108,10 +106,10 @@ namespace PLVirtualMachine.Common.Data
                 byteArray = BitConverter.GetBytes(num6);
                 break;
               case byte num7:
-                byteArray = BitConverter.GetBytes((short) num7);
+                byteArray = BitConverter.GetBytes(num7);
                 break;
               case sbyte num8:
-                byteArray = BitConverter.GetBytes((short) num8);
+                byteArray = BitConverter.GetBytes(num8);
                 break;
               case double num9:
                 byteArray = BitConverter.GetBytes(num9);

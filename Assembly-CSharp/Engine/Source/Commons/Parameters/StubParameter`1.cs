@@ -10,8 +10,8 @@ namespace Engine.Source.Commons.Parameters
     [Inspected(Header = true)]
     public ParameterNameEnum Name
     {
-      get => this.name;
-      set => this.name = value;
+      get => name;
+      set => name = value;
     }
 
     [Inspected(Header = true)]
@@ -53,7 +53,7 @@ namespace Engine.Source.Commons.Parameters
     [Inspected]
     public bool Resetable => false;
 
-    public object ValueData => (object) this.Value;
+    public object ValueData => Value;
 
     public void AddListener(IChangeParameterListener listener)
     {

@@ -8,9 +8,9 @@ public class CombatCry
   private CombatCryEnum cryType;
   private CombatServiceCharacterInfo character;
 
-  public CombatCryEnum CryType => this.cryType;
+  public CombatCryEnum CryType => cryType;
 
-  public CombatServiceCharacterInfo Character => this.character;
+  public CombatServiceCharacterInfo Character => character;
 
   public CombatCry(CombatCryEnum cryType, CombatServiceCharacterInfo character)
   {

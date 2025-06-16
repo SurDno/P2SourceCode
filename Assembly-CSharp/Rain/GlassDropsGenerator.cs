@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace Rain
+﻿namespace Rain
 {
   [ExecuteInEditMode]
   public class GlassDropsGenerator : MonoBehaviour
@@ -11,56 +9,56 @@ namespace Rain
     public RenderTexture normalOutput;
     public float speed = 1f;
     private Material _material;
-    private float _phase = 0.0f;
-    private bool _isOutputFlat = false;
+    private float _phase;
+    private bool _isOutputFlat;
 
     private Material material
     {
       get
       {
-        if ((Object) this._material == (Object) null)
-          this._material = new Material(this.shader);
-        return this._material;
+        if ((Object) _material == (Object) null)
+          _material = new Material(shader);
+        return _material;
       }
       set
       {
-        if (!((Object) value != (Object) this._material))
+        if (!((Object) value != (Object) _material))
           return;
-        if ((Object) this._material != (Object) null)
-          Object.Destroy((Object) this._material);
-        this._material = value;
+        if ((Object) _material != (Object) null)
+          Object.Destroy((Object) _material);
+        _material = value;
       }
     }
 
-    private void OnDisable() => this.material = (Material) null;
+    private void OnDisable() => material = (Material) null;
 
     private void Update()
     {
       RainManager instance = RainManager.Instance;
       float num = 0.0f;
-      if ((Object) instance != (Object) null && (double) instance.actualRainIntensity > 0.0)
+      if ((Object) instance != (Object) null && instance.actualRainIntensity > 0.0)
       {
-        this._phase += Time.deltaTime * this.speed * instance.actualRainIntensity * instance.actualRainIntensity;
-        if ((double) this._phase >= 1.0)
-          --this._phase;
+        _phase += Time.deltaTime * speed * instance.actualRainIntensity * instance.actualRainIntensity;
+        if (_phase >= 1.0)
+          --_phase;
         num = Mathf.Sqrt(instance.actualRainIntensity);
       }
-      if ((double) num <= 0.0)
+      if (num <= 0.0)
       {
-        if (this._isOutputFlat)
+        if (_isOutputFlat)
         {
-          if (this.normalOutput.IsCreated())
+          if (normalOutput.IsCreated())
             return;
         }
         else
-          this._isOutputFlat = true;
+          _isOutputFlat = true;
       }
       else
-        this._isOutputFlat = false;
-      this.material.SetFloat("_Intensity", num);
-      this.material.SetFloat("_Phase", this._phase);
-      Graphics.Blit(this.inputTexture, this.heightOutput, this.material, 0);
-      Graphics.Blit((Texture) this.heightOutput, this.normalOutput, this.material, 1);
+        _isOutputFlat = false;
+      material.SetFloat("_Intensity", num);
+      material.SetFloat("_Phase", _phase);
+      Graphics.Blit(inputTexture, heightOutput, material, 0);
+      Graphics.Blit((Texture) heightOutput, normalOutput, material, 1);
     }
   }
 }

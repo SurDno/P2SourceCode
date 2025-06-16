@@ -1,8 +1,9 @@
-﻿using Facepunch.Steamworks.Callbacks;
-using SteamNative;
-using System;
+﻿using System;
 using System.IO;
 using System.Text;
+using Facepunch.Steamworks.Callbacks;
+using SteamNative;
+using Result = SteamNative.Result;
 
 namespace Facepunch.Steamworks
 {
@@ -19,24 +20,24 @@ namespace Facepunch.Steamworks
 
     public bool Exists { get; internal set; }
 
-    public bool IsDownloading => this._isUgc && this._isDownloading && this._downloadedData == null;
+    public bool IsDownloading => _isUgc && _isDownloading && _downloadedData == null;
 
-    public bool IsDownloaded => !this._isUgc || this._downloadedData != null;
+    public bool IsDownloaded => !_isUgc || _downloadedData != null;
 
-    public bool IsShared => this._handle.Value > 0UL;
+    public bool IsShared => _handle.Value > 0UL;
 
-    internal UGCHandle_t UGCHandle => this._handle;
+    internal UGCHandle_t UGCHandle => _handle;
 
-    public ulong SharingId => this.UGCHandle.Value;
+    public ulong SharingId => UGCHandle.Value;
 
     public string FileName
     {
       get
       {
-        if (this._fileName != null)
-          return this._fileName;
-        this.GetUGCDetails();
-        return this._fileName;
+        if (_fileName != null)
+          return _fileName;
+        GetUGCDetails();
+        return _fileName;
       }
     }
 
@@ -44,10 +45,10 @@ namespace Facepunch.Steamworks
     {
       get
       {
-        if (this._ownerId > 0UL)
-          return this._ownerId;
-        this.GetUGCDetails();
-        return this._ownerId;
+        if (_ownerId > 0UL)
+          return _ownerId;
+        GetUGCDetails();
+        return _ownerId;
       }
     }
 
@@ -55,43 +56,43 @@ namespace Facepunch.Steamworks
     {
       get
       {
-        if (this._sizeInBytes != -1)
-          return this._sizeInBytes;
-        if (this._isUgc)
+        if (_sizeInBytes != -1)
+          return _sizeInBytes;
+        if (_isUgc)
           throw new NotImplementedException();
-        this._sizeInBytes = this.remoteStorage.native.GetFileSize(this.FileName);
-        return this._sizeInBytes;
+        _sizeInBytes = remoteStorage.native.GetFileSize(FileName);
+        return _sizeInBytes;
       }
-      internal set => this._sizeInBytes = value;
+      internal set => _sizeInBytes = value;
     }
 
     internal RemoteFile(RemoteStorage r, UGCHandle_t handle)
     {
-      this.Exists = true;
-      this.remoteStorage = r;
-      this._isUgc = true;
-      this._handle = handle;
+      Exists = true;
+      remoteStorage = r;
+      _isUgc = true;
+      _handle = handle;
     }
 
     internal RemoteFile(RemoteStorage r, string name, ulong ownerId, int sizeInBytes = -1)
     {
-      this.remoteStorage = r;
-      this._isUgc = false;
-      this._fileName = name;
-      this._ownerId = ownerId;
-      this._sizeInBytes = sizeInBytes;
+      remoteStorage = r;
+      _isUgc = false;
+      _fileName = name;
+      _ownerId = ownerId;
+      _sizeInBytes = sizeInBytes;
     }
 
     public RemoteFileWriteStream OpenWrite()
     {
-      if (this._isUgc)
+      if (_isUgc)
         throw new InvalidOperationException("Cannot write to a shared file.");
-      return new RemoteFileWriteStream(this.remoteStorage, this);
+      return new RemoteFileWriteStream(remoteStorage, this);
     }
 
     public void WriteAllBytes(byte[] buffer)
     {
-      using (RemoteFileWriteStream remoteFileWriteStream = this.OpenWrite())
+      using (RemoteFileWriteStream remoteFileWriteStream = OpenWrite())
         remoteFileWriteStream.Write(buffer, 0, buffer.Length);
     }
 
@@ -99,60 +100,60 @@ namespace Facepunch.Steamworks
     {
       if (encoding == null)
         encoding = Encoding.UTF8;
-      this.WriteAllBytes(encoding.GetBytes(text));
+      WriteAllBytes(encoding.GetBytes(text));
     }
 
     public bool GetDownloadProgress(out int bytesDownloaded, out int bytesExpected)
     {
-      return this.remoteStorage.native.GetUGCDownloadProgress(this._handle, out bytesDownloaded, out bytesExpected);
+      return remoteStorage.native.GetUGCDownloadProgress(_handle, out bytesDownloaded, out bytesExpected);
     }
 
-    public unsafe bool Download(RemoteFile.DownloadCallback onSuccess = null, FailureCallback onFailure = null)
+    public unsafe bool Download(DownloadCallback onSuccess = null, FailureCallback onFailure = null)
     {
-      if (!this._isUgc || this._isDownloading || this.IsDownloaded)
+      if (!_isUgc || _isDownloading || IsDownloaded)
         return false;
-      this._isDownloading = true;
-      this.remoteStorage.native.UGCDownload(this._handle, 1000U, (Action<RemoteStorageDownloadUGCResult_t, bool>) ((result, error) =>
+      _isDownloading = true;
+      remoteStorage.native.UGCDownload(_handle, 1000U, (result, error) =>
       {
-        this._isDownloading = false;
-        if (error || result.Result != SteamNative.Result.OK)
+        _isDownloading = false;
+        if (error || result.Result != Result.OK)
         {
           FailureCallback failureCallback = onFailure;
           if (failureCallback == null)
             return;
-          failureCallback(result.Result == (SteamNative.Result) 0 ? Facepunch.Steamworks.Callbacks.Result.IOFailure : (Facepunch.Steamworks.Callbacks.Result) result.Result);
+          failureCallback(result.Result == 0 ? Callbacks.Result.IOFailure : (Callbacks.Result) result.Result);
         }
         else
         {
-          this._ownerId = result.SteamIDOwner;
-          this._sizeInBytes = result.SizeInBytes;
-          this._fileName = result.PchFileName;
-          this._downloadedData = new byte[this._sizeInBytes];
-          fixed (byte* pvData = this._downloadedData)
-            this.remoteStorage.native.UGCRead(this._handle, (IntPtr) (void*) pvData, this._sizeInBytes, 0U, UGCReadAction.ontinueReading);
-          RemoteFile.DownloadCallback downloadCallback = onSuccess;
+          _ownerId = result.SteamIDOwner;
+          _sizeInBytes = result.SizeInBytes;
+          _fileName = result.PchFileName;
+          _downloadedData = new byte[_sizeInBytes];
+          fixed (byte* pvData = _downloadedData)
+            remoteStorage.native.UGCRead(_handle, (IntPtr) pvData, _sizeInBytes, 0U, UGCReadAction.ontinueReading);
+          DownloadCallback downloadCallback = onSuccess;
           if (downloadCallback == null)
             return;
           downloadCallback();
         }
-      }));
+      });
       return true;
     }
 
-    public Stream OpenRead() => (Stream) new MemoryStream(this.ReadAllBytes(), false);
+    public Stream OpenRead() => new MemoryStream(ReadAllBytes(), false);
 
     public unsafe byte[] ReadAllBytes()
     {
-      if (this._isUgc)
+      if (_isUgc)
       {
-        if (!this.IsDownloaded)
+        if (!IsDownloaded)
           throw new Exception("Cannot read a file that hasn't been downloaded.");
-        return this._downloadedData;
+        return _downloadedData;
       }
-      int sizeInBytes = this.SizeInBytes;
+      int sizeInBytes = SizeInBytes;
       byte[] numArray = new byte[sizeInBytes];
       fixed (byte* pvData = numArray)
-        this.remoteStorage.native.FileRead(this.FileName, (IntPtr) (void*) pvData, sizeInBytes);
+        remoteStorage.native.FileRead(FileName, (IntPtr) pvData, sizeInBytes);
       return numArray;
     }
 
@@ -160,19 +161,19 @@ namespace Facepunch.Steamworks
     {
       if (encoding == null)
         encoding = Encoding.UTF8;
-      return encoding.GetString(this.ReadAllBytes());
+      return encoding.GetString(ReadAllBytes());
     }
 
-    public bool Share(RemoteFile.ShareCallback onSuccess = null, FailureCallback onFailure = null)
+    public bool Share(ShareCallback onSuccess = null, FailureCallback onFailure = null)
     {
-      if (this._isUgc || this._handle.Value > 0UL)
+      if (_isUgc || _handle.Value > 0UL)
         return false;
-      this.remoteStorage.native.FileShare(this.FileName, (Action<RemoteStorageFileShareResult_t, bool>) ((result, error) =>
+      remoteStorage.native.FileShare(FileName, (result, error) =>
       {
-        if (!error && result.Result == SteamNative.Result.OK)
+        if (!error && result.Result == Result.OK)
         {
-          this._handle.Value = result.File;
-          RemoteFile.ShareCallback shareCallback = onSuccess;
+          _handle.Value = result.File;
+          ShareCallback shareCallback = onSuccess;
           if (shareCallback == null)
             return;
           shareCallback();
@@ -181,37 +182,36 @@ namespace Facepunch.Steamworks
         {
           FailureCallback failureCallback = onFailure;
           if (failureCallback != null)
-            failureCallback(result.Result == (SteamNative.Result) 0 ? Facepunch.Steamworks.Callbacks.Result.IOFailure : (Facepunch.Steamworks.Callbacks.Result) result.Result);
+            failureCallback(result.Result == 0 ? Callbacks.Result.IOFailure : (Callbacks.Result) result.Result);
         }
-      }));
+      });
       return true;
     }
 
     public bool Delete()
     {
-      if (!this.Exists || this._isUgc || !this.remoteStorage.native.FileDelete(this.FileName))
+      if (!Exists || _isUgc || !remoteStorage.native.FileDelete(FileName))
         return false;
-      this.Exists = false;
-      this.remoteStorage.InvalidateFiles();
+      Exists = false;
+      remoteStorage.InvalidateFiles();
       return true;
     }
 
     public bool Forget()
     {
-      return this.Exists && !this._isUgc && this.remoteStorage.native.FileForget(this.FileName);
+      return Exists && !_isUgc && remoteStorage.native.FileForget(FileName);
     }
 
     private void GetUGCDetails()
     {
-      if (!this._isUgc)
+      if (!_isUgc)
         throw new InvalidOperationException();
-      AppId_t pnAppID = new AppId_t()
-      {
-        Value = this.remoteStorage.native.steamworks.AppId
+      AppId_t pnAppID = new AppId_t {
+        Value = remoteStorage.native.steamworks.AppId
       };
       CSteamID pSteamIDOwner;
-      this.remoteStorage.native.GetUGCDetails(this._handle, ref pnAppID, out this._fileName, out pSteamIDOwner);
-      this._ownerId = pSteamIDOwner.Value;
+      remoteStorage.native.GetUGCDetails(_handle, ref pnAppID, out _fileName, out pSteamIDOwner);
+      _ownerId = pSteamIDOwner.Value;
     }
 
     public delegate void DownloadCallback();

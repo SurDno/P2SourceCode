@@ -4,7 +4,6 @@ using Engine.Common.Commons;
 using Engine.Impl.Services.Factories;
 using Engine.Source.Settings.External;
 using ParadoxNotion;
-using UnityEngine;
 
 namespace Engine.Source.Commons
 {
@@ -17,13 +16,13 @@ namespace Engine.Source.Commons
     {
       get
       {
-        if ((Object) this.gameObject == (Object) null)
+        if ((Object) gameObject == (Object) null)
         {
-          string path = AssetDatabaseService.Instance.GetPath(this.Id);
-          ReflectionTools.ContextObject = (object) path;
-          this.gameObject = AssetDatabaseService.Instance.Load<GameObject>(path);
+          string path = AssetDatabaseService.Instance.GetPath(Id);
+          ReflectionTools.ContextObject = path;
+          gameObject = AssetDatabaseService.Instance.Load<GameObject>(path);
         }
-        return this.gameObject;
+        return gameObject;
       }
     }
 
@@ -31,7 +30,7 @@ namespace Engine.Source.Commons
     {
       if (!ExternalSettingsInstance<ExternalOptimizationSettings>.Instance.PreloadBlueprints)
         return;
-      GameObject gameObject = this.GameObject;
+      GameObject gameObject = GameObject;
     }
   }
 }

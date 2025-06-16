@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEngine;
 
 namespace RootMotion.FinalIK
 {
@@ -21,15 +20,15 @@ namespace RootMotion.FinalIK
     {
       get
       {
-        if (this._limbs == null || this._limbs != null && this._limbs.Length != 4)
-          this._limbs = new IKSolverLimb[4]
+        if (_limbs == null || _limbs != null && _limbs.Length != 4)
+          _limbs = new IKSolverLimb[4]
           {
-            this.leftFoot,
-            this.rightFoot,
-            this.leftHand,
-            this.rightHand
+            leftFoot,
+            rightFoot,
+            leftHand,
+            rightHand
           };
-        return this._limbs;
+        return _limbs;
       }
     }
 
@@ -37,34 +36,34 @@ namespace RootMotion.FinalIK
     {
       get
       {
-        if (this._ikSolvers == null || this._ikSolvers != null && this._ikSolvers.Length != 7)
-          this._ikSolvers = new IKSolver[7]
+        if (_ikSolvers == null || _ikSolvers != null && _ikSolvers.Length != 7)
+          _ikSolvers = new IKSolver[7]
           {
-            (IKSolver) this.leftFoot,
-            (IKSolver) this.rightFoot,
-            (IKSolver) this.leftHand,
-            (IKSolver) this.rightHand,
-            (IKSolver) this.spine,
-            (IKSolver) this.lookAt,
-            (IKSolver) this.aim
+            leftFoot,
+            rightFoot,
+            leftHand,
+            rightHand,
+            spine,
+            lookAt,
+            aim
           };
-        return this._ikSolvers;
+        return _ikSolvers;
       }
     }
 
     public void AssignReferences(BipedReferences references)
     {
-      this.leftHand.SetChain(references.leftUpperArm, references.leftForearm, references.leftHand, references.root);
-      this.rightHand.SetChain(references.rightUpperArm, references.rightForearm, references.rightHand, references.root);
-      this.leftFoot.SetChain(references.leftThigh, references.leftCalf, references.leftFoot, references.root);
-      this.rightFoot.SetChain(references.rightThigh, references.rightCalf, references.rightFoot, references.root);
-      this.spine.SetChain(references.spine, references.root);
-      this.lookAt.SetChain(references.spine, references.head, references.eyes, references.root);
-      this.aim.SetChain(references.spine, references.root);
-      this.leftFoot.goal = AvatarIKGoal.LeftFoot;
-      this.rightFoot.goal = AvatarIKGoal.RightFoot;
-      this.leftHand.goal = AvatarIKGoal.LeftHand;
-      this.rightHand.goal = AvatarIKGoal.RightHand;
+      leftHand.SetChain(references.leftUpperArm, references.leftForearm, references.leftHand, references.root);
+      rightHand.SetChain(references.rightUpperArm, references.rightForearm, references.rightHand, references.root);
+      leftFoot.SetChain(references.leftThigh, references.leftCalf, references.leftFoot, references.root);
+      rightFoot.SetChain(references.rightThigh, references.rightCalf, references.rightFoot, references.root);
+      spine.SetChain(references.spine, references.root);
+      lookAt.SetChain(references.spine, references.head, references.eyes, references.root);
+      aim.SetChain(references.spine, references.root);
+      leftFoot.goal = AvatarIKGoal.LeftFoot;
+      rightFoot.goal = AvatarIKGoal.RightFoot;
+      leftHand.goal = AvatarIKGoal.LeftHand;
+      rightHand.goal = AvatarIKGoal.RightHand;
     }
   }
 }

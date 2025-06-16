@@ -1,7 +1,5 @@
-﻿using Cinemachine.Utility;
-using System;
-using UnityEngine;
-using UnityEngine.Serialization;
+﻿using System;
+using Cinemachine.Utility;
 
 namespace Cinemachine
 {
@@ -13,9 +11,9 @@ namespace Cinemachine
   {
     [Space]
     [Tooltip("The definition of Forward.  Camera will follow behind.")]
-    public CinemachineOrbitalTransposer.Heading m_Heading = new CinemachineOrbitalTransposer.Heading(CinemachineOrbitalTransposer.Heading.HeadingDefinition.TargetForward, 4, 0.0f);
+    public Heading m_Heading = new Heading(Heading.HeadingDefinition.TargetForward, 4, 0.0f);
     [Tooltip("Automatic heading recentering.  The settings here defines how the camera will reposition itself in the absence of player input.")]
-    public CinemachineOrbitalTransposer.Recentering m_RecenterToTargetHeading = new CinemachineOrbitalTransposer.Recentering(true, 1f, 2f);
+    public Recentering m_RecenterToTargetHeading = new Recentering(true, 1f, 2f);
     [Tooltip("Heading Control.  The settings here control the behaviour of the camera in response to the player's input.")]
     public AxisState m_XAxis = new AxisState(300f, 2f, 1f, 0.0f, "Mouse X", true);
     [SerializeField]
@@ -33,51 +31,51 @@ namespace Cinemachine
     [HideInInspector]
     [NoSaveDuringPlay]
     public bool m_HeadingIsSlave = false;
-    internal CinemachineOrbitalTransposer.UpdateHeadingDelegate HeadingUpdater = (CinemachineOrbitalTransposer.UpdateHeadingDelegate) ((orbital, deltaTime, up) => orbital.UpdateHeading(deltaTime, up, ref orbital.m_XAxis));
-    private float mLastHeadingAxisInputTime = 0.0f;
-    private float mHeadingRecenteringVelocity = 0.0f;
+    internal UpdateHeadingDelegate HeadingUpdater = (orbital, deltaTime, up) => orbital.UpdateHeading(deltaTime, up, ref orbital.m_XAxis);
+    private float mLastHeadingAxisInputTime;
+    private float mHeadingRecenteringVelocity;
     private Vector3 mLastTargetPosition = Vector3.zero;
-    private CinemachineOrbitalTransposer.HeadingTracker mHeadingTracker;
+    private HeadingTracker mHeadingTracker;
     private Rigidbody mTargetRigidBody = (Rigidbody) null;
     private Quaternion mHeadingPrevFrame = Quaternion.identity;
     private Vector3 mOffsetPrevFrame = Vector3.zero;
 
     protected override void OnValidate()
     {
-      if ((double) this.m_LegacyRadius != 3.4028234663852886E+38 && (double) this.m_LegacyHeightOffset != 3.4028234663852886E+38 && (double) this.m_LegacyHeadingBias != 3.4028234663852886E+38)
+      if (m_LegacyRadius != 3.4028234663852886E+38 && m_LegacyHeightOffset != 3.4028234663852886E+38 && m_LegacyHeadingBias != 3.4028234663852886E+38)
       {
-        this.m_FollowOffset = new Vector3(0.0f, this.m_LegacyHeightOffset, -this.m_LegacyRadius);
-        this.m_LegacyHeightOffset = this.m_LegacyRadius = float.MaxValue;
-        this.m_Heading.m_HeadingBias = this.m_LegacyHeadingBias;
-        this.m_XAxis.m_MaxSpeed /= 10f;
-        this.m_XAxis.m_AccelTime /= 10f;
-        this.m_XAxis.m_DecelTime /= 10f;
-        this.m_LegacyHeadingBias = float.MaxValue;
-        this.m_RecenterToTargetHeading.LegacyUpgrade(ref this.m_Heading.m_HeadingDefinition, ref this.m_Heading.m_VelocityFilterStrength);
+        m_FollowOffset = new Vector3(0.0f, m_LegacyHeightOffset, -m_LegacyRadius);
+        m_LegacyHeightOffset = m_LegacyRadius = float.MaxValue;
+        m_Heading.m_HeadingBias = m_LegacyHeadingBias;
+        m_XAxis.m_MaxSpeed /= 10f;
+        m_XAxis.m_AccelTime /= 10f;
+        m_XAxis.m_DecelTime /= 10f;
+        m_LegacyHeadingBias = float.MaxValue;
+        m_RecenterToTargetHeading.LegacyUpgrade(ref m_Heading.m_HeadingDefinition, ref m_Heading.m_VelocityFilterStrength);
       }
-      this.m_XAxis.Validate();
-      this.m_RecenterToTargetHeading.Validate();
+      m_XAxis.Validate();
+      m_RecenterToTargetHeading.Validate();
       base.OnValidate();
     }
 
     public float UpdateHeading(float deltaTime, Vector3 up, ref AxisState axis)
     {
-      if (((double) deltaTime >= 0.0 || CinemachineCore.Instance.IsLive((ICinemachineCamera) this.VirtualCamera)) && false | axis.Update(deltaTime))
+      if ((deltaTime >= 0.0 || CinemachineCore.Instance.IsLive(VirtualCamera)) && false | axis.Update(deltaTime))
       {
-        this.mLastHeadingAxisInputTime = Time.time;
-        this.mHeadingRecenteringVelocity = 0.0f;
+        mLastHeadingAxisInputTime = Time.time;
+        mHeadingRecenteringVelocity = 0.0f;
       }
-      float targetHeading = this.GetTargetHeading(axis.Value, this.GetReferenceOrientation(up), deltaTime);
-      if ((double) deltaTime < 0.0)
+      float targetHeading = GetTargetHeading(axis.Value, GetReferenceOrientation(up), deltaTime);
+      if (deltaTime < 0.0)
       {
-        this.mHeadingRecenteringVelocity = 0.0f;
-        if (this.m_RecenterToTargetHeading.m_enabled)
+        mHeadingRecenteringVelocity = 0.0f;
+        if (m_RecenterToTargetHeading.m_enabled)
           axis.Value = targetHeading;
       }
-      else if (this.m_BindingMode != CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp && this.m_RecenterToTargetHeading.m_enabled && (double) Time.time > (double) this.mLastHeadingAxisInputTime + (double) this.m_RecenterToTargetHeading.m_RecenterWaitTime)
+      else if (m_BindingMode != BindingMode.SimpleFollowWithWorldUp && m_RecenterToTargetHeading.m_enabled && (double) Time.time > mLastHeadingAxisInputTime + (double) m_RecenterToTargetHeading.m_RecenterWaitTime)
       {
-        float num1 = this.m_RecenterToTargetHeading.m_RecenteringTime / 3f;
-        if ((double) num1 <= (double) deltaTime)
+        float num1 = m_RecenterToTargetHeading.m_RecenteringTime / 3f;
+        if (num1 <= (double) deltaTime)
         {
           axis.Value = targetHeading;
         }
@@ -85,86 +83,86 @@ namespace Cinemachine
         {
           float f = Mathf.DeltaAngle(axis.Value, targetHeading);
           float a = Mathf.Abs(f);
-          if ((double) a < 9.9999997473787516E-05)
+          if (a < 9.9999997473787516E-05)
           {
             axis.Value = targetHeading;
-            this.mHeadingRecenteringVelocity = 0.0f;
+            mHeadingRecenteringVelocity = 0.0f;
           }
           else
           {
             float num2 = deltaTime / num1;
             float num3 = Mathf.Sign(f) * Mathf.Min(a, a * num2);
-            float num4 = num3 - this.mHeadingRecenteringVelocity;
-            if ((double) num3 < 0.0 && (double) num4 < 0.0 || (double) num3 > 0.0 && (double) num4 > 0.0)
-              num3 = this.mHeadingRecenteringVelocity + num3 * num2;
+            float num4 = num3 - mHeadingRecenteringVelocity;
+            if (num3 < 0.0 && num4 < 0.0 || num3 > 0.0 && num4 > 0.0)
+              num3 = mHeadingRecenteringVelocity + num3 * num2;
             axis.Value += num3;
-            this.mHeadingRecenteringVelocity = num3;
+            mHeadingRecenteringVelocity = num3;
           }
         }
       }
       float num = axis.Value;
-      if (this.m_BindingMode == CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp)
+      if (m_BindingMode == BindingMode.SimpleFollowWithWorldUp)
         axis.Value = 0.0f;
       return num;
     }
 
     private void OnEnable()
     {
-      this.m_XAxis.SetThresholds(0.0f, 360f, true);
-      this.PreviousTarget = (Transform) null;
-      this.mLastTargetPosition = Vector3.zero;
+      m_XAxis.SetThresholds(0.0f, 360f, true);
+      PreviousTarget = (Transform) null;
+      mLastTargetPosition = Vector3.zero;
     }
 
     private Transform PreviousTarget { get; set; }
 
     public override void MutateCameraState(ref CameraState curState, float deltaTime)
     {
-      this.InitPrevFrameStateInfo(ref curState, deltaTime);
-      if ((UnityEngine.Object) this.FollowTarget != (UnityEngine.Object) this.PreviousTarget)
+      InitPrevFrameStateInfo(ref curState, deltaTime);
+      if ((UnityEngine.Object) FollowTarget != (UnityEngine.Object) PreviousTarget)
       {
-        this.PreviousTarget = this.FollowTarget;
-        this.mTargetRigidBody = (UnityEngine.Object) this.PreviousTarget == (UnityEngine.Object) null ? (Rigidbody) null : this.PreviousTarget.GetComponent<Rigidbody>();
-        this.mLastTargetPosition = (UnityEngine.Object) this.PreviousTarget == (UnityEngine.Object) null ? Vector3.zero : this.PreviousTarget.position;
-        this.mHeadingTracker = (CinemachineOrbitalTransposer.HeadingTracker) null;
+        PreviousTarget = FollowTarget;
+        mTargetRigidBody = (UnityEngine.Object) PreviousTarget == (UnityEngine.Object) null ? (Rigidbody) null : PreviousTarget.GetComponent<Rigidbody>();
+        mLastTargetPosition = (UnityEngine.Object) PreviousTarget == (UnityEngine.Object) null ? Vector3.zero : PreviousTarget.position;
+        mHeadingTracker = null;
       }
-      float angle = this.HeadingUpdater(this, deltaTime, curState.ReferenceUp);
-      if (!this.IsValid)
+      float angle = HeadingUpdater(this, deltaTime, curState.ReferenceUp);
+      if (!IsValid)
         return;
-      this.mLastTargetPosition = this.FollowTarget.position;
-      if (this.m_BindingMode != CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp)
-        angle += this.m_Heading.m_HeadingBias;
+      mLastTargetPosition = FollowTarget.position;
+      if (m_BindingMode != BindingMode.SimpleFollowWithWorldUp)
+        angle += m_Heading.m_HeadingBias;
       Quaternion quaternion1 = Quaternion.AngleAxis(angle, curState.ReferenceUp);
-      Vector3 effectiveOffset = this.EffectiveOffset;
+      Vector3 effectiveOffset = EffectiveOffset;
       Vector3 outTargetPosition;
       Quaternion outTargetOrient;
-      this.TrackTarget(deltaTime, curState.ReferenceUp, quaternion1 * effectiveOffset, out outTargetPosition, out outTargetOrient);
+      TrackTarget(deltaTime, curState.ReferenceUp, quaternion1 * effectiveOffset, out outTargetPosition, out outTargetOrient);
       curState.ReferenceUp = outTargetOrient * Vector3.up;
-      if ((double) deltaTime >= 0.0)
+      if (deltaTime >= 0.0)
       {
-        Vector3 vector3_1 = quaternion1 * effectiveOffset - this.mHeadingPrevFrame * this.mOffsetPrevFrame;
+        Vector3 vector3_1 = quaternion1 * effectiveOffset - mHeadingPrevFrame * mOffsetPrevFrame;
         Vector3 vector3_2 = outTargetOrient * vector3_1;
         curState.PositionDampingBypass = vector3_2;
       }
       Quaternion quaternion2 = outTargetOrient * quaternion1;
       curState.RawPosition = outTargetPosition + quaternion2 * effectiveOffset;
-      this.mHeadingPrevFrame = this.m_BindingMode == CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp ? Quaternion.identity : quaternion1;
-      this.mOffsetPrevFrame = effectiveOffset;
+      mHeadingPrevFrame = m_BindingMode == BindingMode.SimpleFollowWithWorldUp ? Quaternion.identity : quaternion1;
+      mOffsetPrevFrame = effectiveOffset;
     }
 
     public override void OnPositionDragged(Vector3 delta)
     {
-      this.m_FollowOffset = this.m_FollowOffset + (Quaternion.Inverse(this.GetReferenceOrientation(this.VcamState.ReferenceUp)) * delta) with
+      m_FollowOffset = m_FollowOffset + (Quaternion.Inverse(GetReferenceOrientation(VcamState.ReferenceUp)) * delta) with
       {
         x = 0.0f
       };
-      this.m_FollowOffset = this.EffectiveOffset;
+      m_FollowOffset = EffectiveOffset;
     }
 
     private static string GetFullName(GameObject current)
     {
       if ((UnityEngine.Object) current == (UnityEngine.Object) null)
         return "";
-      return (UnityEngine.Object) current.transform.parent == (UnityEngine.Object) null ? "/" + current.name : CinemachineOrbitalTransposer.GetFullName(current.transform.parent.gameObject) + "/" + current.name;
+      return (UnityEngine.Object) current.transform.parent == (UnityEngine.Object) null ? "/" + current.name : GetFullName(current.transform.parent.gameObject) + "/" + current.name;
     }
 
     private float GetTargetHeading(
@@ -172,40 +170,40 @@ namespace Cinemachine
       Quaternion targetOrientation,
       float deltaTime)
     {
-      if (this.m_BindingMode == CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp)
+      if (m_BindingMode == BindingMode.SimpleFollowWithWorldUp)
         return 0.0f;
-      if ((UnityEngine.Object) this.FollowTarget == (UnityEngine.Object) null)
+      if ((UnityEngine.Object) FollowTarget == (UnityEngine.Object) null)
         return currentHeading;
-      if (this.m_Heading.m_HeadingDefinition == CinemachineOrbitalTransposer.Heading.HeadingDefinition.Velocity && (UnityEngine.Object) this.mTargetRigidBody == (UnityEngine.Object) null)
+      if (m_Heading.m_HeadingDefinition == Heading.HeadingDefinition.Velocity && (UnityEngine.Object) mTargetRigidBody == (UnityEngine.Object) null)
       {
-        Debug.Log((object) string.Format("Attempted to use HeadingDerivationMode.Velocity to calculate heading for {0}. No RigidBody was present on '{1}'. Defaulting to position delta", (object) CinemachineOrbitalTransposer.GetFullName(this.VirtualCamera.VirtualCameraGameObject), (object) this.FollowTarget));
-        this.m_Heading.m_HeadingDefinition = CinemachineOrbitalTransposer.Heading.HeadingDefinition.PositionDelta;
+        Debug.Log((object) string.Format("Attempted to use HeadingDerivationMode.Velocity to calculate heading for {0}. No RigidBody was present on '{1}'. Defaulting to position delta", GetFullName(VirtualCamera.VirtualCameraGameObject), (object) FollowTarget));
+        m_Heading.m_HeadingDefinition = Heading.HeadingDefinition.PositionDelta;
       }
       Vector3 zero = Vector3.zero;
       Vector3 vector;
-      switch (this.m_Heading.m_HeadingDefinition)
+      switch (m_Heading.m_HeadingDefinition)
       {
-        case CinemachineOrbitalTransposer.Heading.HeadingDefinition.PositionDelta:
-          vector = this.FollowTarget.position - this.mLastTargetPosition;
+        case Heading.HeadingDefinition.PositionDelta:
+          vector = FollowTarget.position - mLastTargetPosition;
           break;
-        case CinemachineOrbitalTransposer.Heading.HeadingDefinition.Velocity:
-          vector = this.mTargetRigidBody.velocity;
+        case Heading.HeadingDefinition.Velocity:
+          vector = mTargetRigidBody.velocity;
           break;
-        case CinemachineOrbitalTransposer.Heading.HeadingDefinition.TargetForward:
-          vector = this.FollowTarget.forward;
+        case Heading.HeadingDefinition.TargetForward:
+          vector = FollowTarget.forward;
           break;
         default:
           return 0.0f;
       }
-      int filterSize = this.m_Heading.m_VelocityFilterStrength * 5;
-      if (this.mHeadingTracker == null || this.mHeadingTracker.FilterSize != filterSize)
-        this.mHeadingTracker = new CinemachineOrbitalTransposer.HeadingTracker(filterSize);
-      this.mHeadingTracker.DecayHistory();
+      int filterSize = m_Heading.m_VelocityFilterStrength * 5;
+      if (mHeadingTracker == null || mHeadingTracker.FilterSize != filterSize)
+        mHeadingTracker = new HeadingTracker(filterSize);
+      mHeadingTracker.DecayHistory();
       Vector3 vector3_1 = targetOrientation * Vector3.up;
       Vector3 vector3_2 = vector.ProjectOntoPlane(vector3_1);
       if (!vector3_2.AlmostZero())
-        this.mHeadingTracker.Add(vector3_2);
-      Vector3 reliableHeading = this.mHeadingTracker.GetReliableHeading();
+        mHeadingTracker.Add(vector3_2);
+      Vector3 reliableHeading = mHeadingTracker.GetReliableHeading();
       return !reliableHeading.AlmostZero() ? UnityVectorExtensions.SignedAngle(targetOrientation * Vector3.forward, reliableHeading, vector3_1) : currentHeading;
     }
 
@@ -214,7 +212,7 @@ namespace Cinemachine
     public struct Heading
     {
       [Tooltip("How 'forward' is defined.  The camera will be placed by default behind the target.  PositionDelta will consider 'forward' to be the direction in which the target is moving.")]
-      public CinemachineOrbitalTransposer.Heading.HeadingDefinition m_HeadingDefinition;
+      public HeadingDefinition m_HeadingDefinition;
       [Range(0.0f, 10f)]
       [Tooltip("Size of the velocity sampling window for target heading filter.  This filters out irregularities in the target's movement.  Used only if deriving heading from target's movement (PositionDelta or Velocity)")]
       public int m_VelocityFilterStrength;
@@ -223,13 +221,13 @@ namespace Cinemachine
       public float m_HeadingBias;
 
       public Heading(
-        CinemachineOrbitalTransposer.Heading.HeadingDefinition def,
+        HeadingDefinition def,
         int filterStrength,
         float bias)
       {
-        this.m_HeadingDefinition = def;
-        this.m_VelocityFilterStrength = filterStrength;
-        this.m_HeadingBias = bias;
+        m_HeadingDefinition = def;
+        m_VelocityFilterStrength = filterStrength;
+        m_HeadingBias = bias;
       }
 
       [DocumentationSorting(6.21f, DocumentationSortingAttribute.Level.UserRef)]
@@ -263,27 +261,27 @@ namespace Cinemachine
 
       public Recentering(bool enabled, float recenterWaitTime, float recenteringSpeed)
       {
-        this.m_enabled = enabled;
-        this.m_RecenterWaitTime = recenterWaitTime;
-        this.m_RecenteringTime = recenteringSpeed;
-        this.m_LegacyHeadingDefinition = this.m_LegacyVelocityFilterStrength = -1;
+        m_enabled = enabled;
+        m_RecenterWaitTime = recenterWaitTime;
+        m_RecenteringTime = recenteringSpeed;
+        m_LegacyHeadingDefinition = m_LegacyVelocityFilterStrength = -1;
       }
 
       public void Validate()
       {
-        this.m_RecenterWaitTime = Mathf.Max(0.0f, this.m_RecenterWaitTime);
-        this.m_RecenteringTime = Mathf.Max(0.0f, this.m_RecenteringTime);
+        m_RecenterWaitTime = Mathf.Max(0.0f, m_RecenterWaitTime);
+        m_RecenteringTime = Mathf.Max(0.0f, m_RecenteringTime);
       }
 
       internal bool LegacyUpgrade(
-        ref CinemachineOrbitalTransposer.Heading.HeadingDefinition heading,
+        ref Heading.HeadingDefinition heading,
         ref int velocityFilter)
       {
-        if (this.m_LegacyHeadingDefinition == -1 || this.m_LegacyVelocityFilterStrength == -1)
+        if (m_LegacyHeadingDefinition == -1 || m_LegacyVelocityFilterStrength == -1)
           return false;
-        heading = (CinemachineOrbitalTransposer.Heading.HeadingDefinition) this.m_LegacyHeadingDefinition;
-        velocityFilter = this.m_LegacyVelocityFilterStrength;
-        this.m_LegacyHeadingDefinition = this.m_LegacyVelocityFilterStrength = -1;
+        heading = (Heading.HeadingDefinition) m_LegacyHeadingDefinition;
+        velocityFilter = m_LegacyVelocityFilterStrength;
+        m_LegacyHeadingDefinition = m_LegacyVelocityFilterStrength = -1;
         return true;
       }
     }
@@ -295,103 +293,103 @@ namespace Cinemachine
 
     private class HeadingTracker
     {
-      private CinemachineOrbitalTransposer.HeadingTracker.Item[] mHistory;
+      private Item[] mHistory;
       private int mTop;
       private int mBottom;
       private int mCount;
       private Vector3 mHeadingSum;
-      private float mWeightSum = 0.0f;
-      private float mWeightTime = 0.0f;
+      private float mWeightSum;
+      private float mWeightTime;
       private Vector3 mLastGoodHeading = Vector3.zero;
       private static float mDecayExponent;
 
       public HeadingTracker(int filterSize)
       {
-        this.mHistory = new CinemachineOrbitalTransposer.HeadingTracker.Item[filterSize];
-        float num = (float) filterSize / 5f;
-        CinemachineOrbitalTransposer.HeadingTracker.mDecayExponent = -Mathf.Log(2f) / num;
-        this.ClearHistory();
+        mHistory = new Item[filterSize];
+        float num = filterSize / 5f;
+        mDecayExponent = -Mathf.Log(2f) / num;
+        ClearHistory();
       }
 
-      public int FilterSize => this.mHistory.Length;
+      public int FilterSize => mHistory.Length;
 
       private void ClearHistory()
       {
-        this.mTop = this.mBottom = this.mCount = 0;
-        this.mWeightSum = 0.0f;
-        this.mHeadingSum = Vector3.zero;
+        mTop = mBottom = mCount = 0;
+        mWeightSum = 0.0f;
+        mHeadingSum = Vector3.zero;
       }
 
       private static float Decay(float time)
       {
-        return Mathf.Exp(time * CinemachineOrbitalTransposer.HeadingTracker.mDecayExponent);
+        return Mathf.Exp(time * mDecayExponent);
       }
 
       public void Add(Vector3 velocity)
       {
-        if (this.FilterSize == 0)
+        if (FilterSize == 0)
         {
-          this.mLastGoodHeading = velocity;
+          mLastGoodHeading = velocity;
         }
         else
         {
           float magnitude = velocity.magnitude;
-          if ((double) magnitude <= 9.9999997473787516E-05)
+          if (magnitude <= 9.9999997473787516E-05)
             return;
-          CinemachineOrbitalTransposer.HeadingTracker.Item obj = new CinemachineOrbitalTransposer.HeadingTracker.Item();
+          Item obj = new Item();
           obj.velocity = velocity;
           obj.weight = magnitude;
           obj.time = Time.time;
-          if (this.mCount == this.FilterSize)
-            this.PopBottom();
-          ++this.mCount;
-          this.mHistory[this.mTop] = obj;
-          if (++this.mTop == this.FilterSize)
-            this.mTop = 0;
-          this.mWeightSum *= CinemachineOrbitalTransposer.HeadingTracker.Decay(obj.time - this.mWeightTime);
-          this.mWeightTime = obj.time;
-          this.mWeightSum += magnitude;
-          this.mHeadingSum += obj.velocity;
+          if (mCount == FilterSize)
+            PopBottom();
+          ++mCount;
+          mHistory[mTop] = obj;
+          if (++mTop == FilterSize)
+            mTop = 0;
+          mWeightSum *= Decay(obj.time - mWeightTime);
+          mWeightTime = obj.time;
+          mWeightSum += magnitude;
+          mHeadingSum += obj.velocity;
         }
       }
 
       private void PopBottom()
       {
-        if (this.mCount <= 0)
+        if (mCount <= 0)
           return;
         float time = Time.time;
-        CinemachineOrbitalTransposer.HeadingTracker.Item obj = this.mHistory[this.mBottom];
-        if (++this.mBottom == this.FilterSize)
-          this.mBottom = 0;
-        --this.mCount;
-        float num = CinemachineOrbitalTransposer.HeadingTracker.Decay(time - obj.time);
-        this.mWeightSum -= obj.weight * num;
-        this.mHeadingSum -= obj.velocity * num;
-        if ((double) this.mWeightSum <= 9.9999997473787516E-05 || this.mCount == 0)
-          this.ClearHistory();
+        Item obj = mHistory[mBottom];
+        if (++mBottom == FilterSize)
+          mBottom = 0;
+        --mCount;
+        float num = Decay(time - obj.time);
+        mWeightSum -= obj.weight * num;
+        mHeadingSum -= obj.velocity * num;
+        if (mWeightSum <= 9.9999997473787516E-05 || mCount == 0)
+          ClearHistory();
       }
 
       public void DecayHistory()
       {
         float time = Time.time;
-        float num = CinemachineOrbitalTransposer.HeadingTracker.Decay(time - this.mWeightTime);
-        this.mWeightSum *= num;
-        this.mWeightTime = time;
-        if ((double) this.mWeightSum < 9.9999997473787516E-05)
-          this.ClearHistory();
+        float num = Decay(time - mWeightTime);
+        mWeightSum *= num;
+        mWeightTime = time;
+        if (mWeightSum < 9.9999997473787516E-05)
+          ClearHistory();
         else
-          this.mHeadingSum *= num;
+          mHeadingSum *= num;
       }
 
       public Vector3 GetReliableHeading()
       {
-        if ((double) this.mWeightSum > 9.9999997473787516E-05 && (this.mCount == this.mHistory.Length || this.mLastGoodHeading.AlmostZero()))
+        if (mWeightSum > 9.9999997473787516E-05 && (mCount == mHistory.Length || mLastGoodHeading.AlmostZero()))
         {
-          Vector3 v = this.mHeadingSum / this.mWeightSum;
+          Vector3 v = mHeadingSum / mWeightSum;
           if (!v.AlmostZero())
-            this.mLastGoodHeading = v.normalized;
+            mLastGoodHeading = v.normalized;
         }
-        return this.mLastGoodHeading;
+        return mLastGoodHeading;
       }
 
       private struct Item

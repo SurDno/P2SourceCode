@@ -5,11 +5,6 @@ using Engine.Source.Services.CameraServices;
 using Engine.Source.Services.Inputs;
 using Engine.Source.Settings;
 using InputServices;
-using UnityEngine;
-using UnityEngine.Events;
-using UnityEngine.EventSystems;
-using UnityEngine.Serialization;
-using UnityEngine.UI;
 
 namespace Engine.Impl.UI.Menu.Main
 {
@@ -32,18 +27,18 @@ namespace Engine.Impl.UI.Menu.Main
 
     public override void Initialize()
     {
-      this.RegisterLayer();
-      this.inputGameSetting = InstanceByRequest<InputGameSetting>.Instance;
-      this.SetMenuState();
-      this.sliderMouseSensitivity.onValueChanged.AddListener(new UnityAction<float>(this.Slider_Mouse_Sensitivity_Value_Changed_Handler));
-      this.toggleInvertMouse.onValueChanged.AddListener(new UnityAction<bool>(this.Toggle_Mouse_Invert_Value_Changed_Handler));
+      RegisterLayer();
+      inputGameSetting = InstanceByRequest<InputGameSetting>.Instance;
+      SetMenuState();
+      sliderMouseSensitivity.onValueChanged.AddListener(new UnityAction<float>(Slider_Mouse_Sensitivity_Value_Changed_Handler));
+      toggleInvertMouse.onValueChanged.AddListener(new UnityAction<bool>(Toggle_Mouse_Invert_Value_Changed_Handler));
       Button[] componentsInChildren = this.GetComponentsInChildren<Button>(true);
       for (int index = 0; index < componentsInChildren.Length; ++index)
       {
         componentsInChildren[index].gameObject.AddComponent<EventTrigger>();
         EventTrigger.Entry entry = new EventTrigger.Entry();
         entry.eventID = EventTriggerType.PointerClick;
-        entry.callback.AddListener((UnityAction<BaseEventData>) (eventData => this.Button_Click_Handler()));
+        entry.callback.AddListener((UnityAction<BaseEventData>) (eventData => Button_Click_Handler()));
         componentsInChildren[index].gameObject.GetComponent<EventTrigger>().triggers.Add(entry);
       }
       base.Initialize();
@@ -51,44 +46,44 @@ namespace Engine.Impl.UI.Menu.Main
 
     private void SetMenuState()
     {
-      this.toggleInvertMouse.isOn = this.inputGameSetting.MouseInvert.Value;
-      this.sliderMouseSensitivity.value = this.inputGameSetting.MouseSensitivity.Value;
+      toggleInvertMouse.isOn = inputGameSetting.MouseInvert.Value;
+      sliderMouseSensitivity.value = inputGameSetting.MouseSensitivity.Value;
     }
 
     public void Button_Click_Handler()
     {
       if (!this.gameObject.activeInHierarchy)
         return;
-      this.gameObject.GetComponent<AudioSource>().PlayOneShot(this.clickSound);
+      this.gameObject.GetComponent<AudioSource>().PlayOneShot(clickSound);
     }
 
     public void Button_Back_Click_Handler() => ServiceLocator.GetService<UIService>().Pop();
 
     public void Button_Reset_Click_Handler()
     {
-      this.inputGameSetting.MouseInvert.Value = this.inputGameSetting.MouseInvert.DefaultValue;
-      this.toggleInvertMouse.isOn = this.inputGameSetting.MouseInvert.Value;
-      this.Toggle_Mouse_Invert_Value_Changed_Handler(this.inputGameSetting.MouseInvert.Value);
-      this.inputGameSetting.MouseSensitivity.Value = this.inputGameSetting.MouseSensitivity.DefaultValue;
-      this.sliderMouseSensitivity.value = this.inputGameSetting.MouseSensitivity.Value;
-      this.Slider_Mouse_Sensitivity_Value_Changed_Handler(this.inputGameSetting.MouseSensitivity.Value);
+      inputGameSetting.MouseInvert.Value = inputGameSetting.MouseInvert.DefaultValue;
+      toggleInvertMouse.isOn = inputGameSetting.MouseInvert.Value;
+      Toggle_Mouse_Invert_Value_Changed_Handler(inputGameSetting.MouseInvert.Value);
+      inputGameSetting.MouseSensitivity.Value = inputGameSetting.MouseSensitivity.DefaultValue;
+      sliderMouseSensitivity.value = inputGameSetting.MouseSensitivity.Value;
+      Slider_Mouse_Sensitivity_Value_Changed_Handler(inputGameSetting.MouseSensitivity.Value);
     }
 
     public void Slider_Mouse_Sensitivity_Value_Changed_Handler(float value)
     {
-      this.inputGameSetting.MouseSensitivity.Value = value;
+      inputGameSetting.MouseSensitivity.Value = value;
     }
 
     public void Toggle_Mouse_Invert_Value_Changed_Handler(bool value)
     {
-      this.inputGameSetting.MouseInvert.Value = value;
+      inputGameSetting.MouseInvert.Value = value;
     }
 
     protected override void OnEnable()
     {
       base.OnEnable();
-      this.SetMenuState();
-      this.lastCameraKind = ServiceLocator.GetService<CameraService>().Kind;
+      SetMenuState();
+      lastCameraKind = ServiceLocator.GetService<CameraService>().Kind;
       ServiceLocator.GetService<CameraService>().Kind = CameraKindEnum.Unknown;
       InstanceByRequest<EngineApplication>.Instance.IsPaused = true;
       CursorService.Instance.Free = CursorService.Instance.Visible = true;
@@ -97,7 +92,7 @@ namespace Engine.Impl.UI.Menu.Main
 
     protected override void OnDisable()
     {
-      ServiceLocator.GetService<CameraService>().Kind = this.lastCameraKind;
+      ServiceLocator.GetService<CameraService>().Kind = lastCameraKind;
       InstanceByRequest<EngineApplication>.Instance.IsPaused = false;
       ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Cancel, new GameActionHandle(((UIWindow) this).CancelListener));
       base.OnDisable();

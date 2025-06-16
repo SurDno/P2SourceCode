@@ -6,17 +6,17 @@ namespace UnityEngine.PostProcessing
   public class ScreenSpaceReflectionModel : PostProcessingModel
   {
     [SerializeField]
-    private ScreenSpaceReflectionModel.Settings m_Settings = ScreenSpaceReflectionModel.Settings.defaultSettings;
+    private Settings m_Settings = Settings.defaultSettings;
 
-    public ScreenSpaceReflectionModel.Settings settings
+    public Settings settings
     {
-      get => this.m_Settings;
-      set => this.m_Settings = value;
+      get => m_Settings;
+      set => m_Settings = value;
     }
 
     public override void Reset()
     {
-      this.m_Settings = ScreenSpaceReflectionModel.Settings.defaultSettings;
+      m_Settings = Settings.defaultSettings;
     }
 
     public enum SSRResolution
@@ -52,9 +52,9 @@ namespace UnityEngine.PostProcessing
     public struct ReflectionSettings
     {
       [Tooltip("How the reflections are blended into the render.")]
-      public ScreenSpaceReflectionModel.SSRReflectionBlendType blendType;
+      public SSRReflectionBlendType blendType;
       [Tooltip("Half resolution SSRR is much faster, but less accurate.")]
-      public ScreenSpaceReflectionModel.SSRResolution reflectionQuality;
+      public SSRResolution reflectionQuality;
       [Tooltip("Maximum reflection distance in world units.")]
       [Range(0.1f, 300f)]
       public float maxDistance;
@@ -85,20 +85,18 @@ namespace UnityEngine.PostProcessing
     [Serializable]
     public struct Settings
     {
-      public ScreenSpaceReflectionModel.ReflectionSettings reflection;
-      public ScreenSpaceReflectionModel.IntensitySettings intensity;
-      public ScreenSpaceReflectionModel.ScreenEdgeMask screenEdgeMask;
+      public ReflectionSettings reflection;
+      public IntensitySettings intensity;
+      public ScreenEdgeMask screenEdgeMask;
 
-      public static ScreenSpaceReflectionModel.Settings defaultSettings
+      public static Settings defaultSettings
       {
         get
         {
-          return new ScreenSpaceReflectionModel.Settings()
-          {
-            reflection = new ScreenSpaceReflectionModel.ReflectionSettings()
-            {
-              blendType = ScreenSpaceReflectionModel.SSRReflectionBlendType.PhysicallyBased,
-              reflectionQuality = ScreenSpaceReflectionModel.SSRResolution.Low,
+          return new Settings {
+            reflection = new ReflectionSettings {
+              blendType = SSRReflectionBlendType.PhysicallyBased,
+              reflectionQuality = SSRResolution.Low,
               maxDistance = 100f,
               iterationCount = 256,
               stepSize = 3,
@@ -106,15 +104,13 @@ namespace UnityEngine.PostProcessing
               reflectionBlur = 1f,
               reflectBackfaces = false
             },
-            intensity = new ScreenSpaceReflectionModel.IntensitySettings()
-            {
+            intensity = new IntensitySettings {
               reflectionMultiplier = 1f,
               fadeDistance = 100f,
               fresnelFade = 1f,
               fresnelFadePower = 1f
             },
-            screenEdgeMask = new ScreenSpaceReflectionModel.ScreenEdgeMask()
-            {
+            screenEdgeMask = new ScreenEdgeMask {
               intensity = 0.03f
             }
           };

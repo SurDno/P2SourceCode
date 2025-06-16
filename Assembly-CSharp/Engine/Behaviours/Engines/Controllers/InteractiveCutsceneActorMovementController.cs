@@ -1,6 +1,5 @@
-﻿using Engine.Behaviours.Components;
-using System;
-using UnityEngine;
+﻿using System;
+using Engine.Behaviours.Components;
 
 namespace Engine.Behaviours.Engines.Controllers
 {
@@ -23,15 +22,15 @@ namespace Engine.Behaviours.Engines.Controllers
     public void Initialize(GameObject gameObject)
     {
       this.gameObject = gameObject;
-      this.collider = gameObject.GetComponent<CapsuleCollider>();
-      this.rigidbody = gameObject.GetComponent<Rigidbody>();
-      if ((UnityEngine.Object) this.rigidbody != (UnityEngine.Object) null)
-        this.rigidbody.isKinematic = true;
+      collider = gameObject.GetComponent<CapsuleCollider>();
+      rigidbody = gameObject.GetComponent<Rigidbody>();
+      if ((UnityEngine.Object) rigidbody != (UnityEngine.Object) null)
+        rigidbody.isKinematic = true;
       Pivot component = gameObject.GetComponent<Pivot>();
       if ((UnityEngine.Object) component != (UnityEngine.Object) null)
         component.RagdollWeight = 0.0f;
-      this.animator = component.GetAnimator();
-      this.animator.updateMode = AnimatorUpdateMode.Normal;
+      animator = component.GetAnimator();
+      animator.updateMode = AnimatorUpdateMode.Normal;
     }
 
     public void StartMovement(Vector3 direction, EngineBehavior.GaitType gait)
@@ -43,7 +42,7 @@ namespace Engine.Behaviours.Engines.Controllers
       return false;
     }
 
-    public void OnAnimatorMove() => this.animator.ApplyBuiltinRootMotion();
+    public void OnAnimatorMove() => animator.ApplyBuiltinRootMotion();
 
     public bool Rotate(Vector3 direction) => throw new NotImplementedException();
 

@@ -14,7 +14,7 @@ namespace SteamNative
 
     public static LeaderboardEntry_t FromPointer(IntPtr p)
     {
-      return Platform.PackSmall ? (LeaderboardEntry_t) (LeaderboardEntry_t.PackSmall) Marshal.PtrToStructure(p, typeof (LeaderboardEntry_t.PackSmall)) : (LeaderboardEntry_t) Marshal.PtrToStructure(p, typeof (LeaderboardEntry_t));
+      return Platform.PackSmall ? (PackSmall) Marshal.PtrToStructure(p, typeof (PackSmall)) : (LeaderboardEntry_t) Marshal.PtrToStructure(p, typeof (LeaderboardEntry_t));
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
@@ -26,10 +26,9 @@ namespace SteamNative
       public int CDetails;
       public ulong UGC;
 
-      public static implicit operator LeaderboardEntry_t(LeaderboardEntry_t.PackSmall d)
+      public static implicit operator LeaderboardEntry_t(PackSmall d)
       {
-        return new LeaderboardEntry_t()
-        {
+        return new LeaderboardEntry_t {
           SteamIDUser = d.SteamIDUser,
           GlobalRank = d.GlobalRank,
           Score = d.Score,

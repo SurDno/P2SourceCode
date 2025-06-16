@@ -1,6 +1,4 @@
 ﻿using System;
-using UnityEngine;
-using UnityEngine.Serialization;
 
 [Serializable]
 public class POIAnimationSetupElementQuick : POIAnimationSetupElementBase
@@ -12,11 +10,11 @@ public class POIAnimationSetupElementQuick : POIAnimationSetupElementBase
   public override object Clone()
   {
     POIAnimationSetupElementQuick setupElementQuick = new POIAnimationSetupElementQuick();
-    setupElementQuick.AnimationClipQuick = this.AnimationClipQuick;
-    setupElementQuick.Offset = this.Offset;
-    setupElementQuick.PlayOnce = this.PlayOnce;
-    setupElementQuick.NeedSynchroniseAnimation = this.NeedSynchroniseAnimation;
-    setupElementQuick.AnimationSyncDelay = this.AnimationSyncDelay;
-    return (object) setupElementQuick;
+    setupElementQuick.AnimationClipQuick = AnimationClipQuick;
+    setupElementQuick.Offset = Offset;
+    setupElementQuick.PlayOnce = PlayOnce;
+    setupElementQuick.NeedSynchroniseAnimation = NeedSynchroniseAnimation;
+    setupElementQuick.AnimationSyncDelay = AnimationSyncDelay;
+    return setupElementQuick;
   }
 }

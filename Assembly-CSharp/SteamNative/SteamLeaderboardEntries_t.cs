@@ -6,8 +6,7 @@
 
     public static implicit operator SteamLeaderboardEntries_t(ulong value)
     {
-      return new SteamLeaderboardEntries_t()
-      {
+      return new SteamLeaderboardEntries_t {
         Value = value
       };
     }

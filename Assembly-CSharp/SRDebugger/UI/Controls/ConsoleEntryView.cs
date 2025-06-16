@@ -1,6 +1,4 @@
 ﻿using SRF;
-using UnityEngine;
-using UnityEngine.UI;
 
 namespace SRDebugger.UI.Controls
 {
@@ -10,6 +8,6 @@ namespace SRDebugger.UI.Controls
     [SerializeField]
     private InputField message;
 
-    public void SetData(string data) => this.message.text = data;
+    public void SetData(string data) => message.text = data;
   }
 }

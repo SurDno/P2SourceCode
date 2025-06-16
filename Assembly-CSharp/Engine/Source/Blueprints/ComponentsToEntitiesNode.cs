@@ -1,8 +1,8 @@
-﻿using Engine.Common;
+﻿using System.Collections.Generic;
+using Engine.Common;
 using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
-using System.Collections.Generic;
 
 namespace Engine.Source.Blueprints
 {
@@ -15,7 +15,7 @@ namespace Engine.Source.Blueprints
     [Port("Entities")]
     private IEnumerable<IEntity> Entities()
     {
-      IEnumerable<IComponent> components = this.componentsInput.value;
+      IEnumerable<IComponent> components = componentsInput.value;
       if (components != null)
       {
         foreach (IComponent component in components)

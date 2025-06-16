@@ -1,23 +1,19 @@
-﻿using Engine.Common.Components;
+﻿using System;
+using System.Collections.Generic;
+using Engine.Common.Components;
 using Engine.Common.Components.Parameters;
 using Engine.Common.Components.Storable;
 using Engine.Impl.UI.Controls;
 using Engine.Source.Components;
 using Inspectors;
-using System;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.Events;
-using UnityEngine.Serialization;
-using UnityEngine.UI;
 
 public class ItemSelector : MonoBehaviour, IChangeParameterListener
 {
   private static List<IStorableComponent> searchBuffer = new List<IStorableComponent>();
   [SerializeField]
-  private SwitchingItemView2 view = (SwitchingItemView2) null;
+  private SwitchingItemView2 view = null;
   [SerializeField]
-  private EntityView itemEntityView = (EntityView) null;
+  private EntityView itemEntityView = null;
   [SerializeField]
   public Button previousButton = (Button) null;
   [SerializeField]
@@ -34,101 +30,101 @@ public class ItemSelector : MonoBehaviour, IChangeParameterListener
   [SerializeField]
   private Image selectedImage;
   [Inspected(Mode = ExecuteMode.Runtime, Mutable = false)]
-  private IStorageComponent storage = (IStorageComponent) null;
+  private IStorageComponent storage = null;
 
   public event Func<ItemSelector, IStorableComponent, bool> ValidateItemEvent;
 
   public event Action<ItemSelector, IStorableComponent, IStorableComponent> ChangeItemEvent;
 
-  public void SetSelection(bool selection) => this.selectedImage?.gameObject.SetActive(selection);
+  public void SetSelection(bool selection) => selectedImage?.gameObject.SetActive(selection);
 
-  public void CheckButtonsForConsole() => this.UpdateButtons();
+  public void CheckButtonsForConsole() => UpdateButtons();
 
-  public bool AvoidNull => this.avoidNull;
+  public bool AvoidNull => avoidNull;
 
   public List<StorableGroup> Groups
   {
-    get => this.groups;
-    set => this.groups = value;
+    get => groups;
+    set => groups = value;
   }
 
   public IStorableComponent Item
   {
-    get => (IStorableComponent) this.view?.Storable;
+    get => view?.Storable;
     set
     {
-      if ((UnityEngine.Object) this.view == (UnityEngine.Object) null)
+      if ((UnityEngine.Object) view == (UnityEngine.Object) null)
         return;
-      StorableComponent storable = this.view.Storable;
+      StorableComponent storable = view.Storable;
       if (storable == value)
         return;
-      this.view.Storable = (StorableComponent) value;
-      if ((UnityEngine.Object) this.itemEntityView != (UnityEngine.Object) null)
-        this.itemEntityView.Value = value?.Owner;
-      if (storable != null && (this.sortByDurability || this.ignoreBroken))
-        storable.GetComponent<ParametersComponent>()?.GetByName<float>(ParameterNameEnum.Durability)?.RemoveListener((IChangeParameterListener) this);
-      if (value != null && (this.sortByDurability || this.ignoreBroken))
-        value.GetComponent<ParametersComponent>()?.GetByName<float>(ParameterNameEnum.Durability)?.AddListener((IChangeParameterListener) this);
-      Action<ItemSelector, IStorableComponent, IStorableComponent> changeItemEvent = this.ChangeItemEvent;
+      view.Storable = (StorableComponent) value;
+      if ((UnityEngine.Object) itemEntityView != (UnityEngine.Object) null)
+        itemEntityView.Value = value?.Owner;
+      if (storable != null && (sortByDurability || ignoreBroken))
+        storable.GetComponent<ParametersComponent>()?.GetByName<float>(ParameterNameEnum.Durability)?.RemoveListener(this);
+      if (value != null && (sortByDurability || ignoreBroken))
+        value.GetComponent<ParametersComponent>()?.GetByName<float>(ParameterNameEnum.Durability)?.AddListener(this);
+      Action<ItemSelector, IStorableComponent, IStorableComponent> changeItemEvent = ChangeItemEvent;
       if (changeItemEvent == null)
         return;
-      changeItemEvent(this, (IStorableComponent) storable, value);
+      changeItemEvent(this, storable, value);
     }
   }
 
   public IStorageComponent Storage
   {
-    get => this.storage;
+    get => storage;
     set
     {
-      if (this.storage == value)
+      if (storage == value)
         return;
-      if (this.storage != null)
+      if (storage != null)
       {
-        this.storage.OnAddItemEvent -= new Action<IStorableComponent, IInventoryComponent>(this.OnStorageContentChange);
-        this.storage.OnChangeItemEvent -= new Action<IStorableComponent, IInventoryComponent>(this.OnStorageContentChange);
-        this.storage.OnRemoveItemEvent -= new Action<IStorableComponent, IInventoryComponent>(this.OnRemoveItemInStorage);
+        storage.OnAddItemEvent -= OnStorageContentChange;
+        storage.OnChangeItemEvent -= OnStorageContentChange;
+        storage.OnRemoveItemEvent -= OnRemoveItemInStorage;
       }
-      this.storage = value;
-      this.SelectDefaultItem();
-      if (this.storage == null)
+      storage = value;
+      SelectDefaultItem();
+      if (storage == null)
         return;
-      this.storage.OnAddItemEvent += new Action<IStorableComponent, IInventoryComponent>(this.OnStorageContentChange);
-      this.storage.OnChangeItemEvent += new Action<IStorableComponent, IInventoryComponent>(this.OnStorageContentChange);
-      this.storage.OnRemoveItemEvent += new Action<IStorableComponent, IInventoryComponent>(this.OnRemoveItemInStorage);
+      storage.OnAddItemEvent += OnStorageContentChange;
+      storage.OnChangeItemEvent += OnStorageContentChange;
+      storage.OnRemoveItemEvent += OnRemoveItemInStorage;
     }
   }
 
   private void Awake()
   {
-    if ((UnityEngine.Object) this.previousButton != (UnityEngine.Object) null)
-      this.previousButton.onClick.AddListener(new UnityAction(this.SelectPrevious));
-    if (!((UnityEngine.Object) this.nextButton != (UnityEngine.Object) null))
+    if ((UnityEngine.Object) previousButton != (UnityEngine.Object) null)
+      previousButton.onClick.AddListener(new UnityAction(SelectPrevious));
+    if (!((UnityEngine.Object) nextButton != (UnityEngine.Object) null))
       return;
-    this.nextButton.onClick.AddListener(new UnityAction(this.SelectNext));
+    nextButton.onClick.AddListener(new UnityAction(SelectNext));
   }
 
   private void SetButtonsInteractable(bool value)
   {
-    if ((UnityEngine.Object) this.previousButton != (UnityEngine.Object) null)
-      this.previousButton.interactable = value;
-    if (!((UnityEngine.Object) this.nextButton != (UnityEngine.Object) null))
+    if ((UnityEngine.Object) previousButton != (UnityEngine.Object) null)
+      previousButton.interactable = value;
+    if (!((UnityEngine.Object) nextButton != (UnityEngine.Object) null))
       return;
-    this.nextButton.interactable = value;
+    nextButton.interactable = value;
   }
 
-  private void ClearSearchBuffer() => ItemSelector.searchBuffer.Clear();
+  private void ClearSearchBuffer() => searchBuffer.Clear();
 
   private void FillSearchBuffer()
   {
-    if (this.Storage == null)
+    if (Storage == null)
       return;
-    foreach (IStorableComponent storableComponent in this.Storage.Items)
+    foreach (IStorableComponent storableComponent in Storage.Items)
     {
       bool flag = false;
       foreach (StorableGroup group1 in storableComponent.Groups)
       {
-        foreach (StorableGroup group2 in this.groups)
+        foreach (StorableGroup group2 in groups)
         {
           if (group2 == group1)
           {
@@ -139,12 +135,12 @@ public class ItemSelector : MonoBehaviour, IChangeParameterListener
         if (flag)
           break;
       }
-      if (flag && (!this.ignoreBroken || (double) this.GetDurability(storableComponent) > 0.0) && (this.ValidateItemEvent == null || this.ValidateItemEvent(this, storableComponent)))
-        ItemSelector.searchBuffer.Add(storableComponent);
+      if (flag && (!ignoreBroken || GetDurability(storableComponent) > 0.0) && (ValidateItemEvent == null || ValidateItemEvent(this, storableComponent)))
+        searchBuffer.Add(storableComponent);
     }
-    if (this.sortByDurability)
-      ItemSelector.searchBuffer.Sort((Comparison<IStorableComponent>) ((x, y) => this.GetDurability(x).CompareTo(this.GetDurability(y))));
-    this.SetButtonsInteractable(ItemSelector.searchBuffer.Count > (this.avoidNull ? 1 : 0));
+    if (sortByDurability)
+      searchBuffer.Sort((x, y) => GetDurability(x).CompareTo(GetDurability(y)));
+    SetButtonsInteractable(searchBuffer.Count > (avoidNull ? 1 : 0));
   }
 
   private float GetDurability(IStorableComponent item)
@@ -155,63 +151,63 @@ public class ItemSelector : MonoBehaviour, IChangeParameterListener
 
   private void OnRemoveItemInStorage(IStorableComponent item, IInventoryComponent container)
   {
-    if (item != this.Item)
+    if (item != Item)
       return;
-    this.SelectDefaultItem();
+    SelectDefaultItem();
   }
 
   private void OnStorageContentChange(IStorableComponent item, IInventoryComponent container)
   {
-    this.UpdateButtons();
+    UpdateButtons();
   }
 
   private void SelectDefaultItem()
   {
-    this.view.ReversedDirection = false;
-    this.FillSearchBuffer();
-    this.Item = !this.avoidNull || ItemSelector.searchBuffer.Count <= 0 ? (IStorableComponent) null : ItemSelector.searchBuffer[0];
-    this.ClearSearchBuffer();
+    view.ReversedDirection = false;
+    FillSearchBuffer();
+    Item = !avoidNull || searchBuffer.Count <= 0 ? null : searchBuffer[0];
+    ClearSearchBuffer();
   }
 
   public void SelectNext()
   {
-    this.view.ReversedDirection = false;
-    this.FillSearchBuffer();
+    view.ReversedDirection = false;
+    FillSearchBuffer();
     int num = -1;
-    if (this.Item != null)
-      num = ItemSelector.searchBuffer.IndexOf(this.Item);
+    if (Item != null)
+      num = searchBuffer.IndexOf(Item);
     int index = num + 1;
-    if (index == ItemSelector.searchBuffer.Count)
-      index = !this.avoidNull || ItemSelector.searchBuffer.Count <= 0 ? -1 : 0;
-    this.Item = index == -1 ? (IStorableComponent) null : ItemSelector.searchBuffer[index];
-    this.ClearSearchBuffer();
+    if (index == searchBuffer.Count)
+      index = !avoidNull || searchBuffer.Count <= 0 ? -1 : 0;
+    Item = index == -1 ? null : searchBuffer[index];
+    ClearSearchBuffer();
   }
 
   public void SelectPrevious()
   {
-    this.view.ReversedDirection = true;
-    this.FillSearchBuffer();
+    view.ReversedDirection = true;
+    FillSearchBuffer();
     int num = -1;
-    if (this.Item != null)
-      num = ItemSelector.searchBuffer.IndexOf(this.Item);
+    if (Item != null)
+      num = searchBuffer.IndexOf(Item);
     int index = num - 1;
-    if (index == -1 && this.avoidNull || index == -2)
-      index = ItemSelector.searchBuffer.Count - 1;
-    this.Item = index == -1 ? (IStorableComponent) null : ItemSelector.searchBuffer[index];
-    this.ClearSearchBuffer();
+    if (index == -1 && avoidNull || index == -2)
+      index = searchBuffer.Count - 1;
+    Item = index == -1 ? null : searchBuffer[index];
+    ClearSearchBuffer();
   }
 
   private void UpdateButtons()
   {
-    this.FillSearchBuffer();
-    this.ClearSearchBuffer();
+    FillSearchBuffer();
+    ClearSearchBuffer();
   }
 
   public void OnParameterChanged(IParameter parameter)
   {
     Debug.Log((object) ObjectInfoUtility.GetStream().Append("Item Selector : Durability changed to ").Append(((IParameter<float>) parameter).Value));
-    if ((double) ((IParameter<float>) parameter).Value > 0.0)
+    if (((IParameter<float>) parameter).Value > 0.0)
       return;
-    this.SelectDefaultItem();
+    SelectDefaultItem();
   }
 }

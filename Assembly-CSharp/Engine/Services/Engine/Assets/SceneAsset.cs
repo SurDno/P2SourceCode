@@ -2,8 +2,6 @@
 using Cofe.Utility;
 using Engine.Common;
 using Inspectors;
-using UnityEngine;
-using UnityEngine.SceneManagement;
 
 namespace Engine.Services.Engine.Assets
 {
@@ -39,56 +37,56 @@ namespace Engine.Services.Engine.Assets
 
     public void Update()
     {
-      if (!this.initialized)
+      if (!initialized)
       {
         if (!SceneController.CanLoad)
           return;
-        if (this.IsDisposed)
+        if (IsDisposed)
         {
-          this.IsReadyToDispose = true;
+          IsReadyToDispose = true;
           return;
         }
-        string path = AssetDatabaseService.Instance.GetPath(this.reference.Id);
+        string path = AssetDatabaseService.Instance.GetPath(reference.Id);
         if (path.IsNullOrEmpty())
         {
-          Debug.Log((object) ObjectInfoUtility.GetStream().Append("[Loader]").Append(" Scene not found : ").Append((object) this.reference.Id).Append(" , context : ").Append(this.context));
-          this.IsError = true;
+          Debug.Log((object) ObjectInfoUtility.GetStream().Append("[Loader]").Append(" Scene not found : ").Append(reference.Id).Append(" , context : ").Append(context));
+          IsError = true;
           return;
         }
-        Debug.Log((object) ObjectInfoUtility.GetStream().Append("[Loader]").Append(" Begin async load scene : ").Append(path).Append(" , context : ").Append(this.context));
-        this.async = AssetDatabaseService.Instance.LoadSceneAsync(path);
-        this.initialized = true;
+        Debug.Log((object) ObjectInfoUtility.GetStream().Append("[Loader]").Append(" Begin async load scene : ").Append(path).Append(" , context : ").Append(context));
+        async = AssetDatabaseService.Instance.LoadSceneAsync(path);
+        initialized = true;
       }
-      if (this.async == null)
+      if (async == null)
       {
-        this.IsError = true;
+        IsError = true;
       }
       else
       {
-        if (!this.async.IsDone)
+        if (!async.IsDone)
           return;
-        if (!this.IsLoaded)
+        if (!IsLoaded)
         {
-          this.IsLoaded = true;
-          this.Scene = (Scene) this.async.Asset;
+          IsLoaded = true;
+          Scene = (Scene) async.Asset;
         }
-        if (!this.IsDisposed || !this.Scene.IsValid())
+        if (!IsDisposed || !Scene.IsValid())
           return;
-        Debug.Log((object) ObjectInfoUtility.GetStream().Append("[Loader]").Append(" Unload scene : ").Append(this.Scene.path).Append(" , context : ").Append(this.context).Append(" , reason : ").Append(this.reason));
-        SceneManager.UnloadSceneAsync(this.Scene);
-        this.Scene = new Scene();
-        this.IsReadyToDispose = true;
+        Debug.Log((object) ObjectInfoUtility.GetStream().Append("[Loader]").Append(" Unload scene : ").Append(Scene.path).Append(" , context : ").Append(context).Append(" , reason : ").Append(reason));
+        SceneManager.UnloadSceneAsync(Scene);
+        Scene = new Scene();
+        IsReadyToDispose = true;
       }
     }
 
     public void Dispose(string reason)
     {
       this.reason = reason;
-      this.IsDisposed = true;
+      IsDisposed = true;
     }
 
-    public bool IsValid => this.Scene.IsValid();
+    public bool IsValid => Scene.IsValid();
 
-    public string Path => this.Scene.path;
+    public string Path => Scene.path;
   }
 }

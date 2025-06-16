@@ -1,10 +1,9 @@
-﻿using Cofe.Meta;
+﻿using System.Linq;
+using Cofe.Meta;
 using Engine.Common.Components;
 using Engine.Common.Components.Interactable;
 using Engine.Common.Components.Storable;
 using Engine.Common.Services;
-using System;
-using System.Linq;
 
 namespace Engine.Source.Components.Interactable.Validators
 {
@@ -14,7 +13,7 @@ namespace Engine.Source.Components.Interactable.Validators
     [InteractValidator(InteractType.LightCandleNoMatches)]
     public static ValidateResult Validate(IInteractableComponent interactable, InteractItem item)
     {
-      return ServiceLocator.GetService<ISimulation>().Player.GetComponent<StorageComponent>().Items.Any<IStorableComponent>((Func<IStorableComponent, bool>) (x => x.Groups.Contains<StorableGroup>(StorableGroup.Fuel_Lamp))) ? new ValidateResult(false, "Fuel_Lamp found") : new ValidateResult(true);
+      return ServiceLocator.GetService<ISimulation>().Player.GetComponent<StorageComponent>().Items.Any(x => x.Groups.Contains(StorableGroup.Fuel_Lamp)) ? new ValidateResult(false, "Fuel_Lamp found") : new ValidateResult(true);
     }
   }
 }

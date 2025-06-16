@@ -1,11 +1,11 @@
-﻿using PLVirtualMachine.Common;
+﻿using System.Collections.Generic;
+using PLVirtualMachine.Common;
 using PLVirtualMachine.Common.EngineAPI;
 using PLVirtualMachine.Common.EngineAPI.VMECS;
 using PLVirtualMachine.Common.VMSpecialAttributes;
 using PLVirtualMachine.Dynamic;
 using PLVirtualMachine.FSM;
 using PLVirtualMachine.Objects;
-using System.Collections.Generic;
 
 namespace PLVirtualMachine
 {
@@ -28,12 +28,12 @@ namespace PLVirtualMachine
           if (eventOwner.IsNull & isOwnEvent)
             return (VMEventLink) eventLinkList[index];
           if (!eventOwner.IsBinded)
-            eventOwner.Bind((IContext) state.Owner, new VMType(typeof (IObjRef)), (ILocalContext) state);
-          if (eventOwner.IsBinded && ((VMVariableService) IVariableService.Instance).GetDynamicContext(eventOwner.VariableContext, (IDynamicGameObjectContext) raisingFSM).Entity.EngineGuid == dynEvent.Entity.EngineGuid)
+            eventOwner.Bind((IContext) state.Owner, new VMType(typeof (IObjRef)), state);
+          if (eventOwner.IsBinded && ((VMVariableService) IVariableService.Instance).GetDynamicContext(eventOwner.VariableContext, raisingFSM).Entity.EngineGuid == dynEvent.Entity.EngineGuid)
             return (VMEventLink) eventLinkList[index];
         }
       }
-      return (VMEventLink) null;
+      return null;
     }
 
     public static VMEventLink GetGraphEnterLinkByEvent(
@@ -52,8 +52,8 @@ namespace PLVirtualMachine
           if (eventOwner.IsNull & isOwnEvent)
             return (VMEventLink) enterLinksByEvent[index];
           if (!eventOwner.IsBinded)
-            eventOwner.Bind((IContext) graph.Owner, new VMType(typeof (IObjRef)), (ILocalContext) graph);
-          if (eventOwner.IsBinded && ((VMVariableService) IVariableService.Instance).GetDynamicContext(eventOwner.VariableContext, (IDynamicGameObjectContext) raisingFSM).Entity.EngineGuid == dynEvent.Entity.EngineGuid)
+            eventOwner.Bind((IContext) graph.Owner, new VMType(typeof (IObjRef)), graph);
+          if (eventOwner.IsBinded && ((VMVariableService) IVariableService.Instance).GetDynamicContext(eventOwner.VariableContext, raisingFSM).Entity.EngineGuid == dynEvent.Entity.EngineGuid)
             return (VMEventLink) enterLinksByEvent[index];
         }
       }
@@ -67,14 +67,14 @@ namespace PLVirtualMachine
             IBlueprint blueprint = baseBlueprints[index];
             if (blueprint != null)
             {
-              VMEventLink enterLinkByEvent = DynamicFsmUtility.GetGraphEnterLinkByEvent(blueprint.StateGraph, raisingFSM, dynEvent, messages, isOwnEvent);
+              VMEventLink enterLinkByEvent = GetGraphEnterLinkByEvent(blueprint.StateGraph, raisingFSM, dynEvent, messages, isOwnEvent);
               if (enterLinkByEvent != null)
                 return enterLinkByEvent;
             }
           }
         }
       }
-      return (VMEventLink) null;
+      return null;
     }
 
     public static IDynamicGameObjectContext GetEventOwnerDynamicContext(
@@ -85,16 +85,16 @@ namespace PLVirtualMachine
       if (eventOwnerVariable.IsNull)
       {
         if (activeFSM.FSMStaticObject.IsDerivedFrom(graphOwner.BaseGuid, true))
-          return (IDynamicGameObjectContext) activeFSM;
+          return activeFSM;
       }
       else
       {
         if (!eventOwnerVariable.IsBinded)
-          eventOwnerVariable.Bind((IContext) graphOwner, new VMType(typeof (IObjRef)));
+          eventOwnerVariable.Bind(graphOwner, new VMType(typeof (IObjRef)));
         if (eventOwnerVariable.VariableContext != null)
-          return ((VMVariableService) IVariableService.Instance).GetDynamicContext(eventOwnerVariable.VariableContext, (IDynamicGameObjectContext) activeFSM);
+          return ((VMVariableService) IVariableService.Instance).GetDynamicContext(eventOwnerVariable.VariableContext, activeFSM);
       }
-      return (IDynamicGameObjectContext) null;
+      return null;
     }
   }
 }

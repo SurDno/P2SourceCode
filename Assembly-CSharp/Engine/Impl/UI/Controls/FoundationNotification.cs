@@ -6,8 +6,6 @@ using Engine.Impl.UI.Menu.Protagonist.HeadUpDisplay;
 using Engine.Source.Audio;
 using Engine.Source.Services.Notifications;
 using Inspectors;
-using UnityEngine;
-using UnityEngine.Audio;
 
 namespace Engine.Impl.UI.Controls
 {
@@ -48,64 +46,64 @@ namespace Engine.Impl.UI.Controls
 
     private void Update()
     {
-      if (this.Complete || !(this.ui.Active is HudWindow))
+      if (Complete || !(ui.Active is HudWindow))
         return;
-      if (!this.play)
+      if (!play)
       {
-        this.Play();
-        this.play = true;
+        Play();
+        play = true;
       }
-      this.progress += Time.deltaTime;
-      if ((double) this.progress > (double) this.time)
-        this.Complete = true;
+      progress += Time.deltaTime;
+      if (progress > (double) time)
+        Complete = true;
       else
-        this.SetAlpha(SoundUtility.ComputeFade(this.progress, this.time, this.fade));
+        SetAlpha(SoundUtility.ComputeFade(progress, time, fade));
     }
 
     private void Play()
     {
-      if ((Object) this.clip == (Object) null || (Object) this.mixer == (Object) null)
+      if ((Object) clip == (Object) null || (Object) mixer == (Object) null)
         return;
-      SoundUtility.PlayAudioClip2D(this.clip, this.mixer, 1f, 0.0f, context: this.gameObject.GetFullName());
+      SoundUtility.PlayAudioClip2D(clip, mixer, 1f, 0.0f, context: this.gameObject.GetFullName());
     }
 
     protected override void Awake()
     {
       base.Awake();
-      this.ui = ServiceLocator.GetService<UIService>();
-      this.SetAlpha(0.0f);
+      ui = ServiceLocator.GetService<UIService>();
+      SetAlpha(0.0f);
     }
 
     public void Initialise(NotificationEnum type, object[] values)
     {
-      this.Type = type;
+      Type = type;
       int result = 0;
-      this.ApplyValue<int>(ref result, values, 0);
+      ApplyValue(ref result, values, 0);
       float num1 = 0.0f;
       int num2 = (int) Mathf.Sign((float) result);
       int index = result * num2;
-      if (index >= 0 && index < this.deltas.Length)
-        num1 = (float) ((double) this.deltas[index] * (double) num2 * 0.5);
-      this.StartChange(0.5f - num1, 0.5f + num1);
+      if (index >= 0 && index < deltas.Length)
+        num1 = (float) (deltas[index] * (double) num2 * 0.5);
+      StartChange(0.5f - num1, 0.5f + num1);
     }
 
     private void StartChange(float oldReputation, float newReputation)
     {
-      bool flag = (double) newReputation > (double) oldReputation;
-      this.oldReputationView.Progress = Mathf.Clamp01(oldReputation);
-      this.targetReputationView.Progress = newReputation;
-      this.upEffect.Visible = flag;
-      this.downEffect.Visible = !flag;
+      bool flag = newReputation > (double) oldReputation;
+      oldReputationView.Progress = Mathf.Clamp01(oldReputation);
+      targetReputationView.Progress = newReputation;
+      upEffect.Visible = flag;
+      downEffect.Visible = !flag;
     }
 
     public void Shutdown() => Object.Destroy((Object) this.gameObject);
 
     private void SetAlpha(float value)
     {
-      if ((double) this.alpha == (double) value)
+      if (alpha == (double) value)
         return;
-      this.alpha = value;
-      this.canvasGroup.alpha = this.alpha;
+      alpha = value;
+      canvasGroup.alpha = alpha;
     }
 
     private void ApplyValue<T>(ref T result, object[] values, int index)

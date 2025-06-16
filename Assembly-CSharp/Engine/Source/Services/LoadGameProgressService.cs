@@ -1,11 +1,10 @@
-﻿using Engine.Common.Services;
+﻿using System.Reflection;
+using Engine.Common.Services;
 using Engine.Impl.UI.Menu.Main;
-using System.Reflection;
-using UnityEngine;
 
 namespace Engine.Source.Services
 {
-  [RuntimeService(new System.Type[] {typeof (LoadGameProgressService), typeof (ILoadProgress)})]
+  [RuntimeService(typeof (LoadGameProgressService), typeof (ILoadProgress))]
   public class LoadGameProgressService : ILoadProgress
   {
     public void BeginLoadGame()

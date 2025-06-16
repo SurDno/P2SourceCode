@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.Serialization;
 
 public class POISetup : MonoBehaviour
 {
@@ -121,8 +119,8 @@ public class POISetup : MonoBehaviour
 
   public POIAnimationEnum SupportedAnimations
   {
-    get => this._supportedAnimations;
-    set => this._supportedAnimations = value;
+    get => _supportedAnimations;
+    set => _supportedAnimations = value;
   }
 
   private void Start()
@@ -134,61 +132,61 @@ public class POISetup : MonoBehaviour
     switch (animation)
     {
       case POIAnimationEnum.S_SitAtDesk:
-        return (POIAnimationSetupBase) this._s_SitAtDesk_Setup;
+        return _s_SitAtDesk_Setup;
       case POIAnimationEnum.S_SitOnBench:
-        return (POIAnimationSetupBase) this._s_SitOnBench_Setup;
+        return _s_SitOnBench_Setup;
       case POIAnimationEnum.S_LeanOnWall:
-        return (POIAnimationSetupBase) this._s_LeanOnWall_Setup;
+        return _s_LeanOnWall_Setup;
       case POIAnimationEnum.S_LeanOnTable:
-        return (POIAnimationSetupBase) this._s_LeanOnTable_Setup;
+        return _s_LeanOnTable_Setup;
       case POIAnimationEnum.S_SitNearWall:
-        return (POIAnimationSetupBase) this._s_SitNearWall_Setup;
+        return _s_SitNearWall_Setup;
       case POIAnimationEnum.S_LieOnBed:
-        return (POIAnimationSetupBase) this._s_LieOnBed_Setup;
+        return _s_LieOnBed_Setup;
       case POIAnimationEnum.S_NearFire:
-        return (POIAnimationSetupBase) this._s_NearFire_Setup;
+        return _s_NearFire_Setup;
       case POIAnimationEnum.Q_ViewPoster:
-        return this._q_ViewPoster_Setup;
+        return _q_ViewPoster_Setup;
       case POIAnimationEnum.Q_LookOutOfTheWindow:
-        return this._q_LookOutOfTheWindow_Setup;
+        return _q_LookOutOfTheWindow_Setup;
       case POIAnimationEnum.Q_LookUnder:
-        return this._q_LookUnder_Setup;
+        return _q_LookUnder_Setup;
       case POIAnimationEnum.Q_LookIntoTheWindow:
-        return this._q_LookIntoTheWindow_Setup;
+        return _q_LookIntoTheWindow_Setup;
       case POIAnimationEnum.Q_ActionWithWall:
-        return this._q_ActionWithWall_Setup;
+        return _q_ActionWithWall_Setup;
       case POIAnimationEnum.Q_ActionWithTable:
-        return this._q_ActionWithTable_Setup;
+        return _q_ActionWithTable_Setup;
       case POIAnimationEnum.Q_ActionWithWardrobe:
-        return this._q_ActionWithWardrobe_Setup;
+        return _q_ActionWithWardrobe_Setup;
       case POIAnimationEnum.Q_ActionWithShelves:
-        return this._q_ActionWithShelves_Setup;
+        return _q_ActionWithShelves_Setup;
       case POIAnimationEnum.Q_ActionWithNightstand:
-        return this._q_ActionWithNightstand_Setup;
+        return _q_ActionWithNightstand_Setup;
       case POIAnimationEnum.Q_ActionOnFloor:
-        return this._q_ActionOnFloor_Setup;
+        return _q_ActionOnFloor_Setup;
       case POIAnimationEnum.S_ActionOnFloor:
-        return (POIAnimationSetupBase) this._s_ActionOnFloor_Setup;
+        return _s_ActionOnFloor_Setup;
       case POIAnimationEnum.Q_Idle:
-        return this._q_Idle_Setup;
+        return _q_Idle_Setup;
       case POIAnimationEnum.Q_NearFire:
-        return this._q_Idle_Setup;
+        return _q_Idle_Setup;
       case POIAnimationEnum.S_Dialog:
-        return this._q_Idle_Setup;
+        return _q_Idle_Setup;
       case POIAnimationEnum.S_Loot:
-        return this._q_Idle_Setup;
+        return _q_Idle_Setup;
       case POIAnimationEnum.Q_PlaygroundPlay:
-        return (POIAnimationSetupBase) this.q_PlaygroundPlay_Setup;
+        return q_PlaygroundPlay_Setup;
       case POIAnimationEnum.S_PlaygroundSandbox:
-        return (POIAnimationSetupBase) this.s_PlaygroundSandbox_Setup;
+        return s_PlaygroundSandbox_Setup;
       case POIAnimationEnum.S_PlaygroundCooperative:
-        return (POIAnimationSetupBase) this.s_PlaygroundCooperative_Setup;
+        return s_PlaygroundCooperative_Setup;
       case POIAnimationEnum.Q_PlaygroundCooperative:
-        return (POIAnimationSetupBase) this.q_PlaygroundCooperative_Setup;
+        return q_PlaygroundCooperative_Setup;
       case POIAnimationEnum.S_SitAtDeskRight:
-        return (POIAnimationSetupBase) this.s_SitAtDeskRight_Setup;
+        return s_SitAtDeskRight_Setup;
       default:
-        return (POIAnimationSetupBase) null;
+        return null;
     }
   }
 
@@ -197,73 +195,73 @@ public class POISetup : MonoBehaviour
     switch (animation)
     {
       case POIAnimationEnum.S_SitAtDesk:
-        return (POIAnimationSetupBase) this.s_SitAtDesk_Setup;
+        return s_SitAtDesk_Setup;
       case POIAnimationEnum.S_SitOnBench:
-        return (POIAnimationSetupBase) this.s_SitOnBench_Setup;
+        return s_SitOnBench_Setup;
       case POIAnimationEnum.S_LeanOnWall:
-        return (POIAnimationSetupBase) this.s_LeanOnWall_Setup;
+        return s_LeanOnWall_Setup;
       case POIAnimationEnum.S_LeanOnTable:
-        return (POIAnimationSetupBase) this.s_LeanOnTable_Setup;
+        return s_LeanOnTable_Setup;
       case POIAnimationEnum.S_SitNearWall:
-        return (POIAnimationSetupBase) this.s_SitNearWall_Setup;
+        return s_SitNearWall_Setup;
       case POIAnimationEnum.S_LieOnBed:
-        return (POIAnimationSetupBase) this.s_LieOnBed_Setup;
+        return s_LieOnBed_Setup;
       case POIAnimationEnum.S_NearFire:
-        return (POIAnimationSetupBase) this.s_NearFire_Setup;
+        return s_NearFire_Setup;
       case POIAnimationEnum.Q_ViewPoster:
-        return (POIAnimationSetupBase) this.q_ViewPoster_Setup;
+        return q_ViewPoster_Setup;
       case POIAnimationEnum.Q_LookOutOfTheWindow:
-        return (POIAnimationSetupBase) this.q_LookOutOfTheWindow_Setup;
+        return q_LookOutOfTheWindow_Setup;
       case POIAnimationEnum.Q_LookUnder:
-        return (POIAnimationSetupBase) this.q_LookUnder_Setup;
+        return q_LookUnder_Setup;
       case POIAnimationEnum.Q_LookIntoTheWindow:
-        return (POIAnimationSetupBase) this.q_LookIntoTheWindow_Setup;
+        return q_LookIntoTheWindow_Setup;
       case POIAnimationEnum.Q_ActionWithWall:
-        return (POIAnimationSetupBase) this.q_ActionWithWall_Setup;
+        return q_ActionWithWall_Setup;
       case POIAnimationEnum.Q_ActionWithTable:
-        return (POIAnimationSetupBase) this.q_ActionWithTable_Setup;
+        return q_ActionWithTable_Setup;
       case POIAnimationEnum.Q_ActionWithWardrobe:
-        return (POIAnimationSetupBase) this.q_ActionWithWardrobe_Setup;
+        return q_ActionWithWardrobe_Setup;
       case POIAnimationEnum.Q_ActionWithShelves:
-        return (POIAnimationSetupBase) this.q_ActionWithShelves_Setup;
+        return q_ActionWithShelves_Setup;
       case POIAnimationEnum.Q_ActionWithNightstand:
-        return (POIAnimationSetupBase) this.q_ActionWithNightstand_Setup;
+        return q_ActionWithNightstand_Setup;
       case POIAnimationEnum.Q_ActionOnFloor:
-        return (POIAnimationSetupBase) this.q_ActionOnFloor_Setup;
+        return q_ActionOnFloor_Setup;
       case POIAnimationEnum.S_ActionOnFloor:
-        return (POIAnimationSetupBase) this.s_ActionOnFloor_Setup;
+        return s_ActionOnFloor_Setup;
       case POIAnimationEnum.Q_Idle:
-        return (POIAnimationSetupBase) this.q_Idle_Setup;
+        return q_Idle_Setup;
       case POIAnimationEnum.Q_NearFire:
-        return (POIAnimationSetupBase) this.q_NearFire_Setup;
+        return q_NearFire_Setup;
       case POIAnimationEnum.S_Dialog:
-        return (POIAnimationSetupBase) this.s_Dialog_Setup;
+        return s_Dialog_Setup;
       case POIAnimationEnum.S_Loot:
-        return (POIAnimationSetupBase) this.s_Loot_Setup;
+        return s_Loot_Setup;
       case POIAnimationEnum.Q_PlaygroundPlay:
-        return (POIAnimationSetupBase) this.q_PlaygroundPlay_Setup;
+        return q_PlaygroundPlay_Setup;
       case POIAnimationEnum.S_PlaygroundSandbox:
-        return (POIAnimationSetupBase) this.s_PlaygroundSandbox_Setup;
+        return s_PlaygroundSandbox_Setup;
       case POIAnimationEnum.S_PlaygroundCooperative:
-        return (POIAnimationSetupBase) this.s_PlaygroundCooperative_Setup;
+        return s_PlaygroundCooperative_Setup;
       case POIAnimationEnum.Q_PlaygroundCooperative:
-        return (POIAnimationSetupBase) this.q_PlaygroundCooperative_Setup;
+        return q_PlaygroundCooperative_Setup;
       case POIAnimationEnum.S_SitAtDeskRight:
-        return (POIAnimationSetupBase) this.s_SitAtDeskRight_Setup;
+        return s_SitAtDeskRight_Setup;
       default:
-        return (POIAnimationSetupBase) null;
+        return null;
     }
   }
 
   public Vector3 GetAnimationOffset(POIAnimationEnum animation, int animationIndex)
   {
-    POIAnimationSetupBase animationSetup = this.GetAnimationSetup(animation);
+    POIAnimationSetupBase animationSetup = GetAnimationSetup(animation);
     return animationSetup != null && animationSetup.Elements.Count > animationIndex && animationSetup.Elements[animationIndex] != null ? animationSetup.Elements[animationIndex].Offset : Vector3.zero;
   }
 
   public bool GetAnimationPlayOnce(POIAnimationEnum animation, int animationIndex)
   {
-    POIAnimationSetupBase animationSetup = this.GetAnimationSetup(animation);
+    POIAnimationSetupBase animationSetup = GetAnimationSetup(animation);
     if (animationSetup == null || animationSetup.Elements.Count <= animationIndex || animationSetup.Elements[animationIndex] == null)
       return false;
     return animationSetup is POIAnimationSetupQuick || animationSetup.Elements[animationIndex].PlayOnce;
@@ -271,12 +269,12 @@ public class POISetup : MonoBehaviour
 
   public bool AnimationIsQuick(POIAnimationEnum animation)
   {
-    return this.GetAnimationSetup(animation) is POIAnimationSetupQuick;
+    return GetAnimationSetup(animation) is POIAnimationSetupQuick;
   }
 
   public bool GetNeedSynchronizeAnimation(POIAnimationEnum animation, int animationIndex)
   {
-    POIAnimationSetupBase animationSetup = this.GetAnimationSetup(animation);
+    POIAnimationSetupBase animationSetup = GetAnimationSetup(animation);
     if (animationSetup == null || animationSetup.Elements.Count <= animationIndex || animationSetup.Elements[animationIndex] == null)
       return false;
     return animationSetup.Elements[animationIndex].Offset != Vector3.zero || animationSetup.Elements[animationIndex].NeedSynchroniseAnimation;
@@ -284,7 +282,7 @@ public class POISetup : MonoBehaviour
 
   public float GetAnimationSyncDelay(POIAnimationEnum animation, int animationIndex)
   {
-    POIAnimationSetupBase animationSetup = this.GetAnimationSetup(animation);
+    POIAnimationSetupBase animationSetup = GetAnimationSetup(animation);
     return animationSetup != null && animationSetup.Elements.Count > animationIndex && animationSetup.Elements[animationIndex] != null ? animationSetup.Elements[animationIndex].AnimationSyncDelay : 0.0f;
   }
 

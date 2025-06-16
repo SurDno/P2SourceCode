@@ -2,8 +2,6 @@
 using SRDebugger.Services;
 using SRF;
 using SRF.Service;
-using UnityEngine;
-using UnityEngine.UI;
 
 namespace SRDebugger.UI.Profiler
 {
@@ -17,21 +15,21 @@ namespace SRDebugger.UI.Profiler
 
     private void Update()
     {
-      if ((double) Time.realtimeSinceStartup <= (double) this.nextUpdate)
+      if ((double) Time.realtimeSinceStartup <= nextUpdate)
         return;
-      this.Refresh();
+      Refresh();
     }
 
     private void Refresh()
     {
-      this.nextUpdate = Time.realtimeSinceStartup + this.updateFrequency;
+      nextUpdate = Time.realtimeSinceStartup + updateFrequency;
       long reservedMemoryLong = UnityEngine.Profiling.Profiler.GetTotalReservedMemoryLong();
-      this._text.text = "Total : " + OptimizationUtility.GetMemoryText(UnityEngine.Profiling.Profiler.GetTotalAllocatedMemoryLong()) + " / " + OptimizationUtility.GetMemoryText(reservedMemoryLong);
+      _text.text = "Total : " + OptimizationUtility.GetMemoryText(UnityEngine.Profiling.Profiler.GetTotalAllocatedMemoryLong()) + " / " + OptimizationUtility.GetMemoryText(reservedMemoryLong);
     }
 
     protected void Awake()
     {
-      this._profilerService = SRServiceManager.GetService<IProfilerService>();
+      _profilerService = SRServiceManager.GetService<IProfilerService>();
     }
   }
 }

@@ -1,7 +1,4 @@
 ﻿using Cofe.Meta;
-using System;
-using UnityEngine;
-using UnityEngine.SceneManagement;
 
 namespace Inspectors
 {
@@ -10,10 +7,10 @@ namespace Inspectors
   {
     private static InspectedDrawerService.DrawerHandle defaultObjectDrawer;
 
-    [Cofe.Meta.Initialise]
+    [Initialise]
     private static void Initialise()
     {
-      InspectedDrawerService.Add<Bounds>((InspectedDrawerService.DrawerHandle) ((name, type, value, mutable, context, drawer, target, member, setter) =>
+      InspectedDrawerService.Add<Bounds>((name, type, value, mutable, context, drawer, target, member, setter) =>
       {
         Bounds bounds1 = (Bounds) value;
         Bounds bounds2 = drawer.BoundsField(name, bounds1);
@@ -22,8 +19,8 @@ namespace Inspectors
         value = (object) bounds2;
         if (setter != null)
           setter(value);
-      }));
-      InspectedDrawerService.Add<Vector2>((InspectedDrawerService.DrawerHandle) ((name, type, value, mutable, context, drawer, target, member, setter) =>
+      });
+      InspectedDrawerService.Add<Vector2>((name, type, value, mutable, context, drawer, target, member, setter) =>
       {
         Vector2 vector2_1 = (Vector2) value;
         Vector2 vector2_2 = drawer.Vector2Field(name, vector2_1);
@@ -32,8 +29,8 @@ namespace Inspectors
         value = (object) vector2_2;
         if (setter != null)
           setter(value);
-      }));
-      InspectedDrawerService.Add<Vector3>((InspectedDrawerService.DrawerHandle) ((name, type, value, mutable, context, drawer, target, member, setter) =>
+      });
+      InspectedDrawerService.Add<Vector3>((name, type, value, mutable, context, drawer, target, member, setter) =>
       {
         Vector3 vector3_1 = (Vector3) value;
         Vector3 vector3_2 = drawer.Vector3Field(name, vector3_1);
@@ -42,8 +39,8 @@ namespace Inspectors
         value = (object) vector3_2;
         if (setter != null)
           setter(value);
-      }));
-      InspectedDrawerService.Add<Vector4>((InspectedDrawerService.DrawerHandle) ((name, type, value, mutable, context, drawer, target, member, setter) =>
+      });
+      InspectedDrawerService.Add<Vector4>((name, type, value, mutable, context, drawer, target, member, setter) =>
       {
         Vector4 vector4_1 = (Vector4) value;
         Vector4 vector4_2 = drawer.Vector4Field(name, vector4_1);
@@ -52,8 +49,8 @@ namespace Inspectors
         value = (object) vector4_2;
         if (setter != null)
           setter(value);
-      }));
-      InspectedDrawerService.Add<Quaternion>((InspectedDrawerService.DrawerHandle) ((name, type, value, mutable, context, drawer, target, member, setter) =>
+      });
+      InspectedDrawerService.Add<Quaternion>((name, type, value, mutable, context, drawer, target, member, setter) =>
       {
         Vector3 eulerAngles = ((Quaternion) value).eulerAngles;
         Vector3 euler = drawer.Vector3Field(name, eulerAngles);
@@ -62,8 +59,8 @@ namespace Inspectors
         value = (object) Quaternion.Euler(euler);
         if (setter != null)
           setter(value);
-      }));
-      InspectedDrawerService.Add<Color>((InspectedDrawerService.DrawerHandle) ((name, type, value, mutable, context, drawer, target, member, setter) =>
+      });
+      InspectedDrawerService.Add<Color>((name, type, value, mutable, context, drawer, target, member, setter) =>
       {
         Color color1 = (Color) value;
         Color color2 = drawer.ColorField(name, color1);
@@ -72,8 +69,8 @@ namespace Inspectors
         value = (object) color2;
         if (setter != null)
           setter(value);
-      }));
-      InspectedDrawerService.Add<Rect>((InspectedDrawerService.DrawerHandle) ((name, type, value, mutable, context, drawer, target, member, setter) =>
+      });
+      InspectedDrawerService.Add<Rect>((name, type, value, mutable, context, drawer, target, member, setter) =>
       {
         Rect rect1 = (Rect) value;
         Rect rect2 = drawer.RectField(name, rect1);
@@ -82,8 +79,8 @@ namespace Inspectors
         value = (object) rect2;
         if (setter != null)
           setter(value);
-      }));
-      InspectedDrawerService.Add<AnimationCurve>((InspectedDrawerService.DrawerHandle) ((name, type, value, mutable, context, drawer, target, member, setter) =>
+      });
+      InspectedDrawerService.Add<AnimationCurve>((name, type, value, mutable, context, drawer, target, member, setter) =>
       {
         AnimationCurve animationCurve1 = (AnimationCurve) value;
         AnimationCurve animationCurve2 = drawer.CurveField(name, animationCurve1);
@@ -92,31 +89,31 @@ namespace Inspectors
         value = (object) animationCurve2;
         if (setter != null)
           setter(value);
-      }));
-      InspectedDrawerService.Add<GradientAlphaKey>((InspectedDrawerService.DrawerHandle) ((name, type, value, mutable, context, drawer, target, member, setter) =>
+      });
+      InspectedDrawerService.Add<GradientAlphaKey>((name, type, value, mutable, context, drawer, target, member, setter) =>
       {
         string displayName = name;
         GradientAlphaKey gradientAlphaKey = (GradientAlphaKey) value;
-        InspectedDrawerUtility.Foldout fold = InspectedDrawerUtility.BeginComplex(name, displayName, (IExpandedProvider) context, drawer);
+        InspectedDrawerUtility.Foldout fold = InspectedDrawerUtility.BeginComplex(name, displayName, context, drawer);
         if (fold.Expand)
           gradientAlphaKey = new GradientAlphaKey(drawer.FloatField("Alpha", gradientAlphaKey.alpha), drawer.FloatField("Time", gradientAlphaKey.time));
-        InspectedDrawerUtility.EndComplex(fold, name, (IExpandedProvider) context, drawer);
-      }));
-      InspectedDrawerService.Add<GradientColorKey>((InspectedDrawerService.DrawerHandle) ((name, type, value, mutable, context, drawer, target, member, setter) =>
+        InspectedDrawerUtility.EndComplex(fold, name, context, drawer);
+      });
+      InspectedDrawerService.Add<GradientColorKey>((name, type, value, mutable, context, drawer, target, member, setter) =>
       {
         string displayName = name;
         GradientColorKey gradientColorKey = (GradientColorKey) value;
-        InspectedDrawerUtility.Foldout fold = InspectedDrawerUtility.BeginComplex(name, displayName, (IExpandedProvider) context, drawer);
+        InspectedDrawerUtility.Foldout fold = InspectedDrawerUtility.BeginComplex(name, displayName, context, drawer);
         if (fold.Expand)
           gradientColorKey = new GradientColorKey(drawer.ColorField("Color", gradientColorKey.color), drawer.FloatField("Time", gradientColorKey.time));
-        InspectedDrawerUtility.EndComplex(fold, name, (IExpandedProvider) context, drawer);
-      }));
-      InspectedDrawerService.Add<Scene>((InspectedDrawerService.DrawerHandle) ((name, type, value, mutable, context, drawer, target, member, setter) =>
+        InspectedDrawerUtility.EndComplex(fold, name, context, drawer);
+      });
+      InspectedDrawerService.Add<Scene>((name, type, value, mutable, context, drawer, target, member, setter) =>
       {
         string path = ((Scene) value).path;
         drawer.TextField(name, path);
-      }));
-      InspectedDrawerService.AddConditional((Func<System.Type, bool>) (type => typeof (UnityEngine.Object).IsAssignableFrom(type)), (InspectedDrawerService.DrawerHandle) ((name, type, value, mutable, context, drawer, target, member, setter) =>
+      });
+      InspectedDrawerService.AddConditional(type => typeof (UnityEngine.Object).IsAssignableFrom(type), (name, type, value, mutable, context, drawer, target, member, setter) =>
       {
         UnityEngine.Object object1 = (UnityEngine.Object) value;
         UnityEngine.Object object2 = drawer.ObjectField(name, object1, type);
@@ -125,7 +122,7 @@ namespace Inspectors
         value = (object) object2;
         if (setter != null)
           setter(value);
-      }));
+      });
     }
   }
 }

@@ -1,11 +1,11 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons;
 using Engine.Common.Commons.Converters;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Scripts.Tools.Serializations.Converters;
-using UnityEngine;
 
 namespace BehaviorDesigner.Runtime.Tasks.Basic.SharedVariables
 {
@@ -14,56 +14,56 @@ namespace BehaviorDesigner.Runtime.Tasks.Basic.SharedVariables
   [TaskDescription("Gets the GameObject from the Transform component. Returns Success.")]
   [Factory]
   [GeneratePartial(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
-  public class SharedTransformToGameObject : BehaviorDesigner.Runtime.Tasks.Action, IStub, ISerializeDataWrite, ISerializeDataRead
+  public class SharedTransformToGameObject : Action, IStub, ISerializeDataWrite, ISerializeDataRead
   {
-    [BehaviorDesigner.Runtime.Tasks.Tooltip("The Transform component")]
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [Tooltip("The Transform component")]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [SerializeField]
     public SharedTransform sharedTransform;
     [RequiredField]
-    [BehaviorDesigner.Runtime.Tasks.Tooltip("The GameObject to set")]
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [Tooltip("The GameObject to set")]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy()]
     [SerializeField]
     public SharedGameObject sharedGameObject;
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.WriteSerialize<NodeData>(writer, "NodeData", this.nodeData);
-      DefaultDataWriteUtility.Write(writer, "Id", this.id);
-      DefaultDataWriteUtility.Write(writer, "FriendlyName", this.friendlyName);
-      DefaultDataWriteUtility.Write(writer, "Instant", this.instant);
-      DefaultDataWriteUtility.Write(writer, "Disabled", this.disabled);
-      BehaviorTreeDataWriteUtility.WriteShared<SharedTransform>(writer, "SharedTransform", this.sharedTransform);
-      BehaviorTreeDataWriteUtility.WriteShared<SharedGameObject>(writer, "SharedGameObject", this.sharedGameObject);
+      DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
+      DefaultDataWriteUtility.Write(writer, "Id", id);
+      DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
+      DefaultDataWriteUtility.Write(writer, "Instant", instant);
+      DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
+      BehaviorTreeDataWriteUtility.WriteShared(writer, "SharedTransform", sharedTransform);
+      BehaviorTreeDataWriteUtility.WriteShared(writer, "SharedGameObject", sharedGameObject);
     }
 
-    public void DataRead(IDataReader reader, System.Type type)
+    public void DataRead(IDataReader reader, Type type)
     {
-      this.nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
-      this.id = DefaultDataReadUtility.Read(reader, "Id", this.id);
-      this.friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", this.friendlyName);
-      this.instant = DefaultDataReadUtility.Read(reader, "Instant", this.instant);
-      this.disabled = DefaultDataReadUtility.Read(reader, "Disabled", this.disabled);
-      this.sharedTransform = BehaviorTreeDataReadUtility.ReadShared<SharedTransform>(reader, "SharedTransform", this.sharedTransform);
-      this.sharedGameObject = BehaviorTreeDataReadUtility.ReadShared<SharedGameObject>(reader, "SharedGameObject", this.sharedGameObject);
+      nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
+      id = DefaultDataReadUtility.Read(reader, "Id", id);
+      friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
+      instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
+      disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
+      sharedTransform = BehaviorTreeDataReadUtility.ReadShared(reader, "SharedTransform", sharedTransform);
+      sharedGameObject = BehaviorTreeDataReadUtility.ReadShared(reader, "SharedGameObject", sharedGameObject);
     }
 
     public override TaskStatus OnUpdate()
     {
-      if ((UnityEngine.Object) this.sharedTransform.Value == (UnityEngine.Object) null)
+      if ((UnityEngine.Object) sharedTransform.Value == (UnityEngine.Object) null)
         return TaskStatus.Failure;
-      this.sharedGameObject.Value = this.sharedTransform.Value.gameObject;
+      sharedGameObject.Value = sharedTransform.Value.gameObject;
       return TaskStatus.Success;
     }
 
     public override void OnReset()
     {
-      this.sharedTransform = (SharedTransform) null;
-      this.sharedGameObject = (SharedGameObject) null;
+      sharedTransform = null;
+      sharedGameObject = null;
     }
   }
 }

@@ -1,6 +1,4 @@
 ﻿using Engine.Impl.UI.Controls;
-using UnityEngine;
-using UnityEngine.UI;
 
 namespace Engine.Source.Behaviours
 {
@@ -15,20 +13,20 @@ namespace Engine.Source.Behaviours
     {
       get
       {
-        if ((Object) this.rawImage != (Object) null)
-          return this.rawImage.color.a;
-        return (Object) this.image != (Object) null ? this.image.color.a : 1f;
+        if ((Object) rawImage != (Object) null)
+          return rawImage.color.a;
+        return (Object) image != (Object) null ? image.color.a : 1f;
       }
       set
       {
-        if ((Object) this.rawImage != (Object) null)
-          this.rawImage.color = this.rawImage.color with
+        if ((Object) rawImage != (Object) null)
+          rawImage.color = rawImage.color with
           {
             a = value
           };
-        if (!((Object) this.image != (Object) null))
+        if (!((Object) image != (Object) null))
           return;
-        this.image.color = this.image.color with
+        image.color = image.color with
         {
           a = value
         };

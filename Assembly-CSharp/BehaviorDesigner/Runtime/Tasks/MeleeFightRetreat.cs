@@ -1,11 +1,11 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons;
 using Engine.Common.Commons.Converters;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Scripts.Tools.Serializations.Converters;
-using UnityEngine;
 
 namespace BehaviorDesigner.Runtime.Tasks
 {
@@ -17,19 +17,19 @@ namespace BehaviorDesigner.Runtime.Tasks
   [FactoryProxy(typeof (MeleeFightRetreat))]
   public class MeleeFightRetreat : MeleeFightBase, IStub, ISerializeDataWrite, ISerializeDataRead
   {
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [SerializeField]
     private RetreatDescription description;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [SerializeField]
     public SharedBool Escaping;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy()]
     [SerializeField]
     public SharedFloat RetreatTime;
     private float desiredWalkSpeed;
@@ -43,78 +43,78 @@ namespace BehaviorDesigner.Runtime.Tasks
     public override void OnStart()
     {
       base.OnStart();
-      this.fighter = this.owner as NPCEnemy;
-      this.startTime = Time.time;
-      this.waitDuration = this.RetreatTime.Value;
-      this.agent.enabled = true;
-      this.npcState.FightIdle(false);
+      fighter = owner as NPCEnemy;
+      startTime = Time.time;
+      waitDuration = RetreatTime.Value;
+      agent.enabled = true;
+      npcState.FightIdle(false);
     }
 
     public override TaskStatus DoUpdate(float deltaTime)
     {
-      if ((UnityEngine.Object) this.description == (UnityEngine.Object) null)
+      if ((UnityEngine.Object) description == (UnityEngine.Object) null)
       {
-        Debug.LogWarning((object) (typeof (MeleeFightRetreat).Name + " has no " + typeof (RetreatDescription).Name + " attached"), (UnityEngine.Object) this.gameObject);
+        Debug.LogWarning((object) (typeof (MeleeFightRetreat).Name + " has no " + typeof (RetreatDescription).Name + " attached"), (UnityEngine.Object) gameObject);
         return TaskStatus.Failure;
       }
-      if ((UnityEngine.Object) this.owner.Enemy == (UnityEngine.Object) null)
+      if ((UnityEngine.Object) owner.Enemy == (UnityEngine.Object) null)
         return TaskStatus.Failure;
-      this.owner.RotationTarget = (Transform) null;
-      this.owner.RotateByPath = false;
-      this.owner.RetreatAngle = new float?();
-      Vector3 forward = this.owner.Enemy.transform.position - this.owner.transform.position;
+      owner.RotationTarget = (Transform) null;
+      owner.RotateByPath = false;
+      owner.RetreatAngle = new float?();
+      Vector3 forward = owner.Enemy.transform.position - owner.transform.position;
       float magnitude = forward.magnitude;
       forward.Normalize();
-      if (this.fighter.IsReacting)
+      if (fighter.IsReacting)
       {
-        if (this.fighter.IsAttacking || this.fighter.IsContrReacting)
-          this.owner.transform.rotation = Quaternion.RotateTowards(this.owner.transform.rotation, Quaternion.AngleAxis(0.0f, Vector3.up) * Quaternion.LookRotation(forward), 270f * Time.deltaTime);
+        if (fighter.IsAttacking || fighter.IsContrReacting)
+          owner.transform.rotation = Quaternion.RotateTowards(owner.transform.rotation, Quaternion.AngleAxis(0.0f, Vector3.up) * Quaternion.LookRotation(forward), 270f * Time.deltaTime);
         return TaskStatus.Running;
       }
-      float? retreatDirection = PathfindingHelper.FindBestRetreatDirection(this.owner.transform.position, this.owner.Enemy.transform.position);
+      float? retreatDirection = PathfindingHelper.FindBestRetreatDirection(owner.transform.position, owner.Enemy.transform.position);
       Quaternion quaternion1 = Quaternion.LookRotation(forward);
       if (!retreatDirection.HasValue)
       {
-        this.desiredWalkSpeed = 0.0f;
+        desiredWalkSpeed = 0.0f;
       }
       else
       {
-        if ((double) magnitude < (double) this.description.RunDistance)
-          this.desiredWalkSpeed = -2f;
-        else if ((double) magnitude < (double) this.description.WalkDistance)
-          this.desiredWalkSpeed = -1f;
-        else if ((double) magnitude < (double) this.description.StopDistance)
-          this.desiredWalkSpeed = 0.0f;
-        if (this.Escaping.Value && (double) magnitude > (double) this.description.EscapeDistance || (double) this.RetreatTime.Value > 0.0 && (double) this.startTime + (double) this.waitDuration < (double) Time.time)
+        if (magnitude < (double) description.RunDistance)
+          desiredWalkSpeed = -2f;
+        else if (magnitude < (double) description.WalkDistance)
+          desiredWalkSpeed = -1f;
+        else if (magnitude < (double) description.StopDistance)
+          desiredWalkSpeed = 0.0f;
+        if (Escaping.Value && magnitude > (double) description.EscapeDistance || RetreatTime.Value > 0.0 && startTime + (double) waitDuration < (double) Time.time)
           return TaskStatus.Success;
         Quaternion quaternion2 = quaternion1 * Quaternion.AngleAxis(retreatDirection.Value, Vector3.up);
       }
-      this.owner.DesiredWalkSpeed = this.desiredWalkSpeed;
-      this.owner.RotationTarget = this.owner.Enemy.transform;
-      if ((double) magnitude < (double) this.description.AttackDistance)
+      owner.DesiredWalkSpeed = desiredWalkSpeed;
+      owner.RotationTarget = owner.Enemy.transform;
+      if (magnitude < (double) description.AttackDistance)
       {
-        if (!this.fightAnimatorState.IsAttacking)
-          this.attackCooldownTime -= deltaTime;
-        if ((double) this.attackCooldownTime <= 0.0 && !this.fightAnimatorState.IsAttacking && !this.fightAnimatorState.IsReaction && !this.fightAnimatorState.IsQuickBlock)
+        if (!fightAnimatorState.IsAttacking)
+          attackCooldownTime -= deltaTime;
+        if (attackCooldownTime <= 0.0 && !fightAnimatorState.IsAttacking && !fightAnimatorState.IsReaction && !fightAnimatorState.IsQuickBlock)
         {
-          if ((double) magnitude < 0.60000002384185791 * (double) Fight.Description.NPCHitDistance)
+          if (magnitude < 0.60000002384185791 * Fight.Description.NPCHitDistance)
           {
-            this.animatorState.SetTrigger("Fight.Triggers/Attack");
-            this.animator.SetInteger("Fight.AttackType", 0);
-            this.attackCooldownTime = this.description.PunchCooldownTime;
+            animatorState.SetTrigger("Fight.Triggers/Attack");
+            animator.SetInteger("Fight.AttackType", 0);
+            attackCooldownTime = description.PunchCooldownTime;
           }
-          else if ((double) magnitude < 1.0 * (double) Fight.Description.NPCHitDistance)
+          else if (magnitude < 1.0 * Fight.Description.NPCHitDistance)
           {
-            this.animatorState.SetTrigger("Fight.Triggers/Attack");
-            this.animator.SetInteger("Fight.AttackType", 1);
-            this.attackCooldownTime = this.description.StepPunchCooldownTime;
+            animatorState.SetTrigger("Fight.Triggers/Attack");
+            animator.SetInteger("Fight.AttackType", 1);
+            attackCooldownTime = description.StepPunchCooldownTime;
           }
-          else if ((double) magnitude < (double) this.description.AttackDistance)
+          else if (magnitude < (double) description.AttackDistance)
           {
-            this.animatorState.SetTrigger("Fight.Triggers/Attack");
-            this.animator.SetInteger("Fight.AttackType", 3);
-            this.animator.SetBool("Fight.AttackAfterCheat", (double) UnityEngine.Random.value > (double) this.description.CheatProbability);
-            this.attackCooldownTime = this.description.TelegraphPunchCooldownTime;
+            animatorState.SetTrigger("Fight.Triggers/Attack");
+            animator.SetInteger("Fight.AttackType", 3);
+            animator.SetBool("Fight.AttackAfterCheat", (double) UnityEngine.Random.value > description.CheatProbability);
+            attackCooldownTime = description.TelegraphPunchCooldownTime;
           }
         }
       }
@@ -131,26 +131,26 @@ namespace BehaviorDesigner.Runtime.Tasks
 
     public new void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.WriteSerialize<NodeData>(writer, "NodeData", this.nodeData);
-      DefaultDataWriteUtility.Write(writer, "Id", this.id);
-      DefaultDataWriteUtility.Write(writer, "FriendlyName", this.friendlyName);
-      DefaultDataWriteUtility.Write(writer, "Instant", this.instant);
-      DefaultDataWriteUtility.Write(writer, "Disabled", this.disabled);
-      BehaviorTreeDataWriteUtility.WriteUnity<RetreatDescription>(writer, "Description", this.description);
-      BehaviorTreeDataWriteUtility.WriteShared<SharedBool>(writer, "Escaping", this.Escaping);
-      BehaviorTreeDataWriteUtility.WriteShared<SharedFloat>(writer, "RetreatTime", this.RetreatTime);
+      DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
+      DefaultDataWriteUtility.Write(writer, "Id", id);
+      DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
+      DefaultDataWriteUtility.Write(writer, "Instant", instant);
+      DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
+      BehaviorTreeDataWriteUtility.WriteUnity<RetreatDescription>(writer, "Description", description);
+      BehaviorTreeDataWriteUtility.WriteShared(writer, "Escaping", Escaping);
+      BehaviorTreeDataWriteUtility.WriteShared(writer, "RetreatTime", RetreatTime);
     }
 
-    public new void DataRead(IDataReader reader, System.Type type)
+    public new void DataRead(IDataReader reader, Type type)
     {
-      this.nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
-      this.id = DefaultDataReadUtility.Read(reader, "Id", this.id);
-      this.friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", this.friendlyName);
-      this.instant = DefaultDataReadUtility.Read(reader, "Instant", this.instant);
-      this.disabled = DefaultDataReadUtility.Read(reader, "Disabled", this.disabled);
-      this.description = BehaviorTreeDataReadUtility.ReadUnity<RetreatDescription>(reader, "Description", this.description);
-      this.Escaping = BehaviorTreeDataReadUtility.ReadShared<SharedBool>(reader, "Escaping", this.Escaping);
-      this.RetreatTime = BehaviorTreeDataReadUtility.ReadShared<SharedFloat>(reader, "RetreatTime", this.RetreatTime);
+      nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
+      id = DefaultDataReadUtility.Read(reader, "Id", id);
+      friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
+      instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
+      disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
+      description = BehaviorTreeDataReadUtility.ReadUnity<RetreatDescription>(reader, "Description", description);
+      Escaping = BehaviorTreeDataReadUtility.ReadShared(reader, "Escaping", Escaping);
+      RetreatTime = BehaviorTreeDataReadUtility.ReadShared(reader, "RetreatTime", RetreatTime);
     }
   }
 }

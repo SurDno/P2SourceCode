@@ -1,10 +1,9 @@
-﻿using Engine.Common;
+﻿using System;
+using System.Collections.Generic;
+using Engine.Common;
 using Engine.Common.Components;
 using Engine.Impl.Services.HierarchyServices;
 using Engine.Source.Commons;
-using System;
-using System.Collections.Generic;
-using UnityEngine;
 
 public static class EntityUtility
 {
@@ -33,22 +32,22 @@ public static class EntityUtility
       if ((UnityEngine.Object) engineGameObject != (UnityEngine.Object) null)
         return engineGameObject.Owner;
     }
-    return (IEntity) null;
+    return null;
   }
 
   public static IEntity FindChildByName(IEntity entity, string name)
   {
     if (entity == null || entity.Childs == null)
-      return (IEntity) null;
+      return null;
     foreach (IEntity child in entity.Childs)
     {
       if (child.Name == name)
         return child;
-      IEntity childByName = EntityUtility.FindChildByName(child, name);
+      IEntity childByName = FindChildByName(child, name);
       if (childByName != null)
         return childByName;
     }
-    return (IEntity) null;
+    return null;
   }
 
   public static IEntity GetEntityByTemplate(IEntity entity, Guid templateId)
@@ -56,7 +55,7 @@ public static class EntityUtility
     if (entity.TemplateId == templateId)
       return entity;
     if (entity.Childs == null)
-      return (IEntity) null;
+      return null;
     foreach (IEntity child in entity.Childs)
     {
       HierarchyItem hierarchyItem = ((IEntityHierarchy) child).HierarchyItem;
@@ -67,11 +66,11 @@ public static class EntityUtility
       }
       else if (hierarchyItem.Container == null)
       {
-        IEntity entityByTemplate = EntityUtility.GetEntityByTemplate(child, templateId);
+        IEntity entityByTemplate = GetEntityByTemplate(child, templateId);
         if (entityByTemplate != null)
           return entityByTemplate;
       }
     }
-    return (IEntity) null;
+    return null;
   }
 }

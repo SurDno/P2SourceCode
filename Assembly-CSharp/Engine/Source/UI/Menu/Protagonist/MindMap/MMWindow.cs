@@ -1,4 +1,8 @@
-﻿using Engine.Common;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using Engine.Common;
 using Engine.Common.Commons;
 using Engine.Common.Comparers;
 using Engine.Common.MindMap;
@@ -15,13 +19,6 @@ using Engine.Source.Utility;
 using InputServices;
 using Inspectors;
 using Pingle;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.UI;
 
 namespace Engine.Source.UI.Menu.Protagonist.MindMap
 {
@@ -72,14 +69,14 @@ namespace Engine.Source.UI.Menu.Protagonist.MindMap
     [SerializeField]
     private GameObject newNodeIndicatorPrefab;
     [Inspected]
-    private Dictionary<Guid, MMContent> contents = new Dictionary<Guid, MMContent>((IEqualityComparer<Guid>) GuidComparer.Instance);
+    private Dictionary<Guid, MMContent> contents = new Dictionary<Guid, MMContent>(GuidComparer.Instance);
     [Inspected]
     private List<MMPage> pages = new List<MMPage>();
     private MMPage globalPage;
     private CameraKindEnum lastCameraKind;
-    private float baseScalePower = 0.0f;
-    private float desiredScaleValue = 0.0f;
-    private float scaleValue = 0.0f;
+    private float baseScalePower;
+    private float desiredScaleValue;
+    private float scaleValue;
     private MMPageView openedPageView;
     private HashSet<IMMNode> mapNodes = new HashSet<IMMNode>();
     private int currentNodeIndex = 0;
@@ -90,111 +87,111 @@ namespace Engine.Source.UI.Menu.Protagonist.MindMap
     [SerializeField]
     private ScrollRect scroll;
     private float xPrev;
-    private float yPrev = 0.0f;
-    private IMMNode currentNode = (IMMNode) null;
+    private float yPrev;
+    private IMMNode currentNode;
     private List<MMNodeView> nodes = new List<MMNodeView>();
     private const float CLOSEST_NODE_DETECTION_THRESHOLD = 2f;
-    private MMWindow.NodeMoveDirection bufferedDirection = MMWindow.NodeMoveDirection.None;
-    private MMNodeView previousNode = (MMNodeView) null;
-    private MMNodeView hovered = (MMNodeView) null;
-    private MMNodeView newHovered = (MMNodeView) null;
+    private NodeMoveDirection bufferedDirection = NodeMoveDirection.None;
+    private MMNodeView previousNode;
+    private MMNodeView hovered;
+    private MMNodeView newHovered;
     private GraphicRaycaster rayCaster = (GraphicRaycaster) null;
     private PointerEventData pointerData = (PointerEventData) null;
     private const float MAX_ACCELERATION_RATE = 3f;
-    private float currentAcceleration = 0.0f;
+    private float currentAcceleration;
     private float accelerationSpeed = 3f;
     private Vector2 cursorMapPosition = Vector2.zero;
     private Vector2 maxNavigationValues = Vector2.zero;
     private Vector2 minNavigationValues = Vector2.zero;
-    private bool analogNavigationCooldown = false;
+    private bool analogNavigationCooldown;
     private const float ANALOG_NAVIGATION_TRESHOLD = 0.640000045f;
     private const float ANALOG_NAVIGATION_COOL = 0.0400000028f;
     private const float NAVIGATION_THRESHOLD = 150f;
-    private bool isNodesListComplete = false;
+    private bool isNodesListComplete;
 
-    public IEnumerable<IMMPage> Pages => (IEnumerable<IMMPage>) this.pages;
+    public IEnumerable<IMMPage> Pages => pages;
 
     public MMPage OpenedPage { get; private set; }
 
-    public RectTransform ContentRect => this.contentRect;
+    public RectTransform ContentRect => contentRect;
 
-    public float LinkThickness => this.linkThickness;
+    public float LinkThickness => linkThickness;
 
-    public Material Material => this.material;
+    public Material Material => material;
 
-    public Sprite LinkImage => this.linkImage;
+    public Sprite LinkImage => linkImage;
 
-    public float RadiusToSpriteSize => this.radiusToSpriteSize;
+    public float RadiusToSpriteSize => radiusToSpriteSize;
 
-    public Sprite ActiveGlowImage => this.activeGlowImage;
+    public Sprite ActiveGlowImage => activeGlowImage;
 
-    public Texture PredictionIcon => this.predictionIcon;
+    public Texture PredictionIcon => predictionIcon;
 
-    public GameObject NewNodeIndicatorPrefab => this.newNodeIndicatorPrefab;
+    public GameObject NewNodeIndicatorPrefab => newNodeIndicatorPrefab;
 
-    public Color ActiveGlowColor => this.activeGlowColor;
+    public Color ActiveGlowColor => activeGlowColor;
 
-    public Color InactiveTint => this.inactiveTint;
+    public Color InactiveTint => inactiveTint;
 
     public IEntity Actor { get; set; }
 
     public MMPage GlobalPage
     {
-      get => this.globalPage;
+      get => globalPage;
       set
       {
-        if (value == this.globalPage)
+        if (value == globalPage)
           return;
-        bool flag = this.OpenedPage == this.globalPage;
-        this.globalPage = value;
+        bool flag = OpenedPage == globalPage;
+        globalPage = value;
         if (flag)
-          this.OpenPage(this.globalPage);
+          OpenPage(globalPage);
         else
-          this.sideBar.UpdateButtons();
+          sideBar.UpdateButtons();
         Debug.Log((object) "Mind Map : Global page set");
       }
     }
 
     public MMPage LastPage
     {
-      get => this.pages.Count == 0 ? (MMPage) null : this.pages[this.pages.Count - 1];
+      get => pages.Count == 0 ? null : pages[pages.Count - 1];
       set
       {
       }
     }
 
-    public int PageCount => this.pages.Count;
+    public int PageCount => pages.Count;
 
     private float BaseScalePower
     {
-      get => this.baseScalePower;
+      get => baseScalePower;
       set
       {
-        if ((double) this.baseScalePower == (double) value)
+        if (baseScalePower == (double) value)
           return;
-        this.baseScalePower = value;
-        this.ApplyScale();
+        baseScalePower = value;
+        ApplyScale();
       }
     }
 
     private float ScaleValue
     {
-      get => this.scaleValue;
+      get => scaleValue;
       set
       {
-        if ((double) this.scaleValue == (double) value)
+        if (scaleValue == (double) value)
           return;
-        this.scaleValue = value;
-        this.ApplyScale();
+        scaleValue = value;
+        ApplyScale();
       }
     }
 
-    public IEnumerable<IMMContent> Contents => (IEnumerable<IMMContent>) this.contents.Values;
+    public IEnumerable<IMMContent> Contents => contents.Values;
 
     private void ApplyScale()
     {
-      float num = Mathf.Pow(2f, Mathf.Lerp(this.baseScalePower, 1.5f, this.scaleValue));
-      this.ContentRect.localScale = new Vector3(num, num, num);
+      float num = Mathf.Pow(2f, Mathf.Lerp(baseScalePower, 1.5f, scaleValue));
+      ContentRect.localScale = new Vector3(num, num, num);
     }
 
     public void CallMap(IMMNode node)
@@ -212,7 +209,7 @@ namespace Engine.Source.UI.Menu.Protagonist.MindMap
         if (mapItem.Nodes != null)
         {
           foreach (IMMNode node in mapItem.Nodes)
-            this.mapNodes.Add(node);
+            mapNodes.Add(node);
         }
       }
     }
@@ -222,19 +219,19 @@ namespace Engine.Source.UI.Menu.Protagonist.MindMap
       switch (kind)
       {
         case MMContentKind.Success:
-          return this.successColor;
+          return successColor;
         case MMContentKind.Fail:
-          return this.failColor;
+          return failColor;
         case MMContentKind.Knowledge:
-          return this.knowledgeColor;
+          return knowledgeColor;
         case MMContentKind.IsolatedFact:
-          return this.isolatedFactColor;
+          return isolatedFactColor;
         default:
-          return this.normalColor;
+          return normalColor;
       }
     }
 
-    public bool MapContainsNode(IMMNode node) => this.mapNodes.Contains(node);
+    public bool MapContainsNode(IMMNode node) => mapNodes.Contains(node);
 
     public void CreateContent(
       Guid id,
@@ -246,138 +243,138 @@ namespace Engine.Source.UI.Menu.Protagonist.MindMap
       content.Kind = kind;
       content.Placeholder = placeholder;
       content.Description = description;
-      this.AddContent(content);
+      AddContent(content);
     }
 
     public void AddContent(IMMContent content)
     {
-      this.contents.Add(content.Id, (MMContent) content);
+      contents.Add(content.Id, (MMContent) content);
     }
 
-    public void RemoveContent(IMMContent content) => this.contents.Remove(content.Id);
+    public void RemoveContent(IMMContent content) => contents.Remove(content.Id);
 
     private void CloseOpenedPage()
     {
-      this.infoView.Hide();
-      if ((UnityEngine.Object) this.openedPageView != (UnityEngine.Object) null)
+      infoView.Hide();
+      if ((UnityEngine.Object) openedPageView != (UnityEngine.Object) null)
       {
-        UnityEngine.Object.Destroy((UnityEngine.Object) this.openedPageView.gameObject);
-        this.openedPageView = (MMPageView) null;
+        UnityEngine.Object.Destroy((UnityEngine.Object) openedPageView.gameObject);
+        openedPageView = null;
       }
-      this.OpenedPage = (MMPage) null;
-      this.nodes = new List<MMNodeView>();
-      this.isNodesListComplete = false;
+      OpenedPage = null;
+      nodes = new List<MMNodeView>();
+      isNodesListComplete = false;
     }
 
-    public void HideNodeInfo(MMNodeView nodeView) => this.infoView.Hide(nodeView);
+    public void HideNodeInfo(MMNodeView nodeView) => infoView.Hide(nodeView);
 
     public void AddPage(MMPage page)
     {
-      bool flag = this.OpenedPage != null && this.OpenedPage == this.LastPage;
-      Debug.Log((object) ("Mind Map : Local page " + (object) this.pages.Count + " added"));
-      this.pages.Add(page);
+      bool flag = OpenedPage != null && OpenedPage == LastPage;
+      Debug.Log((object) ("Mind Map : Local page " + pages.Count + " added"));
+      pages.Add(page);
       if (flag)
-        this.OpenPage(page);
+        OpenPage(page);
       else
-        this.sideBar.UpdateButtons();
+        sideBar.UpdateButtons();
     }
 
     public void ClearPages()
     {
-      this.pages.Clear();
-      if (this.OpenedPage != null && this.OpenedPage != this.globalPage)
-        this.OpenPage(this.globalPage);
+      pages.Clear();
+      if (OpenedPage != null && OpenedPage != globalPage)
+        OpenPage(globalPage);
       else
-        this.sideBar.UpdateButtons();
+        sideBar.UpdateButtons();
     }
 
     public void RemovePage(MMPage page)
     {
-      int index = this.pages.IndexOf(page);
+      int index = pages.IndexOf(page);
       if (index == -1)
         return;
-      this.RemovePageAt(index);
+      RemovePageAt(index);
     }
 
     public void RemovePageAt(int index)
     {
-      bool flag = this.OpenedPage == this.pages[index];
-      this.pages.RemoveAt(index);
+      bool flag = OpenedPage == pages[index];
+      pages.RemoveAt(index);
       if (flag)
-        this.OpenPage(this.globalPage);
+        OpenPage(globalPage);
       else
-        this.sideBar.UpdateButtons();
-      Debug.Log((object) ("Mind Map : Local page " + (object) index + " removed"));
+        sideBar.UpdateButtons();
+      Debug.Log((object) ("Mind Map : Local page " + index + " removed"));
     }
 
-    public MMPage GetPage(int index) => this.pages[index];
+    public MMPage GetPage(int index) => pages[index];
 
     public void SetPage(int index, MMPage page)
     {
-      bool flag = this.OpenedPage == this.pages[index];
-      this.pages[index] = page;
+      bool flag = OpenedPage == pages[index];
+      pages[index] = page;
       if (flag)
-        this.OpenPage(page);
+        OpenPage(page);
       else
-        this.sideBar.UpdateButtons();
+        sideBar.UpdateButtons();
     }
 
     protected override void OnEnable()
     {
       base.OnEnable();
-      this.lastCameraKind = ServiceLocator.GetService<CameraService>().Kind;
+      lastCameraKind = ServiceLocator.GetService<CameraService>().Kind;
       ServiceLocator.GetService<CameraService>().Kind = CameraKindEnum.Unknown;
       InstanceByRequest<EngineApplication>.Instance.IsPaused = true;
       PlayerUtility.ShowPlayerHands(false);
       CursorService.Instance.Free = CursorService.Instance.Visible = true;
       ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Cancel, new GameActionHandle(((UIWindow) this).CancelListener));
       ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.GenericPlayerMenu, new GameActionHandle(((UIWindow) this).CancelListener), true);
-      this.CollectMapNodes();
-      this.OpenPage(this.LastPage);
-      this.ScaleValue = 0.0f;
+      CollectMapNodes();
+      OpenPage(LastPage);
+      ScaleValue = 0.0f;
       ServiceLocator.GetService<NotificationService>().RemoveNotify(NotificationEnum.MindMap);
-      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.RStickUp, new GameActionHandle(this.MoveOnNodes));
-      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.RStickDown, new GameActionHandle(this.MoveOnNodes));
-      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.RStickLeft, new GameActionHandle(this.MoveOnNodes));
-      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.RStickRight, new GameActionHandle(this.MoveOnNodes));
-      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Submit, new GameActionHandle(this.SwapToMap));
-      this.rayCaster = this.GetComponent<GraphicRaycaster>();
-      this.pointerData = new PointerEventData(EventSystem.current)
+      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.RStickUp, MoveOnNodes);
+      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.RStickDown, MoveOnNodes);
+      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.RStickLeft, MoveOnNodes);
+      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.RStickRight, MoveOnNodes);
+      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Submit, SwapToMap);
+      rayCaster = this.GetComponent<GraphicRaycaster>();
+      pointerData = new PointerEventData(EventSystem.current)
       {
-        position = (Vector2) this.consoleCursor.transform.position
+        position = (Vector2) consoleCursor.transform.position
       };
-      this.SelectNode();
+      SelectNode();
     }
 
     private bool SwapToMap(GameActionType type, bool down)
     {
-      if (!InputService.Instance.JoystickUsed || !down || !((UnityEngine.Object) this.newHovered != (UnityEngine.Object) null))
+      if (!InputService.Instance.JoystickUsed || !down || !((UnityEngine.Object) newHovered != (UnityEngine.Object) null))
         return false;
-      this.CallMap((IMMNode) this.newHovered.Node);
+      CallMap(newHovered.Node);
       return true;
     }
 
     protected override void OnJoystick(bool joystick)
     {
       base.OnJoystick(joystick);
-      this.scroll.movementType = joystick ? ScrollRect.MovementType.Unrestricted : ScrollRect.MovementType.Elastic;
+      scroll.movementType = joystick ? ScrollRect.MovementType.Unrestricted : ScrollRect.MovementType.Elastic;
       CursorService.Instance.Visible = !joystick;
-      this.helpPanel.SetActive(joystick);
-      this.consoleCursor.SetActive(joystick);
-      if ((UnityEngine.Object) this.hovered != (UnityEngine.Object) null)
+      helpPanel.SetActive(joystick);
+      consoleCursor.SetActive(joystick);
+      if ((UnityEngine.Object) hovered != (UnityEngine.Object) null)
       {
-        this.hovered?.OnPointerExit(this.pointerData);
-        this.hovered = (MMNodeView) null;
+        hovered?.OnPointerExit(pointerData);
+        hovered = null;
       }
-      if ((UnityEngine.Object) this.newHovered != (UnityEngine.Object) null)
+      if ((UnityEngine.Object) newHovered != (UnityEngine.Object) null)
       {
-        this.newHovered?.OnPointerExit(this.pointerData);
-        this.newHovered = (MMNodeView) null;
+        newHovered?.OnPointerExit(pointerData);
+        newHovered = null;
       }
       if (joystick)
       {
         ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.MindMap, new GameActionHandle(((UIWindow) this).WithoutJoystickCancelListener));
-        this.SelectNode();
+        SelectNode();
       }
       else
         ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.MindMap, new GameActionHandle(((UIWindow) this).WithoutJoystickCancelListener));
@@ -385,45 +382,45 @@ namespace Engine.Source.UI.Menu.Protagonist.MindMap
 
     private bool MoveOnNodes(GameActionType type, bool down) => false;
 
-    private void ParseNodes(MMWindow.NodeMoveDirection direction)
+    private void ParseNodes(NodeMoveDirection direction)
     {
-      Transform transform = (UnityEngine.Object) this.newHovered != (UnityEngine.Object) null ? this.newHovered.transform : this.consoleCursor.transform;
-      this.SetNodes(this.openedPageView);
-      if (this.nodes.Count == 0)
+      Transform transform = (UnityEngine.Object) newHovered != (UnityEngine.Object) null ? newHovered.transform : consoleCursor.transform;
+      SetNodes(openedPageView);
+      if (nodes.Count == 0)
         return;
       Vector3 dir = Vector3.up;
       switch (direction)
       {
-        case MMWindow.NodeMoveDirection.Up:
+        case NodeMoveDirection.Up:
           dir = Vector3.up;
           break;
-        case MMWindow.NodeMoveDirection.Down:
+        case NodeMoveDirection.Down:
           dir = Vector3.down;
           break;
-        case MMWindow.NodeMoveDirection.Left:
+        case NodeMoveDirection.Left:
           dir = Vector3.left;
           break;
-        case MMWindow.NodeMoveDirection.Right:
+        case NodeMoveDirection.Right:
           dir = Vector3.right;
           break;
       }
-      this.NavigateNode(dir);
+      NavigateNode(dir);
     }
 
     private void NavigateNode(Vector3 dir)
     {
-      if (this.nodes.Count == 0)
+      if (nodes.Count == 0)
         return;
-      MMNodeView component = UISelectableHelper.Select(this.nodes.Select<MMNodeView, GameObject>((Func<MMNodeView, GameObject>) (n => n.gameObject)), this.consoleCursor, dir)?.GetComponent<MMNodeView>();
+      MMNodeView component = UISelectableHelper.Select(nodes.Select((Func<MMNodeView, GameObject>) (n => n.gameObject)), consoleCursor, dir)?.GetComponent<MMNodeView>();
       if ((UnityEngine.Object) component == (UnityEngine.Object) null)
         return;
-      this.cursorMapPosition = (Vector2) this.contentRect.InverseTransformPoint(component.gameObject.transform.position);
-      this.consoleCursor.transform.position = this.contentRect.TransformPoint((Vector3) this.cursorMapPosition);
-      this.pointerData = new PointerEventData(EventSystem.current)
+      cursorMapPosition = (Vector2) contentRect.InverseTransformPoint(component.gameObject.transform.position);
+      consoleCursor.transform.position = contentRect.TransformPoint((Vector3) cursorMapPosition);
+      pointerData = new PointerEventData(EventSystem.current)
       {
-        position = (Vector2) this.consoleCursor.transform.position
+        position = (Vector2) consoleCursor.transform.position
       };
-      this.SelectNode();
+      SelectNode();
     }
 
     private void UpdateNavigation()
@@ -431,160 +428,160 @@ namespace Engine.Source.UI.Menu.Protagonist.MindMap
       if (!InputService.Instance.JoystickUsed)
         return;
       Vector2 dir = new Vector2(InputService.Instance.GetAxis("RightStickX"), -InputService.Instance.GetAxis("RightStickY"));
-      if (!this.analogNavigationCooldown && (double) dir.sqrMagnitude > 0.64000004529953)
+      if (!analogNavigationCooldown && (double) dir.sqrMagnitude > 0.64000004529953)
       {
-        this.analogNavigationCooldown = true;
+        analogNavigationCooldown = true;
         dir.Normalize();
-        this.NavigateNode((Vector3) dir);
+        NavigateNode((Vector3) dir);
       }
-      else if (this.analogNavigationCooldown && (double) dir.sqrMagnitude < 0.64000004529953)
-        this.analogNavigationCooldown = false;
-      float num1 = Mathf.Pow(2f, Mathf.Lerp(this.baseScalePower, 1.5f, this.scaleValue));
+      else if (analogNavigationCooldown && (double) dir.sqrMagnitude < 0.64000004529953)
+        analogNavigationCooldown = false;
+      float num1 = Mathf.Pow(2f, Mathf.Lerp(baseScalePower, 1.5f, scaleValue));
       Vector2 zero = Vector2.zero;
       float axis1 = InputService.Instance.GetAxis("LeftStickX");
-      float num2 = (this.xPrev + axis1) * Time.deltaTime;
-      this.xPrev = axis1;
+      float num2 = (xPrev + axis1) * Time.deltaTime;
+      xPrev = axis1;
       float axis2 = InputService.Instance.GetAxis("LeftStickY");
-      float num3 = (this.yPrev + axis2) * Time.deltaTime;
-      this.yPrev = axis2;
-      if ((double) num2 != 0.0 || (double) num3 != 0.0)
+      float num3 = (yPrev + axis2) * Time.deltaTime;
+      yPrev = axis2;
+      if (num2 != 0.0 || num3 != 0.0)
       {
-        this.currentAcceleration = 3f;
-        if ((double) this.currentAcceleration >= 1.0)
+        currentAcceleration = 3f;
+        if (currentAcceleration >= 1.0)
         {
-          num2 *= this.currentAcceleration;
-          num3 *= this.currentAcceleration;
+          num2 *= currentAcceleration;
+          num3 *= currentAcceleration;
         }
-        Vector2 vector2 = this.cursorMapPosition - new Vector2(-(num2 * (ExternalSettingsInstance<ExternalInputSettings>.Instance.JoystickSensitivity / num1)), num3 * (ExternalSettingsInstance<ExternalInputSettings>.Instance.JoystickSensitivity / num1));
-        vector2.x = Mathf.Clamp(vector2.x, this.minNavigationValues.x, this.maxNavigationValues.x);
-        vector2.y = Mathf.Clamp(vector2.y, this.minNavigationValues.y, this.maxNavigationValues.y);
-        this.cursorMapPosition = vector2;
+        Vector2 vector2 = cursorMapPosition - new Vector2(-(num2 * (ExternalSettingsInstance<ExternalInputSettings>.Instance.JoystickSensitivity / num1)), num3 * (ExternalSettingsInstance<ExternalInputSettings>.Instance.JoystickSensitivity / num1));
+        vector2.x = Mathf.Clamp(vector2.x, minNavigationValues.x, maxNavigationValues.x);
+        vector2.y = Mathf.Clamp(vector2.y, minNavigationValues.y, maxNavigationValues.y);
+        cursorMapPosition = vector2;
       }
-      else if ((double) this.currentAcceleration != 0.0)
-        this.currentAcceleration = 0.0f;
-      RectTransform transform = (RectTransform) this.consoleCursor.transform;
+      else if (currentAcceleration != 0.0)
+        currentAcceleration = 0.0f;
+      RectTransform transform = (RectTransform) consoleCursor.transform;
       if ((double) transform.anchoredPosition.sqrMagnitude > 1.0)
-        this.contentRect.anchoredPosition += -transform.anchoredPosition * Mathf.MoveTowards(0.0f, 1f, 5f * Time.deltaTime);
+        contentRect.anchoredPosition += -transform.anchoredPosition * Mathf.MoveTowards(0.0f, 1f, 5f * Time.deltaTime);
     }
 
     private void LateUpdate()
     {
-      if (!this.consoleCursor.activeSelf)
+      if (!consoleCursor.activeSelf)
         return;
-      Vector3 vector3 = this.contentRect.TransformPoint((Vector3) this.cursorMapPosition);
-      this.consoleCursor.transform.position = vector3;
+      Vector3 vector3 = contentRect.TransformPoint((Vector3) cursorMapPosition);
+      consoleCursor.transform.position = vector3;
       if ((double) vector3.sqrMagnitude > 0.0)
       {
-        this.pointerData = new PointerEventData(EventSystem.current)
+        pointerData = new PointerEventData(EventSystem.current)
         {
-          position = (Vector2) this.consoleCursor.transform.position
+          position = (Vector2) consoleCursor.transform.position
         };
-        this.SelectNode();
+        SelectNode();
       }
     }
 
     private void SelectNode()
     {
       List<RaycastResult> source = new List<RaycastResult>();
-      if (this.pointerData == null)
+      if (pointerData == null)
         return;
-      this.rayCaster.Raycast(this.pointerData, source);
-      if (source.Count == 1 && (UnityEngine.Object) source.ElementAt<RaycastResult>(0).gameObject?.GetComponent<ScrollRect>() != (UnityEngine.Object) null)
+      rayCaster.Raycast(pointerData, source);
+      if (source.Count == 1 && (UnityEngine.Object) source.ElementAt(0).gameObject?.GetComponent<ScrollRect>() != (UnityEngine.Object) null)
       {
-        this.hovered?.OnPointerExit(this.pointerData);
-        this.newHovered?.OnPointerExit(this.pointerData);
-        this.hovered = (MMNodeView) null;
-        this.newHovered = (MMNodeView) null;
+        hovered?.OnPointerExit(pointerData);
+        newHovered?.OnPointerExit(pointerData);
+        hovered = null;
+        newHovered = null;
       }
       foreach (RaycastResult raycastResult in source)
       {
         MMNodeView component = raycastResult.gameObject?.GetComponent<MMNodeView>();
         if ((UnityEngine.Object) component != (UnityEngine.Object) null)
         {
-          this.newHovered = component;
+          newHovered = component;
           break;
         }
       }
-      if (!((UnityEngine.Object) this.newHovered != (UnityEngine.Object) this.hovered))
+      if (!((UnityEngine.Object) newHovered != (UnityEngine.Object) hovered))
         return;
-      this.hovered?.OnPointerExit(this.pointerData);
-      this.previousNode = this.hovered;
-      this.newHovered?.OnPointerEnter(this.pointerData);
-      this.hovered = this.newHovered;
+      hovered?.OnPointerExit(pointerData);
+      previousNode = hovered;
+      newHovered?.OnPointerEnter(pointerData);
+      hovered = newHovered;
     }
 
     private void SetNodes(MMPageView pageView)
     {
-      this.nodes = new List<MMNodeView>((IEnumerable<MMNodeView>) pageView.GetComponentsInChildren<MMNodeView>());
-      if (this.nodes.Count == 0)
+      nodes = new List<MMNodeView>((IEnumerable<MMNodeView>) pageView.GetComponentsInChildren<MMNodeView>());
+      if (nodes.Count == 0)
         return;
-      this.UpdateBoundVectors();
+      UpdateBoundVectors();
     }
 
     private void UpdateBoundVectors()
     {
-      if (this.nodes.Count == 0)
+      if (nodes.Count == 0)
         return;
-      this.maxNavigationValues = new Vector2();
-      this.minNavigationValues = new Vector2();
-      for (int index = 0; index < this.nodes.Count; ++index)
+      maxNavigationValues = new Vector2();
+      minNavigationValues = new Vector2();
+      for (int index = 0; index < nodes.Count; ++index)
       {
-        Vector2 vector2 = (Vector2) this.contentRect.InverseTransformPoint(this.nodes[index].transform.position);
-        this.minNavigationValues.x = Mathf.Min(this.minNavigationValues.x, vector2.x - 150f);
-        this.minNavigationValues.y = Mathf.Min(this.minNavigationValues.y, vector2.y - 150f);
-        this.maxNavigationValues.x = Mathf.Max(this.maxNavigationValues.x, vector2.x + 150f);
-        this.maxNavigationValues.y = Mathf.Max(this.maxNavigationValues.y, vector2.y + 150f);
+        Vector2 vector2 = (Vector2) contentRect.InverseTransformPoint(nodes[index].transform.position);
+        minNavigationValues.x = Mathf.Min(minNavigationValues.x, vector2.x - 150f);
+        minNavigationValues.y = Mathf.Min(minNavigationValues.y, vector2.y - 150f);
+        maxNavigationValues.x = Mathf.Max(maxNavigationValues.x, vector2.x + 150f);
+        maxNavigationValues.y = Mathf.Max(maxNavigationValues.y, vector2.y + 150f);
       }
-      if (!this.isNodesListComplete)
-        this.isNodesListComplete = true;
+      if (!isNodesListComplete)
+        isNodesListComplete = true;
     }
 
     protected override void OnDisable()
     {
-      ServiceLocator.GetService<CameraService>().Kind = this.lastCameraKind;
+      ServiceLocator.GetService<CameraService>().Kind = lastCameraKind;
       PlayerUtility.ShowPlayerHands(true);
       InstanceByRequest<EngineApplication>.Instance.IsPaused = false;
       ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Cancel, new GameActionHandle(((UIWindow) this).CancelListener));
       ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.MindMap, new GameActionHandle(((UIWindow) this).WithoutJoystickCancelListener));
       ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.GenericPlayerMenu, new GameActionHandle(((UIWindow) this).CancelListener));
-      this.CloseOpenedPage();
-      this.mapNodes.Clear();
-      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.RStickUp, new GameActionHandle(this.MoveOnNodes));
-      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.RStickDown, new GameActionHandle(this.MoveOnNodes));
-      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.RStickLeft, new GameActionHandle(this.MoveOnNodes));
-      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.RStickRight, new GameActionHandle(this.MoveOnNodes));
-      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Submit, new GameActionHandle(this.SwapToMap));
+      CloseOpenedPage();
+      mapNodes.Clear();
+      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.RStickUp, MoveOnNodes);
+      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.RStickDown, MoveOnNodes);
+      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.RStickLeft, MoveOnNodes);
+      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.RStickRight, MoveOnNodes);
+      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Submit, SwapToMap);
       base.OnDisable();
     }
 
     public void OpenPage(MMPage page, MMNode node = null)
     {
-      this.CloseOpenedPage();
-      this.contentRect.anchoredPosition = Vector2.zero;
+      CloseOpenedPage();
+      contentRect.anchoredPosition = Vector2.zero;
       if (page == null)
         return;
-      this.desiredScaleValue = 0.0f;
-      this.OpenedPage = page;
-      this.sideBar.UpdateButtons();
-      this.openedPageView = MMPageView.Create(this, page, node);
-      this.hovered = (MMNodeView) null;
-      this.newHovered = (MMNodeView) null;
-      this.maxNavigationValues = Vector2.zero;
-      this.minNavigationValues = Vector2.zero;
-      this.nodes = new List<MMNodeView>((IEnumerable<MMNodeView>) this.openedPageView.GetComponentsInChildren<MMNodeView>());
-      this.cursorMapPosition = Vector2.zero;
-      this.UpdateBoundVectors();
+      desiredScaleValue = 0.0f;
+      OpenedPage = page;
+      sideBar.UpdateButtons();
+      openedPageView = MMPageView.Create(this, page, node);
+      hovered = null;
+      newHovered = null;
+      maxNavigationValues = Vector2.zero;
+      minNavigationValues = Vector2.zero;
+      nodes = new List<MMNodeView>((IEnumerable<MMNodeView>) openedPageView.GetComponentsInChildren<MMNodeView>());
+      cursorMapPosition = Vector2.zero;
+      UpdateBoundVectors();
     }
 
     public void FocusOnNode(RectTransform node)
     {
-      this.ScaleValue = 0.5f;
-      this.desiredScaleValue = 0.5f;
+      ScaleValue = 0.5f;
+      desiredScaleValue = 0.5f;
       Vector2 position = (Vector2) node.position;
       Vector2 vector2 = new Vector2((float) Screen.width / 2f, (float) Screen.height / 2f);
       if (!InputService.Instance.JoystickUsed)
-        this.ContentRect.anchoredPosition += vector2 - position;
-      this.cursorMapPosition = (Vector2) this.ContentRect.InverseTransformPoint(node.position);
+        ContentRect.anchoredPosition += vector2 - position;
+      cursorMapPosition = (Vector2) ContentRect.InverseTransformPoint(node.position);
     }
 
     public float RadiusByKind(MMNodeKind kind)
@@ -592,107 +589,107 @@ namespace Engine.Source.UI.Menu.Protagonist.MindMap
       switch (kind)
       {
         case MMNodeKind.Normal:
-          return this.normalRadius;
+          return normalRadius;
         case MMNodeKind.Сonclusion:
-          return this.conclusionRadius;
+          return conclusionRadius;
         default:
-          return this.missionRadius;
+          return missionRadius;
       }
     }
 
     public void ShowNodeInfo(MMNodeView nodeView)
     {
       bool blockMapInterface = ServiceLocator.GetService<InterfaceBlockingService>().BlockMapInterface;
-      this.infoView.Show(nodeView, !blockMapInterface && this.mapNodes.Contains((IMMNode) nodeView.Node));
-      this.currentNode = (IMMNode) nodeView.Node;
+      infoView.Show(nodeView, !blockMapInterface && mapNodes.Contains(nodeView.Node));
+      currentNode = nodeView.Node;
     }
 
     private void Update()
     {
-      if (!this.isNodesListComplete)
-        this.SetNodes(this.openedPageView);
-      this.UpdateNavigation();
+      if (!isNodesListComplete)
+        SetNodes(openedPageView);
+      UpdateNavigation();
       float num1 = Input.GetAxis("MouseWheel") * ExternalSettingsInstance<ExternalInputSettings>.Instance.WheelMouseSensitivity;
-      if ((double) num1 == 0.0)
+      if (num1 == 0.0)
       {
         float axis1 = InputService.Instance.GetAxis("LT");
         float axis2 = InputService.Instance.GetAxis("RT");
-        if ((double) axis1 != 0.0)
+        if (axis1 != 0.0)
           num1 = -axis1 * ExternalSettingsInstance<ExternalInputSettings>.Instance.JoystickScaleSensitivity;
-        else if ((double) axis2 != 0.0)
+        else if (axis2 != 0.0)
           num1 = axis2 * ExternalSettingsInstance<ExternalInputSettings>.Instance.JoystickScaleSensitivity;
       }
-      this.desiredScaleValue = Mathf.Clamp(this.desiredScaleValue + num1, 0.0f, 1f);
-      if ((double) this.ScaleValue == (double) this.desiredScaleValue)
+      desiredScaleValue = Mathf.Clamp(desiredScaleValue + num1, 0.0f, 1f);
+      if (ScaleValue == (double) desiredScaleValue)
         return;
-      float x1 = this.contentRect.localScale.x;
-      this.ScaleValue = Mathf.MoveTowards(this.ScaleValue, this.desiredScaleValue, 5f * Time.deltaTime);
-      float x2 = this.contentRect.localScale.x;
+      float x1 = contentRect.localScale.x;
+      ScaleValue = Mathf.MoveTowards(ScaleValue, desiredScaleValue, 5f * Time.deltaTime);
+      float x2 = contentRect.localScale.x;
       if (InputService.Instance.JoystickUsed ? !InputService.Instance.GetButton("A", false) : !Input.GetMouseButton(0))
       {
         float num2 = x2 / x1;
-        Vector3 anchoredPosition = (Vector3) this.ContentRect.anchoredPosition;
-        Vector3 vector3_1 = this.ContentRect.parent.InverseTransformPoint(InputService.Instance.JoystickUsed ? this.consoleCursor.transform.position : Input.mousePosition);
+        Vector3 anchoredPosition = (Vector3) ContentRect.anchoredPosition;
+        Vector3 vector3_1 = ContentRect.parent.InverseTransformPoint(InputService.Instance.JoystickUsed ? consoleCursor.transform.position : Input.mousePosition);
         Vector3 vector3_2 = (anchoredPosition - vector3_1) * num2;
-        this.ContentRect.anchoredPosition = (Vector2) (vector3_1 + vector3_2);
+        ContentRect.anchoredPosition = (Vector2) (vector3_1 + vector3_2);
       }
     }
 
     public override void Initialize()
     {
-      this.RegisterLayer<IMMWindow>((IMMWindow) this);
+      RegisterLayer((IMMWindow) this);
       base.Initialize();
     }
 
-    public override System.Type GetWindowType() => typeof (IMMWindow);
+    public override Type GetWindowType() => typeof (IMMWindow);
 
     public IMMPlaceholder GetPlaceholderByNode(Guid id)
     {
       MMContent mmContent;
-      this.contents.TryGetValue(id, out mmContent);
+      contents.TryGetValue(id, out mmContent);
       return mmContent?.Placeholder;
     }
 
     public LocalizedText GetTextByNode(Guid id)
     {
       MMContent mmContent;
-      this.contents.TryGetValue(id, out mmContent);
+      contents.TryGetValue(id, out mmContent);
       return mmContent != null ? mmContent.Description : LocalizedText.Empty;
     }
 
     public void GoToNode(IMMNode node)
     {
-      foreach (MMPage page in this.pages)
+      foreach (MMPage page in pages)
       {
-        if (page.Nodes.Contains<IMMNode>(node))
+        if (page.Nodes.Contains(node))
         {
-          this.OpenPage(page, (MMNode) node);
+          OpenPage(page, (MMNode) node);
           return;
         }
       }
-      if (this.globalPage == null || !this.globalPage.Nodes.Contains<IMMNode>(node))
+      if (globalPage == null || !globalPage.Nodes.Contains(node))
         return;
-      this.OpenPage(this.globalPage, (MMNode) node);
+      OpenPage(globalPage, (MMNode) node);
     }
 
     public void SetContentSize(Vector2 size)
     {
-      this.contentRect.sizeDelta = size;
-      Vector2 sizeDelta = ((RectTransform) this.contentRect.parent).sizeDelta;
+      contentRect.sizeDelta = size;
+      Vector2 sizeDelta = ((RectTransform) contentRect.parent).sizeDelta;
       if ((double) size.x <= 0.0 || (double) size.y <= 0.0)
       {
-        this.BaseScalePower = 0.0f;
+        BaseScalePower = 0.0f;
       }
       else
       {
         float num = Mathf.Min(sizeDelta.x / size.x, sizeDelta.y / size.y);
-        this.BaseScalePower = Mathf.Log((double) num < 1.0 ? num : 1f, 2f);
+        BaseScalePower = Mathf.Log(num < 1.0 ? num : 1f, 2f);
       }
     }
 
     public override IEnumerator OnOpened()
     {
-      SimplePlayerWindowSwapper.SetLastOpenedPlayerWindow<IMMWindow>((IWindow) this);
+      SimplePlayerWindowSwapper.SetLastOpenedPlayerWindow<IMMWindow>(this);
       return base.OnOpened();
     }
 

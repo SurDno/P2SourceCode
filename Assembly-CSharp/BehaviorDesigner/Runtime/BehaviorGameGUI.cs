@@ -1,6 +1,5 @@
-﻿using BehaviorDesigner.Runtime.Tasks;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using System.Collections.Generic;
+using BehaviorDesigner.Runtime.Tasks;
 
 namespace BehaviorDesigner.Runtime
 {
@@ -9,15 +8,15 @@ namespace BehaviorDesigner.Runtime
     private BehaviorTreeManager behaviorManager;
     private Camera mainCamera;
 
-    public void Start() => this.mainCamera = Camera.main;
+    public void Start() => mainCamera = Camera.main;
 
     public void OnGUI()
     {
-      if ((Object) this.behaviorManager == (Object) null)
-        this.behaviorManager = MonoBehaviourInstance<BehaviorTreeManager>.Instance;
-      if ((Object) this.behaviorManager == (Object) null || (Object) this.mainCamera == (Object) null)
+      if ((Object) behaviorManager == (Object) null)
+        behaviorManager = MonoBehaviourInstance<BehaviorTreeManager>.Instance;
+      if ((Object) behaviorManager == (Object) null || (Object) mainCamera == (Object) null)
         return;
-      List<BehaviorTreeClient> behaviorTrees = this.behaviorManager.BehaviorTrees;
+      List<BehaviorTreeClient> behaviorTrees = behaviorManager.BehaviorTrees;
       for (int index1 = 0; index1 < behaviorTrees.Count; ++index1)
       {
         BehaviorTreeClient behaviorTreeClient = behaviorTrees[index1];

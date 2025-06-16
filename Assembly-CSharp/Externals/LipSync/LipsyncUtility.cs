@@ -1,6 +1,6 @@
-﻿using Scripts.Utility;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
+using Scripts.Utility;
 
 namespace Externals.LipSync
 {
@@ -18,18 +18,18 @@ namespace Externals.LipSync
       data = CompressUtility.DecompressData(data);
       using (MemoryStream input = new MemoryStream(data))
       {
-        using (BinaryReader binaryReader = new BinaryReader((Stream) input))
+        using (BinaryReader binaryReader = new BinaryReader(input))
         {
           while (true)
           {
             byte length = binaryReader.ReadByte();
-            if (length != (byte) 0)
+            if (length != 0)
             {
               PhonemeMixtureArticulationData articulationData = new PhonemeMixtureArticulationData();
-              articulationData.Constituents = new PhonemeData[(int) length];
-              for (int index = 0; index < (int) length; ++index)
+              articulationData.Constituents = new PhonemeData[length];
+              for (int index = 0; index < length; ++index)
               {
-                articulationData.Constituents[index].Phoneme = (int) binaryReader.ReadByte();
+                articulationData.Constituents[index].Phoneme = binaryReader.ReadByte();
                 articulationData.Constituents[index].Weight = binaryReader.ReadSingle();
               }
               markers.Add(articulationData);
@@ -46,11 +46,10 @@ namespace Externals.LipSync
       PhonemeMixtureArticulationData articulationData = new PhonemeMixtureArticulationData();
       articulationData.Constituents = new PhonemeData[1]
       {
-        new PhonemeData() { Phoneme = 0, Weight = 1f }
+        new PhonemeData { Phoneme = 0, Weight = 1f }
       };
-      LipsyncUtility.DefaultPhoneme = articulationData;
-      LipsyncUtility.Vowels = new HashSet<int>()
-      {
+      DefaultPhoneme = articulationData;
+      Vowels = new HashSet<int> {
         0,
         1,
         2,

@@ -1,9 +1,9 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons.Converters;
 using Engine.Impl.Services;
 using Engine.Source.Services;
-using System;
 
 namespace Engine.Source.Proxies
 {
@@ -15,12 +15,12 @@ namespace Engine.Source.Proxies
   {
     public void StateSave(IDataWriter writer)
     {
-      DefaultStateSaveUtility.SaveSerialize<WeatherInfo>(writer, "WeatherInfo", this.WeatherInfo);
+      DefaultStateSaveUtility.SaveSerialize(writer, "WeatherInfo", WeatherInfo);
     }
 
     public void StateLoad(IDataReader reader, Type type)
     {
-      this.WeatherInfo = DefaultStateLoadUtility.ReadSerialize<WeatherInfo>(reader, "WeatherInfo");
+      WeatherInfo = DefaultStateLoadUtility.ReadSerialize<WeatherInfo>(reader, "WeatherInfo");
     }
   }
 }

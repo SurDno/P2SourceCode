@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEngine;
 
 namespace RootMotion.Dynamics
 {
@@ -33,7 +32,7 @@ namespace RootMotion.Dynamics
     public bool angularLimits;
     public bool internalCollisions;
     [LargeHeader("Individual Muscle Settings")]
-    public PuppetMasterHumanoidConfig.HumanoidMuscle[] muscles = new PuppetMasterHumanoidConfig.HumanoidMuscle[0];
+    public HumanoidMuscle[] muscles = new HumanoidMuscle[0];
 
     public void ApplyTo(PuppetMaster p)
     {
@@ -47,27 +46,27 @@ namespace RootMotion.Dynamics
       }
       else
       {
-        p.state = this.state;
-        p.stateSettings = this.stateSettings;
-        p.mode = this.mode;
-        p.blendTime = this.blendTime;
-        p.fixTargetTransforms = this.fixTargetTransforms;
-        p.solverIterationCount = this.solverIterationCount;
-        p.visualizeTargetPose = this.visualizeTargetPose;
-        p.mappingWeight = this.mappingWeight;
-        p.pinWeight = this.pinWeight;
-        p.muscleWeight = this.muscleWeight;
-        p.muscleSpring = this.muscleSpring;
-        p.muscleDamper = this.muscleDamper;
-        p.pinPow = this.pinPow;
-        p.pinDistanceFalloff = this.pinDistanceFalloff;
-        p.updateJointAnchors = this.updateJointAnchors;
-        p.supportTranslationAnimation = this.supportTranslationAnimation;
-        p.angularLimits = this.angularLimits;
-        p.internalCollisions = this.internalCollisions;
-        foreach (PuppetMasterHumanoidConfig.HumanoidMuscle muscle1 in this.muscles)
+        p.state = state;
+        p.stateSettings = stateSettings;
+        p.mode = mode;
+        p.blendTime = blendTime;
+        p.fixTargetTransforms = fixTargetTransforms;
+        p.solverIterationCount = solverIterationCount;
+        p.visualizeTargetPose = visualizeTargetPose;
+        p.mappingWeight = mappingWeight;
+        p.pinWeight = pinWeight;
+        p.muscleWeight = muscleWeight;
+        p.muscleSpring = muscleSpring;
+        p.muscleDamper = muscleDamper;
+        p.pinPow = pinPow;
+        p.pinDistanceFalloff = pinDistanceFalloff;
+        p.updateJointAnchors = updateJointAnchors;
+        p.supportTranslationAnimation = supportTranslationAnimation;
+        p.angularLimits = angularLimits;
+        p.internalCollisions = internalCollisions;
+        foreach (HumanoidMuscle muscle1 in muscles)
         {
-          Muscle muscle2 = this.GetMuscle(muscle1.bone, p.targetAnimator, p);
+          Muscle muscle2 = GetMuscle(muscle1.bone, p.targetAnimator, p);
           if (muscle2 != null)
           {
             muscle2.props.group = muscle1.props.group;
@@ -85,13 +84,13 @@ namespace RootMotion.Dynamics
     {
       Transform boneTransform = animator.GetBoneTransform(boneId);
       if ((UnityEngine.Object) boneTransform == (UnityEngine.Object) null)
-        return (Muscle) null;
+        return null;
       foreach (Muscle muscle in puppetMaster.muscles)
       {
         if ((UnityEngine.Object) muscle.target == (UnityEngine.Object) boneTransform)
           return muscle;
       }
-      return (Muscle) null;
+      return null;
     }
 
     [Serializable]

@@ -1,10 +1,10 @@
-﻿using Engine.Common.Services;
+﻿using System.Collections;
+using Engine.Common.Services;
 using Engine.Impl.Services;
 using Engine.Impl.UI.Menu.Main;
 using Engine.Source.Commons;
 using Engine.Source.Services;
 using Engine.Source.Services.Profiles;
-using System.Collections;
 
 namespace Engine.Source.UI.Menu.Main
 {
@@ -18,7 +18,7 @@ namespace Engine.Source.UI.Menu.Main
       UIService uiService = ServiceLocator.GetService<UIService>();
       uiService.Pop();
       while (uiService.IsTransition)
-        yield return (object) null;
+        yield return null;
       GameLauncher gameLauncher = ServiceLocator.GetService<GameLauncher>();
       gameLauncher.StartGameWithSave(saveName);
     }
@@ -30,7 +30,7 @@ namespace Engine.Source.UI.Menu.Main
       UIService uiService = ServiceLocator.GetService<UIService>();
       uiService.Pop();
       while (uiService.IsTransition)
-        yield return (object) null;
+        yield return null;
       InstanceByRequest<GameDataService>.Instance.SetCurrentGameData(projectName);
       ProfilesService profiles = ServiceLocator.GetService<ProfilesService>();
       profiles.GenerateNewProfile(InstanceByRequest<GameDataService>.Instance.GetCurrentGameData().GameName);
@@ -46,10 +46,10 @@ namespace Engine.Source.UI.Menu.Main
       UIService uiService = ServiceLocator.GetService<UIService>();
       uiService.Pop();
       while (uiService.IsTransition)
-        yield return (object) null;
+        yield return null;
       uiService.Pop();
       while (uiService.IsTransition)
-        yield return (object) null;
+        yield return null;
       GameLauncher gameLauncher = ServiceLocator.GetService<GameLauncher>();
       VirtualMachineController vm = ServiceLocator.GetService<VirtualMachineController>();
       if (vm.IsLoaded)

@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace SoundPropagation
+﻿namespace SoundPropagation
 {
   public class SPAudioListener : MonoBehaviour
   {
@@ -17,52 +15,52 @@ namespace SoundPropagation
     {
       get
       {
-        this.Check();
-        return this.cell;
+        Check();
+        return cell;
       }
     }
 
     private void Check()
     {
       int frameCount = Time.frameCount;
-      if (this.lastFrame == frameCount)
+      if (lastFrame == frameCount)
         return;
-      this.position = this.transform.position;
-      this.direction = this.transform.forward * -this.Directionality;
-      this.cell = SPCell.Find(this.position, this.LayerMask);
-      this.lastFrame = frameCount;
+      position = this.transform.position;
+      direction = this.transform.forward * -Directionality;
+      cell = SPCell.Find(position, LayerMask);
+      lastFrame = frameCount;
     }
 
     public Vector3 Direction
     {
       get
       {
-        this.Check();
-        return this.direction;
+        Check();
+        return direction;
       }
     }
 
     private void OnDisable()
     {
-      this.cell = (SPCell) null;
-      if (!((Object) SPAudioListener.Instance == (Object) this))
+      cell = null;
+      if (!((Object) Instance == (Object) this))
         return;
-      SPAudioListener.Instance = (SPAudioListener) null;
+      Instance = null;
     }
 
     private void OnEnable()
     {
-      if (!((Object) SPAudioListener.Instance == (Object) null))
+      if (!((Object) Instance == (Object) null))
         return;
-      SPAudioListener.Instance = this;
+      Instance = this;
     }
 
     public Vector3 Position
     {
       get
       {
-        this.Check();
-        return this.position;
+        Check();
+        return position;
       }
     }
   }

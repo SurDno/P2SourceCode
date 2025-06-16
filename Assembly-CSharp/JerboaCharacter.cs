@@ -1,9 +1,7 @@
-﻿using UnityEngine;
-
-public class JerboaCharacter : MonoBehaviour
+﻿public class JerboaCharacter : MonoBehaviour
 {
   private Animator jerboaAnimator;
-  public bool jumpStart = false;
+  public bool jumpStart;
   public float groundCheckDistance = 0.6f;
   public float groundCheckOffset = 0.01f;
   public bool isGrounded = true;
@@ -12,76 +10,76 @@ public class JerboaCharacter : MonoBehaviour
   public float forwardSpeed;
   public float turnSpeed;
   public float walkMode = 1f;
-  public float jumpStartTime = 0.0f;
+  public float jumpStartTime;
 
   private void Start()
   {
-    this.jerboaAnimator = this.GetComponent<Animator>();
-    this.jerboaRigid = this.GetComponent<Rigidbody>();
+    jerboaAnimator = this.GetComponent<Animator>();
+    jerboaRigid = this.GetComponent<Rigidbody>();
   }
 
   private void FixedUpdate()
   {
-    this.CheckGroundStatus();
-    this.Move();
-    this.jumpStartTime += Time.deltaTime;
+    CheckGroundStatus();
+    Move();
+    jumpStartTime += Time.deltaTime;
   }
 
-  public void Attack() => this.jerboaAnimator.SetTrigger(nameof (Attack));
+  public void Attack() => jerboaAnimator.SetTrigger(nameof (Attack));
 
-  public void Hit() => this.jerboaAnimator.SetTrigger(nameof (Hit));
+  public void Hit() => jerboaAnimator.SetTrigger(nameof (Hit));
 
-  public void Grooming() => this.jerboaAnimator.SetTrigger(nameof (Grooming));
+  public void Grooming() => jerboaAnimator.SetTrigger(nameof (Grooming));
 
-  public void Death() => this.jerboaAnimator.SetBool("IsLived", false);
+  public void Death() => jerboaAnimator.SetBool("IsLived", false);
 
-  public void Rebirth() => this.jerboaAnimator.SetBool("IsLived", true);
+  public void Rebirth() => jerboaAnimator.SetBool("IsLived", true);
 
-  public void StandUp() => this.jerboaAnimator.SetBool("SitDown", false);
+  public void StandUp() => jerboaAnimator.SetBool("SitDown", false);
 
-  public void Sitdown() => this.jerboaAnimator.SetBool("SitDown", true);
+  public void Sitdown() => jerboaAnimator.SetBool("SitDown", true);
 
-  public void Gallop() => this.walkMode = 2f;
+  public void Gallop() => walkMode = 2f;
 
-  public void Walk() => this.walkMode = 1f;
+  public void Walk() => walkMode = 1f;
 
   public void Jump()
   {
-    if (!this.isGrounded)
+    if (!isGrounded)
       return;
-    this.jerboaAnimator.SetBool("JumpStart", true);
-    this.jumpStart = true;
-    this.jumpStartTime = 0.0f;
-    this.isGrounded = false;
-    this.jerboaAnimator.SetBool("IsGrounded", false);
+    jerboaAnimator.SetBool("JumpStart", true);
+    jumpStart = true;
+    jumpStartTime = 0.0f;
+    isGrounded = false;
+    jerboaAnimator.SetBool("IsGrounded", false);
   }
 
   private void CheckGroundStatus()
   {
-    this.isGrounded = Physics.Raycast(this.transform.position + this.transform.up * this.groundCheckOffset, Vector3.down, out RaycastHit _, this.groundCheckDistance);
-    if (this.jumpStart && (double) this.jumpStartTime > 0.15000000596046448)
+    isGrounded = Physics.Raycast(this.transform.position + this.transform.up * groundCheckOffset, Vector3.down, out RaycastHit _, groundCheckDistance);
+    if (jumpStart && jumpStartTime > 0.15000000596046448)
     {
-      this.jumpStart = false;
-      this.jerboaAnimator.SetBool("JumpStart", false);
-      this.jerboaRigid.AddForce((this.transform.up + this.transform.forward * this.forwardSpeed) * this.jumpSpeed, ForceMode.Impulse);
-      this.jerboaAnimator.applyRootMotion = false;
-      this.jerboaAnimator.SetBool("IsGrounded", false);
+      jumpStart = false;
+      jerboaAnimator.SetBool("JumpStart", false);
+      jerboaRigid.AddForce((this.transform.up + this.transform.forward * forwardSpeed) * jumpSpeed, ForceMode.Impulse);
+      jerboaAnimator.applyRootMotion = false;
+      jerboaAnimator.SetBool("IsGrounded", false);
     }
-    if (this.isGrounded && !this.jumpStart && (double) this.jumpStartTime > 0.30000001192092896)
+    if (isGrounded && !jumpStart && jumpStartTime > 0.30000001192092896)
     {
-      this.jerboaAnimator.applyRootMotion = true;
-      this.jerboaAnimator.SetBool("IsGrounded", true);
+      jerboaAnimator.applyRootMotion = true;
+      jerboaAnimator.SetBool("IsGrounded", true);
     }
-    else if (!this.jumpStart)
+    else if (!jumpStart)
     {
-      this.jerboaAnimator.applyRootMotion = false;
-      this.jerboaAnimator.SetBool("IsGrounded", false);
+      jerboaAnimator.applyRootMotion = false;
+      jerboaAnimator.SetBool("IsGrounded", false);
     }
   }
 
   public void Move()
   {
-    this.jerboaAnimator.SetFloat("Forward", this.forwardSpeed * this.walkMode);
-    this.jerboaAnimator.SetFloat("Turn", this.turnSpeed);
+    jerboaAnimator.SetFloat("Forward", forwardSpeed * walkMode);
+    jerboaAnimator.SetFloat("Turn", turnSpeed);
   }
 }

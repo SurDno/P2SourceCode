@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-public class demo_scene_control : MonoBehaviour
+﻿public class demo_scene_control : MonoBehaviour
 {
   public Transform c_point;
   public Transform c_point1;
@@ -10,94 +8,94 @@ public class demo_scene_control : MonoBehaviour
   public Transform[] style3 = new Transform[8];
   public Transform[] style4 = new Transform[8];
   private GameObject current;
-  private int style = 0;
-  private int cur_effect = 0;
+  private int style;
+  private int cur_effect;
   private int max_n = 11;
 
   private void Start()
   {
-    this.Restart();
+    Restart();
     Application.targetFrameRate = 60;
   }
 
   private void Update()
   {
-    this.transform.RotateAround(this.c_point1.transform.position, Vector3.up, 0.5f);
+    this.transform.RotateAround(c_point1.transform.position, Vector3.up, 0.5f);
   }
 
   private void OnGUI()
   {
-    string name = this.current.name;
+    string name = current.name;
     GUI.Label(new Rect(15f, 10f, 200f, 20f), name.Substring(0, name.Length - 7));
     if (GUI.Button(new Rect(290f, 30f, 90f, 30f), "Style1"))
     {
-      this.style = 0;
-      this.Restart();
+      style = 0;
+      Restart();
     }
     if (GUI.Button(new Rect(390f, 30f, 90f, 30f), "Style 2"))
     {
-      this.style = 1;
-      this.Restart();
+      style = 1;
+      Restart();
     }
     if (GUI.Button(new Rect(490f, 30f, 90f, 30f), "Style 3"))
     {
-      this.style = 2;
-      this.Restart();
+      style = 2;
+      Restart();
     }
     if (GUI.Button(new Rect(590f, 30f, 90f, 30f), "Style 4"))
     {
-      this.style = 3;
-      this.Restart();
+      style = 3;
+      Restart();
     }
     if (GUI.Button(new Rect(10f, 30f, 40f, 30f), "<-"))
     {
-      if (this.cur_effect <= 0)
-        this.cur_effect = this.max_n;
+      if (cur_effect <= 0)
+        cur_effect = max_n;
       else
-        --this.cur_effect;
-      this.Restart();
+        --cur_effect;
+      Restart();
     }
     if (!GUI.Button(new Rect(60f, 30f, 40f, 30f), "->"))
       return;
-    if (this.cur_effect >= this.max_n)
-      this.cur_effect = 0;
+    if (cur_effect >= max_n)
+      cur_effect = 0;
     else
-      ++this.cur_effect;
-    this.Restart();
+      ++cur_effect;
+    Restart();
   }
 
   private void Restart()
   {
-    Transform cPoint = this.c_point;
-    Object.Destroy((Object) this.current);
-    if (this.cur_effect == 4 || this.cur_effect == 5)
+    Transform cPoint = c_point;
+    Object.Destroy((Object) current);
+    if (cur_effect == 4 || cur_effect == 5)
     {
       cPoint.transform.eulerAngles = new Vector3(0.0f, -90f, 0.0f);
-      cPoint.transform.position = this.c_point1.transform.position + new Vector3(1f, 1f, 0.0f);
+      cPoint.transform.position = c_point1.transform.position + new Vector3(1f, 1f, 0.0f);
     }
-    else if (this.cur_effect == 6 || this.cur_effect == 7)
+    else if (cur_effect == 6 || cur_effect == 7)
     {
-      cPoint.transform.eulerAngles = this.c_point1.transform.eulerAngles;
-      cPoint.transform.position = this.c_point1.transform.position + new Vector3(0.0f, 1f, 0.0f);
+      cPoint.transform.eulerAngles = c_point1.transform.eulerAngles;
+      cPoint.transform.position = c_point1.transform.position + new Vector3(0.0f, 1f, 0.0f);
     }
-    else if (this.cur_effect == 10 || this.cur_effect == 11)
+    else if (cur_effect == 10 || cur_effect == 11)
     {
       cPoint.transform.eulerAngles = new Vector3(0.0f, 0.0f, 0.0f);
-      cPoint.transform.position = this.c_point1.transform.position + new Vector3(0.0f, 1f, 0.0f);
+      cPoint.transform.position = c_point1.transform.position + new Vector3(0.0f, 1f, 0.0f);
     }
     else
     {
-      cPoint.transform.eulerAngles = this.c_point1.transform.eulerAngles;
-      cPoint.transform.position = this.c_point1.transform.position;
+      cPoint.transform.eulerAngles = c_point1.transform.eulerAngles;
+      cPoint.transform.position = c_point1.transform.position;
     }
-    if (this.style == 0)
-      this.current = Object.Instantiate<Transform>(this.style1[this.cur_effect], cPoint.transform.position, cPoint.transform.rotation).gameObject;
-    if (this.style == 1)
-      this.current = Object.Instantiate<Transform>(this.style2[this.cur_effect], cPoint.transform.position, cPoint.transform.rotation).gameObject;
-    if (this.style == 2)
-      this.current = Object.Instantiate<Transform>(this.style3[this.cur_effect], cPoint.transform.position, cPoint.transform.rotation).gameObject;
-    if (this.style != 3)
+    if (style == 0)
+      current = Object.Instantiate<Transform>(style1[cur_effect], cPoint.transform.position, cPoint.transform.rotation).gameObject;
+    if (style == 1)
+      current = Object.Instantiate<Transform>(style2[cur_effect], cPoint.transform.position, cPoint.transform.rotation).gameObject;
+    if (style == 2)
+      current = Object.Instantiate<Transform>(style3[cur_effect], cPoint.transform.position, cPoint.transform.rotation).gameObject;
+    if (style != 3)
       return;
-    this.current = Object.Instantiate<Transform>(this.style4[this.cur_effect], cPoint.transform.position, cPoint.transform.rotation).gameObject;
+    current = Object.Instantiate<Transform>(style4[cur_effect], cPoint.transform.position, cPoint.transform.rotation).gameObject;
   }
 }

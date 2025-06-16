@@ -1,15 +1,13 @@
 ﻿using Engine.Behaviours.Components;
 using Engine.Source.Commons;
 using Inspectors;
-using UnityEngine;
-using UnityEngine.AI;
 
 public class NpcStateMoveCloud : INpcState
 {
   private Pivot pivot;
   private NpcState npcState;
   [Inspected]
-  private NpcStateMoveCloud.StateEnum state = NpcStateMoveCloud.StateEnum.Moving;
+  private StateEnum state = StateEnum.Moving;
   [Inspected]
   private NavMeshAgent agent;
   [Inspected]
@@ -27,28 +25,28 @@ public class NpcStateMoveCloud : INpcState
   {
     this.npcState = npcState;
     this.pivot = pivot;
-    this.GameObject = npcState.gameObject;
+    GameObject = npcState.gameObject;
   }
 
   public void Activate(Vector3 destination)
   {
-    this.Status = NpcStateStatusEnum.Running;
-    this.agent = this.pivot.GetAgent();
-    if ((Object) this.agent != (Object) null)
+    Status = NpcStateStatusEnum.Running;
+    agent = pivot.GetAgent();
+    if ((Object) agent != (Object) null)
     {
-      this.speed = this.agent.speed;
-      this.agentWasEnabled = this.agent.enabled;
-      this.agent.enabled = false;
+      speed = agent.speed;
+      agentWasEnabled = agent.enabled;
+      agent.enabled = false;
     }
     this.destination = destination;
-    this.state = NpcStateMoveCloud.StateEnum.Moving;
+    state = StateEnum.Moving;
   }
 
   public void Shutdown()
   {
-    if (!((Object) this.agent != (Object) null))
+    if (!((Object) agent != (Object) null))
       return;
-    this.agent.enabled = this.agentWasEnabled;
+    agent.enabled = agentWasEnabled;
   }
 
   public void OnAnimatorMove()
@@ -63,22 +61,22 @@ public class NpcStateMoveCloud : INpcState
   {
     if (InstanceByRequest<EngineApplication>.Instance.IsPaused)
       return;
-    if (this.state == NpcStateMoveCloud.StateEnum.Moving)
-      this.OnUpdateMove();
-    if (this.state != NpcStateMoveCloud.StateEnum.Done)
+    if (state == StateEnum.Moving)
+      OnUpdateMove();
+    if (state != StateEnum.Done)
       return;
-    this.Status = NpcStateStatusEnum.Success;
+    Status = NpcStateStatusEnum.Success;
   }
 
   public void OnUpdateMove()
   {
-    Vector3 vector3 = this.destination - this.GameObject.transform.position;
+    Vector3 vector3 = destination - GameObject.transform.position;
     float magnitude = vector3.magnitude;
     float num = 0.2f;
-    this.GameObject.transform.position += vector3.normalized * this.speed * Time.deltaTime;
-    if ((double) magnitude >= (double) num)
+    GameObject.transform.position += vector3.normalized * speed * Time.deltaTime;
+    if (magnitude >= (double) num)
       return;
-    this.state = NpcStateMoveCloud.StateEnum.Done;
+    state = StateEnum.Done;
   }
 
   public void OnLodStateChanged(bool enabled)

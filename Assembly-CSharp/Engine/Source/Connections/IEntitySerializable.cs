@@ -1,8 +1,7 @@
-﻿using Cofe.Serializations.Converters;
-using Engine.Common;
-using System;
+﻿using System;
 using System.IO;
-using UnityEngine;
+using Cofe.Serializations.Converters;
+using Engine.Common;
 
 namespace Engine.Source.Connections
 {
@@ -14,19 +13,19 @@ namespace Engine.Source.Connections
 
     public Guid Id
     {
-      get => DefaultConverter.ParseGuid(this.id);
-      set => this.id = value != Guid.Empty ? value.ToString() : "";
+      get => DefaultConverter.ParseGuid(id);
+      set => id = value != Guid.Empty ? value.ToString() : "";
     }
 
-    public System.Type Type => typeof (IEntity);
+    public Type Type => typeof (IEntity);
 
     public IEntity Value
     {
-      get => TemplateUtility.GetTemplate<IEntity>(this.Id);
-      set => this.Id = value != null ? value.Id : Guid.Empty;
+      get => TemplateUtility.GetTemplate<IEntity>(Id);
+      set => Id = value != null ? value.Id : Guid.Empty;
     }
 
-    public override int GetHashCode() => string.IsNullOrEmpty(this.id) ? 0 : this.id.GetHashCode();
+    public override int GetHashCode() => string.IsNullOrEmpty(id) ? 0 : id.GetHashCode();
 
     public override bool Equals(object a)
     {
@@ -39,7 +38,7 @@ namespace Engine.Source.Connections
 
     public override string ToString()
     {
-      IEntity entity = this.Value;
+      IEntity entity = Value;
       return entity != null ? Path.GetFileNameWithoutExtension(entity.Source) : "";
     }
   }

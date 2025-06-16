@@ -6,7 +6,7 @@
 
     public static implicit operator GID_t(ulong value)
     {
-      return new GID_t() { Value = value };
+      return new GID_t { Value = value };
     }
 
     public static implicit operator ulong(GID_t value) => value.Value;

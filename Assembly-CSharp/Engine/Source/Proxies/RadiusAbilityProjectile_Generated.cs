@@ -1,9 +1,9 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons.Cloneable;
 using Engine.Common.Commons.Converters;
 using Engine.Source.Commons.Abilities.Projectiles;
-using System;
 
 namespace Engine.Source.Proxies
 {
@@ -18,27 +18,27 @@ namespace Engine.Source.Proxies
     public object Clone()
     {
       RadiusAbilityProjectile_Generated instance = Activator.CreateInstance<RadiusAbilityProjectile_Generated>();
-      this.CopyTo((object) instance);
-      return (object) instance;
+      CopyTo(instance);
+      return instance;
     }
 
     public void CopyTo(object target2)
     {
       RadiusAbilityProjectile_Generated projectileGenerated = (RadiusAbilityProjectile_Generated) target2;
-      projectileGenerated.radius = this.radius;
-      projectileGenerated.ignoreSelf = this.ignoreSelf;
+      projectileGenerated.radius = radius;
+      projectileGenerated.ignoreSelf = ignoreSelf;
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.Write(writer, "Radius", this.radius);
-      DefaultDataWriteUtility.Write(writer, "IgnoreSelf", this.ignoreSelf);
+      DefaultDataWriteUtility.Write(writer, "Radius", radius);
+      DefaultDataWriteUtility.Write(writer, "IgnoreSelf", ignoreSelf);
     }
 
     public void DataRead(IDataReader reader, Type type)
     {
-      this.radius = DefaultDataReadUtility.Read(reader, "Radius", this.radius);
-      this.ignoreSelf = DefaultDataReadUtility.Read(reader, "IgnoreSelf", this.ignoreSelf);
+      radius = DefaultDataReadUtility.Read(reader, "Radius", radius);
+      ignoreSelf = DefaultDataReadUtility.Read(reader, "IgnoreSelf", ignoreSelf);
     }
   }
 }

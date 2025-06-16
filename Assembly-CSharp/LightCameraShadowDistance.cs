@@ -1,7 +1,4 @@
-﻿using UnityEngine;
-using UnityEngine.Profiling;
-
-[RequireComponent(typeof (Light))]
+﻿[RequireComponent(typeof (Light))]
 public class LightCameraShadowDistance : MonoBehaviour
 {
   [SerializeField]
@@ -14,7 +11,7 @@ public class LightCameraShadowDistance : MonoBehaviour
   {
     if (Profiler.enabled)
       Profiler.BeginSample(nameof (LightCameraShadowDistance));
-    this.OnPreCullEvent2(camera);
+    OnPreCullEvent2(camera);
     if (!Profiler.enabled)
       return;
     Profiler.EndSample();
@@ -22,22 +19,22 @@ public class LightCameraShadowDistance : MonoBehaviour
 
   private void OnPreCullEvent2(Camera camera)
   {
-    this.cachedLight.shadows = (double) Vector3.Distance(camera.transform.position, this.cachedTransform.position) > (double) this.shadowDistance ? LightShadows.None : this.shadows;
+    cachedLight.shadows = (double) Vector3.Distance(camera.transform.position, cachedTransform.position) > shadowDistance ? LightShadows.None : shadows;
   }
 
   private void OnEnable()
   {
-    this.cachedTransform = this.transform;
-    this.cachedLight = this.GetComponent<Light>();
-    this.shadows = this.cachedLight.shadows;
-    Camera.onPreCull += new Camera.CameraCallback(this.OnPreCullEvent);
+    cachedTransform = this.transform;
+    cachedLight = this.GetComponent<Light>();
+    shadows = cachedLight.shadows;
+    Camera.onPreCull += new Camera.CameraCallback(OnPreCullEvent);
   }
 
   private void OnDisable()
   {
-    Camera.onPreCull -= new Camera.CameraCallback(this.OnPreCullEvent);
-    this.cachedLight.shadows = this.shadows;
-    this.cachedLight = (Light) null;
-    this.cachedTransform = (Transform) null;
+    Camera.onPreCull -= new Camera.CameraCallback(OnPreCullEvent);
+    cachedLight.shadows = shadows;
+    cachedLight = (Light) null;
+    cachedTransform = (Transform) null;
   }
 }

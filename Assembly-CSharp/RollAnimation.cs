@@ -1,6 +1,5 @@
-﻿using Engine.Impl.UI.Controls;
-using System;
-using UnityEngine;
+﻿using System;
+using Engine.Impl.UI.Controls;
 
 public class RollAnimation : MonoBehaviour
 {
@@ -23,49 +22,49 @@ public class RollAnimation : MonoBehaviour
 
   public event Action FinishEvent;
 
-  public float Duration => this.duration;
+  public float Duration => duration;
 
   private void Update()
   {
-    if ((double) this.time <= 0.0)
+    if (time <= 0.0)
       return;
-    this.time -= Time.deltaTime / this.duration;
-    if ((double) this.time <= 0.0)
-      this.Finish();
+    time -= Time.deltaTime / duration;
+    if (time <= 0.0)
+      Finish();
     else
-      this.ShowPosition(this.targetValue - this.time * this.time * this.rate);
+      ShowPosition(targetValue - time * time * rate);
   }
 
   public void ShowPosition(float value)
   {
-    this.position.FloatValue = this.NormalizedSine(Mathf.PingPong(value, 1f));
+    position.FloatValue = NormalizedSine(Mathf.PingPong(value, 1f));
   }
 
   public void Set(float targetValue, bool success)
   {
     this.success = success;
-    this.targetValue = this.NormalizedArcsine(targetValue);
-    this.rate = UnityEngine.Random.Range(this.rateRange.x, this.rateRange.y);
-    this.ShowPosition(targetValue - this.rate);
-    this.visible.Visible = true;
-    this.time = 1f;
+    this.targetValue = NormalizedArcsine(targetValue);
+    rate = UnityEngine.Random.Range(rateRange.x, rateRange.y);
+    ShowPosition(targetValue - rate);
+    visible.Visible = true;
+    time = 1f;
   }
 
   public void Skip()
   {
     this.GetComponent<AudioSource>().Stop();
-    this.Finish();
+    Finish();
   }
 
   private void Finish()
   {
-    this.time = 0.0f;
-    if (this.success)
-      this.successView.Visible = true;
+    time = 0.0f;
+    if (success)
+      successView.Visible = true;
     else
-      this.failView.Visible = true;
-    this.ShowPosition(this.targetValue);
-    Action finishEvent = this.FinishEvent;
+      failView.Visible = true;
+    ShowPosition(targetValue);
+    Action finishEvent = FinishEvent;
     if (finishEvent == null)
       return;
     finishEvent();
@@ -78,6 +77,6 @@ public class RollAnimation : MonoBehaviour
 
   private float NormalizedArcsine(float value)
   {
-    return Mathf.Acos((float) ((0.5 - (double) value) * 2.0)) / 3.14159274f;
+    return Mathf.Acos((float) ((0.5 - value) * 2.0)) / 3.14159274f;
   }
 }

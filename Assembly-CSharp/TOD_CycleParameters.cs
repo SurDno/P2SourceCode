@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEngine;
 
 [Serializable]
 public class TOD_CycleParameters
@@ -18,23 +17,23 @@ public class TOD_CycleParameters
   {
     get
     {
-      DateTime dateTime = new DateTime(0L, DateTimeKind.Utc).AddYears(this.Year - 1);
-      dateTime = dateTime.AddMonths(this.Month - 1);
-      dateTime = dateTime.AddDays((double) (this.Day - 1));
-      return dateTime.AddHours((double) this.Hour);
+      DateTime dateTime = new DateTime(0L, DateTimeKind.Utc).AddYears(Year - 1);
+      dateTime = dateTime.AddMonths(Month - 1);
+      dateTime = dateTime.AddDays(Day - 1);
+      return dateTime.AddHours(Hour);
     }
     set
     {
-      this.Year = value.Year;
-      this.Month = value.Month;
-      this.Day = value.Day;
-      this.Hour = (float) ((double) value.Hour + (double) value.Minute / 60.0 + (double) value.Second / 3600.0 + (double) value.Millisecond / 3600000.0);
+      Year = value.Year;
+      Month = value.Month;
+      Day = value.Day;
+      Hour = (float) (value.Hour + value.Minute / 60.0 + value.Second / 3600.0 + value.Millisecond / 3600000.0);
     }
   }
 
   public long Ticks
   {
-    get => this.DateTime.Ticks;
-    set => this.DateTime = new DateTime(value, DateTimeKind.Utc);
+    get => DateTime.Ticks;
+    set => DateTime = new DateTime(value, DateTimeKind.Utc);
   }
 }

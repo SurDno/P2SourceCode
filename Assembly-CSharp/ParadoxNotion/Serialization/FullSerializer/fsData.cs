@@ -11,23 +11,23 @@ namespace ParadoxNotion.Serialization.FullSerializer
     public static readonly fsData False = new fsData(false);
     public static readonly fsData Null = new fsData();
 
-    public fsData() => this._value = (object) null;
+    public fsData() => _value = null;
 
-    public fsData(bool boolean) => this._value = (object) boolean;
+    public fsData(bool boolean) => _value = boolean;
 
-    public fsData(double f) => this._value = (object) f;
+    public fsData(double f) => _value = f;
 
-    public fsData(long i) => this._value = (object) i;
+    public fsData(long i) => _value = i;
 
-    public fsData(string str) => this._value = (object) str;
+    public fsData(string str) => _value = str;
 
-    public fsData(Dictionary<string, fsData> dict) => this._value = (object) dict;
+    public fsData(Dictionary<string, fsData> dict) => _value = dict;
 
-    public fsData(List<fsData> list) => this._value = (object) list;
+    public fsData(List<fsData> list) => _value = list;
 
     public static fsData CreateDictionary()
     {
-      return new fsData(new Dictionary<string, fsData>(fsGlobalConfig.IsCaseSensitive ? (IEqualityComparer<string>) StringComparer.Ordinal : (IEqualityComparer<string>) StringComparer.OrdinalIgnoreCase));
+      return new fsData(new Dictionary<string, fsData>(fsGlobalConfig.IsCaseSensitive ? StringComparer.Ordinal : (IEqualityComparer<string>) StringComparer.OrdinalIgnoreCase));
     }
 
     public static fsData CreateList() => new fsData(new List<fsData>());
@@ -36,85 +36,85 @@ namespace ParadoxNotion.Serialization.FullSerializer
 
     internal void BecomeDictionary()
     {
-      this._value = (object) new Dictionary<string, fsData>((IEqualityComparer<string>) StringComparer.Ordinal);
+      _value = new Dictionary<string, fsData>(StringComparer.Ordinal);
     }
 
     internal fsData Clone()
     {
-      return new fsData() { _value = this._value };
+      return new fsData { _value = _value };
     }
 
     public fsDataType Type
     {
       get
       {
-        if (this._value == null)
+        if (_value == null)
           return fsDataType.Null;
-        if (this._value is double)
+        if (_value is double)
           return fsDataType.Double;
-        if (this._value is long)
+        if (_value is long)
           return fsDataType.Int64;
-        if (this._value is bool)
+        if (_value is bool)
           return fsDataType.Boolean;
-        if (this._value is string)
+        if (_value is string)
           return fsDataType.String;
-        if (this._value is Dictionary<string, fsData>)
+        if (_value is Dictionary<string, fsData>)
           return fsDataType.Object;
-        if (this._value is List<fsData>)
+        if (_value is List<fsData>)
           return fsDataType.Array;
         throw new InvalidOperationException("unknown JSON data type");
       }
     }
 
-    public bool IsNull => this._value == null;
+    public bool IsNull => _value == null;
 
-    public bool IsDouble => this._value is double;
+    public bool IsDouble => _value is double;
 
-    public bool IsInt64 => this._value is long;
+    public bool IsInt64 => _value is long;
 
-    public bool IsBool => this._value is bool;
+    public bool IsBool => _value is bool;
 
-    public bool IsString => this._value is string;
+    public bool IsString => _value is string;
 
-    public bool IsDictionary => this._value is Dictionary<string, fsData>;
+    public bool IsDictionary => _value is Dictionary<string, fsData>;
 
-    public bool IsList => this._value is List<fsData>;
-
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    public double AsDouble => this.Cast<double>();
+    public bool IsList => _value is List<fsData>;
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    public long AsInt64 => this.Cast<long>();
+    public double AsDouble => Cast<double>();
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    public bool AsBool => this.Cast<bool>();
+    public long AsInt64 => Cast<long>();
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    public string AsString => this.Cast<string>();
+    public bool AsBool => Cast<bool>();
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    public Dictionary<string, fsData> AsDictionary => this.Cast<Dictionary<string, fsData>>();
+    public string AsString => Cast<string>();
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    public List<fsData> AsList => this.Cast<List<fsData>>();
+    public Dictionary<string, fsData> AsDictionary => Cast<Dictionary<string, fsData>>();
+
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    public List<fsData> AsList => Cast<List<fsData>>();
 
     private T Cast<T>()
     {
-      return this._value is T ? (T) this._value : throw new InvalidCastException("Unable to cast <" + (object) this + "> (with type = " + (object) this._value.GetType() + ") to type " + (object) typeof (T));
+      return _value is T ? (T) _value : throw new InvalidCastException("Unable to cast <" + this + "> (with type = " + _value.GetType() + ") to type " + typeof (T));
     }
 
     public override string ToString() => fsJsonPrinter.CompressedJson(this);
 
-    public override bool Equals(object obj) => this.Equals(obj as fsData);
+    public override bool Equals(object obj) => Equals(obj as fsData);
 
     public bool Equals(fsData other)
     {
-      if (other == (fsData) null || this.Type != other.Type)
+      if (other == null || Type != other.Type)
         return false;
-      switch (this.Type)
+      switch (Type)
       {
         case fsDataType.Array:
-          List<fsData> asList1 = this.AsList;
+          List<fsData> asList1 = AsList;
           List<fsData> asList2 = other.AsList;
           if (asList1.Count != asList2.Count)
             return false;
@@ -125,7 +125,7 @@ namespace ParadoxNotion.Serialization.FullSerializer
           }
           return true;
         case fsDataType.Object:
-          Dictionary<string, fsData> asDictionary1 = this.AsDictionary;
+          Dictionary<string, fsData> asDictionary1 = AsDictionary;
           Dictionary<string, fsData> asDictionary2 = other.AsDictionary;
           if (asDictionary1.Count != asDictionary2.Count)
             return false;
@@ -136,13 +136,13 @@ namespace ParadoxNotion.Serialization.FullSerializer
           }
           return true;
         case fsDataType.Double:
-          return this.AsDouble == other.AsDouble || Math.Abs(this.AsDouble - other.AsDouble) < double.Epsilon;
+          return AsDouble == other.AsDouble || Math.Abs(AsDouble - other.AsDouble) < double.Epsilon;
         case fsDataType.Int64:
-          return this.AsInt64 == other.AsInt64;
+          return AsInt64 == other.AsInt64;
         case fsDataType.Boolean:
-          return this.AsBool == other.AsBool;
+          return AsBool == other.AsBool;
         case fsDataType.String:
-          return this.AsString == other.AsString;
+          return AsString == other.AsString;
         case fsDataType.Null:
           return true;
         default:
@@ -152,7 +152,7 @@ namespace ParadoxNotion.Serialization.FullSerializer
 
     public static bool operator ==(fsData a, fsData b)
     {
-      if ((object) a == (object) b)
+      if (a == (object) b)
         return true;
       if ((object) a == null || (object) b == null)
         return false;
@@ -161,6 +161,6 @@ namespace ParadoxNotion.Serialization.FullSerializer
 
     public static bool operator !=(fsData a, fsData b) => !(a == b);
 
-    public override int GetHashCode() => this._value != null ? this._value.GetHashCode() : 0;
+    public override int GetHashCode() => _value != null ? _value.GetHashCode() : 0;
   }
 }

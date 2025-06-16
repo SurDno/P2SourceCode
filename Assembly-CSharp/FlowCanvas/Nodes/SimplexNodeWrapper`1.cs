@@ -1,5 +1,5 @@
-﻿using ParadoxNotion.Design;
-using System;
+﻿using System;
+using ParadoxNotion.Design;
 
 namespace FlowCanvas.Nodes
 {
@@ -12,59 +12,59 @@ namespace FlowCanvas.Nodes
     {
       get
       {
-        if ((object) this._simplexNode == null)
+        if (_simplexNode == null)
         {
-          this._simplexNode = (T) Activator.CreateInstance(typeof (T));
-          if ((object) this._simplexNode != null)
-            this.GatherPorts();
+          _simplexNode = (T) Activator.CreateInstance(typeof (T));
+          if (_simplexNode != null)
+            GatherPorts();
         }
-        return this._simplexNode;
+        return _simplexNode;
       }
     }
 
     public override string name
     {
-      get => (object) this.simplexNode != null ? this.simplexNode.name : "NULL";
+      get => simplexNode != null ? simplexNode.name : "NULL";
     }
 
     public override string description
     {
-      get => (object) this.simplexNode != null ? this.simplexNode.description : "NULL";
+      get => simplexNode != null ? simplexNode.description : "NULL";
     }
 
     public override void OnGraphStarted()
     {
-      if ((object) this.simplexNode == null)
+      if (simplexNode == null)
         return;
-      this.simplexNode.OnGraphStarted();
+      simplexNode.OnGraphStarted();
     }
 
     public override void OnGraphPaused()
     {
-      if ((object) this.simplexNode == null)
+      if (simplexNode == null)
         return;
-      this.simplexNode.OnGraphPaused();
+      simplexNode.OnGraphPaused();
     }
 
     public override void OnGraphUnpaused()
     {
-      if ((object) this.simplexNode == null)
+      if (simplexNode == null)
         return;
-      this.simplexNode.OnGraphUnpaused();
+      simplexNode.OnGraphUnpaused();
     }
 
     public override void OnGraphStoped()
     {
-      if ((object) this.simplexNode == null)
+      if (simplexNode == null)
         return;
-      this.simplexNode.OnGraphStoped();
+      simplexNode.OnGraphStoped();
     }
 
     protected override void RegisterPorts()
     {
-      if ((object) this.simplexNode == null)
+      if (simplexNode == null)
         return;
-      this.simplexNode.RegisterPorts((FlowNode) this);
+      simplexNode.RegisterPorts(this);
     }
   }
 }

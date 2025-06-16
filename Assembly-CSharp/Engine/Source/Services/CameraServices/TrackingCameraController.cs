@@ -1,7 +1,6 @@
 ﻿using Engine.Behaviours.Components;
 using Engine.Common;
 using Engine.Source.Commons;
-using UnityEngine;
 
 namespace Engine.Source.Services.CameraServices
 {

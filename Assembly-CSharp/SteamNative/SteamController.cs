@@ -1,6 +1,6 @@
-﻿using Facepunch.Steamworks;
-using System;
+﻿using System;
 using System.Runtime.InteropServices;
+using Facepunch.Steamworks;
 
 namespace SteamNative
 {
@@ -13,55 +13,55 @@ namespace SteamNative
     {
       this.steamworks = steamworks;
       if (Platform.IsWindows64)
-        this.platform = (Platform.Interface) new Platform.Win64(pointer);
+        platform = (Platform.Interface) new Platform.Win64(pointer);
       else if (Platform.IsWindows32)
-        this.platform = (Platform.Interface) new Platform.Win32(pointer);
+        platform = (Platform.Interface) new Platform.Win32(pointer);
       else if (Platform.IsLinux32)
-        this.platform = (Platform.Interface) new Platform.Linux32(pointer);
+        platform = (Platform.Interface) new Platform.Linux32(pointer);
       else if (Platform.IsLinux64)
       {
-        this.platform = (Platform.Interface) new Platform.Linux64(pointer);
+        platform = (Platform.Interface) new Platform.Linux64(pointer);
       }
       else
       {
         if (!Platform.IsOsx)
           return;
-        this.platform = (Platform.Interface) new Platform.Mac(pointer);
+        platform = (Platform.Interface) new Platform.Mac(pointer);
       }
     }
 
-    public bool IsValid => this.platform != null && this.platform.IsValid;
+    public bool IsValid => platform != null && platform.IsValid;
 
     public virtual void Dispose()
     {
-      if (this.platform == null)
+      if (platform == null)
         return;
-      this.platform.Dispose();
-      this.platform = (Platform.Interface) null;
+      platform.Dispose();
+      platform = (Platform.Interface) null;
     }
 
     public void ActivateActionSet(
       ControllerHandle_t controllerHandle,
       ControllerActionSetHandle_t actionSetHandle)
     {
-      this.platform.ISteamController_ActivateActionSet(controllerHandle.Value, actionSetHandle.Value);
+      platform.ISteamController_ActivateActionSet(controllerHandle.Value, actionSetHandle.Value);
     }
 
     public ControllerActionSetHandle_t GetActionSetHandle(string pszActionSetName)
     {
-      return this.platform.ISteamController_GetActionSetHandle(pszActionSetName);
+      return platform.ISteamController_GetActionSetHandle(pszActionSetName);
     }
 
     public ControllerAnalogActionData_t GetAnalogActionData(
       ControllerHandle_t controllerHandle,
       ControllerAnalogActionHandle_t analogActionHandle)
     {
-      return this.platform.ISteamController_GetAnalogActionData(controllerHandle.Value, analogActionHandle.Value);
+      return platform.ISteamController_GetAnalogActionData(controllerHandle.Value, analogActionHandle.Value);
     }
 
     public ControllerAnalogActionHandle_t GetAnalogActionHandle(string pszActionName)
     {
-      return this.platform.ISteamController_GetAnalogActionHandle(pszActionName);
+      return platform.ISteamController_GetAnalogActionHandle(pszActionName);
     }
 
     public int GetAnalogActionOrigins(
@@ -70,34 +70,34 @@ namespace SteamNative
       ControllerAnalogActionHandle_t analogActionHandle,
       out ControllerActionOrigin originsOut)
     {
-      return this.platform.ISteamController_GetAnalogActionOrigins(controllerHandle.Value, actionSetHandle.Value, analogActionHandle.Value, out originsOut);
+      return platform.ISteamController_GetAnalogActionOrigins(controllerHandle.Value, actionSetHandle.Value, analogActionHandle.Value, out originsOut);
     }
 
     public int GetConnectedControllers(IntPtr handlesOut)
     {
-      return this.platform.ISteamController_GetConnectedControllers(handlesOut);
+      return platform.ISteamController_GetConnectedControllers(handlesOut);
     }
 
     public ControllerHandle_t GetControllerForGamepadIndex(int nIndex)
     {
-      return this.platform.ISteamController_GetControllerForGamepadIndex(nIndex);
+      return platform.ISteamController_GetControllerForGamepadIndex(nIndex);
     }
 
     public ControllerActionSetHandle_t GetCurrentActionSet(ControllerHandle_t controllerHandle)
     {
-      return this.platform.ISteamController_GetCurrentActionSet(controllerHandle.Value);
+      return platform.ISteamController_GetCurrentActionSet(controllerHandle.Value);
     }
 
     public ControllerDigitalActionData_t GetDigitalActionData(
       ControllerHandle_t controllerHandle,
       ControllerDigitalActionHandle_t digitalActionHandle)
     {
-      return this.platform.ISteamController_GetDigitalActionData(controllerHandle.Value, digitalActionHandle.Value);
+      return platform.ISteamController_GetDigitalActionData(controllerHandle.Value, digitalActionHandle.Value);
     }
 
     public ControllerDigitalActionHandle_t GetDigitalActionHandle(string pszActionName)
     {
-      return this.platform.ISteamController_GetDigitalActionHandle(pszActionName);
+      return platform.ISteamController_GetDigitalActionHandle(pszActionName);
     }
 
     public int GetDigitalActionOrigins(
@@ -106,32 +106,32 @@ namespace SteamNative
       ControllerDigitalActionHandle_t digitalActionHandle,
       out ControllerActionOrigin originsOut)
     {
-      return this.platform.ISteamController_GetDigitalActionOrigins(controllerHandle.Value, actionSetHandle.Value, digitalActionHandle.Value, out originsOut);
+      return platform.ISteamController_GetDigitalActionOrigins(controllerHandle.Value, actionSetHandle.Value, digitalActionHandle.Value, out originsOut);
     }
 
     public int GetGamepadIndexForController(ControllerHandle_t ulControllerHandle)
     {
-      return this.platform.ISteamController_GetGamepadIndexForController(ulControllerHandle.Value);
+      return platform.ISteamController_GetGamepadIndexForController(ulControllerHandle.Value);
     }
 
     public string GetGlyphForActionOrigin(ControllerActionOrigin eOrigin)
     {
-      return Marshal.PtrToStringAnsi(this.platform.ISteamController_GetGlyphForActionOrigin(eOrigin));
+      return Marshal.PtrToStringAnsi(platform.ISteamController_GetGlyphForActionOrigin(eOrigin));
     }
 
     public ControllerMotionData_t GetMotionData(ControllerHandle_t controllerHandle)
     {
-      return this.platform.ISteamController_GetMotionData(controllerHandle.Value);
+      return platform.ISteamController_GetMotionData(controllerHandle.Value);
     }
 
     public string GetStringForActionOrigin(ControllerActionOrigin eOrigin)
     {
-      return Marshal.PtrToStringAnsi(this.platform.ISteamController_GetStringForActionOrigin(eOrigin));
+      return Marshal.PtrToStringAnsi(platform.ISteamController_GetStringForActionOrigin(eOrigin));
     }
 
-    public bool Init() => this.platform.ISteamController_Init();
+    public bool Init() => platform.ISteamController_Init();
 
-    public void RunFrame() => this.platform.ISteamController_RunFrame();
+    public void RunFrame() => platform.ISteamController_RunFrame();
 
     public void SetLEDColor(
       ControllerHandle_t controllerHandle,
@@ -140,7 +140,7 @@ namespace SteamNative
       byte nColorB,
       uint nFlags)
     {
-      this.platform.ISteamController_SetLEDColor(controllerHandle.Value, nColorR, nColorG, nColorB, nFlags);
+      platform.ISteamController_SetLEDColor(controllerHandle.Value, nColorR, nColorG, nColorB, nFlags);
     }
 
     public bool ShowAnalogActionOrigins(
@@ -150,12 +150,12 @@ namespace SteamNative
       float flXPosition,
       float flYPosition)
     {
-      return this.platform.ISteamController_ShowAnalogActionOrigins(controllerHandle.Value, analogActionHandle.Value, flScale, flXPosition, flYPosition);
+      return platform.ISteamController_ShowAnalogActionOrigins(controllerHandle.Value, analogActionHandle.Value, flScale, flXPosition, flYPosition);
     }
 
     public bool ShowBindingPanel(ControllerHandle_t controllerHandle)
     {
-      return this.platform.ISteamController_ShowBindingPanel(controllerHandle.Value);
+      return platform.ISteamController_ShowBindingPanel(controllerHandle.Value);
     }
 
     public bool ShowDigitalActionOrigins(
@@ -165,16 +165,16 @@ namespace SteamNative
       float flXPosition,
       float flYPosition)
     {
-      return this.platform.ISteamController_ShowDigitalActionOrigins(controllerHandle.Value, digitalActionHandle.Value, flScale, flXPosition, flYPosition);
+      return platform.ISteamController_ShowDigitalActionOrigins(controllerHandle.Value, digitalActionHandle.Value, flScale, flXPosition, flYPosition);
     }
 
-    public bool Shutdown() => this.platform.ISteamController_Shutdown();
+    public bool Shutdown() => platform.ISteamController_Shutdown();
 
     public void StopAnalogActionMomentum(
       ControllerHandle_t controllerHandle,
       ControllerAnalogActionHandle_t eAction)
     {
-      this.platform.ISteamController_StopAnalogActionMomentum(controllerHandle.Value, eAction.Value);
+      platform.ISteamController_StopAnalogActionMomentum(controllerHandle.Value, eAction.Value);
     }
 
     public void TriggerHapticPulse(
@@ -182,7 +182,7 @@ namespace SteamNative
       SteamControllerPad eTargetPad,
       ushort usDurationMicroSec)
     {
-      this.platform.ISteamController_TriggerHapticPulse(controllerHandle.Value, eTargetPad, usDurationMicroSec);
+      platform.ISteamController_TriggerHapticPulse(controllerHandle.Value, eTargetPad, usDurationMicroSec);
     }
 
     public void TriggerRepeatedHapticPulse(
@@ -193,7 +193,7 @@ namespace SteamNative
       ushort unRepeat,
       uint nFlags)
     {
-      this.platform.ISteamController_TriggerRepeatedHapticPulse(controllerHandle.Value, eTargetPad, usDurationMicroSec, usOffMicroSec, unRepeat, nFlags);
+      platform.ISteamController_TriggerRepeatedHapticPulse(controllerHandle.Value, eTargetPad, usDurationMicroSec, usOffMicroSec, unRepeat, nFlags);
     }
 
     public void TriggerVibration(
@@ -201,7 +201,7 @@ namespace SteamNative
       ushort usLeftSpeed,
       ushort usRightSpeed)
     {
-      this.platform.ISteamController_TriggerVibration(controllerHandle.Value, usLeftSpeed, usRightSpeed);
+      platform.ISteamController_TriggerVibration(controllerHandle.Value, usLeftSpeed, usRightSpeed);
     }
   }
 }

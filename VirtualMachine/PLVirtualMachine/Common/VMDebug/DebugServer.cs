@@ -1,8 +1,8 @@
-﻿using Cofe.Loggers;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
+using Cofe.Loggers;
 
 namespace PLVirtualMachine.Common.VMDebug
 {
@@ -23,96 +23,96 @@ namespace PLVirtualMachine.Common.VMDebug
 
     protected override void Start()
     {
-      IPAddress ipAddress = this.GetIPAddress();
+      IPAddress ipAddress = GetIPAddress();
       if (ipAddress == null)
         return;
-      IPEndPoint localEP = new IPEndPoint(ipAddress, this.portAddress);
-      this.currentClient = (Socket) null;
+      IPEndPoint localEP = new IPEndPoint(ipAddress, portAddress);
+      currentClient = null;
       try
       {
-        this.socket = new Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-        this.socket.Bind((EndPoint) localEP);
-        this.socket.Listen(DebugServer.MAX_CLIENTS_COUNT);
-        this.ProcessLoop();
+        socket = new Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+        socket.Bind(localEP);
+        socket.Listen(MAX_CLIENTS_COUNT);
+        ProcessLoop();
       }
       catch (Exception ex)
       {
-        this.OnError("Debug controller server socket error: " + (object) ex);
+        OnError("Debug controller server socket error: " + ex);
       }
     }
 
     protected override void StartAsync()
     {
-      IPAddress ipAddress = this.GetIPAddress();
+      IPAddress ipAddress = GetIPAddress();
       if (ipAddress == null)
       {
-        this.OnError(string.Format("Server debugger error: not finded addres by host {0}!", (object) this.serverAddress));
+        OnError(string.Format("Server debugger error: not finded addres by host {0}!", serverAddress));
       }
       else
       {
-        IPEndPoint localEP = new IPEndPoint(ipAddress, this.portAddress);
+        IPEndPoint localEP = new IPEndPoint(ipAddress, portAddress);
         try
         {
-          this.socket = new Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-          this.socket.Bind((EndPoint) localEP);
-          this.socket.Listen(DebugServer.MAX_CLIENTS_COUNT);
+          socket = new Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+          socket.Bind(localEP);
+          socket.Listen(MAX_CLIENTS_COUNT);
           Logger.AddInfo("Start async debug server listening");
-          this.socket.BeginAccept(new AsyncCallback(this.OnAsyncConnect), (object) this.socket);
+          socket.BeginAccept(OnAsyncConnect, socket);
         }
         catch (Exception ex)
         {
-          this.OnError("Server debugger error: " + ex.ToString());
+          OnError("Server debugger error: " + ex);
         }
       }
     }
 
     protected void OnAsyncConnect(IAsyncResult ar)
     {
-      this.currentClient = ((Socket) ar.AsyncState).EndAccept(ar);
-      Logger.AddInfo("Client " + (object) this.currentClient.RemoteEndPoint + " connected");
-      this.SetWorkMode(EDebugIPCApplicationWorkMode.IPC_APPLICATION_WORK_MODE_DEBUG);
-      this.isNeedStop = false;
-      this.StartAsyncListening();
+      currentClient = ((Socket) ar.AsyncState).EndAccept(ar);
+      Logger.AddInfo("Client " + currentClient.RemoteEndPoint + " connected");
+      SetWorkMode(EDebugIPCApplicationWorkMode.IPC_APPLICATION_WORK_MODE_DEBUG);
+      isNeedStop = false;
+      StartAsyncListening();
     }
 
     protected void StartAsyncListening()
     {
-      DebugServer.AsyncDataReceiver state = new DebugServer.AsyncDataReceiver(this.currentClient, this.dataBuffer, DebugIpcController.MAX_DEBUG_MESSAGE_SIZE);
-      this.currentClient.BeginReceive(state.DataBuffer, 0, state.BufferSize, SocketFlags.None, new AsyncCallback(this.OnAsyncReceive), (object) state);
+      AsyncDataReceiver state = new AsyncDataReceiver(currentClient, dataBuffer, MAX_DEBUG_MESSAGE_SIZE);
+      currentClient.BeginReceive(state.DataBuffer, 0, state.BufferSize, SocketFlags.None, OnAsyncReceive, state);
     }
 
     protected void OnAsyncReceive(IAsyncResult ar)
     {
-      DebugServer.AsyncDataReceiver asyncState = (DebugServer.AsyncDataReceiver) ar.AsyncState;
+      AsyncDataReceiver asyncState = (AsyncDataReceiver) ar.AsyncState;
       int length = asyncState.WorkSocket.EndReceive(ar);
       if (length <= 0)
         return;
       ReciveIpcMessage debugMessage = new ReciveIpcMessage();
       if (!debugMessage.IsValid)
-        this.OnError(debugMessage.LastError);
+        OnError(debugMessage.LastError);
       debugMessage.Deserialize(asyncState.DataBuffer, length);
-      this.ProcessMessage(debugMessage);
+      ProcessMessage(debugMessage);
     }
 
     protected void AsyncSendMessage(Socket client, SendIpcMessage serverResponse)
     {
       byte[] buffer = serverResponse.Serialize();
-      client.BeginSend(buffer, 0, buffer.Length, SocketFlags.None, new AsyncCallback(this.OnAsyncSend), (object) client);
+      client.BeginSend(buffer, 0, buffer.Length, SocketFlags.None, OnAsyncSend, client);
     }
 
     protected void OnAsyncSend(IAsyncResult ar)
     {
-      this.socket.EndAccept(ar);
-      if (this.isNeedStop)
-        this.CloseClient();
+      socket.EndAccept(ar);
+      if (isNeedStop)
+        CloseClient();
       else
-        this.StartAsyncListening();
+        StartAsyncListening();
     }
 
     protected override ReciveIpcMessage OnListen()
     {
-      Socket client = this.GetClient();
-      return client == null ? (ReciveIpcMessage) null : this.ReceiveMessage(client);
+      Socket client = GetClient();
+      return client == null ? null : ReceiveMessage(client);
     }
 
     protected override void ProcessMessage(ReciveIpcMessage clientMessage)
@@ -120,14 +120,14 @@ namespace PLVirtualMachine.Common.VMDebug
       if (clientMessage == null)
         return;
       bool flag = false;
-      SendIpcMessage sendIpcMessage = (SendIpcMessage) null;
+      SendIpcMessage sendIpcMessage = null;
       if (clientMessage.MessageType == EDebugIPCMessageType.IPC_MESSAGE_REQUEST_SET_DEBUG_OBJECT || clientMessage.MessageType == EDebugIPCMessageType.IPC_MESSAGE_REQUEST_SET_BREAKPOINT || clientMessage.MessageType == EDebugIPCMessageType.IPC_MESSAGE_REQUEST_REMOVE_BREAKPOINT || clientMessage.MessageType == EDebugIPCMessageType.IPC_MESSAGE_REQUEST_STEP_INTO || clientMessage.MessageType == EDebugIPCMessageType.IPC_MESSAGE_REQUEST_STEP_OVER || clientMessage.MessageType == EDebugIPCMessageType.IPC_MESSAGE_REQUEST_STEP_CONTINUE || clientMessage.MessageType == EDebugIPCMessageType.IPC_MESSAGE_REQUEST_SET_DEBUG_CAMERA || clientMessage.MessageType == EDebugIPCMessageType.IPC_MESSAGE_REQUEST_RAISE_EVENT)
       {
-        lock (this.fromClientMessagesLocker)
-          this.fromClientMessagesQueue.Enqueue(clientMessage);
+        lock (fromClientMessagesLocker)
+          fromClientMessagesQueue.Enqueue(clientMessage);
         sendIpcMessage = new SendIpcMessage(clientMessage.MessageType + 11);
         if (!sendIpcMessage.IsValid)
-          this.OnError(sendIpcMessage.LastError);
+          OnError(sendIpcMessage.LastError);
         sendIpcMessage.CopyData(clientMessage);
       }
       else if (clientMessage.MessageType == EDebugIPCMessageType.IPC_MESSAGE_REQUEST_STOP_DEBUG)
@@ -135,105 +135,105 @@ namespace PLVirtualMachine.Common.VMDebug
         flag = true;
         sendIpcMessage = new SendIpcMessage(EDebugIPCMessageType.IPC_MESSAGE_RESPONSE_STOP_DEBUG);
         if (!sendIpcMessage.IsValid)
-          this.OnError(sendIpcMessage.LastError);
+          OnError(sendIpcMessage.LastError);
         sendIpcMessage.CopyData(clientMessage);
       }
       else if (clientMessage.MessageType == EDebugIPCMessageType.IPC_MESSAGE_REQUEST_SERVER_EVENT)
       {
-        lock (this.serverMessagesLocker)
-          sendIpcMessage = this.toClientMessagesQueue.Count <= 0 ? new SendIpcMessage(EDebugIPCMessageType.IPC_MESSAGE_NONE) : this.toClientMessagesQueue.Dequeue();
+        lock (serverMessagesLocker)
+          sendIpcMessage = toClientMessagesQueue.Count <= 0 ? new SendIpcMessage(EDebugIPCMessageType.IPC_MESSAGE_NONE) : toClientMessagesQueue.Dequeue();
         if (!sendIpcMessage.IsValid)
-          this.OnError(sendIpcMessage.LastError);
+          OnError(sendIpcMessage.LastError);
       }
       if (sendIpcMessage != null)
       {
-        if (this.IsAsyncWork)
-          this.AsyncSendMessage(this.currentClient, sendIpcMessage);
+        if (IsAsyncWork)
+          AsyncSendMessage(currentClient, sendIpcMessage);
         else
-          this.SendMessage(this.currentClient, sendIpcMessage);
+          SendMessage(currentClient, sendIpcMessage);
       }
       else
-        this.OnError(string.Format("Invalid debug client message type: {0}", (object) clientMessage.MessageType.ToString()));
-      if (flag && !this.IsAsyncWork)
+        OnError(string.Format("Invalid debug client message type: {0}", clientMessage.MessageType.ToString()));
+      if (flag && !IsAsyncWork)
       {
-        this.CloseClient();
+        CloseClient();
       }
       else
       {
         if (!flag)
           return;
-        this.isNeedStop = true;
+        isNeedStop = true;
       }
     }
 
     protected void ClearMessages()
     {
-      lock (this.serverMessagesLocker)
-        this.toClientMessagesQueue.Clear();
+      lock (serverMessagesLocker)
+        toClientMessagesQueue.Clear();
     }
 
     protected void AddMessageToClient(SendIpcMessage messageToClient)
     {
-      lock (this.serverMessagesLocker)
-        this.toClientMessagesQueue.Enqueue(messageToClient);
+      lock (serverMessagesLocker)
+        toClientMessagesQueue.Enqueue(messageToClient);
     }
 
     protected int MessagesToClienCount()
     {
-      lock (this.serverMessagesLocker)
-        return this.toClientMessagesQueue.Count;
+      lock (serverMessagesLocker)
+        return toClientMessagesQueue.Count;
     }
 
     protected ReciveIpcMessage PopMessageFromClient()
     {
-      ReciveIpcMessage reciveIpcMessage = (ReciveIpcMessage) null;
-      lock (this.fromClientMessagesLocker)
+      ReciveIpcMessage reciveIpcMessage = null;
+      lock (fromClientMessagesLocker)
       {
-        if (this.fromClientMessagesQueue.Count > 0)
-          reciveIpcMessage = this.fromClientMessagesQueue.Dequeue();
+        if (fromClientMessagesQueue.Count > 0)
+          reciveIpcMessage = fromClientMessagesQueue.Dequeue();
       }
       return reciveIpcMessage;
     }
 
     private void CloseClient()
     {
-      this.currentClient.Shutdown(SocketShutdown.Both);
-      this.currentClient.Close();
-      this.currentClient = (Socket) null;
-      lock (this.serverMessagesLocker)
-        this.toClientMessagesQueue.Clear();
-      this.SetWorkMode(EDebugIPCApplicationWorkMode.IPC_APPLICATION_WORK_MODE_PLAY);
+      currentClient.Shutdown(SocketShutdown.Both);
+      currentClient.Close();
+      currentClient = null;
+      lock (serverMessagesLocker)
+        toClientMessagesQueue.Clear();
+      SetWorkMode(EDebugIPCApplicationWorkMode.IPC_APPLICATION_WORK_MODE_PLAY);
       Logger.AddInfo("Start async debug server listening");
-      this.socket.BeginAccept(new AsyncCallback(this.OnAsyncConnect), (object) this.socket);
+      socket.BeginAccept(OnAsyncConnect, socket);
     }
 
     private Socket GetClient()
     {
-      if (this.currentClient != null && !this.currentClient.Connected)
-        this.CloseClient();
+      if (currentClient != null && !currentClient.Connected)
+        CloseClient();
       do
       {
         try
         {
-          if (this.currentClient == null)
+          if (currentClient == null)
           {
-            Logger.AddInfo(string.Format("Start listen to client: address={0}, port={1}", (object) this.serverAddress, (object) this.portAddress));
-            this.currentClient = this.socket.Accept();
+            Logger.AddInfo(string.Format("Start listen to client: address={0}, port={1}", serverAddress, portAddress));
+            currentClient = socket.Accept();
           }
         }
         catch (Exception ex)
         {
-          this.currentClient = (Socket) null;
-          this.OnError("Debug controller server socket error: " + (object) ex);
+          currentClient = null;
+          OnError("Debug controller server socket error: " + ex);
         }
       }
-      while (this.currentClient == null);
-      if (this.ControllerWorkMode == EDebugIPCApplicationWorkMode.IPC_APPLICATION_WORK_MODE_PLAY)
+      while (currentClient == null);
+      if (ControllerWorkMode == EDebugIPCApplicationWorkMode.IPC_APPLICATION_WORK_MODE_PLAY)
       {
-        this.SetWorkMode(EDebugIPCApplicationWorkMode.IPC_APPLICATION_WORK_MODE_DEBUG);
+        SetWorkMode(EDebugIPCApplicationWorkMode.IPC_APPLICATION_WORK_MODE_DEBUG);
         Logger.AddInfo("Client has connected!");
       }
-      return this.currentClient;
+      return currentClient;
     }
 
     public class AsyncDataReceiver
@@ -244,9 +244,9 @@ namespace PLVirtualMachine.Common.VMDebug
 
       public AsyncDataReceiver(Socket workSocket, byte[] buffer, int bufferSize)
       {
-        this.WorkSocket = workSocket;
-        this.DataBuffer = buffer;
-        this.BufferSize = bufferSize;
+        WorkSocket = workSocket;
+        DataBuffer = buffer;
+        BufferSize = bufferSize;
       }
     }
   }

@@ -1,4 +1,5 @@
-﻿using BehaviorDesigner.Runtime;
+﻿using System;
+using BehaviorDesigner.Runtime;
 using BehaviorDesigner.Runtime.Tasks;
 using Cofe.Proxies;
 using Cofe.Serializations.Data;
@@ -9,7 +10,6 @@ using Engine.Common.Components.Parameters;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Engine.Source.Components;
-using System;
 
 namespace Engine.BehaviourNodes.Conditionals
 {
@@ -22,10 +22,10 @@ namespace Engine.BehaviourNodes.Conditionals
   {
     public override TaskStatus OnUpdate()
     {
-      if ((UnityEngine.Object) this.gameObject.GetComponent<EnemyBase>() == (UnityEngine.Object) null)
+      if ((UnityEngine.Object) gameObject.GetComponent<EnemyBase>() == (UnityEngine.Object) null)
         return TaskStatus.Failure;
       CombatStyleEnum styleName = CombatStyleEnum.Default;
-      IEntity owner = this.Owner.GetComponent<EngineGameObject>().Owner;
+      IEntity owner = Owner.GetComponent<EngineGameObject>().Owner;
       if (owner != null)
       {
         ParametersComponent component = owner.GetComponent<ParametersComponent>();
@@ -36,26 +36,26 @@ namespace Engine.BehaviourNodes.Conditionals
             styleName = byName.Value;
         }
       }
-      IndividualCombatSettings individualCombatSettings = ScriptableObjectInstance<FightSettingsData>.Instance.IndividualCombatSettings.Find((Predicate<IndividualCombatSettings>) (x => x.Name == styleName));
+      IndividualCombatSettings individualCombatSettings = ScriptableObjectInstance<FightSettingsData>.Instance.IndividualCombatSettings.Find(x => x.Name == styleName);
       return individualCombatSettings == null ? TaskStatus.Failure : (individualCombatSettings.CanWatchFight ? TaskStatus.Success : TaskStatus.Failure);
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.WriteSerialize<NodeData>(writer, "NodeData", this.nodeData);
-      DefaultDataWriteUtility.Write(writer, "Id", this.id);
-      DefaultDataWriteUtility.Write(writer, "FriendlyName", this.friendlyName);
-      DefaultDataWriteUtility.Write(writer, "Instant", this.instant);
-      DefaultDataWriteUtility.Write(writer, "Disabled", this.disabled);
+      DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
+      DefaultDataWriteUtility.Write(writer, "Id", id);
+      DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
+      DefaultDataWriteUtility.Write(writer, "Instant", instant);
+      DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
     }
 
-    public void DataRead(IDataReader reader, System.Type type)
+    public void DataRead(IDataReader reader, Type type)
     {
-      this.nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
-      this.id = DefaultDataReadUtility.Read(reader, "Id", this.id);
-      this.friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", this.friendlyName);
-      this.instant = DefaultDataReadUtility.Read(reader, "Instant", this.instant);
-      this.disabled = DefaultDataReadUtility.Read(reader, "Disabled", this.disabled);
+      nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
+      id = DefaultDataReadUtility.Read(reader, "Id", id);
+      friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
+      instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
+      disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
     }
   }
 }

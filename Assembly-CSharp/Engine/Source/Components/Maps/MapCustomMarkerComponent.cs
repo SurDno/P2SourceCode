@@ -1,4 +1,5 @@
-﻿using Engine.Common;
+﻿using Cofe.Serializations.Data;
+using Engine.Common;
 using Engine.Common.Commons;
 using Engine.Common.Generator;
 using Engine.Common.Services;
@@ -6,7 +7,6 @@ using Engine.Impl.Services.Factories;
 using Engine.Source.Commons;
 using Engine.Source.Services;
 using Inspectors;
-using UnityEngine;
 
 namespace Engine.Source.Components.Maps
 {
@@ -14,15 +14,15 @@ namespace Engine.Source.Components.Maps
   [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite | TypeEnum.StateSave | TypeEnum.StateLoad)]
   public class MapCustomMarkerComponent : EngineComponent, INeedSave, IEntityEventsListener
   {
-    [StateSaveProxy(MemberEnum.None)]
-    [StateLoadProxy(MemberEnum.None)]
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [StateSaveProxy]
+    [StateLoadProxy]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected bool isEnabled = true;
-    [StateSaveProxy(MemberEnum.None)]
-    [StateLoadProxy(MemberEnum.None)]
+    [StateSaveProxy]
+    [StateLoadProxy()]
     [Inspected]
     protected Vector2 position = Vector2.zero;
     private bool added;
@@ -34,21 +34,21 @@ namespace Engine.Source.Components.Maps
     [Inspected(Mutable = true)]
     public bool IsEnabled
     {
-      get => this.isEnabled;
+      get => isEnabled;
       set
       {
-        this.isEnabled = value;
-        this.OnChangeEnabled();
+        isEnabled = value;
+        OnChangeEnabled();
       }
     }
 
     public Vector2 Position
     {
-      get => this.position;
+      get => position;
       set
       {
-        this.position = value;
-        this.ApplyPosition();
+        position = value;
+        ApplyPosition();
       }
     }
 
@@ -56,71 +56,71 @@ namespace Engine.Source.Components.Maps
 
     private void ApplyPosition()
     {
-      ((IEntityView) this.Owner).Position = new Vector3(this.position.x, 0.0f, this.position.y);
+      ((IEntityView) Owner).Position = new Vector3(position.x, 0.0f, position.y);
     }
 
     public override void OnAdded()
     {
       base.OnAdded();
-      ((Entity) this.Owner).AddListener((IEntityEventsListener) this);
-      this.OnEnableChangedEvent();
+      ((Entity) Owner).AddListener(this);
+      OnEnableChangedEvent();
     }
 
     public override void OnRemoved()
     {
-      ((Entity) this.Owner).RemoveListener((IEntityEventsListener) this);
-      this.RemoveFromMap();
+      ((Entity) Owner).RemoveListener(this);
+      RemoveFromMap();
       base.OnRemoved();
     }
 
     private void OnEnableChangedEvent()
     {
-      if (this.Owner == null)
+      if (Owner == null)
         return;
-      if (this.Owner.IsEnabledInHierarchy && this.IsEnabled)
-        this.AddToMap();
+      if (Owner.IsEnabledInHierarchy && IsEnabled)
+        AddToMap();
       else
-        this.RemoveFromMap();
+        RemoveFromMap();
     }
 
     private void AddToMap()
     {
-      if (this.added)
+      if (added)
         return;
-      this.added = true;
-      if (this.mapService.CustomMarker != null)
+      added = true;
+      if (mapService.CustomMarker != null)
         return;
-      this.mapService.CustomMarker = this.Owner;
+      mapService.CustomMarker = Owner;
     }
 
     private void RemoveFromMap()
     {
-      if (!this.added)
+      if (!added)
         return;
-      this.added = false;
-      if (this.mapService.CustomMarker != this.Owner)
+      added = false;
+      if (mapService.CustomMarker != Owner)
         return;
-      this.mapService.CustomMarker = (IEntity) null;
+      mapService.CustomMarker = null;
     }
 
     public override void OnChangeEnabled()
     {
       base.OnChangeEnabled();
-      this.OnEnableChangedEvent();
+      OnEnableChangedEvent();
     }
 
-    [Cofe.Serializations.Data.OnLoaded]
+    [OnLoaded]
     private void OnLoaded()
     {
-      this.ApplyPosition();
-      this.OnEnableChangedEvent();
+      ApplyPosition();
+      OnEnableChangedEvent();
     }
 
     public void OnEntityEvent(IEntity sender, EntityEvents kind)
     {
       if (kind != EntityEvents.EnableChangedEvent)
         return;
-      this.OnEnableChangedEvent();
+      OnEnableChangedEvent();
     }
   }
 }

@@ -1,12 +1,11 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons.Cloneable;
 using Engine.Common.Commons.Converters;
 using Engine.Common.Services;
 using Engine.Source.Commons;
 using Scripts.Tools.Serializations.Converters;
-using System;
-using UnityEngine;
 
 namespace Engine.Source.Proxies
 {
@@ -20,26 +19,26 @@ namespace Engine.Source.Proxies
   {
     public object Clone()
     {
-      return (object) ServiceCache.Factory.Instantiate<MapTooltipResource_Generated>(this);
+      return ServiceCache.Factory.Instantiate(this);
     }
 
     public void CopyTo(object target2)
     {
       MapTooltipResource_Generated resourceGenerated = (MapTooltipResource_Generated) target2;
-      resourceGenerated.name = this.name;
-      resourceGenerated.image = this.image;
+      resourceGenerated.name = name;
+      resourceGenerated.image = image;
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.Write(writer, "Id", this.id);
-      UnityDataWriteUtility.Write<Texture>(writer, "Image", this.image);
+      DefaultDataWriteUtility.Write(writer, "Id", id);
+      UnityDataWriteUtility.Write(writer, "Image", image);
     }
 
-    public void DataRead(IDataReader reader, System.Type type)
+    public void DataRead(IDataReader reader, Type type)
     {
-      this.id = DefaultDataReadUtility.Read(reader, "Id", this.id);
-      this.image = UnityDataReadUtility.Read<Texture>(reader, "Image", this.image);
+      id = DefaultDataReadUtility.Read(reader, "Id", id);
+      image = UnityDataReadUtility.Read(reader, "Image", image);
     }
   }
 }

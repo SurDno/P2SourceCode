@@ -1,6 +1,5 @@
 ﻿using NodeCanvas.Framework;
 using ParadoxNotion.Design;
-using UnityEngine;
 
 namespace FlowCanvas.Nodes
 {
@@ -14,20 +13,20 @@ namespace FlowCanvas.Nodes
 
     protected override void RegisterPorts()
     {
-      this.AddValueOutput<T>("Value", (ValueHandler<T>) (() => this.value.value));
+      AddValueOutput("Value", () => value.value);
     }
 
-    public void SetTargetVariableName(string name) => this.value.name = name;
+    public void SetTargetVariableName(string name) => value.name = name;
 
     public override void SetVariable(object o)
     {
       switch (o)
       {
         case Variable<T> _:
-          this.value.name = (o as Variable<T>).name;
+          value.name = (o as Variable<T>).name;
           break;
         case T obj:
-          this.value.value = obj;
+          value.value = obj;
           break;
         default:
           Debug.LogError((object) "Set Variable Error");

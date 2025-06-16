@@ -1,21 +1,18 @@
-﻿using UnityEngine;
-using UnityEngine.Profiling;
-
-[ExecuteInEditMode]
+﻿[ExecuteInEditMode]
 public class TerrainHole : MonoBehaviour
 {
-  private static TerrainHole lastHole = (TerrainHole) null;
+  private static TerrainHole lastHole = null;
   private static float lastSqrDistance = float.MaxValue;
-  private static int terrainCutPropertyId = 0;
-  private static int terrainCutMatrixPropertyId = 0;
+  private static int terrainCutPropertyId;
+  private static int terrainCutMatrixPropertyId;
 
   private static int TerrainCutPropertyId
   {
     get
     {
-      if (TerrainHole.terrainCutPropertyId == 0)
-        TerrainHole.terrainCutPropertyId = Shader.PropertyToID("_TerrainCut");
-      return TerrainHole.terrainCutPropertyId;
+      if (terrainCutPropertyId == 0)
+        terrainCutPropertyId = Shader.PropertyToID("_TerrainCut");
+      return terrainCutPropertyId;
     }
   }
 
@@ -23,9 +20,9 @@ public class TerrainHole : MonoBehaviour
   {
     get
     {
-      if (TerrainHole.terrainCutMatrixPropertyId == 0)
-        TerrainHole.terrainCutMatrixPropertyId = Shader.PropertyToID("_TerrainCutMatrix");
-      return TerrainHole.terrainCutMatrixPropertyId;
+      if (terrainCutMatrixPropertyId == 0)
+        terrainCutMatrixPropertyId = Shader.PropertyToID("_TerrainCutMatrix");
+      return terrainCutMatrixPropertyId;
     }
   }
 
@@ -33,7 +30,7 @@ public class TerrainHole : MonoBehaviour
   {
     if (Profiler.enabled)
       Profiler.BeginSample(nameof (TerrainHole));
-    this.OnPreCullEvent2(camera);
+    OnPreCullEvent2(camera);
     if (!Profiler.enabled)
       return;
     Profiler.EndSample();
@@ -42,30 +39,30 @@ public class TerrainHole : MonoBehaviour
   private void OnPreCullEvent2(Camera camera)
   {
     float sqrMagnitude = (this.transform.position - camera.transform.position).sqrMagnitude;
-    if ((Object) TerrainHole.lastHole == (Object) this)
+    if ((Object) lastHole == (Object) this)
     {
-      TerrainHole.lastSqrDistance = sqrMagnitude;
+      lastSqrDistance = sqrMagnitude;
     }
     else
     {
-      if (!((Object) TerrainHole.lastHole == (Object) null) && (double) sqrMagnitude >= (double) TerrainHole.lastSqrDistance)
+      if (!((Object) lastHole == (Object) null) && sqrMagnitude >= (double) lastSqrDistance)
         return;
-      Shader.SetGlobalInt(TerrainHole.TerrainCutPropertyId, 1);
-      Shader.SetGlobalMatrix(TerrainHole.TerrainCutMatrixPropertyId, this.transform.worldToLocalMatrix);
-      TerrainHole.lastHole = this;
-      TerrainHole.lastSqrDistance = sqrMagnitude;
+      Shader.SetGlobalInt(TerrainCutPropertyId, 1);
+      Shader.SetGlobalMatrix(TerrainCutMatrixPropertyId, this.transform.worldToLocalMatrix);
+      lastHole = this;
+      lastSqrDistance = sqrMagnitude;
     }
   }
 
-  private void OnEnable() => Camera.onPreCull += new Camera.CameraCallback(this.OnPreCullEvent);
+  private void OnEnable() => Camera.onPreCull += new Camera.CameraCallback(OnPreCullEvent);
 
   private void OnDisable()
   {
-    Camera.onPreCull -= new Camera.CameraCallback(this.OnPreCullEvent);
-    if (!((Object) TerrainHole.lastHole == (Object) this))
+    Camera.onPreCull -= new Camera.CameraCallback(OnPreCullEvent);
+    if (!((Object) lastHole == (Object) this))
       return;
-    TerrainHole.ResetCurrent();
-    Shader.SetGlobalInt(TerrainHole.TerrainCutPropertyId, 0);
+    ResetCurrent();
+    Shader.SetGlobalInt(TerrainCutPropertyId, 0);
   }
 
   private void OnDrawGizmosSelected()
@@ -95,7 +92,7 @@ public class TerrainHole : MonoBehaviour
 
   private static void ResetCurrent()
   {
-    TerrainHole.lastHole = (TerrainHole) null;
-    TerrainHole.lastSqrDistance = float.MaxValue;
+    lastHole = null;
+    lastSqrDistance = float.MaxValue;
   }
 }

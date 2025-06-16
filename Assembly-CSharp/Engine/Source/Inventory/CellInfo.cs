@@ -11,8 +11,8 @@ namespace Engine.Source.Inventory
 
     public CellInfo(IntCell cell, CellState state)
     {
-      this.Cell = cell;
-      this.State = state;
+      Cell = cell;
+      State = state;
     }
   }
 }

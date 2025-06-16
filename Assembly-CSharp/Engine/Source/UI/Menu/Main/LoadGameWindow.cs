@@ -1,4 +1,5 @@
-﻿using Engine.Common.Services;
+﻿using System.Collections.Generic;
+using Engine.Common.Services;
 using Engine.Impl.Services;
 using Engine.Impl.UI.Menu;
 using Engine.Source.Commons;
@@ -7,13 +8,6 @@ using Engine.Source.Services.CameraServices;
 using Engine.Source.Services.Inputs;
 using Engine.Source.Services.Profiles;
 using InputServices;
-using System;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.Events;
-using UnityEngine.EventSystems;
-using UnityEngine.Serialization;
-using UnityEngine.UI;
 
 namespace Engine.Source.UI.Menu.Main
 {
@@ -34,14 +28,14 @@ namespace Engine.Source.UI.Menu.Main
 
     public override void Initialize()
     {
-      this.RegisterLayer();
+      RegisterLayer();
       Button[] componentsInChildren = this.GetComponentsInChildren<Button>(true);
       for (int index = 0; index < componentsInChildren.Length; ++index)
       {
         componentsInChildren[index].gameObject.AddComponent<EventTrigger>();
         EventTrigger.Entry entry = new EventTrigger.Entry();
         entry.eventID = EventTriggerType.PointerClick;
-        entry.callback.AddListener((UnityAction<BaseEventData>) (eventData => this.Button_Click_Handler()));
+        entry.callback.AddListener((UnityAction<BaseEventData>) (eventData => Button_Click_Handler()));
         componentsInChildren[index].gameObject.GetComponent<EventTrigger>().triggers.Add(entry);
       }
       base.Initialize();
@@ -59,24 +53,24 @@ namespace Engine.Source.UI.Menu.Main
         string text = ProfilesUtility.ConvertSaveName(saveName);
         if (saveName == lastSave)
           text = text + "  " + ServiceLocator.GetService<LocalizationService>().GetText("{UI.CurrentSave}");
-        SaveFileItem saveFileItem = UnityEngine.Object.Instantiate<SaveFileItem>(this.itemPrefab);
-        saveFileItem.transform.SetParent((Transform) this.keyView, false);
+        SaveFileItem saveFileItem = UnityEngine.Object.Instantiate<SaveFileItem>(itemPrefab);
+        saveFileItem.transform.SetParent((Transform) keyView, false);
         SaveFileItem component = saveFileItem.GetComponent<SaveFileItem>();
-        this.items.Add(component);
+        items.Add(component);
         component.SetText(text);
         component.File = saveName;
-        component.OnPressed += new Action<SaveFileItem>(this.OnKeyItemPressed);
+        component.OnPressed += OnKeyItemPressed;
       }
     }
 
     private void Clear()
     {
-      foreach (SaveFileItem saveFileItem in this.items)
+      foreach (SaveFileItem saveFileItem in items)
       {
-        saveFileItem.OnPressed -= new Action<SaveFileItem>(this.OnKeyItemPressed);
+        saveFileItem.OnPressed -= OnKeyItemPressed;
         UnityEngine.Object.Destroy((UnityEngine.Object) saveFileItem.gameObject);
       }
-      this.items.Clear();
+      items.Clear();
     }
 
     private void OnKeyItemPressed(SaveFileItem item)
@@ -100,7 +94,7 @@ namespace Engine.Source.UI.Menu.Main
     {
       if (!this.gameObject.activeInHierarchy)
         return;
-      this.gameObject.GetComponent<AudioSource>().PlayOneShot(this.clickSound);
+      this.gameObject.GetComponent<AudioSource>().PlayOneShot(clickSound);
     }
 
     public void Button_Back_Click_Handler() => ServiceLocator.GetService<UIService>().Pop();
@@ -108,8 +102,8 @@ namespace Engine.Source.UI.Menu.Main
     protected override void OnEnable()
     {
       base.OnEnable();
-      this.Fill();
-      this.lastCameraKind = ServiceLocator.GetService<CameraService>().Kind;
+      Fill();
+      lastCameraKind = ServiceLocator.GetService<CameraService>().Kind;
       ServiceLocator.GetService<CameraService>().Kind = CameraKindEnum.Unknown;
       InstanceByRequest<EngineApplication>.Instance.IsPaused = true;
       CursorService.Instance.Free = CursorService.Instance.Visible = true;
@@ -118,10 +112,10 @@ namespace Engine.Source.UI.Menu.Main
 
     protected override void OnDisable()
     {
-      ServiceLocator.GetService<CameraService>().Kind = this.lastCameraKind;
+      ServiceLocator.GetService<CameraService>().Kind = lastCameraKind;
       InstanceByRequest<EngineApplication>.Instance.IsPaused = false;
       ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Cancel, new GameActionHandle(((UIWindow) this).CancelListener));
-      this.Clear();
+      Clear();
       base.OnDisable();
     }
   }

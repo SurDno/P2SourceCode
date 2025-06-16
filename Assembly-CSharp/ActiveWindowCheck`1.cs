@@ -1,7 +1,6 @@
 ﻿using Engine.Common.Services;
 using Engine.Impl.Services;
 using Engine.Impl.UI.Controls;
-using UnityEngine;
 
 public abstract class ActiveWindowCheck<T> : MonoBehaviour
 {
@@ -10,8 +9,8 @@ public abstract class ActiveWindowCheck<T> : MonoBehaviour
 
   private void Start()
   {
-    if (!((Object) this.view != (Object) null))
+    if (!((Object) view != (Object) null))
       return;
-    this.view.Visible = ServiceLocator.GetService<UIService>().Active is T;
+    view.Visible = ServiceLocator.GetService<UIService>().Active is T;
   }
 }

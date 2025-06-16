@@ -1,8 +1,5 @@
-﻿using Engine.Common.Components;
-using System;
-using UnityEngine;
-using UnityEngine.Events;
-using UnityEngine.UI;
+﻿using System;
+using Engine.Common.Components;
 
 namespace Engine.Impl.UI.Menu.Protagonist.Inventory.Windows
 {
@@ -29,14 +26,14 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory.Windows
 
     public IStorableComponent Target
     {
-      get => this.target;
+      get => target;
       set
       {
-        if (this.target == value)
+        if (target == value)
           return;
-        this.target = value;
-        this.buttonUse.gameObject.SetActive(StorableComponentUtility.IsUsable(this.target));
-        this.buttonWear.gameObject.SetActive(StorableComponentUtility.IsWearable(this.target));
+        target = value;
+        buttonUse.gameObject.SetActive(StorableComponentUtility.IsUsable(target));
+        buttonWear.gameObject.SetActive(StorableComponentUtility.IsWearable(target));
       }
     }
 
@@ -54,30 +51,30 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory.Windows
 
     public void Investigate()
     {
-      if (this.target == null || this.OnButtonInvestigate == null)
+      if (target == null || OnButtonInvestigate == null)
         return;
-      this.OnButtonInvestigate(this.target);
+      OnButtonInvestigate(target);
     }
 
     public void Drop()
     {
-      if (this.target == null || this.OnButtonDrop == null)
+      if (target == null || OnButtonDrop == null)
         return;
-      this.OnButtonDrop(this.target);
+      OnButtonDrop(target);
     }
 
     public void Wear()
     {
-      if (this.target == null || this.OnButtonWear == null || !StorableComponentUtility.IsWearable(this.target))
+      if (target == null || OnButtonWear == null || !StorableComponentUtility.IsWearable(target))
         return;
-      this.OnButtonWear(this.target);
+      OnButtonWear(target);
     }
 
     public void Use()
     {
-      if (this.target == null || this.OnButtonUse == null || !StorableComponentUtility.IsUsable(this.target))
+      if (target == null || OnButtonUse == null || !StorableComponentUtility.IsUsable(target))
         return;
-      this.OnButtonUse(this.target);
+      OnButtonUse(target);
     }
   }
 }

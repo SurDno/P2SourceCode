@@ -1,7 +1,6 @@
 ﻿using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
-using UnityEngine;
 
 namespace Engine.Source.Blueprints
 {
@@ -14,16 +13,16 @@ namespace Engine.Source.Blueprints
     protected override void RegisterPorts()
     {
       base.RegisterPorts();
-      FlowOutput output = this.AddFlowOutput("Out");
-      this.AddFlowInput("In", (FlowHandler) (() =>
+      FlowOutput output = AddFlowOutput("Out");
+      AddFlowInput("In", () =>
       {
-        Behaviour behaviour = this.behaviourInput.value;
+        Behaviour behaviour = behaviourInput.value;
         if ((Object) behaviour != (Object) null)
-          behaviour.enabled = this.enableInput.value;
+          behaviour.enabled = enableInput.value;
         output.Call();
-      }));
-      this.behaviourInput = this.AddValueInput<Behaviour>("Behaviour");
-      this.enableInput = this.AddValueInput<bool>("Enable");
+      });
+      behaviourInput = AddValueInput<Behaviour>("Behaviour");
+      enableInput = AddValueInput<bool>("Enable");
     }
   }
 }

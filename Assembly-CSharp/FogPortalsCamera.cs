@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-[RequireComponent(typeof (Camera))]
+﻿[RequireComponent(typeof (Camera))]
 public class FogPortalsCamera : MonoBehaviour
 {
   [SerializeField]
@@ -10,34 +8,34 @@ public class FogPortalsCamera : MonoBehaviour
 
   private void DestroyTexture()
   {
-    if ((Object) this.rt == (Object) null)
+    if ((Object) rt == (Object) null)
       return;
-    this.rt.Release();
-    Object.Destroy((Object) this.rt);
-    this.rt = (RenderTexture) null;
+    rt.Release();
+    Object.Destroy((Object) rt);
+    rt = (RenderTexture) null;
     this.GetComponent<Camera>().targetTexture = (RenderTexture) null;
     Shader.SetGlobalInt("_IndoorDepthEnabled", 0);
     Shader.SetGlobalTexture("_IndoorDepthTexture", (Texture) null);
   }
 
-  private void OnDisable() => this.DestroyTexture();
+  private void OnDisable() => DestroyTexture();
 
   private void OnPreCull()
   {
     Camera component = this.GetComponent<Camera>();
-    int width = this.HalfResolution ? component.pixelWidth / 2 : component.pixelWidth;
-    int height = this.HalfResolution ? component.pixelHeight / 2 : component.pixelHeight;
-    if ((Object) this.rt != (Object) null && (this.rt.width != width || this.rt.height != height))
-      this.DestroyTexture();
-    if ((Object) this.rt == (Object) null)
+    int width = HalfResolution ? component.pixelWidth / 2 : component.pixelWidth;
+    int height = HalfResolution ? component.pixelHeight / 2 : component.pixelHeight;
+    if ((Object) rt != (Object) null && (rt.width != width || rt.height != height))
+      DestroyTexture();
+    if ((Object) rt == (Object) null)
     {
-      this.rt = new RenderTexture(width, height, 24, RenderTextureFormat.Depth);
-      component.targetTexture = this.rt;
+      rt = new RenderTexture(width, height, 24, RenderTextureFormat.Depth);
+      component.targetTexture = rt;
       Shader.SetGlobalInt("_IndoorDepthEnabled", 1);
-      Shader.SetGlobalTexture("_IndoorDepthTexture", (Texture) this.rt);
+      Shader.SetGlobalTexture("_IndoorDepthTexture", (Texture) rt);
     }
-    component.nearClipPlane = this.baseCamera.nearClipPlane;
-    component.farClipPlane = this.baseCamera.farClipPlane;
-    component.fieldOfView = this.baseCamera.fieldOfView;
+    component.nearClipPlane = baseCamera.nearClipPlane;
+    component.farClipPlane = baseCamera.farClipPlane;
+    component.fieldOfView = baseCamera.fieldOfView;
   }
 }

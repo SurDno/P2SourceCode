@@ -7,11 +7,11 @@ namespace UnityEngine.PostProcessing
   {
     private HashSet<RenderTexture> m_TemporaryRTs;
 
-    public RenderTextureFactory() => this.m_TemporaryRTs = new HashSet<RenderTexture>();
+    public RenderTextureFactory() => m_TemporaryRTs = new HashSet<RenderTexture>();
 
     public RenderTexture Get(RenderTexture baseRenderTexture)
     {
-      return this.Get(baseRenderTexture.width, baseRenderTexture.height, baseRenderTexture.depth, baseRenderTexture.format, baseRenderTexture.sRGB ? RenderTextureReadWrite.sRGB : RenderTextureReadWrite.Linear, baseRenderTexture.filterMode, baseRenderTexture.wrapMode);
+      return Get(baseRenderTexture.width, baseRenderTexture.height, baseRenderTexture.depth, baseRenderTexture.format, baseRenderTexture.sRGB ? RenderTextureReadWrite.sRGB : RenderTextureReadWrite.Linear, baseRenderTexture.filterMode, baseRenderTexture.wrapMode);
     }
 
     public RenderTexture Get(
@@ -28,7 +28,7 @@ namespace UnityEngine.PostProcessing
       temporary.filterMode = filterMode;
       temporary.wrapMode = wrapMode;
       temporary.name = name;
-      this.m_TemporaryRTs.Add(temporary);
+      m_TemporaryRTs.Add(temporary);
       return temporary;
     }
 
@@ -36,20 +36,20 @@ namespace UnityEngine.PostProcessing
     {
       if ((UnityEngine.Object) rt == (UnityEngine.Object) null)
         return;
-      if (!this.m_TemporaryRTs.Contains(rt))
+      if (!m_TemporaryRTs.Contains(rt))
         throw new ArgumentException(string.Format("Attempting to remove a RenderTexture that was not allocated: {0}", (object) rt));
-      this.m_TemporaryRTs.Remove(rt);
+      m_TemporaryRTs.Remove(rt);
       RenderTexture.ReleaseTemporary(rt);
     }
 
     public void ReleaseAll()
     {
-      HashSet<RenderTexture>.Enumerator enumerator = this.m_TemporaryRTs.GetEnumerator();
+      HashSet<A>.Enumerator enumerator = m_TemporaryRTs.GetEnumerator();
       while (enumerator.MoveNext())
         RenderTexture.ReleaseTemporary(enumerator.Current);
-      this.m_TemporaryRTs.Clear();
+      m_TemporaryRTs.Clear();
     }
 
-    public void Dispose() => this.ReleaseAll();
+    public void Dispose() => ReleaseAll();
   }
 }

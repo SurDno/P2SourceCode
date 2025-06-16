@@ -6,10 +6,10 @@ namespace PLVirtualMachine.Base
   {
     public void Initialize(string methodNameKey, MethodInfo methodInfo)
     {
-      this.MethodNameKey = methodNameKey;
-      this.ExecMethodInfo = methodInfo;
-      this.InputParamsInfo = this.ExecMethodInfo.GetParameters();
-      this.InputParams = new object[this.InputParamsInfo.Length];
+      MethodNameKey = methodNameKey;
+      ExecMethodInfo = methodInfo;
+      InputParamsInfo = ExecMethodInfo.GetParameters();
+      InputParams = new object[InputParamsInfo.Length];
     }
 
     public string MethodNameKey { get; private set; }

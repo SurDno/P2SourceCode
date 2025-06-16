@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace UnityStandardAssets.ImageEffects
+﻿namespace UnityStandardAssets.ImageEffects
 {
   public class GlobalFogBase : PostEffectsBase
   {
@@ -23,22 +21,22 @@ namespace UnityStandardAssets.ImageEffects
 
     public Camera Camera
     {
-      get => this.cam;
-      set => this.cam = value;
+      get => cam;
+      set => cam = value;
     }
 
     public override bool CheckResources()
     {
-      this.CheckSupport(true);
-      if ((Object) GlobalFogBase.fogShader == (Object) null)
-        GlobalFogBase.fogShader = Shader.Find("Hidden/Pathologic/Image Effects/Fog");
-      this.fogMaterial = this.CheckShaderAndCreateMaterial(GlobalFogBase.fogShader, this.fogMaterial);
-      if (!this.isSupported)
-        this.ReportAutoDisable();
-      return this.isSupported;
+      CheckSupport(true);
+      if ((Object) fogShader == (Object) null)
+        fogShader = Shader.Find("Hidden/Pathologic/Image Effects/Fog");
+      fogMaterial = CheckShaderAndCreateMaterial(fogShader, fogMaterial);
+      if (!isSupported)
+        ReportAutoDisable();
+      return isSupported;
     }
 
-    private void OnPostRender() => this.DisableFog();
+    private void OnPostRender() => DisableFog();
 
     private void DisableFog()
     {
@@ -48,24 +46,24 @@ namespace UnityStandardAssets.ImageEffects
 
     protected void OnRenderImage_Internal(RenderTexture source, RenderTexture destination)
     {
-      if (!this.CheckResources() || !this.distanceFog && !this.heightFog)
+      if (!CheckResources() || !distanceFog && !heightFog)
       {
-        this.DisableFog();
+        DisableFog();
         Graphics.Blit((Texture) source, destination);
       }
       else
       {
-        Transform transform = this.cam.transform;
-        Matrix4x4 worldToCameraMatrix = this.cam.worldToCameraMatrix;
-        Matrix4x4 matrix4x4 = GL.GetGPUProjectionMatrix(this.cam.projectionMatrix, true) * worldToCameraMatrix;
-        this.fogMaterial.SetMatrix("_InverseView", worldToCameraMatrix.inverse);
+        Transform transform = cam.transform;
+        Matrix4x4 worldToCameraMatrix = cam.worldToCameraMatrix;
+        Matrix4x4 matrix4x4 = GL.GetGPUProjectionMatrix(cam.projectionMatrix, true) * worldToCameraMatrix;
+        fogMaterial.SetMatrix("_InverseView", worldToCameraMatrix.inverse);
         Shader.SetGlobalMatrix("_IPL_InverseViewProj", matrix4x4.inverse);
         Vector3 position = transform.position;
-        float y = -this.height;
-        float z = (double) y <= 0.0 ? 1f : 0.0f;
-        Shader.SetGlobalVector("_FogHeightParams", new Vector4(position.y + this.height, y, z, this.heightFog ? this.heightDensity * 0.5f : 0.0f));
-        Shader.SetGlobalVector("_FogDistanceParams", new Vector4(this.distanceFog ? this.distanceDensity : 0.0f, -Mathf.Max(this.startDistance, 0.0f), 0.0f, 0.0f));
-        Graphics.Blit((Texture) source, destination, this.fogMaterial);
+        float y = -height;
+        float z = y <= 0.0 ? 1f : 0.0f;
+        Shader.SetGlobalVector("_FogHeightParams", new Vector4(position.y + height, y, z, heightFog ? heightDensity * 0.5f : 0.0f));
+        Shader.SetGlobalVector("_FogDistanceParams", new Vector4(distanceFog ? distanceDensity : 0.0f, -Mathf.Max(startDistance, 0.0f), 0.0f, 0.0f));
+        Graphics.Blit((Texture) source, destination, fogMaterial);
       }
     }
   }

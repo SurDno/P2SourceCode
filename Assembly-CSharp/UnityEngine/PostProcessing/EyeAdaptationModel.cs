@@ -6,15 +6,15 @@ namespace UnityEngine.PostProcessing
   public class EyeAdaptationModel : PostProcessingModel
   {
     [SerializeField]
-    private EyeAdaptationModel.Settings m_Settings = EyeAdaptationModel.Settings.defaultSettings;
+    private Settings m_Settings = Settings.defaultSettings;
 
-    public EyeAdaptationModel.Settings settings
+    public Settings settings
     {
-      get => this.m_Settings;
-      set => this.m_Settings = value;
+      get => m_Settings;
+      set => m_Settings = value;
     }
 
-    public override void Reset() => this.m_Settings = EyeAdaptationModel.Settings.defaultSettings;
+    public override void Reset() => m_Settings = Settings.defaultSettings;
 
     public enum EyeAdaptationType
     {
@@ -41,7 +41,7 @@ namespace UnityEngine.PostProcessing
       [Tooltip("Set this to true to let Unity handle the key value automatically based on average luminance.")]
       public bool dynamicKeyValue;
       [Tooltip("Use \"Progressive\" if you want the auto exposure to be animated. Use \"Fixed\" otherwise.")]
-      public EyeAdaptationModel.EyeAdaptationType adaptationType;
+      public EyeAdaptationType adaptationType;
       [Min(0.0f)]
       [Tooltip("Adaptation speed from a dark to a light environment.")]
       public float speedUp;
@@ -55,19 +55,18 @@ namespace UnityEngine.PostProcessing
       [Tooltip("Upper bound for the brightness range of the generated histogram (in EV). The bigger the spread between min & max, the lower the precision will be.")]
       public int logMax;
 
-      public static EyeAdaptationModel.Settings defaultSettings
+      public static Settings defaultSettings
       {
         get
         {
-          return new EyeAdaptationModel.Settings()
-          {
+          return new Settings {
             lowPercent = 45f,
             highPercent = 95f,
             minLuminance = -5f,
             maxLuminance = 1f,
             keyValue = 0.25f,
             dynamicKeyValue = true,
-            adaptationType = EyeAdaptationModel.EyeAdaptationType.Progressive,
+            adaptationType = EyeAdaptationType.Progressive,
             speedUp = 2f,
             speedDown = 1f,
             logMin = -8,

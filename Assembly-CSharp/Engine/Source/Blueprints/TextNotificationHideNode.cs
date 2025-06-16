@@ -13,12 +13,12 @@ namespace Engine.Source.Blueprints
     protected override void RegisterPorts()
     {
       base.RegisterPorts();
-      FlowOutput output = this.AddFlowOutput("Out");
-      this.AddFlowInput("In", (FlowHandler) (() =>
+      FlowOutput output = AddFlowOutput("Out");
+      AddFlowInput("In", () =>
       {
         ServiceLocator.GetService<NotificationService>().RemoveNotify(NotificationEnum.Text);
         output.Call();
-      }));
+      });
     }
   }
 }

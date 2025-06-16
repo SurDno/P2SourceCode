@@ -1,4 +1,6 @@
-﻿using Engine.Behaviours.Components;
+﻿using System;
+using System.Collections.Generic;
+using Engine.Behaviours.Components;
 using Engine.Common;
 using Engine.Common.Components;
 using Engine.Common.Components.AttackerPlayer;
@@ -6,9 +8,6 @@ using Engine.Source.Commons;
 using Engine.Source.Components;
 using Engine.Source.Components.Utilities;
 using Inspectors;
-using System;
-using System.Collections.Generic;
-using UnityEngine;
 
 public class NPCWeaponService : WeaponServiceBase, IEntityAttachable
 {
@@ -28,45 +27,45 @@ public class NPCWeaponService : WeaponServiceBase, IEntityAttachable
   private FightAnimatorBehavior.AnimatorState fightAnimatorState;
   private AnimatorEventProxy animatorEventProxy;
   private Vector3 knifeParentPositionPrev;
-  private bool inited = false;
+  private bool inited;
   private Vector3 weaponStartPosition;
   private Vector3 weaponAimDirection;
   private Dictionary<int, float> neededLayerWeights = new Dictionary<int, float>();
   private Dictionary<int, float> currentLayerWeights = new Dictionary<int, float>();
   private float unknownRelaxTimeLeft;
-  private Dictionary<WeaponEnum, INPCWeaponController> weaponControllers = new Dictionary<WeaponEnum, INPCWeaponController>((IEqualityComparer<WeaponEnum>) WeaponEnumComparer.Instance)
+  private Dictionary<WeaponEnum, INPCWeaponController> weaponControllers = new Dictionary<WeaponEnum, INPCWeaponController>(WeaponEnumComparer.Instance)
   {
     {
       WeaponEnum.Unknown,
-      (INPCWeaponController) new NPCEmptyWeaponController()
+      new NPCEmptyWeaponController()
     },
     {
       WeaponEnum.Hands,
-      (INPCWeaponController) new NPCHandsWeaponController()
+      new NPCHandsWeaponController()
     },
     {
       WeaponEnum.Knife,
-      (INPCWeaponController) new NPCKnifeWeaponController()
+      new NPCKnifeWeaponController()
     },
     {
       WeaponEnum.Flamethrower,
-      (INPCWeaponController) new NPCFlamethrowerWeaponController()
+      new NPCFlamethrowerWeaponController()
     },
     {
       WeaponEnum.Bomb,
-      (INPCWeaponController) new NPCBombWeaponController()
+      new NPCBombWeaponController()
     },
     {
       WeaponEnum.Samopal,
-      (INPCWeaponController) new NPCSamopalWeaponController()
+      new NPCSamopalWeaponController()
     },
     {
       WeaponEnum.Rifle,
-      (INPCWeaponController) new NPCRifleWeaponController()
+      new NPCRifleWeaponController()
     },
     {
       WeaponEnum.RifleClose,
-      (INPCWeaponController) new NPCRifleCloseWeaponController()
+      new NPCRifleCloseWeaponController()
     }
   };
 
@@ -85,181 +84,181 @@ public class NPCWeaponService : WeaponServiceBase, IEntityAttachable
   [Inspected(Mutable = true)]
   public override WeaponEnum Weapon
   {
-    get => this.weapon;
+    get => weapon;
     set
     {
-      if (!this.inited)
-        this.Init();
-      if (value != WeaponEnum.Unknown && this.weapon == value)
+      if (!inited)
+        Init();
+      if (value != WeaponEnum.Unknown && weapon == value)
         return;
       if (value == WeaponEnum.Unknown)
-        this.unknownRelaxTimeLeft = 2f;
-      this.weaponControllers[this.weapon].Shutdown();
-      this.weaponControllers[value].Activate();
-      this.weapon = value;
+        unknownRelaxTimeLeft = 2f;
+      weaponControllers[weapon].Shutdown();
+      weaponControllers[value].Activate();
+      weapon = value;
     }
   }
 
-  public bool IsChangingWeapon() => this.weaponControllers[this.weapon].IsChangingWeapon();
+  public bool IsChangingWeapon() => weaponControllers[weapon].IsChangingWeapon();
 
   public void SwitchWeaponOnImmediate()
   {
-    foreach (KeyValuePair<WeaponEnum, INPCWeaponController> weaponController in this.weaponControllers)
+    foreach (KeyValuePair<WeaponEnum, INPCWeaponController> weaponController in weaponControllers)
     {
-      if (weaponController.Key != this.weapon)
+      if (weaponController.Key != weapon)
         weaponController.Value.ShutdownImmediate();
     }
-    this.weaponControllers[this.weapon].ActivateImmediate();
+    weaponControllers[weapon].ActivateImmediate();
   }
 
   public void SwitchWeaponOffImmediate()
   {
-    foreach (KeyValuePair<WeaponEnum, INPCWeaponController> weaponController in this.weaponControllers)
+    foreach (KeyValuePair<WeaponEnum, INPCWeaponController> weaponController in weaponControllers)
       weaponController.Value.ShutdownImmediate();
-    this.weapon = WeaponEnum.Unknown;
-    this.weaponControllers[WeaponEnum.Unknown].ActivateImmediate();
+    weapon = WeaponEnum.Unknown;
+    weaponControllers[WeaponEnum.Unknown].ActivateImmediate();
   }
 
   private void Init()
   {
-    this.pivot = this.GetComponent<Pivot>();
-    if (!(bool) (UnityEngine.Object) this.pivot)
+    pivot = this.GetComponent<Pivot>();
+    if (!(bool) (UnityEngine.Object) pivot)
     {
       Debug.LogError((object) (typeof (NPCWeaponService).Name + " requires " + typeof (Pivot).Name + " "));
     }
     else
     {
-      this.animator = this.pivot.GetAnimator();
-      this.animatorEventProxy = this.pivot.GetAnimatorEventProxy();
-      this.animatorEventProxy.AnimatorEventEvent += new Action<string>(this.OnAnimatorEvent);
-      this.fightAnimatorState = FightAnimatorBehavior.GetAnimatorState(this.animator);
-      foreach (KeyValuePair<WeaponEnum, INPCWeaponController> weaponController1 in this.weaponControllers)
+      animator = pivot.GetAnimator();
+      animatorEventProxy = pivot.GetAnimatorEventProxy();
+      animatorEventProxy.AnimatorEventEvent += OnAnimatorEvent;
+      fightAnimatorState = FightAnimatorBehavior.GetAnimatorState(animator);
+      foreach (KeyValuePair<WeaponEnum, INPCWeaponController> weaponController1 in weaponControllers)
       {
         INPCWeaponController weaponController2 = weaponController1.Value;
         WeaponEnum weaponKind = weaponController1.Key;
         weaponController2.Initialise(this);
-        weaponController2.WeaponShootEvent += (Action<IEntity, ShotType, ReactionType>) ((entity, shotType, reactionType) =>
+        weaponController2.WeaponShootEvent += (entity, shotType, reactionType) =>
         {
-          if (this.fightAnimatorState.IsReaction)
+          if (fightAnimatorState.IsReaction)
             return;
-          Action<WeaponEnum, IEntity, ShotType, ReactionType> weaponShootEvent = this.WeaponShootEvent;
+          Action<WeaponEnum, IEntity, ShotType, ReactionType> weaponShootEvent = WeaponShootEvent;
           if (weaponShootEvent == null)
             return;
           weaponShootEvent(weaponKind, entity, shotType, reactionType);
-        });
+        };
       }
-      this.inited = true;
+      inited = true;
     }
   }
 
   void IEntityAttachable.Attach(IEntity owner)
   {
-    this.Owner = owner;
-    NavigationComponent component = this.Owner.GetComponent<NavigationComponent>();
+    Owner = owner;
+    NavigationComponent component = Owner.GetComponent<NavigationComponent>();
     if (component == null)
       return;
-    component.OnTeleport += new Action<INavigationComponent, IEntity>(this.NavigationComponent_OnTeleport);
+    component.OnTeleport += NavigationComponent_OnTeleport;
   }
 
   void IEntityAttachable.Detach()
   {
-    NavigationComponent component = this.Owner.GetComponent<NavigationComponent>();
+    NavigationComponent component = Owner.GetComponent<NavigationComponent>();
     if (component != null)
-      component.OnTeleport -= new Action<INavigationComponent, IEntity>(this.NavigationComponent_OnTeleport);
-    this.Owner = (IEntity) null;
+      component.OnTeleport -= NavigationComponent_OnTeleport;
+    Owner = null;
   }
 
   private void NavigationComponent_OnTeleport(
     INavigationComponent navigationComponent,
     IEntity entity)
   {
-    LocationItemComponent component = this.Owner?.GetComponent<LocationItemComponent>();
-    this.IsIndoor = component != null && component.IsIndoor;
-    this.weaponControllers[this.weapon].IndoorChanged();
+    LocationItemComponent component = Owner?.GetComponent<LocationItemComponent>();
+    IsIndoor = component != null && component.IsIndoor;
+    weaponControllers[weapon].IndoorChanged();
   }
 
   private void Start()
   {
-    if (this.inited)
+    if (inited)
       return;
-    this.Init();
+    Init();
   }
 
-  public override Vector3 KnifeSpeed => this.knifeSpeed;
+  public override Vector3 KnifeSpeed => knifeSpeed;
 
   public override Vector3 KnifePosition
   {
     get
     {
-      return (UnityEngine.Object) this.KnifeParent != (UnityEngine.Object) null ? this.KnifeParent.position : this.transform.position;
+      return (UnityEngine.Object) KnifeParent != (UnityEngine.Object) null ? KnifeParent.position : this.transform.position;
     }
   }
 
   private void Update()
   {
-    if (!(bool) (UnityEngine.Object) this.pivot || InstanceByRequest<EngineApplication>.Instance.IsPaused)
+    if (!(bool) (UnityEngine.Object) pivot || InstanceByRequest<EngineApplication>.Instance.IsPaused)
       return;
-    if (this.weapon == WeaponEnum.Unknown)
+    if (weapon == WeaponEnum.Unknown)
     {
-      if ((double) this.unknownRelaxTimeLeft <= 0.0)
+      if (unknownRelaxTimeLeft <= 0.0)
         return;
-      this.unknownRelaxTimeLeft -= Time.deltaTime;
+      unknownRelaxTimeLeft -= Time.deltaTime;
     }
-    foreach (KeyValuePair<WeaponEnum, INPCWeaponController> weaponController in this.weaponControllers)
+    foreach (KeyValuePair<WeaponEnum, INPCWeaponController> weaponController in weaponControllers)
     {
-      if (weaponController.Key == this.weapon)
+      if (weaponController.Key == weapon)
         weaponController.Value.Update();
       else
         weaponController.Value.UpdateSilent();
     }
-    this.CountLayersWeights();
-    if ((UnityEngine.Object) this.KnifeParent != (UnityEngine.Object) null)
+    CountLayersWeights();
+    if ((UnityEngine.Object) KnifeParent != (UnityEngine.Object) null)
     {
-      if (this.knifeParentPositionPrev == Vector3.zero)
-        this.knifeParentPositionPrev = this.KnifeParent.position;
-      Vector3 vector3_1 = this.KnifeParent.position - this.knifeParentPositionPrev;
+      if (knifeParentPositionPrev == Vector3.zero)
+        knifeParentPositionPrev = KnifeParent.position;
+      Vector3 vector3_1 = KnifeParent.position - knifeParentPositionPrev;
       Vector3 vector3_2 = (double) vector3_1.magnitude > (double) Time.deltaTime * 0.05000000074505806 ? vector3_1 / Time.deltaTime : Vector3.zero;
       float num = 1f;
-      this.knifeSpeed = this.knifeSpeed * (1f - num) + vector3_2 * num;
-      this.knifeParentPositionPrev = this.KnifeParent.position;
+      knifeSpeed = knifeSpeed * (1f - num) + vector3_2 * num;
+      knifeParentPositionPrev = KnifeParent.position;
     }
-    if (!((UnityEngine.Object) this.pivot != (UnityEngine.Object) null) || !((UnityEngine.Object) this.pivot.ShootStart != (UnityEngine.Object) null))
+    if (!((UnityEngine.Object) pivot != (UnityEngine.Object) null) || !((UnityEngine.Object) pivot.ShootStart != (UnityEngine.Object) null))
       return;
-    this.weaponStartPosition = this.pivot.ShootStart.transform.position;
-    this.weaponAimDirection = this.pivot.ShootStart.transform.forward;
+    weaponStartPosition = pivot.ShootStart.transform.position;
+    weaponAimDirection = pivot.ShootStart.transform.forward;
   }
 
   public void AddNeededLayer(int key, float value)
   {
-    if ((UnityEngine.Object) this.animator == (UnityEngine.Object) null)
+    if ((UnityEngine.Object) animator == (UnityEngine.Object) null)
       return;
-    if (!this.neededLayerWeights.ContainsKey(key))
+    if (!neededLayerWeights.ContainsKey(key))
     {
-      this.neededLayerWeights.Add(key, value);
-      this.currentLayerWeights.Add(key, this.animator.GetLayerWeight(key));
+      neededLayerWeights.Add(key, value);
+      currentLayerWeights.Add(key, animator.GetLayerWeight(key));
     }
     else
-      this.neededLayerWeights[key] = value;
+      neededLayerWeights[key] = value;
   }
 
-  public void ForceUpdateLayers() => this.CountLayersWeights(true);
+  public void ForceUpdateLayers() => CountLayersWeights(true);
 
   private void CountLayersWeights(bool immediate = false)
   {
-    foreach (KeyValuePair<int, float> neededLayerWeight in this.neededLayerWeights)
+    foreach (KeyValuePair<int, float> neededLayerWeight in neededLayerWeights)
     {
       if (neededLayerWeight.Key != -1)
       {
-        float currentLayerWeight = this.currentLayerWeights[neededLayerWeight.Key];
+        float currentLayerWeight = currentLayerWeights[neededLayerWeight.Key];
         float num = Mathf.MoveTowards(currentLayerWeight, neededLayerWeight.Value, Time.deltaTime / 0.5f);
         if (immediate)
           num = neededLayerWeight.Value;
         if (!Mathf.Approximately(num, currentLayerWeight))
         {
-          this.currentLayerWeights[neededLayerWeight.Key] = num;
+          currentLayerWeights[neededLayerWeight.Key] = num;
           float weight = SmoothUtility.Smooth22(num);
-          if ((double) this.animator.GetLayerWeight(neededLayerWeight.Key) != (double) weight)
-            this.animator.SetLayerWeight(neededLayerWeight.Key, weight);
+          if ((double) animator.GetLayerWeight(neededLayerWeight.Key) != weight)
+            animator.SetLayerWeight(neededLayerWeight.Key, weight);
         }
       }
     }
@@ -267,20 +266,20 @@ public class NPCWeaponService : WeaponServiceBase, IEntityAttachable
 
   public void TriggerAction(WeaponActionEnum weaponAction)
   {
-    this.weaponControllers[this.weapon].TriggerAction(weaponAction);
+    weaponControllers[weapon].TriggerAction(weaponAction);
   }
 
   public void OnAnimatorEvent(string data)
   {
-    this.weaponControllers[this.weapon].OnAnimatorEvent(data);
+    weaponControllers[weapon].OnAnimatorEvent(data);
   }
 
-  public Vector3 GetWeaponStartPoint() => this.weaponStartPosition;
+  public Vector3 GetWeaponStartPoint() => weaponStartPosition;
 
-  public Vector3 GetWeaponAimDirection() => this.weaponAimDirection;
+  public Vector3 GetWeaponAimDirection() => weaponAimDirection;
 
   public void PunchReaction(ReactionType reactionType)
   {
-    this.weaponControllers[this.weapon].PunchReaction(reactionType);
+    weaponControllers[weapon].PunchReaction(reactionType);
   }
 }

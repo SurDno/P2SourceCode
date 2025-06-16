@@ -1,4 +1,5 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common;
 using Engine.Common.Commons;
@@ -12,8 +13,6 @@ using Engine.Source.Components;
 using Engine.Source.Components.Utilities;
 using Engine.Source.Settings;
 using Scripts.Tools.Serializations.Converters;
-using UnityEngine;
-using UnityEngine.AI;
 
 namespace BehaviorDesigner.Runtime.Tasks.Pathologic
 {
@@ -23,72 +22,72 @@ namespace BehaviorDesigner.Runtime.Tasks.Pathologic
   [Factory]
   [GeneratePartial(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
   [FactoryProxy(typeof (TeleportBehindPlayer))]
-  public class TeleportBehindPlayer : BehaviorDesigner.Runtime.Tasks.Action, IStub, ISerializeDataWrite, ISerializeDataRead
+  public class TeleportBehindPlayer : Action, IStub, ISerializeDataWrite, ISerializeDataRead
   {
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [SerializeField]
-    public SharedFloat MinSearchDistance = (SharedFloat) 3f;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    public SharedFloat MinSearchDistance = 3f;
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [SerializeField]
-    public SharedFloat MaxSearchDistance = (SharedFloat) 18f;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    public SharedFloat MaxSearchDistance = 18f;
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [SerializeField]
-    public SharedBool UsePlayerVisionAngle = (SharedBool) true;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    public SharedBool UsePlayerVisionAngle = true;
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy()]
     [SerializeField]
-    public SharedInt NumberOfTries = (SharedInt) 5;
+    public SharedInt NumberOfTries = 5;
     private IEntity entity;
     private IEntity player;
     private NpcState npcState;
     private float lastTryTime;
     private float timeBetweenTries = 0.3f;
-    private int triesMade = 0;
+    private int triesMade;
     private bool wasRestartBehaviourAfterTeleport;
 
     public override void OnStart()
     {
-      this.entity = EntityUtility.GetEntity(this.gameObject);
-      this.player = ServiceLocator.GetService<ISimulation>().Player;
-      this.triesMade = 0;
-      this.lastTryTime = Time.time;
-      this.npcState = this.gameObject.GetComponent<NpcState>();
-      if (!(bool) (UnityEngine.Object) this.npcState)
+      entity = EntityUtility.GetEntity(gameObject);
+      player = ServiceLocator.GetService<ISimulation>().Player;
+      triesMade = 0;
+      lastTryTime = Time.time;
+      npcState = gameObject.GetComponent<NpcState>();
+      if (!(bool) (UnityEngine.Object) npcState)
         return;
-      this.wasRestartBehaviourAfterTeleport = this.npcState.RestartBehaviourAfterTeleport;
-      this.npcState.RestartBehaviourAfterTeleport = false;
+      wasRestartBehaviourAfterTeleport = npcState.RestartBehaviourAfterTeleport;
+      npcState.RestartBehaviourAfterTeleport = false;
     }
 
     public override void OnEnd()
     {
-      if ((bool) (UnityEngine.Object) this.npcState)
-        this.npcState.RestartBehaviourAfterTeleport = this.wasRestartBehaviourAfterTeleport;
-      this.triesMade = 0;
+      if ((bool) (UnityEngine.Object) npcState)
+        npcState.RestartBehaviourAfterTeleport = wasRestartBehaviourAfterTeleport;
+      triesMade = 0;
     }
 
     public override TaskStatus OnUpdate()
     {
-      if (this.entity == null || this.player == null || (UnityEngine.Object) ((IEntityView) this.player).GameObject == (UnityEngine.Object) null)
+      if (entity == null || player == null || (UnityEngine.Object) ((IEntityView) player).GameObject == (UnityEngine.Object) null)
         return TaskStatus.Failure;
-      if ((double) Time.time >= (double) this.lastTryTime + (double) this.timeBetweenTries)
+      if ((double) Time.time >= lastTryTime + (double) timeBetweenTries)
       {
-        Vector3 vector3 = this.CountRandomPoint(((IEntityView) this.player).GameObject);
-        if (this.TryPoint(vector3, ((IEntityView) this.player).GameObject.transform.position))
+        Vector3 vector3 = CountRandomPoint(((IEntityView) player).GameObject);
+        if (TryPoint(vector3, ((IEntityView) player).GameObject.transform.position))
         {
-          ILocationComponent location = this.player.GetComponent<LocationItemComponent>()?.Location;
-          this.entity.GetComponent<NavigationComponent>().TeleportTo(location, vector3, Quaternion.LookRotation(((IEntityView) this.player).GameObject.transform.position - vector3));
+          ILocationComponent location = player.GetComponent<LocationItemComponent>()?.Location;
+          entity.GetComponent<NavigationComponent>().TeleportTo(location, vector3, Quaternion.LookRotation(((IEntityView) player).GameObject.transform.position - vector3));
           return TaskStatus.Success;
         }
-        ++this.triesMade;
-        this.lastTryTime = Time.time;
-        if (this.triesMade > this.NumberOfTries.Value)
+        ++triesMade;
+        lastTryTime = Time.time;
+        if (triesMade > NumberOfTries.Value)
           return TaskStatus.Failure;
       }
       return TaskStatus.Running;
@@ -96,10 +95,10 @@ namespace BehaviorDesigner.Runtime.Tasks.Pathologic
 
     private Vector3 CountRandomPoint(GameObject player)
     {
-      float num1 = this.UsePlayerVisionAngle.Value ? InstanceByRequest<GraphicsGameSettings>.Instance.FieldOfView.Value : 0.0f;
+      float num1 = UsePlayerVisionAngle.Value ? InstanceByRequest<GraphicsGameSettings>.Instance.FieldOfView.Value : 0.0f;
       float num2 = UnityEngine.Random.Range(num1 - 180f, 180f - num1);
       float y = player.transform.rotation.eulerAngles.y + num2;
-      float num3 = UnityEngine.Random.Range(this.MinSearchDistance.Value, this.MaxSearchDistance.Value);
+      float num3 = UnityEngine.Random.Range(MinSearchDistance.Value, MaxSearchDistance.Value);
       return player.transform.position + Quaternion.Euler(0.0f, y, 0.0f) * Vector3.back * num3;
     }
 
@@ -111,33 +110,33 @@ namespace BehaviorDesigner.Runtime.Tasks.Pathologic
       point = hit.position;
       NavMeshPath path = new NavMeshPath();
       NavMesh.CalculatePath(point, playerPosition, -1, path);
-      return path.status == NavMeshPathStatus.PathComplete && (double) NavMeshUtility.GetPathLength(path) <= (double) this.MaxSearchDistance.Value * 2.0;
+      return path.status == NavMeshPathStatus.PathComplete && NavMeshUtility.GetPathLength(path) <= MaxSearchDistance.Value * 2.0;
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.WriteSerialize<NodeData>(writer, "NodeData", this.nodeData);
-      DefaultDataWriteUtility.Write(writer, "Id", this.id);
-      DefaultDataWriteUtility.Write(writer, "FriendlyName", this.friendlyName);
-      DefaultDataWriteUtility.Write(writer, "Instant", this.instant);
-      DefaultDataWriteUtility.Write(writer, "Disabled", this.disabled);
-      BehaviorTreeDataWriteUtility.WriteShared<SharedFloat>(writer, "MinSearchDistance", this.MinSearchDistance);
-      BehaviorTreeDataWriteUtility.WriteShared<SharedFloat>(writer, "MaxSearchDistance", this.MaxSearchDistance);
-      BehaviorTreeDataWriteUtility.WriteShared<SharedBool>(writer, "UsePlayerVisionAngle", this.UsePlayerVisionAngle);
-      BehaviorTreeDataWriteUtility.WriteShared<SharedInt>(writer, "NumberOfTries", this.NumberOfTries);
+      DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
+      DefaultDataWriteUtility.Write(writer, "Id", id);
+      DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
+      DefaultDataWriteUtility.Write(writer, "Instant", instant);
+      DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
+      BehaviorTreeDataWriteUtility.WriteShared(writer, "MinSearchDistance", MinSearchDistance);
+      BehaviorTreeDataWriteUtility.WriteShared(writer, "MaxSearchDistance", MaxSearchDistance);
+      BehaviorTreeDataWriteUtility.WriteShared(writer, "UsePlayerVisionAngle", UsePlayerVisionAngle);
+      BehaviorTreeDataWriteUtility.WriteShared(writer, "NumberOfTries", NumberOfTries);
     }
 
-    public void DataRead(IDataReader reader, System.Type type)
+    public void DataRead(IDataReader reader, Type type)
     {
-      this.nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
-      this.id = DefaultDataReadUtility.Read(reader, "Id", this.id);
-      this.friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", this.friendlyName);
-      this.instant = DefaultDataReadUtility.Read(reader, "Instant", this.instant);
-      this.disabled = DefaultDataReadUtility.Read(reader, "Disabled", this.disabled);
-      this.MinSearchDistance = BehaviorTreeDataReadUtility.ReadShared<SharedFloat>(reader, "MinSearchDistance", this.MinSearchDistance);
-      this.MaxSearchDistance = BehaviorTreeDataReadUtility.ReadShared<SharedFloat>(reader, "MaxSearchDistance", this.MaxSearchDistance);
-      this.UsePlayerVisionAngle = BehaviorTreeDataReadUtility.ReadShared<SharedBool>(reader, "UsePlayerVisionAngle", this.UsePlayerVisionAngle);
-      this.NumberOfTries = BehaviorTreeDataReadUtility.ReadShared<SharedInt>(reader, "NumberOfTries", this.NumberOfTries);
+      nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
+      id = DefaultDataReadUtility.Read(reader, "Id", id);
+      friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
+      instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
+      disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
+      MinSearchDistance = BehaviorTreeDataReadUtility.ReadShared(reader, "MinSearchDistance", MinSearchDistance);
+      MaxSearchDistance = BehaviorTreeDataReadUtility.ReadShared(reader, "MaxSearchDistance", MaxSearchDistance);
+      UsePlayerVisionAngle = BehaviorTreeDataReadUtility.ReadShared(reader, "UsePlayerVisionAngle", UsePlayerVisionAngle);
+      NumberOfTries = BehaviorTreeDataReadUtility.ReadShared(reader, "NumberOfTries", NumberOfTries);
     }
   }
 }

@@ -4,8 +4,6 @@ using Engine.Common.Services;
 using Engine.Source.Commons;
 using Engine.Source.Components;
 using Engine.Source.Services;
-using UnityEngine;
-using UnityEngine.AI;
 
 public class NpcStateMoveFollowTeleport : NpcStateMoveBase
 {
@@ -21,17 +19,17 @@ public class NpcStateMoveFollowTeleport : NpcStateMoveBase
 
   public void Activate(float followDistance, float trialTime, bool waitForTargetSeesMe)
   {
-    if (!this.Activate())
+    if (!Activate())
       return;
     this.waitForTargetSeesMe = waitForTargetSeesMe;
-    this.wasRestartBehaviourAfterTeleport = this.npcState.RestartBehaviourAfterTeleport;
+    wasRestartBehaviourAfterTeleport = npcState.RestartBehaviourAfterTeleport;
     this.followDistance = followDistance;
-    this.lastDestination = Vector3.one * 100000f;
+    lastDestination = Vector3.one * 100000f;
   }
 
   public override void DoShutdown()
   {
-    this.npcState.RestartBehaviourAfterTeleport = this.wasRestartBehaviourAfterTeleport;
+    npcState.RestartBehaviourAfterTeleport = wasRestartBehaviourAfterTeleport;
   }
 
   private GameObject GetPlayer()
@@ -50,69 +48,69 @@ public class NpcStateMoveFollowTeleport : NpcStateMoveBase
 
   public override void DoUpdate()
   {
-    GameObject player = this.GetPlayer();
-    if ((Object) player == (Object) null || this.Status != 0)
+    GameObject player = GetPlayer();
+    if ((Object) player == (Object) null || Status != 0)
       return;
     PostmanTeleportService service = ServiceLocator.GetService<PostmanTeleportService>();
-    Vector3 vector3 = player.transform.position - this.GameObject.transform.position;
+    Vector3 vector3 = player.transform.position - GameObject.transform.position;
     float magnitude1 = vector3.magnitude;
-    vector3 = player.transform.position - this.GameObject.transform.position;
-    if ((double) vector3.magnitude < (double) this.followDistance && this.TargetIsVisible(player))
+    vector3 = player.transform.position - GameObject.transform.position;
+    if ((double) vector3.magnitude < followDistance && TargetIsVisible(player))
     {
-      if (!this.waitForTargetSeesMe || this.TargetSeesMe(player))
-        this.Status = NpcStateStatusEnum.Success;
+      if (!waitForTargetSeesMe || TargetSeesMe(player))
+        Status = NpcStateStatusEnum.Success;
       else
-        service.ReportPostmanIsOK(this.npcState.Owner, true);
+        service.ReportPostmanIsOK(npcState.Owner, true);
     }
     else
     {
-      vector3 = this.lastDestination - player.transform.position;
+      vector3 = lastDestination - player.transform.position;
       float magnitude2 = vector3.magnitude;
-      vector3 = player.transform.position - this.GameObject.transform.position;
+      vector3 = player.transform.position - GameObject.transform.position;
       float magnitude3 = vector3.magnitude;
-      if (this.behavior.Gait == EngineBehavior.GaitType.Run)
+      if (behavior.Gait == EngineBehavior.GaitType.Run)
       {
-        if ((double) magnitude3 < (double) this.followDistance * 3.0)
-          this.behavior.Gait = EngineBehavior.GaitType.Walk;
-        if ((double) magnitude2 > (double) this.followDistance)
+        if (magnitude3 < followDistance * 3.0)
+          behavior.Gait = EngineBehavior.GaitType.Walk;
+        if (magnitude2 > (double) followDistance)
         {
-          this.lastDestination = player.transform.position;
-          this.RestartMovement(this.lastDestination);
+          lastDestination = player.transform.position;
+          RestartMovement(lastDestination);
         }
       }
       else
       {
-        if ((double) magnitude3 > (double) this.followDistance * 4.0)
-          this.behavior.Gait = EngineBehavior.GaitType.Run;
-        if ((double) magnitude2 > 0.30000001192092896 * (double) this.followDistance)
+        if (magnitude3 > followDistance * 4.0)
+          behavior.Gait = EngineBehavior.GaitType.Run;
+        if (magnitude2 > 0.30000001192092896 * followDistance)
         {
-          this.lastDestination = player.transform.position;
-          this.RestartMovement(this.lastDestination);
+          lastDestination = player.transform.position;
+          RestartMovement(lastDestination);
         }
       }
-      if (this.agent.hasPath && (double) this.agent.remainingDistance < (double) this.followDistance && (double) magnitude3 < (double) this.followDistance)
+      if (agent.hasPath && (double) agent.remainingDistance < followDistance && magnitude3 < (double) followDistance)
       {
-        if (!this.waitForTargetSeesMe || this.TargetSeesMe(player))
-          this.Status = NpcStateStatusEnum.Success;
-        this.CompleteTask(false);
-        service.ReportPostmanIsOK(this.npcState.Owner, true);
+        if (!waitForTargetSeesMe || TargetSeesMe(player))
+          Status = NpcStateStatusEnum.Success;
+        CompleteTask(false);
+        service.ReportPostmanIsOK(npcState.Owner, true);
       }
       else
       {
-        if ((double) magnitude1 >= 50.0)
+        if (magnitude1 >= 50.0)
           return;
-        service.ReportPostmanIsOK(this.npcState.Owner, true);
+        service.ReportPostmanIsOK(npcState.Owner, true);
       }
     }
   }
 
   private bool TargetSeesMe(GameObject target)
   {
-    return (double) Vector3.Angle((this.GameObject.transform.position - target.transform.position).normalized, target.transform.forward) < 30.0;
+    return (double) Vector3.Angle((GameObject.transform.position - target.transform.position).normalized, target.transform.forward) < 30.0;
   }
 
   private bool TargetIsVisible(GameObject target)
   {
-    return !NavMesh.Raycast(this.GameObject.transform.position, target.transform.position, out NavMeshHit _, -1);
+    return !NavMesh.Raycast(GameObject.transform.position, target.transform.position, out NavMeshHit _, -1);
   }
 }

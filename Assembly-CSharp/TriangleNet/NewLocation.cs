@@ -14,7 +14,7 @@ namespace TriangleNet
     public NewLocation(Mesh mesh)
     {
       this.mesh = mesh;
-      this.behavior = mesh.behavior;
+      behavior = mesh.behavior;
     }
 
     public Point FindLocation(
@@ -26,7 +26,7 @@ namespace TriangleNet
       bool offcenter,
       Otri badotri)
     {
-      return this.behavior.MaxAngle == 0.0 ? this.FindNewLocationWithoutMaxAngle(torg, tdest, tapex, ref xi, ref eta, true, badotri) : this.FindNewLocation(torg, tdest, tapex, ref xi, ref eta, true, badotri);
+      return behavior.MaxAngle == 0.0 ? FindNewLocationWithoutMaxAngle(torg, tdest, tapex, ref xi, ref eta, true, badotri) : FindNewLocation(torg, tdest, tapex, ref xi, ref eta, true, badotri);
     }
 
     private Point FindNewLocationWithoutMaxAngle(
@@ -38,7 +38,7 @@ namespace TriangleNet
       bool offcenter,
       Otri badotri)
     {
-      double offconstant = this.behavior.offconstant;
+      double offconstant = behavior.offconstant;
       int num1 = 0;
       Otri neighotri = new Otri();
       double[] thirdpoint = new double[2];
@@ -70,14 +70,14 @@ namespace TriangleNet
       }
       else
       {
-        num14 = 0.5 / Primitives.CounterClockwise((Point) tdest, (Point) tapex, (Point) torg);
+        num14 = 0.5 / Primitives.CounterClockwise(tdest, tapex, torg);
         --Statistic.CounterClockwiseCount;
       }
       double num15 = (num11 * dodist - num9 * aodist) * num14;
       double num16 = (num8 * aodist - num10 * dodist) * num14;
       Point point1 = new Point(torg.x + num15, torg.y + num16);
       Otri deltri = badotri;
-      int num17 = this.LongestShortestEdge(aodist, dadist, dodist);
+      int num17 = LongestShortestEdge(aodist, dadist, dodist);
       double num18;
       double num19;
       double num20;
@@ -102,9 +102,9 @@ namespace TriangleNet
           d1 = aodist;
           d2 = dadist;
           num24 = dodist;
-          point2 = (Point) tdest;
-          point3 = (Point) torg;
-          point4 = (Point) tapex;
+          point2 = tdest;
+          point3 = torg;
+          point4 = tapex;
           break;
         case 132:
           num18 = num10;
@@ -116,9 +116,9 @@ namespace TriangleNet
           d1 = aodist;
           d2 = dodist;
           num24 = dadist;
-          point2 = (Point) tdest;
-          point3 = (Point) tapex;
-          point4 = (Point) torg;
+          point2 = tdest;
+          point3 = tapex;
+          point4 = torg;
           break;
         case 213:
           num18 = num12;
@@ -130,9 +130,9 @@ namespace TriangleNet
           d1 = dadist;
           d2 = aodist;
           num24 = dodist;
-          point2 = (Point) torg;
-          point3 = (Point) tdest;
-          point4 = (Point) tapex;
+          point2 = torg;
+          point3 = tdest;
+          point4 = tapex;
           break;
         case 231:
           num18 = num12;
@@ -144,9 +144,9 @@ namespace TriangleNet
           d1 = dadist;
           d2 = dodist;
           num24 = aodist;
-          point2 = (Point) torg;
-          point3 = (Point) tapex;
-          point4 = (Point) tdest;
+          point2 = torg;
+          point3 = tapex;
+          point4 = tdest;
           break;
         case 312:
           num18 = num8;
@@ -158,9 +158,9 @@ namespace TriangleNet
           d1 = dodist;
           d2 = aodist;
           num24 = dadist;
-          point2 = (Point) tapex;
-          point3 = (Point) tdest;
-          point4 = (Point) torg;
+          point2 = tapex;
+          point3 = tdest;
+          point4 = torg;
           break;
         default:
           num18 = num8;
@@ -172,9 +172,9 @@ namespace TriangleNet
           d1 = dodist;
           d2 = dadist;
           num24 = aodist;
-          point2 = (Point) tapex;
-          point3 = (Point) torg;
-          point4 = (Point) tdest;
+          point2 = tapex;
+          point3 = torg;
+          point4 = tdest;
           break;
       }
       if (offcenter && offconstant > 0.0)
@@ -220,7 +220,7 @@ namespace TriangleNet
       {
         double num31 = (d2 + d1 - num24) / (2.0 * Math.Sqrt(d2) * Math.Sqrt(d1));
         bool isObtuse = num31 < 0.0 || Math.Abs(num31 - 0.0) <= 1E-50;
-        num5 = this.DoSmoothing(deltri, torg, tdest, tapex, ref newloc);
+        num5 = DoSmoothing(deltri, torg, tdest, tapex, ref newloc);
         if (num5 > 0)
         {
           ++Statistic.RelocationCount;
@@ -231,21 +231,21 @@ namespace TriangleNet
           switch (num5)
           {
             case 1:
-              this.mesh.DeleteVertex(ref deltri);
+              mesh.DeleteVertex(ref deltri);
               break;
             case 2:
               deltri.LnextSelf();
-              this.mesh.DeleteVertex(ref deltri);
+              mesh.DeleteVertex(ref deltri);
               break;
             case 3:
               deltri.LprevSelf();
-              this.mesh.DeleteVertex(ref deltri);
+              mesh.DeleteVertex(ref deltri);
               break;
           }
         }
         else
         {
-          double r = Math.Sqrt(d1) / (2.0 * Math.Sin(this.behavior.MinAngle * Math.PI / 180.0));
+          double r = Math.Sqrt(d1) / (2.0 * Math.Sin(behavior.MinAngle * Math.PI / 180.0));
           double num32 = (point3.x + point4.x) / 2.0;
           double num33 = (point3.y + point4.y) / 2.0;
           double num34 = num32 + Math.Sqrt(r * r - d1 / 4.0) * (point3.y - point4.y) / Math.Sqrt(d1);
@@ -264,20 +264,20 @@ namespace TriangleNet
             x3_1 = num36;
             y3_1 = num37;
           }
-          bool neighborsVertex1 = this.GetNeighborsVertex(badotri, point3.x, point3.y, point2.x, point2.y, ref thirdpoint, ref neighotri);
+          bool neighborsVertex1 = GetNeighborsVertex(badotri, point3.x, point3.y, point2.x, point2.y, ref thirdpoint, ref neighotri);
           double num38 = num15;
           double num39 = num16;
           if (!neighborsVertex1)
           {
-            Point circumcenter = Primitives.FindCircumcenter((Point) neighotri.Org(), (Point) neighotri.Dest(), (Point) neighotri.Apex(), ref xi1, ref eta1);
+            Point circumcenter = Primitives.FindCircumcenter(neighotri.Org(), neighotri.Dest(), neighotri.Apex(), ref xi1, ref eta1);
             double num40 = point3.y - point2.y;
             double num41 = point2.x - point3.x;
             double x2 = point1.x + num40;
             double y2 = point1.y + num41;
-            this.CircleLineIntersection(point1.x, point1.y, x2, y2, x3_1, y3_1, r, ref p1);
+            CircleLineIntersection(point1.x, point1.y, x2, y2, x3_1, y3_1, r, ref p1);
             double num42;
             double num43;
-            if (this.ChooseCorrectPoint((point3.x + point2.x) / 2.0, (point3.y + point2.y) / 2.0, p1[3], p1[4], point1.x, point1.y, isObtuse))
+            if (ChooseCorrectPoint((point3.x + point2.x) / 2.0, (point3.y + point2.y) / 2.0, p1[3], p1[4], point1.x, point1.y, isObtuse))
             {
               num42 = p1[3];
               num43 = p1[4];
@@ -287,12 +287,12 @@ namespace TriangleNet
               num42 = p1[1];
               num43 = p1[2];
             }
-            this.PointBetweenPoints(num42, num43, point1.x, point1.y, circumcenter.x, circumcenter.y, ref p2);
+            PointBetweenPoints(num42, num43, point1.x, point1.y, circumcenter.x, circumcenter.y, ref p2);
             if (p1[0] > 0.0)
             {
               if (Math.Abs(p2[0] - 1.0) <= 1E-50)
               {
-                if (this.IsBadTriangleAngle(point3.x, point3.y, point4.x, point4.y, circumcenter.x, circumcenter.y))
+                if (IsBadTriangleAngle(point3.x, point3.y, point4.x, point4.y, circumcenter.x, circumcenter.y))
                 {
                   num38 = num15;
                   num39 = num16;
@@ -303,7 +303,7 @@ namespace TriangleNet
                   num39 = p2[3] - torg.y;
                 }
               }
-              else if (this.IsBadTriangleAngle(point4.x, point4.y, point3.x, point3.y, num42, num43))
+              else if (IsBadTriangleAngle(point4.x, point4.y, point3.x, point3.y, num42, num43))
               {
                 double num44 = Math.Sqrt((num42 - point1.x) * (num42 - point1.x) + (num43 - point1.y) * (num43 - point1.y));
                 double num45 = point1.x - num42;
@@ -312,7 +312,7 @@ namespace TriangleNet
                 double num48 = num46 / num44;
                 double x3_2 = num42 + num47 * num2 * Math.Sqrt(d1);
                 double y3_2 = num43 + num48 * num2 * Math.Sqrt(d1);
-                if (this.IsBadTriangleAngle(point3.x, point3.y, point4.x, point4.y, x3_2, y3_2))
+                if (IsBadTriangleAngle(point3.x, point3.y, point4.x, point4.y, x3_2, y3_2))
                 {
                   num38 = num15;
                   num39 = num16;
@@ -335,20 +335,20 @@ namespace TriangleNet
               }
             }
           }
-          bool neighborsVertex2 = this.GetNeighborsVertex(badotri, point4.x, point4.y, point2.x, point2.y, ref thirdpoint, ref neighotri);
+          bool neighborsVertex2 = GetNeighborsVertex(badotri, point4.x, point4.y, point2.x, point2.y, ref thirdpoint, ref neighotri);
           double num49 = num15;
           double num50 = num16;
           if (!neighborsVertex2)
           {
-            Point circumcenter = Primitives.FindCircumcenter((Point) neighotri.Org(), (Point) neighotri.Dest(), (Point) neighotri.Apex(), ref xi1, ref eta1);
+            Point circumcenter = Primitives.FindCircumcenter(neighotri.Org(), neighotri.Dest(), neighotri.Apex(), ref xi1, ref eta1);
             double num51 = point4.y - point2.y;
             double num52 = point2.x - point4.x;
             double x2 = point1.x + num51;
             double y2 = point1.y + num52;
-            this.CircleLineIntersection(point1.x, point1.y, x2, y2, x3_1, y3_1, r, ref p1);
+            CircleLineIntersection(point1.x, point1.y, x2, y2, x3_1, y3_1, r, ref p1);
             double num53;
             double num54;
-            if (this.ChooseCorrectPoint((point4.x + point2.x) / 2.0, (point4.y + point2.y) / 2.0, p1[3], p1[4], point1.x, point1.y, false))
+            if (ChooseCorrectPoint((point4.x + point2.x) / 2.0, (point4.y + point2.y) / 2.0, p1[3], p1[4], point1.x, point1.y, false))
             {
               num53 = p1[3];
               num54 = p1[4];
@@ -358,12 +358,12 @@ namespace TriangleNet
               num53 = p1[1];
               num54 = p1[2];
             }
-            this.PointBetweenPoints(num53, num54, point1.x, point1.y, circumcenter.x, circumcenter.y, ref p2);
+            PointBetweenPoints(num53, num54, point1.x, point1.y, circumcenter.x, circumcenter.y, ref p2);
             if (p1[0] > 0.0)
             {
               if (Math.Abs(p2[0] - 1.0) <= 1E-50)
               {
-                if (this.IsBadTriangleAngle(point3.x, point3.y, point4.x, point4.y, circumcenter.x, circumcenter.y))
+                if (IsBadTriangleAngle(point3.x, point3.y, point4.x, point4.y, circumcenter.x, circumcenter.y))
                 {
                   num49 = num15;
                   num50 = num16;
@@ -374,7 +374,7 @@ namespace TriangleNet
                   num50 = p2[3] - torg.y;
                 }
               }
-              else if (this.IsBadTriangleAngle(point3.x, point3.y, point4.x, point4.y, num53, num54))
+              else if (IsBadTriangleAngle(point3.x, point3.y, point4.x, point4.y, num53, num54))
               {
                 double num55 = Math.Sqrt((num53 - point1.x) * (num53 - point1.x) + (num54 - point1.y) * (num54 - point1.y));
                 double num56 = point1.x - num53;
@@ -383,7 +383,7 @@ namespace TriangleNet
                 double num59 = num57 / num55;
                 double x3_3 = num53 + num58 * num2 * Math.Sqrt(d1);
                 double y3_3 = num54 + num59 * num2 * Math.Sqrt(d1);
-                if (this.IsBadTriangleAngle(point3.x, point3.y, point4.x, point4.y, x3_3, y3_3))
+                if (IsBadTriangleAngle(point3.x, point3.y, point4.x, point4.y, x3_3, y3_3))
                 {
                   num49 = num15;
                   num50 = num16;
@@ -448,7 +448,7 @@ namespace TriangleNet
       bool offcenter,
       Otri badotri)
     {
-      double offconstant = this.behavior.offconstant;
+      double offconstant = behavior.offconstant;
       int num1 = 0;
       Otri otri = new Otri();
       double[] thirdpoint = new double[2];
@@ -484,14 +484,14 @@ namespace TriangleNet
       }
       else
       {
-        num16 = 0.5 / Primitives.CounterClockwise((Point) tdest, (Point) tapex, (Point) torg);
+        num16 = 0.5 / Primitives.CounterClockwise(tdest, tapex, torg);
         --Statistic.CounterClockwiseCount;
       }
       double num17 = (num13 * dodist - num11 * aodist) * num16;
       double num18 = (num10 * aodist - num12 * dodist) * num16;
       Point point1 = new Point(torg.x + num17, torg.y + num18);
       Otri deltri = badotri;
-      int num19 = this.LongestShortestEdge(aodist, dadist, dodist);
+      int num19 = LongestShortestEdge(aodist, dadist, dodist);
       double num20;
       double num21;
       double num22;
@@ -516,9 +516,9 @@ namespace TriangleNet
           d1 = aodist;
           d2 = dadist;
           d3 = dodist;
-          point2 = (Point) tdest;
-          point3 = (Point) torg;
-          point4 = (Point) tapex;
+          point2 = tdest;
+          point3 = torg;
+          point4 = tapex;
           break;
         case 132:
           num20 = num12;
@@ -530,9 +530,9 @@ namespace TriangleNet
           d1 = aodist;
           d2 = dodist;
           d3 = dadist;
-          point2 = (Point) tdest;
-          point3 = (Point) tapex;
-          point4 = (Point) torg;
+          point2 = tdest;
+          point3 = tapex;
+          point4 = torg;
           break;
         case 213:
           num20 = num14;
@@ -544,9 +544,9 @@ namespace TriangleNet
           d1 = dadist;
           d2 = aodist;
           d3 = dodist;
-          point2 = (Point) torg;
-          point3 = (Point) tdest;
-          point4 = (Point) tapex;
+          point2 = torg;
+          point3 = tdest;
+          point4 = tapex;
           break;
         case 231:
           num20 = num14;
@@ -558,9 +558,9 @@ namespace TriangleNet
           d1 = dadist;
           d2 = dodist;
           d3 = aodist;
-          point2 = (Point) torg;
-          point3 = (Point) tapex;
-          point4 = (Point) tdest;
+          point2 = torg;
+          point3 = tapex;
+          point4 = tdest;
           break;
         case 312:
           num20 = num10;
@@ -572,9 +572,9 @@ namespace TriangleNet
           d1 = dodist;
           d2 = aodist;
           d3 = dadist;
-          point2 = (Point) tapex;
-          point3 = (Point) tdest;
-          point4 = (Point) torg;
+          point2 = tapex;
+          point3 = tdest;
+          point4 = torg;
           break;
         default:
           num20 = num10;
@@ -586,9 +586,9 @@ namespace TriangleNet
           d1 = dodist;
           d2 = dadist;
           d3 = aodist;
-          point2 = (Point) tapex;
-          point3 = (Point) torg;
-          point4 = (Point) tdest;
+          point2 = tapex;
+          point3 = torg;
+          point4 = tdest;
           break;
       }
       if (offcenter && offconstant > 0.0)
@@ -634,7 +634,7 @@ namespace TriangleNet
       {
         double num32 = (d2 + d1 - d3) / (2.0 * Math.Sqrt(d2) * Math.Sqrt(d1));
         bool isObtuse = num32 < 0.0 || Math.Abs(num32 - 0.0) <= 1E-50;
-        num5 = this.DoSmoothing(deltri, torg, tdest, tapex, ref newloc);
+        num5 = DoSmoothing(deltri, torg, tdest, tapex, ref newloc);
         if (num5 > 0)
         {
           ++Statistic.RelocationCount;
@@ -645,22 +645,22 @@ namespace TriangleNet
           switch (num5)
           {
             case 1:
-              this.mesh.DeleteVertex(ref deltri);
+              mesh.DeleteVertex(ref deltri);
               break;
             case 2:
               deltri.LnextSelf();
-              this.mesh.DeleteVertex(ref deltri);
+              mesh.DeleteVertex(ref deltri);
               break;
             case 3:
               deltri.LprevSelf();
-              this.mesh.DeleteVertex(ref deltri);
+              mesh.DeleteVertex(ref deltri);
               break;
           }
         }
         else
         {
           double num33 = Math.Acos((d2 + d3 - d1) / (2.0 * Math.Sqrt(d2) * Math.Sqrt(d3))) * 180.0 / Math.PI;
-          double num34 = this.behavior.MinAngle <= num33 ? num33 + 0.5 : this.behavior.MinAngle;
+          double num34 = behavior.MinAngle <= num33 ? num33 + 0.5 : behavior.MinAngle;
           double r = Math.Sqrt(d1) / (2.0 * Math.Sin(num34 * Math.PI / 180.0));
           double num35 = (point3.x + point4.x) / 2.0;
           double num36 = (point3.y + point4.y) / 2.0;
@@ -680,7 +680,7 @@ namespace TriangleNet
             x3_1 = num39;
             y3_1 = num40;
           }
-          bool neighborsVertex1 = this.GetNeighborsVertex(badotri, point3.x, point3.y, point2.x, point2.y, ref thirdpoint, ref otri);
+          bool neighborsVertex1 = GetNeighborsVertex(badotri, point3.x, point3.y, point2.x, point2.y, ref thirdpoint, ref otri);
           double num41 = num17;
           double num42 = num18;
           double num43 = Math.Sqrt((x3_1 - num35) * (x3_1 - num35) + (y3_1 - num36) * (y3_1 - num36));
@@ -688,7 +688,7 @@ namespace TriangleNet
           double num45 = (y3_1 - num36) / num43;
           double num46 = x3_1 + num44 * r;
           double num47 = y3_1 + num45 * r;
-          double num48 = (2.0 * this.behavior.MaxAngle + num34 - 180.0) * Math.PI / 180.0;
+          double num48 = (2.0 * behavior.MaxAngle + num34 - 180.0) * Math.PI / 180.0;
           double x3_2 = num46 * Math.Cos(num48) + num47 * Math.Sin(num48) + x3_1 - x3_1 * Math.Cos(num48) - y3_1 * Math.Sin(num48);
           double y3_2 = -num46 * Math.Sin(num48) + num47 * Math.Cos(num48) + y3_1 + x3_1 * Math.Sin(num48) - y3_1 * Math.Cos(num48);
           double x1_1 = num46 * Math.Cos(num48) - num47 * Math.Sin(num48) + x3_1 - x3_1 * Math.Cos(num48) + y3_1 * Math.Sin(num48);
@@ -697,7 +697,7 @@ namespace TriangleNet
           double num50;
           double num51;
           double num52;
-          if (this.ChooseCorrectPoint(x1_1, y1_1, point3.x, point3.y, x3_2, y3_2, true))
+          if (ChooseCorrectPoint(x1_1, y1_1, point3.x, point3.y, x3_2, y3_2, true))
           {
             num49 = x3_2;
             num50 = y3_2;
@@ -717,15 +717,15 @@ namespace TriangleNet
           double num54;
           if (!neighborsVertex1)
           {
-            Point circumcenter = Primitives.FindCircumcenter((Point) otri.Org(), (Point) otri.Dest(), (Point) otri.Apex(), ref xi1, ref eta1);
+            Point circumcenter = Primitives.FindCircumcenter(otri.Org(), otri.Dest(), otri.Apex(), ref xi1, ref eta1);
             double num55 = point3.y - point2.y;
             double num56 = point2.x - point3.x;
             double x2 = point1.x + num55;
             double y2 = point1.y + num56;
-            this.CircleLineIntersection(point1.x, point1.y, x2, y2, x3_1, y3_1, r, ref p1);
+            CircleLineIntersection(point1.x, point1.y, x2, y2, x3_1, y3_1, r, ref p1);
             double num57;
             double num58;
-            if (this.ChooseCorrectPoint(x1_2, y1_2, p1[3], p1[4], point1.x, point1.y, isObtuse))
+            if (ChooseCorrectPoint(x1_2, y1_2, p1[3], p1[4], point1.x, point1.y, isObtuse))
             {
               num57 = p1[3];
               num58 = p1[4];
@@ -741,26 +741,26 @@ namespace TriangleNet
             num54 = point4.y - point3.y;
             double x4 = num49;
             double y4 = num50;
-            this.LineLineIntersection(point1.x, point1.y, x2, y2, x, y, x4, y4, ref p3);
+            LineLineIntersection(point1.x, point1.y, x2, y2, x, y, x4, y4, ref p3);
             if (p3[0] > 0.0)
             {
               num8 = p3[1];
               num9 = p3[2];
             }
-            this.PointBetweenPoints(num57, num58, point1.x, point1.y, circumcenter.x, circumcenter.y, ref p2);
+            PointBetweenPoints(num57, num58, point1.x, point1.y, circumcenter.x, circumcenter.y, ref p2);
             if (p1[0] > 0.0)
             {
               if (Math.Abs(p2[0] - 1.0) <= 1E-50)
               {
-                this.PointBetweenPoints(p2[2], p2[3], point1.x, point1.y, num8, num9, ref p4);
+                PointBetweenPoints(p2[2], p2[3], point1.x, point1.y, num8, num9, ref p4);
                 if (Math.Abs(p4[0] - 1.0) <= 1E-50 && p3[0] > 0.0)
                 {
-                  if ((point2.x - num49) * (point2.x - num49) + (point2.y - num50) * (point2.y - num50) > num3 * ((point2.x - num8) * (point2.x - num8) + (point2.y - num9) * (point2.y - num9)) && this.IsBadTriangleAngle(point3.x, point3.y, point4.x, point4.y, num49, num50) && this.MinDistanceToNeighbor(num49, num50, ref otri) > this.MinDistanceToNeighbor(num8, num9, ref otri))
+                  if ((point2.x - num49) * (point2.x - num49) + (point2.y - num50) * (point2.y - num50) > num3 * ((point2.x - num8) * (point2.x - num8) + (point2.y - num9) * (point2.y - num9)) && IsBadTriangleAngle(point3.x, point3.y, point4.x, point4.y, num49, num50) && MinDistanceToNeighbor(num49, num50, ref otri) > MinDistanceToNeighbor(num8, num9, ref otri))
                   {
                     num41 = num49 - torg.x;
                     num42 = num50 - torg.y;
                   }
-                  else if (this.IsBadTriangleAngle(point3.x, point3.y, point4.x, point4.y, num8, num9))
+                  else if (IsBadTriangleAngle(point3.x, point3.y, point4.x, point4.y, num8, num9))
                   {
                     double num59 = Math.Sqrt((num8 - point1.x) * (num8 - point1.x) + (num9 - point1.y) * (num9 - point1.y));
                     double num60 = point1.x - num8;
@@ -769,7 +769,7 @@ namespace TriangleNet
                     double num63 = num61 / num59;
                     num8 += num62 * num2 * Math.Sqrt(d1);
                     num9 += num63 * num2 * Math.Sqrt(d1);
-                    if (this.IsBadTriangleAngle(point3.x, point3.y, point4.x, point4.y, num8, num9))
+                    if (IsBadTriangleAngle(point3.x, point3.y, point4.x, point4.y, num8, num9))
                     {
                       num41 = num17;
                       num42 = num18;
@@ -786,7 +786,7 @@ namespace TriangleNet
                     num42 = p4[3] - torg.y;
                   }
                 }
-                else if (this.IsBadTriangleAngle(point3.x, point3.y, point4.x, point4.y, circumcenter.x, circumcenter.y))
+                else if (IsBadTriangleAngle(point3.x, point3.y, point4.x, point4.y, circumcenter.x, circumcenter.y))
                 {
                   num41 = num17;
                   num42 = num18;
@@ -799,15 +799,15 @@ namespace TriangleNet
               }
               else
               {
-                this.PointBetweenPoints(num57, num58, point1.x, point1.y, num8, num9, ref p4);
+                PointBetweenPoints(num57, num58, point1.x, point1.y, num8, num9, ref p4);
                 if (Math.Abs(p4[0] - 1.0) <= 1E-50 && p3[0] > 0.0)
                 {
-                  if ((point2.x - num49) * (point2.x - num49) + (point2.y - num50) * (point2.y - num50) > num3 * ((point2.x - num8) * (point2.x - num8) + (point2.y - num9) * (point2.y - num9)) && this.IsBadTriangleAngle(point3.x, point3.y, point4.x, point4.y, num49, num50) && this.MinDistanceToNeighbor(num49, num50, ref otri) > this.MinDistanceToNeighbor(num8, num9, ref otri))
+                  if ((point2.x - num49) * (point2.x - num49) + (point2.y - num50) * (point2.y - num50) > num3 * ((point2.x - num8) * (point2.x - num8) + (point2.y - num9) * (point2.y - num9)) && IsBadTriangleAngle(point3.x, point3.y, point4.x, point4.y, num49, num50) && MinDistanceToNeighbor(num49, num50, ref otri) > MinDistanceToNeighbor(num8, num9, ref otri))
                   {
                     num41 = num49 - torg.x;
                     num42 = num50 - torg.y;
                   }
-                  else if (this.IsBadTriangleAngle(point4.x, point4.y, point3.x, point3.y, num8, num9))
+                  else if (IsBadTriangleAngle(point4.x, point4.y, point3.x, point3.y, num8, num9))
                   {
                     double num64 = Math.Sqrt((num8 - point1.x) * (num8 - point1.x) + (num9 - point1.y) * (num9 - point1.y));
                     double num65 = point1.x - num8;
@@ -816,7 +816,7 @@ namespace TriangleNet
                     double num68 = num66 / num64;
                     num8 += num67 * num2 * Math.Sqrt(d1);
                     num9 += num68 * num2 * Math.Sqrt(d1);
-                    if (this.IsBadTriangleAngle(point3.x, point3.y, point4.x, point4.y, num8, num9))
+                    if (IsBadTriangleAngle(point3.x, point3.y, point4.x, point4.y, num8, num9))
                     {
                       num41 = num17;
                       num42 = num18;
@@ -833,7 +833,7 @@ namespace TriangleNet
                     num42 = p4[3] - torg.y;
                   }
                 }
-                else if (this.IsBadTriangleAngle(point4.x, point4.y, point3.x, point3.y, num57, num58))
+                else if (IsBadTriangleAngle(point4.x, point4.y, point3.x, point3.y, num57, num58))
                 {
                   double num69 = Math.Sqrt((num57 - point1.x) * (num57 - point1.x) + (num58 - point1.y) * (num58 - point1.y));
                   double num70 = point1.x - num57;
@@ -842,7 +842,7 @@ namespace TriangleNet
                   double num73 = num71 / num69;
                   double x3_3 = num57 + num72 * num2 * Math.Sqrt(d1);
                   double y3_3 = num58 + num73 * num2 * Math.Sqrt(d1);
-                  if (this.IsBadTriangleAngle(point3.x, point3.y, point4.x, point4.y, x3_3, y3_3))
+                  if (IsBadTriangleAngle(point3.x, point3.y, point4.x, point4.y, x3_3, y3_3))
                   {
                     num41 = num17;
                     num42 = num18;
@@ -866,22 +866,22 @@ namespace TriangleNet
               }
             }
           }
-          bool neighborsVertex2 = this.GetNeighborsVertex(badotri, point4.x, point4.y, point2.x, point2.y, ref thirdpoint, ref otri);
+          bool neighborsVertex2 = GetNeighborsVertex(badotri, point4.x, point4.y, point2.x, point2.y, ref thirdpoint, ref otri);
           double num74 = num17;
           double num75 = num18;
           double x1_3 = (point4.x + point2.x) / 2.0;
           double y1_3 = (point4.y + point2.y) / 2.0;
           if (!neighborsVertex2)
           {
-            Point circumcenter = Primitives.FindCircumcenter((Point) otri.Org(), (Point) otri.Dest(), (Point) otri.Apex(), ref xi1, ref eta1);
+            Point circumcenter = Primitives.FindCircumcenter(otri.Org(), otri.Dest(), otri.Apex(), ref xi1, ref eta1);
             double num76 = point4.y - point2.y;
             double num77 = point2.x - point4.x;
             double x2 = point1.x + num76;
             double y2 = point1.y + num77;
-            this.CircleLineIntersection(point1.x, point1.y, x2, y2, x3_1, y3_1, r, ref p1);
+            CircleLineIntersection(point1.x, point1.y, x2, y2, x3_1, y3_1, r, ref p1);
             double num78;
             double num79;
-            if (this.ChooseCorrectPoint(x1_3, y1_3, p1[3], p1[4], point1.x, point1.y, false))
+            if (ChooseCorrectPoint(x1_3, y1_3, p1[3], p1[4], point1.x, point1.y, false))
             {
               num78 = p1[3];
               num79 = p1[4];
@@ -897,26 +897,26 @@ namespace TriangleNet
             num54 = point3.y - point4.y;
             double x4 = num51;
             double y4 = num52;
-            this.LineLineIntersection(point1.x, point1.y, x2, y2, x, y, x4, y4, ref p3);
+            LineLineIntersection(point1.x, point1.y, x2, y2, x, y, x4, y4, ref p3);
             if (p3[0] > 0.0)
             {
               num8 = p3[1];
               num9 = p3[2];
             }
-            this.PointBetweenPoints(num78, num79, point1.x, point1.y, circumcenter.x, circumcenter.y, ref p2);
+            PointBetweenPoints(num78, num79, point1.x, point1.y, circumcenter.x, circumcenter.y, ref p2);
             if (p1[0] > 0.0)
             {
               if (Math.Abs(p2[0] - 1.0) <= 1E-50)
               {
-                this.PointBetweenPoints(p2[2], p2[3], point1.x, point1.y, num8, num9, ref p4);
+                PointBetweenPoints(p2[2], p2[3], point1.x, point1.y, num8, num9, ref p4);
                 if (Math.Abs(p4[0] - 1.0) <= 1E-50 && p3[0] > 0.0)
                 {
-                  if ((point2.x - num51) * (point2.x - num51) + (point2.y - num52) * (point2.y - num52) > num3 * ((point2.x - num8) * (point2.x - num8) + (point2.y - num9) * (point2.y - num9)) && this.IsBadTriangleAngle(point3.x, point3.y, point4.x, point4.y, num51, num52) && this.MinDistanceToNeighbor(num51, num52, ref otri) > this.MinDistanceToNeighbor(num8, num9, ref otri))
+                  if ((point2.x - num51) * (point2.x - num51) + (point2.y - num52) * (point2.y - num52) > num3 * ((point2.x - num8) * (point2.x - num8) + (point2.y - num9) * (point2.y - num9)) && IsBadTriangleAngle(point3.x, point3.y, point4.x, point4.y, num51, num52) && MinDistanceToNeighbor(num51, num52, ref otri) > MinDistanceToNeighbor(num8, num9, ref otri))
                   {
                     num74 = num51 - torg.x;
                     num75 = num52 - torg.y;
                   }
-                  else if (this.IsBadTriangleAngle(point3.x, point3.y, point4.x, point4.y, num8, num9))
+                  else if (IsBadTriangleAngle(point3.x, point3.y, point4.x, point4.y, num8, num9))
                   {
                     double num80 = Math.Sqrt((num8 - point1.x) * (num8 - point1.x) + (num9 - point1.y) * (num9 - point1.y));
                     double num81 = point1.x - num8;
@@ -925,7 +925,7 @@ namespace TriangleNet
                     double num84 = num82 / num80;
                     double x3_4 = num8 + num83 * num2 * Math.Sqrt(d1);
                     double y3_4 = num9 + num84 * num2 * Math.Sqrt(d1);
-                    if (this.IsBadTriangleAngle(point3.x, point3.y, point4.x, point4.y, x3_4, y3_4))
+                    if (IsBadTriangleAngle(point3.x, point3.y, point4.x, point4.y, x3_4, y3_4))
                     {
                       num74 = num17;
                       num75 = num18;
@@ -942,7 +942,7 @@ namespace TriangleNet
                     num75 = p4[3] - torg.y;
                   }
                 }
-                else if (this.IsBadTriangleAngle(point3.x, point3.y, point4.x, point4.y, circumcenter.x, circumcenter.y))
+                else if (IsBadTriangleAngle(point3.x, point3.y, point4.x, point4.y, circumcenter.x, circumcenter.y))
                 {
                   num74 = num17;
                   num75 = num18;
@@ -955,15 +955,15 @@ namespace TriangleNet
               }
               else
               {
-                this.PointBetweenPoints(num78, num79, point1.x, point1.y, num8, num9, ref p4);
+                PointBetweenPoints(num78, num79, point1.x, point1.y, num8, num9, ref p4);
                 if (Math.Abs(p4[0] - 1.0) <= 1E-50 && p3[0] > 0.0)
                 {
-                  if ((point2.x - num51) * (point2.x - num51) + (point2.y - num52) * (point2.y - num52) > num3 * ((point2.x - num8) * (point2.x - num8) + (point2.y - num9) * (point2.y - num9)) && this.IsBadTriangleAngle(point3.x, point3.y, point4.x, point4.y, num51, num52) && this.MinDistanceToNeighbor(num51, num52, ref otri) > this.MinDistanceToNeighbor(num8, num9, ref otri))
+                  if ((point2.x - num51) * (point2.x - num51) + (point2.y - num52) * (point2.y - num52) > num3 * ((point2.x - num8) * (point2.x - num8) + (point2.y - num9) * (point2.y - num9)) && IsBadTriangleAngle(point3.x, point3.y, point4.x, point4.y, num51, num52) && MinDistanceToNeighbor(num51, num52, ref otri) > MinDistanceToNeighbor(num8, num9, ref otri))
                   {
                     num74 = num51 - torg.x;
                     num75 = num52 - torg.y;
                   }
-                  else if (this.IsBadTriangleAngle(point4.x, point4.y, point3.x, point3.y, num8, num9))
+                  else if (IsBadTriangleAngle(point4.x, point4.y, point3.x, point3.y, num8, num9))
                   {
                     double num85 = Math.Sqrt((num8 - point1.x) * (num8 - point1.x) + (num9 - point1.y) * (num9 - point1.y));
                     double num86 = point1.x - num8;
@@ -972,7 +972,7 @@ namespace TriangleNet
                     double num89 = num87 / num85;
                     double x3_5 = num8 + num88 * num2 * Math.Sqrt(d1);
                     double y3_5 = num9 + num89 * num2 * Math.Sqrt(d1);
-                    if (this.IsBadTriangleAngle(point3.x, point3.y, point4.x, point4.y, x3_5, y3_5))
+                    if (IsBadTriangleAngle(point3.x, point3.y, point4.x, point4.y, x3_5, y3_5))
                     {
                       num74 = num17;
                       num75 = num18;
@@ -989,7 +989,7 @@ namespace TriangleNet
                     num75 = p4[3] - torg.y;
                   }
                 }
-                else if (this.IsBadTriangleAngle(point3.x, point3.y, point4.x, point4.y, num78, num79))
+                else if (IsBadTriangleAngle(point3.x, point3.y, point4.x, point4.y, num78, num79))
                 {
                   double num90 = Math.Sqrt((num78 - point1.x) * (num78 - point1.x) + (num79 - point1.y) * (num79 - point1.y));
                   double num91 = point1.x - num78;
@@ -998,7 +998,7 @@ namespace TriangleNet
                   double num94 = num92 / num90;
                   double x3_6 = num78 + num93 * num2 * Math.Sqrt(d1);
                   double y3_6 = num79 + num94 * num2 * Math.Sqrt(d1);
-                  if (this.IsBadTriangleAngle(point3.x, point3.y, point4.x, point4.y, x3_6, y3_6))
+                  if (IsBadTriangleAngle(point3.x, point3.y, point4.x, point4.y, x3_6, y3_6))
                   {
                     num74 = num17;
                     num75 = num18;
@@ -1206,24 +1206,24 @@ namespace TriangleNet
       double[] points1 = new double[500];
       double[] points2 = new double[500];
       double[] points3 = new double[500];
-      int starPoints1 = this.GetStarPoints(badotri, torg, tdest, tapex, 1, ref points1);
-      if (torg.type == VertexType.FreeVertex && starPoints1 != 0 && this.ValidPolygonAngles(starPoints1, points1) && (this.behavior.MaxAngle != 0.0 ? this.GetWedgeIntersection(starPoints1, points1, ref newloc) : this.GetWedgeIntersectionWithoutMaxAngle(starPoints1, points1, ref newloc)))
+      int starPoints1 = GetStarPoints(badotri, torg, tdest, tapex, 1, ref points1);
+      if (torg.type == VertexType.FreeVertex && starPoints1 != 0 && ValidPolygonAngles(starPoints1, points1) && (behavior.MaxAngle != 0.0 ? GetWedgeIntersection(starPoints1, points1, ref newloc) : GetWedgeIntersectionWithoutMaxAngle(starPoints1, points1, ref newloc)))
       {
         numArray[0] = newloc[0];
         numArray[1] = newloc[1];
         ++num1;
         num2 = 1;
       }
-      int starPoints2 = this.GetStarPoints(badotri, torg, tdest, tapex, 2, ref points2);
-      if (tdest.type == VertexType.FreeVertex && starPoints2 != 0 && this.ValidPolygonAngles(starPoints2, points2) && (this.behavior.MaxAngle != 0.0 ? this.GetWedgeIntersection(starPoints2, points2, ref newloc) : this.GetWedgeIntersectionWithoutMaxAngle(starPoints2, points2, ref newloc)))
+      int starPoints2 = GetStarPoints(badotri, torg, tdest, tapex, 2, ref points2);
+      if (tdest.type == VertexType.FreeVertex && starPoints2 != 0 && ValidPolygonAngles(starPoints2, points2) && (behavior.MaxAngle != 0.0 ? GetWedgeIntersection(starPoints2, points2, ref newloc) : GetWedgeIntersectionWithoutMaxAngle(starPoints2, points2, ref newloc)))
       {
         numArray[2] = newloc[0];
         numArray[3] = newloc[1];
         ++num1;
         num3 = 2;
       }
-      int starPoints3 = this.GetStarPoints(badotri, torg, tdest, tapex, 3, ref points3);
-      if (tapex.type == VertexType.FreeVertex && starPoints3 != 0 && this.ValidPolygonAngles(starPoints3, points3) && (this.behavior.MaxAngle != 0.0 ? this.GetWedgeIntersection(starPoints3, points3, ref newloc) : this.GetWedgeIntersectionWithoutMaxAngle(starPoints3, points3, ref newloc)))
+      int starPoints3 = GetStarPoints(badotri, torg, tdest, tapex, 3, ref points3);
+      if (tapex.type == VertexType.FreeVertex && starPoints3 != 0 && ValidPolygonAngles(starPoints3, points3) && (behavior.MaxAngle != 0.0 ? GetWedgeIntersection(starPoints3, points3, ref newloc) : GetWedgeIntersectionWithoutMaxAngle(starPoints3, points3, ref newloc)))
       {
         numArray[4] = newloc[0];
         numArray[5] = newloc[1];
@@ -1305,7 +1305,7 @@ namespace TriangleNet
       int index3 = index2 + 1;
       thirdpoint[0] = second_x;
       thirdpoint[1] = second_y;
-      while (!this.GetNeighborsVertex(badotri1, first_x, first_y, second_x, second_y, ref thirdpoint, ref neighotri))
+      while (!GetNeighborsVertex(badotri1, first_x, first_y, second_x, second_y, ref thirdpoint, ref neighotri))
       {
         badotri1 = neighotri;
         second_x = thirdpoint[0];
@@ -1333,9 +1333,9 @@ label_8:
     {
       Otri o2 = new Otri();
       bool neighborsVertex = false;
-      Vertex vertex1 = (Vertex) null;
-      Vertex vertex2 = (Vertex) null;
-      Vertex vertex3 = (Vertex) null;
+      Vertex vertex1 = null;
+      Vertex vertex2 = null;
+      Vertex vertex3 = null;
       int num1 = 0;
       int num2 = 0;
       for (badotri.orient = 0; badotri.orient < 3; ++badotri.orient)
@@ -1424,7 +1424,6 @@ label_8:
           if (num2 == 0)
           {
             neighborsVertex = true;
-            break;
           }
           break;
       }
@@ -1448,10 +1447,10 @@ label_8:
       double y1 = points[2 * numpoints - 3];
       double x3 = points[2 * numpoints - 2];
       double y3 = points[2 * numpoints - 1];
-      double num1 = this.behavior.MinAngle * Math.PI / 180.0;
+      double num1 = behavior.MinAngle * Math.PI / 180.0;
       double num2;
       double num3;
-      if (this.behavior.goodAngle == 1.0)
+      if (behavior.goodAngle == 1.0)
       {
         num2 = 0.0;
         num3 = 0.0;
@@ -1503,8 +1502,8 @@ label_8:
         double num17 = num13;
         for (int index2 = 1; index2 < 4; ++index2)
         {
-          double num18 = num12 * Math.Cos((Math.PI / 3.0 - num1) * (double) index2) + num13 * Math.Sin((Math.PI / 3.0 - num1) * (double) index2) + numArray1[index1 / 2] - numArray1[index1 / 2] * Math.Cos((Math.PI / 3.0 - num1) * (double) index2) - numArray2[index1 / 2] * Math.Sin((Math.PI / 3.0 - num1) * (double) index2);
-          double num19 = -num12 * Math.Sin((Math.PI / 3.0 - num1) * (double) index2) + num13 * Math.Cos((Math.PI / 3.0 - num1) * (double) index2) + numArray2[index1 / 2] + numArray1[index1 / 2] * Math.Sin((Math.PI / 3.0 - num1) * (double) index2) - numArray2[index1 / 2] * Math.Cos((Math.PI / 3.0 - num1) * (double) index2);
+          double num18 = num12 * Math.Cos((Math.PI / 3.0 - num1) * index2) + num13 * Math.Sin((Math.PI / 3.0 - num1) * index2) + numArray1[index1 / 2] - numArray1[index1 / 2] * Math.Cos((Math.PI / 3.0 - num1) * index2) - numArray2[index1 / 2] * Math.Sin((Math.PI / 3.0 - num1) * index2);
+          double num19 = -num12 * Math.Sin((Math.PI / 3.0 - num1) * index2) + num13 * Math.Cos((Math.PI / 3.0 - num1) * index2) + numArray2[index1 / 2] + numArray1[index1 / 2] * Math.Sin((Math.PI / 3.0 - num1) * index2) - numArray2[index1 / 2] * Math.Cos((Math.PI / 3.0 - num1) * index2);
           numArray4[index1 * 16 + 8 + 4 * (index2 - 1)] = num18;
           numArray4[index1 * 16 + 9 + 4 * (index2 - 1)] = num19;
           numArray4[index1 * 16 + 10 + 4 * (index2 - 1)] = num16;
@@ -1516,8 +1515,8 @@ label_8:
         double num21 = num13;
         for (int index3 = 1; index3 < 4; ++index3)
         {
-          double num22 = num12 * Math.Cos((Math.PI / 3.0 - num1) * (double) index3) - num13 * Math.Sin((Math.PI / 3.0 - num1) * (double) index3) + numArray1[index1 / 2] - numArray1[index1 / 2] * Math.Cos((Math.PI / 3.0 - num1) * (double) index3) + numArray2[index1 / 2] * Math.Sin((Math.PI / 3.0 - num1) * (double) index3);
-          double num23 = num12 * Math.Sin((Math.PI / 3.0 - num1) * (double) index3) + num13 * Math.Cos((Math.PI / 3.0 - num1) * (double) index3) + numArray2[index1 / 2] - numArray1[index1 / 2] * Math.Sin((Math.PI / 3.0 - num1) * (double) index3) - numArray2[index1 / 2] * Math.Cos((Math.PI / 3.0 - num1) * (double) index3);
+          double num22 = num12 * Math.Cos((Math.PI / 3.0 - num1) * index3) - num13 * Math.Sin((Math.PI / 3.0 - num1) * index3) + numArray1[index1 / 2] - numArray1[index1 / 2] * Math.Cos((Math.PI / 3.0 - num1) * index3) + numArray2[index1 / 2] * Math.Sin((Math.PI / 3.0 - num1) * index3);
+          double num23 = num12 * Math.Sin((Math.PI / 3.0 - num1) * index3) + num13 * Math.Cos((Math.PI / 3.0 - num1) * index3) + numArray2[index1 / 2] - numArray1[index1 / 2] * Math.Sin((Math.PI / 3.0 - num1) * index3) - numArray2[index1 / 2] * Math.Cos((Math.PI / 3.0 - num1) * index3);
           numArray4[index1 * 16 + 20 + 4 * (index3 - 1)] = num20;
           numArray4[index1 * 16 + 21 + 4 * (index3 - 1)] = num21;
           numArray4[index1 * 16 + 22 + 4 * (index3 - 1)] = num22;
@@ -1527,7 +1526,7 @@ label_8:
         }
         if (index1 == 0)
         {
-          this.LineLineIntersection(x1, y1, x2, y2, x3, y3, x4, y4, ref p);
+          LineLineIntersection(x1, y1, x2, y2, x3, y3, x4, y4, ref p);
           if (p[0] == 1.0)
           {
             convexPoly[0] = p[1];
@@ -1562,7 +1561,7 @@ label_8:
         int numvertices = 8;
         for (int index = 0; index < 32; index += 4)
         {
-          numpoints1 = this.HalfPlaneIntersection(numvertices, ref convexPoly, numArray4[32 * num24 + index], numArray4[32 * num24 + 1 + index], numArray4[32 * num24 + 2 + index], numArray4[32 * num24 + 3 + index]);
+          numpoints1 = HalfPlaneIntersection(numvertices, ref convexPoly, numArray4[32 * num24 + index], numArray4[32 * num24 + 1 + index], numArray4[32 * num24 + 2 + index], numArray4[32 * num24 + 3 + index]);
           if (numpoints1 == 0)
             return false;
           numvertices = numpoints1;
@@ -1571,7 +1570,7 @@ label_8:
         {
           for (int index5 = 0; index5 < 32; index5 += 4)
           {
-            numpoints1 = this.HalfPlaneIntersection(numvertices, ref convexPoly, numArray4[32 * (num27 + num24 * num25) + index5], numArray4[32 * (num27 + num24 * num25) + 1 + index5], numArray4[32 * (num27 + num24 * num25) + 2 + index5], numArray4[32 * (num27 + num24 * num25) + 3 + index5]);
+            numpoints1 = HalfPlaneIntersection(numvertices, ref convexPoly, numArray4[32 * (num27 + num24 * num25) + index5], numArray4[32 * (num27 + num24 * num25) + 1 + index5], numArray4[32 * (num27 + num24 * num25) + 2 + index5], numArray4[32 * (num27 + num24 * num25) + 3 + index5]);
             if (numpoints1 == 0)
               return false;
             numvertices = numpoints1;
@@ -1579,8 +1578,8 @@ label_8:
           num27 += num25;
           num25 = (num25 + 1) % 2;
         }
-        this.FindPolyCentroid(numpoints1, convexPoly, ref newloc);
-        if (!this.behavior.fixedArea)
+        FindPolyCentroid(numpoints1, convexPoly, ref newloc);
+        if (!behavior.fixedArea)
           return true;
       }
       return false;
@@ -1603,15 +1602,15 @@ label_8:
       double y1 = points[2 * numpoints - 3];
       double x3 = points[2 * numpoints - 2];
       double y3 = points[2 * numpoints - 1];
-      double num2 = this.behavior.MinAngle * Math.PI / 180.0;
+      double num2 = behavior.MinAngle * Math.PI / 180.0;
       double num3 = Math.Sin(num2);
       double num4 = Math.Cos(num2);
-      double num5 = this.behavior.MaxAngle * Math.PI / 180.0;
+      double num5 = behavior.MaxAngle * Math.PI / 180.0;
       double num6 = Math.Sin(num5);
       double num7 = Math.Cos(num5);
       double num8;
       double num9;
-      if (this.behavior.goodAngle == 1.0)
+      if (behavior.goodAngle == 1.0)
       {
         num8 = 0.0;
         num9 = 0.0;
@@ -1661,7 +1660,7 @@ label_8:
         num21 = num19 - numArray2[index1 / 2];
         double num22 = num18;
         double num23 = num19;
-        double num24 = 2.0 * this.behavior.MaxAngle + this.behavior.MinAngle - 180.0;
+        double num24 = 2.0 * behavior.MaxAngle + behavior.MinAngle - 180.0;
         double num25;
         double num26;
         if (num24 <= 0.0)
@@ -1689,12 +1688,12 @@ label_8:
           num26 = 4.0;
         }
         double num27 = num24 * Math.PI / 180.0;
-        for (int index2 = 1; (double) index2 < num25; ++index2)
+        for (int index2 = 1; index2 < num25; ++index2)
         {
           if (num25 != 1.0)
           {
-            double num28 = num18 * Math.Cos(num27 / (num25 - 1.0) * (double) index2) + num19 * Math.Sin(num27 / (num25 - 1.0) * (double) index2) + numArray1[index1 / 2] - numArray1[index1 / 2] * Math.Cos(num27 / (num25 - 1.0) * (double) index2) - numArray2[index1 / 2] * Math.Sin(num27 / (num25 - 1.0) * (double) index2);
-            double num29 = -num18 * Math.Sin(num27 / (num25 - 1.0) * (double) index2) + num19 * Math.Cos(num27 / (num25 - 1.0) * (double) index2) + numArray2[index1 / 2] + numArray1[index1 / 2] * Math.Sin(num27 / (num25 - 1.0) * (double) index2) - numArray2[index1 / 2] * Math.Cos(num27 / (num25 - 1.0) * (double) index2);
+            double num28 = num18 * Math.Cos(num27 / (num25 - 1.0) * index2) + num19 * Math.Sin(num27 / (num25 - 1.0) * index2) + numArray1[index1 / 2] - numArray1[index1 / 2] * Math.Cos(num27 / (num25 - 1.0) * index2) - numArray2[index1 / 2] * Math.Sin(num27 / (num25 - 1.0) * index2);
+            double num29 = -num18 * Math.Sin(num27 / (num25 - 1.0) * index2) + num19 * Math.Cos(num27 / (num25 - 1.0) * index2) + numArray2[index1 / 2] + numArray1[index1 / 2] * Math.Sin(num27 / (num25 - 1.0) * index2) - numArray2[index1 / 2] * Math.Cos(num27 / (num25 - 1.0) * index2);
             numArray4[index1 * 20 + 8 + 4 * (index2 - 1)] = num28;
             numArray4[index1 * 20 + 9 + 4 * (index2 - 1)] = num29;
             numArray4[index1 * 20 + 10 + 4 * (index2 - 1)] = num22;
@@ -1713,12 +1712,12 @@ label_8:
         numArray4[index1 * 20 + 23] = y4_2;
         double num30 = num18;
         double num31 = num19;
-        for (int index3 = 1; (double) index3 < num26; ++index3)
+        for (int index3 = 1; index3 < num26; ++index3)
         {
           if (num26 != 1.0)
           {
-            double num32 = num18 * Math.Cos(num27 / (num26 - 1.0) * (double) index3) - num19 * Math.Sin(num27 / (num26 - 1.0) * (double) index3) + numArray1[index1 / 2] - numArray1[index1 / 2] * Math.Cos(num27 / (num26 - 1.0) * (double) index3) + numArray2[index1 / 2] * Math.Sin(num27 / (num26 - 1.0) * (double) index3);
-            double num33 = num18 * Math.Sin(num27 / (num26 - 1.0) * (double) index3) + num19 * Math.Cos(num27 / (num26 - 1.0) * (double) index3) + numArray2[index1 / 2] - numArray1[index1 / 2] * Math.Sin(num27 / (num26 - 1.0) * (double) index3) - numArray2[index1 / 2] * Math.Cos(num27 / (num26 - 1.0) * (double) index3);
+            double num32 = num18 * Math.Cos(num27 / (num26 - 1.0) * index3) - num19 * Math.Sin(num27 / (num26 - 1.0) * index3) + numArray1[index1 / 2] - numArray1[index1 / 2] * Math.Cos(num27 / (num26 - 1.0) * index3) + numArray2[index1 / 2] * Math.Sin(num27 / (num26 - 1.0) * index3);
+            double num33 = num18 * Math.Sin(num27 / (num26 - 1.0) * index3) + num19 * Math.Cos(num27 / (num26 - 1.0) * index3) + numArray2[index1 / 2] - numArray1[index1 / 2] * Math.Sin(num27 / (num26 - 1.0) * index3) - numArray2[index1 / 2] * Math.Cos(num27 / (num26 - 1.0) * index3);
             numArray4[index1 * 20 + 24 + 4 * (index3 - 1)] = num30;
             numArray4[index1 * 20 + 25 + 4 * (index3 - 1)] = num31;
             numArray4[index1 * 20 + 26 + 4 * (index3 - 1)] = num32;
@@ -1740,10 +1739,10 @@ label_8:
           switch (num1)
           {
             case 4:
-              this.LineLineIntersection(x1, y1, x2_1, y2_1, x3, y3, x4_1, y4_1, ref p1);
-              this.LineLineIntersection(x1, y1, x2_1, y2_1, x3, y3, x4_2, y4_2, ref p2);
-              this.LineLineIntersection(x1, y1, x2_2, y2_2, x3, y3, x4_2, y4_2, ref p3);
-              this.LineLineIntersection(x1, y1, x2_2, y2_2, x3, y3, x4_1, y4_1, ref p4);
+              LineLineIntersection(x1, y1, x2_1, y2_1, x3, y3, x4_1, y4_1, ref p1);
+              LineLineIntersection(x1, y1, x2_1, y2_1, x3, y3, x4_2, y4_2, ref p2);
+              LineLineIntersection(x1, y1, x2_2, y2_2, x3, y3, x4_2, y4_2, ref p3);
+              LineLineIntersection(x1, y1, x2_2, y2_2, x3, y3, x4_1, y4_1, ref p4);
               if (p1[0] == 1.0 && p2[0] == 1.0 && p3[0] == 1.0 && p4[0] == 1.0)
               {
                 convexPoly[0] = p1[1];
@@ -1754,13 +1753,12 @@ label_8:
                 convexPoly[5] = p3[2];
                 convexPoly[6] = p4[1];
                 convexPoly[7] = p4[2];
-                break;
               }
               break;
             case 6:
-              this.LineLineIntersection(x1, y1, x2_1, y2_1, x3, y3, x4_1, y4_1, ref p1);
-              this.LineLineIntersection(x1, y1, x2_1, y2_1, x3, y3, x4_2, y4_2, ref p2);
-              this.LineLineIntersection(x1, y1, x2_2, y2_2, x3, y3, x4_1, y4_1, ref p3);
+              LineLineIntersection(x1, y1, x2_1, y2_1, x3, y3, x4_1, y4_1, ref p1);
+              LineLineIntersection(x1, y1, x2_1, y2_1, x3, y3, x4_2, y4_2, ref p2);
+              LineLineIntersection(x1, y1, x2_2, y2_2, x3, y3, x4_1, y4_1, ref p3);
               if (p1[0] == 1.0 && p2[0] == 1.0 && p3[0] == 1.0)
               {
                 convexPoly[0] = p1[1];
@@ -1775,13 +1773,12 @@ label_8:
                 convexPoly[9] = numArray4[index1 * 20 + 27];
                 convexPoly[10] = p3[1];
                 convexPoly[11] = p3[2];
-                break;
               }
               break;
             case 8:
-              this.LineLineIntersection(x1, y1, x2_1, y2_1, x3, y3, x4_1, y4_1, ref p1);
-              this.LineLineIntersection(x1, y1, x2_1, y2_1, x3, y3, x4_2, y4_2, ref p2);
-              this.LineLineIntersection(x1, y1, x2_2, y2_2, x3, y3, x4_1, y4_1, ref p3);
+              LineLineIntersection(x1, y1, x2_1, y2_1, x3, y3, x4_1, y4_1, ref p1);
+              LineLineIntersection(x1, y1, x2_1, y2_1, x3, y3, x4_2, y4_2, ref p2);
+              LineLineIntersection(x1, y1, x2_2, y2_2, x3, y3, x4_1, y4_1, ref p3);
               if (p1[0] == 1.0 && p2[0] == 1.0 && p3[0] == 1.0)
               {
                 convexPoly[0] = p1[1];
@@ -1800,13 +1797,12 @@ label_8:
                 convexPoly[13] = numArray4[index1 * 20 + 31];
                 convexPoly[14] = p3[1];
                 convexPoly[15] = p3[2];
-                break;
               }
               break;
             case 10:
-              this.LineLineIntersection(x1, y1, x2_1, y2_1, x3, y3, x4_1, y4_1, ref p1);
-              this.LineLineIntersection(x1, y1, x2_1, y2_1, x3, y3, x4_2, y4_2, ref p2);
-              this.LineLineIntersection(x1, y1, x2_2, y2_2, x3, y3, x4_1, y4_1, ref p3);
+              LineLineIntersection(x1, y1, x2_1, y2_1, x3, y3, x4_1, y4_1, ref p1);
+              LineLineIntersection(x1, y1, x2_1, y2_1, x3, y3, x4_2, y4_2, ref p2);
+              LineLineIntersection(x1, y1, x2_2, y2_2, x3, y3, x4_1, y4_1, ref p3);
               if (p1[0] == 1.0 && p2[0] == 1.0 && p3[0] == 1.0)
               {
                 convexPoly[0] = p1[1];
@@ -1829,7 +1825,6 @@ label_8:
                 convexPoly[17] = numArray4[index1 * 20 + 35];
                 convexPoly[18] = p3[1];
                 convexPoly[19] = p3[2];
-                break;
               }
               break;
           }
@@ -1850,7 +1845,7 @@ label_8:
         {
           if ((num1 != 4 || index != 8 && index != 12 && index != 16 && index != 24 && index != 28 && index != 32) && (num1 != 6 || index != 12 && index != 16 && index != 28 && index != 32) && (num1 != 8 || index != 16 && index != 32))
           {
-            numpoints1 = this.HalfPlaneIntersection(numvertices, ref convexPoly, numArray4[40 * num34 + index], numArray4[40 * num34 + 1 + index], numArray4[40 * num34 + 2 + index], numArray4[40 * num34 + 3 + index]);
+            numpoints1 = HalfPlaneIntersection(numvertices, ref convexPoly, numArray4[40 * num34 + index], numArray4[40 * num34 + 1 + index], numArray4[40 * num34 + 2 + index], numArray4[40 * num34 + 3 + index]);
             if (numpoints1 == 0)
               return false;
             numvertices = numpoints1;
@@ -1862,7 +1857,7 @@ label_8:
           {
             if ((num1 != 4 || index5 != 8 && index5 != 12 && index5 != 16 && index5 != 24 && index5 != 28 && index5 != 32) && (num1 != 6 || index5 != 12 && index5 != 16 && index5 != 28 && index5 != 32) && (num1 != 8 || index5 != 16 && index5 != 32))
             {
-              numpoints1 = this.HalfPlaneIntersection(numvertices, ref convexPoly, numArray4[40 * (num37 + num34 * num35) + index5], numArray4[40 * (num37 + num34 * num35) + 1 + index5], numArray4[40 * (num37 + num34 * num35) + 2 + index5], numArray4[40 * (num37 + num34 * num35) + 3 + index5]);
+              numpoints1 = HalfPlaneIntersection(numvertices, ref convexPoly, numArray4[40 * (num37 + num34 * num35) + index5], numArray4[40 * (num37 + num34 * num35) + 1 + index5], numArray4[40 * (num37 + num34 * num35) + 2 + index5], numArray4[40 * (num37 + num34 * num35) + 3 + index5]);
               if (numpoints1 == 0)
                 return false;
               numvertices = numpoints1;
@@ -1871,16 +1866,16 @@ label_8:
           num37 += num35;
           num35 = (num35 + 1) % 2;
         }
-        this.FindPolyCentroid(numpoints1, convexPoly, ref newloc);
-        if (this.behavior.MaxAngle == 0.0)
+        FindPolyCentroid(numpoints1, convexPoly, ref newloc);
+        if (behavior.MaxAngle == 0.0)
           return true;
         int num38 = 0;
         for (int index = 0; index < numpoints * 2 - 2; index += 2)
         {
-          if (this.IsBadTriangleAngle(newloc[0], newloc[1], points[index], points[index + 1], points[index + 2], points[index + 3]))
+          if (IsBadTriangleAngle(newloc[0], newloc[1], points[index], points[index + 1], points[index + 2], points[index + 3]))
             ++num38;
         }
-        if (this.IsBadTriangleAngle(newloc[0], newloc[1], points[0], points[1], points[numpoints * 2 - 2], points[numpoints * 2 - 1]))
+        if (IsBadTriangleAngle(newloc[0], newloc[1], points[0], points[1], points[numpoints * 2 - 2], points[numpoints * 2 - 1]))
           ++num38;
         if (num38 == 0)
           return true;
@@ -1893,15 +1888,15 @@ label_8:
             newloc[1] = 0.0;
             for (int index8 = 0; index8 < 2 * numpoints; index8 += 2)
             {
-              double num40 = 1.0 / (double) numpoints;
+              double num40 = 1.0 / numpoints;
               if (index8 == index6)
               {
-                newloc[0] = newloc[0] + 0.1 * (double) index7 * num40 * points[index8];
-                newloc[1] = newloc[1] + 0.1 * (double) index7 * num40 * points[index8 + 1];
+                newloc[0] = newloc[0] + 0.1 * index7 * num40 * points[index8];
+                newloc[1] = newloc[1] + 0.1 * index7 * num40 * points[index8 + 1];
               }
               else
               {
-                double num41 = (1.0 - 0.1 * (double) index7 * num40) / ((double) numpoints - 1.0);
+                double num41 = (1.0 - 0.1 * index7 * num40) / (numpoints - 1.0);
                 newloc[0] = newloc[0] + num41 * points[index8];
                 newloc[1] = newloc[1] + num41 * points[index8 + 1];
               }
@@ -1909,10 +1904,10 @@ label_8:
             int num42 = 0;
             for (int index9 = 0; index9 < numpoints * 2 - 2; index9 += 2)
             {
-              if (this.IsBadTriangleAngle(newloc[0], newloc[1], points[index9], points[index9 + 1], points[index9 + 2], points[index9 + 3]))
+              if (IsBadTriangleAngle(newloc[0], newloc[1], points[index9], points[index9 + 1], points[index9 + 2], points[index9 + 3]))
                 ++num42;
             }
-            if (this.IsBadTriangleAngle(newloc[0], newloc[1], points[0], points[1], points[numpoints * 2 - 2], points[numpoints * 2 - 1]))
+            if (IsBadTriangleAngle(newloc[0], newloc[1], points[0], points[1], points[numpoints * 2 - 2], points[numpoints * 2 - 1]))
               ++num42;
             if (num42 == 0)
               return true;
@@ -1928,15 +1923,15 @@ label_8:
       {
         if (index == numpoints - 1)
         {
-          if (this.IsBadPolygonAngle(points[index * 2], points[index * 2 + 1], points[0], points[1], points[2], points[3]))
+          if (IsBadPolygonAngle(points[index * 2], points[index * 2 + 1], points[0], points[1], points[2], points[3]))
             return false;
         }
         else if (index == numpoints - 2)
         {
-          if (this.IsBadPolygonAngle(points[index * 2], points[index * 2 + 1], points[(index + 1) * 2], points[(index + 1) * 2 + 1], points[0], points[1]))
+          if (IsBadPolygonAngle(points[index * 2], points[index * 2 + 1], points[(index + 1) * 2], points[(index + 1) * 2 + 1], points[0], points[1]))
             return false;
         }
-        else if (this.IsBadPolygonAngle(points[index * 2], points[index * 2 + 1], points[(index + 1) * 2], points[(index + 1) * 2 + 1], points[(index + 2) * 2], points[(index + 2) * 2 + 1]))
+        else if (IsBadPolygonAngle(points[index * 2], points[index * 2 + 1], points[(index + 1) * 2], points[(index + 1) * 2 + 1], points[(index + 2) * 2], points[(index + 2) * 2 + 1]))
           return false;
       }
       return true;
@@ -1959,7 +1954,7 @@ label_8:
       double d1 = num1 * num1 + num2 * num2;
       double d2 = num3 * num3 + num4 * num4;
       double num7 = num5 * num5 + num6 * num6;
-      return Math.Acos((d1 + d2 - num7) / (2.0 * Math.Sqrt(d1) * Math.Sqrt(d2))) < 2.0 * Math.Acos(Math.Sqrt(this.behavior.goodAngle));
+      return Math.Acos((d1 + d2 - num7) / (2.0 * Math.Sqrt(d1) * Math.Sqrt(d2))) < 2.0 * Math.Acos(Math.Sqrt(behavior.goodAngle));
     }
 
     private void LineLineIntersection(
@@ -2006,12 +2001,12 @@ label_8:
         new double[2],
         new double[2]
       };
-      double[] numArray = (double[]) null;
+      double[] numArray = null;
       int num1 = 0;
       int num2 = 0;
       double num3 = x2 - x1;
       double num4 = y2 - y1;
-      int num5 = this.SplitConvexPolygon(numvertices, convexPoly, x1, y1, x2, y2, ref polys);
+      int num5 = SplitConvexPolygon(numvertices, convexPoly, x1, y1, x2, y2, ref polys);
       if (num5 == 3)
       {
         num1 = numvertices;
@@ -2022,7 +2017,7 @@ label_8:
         {
           double num6 = 1E+17;
           double num7 = -1E+17;
-          for (int index2 = 1; (double) index2 <= 2.0 * polys[index1][0] - 1.0; index2 += 2)
+          for (int index2 = 1; index2 <= 2.0 * polys[index1][0] - 1.0; index2 += 2)
           {
             double num8 = num3 * (polys[index1][index2 + 1] - y1) - num4 * (polys[index1][index2] - x1);
             num6 = num8 < num6 ? num8 : num6;
@@ -2037,7 +2032,7 @@ label_8:
         }
         if (num2 == 1)
         {
-          for (; (double) num1 < numArray[0]; ++num1)
+          for (; num1 < numArray[0]; ++num1)
           {
             convexPoly[2 * num1] = numArray[2 * num1 + 1];
             convexPoly[2 * num1 + 1] = numArray[2 * num1 + 2];
@@ -2074,7 +2069,7 @@ label_8:
       for (int index1 = 0; index1 < 2 * numvertices; index1 += 2)
       {
         int index2 = index1 + 2 >= 2 * numvertices ? 0 : index1 + 2;
-        this.LineLineSegmentIntersection(x1, y1, x2, y2, convexPoly[index1], convexPoly[index1 + 1], convexPoly[index2], convexPoly[index2 + 1], ref p);
+        LineLineSegmentIntersection(x1, y1, x2, y2, convexPoly[index1], convexPoly[index1 + 1], convexPoly[index2], convexPoly[index2 + 1], ref p);
         if (Math.Abs(p[0] - 0.0) <= num4)
         {
           if (num1 == 1)
@@ -2122,8 +2117,8 @@ label_8:
               numArray1[2 * num2] = convexPoly[index2 + 1];
               if (index1 + 4 < 2 * numvertices)
               {
-                int num13 = this.LinePointLocation(x1, y1, x2, y2, convexPoly[index1], convexPoly[index1 + 1]);
-                int num14 = this.LinePointLocation(x1, y1, x2, y2, convexPoly[index1 + 4], convexPoly[index1 + 5]);
+                int num13 = LinePointLocation(x1, y1, x2, y2, convexPoly[index1], convexPoly[index1 + 1]);
+                int num14 = LinePointLocation(x1, y1, x2, y2, convexPoly[index1 + 4], convexPoly[index1 + 5]);
                 if (num13 != num14 && num13 != 0 && num14 != 0)
                 {
                   ++num12;
@@ -2185,8 +2180,8 @@ label_8:
       else
       {
         num15 = num1 == 0 ? 1 : 2;
-        numArray1[0] = (double) num2;
-        numArray2[0] = (double) num3;
+        numArray1[0] = num2;
+        numArray2[0] = num3;
         polys[0] = numArray1;
         if (num1 == 2)
           polys[1] = numArray2;
@@ -2263,8 +2258,8 @@ label_8:
         centroid[0] = centroid[0] + points[index];
         centroid[1] = centroid[1] + points[index + 1];
       }
-      centroid[0] = centroid[0] / (double) numpoints;
-      centroid[1] = centroid[1] / (double) numpoints;
+      centroid[0] = centroid[0] / numpoints;
+      centroid[1] = centroid[1] / numpoints;
     }
 
     private void CircleLineIntersection(
@@ -2403,7 +2398,7 @@ label_8:
         num21 = num15;
         num22 = (num13 + num14 - num15) / (2.0 * Math.Sqrt(num13 * num14));
       }
-      return num17 > this.behavior.goodAngle || this.behavior.MaxAngle != 0.0 && num22 < this.behavior.maxGoodAngle;
+      return num17 > behavior.goodAngle || behavior.MaxAngle != 0.0 && num22 < behavior.maxGoodAngle;
     }
 
     private double MinDistanceToNeighbor(double newlocX, double newlocY, ref Otri searchtri)
@@ -2426,12 +2421,12 @@ label_8:
       }
       else
       {
-        double num = Primitives.CounterClockwise((Point) pa, (Point) pb, point);
+        double num = Primitives.CounterClockwise(pa, pb, point);
         if (num < 0.0)
         {
           searchtri.SymSelf();
           searchtri.Copy(ref otri);
-          locateResult = this.mesh.locator.PreciseLocate(point, ref otri, false);
+          locateResult = mesh.locator.PreciseLocate(point, ref otri, false);
         }
         else if (num == 0.0)
         {
@@ -2444,7 +2439,7 @@ label_8:
         else
         {
           searchtri.Copy(ref otri);
-          locateResult = this.mesh.locator.PreciseLocate(point, ref otri, false);
+          locateResult = mesh.locator.PreciseLocate(point, ref otri, false);
         }
       }
       if (locateResult == LocateResult.OnVertex || locateResult == LocateResult.Outside)

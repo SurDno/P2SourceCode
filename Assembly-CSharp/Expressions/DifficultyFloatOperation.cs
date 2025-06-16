@@ -11,21 +11,21 @@ namespace Expressions
   [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
   public class DifficultyFloatOperation : IValue<float>
   {
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy()]
     [Inspected(Header = true)]
     [Inspected(Name = "name", Mutable = true, Mode = ExecuteMode.Edit)]
     protected string name;
 
     public float GetValue(IEffect context)
     {
-      Engine.Source.Settings.IValue<float> valueItem = InstanceByRequest<DifficultySettings>.Instance.GetValueItem(this.name);
+      Engine.Source.Settings.IValue<float> valueItem = InstanceByRequest<DifficultySettings>.Instance.GetValueItem(name);
       return valueItem != null ? valueItem.Value : 0.0f;
     }
 
-    public string ValueView => "difficulty(" + this.name + ")";
+    public string ValueView => "difficulty(" + name + ")";
 
-    public string TypeView => TypeUtility.GetTypeName(this.GetType());
+    public string TypeView => TypeUtility.GetTypeName(GetType());
   }
 }

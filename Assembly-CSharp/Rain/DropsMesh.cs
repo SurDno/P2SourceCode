@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEngine;
 
 namespace Rain
 {
@@ -12,7 +11,7 @@ namespace Rain
     [Space]
     public float radius = 25f;
     public int count = 128;
-    private int lastCount = 0;
+    private int lastCount;
     private Mesh mesh;
     private Matrix4x4 toWorldMatrix;
     private Matrix4x4 toLocalMatrix;
@@ -26,36 +25,36 @@ namespace Rain
       MeshFilter component = this.GetComponent<MeshFilter>();
       if ((UnityEngine.Object) component == (UnityEngine.Object) null)
         throw new Exception("filter == null");
-      if ((UnityEngine.Object) this.mesh == (UnityEngine.Object) null)
+      if ((UnityEngine.Object) mesh == (UnityEngine.Object) null)
       {
-        this.mesh = new Mesh();
-        this.mesh.MarkDynamic();
-        this.mesh.name = "Rain";
-        component.sharedMesh = this.mesh;
+        mesh = new Mesh();
+        mesh.MarkDynamic();
+        mesh.name = "Rain";
+        component.sharedMesh = mesh;
       }
       else
-        this.mesh.Clear();
+        mesh.Clear();
       buffer.Clear();
-      buffer.SetCapacity(this.count * 9, this.count * 18);
-      this.UpdateSettings();
-      for (int index = 0; index < this.count; ++index)
-        this.AddRaindrop(index, buffer);
-      this.mesh.SetVertices(buffer.vertices);
-      this.mesh.SetColors(buffer.colors);
-      this.mesh.SetUVs(0, buffer.uvs);
-      this.mesh.SetNormals(buffer.normals);
-      this.mesh.SetTriangles(buffer.triangles, 0);
-      this.UpdateBounds();
-      this.lastCount = this.count;
+      buffer.SetCapacity(count * 9, count * 18);
+      UpdateSettings();
+      for (int index = 0; index < count; ++index)
+        AddRaindrop(index, buffer);
+      mesh.SetVertices(buffer.vertices);
+      mesh.SetColors(buffer.colors);
+      mesh.SetUVs(0, buffer.uvs);
+      mesh.SetNormals(buffer.normals);
+      mesh.SetTriangles(buffer.triangles, 0);
+      UpdateBounds();
+      lastCount = count;
     }
 
     private void DestroyMesh()
     {
-      if (!((UnityEngine.Object) this.mesh != (UnityEngine.Object) null))
+      if (!((UnityEngine.Object) mesh != (UnityEngine.Object) null))
         return;
       this.GetComponent<MeshFilter>().sharedMesh = (Mesh) null;
-      UnityEngine.Object.Destroy((UnityEngine.Object) this.mesh);
-      this.mesh = (Mesh) null;
+      UnityEngine.Object.Destroy((UnityEngine.Object) mesh);
+      mesh = (Mesh) null;
     }
 
     private void AddRaindrop(int index, VertexBuffer buffer)
@@ -64,7 +63,7 @@ namespace Rain
       Vector3 impactPosition;
       Vector3 originDirection;
       Vector3 splashNormal;
-      this.CalculateRaindrop(out impactPosition, out originDirection, out splashNormal);
+      CalculateRaindrop(out impactPosition, out originDirection, out splashNormal);
       buffer.vertices.Add(impactPosition);
       buffer.vertices.Add(impactPosition);
       buffer.vertices.Add(impactPosition);
@@ -125,12 +124,12 @@ namespace Rain
 
     private void UpdateBounds()
     {
-      this.mesh.RecalculateBounds();
-      Bounds bounds = this.mesh.bounds;
+      mesh.RecalculateBounds();
+      Bounds bounds = mesh.bounds;
       Vector3 max = bounds.max;
-      max.y += this.raycastLength;
+      max.y += raycastLength;
       bounds.max = max;
-      this.mesh.bounds = bounds;
+      mesh.bounds = bounds;
     }
 
     private void CalculateRaindrop(
@@ -142,53 +141,53 @@ namespace Rain
       RainManager instance = RainManager.Instance;
       if ((UnityEngine.Object) instance != (UnityEngine.Object) null)
         vector2_1 = instance.actualWindVector;
-      Vector2 vector2_2 = UnityEngine.Random.insideUnitCircle * this.diviation - vector2_1;
+      Vector2 vector2_2 = UnityEngine.Random.insideUnitCircle * diviation - vector2_1;
       originDirection = new Vector3(vector2_2.x, 1f, vector2_2.y).normalized;
-      Vector2 vector2_3 = UnityEngine.Random.insideUnitCircle * this.radius;
-      Vector3 point = this.playerPosition + new Vector3(vector2_3.x, 0.0f, vector2_3.y) + originDirection * this.raycastLength * 0.5f;
+      Vector2 vector2_3 = UnityEngine.Random.insideUnitCircle * radius;
+      Vector3 point = playerPosition + new Vector3(vector2_3.x, 0.0f, vector2_3.y) + originDirection * raycastLength * 0.5f;
       RaycastHit hitInfo;
-      if (Physics.Raycast(this.toWorldMatrix.MultiplyPoint(point), -originDirection, out hitInfo, this.raycastLength, (int) this.collisionMask, QueryTriggerInteraction.Ignore))
+      if (Physics.Raycast(toWorldMatrix.MultiplyPoint(point), -originDirection, out hitInfo, raycastLength, (int) collisionMask, QueryTriggerInteraction.Ignore))
       {
-        impactPosition = this.toLocalMatrix.MultiplyPoint(hitInfo.point);
+        impactPosition = toLocalMatrix.MultiplyPoint(hitInfo.point);
         splashNormal = hitInfo.normal;
       }
       else
       {
-        impactPosition = point - originDirection * this.raycastLength;
+        impactPosition = point - originDirection * raycastLength;
         splashNormal = Vector3.down;
       }
     }
 
-    private void OnDisable() => this.DestroyMesh();
+    private void OnDisable() => DestroyMesh();
 
     private void UpdateSettings()
     {
-      this.toLocalMatrix = this.transform.worldToLocalMatrix;
-      this.toWorldMatrix = this.transform.localToWorldMatrix;
+      toLocalMatrix = this.transform.worldToLocalMatrix;
+      toWorldMatrix = this.transform.localToWorldMatrix;
       RainManager instance = RainManager.Instance;
       if (!((UnityEngine.Object) instance != (UnityEngine.Object) null))
         return;
-      this.collisionMask = instance.rainColliders;
-      this.playerPosition = instance.PlayerPosition;
+      collisionMask = instance.rainColliders;
+      playerPosition = instance.PlayerPosition;
     }
 
     public void UpdateMesh(VertexBuffer buffer)
     {
-      if ((UnityEngine.Object) this.mesh == (UnityEngine.Object) null || this.count != this.lastCount)
+      if ((UnityEngine.Object) mesh == (UnityEngine.Object) null || count != lastCount)
       {
-        this.CreateMesh(buffer);
+        CreateMesh(buffer);
       }
       else
       {
         buffer.Clear();
-        buffer.SetCapacity(this.count * 9, 0);
-        this.UpdateSettings();
-        for (int index = 0; index < this.count; ++index)
+        buffer.SetCapacity(count * 9, 0);
+        UpdateSettings();
+        for (int index = 0; index < count; ++index)
         {
           Vector3 impactPosition;
           Vector3 originDirection;
           Vector3 splashNormal;
-          this.CalculateRaindrop(out impactPosition, out originDirection, out splashNormal);
+          CalculateRaindrop(out impactPosition, out originDirection, out splashNormal);
           buffer.vertices.Add(impactPosition);
           buffer.vertices.Add(impactPosition);
           buffer.vertices.Add(impactPosition);
@@ -208,9 +207,9 @@ namespace Rain
           buffer.normals.Add(splashNormal);
           buffer.normals.Add(splashNormal);
         }
-        this.mesh.SetVertices(buffer.vertices);
-        this.mesh.SetNormals(buffer.normals);
-        this.UpdateBounds();
+        mesh.SetVertices(buffer.vertices);
+        mesh.SetNormals(buffer.normals);
+        UpdateBounds();
       }
     }
   }

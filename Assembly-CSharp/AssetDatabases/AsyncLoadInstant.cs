@@ -2,7 +2,7 @@
 {
   public class AsyncLoadInstant : IAsyncLoad
   {
-    public AsyncLoadInstant(object asset) => this.Asset = asset;
+    public AsyncLoadInstant(object asset) => Asset = asset;
 
     public object Asset { get; private set; }
 

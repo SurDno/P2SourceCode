@@ -10,19 +10,19 @@ namespace Engine.Source.Inventory
   [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
   public class InventoryContainerOpenResource
   {
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected Typed<IEntity> resource = new Typed<IEntity>();
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy()]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected int amount = 1;
 
-    public Typed<IEntity> ResourceType => this.resource;
+    public Typed<IEntity> ResourceType => resource;
 
-    public int Amount => this.amount;
+    public int Amount => amount;
   }
 }

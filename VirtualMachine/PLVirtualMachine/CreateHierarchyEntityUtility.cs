@@ -16,20 +16,20 @@ namespace PLVirtualMachine
     {
       VMEntity vmEntity = new VMEntity();
       if (typeof (IWorldHierarchyObject).IsAssignableFrom(staticObject.GetType()) && staticObject.IsPhantom)
-        return (VMBaseEntity) null;
-      vmEntity.Initialize((ILogicObject) staticObject, parentEntity, false);
+        return null;
+      vmEntity.Initialize(staticObject, parentEntity);
       if (vmEntity.Instance == null)
-        return (VMBaseEntity) null;
+        return null;
       IEntity parent = ServiceCache.Simulation.Hierarchy;
       if (parentEntity != null)
       {
         if (parentEntity.Instance != null)
           parent = parentEntity.Instance;
-        parentEntity.AddChildEntity((VMBaseEntity) vmEntity);
+        parentEntity.AddChildEntity(vmEntity);
       }
       ServiceCache.Simulation.Add(vmEntity.Instance, parent);
       vmEntity.Instantiated = true;
-      vmEntity.OnCreate(false);
+      vmEntity.OnCreate();
       if (vmEntity.NeedCreateFSM)
       {
         DynamicFSM entityFsm = DynamicFSM.CreateEntityFSM(vmEntity);
@@ -41,16 +41,16 @@ namespace PLVirtualMachine
         {
           entityFsm.PropertyInitialized = true;
           if (!vmEntity.IsEngineRoot)
-            CreateHierarchyEntityUtility.InitializeObject(vmEntity, (VMLogicObject) staticObject.Blueprint);
+            InitializeObject(vmEntity, (VMLogicObject) staticObject.Blueprint);
         }
       }
-      return (VMBaseEntity) vmEntity;
+      return vmEntity;
     }
 
     private static void InitializeObject(VMEntity entity, VMLogicObject templateObject)
     {
       foreach (VMComponent component in entity.Components)
-        CreateHierarchyEntityUtility.ComputeComponent(entity, templateObject, component);
+        ComputeComponent(entity, templateObject, component);
     }
 
     private static void ComputeComponent(

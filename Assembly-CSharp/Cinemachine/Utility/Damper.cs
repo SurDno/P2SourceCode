@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace Cinemachine.Utility
+﻿namespace Cinemachine.Utility
 {
   public static class Damper
   {
@@ -19,9 +17,9 @@ namespace Cinemachine.Utility
 
     public static float Damp(float initial, float dampTime, float deltaTime)
     {
-      if ((double) dampTime < 9.9999997473787516E-05 || (double) Mathf.Abs(initial) < 9.9999997473787516E-05)
+      if (dampTime < 9.9999997473787516E-05 || (double) Mathf.Abs(initial) < 9.9999997473787516E-05)
         return initial;
-      return (double) deltaTime < 9.9999997473787516E-05 ? 0.0f : initial - Damper.Decay(initial, Damper.DecayConstant(dampTime, 0.01f), deltaTime);
+      return deltaTime < 9.9999997473787516E-05 ? 0.0f : initial - Decay(initial, DecayConstant(dampTime, 0.01f), deltaTime);
     }
 
     public static Vector3 Damp(Vector3 initial, Vector3 dampTime, float deltaTime)

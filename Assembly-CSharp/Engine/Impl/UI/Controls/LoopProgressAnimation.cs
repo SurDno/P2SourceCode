@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace Engine.Impl.UI.Controls
+﻿namespace Engine.Impl.UI.Controls
 {
   public class LoopProgressAnimation : FloatView
   {
@@ -14,15 +12,15 @@ namespace Engine.Impl.UI.Controls
 
     public override float FloatValue
     {
-      get => this.rate;
-      set => this.rate = value;
+      get => rate;
+      set => rate = value;
     }
 
     private void ApplyPhase()
     {
-      if ((Object) this.progressView == (Object) null)
+      if ((Object) progressView == (Object) null)
         return;
-      this.progressView.FloatValue = this.phase;
+      progressView.FloatValue = phase;
     }
 
     public override void SkipAnimation()
@@ -31,15 +29,15 @@ namespace Engine.Impl.UI.Controls
 
     private void OnEnable()
     {
-      this.phase = this.randomStart ? Random.value : 0.0f;
-      this.ApplyPhase();
+      phase = randomStart ? Random.value : 0.0f;
+      ApplyPhase();
     }
 
     private void Update()
     {
-      this.phase += Time.deltaTime * this.rate;
-      this.phase %= 1f;
-      this.ApplyPhase();
+      phase += Time.deltaTime * rate;
+      phase %= 1f;
+      ApplyPhase();
     }
   }
 }

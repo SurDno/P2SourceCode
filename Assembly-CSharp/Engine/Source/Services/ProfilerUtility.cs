@@ -10,10 +10,10 @@ namespace Engine.Source.Services
     public static string GetTypeName(Type type)
     {
       string name;
-      if (!ProfilerUtility.types.TryGetValue(type, out name))
+      if (!types.TryGetValue(type, out name))
       {
         name = type.Name;
-        ProfilerUtility.types.Add(type, name);
+        types.Add(type, name);
       }
       return name;
     }

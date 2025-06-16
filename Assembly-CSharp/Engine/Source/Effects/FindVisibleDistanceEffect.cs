@@ -9,7 +9,6 @@ using Engine.Source.Commons.Effects;
 using Engine.Source.Components;
 using Engine.Source.Services;
 using Inspectors;
-using UnityEngine;
 
 namespace Engine.Source.Effects
 {
@@ -17,49 +16,49 @@ namespace Engine.Source.Effects
   [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
   public class FindVisibleDistanceEffect : IEffect
   {
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected ParameterEffectQueueEnum queue = ParameterEffectQueueEnum.None;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected(Mutable = true, Mode = ExecuteMode.EditAndRuntime)]
     protected bool enable = true;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected DurationTypeEnum durationType = DurationTypeEnum.None;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected bool realTime;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected float duration;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected float interval;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected ParameterNameEnum VisibileDistanceParameterName;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy()]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected ParameterNameEnum FlashlightOnParameterName;
@@ -71,37 +70,37 @@ namespace Engine.Source.Effects
 
     public IEntity Target { get; set; }
 
-    public string Name => this.GetType().Name;
+    public string Name => GetType().Name;
 
-    public ParameterEffectQueueEnum Queue => this.queue;
+    public ParameterEffectQueueEnum Queue => queue;
 
     public bool Prepare(float currentRealTime, float currentGameTime) => true;
 
     public bool Compute(float currentRealTime, float currentGameTime)
     {
-      float num = this.realTime ? currentRealTime : currentGameTime;
-      if (this.durationType == DurationTypeEnum.ByDuration && (double) num - (double) this.startTime > (double) this.duration || this.durationType == DurationTypeEnum.ByAbility && (this.AbilityItem == null || !this.AbilityItem.Active))
+      float num = realTime ? currentRealTime : currentGameTime;
+      if (durationType == DurationTypeEnum.ByDuration && num - (double) startTime > duration || durationType == DurationTypeEnum.ByAbility && (AbilityItem == null || !AbilityItem.Active))
         return false;
-      if ((double) this.interval == 0.0)
+      if (interval == 0.0)
       {
-        this.lastTime = num;
-        this.ComputeEffect();
+        lastTime = num;
+        ComputeEffect();
       }
       else
       {
-        while ((double) num - (double) this.lastTime >= (double) this.interval)
+        while (num - (double) this.lastTime >= interval)
         {
           float lastTime = this.lastTime;
-          this.lastTime += this.interval;
-          if ((double) lastTime == (double) this.lastTime)
+          this.lastTime += interval;
+          if (lastTime == (double) this.lastTime)
           {
-            Debug.LogError((object) ("Error compute effects, effect name : " + this.Name + " , target : " + this.Target.GetInfo()));
+            Debug.LogError((object) ("Error compute effects, effect name : " + Name + " , target : " + Target.GetInfo()));
             break;
           }
-          this.ComputeEffect();
+          ComputeEffect();
         }
       }
-      return this.durationType != DurationTypeEnum.None && this.durationType != DurationTypeEnum.Once;
+      return durationType != DurationTypeEnum.None && durationType != DurationTypeEnum.Once;
     }
 
     private float ComputeSkyLight()
@@ -115,19 +114,19 @@ namespace Engine.Source.Effects
 
     private void ComputeEffect()
     {
-      ParametersComponent component = this.Target?.GetComponent<ParametersComponent>();
-      IParameter<float> byName1 = component?.GetByName<float>(this.VisibileDistanceParameterName);
+      ParametersComponent component = Target?.GetComponent<ParametersComponent>();
+      IParameter<float> byName1 = component?.GetByName<float>(VisibileDistanceParameterName);
       if (byName1 == null)
         return;
-      if (this.Target.GetComponent<LocationItemComponent>().IsIndoor)
+      if (Target.GetComponent<LocationItemComponent>().IsIndoor)
       {
         byName1.Value = byName1.MaxValue;
       }
       else
       {
-        float skyLight = this.ComputeSkyLight();
+        float skyLight = ComputeSkyLight();
         float num1 = 0.0f;
-        IParameter<bool> byName2 = component?.GetByName<bool>(this.FlashlightOnParameterName);
+        IParameter<bool> byName2 = component?.GetByName<bool>(FlashlightOnParameterName);
         if (byName2 != null)
           num1 = byName2.Value ? 1f : 0.0f;
         int num2 = 0;
@@ -135,10 +134,10 @@ namespace Engine.Source.Effects
         if (service != null)
           num2 = service.PlayerIsLighted ? 1 : 0;
         float t = skyLight;
-        if ((double) t < (double) num1)
+        if (t < (double) num1)
           t = num1;
-        if ((double) t < (double) num2)
-          t = (float) num2;
+        if (t < (double) num2)
+          t = num2;
         float num3 = Mathf.Lerp(byName1.MinValue, byName1.MaxValue, t);
         byName1.Value = num3;
       }

@@ -6,7 +6,6 @@ using Engine.Source.VisualEffects;
 using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
-using UnityEngine;
 
 namespace Engine.Source.Blueprints.Effects
 {
@@ -35,10 +34,9 @@ namespace Engine.Source.Blueprints.Effects
     {
       get
       {
-        return new IntensityParameter<Color>()
-        {
-          Intensity = this.intensityValueInput.value,
-          Value = this.colorValueInput.value
+        return new IntensityParameter<Color> {
+          Intensity = intensityValueInput.value,
+          Value = colorValueInput.value
         };
       }
     }
@@ -46,50 +44,50 @@ namespace Engine.Source.Blueprints.Effects
     public override void OnGraphStarted()
     {
       base.OnGraphStarted();
-      InstanceByRequest<UpdateService>.Instance.BlueprintEffectsUpdater.AddUpdatable((IUpdatable) this);
+      InstanceByRequest<UpdateService>.Instance.BlueprintEffectsUpdater.AddUpdatable(this);
     }
 
     public override void OnGraphStoped()
     {
-      InstanceByRequest<UpdateService>.Instance.BlueprintEffectsUpdater.RemoveUpdatable((IUpdatable) this);
+      InstanceByRequest<UpdateService>.Instance.BlueprintEffectsUpdater.RemoveUpdatable(this);
       base.OnGraphStoped();
     }
 
     public void ComputeUpdate()
     {
-      float num = this.intensityValueInput.value;
-      Color color = this.colorValueInput.value;
-      if ((double) this.prevIntensityValue == (double) num && !(this.prevColorValue != color))
+      float num = intensityValueInput.value;
+      Color color = colorValueInput.value;
+      if (prevIntensityValue == (double) num && !(prevColorValue != color))
         return;
-      this.prevIntensityValue = num;
-      this.prevColorValue = color;
-      if ((double) num != 0.0)
-        this.CreateEffect();
+      prevIntensityValue = num;
+      prevColorValue = color;
+      if (num != 0.0)
+        CreateEffect();
       else
-        this.DestroyEffect();
+        DestroyEffect();
     }
 
     public override void OnDestroy()
     {
-      this.destroed = true;
-      this.DestroyEffect();
+      destroed = true;
+      DestroyEffect();
       base.OnDestroy();
     }
 
     protected void CreateEffect()
     {
-      if (this.destroed || this.created)
+      if (destroed || created)
         return;
-      this.created = true;
-      this.effects.AddParameter(this.nameInput.value, (IParameter) this);
+      created = true;
+      effects.AddParameter(nameInput.value, this);
     }
 
     protected void DestroyEffect()
     {
-      if (!this.created)
+      if (!created)
         return;
-      this.created = false;
-      this.effects.RemoveParameter(this.nameInput.value, (IParameter) this);
+      created = false;
+      effects.RemoveParameter(nameInput.value, this);
     }
   }
 }

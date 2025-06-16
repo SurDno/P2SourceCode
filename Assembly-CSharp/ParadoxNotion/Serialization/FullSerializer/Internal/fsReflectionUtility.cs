@@ -8,7 +8,7 @@ namespace ParadoxNotion.Serialization.FullSerializer.Internal
     {
       if (interfaceType.Resolve().IsGenericType && !interfaceType.Resolve().IsGenericTypeDefinition)
         throw new ArgumentException("GetInterface requires that if the interface type is generic, then it must be the generic type definition, not a specific generic type instantiation");
-      for (; type != (Type) null; type = type.Resolve().BaseType)
+      for (; type != null; type = type.Resolve().BaseType)
       {
         foreach (Type type1 in type.GetInterfaces())
         {
@@ -21,7 +21,7 @@ namespace ParadoxNotion.Serialization.FullSerializer.Internal
             return type1;
         }
       }
-      return (Type) null;
+      return null;
     }
   }
 }

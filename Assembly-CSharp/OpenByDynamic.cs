@@ -1,6 +1,5 @@
-﻿using Engine.Common;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using System.Collections.Generic;
+using Engine.Common;
 
 public class OpenByDynamic : MonoBehaviour
 {
@@ -13,9 +12,9 @@ public class OpenByDynamic : MonoBehaviour
     if (other.gameObject.layer != ScriptableObjectInstance<GameSettingsData>.Instance.DynamicLayer.GetIndex())
       return;
     IEntity entity = EntityUtility.GetEntity(other.gameObject);
-    if (entity == null || !this.targets.Add(entity) || !((Object) this.interior != (Object) null))
+    if (entity == null || !targets.Add(entity) || !((Object) interior != (Object) null))
       return;
-    this.interior.Invalidate(this.targets);
+    interior.Invalidate(targets);
   }
 
   private void OnTriggerExit(Collider other)
@@ -23,8 +22,8 @@ public class OpenByDynamic : MonoBehaviour
     if (other.gameObject.layer != ScriptableObjectInstance<GameSettingsData>.Instance.DynamicLayer.GetIndex())
       return;
     IEntity entity = EntityUtility.GetEntity(other.gameObject);
-    if (entity == null || !this.targets.Remove(entity) || !((Object) this.interior != (Object) null))
+    if (entity == null || !targets.Remove(entity) || !((Object) interior != (Object) null))
       return;
-    this.interior.Invalidate(this.targets);
+    interior.Invalidate(targets);
   }
 }

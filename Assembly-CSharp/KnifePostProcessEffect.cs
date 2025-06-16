@@ -1,7 +1,6 @@
-﻿using Inspectors;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using UnityEngine;
+using Inspectors;
 
 [RequireComponent(typeof (AudioSource))]
 public class KnifePostProcessEffect : MonoBehaviour
@@ -11,9 +10,9 @@ public class KnifePostProcessEffect : MonoBehaviour
   [SerializeField]
   private Color bloodColor;
   private AudioSource audioSource;
-  private List<KnifePostProcessEffect.Scar> scars = new List<KnifePostProcessEffect.Scar>();
+  private List<Scar> scars = new List<Scar>();
   private Material material;
-  private KnifePostProcessEffect.Scar zero;
+  private Scar zero;
 
   [Inspected]
   public void AddRandomScar()
@@ -35,8 +34,7 @@ public class KnifePostProcessEffect : MonoBehaviour
     if ((double) viewportPoint.z < 0.0)
       viewportPoint *= -1f;
     Vector2 vector2 = new Vector2(Mathf.Clamp(viewportPoint.x, 0.1f, 0.9f), Mathf.Clamp(viewportPoint.y, 0.1f, 0.9f));
-    this.scars.Add(new KnifePostProcessEffect.Scar()
-    {
+    scars.Add(new Scar {
       Position = vector2,
       Scale = 1f,
       Rotation = -num,
@@ -48,8 +46,7 @@ public class KnifePostProcessEffect : MonoBehaviour
 
   public void AddScar(Vector2 position, float scale, float rotation, float strength, float time)
   {
-    this.scars.Add(new KnifePostProcessEffect.Scar()
-    {
+    scars.Add(new Scar {
       Position = position,
       Scale = scale,
       Rotation = rotation,
@@ -61,10 +58,9 @@ public class KnifePostProcessEffect : MonoBehaviour
 
   private void Awake()
   {
-    this.audioSource = this.GetComponent<AudioSource>();
-    this.material = new Material(Shader.Find("Hidden/KnifePostProcessEffectShader"));
-    this.zero = new KnifePostProcessEffect.Scar()
-    {
+    audioSource = this.GetComponent<AudioSource>();
+    material = new Material(Shader.Find("Hidden/KnifePostProcessEffectShader"));
+    zero = new Scar {
       Position = Vector2.zero,
       Scale = 1f,
       Rotation = 0.0f,
@@ -72,56 +68,53 @@ public class KnifePostProcessEffect : MonoBehaviour
       Time = 1f,
       TimeLeft = 0.0f
     };
-    this.material.SetTexture("_ScarTex", this.scarTexture);
-    this.material.SetColor("_BloodColor", this.bloodColor);
+    material.SetTexture("_ScarTex", scarTexture);
+    material.SetColor("_BloodColor", bloodColor);
   }
 
   private void OnRenderImage(RenderTexture src, RenderTexture dest)
   {
-    this.material.SetFloat("_Aspect", (float) src.width / (float) src.height);
-    Graphics.Blit((Texture) src, dest, this.material);
+    material.SetFloat("_Aspect", (float) src.width / (float) src.height);
+    Graphics.Blit((Texture) src, dest, material);
   }
 
   private void OnPreRender()
   {
     int index = 0;
-    while (index < this.scars.Count)
+    while (index < scars.Count)
     {
-      if ((double) this.scars[index].TimeLeft < (double) Time.deltaTime)
+      if (scars[index].TimeLeft < (double) Time.deltaTime)
       {
-        this.scars.RemoveAt(index);
+        scars.RemoveAt(index);
       }
       else
       {
-        this.scars[index].TimeLeft -= Time.deltaTime;
+        scars[index].TimeLeft -= Time.deltaTime;
         ++index;
       }
     }
-    while (this.scars.Count < 3)
-      this.scars.Add(this.zero);
-    this.material.SetFloat("_StrengthScar1", this.scars[0].Strength * this.scars[0].TimeLeft / this.scars[0].Time);
-    this.material.SetFloat("_StrengthScar2", this.scars[1].Strength * this.scars[1].TimeLeft / this.scars[1].Time);
-    this.material.SetFloat("_StrengthScar3", this.scars[2].Strength * this.scars[2].TimeLeft / this.scars[2].Time);
-    this.material.SetVector("_PositionScar1", new Vector4()
-    {
-      x = this.scars[0].Position.x,
-      y = this.scars[0].Position.y,
-      z = Mathf.Sin(this.scars[0].Rotation * ((float) Math.PI / 180f)) / this.scars[0].Scale,
-      w = Mathf.Cos(this.scars[0].Rotation * ((float) Math.PI / 180f)) / this.scars[0].Scale
+    while (scars.Count < 3)
+      scars.Add(zero);
+    material.SetFloat("_StrengthScar1", scars[0].Strength * scars[0].TimeLeft / scars[0].Time);
+    material.SetFloat("_StrengthScar2", scars[1].Strength * scars[1].TimeLeft / scars[1].Time);
+    material.SetFloat("_StrengthScar3", scars[2].Strength * scars[2].TimeLeft / scars[2].Time);
+    material.SetVector("_PositionScar1", new Vector4 {
+      x = scars[0].Position.x,
+      y = scars[0].Position.y,
+      z = Mathf.Sin(scars[0].Rotation * ((float) Math.PI / 180f)) / scars[0].Scale,
+      w = Mathf.Cos(scars[0].Rotation * ((float) Math.PI / 180f)) / scars[0].Scale
     });
-    this.material.SetVector("_PositionScar2", new Vector4()
-    {
-      x = this.scars[1].Position.x,
-      y = this.scars[1].Position.y,
-      z = Mathf.Sin(this.scars[1].Rotation * ((float) Math.PI / 180f)) / this.scars[1].Scale,
-      w = Mathf.Cos(this.scars[1].Rotation * ((float) Math.PI / 180f)) / this.scars[1].Scale
+    material.SetVector("_PositionScar2", new Vector4 {
+      x = scars[1].Position.x,
+      y = scars[1].Position.y,
+      z = Mathf.Sin(scars[1].Rotation * ((float) Math.PI / 180f)) / scars[1].Scale,
+      w = Mathf.Cos(scars[1].Rotation * ((float) Math.PI / 180f)) / scars[1].Scale
     });
-    this.material.SetVector("_PositionScar3", new Vector4()
-    {
-      x = this.scars[2].Position.x,
-      y = this.scars[2].Position.y,
-      z = Mathf.Sin(this.scars[2].Rotation * ((float) Math.PI / 180f)) / this.scars[2].Scale,
-      w = Mathf.Cos(this.scars[2].Rotation * ((float) Math.PI / 180f)) / this.scars[2].Scale
+    material.SetVector("_PositionScar3", new Vector4 {
+      x = scars[2].Position.x,
+      y = scars[2].Position.y,
+      z = Mathf.Sin(scars[2].Rotation * ((float) Math.PI / 180f)) / scars[2].Scale,
+      w = Mathf.Cos(scars[2].Rotation * ((float) Math.PI / 180f)) / scars[2].Scale
     });
   }
 

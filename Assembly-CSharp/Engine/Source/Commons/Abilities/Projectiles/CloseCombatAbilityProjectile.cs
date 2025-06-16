@@ -1,11 +1,10 @@
-﻿using Engine.Common;
+﻿using System.Collections.Generic;
+using Engine.Common;
 using Engine.Common.Components.Parameters;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Engine.Source.Components;
 using Inspectors;
-using System.Collections.Generic;
-using UnityEngine;
 
 namespace Engine.Source.Commons.Abilities.Projectiles
 {
@@ -13,24 +12,24 @@ namespace Engine.Source.Commons.Abilities.Projectiles
   [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
   public class CloseCombatAbilityProjectile : IAbilityProjectile
   {
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected(Mutable = true, Mode = ExecuteMode.EditAndRuntime)]
     protected BlockTypeEnum blocked = BlockTypeEnum.None;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected(Mutable = true, Mode = ExecuteMode.EditAndRuntime)]
     protected HitOrientationTypeEnum orientation = HitOrientationTypeEnum.None;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected(Mutable = true, Mode = ExecuteMode.EditAndRuntime)]
     protected float radius = 1.8f;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy()]
     [Inspected(Mutable = true, Mode = ExecuteMode.EditAndRuntime)]
     protected float angle = 90f;
 
@@ -50,42 +49,42 @@ namespace Engine.Source.Commons.Abilities.Projectiles
       if ((Object) component2 == (Object) null)
         return;
       IEntity owner = component2.Owner;
-      if (owner == null || !this.CheckBlocked(owner) || !this.CheckHitOrientation(gameObject, enemy.gameObject))
+      if (owner == null || !CheckBlocked(owner) || !CheckHitOrientation(gameObject, enemy.gameObject))
         return;
       EffectsComponent component3 = owner.GetComponent<EffectsComponent>();
-      if (component3 == null || (double) (enemy.transform.position - component1.transform.position).magnitude > (double) this.radius)
+      if (component3 == null || (double) (enemy.transform.position - component1.transform.position).magnitude > radius)
         return;
       Vector3 direction = enemy.transform.position - component1.transform.position;
       Vector3 vector3 = component1.transform.InverseTransformDirection(direction);
-      if ((double) vector3.z > (double) this.radius || (double) vector3.z < 0.0 || (double) Mathf.Abs(vector3.x) > 0.40000000596046448)
+      if ((double) vector3.z > radius || (double) vector3.z < 0.0 || (double) Mathf.Abs(vector3.x) > 0.40000000596046448)
         return;
       targets.Targets.Add(component3);
     }
 
     private bool CheckBlocked(IEntity target)
     {
-      if (this.blocked == BlockTypeEnum.None)
+      if (blocked == BlockTypeEnum.None)
         return true;
       ParametersComponent component = target.GetComponent<ParametersComponent>();
       if (component != null)
       {
         IParameter<BlockTypeEnum> byName = component.GetByName<BlockTypeEnum>(ParameterNameEnum.BlockType);
         if (byName != null)
-          return this.blocked == byName.Value;
+          return blocked == byName.Value;
       }
       return true;
     }
 
     private bool CheckHitOrientation(GameObject gameObject, GameObject target)
     {
-      if (this.orientation == HitOrientationTypeEnum.None)
+      if (orientation == HitOrientationTypeEnum.None)
         return true;
       if ((Object) gameObject == (Object) null || (Object) target == (Object) null)
         return false;
       bool flag = (double) Vector3.Dot((gameObject.transform.position - target.transform.position).normalized, -target.transform.forward) > 0.0;
-      if (this.orientation == HitOrientationTypeEnum.Back)
+      if (orientation == HitOrientationTypeEnum.Back)
         return flag;
-      return this.orientation != HitOrientationTypeEnum.Front || !flag;
+      return orientation != HitOrientationTypeEnum.Front || !flag;
     }
   }
 }

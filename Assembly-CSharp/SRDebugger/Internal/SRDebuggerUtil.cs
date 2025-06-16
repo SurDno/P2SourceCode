@@ -1,7 +1,4 @@
-﻿using UnityEngine;
-using UnityEngine.EventSystems;
-
-namespace SRDebugger.Internal
+﻿namespace SRDebugger.Internal
 {
   public static class SRDebuggerUtil
   {
@@ -13,7 +10,7 @@ namespace SRDebugger.Internal
       if ((Object) objectOfType != (Object) null && objectOfType.gameObject.activeSelf && objectOfType.enabled)
         return false;
       Debug.LogWarning((object) "[SRDebugger] No EventSystem found in scene - creating a default one.");
-      SRDebuggerUtil.CreateDefaultEventSystem();
+      CreateDefaultEventSystem();
       return true;
     }
 

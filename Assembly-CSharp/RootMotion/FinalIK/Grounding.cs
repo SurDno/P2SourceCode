@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEngine;
 
 namespace RootMotion.FinalIK
 {
@@ -43,12 +42,12 @@ namespace RootMotion.FinalIK
     [Tooltip("The radius of the spherecast from the root that determines whether the character root is grounded.")]
     public float rootSphereCastRadius = 0.1f;
     [Tooltip("The raycasting quality. Fastest is a single raycast per foot, Simple is three raycasts, Best is one raycast and a capsule cast per foot.")]
-    public Grounding.Quality quality = Grounding.Quality.Best;
+    public Quality quality = Quality.Best;
     private bool initiated;
 
-    public Grounding.Leg[] legs { get; private set; }
+    public Leg[] legs { get; private set; }
 
-    public Grounding.Pelvis pelvis { get; private set; }
+    public Pelvis pelvis { get; private set; }
 
     public bool isGrounded { get; private set; }
 
@@ -56,46 +55,46 @@ namespace RootMotion.FinalIK
 
     public RaycastHit rootHit { get; private set; }
 
-    public bool rootGrounded => (double) this.rootHit.distance < (double) this.maxStep * 2.0;
+    public bool rootGrounded => (double) rootHit.distance < maxStep * 2.0;
 
     public RaycastHit GetRootHit(float maxDistanceMlp = 10f)
     {
       RaycastHit hitInfo = new RaycastHit();
       Vector3 up = this.up;
       Vector3 zero = Vector3.zero;
-      foreach (Grounding.Leg leg in this.legs)
+      foreach (Leg leg in legs)
         zero += leg.transform.position;
-      Vector3 vector3 = zero / (float) this.legs.Length;
-      hitInfo.point = vector3 - up * this.maxStep * 10f;
+      Vector3 vector3 = zero / (float) legs.Length;
+      hitInfo.point = vector3 - up * maxStep * 10f;
       float num = maxDistanceMlp + 1f;
-      hitInfo.distance = this.maxStep * num;
-      if ((double) this.maxStep <= 0.0)
+      hitInfo.distance = maxStep * num;
+      if (maxStep <= 0.0)
         return hitInfo;
-      if (this.quality != Grounding.Quality.Best)
-        Physics.Raycast(vector3 + up * this.maxStep, -up, out hitInfo, this.maxStep * num, (int) this.layers);
+      if (quality != Quality.Best)
+        Physics.Raycast(vector3 + up * maxStep, -up, out hitInfo, maxStep * num, (int) layers);
       else
-        Physics.SphereCast(vector3 + up * this.maxStep, this.rootSphereCastRadius, -this.up, out hitInfo, this.maxStep * num, (int) this.layers);
+        Physics.SphereCast(vector3 + up * maxStep, rootSphereCastRadius, -this.up, out hitInfo, maxStep * num, (int) layers);
       return hitInfo;
     }
 
     public bool IsValid(ref string errorMessage)
     {
-      if ((UnityEngine.Object) this.root == (UnityEngine.Object) null)
+      if ((UnityEngine.Object) root == (UnityEngine.Object) null)
       {
         errorMessage = "Root transform is null. Can't initiate Grounding.";
         return false;
       }
-      if (this.legs == null)
+      if (legs == null)
       {
         errorMessage = "Grounding legs is null. Can't initiate Grounding.";
         return false;
       }
-      if (this.pelvis == null)
+      if (pelvis == null)
       {
         errorMessage = "Grounding pelvis is null. Can't initiate Grounding.";
         return false;
       }
-      if (this.legs.Length != 0)
+      if (legs.Length != 0)
         return true;
       errorMessage = "Grounding has 0 legs. Can't initiate Grounding.";
       return false;
@@ -104,21 +103,21 @@ namespace RootMotion.FinalIK
     public void Initiate(Transform root, Transform[] feet)
     {
       this.root = root;
-      this.initiated = false;
-      this.rootHit = new RaycastHit();
-      if (this.legs == null)
-        this.legs = new Grounding.Leg[feet.Length];
-      if (this.legs.Length != feet.Length)
-        this.legs = new Grounding.Leg[feet.Length];
+      initiated = false;
+      rootHit = new RaycastHit();
+      if (legs == null)
+        legs = new Leg[feet.Length];
+      if (legs.Length != feet.Length)
+        legs = new Leg[feet.Length];
       for (int index = 0; index < feet.Length; ++index)
       {
-        if (this.legs[index] == null)
-          this.legs[index] = new Grounding.Leg();
+        if (legs[index] == null)
+          legs[index] = new Leg();
       }
-      if (this.pelvis == null)
-        this.pelvis = new Grounding.Pelvis();
+      if (pelvis == null)
+        pelvis = new Pelvis();
       string empty = string.Empty;
-      if (!this.IsValid(ref empty))
+      if (!IsValid(ref empty))
       {
         Warning.Log(empty, root);
       }
@@ -127,51 +126,51 @@ namespace RootMotion.FinalIK
         if (!Application.isPlaying)
           return;
         for (int index = 0; index < feet.Length; ++index)
-          this.legs[index].Initiate(this, feet[index]);
-        this.pelvis.Initiate(this);
-        this.initiated = true;
+          legs[index].Initiate(this, feet[index]);
+        pelvis.Initiate(this);
+        initiated = true;
       }
     }
 
     public void Update()
     {
-      if (!this.initiated)
+      if (!initiated)
         return;
-      if ((int) this.layers == 0)
-        this.LogWarning("Grounding layers are set to nothing. Please add a ground layer.");
-      this.maxStep = Mathf.Clamp(this.maxStep, 0.0f, this.maxStep);
-      this.footRadius = Mathf.Clamp(this.footRadius, 0.0001f, this.maxStep);
-      this.pelvisDamper = Mathf.Clamp(this.pelvisDamper, 0.0f, 1f);
-      this.rootSphereCastRadius = Mathf.Clamp(this.rootSphereCastRadius, 0.0001f, this.rootSphereCastRadius);
-      this.maxFootRotationAngle = Mathf.Clamp(this.maxFootRotationAngle, 0.0f, 90f);
-      this.prediction = Mathf.Clamp(this.prediction, 0.0f, this.prediction);
-      this.footSpeed = Mathf.Clamp(this.footSpeed, 0.0f, this.footSpeed);
-      this.rootHit = this.GetRootHit();
+      if ((int) layers == 0)
+        LogWarning("Grounding layers are set to nothing. Please add a ground layer.");
+      maxStep = Mathf.Clamp(maxStep, 0.0f, maxStep);
+      footRadius = Mathf.Clamp(footRadius, 0.0001f, maxStep);
+      pelvisDamper = Mathf.Clamp(pelvisDamper, 0.0f, 1f);
+      rootSphereCastRadius = Mathf.Clamp(rootSphereCastRadius, 0.0001f, rootSphereCastRadius);
+      maxFootRotationAngle = Mathf.Clamp(maxFootRotationAngle, 0.0f, 90f);
+      prediction = Mathf.Clamp(prediction, 0.0f, prediction);
+      footSpeed = Mathf.Clamp(footSpeed, 0.0f, footSpeed);
+      rootHit = GetRootHit();
       float num1 = float.NegativeInfinity;
       float num2 = float.PositiveInfinity;
-      this.isGrounded = false;
-      foreach (Grounding.Leg leg in this.legs)
+      isGrounded = false;
+      foreach (Leg leg in legs)
       {
         leg.Process();
-        if ((double) leg.IKOffset > (double) num1)
+        if (leg.IKOffset > (double) num1)
           num1 = leg.IKOffset;
-        if ((double) leg.IKOffset < (double) num2)
+        if (leg.IKOffset < (double) num2)
           num2 = leg.IKOffset;
         if (leg.isGrounded)
-          this.isGrounded = true;
+          isGrounded = true;
       }
-      this.pelvis.Process(-num1 * this.lowerPelvisWeight, -num2 * this.liftPelvisWeight, this.isGrounded);
+      pelvis.Process(-num1 * lowerPelvisWeight, -num2 * liftPelvisWeight, isGrounded);
     }
 
     public Vector3 GetLegsPlaneNormal()
     {
-      if (!this.initiated)
+      if (!initiated)
         return Vector3.up;
       Vector3 up = this.up;
       Vector3 legsPlaneNormal = up;
-      for (int index = 0; index < this.legs.Length; ++index)
+      for (int index = 0; index < legs.Length; ++index)
       {
-        Vector3 toDirection = this.legs[index].IKPosition - this.root.position;
+        Vector3 toDirection = legs[index].IKPosition - root.position;
         Vector3 normal = up;
         Vector3 tangent = toDirection;
         Vector3.OrthoNormalize(ref normal, ref tangent);
@@ -184,26 +183,26 @@ namespace RootMotion.FinalIK
     {
       if (!Application.isPlaying)
         return;
-      this.pelvis.Reset();
-      foreach (Grounding.Leg leg in this.legs)
+      pelvis.Reset();
+      foreach (Leg leg in legs)
         leg.Reset();
     }
 
-    public void LogWarning(string message) => Warning.Log(message, this.root);
+    public void LogWarning(string message) => Warning.Log(message, root);
 
-    public Vector3 up => this.useRootRotation ? this.root.up : Vector3.up;
+    public Vector3 up => useRootRotation ? root.up : Vector3.up;
 
     public float GetVerticalOffset(Vector3 p1, Vector3 p2)
     {
-      return this.useRootRotation ? (Quaternion.Inverse(this.root.rotation) * (p1 - p2)).y : p1.y - p2.y;
+      return useRootRotation ? (Quaternion.Inverse(root.rotation) * (p1 - p2)).y : p1.y - p2.y;
     }
 
     public Vector3 Flatten(Vector3 v)
     {
-      if (this.useRootRotation)
+      if (useRootRotation)
       {
         Vector3 tangent = v;
-        Vector3 up = this.root.up;
+        Vector3 up = root.up;
         Vector3.OrthoNormalize(ref up, ref tangent);
         return Vector3.Project(v, tangent);
       }
@@ -211,11 +210,11 @@ namespace RootMotion.FinalIK
       return v;
     }
 
-    private bool useRootRotation => this.rotateSolver && !(this.root.up == Vector3.up);
+    private bool useRootRotation => rotateSolver && !(root.up == Vector3.up);
 
     public Vector3 GetFootCenterOffset()
     {
-      return this.root.forward * this.footRadius + this.root.forward * this.footCenterOffset;
+      return root.forward * footRadius + root.forward * footCenterOffset;
     }
 
     [Serializable]
@@ -255,104 +254,104 @@ namespace RootMotion.FinalIK
 
       public void Initiate(Grounding grounding, Transform transform)
       {
-        this.initiated = false;
+        initiated = false;
         this.grounding = grounding;
         this.transform = transform;
-        this.up = Vector3.up;
-        this.IKPosition = transform.position;
-        this.rotationOffset = Quaternion.identity;
-        this.initiated = true;
-        this.OnEnable();
+        up = Vector3.up;
+        IKPosition = transform.position;
+        rotationOffset = Quaternion.identity;
+        initiated = true;
+        OnEnable();
       }
 
       public void OnEnable()
       {
-        if (!this.initiated)
+        if (!initiated)
           return;
-        this.lastPosition = this.transform.position;
-        this.lastTime = Time.deltaTime;
+        lastPosition = transform.position;
+        lastTime = Time.deltaTime;
       }
 
       public void Reset()
       {
-        this.lastPosition = this.transform.position;
-        this.lastTime = Time.deltaTime;
-        this.IKOffset = 0.0f;
-        this.IKPosition = this.transform.position;
-        this.rotationOffset = Quaternion.identity;
+        lastPosition = transform.position;
+        lastTime = Time.deltaTime;
+        IKOffset = 0.0f;
+        IKPosition = transform.position;
+        rotationOffset = Quaternion.identity;
       }
 
       public void Process()
       {
-        if (!this.initiated || (double) this.grounding.maxStep <= 0.0)
+        if (!initiated || grounding.maxStep <= 0.0)
           return;
-        this.deltaTime = Time.time - this.lastTime;
-        this.lastTime = Time.time;
-        if ((double) this.deltaTime == 0.0)
+        deltaTime = Time.time - lastTime;
+        lastTime = Time.time;
+        if (deltaTime == 0.0)
           return;
-        this.up = this.grounding.up;
-        this.heightFromGround = float.PositiveInfinity;
-        this.velocity = (this.transform.position - this.lastPosition) / this.deltaTime;
-        this.velocity = this.grounding.Flatten(this.velocity);
-        this.lastPosition = this.transform.position;
-        Vector3 offsetFromHeel = this.velocity * this.grounding.prediction;
-        if ((double) this.grounding.footRadius <= 0.0)
-          this.grounding.quality = Grounding.Quality.Fastest;
-        switch (this.grounding.quality)
+        up = grounding.up;
+        heightFromGround = float.PositiveInfinity;
+        velocity = (transform.position - lastPosition) / deltaTime;
+        velocity = grounding.Flatten(velocity);
+        lastPosition = transform.position;
+        Vector3 offsetFromHeel = velocity * grounding.prediction;
+        if (grounding.footRadius <= 0.0)
+          grounding.quality = Quality.Fastest;
+        switch (grounding.quality)
         {
-          case Grounding.Quality.Fastest:
-            RaycastHit raycastHit = this.GetRaycastHit(offsetFromHeel);
-            this.SetFootToPoint(raycastHit.normal, raycastHit.point);
+          case Quality.Fastest:
+            RaycastHit raycastHit = GetRaycastHit(offsetFromHeel);
+            SetFootToPoint(raycastHit.normal, raycastHit.point);
             break;
-          case Grounding.Quality.Simple:
-            this.heelHit = this.GetRaycastHit(Vector3.zero);
-            Vector3 vector3_1 = this.grounding.GetFootCenterOffset();
-            if (this.invertFootCenter)
+          case Quality.Simple:
+            heelHit = GetRaycastHit(Vector3.zero);
+            Vector3 vector3_1 = grounding.GetFootCenterOffset();
+            if (invertFootCenter)
               vector3_1 = -vector3_1;
-            Vector3 vector3_2 = Vector3.Cross(this.GetRaycastHit(vector3_1 + offsetFromHeel).point - this.heelHit.point, this.GetRaycastHit(this.grounding.root.right * this.grounding.footRadius * 0.5f).point - this.heelHit.point).normalized;
-            if ((double) Vector3.Dot(vector3_2, this.up) < 0.0)
+            Vector3 vector3_2 = Vector3.Cross(GetRaycastHit(vector3_1 + offsetFromHeel).point - heelHit.point, this.GetRaycastHit(grounding.root.right * grounding.footRadius * 0.5f).point - heelHit.point).normalized;
+            if ((double) Vector3.Dot(vector3_2, up) < 0.0)
               vector3_2 = -vector3_2;
-            this.SetFootToPlane(vector3_2, this.heelHit.point, this.heelHit.point);
+            SetFootToPlane(vector3_2, heelHit.point, heelHit.point);
             break;
-          case Grounding.Quality.Best:
-            this.heelHit = this.GetRaycastHit(this.invertFootCenter ? -this.grounding.GetFootCenterOffset() : Vector3.zero);
-            RaycastHit capsuleHit = this.GetCapsuleHit(offsetFromHeel);
-            this.SetFootToPlane(capsuleHit.normal, capsuleHit.point, this.heelHit.point);
+          case Quality.Best:
+            heelHit = GetRaycastHit(invertFootCenter ? -grounding.GetFootCenterOffset() : Vector3.zero);
+            RaycastHit capsuleHit = GetCapsuleHit(offsetFromHeel);
+            SetFootToPlane(capsuleHit.normal, capsuleHit.point, heelHit.point);
             break;
         }
-        this.isGrounded = (double) this.heightFromGround < (double) this.grounding.maxStep;
-        float num = this.stepHeightFromGround;
-        if (!this.grounding.rootGrounded)
+        isGrounded = heightFromGround < (double) grounding.maxStep;
+        float num = stepHeightFromGround;
+        if (!grounding.rootGrounded)
           num = 0.0f;
-        this.IKOffset = Interp.LerpValue(this.IKOffset, num, this.grounding.footSpeed, this.grounding.footSpeed);
-        this.IKOffset = Mathf.Lerp(this.IKOffset, num, this.deltaTime * this.grounding.footSpeed);
-        this.IKOffset = Mathf.Clamp(this.IKOffset, -Mathf.Clamp(this.grounding.maxStep - this.grounding.GetVerticalOffset(this.transform.position, this.grounding.root.position), 0.0f, this.grounding.maxStep), this.IKOffset);
-        this.RotateFoot();
-        this.IKPosition = this.transform.position - this.up * this.IKOffset;
-        float footRotationWeight = this.grounding.footRotationWeight;
-        this.rotationOffset = (double) footRotationWeight >= 1.0 ? this.r : Quaternion.Slerp(Quaternion.identity, this.r, footRotationWeight);
+        IKOffset = Interp.LerpValue(IKOffset, num, grounding.footSpeed, grounding.footSpeed);
+        IKOffset = Mathf.Lerp(IKOffset, num, deltaTime * grounding.footSpeed);
+        IKOffset = Mathf.Clamp(IKOffset, -Mathf.Clamp(grounding.maxStep - grounding.GetVerticalOffset(transform.position, grounding.root.position), 0.0f, grounding.maxStep), IKOffset);
+        RotateFoot();
+        IKPosition = transform.position - up * IKOffset;
+        float footRotationWeight = grounding.footRotationWeight;
+        rotationOffset = footRotationWeight >= 1.0 ? r : Quaternion.Slerp(Quaternion.identity, r, footRotationWeight);
       }
 
       public float stepHeightFromGround
       {
-        get => Mathf.Clamp(this.heightFromGround, -this.grounding.maxStep, this.grounding.maxStep);
+        get => Mathf.Clamp(heightFromGround, -grounding.maxStep, grounding.maxStep);
       }
 
       private RaycastHit GetCapsuleHit(Vector3 offsetFromHeel)
       {
         RaycastHit hitInfo = new RaycastHit();
-        Vector3 vector3_1 = this.grounding.GetFootCenterOffset();
-        if (this.invertFootCenter)
+        Vector3 vector3_1 = grounding.GetFootCenterOffset();
+        if (invertFootCenter)
           vector3_1 = -vector3_1;
-        Vector3 vector3_2 = this.transform.position + vector3_1;
-        hitInfo.point = vector3_2 - this.up * this.grounding.maxStep * 2f;
-        hitInfo.normal = this.up;
-        Vector3 point1 = vector3_2 + this.grounding.maxStep * this.up;
+        Vector3 vector3_2 = transform.position + vector3_1;
+        hitInfo.point = vector3_2 - up * grounding.maxStep * 2f;
+        hitInfo.normal = up;
+        Vector3 point1 = vector3_2 + grounding.maxStep * up;
         Vector3 point2 = point1 + offsetFromHeel;
-        if (Physics.CapsuleCast(point1, point2, this.grounding.footRadius, -this.up, out hitInfo, this.grounding.maxStep * 3f, (int) this.grounding.layers) && float.IsNaN(hitInfo.point.x))
+        if (Physics.CapsuleCast(point1, point2, grounding.footRadius, -up, out hitInfo, grounding.maxStep * 3f, (int) grounding.layers) && float.IsNaN(hitInfo.point.x))
         {
-          hitInfo.point = vector3_2 - this.up * this.grounding.maxStep * 2f;
-          hitInfo.normal = this.up;
+          hitInfo.point = vector3_2 - up * grounding.maxStep * 2f;
+          hitInfo.normal = up;
         }
         return hitInfo;
       }
@@ -360,56 +359,56 @@ namespace RootMotion.FinalIK
       private RaycastHit GetRaycastHit(Vector3 offsetFromHeel)
       {
         RaycastHit hitInfo = new RaycastHit();
-        Vector3 vector3 = this.transform.position + offsetFromHeel;
-        hitInfo.point = vector3 - this.up * this.grounding.maxStep * 2f;
-        hitInfo.normal = this.up;
-        if ((double) this.grounding.maxStep <= 0.0)
+        Vector3 vector3 = transform.position + offsetFromHeel;
+        hitInfo.point = vector3 - up * grounding.maxStep * 2f;
+        hitInfo.normal = up;
+        if (grounding.maxStep <= 0.0)
           return hitInfo;
-        Physics.Raycast(vector3 + this.grounding.maxStep * this.up, -this.up, out hitInfo, this.grounding.maxStep * 3f, (int) this.grounding.layers);
+        Physics.Raycast(vector3 + grounding.maxStep * up, -up, out hitInfo, grounding.maxStep * 3f, (int) grounding.layers);
         return hitInfo;
       }
 
       private Vector3 RotateNormal(Vector3 normal)
       {
-        return this.grounding.quality == Grounding.Quality.Best ? normal : Vector3.RotateTowards(this.up, normal, this.grounding.maxFootRotationAngle * ((float) Math.PI / 180f), this.deltaTime);
+        return grounding.quality == Quality.Best ? normal : Vector3.RotateTowards(up, normal, grounding.maxFootRotationAngle * ((float) Math.PI / 180f), deltaTime);
       }
 
       private void SetFootToPoint(Vector3 normal, Vector3 point)
       {
-        this.toHitNormal = Quaternion.FromToRotation(this.up, this.RotateNormal(normal));
-        this.heightFromGround = this.GetHeightFromGround(point);
+        toHitNormal = Quaternion.FromToRotation(up, RotateNormal(normal));
+        heightFromGround = GetHeightFromGround(point);
       }
 
       private void SetFootToPlane(Vector3 planeNormal, Vector3 planePoint, Vector3 heelHitPoint)
       {
-        planeNormal = this.RotateNormal(planeNormal);
-        this.toHitNormal = Quaternion.FromToRotation(this.up, planeNormal);
-        this.heightFromGround = this.GetHeightFromGround(V3Tools.LineToPlane(this.transform.position + this.up * this.grounding.maxStep, -this.up, planeNormal, planePoint));
-        this.heightFromGround = Mathf.Clamp(this.heightFromGround, float.NegativeInfinity, this.GetHeightFromGround(heelHitPoint));
+        planeNormal = RotateNormal(planeNormal);
+        toHitNormal = Quaternion.FromToRotation(up, planeNormal);
+        heightFromGround = GetHeightFromGround(V3Tools.LineToPlane(transform.position + up * grounding.maxStep, -up, planeNormal, planePoint));
+        heightFromGround = Mathf.Clamp(heightFromGround, float.NegativeInfinity, GetHeightFromGround(heelHitPoint));
       }
 
       private float GetHeightFromGround(Vector3 hitPoint)
       {
-        return this.grounding.GetVerticalOffset(this.transform.position, hitPoint) - this.rootYOffset;
+        return grounding.GetVerticalOffset(transform.position, hitPoint) - rootYOffset;
       }
 
       private void RotateFoot()
       {
-        this.r = Quaternion.Slerp(this.r, this.GetRotationOffsetTarget(), this.deltaTime * this.grounding.footRotationSpeed);
+        r = Quaternion.Slerp(r, GetRotationOffsetTarget(), deltaTime * grounding.footRotationSpeed);
       }
 
       private Quaternion GetRotationOffsetTarget()
       {
-        if ((double) this.grounding.maxFootRotationAngle <= 0.0)
+        if (grounding.maxFootRotationAngle <= 0.0)
           return Quaternion.identity;
-        return (double) this.grounding.maxFootRotationAngle >= 180.0 ? this.toHitNormal : Quaternion.RotateTowards(Quaternion.identity, this.toHitNormal, this.grounding.maxFootRotationAngle);
+        return grounding.maxFootRotationAngle >= 180.0 ? toHitNormal : Quaternion.RotateTowards(Quaternion.identity, toHitNormal, grounding.maxFootRotationAngle);
       }
 
       private float rootYOffset
       {
         get
         {
-          return this.grounding.GetVerticalOffset(this.transform.position, this.grounding.root.position - this.up * this.grounding.heightOffset);
+          return grounding.GetVerticalOffset(transform.position, grounding.root.position - up * grounding.heightOffset);
         }
       }
     }
@@ -429,43 +428,43 @@ namespace RootMotion.FinalIK
       public void Initiate(Grounding grounding)
       {
         this.grounding = grounding;
-        this.initiated = true;
-        this.OnEnable();
+        initiated = true;
+        OnEnable();
       }
 
       public void Reset()
       {
-        this.lastRootPosition = this.grounding.root.transform.position;
-        this.lastTime = Time.deltaTime;
-        this.IKOffset = Vector3.zero;
-        this.heightOffset = 0.0f;
+        lastRootPosition = grounding.root.transform.position;
+        lastTime = Time.deltaTime;
+        IKOffset = Vector3.zero;
+        heightOffset = 0.0f;
       }
 
       public void OnEnable()
       {
-        if (!this.initiated)
+        if (!initiated)
           return;
-        this.lastRootPosition = this.grounding.root.transform.position;
-        this.lastTime = Time.time;
+        lastRootPosition = grounding.root.transform.position;
+        lastTime = Time.time;
       }
 
       public void Process(float lowestOffset, float highestOffset, bool isGrounded)
       {
-        if (!this.initiated)
+        if (!initiated)
           return;
-        float num = Time.time - this.lastTime;
-        this.lastTime = Time.time;
-        if ((double) num <= 0.0)
+        float num = Time.time - lastTime;
+        lastTime = Time.time;
+        if (num <= 0.0)
           return;
         float b = lowestOffset + highestOffset;
-        if (!this.grounding.rootGrounded)
+        if (!grounding.rootGrounded)
           b = 0.0f;
-        this.heightOffset = Mathf.Lerp(this.heightOffset, b, num * this.grounding.pelvisSpeed);
-        Vector3 p1 = this.grounding.root.position - this.lastRootPosition;
-        this.lastRootPosition = this.grounding.root.position;
-        this.damperF = Interp.LerpValue(this.damperF, isGrounded ? 1f : 0.0f, 1f, 10f);
-        this.heightOffset -= this.grounding.GetVerticalOffset(p1, Vector3.zero) * this.grounding.pelvisDamper * this.damperF;
-        this.IKOffset = this.grounding.up * this.heightOffset;
+        heightOffset = Mathf.Lerp(heightOffset, b, num * grounding.pelvisSpeed);
+        Vector3 p1 = grounding.root.position - lastRootPosition;
+        lastRootPosition = grounding.root.position;
+        damperF = Interp.LerpValue(damperF, isGrounded ? 1f : 0.0f, 1f, 10f);
+        heightOffset -= grounding.GetVerticalOffset(p1, Vector3.zero) * grounding.pelvisDamper * damperF;
+        IKOffset = grounding.up * heightOffset;
       }
     }
   }

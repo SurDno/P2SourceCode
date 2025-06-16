@@ -1,5 +1,4 @@
 ﻿using ParadoxNotion.Design;
-using UnityEngine;
 
 namespace FlowCanvas.Nodes
 {
@@ -14,15 +13,15 @@ namespace FlowCanvas.Nodes
 
     public int portCount
     {
-      get => this._portCount;
-      set => this._portCount = value;
+      get => _portCount;
+      set => _portCount = value;
     }
 
     protected override void RegisterPorts()
     {
-      this.fOut = this.AddFlowOutput("Out");
-      for (int index = 0; index < this.portCount; ++index)
-        this.AddFlowInput(index.ToString(), (FlowHandler) (() => this.fOut.Call()));
+      fOut = AddFlowOutput("Out");
+      for (int index = 0; index < portCount; ++index)
+        AddFlowInput(index.ToString(), () => fOut.Call());
     }
   }
 }

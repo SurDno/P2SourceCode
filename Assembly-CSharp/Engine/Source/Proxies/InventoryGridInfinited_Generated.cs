@@ -1,10 +1,10 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons.Cloneable;
 using Engine.Common.Commons.Converters;
 using Engine.Common.Services;
 using Engine.Source.Inventory;
-using System;
 
 namespace Engine.Source.Proxies
 {
@@ -18,32 +18,32 @@ namespace Engine.Source.Proxies
   {
     public object Clone()
     {
-      return (object) ServiceCache.Factory.Instantiate<InventoryGridInfinited_Generated>(this);
+      return ServiceCache.Factory.Instantiate(this);
     }
 
     public void CopyTo(object target2)
     {
       InventoryGridInfinited_Generated infinitedGenerated = (InventoryGridInfinited_Generated) target2;
-      infinitedGenerated.name = this.name;
-      infinitedGenerated.columns = this.columns;
-      infinitedGenerated.rows = this.rows;
-      infinitedGenerated.direction = this.direction;
+      infinitedGenerated.name = name;
+      infinitedGenerated.columns = columns;
+      infinitedGenerated.rows = rows;
+      infinitedGenerated.direction = direction;
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.Write(writer, "Id", this.id);
-      DefaultDataWriteUtility.Write(writer, "Columns", this.columns);
-      DefaultDataWriteUtility.Write(writer, "Rows", this.rows);
-      DefaultDataWriteUtility.WriteEnum<DirectionKind>(writer, "Direction", this.direction);
+      DefaultDataWriteUtility.Write(writer, "Id", id);
+      DefaultDataWriteUtility.Write(writer, "Columns", columns);
+      DefaultDataWriteUtility.Write(writer, "Rows", rows);
+      DefaultDataWriteUtility.WriteEnum(writer, "Direction", direction);
     }
 
     public void DataRead(IDataReader reader, Type type)
     {
-      this.id = DefaultDataReadUtility.Read(reader, "Id", this.id);
-      this.columns = DefaultDataReadUtility.Read(reader, "Columns", this.columns);
-      this.rows = DefaultDataReadUtility.Read(reader, "Rows", this.rows);
-      this.direction = DefaultDataReadUtility.ReadEnum<DirectionKind>(reader, "Direction");
+      id = DefaultDataReadUtility.Read(reader, "Id", id);
+      columns = DefaultDataReadUtility.Read(reader, "Columns", columns);
+      rows = DefaultDataReadUtility.Read(reader, "Rows", rows);
+      direction = DefaultDataReadUtility.ReadEnum<DirectionKind>(reader, "Direction");
     }
   }
 }

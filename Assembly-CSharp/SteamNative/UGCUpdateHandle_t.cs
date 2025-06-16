@@ -6,7 +6,7 @@
 
     public static implicit operator UGCUpdateHandle_t(ulong value)
     {
-      return new UGCUpdateHandle_t() { Value = value };
+      return new UGCUpdateHandle_t { Value = value };
     }
 
     public static implicit operator ulong(UGCUpdateHandle_t value) => value.Value;

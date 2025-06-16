@@ -7,15 +7,14 @@ using Engine.Source.Settings;
 using Engine.Source.Settings.External;
 using InputServices;
 using Inspectors;
-using UnityEngine;
 
 namespace Engine.Source.Services.CameraServices
 {
   public class FirstPersonCameraController : ICameraController
   {
     private float xRotationAngle;
-    private float xPrev = 0.0f;
-    private float yPrev = 0.0f;
+    private float xPrev;
+    private float yPrev;
     private Vector3 currentVelocity;
     private Vector3 currentPosition;
     private Simulation simulation;
@@ -24,21 +23,21 @@ namespace Engine.Source.Services.CameraServices
 
     public void Initialise()
     {
-      this.simulation = ServiceLocator.GetService<Simulation>();
-      this.currentPosition = Vector3.zero;
-      this.currentVelocity = Vector3.zero;
-      this.Update((IEntity) null, (GameObject) null);
+      simulation = ServiceLocator.GetService<Simulation>();
+      currentPosition = Vector3.zero;
+      currentVelocity = Vector3.zero;
+      Update(null, (GameObject) null);
     }
 
     public void Shutdown()
     {
-      this.Update((IEntity) null, (GameObject) null);
-      this.simulation = (Simulation) null;
+      Update(null, (GameObject) null);
+      simulation = null;
     }
 
     public void Update(IEntity target, GameObject gameObjectTarget)
     {
-      this.player = this.simulation.Player;
+      this.player = simulation.Player;
       if (this.player == null)
         return;
       IEntityView player = (IEntityView) this.player;
@@ -52,14 +51,14 @@ namespace Engine.Source.Services.CameraServices
         if (ExternalSettingsInstance<ExternalInputSettings>.Instance.SmoothMove)
         {
           Vector3 position = transform.position;
-          if ((double) (position - this.currentPosition).magnitude > 1.0)
+          if ((double) (position - currentPosition).magnitude > 1.0)
           {
-            this.currentPosition = position;
-            this.currentVelocity = Vector3.zero;
+            currentPosition = position;
+            currentVelocity = Vector3.zero;
           }
           else
-            this.currentPosition = Vector3.SmoothDamp(this.currentPosition, position, ref this.currentVelocity, ExternalSettingsInstance<ExternalInputSettings>.Instance.SmoothMoveTime);
-          component.MoveRoot.transform.position = this.currentPosition;
+            currentPosition = Vector3.SmoothDamp(currentPosition, position, ref currentVelocity, ExternalSettingsInstance<ExternalInputSettings>.Instance.SmoothMoveTime);
+          component.MoveRoot.transform.position = currentPosition;
         }
         Quaternion rotation = transform.rotation;
         float y = 0.0f;
@@ -72,11 +71,11 @@ namespace Engine.Source.Services.CameraServices
           float num2 = t;
           float num3 = t;
           float axis1 = InputService.Instance.GetAxis("RightStickX");
-          float num4 = (float) ((double) (this.xPrev + axis1) * (double) Time.deltaTime * (double) ExternalSettingsInstance<ExternalInputSettings>.Instance.JoystickSensitivity * (double) instance.JoystickSensitivity.Value * 2.0);
-          this.xPrev = axis1;
+          float num4 = (float) ((xPrev + axis1) * (double) Time.deltaTime * ExternalSettingsInstance<ExternalInputSettings>.Instance.JoystickSensitivity * instance.JoystickSensitivity.Value * 2.0);
+          xPrev = axis1;
           float axis2 = InputService.Instance.GetAxis("RightStickY");
-          float num5 = (float) ((double) (this.yPrev + axis2) * (double) Time.deltaTime * (double) ExternalSettingsInstance<ExternalInputSettings>.Instance.JoystickSensitivity * (double) instance.JoystickSensitivity.Value * 2.0);
-          this.yPrev = axis2;
+          float num5 = (float) ((yPrev + axis2) * (double) Time.deltaTime * ExternalSettingsInstance<ExternalInputSettings>.Instance.JoystickSensitivity * instance.JoystickSensitivity.Value * 2.0);
+          yPrev = axis2;
           Vector2 vector2;
           vector2.x = Input.GetAxisRaw("MouseX");
           vector2.y = Input.GetAxisRaw("MouseY");
@@ -85,18 +84,18 @@ namespace Engine.Source.Services.CameraServices
           if (ExternalSettingsInstance<ExternalInputSettings>.Instance.UseArrow)
           {
             float num6 = 2f;
-            y += (float) ((Input.GetKey(KeyCode.LeftArrow) ? -(double) num6 : 0.0) + (Input.GetKey(KeyCode.RightArrow) ? (double) num6 : 0.0));
-            num1 += (float) ((Input.GetKey(KeyCode.UpArrow) ? (double) num6 : 0.0) + (Input.GetKey(KeyCode.DownArrow) ? -(double) num6 : 0.0));
+            y += (float) ((Input.GetKey(KeyCode.LeftArrow) ? -(double) num6 : 0.0) + (Input.GetKey(KeyCode.RightArrow) ? num6 : 0.0));
+            num1 += (float) ((Input.GetKey(KeyCode.UpArrow) ? num6 : 0.0) + (Input.GetKey(KeyCode.DownArrow) ? -(double) num6 : 0.0));
           }
         }
         Quaternion quaternion = rotation * Quaternion.Euler(0.0f, y, 0.0f);
         transform.localRotation = quaternion;
         if (InputService.Instance.JoystickUsed ? instance.JoystickInvert.Value : instance.MouseInvert.Value)
-          this.xRotationAngle += num1;
+          xRotationAngle += num1;
         else
-          this.xRotationAngle -= num1;
-        this.xRotationAngle = Mathf.Clamp(this.xRotationAngle, -60f, 60f);
-        component.CameraControllingBone.localEulerAngles = new Vector3(this.xRotationAngle, 0.0f, 0.0f);
+          xRotationAngle -= num1;
+        xRotationAngle = Mathf.Clamp(xRotationAngle, -60f, 60f);
+        component.CameraControllingBone.localEulerAngles = new Vector3(xRotationAngle, 0.0f, 0.0f);
         Transform cameraTransform = GameCamera.Instance.CameraTransform;
         cameraTransform.transform.position = component.AnimatedCameraBone.position;
         cameraTransform.transform.rotation = component.AnimatedCameraBone.rotation;

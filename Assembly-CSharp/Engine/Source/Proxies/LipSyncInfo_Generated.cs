@@ -1,11 +1,10 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons.Cloneable;
 using Engine.Common.Commons.Converters;
 using Engine.Source.Commons;
 using Scripts.Tools.Serializations.Converters;
-using System;
-using UnityEngine;
 
 namespace Engine.Source.Proxies
 {
@@ -20,30 +19,30 @@ namespace Engine.Source.Proxies
     public object Clone()
     {
       LipSyncInfo_Generated instance = Activator.CreateInstance<LipSyncInfo_Generated>();
-      this.CopyTo((object) instance);
-      return (object) instance;
+      CopyTo(instance);
+      return instance;
     }
 
     public void CopyTo(object target2)
     {
       LipSyncInfo_Generated syncInfoGenerated = (LipSyncInfo_Generated) target2;
-      syncInfoGenerated.Clip = this.Clip;
-      syncInfoGenerated.Data = this.Data;
-      syncInfoGenerated.Tag = this.Tag;
+      syncInfoGenerated.Clip = Clip;
+      syncInfoGenerated.Data = Data;
+      syncInfoGenerated.Tag = Tag;
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      UnityDataWriteUtility.Write<AudioClip>(writer, "Clip", this.Clip);
-      DefaultDataWriteUtility.Write(writer, "Data", this.Data);
-      DefaultDataWriteUtility.Write(writer, "Tag", this.Tag);
+      UnityDataWriteUtility.Write(writer, "Clip", Clip);
+      DefaultDataWriteUtility.Write(writer, "Data", Data);
+      DefaultDataWriteUtility.Write(writer, "Tag", Tag);
     }
 
-    public void DataRead(IDataReader reader, System.Type type)
+    public void DataRead(IDataReader reader, Type type)
     {
-      this.Clip = UnityDataReadUtility.Read<AudioClip>(reader, "Clip", this.Clip);
-      this.Data = DefaultDataReadUtility.Read(reader, "Data", this.Data);
-      this.Tag = DefaultDataReadUtility.Read(reader, "Tag", this.Tag);
+      Clip = UnityDataReadUtility.Read(reader, "Clip", Clip);
+      Data = DefaultDataReadUtility.Read(reader, "Data", Data);
+      Tag = DefaultDataReadUtility.Read(reader, "Tag", Tag);
     }
   }
 }

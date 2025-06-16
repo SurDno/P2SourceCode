@@ -1,22 +1,21 @@
-﻿using Engine.Behaviours;
+﻿using System;
+using System.Collections.Generic;
+using Engine.Behaviours;
 using Engine.Common;
 using Engine.Common.Services;
 using Engine.Impl.Services.HierarchyServices;
 using Engine.Source.Commons;
-using System;
-using System.Collections.Generic;
-using UnityEngine;
 
 public class FirstSceneLoader : MonoBehaviour
 {
   private void Start()
   {
-    InstanceByRequest<EngineApplication>.Instance.OnViewEnabledEvent += new Action<bool>(this.OnViewEnabledEvent);
+    InstanceByRequest<EngineApplication>.Instance.OnViewEnabledEvent += OnViewEnabledEvent;
   }
 
   private void OnDestroy()
   {
-    InstanceByRequest<EngineApplication>.Instance.OnViewEnabledEvent -= new Action<bool>(this.OnViewEnabledEvent);
+    InstanceByRequest<EngineApplication>.Instance.OnViewEnabledEvent -= OnViewEnabledEvent;
   }
 
   private void OnViewEnabledEvent(bool enabled)
@@ -35,7 +34,7 @@ public class FirstSceneLoader : MonoBehaviour
       }
       else
       {
-        IEntity entity1 = (IEntity) null;
+        IEntity entity1 = null;
         foreach (HierarchyItem hierarchyItem in ServiceLocator.GetService<HierarchyService>().MainContainer.Items)
         {
           if (hierarchyItem.Reference != null && hierarchyItem.Reference.Id == id)
@@ -50,7 +49,7 @@ public class FirstSceneLoader : MonoBehaviour
         }
         else
         {
-          IEntity entity2 = (IEntity) null;
+          IEntity entity2 = null;
           IEnumerable<IEntity> childs = ServiceLocator.GetService<ISimulation>().Hierarchy.Childs;
           if (childs != null)
           {

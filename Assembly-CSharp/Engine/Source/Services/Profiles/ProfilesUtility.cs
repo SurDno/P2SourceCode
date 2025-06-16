@@ -1,11 +1,10 @@
-﻿using Engine.Common.Components;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using Engine.Common.Components;
 using Engine.Common.Components.Regions;
 using Engine.Common.Services;
 using Engine.Impl.Services;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using UnityEngine;
 
 namespace Engine.Source.Services.Profiles
 {
@@ -23,29 +22,29 @@ namespace Engine.Source.Services.Profiles
 
     public static string GetGameName(string profileName)
     {
-      return ProfilesUtility.ConvertProfileName(profileName).Split(' ')[0];
+      return ConvertProfileName(profileName).Split(' ')[0];
     }
 
     public static string ConvertProfileName(string profile, string formatTag)
     {
       string str = ServiceLocator.GetService<LocalizationService>().GetText(formatTag);
-      string[] strArray = ProfilesUtility.ConvertProfileName(profile).Split(' ');
+      string[] strArray = ConvertProfileName(profile).Split(' ');
       if (strArray.Length >= 2)
         str = str.Replace("<gamename>", strArray[0]).Replace("<index>", strArray[1]);
-      int saveCount = ProfilesUtility.GetSaveCount(profile);
+      int saveCount = GetSaveCount(profile);
       return str.Replace("<saves>", saveCount.ToString());
     }
 
     public static string ConvertSaveName(string saveName)
     {
       string text = ServiceLocator.GetService<LocalizationService>().GetText("{SaveNameFormat}");
-      return ProfilesUtility.ConvertSaveName(saveName, text);
+      return ConvertSaveName(saveName, text);
     }
 
     public static string ConvertSaveName(string saveName, string format)
     {
       SaveInfo saveInfo = SaveInfo.GetSaveInfo(saveName);
-      return saveInfo == null ? saveName : format.Replace("<day>", saveInfo.Days.ToString()).Replace("<hours>", saveInfo.Hours.ToString()).Replace("<minutes>", saveInfo.Minutes.ToString().PadLeft(2, '0')).Replace("<building>", "{Building." + (object) saveInfo.Building + "}");
+      return saveInfo == null ? saveName : format.Replace("<day>", saveInfo.Days.ToString()).Replace("<hours>", saveInfo.Hours.ToString()).Replace("<minutes>", saveInfo.Minutes.ToString().PadLeft(2, '0')).Replace("<building>", "{Building." + saveInfo.Building + "}");
     }
 
     public static string GenerateSaveName()
@@ -78,7 +77,7 @@ namespace Engine.Source.Services.Profiles
     public static List<string> GetSaveNames(string profile)
     {
       List<string> saveNames = new List<string>();
-      string path = ProfilesUtility.ProfilePath(profile);
+      string path = ProfilePath(profile);
       if (!Directory.Exists(path))
         return saveNames;
       foreach (string directory in Directory.GetDirectories(path, "*", SearchOption.TopDirectoryOnly))
@@ -90,15 +89,15 @@ namespace Engine.Source.Services.Profiles
           saveNames.Add(name);
         }
       }
-      saveNames.Sort((Comparison<string>) ((a, b) =>
+      saveNames.Sort((a, b) =>
       {
-        DateTime saveCreationTime = ProfilesUtility.GetSaveCreationTime(profile, a);
-        return ProfilesUtility.GetSaveCreationTime(profile, b).CompareTo(saveCreationTime);
-      }));
+        DateTime saveCreationTime = GetSaveCreationTime(profile, a);
+        return GetSaveCreationTime(profile, b).CompareTo(saveCreationTime);
+      });
       return saveNames;
     }
 
-    public static int GetSaveCount(string name) => ProfilesUtility.GetSaveNames(name).Count;
+    public static int GetSaveCount(string name) => GetSaveNames(name).Count;
 
     public static bool IsSaveExist(string path) => Directory.Exists(path);
 
@@ -109,7 +108,7 @@ namespace Engine.Source.Services.Profiles
 
     public static string SavePath(string profile, string save)
     {
-      return ProfilesUtility.ProfilePath(profile) + "/" + save;
+      return ProfilePath(profile) + "/" + save;
     }
 
     public static DateTime GetSaveCreationTime(string profile, string save)
@@ -117,8 +116,8 @@ namespace Engine.Source.Services.Profiles
       SaveInfo saveInfo = SaveInfo.GetSaveInfo(save);
       if (saveInfo != null && saveInfo.SaveDateTime != DateTime.MinValue)
         return saveInfo.SaveDateTime;
-      string path = ProfilesUtility.SavePath(profile, save);
-      return ProfilesUtility.IsSaveExist(path) ? File.GetCreationTime(path) : DateTime.MinValue;
+      string path = SavePath(profile, save);
+      return IsSaveExist(path) ? File.GetCreationTime(path) : DateTime.MinValue;
     }
   }
 }

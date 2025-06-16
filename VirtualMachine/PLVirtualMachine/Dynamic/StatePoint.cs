@@ -1,10 +1,10 @@
-﻿using Cofe.Loggers;
+﻿using System.Xml;
+using Cofe.Loggers;
 using Cofe.Serializations.Data;
 using PLVirtualMachine.Common;
 using PLVirtualMachine.Common.Data;
 using PLVirtualMachine.Common.Serialization;
 using PLVirtualMachine.Data.SaveLoad;
-using System.Xml;
 
 namespace PLVirtualMachine.Dynamic
 {
@@ -19,27 +19,27 @@ namespace PLVirtualMachine.Dynamic
 
     public StatePoint(IState current, IState prev)
     {
-      this.currentState = current;
-      this.prevState = new StateInfo(prev);
+      currentState = current;
+      prevState = new StateInfo(prev);
     }
 
     public StatePoint(IState current, StateStack prev)
     {
-      this.currentState = current;
-      this.prevState = new StateInfo(prev);
+      currentState = current;
+      prevState = new StateInfo(prev);
     }
 
     public StatePoint(IState current)
     {
-      this.currentState = current;
-      this.prevState = (StateInfo) null;
+      currentState = current;
+      prevState = null;
     }
 
     public void StateSave(IDataWriter writer)
     {
-      SaveManagerUtility.Save(writer, "CurrentState", this.currentState != null ? this.currentState.BaseGuid : 0UL);
-      SaveManagerUtility.Save(writer, "CurrentStateName", this.currentState != null ? this.currentState.Name : "");
-      SaveManagerUtility.SaveDynamicSerializable(writer, "PrevStateInfo", (ISerializeStateSave) this.prevState);
+      SaveManagerUtility.Save(writer, "CurrentState", currentState != null ? currentState.BaseGuid : 0UL);
+      SaveManagerUtility.Save(writer, "CurrentStateName", currentState != null ? currentState.Name : "");
+      SaveManagerUtility.SaveDynamicSerializable(writer, "PrevStateInfo", prevState);
     }
 
     public void LoadFromXML(XmlElement xmlNode)
@@ -49,20 +49,20 @@ namespace PLVirtualMachine.Dynamic
         XmlElement childNode = (XmlElement) xmlNode.ChildNodes[i];
         if (childNode.Name == "CurrentState")
         {
-          ulong id = VMSaveLoadManager.ReadUlong((XmlNode) childNode);
+          ulong id = VMSaveLoadManager.ReadUlong(childNode);
           if (id != 0UL)
           {
             IObject objectByGuid = IStaticDataContainer.StaticDataContainer.GetObjectByGuid(id);
             if (objectByGuid != null)
-              this.currentState = (IState) objectByGuid;
+              currentState = (IState) objectByGuid;
             else
-              Logger.AddError(string.Format("Saveload error: loading state id={0} not found", (object) id));
+              Logger.AddError(string.Format("Saveload error: loading state id={0} not found", id));
           }
         }
         else if (childNode.Name == "PrevStateInfo" && childNode.ChildNodes.Count > 0)
         {
-          this.prevState = new StateInfo();
-          VMSaveLoadManager.LoadDynamicSerializable(childNode, (IDynamicLoadSerializable) this.prevState);
+          prevState = new StateInfo();
+          VMSaveLoadManager.LoadDynamicSerializable(childNode, prevState);
         }
       }
     }

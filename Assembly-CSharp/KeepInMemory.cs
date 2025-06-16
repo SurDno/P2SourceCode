@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-public class KeepInMemory : MonoBehaviour
+﻿public class KeepInMemory : MonoBehaviour
 {
   [SerializeField]
   private Object[] objects;

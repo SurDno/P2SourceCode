@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using UnityEngine;
 
 namespace Engine.Source.Services
 {
@@ -10,41 +9,41 @@ namespace Engine.Source.Services
     private Dictionary<GameObject, bool> CharactersReady;
     private List<GameObject> characters = new List<GameObject>();
 
-    public bool IsDialog => this.isDialog;
+    public bool IsDialog => isDialog;
 
     public GroupActivityObject ActivityObject
     {
-      get => this.activityObject;
+      get => activityObject;
       set
       {
-        this.activityObject = value;
-        if (!((Object) this.activityObject != (Object) null))
+        activityObject = value;
+        if (!((Object) activityObject != (Object) null))
           return;
-        this.isDialog = this.activityObject.IsDialogActivity;
+        isDialog = activityObject.IsDialogActivity;
       }
     }
 
     public List<GameObject> Characters
     {
-      get => this.characters;
+      get => characters;
       set
       {
-        this.characters = value;
-        this.CharactersReady = new Dictionary<GameObject, bool>();
-        foreach (GameObject character in this.characters)
-          this.CharactersReady[character] = false;
+        characters = value;
+        CharactersReady = new Dictionary<GameObject, bool>();
+        foreach (GameObject character in characters)
+          CharactersReady[character] = false;
       }
     }
 
     public void SetCharacterReady(GameObject character)
     {
-      if (!this.CharactersReady.ContainsKey(character))
+      if (!CharactersReady.ContainsKey(character))
         return;
-      this.CharactersReady[character] = true;
+      CharactersReady[character] = true;
     }
 
-    public bool NoCharactersReady() => !this.CharactersReady.ContainsValue(true);
+    public bool NoCharactersReady() => !CharactersReady.ContainsValue(true);
 
-    public bool AllCharactersReady() => !this.CharactersReady.ContainsValue(false);
+    public bool AllCharactersReady() => !CharactersReady.ContainsValue(false);
   }
 }

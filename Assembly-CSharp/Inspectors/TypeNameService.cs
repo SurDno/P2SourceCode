@@ -1,36 +1,35 @@
-﻿using Cofe.Proxies;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using Cofe.Proxies;
 
 namespace Inspectors
 {
   public static class TypeNameService
   {
-    private static Dictionary<Type, TypeNameService.Info> names = new Dictionary<Type, TypeNameService.Info>();
+    private static Dictionary<Type, Info> names = new Dictionary<Type, Info>();
 
     static TypeNameService()
     {
-      TypeNameService.RegisterTypeName(typeof (bool), "bool", "bool");
-      TypeNameService.RegisterTypeName(typeof (byte), "byte", "byte");
-      TypeNameService.RegisterTypeName(typeof (sbyte), "sbyte", "sbyte");
-      TypeNameService.RegisterTypeName(typeof (char), "char", "char");
-      TypeNameService.RegisterTypeName(typeof (Decimal), "decimal", "decimal");
-      TypeNameService.RegisterTypeName(typeof (double), "double", "double");
-      TypeNameService.RegisterTypeName(typeof (float), "float", "float");
-      TypeNameService.RegisterTypeName(typeof (int), "int", "int");
-      TypeNameService.RegisterTypeName(typeof (uint), "uint", "uint");
-      TypeNameService.RegisterTypeName(typeof (long), "long", "long");
-      TypeNameService.RegisterTypeName(typeof (ulong), "ulong", "ulong");
-      TypeNameService.RegisterTypeName(typeof (object), "object", "object");
-      TypeNameService.RegisterTypeName(typeof (short), "short", "short");
-      TypeNameService.RegisterTypeName(typeof (ushort), "ushort", "ushort");
-      TypeNameService.RegisterTypeName(typeof (string), "string", "string");
+      RegisterTypeName(typeof (bool), "bool", "bool");
+      RegisterTypeName(typeof (byte), "byte", "byte");
+      RegisterTypeName(typeof (sbyte), "sbyte", "sbyte");
+      RegisterTypeName(typeof (char), "char", "char");
+      RegisterTypeName(typeof (Decimal), "decimal", "decimal");
+      RegisterTypeName(typeof (double), "double", "double");
+      RegisterTypeName(typeof (float), "float", "float");
+      RegisterTypeName(typeof (int), "int", "int");
+      RegisterTypeName(typeof (uint), "uint", "uint");
+      RegisterTypeName(typeof (long), "long", "long");
+      RegisterTypeName(typeof (ulong), "ulong", "ulong");
+      RegisterTypeName(typeof (object), "object", "object");
+      RegisterTypeName(typeof (short), "short", "short");
+      RegisterTypeName(typeof (ushort), "ushort", "ushort");
+      RegisterTypeName(typeof (string), "string", "string");
     }
 
     public static void RegisterTypeName(Type type, string name, string item)
     {
-      TypeNameService.names.Add(type, new TypeNameService.Info()
-      {
+      names.Add(type, new Info {
         Name = name != null ? name : type.Name,
         Item = item != null ? item : type.Name
       });
@@ -39,12 +38,11 @@ namespace Inspectors
     public static string GetTypeName(Type type, bool menuItemName = false)
     {
       type = ProxyFactory.GetType(type);
-      TypeNameService.Info info;
-      if (TypeNameService.names.TryGetValue(type, out info))
+      Info info;
+      if (names.TryGetValue(type, out info))
         return menuItemName ? info.Item : info.Name;
-      string name = TypeNameService.GetName(type, menuItemName);
-      TypeNameService.names.Add(type, new TypeNameService.Info()
-      {
+      string name = GetName(type, menuItemName);
+      names.Add(type, new Info {
         Name = name,
         Item = name
       });
@@ -66,9 +64,9 @@ namespace Inspectors
         }
         else
         {
-          string str = name + "<" + TypeNameService.GetTypeName(genericArguments[0], menuItemName);
+          string str = name + "<" + GetTypeName(genericArguments[0], menuItemName);
           for (int index = 1; index < genericArguments.Length; ++index)
-            str = str + "," + TypeNameService.GetTypeName(genericArguments[index], menuItemName);
+            str = str + "," + GetTypeName(genericArguments[index], menuItemName);
           name = str + ">";
         }
       }

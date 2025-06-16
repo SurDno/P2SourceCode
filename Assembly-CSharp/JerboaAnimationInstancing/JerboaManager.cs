@@ -1,9 +1,5 @@
-﻿using Engine.Common.Services;
-using System;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.AI;
-using UnityEngine.Audio;
+﻿using System.Collections.Generic;
+using Engine.Common.Services;
 
 namespace JerboaAnimationInstancing
 {
@@ -67,105 +63,105 @@ namespace JerboaAnimationInstancing
 
     public float Quality
     {
-      get => this.quality;
-      set => this.quality = value;
+      get => quality;
+      set => quality = value;
     }
 
     public float Weight
     {
-      get => this.weight;
-      set => this.weight = value;
+      get => weight;
+      set => weight = value;
     }
 
     public JerboaColorEnum ColorEnum
     {
-      get => this.colorEnum;
+      get => colorEnum;
       set
       {
-        this.colorEnum = value;
-        if (!((UnityEngine.Object) this.prefabInstance != (UnityEngine.Object) null) || !((UnityEngine.Object) this.prefabInstance.GetComponentInChildren<SkinnedMeshRenderer>() != (UnityEngine.Object) null))
+        colorEnum = value;
+        if (!((UnityEngine.Object) prefabInstance != (UnityEngine.Object) null) || !((UnityEngine.Object) prefabInstance.GetComponentInChildren<SkinnedMeshRenderer>() != (UnityEngine.Object) null))
           return;
-        foreach (JerboaColor jerboaColor in this.jerboaColors)
+        foreach (JerboaColor jerboaColor in jerboaColors)
         {
-          if (jerboaColor.ColorEnum == this.colorEnum)
+          if (jerboaColor.ColorEnum == colorEnum)
           {
-            this.color = jerboaColor.Color;
+            color = jerboaColor.Color;
             return;
           }
         }
         Debug.LogWarning((object) "Jerboa color not found, defaulting to gray");
-        this.color = new Color(0.5f, 0.5f, 0.5f);
+        color = new Color(0.5f, 0.5f, 0.5f);
       }
     }
 
-    public Color Color => this.color;
+    public Color Color => color;
 
-    public float PathSampleRadius => this.pathSampleRadius;
+    public float PathSampleRadius => pathSampleRadius;
 
-    public float TeleportRadius => this.teleportRadius;
+    public float TeleportRadius => teleportRadius;
 
-    public float GroupSpreadAngle => this.groupSpreadAngle;
+    public float GroupSpreadAngle => groupSpreadAngle;
 
-    public LayerMask RaycasLayerMask => this.raycastLayerMask;
+    public LayerMask RaycasLayerMask => raycastLayerMask;
 
-    public int GroupWalkNavigationMask => this.groupWalkNavigationMask;
+    public int GroupWalkNavigationMask => groupWalkNavigationMask;
 
-    public int GroupRayCount => this.groupRayCount;
+    public int GroupRayCount => groupRayCount;
 
-    public float GroupRayDistance => this.groupRayDistance;
+    public float GroupRayDistance => groupRayDistance;
 
-    public float JerboaRespawnLimitPerSecond => this.jerboaRespawnLimitPerSecond;
+    public float JerboaRespawnLimitPerSecond => jerboaRespawnLimitPerSecond;
 
-    public float SmoothedJerboaWeight => this.smoothedJerboaWeight;
+    public float SmoothedJerboaWeight => smoothedJerboaWeight;
 
-    public AudioMixerGroup AudioMixerGroup => this.audioMixerGroup;
+    public AudioMixerGroup AudioMixerGroup => audioMixerGroup;
 
-    public AudioClip GetJerboaAudioclip(int level) => this.jerboaAudioClips[level];
+    public AudioClip GetJerboaAudioclip(int level) => jerboaAudioClips[level];
 
-    public TextAsset JerboaAnimationsTexture => this.jerboaAnimationsTexture;
+    public TextAsset JerboaAnimationsTexture => jerboaAnimationsTexture;
 
     public void Syncronize()
     {
-      for (int index = 0; index < this.groups.Count; ++index)
+      for (int index = 0; index < groups.Count; ++index)
       {
-        this.groups[index].TryGroupTeleport(this.transform.position, this.teleportRadius);
-        this.groups[index].Syncronize();
+        groups[index].TryGroupTeleport(this.transform.position, teleportRadius);
+        groups[index].Syncronize();
       }
     }
 
     private void OnEnable()
     {
-      this.jerboaInstancingManager = new JerboaInstancingManager(this);
-      this.jerboaAnimationManager = new GameObject("JerboaAnimationManager").AddComponent<JerboaAnimationManager>();
-      this.jerboaAnimationManager.transform.parent = this.transform;
-      this.CreateGroups();
-      this.prefabInstance = UnityEngine.Object.Instantiate<GameObject>(this.prefab);
-      this.prefabInstance.name = this.prefab.name;
-      JerboaInstance component = this.prefabInstance.GetComponent<JerboaInstance>();
-      component.InitializeAnimation(this.jerboaInstancingManager, this.jerboaAnimationManager, this.jerboaAnimationsTexture);
+      jerboaInstancingManager = new JerboaInstancingManager(this);
+      jerboaAnimationManager = new GameObject("JerboaAnimationManager").AddComponent<JerboaAnimationManager>();
+      jerboaAnimationManager.transform.parent = this.transform;
+      CreateGroups();
+      prefabInstance = UnityEngine.Object.Instantiate<GameObject>(prefab);
+      prefabInstance.name = prefab.name;
+      JerboaInstance component = prefabInstance.GetComponent<JerboaInstance>();
+      component.InitializeAnimation(jerboaInstancingManager, jerboaAnimationManager, jerboaAnimationsTexture);
       component.transform.parent = this.transform;
-      for (int index = 0; index < this.jerboaCount; ++index)
+      for (int index = 0; index < jerboaCount; ++index)
       {
         JerboaInstanceDescription instance = new JerboaInstanceDescription();
         instance.Source = component;
         instance.PlayAnimation(UnityEngine.Random.Range(0, 3));
-        this.currentGroupIndex = (this.currentGroupIndex + 1) % this.groups.Count;
-        this.groups[this.currentGroupIndex].AddInstance(instance);
-        this.jerboaInstancingManager.AddBoundingSphere(instance);
-        this.jerboaInstancingManager.AddInstance(instance);
+        currentGroupIndex = (currentGroupIndex + 1) % groups.Count;
+        groups[currentGroupIndex].AddInstance(instance);
+        jerboaInstancingManager.AddBoundingSphere(instance);
+        jerboaInstancingManager.AddInstance(instance);
       }
-      this.Syncronize();
+      Syncronize();
     }
 
     private void OnDisable()
     {
-      this.DestroyGroups();
-      UnityEngine.Object.Destroy((UnityEngine.Object) this.prefabInstance);
-      this.jerboaInstancingManager.Dispose();
-      this.jerboaInstancingManager = (JerboaInstancingManager) null;
+      DestroyGroups();
+      UnityEngine.Object.Destroy((UnityEngine.Object) prefabInstance);
+      jerboaInstancingManager.Dispose();
+      jerboaInstancingManager = null;
     }
 
-    private void Awake() => this.Visible = true;
+    private void Awake() => Visible = true;
 
     private void Start()
     {
@@ -173,7 +169,7 @@ namespace JerboaAnimationInstancing
 
     private void CreateGroups()
     {
-      if ((UnityEngine.Object) this.groupPrefab == (UnityEngine.Object) null)
+      if ((UnityEngine.Object) groupPrefab == (UnityEngine.Object) null)
       {
         Debug.LogError((object) "Jerboa groupPrefab is null");
       }
@@ -181,12 +177,12 @@ namespace JerboaAnimationInstancing
       {
         Vector3 position = this.transform.position;
         NavMeshHit hit;
-        if (NavMesh.SamplePosition(position, out hit, 100f, this.groupWalkNavigationMask))
+        if (NavMesh.SamplePosition(position, out hit, 100f, groupWalkNavigationMask))
           position = hit.position;
-        for (int index = 0; index < this.groupsCount; ++index)
+        for (int index = 0; index < groupsCount; ++index)
         {
-          GameObject gameObject = UnityEngine.Object.Instantiate<GameObject>(this.groupPrefab, position, Quaternion.identity);
-          gameObject.name = string.Format("Jerboa_Group_{0}", (object) index);
+          GameObject gameObject = UnityEngine.Object.Instantiate<GameObject>(groupPrefab, position, Quaternion.identity);
+          gameObject.name = string.Format("Jerboa_Group_{0}", index);
           JerboaGroupBarycentric component = gameObject.GetComponent<JerboaGroupBarycentric>();
           component.Initialize(this);
           if ((UnityEngine.Object) component == (UnityEngine.Object) null)
@@ -194,20 +190,20 @@ namespace JerboaAnimationInstancing
             Debug.LogError((object) (typeof (JerboaGroupBarycentric).Name + " component is not on group prefab"));
             break;
           }
-          this.groups.Add(component);
+          groups.Add(component);
         }
       }
     }
 
     private void DestroyGroups()
     {
-      for (int index = 0; index < this.groups.Count; ++index)
+      for (int index = 0; index < groups.Count; ++index)
       {
-        JerboaGroupBarycentric group = this.groups[index];
+        JerboaGroupBarycentric group = groups[index];
         if ((UnityEngine.Object) group != (UnityEngine.Object) null)
           UnityEngine.Object.Destroy((UnityEngine.Object) group.gameObject);
       }
-      this.groups.Clear();
+      groups.Clear();
     }
 
     private int SortDelegate(JerboaGroupBarycentric a, JerboaGroupBarycentric b)
@@ -217,18 +213,18 @@ namespace JerboaAnimationInstancing
 
     private void Update()
     {
-      this.jerboaInstancingManager.Update(this.transform.position);
-      this.smoothedJerboaWeight = Mathf.MoveTowards(this.smoothedJerboaWeight, this.weight * this.quality, (float) ((double) this.quality * (double) Time.deltaTime / 3.0));
+      jerboaInstancingManager.Update(this.transform.position);
+      smoothedJerboaWeight = Mathf.MoveTowards(smoothedJerboaWeight, weight * quality, (float) (quality * (double) Time.deltaTime / 3.0));
       if ((double) UnityEngine.Random.value < (double) Time.deltaTime / 0.5)
       {
-        this.groups.Sort(new Comparison<JerboaGroupBarycentric>(this.SortDelegate));
-        for (int index = 0; index < this.groups.Count; ++index)
-          this.groups[index].Aloud = index < 2;
+        groups.Sort(SortDelegate);
+        for (int index = 0; index < groups.Count; ++index)
+          groups[index].Aloud = index < 2;
       }
-      for (int index = 0; index < this.groupsCount; ++index)
+      for (int index = 0; index < groupsCount; ++index)
       {
-        JerboaGroupBarycentric group = this.groups[index];
-        if ((double) (this.transform.position - group.transform.position).magnitude >= (double) this.teleportRadius * 2.0 && group.TryGroupTeleport(this.transform.position, this.teleportRadius))
+        JerboaGroupBarycentric group = groups[index];
+        if ((double) (this.transform.position - group.transform.position).magnitude >= teleportRadius * 2.0 && group.TryGroupTeleport(this.transform.position, teleportRadius))
           break;
       }
     }

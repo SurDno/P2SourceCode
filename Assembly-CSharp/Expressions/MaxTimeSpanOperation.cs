@@ -1,6 +1,6 @@
-﻿using Engine.Common.Generator;
+﻿using System;
+using Engine.Common.Generator;
 using Inspectors;
-using System;
 
 namespace Expressions
 {
@@ -14,7 +14,7 @@ namespace Expressions
     {
       get
       {
-        return "max(" + (this.a != null ? this.a.ValueView : "null") + ", " + (this.b != null ? this.b.ValueView : "null") + ")";
+        return "max(" + (a != null ? a.ValueView : "null") + ", " + (b != null ? b.ValueView : "null") + ")";
       }
     }
   }

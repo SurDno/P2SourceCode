@@ -6,15 +6,15 @@ namespace UnityEngine.PostProcessing
   public class VignetteModel : PostProcessingModel
   {
     [SerializeField]
-    private VignetteModel.Settings m_Settings = VignetteModel.Settings.defaultSettings;
+    private Settings m_Settings = Settings.defaultSettings;
 
-    public VignetteModel.Settings settings
+    public Settings settings
     {
-      get => this.m_Settings;
-      set => this.m_Settings = value;
+      get => m_Settings;
+      set => m_Settings = value;
     }
 
-    public override void Reset() => this.m_Settings = VignetteModel.Settings.defaultSettings;
+    public override void Reset() => m_Settings = Settings.defaultSettings;
 
     public enum Mode
     {
@@ -26,7 +26,7 @@ namespace UnityEngine.PostProcessing
     public struct Settings
     {
       [Tooltip("Use the \"Classic\" mode for parametric controls. Use the \"Masked\" mode to use your own texture mask.")]
-      public VignetteModel.Mode mode;
+      public Mode mode;
       [ColorUsage(false)]
       [Tooltip("Vignette color. Use the alpha channel for transparency.")]
       public Color color;
@@ -49,13 +49,12 @@ namespace UnityEngine.PostProcessing
       [Tooltip("Should the vignette be perfectly round or be dependent on the current aspect ratio?")]
       public bool rounded;
 
-      public static VignetteModel.Settings defaultSettings
+      public static Settings defaultSettings
       {
         get
         {
-          return new VignetteModel.Settings()
-          {
-            mode = VignetteModel.Mode.Classic,
+          return new Settings {
+            mode = Mode.Classic,
             color = new Color(0.0f, 0.0f, 0.0f, 1f),
             center = new Vector2(0.5f, 0.5f),
             intensity = 0.45f,

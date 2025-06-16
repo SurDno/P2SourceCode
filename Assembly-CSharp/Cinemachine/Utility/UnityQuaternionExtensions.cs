@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace Cinemachine.Utility
+﻿namespace Cinemachine.Utility
 {
   public static class UnityQuaternionExtensions
   {

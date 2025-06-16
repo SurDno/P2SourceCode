@@ -12,7 +12,7 @@ namespace Engine.Source.Difficulties
       {
         if (preset.Name == presetName)
         {
-          DifficultyUtility.SetPresetValues(preset);
+          SetPresetValues(preset);
           break;
         }
       }

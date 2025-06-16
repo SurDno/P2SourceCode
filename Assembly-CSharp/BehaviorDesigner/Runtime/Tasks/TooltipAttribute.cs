@@ -2,13 +2,13 @@
 
 namespace BehaviorDesigner.Runtime.Tasks
 {
-  [AttributeUsage(AttributeTargets.Field, AllowMultiple = false, Inherited = false)]
+  [AttributeUsage(AttributeTargets.Field)]
   public class TooltipAttribute : Attribute
   {
     private readonly string mTooltip;
 
-    public string Tooltip => this.mTooltip;
+    public string Tooltip => mTooltip;
 
-    public TooltipAttribute(string tooltip) => this.mTooltip = tooltip;
+    public TooltipAttribute(string tooltip) => mTooltip = tooltip;
   }
 }

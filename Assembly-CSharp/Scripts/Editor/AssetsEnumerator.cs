@@ -14,11 +14,11 @@ namespace Scripts.Editor
       this.assets = assets;
     }
 
-    public IEnumerator<string> GetEnumerator() => this.assets.GetEnumerator();
+    public IEnumerator<string> GetEnumerator() => assets.GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator()
     {
-      return (IEnumerator) ((IEnumerable<string>) this).GetEnumerator();
+      return GetEnumerator();
     }
   }
 }

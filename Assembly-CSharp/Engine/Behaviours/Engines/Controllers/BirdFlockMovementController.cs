@@ -1,7 +1,5 @@
-﻿using Engine.Behaviours.Components;
-using System;
-using UnityEngine;
-using UnityEngine.AI;
+﻿using System;
+using Engine.Behaviours.Components;
 
 namespace Engine.Behaviours.Engines.Controllers
 {
@@ -22,10 +20,10 @@ namespace Engine.Behaviours.Engines.Controllers
     public void Initialize(GameObject gameObject)
     {
       this.gameObject = gameObject;
-      this.agent = gameObject.GetComponent<NavMeshAgent>();
-      if (!(bool) (UnityEngine.Object) this.agent)
+      agent = gameObject.GetComponent<NavMeshAgent>();
+      if (!(bool) (UnityEngine.Object) agent)
         return;
-      this.agent.enabled = false;
+      agent.enabled = false;
     }
 
     public void StartMovement(Vector3 direction, EngineBehavior.GaitType gait)
@@ -35,8 +33,8 @@ namespace Engine.Behaviours.Engines.Controllers
     public bool Move(Vector3 direction, float remainingDistance, EngineBehavior.GaitType gait)
     {
       float num = gait == EngineBehavior.GaitType.Walk ? 5f : 10f;
-      this.gameObject.transform.position += direction.normalized * num * Time.deltaTime;
-      return (double) remainingDistance < 1.0;
+      gameObject.transform.position += direction.normalized * num * Time.deltaTime;
+      return remainingDistance < 1.0;
     }
 
     public bool Rotate(Vector3 direction) => true;

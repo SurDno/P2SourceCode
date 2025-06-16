@@ -1,14 +1,12 @@
-﻿using JetBrains.Annotations;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace UnityHeapCrawler
 {
   public class CrawlSettings
   {
     [NotNull]
-    private static readonly System.Type[] hierarchyTypes = new System.Type[6]
+    private static readonly Type[] hierarchyTypes = new Type[6]
     {
       typeof (GameObject),
       typeof (Component),
@@ -25,30 +23,30 @@ namespace UnityHeapCrawler
     [NotNull]
     public string Filename;
     public bool PrintChildren = true;
-    public bool PrintOnlyGameObjects = false;
-    public bool IncludeAllUnityTypes = false;
+    public bool PrintOnlyGameObjects;
+    public bool IncludeAllUnityTypes;
     [NotNull]
-    public List<System.Type> IncludedUnityTypes = new List<System.Type>();
-    public int MaxDepth = 0;
+    public List<Type> IncludedUnityTypes = new List<Type>();
+    public int MaxDepth;
     public int MaxChildren = 10;
     public int MinItemSize = 1024;
 
     [NotNull]
-    public static IComparer<CrawlSettings> PriorityComparer { get; } = (IComparer<CrawlSettings>) new CrawlSettings.PriorityRelationalComparer();
+    public static IComparer<CrawlSettings> PriorityComparer { get; } = new PriorityRelationalComparer();
 
     public CrawlSettings([NotNull] string filename, [NotNull] string caption, [NotNull] Action rootsCollector, CrawlOrder order)
     {
-      this.Filename = filename;
-      this.Caption = caption;
-      this.RootsCollector = rootsCollector;
-      this.Order = order;
+      Filename = filename;
+      Caption = caption;
+      RootsCollector = rootsCollector;
+      Order = order;
     }
 
-    internal bool IsUnityTypeAllowed(System.Type type)
+    internal bool IsUnityTypeAllowed(Type type)
     {
-      if (this.IncludeAllUnityTypes)
+      if (IncludeAllUnityTypes)
         return true;
-      foreach (System.Type includedUnityType in this.IncludedUnityTypes)
+      foreach (Type includedUnityType in IncludedUnityTypes)
       {
         if (includedUnityType.IsAssignableFrom(type))
           return true;
@@ -81,7 +79,7 @@ namespace UnityHeapCrawler
       {
         PrintOnlyGameObjects = true,
         MaxChildren = 0,
-        IncludedUnityTypes = new List<System.Type>((IEnumerable<System.Type>) CrawlSettings.hierarchyTypes)
+        IncludedUnityTypes = new List<Type>(hierarchyTypes)
       };
     }
 
@@ -101,7 +99,7 @@ namespace UnityHeapCrawler
       {
         PrintOnlyGameObjects = true,
         MaxChildren = 0,
-        IncludedUnityTypes = new List<System.Type>((IEnumerable<System.Type>) CrawlSettings.hierarchyTypes)
+        IncludedUnityTypes = new List<Type>(hierarchyTypes)
       };
     }
 
@@ -113,7 +111,7 @@ namespace UnityHeapCrawler
 
     public override string ToString()
     {
-      return "Crawl Settings [" + this.Caption + ", " + this.Filename + "]";
+      return "Crawl Settings [" + Caption + ", " + Filename + "]";
     }
 
     private sealed class PriorityRelationalComparer : IComparer<CrawlSettings>
@@ -124,7 +122,7 @@ namespace UnityHeapCrawler
           return 0;
         if (y == null)
           return 1;
-        return x == null ? -1 : x.Order.CompareTo((object) y.Order);
+        return x == null ? -1 : x.Order.CompareTo(y.Order);
       }
     }
   }

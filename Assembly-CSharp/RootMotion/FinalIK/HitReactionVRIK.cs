@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEngine;
 
 namespace RootMotion.FinalIK
 {
@@ -7,35 +6,35 @@ namespace RootMotion.FinalIK
   {
     public AnimationCurve[] offsetCurves;
     [Tooltip("Hit points for the FBBIK effectors")]
-    public HitReactionVRIK.PositionOffset[] positionOffsets;
+    public PositionOffset[] positionOffsets;
     [Tooltip(" Hit points for bones without an effector, such as the head")]
-    public HitReactionVRIK.RotationOffset[] rotationOffsets;
+    public RotationOffset[] rotationOffsets;
 
     protected override void OnModifyOffset()
     {
-      foreach (HitReactionVRIK.Offset positionOffset in this.positionOffsets)
-        positionOffset.Apply(this.ik, this.offsetCurves, this.weight);
-      foreach (HitReactionVRIK.Offset rotationOffset in this.rotationOffsets)
-        rotationOffset.Apply(this.ik, this.offsetCurves, this.weight);
+      foreach (Offset positionOffset in positionOffsets)
+        positionOffset.Apply(ik, offsetCurves, weight);
+      foreach (Offset rotationOffset in rotationOffsets)
+        rotationOffset.Apply(ik, offsetCurves, weight);
     }
 
     public void Hit(Collider collider, Vector3 force, Vector3 point)
     {
-      if ((UnityEngine.Object) this.ik == (UnityEngine.Object) null)
+      if ((UnityEngine.Object) ik == (UnityEngine.Object) null)
       {
         Debug.LogError((object) "No IK assigned in HitReaction");
       }
       else
       {
-        foreach (HitReactionVRIK.PositionOffset positionOffset in this.positionOffsets)
+        foreach (PositionOffset positionOffset in positionOffsets)
         {
           if ((UnityEngine.Object) positionOffset.collider == (UnityEngine.Object) collider)
-            positionOffset.Hit(force, this.offsetCurves, point);
+            positionOffset.Hit(force, offsetCurves, point);
         }
-        foreach (HitReactionVRIK.RotationOffset rotationOffset in this.rotationOffsets)
+        foreach (RotationOffset rotationOffset in rotationOffsets)
         {
           if ((UnityEngine.Object) rotationOffset.collider == (UnityEngine.Object) collider)
-            rotationOffset.Hit(force, this.offsetCurves, point);
+            rotationOffset.Hit(force, offsetCurves, point);
         }
       }
     }
@@ -64,19 +63,19 @@ namespace RootMotion.FinalIK
 
       public void Hit(Vector3 force, AnimationCurve[] curves, Vector3 point)
       {
-        if ((double) this.length == 0.0)
-          this.length = this.GetLength(curves);
-        if ((double) this.length <= 0.0)
+        if (length == 0.0)
+          length = GetLength(curves);
+        if (length <= 0.0)
         {
           Debug.LogError((object) "Hit Point WeightCurve length is zero.");
         }
         else
         {
-          if ((double) this.timer < 1.0)
-            this.crossFader = 0.0f;
-          this.crossFadeSpeed = (double) this.crossFadeTime > 0.0 ? 1f / this.crossFadeTime : 0.0f;
-          this.CrossFadeStart();
-          this.timer = 0.0f;
+          if (timer < 1.0)
+            crossFader = 0.0f;
+          crossFadeSpeed = crossFadeTime > 0.0 ? 1f / crossFadeTime : 0.0f;
+          CrossFadeStart();
+          timer = 0.0f;
           this.force = force;
           this.point = point;
         }
@@ -84,13 +83,13 @@ namespace RootMotion.FinalIK
 
       public void Apply(VRIK ik, AnimationCurve[] curves, float weight)
       {
-        float num = Time.time - this.lastTime;
-        this.lastTime = Time.time;
-        if ((double) this.timer >= (double) this.length)
+        float num = Time.time - lastTime;
+        lastTime = Time.time;
+        if (timer >= (double) length)
           return;
-        this.timer = Mathf.Clamp(this.timer + num, 0.0f, this.length);
-        this.crossFader = (double) this.crossFadeSpeed <= 0.0 ? 1f : Mathf.Clamp(this.crossFader + num * this.crossFadeSpeed, 0.0f, 1f);
-        this.OnApply(ik, curves, weight);
+        timer = Mathf.Clamp(timer + num, 0.0f, length);
+        crossFader = crossFadeSpeed <= 0.0 ? 1f : Mathf.Clamp(crossFader + num * crossFadeSpeed, 0.0f, 1f);
+        OnApply(ik, curves, weight);
       }
 
       protected abstract float GetLength(AnimationCurve[] curves);
@@ -101,34 +100,34 @@ namespace RootMotion.FinalIK
     }
 
     [Serializable]
-    public class PositionOffset : HitReactionVRIK.Offset
+    public class PositionOffset : Offset
     {
       [Tooltip("Offset magnitude in the direction of the hit force")]
       public int forceDirCurveIndex;
       [Tooltip("Offset magnitude in the direction of character.up")]
       public int upDirCurveIndex = 1;
       [Tooltip("Linking this offset to the VRIK position offsets")]
-      public HitReactionVRIK.PositionOffset.PositionOffsetLink[] offsetLinks;
+      public PositionOffsetLink[] offsetLinks;
 
       protected override float GetLength(AnimationCurve[] curves)
       {
-        float max = curves[this.forceDirCurveIndex].keys.Length != 0 ? curves[this.forceDirCurveIndex].keys[curves[this.forceDirCurveIndex].length - 1].time : 0.0f;
-        float min = curves[this.upDirCurveIndex].keys.Length != 0 ? curves[this.upDirCurveIndex].keys[curves[this.upDirCurveIndex].length - 1].time : 0.0f;
+        float max = curves[forceDirCurveIndex].keys.Length != 0 ? curves[forceDirCurveIndex].keys[curves[forceDirCurveIndex].length - 1].time : 0.0f;
+        float min = curves[upDirCurveIndex].keys.Length != 0 ? curves[upDirCurveIndex].keys[curves[upDirCurveIndex].length - 1].time : 0.0f;
         return Mathf.Clamp(max, min, max);
       }
 
       protected override void CrossFadeStart()
       {
-        foreach (HitReactionVRIK.PositionOffset.PositionOffsetLink offsetLink in this.offsetLinks)
+        foreach (PositionOffsetLink offsetLink in offsetLinks)
           offsetLink.CrossFadeStart();
       }
 
       protected override void OnApply(VRIK ik, AnimationCurve[] curves, float weight)
       {
-        Vector3 vector3 = ik.transform.up * this.force.magnitude;
-        Vector3 offset = (curves[this.forceDirCurveIndex].Evaluate(this.timer) * this.force + curves[this.upDirCurveIndex].Evaluate(this.timer) * vector3) * weight;
-        foreach (HitReactionVRIK.PositionOffset.PositionOffsetLink offsetLink in this.offsetLinks)
-          offsetLink.Apply(ik, offset, this.crossFader);
+        Vector3 vector3 = ik.transform.up * force.magnitude;
+        Vector3 offset = (curves[forceDirCurveIndex].Evaluate(timer) * force + curves[upDirCurveIndex].Evaluate(timer) * vector3) * weight;
+        foreach (PositionOffsetLink offsetLink in offsetLinks)
+          offsetLink.Apply(ik, offset, crossFader);
       }
 
       [Serializable]
@@ -143,50 +142,50 @@ namespace RootMotion.FinalIK
 
         public void Apply(VRIK ik, Vector3 offset, float crossFader)
         {
-          this.current = Vector3.Lerp(this.lastValue, offset * this.weight, crossFader);
-          ik.solver.AddPositionOffset(this.positionOffset, this.current);
+          current = Vector3.Lerp(lastValue, offset * weight, crossFader);
+          ik.solver.AddPositionOffset(positionOffset, current);
         }
 
-        public void CrossFadeStart() => this.lastValue = this.current;
+        public void CrossFadeStart() => lastValue = current;
       }
     }
 
     [Serializable]
-    public class RotationOffset : HitReactionVRIK.Offset
+    public class RotationOffset : Offset
     {
       [Tooltip("The angle to rotate the bone around it's rigidbody's world center of mass")]
       public int curveIndex;
       [Tooltip("Linking this hit point to bone(s)")]
-      public HitReactionVRIK.RotationOffset.RotationOffsetLink[] offsetLinks;
+      public RotationOffsetLink[] offsetLinks;
       private Rigidbody rigidbody;
 
       protected override float GetLength(AnimationCurve[] curves)
       {
-        return curves[this.curveIndex].keys.Length != 0 ? curves[this.curveIndex].keys[curves[this.curveIndex].length - 1].time : 0.0f;
+        return curves[curveIndex].keys.Length != 0 ? curves[curveIndex].keys[curves[curveIndex].length - 1].time : 0.0f;
       }
 
       protected override void CrossFadeStart()
       {
-        foreach (HitReactionVRIK.RotationOffset.RotationOffsetLink offsetLink in this.offsetLinks)
+        foreach (RotationOffsetLink offsetLink in offsetLinks)
           offsetLink.CrossFadeStart();
       }
 
       protected override void OnApply(VRIK ik, AnimationCurve[] curves, float weight)
       {
-        if ((UnityEngine.Object) this.collider == (UnityEngine.Object) null)
+        if ((UnityEngine.Object) collider == (UnityEngine.Object) null)
         {
           Debug.LogError((object) "No collider assigned for a HitPointBone in the HitReaction component.");
         }
         else
         {
-          if ((UnityEngine.Object) this.rigidbody == (UnityEngine.Object) null)
-            this.rigidbody = this.collider.GetComponent<Rigidbody>();
-          if (!((UnityEngine.Object) this.rigidbody != (UnityEngine.Object) null))
+          if ((UnityEngine.Object) rigidbody == (UnityEngine.Object) null)
+            rigidbody = collider.GetComponent<Rigidbody>();
+          if (!((UnityEngine.Object) rigidbody != (UnityEngine.Object) null))
             return;
-          Vector3 axis = Vector3.Cross(this.force, this.point - this.rigidbody.worldCenterOfMass);
-          Quaternion offset = Quaternion.AngleAxis(curves[this.curveIndex].Evaluate(this.timer) * weight, axis);
-          foreach (HitReactionVRIK.RotationOffset.RotationOffsetLink offsetLink in this.offsetLinks)
-            offsetLink.Apply(ik, offset, this.crossFader);
+          Vector3 axis = Vector3.Cross(force, point - rigidbody.worldCenterOfMass);
+          Quaternion offset = Quaternion.AngleAxis(curves[curveIndex].Evaluate(timer) * weight, axis);
+          foreach (RotationOffsetLink offsetLink in offsetLinks)
+            offsetLink.Apply(ik, offset, crossFader);
         }
       }
 
@@ -203,11 +202,11 @@ namespace RootMotion.FinalIK
 
         public void Apply(VRIK ik, Quaternion offset, float crossFader)
         {
-          this.current = Quaternion.Lerp(this.lastValue, Quaternion.Lerp(Quaternion.identity, offset, this.weight), crossFader);
-          ik.solver.AddRotationOffset(this.rotationOffset, this.current);
+          current = Quaternion.Lerp(lastValue, Quaternion.Lerp(Quaternion.identity, offset, weight), crossFader);
+          ik.solver.AddRotationOffset(rotationOffset, current);
         }
 
-        public void CrossFadeStart() => this.lastValue = this.current;
+        public void CrossFadeStart() => lastValue = current;
       }
     }
   }

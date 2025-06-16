@@ -1,10 +1,10 @@
-﻿using Engine.Common;
+﻿using System;
+using System.Collections.Generic;
+using Engine.Common;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Engine.Source.Commons;
 using Inspectors;
-using System;
-using System.Collections.Generic;
 
 namespace Engine.Source.Components
 {
@@ -12,9 +12,9 @@ namespace Engine.Source.Components
   [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
   public class RegisterComponent : EngineComponent
   {
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy()]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected string tag = "";
@@ -23,22 +23,22 @@ namespace Engine.Source.Components
     public static IEntity GetByTag(string tag)
     {
       IEntity byTag;
-      RegisterComponent.entities.TryGetValue(tag, out byTag);
+      entities.TryGetValue(tag, out byTag);
       return byTag;
     }
 
     public override void OnAdded()
     {
       base.OnAdded();
-      IEntity entity = (IEntity) null;
-      if (RegisterComponent.entities.TryGetValue(this.tag, out entity))
-        throw new Exception("Already add with tag : " + this.tag + " , exist : " + entity.GetInfo() + " , new : " + this.Owner.GetInfo());
-      RegisterComponent.entities.Add(this.tag, this.Owner);
+      IEntity entity = null;
+      if (entities.TryGetValue(tag, out entity))
+        throw new Exception("Already add with tag : " + tag + " , exist : " + entity.GetInfo() + " , new : " + Owner.GetInfo());
+      entities.Add(tag, Owner);
     }
 
     public override void OnRemoved()
     {
-      RegisterComponent.entities.Remove(this.tag);
+      entities.Remove(tag);
       base.OnRemoved();
     }
   }

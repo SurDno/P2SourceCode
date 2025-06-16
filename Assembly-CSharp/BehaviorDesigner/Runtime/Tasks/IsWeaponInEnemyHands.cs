@@ -1,4 +1,5 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Behaviours.Engines.Services;
 using Engine.Common.Commons;
@@ -6,7 +7,6 @@ using Engine.Common.Commons.Converters;
 using Engine.Common.Components.AttackerPlayer;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
-using UnityEngine;
 
 namespace BehaviorDesigner.Runtime.Tasks
 {
@@ -17,9 +17,9 @@ namespace BehaviorDesigner.Runtime.Tasks
   [FactoryProxy(typeof (IsWeaponInEnemyHands))]
   public class IsWeaponInEnemyHands : Conditional, IStub, ISerializeDataWrite, ISerializeDataRead
   {
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy()]
     [SerializeField]
     private WeaponEnum weapon = WeaponEnum.Hands;
     private EnemyBase owner;
@@ -27,76 +27,76 @@ namespace BehaviorDesigner.Runtime.Tasks
 
     public override void OnAwake()
     {
-      this.owner = this.gameObject.GetComponent<EnemyBase>();
-      if (!((UnityEngine.Object) this.owner != (UnityEngine.Object) null) || !((UnityEngine.Object) this.owner.Enemy != (UnityEngine.Object) null))
+      owner = gameObject.GetComponent<EnemyBase>();
+      if (!((UnityEngine.Object) owner != (UnityEngine.Object) null) || !((UnityEngine.Object) owner.Enemy != (UnityEngine.Object) null))
         return;
-      this.npcState = this.owner.Enemy.gameObject.GetComponent<NpcState>();
+      npcState = owner.Enemy.gameObject.GetComponent<NpcState>();
     }
 
     public override TaskStatus OnUpdate()
     {
-      if ((UnityEngine.Object) this.owner == (UnityEngine.Object) null || (UnityEngine.Object) this.owner.Enemy == (UnityEngine.Object) null)
+      if ((UnityEngine.Object) owner == (UnityEngine.Object) null || (UnityEngine.Object) owner.Enemy == (UnityEngine.Object) null)
         return TaskStatus.Failure;
-      if (this.owner.Enemy is PlayerEnemy)
+      if (owner.Enemy is PlayerEnemy)
       {
-        PlayerWeaponServiceNew component = this.owner.Enemy.gameObject.GetComponent<PlayerWeaponServiceNew>();
+        PlayerWeaponServiceNew component = owner.Enemy.gameObject.GetComponent<PlayerWeaponServiceNew>();
         if ((UnityEngine.Object) component == (UnityEngine.Object) null)
           return TaskStatus.Failure;
         switch (component.KindBase)
         {
           case WeaponKind.Hands:
-            if (this.weapon == WeaponEnum.Hands)
+            if (weapon == WeaponEnum.Hands)
               return TaskStatus.Success;
             break;
           case WeaponKind.Knife:
-            if (this.weapon == WeaponEnum.Knife)
+            if (weapon == WeaponEnum.Knife)
               return TaskStatus.Success;
             break;
           case WeaponKind.Revolver:
-            if (this.weapon == WeaponEnum.Revolver)
+            if (weapon == WeaponEnum.Revolver)
               return TaskStatus.Success;
             break;
           case WeaponKind.Rifle:
-            if (this.weapon == WeaponEnum.Rifle)
+            if (weapon == WeaponEnum.Rifle)
               return TaskStatus.Success;
             break;
           case WeaponKind.Scalpel:
-            if (this.weapon == WeaponEnum.Scalpel)
+            if (weapon == WeaponEnum.Scalpel)
               return TaskStatus.Success;
             break;
           case WeaponKind.Lockpick:
-            if (this.weapon == WeaponEnum.Lockpick)
+            if (weapon == WeaponEnum.Lockpick)
               return TaskStatus.Success;
             break;
           case WeaponKind.Shotgun:
-            if (this.weapon == WeaponEnum.Shotgun)
+            if (weapon == WeaponEnum.Shotgun)
               return TaskStatus.Success;
             break;
         }
         return TaskStatus.Failure;
       }
-      this.npcState = this.owner.Enemy.gameObject.GetComponent<NpcState>();
-      return (UnityEngine.Object) this.npcState == (UnityEngine.Object) null || this.npcState.Weapon != this.weapon ? TaskStatus.Failure : TaskStatus.Success;
+      npcState = owner.Enemy.gameObject.GetComponent<NpcState>();
+      return (UnityEngine.Object) npcState == (UnityEngine.Object) null || npcState.Weapon != weapon ? TaskStatus.Failure : TaskStatus.Success;
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.WriteSerialize<NodeData>(writer, "NodeData", this.nodeData);
-      DefaultDataWriteUtility.Write(writer, "Id", this.id);
-      DefaultDataWriteUtility.Write(writer, "FriendlyName", this.friendlyName);
-      DefaultDataWriteUtility.Write(writer, "Instant", this.instant);
-      DefaultDataWriteUtility.Write(writer, "Disabled", this.disabled);
-      DefaultDataWriteUtility.WriteEnum<WeaponEnum>(writer, "Weapon", this.weapon);
+      DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
+      DefaultDataWriteUtility.Write(writer, "Id", id);
+      DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
+      DefaultDataWriteUtility.Write(writer, "Instant", instant);
+      DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
+      DefaultDataWriteUtility.WriteEnum(writer, "Weapon", weapon);
     }
 
-    public void DataRead(IDataReader reader, System.Type type)
+    public void DataRead(IDataReader reader, Type type)
     {
-      this.nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
-      this.id = DefaultDataReadUtility.Read(reader, "Id", this.id);
-      this.friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", this.friendlyName);
-      this.instant = DefaultDataReadUtility.Read(reader, "Instant", this.instant);
-      this.disabled = DefaultDataReadUtility.Read(reader, "Disabled", this.disabled);
-      this.weapon = DefaultDataReadUtility.ReadEnum<WeaponEnum>(reader, "Weapon");
+      nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
+      id = DefaultDataReadUtility.Read(reader, "Id", id);
+      friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
+      instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
+      disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
+      weapon = DefaultDataReadUtility.ReadEnum<WeaponEnum>(reader, "Weapon");
     }
   }
 }

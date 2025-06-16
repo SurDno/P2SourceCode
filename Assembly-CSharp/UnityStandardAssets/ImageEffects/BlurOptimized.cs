@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace UnityStandardAssets.ImageEffects
+﻿namespace UnityStandardAssets.ImageEffects
 {
   [ExecuteInEditMode]
   [RequireComponent(typeof (Camera))]
@@ -13,55 +11,55 @@ namespace UnityStandardAssets.ImageEffects
     public float blurSize = 3f;
     [Range(1f, 4f)]
     public int blurIterations = 2;
-    public BlurOptimized.BlurType blurType = BlurOptimized.BlurType.StandardGauss;
+    public BlurType blurType = BlurType.StandardGauss;
     public Shader blurShader = (Shader) null;
     private Material blurMaterial = (Material) null;
 
     public override bool CheckResources()
     {
-      this.CheckSupport(false);
-      this.blurMaterial = this.CheckShaderAndCreateMaterial(this.blurShader, this.blurMaterial);
-      if (!this.isSupported)
-        this.ReportAutoDisable();
-      return this.isSupported;
+      CheckSupport(false);
+      blurMaterial = CheckShaderAndCreateMaterial(blurShader, blurMaterial);
+      if (!isSupported)
+        ReportAutoDisable();
+      return isSupported;
     }
 
     public void OnDisable()
     {
-      if (!(bool) (Object) this.blurMaterial)
+      if (!(bool) (Object) blurMaterial)
         return;
-      Object.DestroyImmediate((Object) this.blurMaterial);
+      Object.DestroyImmediate((Object) blurMaterial);
     }
 
     public void OnRenderImage(RenderTexture source, RenderTexture destination)
     {
-      if (!this.CheckResources())
+      if (!CheckResources())
       {
         Graphics.Blit((Texture) source, destination);
       }
       else
       {
-        float num1 = (float) (1.0 / (1.0 * (double) (1 << this.downsample)));
-        this.blurMaterial.SetVector("_Parameter", new Vector4(this.blurSize * num1, -this.blurSize * num1, 0.0f, 0.0f));
+        float num1 = (float) (1.0 / (1.0 * (1 << downsample)));
+        blurMaterial.SetVector("_Parameter", new Vector4(blurSize * num1, -blurSize * num1, 0.0f, 0.0f));
         source.filterMode = FilterMode.Bilinear;
-        int width = source.width >> this.downsample;
-        int height = source.height >> this.downsample;
+        int width = source.width >> downsample;
+        int height = source.height >> downsample;
         RenderTexture renderTexture1 = RenderTexture.GetTemporary(width, height, 0, source.format);
         renderTexture1.filterMode = FilterMode.Bilinear;
-        Graphics.Blit((Texture) source, renderTexture1, this.blurMaterial, 0);
-        int num2 = this.blurType == BlurOptimized.BlurType.StandardGauss ? 0 : 2;
-        for (int index = 0; index < this.blurIterations; ++index)
+        Graphics.Blit((Texture) source, renderTexture1, blurMaterial, 0);
+        int num2 = blurType == BlurType.StandardGauss ? 0 : 2;
+        for (int index = 0; index < blurIterations; ++index)
         {
-          float num3 = (float) index * 1f;
-          this.blurMaterial.SetVector("_Parameter", new Vector4(this.blurSize * num1 + num3, -this.blurSize * num1 - num3, 0.0f, 0.0f));
+          float num3 = index * 1f;
+          blurMaterial.SetVector("_Parameter", new Vector4(blurSize * num1 + num3, -blurSize * num1 - num3, 0.0f, 0.0f));
           RenderTexture temporary1 = RenderTexture.GetTemporary(width, height, 0, source.format);
           temporary1.filterMode = FilterMode.Bilinear;
-          Graphics.Blit((Texture) renderTexture1, temporary1, this.blurMaterial, 1 + num2);
+          Graphics.Blit((Texture) renderTexture1, temporary1, blurMaterial, 1 + num2);
           RenderTexture.ReleaseTemporary(renderTexture1);
           RenderTexture renderTexture2 = temporary1;
           RenderTexture temporary2 = RenderTexture.GetTemporary(width, height, 0, source.format);
           temporary2.filterMode = FilterMode.Bilinear;
-          Graphics.Blit((Texture) renderTexture2, temporary2, this.blurMaterial, 2 + num2);
+          Graphics.Blit((Texture) renderTexture2, temporary2, blurMaterial, 2 + num2);
           RenderTexture.ReleaseTemporary(renderTexture2);
           renderTexture1 = temporary2;
         }

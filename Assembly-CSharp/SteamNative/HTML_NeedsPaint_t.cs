@@ -21,7 +21,7 @@ namespace SteamNative
 
     public static HTML_NeedsPaint_t FromPointer(IntPtr p)
     {
-      return Platform.PackSmall ? (HTML_NeedsPaint_t) (HTML_NeedsPaint_t.PackSmall) Marshal.PtrToStructure(p, typeof (HTML_NeedsPaint_t.PackSmall)) : (HTML_NeedsPaint_t) Marshal.PtrToStructure(p, typeof (HTML_NeedsPaint_t));
+      return Platform.PackSmall ? (PackSmall) Marshal.PtrToStructure(p, typeof (PackSmall)) : (HTML_NeedsPaint_t) Marshal.PtrToStructure(p, typeof (HTML_NeedsPaint_t));
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
@@ -40,10 +40,9 @@ namespace SteamNative
       public float FlPageScale;
       public uint UnPageSerial;
 
-      public static implicit operator HTML_NeedsPaint_t(HTML_NeedsPaint_t.PackSmall d)
+      public static implicit operator HTML_NeedsPaint_t(PackSmall d)
       {
-        return new HTML_NeedsPaint_t()
-        {
+        return new HTML_NeedsPaint_t {
           UnBrowserHandle = d.UnBrowserHandle,
           PBGRA = d.PBGRA,
           UnWide = d.UnWide,

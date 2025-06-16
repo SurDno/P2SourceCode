@@ -1,17 +1,15 @@
-﻿using UnityEngine;
-
-namespace Engine.Impl.UI.Controls
+﻿namespace Engine.Impl.UI.Controls
 {
   public class EnvironmentProbeIntensityFloatView : FloatViewBase
   {
     [SerializeField]
-    private EnvironmentProbe view = (EnvironmentProbe) null;
+    private EnvironmentProbe view = null;
 
     protected override void ApplyFloatValue()
     {
-      if (!((Object) this.view != (Object) null))
+      if (!((Object) view != (Object) null))
         return;
-      this.view.AmbientIntensity = this.FloatValue;
+      view.AmbientIntensity = FloatValue;
     }
 
     public override void SkipAnimation()

@@ -1,7 +1,5 @@
-﻿using Cinemachine.Utility;
-using System;
-using UnityEngine;
-using UnityEngine.Serialization;
+﻿using System;
+using Cinemachine.Utility;
 
 namespace Cinemachine
 {
@@ -41,29 +39,29 @@ namespace Cinemachine
     [FormerlySerializedAs("m_SplineTension")]
     public float m_SplineCurvature = 0.2f;
     [Tooltip("The radius and height of the three orbiting rigs.")]
-    public CinemachineFreeLook.Orbit[] m_Orbits = new CinemachineFreeLook.Orbit[3]
+    public Orbit[] m_Orbits = new Orbit[3]
     {
-      new CinemachineFreeLook.Orbit(4.5f, 1.75f),
-      new CinemachineFreeLook.Orbit(2.5f, 3f),
-      new CinemachineFreeLook.Orbit(0.4f, 1.3f)
+      new Orbit(4.5f, 1.75f),
+      new Orbit(2.5f, 3f),
+      new Orbit(0.4f, 1.3f)
     };
     [SerializeField]
     [HideInInspector]
     [FormerlySerializedAs("m_HeadingBias")]
     private float m_LegacyHeadingBias = float.MaxValue;
-    private bool mUseLegacyRigDefinitions = false;
-    private bool mIsDestroyed = false;
+    private bool mUseLegacyRigDefinitions;
+    private bool mIsDestroyed;
     private CameraState m_State = CameraState.Default;
     [SerializeField]
     [HideInInspector]
     [NoSaveDuringPlay]
     private CinemachineVirtualCamera[] m_Rigs = new CinemachineVirtualCamera[3];
-    private CinemachineOrbitalTransposer[] mOrbitals = (CinemachineOrbitalTransposer[]) null;
+    private CinemachineOrbitalTransposer[] mOrbitals;
     private CinemachineBlend mBlendA;
     private CinemachineBlend mBlendB;
-    public static CinemachineFreeLook.CreateRigDelegate CreateRigOverride;
-    public static CinemachineFreeLook.DestroyRigDelegate DestroyRigOverride;
-    private CinemachineFreeLook.Orbit[] m_CachedOrbits;
+    public static CreateRigDelegate CreateRigOverride;
+    public static DestroyRigDelegate DestroyRigOverride;
+    private Orbit[] m_CachedOrbits;
     private float m_CachedTension;
     private Vector4[] m_CachedKnots;
     private Vector4[] m_CachedCtrl1;
@@ -72,24 +70,24 @@ namespace Cinemachine
     protected override void OnValidate()
     {
       base.OnValidate();
-      if ((double) this.m_LegacyHeadingBias != 3.4028234663852886E+38)
+      if (m_LegacyHeadingBias != 3.4028234663852886E+38)
       {
-        this.m_Heading.m_HeadingBias = this.m_LegacyHeadingBias;
-        this.m_LegacyHeadingBias = float.MaxValue;
-        this.m_RecenterToTargetHeading.LegacyUpgrade(ref this.m_Heading.m_HeadingDefinition, ref this.m_Heading.m_VelocityFilterStrength);
-        this.mUseLegacyRigDefinitions = true;
+        m_Heading.m_HeadingBias = m_LegacyHeadingBias;
+        m_LegacyHeadingBias = float.MaxValue;
+        m_RecenterToTargetHeading.LegacyUpgrade(ref m_Heading.m_HeadingDefinition, ref m_Heading.m_VelocityFilterStrength);
+        mUseLegacyRigDefinitions = true;
       }
-      this.m_YAxis.Validate();
-      this.m_XAxis.Validate();
-      this.m_RecenterToTargetHeading.Validate();
-      this.m_Lens.Validate();
-      this.InvalidateRigCache();
+      m_YAxis.Validate();
+      m_XAxis.Validate();
+      m_RecenterToTargetHeading.Validate();
+      m_Lens.Validate();
+      InvalidateRigCache();
     }
 
     public CinemachineVirtualCamera GetRig(int i)
     {
-      this.UpdateRigCache();
-      return i < 0 || i > 2 ? (CinemachineVirtualCamera) null : this.m_Rigs[i];
+      UpdateRigCache();
+      return i < 0 || i > 2 ? null : m_Rigs[i];
     }
 
     public static string[] RigNames
@@ -107,72 +105,72 @@ namespace Cinemachine
 
     protected override void OnEnable()
     {
-      this.mIsDestroyed = false;
+      mIsDestroyed = false;
       base.OnEnable();
-      this.InvalidateRigCache();
+      InvalidateRigCache();
     }
 
     protected override void OnDestroy()
     {
-      if (this.m_Rigs != null)
+      if (m_Rigs != null)
       {
-        foreach (CinemachineVirtualCamera rig in this.m_Rigs)
+        foreach (CinemachineVirtualCamera rig in m_Rigs)
         {
           if ((UnityEngine.Object) rig != (UnityEngine.Object) null && (UnityEngine.Object) rig.gameObject != (UnityEngine.Object) null)
             rig.gameObject.hideFlags &= ~(HideFlags.HideInHierarchy | HideFlags.HideInInspector);
         }
       }
-      this.mIsDestroyed = true;
+      mIsDestroyed = true;
       base.OnDestroy();
     }
 
-    private void OnTransformChildrenChanged() => this.InvalidateRigCache();
+    private void OnTransformChildrenChanged() => InvalidateRigCache();
 
-    private void Reset() => this.DestroyRigs();
+    private void Reset() => DestroyRigs();
 
-    public override CameraState State => this.m_State;
+    public override CameraState State => m_State;
 
     public override Transform LookAt
     {
-      get => this.ResolveLookAt(this.m_LookAt);
-      set => this.m_LookAt = value;
+      get => ResolveLookAt(m_LookAt);
+      set => m_LookAt = value;
     }
 
     public override Transform Follow
     {
-      get => this.ResolveFollow(this.m_Follow);
-      set => this.m_Follow = value;
+      get => ResolveFollow(m_Follow);
+      set => m_Follow = value;
     }
 
     public override ICinemachineCamera LiveChildOrSelf
     {
       get
       {
-        if (this.m_Rigs == null || this.m_Rigs.Length != 3)
-          return (ICinemachineCamera) this;
-        if ((double) this.m_YAxis.Value < 0.33000001311302185)
-          return (ICinemachineCamera) this.m_Rigs[2];
-        return (double) this.m_YAxis.Value > 0.6600000262260437 ? (ICinemachineCamera) this.m_Rigs[0] : (ICinemachineCamera) this.m_Rigs[1];
+        if (m_Rigs == null || m_Rigs.Length != 3)
+          return this;
+        if (m_YAxis.Value < 0.33000001311302185)
+          return m_Rigs[2];
+        return m_YAxis.Value > 0.6600000262260437 ? m_Rigs[0] : (ICinemachineCamera) m_Rigs[1];
       }
     }
 
     public override bool IsLiveChild(ICinemachineCamera vcam)
     {
-      if (this.m_Rigs == null || this.m_Rigs.Length != 3)
+      if (m_Rigs == null || m_Rigs.Length != 3)
         return false;
-      if ((double) this.m_YAxis.Value < 0.33000001311302185)
-        return vcam == this.m_Rigs[2];
-      return (double) this.m_YAxis.Value > 0.6600000262260437 ? vcam == this.m_Rigs[0] : vcam == this.m_Rigs[1];
+      if (m_YAxis.Value < 0.33000001311302185)
+        return vcam == m_Rigs[2];
+      return m_YAxis.Value > 0.6600000262260437 ? vcam == m_Rigs[0] : vcam == m_Rigs[1];
     }
 
     public override void RemovePostPipelineStageHook(
-      CinemachineVirtualCameraBase.OnPostPipelineStageDelegate d)
+      OnPostPipelineStageDelegate d)
     {
       base.RemovePostPipelineStageHook(d);
-      this.UpdateRigCache();
-      if (this.m_Rigs == null)
+      UpdateRigCache();
+      if (m_Rigs == null)
         return;
-      foreach (CinemachineVirtualCamera rig in this.m_Rigs)
+      foreach (CinemachineVirtualCamera rig in m_Rigs)
       {
         if ((UnityEngine.Object) rig != (UnityEngine.Object) null)
           rig.RemovePostPipelineStageHook(d);
@@ -181,24 +179,24 @@ namespace Cinemachine
 
     public override void UpdateCameraState(Vector3 worldUp, float deltaTime)
     {
-      if (!this.PreviousStateIsValid)
+      if (!PreviousStateIsValid)
         deltaTime = -1f;
-      this.UpdateRigCache();
-      if ((double) deltaTime < 0.0)
-        this.m_State = this.PullStateFromVirtualCamera(worldUp);
-      this.m_State = this.CalculateNewState(worldUp, deltaTime);
-      if ((UnityEngine.Object) this.Follow != (UnityEngine.Object) null)
+      UpdateRigCache();
+      if (deltaTime < 0.0)
+        m_State = PullStateFromVirtualCamera(worldUp);
+      m_State = CalculateNewState(worldUp, deltaTime);
+      if ((UnityEngine.Object) Follow != (UnityEngine.Object) null)
       {
-        Vector3 vector3 = this.State.RawPosition - this.transform.position;
-        this.transform.position = this.State.RawPosition;
-        this.m_Rigs[0].transform.position -= vector3;
-        this.m_Rigs[1].transform.position -= vector3;
-        this.m_Rigs[2].transform.position -= vector3;
+        Vector3 vector3 = State.RawPosition - this.transform.position;
+        this.transform.position = State.RawPosition;
+        m_Rigs[0].transform.position -= vector3;
+        m_Rigs[1].transform.position -= vector3;
+        m_Rigs[2].transform.position -= vector3;
       }
-      this.PreviousStateIsValid = true;
-      if ((double) deltaTime >= 0.0 || CinemachineCore.Instance.IsLive((ICinemachineCamera) this))
-        this.m_YAxis.Update(deltaTime);
-      this.PushSettingsToRigs();
+      PreviousStateIsValid = true;
+      if (deltaTime >= 0.0 || CinemachineCore.Instance.IsLive(this))
+        m_YAxis.Update(deltaTime);
+      PushSettingsToRigs();
     }
 
     public override void OnTransitionFromCamera(
@@ -210,24 +208,24 @@ namespace Cinemachine
       if (fromCam == null || !(fromCam is CinemachineFreeLook))
         return;
       CinemachineFreeLook cinemachineFreeLook = fromCam as CinemachineFreeLook;
-      if ((UnityEngine.Object) cinemachineFreeLook.Follow == (UnityEngine.Object) this.Follow)
+      if ((UnityEngine.Object) cinemachineFreeLook.Follow == (UnityEngine.Object) Follow)
       {
-        this.m_XAxis.Value = cinemachineFreeLook.m_XAxis.Value;
-        this.m_YAxis.Value = cinemachineFreeLook.m_YAxis.Value;
-        this.UpdateCameraState(worldUp, deltaTime);
+        m_XAxis.Value = cinemachineFreeLook.m_XAxis.Value;
+        m_YAxis.Value = cinemachineFreeLook.m_YAxis.Value;
+        UpdateCameraState(worldUp, deltaTime);
       }
     }
 
-    private void InvalidateRigCache() => this.mOrbitals = (CinemachineOrbitalTransposer[]) null;
+    private void InvalidateRigCache() => mOrbitals = null;
 
     private void DestroyRigs()
     {
-      CinemachineVirtualCamera[] cinemachineVirtualCameraArray = new CinemachineVirtualCamera[CinemachineFreeLook.RigNames.Length];
-      for (int index = 0; index < CinemachineFreeLook.RigNames.Length; ++index)
+      CinemachineVirtualCamera[] cinemachineVirtualCameraArray = new CinemachineVirtualCamera[RigNames.Length];
+      for (int index = 0; index < RigNames.Length; ++index)
       {
         foreach (Transform transform in this.transform)
         {
-          if (transform.gameObject.name == CinemachineFreeLook.RigNames[index])
+          if (transform.gameObject.name == RigNames[index])
             cinemachineVirtualCameraArray[index] = transform.GetComponent<CinemachineVirtualCamera>();
         }
       }
@@ -235,33 +233,33 @@ namespace Cinemachine
       {
         if ((UnityEngine.Object) cinemachineVirtualCameraArray[index] != (UnityEngine.Object) null)
         {
-          if (CinemachineFreeLook.DestroyRigOverride != null)
-            CinemachineFreeLook.DestroyRigOverride(cinemachineVirtualCameraArray[index].gameObject);
+          if (DestroyRigOverride != null)
+            DestroyRigOverride(cinemachineVirtualCameraArray[index].gameObject);
           else
             UnityEngine.Object.Destroy((UnityEngine.Object) cinemachineVirtualCameraArray[index].gameObject);
         }
       }
-      this.m_Rigs = (CinemachineVirtualCamera[]) null;
-      this.mOrbitals = (CinemachineOrbitalTransposer[]) null;
+      m_Rigs = null;
+      mOrbitals = null;
     }
 
     private CinemachineVirtualCamera[] CreateRigs(CinemachineVirtualCamera[] copyFrom)
     {
-      this.mOrbitals = (CinemachineOrbitalTransposer[]) null;
+      mOrbitals = null;
       float[] numArray = new float[3]{ 0.5f, 0.55f, 0.6f };
       CinemachineVirtualCamera[] rigs = new CinemachineVirtualCamera[3];
-      for (int index = 0; index < CinemachineFreeLook.RigNames.Length; ++index)
+      for (int index = 0; index < RigNames.Length; ++index)
       {
-        CinemachineVirtualCamera cinemachineVirtualCamera = (CinemachineVirtualCamera) null;
+        CinemachineVirtualCamera cinemachineVirtualCamera = null;
         if (copyFrom != null && copyFrom.Length > index)
           cinemachineVirtualCamera = copyFrom[index];
-        if (CinemachineFreeLook.CreateRigOverride != null)
+        if (CreateRigOverride != null)
         {
-          rigs[index] = CinemachineFreeLook.CreateRigOverride(this, CinemachineFreeLook.RigNames[index], cinemachineVirtualCamera);
+          rigs[index] = CreateRigOverride(this, RigNames[index], cinemachineVirtualCamera);
         }
         else
         {
-          rigs[index] = new GameObject(CinemachineFreeLook.RigNames[index])
+          rigs[index] = new GameObject(RigNames[index])
           {
             transform = {
               parent = this.transform
@@ -269,7 +267,7 @@ namespace Cinemachine
           }.AddComponent<CinemachineVirtualCamera>();
           if ((UnityEngine.Object) cinemachineVirtualCamera != (UnityEngine.Object) null)
           {
-            ReflectionHelpers.CopyFields((object) cinemachineVirtualCamera, (object) rigs[index]);
+            ReflectionHelpers.CopyFields(cinemachineVirtualCamera, rigs[index]);
           }
           else
           {
@@ -302,26 +300,26 @@ namespace Cinemachine
 
     private void UpdateRigCache()
     {
-      if (this.mIsDestroyed)
+      if (mIsDestroyed)
         return;
-      if (this.m_Rigs != null && this.m_Rigs.Length == 3 && (UnityEngine.Object) this.m_Rigs[0] != (UnityEngine.Object) null && (UnityEngine.Object) this.m_Rigs[0].transform.parent != (UnityEngine.Object) this.transform)
+      if (m_Rigs != null && m_Rigs.Length == 3 && (UnityEngine.Object) m_Rigs[0] != (UnityEngine.Object) null && (UnityEngine.Object) m_Rigs[0].transform.parent != (UnityEngine.Object) this.transform)
       {
-        this.DestroyRigs();
-        this.m_Rigs = this.CreateRigs(this.m_Rigs);
+        DestroyRigs();
+        m_Rigs = CreateRigs(m_Rigs);
       }
-      if (this.mOrbitals != null && this.mOrbitals.Length == 3)
+      if (mOrbitals != null && mOrbitals.Length == 3)
         return;
-      if (this.LocateExistingRigs(CinemachineFreeLook.RigNames, false) != 3)
+      if (LocateExistingRigs(RigNames, false) != 3)
       {
-        this.DestroyRigs();
-        this.m_Rigs = this.CreateRigs((CinemachineVirtualCamera[]) null);
-        this.LocateExistingRigs(CinemachineFreeLook.RigNames, true);
+        DestroyRigs();
+        m_Rigs = CreateRigs(null);
+        LocateExistingRigs(RigNames, true);
       }
-      foreach (CinemachineVirtualCamera rig in this.m_Rigs)
+      foreach (CinemachineVirtualCamera rig in m_Rigs)
       {
         CinemachineVirtualCamera cinemachineVirtualCamera = rig;
         string[] strArray;
-        if (!this.m_CommonLens)
+        if (!m_CommonLens)
           strArray = new string[5]
           {
             "m_Script",
@@ -343,16 +341,16 @@ namespace Cinemachine
         cinemachineVirtualCamera.m_ExcludedPropertiesInInspector = strArray;
         rig.m_LockStageInInspector = new CinemachineCore.Stage[1];
       }
-      this.mBlendA = new CinemachineBlend((ICinemachineCamera) this.m_Rigs[1], (ICinemachineCamera) this.m_Rigs[0], AnimationCurve.Linear(0.0f, 0.0f, 1f, 1f), 1f, 0.0f);
-      this.mBlendB = new CinemachineBlend((ICinemachineCamera) this.m_Rigs[2], (ICinemachineCamera) this.m_Rigs[1], AnimationCurve.Linear(0.0f, 0.0f, 1f, 1f), 1f, 0.0f);
-      this.m_XAxis.SetThresholds(0.0f, 360f, true);
-      this.m_YAxis.SetThresholds(0.0f, 1f, false);
+      mBlendA = new CinemachineBlend(m_Rigs[1], m_Rigs[0], AnimationCurve.Linear(0.0f, 0.0f, 1f, 1f), 1f, 0.0f);
+      mBlendB = new CinemachineBlend(m_Rigs[2], m_Rigs[1], AnimationCurve.Linear(0.0f, 0.0f, 1f, 1f), 1f, 0.0f);
+      m_XAxis.SetThresholds(0.0f, 360f, true);
+      m_YAxis.SetThresholds(0.0f, 1f, false);
     }
 
     private int LocateExistingRigs(string[] rigNames, bool forceOrbital)
     {
-      this.mOrbitals = new CinemachineOrbitalTransposer[rigNames.Length];
-      this.m_Rigs = new CinemachineVirtualCamera[rigNames.Length];
+      mOrbitals = new CinemachineOrbitalTransposer[rigNames.Length];
+      m_Rigs = new CinemachineVirtualCamera[rigNames.Length];
       int num = 0;
       foreach (Transform transform in this.transform)
       {
@@ -362,17 +360,17 @@ namespace Cinemachine
           GameObject gameObject = transform.gameObject;
           for (int index = 0; index < rigNames.Length; ++index)
           {
-            if ((UnityEngine.Object) this.mOrbitals[index] == (UnityEngine.Object) null && gameObject.name == rigNames[index])
+            if ((UnityEngine.Object) mOrbitals[index] == (UnityEngine.Object) null && gameObject.name == rigNames[index])
             {
-              this.mOrbitals[index] = component.GetCinemachineComponent<CinemachineOrbitalTransposer>();
-              if ((UnityEngine.Object) this.mOrbitals[index] == (UnityEngine.Object) null & forceOrbital)
-                this.mOrbitals[index] = component.AddCinemachineComponent<CinemachineOrbitalTransposer>();
-              if ((UnityEngine.Object) this.mOrbitals[index] != (UnityEngine.Object) null)
+              mOrbitals[index] = component.GetCinemachineComponent<CinemachineOrbitalTransposer>();
+              if ((UnityEngine.Object) mOrbitals[index] == (UnityEngine.Object) null & forceOrbital)
+                mOrbitals[index] = component.AddCinemachineComponent<CinemachineOrbitalTransposer>();
+              if ((UnityEngine.Object) mOrbitals[index] != (UnityEngine.Object) null)
               {
-                this.mOrbitals[index].m_HeadingIsSlave = true;
+                mOrbitals[index].m_HeadingIsSlave = true;
                 if (index == 0)
-                  this.mOrbitals[index].HeadingUpdater = (CinemachineOrbitalTransposer.UpdateHeadingDelegate) ((orbital, deltaTime, up) => orbital.UpdateHeading(deltaTime, up, ref this.m_XAxis));
-                this.m_Rigs[index] = component;
+                  mOrbitals[index].HeadingUpdater = (orbital, deltaTime, up) => orbital.UpdateHeading(deltaTime, up, ref m_XAxis);
+                m_Rigs[index] = component;
                 ++num;
               }
             }
@@ -384,57 +382,57 @@ namespace Cinemachine
 
     private void PushSettingsToRigs()
     {
-      this.UpdateRigCache();
-      for (int index = 0; index < this.m_Rigs.Length; ++index)
+      UpdateRigCache();
+      for (int index = 0; index < m_Rigs.Length; ++index)
       {
-        if (!((UnityEngine.Object) this.m_Rigs[index] == (UnityEngine.Object) null))
+        if (!((UnityEngine.Object) m_Rigs[index] == (UnityEngine.Object) null))
         {
-          if (this.m_CommonLens)
-            this.m_Rigs[index].m_Lens = this.m_Lens;
-          if (this.mUseLegacyRigDefinitions)
+          if (m_CommonLens)
+            m_Rigs[index].m_Lens = m_Lens;
+          if (mUseLegacyRigDefinitions)
           {
-            this.mUseLegacyRigDefinitions = false;
-            this.m_Orbits[index].m_Height = this.mOrbitals[index].m_FollowOffset.y;
-            this.m_Orbits[index].m_Radius = -this.mOrbitals[index].m_FollowOffset.z;
-            if ((UnityEngine.Object) this.m_Rigs[index].Follow != (UnityEngine.Object) null)
-              this.Follow = this.m_Rigs[index].Follow;
+            mUseLegacyRigDefinitions = false;
+            m_Orbits[index].m_Height = mOrbitals[index].m_FollowOffset.y;
+            m_Orbits[index].m_Radius = -mOrbitals[index].m_FollowOffset.z;
+            if ((UnityEngine.Object) m_Rigs[index].Follow != (UnityEngine.Object) null)
+              Follow = m_Rigs[index].Follow;
           }
-          this.m_Rigs[index].Follow = (Transform) null;
+          m_Rigs[index].Follow = (Transform) null;
           if (CinemachineCore.sShowHiddenObjects)
-            this.m_Rigs[index].gameObject.hideFlags &= ~(HideFlags.HideInHierarchy | HideFlags.HideInInspector);
+            m_Rigs[index].gameObject.hideFlags &= ~(HideFlags.HideInHierarchy | HideFlags.HideInInspector);
           else
-            this.m_Rigs[index].gameObject.hideFlags |= HideFlags.HideInHierarchy | HideFlags.HideInInspector;
-          this.mOrbitals[index].m_FollowOffset = this.GetLocalPositionForCameraFromInput(this.m_YAxis.Value);
-          this.mOrbitals[index].m_BindingMode = this.m_BindingMode;
-          this.mOrbitals[index].m_Heading = this.m_Heading;
-          this.mOrbitals[index].m_XAxis = this.m_XAxis;
-          this.mOrbitals[index].m_RecenterToTargetHeading = this.m_RecenterToTargetHeading;
+            m_Rigs[index].gameObject.hideFlags |= HideFlags.HideInHierarchy | HideFlags.HideInInspector;
+          mOrbitals[index].m_FollowOffset = GetLocalPositionForCameraFromInput(m_YAxis.Value);
+          mOrbitals[index].m_BindingMode = m_BindingMode;
+          mOrbitals[index].m_Heading = m_Heading;
+          mOrbitals[index].m_XAxis = m_XAxis;
+          mOrbitals[index].m_RecenterToTargetHeading = m_RecenterToTargetHeading;
           if (index > 0)
-            this.mOrbitals[index].m_RecenterToTargetHeading.m_enabled = false;
-          if (this.m_BindingMode == CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp)
-            this.m_Rigs[index].SetStateRawPosition(this.State.RawPosition);
+            mOrbitals[index].m_RecenterToTargetHeading.m_enabled = false;
+          if (m_BindingMode == CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp)
+            m_Rigs[index].SetStateRawPosition(State.RawPosition);
         }
       }
     }
 
     private CameraState CalculateNewState(Vector3 worldUp, float deltaTime)
     {
-      CameraState newState = this.PullStateFromVirtualCamera(worldUp);
-      float num = this.m_YAxis.Value;
-      if ((double) num > 0.5)
+      CameraState newState = PullStateFromVirtualCamera(worldUp);
+      float num = m_YAxis.Value;
+      if (num > 0.5)
       {
-        if (this.mBlendA != null)
+        if (mBlendA != null)
         {
-          this.mBlendA.TimeInBlend = (float) (((double) num - 0.5) * 2.0);
-          this.mBlendA.UpdateCameraState(worldUp, deltaTime);
-          newState = this.mBlendA.State;
+          mBlendA.TimeInBlend = (float) ((num - 0.5) * 2.0);
+          mBlendA.UpdateCameraState(worldUp, deltaTime);
+          newState = mBlendA.State;
         }
       }
-      else if (this.mBlendB != null)
+      else if (mBlendB != null)
       {
-        this.mBlendB.TimeInBlend = num * 2f;
-        this.mBlendB.UpdateCameraState(worldUp, deltaTime);
-        newState = this.mBlendB.State;
+        mBlendB.TimeInBlend = num * 2f;
+        mBlendB.UpdateCameraState(worldUp, deltaTime);
+        newState = mBlendB.State;
       }
       return newState;
     }
@@ -447,48 +445,48 @@ namespace Cinemachine
         RawOrientation = this.transform.rotation,
         ReferenceUp = worldUp
       };
-      CinemachineBrain potentialTargetBrain = CinemachineCore.Instance.FindPotentialTargetBrain((ICinemachineCamera) this);
-      this.m_Lens.Aspect = (UnityEngine.Object) potentialTargetBrain != (UnityEngine.Object) null ? potentialTargetBrain.OutputCamera.aspect : 1f;
-      this.m_Lens.Orthographic = (UnityEngine.Object) potentialTargetBrain != (UnityEngine.Object) null && potentialTargetBrain.OutputCamera.orthographic;
-      cameraState.Lens = this.m_Lens;
+      CinemachineBrain potentialTargetBrain = CinemachineCore.Instance.FindPotentialTargetBrain(this);
+      m_Lens.Aspect = (UnityEngine.Object) potentialTargetBrain != (UnityEngine.Object) null ? potentialTargetBrain.OutputCamera.aspect : 1f;
+      m_Lens.Orthographic = (UnityEngine.Object) potentialTargetBrain != (UnityEngine.Object) null && potentialTargetBrain.OutputCamera.orthographic;
+      cameraState.Lens = m_Lens;
       return cameraState;
     }
 
     public Vector3 GetLocalPositionForCameraFromInput(float t)
     {
-      if (this.mOrbitals == null)
+      if (mOrbitals == null)
         return Vector3.zero;
-      this.UpdateCachedSpline();
+      UpdateCachedSpline();
       int index = 1;
-      if ((double) t > 0.5)
+      if (t > 0.5)
       {
         t -= 0.5f;
         index = 2;
       }
-      return SplineHelpers.Bezier3(t * 2f, (Vector3) this.m_CachedKnots[index], (Vector3) this.m_CachedCtrl1[index], (Vector3) this.m_CachedCtrl2[index], (Vector3) this.m_CachedKnots[index + 1]);
+      return SplineHelpers.Bezier3(t * 2f, (Vector3) m_CachedKnots[index], (Vector3) m_CachedCtrl1[index], (Vector3) m_CachedCtrl2[index], (Vector3) m_CachedKnots[index + 1]);
     }
 
     private void UpdateCachedSpline()
     {
-      bool flag = this.m_CachedOrbits != null && (double) this.m_CachedTension == (double) this.m_SplineCurvature;
+      bool flag = m_CachedOrbits != null && m_CachedTension == (double) m_SplineCurvature;
       for (int index = 0; index < 3 & flag; ++index)
-        flag = (double) this.m_CachedOrbits[index].m_Height == (double) this.m_Orbits[index].m_Height && (double) this.m_CachedOrbits[index].m_Radius == (double) this.m_Orbits[index].m_Radius;
+        flag = m_CachedOrbits[index].m_Height == (double) m_Orbits[index].m_Height && m_CachedOrbits[index].m_Radius == (double) m_Orbits[index].m_Radius;
       if (flag)
         return;
-      float splineCurvature = this.m_SplineCurvature;
-      this.m_CachedKnots = new Vector4[5];
-      this.m_CachedCtrl1 = new Vector4[5];
-      this.m_CachedCtrl2 = new Vector4[5];
-      this.m_CachedKnots[1] = new Vector4(0.0f, this.m_Orbits[2].m_Height, -this.m_Orbits[2].m_Radius, 0.0f);
-      this.m_CachedKnots[2] = new Vector4(0.0f, this.m_Orbits[1].m_Height, -this.m_Orbits[1].m_Radius, 0.0f);
-      this.m_CachedKnots[3] = new Vector4(0.0f, this.m_Orbits[0].m_Height, -this.m_Orbits[0].m_Radius, 0.0f);
-      this.m_CachedKnots[0] = Vector4.Lerp(this.m_CachedKnots[1], Vector4.zero, splineCurvature);
-      this.m_CachedKnots[4] = Vector4.Lerp(this.m_CachedKnots[3], Vector4.zero, splineCurvature);
-      SplineHelpers.ComputeSmoothControlPoints(ref this.m_CachedKnots, ref this.m_CachedCtrl1, ref this.m_CachedCtrl2);
-      this.m_CachedOrbits = new CinemachineFreeLook.Orbit[3];
+      float splineCurvature = m_SplineCurvature;
+      m_CachedKnots = new Vector4[5];
+      m_CachedCtrl1 = new Vector4[5];
+      m_CachedCtrl2 = new Vector4[5];
+      m_CachedKnots[1] = new Vector4(0.0f, m_Orbits[2].m_Height, -m_Orbits[2].m_Radius, 0.0f);
+      m_CachedKnots[2] = new Vector4(0.0f, m_Orbits[1].m_Height, -m_Orbits[1].m_Radius, 0.0f);
+      m_CachedKnots[3] = new Vector4(0.0f, m_Orbits[0].m_Height, -m_Orbits[0].m_Radius, 0.0f);
+      m_CachedKnots[0] = Vector4.Lerp(m_CachedKnots[1], Vector4.zero, splineCurvature);
+      m_CachedKnots[4] = Vector4.Lerp(m_CachedKnots[3], Vector4.zero, splineCurvature);
+      SplineHelpers.ComputeSmoothControlPoints(ref m_CachedKnots, ref m_CachedCtrl1, ref m_CachedCtrl2);
+      m_CachedOrbits = new Orbit[3];
       for (int index = 0; index < 3; ++index)
-        this.m_CachedOrbits[index] = this.m_Orbits[index];
-      this.m_CachedTension = this.m_SplineCurvature;
+        m_CachedOrbits[index] = m_Orbits[index];
+      m_CachedTension = m_SplineCurvature;
     }
 
     [Serializable]
@@ -499,8 +497,8 @@ namespace Cinemachine
 
       public Orbit(float h, float r)
       {
-        this.m_Height = h;
-        this.m_Radius = r;
+        m_Height = h;
+        m_Radius = r;
       }
     }
 

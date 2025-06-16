@@ -1,10 +1,9 @@
-﻿using Engine.Source.Commons;
-using Facepunch.Steamworks;
-using Inspectors;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
+using Engine.Source.Commons;
+using Facepunch.Steamworks;
+using Inspectors;
 
 namespace Engine.Source.Achievements
 {
@@ -15,7 +14,7 @@ namespace Engine.Source.Achievements
     {
       get
       {
-        return Client.Instance == null ? (IEnumerable<string>) Array.Empty<string>() : ((IEnumerable<Achievement>) Client.Instance.Achievements.All).Select<Achievement, string>((Func<Achievement, string>) (o => o.Id));
+        return Client.Instance == null ? Array.Empty<string>() : Client.Instance.Achievements.All.Select(o => o.Id);
       }
     }
 
@@ -28,13 +27,13 @@ namespace Engine.Source.Achievements
       }
       else
       {
-        Debug.Log((object) ("Steam AppId: " + (object) steamAppId));
+        Debug.Log((object) ("Steam AppId: " + steamAppId));
         Config.ForUnity(Application.platform.ToString());
         Client client = new Client(steamAppId);
         if (Client.Instance == null)
           Debug.LogWarning((object) "Error starting Steam!");
         else
-          InstanceByRequest<EngineApplication>.Instance.OnApplicationQuit += new Action(this.OnApplicationQuit);
+          InstanceByRequest<EngineApplication>.Instance.OnApplicationQuit += OnApplicationQuit;
       }
     }
 
@@ -56,7 +55,7 @@ namespace Engine.Source.Achievements
     {
       if (Client.Instance == null)
         return true;
-      Achievement achievement = ((IEnumerable<Achievement>) Client.Instance.Achievements.All).FirstOrDefault<Achievement>((Func<Achievement, bool>) (o => o.Id == id));
+      Achievement achievement = Client.Instance.Achievements.All.FirstOrDefault(o => o.Id == id);
       return achievement == null || achievement.State;
     }
 
@@ -64,7 +63,7 @@ namespace Engine.Source.Achievements
     {
       if (Client.Instance == null)
         return;
-      Achievement achievement = ((IEnumerable<Achievement>) Client.Instance.Achievements.All).FirstOrDefault<Achievement>((Func<Achievement, bool>) (o => o.Id == id));
+      Achievement achievement = Client.Instance.Achievements.All.FirstOrDefault(o => o.Id == id);
       if (achievement == null)
       {
         Debug.LogError((object) ("Achievement not found : " + id));
@@ -80,13 +79,13 @@ namespace Engine.Source.Achievements
     {
       if (Client.Instance == null)
         return;
-      Achievement achievement = ((IEnumerable<Achievement>) Client.Instance.Achievements.All).FirstOrDefault<Achievement>((Func<Achievement, bool>) (o => o.Id == id));
+      Achievement achievement = Client.Instance.Achievements.All.FirstOrDefault(o => o.Id == id);
       if (achievement == null)
         Debug.LogError((object) ("Achievement not found : " + id));
       else
         achievement.Reset();
     }
 
-    private void OnApplicationQuit() => this.Shutdown();
+    private void OnApplicationQuit() => Shutdown();
   }
 }

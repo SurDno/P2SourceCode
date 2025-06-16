@@ -1,6 +1,5 @@
 ﻿using NodeCanvas.Framework;
 using ParadoxNotion.Design;
-using UnityEngine;
 
 namespace FlowCanvas.Nodes
 {
@@ -17,30 +16,30 @@ namespace FlowCanvas.Nodes
 
     public OscillatorEvent()
     {
-      this.curve = new AnimationCurve(new Keyframe[4]
+      curve = new AnimationCurve(new Keyframe[4]
       {
         new Keyframe(0.0f, 1f),
         new Keyframe(0.5f, 1f),
         new Keyframe(0.5f, -1f),
         new Keyframe(1f, -1f)
       });
-      this.curve.postWrapMode = WrapMode.Loop;
+      curve.postWrapMode = WrapMode.Loop;
     }
 
     protected override void RegisterPorts()
     {
-      this.hi = this.AddFlowOutput("Hi");
-      this.low = this.AddFlowOutput("Low");
-      this.AddValueOutput<float>("Value", (ValueHandler<float>) (() => this.value));
+      hi = AddFlowOutput("Hi");
+      low = AddFlowOutput("Low");
+      AddValueOutput("Value", () => value);
     }
 
-    public override void OnGraphStarted() => this.time = 0.0f;
+    public override void OnGraphStarted() => time = 0.0f;
 
     public void Update()
     {
-      this.value = this.curve.Evaluate(this.time);
-      this.time += Time.deltaTime;
-      this.Call((double) this.value >= 0.0 ? this.hi : this.low);
+      value = curve.Evaluate(time);
+      time += Time.deltaTime;
+      Call(value >= 0.0 ? hi : low);
     }
   }
 }

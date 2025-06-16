@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace Cinemachine
+﻿namespace Cinemachine
 {
   [DocumentationSorting(23f, DocumentationSortingAttribute.Level.UserRef)]
   [AddComponentMenu("")]
@@ -8,13 +6,13 @@ namespace Cinemachine
   [SaveDuringPlay]
   public class CinemachineHardLookAt : CinemachineComponentBase
   {
-    public override bool IsValid => this.enabled && (Object) this.LookAtTarget != (Object) null;
+    public override bool IsValid => this.enabled && (Object) LookAtTarget != (Object) null;
 
     public override CinemachineCore.Stage Stage => CinemachineCore.Stage.Aim;
 
     public override void MutateCameraState(ref CameraState curState, float deltaTime)
     {
-      if (!this.IsValid || !curState.HasLookAt)
+      if (!IsValid || !curState.HasLookAt)
         return;
       Vector3 vector3_1 = curState.ReferenceLookAt - curState.CorrectedPosition;
       if ((double) vector3_1.magnitude > 9.9999997473787516E-05)

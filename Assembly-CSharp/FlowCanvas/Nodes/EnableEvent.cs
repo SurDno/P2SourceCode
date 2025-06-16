@@ -9,8 +9,8 @@ namespace FlowCanvas.Nodes
   {
     private FlowOutput enable;
 
-    public override void OnGraphStarted() => this.enable.Call();
+    public override void OnGraphStarted() => enable.Call();
 
-    protected override void RegisterPorts() => this.enable = this.AddFlowOutput("Out");
+    protected override void RegisterPorts() => enable = AddFlowOutput("Out");
   }
 }

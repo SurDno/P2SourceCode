@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEngine;
 
 namespace Cinemachine
 {
@@ -15,27 +14,27 @@ namespace Cinemachine
 
     public float BlendWeight
     {
-      get => this.BlendCurve != null ? this.BlendCurve.Evaluate(this.TimeInBlend) : 0.0f;
+      get => BlendCurve != null ? BlendCurve.Evaluate(TimeInBlend) : 0.0f;
     }
 
-    public bool IsValid => this.CamA != null || this.CamB != null;
+    public bool IsValid => CamA != null || CamB != null;
 
     public float Duration { get; set; }
 
-    public bool IsComplete => (double) this.TimeInBlend >= (double) this.Duration;
+    public bool IsComplete => TimeInBlend >= (double) Duration;
 
     public string Description
     {
       get
       {
-        string str = this.CamA != null ? "[" + this.CamA.Name + "]" : "(none)";
-        return string.Format("{0} {1}% from {2}", this.CamB != null ? (object) ("[" + this.CamB.Name + "]") : (object) "(none)", (object) (int) ((double) this.BlendWeight * 100.0), (object) str);
+        string str = CamA != null ? "[" + CamA.Name + "]" : "(none)";
+        return string.Format("{0} {1}% from {2}", CamB != null ? "[" + CamB.Name + "]" : (object) "(none)", (int) (BlendWeight * 100.0), str);
       }
     }
 
     public bool Uses(ICinemachineCamera cam)
     {
-      return cam == this.CamA || cam == this.CamB || this.CamA is BlendSourceVirtualCamera camA && camA.Blend.Uses(cam) || this.CamB is BlendSourceVirtualCamera camB && camB.Blend.Uses(cam);
+      return cam == CamA || cam == CamB || CamA is BlendSourceVirtualCamera camA && camA.Blend.Uses(cam) || CamB is BlendSourceVirtualCamera camB && camB.Blend.Uses(cam);
     }
 
     public CinemachineBlend(
@@ -45,22 +44,22 @@ namespace Cinemachine
       float duration,
       float t)
     {
-      this.CamA = a != null && b != null ? a : throw new ArgumentException("Blend cameras cannot be null");
-      this.CamB = b;
-      this.BlendCurve = curve;
-      this.TimeInBlend = t;
-      this.Duration = duration;
+      CamA = a != null && b != null ? a : throw new ArgumentException("Blend cameras cannot be null");
+      CamB = b;
+      BlendCurve = curve;
+      TimeInBlend = t;
+      Duration = duration;
     }
 
     public void UpdateCameraState(Vector3 worldUp, float deltaTime)
     {
-      CinemachineCore.Instance.UpdateVirtualCamera(this.CamA, worldUp, deltaTime);
-      CinemachineCore.Instance.UpdateVirtualCamera(this.CamB, worldUp, deltaTime);
+      CinemachineCore.Instance.UpdateVirtualCamera(CamA, worldUp, deltaTime);
+      CinemachineCore.Instance.UpdateVirtualCamera(CamB, worldUp, deltaTime);
     }
 
     public CameraState State
     {
-      get => CameraState.Lerp(this.CamA.State, this.CamB.State, this.BlendWeight);
+      get => CameraState.Lerp(CamA.State, CamB.State, BlendWeight);
     }
   }
 }

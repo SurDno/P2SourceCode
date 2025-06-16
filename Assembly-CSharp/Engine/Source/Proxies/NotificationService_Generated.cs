@@ -1,9 +1,8 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
-using Engine.Common.Commons;
 using Engine.Common.Commons.Converters;
 using Engine.Source.Services;
-using System;
 
 namespace Engine.Source.Proxies
 {
@@ -15,12 +14,12 @@ namespace Engine.Source.Proxies
   {
     public void StateSave(IDataWriter writer)
     {
-      DefaultDataWriteUtility.WriteListEnum<NotificationEnum>(writer, "BlockedTypes", this.blockedTypes);
+      DefaultDataWriteUtility.WriteListEnum(writer, "BlockedTypes", blockedTypes);
     }
 
     public void StateLoad(IDataReader reader, Type type)
     {
-      this.blockedTypes = DefaultDataReadUtility.ReadListEnum<NotificationEnum>(reader, "BlockedTypes", this.blockedTypes);
+      blockedTypes = DefaultDataReadUtility.ReadListEnum(reader, "BlockedTypes", blockedTypes);
     }
   }
 }

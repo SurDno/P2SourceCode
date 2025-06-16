@@ -1,20 +1,19 @@
-﻿using Engine.Common.Services;
+﻿using System;
+using Engine.Common.Services;
 using Engine.Source.Settings;
 using Inspectors;
-using System;
-using UnityEngine;
 
 namespace Engine.Source.Services
 {
-  [RuntimeService(new System.Type[] {typeof (BackerUnlocksService), typeof (IBackerUnlocksService)})]
+  [RuntimeService(typeof (BackerUnlocksService), typeof (IBackerUnlocksService))]
   public class BackerUnlocksService : IBackerUnlocksService
   {
     private const string ItemCorrectCode = "somethingold";
     private const string QuestCorrectCode = "herekittykitty";
     private const string PolyhedralRoomCorrectCode = "0";
-    private IValue<string> itemCode = (IValue<string>) new StringValue(nameof (itemCode), string.Empty);
-    private IValue<string> questCode = (IValue<string>) new StringValue(nameof (questCode), string.Empty);
-    private IValue<string> polyhedralRoomCode = (IValue<string>) new StringValue(nameof (polyhedralRoomCode), string.Empty);
+    private IValue<string> itemCode = new StringValue(nameof (itemCode), string.Empty);
+    private IValue<string> questCode = new StringValue(nameof (questCode), string.Empty);
+    private IValue<string> polyhedralRoomCode = new StringValue(nameof (polyhedralRoomCode), string.Empty);
 
     public event Action AnyChangeEvent;
 
@@ -22,7 +21,7 @@ namespace Engine.Source.Services
     {
       get
       {
-        bool itemUnlocked = this.ItemUnlocked;
+        bool itemUnlocked = ItemUnlocked;
         Debug.Log((object) ObjectInfoUtility.GetStream().Append(nameof (BackerUnlocksService)).Append(" : ").Append("ItemUnlocked").Append(" , value : ").Append(itemUnlocked));
         return itemUnlocked;
       }
@@ -32,7 +31,7 @@ namespace Engine.Source.Services
     {
       get
       {
-        bool questUnlocked = this.QuestUnlocked;
+        bool questUnlocked = QuestUnlocked;
         Debug.Log((object) ObjectInfoUtility.GetStream().Append(nameof (BackerUnlocksService)).Append(" : ").Append("QuestUnlocked").Append(" , value : ").Append(questUnlocked));
         return questUnlocked;
       }
@@ -42,7 +41,7 @@ namespace Engine.Source.Services
     {
       get
       {
-        bool polyhedralRoomUnlocked = this.PolyhedralRoomUnlocked;
+        bool polyhedralRoomUnlocked = PolyhedralRoomUnlocked;
         Debug.Log((object) ObjectInfoUtility.GetStream().Append(nameof (BackerUnlocksService)).Append(" : ").Append("PolyhedralRoomUnlocked").Append(" , value : ").Append(polyhedralRoomUnlocked));
         return polyhedralRoomUnlocked;
       }
@@ -51,13 +50,13 @@ namespace Engine.Source.Services
     [Inspected(Mutable = true)]
     public bool ItemUnlocked
     {
-      get => this.itemCode.Value == "somethingold";
+      get => itemCode.Value == "somethingold";
       private set
       {
-        if (this.ItemUnlocked == value)
+        if (ItemUnlocked == value)
           return;
-        this.itemCode.Value = value ? "somethingold" : string.Empty;
-        Action anyChangeEvent = this.AnyChangeEvent;
+        itemCode.Value = value ? "somethingold" : string.Empty;
+        Action anyChangeEvent = AnyChangeEvent;
         if (anyChangeEvent == null)
           return;
         anyChangeEvent();
@@ -67,13 +66,13 @@ namespace Engine.Source.Services
     [Inspected(Mutable = true)]
     public bool QuestUnlocked
     {
-      get => this.questCode.Value == "herekittykitty";
+      get => questCode.Value == "herekittykitty";
       private set
       {
-        if (this.QuestUnlocked == value)
+        if (QuestUnlocked == value)
           return;
-        this.questCode.Value = value ? "herekittykitty" : string.Empty;
-        Action anyChangeEvent = this.AnyChangeEvent;
+        questCode.Value = value ? "herekittykitty" : string.Empty;
+        Action anyChangeEvent = AnyChangeEvent;
         if (anyChangeEvent == null)
           return;
         anyChangeEvent();
@@ -83,34 +82,34 @@ namespace Engine.Source.Services
     [Inspected(Mutable = true)]
     public bool PolyhedralRoomUnlocked
     {
-      get => this.polyhedralRoomCode.Value == "0";
+      get => polyhedralRoomCode.Value == "0";
       private set
       {
-        if (this.PolyhedralRoomUnlocked == value)
+        if (PolyhedralRoomUnlocked == value)
           return;
-        this.polyhedralRoomCode.Value = value ? "0" : string.Empty;
-        Action anyChangeEvent = this.AnyChangeEvent;
+        polyhedralRoomCode.Value = value ? "0" : string.Empty;
+        Action anyChangeEvent = AnyChangeEvent;
         if (anyChangeEvent == null)
           return;
         anyChangeEvent();
       }
     }
 
-    public BackerUnlocksService.Result TryAddCode(string code)
+    public Result TryAddCode(string code)
     {
       if (code.Equals("somethingold", StringComparison.InvariantCultureIgnoreCase))
       {
-        if (this.ItemUnlocked)
-          return BackerUnlocksService.Result.AlreadyUnlocked;
-        this.ItemUnlocked = true;
-        return BackerUnlocksService.Result.Success;
+        if (ItemUnlocked)
+          return Result.AlreadyUnlocked;
+        ItemUnlocked = true;
+        return Result.Success;
       }
       if (!code.Equals("herekittykitty", StringComparison.InvariantCultureIgnoreCase))
-        return BackerUnlocksService.Result.Fail;
-      if (this.QuestUnlocked)
-        return BackerUnlocksService.Result.AlreadyUnlocked;
-      this.QuestUnlocked = true;
-      return BackerUnlocksService.Result.Success;
+        return Result.Fail;
+      if (QuestUnlocked)
+        return Result.AlreadyUnlocked;
+      QuestUnlocked = true;
+      return Result.Success;
     }
 
     public enum Result

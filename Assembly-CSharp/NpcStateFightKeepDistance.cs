@@ -6,9 +6,6 @@ using Engine.Source.Commons;
 using Engine.Source.Components;
 using Engine.Source.Components.Utilities;
 using Inspectors;
-using System;
-using UnityEngine;
-using UnityEngine.AI;
 
 public class NpcStateFightKeepDistance : INpcState
 {
@@ -34,189 +31,186 @@ public class NpcStateFightKeepDistance : INpcState
 
   private bool TryInit()
   {
-    if (this.inited)
+    if (inited)
       return true;
-    this.enemy = this.pivot.GetNpcEnemy();
-    this.agent = this.pivot.GetAgent();
-    this.animator = this.pivot.GetAnimator();
-    this.weaponService = this.pivot.GetNpcWeaponService();
-    this.ikController = this.GameObject.GetComponent<IKController>();
-    if ((UnityEngine.Object) this.animator == (UnityEngine.Object) null)
+    enemy = pivot.GetNpcEnemy();
+    agent = pivot.GetAgent();
+    animator = pivot.GetAnimator();
+    weaponService = pivot.GetNpcWeaponService();
+    ikController = GameObject.GetComponent<IKController>();
+    if ((UnityEngine.Object) animator == (UnityEngine.Object) null)
     {
-      Debug.LogError((object) ("Null animator " + this.GameObject.name), (UnityEngine.Object) this.GameObject);
-      Debug.LogError((object) ("Null animator " + this.GameObject.GetFullName()));
-      this.failed = true;
+      Debug.LogError((object) ("Null animator " + GameObject.name), (UnityEngine.Object) GameObject);
+      Debug.LogError((object) ("Null animator " + GameObject.GetFullName()));
+      failed = true;
       return false;
     }
-    this.animatorState = AnimatorState45.GetAnimatorState(this.animator);
-    this.failed = false;
-    this.inited = true;
+    animatorState = AnimatorState45.GetAnimatorState(animator);
+    failed = false;
+    inited = true;
     return true;
   }
 
   private bool IsEnemyRunningAway()
   {
-    return (double) this.enemy.Enemy.Velocity.magnitude >= 0.5 && (double) Vector3.Dot(this.enemy.transform.forward, (this.enemy.Enemy.transform.position - this.enemy.transform.position).normalized) > 0.25;
+    return (double) enemy.Enemy.Velocity.magnitude >= 0.5 && (double) Vector3.Dot(enemy.transform.forward, (enemy.Enemy.transform.position - enemy.transform.position).normalized) > 0.25;
   }
 
   public NpcStateFightKeepDistance(NpcState npcState, Pivot pivot)
   {
-    this.GameObject = npcState.gameObject;
+    GameObject = npcState.gameObject;
     this.pivot = pivot;
     this.npcState = npcState;
   }
 
   public void Activate(float keepDistance, bool strafe, bool aim)
   {
-    if (!this.TryInit())
+    if (!TryInit())
       return;
-    this.prevAreaMask = this.agent.areaMask;
-    this.agentWasEnabled = this.agent.enabled;
+    prevAreaMask = agent.areaMask;
+    agentWasEnabled = agent.enabled;
     this.keepDistance = keepDistance;
     this.strafe = strafe;
-    this.weaponService.Weapon = this.npcState.Weapon;
-    this.npcState.WeaponChangeEvent += new Action<WeaponEnum>(this.State_WeaponChangeEvent);
-    this.Status = NpcStateStatusEnum.Running;
-    LocationItemComponent component = (LocationItemComponent) this.npcState.Owner.GetComponent<ILocationItemComponent>();
+    weaponService.Weapon = npcState.Weapon;
+    npcState.WeaponChangeEvent += State_WeaponChangeEvent;
+    Status = NpcStateStatusEnum.Running;
+    LocationItemComponent component = (LocationItemComponent) npcState.Owner.GetComponent<ILocationItemComponent>();
     if (component == null)
     {
-      Debug.LogWarning((object) (this.GameObject.name + ": location component not found"));
-      this.Status = NpcStateStatusEnum.Failed;
+      Debug.LogWarning((object) (GameObject.name + ": location component not found"));
+      Status = NpcStateStatusEnum.Failed;
     }
     else
     {
       bool isIndoor = component.IsIndoor;
-      NPCStateHelper.SetAgentAreaMask(this.agent, isIndoor);
-      this.agent.enabled = true;
-      if (!this.agent.isOnNavMesh)
+      NPCStateHelper.SetAgentAreaMask(agent, isIndoor);
+      agent.enabled = true;
+      if (!agent.isOnNavMesh)
       {
-        Vector3 position = this.GameObject.transform.position;
-        if (NavMeshUtility.SampleRaycastPosition(ref position, isIndoor ? 1f : 5f, isIndoor ? 2f : 10f, this.agent.areaMask))
+        Vector3 position = GameObject.transform.position;
+        if (NavMeshUtility.SampleRaycastPosition(ref position, isIndoor ? 1f : 5f, isIndoor ? 2f : 10f, agent.areaMask))
         {
-          this.agent.Warp(position);
+          agent.Warp(position);
         }
         else
         {
-          this.Status = NpcStateStatusEnum.Failed;
+          Status = NpcStateStatusEnum.Failed;
           return;
         }
       }
-      if (!((UnityEngine.Object) this.ikController != (UnityEngine.Object) null & aim) || !((UnityEngine.Object) this.enemy != (UnityEngine.Object) null) || !((UnityEngine.Object) this.enemy.Enemy != (UnityEngine.Object) null))
+      if (!((UnityEngine.Object) ikController != (UnityEngine.Object) null & aim) || !((UnityEngine.Object) enemy != (UnityEngine.Object) null) || !((UnityEngine.Object) enemy.Enemy != (UnityEngine.Object) null))
         return;
-      this.ikController.WeaponTarget = this.enemy.Enemy.transform;
+      ikController.WeaponTarget = enemy.Enemy.transform;
     }
   }
 
-  private void State_WeaponChangeEvent(WeaponEnum weapon) => this.weaponService.Weapon = weapon;
+  private void State_WeaponChangeEvent(WeaponEnum weapon) => weaponService.Weapon = weapon;
 
   public void Shutdown()
   {
-    if (this.failed)
+    if (failed)
       return;
-    this.npcState.WeaponChangeEvent -= new Action<WeaponEnum>(this.State_WeaponChangeEvent);
-    this.agent.areaMask = this.prevAreaMask;
-    this.agent.enabled = this.agentWasEnabled;
-    if (!((UnityEngine.Object) this.ikController != (UnityEngine.Object) null))
+    npcState.WeaponChangeEvent -= State_WeaponChangeEvent;
+    agent.areaMask = prevAreaMask;
+    agent.enabled = agentWasEnabled;
+    if (!((UnityEngine.Object) ikController != (UnityEngine.Object) null))
       return;
-    this.ikController.WeaponTarget = (Transform) null;
+    ikController.WeaponTarget = (Transform) null;
   }
 
   public void OnAnimatorMove()
   {
-    if (this.failed)
+    if (failed)
       return;
-    this.enemy?.OnExternalAnimatorMove();
+    enemy?.OnExternalAnimatorMove();
   }
 
   public void OnAnimatorEventEvent(string obj)
   {
-    if (!this.failed)
+    if (!failed)
       ;
   }
 
   public void Update()
   {
-    if (this.failed)
+    if (failed)
       return;
     if (InstanceByRequest<EngineApplication>.Instance.IsPaused)
     {
-      this.agent.nextPosition = this.GameObject.transform.position;
+      agent.nextPosition = GameObject.transform.position;
     }
     else
     {
-      this.enemy.RotationTarget = (Transform) null;
-      this.enemy.RotateByPath = false;
-      this.enemy.RetreatAngle = new float?();
-      if ((UnityEngine.Object) this.enemy.Enemy == (UnityEngine.Object) null)
+      enemy.RotationTarget = (Transform) null;
+      enemy.RotateByPath = false;
+      enemy.RetreatAngle = new float?();
+      if ((UnityEngine.Object) enemy.Enemy == (UnityEngine.Object) null)
         return;
-      Vector3 forward = this.enemy.Enemy.transform.position - this.enemy.transform.position;
+      Vector3 forward = enemy.Enemy.transform.position - enemy.transform.position;
       float magnitude = forward.magnitude;
       forward.Normalize();
-      if (this.enemy.IsReacting)
+      if (enemy.IsReacting)
       {
-        if (this.enemy.IsAttacking || this.enemy.IsContrReacting)
-          this.enemy.transform.rotation = Quaternion.RotateTowards(this.enemy.transform.rotation, Quaternion.AngleAxis(0.0f, Vector3.up) * Quaternion.LookRotation(forward), 270f * Time.deltaTime);
-        this.Status = NpcStateStatusEnum.Running;
+        if (enemy.IsAttacking || enemy.IsContrReacting)
+          enemy.transform.rotation = Quaternion.RotateTowards(enemy.transform.rotation, Quaternion.AngleAxis(0.0f, Vector3.up) * Quaternion.LookRotation(forward), 270f * Time.deltaTime);
+        Status = NpcStateStatusEnum.Running;
       }
       else
       {
         float num1;
-        if ((double) magnitude < (double) this.keepDistance)
-        {
+        if (magnitude < (double) keepDistance) {
           if (false)
           {
-            float? retreatDirection2 = PathfindingHelper.FindBestRetreatDirection2(this.enemy.transform, this.enemy.Enemy.transform);
+            float? retreatDirection2 = PathfindingHelper.FindBestRetreatDirection2(enemy.transform, enemy.Enemy.transform);
             if (!retreatDirection2.HasValue)
             {
               num1 = 0.0f;
-              this.enemy.RotationTarget = this.enemy.Enemy.transform;
+              enemy.RotationTarget = enemy.Enemy.transform;
             }
             else
             {
               Quaternion quaternion = Quaternion.LookRotation(forward) * Quaternion.AngleAxis(retreatDirection2.Value, Vector3.up);
-              num1 = PathfindingHelper.IsFreeSpace(this.enemy.transform.position, this.enemy.transform.position - this.enemy.transform.forward * 1f) ? -2f : 0.0f;
-              this.enemy.RotationTarget = this.enemy.Enemy.transform;
+              num1 = PathfindingHelper.IsFreeSpace(enemy.transform.position, enemy.transform.position - enemy.transform.forward * 1f) ? -2f : 0.0f;
+              enemy.RotationTarget = enemy.Enemy.transform;
             }
+          }
+
+          bool flag = strafe && magnitude < 2.0;
+          float distance = PathfindingHelper.FindDistance(enemy.transform.position, -enemy.transform.forward, 10f);
+          float num2 = flag ? PathfindingHelper.FindDistance(enemy.transform.position, -enemy.transform.right, 2.5f) : 0.0f;
+          float num3 = flag ? PathfindingHelper.FindDistance(enemy.transform.position, enemy.transform.right, 2.5f) : 0.0f;
+          if (num2 > (double) distance && num2 > (double) num3)
+          {
+            num1 = 0.0f;
+            enemy.RotationTarget = enemy.Enemy.transform;
+            animatorState.SetTrigger("Fight.Triggers/StepLeft");
+          }
+          else if (num3 > (double) distance && num3 > (double) num2)
+          {
+            num1 = 0.0f;
+            enemy.RotationTarget = enemy.Enemy.transform;
+            animatorState.SetTrigger("Fight.Triggers/StepRight");
           }
           else
           {
-            bool flag = this.strafe && (double) magnitude < 2.0;
-            float distance = PathfindingHelper.FindDistance(this.enemy.transform.position, -this.enemy.transform.forward, 10f);
-            float num2 = flag ? PathfindingHelper.FindDistance(this.enemy.transform.position, -this.enemy.transform.right, 2.5f) : 0.0f;
-            float num3 = flag ? PathfindingHelper.FindDistance(this.enemy.transform.position, this.enemy.transform.right, 2.5f) : 0.0f;
-            if ((double) num2 > (double) distance && (double) num2 > (double) num3)
-            {
-              num1 = 0.0f;
-              this.enemy.RotationTarget = this.enemy.Enemy.transform;
-              this.animatorState.SetTrigger("Fight.Triggers/StepLeft");
-            }
-            else if ((double) num3 > (double) distance && (double) num3 > (double) num2)
-            {
-              num1 = 0.0f;
-              this.enemy.RotationTarget = this.enemy.Enemy.transform;
-              this.animatorState.SetTrigger("Fight.Triggers/StepRight");
-            }
-            else
-            {
-              Quaternion.LookRotation(forward);
-              num1 = (double) distance > 1.0 ? -2f : 0.0f;
-              this.enemy.RotationTarget = this.enemy.Enemy.transform;
-            }
+            Quaternion.LookRotation(forward);
+            num1 = distance > 1.0 ? -2f : 0.0f;
+            enemy.RotationTarget = enemy.Enemy.transform;
           }
         }
-        else if ((double) magnitude < (double) this.keepDistance + 1.0)
+        else if (magnitude < keepDistance + 1.0)
         {
           num1 = 0.0f;
-          this.enemy.RotationTarget = this.enemy.Enemy.transform;
+          enemy.RotationTarget = enemy.Enemy.transform;
         }
         else
         {
           num1 = 1f;
-          this.enemy.RotationTarget = this.enemy.Enemy.transform;
+          enemy.RotationTarget = enemy.Enemy.transform;
         }
-        this.enemy.DesiredWalkSpeed = num1;
-        this.agent.nextPosition = this.animator.rootPosition;
-        this.Status = NpcStateStatusEnum.Running;
+        enemy.DesiredWalkSpeed = num1;
+        agent.nextPosition = animator.rootPosition;
+        Status = NpcStateStatusEnum.Running;
       }
     }
   }

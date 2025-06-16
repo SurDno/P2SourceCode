@@ -6,7 +6,6 @@ using Engine.Source.Commons.Abilities;
 using Engine.Source.Commons.Effects;
 using Engine.Source.Components;
 using Inspectors;
-using UnityEngine;
 
 namespace Engine.Source.Effects
 {
@@ -14,67 +13,67 @@ namespace Engine.Source.Effects
   [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
   public class IncreaseStaminaInBlockEffect : IEffect
   {
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected ParameterEffectQueueEnum queue = ParameterEffectQueueEnum.None;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected(Mutable = true, Mode = ExecuteMode.EditAndRuntime)]
     protected bool enable = true;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected ParameterNameEnum staminaParameterName;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected ParameterNameEnum runParameterName;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected ParameterNameEnum blockTypeParameterName;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected ParameterNameEnum isFightingParameterName;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected DurationTypeEnum durationType = DurationTypeEnum.None;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected bool realTime;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected float duration;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected float interval;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy()]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected float increaseStaminaStepMaxValue = 0.01f;
@@ -86,68 +85,68 @@ namespace Engine.Source.Effects
 
     public IEntity Target { get; set; }
 
-    public string Name => this.GetType().Name;
+    public string Name => GetType().Name;
 
-    public ParameterEffectQueueEnum Queue => this.queue;
+    public ParameterEffectQueueEnum Queue => queue;
 
     public bool Prepare(float currentRealTime, float currentGameTime)
     {
-      float num = this.realTime ? currentRealTime : currentGameTime;
-      if (this.durationType == DurationTypeEnum.ByAbility)
-        this.AbilityItem.AddDependEffect((IEffect) this);
-      this.startTime = num;
-      this.lastTime = num;
+      float num = realTime ? currentRealTime : currentGameTime;
+      if (durationType == DurationTypeEnum.ByAbility)
+        AbilityItem.AddDependEffect(this);
+      startTime = num;
+      lastTime = num;
       return true;
     }
 
     public bool Compute(float currentRealTime, float currentGameTime)
     {
-      float num = this.realTime ? currentRealTime : currentGameTime;
-      if (this.durationType == DurationTypeEnum.ByDuration && (double) num - (double) this.startTime > (double) this.duration || this.durationType == DurationTypeEnum.ByAbility && (this.AbilityItem == null || !this.AbilityItem.Active))
+      float num = realTime ? currentRealTime : currentGameTime;
+      if (durationType == DurationTypeEnum.ByDuration && num - (double) startTime > duration || durationType == DurationTypeEnum.ByAbility && (AbilityItem == null || !AbilityItem.Active))
         return false;
-      if ((double) this.interval == 0.0)
+      if (interval == 0.0)
       {
-        this.lastTime = num;
-        this.ComputeEffect();
+        lastTime = num;
+        ComputeEffect();
       }
       else
       {
-        while ((double) num - (double) this.lastTime >= (double) this.interval)
+        while (num - (double) this.lastTime >= interval)
         {
           float lastTime = this.lastTime;
-          this.lastTime += this.interval;
-          if ((double) lastTime == (double) this.lastTime)
+          this.lastTime += interval;
+          if (lastTime == (double) this.lastTime)
           {
-            Debug.LogError((object) ("Error compute effects, effect name : " + this.Name + " , target : " + this.Target.GetInfo()));
+            Debug.LogError((object) ("Error compute effects, effect name : " + Name + " , target : " + Target.GetInfo()));
             break;
           }
-          this.ComputeEffect();
+          ComputeEffect();
         }
       }
-      return this.durationType != DurationTypeEnum.None && this.durationType != DurationTypeEnum.Once;
+      return durationType != DurationTypeEnum.None && durationType != DurationTypeEnum.Once;
     }
 
     public void ComputeEffect()
     {
-      if (!this.enable)
+      if (!enable)
         return;
-      ParametersComponent component = this.Target?.GetComponent<ParametersComponent>();
-      IParameter<bool> byName1 = component?.GetByName<bool>(this.isFightingParameterName);
+      ParametersComponent component = Target?.GetComponent<ParametersComponent>();
+      IParameter<bool> byName1 = component?.GetByName<bool>(isFightingParameterName);
       if (byName1 != null && !byName1.Value)
         return;
-      IParameter<BlockTypeEnum> byName2 = component?.GetByName<BlockTypeEnum>(this.blockTypeParameterName);
+      IParameter<BlockTypeEnum> byName2 = component?.GetByName<BlockTypeEnum>(blockTypeParameterName);
       if (byName2 != null && byName2.Value != BlockTypeEnum.Block)
         return;
-      IParameter<bool> byName3 = component?.GetByName<bool>(this.runParameterName);
+      IParameter<bool> byName3 = component?.GetByName<bool>(runParameterName);
       if (byName3 != null && byName3.Value)
         return;
-      IParameter<float> byName4 = component?.GetByName<float>(this.staminaParameterName);
+      IParameter<float> byName4 = component?.GetByName<float>(staminaParameterName);
       if (byName4 == null)
         return;
       float num = byName4.Value;
-      if ((double) byName4.Value >= (double) byName4.MaxValue)
+      if (byName4.Value >= (double) byName4.MaxValue)
         return;
-      byName4.Value += this.increaseStaminaStepMaxValue;
+      byName4.Value += increaseStaminaStepMaxValue;
     }
 
     public void Cleanup()

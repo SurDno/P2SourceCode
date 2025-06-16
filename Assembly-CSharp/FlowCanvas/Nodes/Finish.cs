@@ -7,8 +7,8 @@ namespace FlowCanvas.Nodes
   {
     protected override void RegisterPorts()
     {
-      ValueInput<bool> c = this.AddValueInput<bool>("Success");
-      this.AddFlowInput("In", (FlowHandler) (() => this.graph.Stop(c.value)));
+      ValueInput<bool> c = AddValueInput<bool>("Success");
+      AddFlowInput("In", () => graph.Stop(c.value));
     }
   }
 }

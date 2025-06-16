@@ -1,15 +1,13 @@
-﻿using Engine.Behaviours.Components;
+﻿using System.Collections.Generic;
+using Engine.Behaviours.Components;
 using Engine.Source.Commons;
 using Engine.Source.Components.Utilities;
 using Inspectors;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.AI;
 
 public class NpcStateMoveByPath : INpcState
 {
-  private NpcStateMoveByPath.StateEnum state;
-  private bool failed = false;
+  private StateEnum state;
+  private bool failed;
   private NpcState npcState;
   private Pivot pivot;
   private EngineBehavior behavior;
@@ -19,7 +17,7 @@ public class NpcStateMoveByPath : INpcState
   [Inspected]
   private List<Vector3> path;
   [Inspected]
-  private int currentIndex = 0;
+  private int currentIndex;
   [Inspected]
   private Vector3 currentPoint;
   [Inspected]
@@ -33,134 +31,134 @@ public class NpcStateMoveByPath : INpcState
 
   private bool TryInit()
   {
-    if (this.inited)
+    if (inited)
       return true;
-    this.behavior = this.pivot.GetBehavior();
-    this.agent = this.pivot.GetAgent();
-    this.weaponService = this.pivot.GetNpcWeaponService();
-    this.inited = true;
+    behavior = pivot.GetBehavior();
+    agent = pivot.GetAgent();
+    weaponService = pivot.GetNpcWeaponService();
+    inited = true;
     return true;
   }
 
   public NpcStateMoveByPath(NpcState npcState, Pivot pivot)
   {
-    this.GameObject = npcState.gameObject;
+    GameObject = npcState.gameObject;
     this.pivot = pivot;
     this.npcState = npcState;
   }
 
   public void Activate(List<Vector3> path)
   {
-    this.failed = false;
-    this.currentIndex = 0;
-    this.Status = NpcStateStatusEnum.Running;
-    if (!this.TryInit())
+    failed = false;
+    currentIndex = 0;
+    Status = NpcStateStatusEnum.Running;
+    if (!TryInit())
       return;
     this.path = path;
-    this.movementStarted = false;
-    this.agentWasEnabled = this.agent.enabled;
-    this.agent.enabled = true;
-    if (!this.agent.isOnNavMesh)
+    movementStarted = false;
+    agentWasEnabled = agent.enabled;
+    agent.enabled = true;
+    if (!agent.isOnNavMesh)
     {
-      Vector3 position = this.GameObject.transform.position;
+      Vector3 position = GameObject.transform.position;
       bool flag = false;
-      if (NavMeshUtility.SampleRaycastPosition(ref position, flag ? 1f : 5f, flag ? 2f : 10f, this.agent.areaMask))
+      if (NavMeshUtility.SampleRaycastPosition(ref position, flag ? 1f : 5f, flag ? 2f : 10f, agent.areaMask))
       {
-        this.agent.Warp(position);
+        agent.Warp(position);
       }
       else
       {
-        Debug.Log((object) "Can't sample navmesh", (Object) this.GameObject);
-        this.Status = NpcStateStatusEnum.Failed;
+        Debug.Log((object) "Can't sample navmesh", (Object) GameObject);
+        Status = NpcStateStatusEnum.Failed;
         return;
       }
     }
-    this.GoToNextPoint();
-    if (!((Object) this.weaponService != (Object) null))
+    GoToNextPoint();
+    if (!((Object) weaponService != (Object) null))
       return;
-    this.weaponService.Weapon = WeaponEnum.Unknown;
+    weaponService.Weapon = WeaponEnum.Unknown;
   }
 
   private void GoToNextPoint()
   {
-    this.currentPoint = this.path[this.currentIndex];
-    ++this.currentIndex;
-    this.state = NpcStateMoveByPath.StateEnum.Moving;
-    this.RecountRemainingDistance();
+    currentPoint = path[currentIndex];
+    ++currentIndex;
+    state = StateEnum.Moving;
+    RecountRemainingDistance();
   }
 
   private void RecountRemainingDistance()
   {
-    this.remainingPointsDistance = 0.0f;
-    for (int currentIndex = this.currentIndex; currentIndex < this.path.Count; ++currentIndex)
-      this.remainingPointsDistance += (this.path[currentIndex - 1] - this.path[currentIndex]).magnitude;
+    remainingPointsDistance = 0.0f;
+    for (int currentIndex = this.currentIndex; currentIndex < path.Count; ++currentIndex)
+      remainingPointsDistance += (path[currentIndex - 1] - path[currentIndex]).magnitude;
   }
 
   public void Shutdown()
   {
-    if (this.failed)
+    if (failed)
       return;
-    this.agent.enabled = this.agentWasEnabled;
-    if (!((Object) this.weaponService != (Object) null))
+    agent.enabled = agentWasEnabled;
+    if (!((Object) weaponService != (Object) null))
       return;
-    this.weaponService.Weapon = this.npcState.Weapon;
+    weaponService.Weapon = npcState.Weapon;
   }
 
-  public void OnAnimatorMove() => this.behavior.OnExternalAnimatorMove();
+  public void OnAnimatorMove() => behavior.OnExternalAnimatorMove();
 
   public void OnAnimatorEventEvent(string obj)
   {
-    if (!this.failed)
+    if (!failed)
       ;
   }
 
   public void Update()
   {
-    if (InstanceByRequest<EngineApplication>.Instance.IsPaused || !this.inited)
+    if (InstanceByRequest<EngineApplication>.Instance.IsPaused || !inited)
       return;
-    if (this.state == NpcStateMoveByPath.StateEnum.Moving)
-      this.OnUpdateMove();
-    if (this.state == NpcStateMoveByPath.StateEnum.Stopping)
-      this.OnUpdateStopMovement();
-    if (this.state != NpcStateMoveByPath.StateEnum.Done)
+    if (state == StateEnum.Moving)
+      OnUpdateMove();
+    if (state == StateEnum.Stopping)
+      OnUpdateStopMovement();
+    if (state != StateEnum.Done)
       return;
-    this.Status = this.failed ? NpcStateStatusEnum.Failed : NpcStateStatusEnum.Success;
+    Status = failed ? NpcStateStatusEnum.Failed : NpcStateStatusEnum.Success;
   }
 
   public void OnUpdateMove()
   {
-    Vector3 direction = this.currentPoint - this.GameObject.transform.position;
+    Vector3 direction = currentPoint - GameObject.transform.position;
     float magnitude = direction.magnitude;
-    float stoppingDistance = this.agent.stoppingDistance;
-    if (this.currentIndex != this.path.Count)
+    float stoppingDistance = agent.stoppingDistance;
+    if (currentIndex != path.Count)
       stoppingDistance *= 1.5f;
-    if (!this.movementStarted)
+    if (!movementStarted)
     {
-      this.behavior.StartMovement(direction.normalized);
-      this.movementStarted = true;
+      behavior.StartMovement(direction.normalized);
+      movementStarted = true;
     }
     else
     {
-      bool flag = this.behavior.Move(direction, magnitude + this.remainingPointsDistance);
-      if (!((double) magnitude < (double) stoppingDistance | flag))
+      bool flag = behavior.Move(direction, magnitude + remainingPointsDistance);
+      if (!(magnitude < (double) stoppingDistance | flag))
         return;
-      this.PointReached();
+      PointReached();
     }
   }
 
   public void OnUpdateStopMovement()
   {
-    if (!this.behavior.Move(this.currentPoint - this.GameObject.transform.position, 0.0f))
+    if (!behavior.Move(currentPoint - GameObject.transform.position, 0.0f))
       return;
-    this.state = NpcStateMoveByPath.StateEnum.Done;
+    state = StateEnum.Done;
   }
 
   private void PointReached()
   {
-    if (this.currentIndex == this.path.Count)
-      this.state = NpcStateMoveByPath.StateEnum.Stopping;
+    if (currentIndex == path.Count)
+      state = StateEnum.Stopping;
     else
-      this.GoToNextPoint();
+      GoToNextPoint();
   }
 
   public void OnLodStateChanged(bool enabled)

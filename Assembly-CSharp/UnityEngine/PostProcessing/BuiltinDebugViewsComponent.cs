@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using UnityEngine.Rendering;
 
 namespace UnityEngine.PostProcessing
 {
@@ -7,19 +6,19 @@ namespace UnityEngine.PostProcessing
     PostProcessingComponentCommandBuffer<BuiltinDebugViewsModel>
   {
     private const string k_ShaderString = "Hidden/Post FX/Builtin Debug Views";
-    private BuiltinDebugViewsComponent.ArrowArray m_Arrows;
+    private ArrowArray m_Arrows;
 
     public override bool active
     {
       get
       {
-        return this.model.IsModeActive(BuiltinDebugViewsModel.Mode.Depth) || this.model.IsModeActive(BuiltinDebugViewsModel.Mode.Normals) || this.model.IsModeActive(BuiltinDebugViewsModel.Mode.MotionVectors);
+        return model.IsModeActive(BuiltinDebugViewsModel.Mode.Depth) || model.IsModeActive(BuiltinDebugViewsModel.Mode.Normals) || model.IsModeActive(BuiltinDebugViewsModel.Mode.MotionVectors);
       }
     }
 
     public override DepthTextureMode GetCameraFlags()
     {
-      BuiltinDebugViewsModel.Mode mode = this.model.settings.mode;
+      BuiltinDebugViewsModel.Mode mode = model.settings.mode;
       DepthTextureMode cameraFlags = DepthTextureMode.None;
       switch (mode)
       {
@@ -38,99 +37,99 @@ namespace UnityEngine.PostProcessing
 
     public override CameraEvent GetCameraEvent()
     {
-      return this.model.settings.mode == BuiltinDebugViewsModel.Mode.MotionVectors ? CameraEvent.BeforeImageEffects : CameraEvent.BeforeImageEffectsOpaque;
+      return model.settings.mode == BuiltinDebugViewsModel.Mode.MotionVectors ? CameraEvent.BeforeImageEffects : CameraEvent.BeforeImageEffectsOpaque;
     }
 
     public override string GetName() => "Builtin Debug Views";
 
     public override void PopulateCommandBuffer(CommandBuffer cb)
     {
-      BuiltinDebugViewsModel.Settings settings = this.model.settings;
-      Material material = this.context.materialFactory.Get("Hidden/Post FX/Builtin Debug Views");
+      BuiltinDebugViewsModel.Settings settings = model.settings;
+      Material material = context.materialFactory.Get("Hidden/Post FX/Builtin Debug Views");
       material.shaderKeywords = (string[]) null;
-      if (this.context.isGBufferAvailable)
+      if (context.isGBufferAvailable)
         material.EnableKeyword("SOURCE_GBUFFER");
       switch (settings.mode)
       {
         case BuiltinDebugViewsModel.Mode.Depth:
-          this.DepthPass(cb);
+          DepthPass(cb);
           break;
         case BuiltinDebugViewsModel.Mode.Normals:
-          this.DepthNormalsPass(cb);
+          DepthNormalsPass(cb);
           break;
         case BuiltinDebugViewsModel.Mode.MotionVectors:
-          this.MotionVectorsPass(cb);
+          MotionVectorsPass(cb);
           break;
       }
-      this.context.Interrupt();
+      context.Interrupt();
     }
 
     private void DepthPass(CommandBuffer cb)
     {
-      Material mat = this.context.materialFactory.Get("Hidden/Post FX/Builtin Debug Views");
-      BuiltinDebugViewsModel.DepthSettings depth = this.model.settings.depth;
-      cb.SetGlobalFloat(BuiltinDebugViewsComponent.Uniforms._DepthScale, 1f / depth.scale);
+      Material mat = context.materialFactory.Get("Hidden/Post FX/Builtin Debug Views");
+      BuiltinDebugViewsModel.DepthSettings depth = model.settings.depth;
+      cb.SetGlobalFloat(Uniforms._DepthScale, 1f / depth.scale);
       cb.Blit((Texture) null, (RenderTargetIdentifier) BuiltinRenderTextureType.CameraTarget, mat, 0);
     }
 
     private void DepthNormalsPass(CommandBuffer cb)
     {
-      Material mat = this.context.materialFactory.Get("Hidden/Post FX/Builtin Debug Views");
+      Material mat = context.materialFactory.Get("Hidden/Post FX/Builtin Debug Views");
       cb.Blit((Texture) null, (RenderTargetIdentifier) BuiltinRenderTextureType.CameraTarget, mat, 1);
     }
 
     private void MotionVectorsPass(CommandBuffer cb)
     {
-      Material material = this.context.materialFactory.Get("Hidden/Post FX/Builtin Debug Views");
-      BuiltinDebugViewsModel.MotionVectorsSettings motionVectors = this.model.settings.motionVectors;
-      int num = BuiltinDebugViewsComponent.Uniforms._TempRT;
-      cb.GetTemporaryRT(num, this.context.width, this.context.height, 0, FilterMode.Bilinear);
-      cb.SetGlobalFloat(BuiltinDebugViewsComponent.Uniforms._Opacity, motionVectors.sourceOpacity);
-      cb.SetGlobalTexture(BuiltinDebugViewsComponent.Uniforms._MainTex, (RenderTargetIdentifier) BuiltinRenderTextureType.CameraTarget);
+      Material material = context.materialFactory.Get("Hidden/Post FX/Builtin Debug Views");
+      BuiltinDebugViewsModel.MotionVectorsSettings motionVectors = model.settings.motionVectors;
+      int num = Uniforms._TempRT;
+      cb.GetTemporaryRT(num, context.width, context.height, 0, FilterMode.Bilinear);
+      cb.SetGlobalFloat(Uniforms._Opacity, motionVectors.sourceOpacity);
+      cb.SetGlobalTexture(Uniforms._MainTex, (RenderTargetIdentifier) BuiltinRenderTextureType.CameraTarget);
       cb.Blit((RenderTargetIdentifier) BuiltinRenderTextureType.CameraTarget, (RenderTargetIdentifier) num, material, 2);
-      if ((double) motionVectors.motionImageOpacity > 0.0 && (double) motionVectors.motionImageAmplitude > 0.0)
+      if (motionVectors.motionImageOpacity > 0.0 && motionVectors.motionImageAmplitude > 0.0)
       {
-        int tempRt2 = BuiltinDebugViewsComponent.Uniforms._TempRT2;
-        cb.GetTemporaryRT(tempRt2, this.context.width, this.context.height, 0, FilterMode.Bilinear);
-        cb.SetGlobalFloat(BuiltinDebugViewsComponent.Uniforms._Opacity, motionVectors.motionImageOpacity);
-        cb.SetGlobalFloat(BuiltinDebugViewsComponent.Uniforms._Amplitude, motionVectors.motionImageAmplitude);
-        cb.SetGlobalTexture(BuiltinDebugViewsComponent.Uniforms._MainTex, (RenderTargetIdentifier) num);
+        int tempRt2 = Uniforms._TempRT2;
+        cb.GetTemporaryRT(tempRt2, context.width, context.height, 0, FilterMode.Bilinear);
+        cb.SetGlobalFloat(Uniforms._Opacity, motionVectors.motionImageOpacity);
+        cb.SetGlobalFloat(Uniforms._Amplitude, motionVectors.motionImageAmplitude);
+        cb.SetGlobalTexture(Uniforms._MainTex, (RenderTargetIdentifier) num);
         cb.Blit((RenderTargetIdentifier) num, (RenderTargetIdentifier) tempRt2, material, 3);
         cb.ReleaseTemporaryRT(num);
         num = tempRt2;
       }
-      if ((double) motionVectors.motionVectorsOpacity > 0.0 && (double) motionVectors.motionVectorsAmplitude > 0.0)
+      if (motionVectors.motionVectorsOpacity > 0.0 && motionVectors.motionVectorsAmplitude > 0.0)
       {
-        this.PrepareArrows();
-        float y = 1f / (float) motionVectors.motionVectorsResolution;
-        float x = y * (float) this.context.height / (float) this.context.width;
-        cb.SetGlobalVector(BuiltinDebugViewsComponent.Uniforms._Scale, (Vector4) new Vector2(x, y));
-        cb.SetGlobalFloat(BuiltinDebugViewsComponent.Uniforms._Opacity, motionVectors.motionVectorsOpacity);
-        cb.SetGlobalFloat(BuiltinDebugViewsComponent.Uniforms._Amplitude, motionVectors.motionVectorsAmplitude);
-        cb.DrawMesh(this.m_Arrows.mesh, Matrix4x4.identity, material, 0, 4);
+        PrepareArrows();
+        float y = 1f / motionVectors.motionVectorsResolution;
+        float x = y * context.height / context.width;
+        cb.SetGlobalVector(Uniforms._Scale, (Vector4) new Vector2(x, y));
+        cb.SetGlobalFloat(Uniforms._Opacity, motionVectors.motionVectorsOpacity);
+        cb.SetGlobalFloat(Uniforms._Amplitude, motionVectors.motionVectorsAmplitude);
+        cb.DrawMesh(m_Arrows.mesh, Matrix4x4.identity, material, 0, 4);
       }
-      cb.SetGlobalTexture(BuiltinDebugViewsComponent.Uniforms._MainTex, (RenderTargetIdentifier) num);
+      cb.SetGlobalTexture(Uniforms._MainTex, (RenderTargetIdentifier) num);
       cb.Blit((RenderTargetIdentifier) num, (RenderTargetIdentifier) BuiltinRenderTextureType.CameraTarget);
       cb.ReleaseTemporaryRT(num);
     }
 
     private void PrepareArrows()
     {
-      int vectorsResolution = this.model.settings.motionVectors.motionVectorsResolution;
+      int vectorsResolution = model.settings.motionVectors.motionVectorsResolution;
       int columns = vectorsResolution * Screen.width / Screen.height;
-      if (this.m_Arrows == null)
-        this.m_Arrows = new BuiltinDebugViewsComponent.ArrowArray();
-      if (this.m_Arrows.columnCount == columns && this.m_Arrows.rowCount == vectorsResolution)
+      if (m_Arrows == null)
+        m_Arrows = new ArrowArray();
+      if (m_Arrows.columnCount == columns && m_Arrows.rowCount == vectorsResolution)
         return;
-      this.m_Arrows.Release();
-      this.m_Arrows.BuildMesh(columns, vectorsResolution);
+      m_Arrows.Release();
+      m_Arrows.BuildMesh(columns, vectorsResolution);
     }
 
     public override void OnDisable()
     {
-      if (this.m_Arrows != null)
-        this.m_Arrows.Release();
-      this.m_Arrows = (BuiltinDebugViewsComponent.ArrowArray) null;
+      if (m_Arrows != null)
+        m_Arrows.Release();
+      m_Arrows = null;
     }
 
     private static class Uniforms
@@ -179,7 +178,7 @@ namespace UnityEngine.PostProcessing
         {
           for (int index2 = 0; index2 < columns; ++index2)
           {
-            Vector2 vector2 = new Vector2((0.5f + (float) index2) / (float) columns, (0.5f + (float) index1) / (float) rows);
+            Vector2 vector2 = new Vector2((0.5f + index2) / columns, (0.5f + index1) / rows);
             for (int index3 = 0; index3 < 6; ++index3)
             {
               vector3List.Add(vector3Array[index3]);
@@ -197,14 +196,14 @@ namespace UnityEngine.PostProcessing
         this.mesh.SetUVs(0, vector2List);
         this.mesh.SetIndices(indices, MeshTopology.Lines, 0);
         this.mesh.UploadMeshData(true);
-        this.columnCount = columns;
-        this.rowCount = rows;
+        columnCount = columns;
+        rowCount = rows;
       }
 
       public void Release()
       {
-        GraphicsUtils.Destroy((Object) this.mesh);
-        this.mesh = (Mesh) null;
+        GraphicsUtils.Destroy((Object) mesh);
+        mesh = (Mesh) null;
       }
     }
   }

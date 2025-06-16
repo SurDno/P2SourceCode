@@ -2,7 +2,7 @@
 
 namespace PLVirtualMachine.Common.EngineAPI.VMECS
 {
-  [Info("Scene", null)]
+  [Info("Scene")]
   public class VMScene : VMComponent
   {
     public const string ComponentName = "Scene";

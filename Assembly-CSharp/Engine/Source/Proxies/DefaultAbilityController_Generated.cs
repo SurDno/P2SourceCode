@@ -1,9 +1,9 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons.Cloneable;
 using Engine.Common.Commons.Converters;
 using Engine.Source.Commons.Abilities.Controllers;
-using System;
 
 namespace Engine.Source.Proxies
 {
@@ -18,20 +18,20 @@ namespace Engine.Source.Proxies
     public object Clone()
     {
       DefaultAbilityController_Generated instance = Activator.CreateInstance<DefaultAbilityController_Generated>();
-      this.CopyTo((object) instance);
-      return (object) instance;
+      CopyTo(instance);
+      return instance;
     }
 
-    public void CopyTo(object target2) => ((DefaultAbilityController) target2).active = this.active;
+    public void CopyTo(object target2) => ((DefaultAbilityController) target2).active = active;
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.Write(writer, "Active", this.active);
+      DefaultDataWriteUtility.Write(writer, "Active", active);
     }
 
     public void DataRead(IDataReader reader, Type type)
     {
-      this.active = DefaultDataReadUtility.Read(reader, "Active", this.active);
+      active = DefaultDataReadUtility.Read(reader, "Active", active);
     }
   }
 }

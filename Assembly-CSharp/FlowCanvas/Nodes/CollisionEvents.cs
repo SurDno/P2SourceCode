@@ -1,5 +1,4 @@
 ﻿using ParadoxNotion.Design;
-using UnityEngine;
 
 namespace FlowCanvas.Nodes
 {
@@ -25,30 +24,30 @@ namespace FlowCanvas.Nodes
 
     protected override void RegisterPorts()
     {
-      this.enter = this.AddFlowOutput("Enter");
-      this.stay = this.AddFlowOutput("Stay");
-      this.exit = this.AddFlowOutput("Exit");
-      this.AddValueOutput<GameObject>("Other", (ValueHandler<GameObject>) (() => this.collision.gameObject));
-      this.AddValueOutput<ContactPoint>("Contact Point", (ValueHandler<ContactPoint>) (() => this.collision.contacts[0]));
-      this.AddValueOutput<Collision>("Collision Info", (ValueHandler<Collision>) (() => this.collision));
+      enter = AddFlowOutput("Enter");
+      stay = AddFlowOutput("Stay");
+      exit = AddFlowOutput("Exit");
+      AddValueOutput("Other", (ValueHandler<GameObject>) (() => collision.gameObject));
+      AddValueOutput("Contact Point", (ValueHandler<ContactPoint>) (() => collision.contacts[0]));
+      AddValueOutput("Collision Info", (ValueHandler<Collision>) (() => collision));
     }
 
     private void OnCollisionEnter(Collision collision)
     {
       this.collision = collision;
-      this.enter.Call();
+      enter.Call();
     }
 
     private void OnCollisionStay(Collision collision)
     {
       this.collision = collision;
-      this.stay.Call();
+      stay.Call();
     }
 
     private void OnCollisionExit(Collision collision)
     {
       this.collision = collision;
-      this.exit.Call();
+      exit.Call();
     }
   }
 }

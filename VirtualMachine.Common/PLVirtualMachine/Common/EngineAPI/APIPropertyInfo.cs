@@ -1,6 +1,6 @@
-﻿using Cofe.Utility;
+﻿using System.Reflection;
+using Cofe.Utility;
 using PLVirtualMachine.Common.EngineAPI.VMECS.VMAttributes;
-using System.Reflection;
 
 namespace PLVirtualMachine.Common.EngineAPI
 {
@@ -13,15 +13,15 @@ namespace PLVirtualMachine.Common.EngineAPI
 
     public APIPropertyInfo(PropertyInfo propertyInfo, VMType propertyType)
     {
-      this.PropertyInfo = propertyInfo;
-      this.PropertyType = propertyType;
-      this.PropertyDefValue = TypeDefaultUtility.GetDefault(this.PropertyType.BaseType);
+      PropertyInfo = propertyInfo;
+      PropertyType = propertyType;
+      PropertyDefValue = TypeDefaultUtility.GetDefault(PropertyType.BaseType);
       PropertyAttribute[] customAttributes = (PropertyAttribute[]) propertyInfo.GetCustomAttributes(typeof (PropertyAttribute), true);
       if (customAttributes.Length == 0)
         return;
-      this.Attribute = customAttributes[0];
+      Attribute = customAttributes[0];
     }
 
-    public string PropertyName => this.PropertyInfo.Name;
+    public string PropertyName => PropertyInfo.Name;
   }
 }

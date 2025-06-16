@@ -9,18 +9,18 @@
 
     public IntRect(long l, long t, long r, long b)
     {
-      this.left = l;
-      this.top = t;
-      this.right = r;
-      this.bottom = b;
+      left = l;
+      top = t;
+      right = r;
+      bottom = b;
     }
 
     public IntRect(IntRect ir)
     {
-      this.left = ir.left;
-      this.top = ir.top;
-      this.right = ir.right;
-      this.bottom = ir.bottom;
+      left = ir.left;
+      top = ir.top;
+      right = ir.right;
+      bottom = ir.bottom;
     }
   }
 }

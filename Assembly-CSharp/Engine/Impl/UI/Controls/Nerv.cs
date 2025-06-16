@@ -1,9 +1,6 @@
-﻿using Engine.Behaviours.Localization;
+﻿using System;
+using Engine.Behaviours.Localization;
 using Engine.Common.Components.Parameters;
-using System;
-using UnityEngine;
-using UnityEngine.Serialization;
-using UnityEngine.UI;
 
 namespace Engine.Impl.UI.Controls
 {
@@ -41,57 +38,57 @@ namespace Engine.Impl.UI.Controls
     private float progress = 0.5f;
     private bool threshold;
 
-    public ParameterNameEnum Name => this.parameterName;
+    public ParameterNameEnum Name => parameterName;
 
-    private void OnValidate() => this.ApplyProgress();
+    private void OnValidate() => ApplyProgress();
 
     private void ApplyProgress()
     {
-      if ((UnityEngine.Object) this.image != (UnityEngine.Object) null)
+      if ((UnityEngine.Object) image != (UnityEngine.Object) null)
       {
-        this.image.fillAmount = this.progress;
-        this.image.color = Color.Lerp(this.minFillColor, this.maxFillColor, this.progress);
+        image.fillAmount = progress;
+        image.color = Color.Lerp(minFillColor, maxFillColor, progress);
       }
-      if ((UnityEngine.Object) this.baseImage != (UnityEngine.Object) null)
+      if ((UnityEngine.Object) baseImage != (UnityEngine.Object) null)
       {
-        this.baseImage.fillAmount = 1f - this.progress;
-        this.baseImage.color = Color.Lerp(this.minBaseColor, this.maxBaseColor, this.progress);
+        baseImage.fillAmount = 1f - progress;
+        baseImage.color = Color.Lerp(minBaseColor, maxBaseColor, progress);
       }
-      this.Threshold = (double) this.thresholdMin <= (double) this.image.fillAmount && (double) this.image.fillAmount <= (double) this.thresholdMax;
+      Threshold = thresholdMin <= (double) image.fillAmount && (double) image.fillAmount <= thresholdMax;
     }
 
     public float Progress
     {
-      get => this.progress;
+      get => progress;
       set
       {
-        if (Mathf.Approximately(this.progress, value))
+        if (Mathf.Approximately(progress, value))
           return;
-        this.progress = value;
-        this.ApplyProgress();
+        progress = value;
+        ApplyProgress();
       }
     }
 
     public Localizer Localizer
     {
-      get => this.localizer;
-      protected set => this.localizer = value;
+      get => localizer;
+      protected set => localizer = value;
     }
 
     public bool Threshold
     {
       get
       {
-        if (!this.thresholdIsEnabled)
-          this.threshold = false;
-        return this.threshold;
+        if (!thresholdIsEnabled)
+          threshold = false;
+        return threshold;
       }
       protected set
       {
-        if (this.threshold == value)
+        if (threshold == value)
           return;
-        this.threshold = this.thresholdIsEnabled && value;
-        Action<Nerv> thresholdEvent = this.ThresholdEvent;
+        threshold = thresholdIsEnabled && value;
+        Action<Nerv> thresholdEvent = ThresholdEvent;
         if (thresholdEvent == null)
           return;
         thresholdEvent(this);

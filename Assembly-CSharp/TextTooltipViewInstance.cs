@@ -1,5 +1,4 @@
 ﻿using Engine.Impl.UI.Controls;
-using UnityEngine;
 
 public class TextTooltipViewInstance : TextTooltipView
 {
@@ -11,90 +10,90 @@ public class TextTooltipViewInstance : TextTooltipView
   private float fadeInTime = 1f;
   [SerializeField]
   private float fadeOutTime = 1f;
-  private TextTooltipViewInstance.State state = TextTooltipViewInstance.State.Disabled;
+  private State state = State.Disabled;
   private float phase;
   private string nextText;
   private Vector2 nextPosition;
 
   public override void Hide()
   {
-    if (this.state == TextTooltipViewInstance.State.Disabled)
+    if (state == State.Disabled)
       return;
-    this.nextText = (string) null;
-    this.SetState(TextTooltipViewInstance.State.FadingOut);
+    nextText = null;
+    SetState(State.FadingOut);
   }
 
   public void Update()
   {
-    if (this.state == TextTooltipViewInstance.State.FadingIn)
+    if (state == State.FadingIn)
     {
-      if ((double) this.fadeInTime == 0.0)
-        this.phase = 1f;
+      if (fadeInTime == 0.0)
+        phase = 1f;
       else
-        this.phase += Time.deltaTime / this.fadeInTime;
-      if ((double) this.phase >= 1.0)
+        phase += Time.deltaTime / fadeInTime;
+      if (phase >= 1.0)
       {
-        this.phase = 1f;
-        this.opacityView.Progress = 1f;
-        this.SetState(TextTooltipViewInstance.State.Enabled);
+        phase = 1f;
+        opacityView.Progress = 1f;
+        SetState(State.Enabled);
       }
       else
-        this.opacityView.Progress = this.phase;
+        opacityView.Progress = phase;
     }
     else
     {
-      if (this.state != TextTooltipViewInstance.State.FadingOut)
+      if (state != State.FadingOut)
         return;
-      if ((double) this.fadeOutTime == 0.0)
-        this.phase = 0.0f;
+      if (fadeOutTime == 0.0)
+        phase = 0.0f;
       else
-        this.phase -= Time.deltaTime / this.fadeOutTime;
-      if ((double) this.phase <= 0.0)
+        phase -= Time.deltaTime / fadeOutTime;
+      if (phase <= 0.0)
       {
-        this.phase = 0.0f;
-        this.opacityView.Progress = 0.0f;
-        if (this.nextText != null)
+        phase = 0.0f;
+        opacityView.Progress = 0.0f;
+        if (nextText != null)
         {
-          this.SetData(this.nextPosition, this.nextText);
-          this.nextText = (string) null;
-          this.SetState(TextTooltipViewInstance.State.FadingIn);
+          SetData(nextPosition, nextText);
+          nextText = null;
+          SetState(State.FadingIn);
         }
         else
-          this.SetState(TextTooltipViewInstance.State.Disabled);
+          SetState(State.Disabled);
       }
       else
-        this.opacityView.Progress = this.phase;
+        opacityView.Progress = phase;
     }
   }
 
   public override void Show(Vector2 screenPosition, string text)
   {
     if (text == null)
-      this.Hide();
-    else if (this.state == TextTooltipViewInstance.State.Disabled)
+      Hide();
+    else if (state == State.Disabled)
     {
-      this.SetData(screenPosition, text);
-      this.SetState(TextTooltipViewInstance.State.FadingIn);
+      SetData(screenPosition, text);
+      SetState(State.FadingIn);
     }
     else
     {
-      this.nextPosition = screenPosition;
-      this.nextText = text;
-      this.SetState(TextTooltipViewInstance.State.FadingOut);
+      nextPosition = screenPosition;
+      nextText = text;
+      SetState(State.FadingOut);
     }
   }
 
-  private void SetState(TextTooltipViewInstance.State newState)
+  private void SetState(State newState)
   {
-    if (this.state == newState)
+    if (state == newState)
       return;
-    this.state = newState;
-    this.enabled = this.state == TextTooltipViewInstance.State.FadingIn || this.state == TextTooltipViewInstance.State.FadingOut;
+    state = newState;
+    this.enabled = state == State.FadingIn || state == State.FadingOut;
   }
 
   private void SetData(Vector2 screenPosition, string text)
   {
-    this.textView.StringValue = text;
+    textView.StringValue = text;
     Vector2 vector2 = new Vector2((float) Screen.width * 0.5f, (float) Screen.height * 0.5f);
     RectTransform transform = (RectTransform) this.transform;
     transform.pivot = new Vector2((double) screenPosition.x < (double) vector2.x ? 0.0f : 1f, (double) screenPosition.y < (double) vector2.y ? 0.0f : 1f);

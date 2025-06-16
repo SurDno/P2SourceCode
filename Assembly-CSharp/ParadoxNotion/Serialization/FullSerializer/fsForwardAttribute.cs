@@ -2,11 +2,11 @@
 
 namespace ParadoxNotion.Serialization.FullSerializer
 {
-  [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Interface, AllowMultiple = false, Inherited = false)]
+  [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Interface, Inherited = false)]
   public sealed class fsForwardAttribute : Attribute
   {
     public string MemberName;
 
-    public fsForwardAttribute(string memberName) => this.MemberName = memberName;
+    public fsForwardAttribute(string memberName) => MemberName = memberName;
   }
 }

@@ -1,11 +1,9 @@
-﻿using FlowCanvas;
+﻿using System;
+using FlowCanvas;
 using FlowCanvas.Nodes;
 using InputServices;
 using NodeCanvas.Framework;
 using ParadoxNotion.Design;
-using System;
-using UnityEngine;
-using UnityEngine.Playables;
 
 namespace Engine.Source.Blueprints
 {
@@ -19,11 +17,11 @@ namespace Engine.Source.Blueprints
     protected override void RegisterPorts()
     {
       base.RegisterPorts();
-      FlowOutput output = this.AddFlowOutput("Out");
-      this.AddFlowInput("In", (FlowHandler) (() =>
+      FlowOutput output = AddFlowOutput("Out");
+      AddFlowInput("In", () =>
       {
-        this.director = !((UnityEngine.Object) this.director != (UnityEngine.Object) null) ? this.directorInput.value : throw new Exception();
-        if ((UnityEngine.Object) this.director == (UnityEngine.Object) null)
+        director = !((UnityEngine.Object) director != (UnityEngine.Object) null) ? directorInput.value : throw new Exception();
+        if ((UnityEngine.Object) director == (UnityEngine.Object) null)
         {
           output.Call();
         }
@@ -32,23 +30,23 @@ namespace Engine.Source.Blueprints
           Action<PlayableDirector> stopped = (Action<PlayableDirector>) null;
           stopped = (Action<PlayableDirector>) (tmp =>
           {
-            this.director.stopped -= stopped;
-            this.director = (PlayableDirector) null;
+            director.stopped -= stopped;
+            director = (PlayableDirector) null;
             output.Call();
           });
-          this.director.stopped += stopped;
-          this.director.Play();
+          director.stopped += stopped;
+          director.Play();
         }
-      }));
-      this.directorInput = this.AddValueInput<PlayableDirector>("Director");
-      this.interruptibleInput = this.AddValueInput<bool>("Interruptible");
+      });
+      directorInput = AddValueInput<PlayableDirector>("Director");
+      interruptibleInput = AddValueInput<bool>("Interruptible");
     }
 
     public void Update()
     {
-      if (!this.interruptibleInput.value || (UnityEngine.Object) this.director == (UnityEngine.Object) null || !Input.GetKeyDown(KeyCode.Escape) && !InputService.Instance.GetButtonDown("B", false))
+      if (!interruptibleInput.value || (UnityEngine.Object) director == (UnityEngine.Object) null || !Input.GetKeyDown(KeyCode.Escape) && !InputService.Instance.GetButtonDown("B", false))
         return;
-      this.director.Stop();
+      director.Stop();
     }
   }
 }

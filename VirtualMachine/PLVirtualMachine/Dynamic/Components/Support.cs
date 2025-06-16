@@ -1,11 +1,11 @@
-﻿using Cofe.Loggers;
+﻿using System;
+using Cofe.Loggers;
 using Cofe.Proxies;
 using PLVirtualMachine.Common;
 using PLVirtualMachine.Common.EngineAPI;
 using PLVirtualMachine.Common.EngineAPI.VMECS;
 using PLVirtualMachine.Common.EngineAPI.VMECS.VMAttributes;
 using PLVirtualMachine.Objects;
-using System;
 
 namespace PLVirtualMachine.Dynamic.Components
 {
@@ -28,13 +28,13 @@ namespace PLVirtualMachine.Dynamic.Components
     public override void Initialize(VMBaseEntity parent)
     {
       base.Initialize(parent);
-      if (Support.instance == null)
-        Support.instance = (VMSupport) this;
+      if (instance == null)
+        instance = this;
       else
-        Logger.AddError(string.Format("Support component creation dublicate!"));
+        Logger.AddError("Support component creation dublicate!");
     }
 
-    public static void ResetInstance() => Support.instance = (VMSupport) null;
+    public static void ResetInstance() => instance = null;
 
     public override float Random() => (float) VMMath.GetRandomDouble();
 
@@ -42,7 +42,7 @@ namespace PLVirtualMachine.Dynamic.Components
 
     public override float MinMaxRand(float minVal, float maxVal)
     {
-      return minVal + (float) (((double) maxVal - (double) minVal) * VMMath.GetRandomDouble());
+      return minVal + (float) ((maxVal - (double) minVal) * VMMath.GetRandomDouble());
     }
 
     public override int MinMaxIntRand(int minVal, int maxVal)
@@ -60,19 +60,19 @@ namespace PLVirtualMachine.Dynamic.Components
 
     public override GameTime PoissonRandTime(float flowPerSecond)
     {
-      if ((double) flowPerSecond <= 0.0)
+      if (flowPerSecond <= 0.0)
         return new GameTime(ulong.MaxValue);
       double d = 1E-06 + VMMath.GetRandomDouble();
       if (d > 1.0)
         d = 1.0;
-      return new GameTime((ulong) Math.Round(-(1.0 / (double) flowPerSecond) * Math.Log(d)));
+      return new GameTime((ulong) Math.Round(-(1.0 / flowPerSecond) * Math.Log(d)));
     }
 
     public override int GetListObjectsCount(VMCommonList objList)
     {
       if (objList != null)
         return objList.ObjectsCount;
-      Logger.AddError(string.Format("GetListObjectsCount error: list instance is null !!! at {0}", (object) DynamicFSM.CurrentStateInfo));
+      Logger.AddError(string.Format("GetListObjectsCount error: list instance is null !!! at {0}", DynamicFSM.CurrentStateInfo));
       return 0;
     }
 
@@ -80,16 +80,16 @@ namespace PLVirtualMachine.Dynamic.Components
     {
       if (objList != null)
         return objList.GetType(index);
-      Logger.AddError(string.Format("GetListObjectsCount error: list instance is null !!! at {0}", (object) DynamicFSM.CurrentStateInfo));
-      return (VMType) null;
+      Logger.AddError(string.Format("GetListObjectsCount error: list instance is null !!! at {0}", DynamicFSM.CurrentStateInfo));
+      return null;
     }
 
     public override object GetListObject(VMCommonList objList, int index)
     {
       if (objList == null)
       {
-        Logger.AddError(string.Format("GetListObjectsCount error: list instance is null !!! at {0}", (object) DynamicFSM.CurrentStateInfo));
-        return (object) null;
+        Logger.AddError(string.Format("GetListObjectsCount error: list instance is null !!! at {0}", DynamicFSM.CurrentStateInfo));
+        return null;
       }
       try
       {
@@ -97,8 +97,8 @@ namespace PLVirtualMachine.Dynamic.Components
       }
       catch (Exception ex)
       {
-        Logger.AddError(string.Format("Get list object error: {0}", (object) ex));
-        return (object) null;
+        Logger.AddError(string.Format("Get list object error: {0}", ex));
+        return null;
       }
     }
 
@@ -110,7 +110,7 @@ namespace PLVirtualMachine.Dynamic.Components
       }
       catch (Exception ex)
       {
-        Logger.AddError(string.Format("Get list object error: {0}", (object) ex));
+        Logger.AddError(string.Format("Get list object error: {0}", ex));
       }
     }
 
@@ -119,16 +119,16 @@ namespace PLVirtualMachine.Dynamic.Components
     {
       if (objList == null)
       {
-        Logger.AddError(string.Format("Cannot get random object from list: list instance not defined at {0}", (object) DynamicFSM.CurrentStateInfo));
-        return (object) null;
+        Logger.AddError(string.Format("Cannot get random object from list: list instance not defined at {0}", DynamicFSM.CurrentStateInfo));
+        return null;
       }
       int index = VMMath.GetRandomInt(objList.ObjectsCount);
       if (index >= objList.ObjectsCount)
       {
-        Logger.AddError(string.Format("Random index generating error: probably list is empty at {0}", (object) DynamicFSM.CurrentStateInfo));
+        Logger.AddError(string.Format("Random index generating error: probably list is empty at {0}", DynamicFSM.CurrentStateInfo));
         index = objList.ObjectsCount - 1;
       }
-      return this.GetListObject(objList, index);
+      return GetListObject(objList, index);
     }
 
     public override int GetListIndexOfMaxValue(VMCommonList list)
@@ -139,7 +139,7 @@ namespace PLVirtualMachine.Dynamic.Components
       }
       catch (Exception ex)
       {
-        Logger.AddError(string.Format("Get list max value index error: {0}", (object) ex));
+        Logger.AddError(string.Format("Get list max value index error: {0}", ex));
         return -1;
       }
     }
@@ -149,7 +149,7 @@ namespace PLVirtualMachine.Dynamic.Components
       if (objList != null)
         objList.Clear();
       else
-        Logger.AddError(string.Format("Target list for clear function is null"));
+        Logger.AddError("Target list for clear function is null");
     }
 
     public override void AddObjectToList(VMCommonList objList, object obj)
@@ -157,7 +157,7 @@ namespace PLVirtualMachine.Dynamic.Components
       if (objList != null)
         objList.AddObject(obj);
       else
-        Logger.AddError(string.Format("Target list for adding object function is null"));
+        Logger.AddError("Target list for adding object function is null");
     }
 
     public override void RemoveElementFromList(VMCommonList objList, int index)
@@ -165,7 +165,7 @@ namespace PLVirtualMachine.Dynamic.Components
       if (objList != null)
         objList.RemoveObjectByIndex(index);
       else
-        Logger.AddError(string.Format("Target list for adding object function is null"));
+        Logger.AddError("Target list for adding object function is null");
     }
 
     public override bool RemoveObjectFromList(VMCommonList list, object obj)
@@ -177,7 +177,7 @@ namespace PLVirtualMachine.Dynamic.Components
     {
       if (firstList == null || secondList == null)
         return;
-      firstList.Merge((ICommonList) secondList);
+      firstList.Merge(secondList);
     }
 
     public override bool CheckListObjectExist(VMCommonList list, object obj)
@@ -190,6 +190,6 @@ namespace PLVirtualMachine.Dynamic.Components
       return list.GetObjectIndex(obj);
     }
 
-    public static VMSupport Instance => Support.instance;
+    public static VMSupport Instance => instance;
   }
 }

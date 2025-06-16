@@ -1,10 +1,10 @@
-﻿using Engine.Common;
+﻿using System;
+using Engine.Common;
 using Engine.Common.Services;
-using System;
 
 namespace Engine.Source.Services
 {
-  [GameService(new Type[] {typeof (LogicEventService), typeof (ILogicEventService)})]
+  [GameService(typeof (LogicEventService), typeof (ILogicEventService))]
   public class LogicEventService : ILogicEventService
   {
     public event Action<string> OnCommonEvent;
@@ -15,7 +15,7 @@ namespace Engine.Source.Services
 
     public void FireCommonEvent(string name)
     {
-      Action<string> onCommonEvent = this.OnCommonEvent;
+      Action<string> onCommonEvent = OnCommonEvent;
       if (onCommonEvent == null)
         return;
       onCommonEvent(name);
@@ -23,7 +23,7 @@ namespace Engine.Source.Services
 
     public void FireValueEvent(string name, string value)
     {
-      Action<string, string> onValueEvent = this.OnValueEvent;
+      Action<string, string> onValueEvent = OnValueEvent;
       if (onValueEvent == null)
         return;
       onValueEvent(name, value);
@@ -31,7 +31,7 @@ namespace Engine.Source.Services
 
     public void FireEntityEvent(string name, IEntity entity)
     {
-      Action<string, IEntity> onEntityEvent = this.OnEntityEvent;
+      Action<string, IEntity> onEntityEvent = OnEntityEvent;
       if (onEntityEvent == null)
         return;
       onEntityEvent(name, entity);

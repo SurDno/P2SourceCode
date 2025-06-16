@@ -2,7 +2,7 @@
 
 namespace ParadoxNotion.Serialization.FullSerializer
 {
-  [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = false, Inherited = false)]
+  [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
   public sealed class fsPropertyAttribute : Attribute
   {
     public string Name;
@@ -13,6 +13,6 @@ namespace ParadoxNotion.Serialization.FullSerializer
     {
     }
 
-    public fsPropertyAttribute(string name) => this.Name = name;
+    public fsPropertyAttribute(string name) => Name = name;
   }
 }

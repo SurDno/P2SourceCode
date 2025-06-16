@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEngine;
 
 namespace Engine.Impl.UI.Controls
 {
@@ -16,12 +15,12 @@ namespace Engine.Impl.UI.Controls
     {
       if (!(this.view is IValueView<Color> view))
         return;
-      view.SetValue(this.id, value, instant);
+      view.SetValue(id, value, instant);
     }
 
     public Color GetValue()
     {
-      return this.view is IValueView<Color> view ? view.GetValue(this.id) : new Color();
+      return this.view is IValueView<Color> view ? view.GetValue(id) : new Color();
     }
   }
 }

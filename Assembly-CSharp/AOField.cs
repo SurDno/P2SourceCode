@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using UnityEngine;
 
 [RequireComponent(typeof (DeferredProjector))]
 public class AOField : MonoBehaviour
@@ -10,66 +9,66 @@ public class AOField : MonoBehaviour
 
   public static bool IsPlayerOutdoor
   {
-    get => AOField.isPlayerOutdoor;
+    get => isPlayerOutdoor;
     set
     {
-      if (AOField.isPlayerOutdoor == value)
+      if (isPlayerOutdoor == value)
         return;
-      AOField.isPlayerOutdoor = value;
-      AOField.UpdateAll();
+      isPlayerOutdoor = value;
+      UpdateAll();
     }
   }
 
   public static bool Allowed
   {
-    get => AOField.allowed;
+    get => allowed;
     set
     {
-      if (AOField.allowed == value)
+      if (allowed == value)
         return;
-      AOField.allowed = value;
-      AOField.UpdateAll();
+      allowed = value;
+      UpdateAll();
     }
   }
 
   private static void Register(AOField instance)
   {
-    if (AOField.all == null)
-      AOField.all = new List<AOField>();
-    AOField.all.Add(instance);
+    if (all == null)
+      all = new List<AOField>();
+    all.Add(instance);
   }
 
   private static void Unregister(AOField instance)
   {
-    if (AOField.all == null)
+    if (all == null)
       return;
-    int index1 = AOField.all.IndexOf(instance);
+    int index1 = all.IndexOf(instance);
     if (index1 == -1)
       return;
-    int index2 = AOField.all.Count - 1;
+    int index2 = all.Count - 1;
     if (index1 != index2)
-      AOField.all[index1] = AOField.all[index2];
-    AOField.all.RemoveAt(index2);
+      all[index1] = all[index2];
+    all.RemoveAt(index2);
   }
 
   private static void UpdateAll()
   {
-    if (AOField.all == null)
+    if (all == null)
       return;
-    for (int index = 0; index < AOField.all.Count; ++index)
-      AOField.all[index].UpdateDecal();
+    for (int index = 0; index < all.Count; ++index)
+      all[index].UpdateDecal();
   }
 
-  private void OnDisable() => AOField.Unregister(this);
+  private void OnDisable() => Unregister(this);
 
   private void OnEnable()
   {
-    this.UpdateDecal();
-    AOField.Register(this);
+    UpdateDecal();
+    Register(this);
   }
 
   private void UpdateDecal()
   {
-    this.GetComponent<DeferredProjector>().enabled = AOField.Allowed && AOField.IsPlayerOutdoor;
+    this.GetComponent<DeferredProjector>().enabled = Allowed && IsPlayerOutdoor;
   }
 }

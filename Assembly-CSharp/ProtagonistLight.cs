@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-public class ProtagonistLight : MonoBehaviour
+﻿public class ProtagonistLight : MonoBehaviour
 {
   private void LateUpdate()
   {

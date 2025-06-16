@@ -1,8 +1,6 @@
 ﻿using Engine.Common;
 using Engine.Common.Services;
 using Engine.Impl.Services.Simulations;
-using System;
-using UnityEngine;
 
 namespace Engine.Impl.UI.Controls
 {
@@ -15,21 +13,21 @@ namespace Engine.Impl.UI.Controls
 
     protected override void OnConnectToEngine()
     {
-      this.SetPlayer(this.simulation.Player);
-      this.simulation.OnPlayerChanged += new Action<IEntity>(this.SetPlayer);
+      SetPlayer(simulation.Player);
+      simulation.OnPlayerChanged += SetPlayer;
     }
 
     protected override void OnDisconnectFromEngine()
     {
-      this.simulation.OnPlayerChanged -= new Action<IEntity>(this.SetPlayer);
-      this.SetPlayer((IEntity) null);
+      simulation.OnPlayerChanged -= SetPlayer;
+      SetPlayer(null);
     }
 
     private void SetPlayer(IEntity entity)
     {
-      if (!((UnityEngine.Object) this.view != (UnityEngine.Object) null))
+      if (!((UnityEngine.Object) view != (UnityEngine.Object) null))
         return;
-      this.view.Value = entity;
+      view.Value = entity;
     }
   }
 }

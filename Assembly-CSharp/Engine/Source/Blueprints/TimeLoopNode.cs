@@ -1,7 +1,6 @@
 ﻿using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
-using UnityEngine;
 
 namespace Engine.Source.Blueprints
 {
@@ -16,18 +15,18 @@ namespace Engine.Source.Blueprints
     [Port("Value")]
     private float Value()
     {
-      this.UpdateValue();
-      return this.value;
+      UpdateValue();
+      return value;
     }
 
     private void UpdateValue()
     {
       float time = Time.time;
-      if ((double) this.prevTime == (double) time)
+      if (prevTime == (double) time)
         return;
-      if ((double) this.lengthInput.value != 0.0)
-        this.value = Mathf.Repeat(this.value + (time - this.prevTime) / this.lengthInput.value, 1f);
-      this.prevTime = time;
+      if (lengthInput.value != 0.0)
+        value = Mathf.Repeat(value + (time - prevTime) / lengthInput.value, 1f);
+      prevTime = time;
     }
   }
 }

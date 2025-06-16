@@ -6,8 +6,6 @@ using Engine.Source.Commons.Effects;
 using Engine.Source.Connections;
 using Engine.Source.Services;
 using Inspectors;
-using System;
-using UnityEngine;
 
 namespace Engine.Source.Effects
 {
@@ -15,32 +13,32 @@ namespace Engine.Source.Effects
   [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
   public class BlueprintEffect : IEffect
   {
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected(Header = true, Mutable = true, Mode = ExecuteMode.EditAndRuntime)]
     protected string name = "";
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected ParameterEffectQueueEnum queue = ParameterEffectQueueEnum.None;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy()]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected UnityAsset<GameObject> blueprint;
 
-    public string Name => this.name;
+    public string Name => name;
 
     [Inspected]
     public AbilityItem AbilityItem { get; set; }
 
     public IEntity Target { get; set; }
 
-    public ParameterEffectQueueEnum Queue => this.queue;
+    public ParameterEffectQueueEnum Queue => queue;
 
     public void Cleanup()
     {
@@ -50,7 +48,7 @@ namespace Engine.Source.Effects
 
     public bool Compute(float currentRealTime, float currentGameTime)
     {
-      BlueprintServiceUtility.StartAsync(this.blueprint, this.AbilityItem.AbilityController as IAbilityValueContainer, this.Target, (Action) null, (Action) null, false);
+      BlueprintServiceUtility.StartAsync(blueprint, AbilityItem.AbilityController as IAbilityValueContainer, Target, null, null, false);
       return false;
     }
   }

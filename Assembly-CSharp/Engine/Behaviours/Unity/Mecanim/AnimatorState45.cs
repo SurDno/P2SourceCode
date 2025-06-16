@@ -1,8 +1,7 @@
-﻿using Engine.Impl.Tasks;
-using Inspectors;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using UnityEngine;
+using Engine.Impl.Tasks;
+using Inspectors;
 
 namespace Engine.Behaviours.Unity.Mecanim
 {
@@ -25,7 +24,7 @@ namespace Engine.Behaviours.Unity.Mecanim
     [Inspected]
     public bool IsRotate
     {
-      get => this.Animator.GetCurrentAnimatorStateInfo(0).tagHash == AnimatorState45.rotateTagHash;
+      get => Animator.GetCurrentAnimatorStateInfo(0).tagHash == rotateTagHash;
     }
 
     [Inspected]
@@ -33,10 +32,10 @@ namespace Engine.Behaviours.Unity.Mecanim
     {
       get
       {
-        if ((UnityEngine.Object) this.Animator == (UnityEngine.Object) null)
+        if ((UnityEngine.Object) Animator == (UnityEngine.Object) null)
           return false;
-        int tagHash = this.Animator.GetCurrentAnimatorStateInfo(0).tagHash;
-        return tagHash == AnimatorState45.moveTagHash || tagHash == AnimatorState45.moveStartTagHash || tagHash == AnimatorState45.moveStopTagHash;
+        int tagHash = Animator.GetCurrentAnimatorStateInfo(0).tagHash;
+        return tagHash == moveTagHash || tagHash == moveStartTagHash || tagHash == moveStopTagHash;
       }
     }
 
@@ -45,7 +44,7 @@ namespace Engine.Behaviours.Unity.Mecanim
     {
       get
       {
-        return this.Animator.GetCurrentAnimatorStateInfo(0).tagHash == AnimatorState45.moveStartTagHash;
+        return Animator.GetCurrentAnimatorStateInfo(0).tagHash == moveStartTagHash;
       }
     }
 
@@ -54,7 +53,7 @@ namespace Engine.Behaviours.Unity.Mecanim
     {
       get
       {
-        return this.Animator.GetCurrentAnimatorStateInfo(0).tagHash == AnimatorState45.moveStopTagHash;
+        return Animator.GetCurrentAnimatorStateInfo(0).tagHash == moveStopTagHash;
       }
     }
 
@@ -63,117 +62,117 @@ namespace Engine.Behaviours.Unity.Mecanim
     {
       get
       {
-        int tagHash = this.Animator.GetCurrentAnimatorStateInfo(0).tagHash;
-        return tagHash == AnimatorState45.poiTagHash || tagHash == AnimatorState45.poiExitTagHash;
+        int tagHash = Animator.GetCurrentAnimatorStateInfo(0).tagHash;
+        return tagHash == poiTagHash || tagHash == poiExitTagHash;
       }
     }
 
     [Inspected]
     public bool IsPOIExit
     {
-      get => this.Animator.GetCurrentAnimatorStateInfo(0).tagHash == AnimatorState45.poiExitTagHash;
+      get => Animator.GetCurrentAnimatorStateInfo(0).tagHash == poiExitTagHash;
     }
 
     public bool MovableStop
     {
-      set => this.Animator.SetBool("Movable.Stop", value);
+      set => Animator.SetBool("Movable.Stop", value);
     }
 
     [Inspected]
     public bool NextMoveIsLeft
     {
-      get => this.Animator.GetBool("Movable.Next.Is.Left");
-      set => this.Animator.SetBool("Movable.Next.Is.Left", value);
+      get => Animator.GetBool("Movable.Next.Is.Left");
+      set => Animator.SetBool("Movable.Next.Is.Left", value);
     }
 
     public void SetTrigger(string name)
     {
-      this.Animator.SetTrigger(name);
-      this.triggers.Add(name);
+      Animator.SetTrigger(name);
+      triggers.Add(name);
     }
 
     public void ResetTrigger(string name)
     {
-      this.Animator.ResetTrigger(name);
-      this.triggers.Remove(name);
+      Animator.ResetTrigger(name);
+      triggers.Remove(name);
     }
 
     public void ResetAllTriggers()
     {
-      foreach (string trigger in this.triggers)
-        this.Animator.ResetTrigger(trigger);
-      this.triggers.Clear();
+      foreach (string trigger in triggers)
+        Animator.ResetTrigger(trigger);
+      triggers.Clear();
     }
 
     public void FireStopDoneEvent()
     {
-      Action stopDoneEvent = this.StopDoneEvent;
+      Action stopDoneEvent = StopDoneEvent;
       if (stopDoneEvent == null)
         return;
       stopDoneEvent();
     }
 
-    public AnimatorState45.MovableState45 ControlMovableState
+    public MovableState45 ControlMovableState
     {
       set
       {
-        if (!this.Animator.gameObject.activeSelf)
+        if (!Animator.gameObject.activeSelf)
           return;
-        this.Animator.ResetTrigger("Triggers/Base/Idle");
-        this.Animator.ResetTrigger("Triggers/Base/Move");
-        this.Animator.ResetTrigger("Triggers/Base/POI");
-        this.Animator.ResetTrigger("Triggers/Base/Rotate");
-        this.Animator.ResetTrigger("Triggers/Base/IdlePreset");
+        Animator.ResetTrigger("Triggers/Base/Idle");
+        Animator.ResetTrigger("Triggers/Base/Move");
+        Animator.ResetTrigger("Triggers/Base/POI");
+        Animator.ResetTrigger("Triggers/Base/Rotate");
+        Animator.ResetTrigger("Triggers/Base/IdlePreset");
         switch (value)
         {
-          case AnimatorState45.MovableState45.Idle:
-            this.Animator.SetTrigger("Triggers/Base/Idle");
-            this.Animator.SetInteger("Movable.State.Control", 1);
+          case MovableState45.Idle:
+            Animator.SetTrigger("Triggers/Base/Idle");
+            Animator.SetInteger("Movable.State.Control", 1);
             break;
-          case AnimatorState45.MovableState45.Rotate:
-            this.Animator.SetTrigger("Triggers/Base/Rotate");
-            this.Animator.SetInteger("Movable.State.Control", 2);
+          case MovableState45.Rotate:
+            Animator.SetTrigger("Triggers/Base/Rotate");
+            Animator.SetInteger("Movable.State.Control", 2);
             break;
-          case AnimatorState45.MovableState45.Move:
-            this.Animator.SetTrigger("Triggers/Base/Move");
-            this.Animator.SetInteger("Movable.State.Control", 3);
+          case MovableState45.Move:
+            Animator.SetTrigger("Triggers/Base/Move");
+            Animator.SetInteger("Movable.State.Control", 3);
             break;
-          case AnimatorState45.MovableState45.POI:
-            this.Animator.SetTrigger("Triggers/Base/POI");
-            this.Animator.SetInteger("Movable.State.Control", 6);
+          case MovableState45.POI:
+            Animator.SetTrigger("Triggers/Base/POI");
+            Animator.SetInteger("Movable.State.Control", 6);
             break;
-          case AnimatorState45.MovableState45.IdlePreset:
-            this.Animator.SetTrigger("Triggers/Base/IdlePreset");
-            this.Animator.SetInteger("Movable.State.Control", 6);
+          case MovableState45.IdlePreset:
+            Animator.SetTrigger("Triggers/Base/IdlePreset");
+            Animator.SetInteger("Movable.State.Control", 6);
             break;
         }
       }
-      get => (AnimatorState45.MovableState45) this.Animator.GetInteger("Movable.State.Control");
+      get => (MovableState45) Animator.GetInteger("Movable.State.Control");
     }
 
     public MecanimKinds.MovablePOIStateKind ControlPOIState
     {
-      set => this.Animator.SetInteger("Movable.POI.Control", (int) value);
+      set => Animator.SetInteger("Movable.POI.Control", (int) value);
     }
 
     public int ControlPOIMiddleAnimationsCount
     {
-      set => this.Animator.SetInteger("Movable.POI.MiddleAnimationsCount", value);
+      set => Animator.SetInteger("Movable.POI.MiddleAnimationsCount", value);
     }
 
     public int ControlPOIAnimationIndex
     {
-      set => this.Animator.SetInteger("Movable.POI.AnimationIndex", value);
+      set => Animator.SetInteger("Movable.POI.AnimationIndex", value);
     }
 
     public bool ControlPOIStartFromMiddle
     {
-      set => this.Animator.SetBool("Movable.POI.StartFromMiddle", value);
+      set => Animator.SetBool("Movable.POI.StartFromMiddle", value);
     }
 
-    public float StateLength => this.Animator.GetCurrentAnimatorStateInfo(0).length;
+    public float StateLength => Animator.GetCurrentAnimatorStateInfo(0).length;
 
-    public void ResetMovable() => this.Animator.SetTrigger("Movable.Cancel");
+    public void ResetMovable() => Animator.SetTrigger("Movable.Cancel");
 
     [Inspected]
     public float RemainingDistance { get; set; }
@@ -183,14 +182,14 @@ namespace Engine.Behaviours.Unity.Mecanim
 
     public float MovableSpeed
     {
-      get => this.Animator.GetFloat("Movable.Velocity.Z");
-      set => this.Animator.SetFloat("Movable.Velocity.Z", value);
+      get => Animator.GetFloat("Movable.Velocity.Z");
+      set => Animator.SetFloat("Movable.Velocity.Z", value);
     }
 
     public float MovableAngleStart
     {
-      set => this.Animator.SetFloat("Movable.Angle.Start", value);
-      get => this.Animator.GetFloat("Movable.Angle.Start");
+      set => Animator.SetFloat("Movable.Angle.Start", value);
+      get => Animator.GetFloat("Movable.Angle.Start");
     }
 
     public static AnimatorState45 GetAnimatorState(Animator animator)
@@ -198,11 +197,11 @@ namespace Engine.Behaviours.Unity.Mecanim
       if ((UnityEngine.Object) animator == (UnityEngine.Object) null)
         return new AnimatorState45();
       AnimatorState45 animatorState;
-      if (!AnimatorState45.animatorStates.TryGetValue(animator, out animatorState))
+      if (!animatorStates.TryGetValue(animator, out animatorState))
       {
         animatorState = new AnimatorState45();
         animatorState.Animator = animator;
-        AnimatorState45.animatorStates[animator] = animatorState;
+        animatorStates[animator] = animatorState;
       }
       return animatorState;
     }

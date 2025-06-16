@@ -1,7 +1,4 @@
 ﻿using System;
-using UnityEngine;
-using UnityEngine.Events;
-using UnityEngine.UI;
 
 public class BoolSettingsValueView : SettingsValueView<bool>
 {
@@ -12,55 +9,55 @@ public class BoolSettingsValueView : SettingsValueView<bool>
 
   public override bool VisibleValue
   {
-    get => this.visibleValue;
-    set => this.SetVisibleValue(value);
+    get => visibleValue;
+    set => SetVisibleValue(value);
   }
 
   private void Awake()
   {
-    this.button.onClick.AddListener(new UnityAction(this.OnClick));
-    this.slider.onValueChanged.AddListener(new UnityAction<float>(this.OnValueChanged));
+    button.onClick.AddListener(new UnityAction(OnClick));
+    slider.onValueChanged.AddListener(new UnityAction<float>(OnValueChanged));
   }
 
-  public override void ApplyVisibleValue() => this.SettingsValue.Value = this.visibleValue;
+  public override void ApplyVisibleValue() => SettingsValue.Value = visibleValue;
 
   private void OnClick()
   {
-    this.SetVisibleValue(!this.visibleValue);
-    this.FireVisibleValueChangeEvent();
+    SetVisibleValue(!visibleValue);
+    FireVisibleValueChangeEvent();
   }
 
   private void OnValueChanged(float value)
   {
-    if (this.changeEventDisabled)
+    if (changeEventDisabled)
       return;
     bool visibleValue = this.visibleValue;
-    this.SetVisibleValue(Convert.ToBoolean(value));
+    SetVisibleValue(Convert.ToBoolean(value));
     if (this.visibleValue == visibleValue)
       return;
-    this.FireVisibleValueChangeEvent();
+    FireVisibleValueChangeEvent();
   }
 
   private void SetVisibleValue(bool value)
   {
-    this.changeEventDisabled = true;
-    this.visibleValue = value;
-    this.slider.value = this.visibleValue ? 1f : 0.0f;
-    this.valueText.Signature = this.visibleValue ? "{UI.Menu.Main.Settings.Bool.On}" : "{UI.Menu.Main.Settings.Bool.Off}";
-    this.changeEventDisabled = false;
+    changeEventDisabled = true;
+    visibleValue = value;
+    slider.value = visibleValue ? 1f : 0.0f;
+    valueText.Signature = visibleValue ? "{UI.Menu.Main.Settings.Bool.On}" : "{UI.Menu.Main.Settings.Bool.Off}";
+    changeEventDisabled = false;
   }
 
-  public override void RevertVisibleValue() => this.SetVisibleValue(this.SettingsValue.Value);
+  public override void RevertVisibleValue() => SetVisibleValue(SettingsValue.Value);
 
   public override void IncrementValue()
   {
-    this.OnValueChanged(1f);
-    this.ApplyVisibleValue();
+    OnValueChanged(1f);
+    ApplyVisibleValue();
   }
 
   public override void DecrementValue()
   {
-    this.OnValueChanged(0.0f);
-    this.ApplyVisibleValue();
+    OnValueChanged(0.0f);
+    ApplyVisibleValue();
   }
 }

@@ -11,11 +11,11 @@
     public Vertex triangdest;
     public Vertex triangapex;
 
-    public BadTriangle() => this.ID = BadTriangle.OTID++;
+    public BadTriangle() => ID = OTID++;
 
     public override string ToString()
     {
-      return string.Format("B-TID {0}", (object) this.poortri.triangle.hash);
+      return string.Format("B-TID {0}", poortri.triangle.hash);
     }
   }
 }

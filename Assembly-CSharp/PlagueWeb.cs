@@ -1,10 +1,8 @@
-﻿using UnityEngine;
-
-public abstract class PlagueWeb : MonoBehaviour
+﻿public abstract class PlagueWeb : MonoBehaviour
 {
   public static PlagueWeb Instance { get; private set; }
 
-  private void Awake() => PlagueWeb.Instance = this;
+  private void Awake() => Instance = this;
 
   public abstract Vector3 CameraPosition { get; set; }
 

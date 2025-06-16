@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using UnityEngine;
 
 namespace Cinemachine
 {
@@ -35,23 +34,23 @@ namespace Cinemachine
       switch (index)
       {
         case 0:
-          return this.m_Weight0;
+          return m_Weight0;
         case 1:
-          return this.m_Weight1;
+          return m_Weight1;
         case 2:
-          return this.m_Weight2;
+          return m_Weight2;
         case 3:
-          return this.m_Weight3;
+          return m_Weight3;
         case 4:
-          return this.m_Weight4;
+          return m_Weight4;
         case 5:
-          return this.m_Weight5;
+          return m_Weight5;
         case 6:
-          return this.m_Weight6;
+          return m_Weight6;
         case 7:
-          return this.m_Weight7;
+          return m_Weight7;
         default:
-          Debug.LogError((object) ("CinemachineMixingCamera: Invalid index: " + (object) index));
+          Debug.LogError((object) ("CinemachineMixingCamera: Invalid index: " + index));
           return 0.0f;
       }
     }
@@ -61,31 +60,31 @@ namespace Cinemachine
       switch (index)
       {
         case 0:
-          this.m_Weight0 = w;
+          m_Weight0 = w;
           break;
         case 1:
-          this.m_Weight1 = w;
+          m_Weight1 = w;
           break;
         case 2:
-          this.m_Weight2 = w;
+          m_Weight2 = w;
           break;
         case 3:
-          this.m_Weight3 = w;
+          m_Weight3 = w;
           break;
         case 4:
-          this.m_Weight4 = w;
+          m_Weight4 = w;
           break;
         case 5:
-          this.m_Weight5 = w;
+          m_Weight5 = w;
           break;
         case 6:
-          this.m_Weight6 = w;
+          m_Weight6 = w;
           break;
         case 7:
-          this.m_Weight7 = w;
+          m_Weight7 = w;
           break;
         default:
-          Debug.LogError((object) ("CinemachineMixingCamera: Invalid index: " + (object) index));
+          Debug.LogError((object) ("CinemachineMixingCamera: Invalid index: " + index));
           break;
       }
     }
@@ -93,8 +92,8 @@ namespace Cinemachine
     public float GetWeight(CinemachineVirtualCameraBase vcam)
     {
       int index;
-      if (this.m_indexMap.TryGetValue(vcam, out index))
-        return this.GetWeight(index);
+      if (m_indexMap.TryGetValue(vcam, out index))
+        return GetWeight(index);
       Debug.LogError((object) ("CinemachineMixingCamera: Invalid child: " + ((Object) vcam != (Object) null ? vcam.Name : "(null)")));
       return 0.0f;
     }
@@ -102,53 +101,53 @@ namespace Cinemachine
     public void SetWeight(CinemachineVirtualCameraBase vcam, float w)
     {
       int index;
-      if (this.m_indexMap.TryGetValue(vcam, out index))
-        this.SetWeight(index, w);
+      if (m_indexMap.TryGetValue(vcam, out index))
+        SetWeight(index, w);
       else
         Debug.LogError((object) ("CinemachineMixingCamera: Invalid child: " + ((Object) vcam != (Object) null ? vcam.Name : "(null)")));
     }
 
     private ICinemachineCamera LiveChild { set; get; }
 
-    public override CameraState State => this.m_State;
+    public override CameraState State => m_State;
 
     public override Transform LookAt { get; set; }
 
     public override Transform Follow { get; set; }
 
-    public override ICinemachineCamera LiveChildOrSelf => this.LiveChild;
+    public override ICinemachineCamera LiveChildOrSelf => LiveChild;
 
     public override void RemovePostPipelineStageHook(
-      CinemachineVirtualCameraBase.OnPostPipelineStageDelegate d)
+      OnPostPipelineStageDelegate d)
     {
       base.RemovePostPipelineStageHook(d);
-      this.ValidateListOfChildren();
-      foreach (CinemachineVirtualCameraBase childCamera in this.m_ChildCameras)
+      ValidateListOfChildren();
+      foreach (CinemachineVirtualCameraBase childCamera in m_ChildCameras)
         childCamera.RemovePostPipelineStageHook(d);
     }
 
     protected override void OnEnable()
     {
       base.OnEnable();
-      this.InvalidateListOfChildren();
+      InvalidateListOfChildren();
     }
 
-    public void OnTransformChildrenChanged() => this.InvalidateListOfChildren();
+    public void OnTransformChildrenChanged() => InvalidateListOfChildren();
 
     protected override void OnValidate()
     {
       base.OnValidate();
       for (int index = 0; index < 8; ++index)
-        this.SetWeight(index, Mathf.Max(0.0f, this.GetWeight(index)));
+        SetWeight(index, Mathf.Max(0.0f, GetWeight(index)));
     }
 
     public override bool IsLiveChild(ICinemachineCamera vcam)
     {
-      CinemachineVirtualCameraBase[] childCameras = this.ChildCameras;
+      CinemachineVirtualCameraBase[] childCameras = ChildCameras;
       for (int index = 0; index < 8 && index < childCameras.Length; ++index)
       {
         if (childCameras[index] == vcam)
-          return (double) this.GetWeight(index) > 9.9999997473787516E-05 && childCameras[index].isActiveAndEnabled;
+          return GetWeight(index) > 9.9999997473787516E-05 && childCameras[index].isActiveAndEnabled;
       }
       return false;
     }
@@ -157,23 +156,23 @@ namespace Cinemachine
     {
       get
       {
-        this.ValidateListOfChildren();
-        return this.m_ChildCameras;
+        ValidateListOfChildren();
+        return m_ChildCameras;
       }
     }
 
     protected void InvalidateListOfChildren()
     {
-      this.m_ChildCameras = (CinemachineVirtualCameraBase[]) null;
-      this.m_indexMap = (Dictionary<CinemachineVirtualCameraBase, int>) null;
-      this.LiveChild = (ICinemachineCamera) null;
+      m_ChildCameras = null;
+      m_indexMap = null;
+      LiveChild = null;
     }
 
     protected void ValidateListOfChildren()
     {
-      if (this.m_ChildCameras != null)
+      if (m_ChildCameras != null)
         return;
-      this.m_indexMap = new Dictionary<CinemachineVirtualCameraBase, int>();
+      m_indexMap = new Dictionary<CinemachineVirtualCameraBase, int>();
       List<CinemachineVirtualCameraBase> virtualCameraBaseList = new List<CinemachineVirtualCameraBase>();
       foreach (CinemachineVirtualCameraBase componentsInChild in this.GetComponentsInChildren<CinemachineVirtualCameraBase>(true))
       {
@@ -182,16 +181,16 @@ namespace Cinemachine
           int count = virtualCameraBaseList.Count;
           virtualCameraBaseList.Add(componentsInChild);
           if (count < 8)
-            this.m_indexMap.Add(componentsInChild, count);
+            m_indexMap.Add(componentsInChild, count);
         }
       }
-      this.m_ChildCameras = virtualCameraBaseList.ToArray();
+      m_ChildCameras = virtualCameraBaseList.ToArray();
     }
 
     public override void UpdateCameraState(Vector3 worldUp, float deltaTime)
     {
-      CinemachineVirtualCameraBase[] childCameras = this.ChildCameras;
-      this.LiveChild = (ICinemachineCamera) null;
+      CinemachineVirtualCameraBase[] childCameras = ChildCameras;
+      LiveChild = null;
       float num1 = 0.0f;
       float num2 = 0.0f;
       for (int index = 0; index < 8 && index < childCameras.Length; ++index)
@@ -199,15 +198,15 @@ namespace Cinemachine
         CinemachineVirtualCameraBase virtualCameraBase = childCameras[index];
         if (virtualCameraBase.isActiveAndEnabled)
         {
-          float num3 = Mathf.Max(0.0f, this.GetWeight(index));
-          if ((double) num3 > 9.9999997473787516E-05)
+          float num3 = Mathf.Max(0.0f, GetWeight(index));
+          if (num3 > 9.9999997473787516E-05)
           {
             num2 += num3;
-            this.m_State = (double) num2 != (double) num3 ? CameraState.Lerp(this.m_State, virtualCameraBase.State, num3 / num2) : virtualCameraBase.State;
-            if ((double) num3 > (double) num1)
+            m_State = num2 != (double) num3 ? CameraState.Lerp(m_State, virtualCameraBase.State, num3 / num2) : virtualCameraBase.State;
+            if (num3 > (double) num1)
             {
               num1 = num3;
-              this.LiveChild = (ICinemachineCamera) virtualCameraBase;
+              LiveChild = virtualCameraBase;
             }
           }
         }

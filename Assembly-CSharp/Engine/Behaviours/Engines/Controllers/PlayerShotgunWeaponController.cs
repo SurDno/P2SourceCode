@@ -1,4 +1,7 @@
-﻿using Engine.Behaviours.Components;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Engine.Behaviours.Components;
 using Engine.Behaviours.Unity.Mecanim;
 using Engine.Common;
 using Engine.Common.Components;
@@ -10,10 +13,6 @@ using Engine.Source.Commons;
 using Engine.Source.Components;
 using Engine.Source.Services.Inputs;
 using Engine.Source.Utility;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
 
 namespace Engine.Behaviours.Engines.Controllers
 {
@@ -30,18 +29,18 @@ namespace Engine.Behaviours.Engines.Controllers
     private ControllerComponent controllerComponent;
     protected bool geometryVisible;
     protected bool weaponVisible;
-    private float timeToLastPunch = 0.0f;
+    private float timeToLastPunch;
     private bool isShoting;
     private StorageComponent storage;
     private List<StorableComponent> storageAmmo = new List<StorableComponent>();
     private IEntity item;
     private IParameter<int> bullets;
     private IParameter<float> durability;
-    private bool isReloading = false;
-    private bool reloadingCancelled = false;
-    private bool isAiming = false;
+    private bool isReloading;
+    private bool reloadingCancelled;
+    private bool isAiming;
     private int maxAmmo = 2;
-    private float smoothedNormalizedSpeed = 0.0f;
+    private float smoothedNormalizedSpeed;
     private float layerWeight;
     private bool bulletVisible;
     private bool[] bulletsInserted;
@@ -57,66 +56,66 @@ namespace Engine.Behaviours.Engines.Controllers
     {
       set
       {
-        this.geometryVisible = value;
-        this.ApplyVisibility();
-        this.ApplyBulletsVisibility();
-        if (!this.geometryVisible && this.isReloading)
+        geometryVisible = value;
+        ApplyVisibility();
+        ApplyBulletsVisibility();
+        if (!geometryVisible && isReloading)
         {
-          this.animatorState.ShotgunRestore();
-          this.isReloading = false;
+          animatorState.ShotgunRestore();
+          isReloading = false;
         }
-        this.isShoting = false;
+        isShoting = false;
       }
-      get => this.geometryVisible;
+      get => geometryVisible;
     }
 
     private bool WeaponVisible
     {
       set
       {
-        this.weaponVisible = value;
-        this.ApplyVisibility();
-        this.ApplyBulletsVisibility();
+        weaponVisible = value;
+        ApplyVisibility();
+        ApplyBulletsVisibility();
       }
     }
 
     private void SetBulletVisible(bool visible)
     {
-      this.bulletVisible = visible;
-      this.ApplyBulletVisibility();
+      bulletVisible = visible;
+      ApplyBulletVisibility();
     }
 
     private void ApplyBulletVisibility()
     {
-      this.pivot?.ShotgunAmmo?.SetActive(this.bulletVisible && this.geometryVisible);
+      pivot?.ShotgunAmmo?.SetActive(bulletVisible && geometryVisible);
     }
 
     private void ApplyBulletsVisibility()
     {
-      Transform[] shotgunAmmos = this.pivot?.ShotgunAmmos;
+      Transform[] shotgunAmmos = pivot?.ShotgunAmmos;
       for (int index = 0; index < shotgunAmmos.Length; ++index)
-        shotgunAmmos[index]?.gameObject?.SetActive(this.weaponVisible && this.geometryVisible && this.bulletsInserted[index]);
+        shotgunAmmos[index]?.gameObject?.SetActive(weaponVisible && geometryVisible && bulletsInserted[index]);
     }
 
     protected void ApplyVisibility()
     {
-      this.pivot.HandsGeometryVisible = this.geometryVisible;
-      this.pivot.ShotgunGeometryVisible = this.geometryVisible && this.weaponVisible;
-      this.ApplyBulletVisibility();
-      this.ApplyLayerWeight(this.geometryVisible ? 1f : 0.0f);
+      pivot.HandsGeometryVisible = geometryVisible;
+      pivot.ShotgunGeometryVisible = geometryVisible && weaponVisible;
+      ApplyBulletVisibility();
+      ApplyLayerWeight(geometryVisible ? 1f : 0.0f);
     }
 
     protected void ApplyLayerWeight(float weight)
     {
-      this.animatorState.ShotgunLayerWeight = weight;
-      this.animatorState.ShotgunReactionLayerWeight = weight;
+      animatorState.ShotgunLayerWeight = weight;
+      animatorState.ShotgunReactionLayerWeight = weight;
     }
 
     public void Initialise(IEntity entity, GameObject gameObject, Animator animator)
     {
       this.entity = entity;
-      this.pivot = gameObject.GetComponent<PivotPlayer>();
-      if ((UnityEngine.Object) this.pivot == (UnityEngine.Object) null)
+      pivot = gameObject.GetComponent<PivotPlayer>();
+      if ((UnityEngine.Object) pivot == (UnityEngine.Object) null)
       {
         Debug.LogErrorFormat("{0} has no {1} unity component", (object) gameObject.name, (object) typeof (PivotPlayer).Name);
       }
@@ -124,27 +123,27 @@ namespace Engine.Behaviours.Engines.Controllers
       {
         this.gameObject = gameObject;
         this.animator = animator;
-        this.bulletsInserted = new bool[this.maxAmmo];
-        this.playerEnemy = gameObject.GetComponent<PlayerEnemy>();
-        this.controllerComponent = entity.GetComponent<ControllerComponent>();
-        this.animatorState = PlayerAnimatorState.GetAnimatorState(animator);
-        this.stamina = entity.GetComponent<ParametersComponent>().GetByName<float>(ParameterNameEnum.Stamina);
+        bulletsInserted = new bool[maxAmmo];
+        playerEnemy = gameObject.GetComponent<PlayerEnemy>();
+        controllerComponent = entity.GetComponent<ControllerComponent>();
+        animatorState = PlayerAnimatorState.GetAnimatorState(animator);
+        stamina = entity.GetComponent<ParametersComponent>().GetByName<float>(ParameterNameEnum.Stamina);
         if (entity == null)
         {
           Debug.LogWarningFormat("{0} can't map entity", (object) gameObject.name);
         }
         else
         {
-          this.detectable = (DetectableComponent) entity.GetComponent<IDetectableComponent>();
-          if (this.detectable == null)
+          detectable = (DetectableComponent) entity.GetComponent<IDetectableComponent>();
+          if (detectable == null)
             Debug.LogWarningFormat("{0} doesn't have {1} engine component", (object) gameObject.name, (object) typeof (IDetectableComponent).Name);
           else
-            this.storage = entity.GetComponent<StorageComponent>();
+            storage = entity.GetComponent<StorageComponent>();
         }
       }
     }
 
-    public IEntity GetItem() => this.item;
+    public IEntity GetItem() => item;
 
     public void SetItem(IEntity item)
     {
@@ -152,224 +151,224 @@ namespace Engine.Behaviours.Engines.Controllers
       ParametersComponent component = item.GetComponent<ParametersComponent>();
       if (component != null)
       {
-        this.durability = component.GetByName<float>(ParameterNameEnum.Durability);
-        this.bullets = component.GetByName<int>(ParameterNameEnum.Bullets);
+        durability = component.GetByName<float>(ParameterNameEnum.Durability);
+        bullets = component.GetByName<int>(ParameterNameEnum.Bullets);
       }
       else
       {
-        this.durability = (IParameter<float>) null;
-        this.bullets = (IParameter<int>) null;
+        durability = null;
+        bullets = null;
       }
-      if (!this.geometryVisible)
+      if (!geometryVisible)
         return;
-      this.CheckAmmo();
+      CheckAmmo();
     }
 
     private int StorageAmmoCount()
     {
       int num = 0;
-      foreach (StorableComponent storableComponent in this.storageAmmo)
+      foreach (StorableComponent storableComponent in storageAmmo)
         num += storableComponent.Count;
       return num;
     }
 
     private void RefreshAmmoCount()
     {
-      this.RefreshStorageAmmo();
-      if (this.bullets == null)
+      RefreshStorageAmmo();
+      if (bullets == null)
         return;
-      this.bullets.Value = Mathf.Min(new int[3]
+      bullets.Value = Mathf.Min(new int[3]
       {
-        this.StorageAmmoCount(),
-        this.bullets.Value,
-        this.bullets.MaxValue
+        StorageAmmoCount(),
+        bullets.Value,
+        bullets.MaxValue
       });
     }
 
     private void CheckAmmo()
     {
-      if (this.bullets == null || this.bullets.Value == 0)
+      if (bullets == null || bullets.Value == 0)
       {
-        if (this.StorageAmmoCount() <= 0)
+        if (StorageAmmoCount() <= 0)
           return;
-        this.BeginReloading();
+        BeginReloading();
       }
       else
       {
-        for (int index = 0; index < this.bullets.Value; ++index)
+        for (int index = 0; index < bullets.Value; ++index)
         {
-          if (index < this.bulletsInserted.Length)
-            this.bulletsInserted[index] = true;
+          if (index < bulletsInserted.Length)
+            bulletsInserted[index] = true;
         }
       }
     }
 
     private void BeginReloading()
     {
-      this.isReloading = true;
-      this.reloadingCancelled = false;
-      this.isAiming = false;
-      this.animatorState.ShotgunAim(false);
-      bool flag = this.durability != null && (double) this.durability.Value < 0.30000001192092896;
-      this.animatorState.ShotgunReload(true, this.bullets.Value);
-      this.SetBulletVisible(true);
+      isReloading = true;
+      reloadingCancelled = false;
+      isAiming = false;
+      animatorState.ShotgunAim(false);
+      bool flag = durability != null && durability.Value < 0.30000001192092896;
+      animatorState.ShotgunReload(true, bullets.Value);
+      SetBulletVisible(true);
     }
 
-    private void EndReloading() => this.animatorState.ShotgunReload(false);
+    private void EndReloading() => animatorState.ShotgunReload(false);
 
     private void ReloadAmmo()
     {
-      this.bullets.Value = Mathf.Min(new int[3]
+      bullets.Value = Mathf.Min(new int[3]
       {
-        this.StorageAmmoCount(),
-        this.bullets.Value + 1,
-        this.bullets.MaxValue
+        StorageAmmoCount(),
+        bullets.Value + 1,
+        bullets.MaxValue
       });
     }
 
     private void RemoveAmmo()
     {
-      --this.bullets.Value;
-      if (this.storageAmmo.Count > 0)
+      --bullets.Value;
+      if (storageAmmo.Count > 0)
       {
-        --this.storageAmmo[0].Count;
-        if (this.storageAmmo[0].Count <= 0)
-          this.storageAmmo[0].Owner.Dispose();
+        --storageAmmo[0].Count;
+        if (storageAmmo[0].Count <= 0)
+          storageAmmo[0].Owner.Dispose();
       }
-      this.RefreshStorageAmmo();
+      RefreshStorageAmmo();
     }
 
     public void OnEnable()
     {
-      this.ApplyVisibility();
-      this.animator.SetTrigger("Triggers/ShotgunRestore");
-      this.AddListeners();
+      ApplyVisibility();
+      animator.SetTrigger("Triggers/ShotgunRestore");
+      AddListeners();
     }
 
-    public void OnDisable() => this.RemoveListeners();
+    public void OnDisable() => RemoveListeners();
 
     public void Activate(bool geometryVisible)
     {
-      this.WeaponVisible = true;
-      this.animatorState.ShotgunUnholster();
-      Action unholsterEndEvent = this.WeaponUnholsterEndEvent;
+      WeaponVisible = true;
+      animatorState.ShotgunUnholster();
+      Action unholsterEndEvent = WeaponUnholsterEndEvent;
       if (unholsterEndEvent != null)
         unholsterEndEvent();
-      this.AddListeners();
-      this.RefreshAmmoCount();
-      this.isReloading = false;
-      this.isShoting = false;
-      if (this.item == null)
+      AddListeners();
+      RefreshAmmoCount();
+      isReloading = false;
+      isShoting = false;
+      if (item == null)
         return;
-      this.CheckAmmo();
+      CheckAmmo();
     }
 
     private void RefreshStorageAmmo()
     {
-      this.storageAmmo.Clear();
-      this.storageAmmo.AddRange(this.storage.Items.ToList<IStorableComponent>().FindAll((Predicate<IStorableComponent>) (x => x.Groups.Contains<StorableGroup>(StorableGroup.Ammo_Shotgun) && x.Count > 0)).Cast<StorableComponent>());
+      storageAmmo.Clear();
+      storageAmmo.AddRange(storage.Items.ToList().FindAll(x => x.Groups.Contains(StorableGroup.Ammo_Shotgun) && x.Count > 0).Cast<StorableComponent>());
     }
 
     public void Shutdown()
     {
-      this.RemoveListeners();
-      this.animatorState.ShotgunHolster();
-      Action holsterStartEvent = this.WeaponHolsterStartEvent;
+      RemoveListeners();
+      animatorState.ShotgunHolster();
+      Action holsterStartEvent = WeaponHolsterStartEvent;
       if (holsterStartEvent != null)
         holsterStartEvent();
-      this.isAiming = false;
-      this.animatorState.ShotgunAim(false);
+      isAiming = false;
+      animatorState.ShotgunAim(false);
     }
 
     private void AddListeners()
     {
-      if (this.listenersAdded)
+      if (listenersAdded)
         return;
-      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Fire, new GameActionHandle(this.PunchListener));
-      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Block, new GameActionHandle(this.BlockListener));
-      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Push, new GameActionHandle(this.PushListener));
-      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Reload, new GameActionHandle(this.ReloadListener));
-      this.listenersAdded = true;
+      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Fire, PunchListener);
+      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Block, BlockListener);
+      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Push, PushListener);
+      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Reload, ReloadListener);
+      listenersAdded = true;
     }
 
     private void RemoveListeners()
     {
-      if (!this.listenersAdded)
+      if (!listenersAdded)
         return;
-      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Fire, new GameActionHandle(this.PunchListener));
-      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Block, new GameActionHandle(this.BlockListener));
-      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Push, new GameActionHandle(this.PushListener));
-      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Reload, new GameActionHandle(this.ReloadListener));
-      this.listenersAdded = false;
+      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Fire, PunchListener);
+      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Block, BlockListener);
+      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Push, PushListener);
+      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Reload, ReloadListener);
+      listenersAdded = false;
     }
 
     private bool PunchListener(GameActionType type, bool down)
     {
-      this.RefreshAmmoCount();
-      if (this.entity != ServiceLocator.GetService<ISimulation>().Player || !PlayerUtility.IsPlayerCanControlling)
+      RefreshAmmoCount();
+      if (entity != ServiceLocator.GetService<ISimulation>().Player || !PlayerUtility.IsPlayerCanControlling)
         return false;
-      if (this.isReloading)
+      if (isReloading)
       {
-        this.reloadingCancelled = true;
+        reloadingCancelled = true;
         return true;
       }
-      if (down && (double) this.timeToLastPunch <= 0.0 && !this.isShoting)
+      if (down && timeToLastPunch <= 0.0 && !isShoting)
       {
-        if (this.bullets != null && this.bullets.Value > 0)
+        if (bullets != null && bullets.Value > 0)
         {
-          this.Shoot();
+          Shoot();
           return true;
         }
-        this.CheckAmmo();
-        if (this.StorageAmmoCount() == 0)
-          this.Shoot();
+        CheckAmmo();
+        if (StorageAmmoCount() == 0)
+          Shoot();
       }
       return true;
     }
 
     private void Shoot()
     {
-      this.RefreshAmmoCount();
-      bool gunJam = WeaponUtility.ComputeGunJam(this.gameObject, this.durability);
-      this.animatorState.ShotgunShot(this.bullets.Value <= 0, gunJam);
-      this.isShoting = true;
-      if (this.durability != null && (double) this.durability.Value <= 0.0)
+      RefreshAmmoCount();
+      bool gunJam = WeaponUtility.ComputeGunJam(gameObject, durability);
+      animatorState.ShotgunShot(bullets.Value <= 0, gunJam);
+      isShoting = true;
+      if (durability != null && durability.Value <= 0.0)
       {
-        Action<IEntity, ShotType, ReactionType, ShotSubtypeEnum> weaponShootEvent = this.WeaponShootEvent;
+        Action<IEntity, ShotType, ReactionType, ShotSubtypeEnum> weaponShootEvent = WeaponShootEvent;
         if (weaponShootEvent != null)
-          weaponShootEvent(this.item, ShotType.None, ReactionType.None, ShotSubtypeEnum.WeaponBroken);
+          weaponShootEvent(item, ShotType.None, ReactionType.None, ShotSubtypeEnum.WeaponBroken);
       }
       if (gunJam)
         return;
-      this.RemoveAmmo();
+      RemoveAmmo();
     }
 
     private bool PushListener(GameActionType type, bool down)
     {
-      if (this.entity != ServiceLocator.GetService<ISimulation>().Player || !PlayerUtility.IsPlayerCanControlling || this.isReloading)
+      if (entity != ServiceLocator.GetService<ISimulation>().Player || !PlayerUtility.IsPlayerCanControlling || isReloading)
         return false;
-      if (!down || (double) this.timeToLastPunch > 0.0 || this.isShoting)
+      if (!down || timeToLastPunch > 0.0 || isShoting)
         return true;
-      this.animatorState.ShotgunPush();
-      this.timeToLastPunch = ScriptableObjectInstance<FightSettingsData>.Instance.Description.PlayerPunchCooldownTime;
+      animatorState.ShotgunPush();
+      timeToLastPunch = ScriptableObjectInstance<FightSettingsData>.Instance.Description.PlayerPunchCooldownTime;
       return true;
     }
 
     private bool BlockListener(GameActionType type, bool down)
     {
-      if (this.entity != ServiceLocator.GetService<ISimulation>().Player || !PlayerUtility.IsPlayerCanControlling)
+      if (entity != ServiceLocator.GetService<ISimulation>().Player || !PlayerUtility.IsPlayerCanControlling)
         return false;
-      this.isAiming = down;
-      this.animatorState.ShotgunAim(down);
+      isAiming = down;
+      animatorState.ShotgunAim(down);
       return true;
     }
 
     private bool ReloadListener(GameActionType type, bool down)
     {
-      if (this.entity != ServiceLocator.GetService<ISimulation>().Player || !PlayerUtility.IsPlayerCanControlling || this.isReloading || this.isShoting)
+      if (entity != ServiceLocator.GetService<ISimulation>().Player || !PlayerUtility.IsPlayerCanControlling || isReloading || isShoting)
         return false;
-      if (this.bullets.Value < this.bullets.MaxValue && this.StorageAmmoCount() > this.bullets.Value)
-        this.BeginReloading();
+      if (bullets.Value < bullets.MaxValue && StorageAmmoCount() > bullets.Value)
+        BeginReloading();
       return true;
     }
 
@@ -378,14 +377,14 @@ namespace Engine.Behaviours.Engines.Controllers
       if (!PlayerUtility.IsPlayerCanControlling)
         return;
       float target1 = 0.0f;
-      bool flag = this.controllerComponent != null && this.controllerComponent.IsRun.Value;
-      if (this.controllerComponent.IsWalk.Value)
-        target1 = (flag ? 1f : 0.5f) * this.controllerComponent.WalkModifier.Value;
-      this.smoothedNormalizedSpeed = Mathf.MoveTowards(this.smoothedNormalizedSpeed, target1, Time.deltaTime / 1f);
-      this.animatorState.WalkSpeed = this.smoothedNormalizedSpeed;
-      if ((double) this.timeToLastPunch <= 0.0)
+      bool flag = controllerComponent != null && controllerComponent.IsRun.Value;
+      if (controllerComponent.IsWalk.Value)
+        target1 = (flag ? 1f : 0.5f) * controllerComponent.WalkModifier.Value;
+      smoothedNormalizedSpeed = Mathf.MoveTowards(smoothedNormalizedSpeed, target1, Time.deltaTime / 1f);
+      animatorState.WalkSpeed = smoothedNormalizedSpeed;
+      if (timeToLastPunch <= 0.0)
         return;
-      this.timeToLastPunch -= Time.deltaTime;
+      timeToLastPunch -= Time.deltaTime;
     }
 
     public void UpdateSilent(IEntity target)
@@ -394,7 +393,7 @@ namespace Engine.Behaviours.Engines.Controllers
         ;
     }
 
-    public void Reset() => this.animatorState.ResetAnimator();
+    public void Reset() => animatorState.ResetAnimator();
 
     public bool Validate(GameObject gameObject, IEntity item) => true;
 
@@ -410,67 +409,67 @@ namespace Engine.Behaviours.Engines.Controllers
     {
       if (data.StartsWith("Shotgun.EndShot"))
       {
-        this.isShoting = false;
-        this.CheckAmmo();
+        isShoting = false;
+        CheckAmmo();
       }
       if (data.StartsWith("Shotgun.Shot"))
       {
-        Action<IEntity, ShotType, ReactionType, ShotSubtypeEnum> weaponShootEvent = this.WeaponShootEvent;
+        Action<IEntity, ShotType, ReactionType, ShotSubtypeEnum> weaponShootEvent = WeaponShootEvent;
         if (weaponShootEvent != null)
-          weaponShootEvent(this.item, ShotType.Moderate, ReactionType.Uppercut, ShotSubtypeEnum.None);
-        this.pivot?.ShotgunShot?.Fire();
-        this.item.GetComponent<StorableComponent>().Use();
+          weaponShootEvent(item, ShotType.Moderate, ReactionType.Uppercut, ShotSubtypeEnum.None);
+        pivot?.ShotgunShot?.Fire();
+        item.GetComponent<StorableComponent>().Use();
       }
       if (data.StartsWith("Shotgun.AimedShot"))
       {
-        Action<IEntity, ShotType, ReactionType, ShotSubtypeEnum> weaponShootEvent = this.WeaponShootEvent;
+        Action<IEntity, ShotType, ReactionType, ShotSubtypeEnum> weaponShootEvent = WeaponShootEvent;
         if (weaponShootEvent != null)
-          weaponShootEvent(this.item, ShotType.Strong, ReactionType.Uppercut, ShotSubtypeEnum.None);
-        this.pivot?.ShotgunShot?.Fire();
-        this.item.GetComponent<StorableComponent>().Use();
+          weaponShootEvent(item, ShotType.Strong, ReactionType.Uppercut, ShotSubtypeEnum.None);
+        pivot?.ShotgunShot?.Fire();
+        item.GetComponent<StorableComponent>().Use();
       }
       if (data.StartsWith("Shotgun.Push"))
       {
-        Action<IEntity, ShotType, ReactionType, ShotSubtypeEnum> weaponShootEvent = this.WeaponShootEvent;
+        Action<IEntity, ShotType, ReactionType, ShotSubtypeEnum> weaponShootEvent = WeaponShootEvent;
         if (weaponShootEvent != null)
-          weaponShootEvent(this.item, ShotType.Push, ReactionType.None, ShotSubtypeEnum.None);
+          weaponShootEvent(item, ShotType.Push, ReactionType.None, ShotSubtypeEnum.None);
       }
       if (data.StartsWith("Shotgun.ReloadedAmmo"))
       {
-        this.ReloadAmmo();
-        this.RefreshAmmoCount();
-        this.ShowAmmo(this.bullets.Value - 1, true);
-        this.SetBulletVisible(false);
-        if (this.reloadingCancelled || this.bullets.Value >= this.bullets.MaxValue || this.StorageAmmoCount() <= this.bullets.Value)
-          this.EndReloading();
+        ReloadAmmo();
+        RefreshAmmoCount();
+        ShowAmmo(bullets.Value - 1, true);
+        SetBulletVisible(false);
+        if (reloadingCancelled || bullets.Value >= bullets.MaxValue || StorageAmmoCount() <= bullets.Value)
+          EndReloading();
       }
       if (data.StartsWith("Shotgun.ShowInsertingAmmo"))
-        this.SetBulletVisible(true);
+        SetBulletVisible(true);
       if (data.StartsWith("Shotgun.HideAmmo0"))
-        this.ShowAmmo(0, false);
+        ShowAmmo(0, false);
       if (data.StartsWith("Shotgun.HideAmmo1"))
-        this.ShowAmmo(1, false);
+        ShowAmmo(1, false);
       if (!data.StartsWith("Shotgun.ReloadEnded"))
         return;
-      this.isReloading = false;
-      this.isShoting = false;
-      this.SetBulletVisible(false);
+      isReloading = false;
+      isShoting = false;
+      SetBulletVisible(false);
     }
 
     private void ShowAmmo(int index, bool show)
     {
-      if (this.geometryVisible || !show)
-        this.bulletsInserted[index] = show;
-      this.ApplyBulletsVisibility();
+      if (geometryVisible || !show)
+        bulletsInserted[index] = show;
+      ApplyBulletsVisibility();
     }
 
     public void Reaction()
     {
-      if (!this.isReloading)
+      if (!isReloading)
         return;
-      this.animatorState.ShotgunCancelReload();
-      this.reloadingCancelled = true;
-      this.isReloading = false;
+      animatorState.ShotgunCancelReload();
+      reloadingCancelled = true;
+      isReloading = false;
     }
   }
 }

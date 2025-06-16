@@ -15,7 +15,7 @@ namespace PLVirtualMachine.Dynamic.Components
       IParam obj;
       if (!((IBlueprint) templateObject).TryGetProperty("Combination.CombinationData", out obj))
         return;
-      this.CombinationData = (ObjectCombinationDataStruct) obj.Value;
+      CombinationData = (ObjectCombinationDataStruct) obj.Value;
     }
 
     public void InitialiseEvent(DynamicEvent target)

@@ -1,9 +1,9 @@
-﻿using SteamNative;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using SteamNative;
 
 namespace Facepunch.Steamworks
 {
@@ -21,111 +21,111 @@ namespace Facepunch.Steamworks
 
     internal RemoteStorage(Client c)
     {
-      this.client = c;
-      this.native = this.client.native.remoteStorage;
+      client = c;
+      native = client.native.remoteStorage;
     }
 
-    public bool IsCloudEnabledForAccount => this.native.IsCloudEnabledForAccount();
+    public bool IsCloudEnabledForAccount => native.IsCloudEnabledForAccount();
 
-    public bool IsCloudEnabledForApp => this.native.IsCloudEnabledForApp();
+    public bool IsCloudEnabledForApp => native.IsCloudEnabledForApp();
 
-    public int FileCount => this.native.GetFileCount();
+    public int FileCount => native.GetFileCount();
 
     public IEnumerable<RemoteFile> Files
     {
       get
       {
-        this.UpdateFiles();
-        return (IEnumerable<RemoteFile>) this._files;
+        UpdateFiles();
+        return _files;
       }
     }
 
     public RemoteFile CreateFile(string path)
     {
-      path = RemoteStorage.NormalizePath(path);
-      this.InvalidateFiles();
-      return this.Files.FirstOrDefault<RemoteFile>((Func<RemoteFile, bool>) (x => x.FileName == path)) ?? new RemoteFile(this, path, this.client.SteamId, 0);
+      path = NormalizePath(path);
+      InvalidateFiles();
+      return Files.FirstOrDefault(x => x.FileName == path) ?? new RemoteFile(this, path, client.SteamId, 0);
     }
 
     public RemoteFile OpenFile(string path)
     {
-      path = RemoteStorage.NormalizePath(path);
-      this.InvalidateFiles();
-      return this.Files.FirstOrDefault<RemoteFile>((Func<RemoteFile, bool>) (x => x.FileName == path));
+      path = NormalizePath(path);
+      InvalidateFiles();
+      return Files.FirstOrDefault(x => x.FileName == path);
     }
 
     public RemoteFile OpenSharedFile(ulong sharingId)
     {
-      return new RemoteFile(this, (UGCHandle_t) sharingId);
+      return new RemoteFile(this, sharingId);
     }
 
     public bool WriteString(string path, string text, Encoding encoding = null)
     {
-      RemoteFile file = this.CreateFile(path);
+      RemoteFile file = CreateFile(path);
       file.WriteAllText(text, encoding);
       return file.Exists;
     }
 
     public bool WriteBytes(string path, byte[] data)
     {
-      RemoteFile file = this.CreateFile(path);
+      RemoteFile file = CreateFile(path);
       file.WriteAllBytes(data);
       return file.Exists;
     }
 
     public string ReadString(string path, Encoding encoding = null)
     {
-      return this.OpenFile(path)?.ReadAllText(encoding);
+      return OpenFile(path)?.ReadAllText(encoding);
     }
 
-    public byte[] ReadBytes(string path) => this.OpenFile(path)?.ReadAllBytes();
+    public byte[] ReadBytes(string path) => OpenFile(path)?.ReadAllBytes();
 
     internal void OnWrittenNewFile(RemoteFile file)
     {
-      if (this._files.Any<RemoteFile>((Func<RemoteFile, bool>) (x => x.FileName == file.FileName)))
+      if (_files.Any(x => x.FileName == file.FileName))
         return;
-      this._files.Add(file);
+      _files.Add(file);
       file.Exists = true;
-      this.InvalidateFiles();
+      InvalidateFiles();
     }
 
-    internal void InvalidateFiles() => this._filesInvalid = true;
+    internal void InvalidateFiles() => _filesInvalid = true;
 
     private void UpdateFiles()
     {
-      if (!this._filesInvalid)
+      if (!_filesInvalid)
         return;
-      this._filesInvalid = false;
-      foreach (RemoteFile file in this._files)
+      _filesInvalid = false;
+      foreach (RemoteFile file in _files)
         file.Exists = false;
-      int fileCount = this.FileCount;
+      int fileCount = FileCount;
       for (int iFile = 0; iFile < fileCount; ++iFile)
       {
         int pnFileSizeInBytes;
-        string name = RemoteStorage.NormalizePath(this.native.GetFileNameAndSize(iFile, out pnFileSizeInBytes));
-        RemoteFile remoteFile = this._files.FirstOrDefault<RemoteFile>((Func<RemoteFile, bool>) (x => x.FileName == name));
+        string name = NormalizePath(native.GetFileNameAndSize(iFile, out pnFileSizeInBytes));
+        RemoteFile remoteFile = _files.FirstOrDefault(x => x.FileName == name);
         if (remoteFile == null)
         {
-          remoteFile = new RemoteFile(this, name, this.client.SteamId, pnFileSizeInBytes);
-          this._files.Add(remoteFile);
+          remoteFile = new RemoteFile(this, name, client.SteamId, pnFileSizeInBytes);
+          _files.Add(remoteFile);
         }
         else
           remoteFile.SizeInBytes = pnFileSizeInBytes;
         remoteFile.Exists = true;
       }
-      for (int index = this._files.Count - 1; index >= 0; --index)
+      for (int index = _files.Count - 1; index >= 0; --index)
       {
-        if (!this._files[index].Exists)
-          this._files.RemoveAt(index);
+        if (!_files[index].Exists)
+          _files.RemoveAt(index);
       }
     }
 
-    public bool FileExists(string path) => this.native.FileExists(path);
+    public bool FileExists(string path) => native.FileExists(path);
 
     public void Dispose()
     {
-      this.client = (Client) null;
-      this.native = (SteamRemoteStorage) null;
+      client = null;
+      native = null;
     }
 
     public ulong QuotaUsed
@@ -134,7 +134,7 @@ namespace Facepunch.Steamworks
       {
         ulong pnTotalBytes = 0;
         ulong puAvailableBytes = 0;
-        return !this.native.GetQuota(out pnTotalBytes, out puAvailableBytes) ? 0UL : pnTotalBytes - puAvailableBytes;
+        return !native.GetQuota(out pnTotalBytes, out puAvailableBytes) ? 0UL : pnTotalBytes - puAvailableBytes;
       }
     }
 
@@ -144,7 +144,7 @@ namespace Facepunch.Steamworks
       {
         ulong pnTotalBytes = 0;
         ulong puAvailableBytes = 0;
-        return !this.native.GetQuota(out pnTotalBytes, out puAvailableBytes) ? 0UL : pnTotalBytes;
+        return !native.GetQuota(out pnTotalBytes, out puAvailableBytes) ? 0UL : pnTotalBytes;
       }
     }
 
@@ -154,7 +154,7 @@ namespace Facepunch.Steamworks
       {
         ulong pnTotalBytes = 0;
         ulong puAvailableBytes = 0;
-        return !this.native.GetQuota(out pnTotalBytes, out puAvailableBytes) ? 0UL : puAvailableBytes;
+        return !native.GetQuota(out pnTotalBytes, out puAvailableBytes) ? 0UL : puAvailableBytes;
       }
     }
   }

@@ -1,10 +1,10 @@
-﻿using Engine.Common.Services;
+﻿using System.Collections.Generic;
+using Engine.Common.Services;
 using Engine.Source.Services;
 using Engine.Source.VisualEffects;
 using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
-using System.Collections.Generic;
 
 namespace Engine.Source.Blueprints.Effects
 {
@@ -20,8 +20,8 @@ namespace Engine.Source.Blueprints.Effects
     [Port("Value")]
     private IList<IParameter<float>> Value()
     {
-      this.effects.GetParameters<float>(this.nameInput.value, this.result);
-      return (IList<IParameter<float>>) this.result;
+      effects.GetParameters(nameInput.value, result);
+      return result;
     }
   }
 }

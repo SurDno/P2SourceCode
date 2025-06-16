@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace UnityStandardAssets.ImageEffects
+﻿namespace UnityStandardAssets.ImageEffects
 {
   [ExecuteInEditMode]
   [AddComponentMenu("Image Effects/Displacement/Twirl")]
@@ -13,7 +11,7 @@ namespace UnityStandardAssets.ImageEffects
 
     private void OnRenderImage(RenderTexture source, RenderTexture destination)
     {
-      UnityStandardAssets.ImageEffects.ImageEffects.RenderDistortion(this.material, source, destination, this.angle, this.center, this.radius);
+      ImageEffects.RenderDistortion(material, source, destination, angle, center, radius);
     }
   }
 }

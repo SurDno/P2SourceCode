@@ -1,9 +1,7 @@
-﻿using Cofe.Utility;
-using Engine.Source.Audio;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.Audio;
+using Cofe.Utility;
+using Engine.Source.Audio;
 
 namespace Engine.Behaviours.Unity.Mecanim
 {
@@ -28,14 +26,14 @@ namespace Engine.Behaviours.Unity.Mecanim
       AnimatorStateInfo stateInfo,
       int layerIndex)
     {
-      if (this.Clips == null || this.Clips.Count == 0 || (double) animator.GetLayerWeight(layerIndex) < 0.5)
+      if (Clips == null || Clips.Count == 0 || (double) animator.GetLayerWeight(layerIndex) < 0.5)
         return;
-      AudioClip clip = this.Clips[UnityEngine.Random.Range(0, this.Clips.Count)];
-      CoroutineService.Instance.WaitSecond(this.Delay, (Action) (() =>
+      AudioClip clip = Clips[UnityEngine.Random.Range(0, Clips.Count)];
+      CoroutineService.Instance.WaitSecond(Delay, (Action) (() =>
       {
         if (!((UnityEngine.Object) animator != (UnityEngine.Object) null))
           return;
-        SoundUtility.PlayAudioClip3D(animator.transform, clip, this.AudioMixer2, this.Volume, this.MinDistance, this.MaxDistance, true, 0.0f, context: TypeUtility.GetTypeName(((object) this).GetType()) + " " + this.name);
+        SoundUtility.PlayAudioClip3D(animator.transform, clip, AudioMixer2, Volume, MinDistance, MaxDistance, true, 0.0f, context: TypeUtility.GetTypeName(this.GetType()) + " " + this.name);
       }));
     }
   }

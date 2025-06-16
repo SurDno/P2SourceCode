@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using UnityEngine;
 
 public class FootageCapture : MonoBehaviour
 {
@@ -10,7 +9,7 @@ public class FootageCapture : MonoBehaviour
   public int SuperSize = 0;
   public KeyCode RecordKey = KeyCode.F9;
   public KeyCode ScreenshotKey = KeyCode.F12;
-  private bool isCapturing = false;
+  private bool isCapturing;
   private string currentClipFolder;
   private int currentFrame;
 
@@ -25,33 +24,33 @@ public class FootageCapture : MonoBehaviour
 
   private void Update()
   {
-    if (this.isCapturing)
+    if (isCapturing)
     {
-      ScreenCapture.CaptureScreenshot(this.currentClipFolder + this.currentFrame.ToString("0000") + ".png", this.SuperSize);
-      ++this.currentFrame;
+      ScreenCapture.CaptureScreenshot(currentClipFolder + currentFrame.ToString("0000") + ".png", SuperSize);
+      ++currentFrame;
     }
-    else if (Input.GetKeyDown(this.ScreenshotKey))
+    else if (Input.GetKeyDown(ScreenshotKey))
     {
-      this.CheckCaptureFolder();
-      ScreenCapture.CaptureScreenshot("Capture/" + this.TimeToString() + ".png", this.SuperSize);
+      CheckCaptureFolder();
+      ScreenCapture.CaptureScreenshot("Capture/" + TimeToString() + ".png", SuperSize);
     }
-    if (!Input.GetKeyDown(this.RecordKey))
+    if (!Input.GetKeyDown(RecordKey))
       return;
-    if (!this.isCapturing)
+    if (!isCapturing)
     {
-      this.currentFrame = 0;
-      this.CheckCaptureFolder();
-      string str = this.TimeToString();
-      this.currentClipFolder = "Capture/" + str;
-      if (!Directory.Exists(this.currentClipFolder))
-        Directory.CreateDirectory(this.currentClipFolder);
-      this.currentClipFolder = this.currentClipFolder + "/" + str + " ";
-      Time.captureFramerate = this.CaptureFramerate;
-      this.isCapturing = true;
+      currentFrame = 0;
+      CheckCaptureFolder();
+      string str = TimeToString();
+      currentClipFolder = "Capture/" + str;
+      if (!Directory.Exists(currentClipFolder))
+        Directory.CreateDirectory(currentClipFolder);
+      currentClipFolder = currentClipFolder + "/" + str + " ";
+      Time.captureFramerate = CaptureFramerate;
+      isCapturing = true;
     }
     else
     {
-      this.isCapturing = false;
+      isCapturing = false;
       Time.captureFramerate = 0;
     }
   }

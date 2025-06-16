@@ -14,7 +14,7 @@ namespace Expressions
     {
       get
       {
-        return "min(" + (this.a != null ? this.a.ValueView : "null") + ", " + (this.b != null ? this.b.ValueView : "null") + ")";
+        return "min(" + (a != null ? a.ValueView : "null") + ", " + (b != null ? b.ValueView : "null") + ")";
       }
     }
   }

@@ -1,8 +1,8 @@
-﻿using Engine.Common;
+﻿using System;
+using Engine.Common;
 using Engine.Common.Components;
 using Engine.Common.Components.Interactable;
 using PLVirtualMachine.Common.EngineAPI.VMECS.VMAttributes;
-using System;
 
 namespace PLVirtualMachine.Common.EngineAPI.VMECS
 {
@@ -13,19 +13,19 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
 
     public override void Clear()
     {
-      if (!this.InstanceValid)
+      if (!InstanceValid)
         return;
-      this.Component.BeginInteractEvent -= new Action<IEntity, IInteractableComponent, IInteractItem>(this.FireBeginInteractEvent);
-      this.Component.EndInteractEvent -= new Action<IEntity, IInteractableComponent, IInteractItem>(this.FireEndInteractEvent);
+      Component.BeginInteractEvent -= FireBeginInteractEvent;
+      Component.EndInteractEvent -= FireEndInteractEvent;
       base.Clear();
     }
 
     protected override void Init()
     {
-      if (this.IsTemplate)
+      if (IsTemplate)
         return;
-      this.Component.BeginInteractEvent += new Action<IEntity, IInteractableComponent, IInteractItem>(this.FireBeginInteractEvent);
-      this.Component.EndInteractEvent += new Action<IEntity, IInteractableComponent, IInteractItem>(this.FireEndInteractEvent);
+      Component.BeginInteractEvent += FireBeginInteractEvent;
+      Component.EndInteractEvent += FireEndInteractEvent;
     }
 
     private void FireBeginInteractEvent(
@@ -33,7 +33,7 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
       IInteractableComponent target,
       IInteractItem item)
     {
-      Action<IEntity, IEntity, InteractType> controllIteractEvent = this.BeginControllIteractEvent;
+      Action<IEntity, IEntity, InteractType> controllIteractEvent = BeginControllIteractEvent;
       if (controllIteractEvent == null)
         return;
       controllIteractEvent(owner, target.Owner, item.Type);
@@ -44,7 +44,7 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
       IInteractableComponent target,
       IInteractItem item)
     {
-      Action<IEntity, IEntity, InteractType> controllIteractEvent = this.EndControllIteractEvent;
+      Action<IEntity, IEntity, InteractType> controllIteractEvent = EndControllIteractEvent;
       if (controllIteractEvent == null)
         return;
       controllIteractEvent(owner, target.Owner, item.Type);

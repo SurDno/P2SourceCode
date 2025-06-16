@@ -1,6 +1,5 @@
 ﻿using Engine.Common.Commons;
 using Engine.Common.Components;
-using UnityEngine;
 
 namespace Engine.Source.Components.BoundCharacters
 {
@@ -37,7 +36,7 @@ namespace Engine.Source.Components.BoundCharacters
           boundHealthStateEnum = BoundHealthStateEnum.Diseased;
           break;
       }
-      if (boundHealthStateEnum == BoundHealthStateEnum.Danger && !BoundCharacterUtility.CharacterRegionDiscovered(character))
+      if (boundHealthStateEnum == BoundHealthStateEnum.Danger && !CharacterRegionDiscovered(character))
         boundHealthStateEnum = BoundHealthStateEnum.Normal;
       return boundHealthStateEnum;
     }
@@ -95,9 +94,9 @@ namespace Engine.Source.Components.BoundCharacters
       BoundHealthStateEnum percievedHealth)
     {
       if (percievedHealth == BoundHealthStateEnum.None || percievedHealth == BoundHealthStateEnum.Normal)
-        return (string) null;
-      Gender gender = BoundCharacterUtility.GetGender(character);
-      return "{UI.Menu.Protagonist.BoundHealthState." + percievedHealth.ToString() + "." + gender.ToString() + "}";
+        return null;
+      Gender gender = GetGender(character);
+      return "{UI.Menu.Protagonist.BoundHealthState." + percievedHealth + "." + gender + "}";
     }
   }
 }

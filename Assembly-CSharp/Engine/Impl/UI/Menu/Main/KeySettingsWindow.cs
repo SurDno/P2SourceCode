@@ -1,4 +1,5 @@
-﻿using Cofe.Utility;
+﻿using System.Collections.Generic;
+using Cofe.Utility;
 using Engine.Common.Services;
 using Engine.Impl.Services;
 using Engine.Source.Commons;
@@ -6,13 +7,6 @@ using Engine.Source.Services.CameraServices;
 using Engine.Source.Services.Inputs;
 using Engine.Source.Utility;
 using InputServices;
-using System;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.Events;
-using UnityEngine.EventSystems;
-using UnityEngine.Serialization;
-using UnityEngine.UI;
 
 namespace Engine.Impl.UI.Menu.Main
 {
@@ -36,14 +30,14 @@ namespace Engine.Impl.UI.Menu.Main
 
     public override void Initialize()
     {
-      this.RegisterLayer();
+      RegisterLayer();
       Button[] componentsInChildren = this.GetComponentsInChildren<Button>(true);
       for (int index = 0; index < componentsInChildren.Length; ++index)
       {
         componentsInChildren[index].gameObject.AddComponent<EventTrigger>();
         EventTrigger.Entry entry = new EventTrigger.Entry();
         entry.eventID = EventTriggerType.PointerClick;
-        entry.callback.AddListener((UnityAction<BaseEventData>) (eventData => this.Button_Click_Handler()));
+        entry.callback.AddListener((UnityAction<BaseEventData>) (eventData => Button_Click_Handler()));
         componentsInChildren[index].gameObject.GetComponent<EventTrigger>().triggers.Add(entry);
       }
       base.Initialize();
@@ -53,51 +47,51 @@ namespace Engine.Impl.UI.Menu.Main
     {
       if (!this.gameObject.activeInHierarchy)
         return;
-      this.gameObject.GetComponent<AudioSource>().PlayOneShot(this.clickSound);
+      this.gameObject.GetComponent<AudioSource>().PlayOneShot(clickSound);
     }
 
     public void Button_Back_Click_Handler() => ServiceLocator.GetService<UIService>().Pop();
 
-    public void Button_Reset_Click_Handler() => this.ResetKeys();
+    public void Button_Reset_Click_Handler() => ResetKeys();
 
     protected override void OnEnable()
     {
       base.OnEnable();
-      this.lastCameraKind = ServiceLocator.GetService<CameraService>().Kind;
+      lastCameraKind = ServiceLocator.GetService<CameraService>().Kind;
       ServiceLocator.GetService<CameraService>().Kind = CameraKindEnum.Unknown;
       InstanceByRequest<EngineApplication>.Instance.IsPaused = true;
       CursorService.Instance.Free = CursorService.Instance.Visible = true;
       ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Cancel, new GameActionHandle(((UIWindow) this).CancelListener));
-      this.Fill();
-      this.gameActionService.OnKeyPressed += new Action<KeyCode>(this.OnKeyPressed);
+      Fill();
+      gameActionService.OnKeyPressed += OnKeyPressed;
     }
 
     protected override void OnDisable()
     {
-      ServiceLocator.GetService<CameraService>().Kind = this.lastCameraKind;
+      ServiceLocator.GetService<CameraService>().Kind = lastCameraKind;
       InstanceByRequest<EngineApplication>.Instance.IsPaused = false;
       ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Cancel, new GameActionHandle(((UIWindow) this).CancelListener));
-      this.Clear();
-      this.gameActionService.OnKeyPressed -= new Action<KeyCode>(this.OnKeyPressed);
+      Clear();
+      gameActionService.OnKeyPressed -= OnKeyPressed;
       base.OnDisable();
     }
 
     public void Fill()
     {
-      this.localizationService = ServiceLocator.GetService<LocalizationService>();
-      this.gameActionService = ServiceLocator.GetService<GameActionService>();
-      foreach (ActionGroup bind in this.gameActionService.GetBinds())
+      localizationService = ServiceLocator.GetService<LocalizationService>();
+      gameActionService = ServiceLocator.GetService<GameActionService>();
+      foreach (ActionGroup bind in gameActionService.GetBinds())
       {
         if (!bind.Hide)
         {
-          GameObject gameObject = UnityEngine.Object.Instantiate<GameObject>(this.keyItem);
-          gameObject.transform.SetParent((Transform) this.keyView, false);
+          GameObject gameObject = UnityEngine.Object.Instantiate<GameObject>(keyItem);
+          gameObject.transform.SetParent((Transform) keyView, false);
           KeyItem component = gameObject.GetComponent<KeyItem>();
-          this.keyItems.Add(component);
+          keyItems.Add(component);
           component.Bind = bind;
-          component.SetText(this.GetText(bind));
+          component.SetText(GetText(bind));
           if (bind.IsChangeble)
-            component.OnPressed += new Action<KeyItem>(this.OnKeyItemPressed);
+            component.OnPressed += OnKeyItemPressed;
           else
             component.SetReadonly();
         }
@@ -106,46 +100,46 @@ namespace Engine.Impl.UI.Menu.Main
 
     public void Clear()
     {
-      foreach (KeyItem keyItem in this.keyItems)
+      foreach (KeyItem keyItem in keyItems)
       {
-        keyItem.OnPressed -= new Action<KeyItem>(this.OnKeyItemPressed);
+        keyItem.OnPressed -= OnKeyItemPressed;
         UnityEngine.Object.Destroy((UnityEngine.Object) keyItem.gameObject);
       }
-      this.keyItems.Clear();
-      this.listeningItem = (KeyItem) null;
+      keyItems.Clear();
+      listeningItem = null;
     }
 
     private string GetText(ActionGroup bind)
     {
-      string text = this.localizationService.GetText(InputUtility.GetTagName(bind));
+      string text = localizationService.GetText(InputUtility.GetTagName(bind));
       return text.IsNullOrEmpty() ? "" : text + "  [" + InputUtility.GetHotKeyNameByGroup(bind, InputService.Instance.JoystickUsed) + "]";
     }
 
     public void ResetKeys()
     {
-      this.gameActionService.ResetAllRebinds();
-      this.Clear();
-      this.Fill();
+      gameActionService.ResetAllRebinds();
+      Clear();
+      Fill();
     }
 
     private void OnKeyItemPressed(KeyItem item)
     {
-      if ((UnityEngine.Object) this.listeningItem != (UnityEngine.Object) null)
+      if ((UnityEngine.Object) listeningItem != (UnityEngine.Object) null)
         return;
-      this.listeningItem = item;
-      this.listeningItem.Selection = true;
+      listeningItem = item;
+      listeningItem.Selection = true;
     }
 
     private void OnKeyPressed(KeyCode code)
     {
-      if (!this.IsWaiting)
+      if (!IsWaiting)
         return;
-      this.gameActionService.AddRebind(this.listeningItem.Bind, code);
-      this.listeningItem = (KeyItem) null;
-      this.Clear();
-      this.Fill();
+      gameActionService.AddRebind(listeningItem.Bind, code);
+      listeningItem = null;
+      Clear();
+      Fill();
     }
 
-    public bool IsWaiting => (UnityEngine.Object) this.listeningItem != (UnityEngine.Object) null;
+    public bool IsWaiting => (UnityEngine.Object) listeningItem != (UnityEngine.Object) null;
   }
 }

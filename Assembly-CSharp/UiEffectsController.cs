@@ -1,35 +1,34 @@
-﻿using Engine.Impl.UI.Controls;
+﻿using System;
+using Engine.Impl.UI.Controls;
 using Inspectors;
-using System;
-using UnityEngine;
 
 public class UiEffectsController : MonoBehaviourInstance<UiEffectsController>
 {
   [Inspected]
   [SerializeField]
-  private UiEffectsController.Info[] effects = new UiEffectsController.Info[0];
+  private Info[] effects = new Info[0];
 
   protected override void Awake()
   {
     base.Awake();
-    for (int index = 0; index < this.effects.Length; ++index)
+    for (int index = 0; index < effects.Length; ++index)
     {
-      UiEffectsController.Info effect = this.effects[index];
+      Info effect = effects[index];
       if (!((UnityEngine.Object) effect.Progress == (UnityEngine.Object) null) && effect.Progress.gameObject.activeSelf)
       {
         effect.Visible = true;
         effect.Value = 1f;
         effect.Time = 0.0f;
-        this.effects[index] = effect;
+        effects[index] = effect;
       }
     }
   }
 
   public void SetVisible(bool visible, UiEffectType type, float time, Action action = null)
   {
-    for (int index = 0; index < this.effects.Length; ++index)
+    for (int index = 0; index < effects.Length; ++index)
     {
-      UiEffectsController.Info effect = this.effects[index];
+      Info effect = effects[index];
       if (effect.Type == type)
       {
         Action action1 = effect.Action;
@@ -38,66 +37,66 @@ public class UiEffectsController : MonoBehaviourInstance<UiEffectsController>
         effect.Action = action;
         effect.Visible = visible;
         effect.Time = time;
-        this.effects[index] = effect;
+        effects[index] = effect;
         return;
       }
     }
-    Debug.LogError((object) (type.ToString() + " not found"));
+    Debug.LogError((object) (type + " not found"));
   }
 
   private void Update()
   {
-    for (int index = 0; index < this.effects.Length; ++index)
+    for (int index = 0; index < effects.Length; ++index)
     {
-      UiEffectsController.Info effect = this.effects[index];
+      Info effect = effects[index];
       if (!((UnityEngine.Object) effect.Progress == (UnityEngine.Object) null))
       {
         bool flag1 = false;
         bool activeSelf = effect.Progress.gameObject.activeSelf;
         if (effect.Visible)
         {
-          if ((double) effect.Value < 1.0)
+          if (effect.Value < 1.0)
           {
             effect.Value += Time.deltaTime * (1f / effect.Time);
-            if ((double) effect.Value >= 1.0)
+            if (effect.Value >= 1.0)
             {
               flag1 = true;
               effect.Value = 1f;
             }
-            this.effects[index] = effect;
-            this.UpdateEffect(effect);
+            effects[index] = effect;
+            UpdateEffect(effect);
           }
           else if (effect.Action != null)
             flag1 = true;
         }
-        else if ((double) effect.Value > 0.0)
+        else if (effect.Value > 0.0)
         {
           effect.Value -= Time.deltaTime * (1f / effect.Time);
-          if ((double) effect.Value <= 0.0)
+          if (effect.Value <= 0.0)
           {
             flag1 = true;
             effect.Value = 0.0f;
           }
-          this.effects[index] = effect;
-          this.UpdateEffect(effect);
+          effects[index] = effect;
+          UpdateEffect(effect);
         }
         else if (effect.Action != null)
           flag1 = true;
-        bool flag2 = (double) effect.Value > 0.0;
+        bool flag2 = effect.Value > 0.0;
         if (flag2 != activeSelf)
           effect.Progress.gameObject.SetActive(flag2);
         if (flag1 && effect.Action != null)
         {
           Action action = effect.Action;
-          effect.Action = (Action) null;
-          this.effects[index] = effect;
+          effect.Action = null;
+          effects[index] = effect;
           action();
         }
       }
     }
   }
 
-  private void UpdateEffect(UiEffectsController.Info effect)
+  private void UpdateEffect(Info effect)
   {
     effect.Progress.Progress = effect.Value;
   }
@@ -109,7 +108,7 @@ public class UiEffectsController : MonoBehaviourInstance<UiEffectsController>
   }
 
   [Inspected]
-  private void Show() => this.SetVisible(true, UiEffectType.Logo, 1f);
+  private void Show() => SetVisible(true, UiEffectType.Logo, 1f);
 
   [Serializable]
   public struct Info

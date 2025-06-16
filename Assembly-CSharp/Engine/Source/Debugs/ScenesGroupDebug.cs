@@ -1,11 +1,9 @@
-﻿using Cofe.Meta;
+﻿using System;
+using Cofe.Meta;
 using Engine.Common.Services;
 using Engine.Source.Commons;
 using Engine.Source.Services.Gizmos;
 using Engine.Source.Utility;
-using System;
-using UnityEngine;
-using UnityEngine.SceneManagement;
 
 namespace Engine.Source.Debugs
 {
@@ -21,19 +19,19 @@ namespace Engine.Source.Debugs
     private static Color loadingColor = Color.yellow;
     private static Color loadedColor = Color.green;
 
-    [Cofe.Meta.Initialise]
+    [Initialise]
     private static void Initialise()
     {
-      InstanceByRequest<EngineApplication>.Instance.OnInitialized += (Action) (() => GroupDebugService.RegisterGroup(ScenesGroupDebug.name, ScenesGroupDebug.key, ScenesGroupDebug.modifficators, new Action(ScenesGroupDebug.Update)));
+      InstanceByRequest<EngineApplication>.Instance.OnInitialized += (Action) (() => GroupDebugService.RegisterGroup(name, key, modifficators, Update));
     }
 
     private static void Update()
     {
-      string text1 = "\n" + ScenesGroupDebug.name + " (" + InputUtility.GetHotKeyText(ScenesGroupDebug.key, ScenesGroupDebug.modifficators) + ")";
-      ServiceLocator.GetService<GizmoService>().DrawText(text1, ScenesGroupDebug.headerColor);
+      string text1 = "\n" + name + " (" + InputUtility.GetHotKeyText(key, modifficators) + ")";
+      ServiceLocator.GetService<GizmoService>().DrawText(text1, headerColor);
       int sceneCount = SceneManager.sceneCount;
-      string text2 = "  Scene count : " + (object) sceneCount;
-      ServiceLocator.GetService<GizmoService>().DrawText(text2, ScenesGroupDebug.bodyColor);
+      string text2 = "  Scene count : " + sceneCount;
+      ServiceLocator.GetService<GizmoService>().DrawText(text2, bodyColor);
       for (int index = 0; index < sceneCount; ++index)
       {
         Scene sceneAt = SceneManager.GetSceneAt(index);
@@ -42,18 +40,18 @@ namespace Engine.Source.Debugs
           if (sceneAt.isLoaded)
           {
             string text3 = "  state : complete , scene : " + sceneAt.name;
-            ServiceLocator.GetService<GizmoService>().DrawText(text3, ScenesGroupDebug.loadedColor);
+            ServiceLocator.GetService<GizmoService>().DrawText(text3, loadedColor);
           }
           else
           {
             string text4 = "  state : loading , scene : " + sceneAt.name;
-            ServiceLocator.GetService<GizmoService>().DrawText(text4, ScenesGroupDebug.loadingColor);
+            ServiceLocator.GetService<GizmoService>().DrawText(text4, loadingColor);
           }
         }
         else
         {
           string text5 = "  state : not valid , scene : " + sceneAt.name;
-          ServiceLocator.GetService<GizmoService>().DrawText(text5, ScenesGroupDebug.notValidColor);
+          ServiceLocator.GetService<GizmoService>().DrawText(text5, notValidColor);
         }
       }
     }

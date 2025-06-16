@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using UnityEngine;
 
 public class LightShaftsBuilder
 {
@@ -19,64 +18,64 @@ public class LightShaftsBuilder
 
   public static void Occupy()
   {
-    if (LightShaftsBuilder.Instance == null)
+    if (Instance == null)
     {
-      LightShaftsBuilder.Instance = new LightShaftsBuilder();
-      LightShaftsBuilder.Instance.occupants = 1;
+      Instance = new LightShaftsBuilder();
+      Instance.occupants = 1;
     }
     else
-      ++LightShaftsBuilder.Instance.occupants;
+      ++Instance.occupants;
   }
 
   public static void Vacate()
   {
-    --LightShaftsBuilder.Instance.occupants;
-    if (LightShaftsBuilder.Instance.occupants > 0)
+    --Instance.occupants;
+    if (Instance.occupants > 0)
       return;
-    LightShaftsBuilder.Instance = (LightShaftsBuilder) null;
+    Instance = null;
   }
 
   public void AddRay(Vector3 origin, float length)
   {
-    this.rayOrigins.Add(origin);
-    this.rayLengths.Add(length);
+    rayOrigins.Add(origin);
+    rayLengths.Add(length);
   }
 
   private void AddTriangle(int index0, int index1, int index2)
   {
-    this.triangles.Add(index0);
-    this.triangles.Add(index1);
-    this.triangles.Add(index2);
+    triangles.Add(index0);
+    triangles.Add(index1);
+    triangles.Add(index2);
   }
 
   private void AddTriangles()
   {
-    this.AddTriangle(this.vertices.Count - 1, this.vertices.Count + 1, this.vertices.Count - 2);
-    this.AddTriangle(this.vertices.Count + 1, this.vertices.Count, this.vertices.Count - 2);
+    AddTriangle(vertices.Count - 1, vertices.Count + 1, vertices.Count - 2);
+    AddTriangle(vertices.Count + 1, vertices.Count, vertices.Count - 2);
   }
 
   private void AddVertex(Vector3 position, Vector2 uv)
   {
-    this.vertices.Add(this.w2l.MultiplyPoint(position));
-    this.normals.Add(this.w2l.MultiplyVector(LightShafts.LightDirection));
-    this.uvs.Add(uv);
+    vertices.Add(w2l.MultiplyPoint(position));
+    normals.Add(w2l.MultiplyVector(LightShafts.LightDirection));
+    uvs.Add(uv);
   }
 
   private void AddVertices(Vector3 position, float opacity)
   {
-    this.AddVertex(position - this.up, new Vector2(-this.lightShafts.radius, opacity));
-    this.AddVertex(position + this.up, new Vector2(this.lightShafts.radius, opacity));
+    AddVertex(position - up, new Vector2(-lightShafts.radius, opacity));
+    AddVertex(position + up, new Vector2(lightShafts.radius, opacity));
   }
 
   public void BuildTo(Mesh mesh)
   {
     int num1 = 0;
     int num2 = 0;
-    for (int index = 0; index < this.rayLengths.Count; ++index)
+    for (int index = 0; index < rayLengths.Count; ++index)
     {
-      if ((double) this.rayLengths[index] > 0.0)
+      if (rayLengths[index] > 0.0)
       {
-        if ((double) this.rayLengths[index] == (double) this.lightShafts.length || (double) this.lightShafts.length <= (double) this.lightShafts.fadeIn + (double) this.lightShafts.radius)
+        if (rayLengths[index] == (double) lightShafts.length || lightShafts.length <= lightShafts.fadeIn + (double) lightShafts.radius)
         {
           num1 += 6;
           num2 += 12;
@@ -88,57 +87,57 @@ public class LightShaftsBuilder
         }
       }
     }
-    this.vertices.Clear();
-    if (this.vertices.Capacity < num1)
-      this.vertices.Capacity = num1;
-    this.normals.Clear();
-    if (this.normals.Capacity < num1)
-      this.normals.Capacity = num1;
-    this.uvs.Clear();
-    if (this.uvs.Capacity < num1)
-      this.uvs.Capacity = num1;
-    this.triangles.Clear();
-    if (this.triangles.Capacity < num2)
-      this.triangles.Capacity = num2;
-    this.w2l = this.lightShafts.transform.worldToLocalMatrix;
-    this.up = Vector3.Cross(LightShafts.LightDirection, Vector3.Cross(LightShafts.LightDirection, Vector3.down).normalized).normalized * (1f / 1000f);
-    for (int index = 0; index < this.rayLengths.Count; ++index)
+    vertices.Clear();
+    if (vertices.Capacity < num1)
+      vertices.Capacity = num1;
+    normals.Clear();
+    if (normals.Capacity < num1)
+      normals.Capacity = num1;
+    uvs.Clear();
+    if (uvs.Capacity < num1)
+      uvs.Capacity = num1;
+    triangles.Clear();
+    if (triangles.Capacity < num2)
+      triangles.Capacity = num2;
+    w2l = lightShafts.transform.worldToLocalMatrix;
+    up = Vector3.Cross(LightShafts.LightDirection, Vector3.Cross(LightShafts.LightDirection, Vector3.down).normalized).normalized * (1f / 1000f);
+    for (int index = 0; index < rayLengths.Count; ++index)
     {
-      if ((double) this.rayLengths[index] != 0.0)
+      if (rayLengths[index] != 0.0)
       {
-        this.AddVertices(this.rayOrigins[index], 0.0f);
-        if ((double) this.rayLengths[index] == (double) this.lightShafts.length)
+        AddVertices(rayOrigins[index], 0.0f);
+        if (rayLengths[index] == (double) lightShafts.length)
         {
-          this.AddTriangles();
-          this.AddVertices(this.rayOrigins[index] + LightShafts.LightDirection * this.lightShafts.fadeIn, this.opacity);
-          this.AddTriangles();
-          this.AddVertices(this.rayOrigins[index] + LightShafts.LightDirection * this.rayLengths[index], 0.0f);
+          AddTriangles();
+          AddVertices(rayOrigins[index] + LightShafts.LightDirection * lightShafts.fadeIn, opacity);
+          AddTriangles();
+          AddVertices(rayOrigins[index] + LightShafts.LightDirection * rayLengths[index], 0.0f);
         }
-        else if ((double) this.rayLengths[index] <= (double) this.lightShafts.fadeIn + (double) this.lightShafts.radius)
+        else if (rayLengths[index] <= lightShafts.fadeIn + (double) lightShafts.radius)
         {
-          float num3 = (this.rayLengths[index] - this.lightShafts.radius) / this.lightShafts.fadeIn;
-          this.AddTriangles();
-          this.AddVertices(this.rayOrigins[index] + LightShafts.LightDirection * (this.rayLengths[index] - this.lightShafts.radius), this.opacity * num3);
-          this.AddTriangles();
-          this.AddVertices(this.rayOrigins[index] + LightShafts.LightDirection * this.rayLengths[index], 0.0f);
+          float num3 = (rayLengths[index] - lightShafts.radius) / lightShafts.fadeIn;
+          AddTriangles();
+          AddVertices(rayOrigins[index] + LightShafts.LightDirection * (rayLengths[index] - lightShafts.radius), opacity * num3);
+          AddTriangles();
+          AddVertices(rayOrigins[index] + LightShafts.LightDirection * rayLengths[index], 0.0f);
         }
         else
         {
-          float num4 = (float) (((double) this.rayLengths[index] - (double) this.lightShafts.radius) / ((double) this.lightShafts.length - (double) this.lightShafts.fadeIn));
-          this.AddTriangles();
-          this.AddVertices(this.rayOrigins[index] + LightShafts.LightDirection * this.lightShafts.fadeIn, this.opacity);
-          this.AddTriangles();
-          this.AddVertices(this.rayOrigins[index] + LightShafts.LightDirection * (this.rayLengths[index] - this.lightShafts.radius), this.opacity * num4);
-          this.AddTriangles();
-          this.AddVertices(this.rayOrigins[index] + LightShafts.LightDirection * this.rayLengths[index], 0.0f);
+          float num4 = (float) ((rayLengths[index] - (double) lightShafts.radius) / (lightShafts.length - (double) lightShafts.fadeIn));
+          AddTriangles();
+          AddVertices(rayOrigins[index] + LightShafts.LightDirection * lightShafts.fadeIn, opacity);
+          AddTriangles();
+          AddVertices(rayOrigins[index] + LightShafts.LightDirection * (rayLengths[index] - lightShafts.radius), opacity * num4);
+          AddTriangles();
+          AddVertices(rayOrigins[index] + LightShafts.LightDirection * rayLengths[index], 0.0f);
         }
       }
     }
     mesh.Clear();
-    mesh.SetVertices(this.vertices);
-    mesh.SetNormals(this.normals);
-    mesh.SetUVs(0, this.uvs);
-    mesh.SetTriangles(this.triangles, 0);
+    mesh.SetVertices(vertices);
+    mesh.SetNormals(normals);
+    mesh.SetUVs(0, uvs);
+    mesh.SetTriangles(triangles, 0);
     mesh.RecalculateBounds();
   }
 
@@ -146,12 +145,12 @@ public class LightShaftsBuilder
   {
     this.lightShafts = lightShafts;
     this.opacity = opacity;
-    this.rayOrigins.Clear();
-    if (this.rayOrigins.Capacity < pointCount)
-      this.rayOrigins.Capacity = pointCount;
-    this.rayLengths.Clear();
-    if (this.rayLengths.Capacity >= pointCount)
+    rayOrigins.Clear();
+    if (rayOrigins.Capacity < pointCount)
+      rayOrigins.Capacity = pointCount;
+    rayLengths.Clear();
+    if (rayLengths.Capacity >= pointCount)
       return;
-    this.rayLengths.Capacity = pointCount;
+    rayLengths.Capacity = pointCount;
   }
 }

@@ -1,11 +1,11 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons.Cloneable;
 using Engine.Common.Commons.Converters;
 using Engine.Common.Components.Gate;
 using Engine.Common.Components.Parameters;
 using Engine.Source.Commons.Parameters;
-using System;
 
 namespace Engine.Source.Proxies
 {
@@ -22,38 +22,38 @@ namespace Engine.Source.Proxies
     public object Clone()
     {
       LockStatePriorityParameter_Generated instance = Activator.CreateInstance<LockStatePriorityParameter_Generated>();
-      this.CopyTo((object) instance);
-      return (object) instance;
+      CopyTo(instance);
+      return instance;
     }
 
     public void CopyTo(object target2)
     {
       LockStatePriorityParameter_Generated parameterGenerated = (LockStatePriorityParameter_Generated) target2;
-      parameterGenerated.name = this.name;
-      parameterGenerated.container = CloneableObjectUtility.Clone<PriorityContainer<LockState>>(this.container);
+      parameterGenerated.name = name;
+      parameterGenerated.container = CloneableObjectUtility.Clone(container);
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.WriteEnum<ParameterNameEnum>(writer, "Name", this.name);
-      DefaultDataWriteUtility.WriteSerialize<PriorityContainer<LockState>>(writer, "Container", this.container);
+      DefaultDataWriteUtility.WriteEnum(writer, "Name", name);
+      DefaultDataWriteUtility.WriteSerialize(writer, "Container", container);
     }
 
     public void DataRead(IDataReader reader, Type type)
     {
-      this.name = DefaultDataReadUtility.ReadEnum<ParameterNameEnum>(reader, "Name");
-      this.container = DefaultDataReadUtility.ReadSerialize<PriorityContainer<LockState>>(reader, "Container");
+      name = DefaultDataReadUtility.ReadEnum<ParameterNameEnum>(reader, "Name");
+      container = DefaultDataReadUtility.ReadSerialize<PriorityContainer<LockState>>(reader, "Container");
     }
 
     public void StateSave(IDataWriter writer)
     {
-      DefaultDataWriteUtility.WriteEnum<ParameterNameEnum>(writer, "Name", this.name);
-      DefaultStateSaveUtility.SaveSerialize<PriorityContainer<LockState>>(writer, "Container", this.container);
+      DefaultDataWriteUtility.WriteEnum(writer, "Name", name);
+      DefaultStateSaveUtility.SaveSerialize(writer, "Container", container);
     }
 
     public void StateLoad(IDataReader reader, Type type)
     {
-      this.container = DefaultStateLoadUtility.ReadSerialize<PriorityContainer<LockState>>(reader, "Container");
+      container = DefaultStateLoadUtility.ReadSerialize<PriorityContainer<LockState>>(reader, "Container");
     }
   }
 }

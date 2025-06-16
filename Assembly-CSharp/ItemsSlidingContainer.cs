@@ -1,4 +1,5 @@
-﻿using Engine.Behaviours.Localization;
+﻿using System.Collections.Generic;
+using Engine.Behaviours.Localization;
 using Engine.Common.Components;
 using Engine.Impl.UI;
 using Engine.Impl.UI.Menu.Protagonist.Inventory;
@@ -6,9 +7,6 @@ using Engine.Impl.UI.Menu.Protagonist.Inventory.Container;
 using Engine.Impl.UI.Menu.Protagonist.Inventory.Grid;
 using Engine.Source.Components;
 using Engine.Source.UI.Menu.Protagonist.Inventory.Grid;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UI;
 
 public class ItemsSlidingContainer : UIControl
 {
@@ -34,10 +32,10 @@ public class ItemsSlidingContainer : UIControl
     Dictionary<InventoryContainerUI, IStorageComponent> containers,
     Dictionary<IStorableComponent, StorableUI> storables)
   {
-    foreach (Object itemGroupTitle in this.itemGroupTitles)
+    foreach (Object itemGroupTitle in itemGroupTitles)
       Object.DestroyImmediate(itemGroupTitle);
-    this.itemGroupTitles.Clear();
-    foreach (InventoryContainerUI containerView in this.containerViews)
+    itemGroupTitles.Clear();
+    foreach (InventoryContainerUI containerView in containerViews)
     {
       if (containerView is ComplexInventoryContainerUI)
       {
@@ -50,12 +48,12 @@ public class ItemsSlidingContainer : UIControl
       containers.Remove(containerView);
       Object.DestroyImmediate((Object) containerView.gameObject);
     }
-    this.containerViews.Clear();
-    this.scrollRect.verticalNormalizedPosition = 1f;
-    this.items.Clear();
+    containerViews.Clear();
+    scrollRect.verticalNormalizedPosition = 1f;
+    items.Clear();
   }
 
-  public List<StorableUI> ItemsUI => this.items;
+  public List<StorableUI> ItemsUI => items;
 
   public void CreateSlots(
     List<List<StorableComponent>> itemsList,
@@ -66,10 +64,10 @@ public class ItemsSlidingContainer : UIControl
   {
     for (int index = 0; index < itemsList.Count; ++index)
     {
-      GameObject gameObject = Object.Instantiate<GameObject>(this.groupTitlePrefab, (UnityEngine.Transform) this.ContentArea, false);
+      GameObject gameObject = Object.Instantiate<GameObject>(groupTitlePrefab, (UnityEngine.Transform) ContentArea, false);
       gameObject.GetComponent<Localizer>().Signature = groupSignatures[index];
-      this.itemGroupTitles.Add(gameObject);
-      this.CreateSlots(itemsList[index], storage, containers, storables);
+      itemGroupTitles.Add(gameObject);
+      CreateSlots(itemsList[index], storage, containers, storables);
     }
   }
 
@@ -79,39 +77,39 @@ public class ItemsSlidingContainer : UIControl
     Dictionary<InventoryContainerUI, IStorageComponent> containers,
     Dictionary<IStorableComponent, StorableUI> storables)
   {
-    ComplexInventoryContainerUI key = ComplexInventoryContainerUI.Instantiate(this.cellStyle, this.inventoryContainerPrefab, itemsList, this.Mask);
-    key.transform.SetParent((UnityEngine.Transform) this.ContentArea, false);
-    this.containerViews.Add((InventoryContainerUI) key);
+    ComplexInventoryContainerUI key = ComplexInventoryContainerUI.Instantiate(cellStyle, inventoryContainerPrefab, itemsList, Mask);
+    key.transform.SetParent((UnityEngine.Transform) ContentArea, false);
+    containerViews.Add(key);
     List<StorableUI> collection = new List<StorableUI>();
     foreach (StorableComponent items in itemsList)
     {
-      StorableUI storableUi = StorableUI.Instantiate((IStorableComponent) items, this.inventoryStorablePrefab, this.cellStyle.imageStyle);
-      storableUi.Style = this.cellStyle;
+      StorableUI storableUi = StorableUI.Instantiate(items, inventoryStorablePrefab, cellStyle.imageStyle);
+      storableUi.Style = cellStyle;
       InventoryCellUI cellUi = key.GetCellUi(items.Cell);
       storableUi.transform.SetParent((UnityEngine.Transform) cellUi.Transform, false);
       storableUi.transform.localPosition = (Vector3) Vector2.zero;
-      storables[(IStorableComponent) items] = storableUi;
+      storables[items] = storableUi;
       collection.Add(storableUi);
     }
-    this.items.AddRange((IEnumerable<StorableUI>) collection);
-    containers.Add((InventoryContainerUI) key, (IStorageComponent) storage);
+    this.items.AddRange(collection);
+    containers.Add(key, storage);
   }
 
   public void FillForSelected(int index)
   {
-    float height1 = this.scrollRect.gameObject.GetComponent<RectTransform>().rect.height;
-    float height2 = this.inventoryStorablePrefab.GetComponent<RectTransform>().rect.height;
-    float num = (float) ((double) (index + 1) * (double) height2 * 2.0);
-    Vector2 anchoredPosition = this.ContentArea.anchoredPosition;
-    if ((double) num - (double) anchoredPosition.y > (double) height1)
-      anchoredPosition.y = (double) num + (double) anchoredPosition.y > (double) height1 ? num - height1 : 0.0f;
-    else if ((double) num - (double) height2 * 2.0 - (double) anchoredPosition.y < 0.0)
+    float height1 = scrollRect.gameObject.GetComponent<RectTransform>().rect.height;
+    float height2 = inventoryStorablePrefab.GetComponent<RectTransform>().rect.height;
+    float num = (float) ((index + 1) * (double) height2 * 2.0);
+    Vector2 anchoredPosition = ContentArea.anchoredPosition;
+    if (num - (double) anchoredPosition.y > height1)
+      anchoredPosition.y = num + (double) anchoredPosition.y > height1 ? num - height1 : 0.0f;
+    else if (num - height2 * 2.0 - (double) anchoredPosition.y < 0.0)
       anchoredPosition.y = num - height2 * 2f;
-    this.ContentArea.anchoredPosition = anchoredPosition;
+    ContentArea.anchoredPosition = anchoredPosition;
   }
 
   public void ScrollTo(int index, int storableCount)
   {
-    this.scrollRect.verticalNormalizedPosition = (float) (1.0 - (double) index / (double) (storableCount - 1));
+    scrollRect.verticalNormalizedPosition = (float) (1.0 - index / (double) (storableCount - 1));
   }
 }

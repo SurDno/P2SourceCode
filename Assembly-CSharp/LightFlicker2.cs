@@ -1,9 +1,7 @@
-﻿using UnityEngine;
-
-public class LightFlicker2 : MonoBehaviour
+﻿public class LightFlicker2 : MonoBehaviour
 {
   private static MaterialPropertyBlock propertyBlock;
-  private static int propertyId = 0;
+  private static int propertyId;
   [SerializeField]
   private Light additionalLight;
   [SerializeField]
@@ -21,57 +19,57 @@ public class LightFlicker2 : MonoBehaviour
 
   private void Awake()
   {
-    this.light = this.GetComponent<Light>();
-    if ((Object) this.light != (Object) null)
-      this.baseIntensity = this.light.intensity;
-    if ((Object) this.additionalLight != (Object) null)
-      this.baseAdditionalIntensity = this.additionalLight.intensity;
-    if ((Object) this.bulbObject != (Object) null)
-      this.bulbRenderer = this.bulbObject.GetComponent<Renderer>();
-    if (!((Object) this.bulbRenderer != (Object) null))
+    light = this.GetComponent<Light>();
+    if ((Object) light != (Object) null)
+      baseIntensity = light.intensity;
+    if ((Object) additionalLight != (Object) null)
+      baseAdditionalIntensity = additionalLight.intensity;
+    if ((Object) bulbObject != (Object) null)
+      bulbRenderer = bulbObject.GetComponent<Renderer>();
+    if (!((Object) bulbRenderer != (Object) null))
       return;
-    if (LightFlicker2.propertyId == 0)
-      LightFlicker2.propertyId = Shader.PropertyToID("_EmissionColor");
-    Material[] sharedMaterials = this.bulbRenderer.sharedMaterials;
+    if (propertyId == 0)
+      propertyId = Shader.PropertyToID("_EmissionColor");
+    Material[] sharedMaterials = bulbRenderer.sharedMaterials;
     if (sharedMaterials.Length != 0)
-      this.baseEmissionColors = new Color[sharedMaterials.Length];
+      baseEmissionColors = new Color[sharedMaterials.Length];
     for (int index = 0; index < sharedMaterials.Length; ++index)
     {
       if ((Object) sharedMaterials[index] != (Object) null)
-        this.baseEmissionColors[index] = sharedMaterials[index].GetColor(LightFlicker2.propertyId);
+        baseEmissionColors[index] = sharedMaterials[index].GetColor(propertyId);
     }
   }
 
   private void Update()
   {
-    if ((double) this.flickerFrequency <= 0.0 || (double) Time.time < (double) (this.lastChangeTime + 1f / this.flickerFrequency))
+    if (flickerFrequency <= 0.0 || (double) Time.time < lastChangeTime + 1f / flickerFrequency)
       return;
-    this.lastChangeTime = Time.time;
-    float num = (float) (1.0 - (double) Mathf.PerlinNoise(Random.Range(0.0f, 1000f), Time.time) * (double) this.flickerIntensity);
-    if ((Object) this.light != (Object) null)
-      this.light.intensity = this.baseIntensity * num;
-    if ((Object) this.additionalLight != (Object) null)
-      this.additionalLight.intensity = this.baseAdditionalIntensity * num;
-    if (this.baseEmissionColors == null)
+    lastChangeTime = Time.time;
+    float num = (float) (1.0 - (double) Mathf.PerlinNoise(Random.Range(0.0f, 1000f), Time.time) * flickerIntensity);
+    if ((Object) light != (Object) null)
+      light.intensity = baseIntensity * num;
+    if ((Object) additionalLight != (Object) null)
+      additionalLight.intensity = baseAdditionalIntensity * num;
+    if (baseEmissionColors == null)
       return;
-    if (LightFlicker2.propertyBlock == null)
-      LightFlicker2.propertyBlock = new MaterialPropertyBlock();
-    for (int materialIndex = 0; materialIndex < this.baseEmissionColors.Length; ++materialIndex)
+    if (propertyBlock == null)
+      propertyBlock = new MaterialPropertyBlock();
+    for (int materialIndex = 0; materialIndex < baseEmissionColors.Length; ++materialIndex)
     {
-      LightFlicker2.propertyBlock.SetColor(LightFlicker2.propertyId, this.baseEmissionColors[materialIndex] * num);
-      this.bulbRenderer.SetPropertyBlock(LightFlicker2.propertyBlock, materialIndex);
+      propertyBlock.SetColor(propertyId, baseEmissionColors[materialIndex] * num);
+      bulbRenderer.SetPropertyBlock(propertyBlock, materialIndex);
     }
   }
 
   private void OnDisable()
   {
-    if ((Object) this.light != (Object) null)
-      this.light.intensity = this.baseIntensity;
-    if ((Object) this.additionalLight != (Object) null)
-      this.additionalLight.intensity = this.baseAdditionalIntensity;
-    if (this.baseEmissionColors == null)
+    if ((Object) light != (Object) null)
+      light.intensity = baseIntensity;
+    if ((Object) additionalLight != (Object) null)
+      additionalLight.intensity = baseAdditionalIntensity;
+    if (baseEmissionColors == null)
       return;
-    for (int materialIndex = 0; materialIndex < this.baseEmissionColors.Length; ++materialIndex)
-      this.bulbRenderer.SetPropertyBlock((MaterialPropertyBlock) null, materialIndex);
+    for (int materialIndex = 0; materialIndex < baseEmissionColors.Length; ++materialIndex)
+      bulbRenderer.SetPropertyBlock((MaterialPropertyBlock) null, materialIndex);
   }
 }

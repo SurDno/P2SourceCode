@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace Pathologic.Prototype
 {
@@ -8,7 +7,7 @@ namespace Pathologic.Prototype
   {
     private static Dictionary<int, FightAnimation> _animations = new Dictionary<int, FightAnimation>();
 
-    public static int FightAnimationCount => FightAnimationDatabase._animations.Count;
+    public static int FightAnimationCount => _animations.Count;
 
     static FightAnimationDatabase()
     {
@@ -21,9 +20,8 @@ namespace Pathologic.Prototype
       fightAnimation1.HitTimesB.Add(0.8833333f);
       fightAnimation1.HitTimesB.Add(0.9166667f);
       fightAnimation1.HitTimesB.Add(0.95f);
-      FightAnimationDatabase._animations[0] = fightAnimation1;
-      FightAnimationDatabase._animations[1] = new FightAnimation()
-      {
+      _animations[0] = fightAnimation1;
+      _animations[1] = new FightAnimation {
         SpeedScale = 1.3f,
         MatchTargetTime = 0.3f,
         UnlockTime = 1.16899991f,
@@ -37,20 +35,19 @@ namespace Pathologic.Prototype
       fightAnimation2.AttackPosition = new Vector3(0.0f, 0.0f, 1.1f);
       fightAnimation2.AttackRotation = Quaternion.AngleAxis(180f, Vector3.up);
       fightAnimation2.HitTimesB.Add(0.8333333f);
-      FightAnimationDatabase._animations[2] = fightAnimation2;
+      _animations[2] = fightAnimation2;
       Matrix4x4 m = Matrix4x4.TRS(new Vector3(0.3832948f, 0.0f, 1.722896f), Quaternion.Euler(0.17f, 106.544f, -94.325f), new Vector3(1f, 1f, 1f)) * Matrix4x4.Inverse(Matrix4x4.TRS(new Vector3(0.4054076f, 0.0f, -0.4498747f), Quaternion.Euler(-1.515f, -77.57101f, -101.132f), new Vector3(1f, 1f, 1f)));
-      FightAnimation fightAnimation3 = new FightAnimation()
-      {
+      FightAnimation fightAnimation3 = new FightAnimation {
         SpeedScale = 1f,
         MatchTargetTime = 227f * (float) Math.E / 861f,
         UnlockTime = 0.0f,
-        AttackPosition = FightAnimationDatabase.GetPosition(m),
-        AttackRotation = FightAnimationDatabase.GetRotation(m)
+        AttackPosition = GetPosition(m),
+        AttackRotation = GetRotation(m)
       };
       fightAnimation3.AttackPosition = new Vector3(0.2f, 0.0f, 1.9f);
       fightAnimation3.AttackRotation = Quaternion.AngleAxis(180f, Vector3.up);
       fightAnimation3.HitTimesB.Add(0.8333333f);
-      FightAnimationDatabase._animations[1000] = fightAnimation3;
+      _animations[1000] = fightAnimation3;
     }
 
     public static Vector3 GetScale(Matrix4x4 m)
@@ -81,15 +78,15 @@ namespace Pathologic.Prototype
 
     public static FightAnimation Get(int animationType)
     {
-      return FightAnimationDatabase._animations[animationType];
+      return _animations[animationType];
     }
 
     public static void FillTransforms(GameObject go)
     {
-      foreach (KeyValuePair<int, FightAnimation> animation in FightAnimationDatabase._animations)
+      foreach (KeyValuePair<int, FightAnimation> animation in _animations)
       {
         FightAnimation fightAnimation = animation.Value;
-        GameObject gameObject = new GameObject("AttackTransform" + (object) animation.Key)
+        GameObject gameObject = new GameObject("AttackTransform" + animation.Key)
         {
           transform = {
             parent = go.transform,

@@ -1,13 +1,13 @@
-﻿using InputServices;
+﻿using System;
+using InputServices;
 using SRDebugger.Internal;
 using SRDebugger.UI;
 using SRF;
-using System;
-using UnityEngine;
+using SRF.Service;
 
 namespace SRDebugger.Services.Implementation
 {
-  [SRF.Service.Service(typeof (IDebugPanelService))]
+  [Service(typeof (IDebugPanelService))]
   public class DebugPanelServiceImpl : ScriptableObject, IDebugPanelService
   {
     private bool _cursorWasVisible;
@@ -16,41 +16,41 @@ namespace SRDebugger.Services.Implementation
 
     public event Action<IDebugPanelService, bool> VisibilityChanged;
 
-    public bool IsLoaded => (UnityEngine.Object) this._debugPanelRootObject != (UnityEngine.Object) null;
+    public bool IsLoaded => (UnityEngine.Object) _debugPanelRootObject != (UnityEngine.Object) null;
 
     public bool IsVisible
     {
-      get => this.IsLoaded && this._isVisible;
+      get => IsLoaded && _isVisible;
       set
       {
-        if (this._isVisible == value)
+        if (_isVisible == value)
           return;
         if (value)
         {
-          if (!this.IsLoaded)
-            this.Load();
+          if (!IsLoaded)
+            Load();
           SRDebuggerUtil.EnsureEventSystemExists();
-          this._debugPanelRootObject.CanvasGroup.alpha = 1f;
-          this._debugPanelRootObject.CanvasGroup.interactable = true;
-          this._debugPanelRootObject.CanvasGroup.blocksRaycasts = true;
-          this._cursorWasVisible = CursorService.Instance.Visible;
+          _debugPanelRootObject.CanvasGroup.alpha = 1f;
+          _debugPanelRootObject.CanvasGroup.interactable = true;
+          _debugPanelRootObject.CanvasGroup.blocksRaycasts = true;
+          _cursorWasVisible = CursorService.Instance.Visible;
           CursorService.Instance.Free = CursorService.Instance.Visible = true;
         }
         else
         {
-          if (this.IsLoaded)
+          if (IsLoaded)
           {
-            this._debugPanelRootObject.CanvasGroup.alpha = 0.0f;
-            this._debugPanelRootObject.CanvasGroup.interactable = false;
-            this._debugPanelRootObject.CanvasGroup.blocksRaycasts = false;
+            _debugPanelRootObject.CanvasGroup.alpha = 0.0f;
+            _debugPanelRootObject.CanvasGroup.interactable = false;
+            _debugPanelRootObject.CanvasGroup.blocksRaycasts = false;
           }
-          CursorService.Instance.Free = CursorService.Instance.Visible = this._cursorWasVisible;
+          CursorService.Instance.Free = CursorService.Instance.Visible = _cursorWasVisible;
         }
-        this._isVisible = value;
-        Action<IDebugPanelService, bool> visibilityChanged = this.VisibilityChanged;
+        _isVisible = value;
+        Action<IDebugPanelService, bool> visibilityChanged = VisibilityChanged;
         if (visibilityChanged == null)
           return;
-        visibilityChanged((IDebugPanelService) this, this._isVisible);
+        visibilityChanged(this, _isVisible);
       }
     }
 
@@ -58,25 +58,25 @@ namespace SRDebugger.Services.Implementation
     {
       get
       {
-        return (UnityEngine.Object) this._debugPanelRootObject == (UnityEngine.Object) null ? new DefaultTabs?() : this._debugPanelRootObject.TabController.ActiveTab;
+        return (UnityEngine.Object) _debugPanelRootObject == (UnityEngine.Object) null ? new DefaultTabs?() : _debugPanelRootObject.TabController.ActiveTab;
       }
     }
 
     public void OpenTab(DefaultTabs tab)
     {
-      if (!this.IsVisible)
-        this.IsVisible = true;
-      this._debugPanelRootObject.TabController.OpenTab(tab);
+      if (!IsVisible)
+        IsVisible = true;
+      _debugPanelRootObject.TabController.OpenTab(tab);
     }
 
     public void Unload()
     {
-      if ((UnityEngine.Object) this._debugPanelRootObject == (UnityEngine.Object) null)
+      if ((UnityEngine.Object) _debugPanelRootObject == (UnityEngine.Object) null)
         return;
-      this.IsVisible = false;
-      this._debugPanelRootObject.CachedGameObject.SetActive(false);
-      UnityEngine.Object.Destroy((UnityEngine.Object) this._debugPanelRootObject.CachedGameObject);
-      this._debugPanelRootObject = (DebugPanelRoot) null;
+      IsVisible = false;
+      _debugPanelRootObject.CachedGameObject.SetActive(false);
+      UnityEngine.Object.Destroy((UnityEngine.Object) _debugPanelRootObject.CachedGameObject);
+      _debugPanelRootObject = null;
     }
 
     private void Load()
@@ -88,10 +88,10 @@ namespace SRDebugger.Services.Implementation
       }
       else
       {
-        this._debugPanelRootObject = SRInstantiate.Instantiate<DebugPanelRoot>(prefab);
-        this._debugPanelRootObject.name = "Panel";
-        UnityEngine.Object.DontDestroyOnLoad((UnityEngine.Object) this._debugPanelRootObject);
-        this._debugPanelRootObject.CachedTransform.SetParent(Hierarchy.Get("SRDebugger/UI"), true);
+        _debugPanelRootObject = SRInstantiate.Instantiate<DebugPanelRoot>(prefab);
+        _debugPanelRootObject.name = "Panel";
+        UnityEngine.Object.DontDestroyOnLoad((UnityEngine.Object) _debugPanelRootObject);
+        _debugPanelRootObject.CachedTransform.SetParent(Hierarchy.Get("SRDebugger/UI"), true);
         SRDebuggerUtil.EnsureEventSystemExists();
       }
     }

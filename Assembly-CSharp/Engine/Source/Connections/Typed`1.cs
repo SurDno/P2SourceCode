@@ -1,6 +1,6 @@
-﻿using Engine.Common;
+﻿using System;
+using Engine.Common;
 using Inspectors;
-using System;
 
 namespace Engine.Source.Connections
 {
@@ -9,17 +9,17 @@ namespace Engine.Source.Connections
     private Guid id;
 
     [Inspected]
-    public Guid Id => this.id;
+    public Guid Id => id;
 
     public Typed(Guid id) => this.id = id;
 
     public T Value
     {
-      get => TemplateUtility.GetTemplate<T>(this.Id);
-      set => this.id = (object) value != null ? value.Id : Guid.Empty;
+      get => TemplateUtility.GetTemplate<T>(Id);
+      set => id = value != null ? value.Id : Guid.Empty;
     }
 
-    public override int GetHashCode() => this.id.GetHashCode();
+    public override int GetHashCode() => id.GetHashCode();
 
     public override bool Equals(object a) => a is Typed<T> typed && this == typed;
 

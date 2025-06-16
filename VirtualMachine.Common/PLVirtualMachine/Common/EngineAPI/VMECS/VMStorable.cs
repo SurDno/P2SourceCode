@@ -1,4 +1,6 @@
-﻿using Cofe.Loggers;
+﻿using System;
+using System.Collections.Generic;
+using Cofe.Loggers;
 using Engine.Common;
 using Engine.Common.Components;
 using Engine.Common.Components.Storable;
@@ -6,8 +8,6 @@ using Engine.Common.Services;
 using Engine.Common.Types;
 using PLVirtualMachine.Common.EngineAPI.VMECS.VMAttributes;
 using PLVirtualMachine.Common.VMSpecialAttributes;
-using System;
-using System.Collections.Generic;
 
 namespace PLVirtualMachine.Common.EngineAPI.VMECS
 {
@@ -28,20 +28,20 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
     [Property("Tag", "", true)]
     public string StoreTag
     {
-      get => this.storeTag;
+      get => storeTag;
       set
       {
         if (value == null)
           return;
-        this.storeTag = value;
+        storeTag = value;
       }
     }
 
     [Property("Default stack count", "", true, 1)]
     public int DefaultStackCount
     {
-      get => this.Component.Max;
-      set => this.Component.Max = value;
+      get => Component.Max;
+      set => Component.Max = value;
     }
 
     public static IStorableComponent MakeStorableByTemplate(
@@ -50,14 +50,14 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
     {
       if (template.GetComponent<IStorableComponent>() == null)
       {
-        Logger.AddError(string.Format("Invalid storable object template {0}: there is no storable component!", (object) template.Name));
-        return (IStorableComponent) null;
+        Logger.AddError(string.Format("Invalid storable object template {0}: there is no storable component!", template.Name));
+        return null;
       }
       try
       {
-        if (!VMStorable.StorableTemplateNamesDict.ContainsKey(template.Name))
-          VMStorable.StorableTemplateNamesDict.Add(template.Name, template);
-        IStorableComponent component = EngineAPIManager.Instance.CreateWorldTemplateDynamicChildInstance(template, (VMBaseEntity) null, ServiceCache.Simulation.Storables).Instance.GetComponent<IStorableComponent>();
+        if (!StorableTemplateNamesDict.ContainsKey(template.Name))
+          StorableTemplateNamesDict.Add(template.Name, template);
+        IStorableComponent component = EngineAPIManager.Instance.CreateWorldTemplateDynamicChildInstance(template, null, ServiceCache.Simulation.Storables).Instance.GetComponent<IStorableComponent>();
         Invoice invoice;
         invoice.SellPrice = 0.0f;
         invoice.BuyPrice = VMMarket.DEFAULT_ITEM_PRICE;
@@ -66,9 +66,9 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
       }
       catch (Exception ex)
       {
-        Logger.AddError(string.Format("Set storable {0} market data error: {1}", (object) template.Name, (object) ex));
+        Logger.AddError(string.Format("Set storable {0} market data error: {1}", template.Name, ex));
       }
-      return (IStorableComponent) null;
+      return null;
     }
 
     public static void MakeStorableByInstance(
@@ -78,25 +78,25 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
     {
       IEntity owner = storable.Owner;
       if (template.GetComponent<IStorableComponent>() == null)
-        Logger.AddError(string.Format("Invalid storable object template {0}: there is no storable component!", (object) template.Name));
+        Logger.AddError(string.Format("Invalid storable object template {0}: there is no storable component!", template.Name));
       else
         EngineAPIManager.Instance.CreateWorldTemplateDynamicChildInstance(template, owner);
     }
 
     public static IEntity GetEngTemplateByStorableName(string storableName)
     {
-      return VMStorable.StorableTemplateNamesDict.ContainsKey(storableName) ? VMStorable.StorableTemplateNamesDict[storableName] : (IEntity) null;
+      return StorableTemplateNamesDict.ContainsKey(storableName) ? StorableTemplateNamesDict[storableName] : null;
     }
 
     [Property("Title", "", true)]
     [SpecialProperty(ESpecialPropertyName.SPN_STORABLE_TITLE)]
     public ITextRef Title
     {
-      get => this.objectTitle;
+      get => objectTitle;
       set
       {
-        this.objectTitle = value;
-        this.Component.Title = EngineAPIManager.CreateEngineTextInstance(this.objectTitle);
+        objectTitle = value;
+        Component.Title = EngineAPIManager.CreateEngineTextInstance(objectTitle);
       }
     }
 
@@ -104,11 +104,11 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
     [SpecialProperty(ESpecialPropertyName.SPN_STORABLE_TOOLTIP)]
     public ITextRef Tooltip
     {
-      get => this.objectTooltip;
+      get => objectTooltip;
       set
       {
-        this.objectTooltip = value;
-        this.Component.Tooltip = EngineAPIManager.CreateEngineTextInstance(this.objectTooltip);
+        objectTooltip = value;
+        Component.Tooltip = EngineAPIManager.CreateEngineTextInstance(objectTooltip);
       }
     }
 
@@ -116,11 +116,11 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
     [SpecialProperty(ESpecialPropertyName.SPN_STORABLE_DESCRIPTION)]
     public ITextRef Description
     {
-      get => this.objectDescription;
+      get => objectDescription;
       set
       {
-        this.objectDescription = value;
-        this.Component.Description = EngineAPIManager.CreateEngineTextInstance(this.objectDescription);
+        objectDescription = value;
+        Component.Description = EngineAPIManager.CreateEngineTextInstance(objectDescription);
       }
     }
 
@@ -128,11 +128,11 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
     [SpecialProperty(ESpecialPropertyName.SPN_STORABLE_SPECIALDESCRIPTION)]
     public ITextRef SpecialDescription
     {
-      get => this.objectSpecialDescription;
+      get => objectSpecialDescription;
       set
       {
-        this.objectSpecialDescription = value;
-        this.Component.SpecialDescription = EngineAPIManager.CreateEngineTextInstance(this.objectSpecialDescription);
+        objectSpecialDescription = value;
+        Component.SpecialDescription = EngineAPIManager.CreateEngineTextInstance(objectSpecialDescription);
       }
     }
 
@@ -158,6 +158,6 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
       }
     }
 
-    public static void ClearAll() => VMStorable.StorableTemplateNamesDict.Clear();
+    public static void ClearAll() => StorableTemplateNamesDict.Clear();
   }
 }

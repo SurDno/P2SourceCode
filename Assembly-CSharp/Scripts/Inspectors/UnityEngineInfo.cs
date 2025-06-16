@@ -10,9 +10,9 @@ namespace Scripts.Inspectors
     {
       get
       {
-        if (UnityEngineInfo.instance == null)
-          UnityEngineInfo.instance = new UnityEngineInfo();
-        return UnityEngineInfo.instance;
+        if (instance == null)
+          instance = new UnityEngineInfo();
+        return instance;
       }
     }
 

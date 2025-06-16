@@ -15,7 +15,7 @@ namespace Engine.Source.Components
       if (interactable == null || interactable.Owner == null)
         return false;
       if (item.Type == InteractType.BreakPicklock)
-        return !PlayerInteractableComponentUtility.IsFree(interactable.Owner);
+        return !IsFree(interactable.Owner);
       if (item.Type == InteractType.Autopsy)
       {
         IEntity player = ServiceLocator.GetService<ISimulation>().Player;
@@ -45,7 +45,7 @@ namespace Engine.Source.Components
       }
       if (!flag)
         return component1.IsCrime(ActionEnum.Theft, interactable.Owner);
-      return PlayerInteractableComponentUtility.IsDead(interactable.Owner) ? component1.IsCrime(ActionEnum.LootDeadCharacter, interactable.Owner) : component1.IsCrime(ActionEnum.TakeItemsFromSurrender, interactable.Owner);
+      return IsDead(interactable.Owner) ? component1.IsCrime(ActionEnum.LootDeadCharacter, interactable.Owner) : component1.IsCrime(ActionEnum.TakeItemsFromSurrender, interactable.Owner);
     }
 
     private static bool IsFree(IEntity entity)

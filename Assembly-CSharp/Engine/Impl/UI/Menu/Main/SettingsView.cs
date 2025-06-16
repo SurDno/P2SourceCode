@@ -1,12 +1,8 @@
-﻿using Engine.Common.Services;
+﻿using System.Collections;
+using System.Collections.Generic;
+using Engine.Common.Services;
 using Engine.Source.Services.Inputs;
 using InputServices;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.Events;
-using UnityEngine.UI;
 
 namespace Engine.Impl.UI.Menu.Main
 {
@@ -25,51 +21,51 @@ namespace Engine.Impl.UI.Menu.Main
     protected BoolSettingsValueView boolValueViewPrefab;
     [SerializeField]
     private Button buttonReset;
-    private ISettingEntity currentEntity = (ISettingEntity) null;
-    private int currentIndex = 0;
+    private ISettingEntity currentEntity;
+    private int currentIndex;
     protected LayoutContainer layout;
     private Coroutine scrollCoroutine;
     private Coroutine changingCoroutine;
 
     protected virtual void Awake()
     {
-      SettingsMenuHelper.Instatnce.OnStateSelected += new Action<bool>(this.OnStateSelected);
-      this.buttonReset?.onClick.AddListener(new UnityAction(this.OnButtonReset));
+      SettingsMenuHelper.Instatnce.OnStateSelected += OnStateSelected;
+      buttonReset?.onClick.AddListener(new UnityAction(OnButtonReset));
     }
 
     protected virtual void OnEnable()
     {
-      SettingsView.Current = this;
-      InputService.Instance.onJoystickUsedChanged += new Action<bool>(this.OnJoystick);
-      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.LStickDown, new GameActionHandle(this.OnNavigate), true);
-      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.LStickUp, new GameActionHandle(this.OnNavigate), true);
-      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.LStickLeft, new GameActionHandle(this.OnValueChange), true);
-      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.LStickRight, new GameActionHandle(this.OnValueChange), true);
-      this.OnJoystick(InputService.Instance.JoystickUsed);
+      Current = this;
+      InputService.Instance.onJoystickUsedChanged += OnJoystick;
+      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.LStickDown, OnNavigate, true);
+      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.LStickUp, OnNavigate, true);
+      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.LStickLeft, OnValueChange, true);
+      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.LStickRight, OnValueChange, true);
+      OnJoystick(InputService.Instance.JoystickUsed);
     }
 
     protected virtual bool OnResetGameAction(GameActionType type, bool down)
     {
       if (down)
-        this.OnButtonReset();
+        OnButtonReset();
       return down;
     }
 
     private bool OnValueChange(GameActionType type, bool down)
     {
-      if (this.changingCoroutine != null)
-        this.StopCoroutine(this.changingCoroutine);
+      if (changingCoroutine != null)
+        this.StopCoroutine(changingCoroutine);
       if (down)
       {
         switch (type)
         {
           case GameActionType.LStickLeft:
-            this.currentEntity?.DecrementValue();
-            this.changingCoroutine = this.StartCoroutine(this.ChangingCoroutine(true));
+            currentEntity?.DecrementValue();
+            changingCoroutine = this.StartCoroutine(ChangingCoroutine(true));
             break;
           case GameActionType.LStickRight:
-            this.currentEntity?.IncrementValue();
-            this.changingCoroutine = this.StartCoroutine(this.ChangingCoroutine(false));
+            currentEntity?.IncrementValue();
+            changingCoroutine = this.StartCoroutine(ChangingCoroutine(false));
             break;
         }
       }
@@ -78,19 +74,19 @@ namespace Engine.Impl.UI.Menu.Main
 
     private bool OnNavigate(GameActionType type, bool down)
     {
-      if (this.scrollCoroutine != null)
-        this.StopCoroutine(this.scrollCoroutine);
+      if (scrollCoroutine != null)
+        this.StopCoroutine(scrollCoroutine);
       if (down)
       {
         switch (type)
         {
           case GameActionType.LStickUp:
-            this.SelectItem(this.currentIndex - 1);
-            this.scrollCoroutine = this.StartCoroutine(this.ScrollCoroutine(true));
+            SelectItem(currentIndex - 1);
+            scrollCoroutine = this.StartCoroutine(ScrollCoroutine(true));
             break;
           case GameActionType.LStickDown:
-            this.SelectItem(this.currentIndex + 1);
-            this.scrollCoroutine = this.StartCoroutine(this.ScrollCoroutine(false));
+            SelectItem(currentIndex + 1);
+            scrollCoroutine = this.StartCoroutine(ScrollCoroutine(false));
             break;
         }
       }
@@ -100,71 +96,71 @@ namespace Engine.Impl.UI.Menu.Main
     protected virtual void OnJoystick(bool isUsed)
     {
       if (isUsed)
-        ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Context, new GameActionHandle(this.OnResetGameAction));
+        ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Context, OnResetGameAction);
       else
-        ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Context, new GameActionHandle(this.OnResetGameAction));
-      if (this.currentEntity != null)
-        this.currentEntity.Selected = isUsed;
+        ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Context, OnResetGameAction);
+      if (currentEntity != null)
+        currentEntity.Selected = isUsed;
       if (isUsed)
         return;
-      this.OnStateSelected(true);
+      OnStateSelected(true);
     }
 
     protected virtual void OnDestroy()
     {
-      SettingsMenuHelper.Instatnce.OnStateSelected -= new Action<bool>(this.OnStateSelected);
+      SettingsMenuHelper.Instatnce.OnStateSelected -= OnStateSelected;
     }
 
     protected virtual void OnDisable()
     {
-      InputService.Instance.onJoystickUsedChanged -= new Action<bool>(this.OnJoystick);
-      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.LStickDown, new GameActionHandle(this.OnNavigate));
-      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.LStickUp, new GameActionHandle(this.OnNavigate));
-      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.LStickLeft, new GameActionHandle(this.OnValueChange));
-      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.LStickRight, new GameActionHandle(this.OnValueChange));
-      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Context, new GameActionHandle(this.OnResetGameAction));
+      InputService.Instance.onJoystickUsedChanged -= OnJoystick;
+      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.LStickDown, OnNavigate);
+      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.LStickUp, OnNavigate);
+      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.LStickLeft, OnValueChange);
+      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.LStickRight, OnValueChange);
+      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Context, OnResetGameAction);
     }
 
     private void OnStateSelected(bool isSelected)
     {
       isSelected = isSelected || !InputService.Instance.JoystickUsed;
       this.gameObject.SetActive(isSelected);
-      this.SelectItem(0);
-      if (this.currentEntity == null)
+      SelectItem(0);
+      if (currentEntity == null)
         return;
-      this.currentEntity.Selected = InputService.Instance.JoystickUsed;
+      currentEntity.Selected = InputService.Instance.JoystickUsed;
     }
 
     protected bool SelectItem(int index)
     {
-      List<ISettingEntity> all = new List<ISettingEntity>((IEnumerable<ISettingEntity>) this.layout.transform.GetComponentsInChildren<ISettingEntity>()).FindAll((Predicate<ISettingEntity>) (e => e.IsActive() && e.Interactable));
+      List<ISettingEntity> all = new List<ISettingEntity>((IEnumerable<ISettingEntity>) layout.transform.GetComponentsInChildren<ISettingEntity>()).FindAll(e => e.IsActive() && e.Interactable);
       if (all.Count == 0)
         return false;
-      this.currentIndex = index >= all.Count ? 0 : (index < 0 ? all.Count - 1 : index);
-      if (this.currentEntity != null)
+      currentIndex = index >= all.Count ? 0 : (index < 0 ? all.Count - 1 : index);
+      if (currentEntity != null)
       {
         if (InputService.Instance.JoystickUsed)
-          this.currentEntity.OnDeSelect();
-        this.currentEntity.Selected = false;
+          currentEntity.OnDeSelect();
+        currentEntity.Selected = false;
       }
-      this.currentEntity = all[this.currentIndex];
-      this.currentEntity.Selected = true;
+      currentEntity = all[currentIndex];
+      currentEntity.Selected = true;
       if (InputService.Instance.JoystickUsed)
-        this.currentEntity.OnSelect();
-      this.FillForSelected();
-      return this.currentEntity.Interactable;
+        currentEntity.OnSelect();
+      FillForSelected();
+      return currentEntity.Interactable;
     }
 
     public void FillForSelected()
     {
-      float height = this.layout.Content.parent.parent.GetComponent<RectTransform>().rect.height;
+      float height = layout.Content.parent.parent.GetComponent<RectTransform>().rect.height;
       float num1 = 84f;
-      float num2 = -((Component) this.currentEntity).GetComponent<RectTransform>().anchoredPosition.y + num1;
-      RectTransform component = this.layout.Content.parent.GetComponent<RectTransform>();
+      float num2 = -((Component) currentEntity).GetComponent<RectTransform>().anchoredPosition.y + num1;
+      RectTransform component = layout.Content.parent.GetComponent<RectTransform>();
       Vector2 anchoredPosition = component.anchoredPosition;
-      if ((double) num2 - (double) anchoredPosition.y > (double) height)
-        anchoredPosition.y = (double) num2 + (double) anchoredPosition.y > (double) height ? num2 - height : 0.0f;
-      else if ((double) num2 - (double) num1 * 2.0 - (double) anchoredPosition.y < 0.0)
+      if (num2 - (double) anchoredPosition.y > height)
+        anchoredPosition.y = num2 + (double) anchoredPosition.y > height ? num2 - height : 0.0f;
+      else if (num2 - num1 * 2.0 - (double) anchoredPosition.y < 0.0)
         anchoredPosition.y = num2 - num1 * 2f;
       component.anchoredPosition = anchoredPosition;
     }
@@ -178,8 +174,8 @@ namespace Engine.Impl.UI.Menu.Main
       yield return (object) new WaitForSeconds(0.5f);
       while (true)
       {
-        int sellected = !isUp ? this.currentIndex + 1 : this.currentIndex - 1;
-        this.SelectItem(sellected);
+        int sellected = !isUp ? currentIndex + 1 : currentIndex - 1;
+        SelectItem(sellected);
         yield return (object) new WaitForSeconds(0.05f);
       }
     }
@@ -190,9 +186,9 @@ namespace Engine.Impl.UI.Menu.Main
       while (true)
       {
         if (isDecrement)
-          this.currentEntity?.DecrementValue();
+          currentEntity?.DecrementValue();
         else
-          this.currentEntity?.IncrementValue();
+          currentEntity?.IncrementValue();
         yield return (object) new WaitForSeconds(0.05f);
       }
     }

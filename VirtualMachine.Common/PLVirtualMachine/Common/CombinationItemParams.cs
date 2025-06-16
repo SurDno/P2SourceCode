@@ -1,10 +1,10 @@
-﻿using Cofe.Loggers;
+﻿using System;
+using System.Xml;
+using Cofe.Loggers;
 using Cofe.Serializations.Data;
 using PLVirtualMachine.Common.Data;
 using PLVirtualMachine.Common.EngineAPI;
 using PLVirtualMachine.Common.Serialization;
-using System;
-using System.Xml;
 
 namespace PLVirtualMachine.Common
 {
@@ -22,20 +22,20 @@ namespace PLVirtualMachine.Common
 
     public CombinationItemParams(CombinationItemParams combItemParams)
     {
-      this.minDurablityProc = combItemParams.minDurablityProc;
-      this.maxDurablityProc = combItemParams.maxDurablityProc;
+      minDurablityProc = combItemParams.minDurablityProc;
+      maxDurablityProc = combItemParams.maxDurablityProc;
     }
 
-    public int MinDurablityProc => this.minDurablityProc;
+    public int MinDurablityProc => minDurablityProc;
 
-    public int MaxDurablityProc => this.maxDurablityProc;
+    public int MaxDurablityProc => maxDurablityProc;
 
     public void Read(string data)
     {
       switch (data)
       {
         case null:
-          Logger.AddError(string.Format("Attempt to read null combination item params data at {0}", (object) EngineAPIManager.Instance.CurrentFSMStateInfo));
+          Logger.AddError(string.Format("Attempt to read null combination item params data at {0}", EngineAPIManager.Instance.CurrentFSMStateInfo));
           break;
         case "":
           break;
@@ -47,13 +47,13 @@ namespace PLVirtualMachine.Common
           string[] strArray = data.Split(separator, StringSplitOptions.RemoveEmptyEntries);
           if (strArray.Length != 0)
           {
-            this.minDurablityProc = StringUtility.ToInt32(strArray[0]);
+            minDurablityProc = StringUtility.ToInt32(strArray[0]);
             if (strArray.Length <= 1)
               break;
-            this.maxDurablityProc = StringUtility.ToInt32(strArray[1]);
+            maxDurablityProc = StringUtility.ToInt32(strArray[1]);
             break;
           }
-          Logger.AddError(string.Format("Invalid combination item params data: {0}", (object) data));
+          Logger.AddError(string.Format("Invalid combination item params data: {0}", data));
           break;
       }
     }
@@ -66,8 +66,8 @@ namespace PLVirtualMachine.Common
 
     public void StateSave(IDataWriter writer)
     {
-      SaveManagerUtility.Save(writer, "MinDurablityProc", this.minDurablityProc);
-      SaveManagerUtility.Save(writer, "MaxDurablityProc", this.maxDurablityProc);
+      SaveManagerUtility.Save(writer, "MinDurablityProc", minDurablityProc);
+      SaveManagerUtility.Save(writer, "MaxDurablityProc", maxDurablityProc);
     }
 
     public void LoadFromXML(XmlElement xmlNode)
@@ -75,9 +75,9 @@ namespace PLVirtualMachine.Common
       foreach (XmlElement childNode in xmlNode.ChildNodes)
       {
         if (childNode.Name == "MinDurablityProc")
-          this.minDurablityProc = StringUtility.ToInt32(childNode.InnerText);
+          minDurablityProc = StringUtility.ToInt32(childNode.InnerText);
         else if (childNode.Name == "MaxDurablityProc")
-          this.maxDurablityProc = StringUtility.ToInt32(childNode.InnerText);
+          maxDurablityProc = StringUtility.ToInt32(childNode.InnerText);
       }
     }
   }

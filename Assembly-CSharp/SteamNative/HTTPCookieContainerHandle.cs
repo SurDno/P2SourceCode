@@ -6,8 +6,7 @@
 
     public static implicit operator HTTPCookieContainerHandle(uint value)
     {
-      return new HTTPCookieContainerHandle()
-      {
+      return new HTTPCookieContainerHandle {
         Value = value
       };
     }

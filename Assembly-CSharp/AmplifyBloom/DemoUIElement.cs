@@ -1,19 +1,16 @@
-﻿using UnityEngine;
-using UnityEngine.UI;
-
-namespace AmplifyBloom
+﻿namespace AmplifyBloom
 {
   public class DemoUIElement : MonoBehaviour
   {
-    private bool m_isSelected = false;
+    private bool m_isSelected;
     private Text m_text;
     private Color m_selectedColor = new Color(1f, 1f, 1f);
     private Color m_unselectedColor;
 
     public void Init()
     {
-      this.m_text = this.transform.GetComponentInChildren<Text>();
-      this.m_unselectedColor = this.m_text.color;
+      m_text = this.transform.GetComponentInChildren<Text>();
+      m_unselectedColor = m_text.color;
     }
 
     public virtual void DoAction(DemoUIElementAction action, params object[] vars)
@@ -26,11 +23,11 @@ namespace AmplifyBloom
 
     public bool Select
     {
-      get => this.m_isSelected;
+      get => m_isSelected;
       set
       {
-        this.m_isSelected = value;
-        this.m_text.color = value ? this.m_selectedColor : this.m_unselectedColor;
+        m_isSelected = value;
+        m_text.color = value ? m_selectedColor : m_unselectedColor;
       }
     }
   }

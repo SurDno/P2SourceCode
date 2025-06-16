@@ -1,11 +1,10 @@
-﻿using Engine.Common.Components;
+﻿using System.Collections.Generic;
+using Engine.Common.Components;
 using Engine.Impl.UI.Menu.Protagonist.Inventory.Grid;
 using Engine.Source.Components;
 using Engine.Source.Inventory;
 using Engine.Source.UI.Menu.Protagonist.Inventory;
 using Engine.Source.UI.Menu.Protagonist.Inventory.Grid;
-using System.Collections.Generic;
-using UnityEngine;
 
 namespace Engine.Impl.UI.Menu.Protagonist.Inventory.Container
 {
@@ -18,7 +17,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory.Container
 
     public IEnumerable<IStorableComponent> Items
     {
-      get => (IEnumerable<IStorableComponent>) this.items.Values;
+      get => items.Values;
     }
 
     public static ComplexInventoryContainerUI Instantiate(
@@ -30,7 +29,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory.Container
       GameObject gameObject = Object.Instantiate<GameObject>(prefab);
       gameObject.name = "[Container] Complex";
       ComplexInventoryContainerUI component1 = gameObject.GetComponent<ComplexInventoryContainerUI>();
-      component1.content = (UIControl) component1;
+      component1.content = component1;
       component1.Mask = mask;
       int num = 0;
       foreach (StorableComponent storableComponent in items)
@@ -49,7 +48,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory.Container
       {
         RectTransform component2 = Object.Instantiate<GameObject>(style.OutlinePrefab).GetComponent<RectTransform>();
         component2.sizeDelta = new Vector2(outerSize.x + style.OutlineOffset.x * 2f, outerSize.y + style.OutlineOffset.y * 2f);
-        InventoryUtility.GetCenter((UIControl) component1);
+        InventoryUtility.GetCenter(component1);
         component2.SetParent(component1.grid.transform, false);
       }
       if ((Object) component1.button != (Object) null)
@@ -59,12 +58,12 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory.Container
 
     public InventoryCellUI GetCellUi(Cell cell)
     {
-      return !this.cells.ContainsKey(cell) ? (InventoryCellUI) null : this.cells[cell];
+      return !cells.ContainsKey(cell) ? null : cells[cell];
     }
 
     public IStorableComponent GetCellItem(Cell cell)
     {
-      return !this.items.ContainsKey(cell) || this.items[cell].Cell != cell ? (IStorableComponent) null : (IStorableComponent) this.items[cell];
+      return !items.ContainsKey(cell) || items[cell].Cell != cell ? null : (IStorableComponent) items[cell];
     }
   }
 }

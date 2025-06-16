@@ -1,5 +1,3 @@
-﻿using UnityEngine;
-
-public class TerrainMagnet : MonoBehaviour
+﻿public class TerrainMagnet : MonoBehaviour
 {
 }

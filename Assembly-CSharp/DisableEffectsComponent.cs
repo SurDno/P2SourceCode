@@ -1,7 +1,6 @@
 ﻿using Engine.Common;
 using Engine.Source.Commons;
 using Engine.Source.Components;
-using UnityEngine;
 
 internal class DisableEffectsComponent : MonoBehaviour, IEntityAttachable
 {

@@ -10,7 +10,7 @@ namespace Engine.Source.UI.Menu.Main
   {
     protected override void RegisterLayer()
     {
-      this.RegisterLayer<IStartDifficultyPresetWindow>((IStartDifficultyPresetWindow) this);
+      RegisterLayer((IStartDifficultyPresetWindow) this);
     }
   }
 }

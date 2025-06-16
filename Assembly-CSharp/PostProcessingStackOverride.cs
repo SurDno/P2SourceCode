@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEngine;
 using UnityEngine.PostProcessing;
 
 public class PostProcessingStackOverride : MonoBehaviour
@@ -8,21 +7,21 @@ public class PostProcessingStackOverride : MonoBehaviour
   private PostProcessingStackOverride nestedOverride;
   [Space]
   [SerializeField]
-  private PostProcessingStackOverride.AntialiasingOverride antialiasing;
+  private AntialiasingOverride antialiasing;
   [SerializeField]
-  private PostProcessingStackOverride.AmbientOcclusionOverride ambientOcclusion;
+  private AmbientOcclusionOverride ambientOcclusion;
   [SerializeField]
-  private PostProcessingStackOverride.ScreenSpaceReflectionOverride screenSpaceReflection;
+  private ScreenSpaceReflectionOverride screenSpaceReflection;
   [SerializeField]
-  private PostProcessingStackOverride.DepthOfFieldOverride depthOfField;
+  private DepthOfFieldOverride depthOfField;
   [SerializeField]
-  private PostProcessingStackOverride.MotionBlurOverride motionBlur;
+  private MotionBlurOverride motionBlur;
   [SerializeField]
-  private PostProcessingStackOverride.ColorGradingOverride colorGrading;
+  private ColorGradingOverride colorGrading;
   [SerializeField]
-  private PostProcessingStackOverride.ChromaticAberrationOverride chromaticAberration;
+  private ChromaticAberrationOverride chromaticAberration;
   [SerializeField]
-  private PostProcessingStackOverride.VignetteOverride vignette;
+  private VignetteOverride vignette;
   private AntialiasingModel antialiasingModel;
   private AmbientOcclusionModel ambientOcclusionModel;
   private ScreenSpaceReflectionModel screenSpaceReflectionModel;
@@ -38,30 +37,30 @@ public class PostProcessingStackOverride : MonoBehaviour
     set => this.nestedOverride = value;
   }
 
-  public PostProcessingStackOverride.AntialiasingOverride Antialiasing => this.antialiasing;
+  public AntialiasingOverride Antialiasing => this.antialiasing;
 
-  public PostProcessingStackOverride.AmbientOcclusionOverride AmbientOcclusion
+  public AmbientOcclusionOverride AmbientOcclusion
   {
     get => this.ambientOcclusion;
   }
 
-  public PostProcessingStackOverride.ScreenSpaceReflectionOverride ScreenSpaceReflection
+  public ScreenSpaceReflectionOverride ScreenSpaceReflection
   {
     get => this.screenSpaceReflection;
   }
 
-  public PostProcessingStackOverride.DepthOfFieldOverride DepthOfField => this.depthOfField;
+  public DepthOfFieldOverride DepthOfField => this.depthOfField;
 
-  public PostProcessingStackOverride.MotionBlurOverride MotionBlur => this.motionBlur;
+  public MotionBlurOverride MotionBlur => this.motionBlur;
 
-  public PostProcessingStackOverride.ColorGradingOverride ColorGrading => this.colorGrading;
+  public ColorGradingOverride ColorGrading => this.colorGrading;
 
-  public PostProcessingStackOverride.ChromaticAberrationOverride ChromaticAberration
+  public ChromaticAberrationOverride ChromaticAberration
   {
     get => this.chromaticAberration;
   }
 
-  public PostProcessingStackOverride.VignetteOverride Vignette => this.vignette;
+  public VignetteOverride Vignette => this.vignette;
 
   public void ApplyTo(PostProcessingProfile source, PostProcessingProfile target)
   {
@@ -106,7 +105,7 @@ public class PostProcessingStackOverride : MonoBehaviour
   }
 
   [Serializable]
-  public class AntialiasingOverride : PostProcessingStackOverride.ModelOverride<AntialiasingModel>
+  public class AntialiasingOverride : ModelOverride<AntialiasingModel>
   {
     protected override void ApplySettings(AntialiasingModel source, AntialiasingModel target)
     {
@@ -116,7 +115,7 @@ public class PostProcessingStackOverride : MonoBehaviour
 
   [Serializable]
   public class AmbientOcclusionOverride : 
-    PostProcessingStackOverride.ModelOverride<AmbientOcclusionModel>
+    ModelOverride<AmbientOcclusionModel>
   {
     protected override void ApplySettings(
       AmbientOcclusionModel source,
@@ -128,7 +127,7 @@ public class PostProcessingStackOverride : MonoBehaviour
 
   [Serializable]
   public class ScreenSpaceReflectionOverride : 
-    PostProcessingStackOverride.ModelOverride<ScreenSpaceReflectionModel>
+    ModelOverride<ScreenSpaceReflectionModel>
   {
     protected override void ApplySettings(
       ScreenSpaceReflectionModel source,
@@ -139,7 +138,7 @@ public class PostProcessingStackOverride : MonoBehaviour
   }
 
   [Serializable]
-  public class DepthOfFieldOverride : PostProcessingStackOverride.ModelOverride<DepthOfFieldModel>
+  public class DepthOfFieldOverride : ModelOverride<DepthOfFieldModel>
   {
     [UnityEngine.Min(0.1f)]
     [Tooltip("Distance to the point of focus.")]
@@ -167,7 +166,7 @@ public class PostProcessingStackOverride : MonoBehaviour
   }
 
   [Serializable]
-  public class MotionBlurOverride : PostProcessingStackOverride.ModelOverride<MotionBlurModel>
+  public class MotionBlurOverride : ModelOverride<MotionBlurModel>
   {
     [Range(0.0f, 360f)]
     [Tooltip("The angle of rotary shutter relative to 30 fps. Larger values give longer exposure.")]
@@ -184,7 +183,7 @@ public class PostProcessingStackOverride : MonoBehaviour
   }
 
   [Serializable]
-  public class ColorGradingOverride : PostProcessingStackOverride.ModelOverride<ColorGradingModel>
+  public class ColorGradingOverride : ModelOverride<ColorGradingModel>
   {
     public ColorGradingModel.BasicSettings Basic = ColorGradingModel.Settings.defaultSettings.basic;
     public ColorGradingModel.ChannelMixerSettings ChannelMixer = ColorGradingModel.Settings.defaultSettings.channelMixer;
@@ -202,7 +201,7 @@ public class PostProcessingStackOverride : MonoBehaviour
 
   [Serializable]
   public class ChromaticAberrationOverride : 
-    PostProcessingStackOverride.ModelOverride<ChromaticAberrationModel>
+    ModelOverride<ChromaticAberrationModel>
   {
     [Range(0.0f, 1f)]
     [Tooltip("Amount of tangential distortion.")]
@@ -221,7 +220,7 @@ public class PostProcessingStackOverride : MonoBehaviour
   }
 
   [Serializable]
-  public class VignetteOverride : PostProcessingStackOverride.ModelOverride<VignetteModel>
+  public class VignetteOverride : ModelOverride<VignetteModel>
   {
     [ColorUsage(false)]
     [Tooltip("Vignette color. Use the alpha channel for transparency.")]

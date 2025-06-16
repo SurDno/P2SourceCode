@@ -1,4 +1,5 @@
-﻿using Engine.Common;
+﻿using System;
+using Engine.Common;
 using Engine.Common.Components;
 using Engine.Common.Components.AttackerPlayer;
 using Engine.Common.Components.Interactable;
@@ -17,8 +18,6 @@ using Engine.Source.UI;
 using Engine.Source.Utility;
 using InputServices;
 using Inspectors;
-using System;
-using UnityEngine;
 
 namespace Engine.Source.Components
 {
@@ -58,55 +57,55 @@ namespace Engine.Source.Components
     public event Action<WeaponKind, bool> OnWeaponEnableChanged;
 
     [Inspected]
-    public IParameterValue<bool> IsFighting { get; } = (IParameterValue<bool>) new ParameterValue<bool>();
+    public IParameterValue<bool> IsFighting { get; } = new ParameterValue<bool>();
 
     [Inspected]
-    public IParameterValue<bool> IsStelth { get; } = (IParameterValue<bool>) new ParameterValue<bool>();
+    public IParameterValue<bool> IsStelth { get; } = new ParameterValue<bool>();
 
     [Inspected]
-    public IParameterValue<bool> IsRun { get; } = (IParameterValue<bool>) new ParameterValue<bool>();
+    public IParameterValue<bool> IsRun { get; } = new ParameterValue<bool>();
 
     [Inspected]
-    public IParameterValue<bool> IsWalk { get; } = (IParameterValue<bool>) new ParameterValue<bool>();
+    public IParameterValue<bool> IsWalk { get; } = new ParameterValue<bool>();
 
     [Inspected]
-    public IParameterValue<bool> IsFlashlight { get; } = (IParameterValue<bool>) new ParameterValue<bool>();
+    public IParameterValue<bool> IsFlashlight { get; } = new ParameterValue<bool>();
 
     [Inspected]
-    public IParameterValue<float> WalkModifier { get; } = (IParameterValue<float>) new ParameterValue<float>();
+    public IParameterValue<float> WalkModifier { get; } = new ParameterValue<float>();
 
     [Inspected]
-    public IParameterValue<bool> WalkBlock { get; } = (IParameterValue<bool>) new ParameterValue<bool>();
+    public IParameterValue<bool> WalkBlock { get; } = new ParameterValue<bool>();
 
     [Inspected]
-    public IParameterValue<float> RunModifier { get; } = (IParameterValue<float>) new ParameterValue<float>();
+    public IParameterValue<float> RunModifier { get; } = new ParameterValue<float>();
 
     [Inspected]
     public bool IsJump { get; set; }
 
     [Inspected]
-    public bool IsForward => (double) this.ForwardValue != 0.0;
+    public bool IsForward => ForwardValue != 0.0;
 
     [Inspected]
-    public bool IsBackward => (double) this.BackwardValue != 0.0;
+    public bool IsBackward => BackwardValue != 0.0;
 
     [Inspected]
-    public bool IsLeft => (double) this.LeftValue != 0.0;
+    public bool IsLeft => LeftValue != 0.0;
 
     [Inspected]
-    public bool IsRight => (double) this.RightValue != 0.0;
+    public bool IsRight => RightValue != 0.0;
 
     [Inspected]
-    public float ForwardValue => this.forward ? 1f : this.forwardValue;
+    public float ForwardValue => forward ? 1f : forwardValue;
 
     [Inspected]
-    public float BackwardValue => this.backward ? 1f : this.backwardValue;
+    public float BackwardValue => backward ? 1f : backwardValue;
 
     [Inspected]
-    public float LeftValue => this.left ? 1f : this.leftValue;
+    public float LeftValue => left ? 1f : leftValue;
 
     [Inspected]
-    public float RightValue => this.right ? 1f : this.rightValue;
+    public float RightValue => right ? 1f : rightValue;
 
     [Inspected]
     public Vector3 PushVelocity { get; set; }
@@ -114,56 +113,56 @@ namespace Engine.Source.Components
     public override void OnAdded()
     {
       base.OnAdded();
-      this.IsFighting.Set<bool>(this.parameters.GetByName<bool>(ParameterNameEnum.IsFighting));
-      this.IsStelth.Set<bool>(this.parameters.GetByName<bool>(ParameterNameEnum.Stealth));
-      this.IsRun.Set<bool>(this.parameters.GetByName<bool>(ParameterNameEnum.Run));
-      this.IsWalk.Set<bool>(this.parameters.GetByName<bool>(ParameterNameEnum.Walk));
-      this.IsFlashlight.Set<bool>(this.parameters.GetByName<bool>(ParameterNameEnum.Flashlight));
-      this.WalkModifier.Set<float>(this.parameters.GetByName<float>(ParameterNameEnum.WalkSpeedModifier));
-      this.WalkBlock.Set<bool>(this.parameters.GetByName<bool>(ParameterNameEnum.MovementControlBlock));
-      this.RunModifier.Set<float>(this.parameters.GetByName<float>(ParameterNameEnum.RunSpeedModifier));
-      this.UpdatePlayer();
+      IsFighting.Set(parameters.GetByName<bool>(ParameterNameEnum.IsFighting));
+      IsStelth.Set(parameters.GetByName<bool>(ParameterNameEnum.Stealth));
+      IsRun.Set(parameters.GetByName<bool>(ParameterNameEnum.Run));
+      IsWalk.Set(parameters.GetByName<bool>(ParameterNameEnum.Walk));
+      IsFlashlight.Set(parameters.GetByName<bool>(ParameterNameEnum.Flashlight));
+      WalkModifier.Set(parameters.GetByName<float>(ParameterNameEnum.WalkSpeedModifier));
+      WalkBlock.Set(parameters.GetByName<bool>(ParameterNameEnum.MovementControlBlock));
+      RunModifier.Set(parameters.GetByName<float>(ParameterNameEnum.RunSpeedModifier));
+      UpdatePlayer();
     }
 
     public override void OnRemoved()
     {
-      this.RemovePlayer();
-      this.IsFighting.Set<bool>((IParameter<bool>) null);
-      this.IsStelth.Set<bool>((IParameter<bool>) null);
-      this.IsRun.Set<bool>((IParameter<bool>) null);
-      this.IsWalk.Set<bool>((IParameter<bool>) null);
-      this.IsFlashlight.Set<bool>((IParameter<bool>) null);
-      this.WalkModifier.Set<float>((IParameter<float>) null);
-      this.WalkBlock.Set<bool>((IParameter<bool>) null);
-      this.RunModifier.Set<float>((IParameter<float>) null);
+      RemovePlayer();
+      IsFighting.Set(null);
+      IsStelth.Set(null);
+      IsRun.Set(null);
+      IsWalk.Set(null);
+      IsFlashlight.Set(null);
+      WalkModifier.Set(null);
+      WalkBlock.Set(null);
+      RunModifier.Set(null);
       base.OnRemoved();
     }
 
     public override void OnChangeEnabled()
     {
       base.OnChangeEnabled();
-      this.UpdatePlayer();
+      UpdatePlayer();
     }
 
     public void FireBeginInteract(InteractableComponent interactable, InteractItem item)
     {
-      Action<IEntity, IInteractableComponent, IInteractItem> beginInteractEvent = this.BeginInteractEvent;
+      Action<IEntity, IInteractableComponent, IInteractItem> beginInteractEvent = BeginInteractEvent;
       if (beginInteractEvent == null)
         return;
-      beginInteractEvent(this.Owner, (IInteractableComponent) interactable, (IInteractItem) item);
+      beginInteractEvent(Owner, interactable, item);
     }
 
     public void FireEndInteract(InteractableComponent interactable, InteractItem item)
     {
-      Action<IEntity, IInteractableComponent, IInteractItem> endInteractEvent = this.EndInteractEvent;
+      Action<IEntity, IInteractableComponent, IInteractItem> endInteractEvent = EndInteractEvent;
       if (endInteractEvent == null)
         return;
-      endInteractEvent(this.Owner, (IInteractableComponent) interactable, (IInteractItem) item);
+      endInteractEvent(Owner, interactable, item);
     }
 
     private void AttackerPlayer_HandsHolsteredEvent(WeaponKind weapon)
     {
-      Action<WeaponKind, bool> weaponEnableChanged = this.OnWeaponEnableChanged;
+      Action<WeaponKind, bool> weaponEnableChanged = OnWeaponEnableChanged;
       if (weaponEnableChanged == null)
         return;
       weaponEnableChanged(weapon, false);
@@ -171,7 +170,7 @@ namespace Engine.Source.Components
 
     private void AttackerPlayer_HandsUnholsteredEvent(WeaponKind weapon)
     {
-      Action<WeaponKind, bool> weaponEnableChanged = this.OnWeaponEnableChanged;
+      Action<WeaponKind, bool> weaponEnableChanged = OnWeaponEnableChanged;
       if (weaponEnableChanged == null)
         return;
       weaponEnableChanged(weapon, true);
@@ -181,7 +180,7 @@ namespace Engine.Source.Components
     {
       if (!(type == GameActionType.GenericPlayerMenu & down) || !PlayerUtility.IsPlayerCanControlling)
         return false;
-      return SimplePlayerWindowSwapper.LastOpenedPlayerWindowType == typeof (IInventoryWindow) ? this.InventoryListener(type, down) : SimplePlayerWindowSwapper.CallLastPlayerWindow();
+      return SimplePlayerWindowSwapper.LastOpenedPlayerWindowType == typeof (IInventoryWindow) ? InventoryListener(type, down) : SimplePlayerWindowSwapper.CallLastPlayerWindow();
     }
 
     private bool BoundCharactersListener(GameActionType type, bool down)
@@ -196,7 +195,7 @@ namespace Engine.Source.Components
     {
       if (!down || InputService.Instance.JoystickUsed && type == GameActionType.Inventory && JoystickLayoutSwitcher.Instance.CurrentLayout != 0 || !PlayerUtility.IsPlayerCanControlling || ServiceLocator.GetService<InterfaceBlockingService>().BlockInventoryInterface)
         return false;
-      IStorageComponent component = this.Owner.GetComponent<IStorageComponent>();
+      IStorageComponent component = Owner.GetComponent<IStorageComponent>();
       if (component == null)
         return false;
       ServiceLocator.GetService<UIService>().Get<IInventoryWindow>().Actor = component;
@@ -222,28 +221,28 @@ namespace Engine.Source.Components
 
     private bool UnholsterListener(GameActionType type, bool down)
     {
-      if (InputService.Instance.JoystickUsed || !down || !PlayerUtility.IsPlayerCanControlling || this.attackerPlayer == null)
+      if (InputService.Instance.JoystickUsed || !down || !PlayerUtility.IsPlayerCanControlling || attackerPlayer == null)
         return false;
-      if (this.attackerPlayer.IsUnholstered)
-        this.attackerPlayer.HandsHolster();
+      if (attackerPlayer.IsUnholstered)
+        attackerPlayer.HandsHolster();
       else
-        this.attackerPlayer.HandsUnholster();
+        attackerPlayer.HandsUnholster();
       return true;
     }
 
     private bool NextWeaponListener(GameActionType type, bool down)
     {
-      if (!down || !PlayerUtility.IsPlayerCanControlling || this.attackerPlayer == null)
+      if (!down || !PlayerUtility.IsPlayerCanControlling || attackerPlayer == null)
         return false;
-      this.attackerPlayer.NextWeapon();
+      attackerPlayer.NextWeapon();
       return true;
     }
 
     private bool PrevWeaponListener(GameActionType type, bool down)
     {
-      if (!down || !PlayerUtility.IsPlayerCanControlling || this.attackerPlayer == null)
+      if (!down || !PlayerUtility.IsPlayerCanControlling || attackerPlayer == null)
         return false;
-      this.attackerPlayer.PrevWeapon();
+      attackerPlayer.PrevWeapon();
       return true;
     }
 
@@ -253,11 +252,11 @@ namespace Engine.Source.Components
       {
         if (!PlayerUtility.IsPlayerCanControlling)
           return false;
-        this.IsStelth.Value = true;
-        this.IsRun.Value = false;
+        IsStelth.Value = true;
+        IsRun.Value = false;
         return true;
       }
-      this.IsStelth.Value = false;
+      IsStelth.Value = false;
       return false;
     }
 
@@ -276,18 +275,18 @@ namespace Engine.Source.Components
     {
       if (down)
       {
-        if (!PlayerUtility.IsPlayerCanControlling || this.IsStelth.Value)
+        if (!PlayerUtility.IsPlayerCanControlling || IsStelth.Value)
           return false;
-        if (JoystickLayoutSwitcher.Instance.CurrentLayout != JoystickLayoutSwitcher.KeyLayouts.Three && this.IsRun.Value)
+        if (JoystickLayoutSwitcher.Instance.CurrentLayout != JoystickLayoutSwitcher.KeyLayouts.Three && IsRun.Value)
         {
-          this.IsRun.Value = false;
+          IsRun.Value = false;
           return false;
         }
-        this.IsRun.Value = true;
+        IsRun.Value = true;
         return true;
       }
       if (!InputService.Instance.JoystickUsed || JoystickLayoutSwitcher.Instance.CurrentLayout == JoystickLayoutSwitcher.KeyLayouts.Three)
-        this.IsRun.Value = false;
+        IsRun.Value = false;
       return false;
     }
 
@@ -295,12 +294,12 @@ namespace Engine.Source.Components
     {
       if (down)
       {
-        if (!PlayerUtility.IsPlayerCanControlling || this.IsStelth.Value)
+        if (!PlayerUtility.IsPlayerCanControlling || IsStelth.Value)
           return false;
-        this.IsJump = true;
+        IsJump = true;
         return true;
       }
-      this.IsJump = false;
+      IsJump = false;
       return false;
     }
 
@@ -310,12 +309,12 @@ namespace Engine.Source.Components
       {
         if (!PlayerUtility.IsPlayerCanControlling)
           return false;
-        this.right = true;
-        this.UpdateWalk();
+        right = true;
+        UpdateWalk();
         return true;
       }
-      this.right = false;
-      this.UpdateWalk();
+      right = false;
+      UpdateWalk();
       return false;
     }
 
@@ -325,12 +324,12 @@ namespace Engine.Source.Components
       {
         if (!PlayerUtility.IsPlayerCanControlling)
           return false;
-        this.left = true;
-        this.UpdateWalk();
+        left = true;
+        UpdateWalk();
         return true;
       }
-      this.left = false;
-      this.UpdateWalk();
+      left = false;
+      UpdateWalk();
       return false;
     }
 
@@ -340,12 +339,12 @@ namespace Engine.Source.Components
       {
         if (!PlayerUtility.IsPlayerCanControlling)
           return false;
-        this.backward = true;
-        this.UpdateWalk();
+        backward = true;
+        UpdateWalk();
         return true;
       }
-      this.backward = false;
-      this.UpdateWalk();
+      backward = false;
+      UpdateWalk();
       return false;
     }
 
@@ -355,151 +354,151 @@ namespace Engine.Source.Components
       {
         if (!PlayerUtility.IsPlayerCanControlling)
           return false;
-        this.forward = true;
-        this.UpdateWalk();
+        forward = true;
+        UpdateWalk();
         return true;
       }
-      this.forward = false;
-      this.UpdateWalk();
+      forward = false;
+      UpdateWalk();
       return false;
     }
 
     private void UpdateWalk()
     {
-      this.IsWalk.Value = this.IsForward || this.IsBackward || this.IsRight || this.IsLeft;
-      if (this.IsWalk.Value || !this.IsRun.Value)
+      IsWalk.Value = IsForward || IsBackward || IsRight || IsLeft;
+      if (IsWalk.Value || !IsRun.Value)
         return;
-      this.IsRun.Value = false;
+      IsRun.Value = false;
     }
 
     private void UpdatePlayer()
     {
-      if (((Entity) this.Owner).IsAdded && this.Owner.IsEnabledInHierarchy)
-        this.AddPlayer();
+      if (((Entity) Owner).IsAdded && Owner.IsEnabledInHierarchy)
+        AddPlayer();
       else
-        this.RemovePlayer();
+        RemovePlayer();
     }
 
     private void AddPlayer()
     {
-      if (this.added)
+      if (added)
         return;
-      this.added = true;
-      ServiceLocator.GetService<Simulation>().AddPlayer(this.Owner);
+      added = true;
+      ServiceLocator.GetService<Simulation>().AddPlayer(Owner);
     }
 
     private void RemovePlayer()
     {
-      if (!this.added)
+      if (!added)
         return;
-      this.added = false;
-      ServiceLocator.GetService<Simulation>().RemovePlayer(this.Owner);
+      added = false;
+      ServiceLocator.GetService<Simulation>().RemovePlayer(Owner);
     }
 
     private void Reset()
     {
-      this.IsStelth.Value = false;
-      this.IsRun.Value = false;
-      this.IsJump = false;
-      this.left = false;
-      this.right = false;
-      this.forward = false;
-      this.backward = false;
-      this.leftValue = 0.0f;
-      this.rightValue = 0.0f;
-      this.forwardValue = 0.0f;
-      this.backwardValue = 0.0f;
-      this.UpdateWalk();
+      IsStelth.Value = false;
+      IsRun.Value = false;
+      IsJump = false;
+      left = false;
+      right = false;
+      forward = false;
+      backward = false;
+      leftValue = 0.0f;
+      rightValue = 0.0f;
+      forwardValue = 0.0f;
+      backwardValue = 0.0f;
+      UpdateWalk();
       ServiceLocator.GetService<QuestCompassService>().IsEnabled = false;
     }
 
     public void ComputeUpdate()
     {
-      this.leftValue = 0.0f;
-      this.rightValue = 0.0f;
-      this.forwardValue = 0.0f;
-      this.backwardValue = 0.0f;
+      leftValue = 0.0f;
+      rightValue = 0.0f;
+      forwardValue = 0.0f;
+      backwardValue = 0.0f;
       if (!PlayerUtility.IsPlayerCanControlling)
         return;
       float axis1 = InputService.Instance.GetAxis("LeftStickX");
-      if ((double) axis1 > 0.0)
-        this.rightValue = axis1;
-      if ((double) axis1 < 0.0)
-        this.leftValue = -axis1;
+      if (axis1 > 0.0)
+        rightValue = axis1;
+      if (axis1 < 0.0)
+        leftValue = -axis1;
       float axis2 = InputService.Instance.GetAxis("LeftStickY");
-      if ((double) axis2 > 0.0)
-        this.backwardValue = axis2;
-      if ((double) axis2 < 0.0)
-        this.forwardValue = -axis2;
-      if (this.stamina != null && (double) this.stamina.Value == 0.0 && this.IsRun.Value)
-        this.IsRun.Value = false;
-      this.UpdateWalk();
+      if (axis2 > 0.0)
+        backwardValue = axis2;
+      if (axis2 < 0.0)
+        forwardValue = -axis2;
+      if (stamina != null && stamina.Value == 0.0 && IsRun.Value)
+        IsRun.Value = false;
+      UpdateWalk();
     }
 
     public void PlayerActivated()
     {
-      if (this.attackerPlayer != null)
+      if (attackerPlayer != null)
       {
-        this.attackerPlayer.WeaponHolsterStartEvent += new Action<WeaponKind>(this.AttackerPlayer_HandsHolsteredEvent);
-        this.attackerPlayer.WeaponUnholsterEndEvent += new Action<WeaponKind>(this.AttackerPlayer_HandsUnholsteredEvent);
+        attackerPlayer.WeaponHolsterStartEvent += AttackerPlayer_HandsHolsteredEvent;
+        attackerPlayer.WeaponUnholsterEndEvent += AttackerPlayer_HandsUnholsteredEvent;
       }
-      InstanceByRequest<UpdateService>.Instance.Updater.AddUpdatable((IUpdatable) this);
-      this.AddListeners();
-      this.stamina = this.Owner.GetComponent<ParametersComponent>().GetByName<float>(ParameterNameEnum.Stamina);
+      InstanceByRequest<UpdateService>.Instance.Updater.AddUpdatable(this);
+      AddListeners();
+      stamina = Owner.GetComponent<ParametersComponent>().GetByName<float>(ParameterNameEnum.Stamina);
     }
 
     public void AddListeners()
     {
       GameActionService service = ServiceLocator.GetService<GameActionService>();
-      service.AddListener(GameActionType.BoundCharacters, new GameActionHandle(this.BoundCharactersListener));
-      service.AddListener(GameActionType.Inventory, new GameActionHandle(this.InventoryListener));
-      service.AddListener(GameActionType.MindMap, new GameActionHandle(this.MindMapListener));
-      service.AddListener(GameActionType.Map, new GameActionHandle(this.MapListener));
-      service.AddListener(GameActionType.GenericPlayerMenu, new GameActionHandle(this.GenericPlayerMenuListener));
-      service.AddListener(GameActionType.Unholster, new GameActionHandle(this.UnholsterListener));
-      service.AddListener(GameActionType.Compass, new GameActionHandle(this.CompassListener));
-      service.AddListener(GameActionType.NextWeapon, new GameActionHandle(this.NextWeaponListener));
-      service.AddListener(GameActionType.PrevWeapon, new GameActionHandle(this.PrevWeaponListener));
-      service.AddListener(GameActionType.Stealth, new GameActionHandle(this.StealthListener));
-      service.AddListener(GameActionType.Run, new GameActionHandle(this.RunListener));
-      service.AddListener(GameActionType.Jump, new GameActionHandle(this.JumpListener));
-      service.AddListener(GameActionType.Forward, new GameActionHandle(this.ForwardListener));
-      service.AddListener(GameActionType.Backward, new GameActionHandle(this.BackwardListener));
-      service.AddListener(GameActionType.Left, new GameActionHandle(this.LeftListener));
-      service.AddListener(GameActionType.Right, new GameActionHandle(this.RightListener));
+      service.AddListener(GameActionType.BoundCharacters, BoundCharactersListener);
+      service.AddListener(GameActionType.Inventory, InventoryListener);
+      service.AddListener(GameActionType.MindMap, MindMapListener);
+      service.AddListener(GameActionType.Map, MapListener);
+      service.AddListener(GameActionType.GenericPlayerMenu, GenericPlayerMenuListener);
+      service.AddListener(GameActionType.Unholster, UnholsterListener);
+      service.AddListener(GameActionType.Compass, CompassListener);
+      service.AddListener(GameActionType.NextWeapon, NextWeaponListener);
+      service.AddListener(GameActionType.PrevWeapon, PrevWeaponListener);
+      service.AddListener(GameActionType.Stealth, StealthListener);
+      service.AddListener(GameActionType.Run, RunListener);
+      service.AddListener(GameActionType.Jump, JumpListener);
+      service.AddListener(GameActionType.Forward, ForwardListener);
+      service.AddListener(GameActionType.Backward, BackwardListener);
+      service.AddListener(GameActionType.Left, LeftListener);
+      service.AddListener(GameActionType.Right, RightListener);
     }
 
     public void RemoveListeners()
     {
       GameActionService service = ServiceLocator.GetService<GameActionService>();
-      service.RemoveListener(GameActionType.BoundCharacters, new GameActionHandle(this.BoundCharactersListener));
-      service.RemoveListener(GameActionType.Inventory, new GameActionHandle(this.InventoryListener));
-      service.RemoveListener(GameActionType.MindMap, new GameActionHandle(this.MindMapListener));
-      service.RemoveListener(GameActionType.Map, new GameActionHandle(this.MapListener));
-      service.RemoveListener(GameActionType.GenericPlayerMenu, new GameActionHandle(this.GenericPlayerMenuListener));
-      service.RemoveListener(GameActionType.Unholster, new GameActionHandle(this.UnholsterListener));
-      service.RemoveListener(GameActionType.Compass, new GameActionHandle(this.CompassListener));
-      service.RemoveListener(GameActionType.NextWeapon, new GameActionHandle(this.NextWeaponListener));
-      service.RemoveListener(GameActionType.PrevWeapon, new GameActionHandle(this.PrevWeaponListener));
-      service.RemoveListener(GameActionType.Stealth, new GameActionHandle(this.StealthListener));
-      service.RemoveListener(GameActionType.Run, new GameActionHandle(this.RunListener));
-      service.RemoveListener(GameActionType.Jump, new GameActionHandle(this.JumpListener));
-      service.RemoveListener(GameActionType.Forward, new GameActionHandle(this.ForwardListener));
-      service.RemoveListener(GameActionType.Backward, new GameActionHandle(this.BackwardListener));
-      service.RemoveListener(GameActionType.Left, new GameActionHandle(this.LeftListener));
-      service.RemoveListener(GameActionType.Right, new GameActionHandle(this.RightListener));
-      this.Reset();
+      service.RemoveListener(GameActionType.BoundCharacters, BoundCharactersListener);
+      service.RemoveListener(GameActionType.Inventory, InventoryListener);
+      service.RemoveListener(GameActionType.MindMap, MindMapListener);
+      service.RemoveListener(GameActionType.Map, MapListener);
+      service.RemoveListener(GameActionType.GenericPlayerMenu, GenericPlayerMenuListener);
+      service.RemoveListener(GameActionType.Unholster, UnholsterListener);
+      service.RemoveListener(GameActionType.Compass, CompassListener);
+      service.RemoveListener(GameActionType.NextWeapon, NextWeaponListener);
+      service.RemoveListener(GameActionType.PrevWeapon, PrevWeaponListener);
+      service.RemoveListener(GameActionType.Stealth, StealthListener);
+      service.RemoveListener(GameActionType.Run, RunListener);
+      service.RemoveListener(GameActionType.Jump, JumpListener);
+      service.RemoveListener(GameActionType.Forward, ForwardListener);
+      service.RemoveListener(GameActionType.Backward, BackwardListener);
+      service.RemoveListener(GameActionType.Left, LeftListener);
+      service.RemoveListener(GameActionType.Right, RightListener);
+      Reset();
       ServiceLocator.GetService<QuestCompassService>().IsEnabled = false;
     }
 
     public void PlayerDeactivated()
     {
-      this.RemoveListeners();
-      InstanceByRequest<UpdateService>.Instance.Updater.RemoveUpdatable((IUpdatable) this);
-      if (this.attackerPlayer == null)
+      RemoveListeners();
+      InstanceByRequest<UpdateService>.Instance.Updater.RemoveUpdatable(this);
+      if (attackerPlayer == null)
         return;
-      this.attackerPlayer.WeaponUnholsterEndEvent -= new Action<WeaponKind>(this.AttackerPlayer_HandsUnholsteredEvent);
-      this.attackerPlayer.WeaponHolsterStartEvent -= new Action<WeaponKind>(this.AttackerPlayer_HandsHolsteredEvent);
+      attackerPlayer.WeaponUnholsterEndEvent -= AttackerPlayer_HandsUnholsteredEvent;
+      attackerPlayer.WeaponHolsterStartEvent -= AttackerPlayer_HandsHolsteredEvent;
     }
   }
 }

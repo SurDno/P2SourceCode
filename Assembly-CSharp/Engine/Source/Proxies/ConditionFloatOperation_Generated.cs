@@ -1,9 +1,9 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons.Cloneable;
 using Engine.Common.Commons.Converters;
 using Expressions;
-using System;
 
 namespace Engine.Source.Proxies
 {
@@ -18,30 +18,30 @@ namespace Engine.Source.Proxies
     public object Clone()
     {
       ConditionFloatOperation_Generated instance = Activator.CreateInstance<ConditionFloatOperation_Generated>();
-      this.CopyTo((object) instance);
-      return (object) instance;
+      CopyTo(instance);
+      return instance;
     }
 
     public void CopyTo(object target2)
     {
       ConditionFloatOperation_Generated operationGenerated = (ConditionFloatOperation_Generated) target2;
-      operationGenerated.condition = CloneableObjectUtility.Clone<IValue<bool>>(this.condition);
-      operationGenerated.trueResult = CloneableObjectUtility.Clone<IValue<float>>(this.trueResult);
-      operationGenerated.falseResult = CloneableObjectUtility.Clone<IValue<float>>(this.falseResult);
+      operationGenerated.condition = CloneableObjectUtility.Clone(condition);
+      operationGenerated.trueResult = CloneableObjectUtility.Clone(trueResult);
+      operationGenerated.falseResult = CloneableObjectUtility.Clone(falseResult);
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.WriteSerialize<IValue<bool>>(writer, "Condition", this.condition);
-      DefaultDataWriteUtility.WriteSerialize<IValue<float>>(writer, "True", this.trueResult);
-      DefaultDataWriteUtility.WriteSerialize<IValue<float>>(writer, "False", this.falseResult);
+      DefaultDataWriteUtility.WriteSerialize(writer, "Condition", condition);
+      DefaultDataWriteUtility.WriteSerialize(writer, "True", trueResult);
+      DefaultDataWriteUtility.WriteSerialize(writer, "False", falseResult);
     }
 
     public void DataRead(IDataReader reader, Type type)
     {
-      this.condition = DefaultDataReadUtility.ReadSerialize<IValue<bool>>(reader, "Condition");
-      this.trueResult = DefaultDataReadUtility.ReadSerialize<IValue<float>>(reader, "True");
-      this.falseResult = DefaultDataReadUtility.ReadSerialize<IValue<float>>(reader, "False");
+      condition = DefaultDataReadUtility.ReadSerialize<IValue<bool>>(reader, "Condition");
+      trueResult = DefaultDataReadUtility.ReadSerialize<IValue<float>>(reader, "True");
+      falseResult = DefaultDataReadUtility.ReadSerialize<IValue<float>>(reader, "False");
     }
   }
 }

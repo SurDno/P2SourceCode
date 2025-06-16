@@ -1,86 +1,84 @@
-﻿using Engine.Common;
+﻿using System;
+using System.Collections.Generic;
+using Engine.Common;
 using Engine.Common.Components;
 using Engine.Source.Components;
 using Engine.Source.Components.Repairing;
 using Engine.Source.Components.Utilities;
-using System;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UI;
 
 public class RepairingCostView : MonoBehaviour
 {
   [SerializeField]
   private List<ItemView> itemViews = new List<ItemView>();
-  private IStorageComponent actor = (IStorageComponent) null;
-  private List<RepairableCostItem> cost = (List<RepairableCostItem>) null;
+  private IStorageComponent actor;
+  private List<RepairableCostItem> cost;
 
   public IStorageComponent Actor
   {
-    get => this.actor;
+    get => actor;
     set
     {
-      if (this.actor == value)
+      if (actor == value)
         return;
-      if (this.actor != null)
+      if (actor != null)
       {
-        this.actor.OnAddItemEvent -= new Action<IStorableComponent, IInventoryComponent>(this.OnActorContentChange);
-        this.actor.OnChangeItemEvent -= new Action<IStorableComponent, IInventoryComponent>(this.OnActorContentChange);
-        this.actor.OnRemoveItemEvent -= new Action<IStorableComponent, IInventoryComponent>(this.OnActorContentChange);
+        actor.OnAddItemEvent -= OnActorContentChange;
+        actor.OnChangeItemEvent -= OnActorContentChange;
+        actor.OnRemoveItemEvent -= OnActorContentChange;
       }
-      this.actor = value;
-      if (this.actor != null)
+      actor = value;
+      if (actor != null)
       {
-        this.actor.OnAddItemEvent += new Action<IStorableComponent, IInventoryComponent>(this.OnActorContentChange);
-        this.actor.OnChangeItemEvent += new Action<IStorableComponent, IInventoryComponent>(this.OnActorContentChange);
-        this.actor.OnRemoveItemEvent += new Action<IStorableComponent, IInventoryComponent>(this.OnActorContentChange);
+        actor.OnAddItemEvent += OnActorContentChange;
+        actor.OnChangeItemEvent += OnActorContentChange;
+        actor.OnRemoveItemEvent += OnActorContentChange;
       }
-      this.Rebuild();
+      Rebuild();
     }
   }
 
   public List<RepairableCostItem> Cost
   {
-    get => this.cost;
+    get => cost;
     set
     {
-      if (this.cost == value)
+      if (cost == value)
         return;
-      this.cost = value;
-      this.Rebuild();
+      cost = value;
+      Rebuild();
     }
   }
 
   private void OnActorContentChange(IStorableComponent item, IInventoryComponent container)
   {
-    this.Rebuild();
+    Rebuild();
   }
 
   private void Rebuild()
   {
-    if (this.Actor == null || this.Cost == null)
+    if (Actor == null || Cost == null)
     {
-      this.PrepareItemViews(0);
+      PrepareItemViews(0);
     }
     else
     {
-      this.PrepareItemViews(this.Cost.Count);
-      for (int index = 0; index < this.Cost.Count && index < this.itemViews.Count; ++index)
+      PrepareItemViews(Cost.Count);
+      for (int index = 0; index < Cost.Count && index < itemViews.Count; ++index)
       {
-        IEntity resource = this.Cost[index].Template.Value;
+        IEntity resource = Cost[index].Template.Value;
         if (resource == null)
         {
-          this.itemViews[index].gameObject.SetActive(false);
+          itemViews[index].gameObject.SetActive(false);
         }
         else
         {
-          this.itemViews[index].Storable = resource.GetComponent<StorableComponent>();
-          Text componentInChildren = this.itemViews[index].GetComponentInChildren<Text>();
+          itemViews[index].Storable = resource.GetComponent<StorableComponent>();
+          Text componentInChildren = itemViews[index].GetComponentInChildren<Text>();
           if ((UnityEngine.Object) componentInChildren != (UnityEngine.Object) null)
           {
-            int count = this.Cost[index].Count;
-            int itemAmount = StorageUtility.GetItemAmount(this.Actor.Items, resource);
-            componentInChildren.text = Math.Min(count, itemAmount).ToString() + " / " + count.ToString();
+            int count = Cost[index].Count;
+            int itemAmount = StorageUtility.GetItemAmount(Actor.Items, resource);
+            componentInChildren.text = Math.Min(count, itemAmount) + " / " + count;
           }
         }
       }
@@ -89,19 +87,19 @@ public class RepairingCostView : MonoBehaviour
 
   private void PrepareItemViews(int count)
   {
-    if (this.itemViews.Count == 0 || (UnityEngine.Object) this.itemViews[0] == (UnityEngine.Object) null)
+    if (itemViews.Count == 0 || (UnityEngine.Object) itemViews[0] == (UnityEngine.Object) null)
       return;
-    while (this.itemViews.Count < count)
+    while (itemViews.Count < count)
     {
-      ItemView itemView1 = this.itemViews[0];
+      ItemView itemView1 = itemViews[0];
       ItemView itemView2 = UnityEngine.Object.Instantiate<ItemView>(itemView1);
       itemView2.transform.SetParent(itemView1.transform.parent, false);
-      this.itemViews.Add(itemView2);
+      itemViews.Add(itemView2);
     }
-    for (int index = 0; index < this.itemViews.Count; ++index)
+    for (int index = 0; index < itemViews.Count; ++index)
     {
-      this.itemViews[index].gameObject.SetActive(index < count);
-      this.itemViews[index].Storable = (StorableComponent) null;
+      itemViews[index].gameObject.SetActive(index < count);
+      itemViews[index].Storable = null;
     }
   }
 }

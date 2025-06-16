@@ -8,30 +8,30 @@ namespace TriangleNet.Log
     private LogLevel level = LogLevel.Info;
     private List<SimpleLogItem> log = new List<SimpleLogItem>();
 
-    public static ILog<SimpleLogItem> Instance => (ILog<SimpleLogItem>) SimpleLog.instance;
+    public static ILog<SimpleLogItem> Instance => instance;
 
     private SimpleLog()
     {
     }
 
-    public void Add(SimpleLogItem item) => this.log.Add(item);
+    public void Add(SimpleLogItem item) => log.Add(item);
 
-    public void Clear() => this.log.Clear();
+    public void Clear() => log.Clear();
 
-    public void Info(string message) => this.log.Add(new SimpleLogItem(LogLevel.Info, message));
+    public void Info(string message) => log.Add(new SimpleLogItem(LogLevel.Info, message));
 
     public void Warning(string message, string location)
     {
-      this.log.Add(new SimpleLogItem(LogLevel.Warning, message, location));
+      log.Add(new SimpleLogItem(LogLevel.Warning, message, location));
     }
 
     public void Error(string message, string location)
     {
-      this.log.Add(new SimpleLogItem(LogLevel.Error, message, location));
+      log.Add(new SimpleLogItem(LogLevel.Error, message, location));
     }
 
-    public IList<SimpleLogItem> Data => (IList<SimpleLogItem>) this.log;
+    public IList<SimpleLogItem> Data => log;
 
-    public LogLevel Level => this.level;
+    public LogLevel Level => level;
   }
 }

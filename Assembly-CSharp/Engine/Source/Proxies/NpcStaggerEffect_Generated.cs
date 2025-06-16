@@ -1,10 +1,10 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons.Cloneable;
 using Engine.Common.Commons.Converters;
 using Engine.Source.Commons.Effects;
 using Engine.Source.Effects;
-using System;
 
 namespace Engine.Source.Proxies
 {
@@ -19,27 +19,27 @@ namespace Engine.Source.Proxies
     public object Clone()
     {
       NpcStaggerEffect_Generated instance = Activator.CreateInstance<NpcStaggerEffect_Generated>();
-      this.CopyTo((object) instance);
-      return (object) instance;
+      CopyTo(instance);
+      return instance;
     }
 
     public void CopyTo(object target2)
     {
       NpcStaggerEffect_Generated staggerEffectGenerated = (NpcStaggerEffect_Generated) target2;
-      staggerEffectGenerated.name = this.name;
-      staggerEffectGenerated.queue = this.queue;
+      staggerEffectGenerated.name = name;
+      staggerEffectGenerated.queue = queue;
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.Write(writer, "Name", this.name);
-      DefaultDataWriteUtility.WriteEnum<ParameterEffectQueueEnum>(writer, "Queue", this.queue);
+      DefaultDataWriteUtility.Write(writer, "Name", name);
+      DefaultDataWriteUtility.WriteEnum(writer, "Queue", queue);
     }
 
     public void DataRead(IDataReader reader, Type type)
     {
-      this.name = DefaultDataReadUtility.Read(reader, "Name", this.name);
-      this.queue = DefaultDataReadUtility.ReadEnum<ParameterEffectQueueEnum>(reader, "Queue");
+      name = DefaultDataReadUtility.Read(reader, "Name", name);
+      queue = DefaultDataReadUtility.ReadEnum<ParameterEffectQueueEnum>(reader, "Queue");
     }
   }
 }

@@ -1,10 +1,8 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
-using Engine.Common.Components;
-using Engine.Source.Components;
 using Engine.Source.Services;
 using Scripts.Tools.Serializations.Converters;
-using System;
 
 namespace Engine.Source.Proxies
 {
@@ -16,14 +14,14 @@ namespace Engine.Source.Proxies
   {
     public void StateSave(IDataWriter writer)
     {
-      CustomStateSaveUtility.SaveListReferences<SpreadingComponent>(writer, "SpreadingComponents", this.spreadingComponents);
-      CustomStateSaveUtility.SaveListReferences<IRegionComponent>(writer, "RegionComponents", this.regionComponents);
+      CustomStateSaveUtility.SaveListReferences(writer, "SpreadingComponents", spreadingComponents);
+      CustomStateSaveUtility.SaveListReferences(writer, "RegionComponents", regionComponents);
     }
 
     public void StateLoad(IDataReader reader, Type type)
     {
-      this.spreadingComponents = CustomStateLoadUtility.LoadListReferences<SpreadingComponent>(reader, "SpreadingComponents", this.spreadingComponents);
-      this.regionComponents = CustomStateLoadUtility.LoadListReferences<IRegionComponent>(reader, "RegionComponents", this.regionComponents);
+      spreadingComponents = CustomStateLoadUtility.LoadListReferences(reader, "SpreadingComponents", spreadingComponents);
+      regionComponents = CustomStateLoadUtility.LoadListReferences(reader, "RegionComponents", regionComponents);
     }
   }
 }

@@ -1,4 +1,7 @@
-﻿using Cofe.Loggers;
+﻿using System;
+using System.Collections.Generic;
+using System.Xml;
+using Cofe.Loggers;
 using Cofe.Serializations.Data;
 using Engine.Common.Comparers;
 using Engine.Common.MindMap;
@@ -11,9 +14,6 @@ using PLVirtualMachine.Common.Serialization;
 using PLVirtualMachine.Data.SaveLoad;
 using PLVirtualMachine.LogicMap;
 using PLVirtualMachine.Objects;
-using System;
-using System.Collections.Generic;
-using System.Xml;
 
 namespace PLVirtualMachine.Dynamic
 {
@@ -24,86 +24,86 @@ namespace PLVirtualMachine.Dynamic
     private IMMPage pageInstance;
     private bool archive;
     private List<DynamicMindMapNode> nodes = new List<DynamicMindMapNode>();
-    private static Dictionary<ulong, DynamicMindMap> mindMaps = new Dictionary<ulong, DynamicMindMap>((IEqualityComparer<ulong>) UlongComparer.Instance);
+    private static Dictionary<ulong, DynamicMindMap> mindMaps = new Dictionary<ulong, DynamicMindMap>(UlongComparer.Instance);
     private static List<ulong> mindMapOrderList = new List<ulong>();
-    private static Dictionary<ulong, IDynamicMindMapObject> mmObjectsDict = new Dictionary<ulong, IDynamicMindMapObject>((IEqualityComparer<ulong>) UlongComparer.Instance);
+    private static Dictionary<ulong, IDynamicMindMapObject> mmObjectsDict = new Dictionary<ulong, IDynamicMindMapObject>(UlongComparer.Instance);
 
     public DynamicMindMap(VMLogicMap staticMindMap, IMMPage page)
     {
-      this.archive = false;
+      archive = false;
       this.staticMindMap = staticMindMap;
-      this.dynamicGuid = DynamicMindMap.RegistrDynamicMMObject((IDynamicMindMapObject) this);
+      dynamicGuid = RegistrDynamicMMObject(this);
       if (staticMindMap.LogicMapType == ELogicMapType.LOGIC_MAP_TYPE_GLOBAL_MINDMAP)
-        this.pageInstance = page;
+        pageInstance = page;
       else if (staticMindMap.LogicMapType == ELogicMapType.LOGIC_MAP_TYPE_LOCAL_MINDMAP)
       {
-        this.pageInstance = page;
+        pageInstance = page;
       }
       else
       {
-        Logger.AddError(string.Format("Invalid logic map {0} type {0} for mind map creation", (object) staticMindMap.Name, (object) staticMindMap.LogicMapType));
+        Logger.AddError(string.Format("Invalid logic map {0} type {0} for mind map creation", staticMindMap.Name, staticMindMap.LogicMapType));
         return;
       }
-      this.LoadNodes();
+      LoadNodes();
     }
 
-    public string Name => this.staticMindMap.Name;
+    public string Name => staticMindMap.Name;
 
     public bool Global
     {
-      get => this.PageInstance.Global;
-      set => this.PageInstance.Global = value;
+      get => PageInstance.Global;
+      set => PageInstance.Global = value;
     }
 
-    public ulong StaticGuid => this.staticMindMap == null ? 0UL : this.staticMindMap.BaseGuid;
+    public ulong StaticGuid => staticMindMap == null ? 0UL : staticMindMap.BaseGuid;
 
-    public Guid DynamicGuid => this.dynamicGuid;
+    public Guid DynamicGuid => dynamicGuid;
 
     public void Think()
     {
-      if (this.Archive)
+      if (Archive)
         return;
-      for (int index = 0; index < this.nodes.Count; ++index)
-        this.nodes[index].Think();
+      for (int index = 0; index < nodes.Count; ++index)
+        nodes[index].Think();
     }
 
     public List<ILink> GetLinksByDestNode(DynamicMindMapNode node)
     {
-      return this.staticMindMap.GetLinksByDestState((IGraphObject) node.StaticNode);
+      return staticMindMap.GetLinksByDestState(node.StaticNode);
     }
 
     public List<ILink> GetLinksBySourceNode(DynamicMindMapNode node)
     {
-      return this.staticMindMap.GetLinksBySourceState((IGraphObject) node.StaticNode);
+      return staticMindMap.GetLinksBySourceState(node.StaticNode);
     }
 
-    public IMMPage PageInstance => this.pageInstance;
+    public IMMPage PageInstance => pageInstance;
 
     public bool Archive
     {
-      get => this.archive;
-      set => this.archive = value;
+      get => archive;
+      set => archive = value;
     }
 
-    public IGameMode GameTimeContext => this.staticMindMap.GameTimeContext;
+    public IGameMode GameTimeContext => staticMindMap.GameTimeContext;
 
     public void Free()
     {
-      for (int index = 0; index < this.nodes.Count; ++index)
-        this.nodes[index].Free();
+      for (int index = 0; index < nodes.Count; ++index)
+        nodes[index].Free();
       IMMService mindMapService = ServiceCache.MindMapService;
-      if (this.PageInstance.Global)
-        mindMapService.CurrentGlobalPage = (IMMPage) null;
+      if (PageInstance.Global)
+        mindMapService.CurrentGlobalPage = null;
       else
-        mindMapService.RemovePage(this.PageInstance);
+        mindMapService.RemovePage(PageInstance);
     }
 
     public void StateSave(IDataWriter writer)
     {
-      SaveManagerUtility.Save(writer, "StaticGuid", this.staticMindMap.BaseGuid);
-      SaveManagerUtility.Save(writer, "DynamicGuid", this.dynamicGuid);
-      SaveManagerUtility.Save(writer, "IsGlobal", this.Global);
-      SaveManagerUtility.SaveDynamicSerializableList<DynamicMindMapNode>(writer, "MMNodeList", this.nodes);
+      SaveManagerUtility.Save(writer, "StaticGuid", staticMindMap.BaseGuid);
+      SaveManagerUtility.Save(writer, "DynamicGuid", dynamicGuid);
+      SaveManagerUtility.Save(writer, "IsGlobal", Global);
+      SaveManagerUtility.SaveDynamicSerializableList(writer, "MMNodeList", nodes);
     }
 
     public void LoadFromXML(XmlElement xmlNode)
@@ -112,16 +112,16 @@ namespace PLVirtualMachine.Dynamic
       {
         XmlElement childNode1 = (XmlElement) xmlNode.ChildNodes[i];
         if (childNode1.Name == "DynamicGuid")
-          this.dynamicGuid = VMSaveLoadManager.ReadGuid((XmlNode) childNode1);
+          dynamicGuid = VMSaveLoadManager.ReadGuid(childNode1);
         else if (childNode1.Name == "MMNodeList")
         {
           foreach (XmlElement childNode2 in childNode1.ChildNodes)
           {
             ulong num = VMSaveLoadManager.ReadUlong(childNode2.FirstChild);
-            if (this.staticMindMap.GetNodeByGuid(num) == null)
+            if (staticMindMap.GetNodeByGuid(num) == null)
               return;
-            if (DynamicMindMap.mmObjectsDict.ContainsKey(num))
-              ((DynamicMindMapNode) DynamicMindMap.mmObjectsDict[num]).LoadFromXML(childNode2);
+            if (mmObjectsDict.ContainsKey(num))
+              ((DynamicMindMapNode) mmObjectsDict[num]).LoadFromXML(childNode2);
           }
         }
       }
@@ -129,20 +129,20 @@ namespace PLVirtualMachine.Dynamic
 
     public void AfterSaveLoading()
     {
-      for (int index = 0; index < this.nodes.Count; ++index)
-        this.nodes[index].AfterSaveLoading();
+      for (int index = 0; index < nodes.Count; ++index)
+        nodes[index].AfterSaveLoading();
     }
 
     public static DynamicMindMap AddGlobalMindMap(ILogicMap mindMap)
     {
-      if (DynamicMindMap.mindMaps.ContainsKey(mindMap.BaseGuid))
+      if (mindMaps.ContainsKey(mindMap.BaseGuid))
       {
-        foreach (KeyValuePair<ulong, DynamicMindMap> mindMap1 in DynamicMindMap.mindMaps)
+        foreach (KeyValuePair<ulong, DynamicMindMap> mindMap1 in mindMaps)
         {
           if ((long) mindMap1.Value.StaticGuid != (long) mindMap.BaseGuid)
             mindMap1.Value.Global = false;
         }
-        DynamicMindMap mindMap2 = DynamicMindMap.mindMaps[mindMap.BaseGuid];
+        DynamicMindMap mindMap2 = mindMaps[mindMap.BaseGuid];
         mindMap2.Global = true;
         ServiceCache.MindMapService.CurrentGlobalPage = mindMap2.PageInstance;
         return mindMap2;
@@ -154,57 +154,57 @@ namespace PLVirtualMachine.Dynamic
       DynamicMindMap dynamicMindMap = new DynamicMindMap((VMLogicMap) mindMap, page);
       if (page.Global)
       {
-        foreach (KeyValuePair<ulong, DynamicMindMap> mindMap3 in DynamicMindMap.mindMaps)
+        foreach (KeyValuePair<ulong, DynamicMindMap> mindMap3 in mindMaps)
           mindMap3.Value.Global = false;
       }
-      DynamicMindMap.mindMaps.Add(mindMap.BaseGuid, dynamicMindMap);
-      DynamicMindMap.mindMapOrderList.Add(mindMap.BaseGuid);
+      mindMaps.Add(mindMap.BaseGuid, dynamicMindMap);
+      mindMapOrderList.Add(mindMap.BaseGuid);
       return dynamicMindMap;
     }
 
     public static DynamicMindMap AddMindMap(ILogicMap mindMap)
     {
-      if (DynamicMindMap.mindMaps.ContainsKey(mindMap.BaseGuid))
+      if (mindMaps.ContainsKey(mindMap.BaseGuid))
       {
-        Logger.AddError(string.Format("Cannot add mind map {0}: this mind map already added", (object) mindMap.Name));
-        return (DynamicMindMap) null;
+        Logger.AddError(string.Format("Cannot add mind map {0}: this mind map already added", mindMap.Name));
+        return null;
       }
       IMMPage page = ServiceCache.Factory.Create<IMMPage>();
       page.Global = false;
       page.Title = EngineAPIManager.CreateEngineTextInstance(mindMap.Title);
       ServiceCache.MindMapService.AddPage(page);
       DynamicMindMap dynamicMindMap = new DynamicMindMap((VMLogicMap) mindMap, page);
-      DynamicMindMap.mindMaps.Add(mindMap.BaseGuid, dynamicMindMap);
-      DynamicMindMap.mindMapOrderList.Add(mindMap.BaseGuid);
+      mindMaps.Add(mindMap.BaseGuid, dynamicMindMap);
+      mindMapOrderList.Add(mindMap.BaseGuid);
       return dynamicMindMap;
     }
 
     public static void RemoveMindMap(ILogicMap mindMap)
     {
-      if (!DynamicMindMap.mindMaps.ContainsKey(mindMap.BaseGuid))
+      if (!mindMaps.ContainsKey(mindMap.BaseGuid))
       {
-        Logger.AddError(string.Format("Cannot remove mind map {0}: this mind map not added previously, or has been removed", (object) mindMap.Name));
+        Logger.AddError(string.Format("Cannot remove mind map {0}: this mind map not added previously, or has been removed", mindMap.Name));
       }
       else
       {
-        DynamicMindMap.mindMaps[mindMap.BaseGuid].Free();
-        DynamicMindMap.mindMaps.Remove(mindMap.BaseGuid);
-        DynamicMindMap.mindMapOrderList.Remove(mindMap.BaseGuid);
+        mindMaps[mindMap.BaseGuid].Free();
+        mindMaps.Remove(mindMap.BaseGuid);
+        mindMapOrderList.Remove(mindMap.BaseGuid);
       }
     }
 
     public static void Clear()
     {
-      foreach (KeyValuePair<ulong, DynamicMindMap> mindMap in DynamicMindMap.mindMaps)
+      foreach (KeyValuePair<ulong, DynamicMindMap> mindMap in mindMaps)
         mindMap.Value.Free();
-      DynamicMindMap.mindMaps.Clear();
-      DynamicMindMap.mindMapOrderList.Clear();
-      DynamicMindMap.mmObjectsDict.Clear();
+      mindMaps.Clear();
+      mindMapOrderList.Clear();
+      mmObjectsDict.Clear();
     }
 
     public static void Update()
     {
-      foreach (KeyValuePair<ulong, DynamicMindMap> mindMap in DynamicMindMap.mindMaps)
+      foreach (KeyValuePair<ulong, DynamicMindMap> mindMap in mindMaps)
       {
         DynamicMindMap dynamicMindMap = mindMap.Value;
         if (!dynamicMindMap.Archive)
@@ -217,12 +217,12 @@ namespace PLVirtualMachine.Dynamic
       try
       {
         Guid guid = Guid.NewGuid();
-        DynamicMindMap.mmObjectsDict.Add(mmObj.StaticGuid, mmObj);
+        mmObjectsDict.Add(mmObj.StaticGuid, mmObj);
         return guid;
       }
       catch (Exception ex)
       {
-        Logger.AddError(string.Format("SaveLoad error: cannot register mindmap object guid={0}, error: {1}", (object) mmObj.StaticGuid, (object) ex.ToString()));
+        Logger.AddError(string.Format("SaveLoad error: cannot register mindmap object guid={0}, error: {1}", mmObj.StaticGuid, ex.ToString()));
         return new Guid();
       }
     }
@@ -254,24 +254,24 @@ namespace PLVirtualMachine.Dynamic
 
     public static IMMNode GetEngineNodeByStaticGuid(ulong stGuid)
     {
-      IDynamicMindMapObject objectByStaticguid = DynamicMindMap.GetDynamicMMObjectByStaticguid(stGuid);
+      IDynamicMindMapObject objectByStaticguid = GetDynamicMMObjectByStaticguid(stGuid);
       if (objectByStaticguid != null && typeof (DynamicMindMapNode) == objectByStaticguid.GetType())
         return ((DynamicMindMapNode) objectByStaticguid).EngineNode;
-      Logger.AddError(string.Format("Cannot find mind map node {0} with static guid {1}", (object) "", (object) stGuid));
-      return (IMMNode) null;
+      Logger.AddError(string.Format("Cannot find mind map node {0} with static guid {1}", "", stGuid));
+      return null;
     }
 
     public static void SaveMindMapsToXML(IDataWriter writer)
     {
-      writer.Begin("MindMapSystem", (Type) null, true);
-      writer.Begin("MindMapList", (Type) null, true);
-      for (int index = 0; index < DynamicMindMap.mindMapOrderList.Count; ++index)
+      writer.Begin("MindMapSystem", null, true);
+      writer.Begin("MindMapList", null, true);
+      for (int index = 0; index < mindMapOrderList.Count; ++index)
       {
-        ulong mindMapOrder = DynamicMindMap.mindMapOrderList[index];
-        if (DynamicMindMap.mindMaps.ContainsKey(mindMapOrder))
-          SaveManagerUtility.SaveDynamicSerializable(writer, "Element", (ISerializeStateSave) DynamicMindMap.mindMaps[mindMapOrder]);
+        ulong mindMapOrder = mindMapOrderList[index];
+        if (mindMaps.ContainsKey(mindMapOrder))
+          SaveManagerUtility.SaveDynamicSerializable(writer, "Element", mindMaps[mindMapOrder]);
         else
-          Logger.AddError(string.Format("SaveLoad error: invalid mind map guid in indexed list: {0}", (object) mindMapOrder));
+          Logger.AddError(string.Format("SaveLoad error: invalid mind map guid in indexed list: {0}", mindMapOrder));
       }
       writer.End("MindMapList", true);
       writer.End("MindMapSystem", true);
@@ -288,9 +288,9 @@ namespace PLVirtualMachine.Dynamic
         ulong key = VMSaveLoadManager.ReadUlong(firstChild2);
         int num = VMSaveLoadManager.ReadBool(nextSibling) ? 1 : 0;
         ILogicMap logicMap = ((VMGameRoot) IStaticDataContainer.StaticDataContainer.GameRoot).LogicMaps[key];
-        (num == 0 ? DynamicMindMap.AddMindMap(logicMap) : DynamicMindMap.AddGlobalMindMap(logicMap)).LoadFromXML(childNode);
+        (num == 0 ? AddMindMap(logicMap) : AddGlobalMindMap(logicMap)).LoadFromXML(childNode);
       }
-      foreach (KeyValuePair<ulong, DynamicMindMap> mindMap in DynamicMindMap.mindMaps)
+      foreach (KeyValuePair<ulong, DynamicMindMap> mindMap in mindMaps)
         mindMap.Value.AfterSaveLoading();
     }
 
@@ -303,57 +303,57 @@ namespace PLVirtualMachine.Dynamic
     public static IDynamicMindMapObject GetDynamicMMObjectByStaticguid(ulong stGuid)
     {
       IDynamicMindMapObject objectByStaticguid;
-      if (DynamicMindMap.mmObjectsDict.TryGetValue(stGuid, out objectByStaticguid))
+      if (mmObjectsDict.TryGetValue(stGuid, out objectByStaticguid))
         return objectByStaticguid;
-      Logger.AddError(string.Format("Cannot find mind map object {0} with static guid {1}", (object) "", (object) stGuid));
-      return (IDynamicMindMapObject) null;
+      Logger.AddError(string.Format("Cannot find mind map object {0} with static guid {1}", "", stGuid));
+      return null;
     }
 
     private void LoadNodes()
     {
-      for (int index = 0; index < this.staticMindMap.Nodes.Count; ++index)
-        this.AddMindMapNode((VMLogicMapNode) this.staticMindMap.Nodes[index]);
-      this.LoadLinks();
+      for (int index = 0; index < staticMindMap.Nodes.Count; ++index)
+        AddMindMapNode((VMLogicMapNode) staticMindMap.Nodes[index]);
+      LoadLinks();
     }
 
     private DynamicMindMapNode AddMindMapNode(VMLogicMapNode staticNode)
     {
       DynamicMindMapNode dynamicMindMapNode = new DynamicMindMapNode(this, staticNode);
-      MMNodeKind nodeKindByNodeType = DynamicMindMap.GetEngineNodeKindByNodeType(dynamicMindMapNode.StaticNode.NodeType);
+      MMNodeKind nodeKindByNodeType = GetEngineNodeKindByNodeType(dynamicMindMapNode.StaticNode.NodeType);
       Position position = new Position(dynamicMindMapNode.StaticNode.GameScreenPositionX, dynamicMindMapNode.StaticNode.GameScreenPositionY);
       IMMNode node = ServiceCache.Factory.Create<IMMNode>(dynamicMindMapNode.DynamicGuid);
       node.Position = position;
       node.NodeKind = nodeKindByNodeType;
-      this.pageInstance.AddNode(node);
+      pageInstance.AddNode(node);
       dynamicMindMapNode.EngineNode = node;
-      this.nodes.Add(dynamicMindMapNode);
+      nodes.Add(dynamicMindMapNode);
       return dynamicMindMapNode;
     }
 
     private void LoadLinks()
     {
-      for (int index = 0; index < this.staticMindMap.Links.Count; ++index)
+      for (int index = 0; index < staticMindMap.Links.Count; ++index)
       {
-        ILink link1 = this.staticMindMap.Links[index];
+        ILink link1 = staticMindMap.Links[index];
         if (link1.Source == null)
-          Logger.AddError(string.Format("Mind map link {0} source not defined at mind map {1}", (object) link1.BaseGuid, (object) this.Name));
-        else if (!DynamicMindMap.mmObjectsDict.ContainsKey(link1.Source.BaseGuid))
-          Logger.AddError(string.Format("invalid mm link source id={0} at mind map {1}", (object) link1.Source.BaseGuid, (object) this.Name));
+          Logger.AddError(string.Format("Mind map link {0} source not defined at mind map {1}", link1.BaseGuid, Name));
+        else if (!mmObjectsDict.ContainsKey(link1.Source.BaseGuid))
+          Logger.AddError(string.Format("invalid mm link source id={0} at mind map {1}", link1.Source.BaseGuid, Name));
         else if (link1.Destination == null)
-          Logger.AddError(string.Format("Mind map link {0} destination not defined at mind map {1}", (object) link1.BaseGuid, (object) this.Name));
-        else if (!DynamicMindMap.mmObjectsDict.ContainsKey(link1.Destination.BaseGuid))
+          Logger.AddError(string.Format("Mind map link {0} destination not defined at mind map {1}", link1.BaseGuid, Name));
+        else if (!mmObjectsDict.ContainsKey(link1.Destination.BaseGuid))
         {
-          Logger.AddError(string.Format("invalid mm link destination id={0} at mind map {1}", (object) link1.Destination.BaseGuid, (object) this.Name));
+          Logger.AddError(string.Format("invalid mm link destination id={0} at mind map {1}", link1.Destination.BaseGuid, Name));
         }
         else
         {
-          DynamicMindMapNode dynamicMindMapNode1 = (DynamicMindMapNode) DynamicMindMap.mmObjectsDict[link1.Source.BaseGuid];
-          DynamicMindMapNode dynamicMindMapNode2 = (DynamicMindMapNode) DynamicMindMap.mmObjectsDict[link1.Destination.BaseGuid];
+          DynamicMindMapNode dynamicMindMapNode1 = (DynamicMindMapNode) mmObjectsDict[link1.Source.BaseGuid];
+          DynamicMindMapNode dynamicMindMapNode2 = (DynamicMindMapNode) mmObjectsDict[link1.Destination.BaseGuid];
           IMMLink link2 = ServiceCache.Factory.Create<IMMLink>();
           link2.Origin = dynamicMindMapNode1.EngineNode;
           link2.Target = dynamicMindMapNode2.EngineNode;
           link2.Kind = MMLinkKind.DirectHidden;
-          this.pageInstance.AddLink(link2);
+          pageInstance.AddLink(link2);
         }
       }
     }

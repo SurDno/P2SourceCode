@@ -1,6 +1,6 @@
-﻿using Cofe.Meta;
+﻿using System;
+using Cofe.Meta;
 using Engine.Source.Commons;
-using UnityEngine;
 
 namespace Engine.Source.Services.Consoles.Binds
 {
@@ -10,7 +10,7 @@ namespace Engine.Source.Services.Consoles.Binds
     [ConsoleCommand("throw")]
     private static string Throw(string command, ConsoleParameter[] parameters)
     {
-      GameObject gameObject = new GameObject("ThrowScript", new System.Type[1]
+      GameObject gameObject = new GameObject("ThrowScript", new Type[1]
       {
         typeof (ThrowScript)
       });

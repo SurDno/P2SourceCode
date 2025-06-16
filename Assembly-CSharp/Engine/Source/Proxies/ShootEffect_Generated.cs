@@ -1,11 +1,11 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons.Cloneable;
 using Engine.Common.Commons.Converters;
 using Engine.Source.Commons.Effects;
 using Engine.Source.Effects;
 using Engine.Source.Effects.Values;
-using System;
 
 namespace Engine.Source.Proxies
 {
@@ -20,27 +20,27 @@ namespace Engine.Source.Proxies
     public object Clone()
     {
       ShootEffect_Generated instance = Activator.CreateInstance<ShootEffect_Generated>();
-      this.CopyTo((object) instance);
-      return (object) instance;
+      CopyTo(instance);
+      return instance;
     }
 
     public void CopyTo(object target2)
     {
       ShootEffect_Generated shootEffectGenerated = (ShootEffect_Generated) target2;
-      shootEffectGenerated.queue = this.queue;
-      shootEffectGenerated.actionType = this.actionType;
+      shootEffectGenerated.queue = queue;
+      shootEffectGenerated.actionType = actionType;
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.WriteEnum<ParameterEffectQueueEnum>(writer, "Queue", this.queue);
-      DefaultDataWriteUtility.WriteEnum<ShootEffectEnum>(writer, "Action", this.actionType);
+      DefaultDataWriteUtility.WriteEnum(writer, "Queue", queue);
+      DefaultDataWriteUtility.WriteEnum(writer, "Action", actionType);
     }
 
     public void DataRead(IDataReader reader, Type type)
     {
-      this.queue = DefaultDataReadUtility.ReadEnum<ParameterEffectQueueEnum>(reader, "Queue");
-      this.actionType = DefaultDataReadUtility.ReadEnum<ShootEffectEnum>(reader, "Action");
+      queue = DefaultDataReadUtility.ReadEnum<ParameterEffectQueueEnum>(reader, "Queue");
+      actionType = DefaultDataReadUtility.ReadEnum<ShootEffectEnum>(reader, "Action");
     }
   }
 }

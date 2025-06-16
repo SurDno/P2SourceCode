@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace Engine.Impl.UI.Controls
+﻿namespace Engine.Impl.UI.Controls
 {
   public class ProgressRemappedSettings : ProgressView
   {
@@ -11,19 +9,19 @@ namespace Engine.Impl.UI.Controls
 
     protected override void ApplyProgress()
     {
-      if ((Object) this.view == (Object) null)
+      if ((Object) view == (Object) null)
         return;
-      if (this.max)
-        this.view.SetMax(this.Progress);
+      if (max)
+        view.SetMax(Progress);
       else
-        this.view.SetMin(this.Progress);
+        view.SetMin(Progress);
     }
 
     public override void SkipAnimation()
     {
-      if (!((Object) this.view != (Object) null))
+      if (!((Object) view != (Object) null))
         return;
-      this.view.SkipAnimation();
+      view.SkipAnimation();
     }
   }
 }

@@ -1,10 +1,10 @@
-﻿using Engine.Common;
+﻿using System;
+using Engine.Common;
 using Engine.Common.Components;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Engine.Source.Commons;
 using Inspectors;
-using System;
 
 namespace Engine.Source.Components
 {
@@ -19,38 +19,38 @@ namespace Engine.Source.Components
     [Inspected(Mutable = true)]
     public bool IsHibernation
     {
-      get => this.isHibernation;
+      get => isHibernation;
       set
       {
-        if (this.isHibernation == value)
+        if (isHibernation == value)
           return;
-        this.isHibernation = value;
-        Action<ILocationItemComponent> hibernationChanged = this.OnHibernationChanged;
+        isHibernation = value;
+        Action<ILocationItemComponent> hibernationChanged = OnHibernationChanged;
         if (hibernationChanged == null)
           return;
-        hibernationChanged((ILocationItemComponent) this);
+        hibernationChanged(this);
       }
     }
 
     public ILocationComponent Location
     {
-      get => (ILocationComponent) this.currentLocation;
+      get => currentLocation;
       set
       {
-        if (this.currentLocation == value)
+        if (currentLocation == value)
           return;
-        if (this.currentLocation != null)
+        if (currentLocation != null)
         {
-          this.currentLocation.OnHibernationChanged -= new Action<ILocationComponent>(this.ComputeHibernation);
-          this.currentLocation = (LocationComponent) null;
+          currentLocation.OnHibernationChanged -= ComputeHibernation;
+          currentLocation = null;
         }
-        this.currentLocation = (LocationComponent) value;
-        if (this.currentLocation != null)
-          this.currentLocation.OnHibernationChanged += new Action<ILocationComponent>(this.ComputeHibernation);
-        Action<ILocationItemComponent, ILocationComponent> onChangeLocation = this.OnChangeLocation;
+        currentLocation = (LocationComponent) value;
+        if (currentLocation != null)
+          currentLocation.OnHibernationChanged += ComputeHibernation;
+        Action<ILocationItemComponent, ILocationComponent> onChangeLocation = OnChangeLocation;
         if (onChangeLocation != null)
-          onChangeLocation((ILocationItemComponent) this, (ILocationComponent) this.currentLocation);
-        this.ComputeHibernation((ILocationComponent) this.currentLocation);
+          onChangeLocation(this, currentLocation);
+        ComputeHibernation(currentLocation);
       }
     }
 
@@ -59,7 +59,7 @@ namespace Engine.Source.Components
     {
       get
       {
-        return this.currentLocation != null ? this.currentLocation.LogicLocation : (ILocationComponent) null;
+        return currentLocation != null ? currentLocation.LogicLocation : null;
       }
     }
 
@@ -68,7 +68,7 @@ namespace Engine.Source.Components
     {
       get
       {
-        ILocationComponent logicLocation = this.LogicLocation;
+        ILocationComponent logicLocation = LogicLocation;
         return logicLocation != null && ((LocationComponent) logicLocation).IsIndoor;
       }
     }
@@ -79,25 +79,25 @@ namespace Engine.Source.Components
 
     private void ComputeHibernation(ILocationComponent sender)
     {
-      this.IsHibernation = this.currentLocation == null || this.currentLocation.IsHibernation;
+      IsHibernation = currentLocation == null || currentLocation.IsHibernation;
     }
 
     public override void OnAdded()
     {
       base.OnAdded();
-      IEntity sceneEntity = ((IEntityHierarchy) this.Owner).SceneEntity;
+      IEntity sceneEntity = ((IEntityHierarchy) Owner).SceneEntity;
       if (sceneEntity != null)
       {
         LocationComponent component = sceneEntity.GetComponent<LocationComponent>();
         if (component != null)
-          this.Location = (ILocationComponent) component;
+          Location = component;
       }
-      this.ComputeHibernation(this.Location);
+      ComputeHibernation(Location);
     }
 
     public override void OnRemoved()
     {
-      this.Location = (ILocationComponent) null;
+      Location = null;
       base.OnRemoved();
     }
   }

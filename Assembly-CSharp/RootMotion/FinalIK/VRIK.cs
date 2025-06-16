@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEngine;
 
 namespace RootMotion.FinalIK
 {
@@ -8,7 +7,7 @@ namespace RootMotion.FinalIK
   {
     [ContextMenuItem("Auto-detect References", "AutoDetectReferences")]
     [Tooltip("Bone mapping. Right-click on the component header and select 'Auto-detect References' of fill in manually if not a Humanoid character.")]
-    public VRIK.References references = new VRIK.References();
+    public References references = new References();
     [Tooltip("The VRIK solver.")]
     public IKSolverVR solver = new IKSolverVR();
 
@@ -33,23 +32,23 @@ namespace RootMotion.FinalIK
     [ContextMenu("Auto-detect References")]
     public void AutoDetectReferences()
     {
-      VRIK.References.AutoDetectReferences(this.transform, out this.references);
+      References.AutoDetectReferences(this.transform, out references);
     }
 
     [ContextMenu("Guess Hand Orientations")]
     public void GuessHandOrientations()
     {
-      this.solver.GuessHandOrientations(this.references, false);
+      solver.GuessHandOrientations(references, false);
     }
 
-    public override IKSolver GetIKSolver() => (IKSolver) this.solver;
+    public override IKSolver GetIKSolver() => solver;
 
     protected override void InitiateSolver()
     {
-      if (this.references.isEmpty)
-        this.AutoDetectReferences();
-      if (this.references.isFilled)
-        this.solver.SetToReferences(this.references);
+      if (references.isEmpty)
+        AutoDetectReferences();
+      if (references.isFilled)
+        solver.SetToReferences(references);
       base.InitiateSolver();
     }
 
@@ -83,28 +82,28 @@ namespace RootMotion.FinalIK
       {
         return new Transform[22]
         {
-          this.root,
-          this.pelvis,
-          this.spine,
-          this.chest,
-          this.neck,
-          this.head,
-          this.leftShoulder,
-          this.leftUpperArm,
-          this.leftForearm,
-          this.leftHand,
-          this.rightShoulder,
-          this.rightUpperArm,
-          this.rightForearm,
-          this.rightHand,
-          this.leftThigh,
-          this.leftCalf,
-          this.leftFoot,
-          this.leftToes,
-          this.rightThigh,
-          this.rightCalf,
-          this.rightFoot,
-          this.rightToes
+          root,
+          pelvis,
+          spine,
+          chest,
+          neck,
+          head,
+          leftShoulder,
+          leftUpperArm,
+          leftForearm,
+          leftHand,
+          rightShoulder,
+          rightUpperArm,
+          rightForearm,
+          rightHand,
+          leftThigh,
+          leftCalf,
+          leftFoot,
+          leftToes,
+          rightThigh,
+          rightCalf,
+          rightFoot,
+          rightToes
         };
       }
 
@@ -112,7 +111,7 @@ namespace RootMotion.FinalIK
       {
         get
         {
-          return !((UnityEngine.Object) this.root == (UnityEngine.Object) null) && !((UnityEngine.Object) this.pelvis == (UnityEngine.Object) null) && !((UnityEngine.Object) this.spine == (UnityEngine.Object) null) && !((UnityEngine.Object) this.head == (UnityEngine.Object) null) && !((UnityEngine.Object) this.leftUpperArm == (UnityEngine.Object) null) && !((UnityEngine.Object) this.leftForearm == (UnityEngine.Object) null) && !((UnityEngine.Object) this.leftHand == (UnityEngine.Object) null) && !((UnityEngine.Object) this.rightUpperArm == (UnityEngine.Object) null) && !((UnityEngine.Object) this.rightForearm == (UnityEngine.Object) null) && !((UnityEngine.Object) this.rightHand == (UnityEngine.Object) null) && !((UnityEngine.Object) this.leftThigh == (UnityEngine.Object) null) && !((UnityEngine.Object) this.leftCalf == (UnityEngine.Object) null) && !((UnityEngine.Object) this.leftFoot == (UnityEngine.Object) null) && !((UnityEngine.Object) this.rightThigh == (UnityEngine.Object) null) && !((UnityEngine.Object) this.rightCalf == (UnityEngine.Object) null) && !((UnityEngine.Object) this.rightFoot == (UnityEngine.Object) null);
+          return !((UnityEngine.Object) root == (UnityEngine.Object) null) && !((UnityEngine.Object) pelvis == (UnityEngine.Object) null) && !((UnityEngine.Object) spine == (UnityEngine.Object) null) && !((UnityEngine.Object) head == (UnityEngine.Object) null) && !((UnityEngine.Object) leftUpperArm == (UnityEngine.Object) null) && !((UnityEngine.Object) leftForearm == (UnityEngine.Object) null) && !((UnityEngine.Object) leftHand == (UnityEngine.Object) null) && !((UnityEngine.Object) rightUpperArm == (UnityEngine.Object) null) && !((UnityEngine.Object) rightForearm == (UnityEngine.Object) null) && !((UnityEngine.Object) rightHand == (UnityEngine.Object) null) && !((UnityEngine.Object) leftThigh == (UnityEngine.Object) null) && !((UnityEngine.Object) leftCalf == (UnityEngine.Object) null) && !((UnityEngine.Object) leftFoot == (UnityEngine.Object) null) && !((UnityEngine.Object) rightThigh == (UnityEngine.Object) null) && !((UnityEngine.Object) rightCalf == (UnityEngine.Object) null) && !((UnityEngine.Object) rightFoot == (UnityEngine.Object) null);
         }
       }
 
@@ -120,13 +119,13 @@ namespace RootMotion.FinalIK
       {
         get
         {
-          return !((UnityEngine.Object) this.root != (UnityEngine.Object) null) && !((UnityEngine.Object) this.pelvis != (UnityEngine.Object) null) && !((UnityEngine.Object) this.spine != (UnityEngine.Object) null) && !((UnityEngine.Object) this.chest != (UnityEngine.Object) null) && !((UnityEngine.Object) this.neck != (UnityEngine.Object) null) && !((UnityEngine.Object) this.head != (UnityEngine.Object) null) && !((UnityEngine.Object) this.leftShoulder != (UnityEngine.Object) null) && !((UnityEngine.Object) this.leftUpperArm != (UnityEngine.Object) null) && !((UnityEngine.Object) this.leftForearm != (UnityEngine.Object) null) && !((UnityEngine.Object) this.leftHand != (UnityEngine.Object) null) && !((UnityEngine.Object) this.rightShoulder != (UnityEngine.Object) null) && !((UnityEngine.Object) this.rightUpperArm != (UnityEngine.Object) null) && !((UnityEngine.Object) this.rightForearm != (UnityEngine.Object) null) && !((UnityEngine.Object) this.rightHand != (UnityEngine.Object) null) && !((UnityEngine.Object) this.leftThigh != (UnityEngine.Object) null) && !((UnityEngine.Object) this.leftCalf != (UnityEngine.Object) null) && !((UnityEngine.Object) this.leftFoot != (UnityEngine.Object) null) && !((UnityEngine.Object) this.leftToes != (UnityEngine.Object) null) && !((UnityEngine.Object) this.rightThigh != (UnityEngine.Object) null) && !((UnityEngine.Object) this.rightCalf != (UnityEngine.Object) null) && !((UnityEngine.Object) this.rightFoot != (UnityEngine.Object) null) && !((UnityEngine.Object) this.rightToes != (UnityEngine.Object) null);
+          return !((UnityEngine.Object) root != (UnityEngine.Object) null) && !((UnityEngine.Object) pelvis != (UnityEngine.Object) null) && !((UnityEngine.Object) spine != (UnityEngine.Object) null) && !((UnityEngine.Object) chest != (UnityEngine.Object) null) && !((UnityEngine.Object) neck != (UnityEngine.Object) null) && !((UnityEngine.Object) head != (UnityEngine.Object) null) && !((UnityEngine.Object) leftShoulder != (UnityEngine.Object) null) && !((UnityEngine.Object) leftUpperArm != (UnityEngine.Object) null) && !((UnityEngine.Object) leftForearm != (UnityEngine.Object) null) && !((UnityEngine.Object) leftHand != (UnityEngine.Object) null) && !((UnityEngine.Object) rightShoulder != (UnityEngine.Object) null) && !((UnityEngine.Object) rightUpperArm != (UnityEngine.Object) null) && !((UnityEngine.Object) rightForearm != (UnityEngine.Object) null) && !((UnityEngine.Object) rightHand != (UnityEngine.Object) null) && !((UnityEngine.Object) leftThigh != (UnityEngine.Object) null) && !((UnityEngine.Object) leftCalf != (UnityEngine.Object) null) && !((UnityEngine.Object) leftFoot != (UnityEngine.Object) null) && !((UnityEngine.Object) leftToes != (UnityEngine.Object) null) && !((UnityEngine.Object) rightThigh != (UnityEngine.Object) null) && !((UnityEngine.Object) rightCalf != (UnityEngine.Object) null) && !((UnityEngine.Object) rightFoot != (UnityEngine.Object) null) && !((UnityEngine.Object) rightToes != (UnityEngine.Object) null);
         }
       }
 
-      public static bool AutoDetectReferences(Transform root, out VRIK.References references)
+      public static bool AutoDetectReferences(Transform root, out References references)
       {
-        references = new VRIK.References();
+        references = new References();
         Animator componentInChildren = root.GetComponentInChildren<Animator>();
         if ((UnityEngine.Object) componentInChildren == (UnityEngine.Object) null || !componentInChildren.isHuman)
         {

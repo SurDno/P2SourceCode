@@ -1,5 +1,5 @@
-﻿using ParadoxNotion.Design;
-using System.Collections;
+﻿using System.Collections;
+using ParadoxNotion.Design;
 
 namespace FlowCanvas.Nodes
 {
@@ -9,22 +9,22 @@ namespace FlowCanvas.Nodes
   public class StartEvent : EventNode
   {
     private FlowOutput start;
-    private bool called = false;
+    private bool called;
 
     public override void OnGraphStarted()
     {
-      if (this.called)
+      if (called)
         return;
-      this.called = true;
-      this.StartCoroutine(this.DelayCall());
+      called = true;
+      StartCoroutine(DelayCall());
     }
 
     private IEnumerator DelayCall()
     {
-      yield return (object) null;
-      this.start.Call();
+      yield return null;
+      start.Call();
     }
 
-    protected override void RegisterPorts() => this.start = this.AddFlowOutput("Once");
+    protected override void RegisterPorts() => start = AddFlowOutput("Once");
   }
 }

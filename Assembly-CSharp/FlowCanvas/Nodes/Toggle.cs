@@ -9,18 +9,18 @@ namespace FlowCanvas.Nodes
     public bool open = true;
     private bool original;
 
-    public override string name => base.name + " " + (this.open ? "[ON]" : "[OFF]");
+    public override string name => base.name + " " + (open ? "[ON]" : "[OFF]");
 
-    public override void OnGraphStarted() => this.original = this.open;
+    public override void OnGraphStarted() => original = open;
 
-    public override void OnGraphStoped() => this.open = this.original;
+    public override void OnGraphStoped() => open = original;
 
     protected override void RegisterPorts()
     {
-      FlowOutput tOut = this.AddFlowOutput("On");
-      FlowOutput fOut = this.AddFlowOutput("Off");
-      this.AddFlowInput("In", (FlowHandler) (() => this.Call(this.open ? tOut : fOut)));
-      this.AddFlowInput(nameof (Toggle), (FlowHandler) (() => this.open = !this.open));
+      FlowOutput tOut = AddFlowOutput("On");
+      FlowOutput fOut = AddFlowOutput("Off");
+      AddFlowInput("In", () => Call(open ? tOut : fOut));
+      AddFlowInput(nameof (Toggle), () => open = !open);
     }
   }
 }

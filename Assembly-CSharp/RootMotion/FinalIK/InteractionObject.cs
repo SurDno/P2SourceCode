@@ -1,6 +1,4 @@
 ﻿using System;
-using UnityEngine;
-using UnityEngine.Events;
 
 namespace RootMotion.FinalIK
 {
@@ -14,9 +12,9 @@ namespace RootMotion.FinalIK
     public Transform otherTargetsRoot;
     [Tooltip("If assigned, all PositionOffset channels will be applied in the rotation space of this Transform. If not, they will be in the rotation space of the character.")]
     public Transform positionOffsetSpace;
-    public InteractionObject.WeightCurve[] weightCurves;
-    public InteractionObject.Multiplier[] multipliers;
-    public InteractionObject.InteractionEvent[] events;
+    public WeightCurve[] weightCurves;
+    public Multiplier[] multipliers;
+    public InteractionEvent[] events;
     private InteractionTarget[] targets = new InteractionTarget[0];
 
     [ContextMenu("TUTORIAL VIDEO (PART 1: BASICS)")]
@@ -61,21 +59,21 @@ namespace RootMotion.FinalIK
 
     public void Initiate()
     {
-      for (int index = 0; index < this.weightCurves.Length; ++index)
+      for (int index = 0; index < weightCurves.Length; ++index)
       {
-        if (this.weightCurves[index].curve.length > 0)
-          this.length = Mathf.Clamp(this.length, this.weightCurves[index].curve.keys[this.weightCurves[index].curve.length - 1].time, this.length);
+        if (weightCurves[index].curve.length > 0)
+          length = Mathf.Clamp(length, weightCurves[index].curve.keys[weightCurves[index].curve.length - 1].time, length);
       }
-      for (int index = 0; index < this.events.Length; ++index)
-        this.length = Mathf.Clamp(this.length, this.events[index].time, this.length);
-      this.targets = this.targetsRoot.GetComponentsInChildren<InteractionTarget>();
+      for (int index = 0; index < events.Length; ++index)
+        length = Mathf.Clamp(length, events[index].time, length);
+      targets = targetsRoot.GetComponentsInChildren<InteractionTarget>();
     }
 
     public Transform lookAtTarget
     {
       get
       {
-        return (UnityEngine.Object) this.otherLookAtTarget != (UnityEngine.Object) null ? this.otherLookAtTarget : this.transform;
+        return (UnityEngine.Object) otherLookAtTarget != (UnityEngine.Object) null ? otherLookAtTarget : this.transform;
       }
     }
 
@@ -85,29 +83,29 @@ namespace RootMotion.FinalIK
     {
       if (interactionSystem.tag == string.Empty || interactionSystem.tag == "")
       {
-        foreach (InteractionTarget target in this.targets)
+        foreach (InteractionTarget target in targets)
         {
           if (target.effectorType == effectorType)
             return target;
         }
-        return (InteractionTarget) null;
+        return null;
       }
-      foreach (InteractionTarget target in this.targets)
+      foreach (InteractionTarget target in targets)
       {
         if (target.effectorType == effectorType && target.tag == interactionSystem.tag)
           return target;
       }
-      return (InteractionTarget) null;
+      return null;
     }
 
-    public bool CurveUsed(InteractionObject.WeightCurve.Type type)
+    public bool CurveUsed(WeightCurve.Type type)
     {
-      foreach (InteractionObject.WeightCurve weightCurve in this.weightCurves)
+      foreach (WeightCurve weightCurve in weightCurves)
       {
         if (weightCurve.type == type)
           return true;
       }
-      foreach (InteractionObject.Multiplier multiplier in this.multipliers)
+      foreach (Multiplier multiplier in multipliers)
       {
         if (multiplier.result == type)
           return true;
@@ -115,23 +113,23 @@ namespace RootMotion.FinalIK
       return false;
     }
 
-    public InteractionTarget[] GetTargets() => this.targets;
+    public InteractionTarget[] GetTargets() => targets;
 
     public Transform GetTarget(FullBodyBipedEffector effectorType, string tag)
     {
       if (tag == string.Empty || tag == "")
-        return this.GetTarget(effectorType);
-      for (int index = 0; index < this.targets.Length; ++index)
+        return GetTarget(effectorType);
+      for (int index = 0; index < targets.Length; ++index)
       {
-        if (this.targets[index].effectorType == effectorType && this.targets[index].tag == tag)
-          return this.targets[index].transform;
+        if (targets[index].effectorType == effectorType && targets[index].tag == tag)
+          return targets[index].transform;
       }
       return this.transform;
     }
 
     public void OnStartInteraction(InteractionSystem interactionSystem)
     {
-      this.lastUsedInteractionSystem = interactionSystem;
+      lastUsedInteractionSystem = interactionSystem;
     }
 
     public void Apply(
@@ -141,46 +139,46 @@ namespace RootMotion.FinalIK
       float timer,
       float weight)
     {
-      for (int index = 0; index < this.weightCurves.Length; ++index)
+      for (int index = 0; index < weightCurves.Length; ++index)
       {
-        float num = (UnityEngine.Object) target == (UnityEngine.Object) null ? 1f : target.GetValue(this.weightCurves[index].type);
-        this.Apply(solver, effector, this.weightCurves[index].type, this.weightCurves[index].GetValue(timer), weight * num);
+        float num = (UnityEngine.Object) target == (UnityEngine.Object) null ? 1f : target.GetValue(weightCurves[index].type);
+        Apply(solver, effector, weightCurves[index].type, weightCurves[index].GetValue(timer), weight * num);
       }
-      for (int index = 0; index < this.multipliers.Length; ++index)
+      for (int index = 0; index < multipliers.Length; ++index)
       {
-        if (this.multipliers[index].curve == this.multipliers[index].result && !Warning.logged)
-          Warning.Log("InteractionObject Multiplier 'Curve' " + this.multipliers[index].curve.ToString() + "and 'Result' are the same.", this.transform);
-        int weightCurveIndex = this.GetWeightCurveIndex(this.multipliers[index].curve);
+        if (multipliers[index].curve == multipliers[index].result && !Warning.logged)
+          Warning.Log("InteractionObject Multiplier 'Curve' " + multipliers[index].curve + "and 'Result' are the same.", this.transform);
+        int weightCurveIndex = GetWeightCurveIndex(multipliers[index].curve);
         if (weightCurveIndex != -1)
         {
-          float num = (UnityEngine.Object) target == (UnityEngine.Object) null ? 1f : target.GetValue(this.multipliers[index].result);
-          this.Apply(solver, effector, this.multipliers[index].result, this.multipliers[index].GetValue(this.weightCurves[weightCurveIndex], timer), weight * num);
+          float num = (UnityEngine.Object) target == (UnityEngine.Object) null ? 1f : target.GetValue(multipliers[index].result);
+          Apply(solver, effector, multipliers[index].result, multipliers[index].GetValue(weightCurves[weightCurveIndex], timer), weight * num);
         }
         else if (!Warning.logged)
-          Warning.Log("InteractionObject Multiplier curve " + this.multipliers[index].curve.ToString() + "does not exist.", this.transform);
+          Warning.Log("InteractionObject Multiplier curve " + multipliers[index].curve + "does not exist.", this.transform);
       }
     }
 
     public float GetValue(
-      InteractionObject.WeightCurve.Type weightCurveType,
+      WeightCurve.Type weightCurveType,
       InteractionTarget target,
       float timer)
     {
-      int weightCurveIndex1 = this.GetWeightCurveIndex(weightCurveType);
+      int weightCurveIndex1 = GetWeightCurveIndex(weightCurveType);
       if (weightCurveIndex1 != -1)
       {
         float num = (UnityEngine.Object) target == (UnityEngine.Object) null ? 1f : target.GetValue(weightCurveType);
-        return this.weightCurves[weightCurveIndex1].GetValue(timer) * num;
+        return weightCurves[weightCurveIndex1].GetValue(timer) * num;
       }
-      for (int index = 0; index < this.multipliers.Length; ++index)
+      for (int index = 0; index < multipliers.Length; ++index)
       {
-        if (this.multipliers[index].result == weightCurveType)
+        if (multipliers[index].result == weightCurveType)
         {
-          int weightCurveIndex2 = this.GetWeightCurveIndex(this.multipliers[index].curve);
+          int weightCurveIndex2 = GetWeightCurveIndex(multipliers[index].curve);
           if (weightCurveIndex2 != -1)
           {
-            float num = (UnityEngine.Object) target == (UnityEngine.Object) null ? 1f : target.GetValue(this.multipliers[index].result);
-            return this.multipliers[index].GetValue(this.weightCurves[weightCurveIndex2], timer) * num;
+            float num = (UnityEngine.Object) target == (UnityEngine.Object) null ? 1f : target.GetValue(multipliers[index].result);
+            return multipliers[index].GetValue(weightCurves[weightCurveIndex2], timer) * num;
           }
         }
       }
@@ -191,46 +189,46 @@ namespace RootMotion.FinalIK
     {
       get
       {
-        return (UnityEngine.Object) this.otherTargetsRoot != (UnityEngine.Object) null ? this.otherTargetsRoot : this.transform;
+        return (UnityEngine.Object) otherTargetsRoot != (UnityEngine.Object) null ? otherTargetsRoot : this.transform;
       }
     }
 
-    private void Awake() => this.Initiate();
+    private void Awake() => Initiate();
 
     private void Apply(
       IKSolverFullBodyBiped solver,
       FullBodyBipedEffector effector,
-      InteractionObject.WeightCurve.Type type,
+      WeightCurve.Type type,
       float value,
       float weight)
     {
       switch (type)
       {
-        case InteractionObject.WeightCurve.Type.PositionWeight:
+        case WeightCurve.Type.PositionWeight:
           solver.GetEffector(effector).positionWeight = Mathf.Lerp(solver.GetEffector(effector).positionWeight, value, weight);
           break;
-        case InteractionObject.WeightCurve.Type.RotationWeight:
+        case WeightCurve.Type.RotationWeight:
           solver.GetEffector(effector).rotationWeight = Mathf.Lerp(solver.GetEffector(effector).rotationWeight, value, weight);
           break;
-        case InteractionObject.WeightCurve.Type.PositionOffsetX:
-          solver.GetEffector(effector).position += ((UnityEngine.Object) this.positionOffsetSpace != (UnityEngine.Object) null ? this.positionOffsetSpace.rotation : solver.GetRoot().rotation) * Vector3.right * value * weight;
+        case WeightCurve.Type.PositionOffsetX:
+          solver.GetEffector(effector).position += ((UnityEngine.Object) positionOffsetSpace != (UnityEngine.Object) null ? positionOffsetSpace.rotation : solver.GetRoot().rotation) * Vector3.right * value * weight;
           break;
-        case InteractionObject.WeightCurve.Type.PositionOffsetY:
-          solver.GetEffector(effector).position += ((UnityEngine.Object) this.positionOffsetSpace != (UnityEngine.Object) null ? this.positionOffsetSpace.rotation : solver.GetRoot().rotation) * Vector3.up * value * weight;
+        case WeightCurve.Type.PositionOffsetY:
+          solver.GetEffector(effector).position += ((UnityEngine.Object) positionOffsetSpace != (UnityEngine.Object) null ? positionOffsetSpace.rotation : solver.GetRoot().rotation) * Vector3.up * value * weight;
           break;
-        case InteractionObject.WeightCurve.Type.PositionOffsetZ:
-          solver.GetEffector(effector).position += ((UnityEngine.Object) this.positionOffsetSpace != (UnityEngine.Object) null ? this.positionOffsetSpace.rotation : solver.GetRoot().rotation) * Vector3.forward * value * weight;
+        case WeightCurve.Type.PositionOffsetZ:
+          solver.GetEffector(effector).position += ((UnityEngine.Object) positionOffsetSpace != (UnityEngine.Object) null ? positionOffsetSpace.rotation : solver.GetRoot().rotation) * Vector3.forward * value * weight;
           break;
-        case InteractionObject.WeightCurve.Type.Pull:
+        case WeightCurve.Type.Pull:
           solver.GetChain(effector).pull = Mathf.Lerp(solver.GetChain(effector).pull, value, weight);
           break;
-        case InteractionObject.WeightCurve.Type.Reach:
+        case WeightCurve.Type.Reach:
           solver.GetChain(effector).reach = Mathf.Lerp(solver.GetChain(effector).reach, value, weight);
           break;
-        case InteractionObject.WeightCurve.Type.Push:
+        case WeightCurve.Type.Push:
           solver.GetChain(effector).push = Mathf.Lerp(solver.GetChain(effector).push, value, weight);
           break;
-        case InteractionObject.WeightCurve.Type.PushParent:
+        case WeightCurve.Type.PushParent:
           solver.GetChain(effector).pushParent = Mathf.Lerp(solver.GetChain(effector).pushParent, value, weight);
           break;
       }
@@ -238,29 +236,29 @@ namespace RootMotion.FinalIK
 
     private Transform GetTarget(FullBodyBipedEffector effectorType)
     {
-      for (int index = 0; index < this.targets.Length; ++index)
+      for (int index = 0; index < targets.Length; ++index)
       {
-        if (this.targets[index].effectorType == effectorType)
-          return this.targets[index].transform;
+        if (targets[index].effectorType == effectorType)
+          return targets[index].transform;
       }
       return this.transform;
     }
 
-    private int GetWeightCurveIndex(InteractionObject.WeightCurve.Type weightCurveType)
+    private int GetWeightCurveIndex(WeightCurve.Type weightCurveType)
     {
-      for (int weightCurveIndex = 0; weightCurveIndex < this.weightCurves.Length; ++weightCurveIndex)
+      for (int weightCurveIndex = 0; weightCurveIndex < weightCurves.Length; ++weightCurveIndex)
       {
-        if (this.weightCurves[weightCurveIndex].type == weightCurveType)
+        if (weightCurves[weightCurveIndex].type == weightCurveType)
           return weightCurveIndex;
       }
       return -1;
     }
 
-    private int GetMultiplierIndex(InteractionObject.WeightCurve.Type weightCurveType)
+    private int GetMultiplierIndex(WeightCurve.Type weightCurveType)
     {
-      for (int multiplierIndex = 0; multiplierIndex < this.multipliers.Length; ++multiplierIndex)
+      for (int multiplierIndex = 0; multiplierIndex < multipliers.Length; ++multiplierIndex)
       {
-        if (this.multipliers[multiplierIndex].result == weightCurveType)
+        if (multipliers[multiplierIndex].result == weightCurveType)
           return multiplierIndex;
       }
       return -1;
@@ -288,18 +286,18 @@ namespace RootMotion.FinalIK
       [Tooltip("If true, the object will be parented to the effector bone on this event. Note that picking up like this can be done by only a single effector at a time. If you wish to pick up an object with both hands, see the Interaction PickUp2Handed demo scene.")]
       public bool pickUp;
       [Tooltip("The animations called on this event.")]
-      public InteractionObject.AnimatorEvent[] animations;
+      public AnimatorEvent[] animations;
       [Tooltip("The messages sent on this event using GameObject.SendMessage().")]
-      public InteractionObject.Message[] messages;
+      public Message[] messages;
       [Tooltip("The UnityEvent to invoke on this event.")]
       public UnityEvent unityEvent;
 
       public void Activate(Transform t)
       {
-        this.unityEvent.Invoke();
-        foreach (InteractionObject.AnimatorEvent animation in this.animations)
-          animation.Activate(this.pickUp);
-        foreach (InteractionObject.Message message in this.messages)
+        unityEvent.Invoke();
+        foreach (AnimatorEvent animation in animations)
+          animation.Activate(pickUp);
+        foreach (Message message in messages)
           message.Send(t);
       }
     }
@@ -315,9 +313,9 @@ namespace RootMotion.FinalIK
 
       public void Send(Transform t)
       {
-        if ((UnityEngine.Object) this.recipient == (UnityEngine.Object) null || this.function == string.Empty || this.function == "")
+        if ((UnityEngine.Object) recipient == (UnityEngine.Object) null || function == string.Empty || function == "")
           return;
-        this.recipient.SendMessage(this.function, (object) t, SendMessageOptions.RequireReceiver);
+        recipient.SendMessage(function, (object) t, SendMessageOptions.RequireReceiver);
       }
     }
 
@@ -340,35 +338,35 @@ namespace RootMotion.FinalIK
 
       public void Activate(bool pickUp)
       {
-        if ((UnityEngine.Object) this.animator != (UnityEngine.Object) null)
+        if ((UnityEngine.Object) animator != (UnityEngine.Object) null)
         {
           if (pickUp)
-            this.animator.applyRootMotion = false;
-          this.Activate(this.animator);
+            animator.applyRootMotion = false;
+          this.Activate(animator);
         }
-        if (!((UnityEngine.Object) this.animation != (UnityEngine.Object) null))
+        if (!((UnityEngine.Object) animation != (UnityEngine.Object) null))
           return;
-        this.Activate(this.animation);
+        this.Activate(animation);
       }
 
       private void Activate(Animator animator)
       {
-        if (this.animationState == "")
+        if (animationState == "")
           return;
-        if (this.resetNormalizedTime)
-          animator.CrossFade(this.animationState, this.crossfadeTime, this.layer, 0.0f);
+        if (resetNormalizedTime)
+          animator.CrossFade(animationState, crossfadeTime, layer, 0.0f);
         else
-          animator.CrossFade(this.animationState, this.crossfadeTime, this.layer);
+          animator.CrossFade(animationState, crossfadeTime, layer);
       }
 
       private void Activate(Animation animation)
       {
-        if (this.animationState == "")
+        if (animationState == "")
           return;
-        if (this.resetNormalizedTime)
-          animation[this.animationState].normalizedTime = 0.0f;
-        animation[this.animationState].layer = this.layer;
-        animation.CrossFade(this.animationState, this.crossfadeTime);
+        if (resetNormalizedTime)
+          animation[animationState].normalizedTime = 0.0f;
+        animation[animationState].layer = layer;
+        animation.CrossFade(animationState, crossfadeTime);
       }
     }
 
@@ -376,11 +374,11 @@ namespace RootMotion.FinalIK
     public class WeightCurve
     {
       [Tooltip("The type of the curve (InteractionObject.WeightCurve.Type).")]
-      public InteractionObject.WeightCurve.Type type;
+      public Type type;
       [Tooltip("The weight curve.")]
       public AnimationCurve curve;
 
-      public float GetValue(float timer) => this.curve.Evaluate(timer);
+      public float GetValue(float timer) => curve.Evaluate(timer);
 
       [Serializable]
       public enum Type
@@ -403,15 +401,15 @@ namespace RootMotion.FinalIK
     public class Multiplier
     {
       [Tooltip("The curve type to multiply.")]
-      public InteractionObject.WeightCurve.Type curve;
+      public WeightCurve.Type curve;
       [Tooltip("The multiplier of the curve's value.")]
       public float multiplier = 1f;
       [Tooltip("The resulting value will be applied to this channel.")]
-      public InteractionObject.WeightCurve.Type result;
+      public WeightCurve.Type result;
 
-      public float GetValue(InteractionObject.WeightCurve weightCurve, float timer)
+      public float GetValue(WeightCurve weightCurve, float timer)
       {
-        return weightCurve.GetValue(timer) * this.multiplier;
+        return weightCurve.GetValue(timer) * multiplier;
       }
     }
   }

@@ -2,11 +2,11 @@
 
 namespace PLVirtualMachine.Common.VMSpecialAttributes
 {
-  [AttributeUsage(AttributeTargets.Event, AllowMultiple = false, Inherited = false)]
+  [AttributeUsage(AttributeTargets.Event)]
   public class SpecialEventAttribute : Attribute
   {
     public readonly ESpecialEventName Name;
 
-    public SpecialEventAttribute(ESpecialEventName specialName) => this.Name = specialName;
+    public SpecialEventAttribute(ESpecialEventName specialName) => Name = specialName;
   }
 }

@@ -6,7 +6,7 @@
     int articCount = LipsyncPlugin.LipRTGetArticCount();
     if (articCount == 0)
     {
-      phns = (phone_weight[]) null;
+      phns = null;
       return 0;
     }
     phns = new phone_weight[articCount];

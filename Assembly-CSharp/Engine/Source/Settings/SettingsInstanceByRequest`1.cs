@@ -1,12 +1,12 @@
-﻿using Engine.Source.Commons;
+﻿using System;
+using Engine.Source.Commons;
 using Inspectors;
-using System;
 
 namespace Engine.Source.Settings
 {
   public abstract class SettingsInstanceByRequest<T> : InstanceByRequest<T> where T : class, new()
   {
-    public SettingsInstanceByRequest() => SettingsViewService.AddSettings((object) this);
+    public SettingsInstanceByRequest() => SettingsViewService.AddSettings(this);
 
     protected virtual void OnInvalidate()
     {
@@ -17,8 +17,8 @@ namespace Engine.Source.Settings
     [Inspected]
     public void Apply()
     {
-      this.OnInvalidate();
-      Action onApply = this.OnApply;
+      OnInvalidate();
+      Action onApply = OnApply;
       if (onApply == null)
         return;
       onApply();

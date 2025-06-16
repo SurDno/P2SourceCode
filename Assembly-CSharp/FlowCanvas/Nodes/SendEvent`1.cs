@@ -8,7 +8,7 @@ namespace FlowCanvas.Nodes
   {
     public override void Invoke(FlowScriptController target, string eventName, T eventValue)
     {
-      target.SendEvent((EventData) new EventData<T>(eventName, eventValue));
+      target.SendEvent(new EventData<T>(eventName, eventValue));
     }
   }
 }

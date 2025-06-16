@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-[CreateAssetMenu(menuName = "Data/Dialog Lighting Profile")]
+﻿[CreateAssetMenu(menuName = "Data/Dialog Lighting Profile")]
 public class DialogLightingProfile : ScriptableObject
 {
   [SerializeField]
@@ -10,9 +8,9 @@ public class DialogLightingProfile : ScriptableObject
   [SerializeField]
   private Vector2 fillLightRotation = new Vector2(-15f, 90f);
 
-  public Vector2 KeyLightRotation => this.keyLightRotation;
+  public Vector2 KeyLightRotation => keyLightRotation;
 
-  public Vector2 BackLightRotation => this.backLightRotation;
+  public Vector2 BackLightRotation => backLightRotation;
 
-  public Vector2 FillLightRotation => this.fillLightRotation;
+  public Vector2 FillLightRotation => fillLightRotation;
 }

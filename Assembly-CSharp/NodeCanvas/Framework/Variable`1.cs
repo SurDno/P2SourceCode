@@ -1,7 +1,6 @@
-﻿using ParadoxNotion;
-using System;
+﻿using System;
 using System.Reflection;
-using UnityEngine;
+using ParadoxNotion;
 
 namespace NodeCanvas.Framework
 {
@@ -17,88 +16,88 @@ namespace NodeCanvas.Framework
 
     public override string propertyPath
     {
-      get => this._propertyPath;
-      set => this._propertyPath = value;
+      get => _propertyPath;
+      set => _propertyPath = value;
     }
 
-    public override bool hasBinding => !string.IsNullOrEmpty(this._propertyPath);
+    public override bool hasBinding => !string.IsNullOrEmpty(_propertyPath);
 
     protected override object objectValue
     {
-      get => (object) this.value;
+      get => value;
       set => this.value = (T) value;
     }
 
-    public override System.Type varType => typeof (T);
+    public override Type varType => typeof (T);
 
     public T value
     {
-      get => this.getter != null ? this.getter() : this._value;
+      get => getter != null ? getter() : _value;
       set
       {
-        if (this.HasValueChangeEvent())
+        if (HasValueChangeEvent())
         {
-          if (object.Equals((object) this._value, (object) value))
+          if (Equals(_value, value))
             return;
-          this._value = value;
+          _value = value;
           Action<T> setter = this.setter;
           if (setter != null)
             setter(value);
-          this.OnValueChanged(this.name, (object) value);
+          OnValueChanged(name, value);
         }
         else if (this.setter != null)
           this.setter(value);
         else
-          this._value = value;
+          _value = value;
       }
     }
 
-    public T GetValue() => this.value;
+    public T GetValue() => value;
 
-    public void SetValue(T newValue) => this.value = newValue;
+    public void SetValue(T newValue) => value = newValue;
 
     public override void BindProperty(MemberInfo prop, GameObject target = null)
     {
       if ((object) (prop as PropertyInfo) == null && !(prop is FieldInfo))
         return;
-      this._propertyPath = string.Format("{0}.{1}", (object) prop.RTReflectedType().FullName, (object) prop.Name);
+      _propertyPath = string.Format("{0}.{1}", prop.RTReflectedType().FullName, prop.Name);
       if ((UnityEngine.Object) target != (UnityEngine.Object) null)
-        this.InitializePropertyBinding(target, false);
+        InitializePropertyBinding(target);
     }
 
     public override void UnBindProperty()
     {
-      this._propertyPath = (string) null;
-      this.getter = (Func<T>) null;
-      this.setter = (Action<T>) null;
+      _propertyPath = null;
+      getter = null;
+      setter = null;
     }
 
     public override void InitializePropertyBinding(GameObject go, bool callSetter = false)
     {
-      if (!this.hasBinding || !Application.isPlaying)
+      if (!hasBinding || !Application.isPlaying)
         return;
-      this.getter = (Func<T>) null;
-      this.setter = (Action<T>) null;
-      int length = this._propertyPath.LastIndexOf('.');
-      string typeFullName = this._propertyPath.Substring(0, length);
-      string name = this._propertyPath.Substring(length + 1);
-      System.Type type = ReflectionTools.GetType(typeFullName, true);
-      if (type == (System.Type) null)
+      getter = null;
+      setter = null;
+      int length = _propertyPath.LastIndexOf('.');
+      string typeFullName = _propertyPath.Substring(0, length);
+      string name = _propertyPath.Substring(length + 1);
+      Type type = ReflectionTools.GetType(typeFullName, true);
+      if (type == null)
       {
-        Debug.LogError((object) string.Format("Type '{0}' not found for Blackboard Variable '{1}' Binding", (object) typeFullName, (object) this.name), (UnityEngine.Object) go);
+        Debug.LogError((object) string.Format("Type '{0}' not found for Blackboard Variable '{1}' Binding", typeFullName, this.name), (UnityEngine.Object) go);
       }
       else
       {
         PropertyInfo property = type.RTGetProperty(name);
-        if (property != (PropertyInfo) null)
+        if (property != null)
         {
           MethodInfo getMethod = property.RTGetGetMethod();
           MethodInfo setMethod = property.RTGetSetMethod();
-          bool flag = getMethod != (MethodInfo) null && getMethod.IsStatic || setMethod != (MethodInfo) null && setMethod.IsStatic;
+          bool flag = getMethod != null && getMethod.IsStatic || setMethod != null && setMethod.IsStatic;
           Component instance = flag ? (Component) null : go.GetComponent(type);
           if ((UnityEngine.Object) instance == (UnityEngine.Object) null && !flag)
           {
-            Debug.LogError((object) string.Format("A Blackboard Variable '{0}' is due to bind to a Component type that is missing '{1}'. Binding ignored", (object) this.name, (object) typeFullName));
+            Debug.LogError((object) string.Format("A Blackboard Variable '{0}' is due to bind to a Component type that is missing '{1}'. Binding ignored", this.name, typeFullName));
           }
           else
           {
@@ -106,61 +105,61 @@ namespace NodeCanvas.Framework
             {
               try
               {
-                this.getter = getMethod.RTCreateDelegate<Func<T>>((object) instance);
+                getter = getMethod.RTCreateDelegate<Func<T>>((object) instance);
               }
               catch
               {
-                this.getter = (Func<T>) (() => (T) getMethod.Invoke((object) instance, (object[]) null));
+                getter = (Func<T>) (() => (T) getMethod.Invoke((object) instance, null));
               }
             }
             else
-              this.getter = (Func<T>) (() =>
+              getter = (Func<T>) (() =>
               {
-                Debug.LogError((object) string.Format("You tried to Get a Property Bound Variable '{0}', but the Bound Property '{1}' is Write Only!", (object) this.name, (object) this._propertyPath));
+                Debug.LogError((object) string.Format("You tried to Get a Property Bound Variable '{0}', but the Bound Property '{1}' is Write Only!", this.name, _propertyPath));
                 return default (T);
               });
             if (property.CanWrite)
             {
               try
               {
-                this.setter = setMethod.RTCreateDelegate<Action<T>>((object) instance);
+                setter = setMethod.RTCreateDelegate<Action<T>>((object) instance);
               }
               catch
               {
-                this.setter = (Action<T>) (o => setMethod.Invoke((object) instance, new object[1]
+                setter = o => setMethod.Invoke((object) instance, new object[1]
                 {
-                  (object) o
-                }));
+                  o
+                });
               }
               if (!callSetter)
                 return;
-              this.setter(this._value);
+              setter(_value);
             }
             else
-              this.setter = (Action<T>) (o => Debug.LogError((object) string.Format("You tried to Set a Property Bound Variable '{0}', but the Bound Property '{1}' is Read Only!", (object) this.name, (object) this._propertyPath)));
+              setter = o => Debug.LogError((object) string.Format("You tried to Set a Property Bound Variable '{0}', but the Bound Property '{1}' is Read Only!", this.name, _propertyPath));
           }
         }
         else
         {
           FieldInfo field = type.RTGetField(name);
-          if (field != (FieldInfo) null)
+          if (field != null)
           {
             Component instance = field.IsStatic ? (Component) null : go.GetComponent(type);
             if ((UnityEngine.Object) instance == (UnityEngine.Object) null && !field.IsStatic)
-              Debug.LogError((object) string.Format("A Blackboard Variable '{0}' is due to bind to a Component type that is missing '{1}'. Binding ignored", (object) this.name, (object) typeFullName));
+              Debug.LogError((object) string.Format("A Blackboard Variable '{0}' is due to bind to a Component type that is missing '{1}'. Binding ignored", this.name, typeFullName));
             else if (field.IsReadOnly())
             {
               T value = (T) field.GetValue((object) instance);
-              this.getter = (Func<T>) (() => value);
+              getter = (Func<T>) (() => value);
             }
             else
             {
-              this.getter = (Func<T>) (() => (T) field.GetValue((object) instance));
-              this.setter = (Action<T>) (o => field.SetValue((object) instance, (object) o));
+              getter = (Func<T>) (() => (T) field.GetValue((object) instance));
+              setter = o => field.SetValue((object) instance, o);
             }
           }
           else
-            Debug.LogError((object) string.Format("A Blackboard Variable '{0}' is due to bind to a property/field named '{1}' that does not exist on type '{2}'. Binding ignored", (object) this.name, (object) name, (object) type.FullName));
+            Debug.LogError((object) string.Format("A Blackboard Variable '{0}' is due to bind to a property/field named '{1}' that does not exist on type '{2}'. Binding ignored", this.name, name, type.FullName));
         }
       }
     }

@@ -1,8 +1,7 @@
-﻿using FlowCanvas;
+﻿using System.ComponentModel;
+using FlowCanvas;
 using FlowCanvas.Nodes;
 using NodeCanvas.Framework;
-using System.ComponentModel;
-using UnityEngine;
 
 namespace Engine.Source.Blueprints.Effects
 {
@@ -14,7 +13,7 @@ namespace Engine.Source.Blueprints.Effects
 
     public void Update()
     {
-      GameCamera.Instance.Camera.transform.localPosition = Vector3.one * UnityEngine.Random.value * this.valueInput.value;
+      GameCamera.Instance.Camera.transform.localPosition = Vector3.one * UnityEngine.Random.value * valueInput.value;
     }
   }
 }

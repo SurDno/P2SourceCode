@@ -1,10 +1,9 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons.Cloneable;
 using Engine.Common.Commons.Converters;
 using Engine.Source.Components;
-using Engine.Source.Components.Interactable;
-using System;
 
 namespace Engine.Source.Proxies
 {
@@ -21,39 +20,39 @@ namespace Engine.Source.Proxies
     public object Clone()
     {
       InteractableComponent_Generated instance = Activator.CreateInstance<InteractableComponent_Generated>();
-      this.CopyTo((object) instance);
-      return (object) instance;
+      CopyTo(instance);
+      return instance;
     }
 
     public void CopyTo(object target2)
     {
       InteractableComponent_Generated componentGenerated = (InteractableComponent_Generated) target2;
-      componentGenerated.isEnabled = this.isEnabled;
-      CloneableObjectUtility.CopyListTo<InteractItem>(componentGenerated.items, this.items);
+      componentGenerated.isEnabled = isEnabled;
+      CloneableObjectUtility.CopyListTo(componentGenerated.items, items);
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.Write(writer, "IsEnabled", this.isEnabled);
-      DefaultDataWriteUtility.WriteListSerialize<InteractItem>(writer, "Items", this.items);
+      DefaultDataWriteUtility.Write(writer, "IsEnabled", isEnabled);
+      DefaultDataWriteUtility.WriteListSerialize(writer, "Items", items);
     }
 
     public void DataRead(IDataReader reader, Type type)
     {
-      this.isEnabled = DefaultDataReadUtility.Read(reader, "IsEnabled", this.isEnabled);
-      this.items = DefaultDataReadUtility.ReadListSerialize<InteractItem>(reader, "Items", this.items);
+      isEnabled = DefaultDataReadUtility.Read(reader, "IsEnabled", isEnabled);
+      items = DefaultDataReadUtility.ReadListSerialize(reader, "Items", items);
     }
 
     public void StateSave(IDataWriter writer)
     {
-      EngineDataWriteUtility.Write(writer, "Title", this.Title);
-      DefaultDataWriteUtility.Write(writer, "IsEnabled", this.isEnabled);
+      EngineDataWriteUtility.Write(writer, "Title", Title);
+      DefaultDataWriteUtility.Write(writer, "IsEnabled", isEnabled);
     }
 
     public void StateLoad(IDataReader reader, Type type)
     {
-      this.Title = EngineDataReadUtility.Read(reader, "Title", this.Title);
-      this.isEnabled = DefaultDataReadUtility.Read(reader, "IsEnabled", this.isEnabled);
+      Title = EngineDataReadUtility.Read(reader, "Title", Title);
+      isEnabled = DefaultDataReadUtility.Read(reader, "IsEnabled", isEnabled);
     }
   }
 }

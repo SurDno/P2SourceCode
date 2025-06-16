@@ -4,15 +4,14 @@ namespace Inspectors
 {
   public static class InspectedDrawerUtility
   {
-    public static InspectedDrawerUtility.Foldout BeginComplex(
+    public static Foldout BeginComplex(
       string name,
       string displayName,
       IExpandedProvider context,
       IInspectedDrawer drawer,
       Action contextMenu = null)
     {
-      InspectedDrawerUtility.Foldout foldout = new InspectedDrawerUtility.Foldout()
-      {
+      Foldout foldout = new Foldout {
         ExpandInternal = context.GetExpanded(context.DeepName + name)
       };
       foldout.Expand = drawer.Foldout(displayName, foldout.ExpandInternal, contextMenu);
@@ -27,7 +26,7 @@ namespace Inspectors
     }
 
     public static void EndComplex(
-      InspectedDrawerUtility.Foldout fold,
+      Foldout fold,
       string name,
       IExpandedProvider context,
       IInspectedDrawer drawer)

@@ -11,7 +11,7 @@ namespace SteamNative
 
     public static FriendSessionStateInfo_t FromPointer(IntPtr p)
     {
-      return Platform.PackSmall ? (FriendSessionStateInfo_t) (FriendSessionStateInfo_t.PackSmall) Marshal.PtrToStructure(p, typeof (FriendSessionStateInfo_t.PackSmall)) : (FriendSessionStateInfo_t) Marshal.PtrToStructure(p, typeof (FriendSessionStateInfo_t));
+      return Platform.PackSmall ? (PackSmall) Marshal.PtrToStructure(p, typeof (PackSmall)) : (FriendSessionStateInfo_t) Marshal.PtrToStructure(p, typeof (FriendSessionStateInfo_t));
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
@@ -20,10 +20,9 @@ namespace SteamNative
       public uint IOnlineSessionInstances;
       public byte IPublishedToFriendsSessionInstance;
 
-      public static implicit operator FriendSessionStateInfo_t(FriendSessionStateInfo_t.PackSmall d)
+      public static implicit operator FriendSessionStateInfo_t(PackSmall d)
       {
-        return new FriendSessionStateInfo_t()
-        {
+        return new FriendSessionStateInfo_t {
           IOnlineSessionInstances = d.IOnlineSessionInstances,
           IPublishedToFriendsSessionInstance = d.IPublishedToFriendsSessionInstance
         };

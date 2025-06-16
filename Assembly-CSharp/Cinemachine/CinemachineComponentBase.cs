@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace Cinemachine
+﻿namespace Cinemachine
 {
   [DocumentationSorting(24f, DocumentationSortingAttribute.Level.API)]
   public abstract class CinemachineComponentBase : MonoBehaviour
@@ -12,9 +10,9 @@ namespace Cinemachine
     {
       get
       {
-        if ((Object) this.m_vcamOwner == (Object) null)
-          this.m_vcamOwner = this.gameObject.transform.parent.gameObject.GetComponent<CinemachineVirtualCameraBase>();
-        return this.m_vcamOwner;
+        if ((Object) m_vcamOwner == (Object) null)
+          m_vcamOwner = this.gameObject.transform.parent.gameObject.GetComponent<CinemachineVirtualCameraBase>();
+        return m_vcamOwner;
       }
     }
 
@@ -22,7 +20,7 @@ namespace Cinemachine
     {
       get
       {
-        CinemachineVirtualCameraBase virtualCamera = this.VirtualCamera;
+        CinemachineVirtualCameraBase virtualCamera = VirtualCamera;
         return (Object) virtualCamera == (Object) null ? (Transform) null : virtualCamera.Follow;
       }
     }
@@ -31,7 +29,7 @@ namespace Cinemachine
     {
       get
       {
-        CinemachineVirtualCameraBase virtualCamera = this.VirtualCamera;
+        CinemachineVirtualCameraBase virtualCamera = VirtualCamera;
         return (Object) virtualCamera == (Object) null ? (Transform) null : virtualCamera.LookAt;
       }
     }
@@ -40,7 +38,7 @@ namespace Cinemachine
     {
       get
       {
-        CinemachineVirtualCameraBase virtualCamera = this.VirtualCamera;
+        CinemachineVirtualCameraBase virtualCamera = VirtualCamera;
         return (Object) virtualCamera == (Object) null ? CameraState.Default : virtualCamera.State;
       }
     }

@@ -1,8 +1,6 @@
 ﻿using Engine.Common;
 using Engine.Impl.UI.Controls;
 using Engine.Source.Components;
-using System;
-using UnityEngine;
 
 public class HUDWeaponsView : EntityView
 {
@@ -19,77 +17,77 @@ public class HUDWeaponsView : EntityView
 
   public override IEntity Value
   {
-    get => this.entity;
+    get => entity;
     set
     {
-      if (this.entity == value)
+      if (entity == value)
         return;
-      this.entity = value;
-      if (this.attacker != null)
+      entity = value;
+      if (attacker != null)
       {
-        this.attacker.AvailableWeaponItemsChangeEvent -= new Action(this.AssignAvailableItems);
-        this.attacker.CurrentWeaponUnholstered -= new Action(this.AssignCurrentItem);
+        attacker.AvailableWeaponItemsChangeEvent -= AssignAvailableItems;
+        attacker.CurrentWeaponUnholstered -= AssignCurrentItem;
       }
-      this.attacker = this.entity?.GetComponent<AttackerPlayerComponent>();
-      if (this.attacker != null)
+      attacker = entity?.GetComponent<AttackerPlayerComponent>();
+      if (attacker != null)
       {
-        this.AssignAvailableItems();
-        this.attacker.AvailableWeaponItemsChangeEvent += new Action(this.AssignAvailableItems);
-        this.attacker.CurrentWeaponUnholstered += new Action(this.AssignCurrentItem);
+        AssignAvailableItems();
+        attacker.AvailableWeaponItemsChangeEvent += AssignAvailableItems;
+        attacker.CurrentWeaponUnholstered += AssignCurrentItem;
       }
       else
-        this.ClearAvailableItems();
+        ClearAvailableItems();
     }
   }
 
-  public AttackerPlayerComponent Attacker => this.attacker;
+  public AttackerPlayerComponent Attacker => attacker;
 
-  public void Hide() => this.changeEventView.Hide();
+  public void Hide() => changeEventView.Hide();
 
   public void Show()
   {
-    this.changeEventView.Show();
-    this.AssignCurrentItem();
+    changeEventView.Show();
+    AssignCurrentItem();
   }
 
   private void AssignAvailableItems()
   {
     int index = 0;
-    foreach (IEntity availableWeaponItem in this.attacker.AvailableWeaponItems)
+    foreach (IEntity availableWeaponItem in attacker.AvailableWeaponItems)
     {
-      this.availableItemViews[index].Value = availableWeaponItem;
+      availableItemViews[index].Value = availableWeaponItem;
       ++index;
-      if (index >= this.availableItemViews.Length)
+      if (index >= availableItemViews.Length)
         break;
     }
-    this.ClearCurrentItem();
+    ClearCurrentItem();
   }
 
   public virtual void AssignCurrentItem()
   {
-    if (this.attacker.CurrentWeaponItem == null)
+    if (attacker.CurrentWeaponItem == null)
     {
-      this.ClearCurrentItem();
+      ClearCurrentItem();
     }
     else
     {
-      this.currentItemView.Value = this.attacker.CurrentWeaponItem;
-      for (int index = 0; index < this.availableItemViews.Length; ++index)
-        this.availableItemSelectionViews[index].Visible = this.availableItemViews[index].Value == this.currentItemView.Value;
+      currentItemView.Value = attacker.CurrentWeaponItem;
+      for (int index = 0; index < availableItemViews.Length; ++index)
+        availableItemSelectionViews[index].Visible = availableItemViews[index].Value == currentItemView.Value;
     }
   }
 
   private void ClearAvailableItems()
   {
-    for (int index = 0; index < this.availableItemViews.Length; ++index)
-      this.availableItemViews[index].Value = (IEntity) null;
-    this.ClearCurrentItem();
+    for (int index = 0; index < availableItemViews.Length; ++index)
+      availableItemViews[index].Value = null;
+    ClearCurrentItem();
   }
 
   private void ClearCurrentItem()
   {
-    this.currentItemView.Value = (IEntity) null;
-    for (int index = 0; index < this.availableItemViews.Length; ++index)
-      this.availableItemSelectionViews[index].Visible = false;
+    currentItemView.Value = null;
+    for (int index = 0; index < availableItemViews.Length; ++index)
+      availableItemSelectionViews[index].Visible = false;
   }
 }

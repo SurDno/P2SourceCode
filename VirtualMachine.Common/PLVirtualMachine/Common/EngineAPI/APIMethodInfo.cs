@@ -8,6 +8,6 @@ namespace PLVirtualMachine.Common.EngineAPI
     public APIParamInfo ReturnParam;
     public readonly List<APIParamInfo> InputParams = new List<APIParamInfo>();
 
-    public APIMethodInfo(string methodName) => this.MethodName = methodName;
+    public APIMethodInfo(string methodName) => MethodName = methodName;
   }
 }

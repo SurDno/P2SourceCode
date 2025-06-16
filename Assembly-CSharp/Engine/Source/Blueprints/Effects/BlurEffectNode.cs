@@ -2,7 +2,6 @@
 using FlowCanvas.Nodes;
 using NodeCanvas.Framework;
 using ParadoxNotion.Design;
-using UnityEngine;
 
 namespace Engine.Source.Blueprints.Effects
 {
@@ -15,20 +14,20 @@ namespace Engine.Source.Blueprints.Effects
 
     public void Update()
     {
-      if ((Object) this.motionTrail == (Object) null)
-        this.motionTrail = GameCamera.Instance.Camera.GetComponent<MotionTrail>();
-      if ((Object) this.motionTrail == (Object) null)
+      if ((Object) motionTrail == (Object) null)
+        motionTrail = GameCamera.Instance.Camera.GetComponent<MotionTrail>();
+      if ((Object) motionTrail == (Object) null)
         return;
-      this.motionTrail.enabled = (double) this.valueInput.value > 1.0 / 256.0;
-      this.motionTrail.Strength = this.valueInput.value;
+      motionTrail.enabled = valueInput.value > 1.0 / 256.0;
+      motionTrail.Strength = valueInput.value;
     }
 
     public override void OnDestroy()
     {
       base.OnDestroy();
-      if (!(bool) (Object) this.motionTrail)
+      if (!(bool) (Object) motionTrail)
         return;
-      this.motionTrail.enabled = false;
+      motionTrail.enabled = false;
     }
   }
 }

@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEngine;
 
 namespace RootMotion.FinalIK
 {
@@ -67,45 +66,45 @@ namespace RootMotion.FinalIK
       public void Initiate(Transform transform, IKSolverFullBody solver)
       {
         this.transform = transform;
-        solver.GetChainAndNodeIndexes(transform, out this.chainIndex, out this.nodeIndex);
+        solver.GetChainAndNodeIndexes(transform, out chainIndex, out nodeIndex);
       }
 
-      public Vector3 swingDirection => this.transform.rotation * this.localSwingAxis;
+      public Vector3 swingDirection => transform.rotation * localSwingAxis;
 
       public void StoreDefaultLocalState()
       {
-        this.defaultLocalPosition = this.transform.localPosition;
-        this.defaultLocalRotation = this.transform.localRotation;
+        defaultLocalPosition = transform.localPosition;
+        defaultLocalRotation = transform.localRotation;
       }
 
       public void FixTransform(bool position)
       {
         if (position)
-          this.transform.localPosition = this.defaultLocalPosition;
-        this.transform.localRotation = this.defaultLocalRotation;
+          transform.localPosition = defaultLocalPosition;
+        transform.localRotation = defaultLocalRotation;
       }
 
-      public bool isNodeBone => this.nodeIndex != -1;
+      public bool isNodeBone => nodeIndex != -1;
 
-      public void SetLength(IKMapping.BoneMap nextBone)
+      public void SetLength(BoneMap nextBone)
       {
-        this.length = Vector3.Distance(this.transform.position, nextBone.transform.position);
+        length = Vector3.Distance(transform.position, nextBone.transform.position);
       }
 
-      public void SetLocalSwingAxis(IKMapping.BoneMap swingTarget)
+      public void SetLocalSwingAxis(BoneMap swingTarget)
       {
-        this.SetLocalSwingAxis(swingTarget, this);
+        SetLocalSwingAxis(swingTarget, this);
       }
 
-      public void SetLocalSwingAxis(IKMapping.BoneMap bone1, IKMapping.BoneMap bone2)
+      public void SetLocalSwingAxis(BoneMap bone1, BoneMap bone2)
       {
-        this.localSwingAxis = Quaternion.Inverse(this.transform.rotation) * (bone1.transform.position - bone2.transform.position);
+        localSwingAxis = Quaternion.Inverse(transform.rotation) * (bone1.transform.position - bone2.transform.position);
       }
 
       public void SetLocalTwistAxis(Vector3 twistDirection, Vector3 normalDirection)
       {
         Vector3.OrthoNormalize(ref normalDirection, ref twistDirection);
-        this.localTwistAxis = Quaternion.Inverse(this.transform.rotation) * twistDirection;
+        localTwistAxis = Quaternion.Inverse(transform.rotation) * twistDirection;
       }
 
       public void SetPlane(
@@ -117,106 +116,106 @@ namespace RootMotion.FinalIK
         this.planeBone1 = planeBone1;
         this.planeBone2 = planeBone2;
         this.planeBone3 = planeBone3;
-        solver.GetChainAndNodeIndexes(planeBone1, out this.plane1ChainIndex, out this.plane1NodeIndex);
-        solver.GetChainAndNodeIndexes(planeBone2, out this.plane2ChainIndex, out this.plane2NodeIndex);
-        solver.GetChainAndNodeIndexes(planeBone3, out this.plane3ChainIndex, out this.plane3NodeIndex);
-        this.UpdatePlane(true, true);
+        solver.GetChainAndNodeIndexes(planeBone1, out plane1ChainIndex, out plane1NodeIndex);
+        solver.GetChainAndNodeIndexes(planeBone2, out plane2ChainIndex, out plane2NodeIndex);
+        solver.GetChainAndNodeIndexes(planeBone3, out plane3ChainIndex, out plane3NodeIndex);
+        UpdatePlane(true, true);
       }
 
       public void UpdatePlane(bool rotation, bool position)
       {
-        Quaternion animatedTargetRotation = this.lastAnimatedTargetRotation;
+        Quaternion animatedTargetRotation = lastAnimatedTargetRotation;
         if (rotation)
-          this.defaultLocalTargetRotation = QuaTools.RotationToLocalSpace(this.transform.rotation, animatedTargetRotation);
+          defaultLocalTargetRotation = QuaTools.RotationToLocalSpace(transform.rotation, animatedTargetRotation);
         if (!position)
           return;
-        this.planePosition = Quaternion.Inverse(animatedTargetRotation) * (this.transform.position - this.planeBone1.position);
+        planePosition = Quaternion.Inverse(animatedTargetRotation) * (transform.position - planeBone1.position);
       }
 
-      public void SetIKPosition() => this.ikPosition = this.transform.position;
+      public void SetIKPosition() => ikPosition = transform.position;
 
-      public void MaintainRotation() => this.maintainRotation = this.transform.rotation;
+      public void MaintainRotation() => maintainRotation = transform.rotation;
 
-      public void SetToIKPosition() => this.transform.position = this.ikPosition;
+      public void SetToIKPosition() => transform.position = ikPosition;
 
       public void FixToNode(IKSolverFullBody solver, float weight, IKSolver.Node fixNode = null)
       {
         if (fixNode == null)
-          fixNode = solver.GetNode(this.chainIndex, this.nodeIndex);
-        if ((double) weight >= 1.0)
-          this.transform.position = fixNode.solverPosition;
+          fixNode = solver.GetNode(chainIndex, nodeIndex);
+        if (weight >= 1.0)
+          transform.position = fixNode.solverPosition;
         else
-          this.transform.position = Vector3.Lerp(this.transform.position, fixNode.solverPosition, weight);
+          transform.position = Vector3.Lerp(transform.position, fixNode.solverPosition, weight);
       }
 
       public Vector3 GetPlanePosition(IKSolverFullBody solver)
       {
-        return solver.GetNode(this.plane1ChainIndex, this.plane1NodeIndex).solverPosition + this.GetTargetRotation(solver) * this.planePosition;
+        return solver.GetNode(plane1ChainIndex, plane1NodeIndex).solverPosition + GetTargetRotation(solver) * planePosition;
       }
 
       public void PositionToPlane(IKSolverFullBody solver)
       {
-        this.transform.position = this.GetPlanePosition(solver);
+        transform.position = GetPlanePosition(solver);
       }
 
       public void RotateToPlane(IKSolverFullBody solver, float weight)
       {
-        Quaternion b = this.GetTargetRotation(solver) * this.defaultLocalTargetRotation;
-        if ((double) weight >= 1.0)
-          this.transform.rotation = b;
+        Quaternion b = GetTargetRotation(solver) * defaultLocalTargetRotation;
+        if (weight >= 1.0)
+          transform.rotation = b;
         else
-          this.transform.rotation = Quaternion.Lerp(this.transform.rotation, b, weight);
+          transform.rotation = Quaternion.Lerp(transform.rotation, b, weight);
       }
 
       public void Swing(Vector3 swingTarget, float weight)
       {
-        this.Swing(swingTarget, this.transform.position, weight);
+        Swing(swingTarget, transform.position, weight);
       }
 
       public void Swing(Vector3 pos1, Vector3 pos2, float weight)
       {
-        Quaternion b = Quaternion.FromToRotation(this.transform.rotation * this.localSwingAxis, pos1 - pos2) * this.transform.rotation;
-        if ((double) weight >= 1.0)
-          this.transform.rotation = b;
+        Quaternion b = Quaternion.FromToRotation(transform.rotation * localSwingAxis, pos1 - pos2) * transform.rotation;
+        if (weight >= 1.0)
+          transform.rotation = b;
         else
-          this.transform.rotation = Quaternion.Lerp(this.transform.rotation, b, weight);
+          transform.rotation = Quaternion.Lerp(transform.rotation, b, weight);
       }
 
       public void Twist(Vector3 twistDirection, Vector3 normalDirection, float weight)
       {
         Vector3.OrthoNormalize(ref normalDirection, ref twistDirection);
-        Quaternion b = Quaternion.FromToRotation(this.transform.rotation * this.localTwistAxis, twistDirection) * this.transform.rotation;
-        if ((double) weight >= 1.0)
-          this.transform.rotation = b;
+        Quaternion b = Quaternion.FromToRotation(transform.rotation * localTwistAxis, twistDirection) * transform.rotation;
+        if (weight >= 1.0)
+          transform.rotation = b;
         else
-          this.transform.rotation = Quaternion.Lerp(this.transform.rotation, b, weight);
+          transform.rotation = Quaternion.Lerp(transform.rotation, b, weight);
       }
 
       public void RotateToMaintain(float weight)
       {
-        if ((double) weight <= 0.0)
+        if (weight <= 0.0)
           return;
-        this.transform.rotation = Quaternion.Lerp(this.transform.rotation, this.maintainRotation, weight);
+        transform.rotation = Quaternion.Lerp(transform.rotation, maintainRotation, weight);
       }
 
       public void RotateToEffector(IKSolverFullBody solver, float weight)
       {
-        if (!this.isNodeBone)
+        if (!isNodeBone)
           return;
-        float t = weight * solver.GetNode(this.chainIndex, this.nodeIndex).effectorRotationWeight;
-        if ((double) t <= 0.0)
+        float t = weight * solver.GetNode(chainIndex, nodeIndex).effectorRotationWeight;
+        if (t <= 0.0)
           return;
-        if ((double) t >= 1.0)
-          this.transform.rotation = solver.GetNode(this.chainIndex, this.nodeIndex).solverRotation;
+        if (t >= 1.0)
+          transform.rotation = solver.GetNode(chainIndex, nodeIndex).solverRotation;
         else
-          this.transform.rotation = Quaternion.Lerp(this.transform.rotation, solver.GetNode(this.chainIndex, this.nodeIndex).solverRotation, t);
+          transform.rotation = Quaternion.Lerp(transform.rotation, solver.GetNode(chainIndex, nodeIndex).solverRotation, t);
       }
 
       private Quaternion GetTargetRotation(IKSolverFullBody solver)
       {
-        Vector3 solverPosition1 = solver.GetNode(this.plane1ChainIndex, this.plane1NodeIndex).solverPosition;
-        Vector3 solverPosition2 = solver.GetNode(this.plane2ChainIndex, this.plane2NodeIndex).solverPosition;
-        Vector3 solverPosition3 = solver.GetNode(this.plane3ChainIndex, this.plane3NodeIndex).solverPosition;
+        Vector3 solverPosition1 = solver.GetNode(plane1ChainIndex, plane1NodeIndex).solverPosition;
+        Vector3 solverPosition2 = solver.GetNode(plane2ChainIndex, plane2NodeIndex).solverPosition;
+        Vector3 solverPosition3 = solver.GetNode(plane3ChainIndex, plane3NodeIndex).solverPosition;
         return solverPosition1 == solverPosition3 ? Quaternion.identity : Quaternion.LookRotation(solverPosition2 - solverPosition1, solverPosition3 - solverPosition1);
       }
 
@@ -224,7 +223,7 @@ namespace RootMotion.FinalIK
       {
         get
         {
-          return this.planeBone1.position == this.planeBone3.position ? Quaternion.identity : Quaternion.LookRotation(this.planeBone2.position - this.planeBone1.position, this.planeBone3.position - this.planeBone1.position);
+          return planeBone1.position == planeBone3.position ? Quaternion.identity : Quaternion.LookRotation(planeBone2.position - planeBone1.position, planeBone3.position - planeBone1.position);
         }
       }
     }

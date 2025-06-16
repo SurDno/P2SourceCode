@@ -1,11 +1,10 @@
-﻿using Engine.Assets.Internal.Reference;
+﻿using System.Collections.Generic;
+using Engine.Assets.Internal.Reference;
 using Engine.Common;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Engine.Source.Commons;
 using Inspectors;
-using System;
-using System.Collections.Generic;
 
 namespace Engine.Impl
 {
@@ -13,26 +12,26 @@ namespace Engine.Impl
   [GenerateProxy(TypeEnum.Copyable | TypeEnum.EngineCloneable | TypeEnum.DataRead | TypeEnum.DataWrite)]
   public class SceneObject : EngineObject, IScene, IObject
   {
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy()]
     [Inspected]
     public List<SceneObjectItem> Items = new List<SceneObjectItem>();
 
-    public void Sort() => this.Sort(this.Items);
+    public void Sort() => Sort(Items);
 
     private void Sort(List<SceneObjectItem> items)
     {
-      items.Sort((Comparison<SceneObjectItem>) ((a, b) => a.Id.CompareTo(b.Id)));
+      items.Sort((a, b) => a.Id.CompareTo(b.Id));
       foreach (SceneObjectItem sceneObjectItem in items)
-        this.Sort(sceneObjectItem.Items);
+        Sort(sceneObjectItem.Items);
     }
 
     public IEnumerable<SceneObjectItem> GetChilds()
     {
-      foreach (SceneObjectItem child in this.Items)
+      foreach (SceneObjectItem child in Items)
       {
         yield return child;
-        foreach (SceneObjectItem child2 in SceneObject.GetChilds(child))
+        foreach (SceneObjectItem child2 in GetChilds(child))
           yield return child2;
       }
     }
@@ -42,7 +41,7 @@ namespace Engine.Impl
       foreach (SceneObjectItem child in item.Items)
       {
         yield return child;
-        foreach (SceneObjectItem child2 in SceneObject.GetChilds(child))
+        foreach (SceneObjectItem child2 in GetChilds(child))
           yield return child2;
       }
     }

@@ -1,11 +1,10 @@
-﻿using Engine.Common.Services;
+﻿using System.Collections.Generic;
+using Engine.Common.Services;
 using Engine.Source.Services;
 using Engine.Source.VisualEffects;
 using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
-using System.Collections.Generic;
-using UnityEngine;
 
 namespace Engine.Source.Blueprints.Effects
 {
@@ -21,8 +20,8 @@ namespace Engine.Source.Blueprints.Effects
     [Port("Value")]
     private IList<IParameter<IntensityParameter<Color>>> Value()
     {
-      this.effects.GetParameters<IntensityParameter<Color>>(this.nameInput.value, this.result);
-      return (IList<IParameter<IntensityParameter<Color>>>) this.result;
+      effects.GetParameters<IntensityParameter<Color>>(nameInput.value, result);
+      return (IList<IParameter<IntensityParameter<Color>>>) result;
     }
   }
 }

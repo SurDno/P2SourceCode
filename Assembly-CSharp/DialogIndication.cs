@@ -4,8 +4,6 @@ using Engine.Source.Commons;
 using Engine.Source.Components;
 using Engine.Source.Services;
 using Inspectors;
-using System;
-using UnityEngine;
 
 [DisallowMultipleComponent]
 public class DialogIndication : MonoBehaviour, IEntityAttachable
@@ -19,17 +17,17 @@ public class DialogIndication : MonoBehaviour, IEntityAttachable
   private bool compassEnabled;
   private bool visible;
 
-  void IEntityAttachable.Attach(IEntity owner) => this.SetOwner(owner);
+  void IEntityAttachable.Attach(IEntity owner) => SetOwner(owner);
 
-  void IEntityAttachable.Detach() => this.SetOwner((IEntity) null);
+  void IEntityAttachable.Detach() => SetOwner(null);
 
   private void OnEnable()
   {
     QuestCompassService service = ServiceLocator.GetService<QuestCompassService>();
     if (service == null)
       return;
-    this.OnEnableChanged(service.IsEnabled);
-    service.OnEnableChanged += new Action<bool>(this.OnEnableChanged);
+    OnEnableChanged(service.IsEnabled);
+    service.OnEnableChanged += OnEnableChanged;
   }
 
   private void OnDisable()
@@ -37,69 +35,69 @@ public class DialogIndication : MonoBehaviour, IEntityAttachable
     QuestCompassService service = ServiceLocator.GetService<QuestCompassService>();
     if (service == null)
       return;
-    service.OnEnableChanged -= new Action<bool>(this.OnEnableChanged);
-    this.OnEnableChanged(false);
+    service.OnEnableChanged -= OnEnableChanged;
+    OnEnableChanged(false);
   }
 
   private void SetOwner(IEntity value)
   {
-    if (this.owner == value)
+    if (owner == value)
       return;
-    this.owner = value;
-    this.SetSpeakingComponent(this.owner?.GetComponent<SpeakingComponent>());
+    owner = value;
+    SetSpeakingComponent(owner?.GetComponent<SpeakingComponent>());
   }
 
   private void SetSpeakingComponent(SpeakingComponent value)
   {
-    if (this.speakingComponent == value)
+    if (speakingComponent == value)
       return;
-    if (this.speakingComponent != null)
-      this.speakingComponent.OnSpeakAvailableChange -= new Action<bool>(this.SetSpeakingAvailable);
-    this.speakingComponent = value;
-    if (this.speakingComponent != null)
+    if (speakingComponent != null)
+      speakingComponent.OnSpeakAvailableChange -= SetSpeakingAvailable;
+    speakingComponent = value;
+    if (speakingComponent != null)
     {
-      this.SetSpeakingAvailable(this.speakingComponent.SpeakAvailable);
-      this.speakingComponent.OnSpeakAvailableChange += new Action<bool>(this.SetSpeakingAvailable);
+      SetSpeakingAvailable(speakingComponent.SpeakAvailable);
+      speakingComponent.OnSpeakAvailableChange += SetSpeakingAvailable;
     }
     else
-      this.SetSpeakingAvailable(false);
+      SetSpeakingAvailable(false);
   }
 
   private void SetSpeakingAvailable(bool value)
   {
-    if (this.speakingAvailable == value)
+    if (speakingAvailable == value)
       return;
-    this.speakingAvailable = value;
-    this.UpdateVisibility();
+    speakingAvailable = value;
+    UpdateVisibility();
   }
 
   private void OnEnableChanged(bool value)
   {
-    if (this.compassEnabled == value)
+    if (compassEnabled == value)
       return;
-    this.compassEnabled = value;
-    this.UpdateVisibility();
+    compassEnabled = value;
+    UpdateVisibility();
   }
 
   private void SetVisibility(bool value)
   {
-    if (this.visible == value)
+    if (visible == value)
       return;
-    this.visible = value;
-    if ((UnityEngine.Object) this.effect == (UnityEngine.Object) null)
+    visible = value;
+    if ((UnityEngine.Object) effect == (UnityEngine.Object) null)
     {
-      if (!this.visible)
+      if (!visible)
         return;
-      this.effect = this.GetComponent<FocusEffect>();
-      if ((UnityEngine.Object) this.effect == (UnityEngine.Object) null)
-        this.effect = this.gameObject.AddComponent<FocusEffect>();
+      effect = this.GetComponent<FocusEffect>();
+      if ((UnityEngine.Object) effect == (UnityEngine.Object) null)
+        effect = this.gameObject.AddComponent<FocusEffect>();
     }
     else
-      this.effect.enabled = this.visible;
+      effect.enabled = visible;
   }
 
   private void UpdateVisibility()
   {
-    this.SetVisibility(this.speakingAvailable && this.compassEnabled);
+    SetVisibility(speakingAvailable && compassEnabled);
   }
 }

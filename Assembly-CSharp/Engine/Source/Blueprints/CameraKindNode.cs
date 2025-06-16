@@ -14,13 +14,13 @@ namespace Engine.Source.Blueprints
     protected override void RegisterPorts()
     {
       base.RegisterPorts();
-      FlowOutput output = this.AddFlowOutput("Out");
-      this.AddFlowInput("In", (FlowHandler) (() =>
+      FlowOutput output = AddFlowOutput("Out");
+      AddFlowInput("In", () =>
       {
-        ServiceLocator.GetService<CameraService>().Kind = this.cameraKindValue.value;
+        ServiceLocator.GetService<CameraService>().Kind = cameraKindValue.value;
         output.Call();
-      }));
-      this.cameraKindValue = this.AddValueInput<CameraKindEnum>("Kind");
+      });
+      cameraKindValue = AddValueInput<CameraKindEnum>("Kind");
     }
   }
 }

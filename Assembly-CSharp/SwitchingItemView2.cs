@@ -1,7 +1,6 @@
-﻿using Engine.Impl.UI.Controls;
+﻿using System;
+using Engine.Impl.UI.Controls;
 using Engine.Source.Components;
-using System;
-using UnityEngine;
 
 public class SwitchingItemView2 : ItemView
 {
@@ -25,12 +24,12 @@ public class SwitchingItemView2 : ItemView
   private ItemView frontView;
   [SerializeField]
   private float swapTime = 0.5f;
-  private StorableComponent storable = (StorableComponent) null;
-  private bool nextDirection = false;
-  private bool direction = false;
-  private bool needToSwitch = false;
+  private StorableComponent storable;
+  private bool nextDirection;
+  private bool direction;
+  private bool needToSwitch;
   private float phase = 1f;
-  private bool isAnimated = false;
+  private bool isAnimated;
 
   public event Action AnimationBeginEvent;
 
@@ -38,22 +37,22 @@ public class SwitchingItemView2 : ItemView
 
   public bool IsAnimated
   {
-    get => this.isAnimated;
+    get => isAnimated;
     private set
     {
-      if (value == this.isAnimated)
+      if (value == isAnimated)
         return;
-      this.isAnimated = value;
-      if (this.isAnimated)
+      isAnimated = value;
+      if (isAnimated)
       {
-        Action animationBeginEvent = this.AnimationBeginEvent;
+        Action animationBeginEvent = AnimationBeginEvent;
         if (animationBeginEvent == null)
           return;
         animationBeginEvent();
       }
       else
       {
-        Action animationEndEvent = this.AnimationEndEvent;
+        Action animationEndEvent = AnimationEndEvent;
         if (animationEndEvent == null)
           return;
         animationEndEvent();
@@ -63,99 +62,99 @@ public class SwitchingItemView2 : ItemView
 
   public bool ReversedDirection
   {
-    get => this.nextDirection;
-    set => this.nextDirection = value;
+    get => nextDirection;
+    set => nextDirection = value;
   }
 
   public override StorableComponent Storable
   {
-    get => this.storable;
+    get => storable;
     set
     {
-      if (this.storable == value)
+      if (storable == value)
         return;
-      this.storable = value;
+      storable = value;
       if (this.isActiveAndEnabled)
-        this.needToSwitch = true;
+        needToSwitch = true;
       else
-        this.ForceResult();
+        ForceResult();
     }
   }
 
   private void ForceResult()
   {
-    this.SetFrontViewStorable();
-    this.phase = 1f;
-    this.ApplyPhase();
+    SetFrontViewStorable();
+    phase = 1f;
+    ApplyPhase();
   }
 
   private void ApplyPhase()
   {
-    if ((double) this.phase >= 1.0)
+    if (phase >= 1.0)
     {
-      this.phase = 1f;
-      this.backView.Storable = (StorableComponent) null;
-      this.IsAnimated = false;
+      phase = 1f;
+      backView.Storable = null;
+      IsAnimated = false;
     }
     else
-      this.IsAnimated = true;
-    float num = 1f - this.phase;
-    this.frontOpacity.Progress = this.frontView.Storable != null ? this.phase : 0.0f;
-    this.backOpacity.Progress = this.backView.Storable != null ? num : 0.0f;
-    if (!((UnityEngine.Object) this.nullOpacity != (UnityEngine.Object) null))
+      IsAnimated = true;
+    float num = 1f - phase;
+    frontOpacity.Progress = frontView.Storable != null ? phase : 0.0f;
+    backOpacity.Progress = backView.Storable != null ? num : 0.0f;
+    if (!((UnityEngine.Object) nullOpacity != (UnityEngine.Object) null))
       return;
-    this.nullOpacity.Progress = (float) ((this.frontView.Storable == null ? (double) this.phase : 0.0) + (this.backView.Storable == null ? (double) num : 0.0));
+    nullOpacity.Progress = (float) ((frontView.Storable == null ? phase : 0.0) + (backView.Storable == null ? num : 0.0));
   }
 
-  private void OnDisable() => this.ForceResult();
+  private void OnDisable() => ForceResult();
 
   private void SetFrontViewStorable()
   {
-    this.frontView.Storable = this.storable;
-    this.needToSwitch = false;
+    frontView.Storable = storable;
+    needToSwitch = false;
   }
 
   private void SwitchViews()
   {
-    this.ApplyDirection();
+    ApplyDirection();
     ItemView backView = this.backView;
-    this.backView = this.frontView;
-    this.frontView = backView;
+    this.backView = frontView;
+    frontView = backView;
     Transform backTransform = this.backTransform;
-    this.backTransform = this.frontTransform;
-    this.frontTransform = backTransform;
-    this.backTransform.SetParent(this.backAnchor, false);
-    this.frontTransform.SetParent(this.frontAnchor, false);
+    this.backTransform = frontTransform;
+    frontTransform = backTransform;
+    this.backTransform.SetParent(backAnchor, false);
+    frontTransform.SetParent(frontAnchor, false);
   }
 
   private void ApplyDirection()
   {
-    if (this.nextDirection == this.direction)
+    if (nextDirection == direction)
       return;
-    this.direction = this.nextDirection;
+    direction = nextDirection;
     Transform backAnchor = this.backAnchor;
-    this.backAnchor = this.frontAnchor;
-    this.frontAnchor = backAnchor;
+    this.backAnchor = frontAnchor;
+    frontAnchor = backAnchor;
     ProgressViewBase backOpacity = this.backOpacity;
-    this.backOpacity = this.frontOpacity;
-    this.frontOpacity = backOpacity;
+    this.backOpacity = frontOpacity;
+    frontOpacity = backOpacity;
   }
 
   private void Update()
   {
-    if ((double) this.phase == 1.0)
+    if (phase == 1.0)
     {
-      if (!this.needToSwitch)
+      if (!needToSwitch)
         return;
-      this.SwitchViews();
-      this.SetFrontViewStorable();
-      this.phase = Time.deltaTime / this.swapTime;
-      this.ApplyPhase();
+      SwitchViews();
+      SetFrontViewStorable();
+      phase = Time.deltaTime / swapTime;
+      ApplyPhase();
     }
     else
     {
-      this.phase += Time.deltaTime / this.swapTime;
-      this.ApplyPhase();
+      phase += Time.deltaTime / swapTime;
+      ApplyPhase();
     }
   }
 }

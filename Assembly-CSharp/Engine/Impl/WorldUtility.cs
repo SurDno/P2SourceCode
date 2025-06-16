@@ -1,7 +1,6 @@
-﻿using Cofe.Utility;
+﻿using System;
+using Cofe.Utility;
 using Engine.Common;
-using System;
-using System.Reflection;
 
 namespace Engine.Impl
 {
@@ -9,17 +8,17 @@ namespace Engine.Impl
   {
     public static IVirtualMachine CreateVirtualMachine()
     {
-      Type virtualMachineType = WorldUtility.GetVirtualMachineType();
-      return virtualMachineType != (Type) null ? (IVirtualMachine) Activator.CreateInstance(virtualMachineType) : (IVirtualMachine) null;
+      Type virtualMachineType = GetVirtualMachineType();
+      return virtualMachineType != null ? (IVirtualMachine) Activator.CreateInstance(virtualMachineType) : null;
     }
 
     private static Type GetVirtualMachineType()
     {
-      Type result = (Type) null;
+      Type result = null;
       Type vmType = typeof (IVirtualMachine);
-      AssemblyUtility.ComputeAssemblies(vmType.Assembly, (Action<Assembly>) (assembly =>
+      AssemblyUtility.ComputeAssemblies(vmType.Assembly, assembly =>
       {
-        if (result != (Type) null)
+        if (result != null)
           return;
         foreach (Type type1 in assembly.GetTypes())
         {
@@ -35,7 +34,7 @@ namespace Engine.Impl
             }
           }
         }
-      }));
+      });
       return result;
     }
   }

@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEngine;
 
 namespace RootMotion.FinalIK
 {
@@ -14,7 +13,7 @@ namespace RootMotion.FinalIK
 
     public bool IsValid(ref string errorMessage)
     {
-      foreach (Finger finger in this.fingers)
+      foreach (Finger finger in fingers)
       {
         if (!finger.IsValid(ref errorMessage))
           return false;
@@ -25,11 +24,11 @@ namespace RootMotion.FinalIK
     [ContextMenu("Auto-detect")]
     public void AutoDetect()
     {
-      this.fingers = new Finger[0];
+      fingers = new Finger[0];
       for (int index = 0; index < this.transform.childCount; ++index)
       {
         Transform[] array = new Transform[0];
-        this.AddChildrenRecursive(this.transform.GetChild(index), ref array);
+        AddChildrenRecursive(this.transform.GetChild(index), ref array);
         if (array.Length == 3 || array.Length == 4)
         {
           Finger finger = new Finger();
@@ -45,8 +44,8 @@ namespace RootMotion.FinalIK
             finger.tip = array[3];
           }
           finger.weight = 1f;
-          Array.Resize<Finger>(ref this.fingers, this.fingers.Length + 1);
-          this.fingers[this.fingers.Length - 1] = finger;
+          Array.Resize(ref fingers, fingers.Length + 1);
+          fingers[fingers.Length - 1] = finger;
         }
       }
     }
@@ -64,75 +63,75 @@ namespace RootMotion.FinalIK
       finger.bone3 = bone3;
       finger.tip = tip;
       finger.target = target;
-      Array.Resize<Finger>(ref this.fingers, this.fingers.Length + 1);
-      this.fingers[this.fingers.Length - 1] = finger;
-      this.initiated = false;
-      finger.Initiate(this.transform, this.fingers.Length - 1);
-      if (!this.fingers[this.fingers.Length - 1].initiated)
+      Array.Resize(ref fingers, fingers.Length + 1);
+      fingers[fingers.Length - 1] = finger;
+      initiated = false;
+      finger.Initiate(this.transform, fingers.Length - 1);
+      if (!fingers[fingers.Length - 1].initiated)
         return;
-      this.initiated = true;
+      initiated = true;
     }
 
     public void RemoveFinger(int index)
     {
-      if ((double) index < 0.0 || index >= this.fingers.Length)
+      if (index < 0.0 || index >= fingers.Length)
         Warning.Log("RemoveFinger index out of bounds.", this.transform);
-      else if (this.fingers.Length == 1)
+      else if (fingers.Length == 1)
       {
-        this.fingers = new Finger[0];
+        fingers = new Finger[0];
       }
       else
       {
-        Finger[] fingerArray = new Finger[this.fingers.Length - 1];
+        Finger[] fingerArray = new Finger[fingers.Length - 1];
         int index1 = 0;
-        for (int index2 = 0; index2 < this.fingers.Length; ++index2)
+        for (int index2 = 0; index2 < fingers.Length; ++index2)
         {
           if (index2 != index)
           {
-            fingerArray[index1] = this.fingers[index2];
+            fingerArray[index1] = fingers[index2];
             ++index1;
           }
         }
-        this.fingers = fingerArray;
+        fingers = fingerArray;
       }
     }
 
     private void AddChildrenRecursive(Transform parent, ref Transform[] array)
     {
-      Array.Resize<Transform>(ref array, array.Length + 1);
+      Array.Resize(ref array, array.Length + 1);
       array[array.Length - 1] = parent;
       if (parent.childCount != 1)
         return;
-      this.AddChildrenRecursive(parent.GetChild(0), ref array);
+      AddChildrenRecursive(parent.GetChild(0), ref array);
     }
 
     protected override void InitiateSolver()
     {
-      this.initiated = true;
-      for (int index = 0; index < this.fingers.Length; ++index)
+      initiated = true;
+      for (int index = 0; index < fingers.Length; ++index)
       {
-        this.fingers[index].Initiate(this.transform, index);
-        if (!this.fingers[index].initiated)
-          this.initiated = false;
+        fingers[index].Initiate(this.transform, index);
+        if (!fingers[index].initiated)
+          initiated = false;
       }
     }
 
     public void UpdateFingerSolvers()
     {
-      if ((double) this.weight <= 0.0)
+      if (weight <= 0.0)
         return;
-      foreach (Finger finger in this.fingers)
-        finger.Update(this.weight);
+      foreach (Finger finger in fingers)
+        finger.Update(weight);
     }
 
     public void FixFingerTransforms()
     {
-      foreach (Finger finger in this.fingers)
+      foreach (Finger finger in fingers)
         finger.FixTransforms();
     }
 
-    protected override void UpdateSolver() => this.UpdateFingerSolvers();
+    protected override void UpdateSolver() => UpdateFingerSolvers();
 
-    protected override void FixTransforms() => this.FixFingerTransforms();
+    protected override void FixTransforms() => FixFingerTransforms();
   }
 }

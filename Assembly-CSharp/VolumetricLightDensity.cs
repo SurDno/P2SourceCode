@@ -1,7 +1,5 @@
 ﻿using Engine.Common.Services;
 using Engine.Source.Services;
-using System;
-using UnityEngine;
 
 [RequireComponent(typeof (VolumetricLight))]
 public class VolumetricLightDensity : EngineDependent
@@ -16,27 +14,27 @@ public class VolumetricLightDensity : EngineDependent
 
   private void ApplyDensity(float density)
   {
-    if ((double) this.referenceDensity == 0.0)
+    if (referenceDensity == 0.0)
       return;
-    if ((UnityEngine.Object) this.volumetricLight == (UnityEngine.Object) null)
+    if ((UnityEngine.Object) volumetricLight == (UnityEngine.Object) null)
     {
-      this.volumetricLight = this.GetComponent<VolumetricLight>();
-      this.baseExtinction = this.volumetricLight.ExtinctionCoef;
-      this.baseScattering = this.volumetricLight.ScatteringCoef;
+      volumetricLight = this.GetComponent<VolumetricLight>();
+      baseExtinction = volumetricLight.ExtinctionCoef;
+      baseScattering = volumetricLight.ScatteringCoef;
     }
-    float num = density / this.referenceDensity;
-    this.volumetricLight.ExtinctionCoef = this.baseExtinction * num;
-    this.volumetricLight.ScatteringCoef = this.baseScattering * num;
+    float num = density / referenceDensity;
+    volumetricLight.ExtinctionCoef = baseExtinction * num;
+    volumetricLight.ScatteringCoef = baseScattering * num;
   }
 
   protected override void OnConnectToEngine()
   {
-    this.ApplyDensity(RenderSettings.fogDensity);
-    this.fogController.DensityChangedEvent += new Action<float>(this.ApplyDensity);
+    ApplyDensity(RenderSettings.fogDensity);
+    fogController.DensityChangedEvent += ApplyDensity;
   }
 
   protected override void OnDisconnectFromEngine()
   {
-    this.fogController.DensityChangedEvent -= new Action<float>(this.ApplyDensity);
+    fogController.DensityChangedEvent -= ApplyDensity;
   }
 }

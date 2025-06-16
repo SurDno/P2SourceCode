@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-public class TOD_Billboard : MonoBehaviour
+﻿public class TOD_Billboard : MonoBehaviour
 {
   public float Altitude = 0.0f;
   public float Azimuth = 0.0f;

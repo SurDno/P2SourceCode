@@ -21,10 +21,10 @@ namespace ParadoxNotion.Serialization.FullSerializer.Internal
     {
       if (!data.IsString)
         return fsResult.Fail("Type converter requires a string");
-      instance = (object) fsTypeCache.GetType(data.AsString);
+      instance = fsTypeCache.GetType(data.AsString);
       return instance == null ? fsResult.Fail("Unable to find type " + data.AsString) : fsResult.Success;
     }
 
-    public override object CreateInstance(fsData data, Type storageType) => (object) storageType;
+    public override object CreateInstance(fsData data, Type storageType) => storageType;
   }
 }

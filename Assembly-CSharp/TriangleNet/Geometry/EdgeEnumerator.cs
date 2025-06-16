@@ -8,54 +8,54 @@ namespace TriangleNet.Geometry
   public class EdgeEnumerator : IEnumerator<Edge>, IEnumerator, IDisposable
   {
     private Edge current;
-    private Otri neighbor = new Otri();
+    private Otri neighbor;
     private Vertex p1;
     private Vertex p2;
-    private Osub sub = new Osub();
-    private Otri tri = new Otri();
+    private Osub sub;
+    private Otri tri;
     private IEnumerator<Triangle> triangles;
 
     public EdgeEnumerator(Mesh mesh)
     {
-      this.triangles = (IEnumerator<Triangle>) mesh.triangles.Values.GetEnumerator();
-      this.triangles.MoveNext();
-      this.tri.triangle = this.triangles.Current;
-      this.tri.orient = 0;
+      triangles = mesh.triangles.Values.GetEnumerator();
+      triangles.MoveNext();
+      tri.triangle = triangles.Current;
+      tri.orient = 0;
     }
 
-    public Edge Current => this.current;
+    public Edge Current => current;
 
-    public void Dispose() => this.triangles.Dispose();
+    public void Dispose() => triangles.Dispose();
 
-    object IEnumerator.Current => (object) this.current;
+    object IEnumerator.Current => current;
 
     public bool MoveNext()
     {
-      if (this.tri.triangle == null)
+      if (tri.triangle == null)
         return false;
-      this.current = (Edge) null;
-      while (this.current == null)
+      current = null;
+      while (current == null)
       {
-        if (this.tri.orient == 3)
+        if (tri.orient == 3)
         {
-          if (!this.triangles.MoveNext())
+          if (!triangles.MoveNext())
             return false;
-          this.tri.triangle = this.triangles.Current;
-          this.tri.orient = 0;
+          tri.triangle = triangles.Current;
+          tri.orient = 0;
         }
-        this.tri.Sym(ref this.neighbor);
-        if (this.tri.triangle.id < this.neighbor.triangle.id || this.neighbor.triangle == Mesh.dummytri)
+        tri.Sym(ref neighbor);
+        if (tri.triangle.id < neighbor.triangle.id || neighbor.triangle == Mesh.dummytri)
         {
-          this.p1 = this.tri.Org();
-          this.p2 = this.tri.Dest();
-          this.tri.SegPivot(ref this.sub);
-          this.current = new Edge(this.p1.id, this.p2.id, this.sub.seg.boundary);
+          p1 = tri.Org();
+          p2 = tri.Dest();
+          tri.SegPivot(ref sub);
+          current = new Edge(p1.id, p2.id, sub.seg.boundary);
         }
-        ++this.tri.orient;
+        ++tri.orient;
       }
       return true;
     }
 
-    public void Reset() => this.triangles.Reset();
+    public void Reset() => triangles.Reset();
   }
 }

@@ -1,14 +1,13 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using System.IO;
+using System.Text;
+using System.Xml;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Cofe.Serializations.Data.Xml;
 using Cofe.Utility;
 using Engine.Common;
 using Engine.Common.Commons.Converters;
-using System;
-using System.IO;
-using System.Text;
-using System.Xml;
-using UnityEngine;
 
 public static class SerializeUtility
 {
@@ -16,7 +15,7 @@ public static class SerializeUtility
 
   public static void Serialize<T>(string path, T template) where T : class
   {
-    if ((object) template == null)
+    if (template == null)
     {
       Debug.LogError((object) ("Template is null , type : " + TypeUtility.GetTypeName(typeof (T))));
     }
@@ -29,9 +28,9 @@ public static class SerializeUtility
           StreamDataWriter writer = new StreamDataWriter(stream);
           if (template is ISerializeDataWrite serializeDataWrite)
           {
-            System.Type type = ProxyFactory.GetType(template.GetType());
+            Type type = ProxyFactory.GetType(template.GetType());
             writer.Begin("Object", type, true);
-            serializeDataWrite.DataWrite((IDataWriter) writer);
+            serializeDataWrite.DataWrite(writer);
             writer.End("Object", true);
           }
           else
@@ -48,7 +47,7 @@ public static class SerializeUtility
   public static T Deserialize<T>(string path) where T : class
   {
     using (FileStream fileStream = new FileStream(path, FileMode.Open, FileAccess.Read))
-      return SerializeUtility.Deserialize<T>((Stream) fileStream, path);
+      return Deserialize<T>(fileStream, path);
   }
 
   public static T Deserialize<T>(Stream stream, string context) where T : class
@@ -62,10 +61,10 @@ public static class SerializeUtility
     }
     catch (Exception ex)
     {
-      Debug.LogError((object) (ex.ToString() + " : " + context));
+      Debug.LogError((object) (ex + " : " + context));
       return default (T);
     }
-    T obj = DefaultDataReadUtility.ReadSerialize<T>((IDataReader) new XmlNodeDataReader((XmlNode) node, context), "Object");
+    T obj = DefaultDataReadUtility.ReadSerialize<T>(new XmlNodeDataReader(node, context), "Object");
     if (obj is IFactoryProduct factoryProduct)
       factoryProduct.ConstructComplete();
     return obj;
@@ -73,7 +72,7 @@ public static class SerializeUtility
 
   public static T Deserialize<T>(XmlNode node, string context) where T : class
   {
-    T obj = DefaultDataReadUtility.ReadSerialize<T>((IDataReader) new XmlNodeDataReader(node, context));
+    T obj = DefaultDataReadUtility.ReadSerialize<T>(new XmlNodeDataReader(node, context));
     if (obj is IFactoryProduct factoryProduct)
       factoryProduct.ConstructComplete();
     return obj;

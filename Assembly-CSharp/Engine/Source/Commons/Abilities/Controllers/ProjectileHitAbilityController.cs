@@ -1,7 +1,5 @@
 ﻿using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
-using System;
-using UnityEngine;
 
 namespace Engine.Source.Commons.Abilities.Controllers
 {
@@ -16,34 +14,34 @@ namespace Engine.Source.Commons.Abilities.Controllers
     {
       this.abilityItem = abilityItem;
       IEntityView owner = (IEntityView) abilityItem.Ability.Owner;
-      owner.OnGameObjectChangedEvent -= new Action(this.OnGOChanged);
-      owner.OnGameObjectChangedEvent += new Action(this.OnGOChanged);
-      this.AddEventListener();
+      owner.OnGameObjectChangedEvent -= OnGOChanged;
+      owner.OnGameObjectChangedEvent += OnGOChanged;
+      AddEventListener();
     }
 
-    private void OnGOChanged() => this.AddEventListener();
+    private void OnGOChanged() => AddEventListener();
 
     private void AddEventListener()
     {
-      this.projectile = ((IEntityView) this.abilityItem.Ability.Owner).GameObject?.GetComponent<ProjectileObject>();
-      if (!((UnityEngine.Object) this.projectile != (UnityEngine.Object) null))
+      projectile = ((IEntityView) abilityItem.Ability.Owner).GameObject?.GetComponent<ProjectileObject>();
+      if (!((UnityEngine.Object) projectile != (UnityEngine.Object) null))
         return;
-      this.projectile.OnProjectileHit -= new Action<Transform>(this.OnProjectileHitEvent);
-      this.projectile.OnProjectileHit += new Action<Transform>(this.OnProjectileHitEvent);
+      projectile.OnProjectileHit -= OnProjectileHitEvent;
+      projectile.OnProjectileHit += OnProjectileHitEvent;
     }
 
     public void Shutdown()
     {
-      ((IEntityView) this.abilityItem.Ability.Owner).OnGameObjectChangedEvent -= new Action(this.OnGOChanged);
-      if (!((UnityEngine.Object) this.projectile != (UnityEngine.Object) null))
+      ((IEntityView) abilityItem.Ability.Owner).OnGameObjectChangedEvent -= OnGOChanged;
+      if (!((UnityEngine.Object) projectile != (UnityEngine.Object) null))
         return;
-      this.projectile.OnProjectileHit -= new Action<Transform>(this.OnProjectileHitEvent);
+      projectile.OnProjectileHit -= OnProjectileHitEvent;
     }
 
     private void OnProjectileHitEvent(Transform transform)
     {
-      this.abilityItem.Active = true;
-      this.abilityItem.Active = false;
+      abilityItem.Active = true;
+      abilityItem.Active = false;
     }
   }
 }

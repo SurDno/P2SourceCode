@@ -1,5 +1,4 @@
 ﻿using Engine.Source.Services.Inputs;
-using UnityEngine;
 
 namespace Engine.Impl.UI.Controls
 {
@@ -8,14 +7,14 @@ namespace Engine.Impl.UI.Controls
     [SerializeField]
     private GameActionType value;
 
-    public override GameActionType GetValue() => this.value;
+    public override GameActionType GetValue() => value;
 
     public override void SetValue(GameActionType value, bool instant)
     {
       if (this.value == value)
         return;
       this.value = value;
-      this.ApplyValue(instant);
+      ApplyValue(instant);
     }
 
     protected abstract void ApplyValue(bool instant);

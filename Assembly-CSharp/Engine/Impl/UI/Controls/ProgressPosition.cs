@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace Engine.Impl.UI.Controls
+﻿namespace Engine.Impl.UI.Controls
 {
   public class ProgressPosition : ProgressView
   {
@@ -11,25 +9,25 @@ namespace Engine.Impl.UI.Controls
 
     public Vector3 MinPosition
     {
-      get => this.minPosition;
+      get => minPosition;
       set
       {
-        if (this.minPosition == value)
+        if (minPosition == value)
           return;
-        this.minPosition = value;
-        this.ApplyProgress();
+        minPosition = value;
+        ApplyProgress();
       }
     }
 
     public Vector3 MaxPosition
     {
-      get => this.maxPosition;
+      get => maxPosition;
       set
       {
-        if (this.maxPosition == value)
+        if (maxPosition == value)
           return;
-        this.maxPosition = value;
-        this.ApplyProgress();
+        maxPosition = value;
+        ApplyProgress();
       }
     }
 
@@ -39,7 +37,7 @@ namespace Engine.Impl.UI.Controls
 
     protected override void ApplyProgress()
     {
-      this.transform.localPosition = Vector3.Lerp(this.minPosition, this.maxPosition, this.Progress);
+      this.transform.localPosition = Vector3.Lerp(minPosition, maxPosition, Progress);
     }
   }
 }

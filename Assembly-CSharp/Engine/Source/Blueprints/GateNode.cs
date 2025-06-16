@@ -14,21 +14,21 @@ namespace Engine.Source.Blueprints
     protected override void RegisterPorts()
     {
       base.RegisterPorts();
-      FlowOutput output = this.AddFlowOutput("Out");
-      this.AddFlowInput("In", (FlowHandler) (() =>
+      FlowOutput output = AddFlowOutput("Out");
+      AddFlowInput("In", () =>
       {
-        IDoorComponent doorComponent = this.gateInput.value;
+        IDoorComponent doorComponent = gateInput.value;
         if (doorComponent != null)
         {
-          if (this.openInput.value)
+          if (openInput.value)
             doorComponent.Opened.Value = true;
           else
             doorComponent.Opened.Value = false;
         }
         output.Call();
-      }));
-      this.gateInput = this.AddValueInput<IDoorComponent>("Gate");
-      this.openInput = this.AddValueInput<bool>("Open");
+      });
+      gateInput = AddValueInput<IDoorComponent>("Gate");
+      openInput = AddValueInput<bool>("Open");
     }
   }
 }

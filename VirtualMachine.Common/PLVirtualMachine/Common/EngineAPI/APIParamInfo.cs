@@ -4,8 +4,8 @@
   {
     public APIParamInfo(VMType type, string name = "")
     {
-      this.Type = type;
-      this.Name = name;
+      Type = type;
+      Name = name;
     }
 
     public VMType Type { get; private set; }

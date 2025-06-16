@@ -1,4 +1,7 @@
-﻿using Engine.Common;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Engine.Common;
 using Engine.Common.Components;
 using Engine.Common.Components.Parameters;
 using Engine.Common.Components.Storable;
@@ -9,10 +12,6 @@ using Engine.Source.Services.Inputs;
 using Engine.Source.UI;
 using InputServices;
 using Inspectors;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
 
 namespace Engine.Impl.UI.Menu.Protagonist.Inventory
 {
@@ -28,12 +27,12 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
     private AudioClip craftAudio;
     [SerializeField]
     private GameObject slotNavigation;
-    private bool isCraftAvailable = false;
+    private bool isCraftAvailable;
     private List<CraftBrewingSlotAnchor> activeBrewingSlots = new List<CraftBrewingSlotAnchor>();
     private int currentBrewingSlotIndex = -1;
     private int CurrentActiveCrafts;
-    private CraftBrewingSlotAnchor lastBrewingSlot = (CraftBrewingSlotAnchor) null;
-    private bool isSlotNavigationEnabled = false;
+    private CraftBrewingSlotAnchor lastBrewingSlot;
+    private bool isSlotNavigationEnabled;
 
     [Inspected]
     public IStorageComponent Target { get; set; }
@@ -41,64 +40,64 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
     protected override void OnEnable()
     {
       base.OnEnable();
-      this.slotNavigation.SetActive(false);
-      this.actors.Clear();
-      this.actors.Add(this.Actor);
-      this.Build2();
-      this.CreateContainers();
-      if ((UnityEngine.Object) this.selectedStorable != (UnityEngine.Object) null)
+      slotNavigation.SetActive(false);
+      actors.Clear();
+      actors.Add(Actor);
+      Build2();
+      CreateContainers();
+      if ((UnityEngine.Object) selectedStorable != (UnityEngine.Object) null)
       {
-        this.HideInfoWindow();
-        this.selectedStorable.SetSelected(false);
-        this.selectedStorable = (StorableUI) null;
+        HideInfoWindow();
+        selectedStorable.SetSelected(false);
+        selectedStorable = null;
       }
-      foreach (ItemSelector ingredientSelector in this.ingredientSelectors)
+      foreach (ItemSelector ingredientSelector in ingredientSelectors)
       {
-        StorableUI storableByComponent = this.GetStorableByComponent(ingredientSelector.Item);
+        StorableUI storableByComponent = GetStorableByComponent(ingredientSelector.Item);
         if ((UnityEngine.Object) storableByComponent != (UnityEngine.Object) null)
         {
-          this.selectedStorable = storableByComponent;
-          this.OnSelectObject(this.selectedStorable.gameObject);
+          selectedStorable = storableByComponent;
+          OnSelectObject(selectedStorable.gameObject);
           break;
         }
       }
-      foreach (CraftBrewingSlotAnchor brewingSlotAnchor in this.brewingSlotAnchors)
+      foreach (CraftBrewingSlotAnchor brewingSlotAnchor in brewingSlotAnchors)
       {
-        brewingSlotAnchor.Slot.OnCraftPerformed += new CraftBrewingSlot.OnCraft(this.SlotCraftStarted);
-        brewingSlotAnchor.Slot.OnItemTaken += new CraftBrewingSlot.OnCraft(this.SlotItemTaken);
+        brewingSlotAnchor.Slot.OnCraftPerformed += SlotCraftStarted;
+        brewingSlotAnchor.Slot.OnItemTaken += SlotItemTaken;
       }
-      this.CurrentActiveCrafts = ((IEnumerable<CraftBrewingSlotAnchor>) this.brewingSlotAnchors).Count<CraftBrewingSlotAnchor>((Func<CraftBrewingSlotAnchor, bool>) (anchor => anchor.Slot.IsSlotAvailable));
-      if (this.CurrentActiveCrafts == 0)
+      CurrentActiveCrafts = brewingSlotAnchors.Count(anchor => anchor.Slot.IsSlotAvailable);
+      if (CurrentActiveCrafts == 0)
         return;
-      if (this.activeBrewingSlots.Count == 0)
-        this.activeBrewingSlots = ((IEnumerable<CraftBrewingSlotAnchor>) this.brewingSlotAnchors).Where<CraftBrewingSlotAnchor>((Func<CraftBrewingSlotAnchor, bool>) (anchor => anchor.Slot.IsSlotAvailable)).ToList<CraftBrewingSlotAnchor>();
-      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.RStickUp, new GameActionHandle(this.NavigateOnSlots));
-      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.RStickDown, new GameActionHandle(this.NavigateOnSlots));
-      this.isSlotNavigationEnabled = true;
-      if ((UnityEngine.Object) this.lastBrewingSlot == (UnityEngine.Object) null)
-        this.lastBrewingSlot = ((IEnumerable<CraftBrewingSlotAnchor>) this.brewingSlotAnchors).Where<CraftBrewingSlotAnchor>((Func<CraftBrewingSlotAnchor, bool>) (anchor => anchor.Slot.IsSlotAvailable)).Last<CraftBrewingSlotAnchor>();
-      if ((UnityEngine.Object) this.lastBrewingSlot != (UnityEngine.Object) null)
+      if (activeBrewingSlots.Count == 0)
+        activeBrewingSlots = brewingSlotAnchors.Where(anchor => anchor.Slot.IsSlotAvailable).ToList();
+      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.RStickUp, NavigateOnSlots);
+      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.RStickDown, NavigateOnSlots);
+      isSlotNavigationEnabled = true;
+      if ((UnityEngine.Object) lastBrewingSlot == (UnityEngine.Object) null)
+        lastBrewingSlot = brewingSlotAnchors.Where(anchor => anchor.Slot.IsSlotAvailable).Last();
+      if ((UnityEngine.Object) lastBrewingSlot != (UnityEngine.Object) null)
       {
-        this.lastBrewingSlot.Slot.SetEnabled(true);
-        this.lastBrewingSlot.Slot.SetSelected(true);
-        this.currentBrewingSlotIndex = this.activeBrewingSlots.IndexOf(this.lastBrewingSlot);
+        lastBrewingSlot.Slot.SetEnabled(true);
+        lastBrewingSlot.Slot.SetSelected(true);
+        currentBrewingSlotIndex = activeBrewingSlots.IndexOf(lastBrewingSlot);
       }
     }
 
     protected override void OnDisable()
     {
-      this.DisableCraftButtons();
+      DisableCraftButtons();
       ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.CraftBrewery, new GameActionHandle(((UIWindow) this).WithoutJoystickCancelListener));
-      this.currentBrewingSlotIndex = -1;
-      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.RStickUp, new GameActionHandle(this.NavigateOnSlots));
-      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.RStickDown, new GameActionHandle(this.NavigateOnSlots));
-      this.lastBrewingSlot = (CraftBrewingSlotAnchor) null;
-      this.activeBrewingSlots.Clear();
-      this.isCraftAvailable = false;
-      foreach (CraftBrewingSlotAnchor brewingSlotAnchor in this.brewingSlotAnchors)
+      currentBrewingSlotIndex = -1;
+      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.RStickUp, NavigateOnSlots);
+      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.RStickDown, NavigateOnSlots);
+      lastBrewingSlot = null;
+      activeBrewingSlots.Clear();
+      isCraftAvailable = false;
+      foreach (CraftBrewingSlotAnchor brewingSlotAnchor in brewingSlotAnchors)
       {
-        brewingSlotAnchor.Slot.OnCraftPerformed -= new CraftBrewingSlot.OnCraft(this.SlotCraftStarted);
-        brewingSlotAnchor.Slot.OnItemTaken -= new CraftBrewingSlot.OnCraft(this.SlotItemTaken);
+        brewingSlotAnchor.Slot.OnCraftPerformed -= SlotCraftStarted;
+        brewingSlotAnchor.Slot.OnItemTaken -= SlotItemTaken;
       }
       base.OnDisable();
     }
@@ -106,33 +105,33 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
     protected override void OnJoystick(bool joystick)
     {
       base.OnJoystick(joystick);
-      this.slotNavigation.SetActive(joystick);
+      slotNavigation.SetActive(joystick);
       if (!joystick)
       {
         ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.CraftBrewery, new GameActionHandle(((UIWindow) this).WithoutJoystickCancelListener));
-        foreach (ItemSelector ingredientSelector in this.ingredientSelectors)
+        foreach (ItemSelector ingredientSelector in ingredientSelectors)
           ingredientSelector.SetSelection(false);
-        this.PreviousMode = this.CurrentMode;
-        this.CurrentMode = SelectableInventoryWindow.Modes.None;
-        foreach (CraftBrewingSlotAnchor brewingSlotAnchor in this.brewingSlotAnchors)
+        PreviousMode = CurrentMode;
+        CurrentMode = Modes.None;
+        foreach (CraftBrewingSlotAnchor brewingSlotAnchor in brewingSlotAnchors)
           brewingSlotAnchor.Slot.SetSelected(false);
       }
       else
       {
         ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.CraftBrewery, new GameActionHandle(((UIWindow) this).WithoutJoystickCancelListener));
-        if (this.PreviousMode != 0)
-          this.CurrentMode = this.PreviousMode;
+        if (PreviousMode != 0)
+          CurrentMode = PreviousMode;
         else
-          this.CurrentMode = SelectableInventoryWindow.Modes.Craft;
-        if (this.currentBrewingSlotIndex == -1)
-          this.currentBrewingSlotIndex = this.activeBrewingSlots.Count - 1;
-        if ((UnityEngine.Object) this.lastBrewingSlot != (UnityEngine.Object) null)
+          CurrentMode = Modes.Craft;
+        if (currentBrewingSlotIndex == -1)
+          currentBrewingSlotIndex = activeBrewingSlots.Count - 1;
+        if ((UnityEngine.Object) lastBrewingSlot != (UnityEngine.Object) null)
         {
-          if (!this.lastBrewingSlot.Slot.IsEnabled)
-            this.lastBrewingSlot.Slot.SetEnabled(true);
-          if (!this.lastBrewingSlot.Slot.IsSelected)
-            this.lastBrewingSlot.Slot.SetSelected(true);
-          this.currentBrewingSlotIndex = this.activeBrewingSlots.IndexOf(this.lastBrewingSlot);
+          if (!lastBrewingSlot.Slot.IsEnabled)
+            lastBrewingSlot.Slot.SetEnabled(true);
+          if (!lastBrewingSlot.Slot.IsSelected)
+            lastBrewingSlot.Slot.SetSelected(true);
+          currentBrewingSlotIndex = activeBrewingSlots.IndexOf(lastBrewingSlot);
         }
       }
     }
@@ -141,42 +140,41 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
     {
       if (!InputService.Instance.JoystickUsed || !down)
         return false;
-      if (this.currentBrewingSlotIndex != -1 && this.currentBrewingSlotIndex < this.activeBrewingSlots.Count && (UnityEngine.Object) this.activeBrewingSlots[this.currentBrewingSlotIndex] != (UnityEngine.Object) null)
-        this.activeBrewingSlots[this.currentBrewingSlotIndex]?.Slot.SetSelected(false);
-      this.currentBrewingSlotIndex += type == GameActionType.RStickUp ? 1 : -1;
-      if (this.currentBrewingSlotIndex < 0)
-        this.currentBrewingSlotIndex = this.currentBrewingSlotIndex = this.activeBrewingSlots.Count - 1;
-      if (this.currentBrewingSlotIndex > this.activeBrewingSlots.Count - 1)
-        this.currentBrewingSlotIndex = 0;
-      if ((UnityEngine.Object) this.activeBrewingSlots[this.currentBrewingSlotIndex] != (UnityEngine.Object) null)
+      if (currentBrewingSlotIndex != -1 && currentBrewingSlotIndex < activeBrewingSlots.Count && (UnityEngine.Object) activeBrewingSlots[currentBrewingSlotIndex] != (UnityEngine.Object) null)
+        activeBrewingSlots[currentBrewingSlotIndex]?.Slot.SetSelected(false);
+      currentBrewingSlotIndex += type == GameActionType.RStickUp ? 1 : -1;
+      if (currentBrewingSlotIndex < 0)
+        currentBrewingSlotIndex = currentBrewingSlotIndex = activeBrewingSlots.Count - 1;
+      if (currentBrewingSlotIndex > activeBrewingSlots.Count - 1)
+        currentBrewingSlotIndex = 0;
+      if ((UnityEngine.Object) activeBrewingSlots[currentBrewingSlotIndex] != (UnityEngine.Object) null)
       {
-        this.activeBrewingSlots[this.currentBrewingSlotIndex].Slot.SetSelected(true);
-        if (this.activeBrewingSlots[this.currentBrewingSlotIndex].Slot.IsSlotAvailable)
-          this.lastBrewingSlot = this.activeBrewingSlots[this.currentBrewingSlotIndex];
+        activeBrewingSlots[currentBrewingSlotIndex].Slot.SetSelected(true);
+        if (activeBrewingSlots[currentBrewingSlotIndex].Slot.IsSlotAvailable)
+          lastBrewingSlot = activeBrewingSlots[currentBrewingSlotIndex];
       }
       return true;
     }
 
-    protected override SelectableInventoryWindow.Modes CurrentMode
+    protected override Modes CurrentMode
     {
       get => base.CurrentMode;
       set
       {
-        if (this.CurrentMode == value || !InputService.Instance.JoystickUsed)
+        if (CurrentMode == value || !InputService.Instance.JoystickUsed)
           return;
         switch (value)
         {
-          case SelectableInventoryWindow.Modes.Inventory:
+          case Modes.Inventory:
             return;
-          case SelectableInventoryWindow.Modes.Craft:
-            if (InputService.Instance.JoystickUsed && this.isCraftAvailable)
+          case Modes.Craft:
+            if (InputService.Instance.JoystickUsed && isCraftAvailable)
             {
-              ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.RStickUp, new GameActionHandle(this.NavigateOnSlots));
-              ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.RStickDown, new GameActionHandle(this.NavigateOnSlots));
-              if (this.currentBrewingSlotIndex == -1)
-                this.currentBrewingSlotIndex = this.activeBrewingSlots.Count - 1;
-              this.activeBrewingSlots[this.currentBrewingSlotIndex].Slot.SetSelected(true);
-              break;
+              ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.RStickUp, NavigateOnSlots);
+              ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.RStickDown, NavigateOnSlots);
+              if (currentBrewingSlotIndex == -1)
+                currentBrewingSlotIndex = activeBrewingSlots.Count - 1;
+              activeBrewingSlots[currentBrewingSlotIndex].Slot.SetSelected(true);
             }
             break;
         }
@@ -186,64 +184,64 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
 
     private void SlotCraftStarted(CraftBrewingSlot slot)
     {
-      foreach (CraftBrewingSlotAnchor activeBrewingSlot in this.activeBrewingSlots)
+      foreach (CraftBrewingSlotAnchor activeBrewingSlot in activeBrewingSlots)
       {
         if ((UnityEngine.Object) activeBrewingSlot.Slot == (UnityEngine.Object) slot)
         {
-          this.lastBrewingSlot = activeBrewingSlot;
+          lastBrewingSlot = activeBrewingSlot;
           break;
         }
       }
-      this.OnInvalidate();
+      OnInvalidate();
     }
 
     private void SlotItemTaken(CraftBrewingSlot slot)
     {
-      if ((UnityEngine.Object) this.lastBrewingSlot == (UnityEngine.Object) slot)
-        this.lastBrewingSlot = (CraftBrewingSlotAnchor) null;
-      if (this.activeBrewingSlots.Count == 0)
-        this.activeBrewingSlots = ((IEnumerable<CraftBrewingSlotAnchor>) this.brewingSlotAnchors).Where<CraftBrewingSlotAnchor>((Func<CraftBrewingSlotAnchor, bool>) (anchor => anchor.Slot.IsSlotAvailable)).ToList<CraftBrewingSlotAnchor>();
-      this.currentBrewingSlotIndex = this.activeBrewingSlots.IndexOf(slot.GetComponentInParent<CraftBrewingSlotAnchor>());
-      if (!this.isCraftAvailable)
-        this.activeBrewingSlots.Remove(this.activeBrewingSlots[this.currentBrewingSlotIndex]);
+      if ((UnityEngine.Object) lastBrewingSlot == (UnityEngine.Object) slot)
+        lastBrewingSlot = null;
+      if (activeBrewingSlots.Count == 0)
+        activeBrewingSlots = brewingSlotAnchors.Where(anchor => anchor.Slot.IsSlotAvailable).ToList();
+      currentBrewingSlotIndex = activeBrewingSlots.IndexOf(slot.GetComponentInParent<CraftBrewingSlotAnchor>());
+      if (!isCraftAvailable)
+        activeBrewingSlots.Remove(activeBrewingSlots[currentBrewingSlotIndex]);
       else
-        this.activeBrewingSlots[this.currentBrewingSlotIndex].Slot.SetSelected(false);
-      if (this.activeBrewingSlots.Count == 0)
+        activeBrewingSlots[currentBrewingSlotIndex].Slot.SetSelected(false);
+      if (activeBrewingSlots.Count == 0)
       {
-        this.activeBrewingSlots.Clear();
-        ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.RStickUp, new GameActionHandle(this.NavigateOnSlots));
-        ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.RStickDown, new GameActionHandle(this.NavigateOnSlots));
-        this.isSlotNavigationEnabled = false;
+        activeBrewingSlots.Clear();
+        ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.RStickUp, NavigateOnSlots);
+        ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.RStickDown, NavigateOnSlots);
+        isSlotNavigationEnabled = false;
       }
-      else if (!this.isCraftAvailable)
-        this.NavigateOnSlots(GameActionType.RStickDown, true);
+      else if (!isCraftAvailable)
+        NavigateOnSlots(GameActionType.RStickDown, true);
       else
         CoroutineService.Instance.WaitFrame(1, (Action) (() =>
         {
-          if (this.currentBrewingSlotIndex >= this.activeBrewingSlots.Count || this.activeBrewingSlots[this.currentBrewingSlotIndex].Slot.IsSelected)
+          if (currentBrewingSlotIndex >= activeBrewingSlots.Count || activeBrewingSlots[currentBrewingSlotIndex].Slot.IsSelected)
             return;
-          this.activeBrewingSlots[this.currentBrewingSlotIndex].Slot.SetSelected(true);
+          activeBrewingSlots[currentBrewingSlotIndex].Slot.SetSelected(true);
         }));
-      this.OnInvalidate();
+      OnInvalidate();
     }
 
     protected override void OnItemClick(IStorableComponent storable)
     {
-      if (storable.Storage == this.Actor)
+      if (storable.Storage == Actor)
       {
-        foreach (ItemSelector ingredientSelector in this.ingredientSelectors)
+        foreach (ItemSelector ingredientSelector in ingredientSelectors)
         {
           if (storable == ingredientSelector.Item)
           {
-            ingredientSelector.Item = (IStorableComponent) null;
+            ingredientSelector.Item = null;
             return;
           }
         }
-        foreach (ItemSelector ingredientSelector in this.ingredientSelectors)
+        foreach (ItemSelector ingredientSelector in ingredientSelectors)
         {
           foreach (StorableGroup group in ingredientSelector.Groups)
           {
-            if (storable.Groups.Contains<StorableGroup>(group))
+            if (storable.Groups.Contains(group))
             {
               ingredientSelector.Item = storable;
               return;
@@ -256,45 +254,45 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
         IParameter<TimeSpan> craftTimeParameter = CraftHelper.GetCraftTimeParameter(storable);
         if (craftTimeParameter != null && craftTimeParameter.Value > TimeSpan.Zero)
           return;
-        this.MoveItem(storable, this.Actor);
+        MoveItem(storable, Actor);
         StorableComponentUtility.PlayTakeSound(storable);
-        this.OnInvalidate();
+        OnInvalidate();
       }
     }
 
     protected override void Clear()
     {
-      foreach (CraftBrewingSlotAnchor brewingSlotAnchor in this.brewingSlotAnchors)
-        brewingSlotAnchor.SetTarget((IEntity) null);
-      foreach (ItemSelector ingredientSelector in this.ingredientSelectors)
-        ingredientSelector.Storage = (IStorageComponent) null;
+      foreach (CraftBrewingSlotAnchor brewingSlotAnchor in brewingSlotAnchors)
+        brewingSlotAnchor.SetTarget(null);
+      foreach (ItemSelector ingredientSelector in ingredientSelectors)
+        ingredientSelector.Storage = null;
       base.Clear();
     }
 
     protected override void OnInvalidate()
     {
       base.OnInvalidate();
-      this.PredictCraftRecipe();
+      PredictCraftRecipe();
       if (!InputService.Instance.JoystickUsed)
         return;
-      this.HideInfoWindow();
+      HideInfoWindow();
     }
 
     private void CreateContainers()
     {
-      foreach (CraftBrewingSlotAnchor brewingSlotAnchor in this.brewingSlotAnchors)
-        brewingSlotAnchor.SetTarget(this.Target.Owner);
-      foreach (ItemSelector ingredientSelector in this.ingredientSelectors)
-        ingredientSelector.Storage = this.Actor;
+      foreach (CraftBrewingSlotAnchor brewingSlotAnchor in brewingSlotAnchors)
+        brewingSlotAnchor.SetTarget(Target.Owner);
+      foreach (ItemSelector ingredientSelector in ingredientSelectors)
+        ingredientSelector.Storage = Actor;
     }
 
     private void Craft(IInventoryComponent targetContainer)
     {
-      this.DisableCraftButtons();
+      DisableCraftButtons();
       List<IStorableComponent> ingredients = new List<IStorableComponent>();
-      for (int index = 0; index < this.ingredientSelectors.Length; ++index)
+      for (int index = 0; index < ingredientSelectors.Length; ++index)
       {
-        IStorableComponent storableComponent = this.ingredientSelectors[index].Item;
+        IStorableComponent storableComponent = ingredientSelectors[index].Item;
         if (storableComponent != null)
           ingredients.Add(storableComponent);
       }
@@ -309,26 +307,26 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
           else
             storableComponent.Owner.Dispose();
         }
-        IEntity entity = ServiceLocator.GetService<IFactory>().Instantiate<IEntity>(craftResult.Owner);
+        IEntity entity = ServiceLocator.GetService<IFactory>().Instantiate(craftResult.Owner);
         ServiceLocator.GetService<ISimulation>().Add(entity, ServiceLocator.GetService<ISimulation>().Storables);
         IStorableComponent component = entity.GetComponent<IStorableComponent>();
-        this.SetItemTimer(component, recipe.Time);
-        this.Target.AddItem(component, targetContainer);
-        if ((UnityEngine.Object) this.craftAudio != (UnityEngine.Object) null)
-          this.PlayAudio(this.craftAudio);
+        SetItemTimer(component, recipe.Time);
+        Target.AddItem(component, targetContainer);
+        if ((UnityEngine.Object) craftAudio != (UnityEngine.Object) null)
+          PlayAudio(craftAudio);
       }
-      this.OnInvalidate();
+      OnInvalidate();
     }
 
     private void PredictCraftRecipe()
     {
-      this.DisableCraftButtons();
-      if (this.currentBrewingSlotIndex != -1 && this.currentBrewingSlotIndex < this.activeBrewingSlots.Count)
-        this.activeBrewingSlots[this.currentBrewingSlotIndex].Slot.SetSelected(true);
+      DisableCraftButtons();
+      if (currentBrewingSlotIndex != -1 && currentBrewingSlotIndex < activeBrewingSlots.Count)
+        activeBrewingSlots[currentBrewingSlotIndex].Slot.SetSelected(true);
       List<IStorableComponent> ingredients = new List<IStorableComponent>();
-      for (int index = 0; index < this.ingredientSelectors.Length; ++index)
+      for (int index = 0; index < ingredientSelectors.Length; ++index)
       {
-        IStorableComponent storableComponent = this.ingredientSelectors[index].Item;
+        IStorableComponent storableComponent = ingredientSelectors[index].Item;
         if (storableComponent != null)
           ingredients.Add(storableComponent);
       }
@@ -336,46 +334,46 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       IStorableComponent craftResult = CraftHelper.GetCraftResult(ingredients, out recipe);
       if (craftResult != null)
       {
-        this.resultPreview.Storable = (StorableComponent) craftResult;
-        this.EnableCraftButtons(recipe.Time);
-        this.isCraftAvailable = true;
-        if (!this.isSlotNavigationEnabled)
+        resultPreview.Storable = (StorableComponent) craftResult;
+        EnableCraftButtons(recipe.Time);
+        isCraftAvailable = true;
+        if (!isSlotNavigationEnabled)
         {
-          ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.RStickUp, new GameActionHandle(this.NavigateOnSlots));
-          ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.RStickDown, new GameActionHandle(this.NavigateOnSlots));
-          this.isSlotNavigationEnabled = true;
+          ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.RStickUp, NavigateOnSlots);
+          ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.RStickDown, NavigateOnSlots);
+          isSlotNavigationEnabled = true;
         }
-        if (this.currentBrewingSlotIndex == -1 || this.currentBrewingSlotIndex > this.activeBrewingSlots.Count - 1)
-          this.currentBrewingSlotIndex = this.activeBrewingSlots.Count - 1;
+        if (currentBrewingSlotIndex == -1 || currentBrewingSlotIndex > activeBrewingSlots.Count - 1)
+          currentBrewingSlotIndex = activeBrewingSlots.Count - 1;
         if (!InputService.Instance.JoystickUsed)
           return;
-        this.activeBrewingSlots[this.currentBrewingSlotIndex].Slot.SetSelected(true);
-        this.slotNavigation.SetActive(true);
+        activeBrewingSlots[currentBrewingSlotIndex].Slot.SetSelected(true);
+        slotNavigation.SetActive(true);
       }
       else
       {
-        this.isCraftAvailable = false;
-        for (int index = 0; index < this.activeBrewingSlots.Count; ++index)
+        isCraftAvailable = false;
+        for (int index = 0; index < activeBrewingSlots.Count; ++index)
         {
-          if (!this.activeBrewingSlots[index].Slot.IsItemCrafted)
+          if (!activeBrewingSlots[index].Slot.IsItemCrafted)
           {
-            this.activeBrewingSlots[index].Slot.SetSelected(false);
-            this.activeBrewingSlots.Remove(this.activeBrewingSlots[index]);
+            activeBrewingSlots[index].Slot.SetSelected(false);
+            activeBrewingSlots.Remove(activeBrewingSlots[index]);
           }
         }
-        if (this.currentBrewingSlotIndex < 0)
-          this.currentBrewingSlotIndex = 0;
-        if (this.currentBrewingSlotIndex > this.activeBrewingSlots.Count - 1)
-          this.currentBrewingSlotIndex = this.activeBrewingSlots.Count - 1;
-        this.CurrentActiveCrafts = ((IEnumerable<CraftBrewingSlotAnchor>) this.brewingSlotAnchors).Count<CraftBrewingSlotAnchor>((Func<CraftBrewingSlotAnchor, bool>) (anchor => anchor.Slot.IsSlotAvailable));
-        if (this.CurrentActiveCrafts == 0)
+        if (currentBrewingSlotIndex < 0)
+          currentBrewingSlotIndex = 0;
+        if (currentBrewingSlotIndex > activeBrewingSlots.Count - 1)
+          currentBrewingSlotIndex = activeBrewingSlots.Count - 1;
+        CurrentActiveCrafts = brewingSlotAnchors.Count(anchor => anchor.Slot.IsSlotAvailable);
+        if (CurrentActiveCrafts == 0)
         {
-          this.currentBrewingSlotIndex = -1;
-          ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.RStickUp, new GameActionHandle(this.NavigateOnSlots));
-          ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.RStickDown, new GameActionHandle(this.NavigateOnSlots));
-          this.slotNavigation.SetActive(false);
-          if (this.isSlotNavigationEnabled)
-            this.isSlotNavigationEnabled = false;
+          currentBrewingSlotIndex = -1;
+          ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.RStickUp, NavigateOnSlots);
+          ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.RStickDown, NavigateOnSlots);
+          slotNavigation.SetActive(false);
+          if (isSlotNavigationEnabled)
+            isSlotNavigationEnabled = false;
         }
       }
     }
@@ -383,27 +381,27 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
     private void EnableCraftButtons(float time)
     {
       string text1 = ServiceLocator.GetService<LocalizationService>().GetText("{UI.Craft.PrepareTime}");
-      TimeSpan timeSpan = TimeSpan.FromMinutes((double) time);
+      TimeSpan timeSpan = TimeSpan.FromMinutes(time);
       string text2 = text1.Replace("<hours>", timeSpan.Hours.ToString("D2")).Replace("<minutes>", timeSpan.Minutes.ToString("D2"));
-      this.activeBrewingSlots.Clear();
-      foreach (CraftBrewingSlotAnchor brewingSlotAnchor in this.brewingSlotAnchors)
+      activeBrewingSlots.Clear();
+      foreach (CraftBrewingSlotAnchor brewingSlotAnchor in brewingSlotAnchors)
       {
         brewingSlotAnchor.Slot.SetCraftTime(text2);
         brewingSlotAnchor.Slot.SetEnabled(true);
         if (brewingSlotAnchor.Slot.IsVisible)
-          this.activeBrewingSlots.Add(brewingSlotAnchor);
+          activeBrewingSlots.Add(brewingSlotAnchor);
       }
     }
 
     private void DisableCraftButtons()
     {
-      foreach (CraftBrewingSlotAnchor brewingSlotAnchor in this.brewingSlotAnchors)
+      foreach (CraftBrewingSlotAnchor brewingSlotAnchor in brewingSlotAnchors)
         brewingSlotAnchor.Slot.SetEnabled(false);
     }
 
     private void SetItemTimer(IStorableComponent item, float timeInMinutes)
     {
-      TimeSpan timeSpan = TimeSpan.FromMinutes((double) timeInMinutes);
+      TimeSpan timeSpan = TimeSpan.FromMinutes(timeInMinutes);
       IParameter<TimeSpan> craftTimeParameter = CraftHelper.GetCraftTimeParameter(item);
       if (craftTimeParameter == null)
         return;
@@ -414,19 +412,19 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
 
     public override void Initialize()
     {
-      this.RegisterLayer<ICraftBreweryWindow>((ICraftBreweryWindow) this);
-      foreach (ItemSelector ingredientSelector in this.ingredientSelectors)
-        ingredientSelector.ChangeItemEvent += new Action<ItemSelector, IStorableComponent, IStorableComponent>(this.OnIngredientChange);
-      foreach (CraftBrewingSlotAnchor brewingSlotAnchor in this.brewingSlotAnchors)
+      RegisterLayer((ICraftBreweryWindow) this);
+      foreach (ItemSelector ingredientSelector in ingredientSelectors)
+        ingredientSelector.ChangeItemEvent += OnIngredientChange;
+      foreach (CraftBrewingSlotAnchor brewingSlotAnchor in brewingSlotAnchors)
       {
-        brewingSlotAnchor.Initialize(this.brewingSlotPrefab);
-        brewingSlotAnchor.CraftEvent += new Action<IInventoryComponent>(this.Craft);
+        brewingSlotAnchor.Initialize(brewingSlotPrefab);
+        brewingSlotAnchor.CraftEvent += Craft;
         brewingSlotAnchor.TakeEvent += new Action<IStorableComponent>(((SelectableInventoryWindow) this).OnItemClick);
       }
       base.Initialize();
     }
 
-    public override System.Type GetWindowType() => typeof (ICraftBreweryWindow);
+    public override Type GetWindowType() => typeof (ICraftBreweryWindow);
 
     private void OnIngredientChange(
       ItemSelector itemSelector,
@@ -437,18 +435,18 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
         StorableComponentUtility.PlayPutSound(prevIngredient);
       if (newIngredient != null)
         StorableComponentUtility.PlayTakeSound(newIngredient);
-      this.OnInvalidate();
+      OnInvalidate();
     }
 
     protected override bool ItemIsInteresting(IStorableComponent item)
     {
-      foreach (ItemSelector ingredientSelector in this.ingredientSelectors)
+      foreach (ItemSelector ingredientSelector in ingredientSelectors)
       {
         if (item == ingredientSelector.Item)
           return true;
         foreach (StorableGroup group in ingredientSelector.Groups)
         {
-          if (item.Groups.Contains<StorableGroup>(group))
+          if (item.Groups.Contains(group))
             return true;
         }
       }
@@ -457,7 +455,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
 
     protected override bool ItemIsSelected(IStorableComponent storable)
     {
-      foreach (ItemSelector ingredientSelector in this.ingredientSelectors)
+      foreach (ItemSelector ingredientSelector in ingredientSelectors)
       {
         if (ingredientSelector.Item == storable)
           return true;

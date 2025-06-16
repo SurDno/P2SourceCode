@@ -1,4 +1,6 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using System.Collections.Generic;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common;
 using Engine.Common.Commons;
@@ -8,8 +10,6 @@ using Engine.Impl.Services.Factories;
 using Engine.Source.Commons;
 using Engine.Source.Components;
 using Scripts.Tools.Serializations.Converters;
-using System.Collections.Generic;
-using UnityEngine;
 
 namespace BehaviorDesigner.Runtime.Tasks.Pathologic
 {
@@ -19,33 +19,33 @@ namespace BehaviorDesigner.Runtime.Tasks.Pathologic
   [Factory]
   [GeneratePartial(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
   [FactoryProxy(typeof (NextPatrolPoint))]
-  public class NextPatrolPoint : BehaviorDesigner.Runtime.Tasks.Action, IStub, ISerializeDataWrite, ISerializeDataRead
+  public class NextPatrolPoint : Action, IStub, ISerializeDataWrite, ISerializeDataRead
   {
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [SerializeField]
     public SharedTransform PatrolTransform;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [SerializeField]
     public SharedInt CurrentIndex;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [SerializeField]
     public SharedTransform Result;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [SerializeField]
     public SharedBool EndPatrol;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy()]
     [SerializeField]
-    public SharedBool InversePath = (SharedBool) false;
+    public SharedBool InversePath = false;
     private PatrolTypeEnum PatollingType;
     private bool inited;
     private PatrolPath patrolPath;
@@ -53,112 +53,112 @@ namespace BehaviorDesigner.Runtime.Tasks.Pathologic
 
     public override void OnStart()
     {
-      this.inited = false;
-      if ((UnityEngine.Object) this.PatrolTransform.Value != (UnityEngine.Object) null)
+      inited = false;
+      if ((UnityEngine.Object) PatrolTransform.Value != (UnityEngine.Object) null)
       {
-        this.patrolPath = this.PatrolTransform.Value.GetComponent<PatrolPath>();
+        patrolPath = PatrolTransform.Value.GetComponent<PatrolPath>();
       }
       else
       {
-        IEntity owner = this.Owner.GetComponent<EngineGameObject>().Owner;
+        IEntity owner = Owner.GetComponent<EngineGameObject>().Owner;
         if (owner == null)
         {
-          Debug.LogWarningFormat("{0} has no entity", (object) this.gameObject.name);
+          Debug.LogWarningFormat("{0} has no entity", (object) gameObject.name);
           return;
         }
         IEntity setupPoint = owner.GetComponent<NavigationComponent>().SetupPoint;
         if (setupPoint != null)
-          this.patrolPath = ((IEntityView) setupPoint).GameObject?.GetComponent<PatrolPath>();
-        if ((UnityEngine.Object) this.patrolPath == (UnityEngine.Object) null)
+          patrolPath = ((IEntityView) setupPoint).GameObject?.GetComponent<PatrolPath>();
+        if ((UnityEngine.Object) patrolPath == (UnityEngine.Object) null)
         {
           CrowdItemComponent component = owner.GetComponent<CrowdItemComponent>();
           if (component != null)
-            this.patrolPath = component.Point?.GameObject?.GetComponent<PatrolPath>();
+            patrolPath = component.Point?.GameObject?.GetComponent<PatrolPath>();
         }
       }
-      if ((UnityEngine.Object) this.patrolPath == (UnityEngine.Object) null)
+      if ((UnityEngine.Object) patrolPath == (UnityEngine.Object) null)
       {
-        Debug.LogWarningFormat("{0} has null patrol points", (object) this.gameObject.name);
+        Debug.LogWarningFormat("{0} has null patrol points", (object) gameObject.name);
       }
       else
       {
-        this.PatollingType = this.patrolPath.PatrolType;
-        if (this.patrolPath.transform.childCount < 2)
+        PatollingType = patrolPath.PatrolType;
+        if (patrolPath.transform.childCount < 2)
         {
-          Debug.LogWarningFormat("{0} contains less than two patrol points", (object) this.patrolPath.gameObject.name);
+          Debug.LogWarningFormat("{0} contains less than two patrol points", (object) patrolPath.gameObject.name);
         }
         else
         {
-          this.patrolPoints = this.patrolPath.PointsList;
-          this.inited = true;
+          patrolPoints = patrolPath.PointsList;
+          inited = true;
         }
       }
     }
 
     public override TaskStatus OnUpdate()
     {
-      if (!this.inited || this.patrolPoints == null || this.patrolPoints.Count == 0)
+      if (!inited || patrolPoints == null || patrolPoints.Count == 0)
         return TaskStatus.Failure;
-      if (this.PatollingType == PatrolTypeEnum.Looped)
-        this.CurrentIndex.Value = (this.CurrentIndex.Value + 1) % this.patrolPoints.Count;
-      else if (this.PatollingType == PatrolTypeEnum.ToTheEndAndBack)
+      if (PatollingType == PatrolTypeEnum.Looped)
+        CurrentIndex.Value = (CurrentIndex.Value + 1) % patrolPoints.Count;
+      else if (PatollingType == PatrolTypeEnum.ToTheEndAndBack)
       {
-        if (!this.InversePath.Value)
+        if (!InversePath.Value)
         {
-          ++this.CurrentIndex.Value;
-          if (this.CurrentIndex.Value >= this.patrolPoints.Count)
+          ++CurrentIndex.Value;
+          if (CurrentIndex.Value >= patrolPoints.Count)
           {
-            this.CurrentIndex.Value = this.patrolPoints.Count - 1;
-            this.InversePath.Value = true;
+            CurrentIndex.Value = patrolPoints.Count - 1;
+            InversePath.Value = true;
           }
         }
         else
         {
-          --this.CurrentIndex.Value;
-          if (this.CurrentIndex.Value < 0)
+          --CurrentIndex.Value;
+          if (CurrentIndex.Value < 0)
           {
-            this.CurrentIndex.Value = 0;
-            this.InversePath.Value = false;
+            CurrentIndex.Value = 0;
+            InversePath.Value = false;
           }
         }
       }
-      else if (this.PatollingType == PatrolTypeEnum.ToTheEndAndStop)
+      else if (PatollingType == PatrolTypeEnum.ToTheEndAndStop)
       {
-        ++this.CurrentIndex.Value;
-        if (this.EndPatrol != null)
-          this.EndPatrol.Value = this.CurrentIndex.Value >= this.patrolPoints.Count;
+        ++CurrentIndex.Value;
+        if (EndPatrol != null)
+          EndPatrol.Value = CurrentIndex.Value >= patrolPoints.Count;
       }
-      if (this.CurrentIndex.Value < this.patrolPoints.Count)
-        this.Result.Value = this.patrolPoints[this.CurrentIndex.Value];
+      if (CurrentIndex.Value < patrolPoints.Count)
+        Result.Value = patrolPoints[CurrentIndex.Value];
       return TaskStatus.Success;
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.WriteSerialize<NodeData>(writer, "NodeData", this.nodeData);
-      DefaultDataWriteUtility.Write(writer, "Id", this.id);
-      DefaultDataWriteUtility.Write(writer, "FriendlyName", this.friendlyName);
-      DefaultDataWriteUtility.Write(writer, "Instant", this.instant);
-      DefaultDataWriteUtility.Write(writer, "Disabled", this.disabled);
-      BehaviorTreeDataWriteUtility.WriteShared<SharedTransform>(writer, "PatrolTransform", this.PatrolTransform);
-      BehaviorTreeDataWriteUtility.WriteShared<SharedInt>(writer, "CurrentIndex", this.CurrentIndex);
-      BehaviorTreeDataWriteUtility.WriteShared<SharedTransform>(writer, "Result", this.Result);
-      BehaviorTreeDataWriteUtility.WriteShared<SharedBool>(writer, "EndPatrol", this.EndPatrol);
-      BehaviorTreeDataWriteUtility.WriteShared<SharedBool>(writer, "InversePath", this.InversePath);
+      DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
+      DefaultDataWriteUtility.Write(writer, "Id", id);
+      DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
+      DefaultDataWriteUtility.Write(writer, "Instant", instant);
+      DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
+      BehaviorTreeDataWriteUtility.WriteShared(writer, "PatrolTransform", PatrolTransform);
+      BehaviorTreeDataWriteUtility.WriteShared(writer, "CurrentIndex", CurrentIndex);
+      BehaviorTreeDataWriteUtility.WriteShared(writer, "Result", Result);
+      BehaviorTreeDataWriteUtility.WriteShared(writer, "EndPatrol", EndPatrol);
+      BehaviorTreeDataWriteUtility.WriteShared(writer, "InversePath", InversePath);
     }
 
-    public void DataRead(IDataReader reader, System.Type type)
+    public void DataRead(IDataReader reader, Type type)
     {
-      this.nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
-      this.id = DefaultDataReadUtility.Read(reader, "Id", this.id);
-      this.friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", this.friendlyName);
-      this.instant = DefaultDataReadUtility.Read(reader, "Instant", this.instant);
-      this.disabled = DefaultDataReadUtility.Read(reader, "Disabled", this.disabled);
-      this.PatrolTransform = BehaviorTreeDataReadUtility.ReadShared<SharedTransform>(reader, "PatrolTransform", this.PatrolTransform);
-      this.CurrentIndex = BehaviorTreeDataReadUtility.ReadShared<SharedInt>(reader, "CurrentIndex", this.CurrentIndex);
-      this.Result = BehaviorTreeDataReadUtility.ReadShared<SharedTransform>(reader, "Result", this.Result);
-      this.EndPatrol = BehaviorTreeDataReadUtility.ReadShared<SharedBool>(reader, "EndPatrol", this.EndPatrol);
-      this.InversePath = BehaviorTreeDataReadUtility.ReadShared<SharedBool>(reader, "InversePath", this.InversePath);
+      nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
+      id = DefaultDataReadUtility.Read(reader, "Id", id);
+      friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
+      instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
+      disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
+      PatrolTransform = BehaviorTreeDataReadUtility.ReadShared(reader, "PatrolTransform", PatrolTransform);
+      CurrentIndex = BehaviorTreeDataReadUtility.ReadShared(reader, "CurrentIndex", CurrentIndex);
+      Result = BehaviorTreeDataReadUtility.ReadShared(reader, "Result", Result);
+      EndPatrol = BehaviorTreeDataReadUtility.ReadShared(reader, "EndPatrol", EndPatrol);
+      InversePath = BehaviorTreeDataReadUtility.ReadShared(reader, "InversePath", InversePath);
     }
   }
 }

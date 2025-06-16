@@ -1,10 +1,9 @@
-﻿using Assets.Engine.Source.Services.Profiles;
+﻿using System;
 using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons.Cloneable;
 using Engine.Common.Commons.Converters;
 using Engine.Source.Services.Profiles;
-using System;
 
 namespace Engine.Source.Proxies
 {
@@ -19,30 +18,30 @@ namespace Engine.Source.Proxies
     public object Clone()
     {
       ProfileData_Generated instance = Activator.CreateInstance<ProfileData_Generated>();
-      this.CopyTo((object) instance);
-      return (object) instance;
+      CopyTo(instance);
+      return instance;
     }
 
     public void CopyTo(object target2)
     {
       ProfileData_Generated profileDataGenerated = (ProfileData_Generated) target2;
-      profileDataGenerated.Name = this.Name;
-      profileDataGenerated.LastSave = this.LastSave;
-      CloneableObjectUtility.CopyListTo<CustomProfileData>(profileDataGenerated.Data, this.Data);
+      profileDataGenerated.Name = Name;
+      profileDataGenerated.LastSave = LastSave;
+      CloneableObjectUtility.CopyListTo(profileDataGenerated.Data, Data);
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.Write(writer, "Name", this.Name);
-      DefaultDataWriteUtility.Write(writer, "LastSave", this.LastSave);
-      DefaultDataWriteUtility.WriteListSerialize<CustomProfileData>(writer, "Data", this.Data);
+      DefaultDataWriteUtility.Write(writer, "Name", Name);
+      DefaultDataWriteUtility.Write(writer, "LastSave", LastSave);
+      DefaultDataWriteUtility.WriteListSerialize(writer, "Data", Data);
     }
 
     public void DataRead(IDataReader reader, Type type)
     {
-      this.Name = DefaultDataReadUtility.Read(reader, "Name", this.Name);
-      this.LastSave = DefaultDataReadUtility.Read(reader, "LastSave", this.LastSave);
-      this.Data = DefaultDataReadUtility.ReadListSerialize<CustomProfileData>(reader, "Data", this.Data);
+      Name = DefaultDataReadUtility.Read(reader, "Name", Name);
+      LastSave = DefaultDataReadUtility.Read(reader, "LastSave", LastSave);
+      Data = DefaultDataReadUtility.ReadListSerialize(reader, "Data", Data);
     }
   }
 }

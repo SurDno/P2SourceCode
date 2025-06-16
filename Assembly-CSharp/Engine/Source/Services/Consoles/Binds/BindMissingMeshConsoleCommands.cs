@@ -1,5 +1,4 @@
 ﻿using Cofe.Meta;
-using UnityEngine;
 
 namespace Engine.Source.Services.Consoles.Binds
 {
@@ -19,14 +18,14 @@ namespace Engine.Source.Services.Consoles.Binds
           {
             object[] objArray = new object[4]
             {
-              (object) "Mesh not found, ParticleSystem , type : ",
+              "Mesh not found, ParticleSystem , type : ",
               null,
               null,
               null
             };
             shape = context.shape;
             objArray[1] = (object) shape.shapeType;
-            objArray[2] = (object) " , info : ";
+            objArray[2] = " , info : ";
             objArray[3] = (object) context.GetInfo();
             Debug.LogError((object) string.Concat(objArray), (Object) context);
           }
@@ -41,14 +40,14 @@ namespace Engine.Source.Services.Consoles.Binds
             {
               object[] objArray = new object[4]
               {
-                (object) "Mesh not found, ParticleSystem , type : ",
+                "Mesh not found, ParticleSystem , type : ",
                 null,
                 null,
                 null
               };
               shape = context.shape;
               objArray[1] = (object) shape.shapeType;
-              objArray[2] = (object) " , info : ";
+              objArray[2] = " , info : ";
               objArray[3] = (object) context.GetInfo();
               Debug.LogError((object) string.Concat(objArray), (Object) context);
             }
@@ -63,14 +62,14 @@ namespace Engine.Source.Services.Consoles.Binds
               {
                 object[] objArray = new object[4]
                 {
-                  (object) "Mesh not found, ParticleSystem , type : ",
+                  "Mesh not found, ParticleSystem , type : ",
                   null,
                   null,
                   null
                 };
                 shape = context.shape;
                 objArray[1] = (object) shape.shapeType;
-                objArray[2] = (object) " , info : ";
+                objArray[2] = " , info : ";
                 objArray[3] = (object) context.GetInfo();
                 Debug.LogError((object) string.Concat(objArray), (Object) context);
               }

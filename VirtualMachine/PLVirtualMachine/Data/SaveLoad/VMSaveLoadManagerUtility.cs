@@ -1,23 +1,22 @@
-﻿using Cofe.Loggers;
-using PLVirtualMachine.Common;
-using PLVirtualMachine.Common.Data;
-using PLVirtualMachine.Common.EngineAPI.VMECS;
-using PLVirtualMachine.Dynamic;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Xml;
+using Cofe.Loggers;
+using PLVirtualMachine.Common;
+using PLVirtualMachine.Common.Data;
+using PLVirtualMachine.Dynamic;
 
 namespace PLVirtualMachine.Data.SaveLoad
 {
   public static class VMSaveLoadManagerUtility
   {
     private static Dictionary<string, XmlElement> preloadedNodes = new Dictionary<string, XmlElement>();
-    private static XmlElement preloadedNode = (XmlElement) null;
+    private static XmlElement preloadedNode = null;
 
     public static void LoadEntities(XmlElement rootNode)
     {
-      VMSaveLoadManagerUtility.PreLoadObjectsFromXml(rootNode);
-      foreach (KeyValuePair<string, XmlElement> preloadedNode in VMSaveLoadManagerUtility.preloadedNodes)
+      PreLoadObjectsFromXml(rootNode);
+      foreach (KeyValuePair<string, XmlElement> preloadedNode in preloadedNodes)
       {
         string key = preloadedNode.Key;
         XmlElement xmlNode = preloadedNode.Value;
@@ -33,34 +32,34 @@ namespace PLVirtualMachine.Data.SaveLoad
           if (objectByGuid != null)
           {
             VMEntity childEntity = new VMEntity();
-            childEntity.Initialize((ILogicObject) objectByGuid, guid);
+            childEntity.Initialize(objectByGuid, guid);
             childEntity.OnCreate(true);
             childEntity.LoadFromXML(xmlNode);
-            VirtualMachine.Instance.GameRootEntity.AddChildEntity((VMBaseEntity) childEntity);
+            VirtualMachine.Instance.GameRootEntity.AddChildEntity(childEntity);
           }
           else
-            Logger.AddError(string.Format("Saveload error: static template with id = {0} not found", (object) uint64));
+            Logger.AddError(string.Format("Saveload error: static template with id = {0} not found", uint64));
         }
       }
     }
 
     private static void PreLoadObjectsFromXml(XmlElement xmlNode)
     {
-      if (VMSaveLoadManagerUtility.preloadedNode == xmlNode)
+      if (preloadedNode == xmlNode)
         return;
-      VMSaveLoadManagerUtility.preloadedNode = xmlNode;
-      VMSaveLoadManagerUtility.preloadedNodes = new Dictionary<string, XmlElement>(xmlNode.ChildNodes.Count);
+      preloadedNode = xmlNode;
+      preloadedNodes = new Dictionary<string, XmlElement>(xmlNode.ChildNodes.Count);
       foreach (XmlNode childNode in xmlNode.ChildNodes)
       {
         XmlNode firstChild = childNode.FirstChild;
         if (firstChild == null)
         {
-          Logger.AddError(string.Format("Saveload error: wrong saved entity in node {0} !", (object) childNode.ToString()));
+          Logger.AddError(string.Format("Saveload error: wrong saved entity in node {0} !", childNode.ToString()));
         }
         else
         {
           string innerText = firstChild.InnerText;
-          VMSaveLoadManagerUtility.preloadedNodes[innerText] = (XmlElement) childNode;
+          preloadedNodes[innerText] = (XmlElement) childNode;
         }
       }
     }
@@ -68,19 +67,19 @@ namespace PLVirtualMachine.Data.SaveLoad
     public static XmlElement GetPreloadedObjectNodeByKey(string sEntityKeyGuid)
     {
       XmlElement preloadedObjectNodeByKey;
-      VMSaveLoadManagerUtility.preloadedNodes.TryGetValue(sEntityKeyGuid, out preloadedObjectNodeByKey);
+      preloadedNodes.TryGetValue(sEntityKeyGuid, out preloadedObjectNodeByKey);
       return preloadedObjectNodeByKey;
     }
 
     public static void Clear()
     {
-      VMSaveLoadManagerUtility.preloadedNodes.Clear();
-      VMSaveLoadManagerUtility.preloadedNode = (XmlElement) null;
+      preloadedNodes.Clear();
+      preloadedNode = null;
     }
 
     public static bool ObjectPreloaded(string saveLoadKey)
     {
-      return VMSaveLoadManagerUtility.preloadedNode != null && VMSaveLoadManagerUtility.preloadedNodes.ContainsKey(saveLoadKey);
+      return preloadedNode != null && preloadedNodes.ContainsKey(saveLoadKey);
     }
   }
 }

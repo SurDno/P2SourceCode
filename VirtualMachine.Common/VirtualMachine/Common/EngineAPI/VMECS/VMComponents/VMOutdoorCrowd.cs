@@ -1,10 +1,10 @@
-﻿using Cofe.Loggers;
+﻿using System;
+using Cofe.Loggers;
 using Engine.Common;
 using Engine.Common.Components;
 using Engine.Common.Components.Crowds;
 using PLVirtualMachine.Common.EngineAPI.VMECS;
 using PLVirtualMachine.Common.EngineAPI.VMECS.VMAttributes;
-using System;
 
 namespace VirtualMachine.Common.EngineAPI.VMECS.VMComponents
 {
@@ -16,12 +16,12 @@ namespace VirtualMachine.Common.EngineAPI.VMECS.VMComponents
     [Property("Layout", "")]
     public OutdoorCrowdLayoutEnum Layout
     {
-      get => this.Component.Layout;
-      set => this.Component.Layout = value;
+      get => Component.Layout;
+      set => Component.Layout = value;
     }
 
     [Event("Need create object event", "template object", false)]
-    public event VMOutdoorCrowd.NeedCreateObjectEventType NeedCreateObjectEvent;
+    public event NeedCreateObjectEventType NeedCreateObjectEvent;
 
     [Event("Need delete object event", "object", false)]
     public event Action<IEntity> NeedDeleteObjectEvent;
@@ -31,37 +31,37 @@ namespace VirtualMachine.Common.EngineAPI.VMECS.VMComponents
     {
       try
       {
-        this.Component.AddEntity(entity);
+        Component.AddEntity(entity);
       }
       catch (Exception ex)
       {
-        Logger.AddError(string.Format("Outdoor crowd entity adding error at {0}: {1} !", (object) this.Parent.Name, (object) ex.ToString()));
+        Logger.AddError(string.Format("Outdoor crowd entity adding error at {0}: {1} !", Parent.Name, ex.ToString()));
       }
     }
 
     [Method("Reset", "", "")]
-    public void Reset() => this.Component.Reset();
+    public void Reset() => Component.Reset();
 
     public override void Clear()
     {
-      if (!this.InstanceValid)
+      if (!InstanceValid)
         return;
-      this.Component.OnCreateEntity -= new Action<IEntity>(this.OnCreateEntity);
-      this.Component.OnDeleteEntity -= new Action<IEntity>(this.OnDeleteEntity);
+      Component.OnCreateEntity -= OnCreateEntity;
+      Component.OnDeleteEntity -= OnDeleteEntity;
       base.Clear();
     }
 
     protected override void Init()
     {
-      if (this.IsTemplate)
+      if (IsTemplate)
         return;
-      this.Component.OnCreateEntity += new Action<IEntity>(this.OnCreateEntity);
-      this.Component.OnDeleteEntity += new Action<IEntity>(this.OnDeleteEntity);
+      Component.OnCreateEntity += OnCreateEntity;
+      Component.OnDeleteEntity += OnDeleteEntity;
     }
 
     private void OnDeleteEntity(IEntity entity)
     {
-      Action<IEntity> deleteObjectEvent = this.NeedDeleteObjectEvent;
+      Action<IEntity> deleteObjectEvent = NeedDeleteObjectEvent;
       if (deleteObjectEvent == null)
         return;
       deleteObjectEvent(entity);
@@ -69,7 +69,7 @@ namespace VirtualMachine.Common.EngineAPI.VMECS.VMComponents
 
     private void OnCreateEntity(IEntity entity)
     {
-      VMOutdoorCrowd.NeedCreateObjectEventType createObjectEvent = this.NeedCreateObjectEvent;
+      NeedCreateObjectEventType createObjectEvent = NeedCreateObjectEvent;
       if (createObjectEvent == null)
         return;
       createObjectEvent(entity);

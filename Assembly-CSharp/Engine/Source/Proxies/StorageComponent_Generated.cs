@@ -1,11 +1,10 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons.Cloneable;
 using Engine.Common.Commons.Converters;
-using Engine.Common.Components;
 using Engine.Source.Components;
 using Scripts.Tools.Serializations.Converters;
-using System;
 
 namespace Engine.Source.Proxies
 {
@@ -22,38 +21,38 @@ namespace Engine.Source.Proxies
     public object Clone()
     {
       StorageComponent_Generated instance = Activator.CreateInstance<StorageComponent_Generated>();
-      this.CopyTo((object) instance);
-      return (object) instance;
+      CopyTo(instance);
+      return instance;
     }
 
     public void CopyTo(object target2)
     {
       StorageComponent_Generated componentGenerated = (StorageComponent_Generated) target2;
-      componentGenerated.tag = this.tag;
-      CloneableObjectUtility.CopyListTo<TemplateInfo>(componentGenerated.inventoryTemplates, this.inventoryTemplates);
-      CloneableObjectUtility.CopyListTo<IStorableComponent>(componentGenerated.items, this.items);
+      componentGenerated.tag = tag;
+      CloneableObjectUtility.CopyListTo(componentGenerated.inventoryTemplates, inventoryTemplates);
+      CloneableObjectUtility.CopyListTo(componentGenerated.items, items);
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.Write(writer, "Tag", this.tag);
-      DefaultDataWriteUtility.WriteListSerialize<TemplateInfo>(writer, "InventoryTemplates", this.inventoryTemplates);
+      DefaultDataWriteUtility.Write(writer, "Tag", tag);
+      DefaultDataWriteUtility.WriteListSerialize(writer, "InventoryTemplates", inventoryTemplates);
     }
 
     public void DataRead(IDataReader reader, Type type)
     {
-      this.tag = DefaultDataReadUtility.Read(reader, "Tag", this.tag);
-      this.inventoryTemplates = DefaultDataReadUtility.ReadListSerialize<TemplateInfo>(reader, "InventoryTemplates", this.inventoryTemplates);
+      tag = DefaultDataReadUtility.Read(reader, "Tag", tag);
+      inventoryTemplates = DefaultDataReadUtility.ReadListSerialize(reader, "InventoryTemplates", inventoryTemplates);
     }
 
     public void StateSave(IDataWriter writer)
     {
-      CustomStateSaveUtility.SaveListReferences<IStorableComponent>(writer, "Items", this.items);
+      CustomStateSaveUtility.SaveListReferences(writer, "Items", items);
     }
 
     public void StateLoad(IDataReader reader, Type type)
     {
-      this.items = CustomStateLoadUtility.LoadListReferences<IStorableComponent>(reader, "Items", this.items);
+      items = CustomStateLoadUtility.LoadListReferences(reader, "Items", items);
     }
   }
 }

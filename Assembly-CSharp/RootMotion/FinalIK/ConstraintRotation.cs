@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEngine;
 
 namespace RootMotion.FinalIK
 {
@@ -10,9 +9,9 @@ namespace RootMotion.FinalIK
 
     public override void UpdateConstraint()
     {
-      if ((double) this.weight <= 0.0 || !this.isValid)
+      if (weight <= 0.0 || !isValid)
         return;
-      this.transform.rotation = Quaternion.Slerp(this.transform.rotation, this.rotation, this.weight);
+      transform.rotation = Quaternion.Slerp(transform.rotation, rotation, weight);
     }
 
     public ConstraintRotation()

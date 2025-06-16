@@ -1,13 +1,11 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons.Cloneable;
 using Engine.Common.Commons.Converters;
 using Engine.Source.Commons.Effects;
 using Engine.Source.Effects;
 using Scripts.Tools.Serializations.Converters;
-using System;
-using UnityEngine;
-using UnityEngine.Audio;
 
 namespace Engine.Source.Proxies
 {
@@ -22,30 +20,30 @@ namespace Engine.Source.Proxies
     public object Clone()
     {
       RemoveEntityIfDurabilityZeroEffect_Generated instance = Activator.CreateInstance<RemoveEntityIfDurabilityZeroEffect_Generated>();
-      this.CopyTo((object) instance);
-      return (object) instance;
+      CopyTo(instance);
+      return instance;
     }
 
     public void CopyTo(object target2)
     {
       RemoveEntityIfDurabilityZeroEffect_Generated zeroEffectGenerated = (RemoveEntityIfDurabilityZeroEffect_Generated) target2;
-      zeroEffectGenerated.queue = this.queue;
-      zeroEffectGenerated.removeSound = this.removeSound;
-      zeroEffectGenerated.removeSoundMixer = this.removeSoundMixer;
+      zeroEffectGenerated.queue = queue;
+      zeroEffectGenerated.removeSound = removeSound;
+      zeroEffectGenerated.removeSoundMixer = removeSoundMixer;
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.WriteEnum<ParameterEffectQueueEnum>(writer, "Queue", this.queue);
-      UnityDataWriteUtility.Write<AudioClip>(writer, "RemoveSound", this.removeSound);
-      UnityDataWriteUtility.Write<AudioMixerGroup>(writer, "RemoveSoundMixer", this.removeSoundMixer);
+      DefaultDataWriteUtility.WriteEnum(writer, "Queue", queue);
+      UnityDataWriteUtility.Write(writer, "RemoveSound", removeSound);
+      UnityDataWriteUtility.Write(writer, "RemoveSoundMixer", removeSoundMixer);
     }
 
-    public void DataRead(IDataReader reader, System.Type type)
+    public void DataRead(IDataReader reader, Type type)
     {
-      this.queue = DefaultDataReadUtility.ReadEnum<ParameterEffectQueueEnum>(reader, "Queue");
-      this.removeSound = UnityDataReadUtility.Read<AudioClip>(reader, "RemoveSound", this.removeSound);
-      this.removeSoundMixer = UnityDataReadUtility.Read<AudioMixerGroup>(reader, "RemoveSoundMixer", this.removeSoundMixer);
+      queue = DefaultDataReadUtility.ReadEnum<ParameterEffectQueueEnum>(reader, "Queue");
+      removeSound = UnityDataReadUtility.Read(reader, "RemoveSound", removeSound);
+      removeSoundMixer = UnityDataReadUtility.Read(reader, "RemoveSoundMixer", removeSoundMixer);
     }
   }
 }

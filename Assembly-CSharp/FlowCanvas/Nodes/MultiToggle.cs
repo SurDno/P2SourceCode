@@ -1,14 +1,13 @@
-﻿using ParadoxNotion.Design;
+﻿using System.Collections.Generic;
+using ParadoxNotion.Design;
 using ParadoxNotion.FlowCanvas.Module;
-using System.Collections.Generic;
-using UnityEngine;
 
 namespace FlowCanvas.Nodes
 {
   [Name("Toggle (Multi)")]
   [Description("Whenever any input is called the current output is called as well. Calling '+' or '-' also changes the current output")]
   [Category("Flow Controllers/Togglers")]
-  [ContextDefinedOutputs(new System.Type[] {typeof (int)})]
+  [ContextDefinedOutputs(typeof (int))]
   public class MultiToggle : FlowControlNode, IMultiPortNode
   {
     [SerializeField]
@@ -17,36 +16,36 @@ namespace FlowCanvas.Nodes
 
     public int portCount
     {
-      get => this._portCount;
-      set => this._portCount = value;
+      get => _portCount;
+      set => _portCount = value;
     }
 
     public override string name
     {
-      get => base.name + " " + string.Format("[{0}]", (object) this.current.ToString());
+      get => base.name + " " + string.Format("[{0}]", current.ToString());
     }
 
-    public override void OnGraphStarted() => this.current = 0;
+    public override void OnGraphStarted() => current = 0;
 
-    public override void OnGraphStoped() => this.current = 0;
+    public override void OnGraphStoped() => current = 0;
 
     protected override void RegisterPorts()
     {
       List<FlowOutput> outs = new List<FlowOutput>();
-      for (int index = 0; index < this.portCount; ++index)
-        outs.Add(this.AddFlowOutput(index.ToString()));
-      this.AddFlowInput("In", (FlowHandler) (() => outs[this.current].Call()));
-      this.AddFlowInput("+", (FlowHandler) (() =>
+      for (int index = 0; index < portCount; ++index)
+        outs.Add(AddFlowOutput(index.ToString()));
+      AddFlowInput("In", () => outs[current].Call());
+      AddFlowInput("+", () =>
       {
-        this.current = (int) Mathf.Repeat((float) (this.current + 1), (float) this.portCount);
-        outs[this.current].Call();
-      }));
-      this.AddFlowInput("-", (FlowHandler) (() =>
+        current = (int) Mathf.Repeat((float) (current + 1), (float) portCount);
+        outs[current].Call();
+      });
+      AddFlowInput("-", () =>
       {
-        this.current = (int) Mathf.Repeat((float) (this.current - 1), (float) this.portCount);
-        outs[this.current].Call();
-      }));
-      this.AddValueOutput<int>("Current", (ValueHandler<int>) (() => this.current));
+        current = (int) Mathf.Repeat((float) (current - 1), (float) portCount);
+        outs[current].Call();
+      });
+      AddValueOutput("Current", () => current);
     }
   }
 }

@@ -1,8 +1,9 @@
-﻿using Facepunch.Steamworks.Callbacks;
-using SteamNative;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Facepunch.Steamworks.Callbacks;
+using SteamNative;
+using Result = Facepunch.Steamworks.Callbacks.Result;
 
 namespace Facepunch.Steamworks
 {
@@ -12,38 +13,38 @@ namespace Facepunch.Steamworks
     internal ulong BoardId;
     internal Client client;
     private readonly Queue<Action> _onCreated = new Queue<Action>();
-    public Leaderboard.Entry[] Results;
+    public Entry[] Results;
     public Action OnBoardInformation;
     [ThreadStatic]
-    private static List<Leaderboard.Entry> _sEntryBuffer;
+    private static List<Entry> _sEntryBuffer;
 
-    internal Leaderboard(Client c) => this.client = c;
+    internal Leaderboard(Client c) => client = c;
 
     public string Name { get; private set; }
 
     public int TotalEntries { get; private set; }
 
-    public bool IsValid => this.BoardId > 0UL;
+    public bool IsValid => BoardId > 0UL;
 
     public bool IsError { get; private set; }
 
     public bool IsQuerying { get; private set; }
 
-    public void Dispose() => this.client = (Client) null;
+    public void Dispose() => client = null;
 
     private void DispatchOnCreatedCallbacks()
     {
-      while (this._onCreated.Count > 0)
-        this._onCreated.Dequeue()();
+      while (_onCreated.Count > 0)
+        _onCreated.Dequeue()();
     }
 
     private bool DeferOnCreated(Action onValid, FailureCallback onFailure = null)
     {
-      if (this.IsValid || this.IsError)
+      if (IsValid || IsError)
         return false;
-      this._onCreated.Enqueue((Action) (() =>
+      _onCreated.Enqueue((Action) (() =>
       {
-        if (this.IsValid)
+        if (IsValid)
         {
           onValid();
         }
@@ -52,7 +53,7 @@ namespace Facepunch.Steamworks
           FailureCallback failureCallback = onFailure;
           if (failureCallback == null)
             return;
-          failureCallback(Facepunch.Steamworks.Callbacks.Result.Fail);
+          failureCallback(Result.Fail);
         }
       }));
       return true;
@@ -60,35 +61,35 @@ namespace Facepunch.Steamworks
 
     internal void OnBoardCreated(LeaderboardFindResult_t result, bool error)
     {
-      if (error || result.LeaderboardFound == (byte) 0)
+      if (error || result.LeaderboardFound == 0)
       {
-        this.IsError = true;
+        IsError = true;
       }
       else
       {
-        this.BoardId = result.SteamLeaderboard;
-        if (this.IsValid)
+        BoardId = result.SteamLeaderboard;
+        if (IsValid)
         {
-          this.Name = this.client.native.userstats.GetLeaderboardName((SteamLeaderboard_t) this.BoardId);
-          this.TotalEntries = this.client.native.userstats.GetLeaderboardEntryCount((SteamLeaderboard_t) this.BoardId);
-          Action boardInformation = this.OnBoardInformation;
+          Name = client.native.userstats.GetLeaderboardName(BoardId);
+          TotalEntries = client.native.userstats.GetLeaderboardEntryCount(BoardId);
+          Action boardInformation = OnBoardInformation;
           if (boardInformation != null)
             boardInformation();
         }
       }
-      this.DispatchOnCreatedCallbacks();
+      DispatchOnCreatedCallbacks();
     }
 
     public bool AddScore(bool onlyIfBeatsOldScore, int score, params int[] subscores)
     {
-      if (this.IsError)
+      if (IsError)
         return false;
-      if (!this.IsValid)
-        return this.DeferOnCreated((Action) (() => this.AddScore(onlyIfBeatsOldScore, score, subscores)));
+      if (!IsValid)
+        return DeferOnCreated(() => AddScore(onlyIfBeatsOldScore, score, subscores));
       LeaderboardUploadScoreMethod eLeaderboardUploadScoreMethod = LeaderboardUploadScoreMethod.ForceUpdate;
       if (onlyIfBeatsOldScore)
         eLeaderboardUploadScoreMethod = LeaderboardUploadScoreMethod.KeepBest;
-      this.client.native.userstats.UploadLeaderboardScore((SteamLeaderboard_t) this.BoardId, eLeaderboardUploadScoreMethod, score, subscores, subscores.Length);
+      client.native.userstats.UploadLeaderboardScore(BoardId, eLeaderboardUploadScoreMethod, score, subscores, subscores.Length);
       return true;
     }
 
@@ -96,29 +97,28 @@ namespace Facepunch.Steamworks
       bool onlyIfBeatsOldScore,
       int score,
       int[] subscores = null,
-      Leaderboard.AddScoreCallback onSuccess = null,
+      AddScoreCallback onSuccess = null,
       FailureCallback onFailure = null)
     {
-      if (this.IsError)
+      if (IsError)
         return false;
-      if (!this.IsValid)
-        return this.DeferOnCreated((Action) (() => this.AddScore(onlyIfBeatsOldScore, score, subscores, onSuccess, onFailure)), onFailure);
+      if (!IsValid)
+        return DeferOnCreated(() => AddScore(onlyIfBeatsOldScore, score, subscores, onSuccess, onFailure), onFailure);
       if (subscores == null)
         subscores = new int[0];
       LeaderboardUploadScoreMethod eLeaderboardUploadScoreMethod = LeaderboardUploadScoreMethod.ForceUpdate;
       if (onlyIfBeatsOldScore)
         eLeaderboardUploadScoreMethod = LeaderboardUploadScoreMethod.KeepBest;
-      this.client.native.userstats.UploadLeaderboardScore((SteamLeaderboard_t) this.BoardId, eLeaderboardUploadScoreMethod, score, subscores, subscores.Length, (Action<LeaderboardScoreUploaded_t, bool>) ((result, error) =>
+      client.native.userstats.UploadLeaderboardScore(BoardId, eLeaderboardUploadScoreMethod, score, subscores, subscores.Length, (result, error) =>
       {
-        if (!error && result.Success > (byte) 0)
+        if (!error && result.Success > 0)
         {
-          Leaderboard.AddScoreCallback addScoreCallback = onSuccess;
+          AddScoreCallback addScoreCallback = onSuccess;
           if (addScoreCallback == null)
             return;
-          addScoreCallback(new Leaderboard.AddScoreResult()
-          {
+          addScoreCallback(new AddScoreResult {
             Score = result.Score,
-            ScoreChanged = result.ScoreChanged > (byte) 0,
+            ScoreChanged = result.ScoreChanged > 0,
             GlobalRankNew = result.GlobalRankNew,
             GlobalRankPrevious = result.GlobalRankPrevious
           });
@@ -127,27 +127,27 @@ namespace Facepunch.Steamworks
         {
           FailureCallback failureCallback = onFailure;
           if (failureCallback != null)
-            failureCallback(error ? Facepunch.Steamworks.Callbacks.Result.IOFailure : Facepunch.Steamworks.Callbacks.Result.Fail);
+            failureCallback(error ? Result.IOFailure : Result.Fail);
         }
-      }));
+      });
       return true;
     }
 
     public bool AttachRemoteFile(
       RemoteFile file,
-      Leaderboard.AttachRemoteFileCallback onSuccess = null,
+      AttachRemoteFileCallback onSuccess = null,
       FailureCallback onFailure = null)
     {
-      if (this.IsError)
+      if (IsError)
         return false;
-      if (!this.IsValid)
-        return this.DeferOnCreated((Action) (() => this.AttachRemoteFile(file, onSuccess, onFailure)), onFailure);
+      if (!IsValid)
+        return DeferOnCreated(() => AttachRemoteFile(file, onSuccess, onFailure), onFailure);
       if (file.IsShared)
-        return (ulong) this.client.native.userstats.AttachLeaderboardUGC((SteamLeaderboard_t) this.BoardId, file.UGCHandle, (Action<LeaderboardUGCSet_t, bool>) ((result, error) =>
+        return client.native.userstats.AttachLeaderboardUGC(BoardId, file.UGCHandle, (result, error) =>
         {
           if (!error && result.Result == SteamNative.Result.OK)
           {
-            Leaderboard.AttachRemoteFileCallback remoteFileCallback = onSuccess;
+            AttachRemoteFileCallback remoteFileCallback = onSuccess;
             if (remoteFileCallback == null)
               return;
             remoteFileCallback();
@@ -156,50 +156,49 @@ namespace Facepunch.Steamworks
           {
             FailureCallback failureCallback = onFailure;
             if (failureCallback != null)
-              failureCallback(result.Result == (SteamNative.Result) 0 ? Facepunch.Steamworks.Callbacks.Result.IOFailure : (Facepunch.Steamworks.Callbacks.Result) result.Result);
+              failureCallback(result.Result == 0 ? Result.IOFailure : (Result) result.Result);
           }
-        })).CallResultHandle > 0UL;
-      file.Share((RemoteFile.ShareCallback) (() =>
+        }).CallResultHandle > 0UL;
+      file.Share(() =>
       {
-        if (file.IsShared && this.AttachRemoteFile(file, onSuccess, onFailure))
+        if (file.IsShared && AttachRemoteFile(file, onSuccess, onFailure))
           return;
         FailureCallback failureCallback = onFailure;
         if (failureCallback != null)
-          failureCallback(Facepunch.Steamworks.Callbacks.Result.Fail);
-      }), onFailure);
+          failureCallback(Result.Fail);
+      }, onFailure);
       return true;
     }
 
-    public bool FetchScores(Leaderboard.RequestType RequestType, int start, int end)
+    public bool FetchScores(RequestType RequestType, int start, int end)
     {
-      if (!this.IsValid || this.IsQuerying)
+      if (!IsValid || IsQuerying)
         return false;
-      this.client.native.userstats.DownloadLeaderboardEntries((SteamLeaderboard_t) this.BoardId, (LeaderboardDataRequest) RequestType, start, end, new Action<LeaderboardScoresDownloaded_t, bool>(this.OnScores));
-      this.Results = (Leaderboard.Entry[]) null;
-      this.IsQuerying = true;
+      client.native.userstats.DownloadLeaderboardEntries(BoardId, (LeaderboardDataRequest) RequestType, start, end, OnScores);
+      Results = null;
+      IsQuerying = true;
       return true;
     }
 
     private unsafe void ReadScores(
       LeaderboardScoresDownloaded_t result,
-      List<Leaderboard.Entry> dest)
+      List<Entry> dest)
     {
       for (int index = 0; index < result.CEntryCount; ++index)
       {
-        fixed (int* pDetails = Leaderboard.subEntriesBuffer)
+        fixed (int* pDetails = subEntriesBuffer)
         {
           LeaderboardEntry_t pLeaderboardEntry = new LeaderboardEntry_t();
-          if (this.client.native.userstats.GetDownloadedLeaderboardEntry((SteamLeaderboardEntries_t) result.SteamLeaderboardEntries, index, ref pLeaderboardEntry, (IntPtr) (void*) pDetails, Leaderboard.subEntriesBuffer.Length))
+          if (client.native.userstats.GetDownloadedLeaderboardEntry(result.SteamLeaderboardEntries, index, ref pLeaderboardEntry, (IntPtr) pDetails, subEntriesBuffer.Length))
           {
-            List<Leaderboard.Entry> entryList = dest;
-            Leaderboard.Entry entry = new Leaderboard.Entry()
-            {
+            List<Entry> entryList = dest;
+            Entry entry = new Entry {
               GlobalRank = pLeaderboardEntry.GlobalRank,
               Score = pLeaderboardEntry.Score,
               SteamId = pLeaderboardEntry.SteamIDUser,
-              SubScores = pLeaderboardEntry.CDetails == 0 ? (int[]) null : ((IEnumerable<int>) Leaderboard.subEntriesBuffer).Take<int>(pLeaderboardEntry.CDetails).ToArray<int>(),
-              Name = this.client.Friends.GetName(pLeaderboardEntry.SteamIDUser),
-              AttachedFile = pLeaderboardEntry.UGC >> 32 == (ulong) uint.MaxValue ? (RemoteFile) null : new RemoteFile(this.client.RemoteStorage, (UGCHandle_t) pLeaderboardEntry.UGC)
+              SubScores = pLeaderboardEntry.CDetails == 0 ? null : subEntriesBuffer.Take(pLeaderboardEntry.CDetails).ToArray(),
+              Name = client.Friends.GetName(pLeaderboardEntry.SteamIDUser),
+              AttachedFile = pLeaderboardEntry.UGC >> 32 == uint.MaxValue ? null : new RemoteFile(client.RemoteStorage, pLeaderboardEntry.UGC)
             };
             entryList.Add(entry);
           }
@@ -208,46 +207,46 @@ namespace Facepunch.Steamworks
     }
 
     public bool FetchScores(
-      Leaderboard.RequestType RequestType,
+      RequestType RequestType,
       int start,
       int end,
-      Leaderboard.FetchScoresCallback onSuccess,
+      FetchScoresCallback onSuccess,
       FailureCallback onFailure = null)
     {
-      if (this.IsError)
+      if (IsError)
         return false;
-      if (!this.IsValid)
-        return this.DeferOnCreated((Action) (() => this.FetchScores(RequestType, start, end, onSuccess, onFailure)), onFailure);
-      this.client.native.userstats.DownloadLeaderboardEntries((SteamLeaderboard_t) this.BoardId, (LeaderboardDataRequest) RequestType, start, end, (Action<LeaderboardScoresDownloaded_t, bool>) ((result, error) =>
+      if (!IsValid)
+        return DeferOnCreated(() => FetchScores(RequestType, start, end, onSuccess, onFailure), onFailure);
+      client.native.userstats.DownloadLeaderboardEntries(BoardId, (LeaderboardDataRequest) RequestType, start, end, (result, error) =>
       {
         if (error)
         {
           FailureCallback failureCallback = onFailure;
           if (failureCallback == null)
             return;
-          failureCallback(Facepunch.Steamworks.Callbacks.Result.IOFailure);
+          failureCallback(Result.IOFailure);
         }
         else
         {
-          if (Leaderboard._sEntryBuffer == null)
-            Leaderboard._sEntryBuffer = new List<Leaderboard.Entry>();
+          if (_sEntryBuffer == null)
+            _sEntryBuffer = new List<Entry>();
           else
-            Leaderboard._sEntryBuffer.Clear();
-          this.ReadScores(result, Leaderboard._sEntryBuffer);
-          onSuccess(Leaderboard._sEntryBuffer.ToArray());
+            _sEntryBuffer.Clear();
+          ReadScores(result, _sEntryBuffer);
+          onSuccess(_sEntryBuffer.ToArray());
         }
-      }));
+      });
       return true;
     }
 
     private void OnScores(LeaderboardScoresDownloaded_t result, bool error)
     {
-      this.IsQuerying = false;
-      if (this.client == null || error)
+      IsQuerying = false;
+      if (client == null || error)
         return;
-      List<Leaderboard.Entry> dest = new List<Leaderboard.Entry>();
-      this.ReadScores(result, dest);
-      this.Results = dest.ToArray();
+      List<Entry> dest = new List<Entry>();
+      ReadScores(result, dest);
+      Results = dest.ToArray();
     }
 
     public enum RequestType
@@ -257,7 +256,7 @@ namespace Facepunch.Steamworks
       Friends,
     }
 
-    public delegate void AddScoreCallback(Leaderboard.AddScoreResult result);
+    public delegate void AddScoreCallback(AddScoreResult result);
 
     public struct AddScoreResult
     {
@@ -269,7 +268,7 @@ namespace Facepunch.Steamworks
 
     public delegate void AttachRemoteFileCallback();
 
-    public delegate void FetchScoresCallback(Leaderboard.Entry[] results);
+    public delegate void FetchScoresCallback(Entry[] results);
 
     public struct Entry
     {

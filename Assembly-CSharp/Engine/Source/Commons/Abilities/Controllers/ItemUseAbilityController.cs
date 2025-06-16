@@ -2,7 +2,6 @@
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Engine.Source.Components;
-using System;
 
 namespace Engine.Source.Commons.Abilities.Controllers
 {
@@ -16,24 +15,24 @@ namespace Engine.Source.Commons.Abilities.Controllers
     public void Initialise(AbilityItem abilityItem)
     {
       this.abilityItem = abilityItem;
-      this.storable = this.abilityItem.Ability.Owner.GetComponent<StorableComponent>();
-      if (this.storable == null)
+      storable = this.abilityItem.Ability.Owner.GetComponent<StorableComponent>();
+      if (storable == null)
         return;
-      this.storable.UseEvent += new Action<IStorableComponent>(this.UseEvent);
+      storable.UseEvent += UseEvent;
     }
 
     public void Shutdown()
     {
-      if (this.storable != null)
-        this.storable.UseEvent -= new Action<IStorableComponent>(this.UseEvent);
-      this.abilityItem = (AbilityItem) null;
-      this.storable = (StorableComponent) null;
+      if (storable != null)
+        storable.UseEvent -= UseEvent;
+      abilityItem = null;
+      storable = null;
     }
 
     private void UseEvent(IStorableComponent sender)
     {
-      this.abilityItem.Active = true;
-      this.abilityItem.Active = false;
+      abilityItem.Active = true;
+      abilityItem.Active = false;
     }
   }
 }

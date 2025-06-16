@@ -1,9 +1,7 @@
-﻿using Engine.Common;
-using Engine.Common.Components;
+﻿using Engine.Common.Components;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Engine.Source.Commons;
-using System;
 
 namespace Engine.Source.Components
 {
@@ -19,58 +17,58 @@ namespace Engine.Source.Components
     public override void OnAdded()
     {
       base.OnAdded();
-      this.locationItem.OnChangeLocation += new Action<ILocationItemComponent, ILocationComponent>(this.LocationItemOnChangeLocation);
-      this.ComputeLocation();
+      locationItem.OnChangeLocation += LocationItemOnChangeLocation;
+      ComputeLocation();
     }
 
     public override void OnRemoved()
     {
-      this.locationItem.OnChangeLocation -= new Action<ILocationItemComponent, ILocationComponent>(this.LocationItemOnChangeLocation);
+      locationItem.OnChangeLocation -= LocationItemOnChangeLocation;
       base.OnRemoved();
     }
 
     public override void OnChangeEnabled()
     {
       base.OnChangeEnabled();
-      this.ComputeLocation();
+      ComputeLocation();
     }
 
     private void ComputeLocation()
     {
-      ILocationComponent location1 = !((Entity) this.Owner).IsAdded || !this.Owner.IsEnabledInHierarchy ? (ILocationComponent) null : this.locationItem.Location;
-      if (this.location == location1)
+      ILocationComponent location1 = !((Entity) Owner).IsAdded || !Owner.IsEnabledInHierarchy ? null : locationItem.Location;
+      if (location == location1)
         return;
-      LocationComponent location2 = this.location;
-      this.location = (LocationComponent) location1;
-      if (this.location != null)
-        this.SetNewLocation(this.location);
+      LocationComponent location2 = location;
+      location = (LocationComponent) location1;
+      if (location != null)
+        SetNewLocation(location);
       if (location2 == null)
         return;
-      this.ClearOldLocation(location2, this.location);
+      ClearOldLocation(location2, location);
     }
 
     private void LocationItemOnChangeLocation(
       ILocationItemComponent sender,
       ILocationComponent newLocation)
     {
-      this.ComputeLocation();
+      ComputeLocation();
     }
 
     private void SetNewLocation(LocationComponent location)
     {
-      location.Player = this.Owner;
-      if (location.Parent == null || ((LocationComponent) location.Parent).Player == this.Owner)
+      location.Player = Owner;
+      if (location.Parent == null || ((LocationComponent) location.Parent).Player == Owner)
         return;
-      this.SetNewLocation((LocationComponent) location.Parent);
+      SetNewLocation((LocationComponent) location.Parent);
     }
 
     private void ClearOldLocation(LocationComponent prevLocation, LocationComponent newLocation)
     {
-      if (!this.Containts(prevLocation, newLocation))
-        prevLocation.Player = (IEntity) null;
+      if (!Containts(prevLocation, newLocation))
+        prevLocation.Player = null;
       if (prevLocation.Parent == null)
         return;
-      this.ClearOldLocation((LocationComponent) prevLocation.Parent, newLocation);
+      ClearOldLocation((LocationComponent) prevLocation.Parent, newLocation);
     }
 
     private bool Containts(LocationComponent prevLocation, LocationComponent newLocation)
@@ -79,7 +77,7 @@ namespace Engine.Source.Components
         return false;
       if (prevLocation == newLocation)
         return true;
-      return newLocation.Parent != null && this.Containts(prevLocation, (LocationComponent) newLocation.Parent);
+      return newLocation.Parent != null && Containts(prevLocation, (LocationComponent) newLocation.Parent);
     }
   }
 }

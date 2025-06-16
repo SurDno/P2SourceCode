@@ -1,7 +1,6 @@
-﻿using Inspectors;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using UnityEngine;
+using Inspectors;
 
 namespace Engine.Source.Commons
 {
@@ -25,54 +24,54 @@ namespace Engine.Source.Commons
       this.list = list;
       this.delay = delay;
       this.updater = updater;
-      this.accumulator = 0.0f;
-      this.lastIndex = 0;
-      this.count = 0;
+      accumulator = 0.0f;
+      lastIndex = 0;
+      count = 0;
     }
 
     public void Update()
     {
-      int count1 = this.list.Count;
+      int count1 = list.Count;
       if (count1 == 0)
         return;
-      if ((double) this.delay != 0.0)
+      if (delay != 0.0)
       {
-        this.accumulator += Time.deltaTime;
-        this.count = (int) ((double) this.accumulator * (double) count1 / (double) this.delay);
-        if (this.count == 0)
+        accumulator += Time.deltaTime;
+        count = (int) (accumulator * (double) count1 / delay);
+        if (count == 0)
           return;
-        this.accumulator -= this.delay * (float) this.count / (float) count1;
-        this.count = Mathf.Min(this.count, count1);
+        accumulator -= delay * count / count1;
+        count = Mathf.Min(count, count1);
       }
       else
       {
-        this.lastIndex = 0;
-        this.count = count1;
+        lastIndex = 0;
+        count = count1;
       }
-      for (int index = 0; index < this.count; ++index)
+      for (int index = 0; index < count; ++index)
       {
-        int count2 = this.list.Count;
+        int count2 = list.Count;
         if (count2 == 0)
           break;
-        if (this.lastIndex >= count2)
-          this.lastIndex = 0;
-        T obj = this.list[this.lastIndex];
-        if ((object) obj == null)
+        if (lastIndex >= count2)
+          lastIndex = 0;
+        T obj = list[lastIndex];
+        if (obj == null)
         {
-          this.list[this.lastIndex] = this.list[this.list.Count - 1];
-          this.list.RemoveAt(this.list.Count - 1);
+          list[lastIndex] = list[list.Count - 1];
+          list.RemoveAt(list.Count - 1);
         }
         else
         {
           try
           {
-            this.updater.ComputeUpdateItem(obj);
+            updater.ComputeUpdateItem(obj);
           }
           catch (Exception ex)
           {
             Debug.LogException(ex);
           }
-          ++this.lastIndex;
+          ++lastIndex;
         }
       }
     }

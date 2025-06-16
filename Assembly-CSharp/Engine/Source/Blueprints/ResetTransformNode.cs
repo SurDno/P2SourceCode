@@ -1,7 +1,6 @@
 ﻿using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
-using UnityEngine;
 
 namespace Engine.Source.Blueprints
 {
@@ -13,15 +12,15 @@ namespace Engine.Source.Blueprints
     protected override void RegisterPorts()
     {
       base.RegisterPorts();
-      FlowOutput output = this.AddFlowOutput("Out");
-      this.AddFlowInput("In", (FlowHandler) (() =>
+      FlowOutput output = AddFlowOutput("Out");
+      AddFlowInput("In", () =>
       {
-        Transform transform = this.transformInput.value;
+        Transform transform = transformInput.value;
         if ((Object) transform != (Object) null)
           transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
         output.Call();
-      }));
-      this.transformInput = this.AddValueInput<Transform>("Transform");
+      });
+      transformInput = AddValueInput<Transform>("Transform");
     }
   }
 }

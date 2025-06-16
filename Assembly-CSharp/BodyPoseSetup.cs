@@ -1,5 +1,4 @@
 ﻿using Inspectors;
-using UnityEngine;
 
 [ExecuteInEditMode]
 [RequireComponent(typeof (Animation))]
@@ -15,35 +14,35 @@ public class BodyPoseSetup : MonoBehaviour
   [Inspected(Mutable = true, Mode = ExecuteMode.EditAndRuntime)]
   private int CurrentClip
   {
-    get => this.currentClip;
+    get => currentClip;
     set
     {
-      this.currentClip = value;
-      this.Sample();
+      currentClip = value;
+      Sample();
     }
   }
 
   private void Awake()
   {
-    this.animation = this.GetComponent<Animation>();
-    if (!((Object) this.animation == (Object) null))
+    animation = this.GetComponent<Animation>();
+    if (!((Object) animation == (Object) null))
       return;
     Debug.LogError((object) (typeof (BodyPoseSetup).Name + ":" + this.gameObject.name + " should contain Animation component"));
   }
 
-  private void Start() => this.Sample();
+  private void Start() => Sample();
 
   private void Sample()
   {
-    if ((Object) this.animation == (Object) null || this.clips.Length < 0 || this.clips.Length <= this.currentClip)
+    if ((Object) animation == (Object) null || clips.Length < 0 || clips.Length <= currentClip)
       return;
-    this.animation.AddClip(this.clips[this.currentClip], this.clips[this.currentClip].name);
-    this.animation.clip = this.clips[this.currentClip];
-    string name = this.animation.clip.name;
-    this.animation[name].time = 0.0f;
-    this.animation[name].weight = 1f;
-    this.animation[name].enabled = true;
-    this.animation.Sample();
-    this.animation[name].enabled = false;
+    animation.AddClip(clips[currentClip], clips[currentClip].name);
+    animation.clip = clips[currentClip];
+    string name = animation.clip.name;
+    animation[name].time = 0.0f;
+    animation[name].weight = 1f;
+    animation[name].enabled = true;
+    animation.Sample();
+    animation[name].enabled = false;
   }
 }

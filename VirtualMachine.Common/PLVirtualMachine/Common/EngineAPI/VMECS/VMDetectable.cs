@@ -12,8 +12,8 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
     [Property("Enabled", "", false, true)]
     public bool DetectableEnabled
     {
-      get => this.Component.IsEnabled;
-      set => this.Component.IsEnabled = value;
+      get => Component.IsEnabled;
+      set => Component.IsEnabled = value;
     }
   }
 }

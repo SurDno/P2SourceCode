@@ -1,4 +1,5 @@
-﻿using PLVirtualMachine.Common;
+﻿using System;
+using PLVirtualMachine.Common;
 using PLVirtualMachine.Common.Data;
 using PLVirtualMachine.Common.EngineAPI;
 
@@ -19,14 +20,14 @@ namespace PLVirtualMachine.GameLogic
     {
       get
       {
-        if (this.StaticInstance == null && this.BaseGuid > 0UL)
-          this.LoadStaticInstance(IStaticDataContainer.StaticDataContainer.GetObjectByGuid(this.BaseGuid));
-        return (IGameString) this.StaticInstance;
+        if (StaticInstance == null && BaseGuid > 0UL)
+          LoadStaticInstance(IStaticDataContainer.StaticDataContainer.GetObjectByGuid(BaseGuid));
+        return (IGameString) StaticInstance;
       }
     }
 
-    public override bool Empty => this.Text == null && base.Empty;
+    public override bool Empty => Text == null && base.Empty;
 
-    protected override System.Type NeedInstanceType => typeof (IGameString);
+    protected override Type NeedInstanceType => typeof (IGameString);
   }
 }

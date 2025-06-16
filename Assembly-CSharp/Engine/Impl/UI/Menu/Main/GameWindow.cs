@@ -1,4 +1,5 @@
-﻿using Engine.Common.Services;
+﻿using System;
+using Engine.Common.Services;
 using Engine.Impl.Services;
 using Engine.Source.Commons;
 using Engine.Source.Services;
@@ -7,12 +8,6 @@ using Engine.Source.Services.Inputs;
 using Engine.Source.UI;
 using Engine.Source.Utility;
 using InputServices;
-using System;
-using UnityEngine;
-using UnityEngine.Events;
-using UnityEngine.EventSystems;
-using UnityEngine.Serialization;
-using UnityEngine.UI;
 
 namespace Engine.Impl.UI.Menu.Main
 {
@@ -38,22 +33,22 @@ namespace Engine.Impl.UI.Menu.Main
     private GameObject helpPanel;
     [SerializeField]
     private Image selectedLine;
-    private int currentIndex = 0;
+    private int currentIndex;
     private Button[] buttons = (Button[]) null;
     private bool isReturnedFromGame = true;
 
-    public GameObject Menu => this.menu;
+    public GameObject Menu => menu;
 
     public override void Initialize()
     {
-      this.RegisterLayer<IGameWindow>((IGameWindow) this);
+      RegisterLayer((IGameWindow) this);
       Button[] componentsInChildren = this.GetComponentsInChildren<Button>(true);
       for (int index = 0; index < componentsInChildren.Length; ++index)
       {
         componentsInChildren[index].gameObject.AddComponent<EventTrigger>();
         EventTrigger.Entry entry = new EventTrigger.Entry();
         entry.eventID = EventTriggerType.PointerClick;
-        entry.callback.AddListener((UnityAction<BaseEventData>) (eventData => this.Button_Click_Handler()));
+        entry.callback.AddListener((UnityAction<BaseEventData>) (eventData => Button_Click_Handler()));
         componentsInChildren[index].gameObject.GetComponent<EventTrigger>().triggers.Add(entry);
       }
       base.Initialize();
@@ -63,7 +58,7 @@ namespace Engine.Impl.UI.Menu.Main
     {
       if (!this.gameObject.activeInHierarchy)
         return;
-      this.gameObject.GetComponent<AudioSource>().PlayOneShot(this.clickSound);
+      this.gameObject.GetComponent<AudioSource>().PlayOneShot(clickSound);
     }
 
     public void Button_BackToGame_Click_Handler() => ServiceLocator.GetService<UIService>().Pop();
@@ -74,11 +69,11 @@ namespace Engine.Impl.UI.Menu.Main
       ServiceLocator.GetService<UIService>().Push<IGameLanguageSettingsWindow>();
     }
 
-    public void Button_ExitGame_Click_Handler() => this.ShowExitConfirmation(new Action(this.Exit));
+    public void Button_ExitGame_Click_Handler() => ShowExitConfirmation(Exit);
 
     public void Button_NewGame_Click_Handler()
     {
-      this.ShowExitConfirmation(new Action(this.ToMainMenu));
+      ShowExitConfirmation(ToMainMenu);
     }
 
     public void Button_LoadGame_Click_Handler()
@@ -88,107 +83,107 @@ namespace Engine.Impl.UI.Menu.Main
 
     protected override void OnEnable()
     {
-      this.buttonExit.gameObject.SetActive(true);
+      buttonExit.gameObject.SetActive(true);
       base.OnEnable();
       InstanceByRequest<EngineApplication>.Instance.IsPaused = true;
       PlayerUtility.ShowPlayerHands(false);
       CursorService.Instance.Free = CursorService.Instance.Visible = true;
-      this.lastCameraKind = ServiceLocator.GetService<CameraService>().Kind;
+      lastCameraKind = ServiceLocator.GetService<CameraService>().Kind;
       ServiceLocator.GetService<CameraService>().Kind = CameraKindEnum.Unknown;
       ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Cancel, new GameActionHandle(((UIWindow) this).CancelListener));
       GameActionService service = ServiceLocator.GetService<GameActionService>();
-      if (this.buttons == null)
-        this.buttons = this.GetComponentsInChildren<Button>();
-      service.AddListener(GameActionType.LStickDown, new GameActionHandle(this.ChangeSelectedItem));
-      service.AddListener(GameActionType.LStickUp, new GameActionHandle(this.ChangeSelectedItem));
-      service.AddListener(GameActionType.Submit, new GameActionHandle(this.ChangeSelectedItem));
-      service.AddListener(GameActionType.Cancel, new GameActionHandle(this.BackButton));
-      service.AddListener(GameActionType.MainMenu, new GameActionHandle(this.BackButton));
-      this.selectedLine.enabled = false;
+      if (buttons == null)
+        buttons = this.GetComponentsInChildren<Button>();
+      service.AddListener(GameActionType.LStickDown, ChangeSelectedItem);
+      service.AddListener(GameActionType.LStickUp, ChangeSelectedItem);
+      service.AddListener(GameActionType.Submit, ChangeSelectedItem);
+      service.AddListener(GameActionType.Cancel, BackButton);
+      service.AddListener(GameActionType.MainMenu, BackButton);
+      selectedLine.enabled = false;
     }
 
     protected override void OnDisable()
     {
-      if ((UnityEngine.Object) this.exitConfirmationInstance != (UnityEngine.Object) null)
-        this.exitConfirmationInstance.Hide();
+      if ((UnityEngine.Object) exitConfirmationInstance != (UnityEngine.Object) null)
+        exitConfirmationInstance.Hide();
       ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Cancel, new GameActionHandle(((UIWindow) this).CancelListener));
       CursorService.Instance.Free = CursorService.Instance.Visible = false;
       PlayerUtility.ShowPlayerHands(true);
       InstanceByRequest<EngineApplication>.Instance.IsPaused = false;
-      ServiceLocator.GetService<CameraService>().Kind = this.lastCameraKind;
+      ServiceLocator.GetService<CameraService>().Kind = lastCameraKind;
       GameActionService service = ServiceLocator.GetService<GameActionService>();
-      service.RemoveListener(GameActionType.LStickDown, new GameActionHandle(this.ChangeSelectedItem));
-      service.RemoveListener(GameActionType.LStickUp, new GameActionHandle(this.ChangeSelectedItem));
-      service.RemoveListener(GameActionType.Submit, new GameActionHandle(this.ChangeSelectedItem));
-      service.RemoveListener(GameActionType.Cancel, new GameActionHandle(this.BackButton));
-      service.RemoveListener(GameActionType.MainMenu, new GameActionHandle(this.BackButton));
+      service.RemoveListener(GameActionType.LStickDown, ChangeSelectedItem);
+      service.RemoveListener(GameActionType.LStickUp, ChangeSelectedItem);
+      service.RemoveListener(GameActionType.Submit, ChangeSelectedItem);
+      service.RemoveListener(GameActionType.Cancel, BackButton);
+      service.RemoveListener(GameActionType.MainMenu, BackButton);
       base.OnDisable();
     }
 
     protected override void OnJoystick(bool joystick)
     {
       base.OnJoystick(joystick);
-      this.helpPanel.SetActive(joystick);
+      helpPanel.SetActive(joystick);
       EventSystem.current.SetSelectedGameObject((GameObject) null);
       if (joystick)
       {
-        if (this.isReturnedFromGame)
+        if (isReturnedFromGame)
         {
-          EventSystem.current.SetSelectedGameObject(this.buttons[0].gameObject);
-          this.currentIndex = 0;
+          EventSystem.current.SetSelectedGameObject(buttons[0].gameObject);
+          currentIndex = 0;
         }
         else
-          EventSystem.current.SetSelectedGameObject(this.buttons[this.currentIndex].gameObject);
+          EventSystem.current.SetSelectedGameObject(buttons[currentIndex].gameObject);
       }
-      this.SetSelectionLine();
+      SetSelectionLine();
     }
 
     private bool BackButton(GameActionType type, bool down)
     {
       if (!down)
         return false;
-      this.Button_BackToGame_Click_Handler();
+      Button_BackToGame_Click_Handler();
       return true;
     }
 
     private bool ChangeSelectedItem(GameActionType type, bool down)
     {
-      if (!this.helpPanel.activeInHierarchy || (UnityEngine.Object) this.exitConfirmationInstance != (UnityEngine.Object) null && this.exitConfirmationInstance.gameObject.activeInHierarchy)
+      if (!helpPanel.activeInHierarchy || (UnityEngine.Object) exitConfirmationInstance != (UnityEngine.Object) null && exitConfirmationInstance.gameObject.activeInHierarchy)
         return false;
       if (type == GameActionType.LStickUp & down)
       {
-        --this.currentIndex;
-        this.ChangeSelection();
+        --currentIndex;
+        ChangeSelection();
         return true;
       }
       if (type == GameActionType.LStickDown & down)
       {
-        ++this.currentIndex;
-        this.ChangeSelection();
+        ++currentIndex;
+        ChangeSelection();
         return true;
       }
       if (type == GameActionType.Submit & down)
       {
         PointerEventData eventData = new PointerEventData(EventSystem.current);
-        this.isReturnedFromGame = this.currentIndex == 0;
-        ExecuteEvents.Execute<ISubmitHandler>(this.buttons[this.currentIndex].gameObject, (BaseEventData) eventData, ExecuteEvents.submitHandler);
+        isReturnedFromGame = currentIndex == 0;
+        ExecuteEvents.Execute<ISubmitHandler>(buttons[currentIndex].gameObject, (BaseEventData) eventData, ExecuteEvents.submitHandler);
         return true;
       }
       if (!(type == GameActionType.Cancel & down))
         return false;
-      this.isReturnedFromGame = true;
-      this.currentIndex = 0;
+      isReturnedFromGame = true;
+      currentIndex = 0;
       return true;
     }
 
     private void ChangeSelection()
     {
-      if (this.currentIndex > this.buttons.Length - 1)
-        this.currentIndex = 0;
-      if (this.currentIndex < 0)
-        this.currentIndex = this.buttons.Length - 1;
-      EventSystem.current.SetSelectedGameObject(this.buttons[this.currentIndex].gameObject);
-      this.SetSelectionLine();
+      if (currentIndex > buttons.Length - 1)
+        currentIndex = 0;
+      if (currentIndex < 0)
+        currentIndex = buttons.Length - 1;
+      EventSystem.current.SetSelectedGameObject(buttons[currentIndex].gameObject);
+      SetSelectionLine();
     }
 
     private void SetSelectionLine()
@@ -196,13 +191,13 @@ namespace Engine.Impl.UI.Menu.Main
       GameObject selectedGameObject = EventSystem.current.currentSelectedGameObject;
       Text component = (UnityEngine.Object) selectedGameObject != (UnityEngine.Object) null ? selectedGameObject.GetComponent<Text>() : (Text) null;
       bool flag = (UnityEngine.Object) component != (UnityEngine.Object) null && InputService.Instance.JoystickUsed;
-      this.selectedLine.enabled = flag;
+      selectedLine.enabled = flag;
       if (!flag)
         return;
-      Vector2 sizeDelta = this.selectedLine.rectTransform.sizeDelta;
-      this.selectedLine.rectTransform.position = component.rectTransform.position;
+      Vector2 sizeDelta = selectedLine.rectTransform.sizeDelta;
+      selectedLine.rectTransform.position = component.rectTransform.position;
       sizeDelta.x = component.preferredWidth;
-      this.selectedLine.rectTransform.sizeDelta = sizeDelta;
+      selectedLine.rectTransform.sizeDelta = sizeDelta;
     }
 
     private void Exit() => InstanceByRequest<EngineApplication>.Instance.Exit();
@@ -211,9 +206,9 @@ namespace Engine.Impl.UI.Menu.Main
 
     private void ShowExitConfirmation(Action onAccept)
     {
-      if ((UnityEngine.Object) this.exitConfirmationInstance == (UnityEngine.Object) null)
-        this.exitConfirmationInstance = UnityEngine.Object.Instantiate<ConfirmationWindow>(this.exitConfirmationPrefab, this.transform, false);
-      this.exitConfirmationInstance.Show("{UI.Menu.Main.Game.ExitConfirmation}", onAccept, (Action) null);
+      if ((UnityEngine.Object) exitConfirmationInstance == (UnityEngine.Object) null)
+        exitConfirmationInstance = UnityEngine.Object.Instantiate<ConfirmationWindow>(exitConfirmationPrefab, this.transform, false);
+      exitConfirmationInstance.Show("{UI.Menu.Main.Game.ExitConfirmation}", onAccept, null);
     }
   }
 }

@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace Engine.Impl.UI.Controls
+﻿namespace Engine.Impl.UI.Controls
 {
   public class ProgressSplited : ProgressView
   {
@@ -9,16 +7,16 @@ namespace Engine.Impl.UI.Controls
 
     protected override void ApplyProgress()
     {
-      foreach (FloatView nestedView in this.nestedViews)
+      foreach (FloatView nestedView in nestedViews)
       {
         if ((Object) nestedView != (Object) null)
-          nestedView.FloatValue = this.Progress;
+          nestedView.FloatValue = Progress;
       }
     }
 
     public override void SkipAnimation()
     {
-      foreach (FloatView nestedView in this.nestedViews)
+      foreach (FloatView nestedView in nestedViews)
       {
         if ((Object) nestedView != (Object) null)
           nestedView.SkipAnimation();

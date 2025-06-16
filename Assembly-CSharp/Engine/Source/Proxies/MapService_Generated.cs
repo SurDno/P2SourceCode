@@ -1,8 +1,8 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons.Converters;
 using Engine.Source.Services;
-using System;
 
 namespace Engine.Source.Proxies
 {
@@ -11,14 +11,14 @@ namespace Engine.Source.Proxies
   {
     public void StateSave(IDataWriter writer)
     {
-      DefaultDataWriteUtility.Write(writer, "BullModeAvailable", this.BullModeAvailable);
-      DefaultDataWriteUtility.Write(writer, "BullModeForced", this.BullModeForced);
+      DefaultDataWriteUtility.Write(writer, "BullModeAvailable", BullModeAvailable);
+      DefaultDataWriteUtility.Write(writer, "BullModeForced", BullModeForced);
     }
 
     public void StateLoad(IDataReader reader, Type type)
     {
-      this.BullModeAvailable = DefaultDataReadUtility.Read(reader, "BullModeAvailable", this.BullModeAvailable);
-      this.BullModeForced = DefaultDataReadUtility.Read(reader, "BullModeForced", this.BullModeForced);
+      BullModeAvailable = DefaultDataReadUtility.Read(reader, "BullModeAvailable", BullModeAvailable);
+      BullModeForced = DefaultDataReadUtility.Read(reader, "BullModeForced", BullModeForced);
     }
   }
 }

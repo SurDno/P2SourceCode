@@ -11,7 +11,7 @@ namespace Engine.Source.UI.Menu.Main
   {
     protected override void RegisterLayer()
     {
-      this.RegisterLayer<IStartDisplaySettingsWindow>((IStartDisplaySettingsWindow) this);
+      RegisterLayer((IStartDisplaySettingsWindow) this);
     }
   }
 }

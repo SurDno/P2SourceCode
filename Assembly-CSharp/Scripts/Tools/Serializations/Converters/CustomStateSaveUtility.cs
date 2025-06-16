@@ -1,12 +1,12 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using System.Collections.Generic;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Cofe.Utility;
 using Engine.Common;
 using Engine.Common.Commons;
 using Engine.Common.Components.Parameters;
 using Scripts.Tools.Serializations.Customs;
-using System.Collections.Generic;
-using UnityEngine;
 
 namespace Scripts.Tools.Serializations.Converters
 {
@@ -21,18 +21,18 @@ namespace Scripts.Tools.Serializations.Converters
 
     public static void SaveListReferences<T>(IDataWriter writer, string name, List<T> value) where T : class
     {
-      writer.Begin(name, (System.Type) null, true);
+      writer.Begin(name, null, true);
       foreach (T obj in value)
       {
-        if ((object) obj != null)
-          CustomReferenceUtility.SaveReference(writer, "Item", (object) obj);
+        if (obj != null)
+          CustomReferenceUtility.SaveReference(writer, "Item", obj);
       }
       writer.End(name, true);
     }
 
     public static void SaveListParameters(IDataWriter writer, string name, List<IParameter> value)
     {
-      writer.Begin(name, (System.Type) null, true);
+      writer.Begin(name, null, true);
       for (int index = 0; index < value.Count; ++index)
       {
         IParameter parameter = value[index];
@@ -40,11 +40,11 @@ namespace Scripts.Tools.Serializations.Converters
         {
           if (!(parameter is ISerializeStateSave serializeStateSave))
           {
-            Debug.LogError((object) ("Type : " + TypeUtility.GetTypeName(parameter.GetType()) + " is not " + (object) typeof (ISerializeStateSave)));
+            Debug.LogError((object) ("Type : " + TypeUtility.GetTypeName(parameter.GetType()) + " is not " + typeof (ISerializeStateSave)));
           }
           else
           {
-            System.Type type = ProxyFactory.GetType(serializeStateSave.GetType());
+            Type type = ProxyFactory.GetType(serializeStateSave.GetType());
             writer.Begin("Item", type, true);
             serializeStateSave.StateSave(writer);
             writer.End("Item", true);
@@ -56,7 +56,7 @@ namespace Scripts.Tools.Serializations.Converters
 
     public static void SaveListComponents(IDataWriter writer, string name, List<IComponent> value)
     {
-      writer.Begin(name, (System.Type) null, true);
+      writer.Begin(name, null, true);
       for (int index = 0; index < value.Count; ++index)
       {
         IComponent component = value[index];
@@ -64,11 +64,11 @@ namespace Scripts.Tools.Serializations.Converters
         {
           if (!(component is ISerializeStateSave serializeStateSave))
           {
-            Debug.LogError((object) ("Type : " + TypeUtility.GetTypeName(component.GetType()) + " is not " + (object) typeof (ISerializeStateSave)));
+            Debug.LogError((object) ("Type : " + TypeUtility.GetTypeName(component.GetType()) + " is not " + typeof (ISerializeStateSave)));
           }
           else
           {
-            System.Type type = ProxyFactory.GetType(serializeStateSave.GetType());
+            Type type = ProxyFactory.GetType(serializeStateSave.GetType());
             writer.Begin("Item", type, true);
             serializeStateSave.StateSave(writer);
             writer.End("Item", true);

@@ -1,8 +1,6 @@
 ﻿using Cofe.Proxies;
-using Engine.Common;
 using PLVirtualMachine.Common.EngineAPI.VMECS;
 using PLVirtualMachine.Objects;
-using System;
 
 namespace PLVirtualMachine.Dynamic.Components
 {
@@ -20,13 +18,13 @@ namespace PLVirtualMachine.Dynamic.Components
       switch (target.Name)
       {
         case "OnSee":
-          this.OnSee += (Action<IEntity>) (p1 => target.RaiseFromEngineImpl((object) p1));
+          OnSee += p1 => target.RaiseFromEngineImpl(p1);
           break;
         case "OnStopSee":
-          this.OnStopSee += (Action<IEntity>) (p1 => target.RaiseFromEngineImpl((object) p1));
+          OnStopSee += p1 => target.RaiseFromEngineImpl(p1);
           break;
         case "OnHear":
-          this.OnHear += (Action<IEntity>) (p1 => target.RaiseFromEngineImpl((object) p1));
+          OnHear += p1 => target.RaiseFromEngineImpl(p1);
           break;
       }
     }

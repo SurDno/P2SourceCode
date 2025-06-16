@@ -1,4 +1,7 @@
-﻿using Cofe.Loggers;
+﻿using System;
+using System.Collections.Generic;
+using System.Xml;
+using Cofe.Loggers;
 using Cofe.Serializations.Data;
 using PLVirtualMachine.Base;
 using PLVirtualMachine.Common;
@@ -10,9 +13,6 @@ using PLVirtualMachine.Data.SaveLoad;
 using PLVirtualMachine.FSM;
 using PLVirtualMachine.GameLogic;
 using PLVirtualMachine.Objects;
-using System;
-using System.Collections.Generic;
-using System.Xml;
 
 namespace PLVirtualMachine.Dynamic
 {
@@ -30,13 +30,13 @@ namespace PLVirtualMachine.Dynamic
     {
     }
 
-    public static bool IsTalking => FSMTalkingManager.talkingMode;
+    public static bool IsTalking => talkingMode;
 
     public override void StateSave(IDataWriter writer)
     {
       base.StateSave(writer);
-      SaveManagerUtility.SaveList(writer, "CanceledSpeechGuidsList", this.canceledSpeechGuids);
-      SaveManagerUtility.SaveList(writer, "CanceledAnswerGuidsList", this.canceledAnswerGuids);
+      SaveManagerUtility.SaveList(writer, "CanceledSpeechGuidsList", canceledSpeechGuids);
+      SaveManagerUtility.SaveList(writer, "CanceledAnswerGuidsList", canceledAnswerGuids);
     }
 
     public override void LoadFromXML(XmlElement xmlNode)
@@ -44,100 +44,100 @@ namespace PLVirtualMachine.Dynamic
       base.LoadFromXML(xmlNode);
       if (xmlNode.Name == "CanceledSpeechGuidsList")
       {
-        VMSaveLoadManager.LoadList(xmlNode, this.canceledSpeechGuids);
+        VMSaveLoadManager.LoadList(xmlNode, canceledSpeechGuids);
       }
       else
       {
         if (!(xmlNode.Name == "CanceledAnswerGuidsList"))
           return;
-        VMSaveLoadManager.LoadList(xmlNode, this.canceledAnswerGuids);
+        VMSaveLoadManager.LoadList(xmlNode, canceledAnswerGuids);
       }
     }
 
     public void StartTalking(IFiniteStateMachine talkingGraph)
     {
-      this.SetCurrentStateStack(EStateStackType.STATESTACK_TYPE_LOCAL, true);
-      this.talking = true;
-      FSMTalkingManager.talkingMode = true;
-      if (this.speechReplyEvent == null)
-        this.speechReplyEvent = this.fsm.GetContextEvent(EngineAPIManager.GetSpecialEventName(ESpecialEventName.SEN_SPEECH_REPLY, typeof (VMSpeaking), true));
-      if (this.speechReplyEvent == null)
-        Logger.AddError(string.Format("Start talking: speech reply event not created in {0} FSM", (object) this.TalkingFSM.FSMStaticObject.Name));
+      SetCurrentStateStack(EStateStackType.STATESTACK_TYPE_LOCAL, true);
+      talking = true;
+      talkingMode = true;
+      if (speechReplyEvent == null)
+        speechReplyEvent = fsm.GetContextEvent(EngineAPIManager.GetSpecialEventName(ESpecialEventName.SEN_SPEECH_REPLY, typeof (VMSpeaking), true));
+      if (speechReplyEvent == null)
+        Logger.AddError(string.Format("Start talking: speech reply event not created in {0} FSM", TalkingFSM.FSMStaticObject.Name));
       else
-        this.speechReplyEvent.Subscribe(this.fsm);
-      ITalkingGraph actualTalking = this.TalkingFSM.Speaking.GetActualTalking(talkingGraph);
+        speechReplyEvent.Subscribe(fsm);
+      ITalkingGraph actualTalking = TalkingFSM.Speaking.GetActualTalking(talkingGraph);
       if (actualTalking == null)
       {
-        Logger.AddError(string.Format("Invalid start talking in {0}, cannot define actual talking at", (object) this.TalkingFSM.FSMStaticObject.Name, (object) DynamicFSM.CurrentStateInfo));
-        this.SetCurrentStateStack(EStateStackType.STATESTACK_TYPE_MAIN);
+        Logger.AddError(string.Format("Invalid start talking in {0}, cannot define actual talking at", TalkingFSM.FSMStaticObject.Name, DynamicFSM.CurrentStateInfo));
+        SetCurrentStateStack(EStateStackType.STATESTACK_TYPE_MAIN);
       }
       else
-        this.MoveIntoTalking(actualTalking);
+        MoveIntoTalking(actualTalking);
     }
 
     public void StopTalking()
     {
-      if (this.TalkingFSM.Speaking.ActiveTalking != null)
+      if (TalkingFSM.Speaking.ActiveTalking != null)
       {
-        VMEventLink afterExitLink = ((VMState) this.TalkingFSM.Speaking.ActiveTalking).GetAfterExitLink();
+        VMEventLink afterExitLink = ((VMState) TalkingFSM.Speaking.ActiveTalking).GetAfterExitLink();
         if (afterExitLink != null && afterExitLink.DestState != null && typeof (IFiniteStateMachine).IsAssignableFrom(afterExitLink.DestState.GetType()))
         {
           IFiniteStateMachine destState = (IFiniteStateMachine) afterExitLink.DestState;
-          if (destState.GraphType == EGraphType.GRAPH_TYPE_TALKING && this.CheckTalkingStateActual(afterExitLink.DestState).Key)
+          if (destState.GraphType == EGraphType.GRAPH_TYPE_TALKING && CheckTalkingStateActual(afterExitLink.DestState).Key)
           {
-            ITalkingGraph actualTalking = this.TalkingFSM.Speaking.GetActualTalking(destState);
+            ITalkingGraph actualTalking = TalkingFSM.Speaking.GetActualTalking(destState);
             if (actualTalking != null)
             {
-              this.TalkingFSM.Speaking.ActiveTalking = destState;
-              this.PopState();
-              this.MoveIntoTalking(actualTalking);
+              TalkingFSM.Speaking.ActiveTalking = destState;
+              PopState();
+              MoveIntoTalking(actualTalking);
               return;
             }
           }
         }
       }
-      this.talking = false;
-      FSMTalkingManager.talkingMode = false;
-      if (this.speechReplyEvent == null)
-        Logger.AddError(string.Format("Stop talking: speech reply event not created in {0} FSM", (object) this.fsm.FSMStaticObject.Name));
+      talking = false;
+      talkingMode = false;
+      if (speechReplyEvent == null)
+        Logger.AddError(string.Format("Stop talking: speech reply event not created in {0} FSM", fsm.FSMStaticObject.Name));
       else
-        this.speechReplyEvent.DeSubscribe(this.fsm);
-      this.TalkingFSM.Speaking.ExitTalking();
-      this.SetCurrentStateStack(EStateStackType.STATESTACK_TYPE_MAIN);
+        speechReplyEvent.DeSubscribe(fsm);
+      TalkingFSM.Speaking.ExitTalking();
+      SetCurrentStateStack(EStateStackType.STATESTACK_TYPE_MAIN);
     }
 
-    protected override void OnChangeState(IState state) => this.TalkingFSM.OnChangeState(state);
+    protected override void OnChangeState(IState state) => TalkingFSM.OnChangeState(state);
 
     protected override void MoveIntoState(IState newState, int iDestEntryPoint, bool bNextLevel = false)
     {
       if (newState == null)
-        Logger.AddError(string.Format("New state not defined in object {0}!", (object) this.fsm.FSMStaticObject.Name));
+        Logger.AddError(string.Format("New state not defined in object {0}!", fsm.FSMStaticObject.Name));
       else if (iDestEntryPoint < 0 || iDestEntryPoint >= newState.EntryPoints.Count)
-        Logger.AddError(string.Format("Invalid entry point index at move to {0} state in {1} object", (object) newState.Name, (object) this.fsm.StaticGuid));
+        Logger.AddError(string.Format("Invalid entry point index at move to {0} state in {1} object", newState.Name, fsm.StaticGuid));
       else if (typeof (IBranch).IsAssignableFrom(newState.GetType()))
-        this.ProcessBranch((IBranch) newState);
-      else if (this.CurrentState != null && (long) newState.BaseGuid == (long) this.CurrentState.BaseGuid)
+        ProcessBranch((IBranch) newState);
+      else if (CurrentState != null && (long) newState.BaseGuid == (long) CurrentState.BaseGuid)
       {
-        this.ProcessState(newState, iDestEntryPoint);
+        ProcessState(newState, iDestEntryPoint);
       }
       else
       {
-        IState currentState = this.CurrentState;
+        IState currentState = CurrentState;
         bool flag1 = false;
         bool flag2 = typeof (ISpeech).IsAssignableFrom(newState.GetType());
-        if (!bNextLevel && (!flag2 ? 0 : (this.CurrentState.Parent.IsEqual((IObject) ((VMBaseObject) newState).Parent) ? 1 : 0)) == 0 && !flag1)
-          this.PopState();
+        if (!bNextLevel && (!flag2 ? 0 : (CurrentState.Parent.IsEqual(((VMBaseObject) newState).Parent) ? 1 : 0)) == 0 && !flag1)
+          PopState();
         if (flag2)
         {
-          if (!this.ProcessSpeech((ISpeech) newState))
-            this.StopTalking();
+          if (!ProcessSpeech((ISpeech) newState))
+            StopTalking();
           iDestEntryPoint = 0;
         }
         if (!flag1)
-          this.PushState(currentState, newState);
+          PushState(currentState, newState);
         if (flag2)
           return;
-        this.ProcessState(newState, iDestEntryPoint);
+        ProcessState(newState, iDestEntryPoint);
       }
     }
 
@@ -147,55 +147,55 @@ namespace PLVirtualMachine.Dynamic
       int iDestEntryPoint = 0)
     {
       if (newState == null)
-        Logger.AddError(string.Format("State for moving to not defined in {0} !!!", (object) this.TalkingFSM.FSMStaticObject.Name));
+        Logger.AddError(string.Format("State for moving to not defined in {0} !!!", TalkingFSM.FSMStaticObject.Name));
       else if (((VMBaseObject) newState).GetCategory() == EObjectCategory.OBJECT_CATEGORY_GRAPH)
       {
         if (((FiniteStateMachine) newState).GraphType == EGraphType.GRAPH_TYPE_TALKING)
         {
-          ITalkingGraph actualTalking = this.TalkingFSM.Speaking.GetActualTalking((IFiniteStateMachine) newState);
+          ITalkingGraph actualTalking = TalkingFSM.Speaking.GetActualTalking((IFiniteStateMachine) newState);
           if (actualTalking != null)
           {
-            if (!this.TalkingFSM.Speaking.IsTalkingOnlyOncePassed((IFiniteStateMachine) actualTalking))
-              this.TalkingFSM.Speaking.ActiveTalking = (IFiniteStateMachine) newState;
-            this.ReturnToPreviousState();
+            if (!TalkingFSM.Speaking.IsTalkingOnlyOncePassed(actualTalking))
+              TalkingFSM.Speaking.ActiveTalking = (IFiniteStateMachine) newState;
+            ReturnToPreviousState();
           }
           else
           {
             VMEventLink afterExitLink = ((VMState) newState).GetAfterExitLink();
             if (afterExitLink != null)
-              this.ProcessLink(afterExitLink);
+              ProcessLink(afterExitLink);
             else
-              this.ReturnToPreviousState();
+              ReturnToPreviousState();
           }
         }
         else
-          this.MoveIntoSubGraph((FiniteStateMachine) newState, inputLink, iDestEntryPoint);
+          MoveIntoSubGraph((FiniteStateMachine) newState, inputLink, iDestEntryPoint);
       }
       else
-        this.MoveIntoState(newState, iDestEntryPoint, false);
+        MoveIntoState(newState, iDestEntryPoint);
     }
 
     private void MoveIntoTalking(ITalkingGraph talkingGraph)
     {
-      this.PushState(this.CurrentState, (IState) talkingGraph);
-      this.MoveIntoState(talkingGraph.InitState, 0, true);
+      PushState(CurrentState, talkingGraph);
+      MoveIntoState(talkingGraph.InitState, 0, true);
     }
 
     public void ProcessSpeechReply(ulong replyTextID)
     {
-      if (!typeof (ISpeech).IsAssignableFrom(this.CurrentState.GetType()))
-        Logger.AddError(string.Format("Current FSM {0} isn't in speech state, cannot process reply", (object) this.fsm.StaticObject.BaseGuid));
+      if (!typeof (ISpeech).IsAssignableFrom(CurrentState.GetType()))
+        Logger.AddError(string.Format("Current FSM {0} isn't in speech state, cannot process reply", fsm.StaticObject.BaseGuid));
       else if (replyTextID == 0UL)
       {
-        this.ProcessSpeech((ISpeech) this.CurrentState);
+        ProcessSpeech((ISpeech) CurrentState);
       }
       else
       {
-        ISpeechReply speechReply = (ISpeechReply) null;
+        ISpeechReply speechReply = null;
         int num = -1;
-        for (int index = 0; index < ((ISpeech) this.CurrentState).Replies.Count; ++index)
+        for (int index = 0; index < ((ISpeech) CurrentState).Replies.Count; ++index)
         {
-          ISpeechReply reply = ((ISpeech) this.CurrentState).Replies[index];
+          ISpeechReply reply = ((ISpeech) CurrentState).Replies[index];
           if ((long) reply.Text.BaseGuid == (long) replyTextID)
           {
             speechReply = reply;
@@ -205,20 +205,20 @@ namespace PLVirtualMachine.Dynamic
         }
         if (speechReply == null)
         {
-          Logger.AddError(string.Format("Invalid reply in speech {0}: Replay id={1} not found in curr speech replyes, probably two replyes from one speech gui sended at the same time", (object) this.CurrentState.Name, (object) replyTextID));
-          this.ProcessSpeech((ISpeech) this.CurrentState);
+          Logger.AddError(string.Format("Invalid reply in speech {0}: Replay id={1} not found in curr speech replyes, probably two replyes from one speech gui sended at the same time", CurrentState.Name, replyTextID));
+          ProcessSpeech((ISpeech) CurrentState);
         }
         else
         {
           if (speechReply.OnlyOneReply)
-            this.canceledAnswerGuids.Add(speechReply.BaseGuid);
+            canceledAnswerGuids.Add(speechReply.BaseGuid);
           IActionLine actionLine = speechReply.ActionLine;
           if (actionLine != null)
-            this.ProcessActionLine(actionLine, true);
-          VMEventLink moveLink = (VMEventLink) null;
-          for (int index = 0; index < ((VMState) this.CurrentState).OutputLinks.Count; ++index)
+            ProcessActionLine(actionLine, true);
+          VMEventLink moveLink = null;
+          for (int index = 0; index < ((VMState) CurrentState).OutputLinks.Count; ++index)
           {
-            VMEventLink outputLink = (VMEventLink) ((VMState) this.CurrentState).OutputLinks[index];
+            VMEventLink outputLink = (VMEventLink) ((VMState) CurrentState).OutputLinks[index];
             if (outputLink.SourceExitPoint == num)
             {
               moveLink = outputLink;
@@ -226,21 +226,21 @@ namespace PLVirtualMachine.Dynamic
             }
           }
           if (moveLink == null)
-            this.StopTalking();
+            StopTalking();
           else if (moveLink.DestState == null)
-            this.StopTalking();
+            StopTalking();
           else
-            this.ProcessLink(moveLink);
+            ProcessLink(moveLink);
         }
       }
     }
 
     public bool ProcessSpeech(ISpeech speech)
     {
-      if (this.OnStateIn((IState) speech))
+      if (OnStateIn(speech))
         return true;
-      VMEntity author1 = (VMEntity) null;
-      if (this.fsm.FSMStaticObject.GetCategory() == EObjectCategory.OBJECT_CATEGORY_QUEST)
+      VMEntity author1 = null;
+      if (fsm.FSMStaticObject.GetCategory() == EObjectCategory.OBJECT_CATEGORY_QUEST)
       {
         if (speech.Author != null)
         {
@@ -253,7 +253,7 @@ namespace PLVirtualMachine.Dynamic
             }
             else
             {
-              DynamicParameter dynamicObjectParameter = this.fsm.GetDynamicObjectParameter(((VMSpeech) speech).SpeechAuthorObjGuid);
+              DynamicParameter dynamicObjectParameter = fsm.GetDynamicObjectParameter(((VMSpeech) speech).SpeechAuthorObjGuid);
               if (dynamicObjectParameter != null && typeof (IObjRef).IsAssignableFrom(dynamicObjectParameter.Type.BaseType))
                 author1 = WorldEntityUtility.GetDynamicObjectEntityByEngineGuid(((IEngineInstanced) dynamicObjectParameter.Value).EngineGuid);
             }
@@ -261,13 +261,13 @@ namespace PLVirtualMachine.Dynamic
         }
       }
       else
-        author1 = this.fsm.Entity;
+        author1 = fsm.Entity;
       if (author1 == null)
       {
-        Logger.AddError(string.Format("Speech author entity not found in speech {0}", (object) speech.Name));
+        Logger.AddError(string.Format("Speech author entity not found in speech {0}", speech.Name));
         return false;
       }
-      this.currSpeechReplyTextGuids.Clear();
+      currSpeechReplyTextGuids.Clear();
       int num = -1;
       for (int index = 0; index < speech.Replies.Count; ++index)
       {
@@ -276,26 +276,26 @@ namespace PLVirtualMachine.Dynamic
           num = index;
         bool flag1 = true;
         if (reply.EnableCondition != null)
-          flag1 = ExpressionUtility.CalculateConditionResult(reply.EnableCondition, (IDynamicGameObjectContext) this.fsm);
-        if (flag1 && !this.canceledAnswerGuids.Contains(reply.BaseGuid))
+          flag1 = ExpressionUtility.CalculateConditionResult(reply.EnableCondition, fsm);
+        if (flag1 && !canceledAnswerGuids.Contains(reply.BaseGuid))
         {
           VMEventLink sourceExitPointIndex = ((VMState) speech).GetOutputLinkBySourceExitPointIndex(index);
           bool flag2 = false;
           if (sourceExitPointIndex != null)
             flag2 = sourceExitPointIndex.DestState != null;
-          this.currSpeechReplyTextGuids.Add(new KeyValuePair<ulong, bool>(reply.Text.BaseGuid, flag2));
+          currSpeechReplyTextGuids.Add(new KeyValuePair<ulong, bool>(reply.Text.BaseGuid, flag2));
           if (reply.OnlyOnce)
-            this.canceledAnswerGuids.Add(reply.BaseGuid);
+            canceledAnswerGuids.Add(reply.BaseGuid);
         }
       }
-      if (this.currSpeechReplyTextGuids.Count == 0 && num >= 0)
+      if (currSpeechReplyTextGuids.Count == 0 && num >= 0)
       {
         ISpeechReply reply = speech.Replies[num];
         VMEventLink sourceExitPointIndex = ((VMState) speech).GetOutputLinkBySourceExitPointIndex(num);
         bool flag = false;
         if (sourceExitPointIndex != null)
           flag = sourceExitPointIndex.DestState != null;
-        this.currSpeechReplyTextGuids.Add(new KeyValuePair<ulong, bool>(reply.Text.BaseGuid, flag));
+        currSpeechReplyTextGuids.Add(new KeyValuePair<ulong, bool>(reply.Text.BaseGuid, flag));
       }
       IGameString text = speech.Text;
       if (speech.TextParam != null)
@@ -304,29 +304,29 @@ namespace PLVirtualMachine.Dynamic
         {
           if (typeof (VMLogicObject).IsAssignableFrom(((VMParameter) speech.TextParam).Parent.GetType()))
           {
-            IParam contextParam = ((VMVariableService) IVariableService.Instance).GetDynamicContext((IContext) ((VMParameter) speech.TextParam).Parent, (IDynamicGameObjectContext) this.fsm).GetContextParam(((VMParameter) speech.TextParam).BaseGuid);
+            IParam contextParam = ((VMVariableService) IVariableService.Instance).GetDynamicContext((IContext) ((VMParameter) speech.TextParam).Parent, fsm).GetContextParam(((VMParameter) speech.TextParam).BaseGuid);
             if (contextParam != null)
             {
               if (typeof (ITextRef).IsAssignableFrom(contextParam.Type.BaseType) && contextParam.Value != null)
                 text = ((ITextRef) contextParam.Value).Text;
               else
-                Logger.AddError(string.Format("Invalid text param {0} value type in speech {1}", (object) contextParam.Name, (object) speech.Name));
+                Logger.AddError(string.Format("Invalid text param {0} value type in speech {1}", contextParam.Name, speech.Name));
             }
             else
-              Logger.AddError(string.Format("Dynamic param with name {0} not found in object {1}", (object) speech.TextParam.Name, (object) speech.Name));
+              Logger.AddError(string.Format("Dynamic param with name {0} not found in object {1}", speech.TextParam.Name, speech.Name));
           }
           else
-            Logger.AddError(string.Format("Text param {0} parent is invalid", (object) speech.TextParam.Name));
+            Logger.AddError(string.Format("Text param {0} parent is invalid", speech.TextParam.Name));
         }
         else
-          Logger.AddError(string.Format("Text param {0} parent isn' t defined", (object) speech.TextParam.Name));
+          Logger.AddError(string.Format("Text param {0} parent isn' t defined", speech.TextParam.Name));
       }
-      this.ProcessActionLine(speech.ActionLine);
-      this.CheckLoopStackClear();
-      if (!this.TalkingFSM.Speaking.MakePlayerSpeech(text.BaseGuid, this.currSpeechReplyTextGuids, (VMBaseEntity) author1))
+      ProcessActionLine(speech.ActionLine);
+      CheckLoopStackClear();
+      if (!TalkingFSM.Speaking.MakePlayerSpeech(text.BaseGuid, currSpeechReplyTextGuids, author1))
         return false;
       if (speech.OnlyOnce)
-        this.canceledSpeechGuids.Add(speech.BaseGuid);
+        canceledSpeechGuids.Add(speech.BaseGuid);
       return true;
     }
 
@@ -339,17 +339,17 @@ namespace PLVirtualMachine.Dynamic
         if (typeof (IFiniteStateMachine).IsAssignableFrom(talkingState.GetType()))
         {
           if (!((IFiniteStateMachine) talkingState).Abstract)
-            return this.CheckTalkingStateActual(((IFiniteStateMachine) talkingState).InitState);
-          return this.TalkingFSM.Speaking.CurrentTalking != null ? this.CheckTalkingStateActual(this.TalkingFSM.Speaking.CurrentTalking.State, bFromBranch) : new KeyValuePair<bool, bool>(false, false);
+            return CheckTalkingStateActual(((IFiniteStateMachine) talkingState).InitState);
+          return TalkingFSM.Speaking.CurrentTalking != null ? CheckTalkingStateActual(TalkingFSM.Speaking.CurrentTalking.State, bFromBranch) : new KeyValuePair<bool, bool>(false, false);
         }
         if (typeof (ISpeech).IsAssignableFrom(talkingState.GetType()))
         {
           VMSpeech vmSpeech = (VMSpeech) talkingState;
-          FSMGraphManager.debugCurrentState = (IGraphObject) vmSpeech;
-          if (this.TalkingFSM.Speaking.IsTalkingOnlyOncePassed((IFiniteStateMachine) vmSpeech.Parent))
+          debugCurrentState = vmSpeech;
+          if (TalkingFSM.Speaking.IsTalkingOnlyOncePassed((IFiniteStateMachine) vmSpeech.Parent))
             return new KeyValuePair<bool, bool>(false, false);
           bool flag = false;
-          if (vmSpeech.OnlyOnce && this.canceledSpeechGuids.Contains(vmSpeech.BaseGuid))
+          if (vmSpeech.OnlyOnce && canceledSpeechGuids.Contains(vmSpeech.BaseGuid))
             flag = true;
           if (!flag)
             return new KeyValuePair<bool, bool>(true, false);
@@ -361,21 +361,21 @@ namespace PLVirtualMachine.Dynamic
           if (outputLink != null)
           {
             if (outputLink.DestState != null)
-              return this.CheckTalkingStateActual(outputLink.DestState);
+              return CheckTalkingStateActual(outputLink.DestState);
           }
         }
         else if (typeof (IBranch).IsAssignableFrom(talkingState.GetType()))
         {
           VMBranch vmBranch = (VMBranch) talkingState;
-          FSMGraphManager.debugCurrentState = (IGraphObject) vmBranch;
+          debugCurrentState = vmBranch;
           if (vmBranch.StateType == EStateType.STATE_TYPE_MAXVALUE_BRANCH || vmBranch.StateType == EStateType.STATE_TYPE_MINVALUE_BRANCH)
           {
-            object secondValue = (object) 0;
+            object secondValue = 0;
             int iSrcPntIndex = -1;
             if (vmBranch.StateType == EStateType.STATE_TYPE_MINVALUE_BRANCH)
-              secondValue = (object) float.MaxValue;
+              secondValue = float.MaxValue;
             else if (vmBranch.StateType == EStateType.STATE_TYPE_MAXVALUE_BRANCH)
-              secondValue = (object) float.MinValue;
+              secondValue = float.MinValue;
             for (int exitPntIndex = 0; exitPntIndex < vmBranch.GetExitPointsCount(); ++exitPntIndex)
             {
               VMPartCondition branchCondition = (VMPartCondition) vmBranch.GetBranchCondition(exitPntIndex);
@@ -384,7 +384,7 @@ namespace PLVirtualMachine.Dynamic
                 VMExpression firstExpression = (VMExpression) branchCondition.FirstExpression;
                 if (firstExpression != null)
                 {
-                  object expressionResult = ExpressionUtility.CalculateExpressionResult((IExpression) firstExpression, (IDynamicGameObjectContext) this.fsm);
+                  object expressionResult = ExpressionUtility.CalculateExpressionResult(firstExpression, fsm);
                   if (vmBranch.StateType == EStateType.STATE_TYPE_MINVALUE_BRANCH)
                   {
                     if (VMTypeMathUtility.IsValueLess(expressionResult, secondValue))
@@ -400,7 +400,7 @@ namespace PLVirtualMachine.Dynamic
                   }
                 }
                 else
-                  Logger.AddError(string.Format("MinMax branch {0} expression not defined at {0}", (object) DynamicFSM.CurrentStateInfo));
+                  Logger.AddError(string.Format("MinMax branch {0} expression not defined at {0}", DynamicFSM.CurrentStateInfo));
               }
             }
             if (iSrcPntIndex >= 0)
@@ -410,7 +410,7 @@ namespace PLVirtualMachine.Dynamic
                 return new KeyValuePair<bool, bool>(false, false);
               if (sourceExitPointIndex.DestState == null)
                 return new KeyValuePair<bool, bool>(false, false);
-              KeyValuePair<bool, bool> keyValuePair = this.CheckTalkingStateActual(sourceExitPointIndex.DestState, true);
+              KeyValuePair<bool, bool> keyValuePair = CheckTalkingStateActual(sourceExitPointIndex.DestState, true);
               if (keyValuePair.Key)
                 return keyValuePair;
               if (!keyValuePair.Value)
@@ -422,14 +422,14 @@ namespace PLVirtualMachine.Dynamic
             for (int index = 0; index < vmBranch.GetExitPointsCount(); ++index)
             {
               ICondition branchCondition = vmBranch.GetBranchCondition(index);
-              if (index >= vmBranch.GetExitPointsCount() - 1 || ExpressionUtility.CalculateConditionResult(branchCondition, (IDynamicGameObjectContext) this.fsm))
+              if (index >= vmBranch.GetExitPointsCount() - 1 || ExpressionUtility.CalculateConditionResult(branchCondition, fsm))
               {
                 VMEventLink sourceExitPointIndex = vmBranch.GetOutputLinkBySourceExitPointIndex(index);
                 if (sourceExitPointIndex == null)
                   return new KeyValuePair<bool, bool>(false, false);
                 if (sourceExitPointIndex.DestState == null)
                   return new KeyValuePair<bool, bool>(false, false);
-                KeyValuePair<bool, bool> keyValuePair = this.CheckTalkingStateActual(sourceExitPointIndex.DestState, true);
+                KeyValuePair<bool, bool> keyValuePair = CheckTalkingStateActual(sourceExitPointIndex.DestState, true);
                 if (keyValuePair.Key || !keyValuePair.Value)
                   return keyValuePair;
               }
@@ -442,38 +442,38 @@ namespace PLVirtualMachine.Dynamic
           if (afterExitLink != null)
           {
             if (afterExitLink.DestState != null)
-              return this.CheckTalkingStateActual(afterExitLink.DestState);
+              return CheckTalkingStateActual(afterExitLink.DestState);
           }
         }
       }
       catch (Exception ex)
       {
-        Logger.AddError(string.Format("Checking talking state actual error at {0}, error: {1}", (object) this.TalkingFSM.FSMStaticObject.Name, (object) ex.ToString()));
+        Logger.AddError(string.Format("Checking talking state actual error at {0}, error: {1}", TalkingFSM.FSMStaticObject.Name, ex.ToString()));
       }
       return new KeyValuePair<bool, bool>(false, false);
     }
 
-    protected override bool IsThisTalking => this.talking;
+    protected override bool IsThisTalking => talking;
 
     protected override bool IgnoreBranchCase(IState newState)
     {
       bool flag = false;
-      VMTalkingGraph vmTalkingGraph = this.TalkingFSM.CurrentTalkingGraph;
-      if (vmTalkingGraph == null && this.CurrentState != null && typeof (VMTalkingGraph) == this.CurrentState.GetType())
-        vmTalkingGraph = (VMTalkingGraph) this.CurrentState;
+      VMTalkingGraph vmTalkingGraph = TalkingFSM.CurrentTalkingGraph;
+      if (vmTalkingGraph == null && CurrentState != null && typeof (VMTalkingGraph) == CurrentState.GetType())
+        vmTalkingGraph = (VMTalkingGraph) CurrentState;
       if (vmTalkingGraph != null && newState != null && typeof (VMSpeech) == newState.GetType())
-        flag = this.canceledSpeechGuids.Contains(((VMBaseObject) newState).BaseGuid);
+        flag = canceledSpeechGuids.Contains(((VMBaseObject) newState).BaseGuid);
       return flag;
     }
 
     protected override void ReturnToOuterGraph(VMEventLink prevLink = null)
     {
-      if (this.IsThisTalking)
-        this.StopTalking();
+      if (IsThisTalking)
+        StopTalking();
       else
         base.ReturnToOuterGraph(prevLink);
     }
 
-    private DynamicTalkingFSM TalkingFSM => (DynamicTalkingFSM) this.fsm;
+    private DynamicTalkingFSM TalkingFSM => (DynamicTalkingFSM) fsm;
   }
 }

@@ -1,7 +1,5 @@
-﻿using Cinemachine.Utility;
-using System;
-using UnityEngine;
-using UnityEngine.Serialization;
+﻿using System;
+using Cinemachine.Utility;
 
 namespace Cinemachine
 {
@@ -14,7 +12,7 @@ namespace Cinemachine
   {
     [NoSaveDuringPlay]
     [HideInInspector]
-    public Action OnGUICallback = (Action) null;
+    public Action OnGUICallback = null;
     [Tooltip("This setting will instruct the composer to adjust its target offset based on the motion of the target.  The composer will look at a point where it estimates the target will be this many seconds into the future.  Note that this setting is sensitive to noisy animation, and can amplify the noise, resulting in undesirable camera jitter.  If the camera jitters unacceptably when the target is in motion, turn down this setting, or animate the target more smoothly.")]
     [Range(0.0f, 1f)]
     public float m_LookaheadTime = 0.0f;
@@ -48,7 +46,7 @@ namespace Cinemachine
     public float m_DeadZoneHeight = 0.1f;
     [Tooltip("The camera will not move along its z-axis if the Follow target is within this distance of the specified camera distance")]
     [FormerlySerializedAs("m_DistanceDeadZoneSize")]
-    public float m_DeadZoneDepth = 0.0f;
+    public float m_DeadZoneDepth;
     [Space]
     [Tooltip("If checked, then then soft zone will be unlimited in size.")]
     public bool m_UnlimitedSoftZone = false;
@@ -60,16 +58,16 @@ namespace Cinemachine
     public float m_SoftZoneHeight = 0.8f;
     [Range(-0.5f, 0.5f)]
     [Tooltip("A non-zero bias will move the target position horizontally away from the center of the soft zone.")]
-    public float m_BiasX = 0.0f;
+    public float m_BiasX;
     [Range(-0.5f, 0.5f)]
     [Tooltip("A non-zero bias will move the target position vertically away from the center of the soft zone.")]
-    public float m_BiasY = 0.0f;
+    public float m_BiasY;
     [Space]
     [Tooltip("What screen dimensions to consider when framing.  Can be Horizontal, Vertical, or both")]
     [FormerlySerializedAs("m_FramingMode")]
-    public CinemachineFramingTransposer.FramingMode m_GroupFramingMode = CinemachineFramingTransposer.FramingMode.HorizontalAndVertical;
+    public FramingMode m_GroupFramingMode = FramingMode.HorizontalAndVertical;
     [Tooltip("How to adjust the camera to get the desired framing.  You can zoom, dolly in/out, or do both.")]
-    public CinemachineFramingTransposer.AdjustmentMode m_AdjustmentMode = CinemachineFramingTransposer.AdjustmentMode.DollyThenZoom;
+    public AdjustmentMode m_AdjustmentMode = AdjustmentMode.DollyThenZoom;
     [Tooltip("The bounding box of the targets should occupy this amount of the screen space.  1 means fill the whole screen.  0.5 means fill half the screen, etc.")]
     public float m_GroupFramingSize = 0.8f;
     [Tooltip("The maximum distance toward the target that this behaviour is allowed to move the camera.")]
@@ -99,16 +97,16 @@ namespace Cinemachine
     {
       get
       {
-        return new Rect(this.m_ScreenX - this.m_DeadZoneWidth / 2f, this.m_ScreenY - this.m_DeadZoneHeight / 2f, this.m_DeadZoneWidth, this.m_DeadZoneHeight);
+        return new Rect(m_ScreenX - m_DeadZoneWidth / 2f, m_ScreenY - m_DeadZoneHeight / 2f, m_DeadZoneWidth, m_DeadZoneHeight);
       }
       set
       {
-        this.m_DeadZoneWidth = Mathf.Clamp01(value.width);
-        this.m_DeadZoneHeight = Mathf.Clamp01(value.height);
-        this.m_ScreenX = Mathf.Clamp01(value.x + this.m_DeadZoneWidth / 2f);
-        this.m_ScreenY = Mathf.Clamp01(value.y + this.m_DeadZoneHeight / 2f);
-        this.m_SoftZoneWidth = Mathf.Max(this.m_SoftZoneWidth, this.m_DeadZoneWidth);
-        this.m_SoftZoneHeight = Mathf.Max(this.m_SoftZoneHeight, this.m_DeadZoneHeight);
+        m_DeadZoneWidth = Mathf.Clamp01(value.width);
+        m_DeadZoneHeight = Mathf.Clamp01(value.height);
+        m_ScreenX = Mathf.Clamp01(value.x + m_DeadZoneWidth / 2f);
+        m_ScreenY = Mathf.Clamp01(value.y + m_DeadZoneHeight / 2f);
+        m_SoftZoneWidth = Mathf.Max(m_SoftZoneWidth, m_DeadZoneWidth);
+        m_SoftZoneHeight = Mathf.Max(m_SoftZoneHeight, m_DeadZoneHeight);
       }
     }
 
@@ -116,44 +114,44 @@ namespace Cinemachine
     {
       get
       {
-        Rect hardGuideRect = new Rect(this.m_ScreenX - this.m_SoftZoneWidth / 2f, this.m_ScreenY - this.m_SoftZoneHeight / 2f, this.m_SoftZoneWidth, this.m_SoftZoneHeight);
-        hardGuideRect.position += new Vector2(this.m_BiasX * (this.m_SoftZoneWidth - this.m_DeadZoneWidth), this.m_BiasY * (this.m_SoftZoneHeight - this.m_DeadZoneHeight));
+        Rect hardGuideRect = new Rect(m_ScreenX - m_SoftZoneWidth / 2f, m_ScreenY - m_SoftZoneHeight / 2f, m_SoftZoneWidth, m_SoftZoneHeight);
+        hardGuideRect.position += new Vector2(m_BiasX * (m_SoftZoneWidth - m_DeadZoneWidth), m_BiasY * (m_SoftZoneHeight - m_DeadZoneHeight));
         return hardGuideRect;
       }
       set
       {
-        this.m_SoftZoneWidth = Mathf.Clamp(value.width, 0.0f, 2f);
-        this.m_SoftZoneHeight = Mathf.Clamp(value.height, 0.0f, 2f);
-        this.m_DeadZoneWidth = Mathf.Min(this.m_DeadZoneWidth, this.m_SoftZoneWidth);
-        this.m_DeadZoneHeight = Mathf.Min(this.m_DeadZoneHeight, this.m_SoftZoneHeight);
-        Vector2 vector2 = value.center - new Vector2(this.m_ScreenX, this.m_ScreenY);
-        float num1 = Mathf.Max(0.0f, this.m_SoftZoneWidth - this.m_DeadZoneWidth);
-        float num2 = Mathf.Max(0.0f, this.m_SoftZoneHeight - this.m_DeadZoneHeight);
-        this.m_BiasX = (double) num1 < 9.9999997473787516E-05 ? 0.0f : Mathf.Clamp(vector2.x / num1, -0.5f, 0.5f);
-        this.m_BiasY = (double) num2 < 9.9999997473787516E-05 ? 0.0f : Mathf.Clamp(vector2.y / num2, -0.5f, 0.5f);
+        m_SoftZoneWidth = Mathf.Clamp(value.width, 0.0f, 2f);
+        m_SoftZoneHeight = Mathf.Clamp(value.height, 0.0f, 2f);
+        m_DeadZoneWidth = Mathf.Min(m_DeadZoneWidth, m_SoftZoneWidth);
+        m_DeadZoneHeight = Mathf.Min(m_DeadZoneHeight, m_SoftZoneHeight);
+        Vector2 vector2 = value.center - new Vector2(m_ScreenX, m_ScreenY);
+        float num1 = Mathf.Max(0.0f, m_SoftZoneWidth - m_DeadZoneWidth);
+        float num2 = Mathf.Max(0.0f, m_SoftZoneHeight - m_DeadZoneHeight);
+        m_BiasX = num1 < 9.9999997473787516E-05 ? 0.0f : Mathf.Clamp(vector2.x / num1, -0.5f, 0.5f);
+        m_BiasY = num2 < 9.9999997473787516E-05 ? 0.0f : Mathf.Clamp(vector2.y / num2, -0.5f, 0.5f);
       }
     }
 
     private void OnValidate()
     {
-      this.m_CameraDistance = Mathf.Max(this.m_CameraDistance, 0.01f);
-      this.m_DeadZoneDepth = Mathf.Max(this.m_DeadZoneDepth, 0.0f);
-      this.m_GroupFramingSize = Mathf.Max(0.0001f, this.m_GroupFramingSize);
-      this.m_MaxDollyIn = Mathf.Max(0.0f, this.m_MaxDollyIn);
-      this.m_MaxDollyOut = Mathf.Max(0.0f, this.m_MaxDollyOut);
-      this.m_MinimumDistance = Mathf.Max(0.0f, this.m_MinimumDistance);
-      this.m_MaximumDistance = Mathf.Max(this.m_MinimumDistance, this.m_MaximumDistance);
-      this.m_MinimumFOV = Mathf.Max(1f, this.m_MinimumFOV);
-      this.m_MaximumFOV = Mathf.Clamp(this.m_MaximumFOV, this.m_MinimumFOV, 179f);
-      this.m_MinimumOrthoSize = Mathf.Max(0.01f, this.m_MinimumOrthoSize);
-      this.m_MaximumOrthoSize = Mathf.Max(this.m_MinimumOrthoSize, this.m_MaximumOrthoSize);
+      m_CameraDistance = Mathf.Max(m_CameraDistance, 0.01f);
+      m_DeadZoneDepth = Mathf.Max(m_DeadZoneDepth, 0.0f);
+      m_GroupFramingSize = Mathf.Max(0.0001f, m_GroupFramingSize);
+      m_MaxDollyIn = Mathf.Max(0.0f, m_MaxDollyIn);
+      m_MaxDollyOut = Mathf.Max(0.0f, m_MaxDollyOut);
+      m_MinimumDistance = Mathf.Max(0.0f, m_MinimumDistance);
+      m_MaximumDistance = Mathf.Max(m_MinimumDistance, m_MaximumDistance);
+      m_MinimumFOV = Mathf.Max(1f, m_MinimumFOV);
+      m_MaximumFOV = Mathf.Clamp(m_MaximumFOV, m_MinimumFOV, 179f);
+      m_MinimumOrthoSize = Mathf.Max(0.01f, m_MinimumOrthoSize);
+      m_MaximumOrthoSize = Mathf.Max(m_MinimumOrthoSize, m_MaximumOrthoSize);
     }
 
     public override bool IsValid
     {
       get
       {
-        return this.enabled && (UnityEngine.Object) this.FollowTarget != (UnityEngine.Object) null && (UnityEngine.Object) this.LookAtTarget == (UnityEngine.Object) null;
+        return this.enabled && (UnityEngine.Object) FollowTarget != (UnityEngine.Object) null && (UnityEngine.Object) LookAtTarget == (UnityEngine.Object) null;
       }
     }
 
@@ -163,73 +161,72 @@ namespace Cinemachine
 
     public override void MutateCameraState(ref CameraState curState, float deltaTime)
     {
-      if ((double) deltaTime < 0.0)
+      if (deltaTime < 0.0)
       {
-        this.m_Predictor.Reset();
-        this.m_PreviousCameraPosition = curState.RawPosition + curState.RawOrientation * Vector3.back * this.m_CameraDistance;
+        m_Predictor.Reset();
+        m_PreviousCameraPosition = curState.RawPosition + curState.RawOrientation * Vector3.back * m_CameraDistance;
       }
-      if (!this.IsValid)
+      if (!IsValid)
         return;
-      Vector3 previousCameraPosition = this.m_PreviousCameraPosition;
-      curState.ReferenceLookAt = this.FollowTarget.position;
-      this.m_Predictor.Smoothing = this.m_LookaheadSmoothing;
-      this.m_Predictor.AddPosition(curState.ReferenceLookAt);
-      this.TrackedPoint = (double) this.m_LookaheadTime > 0.0 ? this.m_Predictor.PredictPosition(this.m_LookaheadTime) : curState.ReferenceLookAt;
+      Vector3 previousCameraPosition = m_PreviousCameraPosition;
+      curState.ReferenceLookAt = FollowTarget.position;
+      m_Predictor.Smoothing = m_LookaheadSmoothing;
+      m_Predictor.AddPosition(curState.ReferenceLookAt);
+      TrackedPoint = m_LookaheadTime > 0.0 ? m_Predictor.PredictPosition(m_LookaheadTime) : curState.ReferenceLookAt;
       Quaternion rawOrientation = curState.RawOrientation;
       Quaternion quaternion = Quaternion.Inverse(rawOrientation);
       Vector3 vector3_1 = quaternion * previousCameraPosition;
-      Vector3 targetPos2D = quaternion * this.TrackedPoint - vector3_1;
+      Vector3 targetPos2D = quaternion * TrackedPoint - vector3_1;
       Vector3 vector3_2 = Vector3.zero;
-      float a = Mathf.Max(0.01f, this.m_CameraDistance - this.m_DeadZoneDepth / 2f);
-      float num1 = Mathf.Max(a, this.m_CameraDistance + this.m_DeadZoneDepth / 2f);
-      if ((double) targetPos2D.z < (double) a)
+      float a = Mathf.Max(0.01f, m_CameraDistance - m_DeadZoneDepth / 2f);
+      float num1 = Mathf.Max(a, m_CameraDistance + m_DeadZoneDepth / 2f);
+      if ((double) targetPos2D.z < a)
         vector3_2.z = targetPos2D.z - a;
-      if ((double) targetPos2D.z > (double) num1)
+      if ((double) targetPos2D.z > num1)
         vector3_2.z = targetPos2D.z - num1;
-      CinemachineTargetGroup targetGroup = this.TargetGroup;
-      if ((UnityEngine.Object) targetGroup != (UnityEngine.Object) null && this.m_GroupFramingMode != CinemachineFramingTransposer.FramingMode.None)
-        vector3_2.z += this.AdjustCameraDepthAndLensForGroupFraming(targetGroup, targetPos2D.z - vector3_2.z, ref curState, deltaTime);
+      CinemachineTargetGroup targetGroup = TargetGroup;
+      if ((UnityEngine.Object) targetGroup != (UnityEngine.Object) null && m_GroupFramingMode != FramingMode.None)
+        vector3_2.z += AdjustCameraDepthAndLensForGroupFraming(targetGroup, targetPos2D.z - vector3_2.z, ref curState, deltaTime);
       targetPos2D.z -= vector3_2.z;
       LensSettings lens = curState.Lens;
-      float num2 = lens.Orthographic ? curState.Lens.OrthographicSize : Mathf.Tan((float) (0.5 * (double) curState.Lens.FieldOfView * (Math.PI / 180.0))) * targetPos2D.z;
-      Rect softGuideRect = this.SoftGuideRect;
-      double orthoSize1 = (double) num2;
+      float num2 = lens.Orthographic ? curState.Lens.OrthographicSize : Mathf.Tan((float) (0.5 * curState.Lens.FieldOfView * (Math.PI / 180.0))) * targetPos2D.z;
+      Rect softGuideRect = SoftGuideRect;
+      double orthoSize1 = num2;
       lens = curState.Lens;
-      double aspect1 = (double) lens.Aspect;
-      Rect ortho1 = this.ScreenToOrtho(softGuideRect, (float) orthoSize1, (float) aspect1);
-      if ((double) deltaTime < 0.0)
+      double aspect1 = lens.Aspect;
+      Rect ortho1 = ScreenToOrtho(softGuideRect, (float) orthoSize1, (float) aspect1);
+      if (deltaTime < 0.0)
       {
         Rect screenRect = new Rect(ortho1.center, Vector2.zero);
-        vector3_2 += this.OrthoOffsetToScreenBounds(targetPos2D, screenRect);
+        vector3_2 += OrthoOffsetToScreenBounds(targetPos2D, screenRect);
       }
       else
       {
-        vector3_2 += this.OrthoOffsetToScreenBounds(targetPos2D, ortho1);
+        vector3_2 += OrthoOffsetToScreenBounds(targetPos2D, ortho1);
         Vector3 vector3_3 = Vector3.zero;
-        if (!this.m_UnlimitedSoftZone)
+        if (!m_UnlimitedSoftZone)
         {
-          Rect hardGuideRect = this.HardGuideRect;
-          double orthoSize2 = (double) num2;
+          Rect hardGuideRect = HardGuideRect;
+          double orthoSize2 = num2;
           lens = curState.Lens;
-          double aspect2 = (double) lens.Aspect;
-          Rect ortho2 = this.ScreenToOrtho(hardGuideRect, (float) orthoSize2, (float) aspect2);
-          Vector3 screenBounds = this.OrthoOffsetToScreenBounds(targetPos2D, ortho2);
+          double aspect2 = lens.Aspect;
+          Rect ortho2 = ScreenToOrtho(hardGuideRect, (float) orthoSize2, (float) aspect2);
+          Vector3 screenBounds = OrthoOffsetToScreenBounds(targetPos2D, ortho2);
           float num3 = Mathf.Max(screenBounds.x / (vector3_2.x + 0.0001f), screenBounds.y / (vector3_2.y + 0.0001f));
           vector3_3 = vector3_2 * num3;
         }
-        vector3_2 = vector3_3 + Damper.Damp(vector3_2 - vector3_3, new Vector3(this.m_XDamping, this.m_YDamping, this.m_ZDamping), deltaTime);
+        vector3_2 = vector3_3 + Damper.Damp(vector3_2 - vector3_3, new Vector3(m_XDamping, m_YDamping, m_ZDamping), deltaTime);
       }
-      curState.RawPosition = this.m_PreviousCameraPosition = rawOrientation * (vector3_1 + vector3_2);
+      curState.RawPosition = m_PreviousCameraPosition = rawOrientation * (vector3_1 + vector3_2);
     }
 
     private Rect ScreenToOrtho(Rect rScreen, float orthoSize, float aspect)
     {
-      return new Rect()
-      {
-        yMax = (float) (2.0 * (double) orthoSize * (1.0 - (double) rScreen.yMin - 0.5)),
-        yMin = (float) (2.0 * (double) orthoSize * (1.0 - (double) rScreen.yMax - 0.5)),
-        xMin = (float) (2.0 * (double) orthoSize * (double) aspect * ((double) rScreen.xMin - 0.5)),
-        xMax = (float) (2.0 * (double) orthoSize * (double) aspect * ((double) rScreen.xMax - 0.5))
+      return new Rect {
+        yMax = (float) (2.0 * orthoSize * (1.0 - (double) rScreen.yMin - 0.5)),
+        yMin = (float) (2.0 * orthoSize * (1.0 - (double) rScreen.yMax - 0.5)),
+        xMin = (float) (2.0 * orthoSize * aspect * ((double) rScreen.xMin - 0.5)),
+        xMax = (float) (2.0 * orthoSize * aspect * ((double) rScreen.xMax - 0.5))
       };
     }
 
@@ -255,7 +252,7 @@ namespace Cinemachine
     {
       get
       {
-        Transform followTarget = this.FollowTarget;
+        Transform followTarget = FollowTarget;
         return (UnityEngine.Object) followTarget != (UnityEngine.Object) null ? followTarget.GetComponent<CinemachineTargetGroup>() : (CinemachineTargetGroup) null;
       }
     }
@@ -269,29 +266,29 @@ namespace Cinemachine
       float num1 = 0.0f;
       Bounds boundingBox = group.BoundingBox;
       Vector3 vector3 = curState.RawOrientation * Vector3.forward;
-      this.m_lastBoundsMatrix = Matrix4x4.TRS(boundingBox.center - vector3 * boundingBox.extents.magnitude, curState.RawOrientation, Vector3.one);
-      this.m_LastBounds = group.GetViewSpaceBoundingBox(this.m_lastBoundsMatrix);
-      float num2 = this.GetTargetHeight(this.m_LastBounds);
-      if ((double) deltaTime >= 0.0)
-        num2 = this.m_prevTargetHeight + Damper.Damp(num2 - this.m_prevTargetHeight, this.m_ZDamping, deltaTime);
-      this.m_prevTargetHeight = num2;
+      m_lastBoundsMatrix = Matrix4x4.TRS(boundingBox.center - vector3 * boundingBox.extents.magnitude, curState.RawOrientation, Vector3.one);
+      m_LastBounds = group.GetViewSpaceBoundingBox(m_lastBoundsMatrix);
+      float num2 = GetTargetHeight(m_LastBounds);
+      if (deltaTime >= 0.0)
+        num2 = m_prevTargetHeight + Damper.Damp(num2 - m_prevTargetHeight, m_ZDamping, deltaTime);
+      m_prevTargetHeight = num2;
       LensSettings lens1 = curState.Lens;
-      if (!lens1.Orthographic && this.m_AdjustmentMode != 0)
+      if (!lens1.Orthographic && m_AdjustmentMode != 0)
       {
-        float num3 = Mathf.Clamp(Mathf.Clamp(num2 / (2f * Mathf.Tan((float) ((double) curState.Lens.FieldOfView * (Math.PI / 180.0) / 2.0))) + this.m_LastBounds.extents.z, targetZ - this.m_MaxDollyIn, targetZ + this.m_MaxDollyOut), this.m_MinimumDistance, this.m_MaximumDistance);
+        float num3 = Mathf.Clamp(Mathf.Clamp(num2 / (2f * Mathf.Tan((float) (curState.Lens.FieldOfView * (Math.PI / 180.0) / 2.0))) + m_LastBounds.extents.z, targetZ - m_MaxDollyIn, targetZ + m_MaxDollyOut), m_MinimumDistance, m_MaximumDistance);
         num1 += num3 - targetZ;
       }
       lens1 = curState.Lens;
-      if (lens1.Orthographic || this.m_AdjustmentMode != CinemachineFramingTransposer.AdjustmentMode.DollyOnly)
+      if (lens1.Orthographic || m_AdjustmentMode != AdjustmentMode.DollyOnly)
       {
-        float num4 = targetZ + num1 - this.m_LastBounds.extents.z;
+        float num4 = targetZ + num1 - m_LastBounds.extents.z;
         float num5 = 179f;
-        if ((double) num4 > 9.9999997473787516E-05)
+        if (num4 > 9.9999997473787516E-05)
           num5 = (float) (2.0 * (double) Mathf.Atan(num2 / (2f * num4)) * 57.295780181884766);
         LensSettings lens2 = curState.Lens with
         {
-          FieldOfView = Mathf.Clamp(num5, this.m_MinimumFOV, this.m_MaximumFOV),
-          OrthographicSize = Mathf.Clamp(num2 / 2f, this.m_MinimumOrthoSize, this.m_MaximumOrthoSize)
+          FieldOfView = Mathf.Clamp(num5, m_MinimumFOV, m_MaximumFOV),
+          OrthographicSize = Mathf.Clamp(num2 / 2f, m_MinimumOrthoSize, m_MaximumOrthoSize)
         };
         curState.Lens = lens2;
       }
@@ -300,15 +297,15 @@ namespace Cinemachine
 
     private float GetTargetHeight(Bounds b)
     {
-      float num = Mathf.Max(0.0001f, this.m_GroupFramingSize);
-      switch (this.m_GroupFramingMode)
+      float num = Mathf.Max(0.0001f, m_GroupFramingSize);
+      switch (m_GroupFramingMode)
       {
-        case CinemachineFramingTransposer.FramingMode.Horizontal:
-          return b.size.x / (num * this.VcamState.Lens.Aspect);
-        case CinemachineFramingTransposer.FramingMode.Vertical:
+        case FramingMode.Horizontal:
+          return b.size.x / (num * VcamState.Lens.Aspect);
+        case FramingMode.Vertical:
           return b.size.y / num;
         default:
-          return Mathf.Max(b.size.x / (num * this.VcamState.Lens.Aspect), b.size.y / num);
+          return Mathf.Max(b.size.x / (num * VcamState.Lens.Aspect), b.size.y / num);
       }
     }
 

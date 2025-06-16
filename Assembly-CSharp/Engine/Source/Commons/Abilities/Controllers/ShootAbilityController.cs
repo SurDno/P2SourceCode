@@ -5,7 +5,6 @@ using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Engine.Source.Components;
 using Inspectors;
-using System;
 
 namespace Engine.Source.Commons.Abilities.Controllers
 {
@@ -13,14 +12,14 @@ namespace Engine.Source.Commons.Abilities.Controllers
   [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
   public class ShootAbilityController : IAbilityController
   {
-    [DataReadProxy(MemberEnum.None, Name = "Weapon")]
-    [DataWriteProxy(MemberEnum.None, Name = "Weapon")]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy(Name = "Weapon")]
+    [DataWriteProxy(Name = "Weapon")]
+    [CopyableProxy]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected WeaponKind weaponKind;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy()]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected ShotType shot;
     private AbilityItem abilityItem;
@@ -31,40 +30,40 @@ namespace Engine.Source.Commons.Abilities.Controllers
     public void Initialise(AbilityItem abilityItem)
     {
       this.abilityItem = abilityItem;
-      this.owner = this.abilityItem.Ability.Owner;
-      this.storable = this.owner.GetComponent<StorableComponent>();
-      if (this.storable == null)
+      owner = this.abilityItem.Ability.Owner;
+      storable = owner.GetComponent<StorableComponent>();
+      if (storable == null)
         return;
-      this.storable.ChangeStorageEvent += new Action<IStorableComponent>(this.ChangeStorageEvent);
-      this.CheckItem();
+      storable.ChangeStorageEvent += ChangeStorageEvent;
+      CheckItem();
     }
 
     public void Shutdown()
     {
-      this.Cleanup();
-      if (this.storable != null)
+      Cleanup();
+      if (storable != null)
       {
-        this.storable.ChangeStorageEvent -= new Action<IStorableComponent>(this.ChangeStorageEvent);
-        this.abilityItem.Active = false;
+        storable.ChangeStorageEvent -= ChangeStorageEvent;
+        abilityItem.Active = false;
       }
-      this.abilityItem = (AbilityItem) null;
-      this.storable = (StorableComponent) null;
+      abilityItem = null;
+      storable = null;
     }
 
-    private void ChangeStorageEvent(IStorableComponent sender) => this.CheckItem();
+    private void ChangeStorageEvent(IStorableComponent sender) => CheckItem();
 
     private void CheckItem()
     {
-      this.Cleanup();
-      if (this.storable.Storage == null)
+      Cleanup();
+      if (storable.Storage == null)
         ;
     }
 
     private void Cleanup()
     {
-      if (this.attacker == null)
+      if (attacker == null)
         return;
-      this.attacker = (IAttackerPlayerComponent) null;
+      attacker = null;
     }
 
     private void OnWeaponShootStartEvent(
@@ -72,16 +71,16 @@ namespace Engine.Source.Commons.Abilities.Controllers
       IEntity weaponEntity,
       ShotType shotType)
     {
-      if (this.owner != weaponEntity || this.shot != ShotType.None && shotType != this.shot)
+      if (owner != weaponEntity || shot != ShotType.None && shotType != shot)
         return;
-      this.abilityItem.Active = true;
+      abilityItem.Active = true;
     }
 
     private void OnWeaponShootEndEvent(WeaponKind weapon, IEntity weaponEntity, ShotType shotType)
     {
-      if (this.owner != weaponEntity || this.shot != ShotType.None && shotType != this.shot)
+      if (owner != weaponEntity || shot != ShotType.None && shotType != shot)
         return;
-      this.abilityItem.Active = false;
+      abilityItem.Active = false;
     }
   }
 }

@@ -1,4 +1,8 @@
-﻿using Cofe.Loggers;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Xml;
+using Cofe.Loggers;
 using Cofe.Serializations.Data;
 using Engine.Common.Comparers;
 using PLVirtualMachine.Base;
@@ -10,10 +14,6 @@ using PLVirtualMachine.Common.Serialization;
 using PLVirtualMachine.Data.SaveLoad;
 using PLVirtualMachine.GameLogic;
 using PLVirtualMachine.Time;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Xml;
 
 namespace PLVirtualMachine.Dynamic
 {
@@ -39,7 +39,7 @@ namespace PLVirtualMachine.Dynamic
     private DynamicEventBody dynamicEventBody;
     private bool isLazyEvent;
     private long prevUpdateTicks;
-    private static List<EventMessage> raisingMessages = new List<EventMessage>(DynamicEvent.MAX_EVENT_MESSAGES_COUNT);
+    private static List<EventMessage> raisingMessages = new List<EventMessage>(MAX_EVENT_MESSAGES_COUNT);
     public static int MAX_EVENT_MESSAGES_COUNT = 10;
     private static float COMPLEX_CONDITION_EVENTS_UPDATE_INTERVAL = 1f;
     private static int SUBSCRIBING_FSM_LIST_DEFALT_SIZE = 20;
@@ -49,37 +49,37 @@ namespace PLVirtualMachine.Dynamic
     {
       try
       {
-        this.ownName = "";
-        this.InitStatic((IObject) staticEvent);
+        ownName = "";
+        InitStatic(staticEvent);
         this.parentFSM = parentFSM;
-        this.isManual = this.IsManual;
-        if (!this.isManual)
+        isManual = IsManual;
+        if (!isManual)
         {
-          string name = this.Name;
-          Type componentType = ((VMFunctionalComponent) this.StaticEvent.Parent).ComponentType;
-          VMComponent objectComponentByType = EngineAPIManager.GetObjectComponentByType((VMBaseEntity) entity, componentType);
+          string name = Name;
+          Type componentType = ((VMFunctionalComponent) StaticEvent.Parent).ComponentType;
+          VMComponent objectComponentByType = EngineAPIManager.GetObjectComponentByType(entity, componentType);
           if (objectComponentByType == null)
             return;
-          this.RegisterEngineEvent(objectComponentByType);
+          RegisterEngineEvent(objectComponentByType);
         }
         else
-          this.InitCustomEvent();
+          InitCustomEvent();
       }
       catch (Exception ex)
       {
-        Logger.AddError(string.Format("Dynamic event {0} creation error: {1}", (object) this.Name, (object) ex));
+        Logger.AddError(string.Format("Dynamic event {0} creation error: {1}", Name, ex));
       }
     }
 
     public DynamicEvent(DynamicFSM parentFSM, string name)
-      : base((VMEntity) null)
+      : base(null)
     {
       this.parentFSM = parentFSM;
-      this.ownName = name;
-      this.isManual = this.IsManual;
-      if (!this.isManual)
+      ownName = name;
+      isManual = IsManual;
+      if (!isManual)
         return;
-      this.InitCustomEvent();
+      InitCustomEvent();
     }
 
     public DynamicEvent(
@@ -91,42 +91,42 @@ namespace PLVirtualMachine.Dynamic
     {
       try
       {
-        this.ownName = apiEventInfo.EventName;
+        ownName = apiEventInfo.EventName;
         this.parentFSM = parentFSM;
-        this.isManual = this.IsManual;
-        this.apiAtOnce = apiEventInfo.AtOnce;
-        this.LoadApiMessages(apiEventInfo);
-        this.RegisterEngineEvent(eventEngComponent);
+        isManual = IsManual;
+        apiAtOnce = apiEventInfo.AtOnce;
+        LoadApiMessages(apiEventInfo);
+        RegisterEngineEvent(eventEngComponent);
       }
       catch (Exception ex)
       {
-        Logger.AddError(string.Format("Dynamic event {0} creation error: {1}", (object) this.Name, (object) ex));
+        Logger.AddError(string.Format("Dynamic event {0} creation error: {1}", Name, ex));
       }
     }
 
     private void RegisterEngineEvent(VMComponent eventEngComponent)
     {
-      DynamicEvent.RegisterInComponent(eventEngComponent, this);
-      if (this.parentFSM.FSMStaticObject.GetCategory() == EObjectCategory.OBJECT_CATEGORY_GAME || !(eventEngComponent.Name != "Common"))
+      RegisterInComponent(eventEngComponent, this);
+      if (parentFSM.FSMStaticObject.GetCategory() == EObjectCategory.OBJECT_CATEGORY_GAME || !(eventEngComponent.Name != "Common"))
         return;
-      this.isLazyEvent = true;
+      isLazyEvent = true;
     }
 
     private void InitCustomEvent()
     {
-      if (this.StaticEvent == null)
+      if (StaticEvent == null)
         return;
-      if (this.StaticEvent.EventRaisingType == EEventRaisingType.EVENT_RAISING_TYPE_CONDITION)
-        this.dynamicEventBody = new DynamicEventBody((VMPartCondition) this.StaticEvent.Condition, (INamed) this, this.GameTimeContext, new DynamicEventBody.OnEventBodyRise(this.OnCheckRise), this.Repeated, this.Entity);
-      else if (this.StaticEvent.EventRaisingType == EEventRaisingType.EVENT_RAISING_TYPE_PARAM_CHANGE)
+      if (StaticEvent.EventRaisingType == EEventRaisingType.EVENT_RAISING_TYPE_CONDITION)
+        dynamicEventBody = new DynamicEventBody((VMPartCondition) StaticEvent.Condition, this, GameTimeContext, OnCheckRise, Repeated, Entity);
+      else if (StaticEvent.EventRaisingType == EEventRaisingType.EVENT_RAISING_TYPE_PARAM_CHANGE)
       {
-        this.dynamicEventBody = new DynamicEventBody((VMParameter) this.StaticEvent.EventParameter, (INamed) this, this.GameTimeContext, new DynamicEventBody.OnEventBodyRise(this.OnCheckRise), this.Repeated, this.Entity);
+        dynamicEventBody = new DynamicEventBody((VMParameter) StaticEvent.EventParameter, this, GameTimeContext, OnCheckRise, Repeated, Entity);
       }
       else
       {
-        if (this.StaticEvent.EventRaisingType != EEventRaisingType.EVENT_RAISING_TYPE_TIME)
+        if (StaticEvent.EventRaisingType != EEventRaisingType.EVENT_RAISING_TYPE_TIME)
           return;
-        this.dynamicEventBody = new DynamicEventBody(this.StaticEvent.EventTime, (INamed) this, this.GameTimeContext, new DynamicEventBody.OnEventBodyRise(this.OnCheckRise), this.Repeated, this.Entity);
+        dynamicEventBody = new DynamicEventBody(StaticEvent.EventTime, this, GameTimeContext, OnCheckRise, Repeated, Entity);
       }
     }
 
@@ -134,54 +134,54 @@ namespace PLVirtualMachine.Dynamic
     {
       get
       {
-        return this.StaticEvent.GameTimeContext != null ? this.StaticEvent.GameTimeContext : this.parentFSM.GameTimeContext;
+        return StaticEvent.GameTimeContext != null ? StaticEvent.GameTimeContext : parentFSM.GameTimeContext;
       }
     }
 
-    public IEvent StaticEvent => (IEvent) this.StaticObject;
+    public IEvent StaticEvent => (IEvent) StaticObject;
 
     public override void Think()
     {
-      if (!this.Active || !this.isManual || this.GameTimeContext != null && GameTimeManager.CurrentGameTimeContext != null && this.GameTimeContext.Name != GameTimeManager.CurrentGameTimeContext.Name || !this.dynamicEventBody.NeedUpdate())
+      if (!Active || !isManual || GameTimeContext != null && GameTimeManager.CurrentGameTimeContext != null && GameTimeContext.Name != GameTimeManager.CurrentGameTimeContext.Name || !dynamicEventBody.NeedUpdate())
         return;
-      this.dynamicEventBody.Think();
+      dynamicEventBody.Think();
     }
 
     public void OnCheckRise(object newConditionValue, EEventRaisingMode raisingMode)
     {
       bool flag = false;
-      if (this.EventRaisingType == EEventRaisingType.EVENT_RAISING_TYPE_CONDITION)
+      if (EventRaisingType == EEventRaisingType.EVENT_RAISING_TYPE_CONDITION)
       {
-        if ((bool) newConditionValue == this.ChangeTo)
+        if ((bool) newConditionValue == ChangeTo)
           flag = true;
       }
-      else if (this.EventRaisingType == EEventRaisingType.EVENT_RAISING_TYPE_PARAM_CHANGE)
+      else if (EventRaisingType == EEventRaisingType.EVENT_RAISING_TYPE_PARAM_CHANGE)
         flag = (bool) newConditionValue;
-      else if (this.EventRaisingType == EEventRaisingType.EVENT_RAISING_TYPE_TIME)
+      else if (EventRaisingType == EEventRaisingType.EVENT_RAISING_TYPE_TIME)
         flag = true;
       if (!flag)
         return;
-      this.Raise(new List<EventMessage>(), raisingMode, Guid.Empty);
+      Raise(new List<EventMessage>(), raisingMode, Guid.Empty);
     }
 
     public void RaiseFromEngineImpl(params object[] parameters)
     {
-      if (DynamicTalkingFSM.IsTalking && this.StaticEvent == null || this.isLazyEvent && !this.HasSubscribtions)
+      if (DynamicTalkingFSM.IsTalking && StaticEvent == null || isLazyEvent && !HasSubscribtions)
         return;
       List<EventMessage> raisingEventMessageList = new List<EventMessage>();
       for (int index = 0; index < parameters.Length; ++index)
       {
-        VMType type = this.ReturnMessages[index].Type;
-        string name = this.ReturnMessages[index].Name;
+        VMType type = ReturnMessages[index].Type;
+        string name = ReturnMessages[index].Name;
         object editorType = VMEngineAPIManager.ConvertEngineTypeToEditorType(parameters[index], type);
         EventMessage eventMessage = new EventMessage();
         eventMessage.Initialize(name, type, editorType);
         raisingEventMessageList.Add(eventMessage);
       }
       EEventRaisingMode raisingMode = EEventRaisingMode.ERM_ADD_TO_QUEUE;
-      if (this.AtOnce && this.CheckSubcribingFSMConsistensy())
+      if (AtOnce && CheckSubcribingFSMConsistensy())
         raisingMode = EEventRaisingMode.ERM_ATONCE;
-      this.Raise(raisingEventMessageList, raisingMode, Guid.Empty);
+      Raise(raisingEventMessageList, raisingMode, Guid.Empty);
     }
 
     public void Raise(
@@ -189,22 +189,22 @@ namespace PLVirtualMachine.Dynamic
       EEventRaisingMode raisingMode,
       Guid fsmGuid)
     {
-      if (this.IsManual)
-        this.OnModify();
-      DynamicEvent.raisingMessages.Clear();
-      if (this.StaticEvent != null)
+      if (IsManual)
+        OnModify();
+      raisingMessages.Clear();
+      if (StaticEvent != null)
       {
         if (raisingEventMessageList != null)
         {
-          if (this.StaticEvent.ReturnMessages.Count != raisingEventMessageList.Count)
-            Logger.AddError(string.Format("Dynamic event messages count {0} don't match static event messages count: {1}", (object) raisingEventMessageList.Count, (object) this.StaticEvent.ReturnMessages.Count));
-          for (int index = 0; index < this.StaticEvent.ReturnMessages.Count; ++index)
+          if (StaticEvent.ReturnMessages.Count != raisingEventMessageList.Count)
+            Logger.AddError(string.Format("Dynamic event messages count {0} don't match static event messages count: {1}", raisingEventMessageList.Count, StaticEvent.ReturnMessages.Count));
+          for (int index = 0; index < StaticEvent.ReturnMessages.Count; ++index)
           {
             if (index < raisingEventMessageList.Count)
             {
-              if (!VMTypeUtility.IsTypesCompatible(this.StaticEvent.ReturnMessages[index].Type, raisingEventMessageList[index].Type))
-                Logger.AddError(string.Format("Dynamic event message {0} type {1} is incompatible with static event message {2} type {3}", (object) raisingEventMessageList[index].Name, (object) raisingEventMessageList[index].Type, (object) this.StaticEvent.ReturnMessages[index].Name, (object) this.StaticEvent.ReturnMessages[index].Type));
-              DynamicEvent.raisingMessages.Add(raisingEventMessageList[index]);
+              if (!VMTypeUtility.IsTypesCompatible(StaticEvent.ReturnMessages[index].Type, raisingEventMessageList[index].Type))
+                Logger.AddError(string.Format("Dynamic event message {0} type {1} is incompatible with static event message {2} type {3}", raisingEventMessageList[index].Name, raisingEventMessageList[index].Type, StaticEvent.ReturnMessages[index].Name, StaticEvent.ReturnMessages[index].Type));
+              raisingMessages.Add(raisingEventMessageList[index]);
             }
           }
         }
@@ -212,137 +212,137 @@ namespace PLVirtualMachine.Dynamic
       else
       {
         for (int index = 0; index < raisingEventMessageList.Count; ++index)
-          DynamicEvent.raisingMessages.Add(raisingEventMessageList[index]);
+          raisingMessages.Add(raisingEventMessageList[index]);
       }
-      this.parentFSM.RaiseEvent(new RaisedEventInfo(this, DynamicEvent.raisingMessages, fsmGuid), raisingMode);
+      parentFSM.RaiseEvent(new RaisedEventInfo(this, raisingMessages, fsmGuid), raisingMode);
     }
 
     public bool HasSubscribtions
     {
-      get => this.eventSubscriptions != null && this.eventSubscriptions.Count > 0;
+      get => eventSubscriptions != null && eventSubscriptions.Count > 0;
     }
 
     public void Execute(RaisedEventInfo evntInfo)
     {
-      if (!this.Active)
+      if (!Active)
         return;
-      if (this.currSubscribeFSMList == null)
-        this.currSubscribeFSMList = new List<DynamicFSM>(DynamicEvent.SUBSCRIBING_FSM_LIST_DEFALT_SIZE);
+      if (currSubscribeFSMList == null)
+        currSubscribeFSMList = new List<DynamicFSM>(SUBSCRIBING_FSM_LIST_DEFALT_SIZE);
       else
-        this.currSubscribeFSMList.Clear();
-      if (this.eventSubscriptions != null)
+        currSubscribeFSMList.Clear();
+      if (eventSubscriptions != null)
       {
-        foreach (KeyValuePair<Guid, SubscribtionInfo> eventSubscription in this.eventSubscriptions)
-          this.currSubscribeFSMList.Add(eventSubscription.Value.SubscribingFSM);
+        foreach (KeyValuePair<Guid, SubscribtionInfo> eventSubscription in eventSubscriptions)
+          currSubscribeFSMList.Add(eventSubscription.Value.SubscribingFSM);
       }
-      for (int index = 0; index < this.currSubscribeFSMList.Count; ++index)
+      for (int index = 0; index < currSubscribeFSMList.Count; ++index)
       {
-        if (evntInfo.SendingFSMGuid == Guid.Empty || this.currSubscribeFSMList[index].DynamicGuid == evntInfo.SendingFSMGuid)
+        if (evntInfo.SendingFSMGuid == Guid.Empty || currSubscribeFSMList[index].DynamicGuid == evntInfo.SendingFSMGuid)
         {
           try
           {
-            this.currSubscribeFSMList[index].OnProcessEvent(evntInfo);
+            currSubscribeFSMList[index].OnProcessEvent(evntInfo);
           }
           catch (Exception ex)
           {
-            Logger.AddError(string.Format("Error during event {0} subscribtion by fsm {1} processing: {2}", (object) this.Name, (object) this.currSubscribeFSMList[index].FSMStaticObject.Name, (object) ex.ToString()));
+            Logger.AddError(string.Format("Error during event {0} subscribtion by fsm {1} processing: {2}", Name, currSubscribeFSMList[index].FSMStaticObject.Name, ex));
           }
         }
       }
-      DynamicFSM.SetCurrentDebugState((IGraphObject) null);
-      if (this.StaticEvent == null || this.StaticEvent.Repeated)
+      DynamicFSM.SetCurrentDebugState(null);
+      if (StaticEvent == null || StaticEvent.Repeated)
         return;
-      this.Active = false;
+      Active = false;
     }
 
     public void Subscribe(DynamicFSM subscribeFSM)
     {
-      if (this.eventSubscriptions == null)
-        this.eventSubscriptions = new Dictionary<Guid, SubscribtionInfo>((IEqualityComparer<Guid>) GuidComparer.Instance);
-      if (this.eventSubscriptions.ContainsKey(subscribeFSM.EngineGuid))
-        this.eventSubscriptions[subscribeFSM.EngineGuid].Add();
+      if (eventSubscriptions == null)
+        eventSubscriptions = new Dictionary<Guid, SubscribtionInfo>(GuidComparer.Instance);
+      if (eventSubscriptions.ContainsKey(subscribeFSM.EngineGuid))
+        eventSubscriptions[subscribeFSM.EngineGuid].Add();
       else
-        this.eventSubscriptions.Add(subscribeFSM.EngineGuid, new SubscribtionInfo(subscribeFSM));
+        eventSubscriptions.Add(subscribeFSM.EngineGuid, new SubscribtionInfo(subscribeFSM));
     }
 
     public void DeSubscribe(DynamicFSM subscribeFSM)
     {
-      if (this.eventSubscriptions == null || !this.eventSubscriptions.ContainsKey(subscribeFSM.EngineGuid))
+      if (eventSubscriptions == null || !eventSubscriptions.ContainsKey(subscribeFSM.EngineGuid))
         return;
-      this.eventSubscriptions[subscribeFSM.EngineGuid].Remove();
-      if (this.eventSubscriptions[subscribeFSM.EngineGuid].Count != 0)
+      eventSubscriptions[subscribeFSM.EngineGuid].Remove();
+      if (eventSubscriptions[subscribeFSM.EngineGuid].Count != 0)
         return;
-      this.eventSubscriptions.Remove(subscribeFSM.EngineGuid);
+      eventSubscriptions.Remove(subscribeFSM.EngineGuid);
     }
 
-    public EObjectCategory GetCategory() => this.StaticEvent.GetCategory();
+    public EObjectCategory GetCategory() => StaticEvent.GetCategory();
 
-    public ulong BaseGuid => this.StaticEvent == null ? 0UL : this.StaticEvent.BaseGuid;
+    public ulong BaseGuid => StaticEvent == null ? 0UL : StaticEvent.BaseGuid;
 
-    public string Name => this.ownName.Length > 0 ? this.ownName : this.StaticEvent.Name;
+    public string Name => ownName.Length > 0 ? ownName : StaticEvent.Name;
 
     public string FunctionalName
     {
-      get => this.ownName.Length > 0 ? this.ownName : this.StaticEvent.FunctionalName;
+      get => ownName.Length > 0 ? ownName : StaticEvent.FunctionalName;
     }
 
     public IContainer Parent
     {
-      get => this.StaticEvent == null ? (IContainer) null : this.StaticEvent.Parent;
+      get => StaticEvent == null ? null : StaticEvent.Parent;
     }
 
-    public DynamicFSM OwnerFSM => this.parentFSM;
+    public DynamicFSM OwnerFSM => parentFSM;
 
-    public string GuidStr => this.StaticEvent != null ? this.StaticEvent.GuidStr : "";
+    public string GuidStr => StaticEvent != null ? StaticEvent.GuidStr : "";
 
     public bool IsEqual(IObject other)
     {
-      return !(typeof (DynamicEvent) != other.GetType()) && (long) ((DynamicObject) other).StaticGuid == (long) this.StaticGuid && !(((DynamicEvent) other).OwnerFSM.EngineGuid == this.OwnerFSM.EngineGuid);
+      return !(typeof (DynamicEvent) != other.GetType()) && (long) ((DynamicObject) other).StaticGuid == (long) StaticGuid && !(((DynamicEvent) other).OwnerFSM.EngineGuid == OwnerFSM.EngineGuid);
     }
 
     public ICondition Condition
     {
-      get => this.StaticEvent == null ? (ICondition) null : this.StaticEvent.Condition;
+      get => StaticEvent == null ? null : StaticEvent.Condition;
     }
 
     public IParam EventParameter
     {
-      get => this.StaticEvent == null ? (IParam) null : this.StaticEvent.EventParameter;
+      get => StaticEvent == null ? null : StaticEvent.EventParameter;
     }
 
     public GameTime EventTime
     {
-      get => this.StaticEvent == null ? new GameTime() : this.StaticEvent.EventTime;
+      get => StaticEvent == null ? new GameTime() : StaticEvent.EventTime;
     }
 
-    public bool ChangeTo => this.StaticEvent != null && this.StaticEvent.ChangeTo;
+    public bool ChangeTo => StaticEvent != null && StaticEvent.ChangeTo;
 
-    public bool Repeated => this.StaticEvent != null && this.StaticEvent.Repeated;
+    public bool Repeated => StaticEvent != null && StaticEvent.Repeated;
 
     public bool AtOnce
     {
-      get => this.StaticEvent != null ? ((VMEvent) this.StaticEvent).AtOnce : this.apiAtOnce;
+      get => StaticEvent != null ? ((VMEvent) StaticEvent).AtOnce : apiAtOnce;
     }
 
     public IContainer Owner
     {
-      get => this.StaticEvent != null ? this.StaticEvent.Owner : (IContainer) null;
+      get => StaticEvent != null ? StaticEvent.Owner : null;
     }
 
     public bool IsInitial(IObject obj)
     {
-      return this.StaticEvent != null && this.StaticEvent.IsInitial(obj);
+      return StaticEvent != null && StaticEvent.IsInitial(obj);
     }
 
-    public bool IsManual => this.StaticEvent != null && this.StaticEvent.IsManual;
+    public bool IsManual => StaticEvent != null && StaticEvent.IsManual;
 
-    public EEventRaisingType EventRaisingType => this.StaticEvent.EventRaisingType;
+    public EEventRaisingType EventRaisingType => StaticEvent.EventRaisingType;
 
     public List<BaseMessage> ReturnMessages
     {
       get
       {
-        return this.StaticObject != null ? ((IEvent) this.StaticObject).ReturnMessages : this.apiEventMessages;
+        return StaticObject != null ? ((IEvent) StaticObject).ReturnMessages : apiEventMessages;
       }
     }
 
@@ -354,53 +354,53 @@ namespace PLVirtualMachine.Dynamic
 
     public void ClearSubscribtions()
     {
-      if (this.eventSubscriptions != null)
-        this.eventSubscriptions.Clear();
-      if (this.currSubscribeFSMList != null)
-        this.currSubscribeFSMList.Clear();
-      if (this.dynamicEventBody == null)
+      if (eventSubscriptions != null)
+        eventSubscriptions.Clear();
+      if (currSubscribeFSMList != null)
+        currSubscribeFSMList.Clear();
+      if (dynamicEventBody == null)
         return;
-      this.dynamicEventBody.ClearSubscribtions();
+      dynamicEventBody.ClearSubscribtions();
     }
 
     public void StateSave(IDataWriter writer)
     {
-      SaveManagerUtility.Save(writer, "StaticId", this.StaticGuid);
-      SaveManagerUtility.Save(writer, "Active", this.Active);
-      SaveManagerUtility.SaveDynamicSerializable(writer, "EventBody", (ISerializeStateSave) this.dynamicEventBody);
+      SaveManagerUtility.Save(writer, "StaticId", StaticGuid);
+      SaveManagerUtility.Save(writer, "Active", Active);
+      SaveManagerUtility.SaveDynamicSerializable(writer, "EventBody", dynamicEventBody);
     }
 
     public void LoadFromXML(XmlElement xmlNode)
     {
-      XmlElement xmlNode1 = (XmlElement) null;
+      XmlElement xmlNode1 = null;
       for (int i = 0; i < xmlNode.ChildNodes.Count; ++i)
       {
         if (xmlNode.ChildNodes[i].Name == "Active")
-          this.Active = VMSaveLoadManager.ReadBool(xmlNode.ChildNodes[i]);
+          Active = VMSaveLoadManager.ReadBool(xmlNode.ChildNodes[i]);
         else if (xmlNode.ChildNodes[i].Name == "EventBody")
           xmlNode1 = (XmlElement) xmlNode.ChildNodes[i];
       }
-      if (this.dynamicEventBody == null || xmlNode1 == null)
+      if (dynamicEventBody == null || xmlNode1 == null)
         return;
-      this.dynamicEventBody.LoadFromXML(xmlNode1);
+      dynamicEventBody.LoadFromXML(xmlNode1);
     }
 
     public void AfterSaveLoading()
     {
-      if (this.dynamicEventBody == null)
+      if (dynamicEventBody == null)
         return;
-      this.dynamicEventBody.AfterSaveLoading();
+      dynamicEventBody.AfterSaveLoading();
     }
 
     public bool NeedUpdate()
     {
-      if (this.dynamicEventBody == null)
+      if (dynamicEventBody == null)
         return false;
       long timestamp = Stopwatch.GetTimestamp();
-      if ((double) (timestamp - this.prevUpdateTicks) / (double) Stopwatch.Frequency <= (double) DynamicEvent.COMPLEX_CONDITION_EVENTS_UPDATE_INTERVAL)
+      if ((timestamp - prevUpdateTicks) / (double) Stopwatch.Frequency <= COMPLEX_CONDITION_EVENTS_UPDATE_INTERVAL)
         return false;
-      this.prevUpdateTicks = timestamp;
-      return this.dynamicEventBody.NeedUpdate();
+      prevUpdateTicks = timestamp;
+      return dynamicEventBody.NeedUpdate();
     }
 
     public void Clear()
@@ -409,36 +409,36 @@ namespace PLVirtualMachine.Dynamic
 
     private void LoadApiMessages(APIEventInfo apiEventInfo)
     {
-      if (this.apiEventMessages != null)
-        this.apiEventMessages.Clear();
+      if (apiEventMessages != null)
+        apiEventMessages.Clear();
       if (apiEventInfo == null)
       {
-        Logger.AddError(string.Format("Cannot load messages for event {0}: api event info not defined", (object) this.Name));
+        Logger.AddError(string.Format("Cannot load messages for event {0}: api event info not defined", Name));
       }
       else
       {
         if (apiEventInfo.MessageParams.Count <= 0)
           return;
-        if (this.apiEventMessages == null)
-          this.apiEventMessages = new List<BaseMessage>();
+        if (apiEventMessages == null)
+          apiEventMessages = new List<BaseMessage>();
         for (int index = 0; index < apiEventInfo.MessageParams.Count; ++index)
         {
           VMType type = apiEventInfo.MessageParams[index].Type;
-          string name = this.Name + "_message_" + apiEventInfo.MessageParams[index].Name;
+          string name = Name + "_message_" + apiEventInfo.MessageParams[index].Name;
           BaseMessage baseMessage = new BaseMessage();
           baseMessage.Initialize(name, type);
-          this.apiEventMessages.Add(baseMessage);
+          apiEventMessages.Add(baseMessage);
         }
       }
     }
 
     private bool CheckSubcribingFSMConsistensy()
     {
-      if (this.currSubscribeFSMList != null)
+      if (currSubscribeFSMList != null)
       {
-        for (int index = 0; index < this.currSubscribeFSMList.Count; ++index)
+        for (int index = 0; index < currSubscribeFSMList.Count; ++index)
         {
-          if (this.currSubscribeFSMList[index].CurrentFSMGraphType == EGraphType.GRAPH_TYPE_PROCEDURE)
+          if (currSubscribeFSMList[index].CurrentFSMGraphType == EGraphType.GRAPH_TYPE_PROCEDURE)
             return false;
         }
       }
@@ -453,6 +453,6 @@ namespace PLVirtualMachine.Dynamic
         Logger.AddError("Event not found, need generate code, component : " + component.Name + " , event name : " + target.Name);
     }
 
-    public static void StaticClear() => DynamicEvent.raisingMessages.Clear();
+    public static void StaticClear() => raisingMessages.Clear();
   }
 }

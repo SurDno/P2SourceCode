@@ -1,9 +1,7 @@
-﻿using Engine.Behaviours.Engines.Controllers;
-using Engine.Common;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.Serialization;
+using Engine.Behaviours.Engines.Controllers;
+using Engine.Common;
 
 namespace Engine.Behaviours.Components
 {
@@ -13,14 +11,14 @@ namespace Engine.Behaviours.Components
   {
     [SerializeField]
     [FormerlySerializedAs("FlamethrowerPS")]
-    private global::Flamethrower flamethrowerPS = (global::Flamethrower) null;
+    private Flamethrower flamethrowerPS = null;
     private Transform flamethrowerPSParent;
     private Vector3 flamethrowerLocalPosition;
     private Quaternion flamethrowerLocalRotation;
     private Animator animator;
     private FightAnimatorBehavior.AnimatorState animatorState;
     private bool flamethrower;
-    private float stanceOnPoseWeigth = 0.0f;
+    private float stanceOnPoseWeigth;
     private bool attackStance;
     private float aimingTime;
     private Transform targetObject;
@@ -29,9 +27,9 @@ namespace Engine.Behaviours.Components
     {
       get
       {
-        if (this.animatorState == null)
-          this.animatorState = FightAnimatorBehavior.GetAnimatorState(this.animator);
-        return this.animatorState;
+        if (animatorState == null)
+          animatorState = FightAnimatorBehavior.GetAnimatorState(animator);
+        return animatorState;
       }
     }
 
@@ -39,13 +37,13 @@ namespace Engine.Behaviours.Components
 
     public bool AttackStance
     {
-      get => this.attackStance;
+      get => attackStance;
       set
       {
-        if (this.attackStance == value)
+        if (attackStance == value)
           return;
-        this.attackStance = value;
-        Action onInvalidate = this.OnInvalidate;
+        attackStance = value;
+        Action onInvalidate = OnInvalidate;
         if (onInvalidate == null)
           return;
         onInvalidate();
@@ -54,29 +52,29 @@ namespace Engine.Behaviours.Components
 
     public bool Flamethrower
     {
-      get => this.flamethrower;
+      get => flamethrower;
       set
       {
-        if (this.flamethrower == value)
+        if (flamethrower == value)
           return;
-        this.flamethrower = value;
-        Action onInvalidate = this.OnInvalidate;
+        flamethrower = value;
+        Action onInvalidate = OnInvalidate;
         if (onInvalidate == null)
           return;
         onInvalidate();
       }
     }
 
-    public float AimingTime => this.aimingTime;
+    public float AimingTime => aimingTime;
 
     public Transform TargetObject
     {
-      get => this.targetObject;
+      get => targetObject;
       set
       {
-        if ((UnityEngine.Object) this.targetObject == (UnityEngine.Object) null)
-          this.aimingTime = 0.0f;
-        this.targetObject = value;
+        if ((UnityEngine.Object) targetObject == (UnityEngine.Object) null)
+          aimingTime = 0.0f;
+        targetObject = value;
       }
     }
 
@@ -84,9 +82,9 @@ namespace Engine.Behaviours.Components
     {
       get
       {
-        if ((UnityEngine.Object) this.flamethrowerPS != (UnityEngine.Object) null && this.Flamethrower)
+        if ((UnityEngine.Object) flamethrowerPS != (UnityEngine.Object) null && Flamethrower)
         {
-          foreach (IFlamable flamable in this.flamethrowerPS.MovablesHit)
+          foreach (IFlamable flamable in flamethrowerPS.MovablesHit)
           {
             IFlamable movable = flamable;
             if (movable != null && !((UnityEngine.Object) movable.gameObject == (UnityEngine.Object) null))
@@ -94,8 +92,8 @@ namespace Engine.Behaviours.Components
               IEntity entityMovable = EntityUtility.GetEntity(movable.gameObject);
               if (entityMovable != null)
                 yield return entityMovable;
-              entityMovable = (IEntity) null;
-              movable = (IFlamable) null;
+              entityMovable = null;
+              movable = null;
             }
           }
         }
@@ -106,23 +104,23 @@ namespace Engine.Behaviours.Components
     {
       set
       {
-        if (!((UnityEngine.Object) this.flamethrowerPS != (UnityEngine.Object) null))
+        if (!((UnityEngine.Object) flamethrowerPS != (UnityEngine.Object) null))
           return;
-        this.flamethrowerPS.SetIndoor(value);
+        flamethrowerPS.SetIndoor(value);
       }
     }
 
     private void Awake()
     {
-      this.animator = this.gameObject.GetComponent<Pivot>().GetAnimator();
-      if ((UnityEngine.Object) this.animator == (UnityEngine.Object) null)
+      animator = this.gameObject.GetComponent<Pivot>().GetAnimator();
+      if ((UnityEngine.Object) animator == (UnityEngine.Object) null)
       {
         Debug.LogErrorFormat("{0} doesn't contain {1} unity component.", (object) this.gameObject.name, (object) typeof (Animator).Name);
       }
       else
       {
-        this.animatorState = FightAnimatorBehavior.GetAnimatorState(this.animator);
-        if (!((UnityEngine.Object) this.flamethrowerPS == (UnityEngine.Object) null))
+        animatorState = FightAnimatorBehavior.GetAnimatorState(animator);
+        if (!((UnityEngine.Object) flamethrowerPS == (UnityEngine.Object) null))
           return;
         Debug.LogWarningFormat("{0}: doesn't contain FlamethrowerPS", (object) this.gameObject.name);
       }
@@ -130,31 +128,31 @@ namespace Engine.Behaviours.Components
 
     private void Start()
     {
-      if (!((UnityEngine.Object) this.flamethrowerPS != (UnityEngine.Object) null))
+      if (!((UnityEngine.Object) flamethrowerPS != (UnityEngine.Object) null))
         return;
-      this.flamethrowerLocalPosition = this.flamethrowerPS.transform.localPosition;
-      this.flamethrowerLocalRotation = this.flamethrowerPS.transform.localRotation;
-      this.flamethrowerPSParent = this.flamethrowerPS.transform.parent;
-      this.flamethrowerPS.transform.parent = (Transform) null;
+      flamethrowerLocalPosition = flamethrowerPS.transform.localPosition;
+      flamethrowerLocalRotation = flamethrowerPS.transform.localRotation;
+      flamethrowerPSParent = flamethrowerPS.transform.parent;
+      flamethrowerPS.transform.parent = (Transform) null;
     }
 
     private void Update()
     {
-      if ((UnityEngine.Object) this.flamethrowerPS != (UnityEngine.Object) null)
+      if ((UnityEngine.Object) flamethrowerPS != (UnityEngine.Object) null)
       {
-        this.flamethrowerPS.Fire = this.flamethrower;
-        this.flamethrowerPS.transform.position = this.flamethrowerPSParent.TransformPoint(this.flamethrowerLocalPosition);
-        this.flamethrowerPS.transform.rotation = this.flamethrowerPSParent.rotation * this.flamethrowerLocalRotation;
+        flamethrowerPS.Fire = flamethrower;
+        flamethrowerPS.transform.position = flamethrowerPSParent.TransformPoint(flamethrowerLocalPosition);
+        flamethrowerPS.transform.rotation = flamethrowerPSParent.rotation * flamethrowerLocalRotation;
       }
-      this.stanceOnPoseWeigth = Mathf.Clamp01(this.stanceOnPoseWeigth + (this.AttackStance ? 1f : -1f) * Time.deltaTime);
-      this.aimingTime += Time.deltaTime;
+      stanceOnPoseWeigth = Mathf.Clamp01(stanceOnPoseWeigth + (AttackStance ? 1f : -1f) * Time.deltaTime);
+      aimingTime += Time.deltaTime;
     }
 
     private void OnDestroy()
     {
-      if (!((UnityEngine.Object) this.flamethrowerPS != (UnityEngine.Object) null))
+      if (!((UnityEngine.Object) flamethrowerPS != (UnityEngine.Object) null))
         return;
-      UnityEngine.Object.Destroy((UnityEngine.Object) this.flamethrowerPS.gameObject);
+      UnityEngine.Object.Destroy((UnityEngine.Object) flamethrowerPS.gameObject);
     }
   }
 }

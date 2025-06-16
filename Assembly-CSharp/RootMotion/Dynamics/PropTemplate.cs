@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace RootMotion.Dynamics
+﻿namespace RootMotion.Dynamics
 {
   [HelpURL("http://root-motion.com/puppetmasterdox/html/page6.html")]
   [AddComponentMenu("Scripts/RootMotion.Dynamics/PuppetMaster/Prop Template")]

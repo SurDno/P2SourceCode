@@ -1,11 +1,10 @@
-﻿using Cofe.Meta;
+﻿using System;
+using Cofe.Meta;
 using Engine.Common.Services;
 using Engine.Impl.Services;
 using Engine.Source.Commons;
 using Engine.Source.Services.Gizmos;
 using Engine.Source.Utility;
-using System;
-using UnityEngine;
 
 namespace Engine.Source.Debugs
 {
@@ -18,10 +17,10 @@ namespace Engine.Source.Debugs
     private static Color headerColor = Color.green;
     private static Color bodyColor = Color.white;
 
-    [Cofe.Meta.Initialise]
+    [Initialise]
     private static void Initialise()
     {
-      InstanceByRequest<EngineApplication>.Instance.OnInitialized += (Action) (() => GroupDebugService.RegisterGroup(TimeGroupDebug.name, TimeGroupDebug.key, TimeGroupDebug.modifficators, new Action(TimeGroupDebug.Update)));
+      InstanceByRequest<EngineApplication>.Instance.OnInitialized += (Action) (() => GroupDebugService.RegisterGroup(name, key, modifficators, Update));
     }
 
     private static void Update()
@@ -33,13 +32,13 @@ namespace Engine.Source.Debugs
       {
         int solarTimeFactor = (int) service.SolarTimeFactor;
         int num = solarTimeFactor != 0 ? solarTimeFactor * 2 : 1;
-        service.SolarTimeFactor = (float) num;
+        service.SolarTimeFactor = num;
       }
       if (InputUtility.IsKeyDown(KeyCode.KeypadMinus))
       {
         int solarTimeFactor = (int) service.SolarTimeFactor;
         int num = solarTimeFactor > 1 ? solarTimeFactor / 2 : 0;
-        service.SolarTimeFactor = (float) num;
+        service.SolarTimeFactor = num;
       }
       if (InputUtility.IsKeyDown(KeyCode.KeypadMultiply))
         service.SolarTimeFactor = service.DefaultTimeFactor;
@@ -74,22 +73,22 @@ namespace Engine.Source.Debugs
       {
         int gameTimeFactor = (int) service.GameTimeFactor;
         int num = gameTimeFactor != 0 ? gameTimeFactor * 2 : 1;
-        service.GameTimeFactor = (float) num;
+        service.GameTimeFactor = num;
       }
       if (InputUtility.IsKeyDown(KeyCode.Keypad2))
       {
         int gameTimeFactor = (int) service.GameTimeFactor;
         int num = gameTimeFactor > 1 ? gameTimeFactor / 2 : 0;
-        service.GameTimeFactor = (float) num;
+        service.GameTimeFactor = num;
       }
       if (InputUtility.IsKeyDown(KeyCode.Keypad3))
         service.GameTimeFactor = service.DefaultTimeFactor;
       if (InputUtility.IsKeyDown(KeyCode.Keypad0))
         service.GameTimeFactor = 0.0f;
-      string text1 = "\n" + TimeGroupDebug.name + " (" + InputUtility.GetHotKeyText(TimeGroupDebug.key, TimeGroupDebug.modifficators) + ")";
-      ServiceLocator.GetService<GizmoService>().DrawText(text1, TimeGroupDebug.headerColor);
-      string text2 = "  Is Game Paused : " + InstanceByRequest<EngineApplication>.Instance.IsPaused.ToString() + "     [hotkeys : pause pause]" + "\n  Solar Time : " + service.SolarTime.ToLongTimeString() + "     [hotkeys : add hour 7 , set 00:00 : 8 , remove hour : 9]" + "\n  Solar Time Day : " + (object) service.SolarTime.GetTimesOfDay() + "\n  Solar Time Factor : " + (object) service.SolarTimeFactor + "     [hotkeys : great + , less - ,  default * , stop /]" + "\n  Game Time : " + service.GameTime.ToLongTimeString() + "     [hotkeys : add hour 4 , set 00:00 : 5 , remove hour : 6]" + "\n  Game Time Day: " + (object) service.GameTime.GetTimesOfDay() + "\n  Game Time Factor : " + (object) service.GameTimeFactor + "     [hotkeys : great 1 , less 2 ,  default 3 , stop 0]" + "\n  Default Time Factor : " + (object) service.DefaultTimeFactor;
-      ServiceLocator.GetService<GizmoService>().DrawText(text2, TimeGroupDebug.bodyColor);
+      string text1 = "\n" + name + " (" + InputUtility.GetHotKeyText(key, modifficators) + ")";
+      ServiceLocator.GetService<GizmoService>().DrawText(text1, headerColor);
+      string text2 = "  Is Game Paused : " + InstanceByRequest<EngineApplication>.Instance.IsPaused + "     [hotkeys : pause pause]" + "\n  Solar Time : " + service.SolarTime.ToLongTimeString() + "     [hotkeys : add hour 7 , set 00:00 : 8 , remove hour : 9]" + "\n  Solar Time Day : " + service.SolarTime.GetTimesOfDay() + "\n  Solar Time Factor : " + service.SolarTimeFactor + "     [hotkeys : great + , less - ,  default * , stop /]" + "\n  Game Time : " + service.GameTime.ToLongTimeString() + "     [hotkeys : add hour 4 , set 00:00 : 5 , remove hour : 6]" + "\n  Game Time Day: " + service.GameTime.GetTimesOfDay() + "\n  Game Time Factor : " + service.GameTimeFactor + "     [hotkeys : great 1 , less 2 ,  default 3 , stop 0]" + "\n  Default Time Factor : " + service.DefaultTimeFactor;
+      ServiceLocator.GetService<GizmoService>().DrawText(text2, bodyColor);
     }
   }
 }

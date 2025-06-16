@@ -1,6 +1,5 @@
 ﻿using Engine.Common.Services;
 using Engine.Source.Services.Inputs;
-using UnityEngine;
 
 namespace Engine.Impl.UI.Controls
 {
@@ -13,19 +12,19 @@ namespace Engine.Impl.UI.Controls
 
     private void OnDisable()
     {
-      ServiceLocator.GetService<GameActionService>().RemoveListener(this.action, new GameActionHandle(this.OnGameAction));
+      ServiceLocator.GetService<GameActionService>().RemoveListener(action, OnGameAction);
     }
 
     private void OnEnable()
     {
-      ServiceLocator.GetService<GameActionService>().AddListener(this.action, new GameActionHandle(this.OnGameAction));
+      ServiceLocator.GetService<GameActionService>().AddListener(action, OnGameAction);
     }
 
     private bool OnGameAction(GameActionType type, bool down)
     {
-      if (!down || (Object) this.view == (Object) null)
+      if (!down || (Object) view == (Object) null)
         return false;
-      this.view.Invoke();
+      view.Invoke();
       return true;
     }
   }

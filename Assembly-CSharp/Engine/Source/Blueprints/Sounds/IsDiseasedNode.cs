@@ -20,12 +20,12 @@ namespace Engine.Source.Blueprints.Sounds
     [Port("Value")]
     private bool Value()
     {
-      IEntity player = this.simulation.Player;
+      IEntity player = simulation.Player;
       if (player != null)
       {
         INavigationComponent component = player.GetComponent<INavigationComponent>();
         if (component != null && component.Region is RegionComponent region)
-          return this.diseasedInput.value == DiseasedUtility.GetStateByLevel(region.DiseaseLevel.Value);
+          return diseasedInput.value == DiseasedUtility.GetStateByLevel(region.DiseaseLevel.Value);
       }
       return false;
     }

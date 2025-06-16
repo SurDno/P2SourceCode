@@ -1,10 +1,9 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons.Cloneable;
 using Engine.Source.Components;
-using Engine.Source.Components.Repairing;
 using Scripts.Tools.Serializations.Converters;
-using System;
 
 namespace Engine.Source.Proxies
 {
@@ -19,20 +18,20 @@ namespace Engine.Source.Proxies
     public object Clone()
     {
       RepairableComponent_Generated instance = Activator.CreateInstance<RepairableComponent_Generated>();
-      this.CopyTo((object) instance);
-      return (object) instance;
+      CopyTo(instance);
+      return instance;
     }
 
-    public void CopyTo(object target2) => ((RepairableComponent) target2).settings = this.settings;
+    public void CopyTo(object target2) => ((RepairableComponent) target2).settings = settings;
 
     public void DataWrite(IDataWriter writer)
     {
-      UnityDataWriteUtility.Write<RepairableSettings>(writer, "Settings", this.settings);
+      UnityDataWriteUtility.Write(writer, "Settings", settings);
     }
 
     public void DataRead(IDataReader reader, Type type)
     {
-      this.settings = UnityDataReadUtility.Read<RepairableSettings>(reader, "Settings", this.settings);
+      settings = UnityDataReadUtility.Read(reader, "Settings", settings);
     }
   }
 }

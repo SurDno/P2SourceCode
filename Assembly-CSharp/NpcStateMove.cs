@@ -4,8 +4,6 @@ using Engine.Source.Commons;
 using Engine.Source.Components;
 using Engine.Source.Components.Utilities;
 using Inspectors;
-using UnityEngine;
-using UnityEngine.AI;
 
 public class NpcStateMove : INpcState
 {
@@ -20,9 +18,9 @@ public class NpcStateMove : INpcState
   private bool rigidbodyWasKinematic;
   private bool rigidbodyWasGravity;
   [Inspected]
-  private NpcStateMove.StateEnum state = NpcStateMove.StateEnum.WaitingPath;
+  private StateEnum state = StateEnum.WaitingPath;
   [Inspected]
-  private bool failed = false;
+  private bool failed;
   [Inspected]
   private NavMeshAgent agent;
   [Inspected]
@@ -38,194 +36,194 @@ public class NpcStateMove : INpcState
   public GameObject GameObject { get; private set; }
 
   [Inspected]
-  private NavMeshAgentWrapper agentWrapper => new NavMeshAgentWrapper(this.agent);
+  private NavMeshAgentWrapper agentWrapper => new NavMeshAgentWrapper(agent);
 
   [Inspected]
   public NpcStateStatusEnum Status { get; private set; }
 
   private bool TryInit()
   {
-    if (this.inited)
+    if (inited)
       return true;
-    this.behavior = this.pivot.GetBehavior();
-    this.agent = this.pivot.GetAgent();
-    this.animator = this.pivot.GetAnimator();
-    this.weaponService = this.pivot.GetNpcWeaponService();
-    this.rigidbody = this.pivot.GetRigidbody();
-    this.inited = true;
+    behavior = pivot.GetBehavior();
+    agent = pivot.GetAgent();
+    animator = pivot.GetAnimator();
+    weaponService = pivot.GetNpcWeaponService();
+    rigidbody = pivot.GetRigidbody();
+    inited = true;
     return true;
   }
 
   public NpcStateMove(NpcState npcState, Pivot pivot)
   {
-    this.GameObject = npcState.gameObject;
+    GameObject = npcState.gameObject;
     this.pivot = pivot;
     this.npcState = npcState;
   }
 
   public void Activate(Vector3 destination, bool failOnPartialPath = false)
   {
-    this.failed = false;
-    this.Status = NpcStateStatusEnum.Running;
-    if (!this.TryInit())
+    failed = false;
+    Status = NpcStateStatusEnum.Running;
+    if (!TryInit())
       return;
     this.failOnPartialPath = failOnPartialPath;
     this.destination = destination;
-    this.state = NpcStateMove.StateEnum.WaitingPath;
-    this.prevAreaMask = this.agent.areaMask;
-    this.agentWasEnabled = this.agent.enabled;
-    this.pathIsPartial = false;
+    state = StateEnum.WaitingPath;
+    prevAreaMask = agent.areaMask;
+    agentWasEnabled = agent.enabled;
+    pathIsPartial = false;
     bool indoor = true;
-    if (this.npcState.Owner != null)
+    if (npcState.Owner != null)
     {
-      LocationItemComponent component = (LocationItemComponent) this.npcState.Owner.GetComponent<ILocationItemComponent>();
+      LocationItemComponent component = (LocationItemComponent) npcState.Owner.GetComponent<ILocationItemComponent>();
       if (component == null)
       {
-        Debug.LogWarning((object) (this.GameObject.name + ": location component not found"));
-        this.Status = NpcStateStatusEnum.Failed;
+        Debug.LogWarning((object) (GameObject.name + ": location component not found"));
+        Status = NpcStateStatusEnum.Failed;
         return;
       }
       if (component != null)
         indoor = component.IsIndoor;
     }
-    if ((Object) this.rigidbody != (Object) null)
+    if ((Object) rigidbody != (Object) null)
     {
-      this.rigidbodyWasKinematic = this.rigidbody.isKinematic;
-      this.rigidbodyWasGravity = this.rigidbody.useGravity;
-      this.rigidbody.useGravity = false;
-      this.rigidbody.isKinematic = false;
+      rigidbodyWasKinematic = rigidbody.isKinematic;
+      rigidbodyWasGravity = rigidbody.useGravity;
+      rigidbody.useGravity = false;
+      rigidbody.isKinematic = false;
     }
-    NPCStateHelper.SetAgentAreaMask(this.agent, indoor);
-    this.agent.enabled = true;
-    if (!this.agent.isOnNavMesh)
+    NPCStateHelper.SetAgentAreaMask(agent, indoor);
+    agent.enabled = true;
+    if (!agent.isOnNavMesh)
     {
-      Vector3 position = this.GameObject.transform.position;
-      if (NavMeshUtility.SampleRaycastPosition(ref position, indoor ? 1f : 5f, indoor ? 2f : 10f, this.agent.areaMask))
+      Vector3 position = GameObject.transform.position;
+      if (NavMeshUtility.SampleRaycastPosition(ref position, indoor ? 1f : 5f, indoor ? 2f : 10f, agent.areaMask))
       {
-        this.agent.Warp(position);
+        agent.Warp(position);
       }
       else
       {
-        this.Status = NpcStateStatusEnum.Failed;
+        Status = NpcStateStatusEnum.Failed;
         return;
       }
     }
-    this.agent.SetDestination(destination);
-    if ((Object) this.animator != (Object) null)
+    agent.SetDestination(destination);
+    if ((Object) animator != (Object) null)
     {
-      this.initialAnimatorUpdateMode = this.animator.updateMode;
-      this.animator.updateMode = AnimatorUpdateMode.AnimatePhysics;
-      this.initialAnimatorCullingMode = this.animator.cullingMode;
-      this.animator.cullingMode = AnimatorCullingMode.CullUpdateTransforms;
+      initialAnimatorUpdateMode = animator.updateMode;
+      animator.updateMode = AnimatorUpdateMode.AnimatePhysics;
+      initialAnimatorCullingMode = animator.cullingMode;
+      animator.cullingMode = AnimatorCullingMode.CullUpdateTransforms;
     }
-    if (!((Object) this.weaponService != (Object) null))
+    if (!((Object) weaponService != (Object) null))
       return;
-    this.weaponService.Weapon = WeaponEnum.Unknown;
+    weaponService.Weapon = WeaponEnum.Unknown;
   }
 
   public void Shutdown()
   {
-    if (this.failed)
+    if (failed)
       return;
-    if ((Object) this.animator != (Object) null)
+    if ((Object) animator != (Object) null)
     {
-      this.animator.updateMode = this.initialAnimatorUpdateMode;
-      this.animator.cullingMode = this.initialAnimatorCullingMode;
+      animator.updateMode = initialAnimatorUpdateMode;
+      animator.cullingMode = initialAnimatorCullingMode;
     }
-    if ((Object) this.rigidbody != (Object) null)
+    if ((Object) rigidbody != (Object) null)
     {
-      this.rigidbody.isKinematic = this.rigidbodyWasKinematic;
-      this.rigidbody.useGravity = this.rigidbodyWasGravity;
+      rigidbody.isKinematic = rigidbodyWasKinematic;
+      rigidbody.useGravity = rigidbodyWasGravity;
     }
-    this.agent.areaMask = this.prevAreaMask;
-    this.agent.enabled = this.agentWasEnabled;
-    if (!((Object) this.weaponService != (Object) null))
+    agent.areaMask = prevAreaMask;
+    agent.enabled = agentWasEnabled;
+    if (!((Object) weaponService != (Object) null))
       return;
-    this.weaponService.Weapon = this.npcState.Weapon;
+    weaponService.Weapon = npcState.Weapon;
   }
 
   public void OnAnimatorMove()
   {
-    if (this.failed)
+    if (failed)
       return;
-    this.behavior.OnExternalAnimatorMove();
+    behavior.OnExternalAnimatorMove();
   }
 
   public void OnAnimatorEventEvent(string obj)
   {
-    if (!this.failed)
+    if (!failed)
       ;
   }
 
   public void Update()
   {
-    if (!this.inited)
+    if (!inited)
       return;
     if (InstanceByRequest<EngineApplication>.Instance.IsPaused)
     {
-      if (!((Object) this.agent != (Object) null))
+      if (!((Object) agent != (Object) null))
         return;
-      this.agent.velocity = Vector3.zero;
+      agent.velocity = Vector3.zero;
     }
     else
     {
-      if (this.state == NpcStateMove.StateEnum.WaitingPath)
-        this.OnUpdateWaitPath();
-      if (this.state == NpcStateMove.StateEnum.Moving)
-        this.OnUpdateMove();
-      if (this.state == NpcStateMove.StateEnum.Stopping)
-        this.OnUpdateStopMovement();
-      if (this.state == NpcStateMove.StateEnum.StopAndRestartPath)
-        this.OnUpdateStopAndRestartPath();
-      if (this.state != NpcStateMove.StateEnum.Done)
+      if (state == StateEnum.WaitingPath)
+        OnUpdateWaitPath();
+      if (state == StateEnum.Moving)
+        OnUpdateMove();
+      if (state == StateEnum.Stopping)
+        OnUpdateStopMovement();
+      if (state == StateEnum.StopAndRestartPath)
+        OnUpdateStopAndRestartPath();
+      if (state != StateEnum.Done)
         return;
-      this.Status = this.failed ? NpcStateStatusEnum.Failed : NpcStateStatusEnum.Success;
+      Status = failed ? NpcStateStatusEnum.Failed : NpcStateStatusEnum.Success;
     }
   }
 
   public void OnUpdateWaitPath()
   {
-    if (this.agent.pathPending)
+    if (agent.pathPending)
       return;
-    if ((double) Random.value < (double) Time.deltaTime / 0.5 && NavMeshUtility.IsBrokenPath(this.agent))
+    if ((double) Random.value < (double) Time.deltaTime / 0.5 && NavMeshUtility.IsBrokenPath(agent))
     {
-      Debug.Log((object) ObjectInfoUtility.GetStream().Append("[Navigation]").Append("  broken path detected, trying to reset: ").GetInfo((object) this.npcState.Owner), (Object) this.GameObject);
-      Vector3 destination = this.agent.destination;
-      this.agent.ResetPath();
-      this.agent.SetDestination(destination);
-      this.state = NpcStateMove.StateEnum.WaitingPath;
+      Debug.Log((object) ObjectInfoUtility.GetStream().Append("[Navigation]").Append("  broken path detected, trying to reset: ").GetInfo(npcState.Owner), (Object) GameObject);
+      Vector3 destination = agent.destination;
+      agent.ResetPath();
+      agent.SetDestination(destination);
+      state = StateEnum.WaitingPath;
     }
     else
     {
-      this.pathIsPartial = this.agent.pathStatus == NavMeshPathStatus.PathPartial;
-      if (this.pathIsPartial && this.failOnPartialPath)
-        this.CompleteTask(true);
-      else if (this.agent.pathStatus == NavMeshPathStatus.PathInvalid)
+      pathIsPartial = agent.pathStatus == NavMeshPathStatus.PathPartial;
+      if (pathIsPartial && failOnPartialPath)
+        CompleteTask(true);
+      else if (agent.pathStatus == NavMeshPathStatus.PathInvalid)
       {
-        Vector3 destination = this.agent.destination;
-        this.agent.ResetPath();
-        this.agent.SetDestination(destination);
-        this.state = NpcStateMove.StateEnum.WaitingPath;
+        Vector3 destination = agent.destination;
+        agent.ResetPath();
+        agent.SetDestination(destination);
+        state = StateEnum.WaitingPath;
       }
-      else if (!NavMeshUtility.HasPathNoGarbage(this.agent) || (double) Random.value < (double) Time.deltaTime / 0.5 && !NavMeshUtility.HasPathWithGarbage(this.agent))
+      else if (!NavMeshUtility.HasPathNoGarbage(agent) || (double) Random.value < (double) Time.deltaTime / 0.5 && !NavMeshUtility.HasPathWithGarbage(agent))
       {
-        Debug.LogWarningFormat("{0} : agent.path.corners.Length == 0, distance to destination = {1}", (object) this.GameObject.name, (object) (this.GameObject.transform.position - this.agent.destination).magnitude);
-        this.CompleteTask(false);
+        Debug.LogWarningFormat("{0} : agent.path.corners.Length == 0, distance to destination = {1}", (object) GameObject.name, (object) (GameObject.transform.position - agent.destination).magnitude);
+        CompleteTask(false);
       }
       else
       {
-        float stoppingDistance = this.agent.stoppingDistance;
-        if ((double) this.agent.desiredVelocity.magnitude < 0.0099999997764825821)
+        float stoppingDistance = agent.stoppingDistance;
+        if ((double) agent.desiredVelocity.magnitude < 0.0099999997764825821)
         {
-          if ((double) this.agent.remainingDistance < (double) stoppingDistance)
-            this.CompleteTask(false);
-          this.agent.ResetPath();
-          this.agent.SetDestination(this.destination);
+          if ((double) agent.remainingDistance < stoppingDistance)
+            CompleteTask(false);
+          agent.ResetPath();
+          agent.SetDestination(destination);
         }
         else
         {
-          this.state = NpcStateMove.StateEnum.Moving;
-          this.behavior.StartMovement(this.agent.desiredVelocity.normalized);
+          state = StateEnum.Moving;
+          behavior.StartMovement(agent.desiredVelocity.normalized);
         }
       }
     }
@@ -233,61 +231,61 @@ public class NpcStateMove : INpcState
 
   public void OnUpdateMove()
   {
-    if ((double) Random.value < (double) Time.deltaTime / 0.5 && NavMeshUtility.IsBrokenPath(this.agent))
+    if ((double) Random.value < (double) Time.deltaTime / 0.5 && NavMeshUtility.IsBrokenPath(agent))
     {
-      Debug.Log((object) ObjectInfoUtility.GetStream().Append("[Navigation]").Append("  broken path detected, trying to reset: ").GetInfo((object) this.npcState.Owner), (Object) this.GameObject);
-      this.state = NpcStateMove.StateEnum.StopAndRestartPath;
+      Debug.Log((object) ObjectInfoUtility.GetStream().Append("[Navigation]").Append("  broken path detected, trying to reset: ").GetInfo(npcState.Owner), (Object) GameObject);
+      state = StateEnum.StopAndRestartPath;
     }
     else
     {
-      float num = this.agent.stoppingDistance * 3f;
-      if (!this.agent.hasPath || !this.behavior.Move(this.agent.desiredVelocity, this.agent.remainingDistance) || (double) this.agent.remainingDistance >= (double) num)
+      float num = agent.stoppingDistance * 3f;
+      if (!agent.hasPath || !behavior.Move(agent.desiredVelocity, agent.remainingDistance) || (double) agent.remainingDistance >= num)
         return;
-      this.agent.ResetPath();
-      this.state = NpcStateMove.StateEnum.Stopping;
+      agent.ResetPath();
+      state = StateEnum.Stopping;
     }
   }
 
   public void OnUpdateStopAndRestartPath()
   {
-    if (!this.behavior.Move(this.agent.desiredVelocity, 0.0f))
+    if (!behavior.Move(agent.desiredVelocity, 0.0f))
       return;
-    Vector3 destination = this.agent.destination;
-    this.agent.ResetPath();
-    this.agent.SetDestination(destination);
-    this.state = NpcStateMove.StateEnum.WaitingPath;
+    Vector3 destination = agent.destination;
+    agent.ResetPath();
+    agent.SetDestination(destination);
+    state = StateEnum.WaitingPath;
   }
 
   public void OnUpdateStopMovement()
   {
-    if (!this.behavior.Move(this.agent.desiredVelocity, 0.0f))
+    if (!behavior.Move(agent.desiredVelocity, 0.0f))
       return;
-    this.state = NpcStateMove.StateEnum.Done;
+    state = StateEnum.Done;
   }
 
   private void CompleteTask(bool failed)
   {
     if (!this.failed)
       this.failed = failed;
-    if (this.state == NpcStateMove.StateEnum.Moving)
+    if (state == StateEnum.Moving)
     {
-      this.behavior.Move(this.agent.desiredVelocity, 0.0f);
-      this.state = NpcStateMove.StateEnum.Stopping;
+      behavior.Move(agent.desiredVelocity, 0.0f);
+      state = StateEnum.Stopping;
     }
     else
-      this.state = NpcStateMove.StateEnum.Done;
+      state = StateEnum.Done;
   }
 
   public void OnLodStateChanged(bool inLodState)
   {
-    this.npcState.AnimatorEnabled = !inLodState;
-    EffectsComponent component = this.npcState.Owner?.GetComponent<EffectsComponent>();
+    npcState.AnimatorEnabled = !inLodState;
+    EffectsComponent component = npcState.Owner?.GetComponent<EffectsComponent>();
     if (component != null)
       component.Disabled = inLodState;
-    this.agent.updatePosition = inLodState;
-    this.agent.updateRotation = inLodState;
-    this.agent.speed = this.behavior.Gait == EngineBehavior.GaitType.Walk ? 1.5f : 3f;
-    this.agent.acceleration = 10f;
+    agent.updatePosition = inLodState;
+    agent.updateRotation = inLodState;
+    agent.speed = behavior.Gait == EngineBehavior.GaitType.Walk ? 1.5f : 3f;
+    agent.acceleration = 10f;
   }
 
   private enum StateEnum

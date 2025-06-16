@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-public class LockPickingPinSpot : MonoBehaviour
+﻿public class LockPickingPinSpot : MonoBehaviour
 {
   [Header("Settings")]
   [SerializeField]
@@ -17,28 +15,28 @@ public class LockPickingPinSpot : MonoBehaviour
   [SerializeField]
   private float position = 0.5f;
 
-  private void OnValidate() => this.ApplyState();
+  private void OnValidate() => ApplyState();
 
   private void ApplyState()
   {
-    float min = this.size * 0.5f;
-    this.position = Mathf.Clamp(this.position, min, 1f - min);
+    float min = size * 0.5f;
+    position = Mathf.Clamp(position, min, 1f - min);
     RectTransform transform = (RectTransform) this.transform;
-    float z = Mathf.Lerp(this.rotationRange.x, this.rotationRange.y, this.position);
+    float z = Mathf.Lerp(rotationRange.x, rotationRange.y, position);
     transform.localEulerAngles = new Vector3(0.0f, 0.0f, z);
-    if (!((Object) this.image != (Object) null))
+    if (!((Object) image != (Object) null))
       return;
-    this.image.sizeDelta = this.image.sizeDelta with
+    image.sizeDelta = image.sizeDelta with
     {
-      y = this.size * this.sizeMapping + this.border
+      y = size * sizeMapping + border
     };
-    this.image.localEulerAngles = new Vector3(0.0f, 0.0f, -z);
+    image.localEulerAngles = new Vector3(0.0f, 0.0f, -z);
   }
 
   public void Setup(float position, float size)
   {
     this.position = position;
     this.size = size;
-    this.ApplyState();
+    ApplyState();
   }
 }

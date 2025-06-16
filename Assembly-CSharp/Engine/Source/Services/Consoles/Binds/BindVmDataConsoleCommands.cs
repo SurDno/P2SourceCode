@@ -1,9 +1,9 @@
-﻿using Cofe.Meta;
+﻿using System.Collections;
+using Cofe.Meta;
 using Engine.Common;
 using Engine.Common.Services;
 using Engine.Impl.Services;
 using Engine.Source.Services.Saves;
-using System.Collections;
 
 namespace Engine.Source.Services.Consoles.Binds
 {
@@ -25,7 +25,7 @@ namespace Engine.Source.Services.Consoles.Binds
         virtualMachine.UnloadData();
       string projectName = parameters[0].Value;
       DefaultErrorLoadingHandler errorHandler = new DefaultErrorLoadingHandler();
-      CoroutineService.Instance.Route(BindVmDataConsoleCommands.Load(projectName, service, (IErrorLoadingHandler) errorHandler));
+      CoroutineService.Instance.Route(Load(projectName, service, errorHandler));
       return errorHandler.HasErrorLoading ? "Error : " + errorHandler.ErrorLoading : command + " " + projectName;
     }
 
@@ -34,7 +34,7 @@ namespace Engine.Source.Services.Consoles.Binds
       VirtualMachineController virtualMachineController,
       IErrorLoadingHandler errorHandler)
     {
-      yield return (object) virtualMachineController.LoadData(projectName, errorHandler);
+      yield return virtualMachineController.LoadData(projectName, errorHandler);
     }
 
     [ConsoleCommand("unload_vm_data")]

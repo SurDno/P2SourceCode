@@ -1,7 +1,4 @@
-﻿using UnityEngine;
-using UnityEngine.Serialization;
-
-namespace Cinemachine
+﻿namespace Cinemachine
 {
   [DocumentationSorting(21f, DocumentationSortingAttribute.Level.UserRef)]
   [ExecuteInEditMode]
@@ -10,7 +7,7 @@ namespace Cinemachine
     [Tooltip("The path to follow")]
     public CinemachinePathBase m_Path;
     [Tooltip("When to move the cart, if Velocity is non-zero")]
-    public CinemachineDollyCart.UpdateMethod m_UpdateMethod = CinemachineDollyCart.UpdateMethod.Update;
+    public UpdateMethod m_UpdateMethod = UpdateMethod.Update;
     [Tooltip("How to interpret the Path Position.  If set to Path Units, values are as follows: 0 represents the first waypoint on the path, 1 is the second, and so on.  Values in-between are points on the path in between the waypoints.  If set to Distance, then Path Position represents distance along the path.")]
     public CinemachinePathBase.PositionUnits m_PositionUnits = CinemachinePathBase.PositionUnits.Distance;
     [Tooltip("Move the cart with this speed along the path.  The value is interpreted according to the Position Units setting.")]
@@ -22,32 +19,32 @@ namespace Cinemachine
 
     private void FixedUpdate()
     {
-      if (this.m_UpdateMethod != CinemachineDollyCart.UpdateMethod.FixedUpdate)
+      if (m_UpdateMethod != UpdateMethod.FixedUpdate)
         return;
-      this.SetCartPosition(this.m_Position += this.m_Speed * Time.deltaTime);
+      SetCartPosition(m_Position += m_Speed * Time.deltaTime);
     }
 
     private void Update()
     {
       if (!Application.isPlaying)
       {
-        this.SetCartPosition(this.m_Position);
+        SetCartPosition(m_Position);
       }
       else
       {
-        if (this.m_UpdateMethod != CinemachineDollyCart.UpdateMethod.Update)
+        if (m_UpdateMethod != UpdateMethod.Update)
           return;
-        this.SetCartPosition(this.m_Position += this.m_Speed * Time.deltaTime);
+        SetCartPosition(m_Position += m_Speed * Time.deltaTime);
       }
     }
 
     private void SetCartPosition(float distanceAlongPath)
     {
-      if (!((Object) this.m_Path != (Object) null))
+      if (!((Object) m_Path != (Object) null))
         return;
-      this.m_Position = this.m_Path.NormalizeUnit(distanceAlongPath, this.m_PositionUnits);
-      this.transform.position = this.m_Path.EvaluatePositionAtUnit(this.m_Position, this.m_PositionUnits);
-      this.transform.rotation = this.m_Path.EvaluateOrientationAtUnit(this.m_Position, this.m_PositionUnits);
+      m_Position = m_Path.NormalizeUnit(distanceAlongPath, m_PositionUnits);
+      this.transform.position = m_Path.EvaluatePositionAtUnit(m_Position, m_PositionUnits);
+      this.transform.rotation = m_Path.EvaluateOrientationAtUnit(m_Position, m_PositionUnits);
     }
 
     public enum UpdateMethod

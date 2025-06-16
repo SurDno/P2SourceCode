@@ -1,9 +1,9 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons.Cloneable;
 using Engine.Common.Commons.Converters;
 using Expressions;
-using System;
 
 namespace Engine.Source.Proxies
 {
@@ -18,23 +18,23 @@ namespace Engine.Source.Proxies
     public object Clone()
     {
       NotBoolOperation_Generated instance = Activator.CreateInstance<NotBoolOperation_Generated>();
-      this.CopyTo((object) instance);
-      return (object) instance;
+      CopyTo(instance);
+      return instance;
     }
 
     public void CopyTo(object target2)
     {
-      ((UnaryOperation<bool>) target2).value = CloneableObjectUtility.Clone<IValue<bool>>(this.value);
+      ((UnaryOperation<bool>) target2).value = CloneableObjectUtility.Clone(value);
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.WriteSerialize<IValue<bool>>(writer, "Value", this.value);
+      DefaultDataWriteUtility.WriteSerialize(writer, "Value", value);
     }
 
     public void DataRead(IDataReader reader, Type type)
     {
-      this.value = DefaultDataReadUtility.ReadSerialize<IValue<bool>>(reader, "Value");
+      value = DefaultDataReadUtility.ReadSerialize<IValue<bool>>(reader, "Value");
     }
   }
 }

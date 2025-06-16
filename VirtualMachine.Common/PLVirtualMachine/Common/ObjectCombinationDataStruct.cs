@@ -1,8 +1,8 @@
-﻿using Cofe.Loggers;
+﻿using System;
+using System.Collections.Generic;
+using Cofe.Loggers;
 using PLVirtualMachine.Common.Data;
 using PLVirtualMachine.Common.EngineAPI;
-using System;
-using System.Collections.Generic;
 
 namespace PLVirtualMachine.Common
 {
@@ -11,18 +11,18 @@ namespace PLVirtualMachine.Common
   {
     private List<ObjectCombinationElement> combinationElements = new List<ObjectCombinationElement>();
 
-    public int GetElementsCount() => this.combinationElements.Count;
+    public int GetElementsCount() => combinationElements.Count;
 
     public ObjectCombinationElement GetCombinationElement(int elemInd)
     {
-      return elemInd < 0 || elemInd >= this.combinationElements.Count ? (ObjectCombinationElement) null : this.combinationElements[elemInd];
+      return elemInd < 0 || elemInd >= combinationElements.Count ? null : combinationElements[elemInd];
     }
 
     public bool ContainsItem(IBlueprint item)
     {
-      for (int index = 0; index < this.combinationElements.Count; ++index)
+      for (int index = 0; index < combinationElements.Count; ++index)
       {
-        if (this.combinationElements[index].ContainsItem(item))
+        if (combinationElements[index].ContainsItem(item))
           return true;
       }
       return false;
@@ -33,21 +33,21 @@ namespace PLVirtualMachine.Common
       switch (data)
       {
         case null:
-          Logger.AddError(string.Format("Attempt to read null object combination data at {0}", (object) EngineAPIManager.Instance.CurrentFSMStateInfo));
+          Logger.AddError(string.Format("Attempt to read null object combination data at {0}", EngineAPIManager.Instance.CurrentFSMStateInfo));
           break;
         case "":
           break;
         default:
           if (data.Length < 12)
           {
-            Logger.AddError(string.Format("Cannot convert {0} to object combination data struct at {1}", (object) data, (object) EngineAPIManager.Instance.CurrentFSMStateInfo));
+            Logger.AddError(string.Format("Cannot convert {0} to object combination data struct at {1}", data, EngineAPIManager.Instance.CurrentFSMStateInfo));
             break;
           }
           string[] separator = new string[1]{ "END&ELEM" };
           string[] strArray = data.Split(separator, StringSplitOptions.RemoveEmptyEntries);
-          this.combinationElements.Clear();
+          combinationElements.Clear();
           for (int index = 0; index < strArray.Length; ++index)
-            this.combinationElements.Add(new ObjectCombinationElement(strArray[index]));
+            combinationElements.Add(new ObjectCombinationElement(strArray[index]));
           break;
       }
     }

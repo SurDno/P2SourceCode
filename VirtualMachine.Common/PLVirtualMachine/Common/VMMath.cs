@@ -7,14 +7,14 @@ namespace PLVirtualMachine.Common
   {
     private static Random random = new Random(Guid.NewGuid().GetHashCode());
 
-    public static int GetRandomInt(int maxIntVal = 2147483647) => VMMath.random.Next(maxIntVal);
+    public static int GetRandomInt(int maxIntVal = 2147483647) => random.Next(maxIntVal);
 
     public static int GetRandomInt(int minIntVal, int maxIntVal)
     {
-      return minIntVal + VMMath.random.Next(maxIntVal - minIntVal);
+      return minIntVal + random.Next(maxIntVal - minIntVal);
     }
 
-    public static double GetRandomDouble() => VMMath.random.NextDouble();
+    public static double GetRandomDouble() => random.NextDouble();
 
     public static List<int> GetRandomIndexes(
       int randomMinIndex,
@@ -28,7 +28,7 @@ namespace PLVirtualMachine.Common
       while (count > 1)
       {
         --count;
-        int index = VMMath.random.Next(count);
+        int index = random.Next(count);
         int num = randomIndexes1[index];
         randomIndexes1[index] = randomIndexes1[count];
         randomIndexes1[count] = num;

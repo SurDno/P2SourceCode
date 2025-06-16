@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace Rain
+﻿namespace Rain
 {
   [AddComponentMenu("Image Effects/Blur Behind")]
   [ExecuteInEditMode]
@@ -8,13 +6,13 @@ namespace Rain
   public class BlurBehind : MonoBehaviour
   {
     private static RenderTexture storedTexture = (RenderTexture) null;
-    private static int count = 0;
+    private static int count;
     private static Rect storedRect = new Rect(0.0f, 0.0f, 1f, 1f);
     public static Shader blurShader = (Shader) null;
     private Material blurMaterial = (Material) null;
-    public BlurBehind.Mode mode = BlurBehind.Mode.Relative;
+    public Mode mode = Mode.Relative;
     public float radius = 15f;
-    public BlurBehind.Settings settings = BlurBehind.Settings.Manual;
+    public Settings settings = Settings.Manual;
     public float downsample = 64f;
     public int iterations = 2;
     public Rect cropRect = new Rect(0.0f, 0.0f, 1f, 1f);
@@ -32,79 +30,79 @@ namespace Rain
       rect.y = Mathf.Round(Mathf.Clamp01(rect.y) * vector2.y) / vector2.y;
       rect.width -= rect.x;
       rect.height -= rect.y;
-      Shader.SetGlobalVector("_BlurBehindRect", new Vector4((BlurBehind.storedRect.x - rect.x) / rect.width, BlurBehind.storedRect.y / rect.height + rect.y, BlurBehind.storedRect.width / rect.width, BlurBehind.storedRect.height / rect.height));
+      Shader.SetGlobalVector("_BlurBehindRect", new Vector4((storedRect.x - rect.x) / rect.width, storedRect.y / rect.height + rect.y, storedRect.width / rect.width, storedRect.height / rect.height));
     }
 
     public static void ResetViewport()
     {
-      Shader.SetGlobalVector("_BlurBehindRect", new Vector4(BlurBehind.storedRect.x, BlurBehind.storedRect.y, BlurBehind.storedRect.width, BlurBehind.storedRect.height));
+      Shader.SetGlobalVector("_BlurBehindRect", new Vector4(storedRect.x, storedRect.y, storedRect.width, storedRect.height));
     }
 
     private void CheckSettings(int sourceSize)
     {
-      if ((double) this.radius < 0.0)
-        this.radius = 0.0f;
-      if ((double) this.downsample < 1.0)
-        this.downsample = 1f;
-      if (this.iterations < 0)
-        this.iterations = 0;
-      if (this.settings == BlurBehind.Settings.Manual)
+      if (radius < 0.0)
+        radius = 0.0f;
+      if (downsample < 1.0)
+        downsample = 1f;
+      if (iterations < 0)
+        iterations = 0;
+      if (settings == Settings.Manual)
         return;
-      float p = this.settings == BlurBehind.Settings.Standard ? 36f : 6f;
-      if (this.mode == BlurBehind.Mode.Absolute)
+      float p = settings == Settings.Standard ? 36f : 6f;
+      if (mode == Mode.Absolute)
       {
-        if ((double) this.radius > 0.0)
+        if (radius > 0.0)
         {
-          this.iterations = (double) this.radius >= (double) p ? Mathf.FloorToInt(Mathf.Log(this.radius, p)) + 1 : 1;
-          this.downsample = this.radius / Mathf.Pow(3f, (float) this.iterations);
-          if ((double) this.downsample < 1.0)
-            this.downsample = 1f;
+          iterations = radius >= (double) p ? Mathf.FloorToInt(Mathf.Log(radius, p)) + 1 : 1;
+          downsample = radius / Mathf.Pow(3f, (float) iterations);
+          if (downsample < 1.0)
+            downsample = 1f;
         }
         else
         {
-          this.downsample = 1f;
-          this.iterations = 0;
+          downsample = 1f;
+          iterations = 0;
         }
       }
-      else if ((double) this.radius > 0.0)
+      else if (radius > 0.0)
       {
-        float f = this.radius / 100f * (float) sourceSize;
-        this.iterations = (double) f >= (double) p ? Mathf.FloorToInt(Mathf.Log(f, p)) + 1 : 1;
-        this.downsample = (float) sourceSize / (f / Mathf.Pow(3f, (float) this.iterations));
+        float f = radius / 100f * sourceSize;
+        iterations = f >= (double) p ? Mathf.FloorToInt(Mathf.Log(f, p)) + 1 : 1;
+        downsample = sourceSize / (f / Mathf.Pow(3f, (float) iterations));
       }
       else
       {
-        this.downsample = float.PositiveInfinity;
-        this.iterations = 0;
+        downsample = float.PositiveInfinity;
+        iterations = 0;
       }
     }
 
     private void CheckOutput(int rtW, int rtH, RenderTextureFormat format)
     {
-      if ((Object) BlurBehind.storedTexture == (Object) null)
-        this.CreateOutput(rtW, rtH, format);
-      else if (BlurBehind.storedTexture.width != rtW || BlurBehind.storedTexture.height != rtH || BlurBehind.storedTexture.format != format)
+      if ((Object) storedTexture == (Object) null)
+        CreateOutput(rtW, rtH, format);
+      else if (storedTexture.width != rtW || storedTexture.height != rtH || storedTexture.format != format)
       {
-        BlurBehind.storedTexture.Release();
-        Object.DestroyImmediate((Object) BlurBehind.storedTexture);
-        this.CreateOutput(rtW, rtH, format);
+        storedTexture.Release();
+        Object.DestroyImmediate((Object) storedTexture);
+        CreateOutput(rtW, rtH, format);
       }
       else
-        BlurBehind.storedTexture.DiscardContents();
+        storedTexture.DiscardContents();
     }
 
     private bool CheckResources()
     {
-      if ((Object) this.blurMaterial == (Object) null)
+      if ((Object) blurMaterial == (Object) null)
       {
-        if ((Object) BlurBehind.blurShader == (Object) null)
-          BlurBehind.blurShader = Shader.Find("Hidden/Blur Behind/Blur");
-        if ((Object) BlurBehind.blurShader != (Object) null)
+        if ((Object) blurShader == (Object) null)
+          blurShader = Shader.Find("Hidden/Blur Behind/Blur");
+        if ((Object) blurShader != (Object) null)
         {
-          if (BlurBehind.blurShader.isSupported)
+          if (blurShader.isSupported)
           {
-            this.blurMaterial = new Material(BlurBehind.blurShader);
-            this.blurMaterial.hideFlags = HideFlags.DontSave;
+            blurMaterial = new Material(blurShader);
+            blurMaterial.hideFlags = HideFlags.DontSave;
           }
           else
           {
@@ -131,16 +129,16 @@ namespace Rain
 
     private void CreateOutput(int width, int height, RenderTextureFormat format)
     {
-      BlurBehind.storedTexture = new RenderTexture(width, height, 0, format);
-      BlurBehind.storedTexture.filterMode = FilterMode.Bilinear;
-      BlurBehind.storedTexture.hideFlags = HideFlags.DontSave;
-      Shader.SetGlobalTexture("_BlurBehindTex", (Texture) BlurBehind.storedTexture);
+      storedTexture = new RenderTexture(width, height, 0, format);
+      storedTexture.filterMode = FilterMode.Bilinear;
+      storedTexture.hideFlags = HideFlags.DontSave;
+      Shader.SetGlobalTexture("_BlurBehindTex", (Texture) storedTexture);
       Shader.EnableKeyword("BLUR_BEHIND_SET");
     }
 
     private RenderTexture CropSource(RenderTexture source)
     {
-      Rect rect1 = new Rect(this.cropRect.x * (float) source.width + this.pixelOffset.x, this.cropRect.y * (float) source.height + this.pixelOffset.y, this.cropRect.width * (float) source.width + this.pixelOffset.width, this.cropRect.height * (float) source.height + this.pixelOffset.height);
+      Rect rect1 = new Rect(cropRect.x * (float) source.width + pixelOffset.x, cropRect.y * (float) source.height + pixelOffset.y, cropRect.width * (float) source.width + pixelOffset.width, cropRect.height * (float) source.height + pixelOffset.height);
       rect1.width = Mathf.Clamp01(Mathf.Round(rect1.width + rect1.x) / (float) source.width);
       rect1.height = Mathf.Clamp01(Mathf.Round(rect1.height + rect1.y) / (float) source.height);
       rect1.x = Mathf.Clamp01(Mathf.Round(rect1.x) / (float) source.width);
@@ -151,14 +149,14 @@ namespace Rain
       if (rect1 != new Rect(0.0f, 0.0f, 1f, 1f))
       {
         dest = RenderTexture.GetTemporary(Mathf.RoundToInt(rect1.width * (float) source.width), Mathf.RoundToInt(rect1.height * (float) source.height), 0, source.format);
-        this.blurMaterial.SetVector("_Parameter", new Vector4(rect1.x, rect1.y, rect1.width, rect1.height));
-        Graphics.Blit((Texture) source, dest, this.blurMaterial, 2);
-        BlurBehind.storedRect = rect1;
+        blurMaterial.SetVector("_Parameter", new Vector4(rect1.x, rect1.y, rect1.width, rect1.height));
+        Graphics.Blit((Texture) source, dest, blurMaterial, 2);
+        storedRect = rect1;
       }
       else
       {
         dest = source;
-        BlurBehind.storedRect = new Rect(0.0f, 0.0f, 1f, 1f);
+        storedRect = new Rect(0.0f, 0.0f, 1f, 1f);
       }
       Rect rect2 = Camera.current.rect;
       if (rect2 != new Rect(0.0f, 0.0f, 1f, 1f))
@@ -170,9 +168,9 @@ namespace Rain
         rect2.y = Mathf.Round(Mathf.Clamp01(rect2.y) * vector2.y) / vector2.y;
         rect2.width -= rect2.x;
         rect2.height -= rect2.y;
-        BlurBehind.storedRect = new Rect(rect2.x + BlurBehind.storedRect.x * rect2.width, rect2.y + BlurBehind.storedRect.y * rect2.height, rect2.width * BlurBehind.storedRect.width, rect2.height * BlurBehind.storedRect.height);
+        storedRect = new Rect(rect2.x + storedRect.x * rect2.width, rect2.y + storedRect.y * rect2.height, rect2.width * storedRect.width, rect2.height * storedRect.height);
       }
-      Shader.SetGlobalVector("_BlurBehindRect", new Vector4(BlurBehind.storedRect.x, BlurBehind.storedRect.y, BlurBehind.storedRect.width, BlurBehind.storedRect.height));
+      Shader.SetGlobalVector("_BlurBehindRect", new Vector4(storedRect.x, storedRect.y, storedRect.width, storedRect.height));
       return dest;
     }
 
@@ -202,16 +200,16 @@ namespace Rain
             height = 1;
           renderTexture.filterMode = FilterMode.Bilinear;
           RenderTexture temporary = RenderTexture.GetTemporary(width, height, 0, renderTexture.format);
-          this.blurMaterial.SetVector("_Parameter", new Vector4(renderTexture.texelSize.x, renderTexture.texelSize.y, -renderTexture.texelSize.x, -renderTexture.texelSize.y));
-          Graphics.Blit((Texture) renderTexture, temporary, this.blurMaterial, 1);
+          blurMaterial.SetVector("_Parameter", new Vector4(renderTexture.texelSize.x, renderTexture.texelSize.y, -renderTexture.texelSize.x, -renderTexture.texelSize.y));
+          Graphics.Blit((Texture) renderTexture, temporary, blurMaterial, 1);
           if ((Object) renderTexture != (Object) source)
             RenderTexture.ReleaseTemporary(renderTexture);
           renderTexture = temporary;
         }
         if (num > 1)
         {
-          this.blurMaterial.SetVector("_Parameter", new Vector4(renderTexture.texelSize.x, renderTexture.texelSize.y, -renderTexture.texelSize.x, -renderTexture.texelSize.y));
-          Graphics.Blit((Texture) renderTexture, dest, this.blurMaterial, 1);
+          blurMaterial.SetVector("_Parameter", new Vector4(renderTexture.texelSize.x, renderTexture.texelSize.y, -renderTexture.texelSize.x, -renderTexture.texelSize.y));
+          Graphics.Blit((Texture) renderTexture, dest, blurMaterial, 1);
         }
         else
           Graphics.Blit((Texture) renderTexture, dest);
@@ -225,69 +223,69 @@ namespace Rain
 
     private void OnDisable()
     {
-      if ((bool) (Object) this.blurMaterial)
+      if ((bool) (Object) blurMaterial)
       {
-        Object.Destroy((Object) this.blurMaterial);
-        this.blurMaterial = (Material) null;
+        Object.Destroy((Object) blurMaterial);
+        blurMaterial = (Material) null;
       }
-      --BlurBehind.count;
-      if (BlurBehind.count != 0 || !(bool) (Object) BlurBehind.storedTexture)
+      --count;
+      if (count != 0 || !(bool) (Object) storedTexture)
         return;
-      BlurBehind.storedTexture.Release();
-      Object.Destroy((Object) BlurBehind.storedTexture);
-      BlurBehind.storedTexture = (RenderTexture) null;
+      storedTexture.Release();
+      Object.Destroy((Object) storedTexture);
+      storedTexture = (RenderTexture) null;
       Shader.SetGlobalTexture("_BlurBehindTex", (Texture) null);
       Shader.DisableKeyword("BLUR_BEHIND_SET");
     }
 
-    private void OnEnable() => ++BlurBehind.count;
+    private void OnEnable() => ++count;
 
-    private void OnPreRender() => BlurBehind.SetViewport();
+    private void OnPreRender() => SetViewport();
 
     private void OnRenderImage(RenderTexture source, RenderTexture destination)
     {
-      if (!this.CheckSupport() || !this.CheckResources())
+      if (!CheckSupport() || !CheckResources())
       {
         this.enabled = false;
         Graphics.Blit((Texture) source, destination);
       }
       else
       {
-        RenderTexture renderTexture = this.CropSource(source);
+        RenderTexture renderTexture = CropSource(source);
         int sourceSize = renderTexture.width > renderTexture.height ? renderTexture.width : renderTexture.height;
-        this.CheckSettings(sourceSize);
+        CheckSettings(sourceSize);
         int width;
         int height;
-        this.SetOutputSize(source, renderTexture, out width, out height);
-        this.CheckOutput(width, height, renderTexture.format);
-        this.Downsample(renderTexture, BlurBehind.storedTexture);
+        SetOutputSize(source, renderTexture, out width, out height);
+        CheckOutput(width, height, renderTexture.format);
+        Downsample(renderTexture, storedTexture);
         if ((Object) renderTexture != (Object) source)
           RenderTexture.ReleaseTemporary(renderTexture);
-        if (this.iterations > 0 && (double) this.radius > 0.0)
+        if (iterations > 0 && radius > 0.0)
         {
           RenderTexture temporary = RenderTexture.GetTemporary(width, height, 0, renderTexture.format);
           temporary.filterMode = FilterMode.Bilinear;
-          for (int p = 0; p < this.iterations; ++p)
+          for (int p = 0; p < iterations; ++p)
           {
-            float num = this.radius / 300f * Mathf.Pow(3f, (float) p) / Mathf.Pow(3f, (float) (this.iterations - 1));
-            if (this.mode == BlurBehind.Mode.Absolute)
-              num *= 100f / (float) sourceSize;
+            float num = radius / 300f * Mathf.Pow(3f, (float) p) / Mathf.Pow(3f, (float) (iterations - 1));
+            if (mode == Mode.Absolute)
+              num *= 100f / sourceSize;
             else if ((Object) renderTexture != (Object) source)
-              num *= (source.width > source.height ? (float) source.width : (float) source.height) / (float) sourceSize;
-            float f = (float) p * 0.7853982f / (float) this.iterations;
+              num *= (source.width > source.height ? (float) source.width : (float) source.height) / sourceSize;
+            float f = p * 0.7853982f / iterations;
             Vector2 vector2_1 = new Vector2(Mathf.Sin(f), Mathf.Cos(f)) * num;
-            Vector2 vector2_2 = width > height ? new Vector2(1f, 1f / (float) height * (float) width) : new Vector2(1f / (float) width * (float) height, 1f);
+            Vector2 vector2_2 = width > height ? new Vector2(1f, 1f / height * width) : new Vector2(1f / width * height, 1f);
             Vector4 vector4 = new Vector4(vector2_1.x * vector2_2.x, vector2_1.y * vector2_2.y, 0.0f, 0.0f);
             vector4.z = -vector4.x;
             vector4.w = -vector4.y;
-            this.blurMaterial.SetVector("_Parameter", vector4);
-            Graphics.Blit((Texture) BlurBehind.storedTexture, temporary, this.blurMaterial, 0);
-            BlurBehind.storedTexture.DiscardContents();
+            blurMaterial.SetVector("_Parameter", vector4);
+            Graphics.Blit((Texture) storedTexture, temporary, blurMaterial, 0);
+            storedTexture.DiscardContents();
             vector4 = new Vector4(vector2_1.y * vector2_2.x, -vector2_1.x * vector2_2.y, 0.0f, 0.0f);
             vector4.z = -vector4.x;
             vector4.w = -vector4.y;
-            this.blurMaterial.SetVector("_Parameter", vector4);
-            Graphics.Blit((Texture) temporary, BlurBehind.storedTexture, this.blurMaterial, 0);
+            blurMaterial.SetVector("_Parameter", vector4);
+            Graphics.Blit((Texture) temporary, storedTexture, blurMaterial, 0);
             temporary.DiscardContents();
           }
           RenderTexture.ReleaseTemporary(temporary);
@@ -302,7 +300,7 @@ namespace Rain
       out int width,
       out int height)
     {
-      float num = this.mode != BlurBehind.Mode.Absolute ? (source.width <= source.height ? ((double) source.height <= (double) this.downsample ? 1f : this.downsample / (float) source.height) : ((double) source.width <= (double) this.downsample ? 1f : this.downsample / (float) source.width)) : 1f / this.downsample;
+      float num = mode != Mode.Absolute ? (source.width <= source.height ? ((double) source.height <= downsample ? 1f : downsample / (float) source.height) : ((double) source.width <= downsample ? 1f : downsample / (float) source.width)) : 1f / downsample;
       width = Mathf.RoundToInt((float) croppedSource.width * num);
       height = Mathf.RoundToInt((float) croppedSource.height * num);
       if (width < 1)

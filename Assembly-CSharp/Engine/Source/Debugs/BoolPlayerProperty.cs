@@ -1,6 +1,6 @@
-﻿using Engine.Source.Settings;
-using System;
+﻿using System;
 using System.Linq.Expressions;
+using Engine.Source.Settings;
 
 namespace Engine.Source.Debugs
 {
@@ -14,7 +14,7 @@ namespace Engine.Source.Debugs
     {
       this.name = name;
       this.defaultValue = defaultValue;
-      this.value = PlayerSettings.Instance.GetBool(name, defaultValue);
+      value = PlayerSettings.Instance.GetBool(name, defaultValue);
     }
 
     public static BoolPlayerProperty Create<T>(
@@ -28,19 +28,19 @@ namespace Engine.Source.Debugs
 
     public bool Value
     {
-      get => this.value;
+      get => value;
       set
       {
         this.value = value;
-        PlayerSettings.Instance.SetBool(this.name, value);
+        PlayerSettings.Instance.SetBool(name, value);
         PlayerSettings.Instance.Save();
       }
     }
 
     public static implicit operator bool(BoolPlayerProperty property) => property.value;
 
-    public override string ToString() => this.value.ToString();
+    public override string ToString() => value.ToString();
 
-    public override int GetHashCode() => this.value.GetHashCode();
+    public override int GetHashCode() => value.GetHashCode();
   }
 }

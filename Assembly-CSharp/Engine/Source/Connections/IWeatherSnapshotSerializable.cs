@@ -1,8 +1,7 @@
-﻿using Cofe.Serializations.Converters;
-using Engine.Common.Weather;
-using System;
+﻿using System;
 using System.IO;
-using UnityEngine;
+using Cofe.Serializations.Converters;
+using Engine.Common.Weather;
 
 namespace Engine.Source.Connections
 {
@@ -14,19 +13,19 @@ namespace Engine.Source.Connections
 
     public Guid Id
     {
-      get => DefaultConverter.ParseGuid(this.id);
-      set => this.id = value != Guid.Empty ? value.ToString() : "";
+      get => DefaultConverter.ParseGuid(id);
+      set => id = value != Guid.Empty ? value.ToString() : "";
     }
 
-    public System.Type Type => typeof (IWeatherSnapshot);
+    public Type Type => typeof (IWeatherSnapshot);
 
     public IWeatherSnapshot Value
     {
-      get => TemplateUtility.GetTemplate<IWeatherSnapshot>(this.Id);
-      set => this.Id = value != null ? value.Id : Guid.Empty;
+      get => TemplateUtility.GetTemplate<IWeatherSnapshot>(Id);
+      set => Id = value != null ? value.Id : Guid.Empty;
     }
 
-    public override int GetHashCode() => string.IsNullOrEmpty(this.id) ? 0 : this.id.GetHashCode();
+    public override int GetHashCode() => string.IsNullOrEmpty(id) ? 0 : id.GetHashCode();
 
     public override bool Equals(object a)
     {
@@ -45,7 +44,7 @@ namespace Engine.Source.Connections
 
     public override string ToString()
     {
-      IWeatherSnapshot weatherSnapshot = this.Value;
+      IWeatherSnapshot weatherSnapshot = Value;
       return weatherSnapshot != null ? Path.GetFileNameWithoutExtension(weatherSnapshot.Source) : "";
     }
   }

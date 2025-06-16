@@ -1,9 +1,9 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons.Cloneable;
 using Engine.Common.Commons.Converters;
 using Engine.Source.Commons.Abilities.Projectiles;
-using System;
 
 namespace Engine.Source.Proxies
 {
@@ -18,23 +18,23 @@ namespace Engine.Source.Proxies
     public object Clone()
     {
       NPCShotAbilityProjectile_Generated instance = Activator.CreateInstance<NPCShotAbilityProjectile_Generated>();
-      this.CopyTo((object) instance);
-      return (object) instance;
+      CopyTo(instance);
+      return instance;
     }
 
     public void CopyTo(object target2)
     {
-      ((NPCShotAbilityProjectile) target2).blocked = this.blocked;
+      ((NPCShotAbilityProjectile) target2).blocked = blocked;
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.WriteEnum<BlockTypeEnum>(writer, "Blocked", this.blocked);
+      DefaultDataWriteUtility.WriteEnum(writer, "Blocked", blocked);
     }
 
     public void DataRead(IDataReader reader, Type type)
     {
-      this.blocked = DefaultDataReadUtility.ReadEnum<BlockTypeEnum>(reader, "Blocked");
+      blocked = DefaultDataReadUtility.ReadEnum<BlockTypeEnum>(reader, "Blocked");
     }
   }
 }

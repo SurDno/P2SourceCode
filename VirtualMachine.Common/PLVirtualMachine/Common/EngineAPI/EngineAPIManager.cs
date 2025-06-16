@@ -1,4 +1,8 @@
-﻿using Cofe.Loggers;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Reflection;
+using Cofe.Loggers;
 using Engine.Common;
 using Engine.Common.Binders;
 using Engine.Common.Components.Movable;
@@ -8,10 +12,6 @@ using Engine.Common.Types;
 using PLVirtualMachine.Common.EngineAPI.VMECS;
 using PLVirtualMachine.Common.EngineAPI.VMECS.VMAttributes;
 using PLVirtualMachine.Common.VMSpecialAttributes;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Reflection;
 
 namespace PLVirtualMachine.Common.EngineAPI
 {
@@ -23,41 +23,41 @@ namespace PLVirtualMachine.Common.EngineAPI
     protected static Dictionary<string, Type> componentTypesDict = new Dictionary<string, Type>();
     protected static Dictionary<Type, string> componentNamesByTypeDict = new Dictionary<Type, string>();
     protected static Dictionary<string, string> functionalDependencyDict = new Dictionary<string, string>();
-    protected static Dictionary<TypeEnumKey, string> specMethodInfoDict = new Dictionary<TypeEnumKey, string>((IEqualityComparer<TypeEnumKey>) TypeEnumKeyEqualityComparer.Instance);
-    protected static Dictionary<TypeEnumKey, string> specPropertyInfoDict = new Dictionary<TypeEnumKey, string>((IEqualityComparer<TypeEnumKey>) TypeEnumKeyEqualityComparer.Instance);
-    protected static Dictionary<TypeEnumKey, string> specEventInfoDict = new Dictionary<TypeEnumKey, string>((IEqualityComparer<TypeEnumKey>) TypeEnumKeyEqualityComparer.Instance);
-    private static bool isObjectCreationExtraDebugInfoMode = false;
+    protected static Dictionary<TypeEnumKey, string> specMethodInfoDict = new Dictionary<TypeEnumKey, string>(TypeEnumKeyEqualityComparer.Instance);
+    protected static Dictionary<TypeEnumKey, string> specPropertyInfoDict = new Dictionary<TypeEnumKey, string>(TypeEnumKeyEqualityComparer.Instance);
+    protected static Dictionary<TypeEnumKey, string> specEventInfoDict = new Dictionary<TypeEnumKey, string>(TypeEnumKeyEqualityComparer.Instance);
+    private static bool isObjectCreationExtraDebugInfoMode;
 
     public static void Init()
     {
-      EngineAPIManager.componentTypesDict.Clear();
-      EngineAPIManager.componentNamesByTypeDict.Clear();
-      EngineAPIManager.LoadEngineAPIComponents();
-      EngineAPIManager.RegistrObjectDefaultComponent(EObjectCategory.OBJECT_CATEGORY_GAME, "Common");
-      EngineAPIManager.RegistrObjectDefaultComponent(EObjectCategory.OBJECT_CATEGORY_GAME, "Support");
-      EngineAPIManager.RegistrObjectDefaultComponent(EObjectCategory.OBJECT_CATEGORY_GAME, "Weather");
-      EngineAPIManager.RegistrObjectDefaultComponent(EObjectCategory.OBJECT_CATEGORY_GAME, "GlobalMarketManager");
-      EngineAPIManager.RegistrObjectDefaultComponent(EObjectCategory.OBJECT_CATEGORY_GAME, "GlobalStorageManager");
-      EngineAPIManager.RegistrObjectDefaultComponent(EObjectCategory.OBJECT_CATEGORY_GAME, "GlobalDoorsManager");
-      EngineAPIManager.RegistrObjectDefaultComponent(EObjectCategory.OBJECT_CATEGORY_GAME, "GameComponent");
-      EngineAPIManager.RegistrObjectDefaultComponent(EObjectCategory.OBJECT_CATEGORY_QUEST, "Common");
-      EngineAPIManager.RegistrObjectDefaultComponent(EObjectCategory.OBJECT_CATEGORY_QUEST, "QuestComponent");
-      EngineAPIManager.RegistrObjectDefaultComponent(EObjectCategory.OBJECT_CATEGORY_CHARACTER, "Common");
-      EngineAPIManager.RegistrObjectDefaultComponent(EObjectCategory.OBJECT_CATEGORY_CHARACTER, "Model");
-      EngineAPIManager.RegistrObjectDefaultComponent(EObjectCategory.OBJECT_CATEGORY_CHARACTER, "BehaviorComponent");
-      EngineAPIManager.RegistrObjectDefaultComponent(EObjectCategory.OBJECT_CATEGORY_CHARACTER, "Position");
-      EngineAPIManager.RegistrObjectDefaultComponent(EObjectCategory.OBJECT_CATEGORY_CHARACTER, "Interactive");
-      EngineAPIManager.RegistrObjectDefaultComponent(EObjectCategory.OBJECT_CATEGORY_CHARACTER, "Detector");
-      EngineAPIManager.RegistrObjectDefaultComponent(EObjectCategory.OBJECT_CATEGORY_CHARACTER, "Detectable");
-      EngineAPIManager.RegistrObjectDefaultComponent(EObjectCategory.OBJECT_CATEGORY_CHARACTER, "Speaking");
-      EngineAPIManager.RegistrObjectDefaultComponent(EObjectCategory.OBJECT_CATEGORY_ITEM, "Common");
-      EngineAPIManager.RegistrObjectDefaultComponent(EObjectCategory.OBJECT_CATEGORY_ITEM, "Model");
-      EngineAPIManager.RegistrObjectDefaultComponent(EObjectCategory.OBJECT_CATEGORY_ITEM, "Storable");
-      EngineAPIManager.RegistrObjectDefaultComponent(EObjectCategory.OBJECT_CATEGORY_GEOM, "Common");
-      EngineAPIManager.RegistrObjectDefaultComponent(EObjectCategory.OBJECT_CATEGORY_GEOM, "Milestone");
-      EngineAPIManager.RegistrObjectDefaultComponent(EObjectCategory.OBJECT_CATEGORY_GEOM, "Position");
-      EngineAPIManager.RegistrObjectDefaultComponent(EObjectCategory.OBJECT_CATEGORY_OTHERS, "Common");
-      EngineAPIManager.RegistrObjectDefaultComponent(EObjectCategory.OBJECT_CATEGORY_OTHERS, "Storable");
+      componentTypesDict.Clear();
+      componentNamesByTypeDict.Clear();
+      LoadEngineAPIComponents();
+      RegistrObjectDefaultComponent(EObjectCategory.OBJECT_CATEGORY_GAME, "Common");
+      RegistrObjectDefaultComponent(EObjectCategory.OBJECT_CATEGORY_GAME, "Support");
+      RegistrObjectDefaultComponent(EObjectCategory.OBJECT_CATEGORY_GAME, "Weather");
+      RegistrObjectDefaultComponent(EObjectCategory.OBJECT_CATEGORY_GAME, "GlobalMarketManager");
+      RegistrObjectDefaultComponent(EObjectCategory.OBJECT_CATEGORY_GAME, "GlobalStorageManager");
+      RegistrObjectDefaultComponent(EObjectCategory.OBJECT_CATEGORY_GAME, "GlobalDoorsManager");
+      RegistrObjectDefaultComponent(EObjectCategory.OBJECT_CATEGORY_GAME, "GameComponent");
+      RegistrObjectDefaultComponent(EObjectCategory.OBJECT_CATEGORY_QUEST, "Common");
+      RegistrObjectDefaultComponent(EObjectCategory.OBJECT_CATEGORY_QUEST, "QuestComponent");
+      RegistrObjectDefaultComponent(EObjectCategory.OBJECT_CATEGORY_CHARACTER, "Common");
+      RegistrObjectDefaultComponent(EObjectCategory.OBJECT_CATEGORY_CHARACTER, "Model");
+      RegistrObjectDefaultComponent(EObjectCategory.OBJECT_CATEGORY_CHARACTER, "BehaviorComponent");
+      RegistrObjectDefaultComponent(EObjectCategory.OBJECT_CATEGORY_CHARACTER, "Position");
+      RegistrObjectDefaultComponent(EObjectCategory.OBJECT_CATEGORY_CHARACTER, "Interactive");
+      RegistrObjectDefaultComponent(EObjectCategory.OBJECT_CATEGORY_CHARACTER, "Detector");
+      RegistrObjectDefaultComponent(EObjectCategory.OBJECT_CATEGORY_CHARACTER, "Detectable");
+      RegistrObjectDefaultComponent(EObjectCategory.OBJECT_CATEGORY_CHARACTER, "Speaking");
+      RegistrObjectDefaultComponent(EObjectCategory.OBJECT_CATEGORY_ITEM, "Common");
+      RegistrObjectDefaultComponent(EObjectCategory.OBJECT_CATEGORY_ITEM, "Model");
+      RegistrObjectDefaultComponent(EObjectCategory.OBJECT_CATEGORY_ITEM, "Storable");
+      RegistrObjectDefaultComponent(EObjectCategory.OBJECT_CATEGORY_GEOM, "Common");
+      RegistrObjectDefaultComponent(EObjectCategory.OBJECT_CATEGORY_GEOM, "Milestone");
+      RegistrObjectDefaultComponent(EObjectCategory.OBJECT_CATEGORY_GEOM, "Position");
+      RegistrObjectDefaultComponent(EObjectCategory.OBJECT_CATEGORY_OTHERS, "Common");
+      RegistrObjectDefaultComponent(EObjectCategory.OBJECT_CATEGORY_OTHERS, "Storable");
     }
 
     public static EngineAPIManager Instance { get; protected set; }
@@ -69,7 +69,7 @@ namespace PLVirtualMachine.Common.EngineAPI
       VMBaseEntity parentEntity,
       IEntity parentInstance)
     {
-      return (VMBaseEntity) null;
+      return null;
     }
 
     public virtual VMBaseEntity CreateWorldTemplateDynamicChildInstance(
@@ -77,7 +77,7 @@ namespace PLVirtualMachine.Common.EngineAPI
       IEntity instance,
       bool bOnSaveLoad = false)
     {
-      return (VMBaseEntity) null;
+      return null;
     }
 
     public virtual void InstantiateObject(
@@ -91,21 +91,21 @@ namespace PLVirtualMachine.Common.EngineAPI
     {
     }
 
-    public virtual IBlueprint GetEditorTemplateByEngineGuid(Guid guid) => (IBlueprint) null;
+    public virtual IBlueprint GetEditorTemplateByEngineGuid(Guid guid) => null;
 
     public static ComponentInfo GetFunctionalComponentByName(string componentName)
     {
       ComponentInfo functionalComponentByName;
-      if (EngineAPIManager.componentsInfoDict.TryGetValue(componentName, out functionalComponentByName))
+      if (componentsInfoDict.TryGetValue(componentName, out functionalComponentByName))
         return functionalComponentByName;
-      Logger.AddError(string.Format("Functional component with name {0} not found at {1}", (object) componentName, (object) EngineAPIManager.Instance.CurrentFSMStateInfo));
-      return (ComponentInfo) null;
+      Logger.AddError(string.Format("Functional component with name {0} not found at {1}", componentName, Instance.CurrentFSMStateInfo));
+      return null;
     }
 
     public static APIEventInfo GetAPIEventInfoByName(string componentName, string sEventName)
     {
       ComponentInfo componentInfo;
-      if (EngineAPIManager.componentsInfoDict.TryGetValue(componentName, out componentInfo))
+      if (componentsInfoDict.TryGetValue(componentName, out componentInfo))
       {
         for (int index = 0; index < componentInfo.Events.Count; ++index)
         {
@@ -113,7 +113,7 @@ namespace PLVirtualMachine.Common.EngineAPI
             return componentInfo.Events[index];
         }
       }
-      return (APIEventInfo) null;
+      return null;
     }
 
     public static VMType GetEditorTypeByEngType(Type engType, string specTypeName, bool isTemplate)
@@ -144,8 +144,8 @@ namespace PLVirtualMachine.Common.EngineAPI
       Type ownerClassType,
       bool bWithComponent = false)
     {
-      string specialFunctionInfo = EngineAPIManager.GetSpecialFunctionInfo(specFuncName, ownerClassType);
-      return bWithComponent ? EngineAPIManager.GetComponentNameByType(ownerClassType) + "." + specialFunctionInfo : specialFunctionInfo;
+      string specialFunctionInfo = GetSpecialFunctionInfo(specFuncName, ownerClassType);
+      return bWithComponent ? GetComponentNameByType(ownerClassType) + "." + specialFunctionInfo : specialFunctionInfo;
     }
 
     public static string GetSpecialPropertyName(
@@ -153,8 +153,8 @@ namespace PLVirtualMachine.Common.EngineAPI
       Type ownerClassType,
       bool bWithComponent = false)
     {
-      string specialPropertyInfo = EngineAPIManager.GetSpecialPropertyInfo(specPropertyName, ownerClassType);
-      return bWithComponent ? EngineAPIManager.GetComponentNameByType(ownerClassType) + "." + specialPropertyInfo : specialPropertyInfo;
+      string specialPropertyInfo = GetSpecialPropertyInfo(specPropertyName, ownerClassType);
+      return bWithComponent ? GetComponentNameByType(ownerClassType) + "." + specialPropertyInfo : specialPropertyInfo;
     }
 
     public static string GetSpecialEventName(
@@ -162,21 +162,20 @@ namespace PLVirtualMachine.Common.EngineAPI
       Type ownerClassType,
       bool bWithComponent = false)
     {
-      string specialEventInfo = EngineAPIManager.GetSpecialEventInfo(specEventName, ownerClassType);
-      return bWithComponent ? EngineAPIManager.GetComponentNameByType(ownerClassType) + "." + specialEventInfo : specialEventInfo;
+      string specialEventInfo = GetSpecialEventInfo(specEventName, ownerClassType);
+      return bWithComponent ? GetComponentNameByType(ownerClassType) + "." + specialEventInfo : specialEventInfo;
     }
 
     public static string GetSpecialFunctionInfo(
       ESpecialFunctionName specFuncName,
       Type ownerClassType)
     {
-      TypeEnumKey key = new TypeEnumKey()
-      {
+      TypeEnumKey key = new TypeEnumKey {
         Type = ownerClassType,
         Int = (int) specFuncName
       };
       string specialFunctionInfo;
-      if (EngineAPIManager.specMethodInfoDict.TryGetValue(key, out specialFunctionInfo))
+      if (specMethodInfoDict.TryGetValue(key, out specialFunctionInfo))
         return specialFunctionInfo;
       MethodInfo[] methods = ownerClassType.GetMethods();
       for (int index = 0; index < methods.Length; ++index)
@@ -186,26 +185,25 @@ namespace PLVirtualMachine.Common.EngineAPI
           if (customAttribute.Name == specFuncName)
           {
             string name = methods[index].Name;
-            EngineAPIManager.specMethodInfoDict.Add(key, name);
+            specMethodInfoDict.Add(key, name);
             return name;
           }
         }
       }
-      Logger.AddError(string.Format("No special method info found for special function name {0} for class type {1}", (object) specFuncName, (object) ownerClassType));
-      return (string) null;
+      Logger.AddError(string.Format("No special method info found for special function name {0} for class type {1}", specFuncName, ownerClassType));
+      return null;
     }
 
     public static string GetSpecialPropertyInfo(
       ESpecialPropertyName specPropertyName,
       Type ownerClassType)
     {
-      TypeEnumKey key = new TypeEnumKey()
-      {
+      TypeEnumKey key = new TypeEnumKey {
         Type = ownerClassType,
         Int = (int) specPropertyName
       };
       string specialPropertyInfo;
-      if (EngineAPIManager.specPropertyInfoDict.TryGetValue(key, out specialPropertyInfo))
+      if (specPropertyInfoDict.TryGetValue(key, out specialPropertyInfo))
         return specialPropertyInfo;
       PropertyInfo[] properties = ownerClassType.GetProperties();
       for (int index = 0; index < properties.Length; ++index)
@@ -215,71 +213,70 @@ namespace PLVirtualMachine.Common.EngineAPI
           if (customAttribute.Name == specPropertyName)
           {
             string name = properties[index].Name;
-            EngineAPIManager.specPropertyInfoDict.Add(key, name);
+            specPropertyInfoDict.Add(key, name);
             return name;
           }
         }
       }
-      Logger.AddError(string.Format("No special property info found for special property name {0} for class type {1}", (object) specPropertyName, (object) ownerClassType));
-      return (string) null;
+      Logger.AddError(string.Format("No special property info found for special property name {0} for class type {1}", specPropertyName, ownerClassType));
+      return null;
     }
 
     public static string GetSpecialEventInfo(ESpecialEventName specEventName, Type ownerClassType)
     {
-      TypeEnumKey key = new TypeEnumKey()
-      {
+      TypeEnumKey key = new TypeEnumKey {
         Type = ownerClassType,
         Int = (int) specEventName
       };
       string specialEventInfo;
-      if (EngineAPIManager.specEventInfoDict.TryGetValue(key, out specialEventInfo))
+      if (specEventInfoDict.TryGetValue(key, out specialEventInfo))
         return specialEventInfo;
       System.Reflection.EventInfo[] events = ownerClassType.GetEvents();
       for (int index = 0; index < events.Length; ++index)
       {
-        SpecialEventAttribute specialEventAttribute = EngineAPIManager.GetSpecialEventAttribute(events[index]);
+        SpecialEventAttribute specialEventAttribute = GetSpecialEventAttribute(events[index]);
         if (specialEventAttribute != null && specialEventAttribute.Name == specEventName)
         {
           string name = events[index].Name;
-          EngineAPIManager.specEventInfoDict.Add(key, name);
+          specEventInfoDict.Add(key, name);
           return name;
         }
       }
-      Logger.AddError(string.Format("No special event info found for special event name {0} for class type {1}", (object) specEventName, (object) ownerClassType));
-      return (string) null;
+      Logger.AddError(string.Format("No special event info found for special event name {0} for class type {1}", specEventName, ownerClassType));
+      return null;
     }
 
     private static SpecialEventAttribute GetSpecialEventAttribute(System.Reflection.EventInfo evntInfo)
     {
       object[] customAttributes = evntInfo.GetCustomAttributes(typeof (SpecialEventAttribute), true);
-      return customAttributes.Length != 0 ? (SpecialEventAttribute) customAttributes[0] : (SpecialEventAttribute) null;
+      return customAttributes.Length != 0 ? (SpecialEventAttribute) customAttributes[0] : null;
     }
 
     public static VMComponent GetObjectComponentByType(
       VMBaseEntity targetObj,
       Type baseComponentType)
     {
-      if (targetObj == null || baseComponentType == (Type) null)
-        return (VMComponent) null;
+      if (targetObj == null || baseComponentType == null)
+        return null;
       foreach (VMComponent component in targetObj.Components)
       {
         if (baseComponentType.IsAssignableFrom(component.GetType()))
           return component;
       }
-      return (VMComponent) null;
+      return null;
     }
 
     public static Type GetComponentTypeByName(string componentName)
     {
       Type componentTypeByName;
-      EngineAPIManager.componentTypesDict.TryGetValue(componentName, out componentTypeByName);
+      componentTypesDict.TryGetValue(componentName, out componentTypeByName);
       return componentTypeByName;
     }
 
     public static string GetComponentNameByType(Type type)
     {
       string str;
-      return EngineAPIManager.componentNamesByTypeDict.TryGetValue(type, out str) ? str : "";
+      return componentNamesByTypeDict.TryGetValue(type, out str) ? str : "";
     }
 
     public static Type GetObjectTypeByName(string typeName)
@@ -287,8 +284,8 @@ namespace PLVirtualMachine.Common.EngineAPI
       Type result;
       if (VMTypeAttribute.TryGetValue(typeName, out result) || SampleAttribute.TryGetValue(typeName, out result) || EnumTypeAttribute.TryGetValue(typeName, out result))
         return result;
-      Logger.AddError("Cannot get object Type for typename " + typeName + " from ECS at " + EngineAPIManager.Instance.CurrentFSMStateInfo);
-      return (Type) null;
+      Logger.AddError("Cannot get object Type for typename " + typeName + " from ECS at " + Instance.CurrentFSMStateInfo);
+      return null;
     }
 
     public static string GetObjectTypeNameByType(Type type)
@@ -306,9 +303,9 @@ namespace PLVirtualMachine.Common.EngineAPI
       string functionalName,
       EContextVariableCategory varCategory)
     {
-      if (EngineAPIManager.componentsAbstractVarsDict.ContainsKey(functionalName))
+      if (componentsAbstractVarsDict.ContainsKey(functionalName))
       {
-        foreach (IVariable variable in EngineAPIManager.GetAbstractVariablesByRegisteredFunctionalName(functionalName, varCategory))
+        foreach (IVariable variable in GetAbstractVariablesByRegisteredFunctionalName(functionalName, varCategory))
           yield return variable;
       }
       else
@@ -316,15 +313,15 @@ namespace PLVirtualMachine.Common.EngineAPI
         if (functionalName.StartsWith("I"))
         {
           functionalName = functionalName.Substring("I".Length);
-          if (EngineAPIManager.componentsAbstractVarsDict.ContainsKey(functionalName))
+          if (componentsAbstractVarsDict.ContainsKey(functionalName))
           {
-            foreach (IVariable variable in EngineAPIManager.GetAbstractVariablesByRegisteredFunctionalName(functionalName, varCategory))
+            foreach (IVariable variable in GetAbstractVariablesByRegisteredFunctionalName(functionalName, varCategory))
               yield return variable;
           }
           else
-            Logger.AddError(string.Format("Functional with name {0} not found in engine api at {1}", (object) functionalName, (object) EngineAPIManager.Instance.CurrentFSMStateInfo));
+            Logger.AddError(string.Format("Functional with name {0} not found in engine api at {1}", functionalName, Instance.CurrentFSMStateInfo));
         }
-        Logger.AddError(string.Format("Functional with name {0} not found in engine api at {1}", (object) functionalName, (object) EngineAPIManager.Instance.CurrentFSMStateInfo));
+        Logger.AddError(string.Format("Functional with name {0} not found in engine api at {1}", functionalName, Instance.CurrentFSMStateInfo));
       }
     }
 
@@ -332,22 +329,22 @@ namespace PLVirtualMachine.Common.EngineAPI
       string functionalName,
       List<VMType> functionParamList)
     {
-      IEnumerable<IVariable> variables = (IEnumerable<IVariable>) null;
-      if (EngineAPIManager.componentsAbstractVarsDict.ContainsKey(functionalName))
+      IEnumerable<IVariable> variables = null;
+      if (componentsAbstractVarsDict.ContainsKey(functionalName))
       {
-        variables = EngineAPIManager.GetAbstractVariablesByRegisteredFunctionalName(functionalName, EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_APIFUNCTION);
+        variables = GetAbstractVariablesByRegisteredFunctionalName(functionalName, EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_APIFUNCTION);
       }
       else
       {
         if (functionalName.StartsWith("I"))
         {
           functionalName = functionalName.Substring("I".Length);
-          if (EngineAPIManager.componentsAbstractVarsDict.ContainsKey(functionalName))
-            variables = EngineAPIManager.GetAbstractVariablesByRegisteredFunctionalName(functionalName, EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_APIFUNCTION);
+          if (componentsAbstractVarsDict.ContainsKey(functionalName))
+            variables = GetAbstractVariablesByRegisteredFunctionalName(functionalName, EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_APIFUNCTION);
           else
-            Logger.AddError(string.Format("Functional with name {0} not found in engine api at {1}", (object) functionalName, (object) EngineAPIManager.Instance.CurrentFSMStateInfo));
+            Logger.AddError(string.Format("Functional with name {0} not found in engine api at {1}", functionalName, Instance.CurrentFSMStateInfo));
         }
-        Logger.AddError(string.Format("Functional with name {0} not found in engine api at {1}", (object) functionalName, (object) EngineAPIManager.Instance.CurrentFSMStateInfo));
+        Logger.AddError(string.Format("Functional with name {0} not found in engine api at {1}", functionalName, Instance.CurrentFSMStateInfo));
       }
       if (variables != null)
       {
@@ -367,7 +364,7 @@ namespace PLVirtualMachine.Common.EngineAPI
                 flag = false;
             }
             if (flag)
-              yield return (IVariable) baseFunction;
+              yield return baseFunction;
           }
         }
       }
@@ -377,12 +374,12 @@ namespace PLVirtualMachine.Common.EngineAPI
     {
       if (enumValue == null)
       {
-        Logger.AddError(string.Format("Enum value not defined at {0}", (object) EngineAPIManager.Instance.CurrentFSMStateInfo));
+        Logger.AddError(string.Format("Enum value not defined at {0}", Instance.CurrentFSMStateInfo));
         return "";
       }
       if (!enumType.IsEnum)
       {
-        Logger.AddError(string.Format("Type {0} isn't enum type at {1}", (object) enumType, (object) EngineAPIManager.Instance.CurrentFSMStateInfo));
+        Logger.AddError(string.Format("Type {0} isn't enum type at {1}", enumType, Instance.CurrentFSMStateInfo));
         return "";
       }
       MemberInfo[] member = enumType.GetMember(enumValue.ToString());
@@ -414,7 +411,7 @@ namespace PLVirtualMachine.Common.EngineAPI
       string functionalName,
       EContextVariableCategory varCategory)
     {
-      Dictionary<EContextVariableCategory, List<IVariable>> abstractVariablesCategoryDict = EngineAPIManager.componentsAbstractVarsDict[functionalName];
+      Dictionary<EContextVariableCategory, List<IVariable>> abstractVariablesCategoryDict = componentsAbstractVarsDict[functionalName];
       if (abstractVariablesCategoryDict.ContainsKey(varCategory))
       {
         foreach (IVariable variable in abstractVariablesCategoryDict[varCategory])
@@ -435,36 +432,36 @@ namespace PLVirtualMachine.Common.EngineAPI
       foreach (ComponentReplectionInfo component in InfoAttribute.Components)
       {
         if (component.DependedComponentName != null && component.DependedComponentName != "")
-          EngineAPIManager.RegisterFunctionalDependency(component.Name, component.DependedComponentName);
+          RegisterFunctionalDependency(component.Name, component.DependedComponentName);
         ComponentInfo componentInfo = new ComponentInfo(component.Name);
-        EngineAPIManager.componentTypesDict.Add(component.Name, component.Type);
-        EngineAPIManager.componentNamesByTypeDict.Add(component.Type, component.Name);
-        List<APIMethodInfo> methods = EngineAPIManager.ComputeMethods(component);
+        componentTypesDict.Add(component.Name, component.Type);
+        componentNamesByTypeDict.Add(component.Type, component.Name);
+        List<APIMethodInfo> methods = ComputeMethods(component);
         componentInfo.Methods.Clear();
-        componentInfo.Methods.AddRange((IEnumerable<APIMethodInfo>) methods);
-        List<APIEventInfo> events = EngineAPIManager.ComputeEvents(component);
+        componentInfo.Methods.AddRange(methods);
+        List<APIEventInfo> events = ComputeEvents(component);
         componentInfo.Events.Clear();
-        componentInfo.Events.AddRange((IEnumerable<APIEventInfo>) events);
-        List<APIPropertyInfo> properties = EngineAPIManager.ComputeProperties(component);
+        componentInfo.Events.AddRange(events);
+        List<APIPropertyInfo> properties = ComputeProperties(component);
         componentInfo.Properties.Clear();
-        componentInfo.Properties.AddRange((IEnumerable<APIPropertyInfo>) properties);
-        EngineAPIManager.componentsInfoDict.Add(component.Name, componentInfo);
-        EngineAPIManager.componentsAbstractVarsDict.Add(component.Name, new Dictionary<EContextVariableCategory, List<IVariable>>());
-        EngineAPIManager.componentsAbstractVarsDict[component.Name].Add(EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_APIFUNCTION, EngineAPIManager.GetAbstractFunctionsList(component, componentInfo.Methods));
-        EngineAPIManager.componentsAbstractVarsDict[component.Name].Add(EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_PARAM, EngineAPIManager.GetAbstractParamsList(component, componentInfo.Properties));
+        componentInfo.Properties.AddRange(properties);
+        componentsInfoDict.Add(component.Name, componentInfo);
+        componentsAbstractVarsDict.Add(component.Name, new Dictionary<EContextVariableCategory, List<IVariable>>());
+        componentsAbstractVarsDict[component.Name].Add(EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_APIFUNCTION, GetAbstractFunctionsList(component, componentInfo.Methods));
+        componentsAbstractVarsDict[component.Name].Add(EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_PARAM, GetAbstractParamsList(component, componentInfo.Properties));
       }
     }
 
     private static List<APIPropertyInfo> ComputeProperties(ComponentReplectionInfo component)
     {
       List<APIPropertyInfo> properties = new List<APIPropertyInfo>();
-      foreach (KeyValuePair<string, PropertyInfo> property in (IEnumerable<KeyValuePair<string, PropertyInfo>>) component.Properties)
+      foreach (KeyValuePair<string, PropertyInfo> property in component.Properties)
       {
         PropertyInfo propertyInfo = property.Value;
-        PropertyAttribute propertyAttribInfo = EngineAPIManager.GetPropertyAttribInfo(component.Type, propertyInfo);
+        PropertyAttribute propertyAttribInfo = GetPropertyAttribInfo(component.Type, propertyInfo);
         if (propertyAttribInfo != null)
         {
-          VMType editorTypeByEngType = EngineAPIManager.GetEditorTypeByEngType(propertyInfo.PropertyType, propertyAttribInfo.SpecialTypeInfo, propertyInfo.IsDefined(typeof (TemplateAttribute), false));
+          VMType editorTypeByEngType = GetEditorTypeByEngType(propertyInfo.PropertyType, propertyAttribInfo.SpecialTypeInfo, propertyInfo.IsDefined(typeof (TemplateAttribute), false));
           APIPropertyInfo apiPropertyInfo = new APIPropertyInfo(propertyInfo, editorTypeByEngType);
           apiPropertyInfo.PropertyDefValue = propertyAttribInfo.DefValue;
           if (apiPropertyInfo.PropertyDefValue != null && apiPropertyInfo.PropertyType != null && apiPropertyInfo.PropertyDefValue.GetType() != apiPropertyInfo.PropertyType.BaseType)
@@ -478,10 +475,10 @@ namespace PLVirtualMachine.Common.EngineAPI
     private static List<APIEventInfo> ComputeEvents(ComponentReplectionInfo component)
     {
       List<APIEventInfo> events = new List<APIEventInfo>();
-      foreach (KeyValuePair<string, System.Reflection.EventInfo> keyValuePair in (IEnumerable<KeyValuePair<string, System.Reflection.EventInfo>>) component.Events)
+      foreach (KeyValuePair<string, System.Reflection.EventInfo> keyValuePair in component.Events)
       {
         System.Reflection.EventInfo reflEventInfo = keyValuePair.Value;
-        EventAttribute eventAttribInfo = EngineAPIManager.GetEventAttribInfo(component.Type, reflEventInfo);
+        EventAttribute eventAttribInfo = GetEventAttribInfo(component.Type, reflEventInfo);
         if (eventAttribInfo != null)
         {
           APIEventInfo apiEventInfo = new APIEventInfo(reflEventInfo.Name);
@@ -493,10 +490,10 @@ namespace PLVirtualMachine.Common.EngineAPI
             {
               string[] strArray1 = eventAttribInfo.InputTypesDesc.Split(',');
               if (strArray1.Length != genericArguments.Length)
-                Logger.AddError(string.Format("{0}: attribute event desc params count not corresponds to real params count", (object) apiEventInfo.EventName));
+                Logger.AddError(string.Format("{0}: attribute event desc params count not corresponds to real params count", apiEventInfo.EventName));
               for (int index = 0; index < genericArguments.Length; ++index)
               {
-                string name = "param_" + index.ToString();
+                string name = "param_" + index;
                 string specTypeName = "";
                 bool isTemplate = false;
                 if (index < strArray1.Length)
@@ -515,7 +512,7 @@ namespace PLVirtualMachine.Common.EngineAPI
                 }
                 try
                 {
-                  APIParamInfo apiParamInfo = new APIParamInfo(EngineAPIManager.GetEditorTypeByEngType(genericArguments[index], specTypeName, isTemplate), name);
+                  APIParamInfo apiParamInfo = new APIParamInfo(GetEditorTypeByEngType(genericArguments[index], specTypeName, isTemplate), name);
                   apiEventInfo.MessageParams.Add(apiParamInfo);
                 }
                 catch (Exception ex)
@@ -541,10 +538,10 @@ namespace PLVirtualMachine.Common.EngineAPI
             {
               string[] strArray3 = eventAttribInfo.InputTypesDesc.Split(',');
               if (strArray3.Length != parameterInfoList.Count)
-                Logger.AddError(string.Format("{0}: attribute event desc params count not corresponds to real params count", (object) apiEventInfo.EventName));
+                Logger.AddError(string.Format("{0}: attribute event desc params count not corresponds to real params count", apiEventInfo.EventName));
               for (int index = 0; index < parameterInfoList.Count; ++index)
               {
-                string name = "param_" + index.ToString();
+                string name = "param_" + index;
                 string specTypeName = "";
                 if (index < strArray3.Length)
                 {
@@ -557,7 +554,7 @@ namespace PLVirtualMachine.Common.EngineAPI
                 try
                 {
                   bool isTemplate = parameterInfoList[index].IsDefined(typeof (TemplateAttribute), false);
-                  APIParamInfo apiParamInfo = new APIParamInfo(EngineAPIManager.GetEditorTypeByEngType(parameterInfoList[index].ParameterType, specTypeName, isTemplate), name);
+                  APIParamInfo apiParamInfo = new APIParamInfo(GetEditorTypeByEngType(parameterInfoList[index].ParameterType, specTypeName, isTemplate), name);
                   apiEventInfo.MessageParams.Add(apiParamInfo);
                 }
                 catch (Exception ex)
@@ -576,21 +573,21 @@ namespace PLVirtualMachine.Common.EngineAPI
     private static List<APIMethodInfo> ComputeMethods(ComponentReplectionInfo component)
     {
       List<APIMethodInfo> methods = new List<APIMethodInfo>();
-      foreach (KeyValuePair<string, MethodInfo> method in (IEnumerable<KeyValuePair<string, MethodInfo>>) component.Methods)
+      foreach (KeyValuePair<string, MethodInfo> method in component.Methods)
       {
         string key = method.Key;
         MethodInfo reflMethodInfo = method.Value;
-        MethodAttribute methodAttribInfo = EngineAPIManager.GetMethodAttribInfo(component.Type, reflMethodInfo);
+        MethodAttribute methodAttribInfo = GetMethodAttribInfo(component.Type, reflMethodInfo);
         if (methodAttribInfo != null)
         {
           APIMethodInfo apiMethodInfo = new APIMethodInfo(key);
-          apiMethodInfo.ReturnParam = new APIParamInfo(EngineAPIManager.GetEditorTypeByEngType(reflMethodInfo.ReturnType, methodAttribInfo.OutputTypesSpecialInfo, false));
+          apiMethodInfo.ReturnParam = new APIParamInfo(GetEditorTypeByEngType(reflMethodInfo.ReturnType, methodAttribInfo.OutputTypesSpecialInfo, false));
           ParameterInfo[] parameters = reflMethodInfo.GetParameters();
-          string[] strArray1 = (string[]) null;
+          string[] strArray1 = null;
           if ("" != methodAttribInfo.InputTypesSpecialInfo)
             strArray1 = methodAttribInfo.InputTypesSpecialInfo.Split(',');
           if (strArray1 != null && strArray1.Length != parameters.Length)
-            Logger.AddError(string.Format("Method {0} attribute params types info length don't match params count", (object) apiMethodInfo.MethodName));
+            Logger.AddError(string.Format("Method {0} attribute params types info length don't match params count", apiMethodInfo.MethodName));
           for (int index = 0; index < parameters.Length; ++index)
           {
             string name = "";
@@ -603,7 +600,7 @@ namespace PLVirtualMachine.Common.EngineAPI
               if (strArray2.Length > 1)
                 specTypeName = strArray2[1];
             }
-            APIParamInfo apiParamInfo = new APIParamInfo(EngineAPIManager.GetEditorTypeByEngType(parameters[index].ParameterType, specTypeName, parameters[index].IsDefined(typeof (TemplateAttribute), false)), name);
+            APIParamInfo apiParamInfo = new APIParamInfo(GetEditorTypeByEngType(parameters[index].ParameterType, specTypeName, parameters[index].IsDefined(typeof (TemplateAttribute), false)), name);
             apiMethodInfo.InputParams.Add(apiParamInfo);
           }
           methods.Add(apiMethodInfo);
@@ -616,21 +613,21 @@ namespace PLVirtualMachine.Common.EngineAPI
       string functionalName,
       string sDependedFunctionalName)
     {
-      if (EngineAPIManager.functionalDependencyDict.ContainsKey(functionalName))
+      if (functionalDependencyDict.ContainsKey(functionalName))
         return;
-      EngineAPIManager.functionalDependencyDict.Add(functionalName, sDependedFunctionalName);
+      functionalDependencyDict.Add(functionalName, sDependedFunctionalName);
     }
 
     public static string GetDependedFunctional(string functionalName)
     {
       string str;
-      return EngineAPIManager.functionalDependencyDict.TryGetValue(functionalName, out str) ? str : "";
+      return functionalDependencyDict.TryGetValue(functionalName, out str) ? str : "";
     }
 
     public static bool ObjectCreationExtraDebugInfoMode
     {
-      get => EngineAPIManager.isObjectCreationExtraDebugInfoMode;
-      set => EngineAPIManager.isObjectCreationExtraDebugInfoMode = value;
+      get => isObjectCreationExtraDebugInfoMode;
+      set => isObjectCreationExtraDebugInfoMode = value;
     }
 
     private static List<IVariable> GetAbstractFunctionsList(
@@ -642,7 +639,7 @@ namespace PLVirtualMachine.Common.EngineAPI
       {
         BaseFunction baseFunction = new BaseFunction(methodList[index].MethodName, componentInfo.Name);
         baseFunction.InitParams(methodList[index].InputParams, methodList[index].ReturnParam);
-        abstractFunctionsList.Add((IVariable) baseFunction);
+        abstractFunctionsList.Add(baseFunction);
       }
       return abstractFunctionsList;
     }
@@ -661,7 +658,7 @@ namespace PLVirtualMachine.Common.EngineAPI
         VMType propertyType = propertiesList[index].PropertyType;
         object defValue = propertyDefValue;
         AbstractParameter abstractParameter = new AbstractParameter(propertyName, componentName, propertyType, defValue);
-        abstractParamsList.Add((IVariable) abstractParameter);
+        abstractParamsList.Add(abstractParameter);
       }
       return abstractParamsList;
     }
@@ -670,13 +667,13 @@ namespace PLVirtualMachine.Common.EngineAPI
       EObjectCategory objCategory,
       string engineComponentName)
     {
-      if (!EngineAPIManager.objectDefaultComponentsDict.ContainsKey(objCategory))
-        EngineAPIManager.objectDefaultComponentsDict.Add(objCategory, new List<ComponentInfo>());
-      ComponentInfo functionalComponentByName = EngineAPIManager.GetFunctionalComponentByName(engineComponentName);
+      if (!objectDefaultComponentsDict.ContainsKey(objCategory))
+        objectDefaultComponentsDict.Add(objCategory, new List<ComponentInfo>());
+      ComponentInfo functionalComponentByName = GetFunctionalComponentByName(engineComponentName);
       if (functionalComponentByName == null)
-        Logger.AddError(string.Format("Functional component with name {0} not found", (object) engineComponentName));
+        Logger.AddError(string.Format("Functional component with name {0} not found", engineComponentName));
       else
-        EngineAPIManager.objectDefaultComponentsDict[objCategory].Add(functionalComponentByName);
+        objectDefaultComponentsDict[objCategory].Add(functionalComponentByName);
     }
 
     private static MethodAttribute GetMethodAttribInfo(
@@ -684,13 +681,13 @@ namespace PLVirtualMachine.Common.EngineAPI
       MethodInfo reflMethodInfo)
     {
       object[] customAttributes = reflMethodInfo.GetCustomAttributes(typeof (MethodAttribute), true);
-      return customAttributes.Length != 0 ? (MethodAttribute) customAttributes[0] : (MethodAttribute) null;
+      return customAttributes.Length != 0 ? (MethodAttribute) customAttributes[0] : null;
     }
 
     private static EventAttribute GetEventAttribInfo(Type componentType, System.Reflection.EventInfo reflEventInfo)
     {
       object[] customAttributes = reflEventInfo.GetCustomAttributes(typeof (EventAttribute), true);
-      return customAttributes.Length != 0 ? (EventAttribute) customAttributes[0] : (EventAttribute) null;
+      return customAttributes.Length != 0 ? (EventAttribute) customAttributes[0] : null;
     }
 
     private static PropertyAttribute GetPropertyAttribInfo(
@@ -698,7 +695,7 @@ namespace PLVirtualMachine.Common.EngineAPI
       PropertyInfo reflPropertyInfo)
     {
       object[] customAttributes = reflPropertyInfo.GetCustomAttributes(typeof (PropertyAttribute), true);
-      return customAttributes.Length != 0 ? (PropertyAttribute) customAttributes[0] : (PropertyAttribute) null;
+      return customAttributes.Length != 0 ? (PropertyAttribute) customAttributes[0] : null;
     }
   }
 }

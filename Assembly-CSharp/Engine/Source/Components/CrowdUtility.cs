@@ -1,7 +1,7 @@
-﻿using Engine.Common;
+﻿using System.Collections.Generic;
+using Engine.Common;
 using Engine.Source.Commons;
 using Engine.Source.Components.Crowds;
-using System.Collections.Generic;
 
 namespace Engine.Source.Components
 {

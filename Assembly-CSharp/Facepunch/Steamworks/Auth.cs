@@ -1,6 +1,4 @@
-﻿using SteamNative;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Linq;
 
 namespace Facepunch.Steamworks
@@ -9,19 +7,18 @@ namespace Facepunch.Steamworks
   {
     internal Client client;
 
-    public unsafe Auth.Ticket GetAuthSessionTicket()
+    public unsafe Ticket GetAuthSessionTicket()
     {
       byte[] source = new byte[1024];
       fixed (byte* pTicket = source)
       {
         uint pcbTicket = 0;
-        uint authSessionTicket = (uint) this.client.native.user.GetAuthSessionTicket((IntPtr) (void*) pTicket, source.Length, out pcbTicket);
+        uint authSessionTicket = client.native.user.GetAuthSessionTicket((IntPtr) pTicket, source.Length, out pcbTicket);
         if (authSessionTicket == 0U)
-          return (Auth.Ticket) null;
-        return new Auth.Ticket()
-        {
-          client = this.client,
-          Data = ((IEnumerable<byte>) source).Take<byte>((int) pcbTicket).ToArray<byte>(),
+          return null;
+        return new Ticket {
+          client = client,
+          Data = source.Take((int) pcbTicket).ToArray(),
           Handle = authSessionTicket
         };
       }
@@ -35,14 +32,14 @@ namespace Facepunch.Steamworks
 
       public void Cancel()
       {
-        if (!this.client.IsValid || this.Handle <= 0U)
+        if (!client.IsValid || Handle <= 0U)
           return;
-        this.client.native.user.CancelAuthTicket((HAuthTicket) this.Handle);
-        this.Handle = 0U;
-        this.Data = (byte[]) null;
+        client.native.user.CancelAuthTicket(Handle);
+        Handle = 0U;
+        Data = null;
       }
 
-      public void Dispose() => this.Cancel();
+      public void Dispose() => Cancel();
     }
   }
 }

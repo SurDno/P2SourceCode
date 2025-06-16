@@ -1,4 +1,6 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using System.Reflection;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common;
 using Engine.Common.Commons;
@@ -8,8 +10,6 @@ using Engine.Impl.Services.Factories;
 using Engine.Source.Services;
 using FlowCanvas;
 using Scripts.Tools.Serializations.Converters;
-using System.Reflection;
-using UnityEngine;
 
 namespace BehaviorDesigner.Runtime.Tasks
 {
@@ -21,14 +21,14 @@ namespace BehaviorDesigner.Runtime.Tasks
   public class RunBlueprint : Action, IStub, ISerializeDataWrite, ISerializeDataRead
   {
     [Tooltip("Сколько ждать секунд (0 - бесконечно)")]
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [SerializeField]
-    public SharedFloat waitTime = (SharedFloat) 0.0f;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    public SharedFloat waitTime = 0.0f;
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy()]
     [SerializeField]
     public SharedGameObject bluerintPrefab;
     private float waitDuration;
@@ -38,67 +38,67 @@ namespace BehaviorDesigner.Runtime.Tasks
 
     public override void OnStart()
     {
-      this.startTime = Time.time;
-      this.waitDuration = this.waitTime.Value;
-      IEntity entity = EntityUtility.GetEntity(this.gameObject);
+      startTime = Time.time;
+      waitDuration = waitTime.Value;
+      IEntity entity = EntityUtility.GetEntity(gameObject);
       if (entity == null)
       {
-        Debug.LogWarning((object) (this.gameObject.name + " : entity not found, method : " + this.GetType().Name + ":" + MethodBase.GetCurrentMethod().Name), (UnityEngine.Object) this.gameObject);
-        this.blueprintController = (FlowScriptController) null;
+        Debug.LogWarning((object) (gameObject.name + " : entity not found, method : " + GetType().Name + ":" + MethodBase.GetCurrentMethod().Name), (UnityEngine.Object) gameObject);
+        blueprintController = null;
       }
       else
       {
-        this.blueprintController = BlueprintServiceUtility.Start(this.bluerintPrefab.Value, entity, (System.Action) null, (string) null);
-        if (!(bool) (UnityEngine.Object) this.blueprintController)
+        blueprintController = BlueprintServiceUtility.Start(bluerintPrefab.Value, entity, null, null);
+        if (!(bool) (UnityEngine.Object) blueprintController)
           return;
-        this.blueprintController.SendEvent("Start");
+        blueprintController.SendEvent("Start");
       }
     }
 
     public override void OnEnd()
     {
-      if (!(bool) (UnityEngine.Object) this.blueprintController)
+      if (!(bool) (UnityEngine.Object) blueprintController)
         return;
-      this.blueprintController.SendEvent("End");
+      blueprintController.SendEvent("End");
     }
 
     public override TaskStatus OnUpdate()
     {
-      if ((UnityEngine.Object) this.blueprintController == (UnityEngine.Object) null)
+      if ((UnityEngine.Object) blueprintController == (UnityEngine.Object) null)
         return TaskStatus.Failure;
-      return (double) this.waitDuration != 0.0 && (double) this.startTime + (double) this.waitDuration < (double) Time.time ? TaskStatus.Success : TaskStatus.Running;
+      return waitDuration != 0.0 && startTime + (double) waitDuration < (double) Time.time ? TaskStatus.Success : TaskStatus.Running;
     }
 
     public override void OnPause(bool paused)
     {
       if (paused)
-        this.pauseTime = Time.time;
+        pauseTime = Time.time;
       else
-        this.startTime += Time.time - this.pauseTime;
+        startTime += Time.time - pauseTime;
     }
 
-    public override void OnReset() => this.waitTime = (SharedFloat) 1f;
+    public override void OnReset() => waitTime = 1f;
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.WriteSerialize<NodeData>(writer, "NodeData", this.nodeData);
-      DefaultDataWriteUtility.Write(writer, "Id", this.id);
-      DefaultDataWriteUtility.Write(writer, "FriendlyName", this.friendlyName);
-      DefaultDataWriteUtility.Write(writer, "Instant", this.instant);
-      DefaultDataWriteUtility.Write(writer, "Disabled", this.disabled);
-      BehaviorTreeDataWriteUtility.WriteShared<SharedFloat>(writer, "WaitTime", this.waitTime);
-      BehaviorTreeDataWriteUtility.WriteShared<SharedGameObject>(writer, "BluerintPrefab", this.bluerintPrefab);
+      DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
+      DefaultDataWriteUtility.Write(writer, "Id", id);
+      DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
+      DefaultDataWriteUtility.Write(writer, "Instant", instant);
+      DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
+      BehaviorTreeDataWriteUtility.WriteShared(writer, "WaitTime", waitTime);
+      BehaviorTreeDataWriteUtility.WriteShared(writer, "BluerintPrefab", bluerintPrefab);
     }
 
-    public void DataRead(IDataReader reader, System.Type type)
+    public void DataRead(IDataReader reader, Type type)
     {
-      this.nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
-      this.id = DefaultDataReadUtility.Read(reader, "Id", this.id);
-      this.friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", this.friendlyName);
-      this.instant = DefaultDataReadUtility.Read(reader, "Instant", this.instant);
-      this.disabled = DefaultDataReadUtility.Read(reader, "Disabled", this.disabled);
-      this.waitTime = BehaviorTreeDataReadUtility.ReadShared<SharedFloat>(reader, "WaitTime", this.waitTime);
-      this.bluerintPrefab = BehaviorTreeDataReadUtility.ReadShared<SharedGameObject>(reader, "BluerintPrefab", this.bluerintPrefab);
+      nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
+      id = DefaultDataReadUtility.Read(reader, "Id", id);
+      friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
+      instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
+      disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
+      waitTime = BehaviorTreeDataReadUtility.ReadShared(reader, "WaitTime", waitTime);
+      bluerintPrefab = BehaviorTreeDataReadUtility.ReadShared(reader, "BluerintPrefab", bluerintPrefab);
     }
   }
 }

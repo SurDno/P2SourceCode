@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEngine;
 
 namespace RootMotion.FinalIK
 {
@@ -8,7 +7,7 @@ namespace RootMotion.FinalIK
   public class InteractionTrigger : MonoBehaviour
   {
     [Tooltip("The valid ranges of the character's and/or it's camera's position for triggering interaction when the character is in contact with the collider of this trigger.")]
-    public InteractionTrigger.Range[] ranges = new InteractionTrigger.Range[0];
+    public Range[] ranges = new Range[0];
 
     [ContextMenu("TUTORIAL VIDEO")]
     private void OpenTutorial4()
@@ -42,9 +41,9 @@ namespace RootMotion.FinalIK
       int bestRangeIndex = -1;
       float num = 180f;
       float maxError = 0.0f;
-      for (int index = 0; index < this.ranges.Length; ++index)
+      for (int index = 0; index < ranges.Length; ++index)
       {
-        if (this.ranges[index].IsInRange(character, raycastFrom, raycastHit, this.transform, out maxError) && (double) maxError <= (double) num)
+        if (ranges[index].IsInRange(character, raycastFrom, raycastHit, this.transform, out maxError) && maxError <= (double) num)
         {
           num = maxError;
           bestRangeIndex = index;
@@ -73,45 +72,45 @@ namespace RootMotion.FinalIK
       [Tooltip("Fixes the Y axis of the trigger to Vector3.up. This makes the trigger symmetrical relative to the object. For example a gun will be able to be picked up from the same direction relative to the barrel no matter which side the gun is resting on.")]
       public bool fixYAxis;
 
-      public Vector3 offset3D => new Vector3(this.offset.x, 0.0f, this.offset.y);
+      public Vector3 offset3D => new Vector3(offset.x, 0.0f, offset.y);
 
       public Vector3 direction3D
       {
-        get => Quaternion.AngleAxis(this.angleOffset, Vector3.up) * Vector3.forward;
+        get => Quaternion.AngleAxis(angleOffset, Vector3.up) * Vector3.forward;
       }
 
       public bool IsInRange(Transform character, Transform trigger, out float error)
       {
         error = 0.0f;
-        if (!this.use)
+        if (!use)
           return true;
         error = 180f;
-        if ((double) this.radius <= 0.0 || (double) this.maxAngle <= 0.0)
+        if (radius <= 0.0 || maxAngle <= 0.0)
           return false;
         Vector3 forward1 = trigger.forward;
-        if (this.fixYAxis)
+        if (fixYAxis)
           forward1.y = 0.0f;
         if (forward1 == Vector3.zero)
           return false;
-        Vector3 normal = this.fixYAxis ? Vector3.up : trigger.up;
+        Vector3 normal = fixYAxis ? Vector3.up : trigger.up;
         Quaternion quaternion = Quaternion.LookRotation(forward1, normal);
-        Vector3 vector3_1 = trigger.position + quaternion * this.offset3D;
-        Vector3 vector3_2 = this.orbit ? trigger.position : vector3_1;
+        Vector3 vector3_1 = trigger.position + quaternion * offset3D;
+        Vector3 vector3_2 = orbit ? trigger.position : vector3_1;
         Vector3 tangent1 = character.position - vector3_2;
         Vector3.OrthoNormalize(ref normal, ref tangent1);
         Vector3 vector3_3 = tangent1 * Vector3.Project(character.position - vector3_2, tangent1).magnitude;
-        if (this.orbit)
+        if (orbit)
         {
-          float magnitude1 = this.offset.magnitude;
+          float magnitude1 = offset.magnitude;
           float magnitude2 = vector3_3.magnitude;
-          if ((double) magnitude2 < (double) magnitude1 - (double) this.radius || (double) magnitude2 > (double) magnitude1 + (double) this.radius)
+          if (magnitude2 < magnitude1 - (double) radius || magnitude2 > magnitude1 + (double) radius)
             return false;
         }
-        else if ((double) vector3_3.magnitude > (double) this.radius)
+        else if ((double) vector3_3.magnitude > radius)
           return false;
-        Vector3 tangent2 = quaternion * this.direction3D;
+        Vector3 tangent2 = quaternion * direction3D;
         Vector3.OrthoNormalize(ref normal, ref tangent2);
-        if (this.orbit)
+        if (orbit)
         {
           Vector3 forward2 = vector3_1 - trigger.position;
           if (forward2 == Vector3.zero)
@@ -120,9 +119,9 @@ namespace RootMotion.FinalIK
           tangent2 = Quaternion.AngleAxis(Mathf.Atan2(vector3_4.x, vector3_4.z) * 57.29578f, normal) * tangent2;
         }
         float num = Vector3.Angle(tangent2, character.forward);
-        if ((double) num > (double) this.maxAngle)
+        if (num > (double) maxAngle)
           return false;
-        error = (float) ((double) num / (double) this.maxAngle * 180.0);
+        error = (float) (num / (double) maxAngle * 180.0);
         return true;
       }
     }
@@ -144,12 +143,12 @@ namespace RootMotion.FinalIK
 
       public Quaternion GetRotation()
       {
-        Vector3 forward = this.lookAtTarget.transform.forward;
-        if (this.fixYAxis)
+        Vector3 forward = lookAtTarget.transform.forward;
+        if (fixYAxis)
           forward.y = 0.0f;
         if (forward == Vector3.zero)
           return Quaternion.identity;
-        Vector3 upwards = this.fixYAxis ? Vector3.up : this.lookAtTarget.transform.up;
+        Vector3 upwards = fixYAxis ? Vector3.up : lookAtTarget.transform.up;
         return Quaternion.LookRotation(forward, upwards);
       }
 
@@ -160,16 +159,16 @@ namespace RootMotion.FinalIK
         out float error)
       {
         error = 0.0f;
-        if ((UnityEngine.Object) this.lookAtTarget == (UnityEngine.Object) null)
+        if ((UnityEngine.Object) lookAtTarget == (UnityEngine.Object) null)
           return true;
         error = 180f;
-        if ((UnityEngine.Object) raycastFrom == (UnityEngine.Object) null || (UnityEngine.Object) hit.collider != (UnityEngine.Object) this.lookAtTarget || (double) hit.distance > (double) this.maxDistance || this.direction == Vector3.zero || (double) this.maxDistance <= 0.0 || (double) this.maxAngle <= 0.0)
+        if ((UnityEngine.Object) raycastFrom == (UnityEngine.Object) null || (UnityEngine.Object) hit.collider != (UnityEngine.Object) lookAtTarget || (double) hit.distance > maxDistance || direction == Vector3.zero || maxDistance <= 0.0 || maxAngle <= 0.0)
           return false;
-        Vector3 to = this.GetRotation() * this.direction;
+        Vector3 to = GetRotation() * direction;
         float num = Vector3.Angle(raycastFrom.position - hit.point, to);
-        if ((double) num > (double) this.maxAngle)
+        if (num > (double) maxAngle)
           return false;
-        error = (float) ((double) num / (double) this.maxAngle * 180.0);
+        error = (float) (num / (double) maxAngle * 180.0);
         return true;
       }
     }
@@ -184,11 +183,11 @@ namespace RootMotion.FinalIK
       [SerializeField]
       public bool show = true;
       [Tooltip("The range for the character's position and rotation.")]
-      public InteractionTrigger.CharacterPosition characterPosition;
+      public CharacterPosition characterPosition;
       [Tooltip("The range for the character camera's position and rotation.")]
-      public InteractionTrigger.CameraPosition cameraPosition;
+      public CameraPosition cameraPosition;
       [Tooltip("Definitions of the interactions associated with this range.")]
-      public InteractionTrigger.Range.Interaction[] interactions;
+      public Interaction[] interactions;
 
       public bool IsInRange(
         Transform character,
@@ -200,7 +199,7 @@ namespace RootMotion.FinalIK
         maxError = 0.0f;
         float error1 = 0.0f;
         float error2 = 0.0f;
-        if (!this.characterPosition.IsInRange(character, trigger, out error1) || !this.cameraPosition.IsInRange(raycastFrom, raycastHit, trigger, out error2))
+        if (!characterPosition.IsInRange(character, trigger, out error1) || !cameraPosition.IsInRange(raycastFrom, raycastHit, trigger, out error2))
           return false;
         maxError = Mathf.Max(error1, error2);
         return true;

@@ -2,7 +2,6 @@
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Engine.Source.Components;
-using System;
 
 namespace Engine.Source.Commons.Abilities.Controllers
 {
@@ -16,24 +15,24 @@ namespace Engine.Source.Commons.Abilities.Controllers
     public void Initialise(AbilityItem abilityItem)
     {
       this.abilityItem = abilityItem;
-      this.controller = this.abilityItem.Ability.Owner.GetComponent<PlayerControllerComponent>();
-      if (this.controller == null)
+      controller = this.abilityItem.Ability.Owner.GetComponent<PlayerControllerComponent>();
+      if (controller == null)
         return;
-      this.controller.OpenContainerEvent += new Action<IInventoryComponent>(this.OpenContainerEvent);
+      controller.OpenContainerEvent += OpenContainerEvent;
     }
 
     public void Shutdown()
     {
-      if (this.controller == null)
+      if (controller == null)
         return;
-      this.controller.OpenContainerEvent -= new Action<IInventoryComponent>(this.OpenContainerEvent);
-      this.controller = (PlayerControllerComponent) null;
+      controller.OpenContainerEvent -= OpenContainerEvent;
+      controller = null;
     }
 
     private void OpenContainerEvent(IInventoryComponent container)
     {
-      this.abilityItem.Active = true;
-      this.abilityItem.Active = false;
+      abilityItem.Active = true;
+      abilityItem.Active = false;
     }
   }
 }

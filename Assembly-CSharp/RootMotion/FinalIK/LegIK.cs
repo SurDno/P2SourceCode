@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace RootMotion.FinalIK
+﻿namespace RootMotion.FinalIK
 {
   [AddComponentMenu("Scripts/RootMotion.FinalIK/IK/Leg IK")]
   public class LegIK : IK
@@ -31,6 +29,6 @@ namespace RootMotion.FinalIK
       Application.OpenURL("http://forum.unity3d.com/threads/final-ik-full-body-ik-aim-look-at-fabrik-ccd-ik-1-0-released.222685/");
     }
 
-    public override IKSolver GetIKSolver() => (IKSolver) this.solver;
+    public override IKSolver GetIKSolver() => solver;
   }
 }

@@ -1,13 +1,11 @@
-﻿using UnityEngine;
-
-namespace UnityStandardAssets.ImageEffects
+﻿namespace UnityStandardAssets.ImageEffects
 {
   [ExecuteInEditMode]
   [RequireComponent(typeof (Camera))]
   [AddComponentMenu("Image Effects/Camera/Vignette and Chromatic Aberration")]
   public class VignetteAndChromaticAberration : PostEffectsBase
   {
-    public VignetteAndChromaticAberration.AberrationMode mode = VignetteAndChromaticAberration.AberrationMode.Simple;
+    public AberrationMode mode = AberrationMode.Simple;
     public float intensity = 0.036f;
     public float chromaticAberration = 0.2f;
     public float axialAberration = 0.5f;
@@ -24,18 +22,18 @@ namespace UnityStandardAssets.ImageEffects
 
     public override bool CheckResources()
     {
-      this.CheckSupport(false);
-      this.m_VignetteMaterial = this.CheckShaderAndCreateMaterial(this.vignetteShader, this.m_VignetteMaterial);
-      this.m_SeparableBlurMaterial = this.CheckShaderAndCreateMaterial(this.separableBlurShader, this.m_SeparableBlurMaterial);
-      this.m_ChromAberrationMaterial = this.CheckShaderAndCreateMaterial(this.chromAberrationShader, this.m_ChromAberrationMaterial);
-      if (!this.isSupported)
-        this.ReportAutoDisable();
-      return this.isSupported;
+      CheckSupport(false);
+      m_VignetteMaterial = CheckShaderAndCreateMaterial(vignetteShader, m_VignetteMaterial);
+      m_SeparableBlurMaterial = CheckShaderAndCreateMaterial(separableBlurShader, m_SeparableBlurMaterial);
+      m_ChromAberrationMaterial = CheckShaderAndCreateMaterial(chromAberrationShader, m_ChromAberrationMaterial);
+      if (!isSupported)
+        ReportAutoDisable();
+      return isSupported;
     }
 
     private void OnRenderImage(RenderTexture source, RenderTexture destination)
     {
-      if (!this.CheckResources())
+      if (!CheckResources())
       {
         Graphics.Blit((Texture) source, destination);
       }
@@ -43,43 +41,43 @@ namespace UnityStandardAssets.ImageEffects
       {
         int width = source.width;
         int height = source.height;
-        bool flag = (double) Mathf.Abs(this.blur) > 0.0 || (double) Mathf.Abs(this.intensity) > 0.0;
-        float num = (float) (1.0 * (double) width / (1.0 * (double) height));
+        bool flag = (double) Mathf.Abs(blur) > 0.0 || (double) Mathf.Abs(intensity) > 0.0;
+        float num = (float) (1.0 * width / (1.0 * height));
         RenderTexture renderTexture1 = (RenderTexture) null;
         RenderTexture renderTexture2 = (RenderTexture) null;
         if (flag)
         {
           renderTexture1 = RenderTexture.GetTemporary(width, height, 0, source.format);
-          if ((double) Mathf.Abs(this.blur) > 0.0)
+          if ((double) Mathf.Abs(blur) > 0.0)
           {
             renderTexture2 = RenderTexture.GetTemporary(width / 2, height / 2, 0, source.format);
-            Graphics.Blit((Texture) source, renderTexture2, this.m_ChromAberrationMaterial, 0);
+            Graphics.Blit((Texture) source, renderTexture2, m_ChromAberrationMaterial, 0);
             for (int index = 0; index < 2; ++index)
             {
-              this.m_SeparableBlurMaterial.SetVector("offsets", new Vector4(0.0f, this.blurSpread * (1f / 512f), 0.0f, 0.0f));
+              m_SeparableBlurMaterial.SetVector("offsets", new Vector4(0.0f, blurSpread * (1f / 512f), 0.0f, 0.0f));
               RenderTexture temporary = RenderTexture.GetTemporary(width / 2, height / 2, 0, source.format);
-              Graphics.Blit((Texture) renderTexture2, temporary, this.m_SeparableBlurMaterial);
+              Graphics.Blit((Texture) renderTexture2, temporary, m_SeparableBlurMaterial);
               RenderTexture.ReleaseTemporary(renderTexture2);
-              this.m_SeparableBlurMaterial.SetVector("offsets", new Vector4(this.blurSpread * (1f / 512f) / num, 0.0f, 0.0f, 0.0f));
+              m_SeparableBlurMaterial.SetVector("offsets", new Vector4(blurSpread * (1f / 512f) / num, 0.0f, 0.0f, 0.0f));
               renderTexture2 = RenderTexture.GetTemporary(width / 2, height / 2, 0, source.format);
-              Graphics.Blit((Texture) temporary, renderTexture2, this.m_SeparableBlurMaterial);
+              Graphics.Blit((Texture) temporary, renderTexture2, m_SeparableBlurMaterial);
               RenderTexture.ReleaseTemporary(temporary);
             }
           }
-          this.m_VignetteMaterial.SetFloat("_Intensity", (float) (1.0 / (1.0 - (double) this.intensity) - 1.0));
-          this.m_VignetteMaterial.SetFloat("_Blur", (float) (1.0 / (1.0 - (double) this.blur) - 1.0));
-          this.m_VignetteMaterial.SetTexture("_VignetteTex", (Texture) renderTexture2);
-          Graphics.Blit((Texture) source, renderTexture1, this.m_VignetteMaterial, 0);
+          m_VignetteMaterial.SetFloat("_Intensity", (float) (1.0 / (1.0 - intensity) - 1.0));
+          m_VignetteMaterial.SetFloat("_Blur", (float) (1.0 / (1.0 - blur) - 1.0));
+          m_VignetteMaterial.SetTexture("_VignetteTex", (Texture) renderTexture2);
+          Graphics.Blit((Texture) source, renderTexture1, m_VignetteMaterial, 0);
         }
-        this.m_ChromAberrationMaterial.SetFloat("_ChromaticAberration", this.chromaticAberration);
-        this.m_ChromAberrationMaterial.SetFloat("_AxialAberration", this.axialAberration);
-        this.m_ChromAberrationMaterial.SetVector("_BlurDistance", (Vector4) new Vector2(-this.blurDistance, this.blurDistance));
-        this.m_ChromAberrationMaterial.SetFloat("_Luminance", 1f / Mathf.Max(Mathf.Epsilon, this.luminanceDependency));
+        m_ChromAberrationMaterial.SetFloat("_ChromaticAberration", chromaticAberration);
+        m_ChromAberrationMaterial.SetFloat("_AxialAberration", axialAberration);
+        m_ChromAberrationMaterial.SetVector("_BlurDistance", (Vector4) new Vector2(-blurDistance, blurDistance));
+        m_ChromAberrationMaterial.SetFloat("_Luminance", 1f / Mathf.Max(Mathf.Epsilon, luminanceDependency));
         if (flag)
           renderTexture1.wrapMode = TextureWrapMode.Clamp;
         else
           source.wrapMode = TextureWrapMode.Clamp;
-        Graphics.Blit(flag ? (Texture) renderTexture1 : (Texture) source, destination, this.m_ChromAberrationMaterial, this.mode == VignetteAndChromaticAberration.AberrationMode.Advanced ? 2 : 1);
+        Graphics.Blit(flag ? (Texture) renderTexture1 : (Texture) source, destination, m_ChromAberrationMaterial, mode == AberrationMode.Advanced ? 2 : 1);
         RenderTexture.ReleaseTemporary(renderTexture1);
         RenderTexture.ReleaseTemporary(renderTexture2);
       }

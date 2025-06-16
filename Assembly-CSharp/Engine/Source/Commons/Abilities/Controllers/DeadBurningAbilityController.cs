@@ -1,10 +1,10 @@
-﻿using Engine.Common;
+﻿using System.Collections.Generic;
+using Engine.Common;
 using Engine.Common.Components.Parameters;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Engine.Source.Components;
 using Engine.Source.Effects.Values;
-using System.Collections.Generic;
 
 namespace Engine.Source.Commons.Abilities.Controllers
 {
@@ -22,33 +22,33 @@ namespace Engine.Source.Commons.Abilities.Controllers
     {
       this.abilityItem = abilityItem;
       ParametersComponent component = this.abilityItem.Ability.Owner.GetComponent<ParametersComponent>();
-      this.burningParameter = component.GetByName<bool>(ParameterNameEnum.IsBurning);
-      if (this.burningParameter == null)
+      burningParameter = component.GetByName<bool>(ParameterNameEnum.IsBurning);
+      if (burningParameter == null)
         return;
-      this.healthParameter = component.GetByName<float>(ParameterNameEnum.Health);
-      if (this.healthParameter == null)
+      healthParameter = component.GetByName<float>(ParameterNameEnum.Health);
+      if (healthParameter == null)
         return;
-      this.burningParameter.AddListener((IChangeParameterListener) this);
-      this.healthParameter.AddListener((IChangeParameterListener) this);
+      burningParameter.AddListener(this);
+      healthParameter.AddListener(this);
     }
 
     private void CheckParameters()
     {
-      if (this.burningParameter == null || this.healthParameter == null || !this.burningParameter.Value || (double) this.healthParameter.Value > 0.0)
+      if (burningParameter == null || healthParameter == null || !burningParameter.Value || healthParameter.Value > 0.0)
         return;
-      this.abilityItem.Active = true;
+      abilityItem.Active = true;
     }
 
     public void Shutdown()
     {
-      if (this.burningParameter != null)
-        this.burningParameter.RemoveListener((IChangeParameterListener) this);
-      if (this.healthParameter != null)
-        this.healthParameter.RemoveListener((IChangeParameterListener) this);
-      this.abilityItem.Active = false;
-      this.abilityItem = (AbilityItem) null;
+      if (burningParameter != null)
+        burningParameter.RemoveListener(this);
+      if (healthParameter != null)
+        healthParameter.RemoveListener(this);
+      abilityItem.Active = false;
+      abilityItem = null;
     }
 
-    public void OnParameterChanged(IParameter parameter) => this.CheckParameters();
+    public void OnParameterChanged(IParameter parameter) => CheckParameters();
   }
 }

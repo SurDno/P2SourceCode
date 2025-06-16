@@ -21,10 +21,10 @@ namespace ParadoxNotion.Serialization.FullSerializer.Internal
     {
       if (!data.IsString)
         return fsResult.Fail("fsGuidConverter encountered an unknown JSON data type");
-      instance = (object) new Guid(data.AsString);
+      instance = new Guid(data.AsString);
       return fsResult.Success;
     }
 
-    public override object CreateInstance(fsData data, Type storageType) => (object) new Guid();
+    public override object CreateInstance(fsData data, Type storageType) => new Guid();
   }
 }

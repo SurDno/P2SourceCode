@@ -1,92 +1,91 @@
-﻿using AssetDatabases;
+﻿using System;
+using AssetDatabases;
 using Engine.Common;
 using Engine.Common.Generator;
 using Engine.Common.Services;
 using Engine.Services;
 using Inspectors;
-using System;
-using UnityEngine;
 
 namespace Engine.Source.Commons
 {
   public abstract class EngineObject : IObject, IDisposable, IIdSetter, ITemplateSetter
   {
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [StateSaveProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [StateSaveProxy]
     [Inspected(Mode = ExecuteMode.EditAndRuntime)]
     protected Guid id = Guid.Empty;
-    [StateSaveProxy(MemberEnum.None)]
-    [StateLoadProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [StateSaveProxy]
+    [StateLoadProxy]
+    [CopyableProxy()]
     [Inspected(Header = true)]
     protected string name = "";
     private IObject template;
-    private EngineObject.Parameters parameters;
+    private Parameters parameters;
 
     public Guid Id
     {
-      get => this.id;
-      set => this.id = !(value == Guid.Empty) ? value : throw new Exception("Set id as Guid.Empty");
+      get => id;
+      set => id = !(value == Guid.Empty) ? value : throw new Exception("Set id as Guid.Empty");
     }
 
     public string Name
     {
-      get => this.name;
-      set => this.name = value;
+      get => name;
+      set => name = value;
     }
 
     [Inspected]
-    public Guid TemplateId => this.template != null ? this.template.Id : Guid.Empty;
+    public Guid TemplateId => template != null ? template.Id : Guid.Empty;
 
     [Inspected]
     public IObject Template
     {
-      get => this.template;
-      set => this.template = value;
+      get => template;
+      set => template = value;
     }
 
     [Inspected]
     public bool IsDisposed
     {
-      get => this.GetParameter(EngineObject.Parameters.IsDisposed);
-      protected set => this.SetParameter(EngineObject.Parameters.IsDisposed, value);
+      get => GetParameter(Parameters.IsDisposed);
+      protected set => SetParameter(Parameters.IsDisposed, value);
     }
 
     [Inspected(Mode = ExecuteMode.EditAndRuntime)]
-    public string Source => AssetDatabaseService.Instance.GetPath(this.Id);
+    public string Source => AssetDatabaseService.Instance.GetPath(Id);
 
     public bool IsTemplate
     {
-      get => this.GetParameter(EngineObject.Parameters.IsTemplate);
-      set => this.SetParameter(EngineObject.Parameters.IsTemplate, value);
+      get => GetParameter(Parameters.IsTemplate);
+      set => SetParameter(Parameters.IsTemplate, value);
     }
 
     public virtual void Dispose()
     {
-      if (this.IsDisposed)
+      if (IsDisposed)
         Debug.LogError((object) ("Object already disposed : " + this.GetInfo()));
       else
-        this.IsDisposed = true;
+        IsDisposed = true;
     }
 
     [Inspected(Type = typeof (StoreToSelectionMethodDrawer))]
     private void StoreToSelection(int index)
     {
-      ServiceLocator.GetService<SelectionService>().SetSelection(index, (object) this);
+      ServiceLocator.GetService<SelectionService>().SetSelection(index, this);
     }
 
-    protected bool GetParameter(EngineObject.Parameters parameter)
+    protected bool GetParameter(Parameters parameter)
     {
-      return (this.parameters & parameter) != 0;
+      return (parameters & parameter) != 0;
     }
 
-    protected void SetParameter(EngineObject.Parameters parameter, bool value)
+    protected void SetParameter(Parameters parameter, bool value)
     {
-      this.parameters &= ~parameter;
+      parameters &= ~parameter;
       if (!value)
         return;
-      this.parameters |= parameter;
+      parameters |= parameter;
     }
 
     [Flags]

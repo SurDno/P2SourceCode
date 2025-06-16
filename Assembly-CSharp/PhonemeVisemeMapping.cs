@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Xml;
-using UnityEngine;
 
 [Serializable]
 public class PhonemeVisemeMapping
 {
-  public string[] visNames = (string[]) null;
-  public phn_string_array_t[] mapping = (phn_string_array_t[]) null;
+  public string[] visNames = null;
+  public phn_string_array_t[] mapping = null;
 
   public PhonemeVisemeMapping()
   {
@@ -15,39 +14,39 @@ public class PhonemeVisemeMapping
 
   public PhonemeVisemeMapping(string[] names, string[][] phns)
   {
-    this.visNames = names;
-    this.mapping = new phn_string_array_t[phns.Length];
+    visNames = names;
+    mapping = new phn_string_array_t[phns.Length];
     for (int index = 0; index < phns.Length; ++index)
-      this.mapping[index] = new phn_string_array_t(phns[index]);
+      mapping[index] = new phn_string_array_t(phns[index]);
   }
 
-  public virtual int GetNumVisemes() => this.visNames.Length;
+  public virtual int GetNumVisemes() => visNames.Length;
 
-  public virtual string[] GetVisemeNames() => this.visNames;
+  public virtual string[] GetVisemeNames() => visNames;
 
   public string[] GetVisemePhonemes(string vis)
   {
-    for (int index = 0; index < this.visNames.Length; ++index)
+    for (int index = 0; index < visNames.Length; ++index)
     {
-      if (this.visNames[index] == vis)
-        return this.mapping[index].phns;
+      if (visNames[index] == vis)
+        return mapping[index].phns;
     }
-    return (string[]) null;
+    return null;
   }
 
   public phn_string_array_t GetPhonemes(string visLabel)
   {
-    for (int index = 0; index < this.visNames.Length; ++index)
+    for (int index = 0; index < visNames.Length; ++index)
     {
-      if (visLabel == this.visNames[index])
-        return this.mapping[index];
+      if (visLabel == visNames[index])
+        return mapping[index];
     }
-    return (phn_string_array_t) null;
+    return null;
   }
 
   public string PhonemeToViseme(string phn)
   {
-    foreach (phn_string_array_t phnStringArrayT in this.mapping)
+    foreach (phn_string_array_t phnStringArrayT in mapping)
     {
       foreach (string phn1 in phnStringArrayT.phns)
       {
@@ -67,24 +66,24 @@ public class PhonemeVisemeMapping
       if (reader.Name == endTag && reader.NodeType == XmlNodeType.EndElement)
         flag = true;
       else if (reader.Name == "vis_phns")
-        stringListList.Add(this.Read_Phns(reader, "vis_phns"));
+        stringListList.Add(Read_Phns(reader, "vis_phns"));
     }
-    this.visNames = new string[stringListList.Count];
-    this.mapping = new phn_string_array_t[stringListList.Count];
+    visNames = new string[stringListList.Count];
+    mapping = new phn_string_array_t[stringListList.Count];
     for (int index = 0; index < stringListList.Count; ++index)
     {
       if (stringListList[index].Count != 0)
       {
-        this.visNames[index] = stringListList[index][0];
-        if (this.visNames[index] == "l")
-          this.visNames[index] = "L";
+        visNames[index] = stringListList[index][0];
+        if (visNames[index] == "l")
+          visNames[index] = "L";
       }
       else
       {
         Debug.Log((object) "Load Error: Bad vis_phns in bone config file");
-        this.visNames[index] = "BAD";
+        visNames[index] = "BAD";
       }
-      this.mapping[index] = new phn_string_array_t(stringListList[index]);
+      mapping[index] = new phn_string_array_t(stringListList[index]);
     }
   }
 

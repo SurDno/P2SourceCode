@@ -1,6 +1,5 @@
-﻿using Engine.Common.Components.Regions;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using System.Collections.Generic;
+using Engine.Common.Components.Regions;
 
 public class RegionLocator : MonoBehaviour
 {
@@ -9,19 +8,19 @@ public class RegionLocator : MonoBehaviour
 
   public static RegionEnum GetRegionName(Vector3 position)
   {
-    return RegionLocator.instance.GetRegionNameInternal(position);
+    return instance.GetRegionNameInternal(position);
   }
 
   private void Initialise()
   {
-    int childCount = RegionLocator.instance.transform.childCount;
+    int childCount = instance.transform.childCount;
     for (int index = 0; index < childCount; ++index)
     {
-      RegionMesh component = RegionLocator.instance.transform.GetChild(index).gameObject.GetComponent<RegionMesh>();
+      RegionMesh component = instance.transform.GetChild(index).gameObject.GetComponent<RegionMesh>();
       if (!((Object) component == (Object) null))
       {
         component.Initialise();
-        this.regionsCache[component.Region] = component;
+        regionsCache[component.Region] = component;
       }
     }
   }
@@ -29,14 +28,14 @@ public class RegionLocator : MonoBehaviour
   public static RegionMesh GetRegionMesh(RegionEnum regionName)
   {
     RegionMesh regionMesh;
-    RegionLocator.instance.regionsCache.TryGetValue(regionName, out regionMesh);
+    instance.regionsCache.TryGetValue(regionName, out regionMesh);
     return regionMesh;
   }
 
   private void Awake()
   {
-    RegionLocator.instance = this;
-    this.Initialise();
+    instance = this;
+    Initialise();
   }
 
   private RegionEnum GetRegionNameInternal(Vector3 position)

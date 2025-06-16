@@ -1,40 +1,38 @@
-﻿using UnityEngine;
-
-namespace Engine.Impl.UI.Controls
+﻿namespace Engine.Impl.UI.Controls
 {
   public class ProgressHideable : ProgressDecorator
   {
     [SerializeField]
-    private HideableView hideableView = (HideableView) null;
+    private HideableView hideableView = null;
     [SerializeField]
     private Vector2 hiddenRange = Vector2.zero;
 
     public Vector2 HiddenRange
     {
-      get => this.hiddenRange;
+      get => hiddenRange;
       set
       {
-        if (value == this.hiddenRange)
+        if (value == hiddenRange)
           return;
-        this.hiddenRange = value;
-        this.ApplyProgress();
+        hiddenRange = value;
+        ApplyProgress();
       }
     }
 
     public override void SkipAnimation()
     {
       base.SkipAnimation();
-      if (!((Object) this.hideableView != (Object) null))
+      if (!((Object) hideableView != (Object) null))
         return;
-      this.hideableView.SkipAnimation();
+      hideableView.SkipAnimation();
     }
 
     protected override void ApplyProgress()
     {
       base.ApplyProgress();
-      if (!((Object) this.hideableView != (Object) null))
+      if (!((Object) hideableView != (Object) null))
         return;
-      this.hideableView.Visible = (double) this.Progress < (double) this.hiddenRange.x || (double) this.Progress > (double) this.hiddenRange.y;
+      hideableView.Visible = Progress < (double) hiddenRange.x || Progress > (double) hiddenRange.y;
     }
   }
 }

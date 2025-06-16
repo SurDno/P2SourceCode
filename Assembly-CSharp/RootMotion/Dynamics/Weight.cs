@@ -1,12 +1,11 @@
 ﻿using System;
-using UnityEngine;
 
 namespace RootMotion.Dynamics
 {
   [Serializable]
   public class Weight
   {
-    public Weight.Mode mode;
+    public Mode mode;
     public float floatValue;
     public AnimationCurve curve;
     public string tooltip = "";
@@ -21,7 +20,7 @@ namespace RootMotion.Dynamics
 
     public float GetValue(float param)
     {
-      return this.mode == Weight.Mode.Curve ? this.curve.Evaluate(param) : this.floatValue;
+      return mode == Mode.Curve ? curve.Evaluate(param) : floatValue;
     }
 
     [Serializable]

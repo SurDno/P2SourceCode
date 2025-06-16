@@ -6,7 +6,7 @@
     int lipsyncArtCount = LipsyncPluginW32._GetLipsyncArtCount();
     if (lipsyncArtCount == 0)
     {
-      phns = (phone_weight[]) null;
+      phns = null;
       return 0;
     }
     phns = new phone_weight[lipsyncArtCount];

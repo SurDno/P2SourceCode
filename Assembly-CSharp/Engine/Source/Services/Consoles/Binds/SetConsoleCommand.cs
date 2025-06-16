@@ -1,14 +1,14 @@
-﻿using Cofe.Meta;
-using Cofe.Serializations.Converters;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using Cofe.Meta;
+using Cofe.Serializations.Converters;
 
 namespace Engine.Source.Services.Consoles.Binds
 {
   [Initialisable]
   public static class SetConsoleCommand
   {
-    private static Dictionary<string, SetConsoleCommand.Holder> binds = new Dictionary<string, SetConsoleCommand.Holder>();
+    private static Dictionary<string, Holder> binds = new Dictionary<string, Holder>();
 
     public static void AddBind(
       Type type,
@@ -17,10 +17,9 @@ namespace Engine.Source.Services.Consoles.Binds
       bool needTarget,
       Action<object, object> action)
     {
-      SetConsoleCommand.Holder holder = new SetConsoleCommand.Holder()
-      {
+      Holder holder = new Holder {
         Type = type,
-        Func = (Func<object, string, string>) ((target, value) =>
+        Func = (target, value) =>
         {
           object result1;
           if (valueType.IsEnum)
@@ -28,12 +27,12 @@ namespace Engine.Source.Services.Consoles.Binds
             Enum result2;
             if (!DefaultConverter.TryParseEnum(value, valueType, out result2))
               return "Error parse value : \"" + value + "\" , name : " + name;
-            result1 = (object) result2;
+            result1 = result2;
           }
           else
           {
             if (!ConvertService.ContainsConverter(valueType))
-              return "Error, parser type not found : " + (object) valueType + " , name : " + name;
+              return "Error, parser type not found : " + valueType + " , name : " + name;
             if (!ConvertService.TryParse(valueType, value, out result1))
               return "Error parse value : \"" + value + "\" , name : " + name;
           }
@@ -41,18 +40,18 @@ namespace Engine.Source.Services.Consoles.Binds
           {
             target = ConsoleTargetService.GetTarget(type, target);
             if (target == null)
-              return "Error, target not found : " + (object) type + " , name : " + name;
+              return "Error, target not found : " + type + " , name : " + name;
           }
           action(target, result1);
           return "Change " + name + " to : " + value;
-        })
+        }
       };
-      SetConsoleCommand.binds.Add(name, holder);
+      binds.Add(name, holder);
     }
 
     public static void AddBind<TObject, T>(string name, bool needTarget, Action<TObject, T> action) where TObject : class
     {
-      SetConsoleCommand.AddBind(typeof (TObject), typeof (T), name, needTarget, (Action<object, object>) ((target, value) => action(target as TObject, (T) value)));
+      AddBind(typeof (TObject), typeof (T), name, needTarget, (target, value) => action(target as TObject, (T) value));
     }
 
     [ConsoleCommand("set")]
@@ -61,16 +60,16 @@ namespace Engine.Source.Services.Consoles.Binds
       if (parameters.Length == 0 || parameters.Length == 1 && parameters[0].Value == "?")
       {
         string str = command + " [target] property value\n\nProperties :\n";
-        foreach (KeyValuePair<string, SetConsoleCommand.Holder> bind in SetConsoleCommand.binds)
+        foreach (KeyValuePair<string, Holder> bind in binds)
           str = str + bind.Key + "\n";
         return str;
       }
-      SetConsoleCommand.Holder holder;
+      Holder holder;
       object target;
       string str1;
       if (parameters.Length == 2)
       {
-        if (!SetConsoleCommand.binds.TryGetValue(parameters[0].Value, out holder))
+        if (!binds.TryGetValue(parameters[0].Value, out holder))
           return "Parameter not found";
         target = ConsoleTargetService.GetTarget(holder.Type, new ConsoleParameter());
         str1 = parameters[1].Value;
@@ -79,7 +78,7 @@ namespace Engine.Source.Services.Consoles.Binds
       {
         if (parameters.Length != 3)
           return "Error parameter count";
-        if (!SetConsoleCommand.binds.TryGetValue(parameters[1].Value, out holder))
+        if (!binds.TryGetValue(parameters[1].Value, out holder))
           return "Parameter not found";
         target = ConsoleTargetService.GetTarget(holder.Type, parameters[0]);
         str1 = parameters[2].Value;

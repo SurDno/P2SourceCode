@@ -55,7 +55,7 @@ namespace ClipperLib
       OutPt outPt = pp;
       do
       {
-        if (!this.PointOnLineSegment(pt, outPt.Pt, outPt.Next.Pt, UseFullRange))
+        if (!PointOnLineSegment(pt, outPt.Pt, outPt.Next.Pt, UseFullRange))
           outPt = outPt.Next;
         else
           goto label_1;
@@ -90,35 +90,35 @@ label_4:
 
     internal ClipperBase()
     {
-      this.m_MinimaList = (LocalMinima) null;
-      this.m_CurrentLM = (LocalMinima) null;
-      this.m_UseFullRange = false;
-      this.m_HasOpenPaths = false;
+      m_MinimaList = null;
+      m_CurrentLM = null;
+      m_UseFullRange = false;
+      m_HasOpenPaths = false;
     }
 
     public virtual void Clear()
     {
-      this.DisposeLocalMinimaList();
-      for (int index1 = 0; index1 < this.m_edges.Count; ++index1)
+      DisposeLocalMinimaList();
+      for (int index1 = 0; index1 < m_edges.Count; ++index1)
       {
-        for (int index2 = 0; index2 < this.m_edges[index1].Count; ++index2)
-          this.m_edges[index1][index2] = (TEdge) null;
-        this.m_edges[index1].Clear();
+        for (int index2 = 0; index2 < m_edges[index1].Count; ++index2)
+          m_edges[index1][index2] = null;
+        m_edges[index1].Clear();
       }
-      this.m_edges.Clear();
-      this.m_UseFullRange = false;
-      this.m_HasOpenPaths = false;
+      m_edges.Clear();
+      m_UseFullRange = false;
+      m_HasOpenPaths = false;
     }
 
     private void DisposeLocalMinimaList()
     {
       LocalMinima next;
-      for (; this.m_MinimaList != null; this.m_MinimaList = next)
+      for (; m_MinimaList != null; m_MinimaList = next)
       {
-        next = this.m_MinimaList.Next;
-        this.m_MinimaList = (LocalMinima) null;
+        next = m_MinimaList.Next;
+        m_MinimaList = null;
       }
-      this.m_CurrentLM = (LocalMinima) null;
+      m_CurrentLM = null;
     }
 
     private void RangeTest(IntPoint Pt, ref bool useFullRange)
@@ -133,7 +133,7 @@ label_4:
         if (Pt.X <= 1073741823L && Pt.Y <= 1073741823L && -Pt.X <= 1073741823L && -Pt.Y <= 1073741823L)
           return;
         useFullRange = true;
-        this.RangeTest(Pt, ref useFullRange);
+        RangeTest(Pt, ref useFullRange);
       }
     }
 
@@ -157,7 +157,7 @@ label_4:
         e.Top = e.Curr;
         e.Bot = e.Next.Curr;
       }
-      this.SetDx(e);
+      SetDx(e);
       e.PolyTyp = polyType;
     }
 
@@ -215,13 +215,13 @@ label_12:
         {
           E = !LeftBoundIsForward ? tedge1.Prev : tedge1.Next;
           LocalMinima newLm = new LocalMinima();
-          newLm.Next = (LocalMinima) null;
+          newLm.Next = null;
           newLm.Y = E.Bot.Y;
-          newLm.LeftBound = (TEdge) null;
+          newLm.LeftBound = null;
           newLm.RightBound = E;
           E.WindDelta = 0;
-          tedge2 = this.ProcessBound(E, LeftBoundIsForward);
-          this.InsertLocalMinima(newLm);
+          tedge2 = ProcessBound(E, LeftBoundIsForward);
+          InsertLocalMinima(newLm);
         }
         return tedge2;
       }
@@ -233,10 +233,10 @@ label_12:
           if (tedge3.Dx == -3.4E+38)
           {
             if (tedge3.Bot.X != E.Bot.X && tedge3.Top.X != E.Bot.X)
-              this.ReverseHorizontal(E);
+              ReverseHorizontal(E);
           }
           else if (tedge3.Bot.X != E.Bot.X)
-            this.ReverseHorizontal(E);
+            ReverseHorizontal(E);
         }
       }
       TEdge tedge4 = E;
@@ -262,10 +262,10 @@ label_12:
         {
           E.NextInLML = E.Next;
           if (E.Dx == -3.4E+38 && E != tedge4 && E.Bot.X != E.Prev.Top.X)
-            this.ReverseHorizontal(E);
+            ReverseHorizontal(E);
         }
         if (E.Dx == -3.4E+38 && E != tedge4 && E.Bot.X != E.Prev.Top.X)
-          this.ReverseHorizontal(E);
+          ReverseHorizontal(E);
         tedge5 = tedge1.Next;
       }
       else
@@ -289,10 +289,10 @@ label_12:
         {
           E.NextInLML = E.Prev;
           if (E.Dx == -3.4E+38 && E != tedge4 && E.Bot.X != E.Next.Top.X)
-            this.ReverseHorizontal(E);
+            ReverseHorizontal(E);
         }
         if (E.Dx == -3.4E+38 && E != tedge4 && E.Bot.X != E.Next.Top.X)
-          this.ReverseHorizontal(E);
+          ReverseHorizontal(E);
         tedge5 = tedge1.Prev;
       }
       return tedge5;
@@ -317,14 +317,14 @@ label_12:
         tedgeList.Add(new TEdge());
       bool flag = true;
       tedgeList[1].Curr = pg[1];
-      this.RangeTest(pg[0], ref this.m_UseFullRange);
-      this.RangeTest(pg[index1], ref this.m_UseFullRange);
-      this.InitEdge(tedgeList[0], tedgeList[1], tedgeList[index1], pg[0]);
-      this.InitEdge(tedgeList[index1], tedgeList[0], tedgeList[index1 - 1], pg[index1]);
+      RangeTest(pg[0], ref m_UseFullRange);
+      RangeTest(pg[index1], ref m_UseFullRange);
+      InitEdge(tedgeList[0], tedgeList[1], tedgeList[index1], pg[0]);
+      InitEdge(tedgeList[index1], tedgeList[0], tedgeList[index1 - 1], pg[index1]);
       for (int index3 = index1 - 1; index3 >= 1; --index3)
       {
-        this.RangeTest(pg[index3], ref this.m_UseFullRange);
-        this.InitEdge(tedgeList[index3], tedgeList[index3 + 1], tedgeList[index3 - 1], pg[index3]);
+        RangeTest(pg[index3], ref m_UseFullRange);
+        InitEdge(tedgeList[index3], tedgeList[index3 + 1], tedgeList[index3 - 1], pg[index3]);
       }
       TEdge next = tedgeList[0];
       TEdge e = next;
@@ -335,11 +335,11 @@ label_12:
         {
           if (e.Prev != e.Next)
           {
-            if (Closed && ClipperBase.SlopesEqual(e.Prev.Curr, e.Curr, e.Next.Curr, this.m_UseFullRange) && (!this.PreserveCollinear || !this.Pt2IsBetweenPt1AndPt3(e.Prev.Curr, e.Curr, e.Next.Curr)))
+            if (Closed && SlopesEqual(e.Prev.Curr, e.Curr, e.Next.Curr, m_UseFullRange) && (!PreserveCollinear || !Pt2IsBetweenPt1AndPt3(e.Prev.Curr, e.Curr, e.Next.Curr)))
             {
               if (e == next)
                 next = e.Next;
-              e = this.RemoveEdge(e).Prev;
+              e = RemoveEdge(e).Prev;
               tedge1 = e;
             }
             else
@@ -356,7 +356,7 @@ label_12:
         {
           if (e == next)
             next = e.Next;
-          e = this.RemoveEdge(e);
+          e = RemoveEdge(e);
           tedge1 = e;
         }
         else
@@ -367,13 +367,13 @@ label_27:
         return false;
       if (!Closed)
       {
-        this.m_HasOpenPaths = true;
+        m_HasOpenPaths = true;
         next.Prev.OutIdx = -2;
       }
       TEdge tedge2 = next;
       do
       {
-        this.InitEdge2(tedge2, polyType);
+        InitEdge2(tedge2, polyType);
         tedge2 = tedge2.Next;
         if (flag && tedge2.Curr.Y != next.Curr.Y)
           flag = false;
@@ -385,12 +385,11 @@ label_27:
           return false;
         tedge2.Prev.OutIdx = -2;
         if (tedge2.Prev.Bot.X < tedge2.Prev.Top.X)
-          this.ReverseHorizontal(tedge2.Prev);
-        LocalMinima newLm = new LocalMinima()
-        {
-          Next = (LocalMinima) null,
+          ReverseHorizontal(tedge2.Prev);
+        LocalMinima newLm = new LocalMinima {
+          Next = null,
           Y = tedge2.Bot.Y,
-          LeftBound = (TEdge) null,
+          LeftBound = null,
           RightBound = tedge2
         };
         newLm.RightBound.Side = EdgeSide.esRight;
@@ -399,25 +398,25 @@ label_27:
         {
           tedge2.NextInLML = tedge2.Next;
           if (tedge2.Bot.X != tedge2.Prev.Top.X)
-            this.ReverseHorizontal(tedge2);
+            ReverseHorizontal(tedge2);
         }
-        this.InsertLocalMinima(newLm);
-        this.m_edges.Add(tedgeList);
+        InsertLocalMinima(newLm);
+        m_edges.Add(tedgeList);
         return true;
       }
-      this.m_edges.Add(tedgeList);
-      TEdge tedge3 = (TEdge) null;
+      m_edges.Add(tedgeList);
+      TEdge tedge3 = null;
       if (tedge2.Prev.Bot == tedge2.Prev.Top)
         tedge2 = tedge2.Next;
       while (true)
       {
-        TEdge nextLocMin = this.FindNextLocMin(tedge2);
+        TEdge nextLocMin = FindNextLocMin(tedge2);
         if (nextLocMin != tedge3)
         {
           if (tedge3 == null)
             tedge3 = nextLocMin;
           LocalMinima newLm = new LocalMinima();
-          newLm.Next = (LocalMinima) null;
+          newLm.Next = null;
           newLm.Y = nextLocMin.Bot.Y;
           bool LeftBoundIsForward;
           if (nextLocMin.Dx < nextLocMin.Prev.Dx)
@@ -436,17 +435,17 @@ label_27:
           newLm.RightBound.Side = EdgeSide.esRight;
           newLm.LeftBound.WindDelta = Closed ? (newLm.LeftBound.Next != newLm.RightBound ? 1 : -1) : 0;
           newLm.RightBound.WindDelta = -newLm.LeftBound.WindDelta;
-          tedge2 = this.ProcessBound(newLm.LeftBound, LeftBoundIsForward);
+          tedge2 = ProcessBound(newLm.LeftBound, LeftBoundIsForward);
           if (tedge2.OutIdx == -2)
-            tedge2 = this.ProcessBound(tedge2, LeftBoundIsForward);
-          TEdge E = this.ProcessBound(newLm.RightBound, !LeftBoundIsForward);
+            tedge2 = ProcessBound(tedge2, LeftBoundIsForward);
+          TEdge E = ProcessBound(newLm.RightBound, !LeftBoundIsForward);
           if (E.OutIdx == -2)
-            E = this.ProcessBound(E, !LeftBoundIsForward);
+            E = ProcessBound(E, !LeftBoundIsForward);
           if (newLm.LeftBound.OutIdx == -2)
-            newLm.LeftBound = (TEdge) null;
+            newLm.LeftBound = null;
           else if (newLm.RightBound.OutIdx == -2)
-            newLm.RightBound = (TEdge) null;
-          this.InsertLocalMinima(newLm);
+            newLm.RightBound = null;
+          InsertLocalMinima(newLm);
           if (!LeftBoundIsForward)
             tedge2 = E;
         }
@@ -461,7 +460,7 @@ label_27:
       bool flag = false;
       for (int index = 0; index < ppg.Count; ++index)
       {
-        if (this.AddPath(ppg[index], polyType, closed))
+        if (AddPath(ppg[index], polyType, closed))
           flag = true;
       }
       return flag;
@@ -479,7 +478,7 @@ label_27:
       e.Prev.Next = e.Next;
       e.Next.Prev = e.Prev;
       TEdge next = e.Next;
-      e.Prev = (TEdge) null;
+      e.Prev = null;
       return next;
     }
 
@@ -490,21 +489,21 @@ label_27:
       if (e.Delta.Y == 0L)
         e.Dx = -3.4E+38;
       else
-        e.Dx = (double) e.Delta.X / (double) e.Delta.Y;
+        e.Dx = e.Delta.X / (double) e.Delta.Y;
     }
 
     private void InsertLocalMinima(LocalMinima newLm)
     {
-      if (this.m_MinimaList == null)
-        this.m_MinimaList = newLm;
-      else if (newLm.Y >= this.m_MinimaList.Y)
+      if (m_MinimaList == null)
+        m_MinimaList = newLm;
+      else if (newLm.Y >= m_MinimaList.Y)
       {
-        newLm.Next = this.m_MinimaList;
-        this.m_MinimaList = newLm;
+        newLm.Next = m_MinimaList;
+        m_MinimaList = newLm;
       }
       else
       {
-        LocalMinima localMinima = this.m_MinimaList;
+        LocalMinima localMinima = m_MinimaList;
         while (localMinima.Next != null && newLm.Y < localMinima.Next.Y)
           localMinima = localMinima.Next;
         newLm.Next = localMinima.Next;
@@ -514,19 +513,19 @@ label_27:
 
     protected void PopLocalMinima()
     {
-      if (this.m_CurrentLM == null)
+      if (m_CurrentLM == null)
         return;
-      this.m_CurrentLM = this.m_CurrentLM.Next;
+      m_CurrentLM = m_CurrentLM.Next;
     }
 
-    private void ReverseHorizontal(TEdge e) => this.Swap(ref e.Top.X, ref e.Bot.X);
+    private void ReverseHorizontal(TEdge e) => Swap(ref e.Top.X, ref e.Bot.X);
 
     protected virtual void Reset()
     {
-      this.m_CurrentLM = this.m_MinimaList;
-      if (this.m_CurrentLM == null)
+      m_CurrentLM = m_MinimaList;
+      if (m_CurrentLM == null)
         return;
-      for (LocalMinima localMinima = this.m_MinimaList; localMinima != null; localMinima = localMinima.Next)
+      for (LocalMinima localMinima = m_MinimaList; localMinima != null; localMinima = localMinima.Next)
       {
         TEdge leftBound = localMinima.LeftBound;
         if (leftBound != null)
@@ -553,8 +552,7 @@ label_27:
         ++index1;
       if (index1 == count)
         return new IntRect(0L, 0L, 0L, 0L);
-      IntRect bounds = new IntRect()
-      {
+      IntRect bounds = new IntRect {
         left = paths[index1][0].X
       };
       bounds.right = bounds.left;

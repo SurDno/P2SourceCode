@@ -1,6 +1,5 @@
-﻿using Engine.Source.Services.Inputs;
-using System;
-using UnityEngine;
+﻿using System;
+using Engine.Source.Services.Inputs;
 
 namespace Engine.Impl.UI.Controls
 {

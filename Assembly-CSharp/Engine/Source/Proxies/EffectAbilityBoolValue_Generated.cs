@@ -1,9 +1,9 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons.Cloneable;
 using Engine.Common.Commons.Converters;
 using Engine.Source.Effects.Values;
-using System;
 
 namespace Engine.Source.Proxies
 {
@@ -18,23 +18,23 @@ namespace Engine.Source.Proxies
     public object Clone()
     {
       EffectAbilityBoolValue_Generated instance = Activator.CreateInstance<EffectAbilityBoolValue_Generated>();
-      this.CopyTo((object) instance);
-      return (object) instance;
+      CopyTo(instance);
+      return instance;
     }
 
     public void CopyTo(object target2)
     {
-      ((EffectAbilityValue<bool>) target2).valueName = this.valueName;
+      ((EffectAbilityValue<bool>) target2).valueName = valueName;
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.WriteEnum<AbilityValueNameEnum>(writer, "AbilityValueName", this.valueName);
+      DefaultDataWriteUtility.WriteEnum(writer, "AbilityValueName", valueName);
     }
 
     public void DataRead(IDataReader reader, Type type)
     {
-      this.valueName = DefaultDataReadUtility.ReadEnum<AbilityValueNameEnum>(reader, "AbilityValueName");
+      valueName = DefaultDataReadUtility.ReadEnum<AbilityValueNameEnum>(reader, "AbilityValueName");
     }
   }
 }

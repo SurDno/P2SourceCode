@@ -7,65 +7,65 @@ namespace Engine.Impl.Weather.Element
   [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
   public class FallingLeaves : IBlendable<FallingLeaves>
   {
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     protected float deviation;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     protected float minLandingNormalY;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     protected int poolCapacity;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     protected float radius;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy()]
     protected float rate;
 
     public int PoolCapacity
     {
-      get => this.poolCapacity;
-      set => this.poolCapacity = value;
+      get => poolCapacity;
+      set => poolCapacity = value;
     }
 
     public float Radius
     {
-      get => this.radius;
-      set => this.radius = value;
+      get => radius;
+      set => radius = value;
     }
 
     public float MinLandingNormalY
     {
-      get => this.minLandingNormalY;
-      set => this.minLandingNormalY = value;
+      get => minLandingNormalY;
+      set => minLandingNormalY = value;
     }
 
     public float Deviation
     {
-      get => this.deviation;
-      set => this.deviation = value;
+      get => deviation;
+      set => deviation = value;
     }
 
     public float Rate
     {
-      get => this.rate;
-      set => this.rate = value;
+      get => rate;
+      set => rate = value;
     }
 
     public void Blend(FallingLeaves a, FallingLeaves b, IPureBlendOperation opp)
     {
       IBlendOperation blendOperation = (IBlendOperation) opp;
-      this.PoolCapacity = blendOperation.Blend(a.PoolCapacity, b.PoolCapacity);
-      this.Radius = blendOperation.Blend(a.Radius, b.Radius);
-      this.MinLandingNormalY = blendOperation.Blend(a.MinLandingNormalY, b.MinLandingNormalY);
-      this.Deviation = blendOperation.Blend(a.Deviation, b.Deviation);
-      this.Rate = blendOperation.Blend(a.Rate, b.Rate);
+      PoolCapacity = blendOperation.Blend(a.PoolCapacity, b.PoolCapacity);
+      Radius = blendOperation.Blend(a.Radius, b.Radius);
+      MinLandingNormalY = blendOperation.Blend(a.MinLandingNormalY, b.MinLandingNormalY);
+      Deviation = blendOperation.Blend(a.Deviation, b.Deviation);
+      Rate = blendOperation.Blend(a.Rate, b.Rate);
     }
   }
 }

@@ -1,18 +1,17 @@
-﻿using Engine.Source.Commons;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading;
+using Engine.Source.Commons;
 using Engine.Source.Settings.External;
 using NodeCanvas.Framework.Internal;
 using ParadoxNotion.Serialization;
-using System;
-using System.Collections.Generic;
-using System.Threading;
-using UnityEngine;
 
 namespace NodeCanvas.Framework
 {
   public class Blackboard : MonoBehaviour, ISerializationCallbackReceiver
   {
     [SerializeField]
-    private string _serializedBlackboard = (string) null;
+    private string _serializedBlackboard = null;
     [SerializeField]
     private List<UnityEngine.Object> _objectReferences = new List<UnityEngine.Object>();
     private BlackboardData _blackboard = new BlackboardData();
@@ -28,48 +27,48 @@ namespace NodeCanvas.Framework
 
     public void WaitForThreadFinish()
     {
-      if (this.deserializeThread == null)
+      if (deserializeThread == null)
         return;
-      this.deserializeThread.Join();
-      this.deserializeThread = (Thread) null;
+      deserializeThread.Join();
+      deserializeThread = null;
     }
 
-    public bool IsReady => this.deserializeThread == null || !this.deserializeThread.IsAlive;
+    public bool IsReady => deserializeThread == null || !deserializeThread.IsAlive;
 
     void ISerializationCallbackReceiver.OnAfterDeserialize()
     {
       if (EngineApplication.MainThread == Thread.CurrentThread && ExternalSettingsInstance<ExternalOptimizationSettings>.Instance.BlueprintsInSeparateThread)
       {
-        this.deserializeThread = new Thread((ThreadStart) (() =>
+        deserializeThread = new Thread(() =>
         {
-          this._blackboard = JSONSerializer.Deserialize<BlackboardData>(this._serializedBlackboard, this._objectReferences);
-          if (this._blackboard != null)
+          _blackboard = JSONSerializer.Deserialize<BlackboardData>(_serializedBlackboard, _objectReferences);
+          if (_blackboard != null)
             return;
           Debug.LogError((object) "!!!");
-          this._blackboard = new BlackboardData();
-        }));
-        this.deserializeThread.Start();
+          _blackboard = new BlackboardData();
+        });
+        deserializeThread.Start();
       }
       else
       {
-        this._blackboard = JSONSerializer.Deserialize<BlackboardData>(this._serializedBlackboard, this._objectReferences);
-        if (this._blackboard == null)
+        _blackboard = JSONSerializer.Deserialize<BlackboardData>(_serializedBlackboard, _objectReferences);
+        if (_blackboard == null)
         {
           Debug.LogError((object) "!!!");
-          this._blackboard = new BlackboardData();
+          _blackboard = new BlackboardData();
         }
       }
     }
 
     public Dictionary<string, Variable> variables
     {
-      get => this._blackboard.variables;
-      set => this._blackboard.variables = value;
+      get => _blackboard.variables;
+      set => _blackboard.variables = value;
     }
 
-    public Variable AddVariable(string name, System.Type type)
+    public Variable AddVariable(string name, Type type)
     {
-      Variable variable = this._blackboard.AddVariable(name, type);
+      Variable variable = _blackboard.AddVariable(name, type);
       Action<Variable> onVariableAdded = this.onVariableAdded;
       if (onVariableAdded != null)
         onVariableAdded(variable);
@@ -78,7 +77,7 @@ namespace NodeCanvas.Framework
 
     public Variable AddVariable(string name, object value)
     {
-      Variable variable = this._blackboard.AddVariable(name, value);
+      Variable variable = _blackboard.AddVariable(name, value);
       Action<Variable> onVariableAdded = this.onVariableAdded;
       if (onVariableAdded != null)
         onVariableAdded(variable);
@@ -87,29 +86,29 @@ namespace NodeCanvas.Framework
 
     public Variable RemoveVariable(string name)
     {
-      Variable variable = this._blackboard.RemoveVariable(name);
+      Variable variable = _blackboard.RemoveVariable(name);
       Action<Variable> onVariableRemoved = this.onVariableRemoved;
       if (onVariableRemoved != null)
         onVariableRemoved(variable);
       return variable;
     }
 
-    public Variable GetVariable(string name, System.Type ofType = null)
+    public Variable GetVariable(string name, Type ofType = null)
     {
-      return this._blackboard.GetVariable(name, ofType);
+      return _blackboard.GetVariable(name, ofType);
     }
 
-    public Variable GetVariableByID(string ID) => this._blackboard.GetVariableByID(ID);
+    public Variable GetVariableByID(string ID) => _blackboard.GetVariableByID(ID);
 
-    public Variable<T> GetVariable<T>(string name) => this._blackboard.GetVariable<T>(name);
+    public Variable<T> GetVariable<T>(string name) => _blackboard.GetVariable<T>(name);
 
-    public T GetValue<T>(string name) => this._blackboard.GetValue<T>(name);
+    public T GetValue<T>(string name) => _blackboard.GetValue<T>(name);
 
-    public Variable SetValue(string name, object value) => this._blackboard.SetValue(name, value);
+    public Variable SetValue(string name, object value) => _blackboard.SetValue(name, value);
 
-    public string[] GetVariableNames(System.Type ofType)
+    public string[] GetVariableNames(Type ofType)
     {
-      return this._blackboard.GetVariableNames(ofType);
+      return _blackboard.GetVariableNames(ofType);
     }
   }
 }

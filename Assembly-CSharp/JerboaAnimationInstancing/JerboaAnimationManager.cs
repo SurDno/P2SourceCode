@@ -1,45 +1,44 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using UnityEngine;
 
 namespace JerboaAnimationInstancing
 {
   public class JerboaAnimationManager : MonoBehaviour
   {
-    private Dictionary<GameObject, JerboaAnimationManager.InstanceAnimationInfo> animationInfo;
+    private Dictionary<GameObject, InstanceAnimationInfo> animationInfo;
 
     private void Awake()
     {
-      this.animationInfo = new Dictionary<GameObject, JerboaAnimationManager.InstanceAnimationInfo>();
+      animationInfo = new Dictionary<GameObject, InstanceAnimationInfo>();
     }
 
     private void Update()
     {
     }
 
-    public JerboaAnimationManager.InstanceAnimationInfo FindAnimationInfo(
+    public InstanceAnimationInfo FindAnimationInfo(
       JerboaInstancingManager jerboaInstancingManager,
       TextAsset textAsset,
       GameObject prefab,
       JerboaInstance instance)
     {
       Debug.Assert((Object) prefab != (Object) null);
-      JerboaAnimationManager.InstanceAnimationInfo instanceAnimationInfo = (JerboaAnimationManager.InstanceAnimationInfo) null;
-      return this.animationInfo.TryGetValue(prefab, out instanceAnimationInfo) ? instanceAnimationInfo : this.CreateAnimationInfoFromFile(jerboaInstancingManager, textAsset, prefab);
+      InstanceAnimationInfo instanceAnimationInfo = null;
+      return animationInfo.TryGetValue(prefab, out instanceAnimationInfo) ? instanceAnimationInfo : CreateAnimationInfoFromFile(jerboaInstancingManager, textAsset, prefab);
     }
 
-    private JerboaAnimationManager.InstanceAnimationInfo CreateAnimationInfoFromFile(
+    private InstanceAnimationInfo CreateAnimationInfoFromFile(
       JerboaInstancingManager jerboaInstancingManager,
       TextAsset textAsset,
       GameObject prefab)
     {
       using (MemoryStream input = new MemoryStream(textAsset.bytes))
       {
-        JerboaAnimationManager.InstanceAnimationInfo animationInfoFromFile = new JerboaAnimationManager.InstanceAnimationInfo();
-        BinaryReader reader = new BinaryReader((Stream) input);
-        animationInfoFromFile.listAniInfo = this.ReadAnimationInfo(reader).ToArray();
-        animationInfoFromFile.extraBoneInfo = this.ReadExtraBoneInfo(reader);
-        this.animationInfo.Add(prefab, animationInfoFromFile);
+        InstanceAnimationInfo animationInfoFromFile = new InstanceAnimationInfo();
+        BinaryReader reader = new BinaryReader(input);
+        animationInfoFromFile.listAniInfo = ReadAnimationInfo(reader).ToArray();
+        animationInfoFromFile.extraBoneInfo = ReadExtraBoneInfo(reader);
+        animationInfo.Add(prefab, animationInfoFromFile);
         jerboaInstancingManager.ImportAnimationTexture(prefab.name, reader);
         input.Close();
         return animationInfoFromFile;
@@ -52,8 +51,7 @@ namespace JerboaAnimationInstancing
       List<AnimationInfo> animationInfoList = new List<AnimationInfo>();
       for (int index1 = 0; index1 != num1; ++index1)
       {
-        AnimationInfo animationInfo = new AnimationInfo()
-        {
+        AnimationInfo animationInfo = new AnimationInfo {
           animationName = reader.ReadString()
         };
         animationInfo.animationNameHash = animationInfo.animationName.GetHashCode();
@@ -80,8 +78,7 @@ namespace JerboaAnimationInstancing
         int num2 = reader.ReadInt32();
         animationInfo.eventList = new List<AnimationEvent>();
         for (int index3 = 0; index3 != num2; ++index3)
-          animationInfo.eventList.Add(new AnimationEvent()
-          {
+          animationInfo.eventList.Add(new AnimationEvent {
             function = reader.ReadString(),
             floatParameter = reader.ReadSingle(),
             intParameter = reader.ReadInt32(),
@@ -91,13 +88,13 @@ namespace JerboaAnimationInstancing
           });
         animationInfoList.Add(animationInfo);
       }
-      animationInfoList.Sort((IComparer<AnimationInfo>) new ComparerHash());
+      animationInfoList.Sort(new ComparerHash());
       return animationInfoList;
     }
 
     private ExtraBoneInfo ReadExtraBoneInfo(BinaryReader reader)
     {
-      ExtraBoneInfo extraBoneInfo = (ExtraBoneInfo) null;
+      ExtraBoneInfo extraBoneInfo = null;
       if (reader.ReadBoolean())
       {
         extraBoneInfo = new ExtraBoneInfo();

@@ -1,9 +1,6 @@
 ﻿using Cofe.Proxies;
-using Engine.Common;
-using Engine.Common.Components.Interactable;
 using PLVirtualMachine.Common.EngineAPI.VMECS;
 using PLVirtualMachine.Objects;
-using System;
 
 namespace PLVirtualMachine.Dynamic.Components
 {
@@ -21,10 +18,10 @@ namespace PLVirtualMachine.Dynamic.Components
       switch (target.Name)
       {
         case "BeginControllIteractEvent":
-          this.BeginControllIteractEvent += (Action<IEntity, IEntity, InteractType>) ((p1, p2, p3) => target.RaiseFromEngineImpl((object) p1, (object) p2, (object) p3));
+          BeginControllIteractEvent += (p1, p2, p3) => target.RaiseFromEngineImpl(p1, p2, p3);
           break;
         case "EndControllIteractEvent":
-          this.EndControllIteractEvent += (Action<IEntity, IEntity, InteractType>) ((p1, p2, p3) => target.RaiseFromEngineImpl((object) p1, (object) p2, (object) p3));
+          EndControllIteractEvent += (p1, p2, p3) => target.RaiseFromEngineImpl(p1, p2, p3);
           break;
       }
     }

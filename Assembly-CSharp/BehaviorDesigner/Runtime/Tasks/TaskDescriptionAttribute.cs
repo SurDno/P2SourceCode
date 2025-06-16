@@ -2,13 +2,13 @@
 
 namespace BehaviorDesigner.Runtime.Tasks
 {
-  [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
+  [AttributeUsage(AttributeTargets.Class, Inherited = false)]
   public class TaskDescriptionAttribute : Attribute
   {
     private readonly string mDescription;
 
-    public string Description => this.mDescription;
+    public string Description => mDescription;
 
-    public TaskDescriptionAttribute(string description) => this.mDescription = description;
+    public TaskDescriptionAttribute(string description) => mDescription = description;
   }
 }

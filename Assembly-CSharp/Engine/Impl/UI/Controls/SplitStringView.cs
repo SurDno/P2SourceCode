@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace Engine.Impl.UI.Controls
+﻿namespace Engine.Impl.UI.Controls
 {
   public class SplitStringView : StringView
   {
@@ -9,11 +7,11 @@ namespace Engine.Impl.UI.Controls
 
     public override void SkipAnimation()
     {
-      if (this.views == null)
+      if (views == null)
         return;
-      for (int index = 0; index < this.views.Length; ++index)
+      for (int index = 0; index < views.Length; ++index)
       {
-        StringView view = this.views[index];
+        StringView view = views[index];
         if ((Object) view != (Object) null)
           view.SkipAnimation();
       }
@@ -21,13 +19,13 @@ namespace Engine.Impl.UI.Controls
 
     protected override void ApplyStringValue()
     {
-      if (this.views == null)
+      if (views == null)
         return;
-      for (int index = 0; index < this.views.Length; ++index)
+      for (int index = 0; index < views.Length; ++index)
       {
-        StringView view = this.views[index];
+        StringView view = views[index];
         if ((Object) view != (Object) null)
-          view.StringValue = this.StringValue;
+          view.StringValue = StringValue;
       }
     }
   }

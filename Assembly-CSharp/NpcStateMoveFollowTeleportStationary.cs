@@ -2,7 +2,6 @@
 using Engine.Behaviours.Unity.Mecanim;
 using Engine.Common.Components.MessangerStationary;
 using Inspectors;
-using UnityEngine;
 
 public class NpcStateMoveFollowTeleportStationary : INpcState
 {
@@ -19,26 +18,26 @@ public class NpcStateMoveFollowTeleportStationary : INpcState
 
   private bool TryInit()
   {
-    if (this.inited)
+    if (inited)
       return true;
-    this.failed = false;
-    this.inited = true;
+    failed = false;
+    inited = true;
     return true;
   }
 
   public NpcStateMoveFollowTeleportStationary(NpcState npcState, Pivot pivot)
   {
-    this.GameObject = npcState.gameObject;
+    GameObject = npcState.gameObject;
     this.npcState = npcState;
     this.pivot = pivot;
   }
 
   public void Activate(float trialTime, SpawnpointKindEnum spawnpointKind)
   {
-    if (!this.TryInit())
+    if (!TryInit())
       return;
-    this.wasRestartBehaviourAfterTeleport = this.npcState.RestartBehaviourAfterTeleport;
-    Animator animator = this.pivot.GetAnimator();
+    wasRestartBehaviourAfterTeleport = npcState.RestartBehaviourAfterTeleport;
+    Animator animator = pivot.GetAnimator();
     if (!((Object) animator != (Object) null))
       return;
     AnimatorState45 animatorState = AnimatorState45.GetAnimatorState(animator);
@@ -48,25 +47,25 @@ public class NpcStateMoveFollowTeleportStationary : INpcState
 
   public void Shutdown()
   {
-    if (!this.failed)
+    if (!failed)
       ;
   }
 
   public void Update()
   {
-    if (!this.failed)
+    if (!failed)
       ;
   }
 
   public void OnAnimatorMove()
   {
-    if (!this.failed)
+    if (!failed)
       ;
   }
 
   public void OnAnimatorEventEvent(string obj)
   {
-    if (!this.failed)
+    if (!failed)
       ;
   }
 

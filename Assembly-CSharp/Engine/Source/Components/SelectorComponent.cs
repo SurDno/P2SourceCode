@@ -1,4 +1,5 @@
-﻿using Engine.Common;
+﻿using System.Collections.Generic;
+using Engine.Common;
 using Engine.Common.Components;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
@@ -6,9 +7,6 @@ using Engine.Source.Commons;
 using Engine.Source.Components.Selectors;
 using Engine.Source.Connections;
 using Inspectors;
-using System;
-using System.Collections.Generic;
-using UnityEngine;
 
 namespace Engine.Source.Components
 {
@@ -17,9 +15,9 @@ namespace Engine.Source.Components
   [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
   public class SelectorComponent : EngineComponent
   {
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy()]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected List<SelectorPreset> presets = new List<SelectorPreset>();
@@ -30,39 +28,39 @@ namespace Engine.Source.Components
     public override void OnAdded()
     {
       base.OnAdded();
-      this.locationItemComponent.OnHibernationChanged += new Action<ILocationItemComponent>(this.LocationItemComponent_OnChangeHibernation);
+      locationItemComponent.OnHibernationChanged += LocationItemComponent_OnChangeHibernation;
     }
 
     public override void OnRemoved()
     {
-      this.locationItemComponent.OnHibernationChanged -= new Action<ILocationItemComponent>(this.LocationItemComponent_OnChangeHibernation);
+      locationItemComponent.OnHibernationChanged -= LocationItemComponent_OnChangeHibernation;
       base.OnRemoved();
     }
 
     private void LocationItemComponent_OnChangeHibernation(ILocationItemComponent sender)
     {
-      if (this.initialise || this.locationItemComponent.IsHibernation)
+      if (initialise || locationItemComponent.IsHibernation)
         return;
-      this.initialise = true;
-      if (this.presets.Count == 0)
+      initialise = true;
+      if (presets.Count == 0)
         return;
-      IEntity sceneEntity = ((IEntityHierarchy) this.Owner).SceneEntity;
+      IEntity sceneEntity = ((IEntityHierarchy) Owner).SceneEntity;
       if (sceneEntity == null)
       {
-        Debug.LogError((object) ("SceneEntity not found : " + this.Owner.GetInfo()));
+        Debug.LogError((object) ("SceneEntity not found : " + Owner.GetInfo()));
       }
       else
       {
-        int num = UnityEngine.Random.Range(0, this.presets.Count);
-        for (int index = 0; index < this.presets.Count; ++index)
+        int num = UnityEngine.Random.Range(0, presets.Count);
+        for (int index = 0; index < presets.Count; ++index)
         {
-          foreach (SceneGameObject sceneGameObject in this.presets[index].Objects)
+          foreach (SceneGameObject sceneGameObject in presets[index].Objects)
           {
             IEntity entityByTemplate = EntityUtility.GetEntityByTemplate(sceneEntity, sceneGameObject.Id);
             if (entityByTemplate != null)
               entityByTemplate.IsEnabled = num == index;
             else
-              Debug.LogError((object) ("SelectorComponent - EntityByTemplate not found , id : " + (object) sceneGameObject.Id + " , owner : " + this.Owner.GetInfo()));
+              Debug.LogError((object) ("SelectorComponent - EntityByTemplate not found , id : " + sceneGameObject.Id + " , owner : " + Owner.GetInfo()));
           }
         }
       }

@@ -1,7 +1,5 @@
 ﻿using Engine.Common.Services;
 using Engine.Impl.Services;
-using System;
-using UnityEngine;
 
 namespace Engine.Impl.UI.Menu.Main
 {
@@ -18,31 +16,31 @@ namespace Engine.Impl.UI.Menu.Main
 
     protected override void Awake()
     {
-      this.localizationService = ServiceLocator.GetService<LocalizationService>();
-      this.layout = UnityEngine.Object.Instantiate<LayoutContainer>(this.listLayoutPrefab, this.transform, false);
-      this.textLanguageView = UnityEngine.Object.Instantiate<NamedIntSettingsValueView>(this.namedIntValueViewPrefab, (Transform) this.layout.Content, false);
+      localizationService = ServiceLocator.GetService<LocalizationService>();
+      layout = UnityEngine.Object.Instantiate<LayoutContainer>(listLayoutPrefab, this.transform, false);
+      this.textLanguageView = UnityEngine.Object.Instantiate<NamedIntSettingsValueView>(namedIntValueViewPrefab, (Transform) layout.Content, false);
       this.textLanguageView.SetName("{UI.Menu.Main.Settings.Language.Text}");
-      this.textLanguageView.SetValueNames(this.languageNames);
+      this.textLanguageView.SetValueNames(languageNames);
       NamedIntSettingsValueView textLanguageView = this.textLanguageView;
-      textLanguageView.VisibleValueChangeEvent = textLanguageView.VisibleValueChangeEvent + new Action<SettingsValueView<int>>(this.OnLanguageChange);
-      this.voiceLanguageView = UnityEngine.Object.Instantiate<NamedIntSettingsValueView>(this.namedIntValueViewPrefab, (Transform) this.layout.Content, false);
+      textLanguageView.VisibleValueChangeEvent = textLanguageView.VisibleValueChangeEvent + OnLanguageChange;
+      this.voiceLanguageView = UnityEngine.Object.Instantiate<NamedIntSettingsValueView>(namedIntValueViewPrefab, (Transform) layout.Content, false);
       this.voiceLanguageView.SetName("{UI.Menu.Main.Settings.Language.Voice}");
-      this.voiceLanguageView.SetValueNames(this.languageNames);
+      this.voiceLanguageView.SetValueNames(languageNames);
       NamedIntSettingsValueView voiceLanguageView = this.voiceLanguageView;
-      voiceLanguageView.VisibleValueChangeEvent = voiceLanguageView.VisibleValueChangeEvent + new Action<SettingsValueView<int>>(this.OnLipSyncLanguageChange);
-      this.subtitlesLanguageView = UnityEngine.Object.Instantiate<NamedIntSettingsValueView>(this.namedIntValueViewPrefab, (Transform) this.layout.Content, false);
+      voiceLanguageView.VisibleValueChangeEvent = voiceLanguageView.VisibleValueChangeEvent + OnLipSyncLanguageChange;
+      this.subtitlesLanguageView = UnityEngine.Object.Instantiate<NamedIntSettingsValueView>(namedIntValueViewPrefab, (Transform) layout.Content, false);
       this.subtitlesLanguageView.SetName("{UI.Menu.Main.Settings.Language.Subtitles}");
-      this.subtitlesLanguageView.SetValueNames(this.languageNames);
+      this.subtitlesLanguageView.SetValueNames(languageNames);
       NamedIntSettingsValueView subtitlesLanguageView = this.subtitlesLanguageView;
-      subtitlesLanguageView.VisibleValueChangeEvent = subtitlesLanguageView.VisibleValueChangeEvent + new Action<SettingsValueView<int>>(this.OnSubTitlesLanguageChange);
+      subtitlesLanguageView.VisibleValueChangeEvent = subtitlesLanguageView.VisibleValueChangeEvent + OnSubTitlesLanguageChange;
       base.Awake();
     }
 
     private int LanguageIndex(LanguageEnum language)
     {
-      for (int index = 0; index < this.languages.Length; ++index)
+      for (int index = 0; index < languages.Length; ++index)
       {
-        if (this.languages[index] == language)
+        if (languages[index] == language)
           return index;
       }
       return 0;
@@ -50,39 +48,39 @@ namespace Engine.Impl.UI.Menu.Main
 
     protected override void OnButtonReset()
     {
-      LanguageEnum defaultLanguage = this.localizationService.DefaultLanguage;
-      this.localizationService.CurrentLanguage = defaultLanguage;
-      this.localizationService.CurrentLipSyncLanguage = defaultLanguage;
-      this.localizationService.CurrentSubTitlesLanguage = defaultLanguage;
-      this.UpdateViews();
+      LanguageEnum defaultLanguage = localizationService.DefaultLanguage;
+      localizationService.CurrentLanguage = defaultLanguage;
+      localizationService.CurrentLipSyncLanguage = defaultLanguage;
+      localizationService.CurrentSubTitlesLanguage = defaultLanguage;
+      UpdateViews();
     }
 
     protected override void OnEnable()
     {
       base.OnEnable();
-      this.UpdateViews();
+      UpdateViews();
     }
 
     private void OnLanguageChange(SettingsValueView<int> view)
     {
-      this.localizationService.CurrentLanguage = this.languages[view.VisibleValue];
+      localizationService.CurrentLanguage = languages[view.VisibleValue];
     }
 
     private void OnLipSyncLanguageChange(SettingsValueView<int> view)
     {
-      this.localizationService.CurrentLipSyncLanguage = this.languages[view.VisibleValue];
+      localizationService.CurrentLipSyncLanguage = languages[view.VisibleValue];
     }
 
     private void OnSubTitlesLanguageChange(SettingsValueView<int> view)
     {
-      this.localizationService.CurrentSubTitlesLanguage = this.languages[view.VisibleValue];
+      localizationService.CurrentSubTitlesLanguage = languages[view.VisibleValue];
     }
 
     private void UpdateViews()
     {
-      this.textLanguageView.VisibleValue = this.LanguageIndex(this.localizationService.CurrentLanguage);
-      this.voiceLanguageView.VisibleValue = this.LanguageIndex(this.localizationService.CurrentLipSyncLanguage);
-      this.subtitlesLanguageView.VisibleValue = this.LanguageIndex(this.localizationService.CurrentSubTitlesLanguage);
+      textLanguageView.VisibleValue = LanguageIndex(localizationService.CurrentLanguage);
+      voiceLanguageView.VisibleValue = LanguageIndex(localizationService.CurrentLipSyncLanguage);
+      subtitlesLanguageView.VisibleValue = LanguageIndex(localizationService.CurrentSubTitlesLanguage);
     }
   }
 }

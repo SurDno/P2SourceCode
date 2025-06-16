@@ -1,12 +1,11 @@
-﻿using Cofe.Proxies;
+﻿using System.Reflection;
+using Cofe.Proxies;
 using Cofe.Utility;
 using Engine.Common.Commons;
 using Engine.Common.Components.Parameters;
 using Engine.Common.Generator;
 using Engine.Common.Services;
 using Inspectors;
-using System.Reflection;
-using UnityEngine;
 
 namespace Engine.Source.Commons.Parameters
 {
@@ -18,17 +17,17 @@ namespace Engine.Source.Commons.Parameters
     INeedSave
     where T : struct
   {
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [StateSaveProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [StateSaveProxy]
+    [CopyableProxy]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected ParameterNameEnum name;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [StateSaveProxy(MemberEnum.None)]
-    [StateLoadProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [StateSaveProxy]
+    [StateLoadProxy]
+    [CopyableProxy()]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected PriorityContainer<T> container = ProxyFactory.Create<PriorityContainer<T>>();
@@ -36,16 +35,16 @@ namespace Engine.Source.Commons.Parameters
     private bool mutableChecked;
 
     [Inspected(Header = true)]
-    public ParameterNameEnum Name => this.name;
+    public ParameterNameEnum Name => name;
 
     [Inspected(Header = true)]
     public T Value
     {
-      get => this.container.Value;
+      get => container.Value;
       set
       {
-        this.CheckMutable();
-        this.container.Value = value;
+        CheckMutable();
+        container.Value = value;
       }
     }
 
@@ -55,7 +54,7 @@ namespace Engine.Source.Commons.Parameters
       get => default (T);
       set
       {
-        Debug.LogError((object) ("Parameter : " + (object) this.name + " , type : " + TypeUtility.GetTypeName(this.GetType()) + " , property : " + MethodBase.GetCurrentMethod().Name + " not supported setter"));
+        Debug.LogError((object) ("Parameter : " + name + " , type : " + TypeUtility.GetTypeName(GetType()) + " , property : " + MethodBase.GetCurrentMethod().Name + " not supported setter"));
       }
     }
 
@@ -65,7 +64,7 @@ namespace Engine.Source.Commons.Parameters
       get => default (T);
       set
       {
-        Debug.LogError((object) ("Parameter : " + (object) this.name + " , type : " + TypeUtility.GetTypeName(this.GetType()) + " , property : " + MethodBase.GetCurrentMethod().Name + " not supported setter"));
+        Debug.LogError((object) ("Parameter : " + name + " , type : " + TypeUtility.GetTypeName(GetType()) + " , property : " + MethodBase.GetCurrentMethod().Name + " not supported setter"));
       }
     }
 
@@ -75,7 +74,7 @@ namespace Engine.Source.Commons.Parameters
       get => default (T);
       set
       {
-        Debug.LogError((object) ("Parameter : " + (object) this.name + " , type : " + TypeUtility.GetTypeName(this.GetType()) + " , property : " + MethodBase.GetCurrentMethod().Name + " not supported setter"));
+        Debug.LogError((object) ("Parameter : " + name + " , type : " + TypeUtility.GetTypeName(GetType()) + " , property : " + MethodBase.GetCurrentMethod().Name + " not supported setter"));
       }
     }
 
@@ -83,34 +82,34 @@ namespace Engine.Source.Commons.Parameters
     public bool Resetable => false;
 
     [Inspected]
-    public bool NeedSave => this.container.NeedSave;
+    public bool NeedSave => container.NeedSave;
 
-    public object ValueData => (object) this.Value;
+    public object ValueData => Value;
 
     public void SetValue(PriorityParameterEnum priority, T value)
     {
-      this.CheckMutable();
-      this.container.SetValue(priority, value);
+      CheckMutable();
+      container.SetValue(priority, value);
     }
 
     public bool TryGetValue(PriorityParameterEnum priority, out T result)
     {
-      return this.container.TryGetValue(priority, out result);
+      return container.TryGetValue(priority, out result);
     }
 
     public void ResetValue(PriorityParameterEnum priority)
     {
-      this.CheckMutable();
-      this.container.ResetValue(priority);
+      CheckMutable();
+      container.ResetValue(priority);
     }
 
     private void CheckMutable()
     {
-      if (this.mutableChecked)
+      if (mutableChecked)
         return;
-      this.mutableChecked = true;
-      this.storedValue = this.Value;
-      ServiceLocator.GetService<ParametersUpdater>().AddParameter((IComputeParameter) this);
+      mutableChecked = true;
+      storedValue = Value;
+      ServiceLocator.GetService<ParametersUpdater>().AddParameter(this);
     }
 
     protected abstract bool Compare(T a, T b);
@@ -125,10 +124,10 @@ namespace Engine.Source.Commons.Parameters
 
     void IComputeParameter.ComputeEvent()
     {
-      this.mutableChecked = false;
-      if (this.Compare(this.storedValue, this.Value))
+      mutableChecked = false;
+      if (Compare(storedValue, Value))
         return;
-      this.ChangeParameterInvoke((IParameter) this);
+      ChangeParameterInvoke(this);
     }
   }
 }

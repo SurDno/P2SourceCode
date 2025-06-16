@@ -1,9 +1,9 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons.Cloneable;
 using Engine.Common.Commons.Converters;
 using Engine.Source.Commons.Parameters;
-using System;
 
 namespace Engine.Source.Proxies
 {
@@ -20,33 +20,33 @@ namespace Engine.Source.Proxies
     public object Clone()
     {
       BoolPriorityContainer_Generated instance = Activator.CreateInstance<BoolPriorityContainer_Generated>();
-      this.CopyTo((object) instance);
-      return (object) instance;
+      CopyTo(instance);
+      return instance;
     }
 
     public void CopyTo(object target2)
     {
-      CloneableObjectUtility.CopyListTo<PriorityItem<bool>>(((PriorityContainer<bool>) target2).items, this.items);
+      CloneableObjectUtility.CopyListTo(((PriorityContainer<bool>) target2).items, items);
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.WriteListSerialize<PriorityItem<bool>>(writer, "Items", this.items);
+      DefaultDataWriteUtility.WriteListSerialize(writer, "Items", items);
     }
 
     public void DataRead(IDataReader reader, Type type)
     {
-      this.items = DefaultDataReadUtility.ReadListSerialize<PriorityItem<bool>>(reader, "Items", this.items);
+      items = DefaultDataReadUtility.ReadListSerialize(reader, "Items", items);
     }
 
     public void StateSave(IDataWriter writer)
     {
-      DefaultStateSaveUtility.SaveListSerialize<PriorityItem<bool>>(writer, "Items", this.items);
+      DefaultStateSaveUtility.SaveListSerialize(writer, "Items", items);
     }
 
     public void StateLoad(IDataReader reader, Type type)
     {
-      this.items = DefaultStateLoadUtility.ReadListSerialize<PriorityItem<bool>>(reader, "Items", this.items);
+      items = DefaultStateLoadUtility.ReadListSerialize(reader, "Items", items);
     }
   }
 }

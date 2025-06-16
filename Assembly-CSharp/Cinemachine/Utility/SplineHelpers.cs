@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace Cinemachine.Utility
+﻿namespace Cinemachine.Utility
 {
   internal static class SplineHelpers
   {
@@ -21,13 +19,13 @@ namespace Cinemachine.Utility
     {
       t = Mathf.Clamp01(t);
       float num = 1f - t;
-      return (float) ((double) num * (double) num * (double) num * (double) p0 + 3.0 * (double) num * (double) num * (double) t * (double) p1 + 3.0 * (double) num * (double) t * (double) t * (double) p2 + (double) t * (double) t * (double) t * (double) p3);
+      return (float) (num * (double) num * num * p0 + 3.0 * num * num * t * p1 + 3.0 * num * t * t * p2 + t * (double) t * t * p3);
     }
 
     public static float BezierTangent1(float t, float p0, float p1, float p2, float p3)
     {
       t = Mathf.Clamp01(t);
-      return (float) ((-3.0 * (double) p0 + 9.0 * (double) p1 - 9.0 * (double) p2 + 3.0 * (double) p3) * (double) t * (double) t + (6.0 * (double) p0 - 12.0 * (double) p1 + 6.0 * (double) p2) * (double) t - 3.0 * (double) p0 + 3.0 * (double) p1);
+      return (float) ((-3.0 * p0 + 9.0 * p1 - 9.0 * p2 + 3.0 * p3) * t * t + (6.0 * p0 - 12.0 * p1 + 6.0 * p2) * t - 3.0 * p0 + 3.0 * p1);
     }
 
     public static void ComputeSmoothControlPoints(
@@ -115,7 +113,7 @@ namespace Cinemachine.Utility
         }
         for (int index = 0; index < length; ++index)
           knot1[index + num] = knot[index];
-        SplineHelpers.ComputeSmoothControlPoints(ref knot1, ref ctrl1_1, ref ctrl2_1);
+        ComputeSmoothControlPoints(ref knot1, ref ctrl1_1, ref ctrl2_1);
         for (int index = 0; index < length; ++index)
         {
           ctrl1[index] = ctrl1_1[index + num];

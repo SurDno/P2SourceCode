@@ -1,7 +1,7 @@
-﻿using Cofe.Loggers;
+﻿using System;
+using Cofe.Loggers;
 using Engine.Common.Components.Regions;
 using PLVirtualMachine.Common.EngineAPI.VMECS.VMAttributes;
-using System;
 
 namespace PLVirtualMachine.Common.EngineAPI.VMECS
 {
@@ -15,17 +15,17 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
     {
       get
       {
-        if (this.Component != null)
-          return this.Component.CanFastTravel.Value;
-        Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", (object) this.Name, (object) this.Parent.Name));
+        if (Component != null)
+          return Component.CanFastTravel.Value;
+        Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", Name, Parent.Name));
         return false;
       }
       set
       {
-        if (this.Component == null)
-          Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", (object) this.Name, (object) this.Parent.Name));
+        if (Component == null)
+          Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", Name, Parent.Name));
         else
-          this.Component.CanFastTravel.Value = value;
+          Component.CanFastTravel.Value = value;
       }
     }
 
@@ -34,17 +34,17 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
     {
       get
       {
-        if (this.Component != null)
-          return this.Component.FastTravelPointIndex.Value;
-        Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", (object) this.Name, (object) this.Parent.Name));
+        if (Component != null)
+          return Component.FastTravelPointIndex.Value;
+        Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", Name, Parent.Name));
         return FastTravelPointEnum.None;
       }
       set
       {
-        if (this.Component == null)
-          Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", (object) this.Name, (object) this.Parent.Name));
+        if (Component == null)
+          Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", Name, Parent.Name));
         else
-          this.Component.FastTravelPointIndex.Value = value;
+          Component.FastTravelPointIndex.Value = value;
       }
     }
 
@@ -53,41 +53,41 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
     {
       get
       {
-        if (this.Component != null)
-          return this.Component.FastTravelPrice.Value;
-        Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", (object) this.Name, (object) this.Parent.Name));
+        if (Component != null)
+          return Component.FastTravelPrice.Value;
+        Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", Name, Parent.Name));
         return 0;
       }
       set
       {
-        if (this.Component == null)
-          Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", (object) this.Name, (object) this.Parent.Name));
+        if (Component == null)
+          Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", Name, Parent.Name));
         else
-          this.Component.FastTravelPrice.Value = value;
+          Component.FastTravelPrice.Value = value;
       }
     }
 
     public override void Clear()
     {
-      if (!this.InstanceValid)
+      if (!InstanceValid)
         return;
-      this.Component.TravelToPoint -= new Action<FastTravelPointEnum, TimeSpan>(this.FireTravelToPoint);
+      Component.TravelToPoint -= FireTravelToPoint;
       base.Clear();
     }
 
     protected override void Init()
     {
-      if (this.IsTemplate)
+      if (IsTemplate)
         return;
-      this.Component.TravelToPoint += new Action<FastTravelPointEnum, TimeSpan>(this.FireTravelToPoint);
+      Component.TravelToPoint += FireTravelToPoint;
     }
 
     private void FireTravelToPoint(FastTravelPointEnum target, TimeSpan travelTime)
     {
-      Action<FastTravelPointEnum, GameTime> travelToPoint = this.TravelToPoint;
+      Action<FastTravelPointEnum, GameTime> travelToPoint = TravelToPoint;
       if (travelToPoint == null)
         return;
-      travelToPoint(target, new GameTime((GameTime) travelTime));
+      travelToPoint(target, new GameTime(travelTime));
     }
 
     [Event("TravelToPoint", "Travel target, Travel time")]

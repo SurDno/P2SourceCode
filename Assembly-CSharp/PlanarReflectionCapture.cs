@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+﻿using System;
 using UnityStandardAssets.ImageEffects;
 
 [ExecuteInEditMode]
@@ -6,7 +6,7 @@ using UnityStandardAssets.ImageEffects;
 public class PlanarReflectionCapture : MonoBehaviour
 {
   public LayerMask HeightCollidersLayer;
-  public PlanarReflectionCapture.Condition UpdateCondition = PlanarReflectionCapture.Condition.Always;
+  public Condition UpdateCondition = Condition.Always;
   public float DefaultPlaneHeight = 0.0f;
   public bool ReflectWorld = true;
   [Space]
@@ -58,157 +58,157 @@ public class PlanarReflectionCapture : MonoBehaviour
 
   private bool CheckObjects()
   {
-    if ((UnityEngine.Object) this.currentCamera == (UnityEngine.Object) null)
+    if ((UnityEngine.Object) currentCamera == (UnityEngine.Object) null)
     {
-      this.currentCamera = this.GetComponent<Camera>();
-      if ((UnityEngine.Object) this.currentCamera == (UnityEngine.Object) null)
+      currentCamera = this.GetComponent<Camera>();
+      if ((UnityEngine.Object) currentCamera == (UnityEngine.Object) null)
       {
         Debug.LogWarning((object) "PlanarReflectionCapture: Camera component not found");
         return false;
       }
     }
-    int width = Mathf.RoundToInt((float) this.currentCamera.pixelWidth * this.RelativeResolution);
-    int height = Mathf.RoundToInt((float) this.currentCamera.pixelHeight * this.RelativeResolution);
-    if (!(bool) (UnityEngine.Object) this.reflectionTexture || this.reflectionTexture.width != width || this.reflectionTexture.height != height)
+    int width = Mathf.RoundToInt((float) currentCamera.pixelWidth * RelativeResolution);
+    int height = Mathf.RoundToInt((float) currentCamera.pixelHeight * RelativeResolution);
+    if (!(bool) (UnityEngine.Object) reflectionTexture || reflectionTexture.width != width || reflectionTexture.height != height)
     {
-      if ((bool) (UnityEngine.Object) this.reflectionTexture)
+      if ((bool) (UnityEngine.Object) reflectionTexture)
       {
-        this.reflectionTexture.Release();
+        reflectionTexture.Release();
         if (Application.isPlaying)
-          UnityEngine.Object.Destroy((UnityEngine.Object) this.reflectionTexture);
+          UnityEngine.Object.Destroy((UnityEngine.Object) reflectionTexture);
         else
-          UnityEngine.Object.DestroyImmediate((UnityEngine.Object) this.reflectionTexture);
+          UnityEngine.Object.DestroyImmediate((UnityEngine.Object) reflectionTexture);
       }
-      this.reflectionTexture = new RenderTexture(width, height, 24, RenderTextureFormat.ARGBHalf, RenderTextureReadWrite.Linear);
-      this.reflectionTexture.name = "Planar Reflection";
-      this.reflectionTexture.hideFlags = HideFlags.HideAndDontSave;
+      reflectionTexture = new RenderTexture(width, height, 24, RenderTextureFormat.ARGBHalf, RenderTextureReadWrite.Linear);
+      reflectionTexture.name = "Planar Reflection";
+      reflectionTexture.hideFlags = HideFlags.HideAndDontSave;
     }
-    if (!(bool) (UnityEngine.Object) this.reflectionCamera)
+    if (!(bool) (UnityEngine.Object) reflectionCamera)
     {
-      GameObject gameObject = new GameObject("Planar Reflection Camera", new System.Type[3]
+      GameObject gameObject = new GameObject("Planar Reflection Camera", new Type[3]
       {
         typeof (Camera),
         typeof (GlobalFogNonopaque),
         typeof (GlobalFog)
       });
       gameObject.hideFlags = HideFlags.HideAndDontSave;
-      this.reflectionCamera = gameObject.GetComponent<Camera>();
-      this.reflectionCamera.enabled = false;
-      this.skyReflectionFog = gameObject.GetComponent<GlobalFogNonopaque>();
-      this.skyReflectionFog.Camera = this.reflectionCamera;
-      this.worldReflectionFog = gameObject.GetComponent<GlobalFog>();
-      this.worldReflectionFog.Camera = this.reflectionCamera;
+      reflectionCamera = gameObject.GetComponent<Camera>();
+      reflectionCamera.enabled = false;
+      skyReflectionFog = gameObject.GetComponent<GlobalFogNonopaque>();
+      skyReflectionFog.Camera = reflectionCamera;
+      worldReflectionFog = gameObject.GetComponent<GlobalFog>();
+      worldReflectionFog.Camera = reflectionCamera;
     }
-    if (this.skyCullDistances == null)
-      this.skyCullDistances = new float[32];
-    if (this.worldCullDistances == null)
-      this.worldCullDistances = new float[32];
+    if (skyCullDistances == null)
+      skyCullDistances = new float[32];
+    if (worldCullDistances == null)
+      worldCullDistances = new float[32];
     return true;
   }
 
   private void OnDisable()
   {
-    this.currentCamera = (Camera) null;
-    if ((bool) (UnityEngine.Object) this.reflectionCamera)
+    currentCamera = (Camera) null;
+    if ((bool) (UnityEngine.Object) reflectionCamera)
     {
-      UnityEngine.Object.DestroyImmediate((UnityEngine.Object) this.reflectionCamera.gameObject);
-      this.reflectionCamera = (Camera) null;
+      UnityEngine.Object.DestroyImmediate((UnityEngine.Object) reflectionCamera.gameObject);
+      reflectionCamera = (Camera) null;
     }
-    this.skyReflectionFog = (GlobalFogNonopaque) null;
-    this.worldReflectionFog = (GlobalFog) null;
-    if (!(bool) (UnityEngine.Object) this.reflectionTexture)
+    skyReflectionFog = null;
+    worldReflectionFog = null;
+    if (!(bool) (UnityEngine.Object) reflectionTexture)
       return;
-    this.reflectionTexture.Release();
+    reflectionTexture.Release();
     if (Application.isPlaying)
-      UnityEngine.Object.Destroy((UnityEngine.Object) this.reflectionTexture);
+      UnityEngine.Object.Destroy((UnityEngine.Object) reflectionTexture);
     else
-      UnityEngine.Object.DestroyImmediate((UnityEngine.Object) this.reflectionTexture);
-    this.reflectionTexture = (RenderTexture) null;
+      UnityEngine.Object.DestroyImmediate((UnityEngine.Object) reflectionTexture);
+    reflectionTexture = (RenderTexture) null;
     Shader.SetGlobalTexture("_PlanarReflection", (Texture) null);
   }
 
   private void OnPreCull()
   {
-    if (!this.CheckObjects())
+    if (!CheckObjects())
     {
       this.enabled = false;
     }
     else
     {
-      bool flag1 = this.UpdateCondition == PlanarReflectionCapture.Condition.Always;
-      float num = this.DefaultPlaneHeight;
+      bool flag1 = UpdateCondition == Condition.Always;
+      float num = DefaultPlaneHeight;
       RaycastHit hitInfo;
-      if (Physics.Raycast(this.transform.position, Vector3.down, out hitInfo, 100f, (int) this.HeightCollidersLayer, QueryTriggerInteraction.Collide))
+      if (Physics.Raycast(this.transform.position, Vector3.down, out hitInfo, 100f, (int) HeightCollidersLayer, QueryTriggerInteraction.Collide))
       {
-        if (this.UpdateCondition == PlanarReflectionCapture.Condition.OnHit)
+        if (UpdateCondition == Condition.OnHit)
           flag1 = true;
         num = hitInfo.point.y;
       }
-      if (!flag1 || (double) this.transform.position.y <= (double) num)
+      if (!flag1 || (double) this.transform.position.y <= num)
         return;
-      this.reflectionCamera.CopyFrom(this.currentCamera);
-      this.reflectionCamera.targetTexture = this.reflectionTexture;
-      this.reflectionCamera.layerCullSpherical = true;
-      this.reflectionCamera.useOcclusionCulling = false;
-      this.reflectionCamera.renderingPath = RenderingPath.DeferredShading;
-      this.reflectionCamera.depthTextureMode = DepthTextureMode.None;
+      reflectionCamera.CopyFrom(currentCamera);
+      reflectionCamera.targetTexture = reflectionTexture;
+      reflectionCamera.layerCullSpherical = true;
+      reflectionCamera.useOcclusionCulling = false;
+      reflectionCamera.renderingPath = RenderingPath.DeferredShading;
+      reflectionCamera.depthTextureMode = DepthTextureMode.None;
       float lodBias = QualitySettings.lodBias;
-      QualitySettings.lodBias = lodBias * this.RelativeLodBias;
+      QualitySettings.lodBias = lodBias * RelativeLodBias;
       float shadowDistance = QualitySettings.shadowDistance;
-      QualitySettings.shadowDistance = shadowDistance * this.RelativeShadowDistance;
+      QualitySettings.shadowDistance = shadowDistance * RelativeShadowDistance;
       Vector3 position = this.transform.position;
       position.y = num * 2f - position.y;
-      this.reflectionCamera.transform.position = position;
-      Vector3 eulerAngles = this.currentCamera.transform.eulerAngles;
-      this.reflectionCamera.transform.eulerAngles = new Vector3(-eulerAngles.x, eulerAngles.y, -eulerAngles.z);
-      GlobalFog globalFog = (GlobalFog) null;
+      reflectionCamera.transform.position = position;
+      Vector3 eulerAngles = currentCamera.transform.eulerAngles;
+      reflectionCamera.transform.eulerAngles = new Vector3(-eulerAngles.x, eulerAngles.y, -eulerAngles.z);
+      GlobalFog globalFog = null;
       bool flag2 = false;
-      if (this.ReplicateGlobalFog)
+      if (ReplicateGlobalFog)
       {
-        globalFog = this.currentCamera.GetComponent<GlobalFog>();
+        globalFog = currentCamera.GetComponent<GlobalFog>();
         flag2 = (UnityEngine.Object) globalFog != (UnityEngine.Object) null && globalFog.enabled;
       }
-      this.reflectionCamera.clearFlags = CameraClearFlags.Skybox;
-      this.reflectionCamera.cullingMask = (int) this.SkyLayers;
-      this.reflectionCamera.farClipPlane = this.SkyFarClip;
-      this.reflectionCamera.layerCullDistances = this.skyCullDistances;
-      if (flag2 && !this.ReflectWorld)
+      reflectionCamera.clearFlags = CameraClearFlags.Skybox;
+      reflectionCamera.cullingMask = (int) SkyLayers;
+      reflectionCamera.farClipPlane = SkyFarClip;
+      reflectionCamera.layerCullDistances = skyCullDistances;
+      if (flag2 && !ReflectWorld)
       {
-        this.skyReflectionFog.distanceFog = globalFog.distanceFog;
-        this.skyReflectionFog.distanceDensity = globalFog.distanceDensity;
-        this.skyReflectionFog.heightFog = globalFog.heightFog;
-        this.skyReflectionFog.height = globalFog.height;
-        this.skyReflectionFog.heightDensity = globalFog.heightDensity;
-        this.skyReflectionFog.startDistance = globalFog.startDistance;
-        this.skyReflectionFog.enabled = true;
+        skyReflectionFog.distanceFog = globalFog.distanceFog;
+        skyReflectionFog.distanceDensity = globalFog.distanceDensity;
+        skyReflectionFog.heightFog = globalFog.heightFog;
+        skyReflectionFog.height = globalFog.height;
+        skyReflectionFog.heightDensity = globalFog.heightDensity;
+        skyReflectionFog.startDistance = globalFog.startDistance;
+        skyReflectionFog.enabled = true;
       }
       else
-        this.skyReflectionFog.enabled = false;
-      this.worldReflectionFog.enabled = false;
-      this.reflectionCamera.Render();
-      if (this.ReflectWorld)
+        skyReflectionFog.enabled = false;
+      worldReflectionFog.enabled = false;
+      reflectionCamera.Render();
+      if (ReflectWorld)
       {
-        this.reflectionCamera.clearFlags = CameraClearFlags.Depth;
-        this.reflectionCamera.cullingMask = (int) this.WorldLayers;
-        this.reflectionCamera.farClipPlane = this.currentCamera.farClipPlane * this.RelativeWorldCullingDistance;
-        this.SetCullingDistances(this.currentCamera.layerCullDistances, this.worldCullDistances, this.RelativeWorldCullingDistance);
-        this.reflectionCamera.layerCullDistances = this.worldCullDistances;
-        this.skyReflectionFog.enabled = false;
+        reflectionCamera.clearFlags = CameraClearFlags.Depth;
+        reflectionCamera.cullingMask = (int) WorldLayers;
+        reflectionCamera.farClipPlane = currentCamera.farClipPlane * RelativeWorldCullingDistance;
+        SetCullingDistances(currentCamera.layerCullDistances, worldCullDistances, RelativeWorldCullingDistance);
+        reflectionCamera.layerCullDistances = worldCullDistances;
+        skyReflectionFog.enabled = false;
         if (flag2)
         {
-          this.worldReflectionFog.distanceFog = globalFog.distanceFog;
-          this.worldReflectionFog.distanceDensity = globalFog.distanceDensity;
-          this.worldReflectionFog.heightFog = globalFog.heightFog;
-          this.worldReflectionFog.height = globalFog.height;
-          this.worldReflectionFog.heightDensity = globalFog.heightDensity;
-          this.worldReflectionFog.startDistance = globalFog.startDistance;
-          this.worldReflectionFog.enabled = true;
+          worldReflectionFog.distanceFog = globalFog.distanceFog;
+          worldReflectionFog.distanceDensity = globalFog.distanceDensity;
+          worldReflectionFog.heightFog = globalFog.heightFog;
+          worldReflectionFog.height = globalFog.height;
+          worldReflectionFog.heightDensity = globalFog.heightDensity;
+          worldReflectionFog.startDistance = globalFog.startDistance;
+          worldReflectionFog.enabled = true;
         }
         else
-          this.worldReflectionFog.enabled = false;
-        this.reflectionCamera.Render();
+          worldReflectionFog.enabled = false;
+        reflectionCamera.Render();
       }
-      Shader.SetGlobalTexture("_PlanarReflectionTex", (Texture) this.reflectionTexture);
+      Shader.SetGlobalTexture("_PlanarReflectionTex", (Texture) reflectionTexture);
       QualitySettings.lodBias = lodBias;
       QualitySettings.shadowDistance = shadowDistance;
     }

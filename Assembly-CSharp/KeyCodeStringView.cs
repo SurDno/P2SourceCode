@@ -1,7 +1,5 @@
 ﻿using Engine.Impl.UI.Controls;
 using InputServices;
-using UnityEngine;
-using UnityEngine.UI;
 
 public class KeyCodeStringView : StringView
 {
@@ -24,30 +22,30 @@ public class KeyCodeStringView : StringView
   {
   }
 
-  private void OnEnable() => this.Apply(InputService.Instance.JoystickUsed);
+  private void OnEnable() => Apply(InputService.Instance.JoystickUsed);
 
   private void OnDisable()
   {
   }
 
-  protected override void ApplyStringValue() => this.Apply(InputService.Instance.JoystickUsed);
+  protected override void ApplyStringValue() => Apply(InputService.Instance.JoystickUsed);
 
   private void Apply(bool joystick)
   {
-    Sprite sprite = joystick ? this.xboxMap?.GetValue(this.StringValue) : this.mouseMap?.GetValue(this.StringValue);
+    Sprite sprite = joystick ? xboxMap?.GetValue(StringValue) : mouseMap?.GetValue(StringValue);
     if ((Object) sprite != (Object) null)
     {
-      this.textObject.gameObject.SetActive(false);
-      this.image.sprite = sprite;
-      this.image.gameObject.SetActive(true);
-      ((RectTransform) this.image.transform).sizeDelta = this.image.sprite.rect.size;
+      textObject.gameObject.SetActive(false);
+      image.sprite = sprite;
+      image.gameObject.SetActive(true);
+      ((RectTransform) image.transform).sizeDelta = image.sprite.rect.size;
     }
     else
     {
-      string str = this.keyMap?.GetValue(this.StringValue) ?? this.StringValue;
-      this.image.gameObject.SetActive(false);
-      this.text.text = str;
-      this.textObject.gameObject.SetActive(true);
+      string str = keyMap?.GetValue(StringValue) ?? StringValue;
+      image.gameObject.SetActive(false);
+      text.text = str;
+      textObject.gameObject.SetActive(true);
     }
   }
 }

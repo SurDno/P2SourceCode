@@ -13,7 +13,7 @@ namespace SteamNative
 
     public static ControllerDigitalActionData_t FromPointer(IntPtr p)
     {
-      return Platform.PackSmall ? (ControllerDigitalActionData_t) (ControllerDigitalActionData_t.PackSmall) Marshal.PtrToStructure(p, typeof (ControllerDigitalActionData_t.PackSmall)) : (ControllerDigitalActionData_t) Marshal.PtrToStructure(p, typeof (ControllerDigitalActionData_t));
+      return Platform.PackSmall ? (PackSmall) Marshal.PtrToStructure(p, typeof (PackSmall)) : (ControllerDigitalActionData_t) Marshal.PtrToStructure(p, typeof (ControllerDigitalActionData_t));
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
@@ -25,10 +25,9 @@ namespace SteamNative
       public bool BActive;
 
       public static implicit operator ControllerDigitalActionData_t(
-        ControllerDigitalActionData_t.PackSmall d)
+        PackSmall d)
       {
-        return new ControllerDigitalActionData_t()
-        {
+        return new ControllerDigitalActionData_t {
           BState = d.BState,
           BActive = d.BActive
         };

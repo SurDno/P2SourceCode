@@ -11,43 +11,43 @@ namespace Engine.Source.Effects.Engine
 {
   public abstract class EffectContextValue<T> : IValueSetter<T>, IValue<T> where T : struct
   {
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected EffectContextEnum effectContext;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected ParameterNameEnum parameterName;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy()]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected ParameterDataEnum parameterData;
 
     public T GetValue(IEffect context)
     {
-      IEntity entity = ExpressionEffectUtility.GetEntity(this.effectContext, context);
+      IEntity entity = ExpressionEffectUtility.GetEntity(effectContext, context);
       if (entity != null)
       {
         ParametersComponent component = entity.GetComponent<ParametersComponent>();
         if (component != null)
         {
-          IParameter<T> byName = component.GetByName<T>(this.parameterName);
+          IParameter<T> byName = component.GetByName<T>(parameterName);
           if (byName != null)
           {
-            if (this.parameterData == ParameterDataEnum.BaseValue)
+            if (parameterData == ParameterDataEnum.BaseValue)
               return byName.BaseValue;
-            if (this.parameterData == ParameterDataEnum.Value)
+            if (parameterData == ParameterDataEnum.Value)
               return byName.Value;
-            if (this.parameterData == ParameterDataEnum.MaxValue)
+            if (parameterData == ParameterDataEnum.MaxValue)
               return byName.MaxValue;
-            if (this.parameterData == ParameterDataEnum.MinValue)
+            if (parameterData == ParameterDataEnum.MinValue)
               return byName.MinValue;
           }
         }
@@ -57,22 +57,22 @@ namespace Engine.Source.Effects.Engine
 
     public void SetValue(T value, IEffect context)
     {
-      IEntity entity = ExpressionEffectUtility.GetEntity(this.effectContext, context);
+      IEntity entity = ExpressionEffectUtility.GetEntity(effectContext, context);
       if (entity == null)
         return;
       ParametersComponent component = entity.GetComponent<ParametersComponent>();
       if (component != null)
       {
-        IParameter<T> byName = component.GetByName<T>(this.parameterName);
+        IParameter<T> byName = component.GetByName<T>(parameterName);
         if (byName != null)
         {
-          if (this.parameterData == ParameterDataEnum.BaseValue)
+          if (parameterData == ParameterDataEnum.BaseValue)
             byName.BaseValue = value;
-          else if (this.parameterData == ParameterDataEnum.Value)
+          else if (parameterData == ParameterDataEnum.Value)
             byName.Value = value;
-          else if (this.parameterData == ParameterDataEnum.MaxValue)
+          else if (parameterData == ParameterDataEnum.MaxValue)
             byName.MaxValue = value;
-          else if (this.parameterData == ParameterDataEnum.MinValue)
+          else if (parameterData == ParameterDataEnum.MinValue)
             byName.MinValue = value;
         }
       }
@@ -82,10 +82,10 @@ namespace Engine.Source.Effects.Engine
     {
       get
       {
-        return this.effectContext.ToString() + "." + this.parameterName.ToString() + "." + this.parameterData.ToString();
+        return effectContext + "." + parameterName + "." + parameterData;
       }
     }
 
-    public string TypeView => TypeUtility.GetTypeName(this.GetType());
+    public string TypeView => TypeUtility.GetTypeName(GetType());
   }
 }

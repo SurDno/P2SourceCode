@@ -1,10 +1,10 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons.Cloneable;
 using Engine.Common.Commons.Converters;
 using Engine.Source.Components.Maps;
 using Scripts.Tools.Serializations.Converters;
-using System;
 
 namespace Engine.Source.Proxies
 {
@@ -21,35 +21,35 @@ namespace Engine.Source.Proxies
     public object Clone()
     {
       MapCustomMarkerComponent_Generated instance = Activator.CreateInstance<MapCustomMarkerComponent_Generated>();
-      this.CopyTo((object) instance);
-      return (object) instance;
+      CopyTo(instance);
+      return instance;
     }
 
     public void CopyTo(object target2)
     {
-      ((MapCustomMarkerComponent) target2).isEnabled = this.isEnabled;
+      ((MapCustomMarkerComponent) target2).isEnabled = isEnabled;
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.Write(writer, "IsEnabled", this.isEnabled);
+      DefaultDataWriteUtility.Write(writer, "IsEnabled", isEnabled);
     }
 
     public void DataRead(IDataReader reader, Type type)
     {
-      this.isEnabled = DefaultDataReadUtility.Read(reader, "IsEnabled", this.isEnabled);
+      isEnabled = DefaultDataReadUtility.Read(reader, "IsEnabled", isEnabled);
     }
 
     public void StateSave(IDataWriter writer)
     {
-      DefaultDataWriteUtility.Write(writer, "IsEnabled", this.isEnabled);
-      UnityDataWriteUtility.Write(writer, "Position", this.position);
+      DefaultDataWriteUtility.Write(writer, "IsEnabled", isEnabled);
+      UnityDataWriteUtility.Write(writer, "Position", position);
     }
 
     public void StateLoad(IDataReader reader, Type type)
     {
-      this.isEnabled = DefaultDataReadUtility.Read(reader, "IsEnabled", this.isEnabled);
-      this.position = UnityDataReadUtility.Read(reader, "Position", this.position);
+      isEnabled = DefaultDataReadUtility.Read(reader, "IsEnabled", isEnabled);
+      position = UnityDataReadUtility.Read(reader, "Position", position);
     }
   }
 }

@@ -2,7 +2,7 @@
 
 namespace ParadoxNotion.FlowCanvas.Module
 {
-  [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
+  [AttributeUsage(AttributeTargets.Class, Inherited = false)]
   public class ContextDefinedOutputsAttribute : Attribute
   {
     public Type[] types;

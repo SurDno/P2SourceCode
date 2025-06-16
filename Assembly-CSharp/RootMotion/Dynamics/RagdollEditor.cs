@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEngine;
 
 namespace RootMotion.Dynamics
 {
@@ -14,7 +13,7 @@ namespace RootMotion.Dynamics
     [HideInInspector]
     public bool symmetry = true;
     [HideInInspector]
-    public RagdollEditor.Mode mode;
+    public Mode mode;
 
     [ContextMenu("User Manual")]
     private void OpenUserManual()

@@ -1,7 +1,5 @@
-﻿using Engine.Source.Services.Gizmos;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.AI;
+﻿using System.Collections.Generic;
+using Engine.Source.Services.Gizmos;
 
 namespace Engine.Source.Components.Utilities
 {
@@ -14,14 +12,14 @@ namespace Engine.Source.Components.Utilities
     {
       if (path == null)
         return 0.0f;
-      int pathAndCount = NavMeshUtility.GetPathAndCount(path);
+      int pathAndCount = GetPathAndCount(path);
       if (pathAndCount < 2)
         return 0.0f;
       float pathLength = 0.0f;
-      Vector3 a = NavMeshUtility.tmp[0];
+      Vector3 a = tmp[0];
       for (int index = 1; index < pathAndCount; ++index)
       {
-        Vector3 b = NavMeshUtility.tmp[index];
+        Vector3 b = tmp[index];
         pathLength += Vector3.Distance(a, b);
         a = b;
       }
@@ -33,7 +31,7 @@ namespace Engine.Source.Components.Utilities
       if ((Object) agent == (Object) null || !agent.hasPath)
         return false;
       NavMeshPath path = agent.path;
-      return path != null && NavMeshUtility.GetPathAndCount(path) < 2;
+      return path != null && GetPathAndCount(path) < 2;
     }
 
     public static bool HasPathNoGarbage(NavMeshAgent agent)
@@ -46,7 +44,7 @@ namespace Engine.Source.Components.Utilities
       if ((Object) agent == (Object) null || !agent.hasPath)
         return false;
       NavMeshPath path = agent.path;
-      return path != null && NavMeshUtility.GetPathAndCount(path) >= 2;
+      return path != null && GetPathAndCount(path) >= 2;
     }
 
     public static void DrawPath(NavMeshAgent agent)
@@ -56,13 +54,13 @@ namespace Engine.Source.Components.Utilities
       NavMeshPath path = agent.path;
       if (path == null)
         return;
-      int pathAndCount = NavMeshUtility.GetPathAndCount(path);
+      int pathAndCount = GetPathAndCount(path);
       if (pathAndCount < 2)
         return;
-      Vector3 start = NavMeshUtility.tmp[0];
+      Vector3 start = tmp[0];
       for (int index = 1; index < pathAndCount; ++index)
       {
-        Vector3 end = NavMeshUtility.tmp[index];
+        Vector3 end = tmp[index];
         Debug.DrawLine(start, end, Color.magenta);
         Debug.DrawLine(start, start + Vector3.up, Color.green);
         start = end;
@@ -77,13 +75,13 @@ namespace Engine.Source.Components.Utilities
       NavMeshPath path = agent.path;
       if (path == null)
         return 0;
-      int pathAndCount = NavMeshUtility.GetPathAndCount(path);
+      int pathAndCount = GetPathAndCount(path);
       if (pathAndCount < 2)
         return pathAndCount;
-      Vector3 start = NavMeshUtility.tmp[0];
+      Vector3 start = tmp[0];
       for (int index = 1; index < pathAndCount; ++index)
       {
-        Vector3 end = NavMeshUtility.tmp[index];
+        Vector3 end = tmp[index];
         gizmoService.DrawLine(start, end, Color.magenta);
         gizmoService.DrawLine(start, start + Vector3.up, Color.green);
         start = end;
@@ -100,12 +98,12 @@ namespace Engine.Source.Components.Utilities
       NavMeshPath path = agent.path;
       if (path == null)
         return;
-      int pathAndCount = NavMeshUtility.GetPathAndCount(path);
+      int pathAndCount = GetPathAndCount(path);
       if (pathAndCount < 2)
         return;
       for (int index = 1; index < pathAndCount; ++index)
       {
-        Vector3 vector3 = NavMeshUtility.tmp[index];
+        Vector3 vector3 = tmp[index];
         result.Add(vector3);
       }
     }
@@ -120,12 +118,12 @@ namespace Engine.Source.Components.Utilities
       RaycastHit hitInfo;
       if (Physics.Raycast(point + new Vector3(0.0f, distanceUp, 0.0f), Vector3.down, out hitInfo, distanceDown, layerMask, QueryTriggerInteraction.Ignore))
         point = hitInfo.point;
-      return NavMeshUtility.SamplePosition(ref point, mask);
+      return SamplePosition(ref point, mask);
     }
 
     public static bool SamplePosition(ref Vector3 point, int mask, int maxRadius = 256)
     {
-      return NavMeshUtility.SamplePosition(ref point, mask, out int _, maxRadius);
+      return SamplePosition(ref point, mask, out int _, maxRadius);
     }
 
     public static bool SamplePosition(
@@ -155,9 +153,9 @@ namespace Engine.Source.Components.Utilities
       int cornersNonAlloc;
       while (true)
       {
-        cornersNonAlloc = path.GetCornersNonAlloc(NavMeshUtility.tmp);
-        if (cornersNonAlloc == NavMeshUtility.tmp.Length)
-          NavMeshUtility.tmp = new Vector3[NavMeshUtility.tmp.Length + 1024];
+        cornersNonAlloc = path.GetCornersNonAlloc(tmp);
+        if (cornersNonAlloc == tmp.Length)
+          tmp = new Vector3[tmp.Length + 1024];
         else
           break;
       }

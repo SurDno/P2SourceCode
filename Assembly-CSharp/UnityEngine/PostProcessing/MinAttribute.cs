@@ -2,7 +2,7 @@
 
 namespace UnityEngine.PostProcessing
 {
-  [AttributeUsage(AttributeTargets.Field, AllowMultiple = false, Inherited = false)]
+  [AttributeUsage(AttributeTargets.Field)]
   public sealed class MinAttribute : PropertyAttribute
   {
     public readonly float min;

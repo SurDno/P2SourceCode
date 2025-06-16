@@ -3,7 +3,6 @@ using Engine.Source.Services.CameraServices;
 using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
-using UnityEngine;
 
 namespace Engine.Source.Blueprints
 {
@@ -15,13 +14,13 @@ namespace Engine.Source.Blueprints
     protected override void RegisterPorts()
     {
       base.RegisterPorts();
-      FlowOutput output = this.AddFlowOutput("Out");
-      this.AddFlowInput("In", (FlowHandler) (() =>
+      FlowOutput output = AddFlowOutput("Out");
+      AddFlowInput("In", () =>
       {
-        ServiceLocator.GetService<CameraService>().GameObjectTarget = this.cameraTargetValue.value;
+        ServiceLocator.GetService<CameraService>().GameObjectTarget = cameraTargetValue.value;
         output.Call();
-      }));
-      this.cameraTargetValue = this.AddValueInput<GameObject>("Target");
+      });
+      cameraTargetValue = AddValueInput<GameObject>("Target");
     }
   }
 }

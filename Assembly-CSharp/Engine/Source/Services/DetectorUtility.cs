@@ -1,13 +1,12 @@
-﻿using Engine.Behaviours.Components;
+﻿using System;
+using System.Collections.Generic;
+using Engine.Behaviours.Components;
 using Engine.Common.Components;
 using Engine.Common.Components.Locations;
 using Engine.Source.Commons;
 using Engine.Source.Components;
 using Engine.Source.Services.Detectablies;
 using SoundPropagation;
-using System;
-using System.Collections.Generic;
-using UnityEngine;
 
 namespace Engine.Source.Services
 {
@@ -18,7 +17,7 @@ namespace Engine.Source.Services
       Vector3 detectablePosition,
       float distance)
     {
-      return (double) detectorPosition.x + (double) distance >= (double) detectablePosition.x && (double) detectorPosition.x - (double) distance <= (double) detectablePosition.x && (double) detectorPosition.z + (double) distance >= (double) detectablePosition.z && (double) detectorPosition.z - (double) distance <= (double) detectablePosition.z;
+      return (double) detectorPosition.x + distance >= (double) detectablePosition.x && (double) detectorPosition.x - distance <= (double) detectablePosition.x && (double) detectorPosition.z + distance >= (double) detectablePosition.z && (double) detectorPosition.z - distance <= (double) detectablePosition.z;
     }
 
     public static bool CheckRadiusDistance(
@@ -26,7 +25,7 @@ namespace Engine.Source.Services
       Vector3 detectablePosition,
       float distance)
     {
-      return (double) detectorPosition.x + (double) distance >= (double) detectablePosition.x && (double) detectorPosition.x - (double) distance <= (double) detectablePosition.x && (double) detectorPosition.z + (double) distance >= (double) detectablePosition.z && (double) detectorPosition.z - (double) distance <= (double) detectablePosition.z && (double) (detectablePosition - detectorPosition).sqrMagnitude <= (double) distance * (double) distance;
+      return (double) detectorPosition.x + distance >= (double) detectablePosition.x && (double) detectorPosition.x - distance <= (double) detectablePosition.x && (double) detectorPosition.z + distance >= (double) detectablePosition.z && (double) detectorPosition.z - distance <= (double) detectablePosition.z && (double) (detectablePosition - detectorPosition).sqrMagnitude <= distance * (double) distance;
     }
 
     public static bool CanHear(
@@ -50,7 +49,7 @@ namespace Engine.Source.Services
       SPCell originCell = SPCell.Find(vector3_2, instance.LayerMask);
       SPCell destCell = SPCell.Find(vector3_1, instance.LayerMask);
       Location location = Locator.Main.GetLocation(originCell, vector3_2, Vector3.zero, destCell, vector3_1, Vector3.zero, roughMaxCost);
-      return location.PathFound && (double) location.PathLength * (double) Mathf.Pow(2f, location.Filtering.Loss) < (double) roughMaxCost;
+      return location.PathFound && location.PathLength * (double) Mathf.Pow(2f, location.Filtering.Loss) < roughMaxCost;
     }
 
     public static Location GetHearLocation(
@@ -96,7 +95,7 @@ namespace Engine.Source.Services
         if (owner2.IsAttached)
         {
           Vector3 position2 = owner2.Position;
-          if (DetectorUtility.CheckDistance(position1, position2, maxDistance) && detectably.Detectable.Owner.IsEnabledInHierarchy && detectably.Detectable.IsEnabled && !detectably.LocationItem.IsHibernation)
+          if (CheckDistance(position1, position2, maxDistance) && detectably.Detectable.Owner.IsEnabledInHierarchy && detectably.Detectable.IsEnabled && !detectably.LocationItem.IsHibernation)
           {
             ILocationComponent logicLocation2 = detectably.LocationItem.LogicLocation;
             if (logicLocation2 != null && ((LocationComponent) logicLocation1).LocationType == ((LocationComponent) logicLocation2).LocationType && (((LocationComponent) logicLocation1).LocationType != LocationType.Indoor || logicLocation1 == logicLocation2) && detector.Owner != detectably.Detectable.Owner && compute != null)

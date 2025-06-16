@@ -1,12 +1,10 @@
-﻿using Engine.Common.Services;
+﻿using System.Collections;
+using Engine.Common.Services;
 using Engine.Source.Components;
 using Engine.Source.Services.Inputs;
 using Engine.Source.Settings.External;
 using Engine.Source.Utility;
 using InputServices;
-using System;
-using System.Collections;
-using UnityEngine;
 
 public class WeaponsSelectionController : MonoBehaviour
 {
@@ -23,77 +21,77 @@ public class WeaponsSelectionController : MonoBehaviour
   private GameObject DPadNavigationHint;
   [SerializeField]
   private GameObject RStickNavigationHint;
-  private bool wasWeaponChanged = false;
+  private bool wasWeaponChanged;
 
   private void OnEnable()
   {
-    InputService.Instance.onJoystickUsedChanged += new Action<bool>(this.OnJoystick);
-    this.OnJoystick(InputService.Instance.JoystickUsed);
-    this._sensativity = ExternalSettingsInstance<ExternalInputSettings>.Instance.JoystickSensitivity;
-    JoystickLayoutSwitcher.Instance.OnLayoutChanged += new Action<JoystickLayoutSwitcher.KeyLayouts>(this.OnLayoutChanged);
+    InputService.Instance.onJoystickUsedChanged += OnJoystick;
+    OnJoystick(InputService.Instance.JoystickUsed);
+    _sensativity = ExternalSettingsInstance<ExternalInputSettings>.Instance.JoystickSensitivity;
+    JoystickLayoutSwitcher.Instance.OnLayoutChanged += OnLayoutChanged;
     if (JoystickLayoutSwitcher.Instance.CurrentLayout == JoystickLayoutSwitcher.KeyLayouts.Two || JoystickLayoutSwitcher.Instance.CurrentLayout == JoystickLayoutSwitcher.KeyLayouts.Three)
     {
-      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Weapon1, new GameActionHandle(this.OnShowSelector), true);
-      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Weapon2, new GameActionHandle(this.OnShowSelector), true);
-      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Weapon3, new GameActionHandle(this.OnShowSelector), true);
-      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Weapon4, new GameActionHandle(this.OnShowSelector), true);
+      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Weapon1, OnShowSelector, true);
+      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Weapon2, OnShowSelector, true);
+      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Weapon3, OnShowSelector, true);
+      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Weapon4, OnShowSelector, true);
       if (JoystickLayoutSwitcher.Instance.CurrentLayout == JoystickLayoutSwitcher.KeyLayouts.Three)
-        ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Unholster, new GameActionHandle(this.OnBumper), true);
+        ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Unholster, OnBumper, true);
     }
     else if (JoystickLayoutSwitcher.Instance.CurrentLayout == JoystickLayoutSwitcher.KeyLayouts.One)
-      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Unholster, new GameActionHandle(this.OnBumper), true);
-    this.wasWeaponChanged = false;
+      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Unholster, OnBumper, true);
+    wasWeaponChanged = false;
   }
 
   private void OnLayoutChanged(JoystickLayoutSwitcher.KeyLayouts newLayout)
   {
-    this.OnDisable();
-    if (this._waitCoroutine == null)
+    OnDisable();
+    if (_waitCoroutine == null)
       return;
-    this.StopCoroutine(this._waitCoroutine);
+    this.StopCoroutine(_waitCoroutine);
   }
 
   private bool OnBumper(GameActionType type, bool down)
   {
-    if (this._isConsole)
+    if (_isConsole)
     {
       if (down && PlayerUtility.IsPlayerCanControlling)
       {
         if (JoystickLayoutSwitcher.Instance.CurrentLayout != JoystickLayoutSwitcher.KeyLayouts.Three)
         {
-          ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.RStickLeft, new GameActionHandle(this.OnStickMove), true);
-          ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.RStickRight, new GameActionHandle(this.OnStickMove), true);
-          ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.RStickUp, new GameActionHandle(this.OnStickMove), true);
-          ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.RStickDown, new GameActionHandle(this.OnStickMove), true);
+          ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.RStickLeft, OnStickMove, true);
+          ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.RStickRight, OnStickMove, true);
+          ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.RStickUp, OnStickMove, true);
+          ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.RStickDown, OnStickMove, true);
         }
-        if (this._waitCoroutine != null)
-          this.StopCoroutine(this._waitCoroutine);
-        this._currentView.Show();
-        if (!this._currentView.Attacker.IsUnholstered)
+        if (_waitCoroutine != null)
+          this.StopCoroutine(_waitCoroutine);
+        _currentView.Show();
+        if (!_currentView.Attacker.IsUnholstered)
         {
-          this._selectedIndex = this._currentView.Attacker.currentWeapon;
-          this._currentView.AssignCurrentItem();
-          this._currentView.Attacker.ToggleCurrentWeapon();
-          this.wasWeaponChanged = true;
+          _selectedIndex = _currentView.Attacker.currentWeapon;
+          _currentView.AssignCurrentItem();
+          _currentView.Attacker.ToggleCurrentWeapon();
+          wasWeaponChanged = true;
         }
         else
-          this.wasWeaponChanged = false;
+          wasWeaponChanged = false;
         ExternalSettingsInstance<ExternalInputSettings>.Instance.JoystickSensitivity = 0.0f;
         return true;
       }
       if (!down && PlayerUtility.IsPlayerCanControlling)
       {
-        ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.RStickLeft, new GameActionHandle(this.OnStickMove));
-        ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.RStickRight, new GameActionHandle(this.OnStickMove));
-        ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.RStickUp, new GameActionHandle(this.OnStickMove));
-        ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.RStickDown, new GameActionHandle(this.OnStickMove));
-        if (this._selectedIndex == this._currentView.Attacker.currentWeapon && !this.wasWeaponChanged)
+        ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.RStickLeft, OnStickMove);
+        ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.RStickRight, OnStickMove);
+        ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.RStickUp, OnStickMove);
+        ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.RStickDown, OnStickMove);
+        if (_selectedIndex == _currentView.Attacker.currentWeapon && !wasWeaponChanged)
         {
-          this._currentView.Attacker.ToggleCurrentWeapon();
-          this.wasWeaponChanged = false;
+          _currentView.Attacker.ToggleCurrentWeapon();
+          wasWeaponChanged = false;
         }
-        this._waitCoroutine = this.StartCoroutine(this.WaitBeforeHide(1f));
-        ExternalSettingsInstance<ExternalInputSettings>.Instance.JoystickSensitivity = this._sensativity;
+        _waitCoroutine = this.StartCoroutine(WaitBeforeHide(1f));
+        ExternalSettingsInstance<ExternalInputSettings>.Instance.JoystickSensitivity = _sensativity;
         return true;
       }
     }
@@ -104,19 +102,19 @@ public class WeaponsSelectionController : MonoBehaviour
   {
     if (!PlayerUtility.IsPlayerCanControlling || !InputService.Instance.JoystickUsed)
       return false;
-    if (this._waitCoroutine != null)
-      this.StopCoroutine(this._waitCoroutine);
+    if (_waitCoroutine != null)
+      this.StopCoroutine(_waitCoroutine);
     if (down)
     {
-      this._currentView.Show();
-      if (!this._currentView.Attacker.IsUnholstered)
+      _currentView.Show();
+      if (!_currentView.Attacker.IsUnholstered)
       {
-        this._selectedIndex = this._currentView.Attacker.currentWeapon;
-        this._currentView.AssignCurrentItem();
+        _selectedIndex = _currentView.Attacker.currentWeapon;
+        _currentView.AssignCurrentItem();
       }
-      return this.OnStickMove(type, down);
+      return OnStickMove(type, down);
     }
-    this._waitCoroutine = this.StartCoroutine(this.WaitBeforeHide(1f));
+    _waitCoroutine = this.StartCoroutine(WaitBeforeHide(1f));
     return true;
   }
 
@@ -146,9 +144,9 @@ public class WeaponsSelectionController : MonoBehaviour
       }
       if (slot != AttackerPlayerComponent.Slots.WeaponNone)
       {
-        this._currentView.Attacker.SetWeaponByIndex(slot);
-        this._selectedIndex = this._currentView.Attacker.currentWeapon;
-        this.wasWeaponChanged = true;
+        _currentView.Attacker.SetWeaponByIndex(slot);
+        _selectedIndex = _currentView.Attacker.currentWeapon;
+        wasWeaponChanged = true;
       }
     }
     return true;
@@ -156,42 +154,42 @@ public class WeaponsSelectionController : MonoBehaviour
 
   private void OnDisable()
   {
-    InputService.Instance.onJoystickUsedChanged -= new Action<bool>(this.OnJoystick);
-    ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Unholster, new GameActionHandle(this.OnBumper));
-    ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Weapon1, new GameActionHandle(this.OnShowSelector));
-    ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Weapon2, new GameActionHandle(this.OnShowSelector));
-    ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Weapon3, new GameActionHandle(this.OnShowSelector));
-    ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Weapon4, new GameActionHandle(this.OnShowSelector));
-    ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.RStickLeft, new GameActionHandle(this.OnStickMove));
-    ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.RStickRight, new GameActionHandle(this.OnStickMove));
-    ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.RStickUp, new GameActionHandle(this.OnStickMove));
-    ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.RStickDown, new GameActionHandle(this.OnStickMove));
-    ExternalSettingsInstance<ExternalInputSettings>.Instance.JoystickSensitivity = this._sensativity;
-    JoystickLayoutSwitcher.Instance.OnLayoutChanged -= new Action<JoystickLayoutSwitcher.KeyLayouts>(this.OnLayoutChanged);
+    InputService.Instance.onJoystickUsedChanged -= OnJoystick;
+    ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Unholster, OnBumper);
+    ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Weapon1, OnShowSelector);
+    ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Weapon2, OnShowSelector);
+    ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Weapon3, OnShowSelector);
+    ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Weapon4, OnShowSelector);
+    ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.RStickLeft, OnStickMove);
+    ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.RStickRight, OnStickMove);
+    ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.RStickUp, OnStickMove);
+    ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.RStickDown, OnStickMove);
+    ExternalSettingsInstance<ExternalInputSettings>.Instance.JoystickSensitivity = _sensativity;
+    JoystickLayoutSwitcher.Instance.OnLayoutChanged -= OnLayoutChanged;
   }
 
   private void OnJoystick(bool isUsed)
   {
-    this._currentView = isUsed ? this._consoleView : this._pcView;
-    this._pcView.gameObject.SetActive(!isUsed);
-    this._consoleView.gameObject.SetActive(isUsed);
-    this._isConsole = isUsed;
-    this.DPadNavigationHint.SetActive(isUsed && (JoystickLayoutSwitcher.Instance.CurrentLayout == JoystickLayoutSwitcher.KeyLayouts.Two || JoystickLayoutSwitcher.Instance.CurrentLayout == JoystickLayoutSwitcher.KeyLayouts.Three));
-    this.RStickNavigationHint.SetActive(isUsed && JoystickLayoutSwitcher.Instance.CurrentLayout == JoystickLayoutSwitcher.KeyLayouts.One);
+    _currentView = isUsed ? _consoleView : _pcView;
+    _pcView.gameObject.SetActive(!isUsed);
+    _consoleView.gameObject.SetActive(isUsed);
+    _isConsole = isUsed;
+    DPadNavigationHint.SetActive(isUsed && (JoystickLayoutSwitcher.Instance.CurrentLayout == JoystickLayoutSwitcher.KeyLayouts.Two || JoystickLayoutSwitcher.Instance.CurrentLayout == JoystickLayoutSwitcher.KeyLayouts.Three));
+    RStickNavigationHint.SetActive(isUsed && JoystickLayoutSwitcher.Instance.CurrentLayout == JoystickLayoutSwitcher.KeyLayouts.One);
   }
 
   private IEnumerator WaitBeforeHide(float seconds)
   {
-    while ((double) seconds > 0.0)
+    while (seconds > 0.0)
     {
       seconds -= Time.deltaTime;
-      yield return (object) null;
+      yield return null;
     }
-    if ((UnityEngine.Object) this._currentView != (UnityEngine.Object) null)
+    if ((UnityEngine.Object) _currentView != (UnityEngine.Object) null)
     {
-      this._currentView.Hide();
-      this.wasWeaponChanged = false;
+      _currentView.Hide();
+      wasWeaponChanged = false;
     }
-    this._waitCoroutine = (Coroutine) null;
+    _waitCoroutine = (Coroutine) null;
   }
 }

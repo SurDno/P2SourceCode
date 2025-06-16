@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-public class DialogIndicationView : MonoBehaviour
+﻿public class DialogIndicationView : MonoBehaviour
 {
   [SerializeField]
   private ParticleSystem particleSystem;
@@ -13,16 +11,16 @@ public class DialogIndicationView : MonoBehaviour
 
   public void SetVisibility(bool value)
   {
-    if (!((Object) this.particleSystem != (Object) null))
+    if (!((Object) particleSystem != (Object) null))
       return;
-    this.particleSystem.emission.enabled = value;
+    particleSystem.emission.enabled = value;
   }
 
   public void SetShape(SkinnedMeshRenderer renderer)
   {
-    if (!((Object) this.particleSystem != (Object) null))
+    if (!((Object) particleSystem != (Object) null))
       return;
-    ParticleSystem.ShapeModule shape = this.particleSystem.shape with
+    ParticleSystem.ShapeModule shape = particleSystem.shape with
     {
       shapeType = ParticleSystemShapeType.SkinnedMeshRenderer,
       meshShapeType = ParticleSystemMeshShapeType.Vertex,
@@ -32,15 +30,15 @@ public class DialogIndicationView : MonoBehaviour
 
   public void SetShape(MeshRenderer renderer)
   {
-    if (!((Object) this.particleSystem != (Object) null))
+    if (!((Object) particleSystem != (Object) null))
       return;
-    ParticleSystem.ShapeModule shape = this.particleSystem.shape with
+    ParticleSystem.ShapeModule shape = particleSystem.shape with
     {
       shapeType = ParticleSystemShapeType.MeshRenderer,
       meshShapeType = ParticleSystemMeshShapeType.Triangle,
       meshRenderer = renderer
     };
     if ((double) renderer.transform.lossyScale.x < 0.0)
-      this.particleSystem.GetComponent<ParticleSystemRenderer>().minParticleSize /= 100000f;
+      particleSystem.GetComponent<ParticleSystemRenderer>().minParticleSize /= 100000f;
   }
 }

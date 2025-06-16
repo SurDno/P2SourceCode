@@ -1,6 +1,4 @@
 ﻿using Inspectors;
-using UnityEngine;
-using UnityEngine.AI;
 
 public class NavMeshAgentWrapper
 {
@@ -9,46 +7,46 @@ public class NavMeshAgentWrapper
   [Inspected]
   private void RestorePath()
   {
-    Vector3 destination = this.agent.destination;
-    this.agent.ResetPath();
-    this.agent.SetDestination(destination);
+    Vector3 destination = agent.destination;
+    agent.ResetPath();
+    agent.SetDestination(destination);
   }
 
   public NavMeshAgentWrapper(NavMeshAgent agent) => this.agent = agent;
 
   [Inspected]
-  private bool HasPath => this.agent.hasPath;
+  private bool HasPath => agent.hasPath;
 
   [Inspected]
-  private bool PathPending => this.agent.pathPending;
+  private bool PathPending => agent.pathPending;
 
   [Inspected]
-  private bool IsPathStale => this.agent.isPathStale;
+  private bool IsPathStale => agent.isPathStale;
 
   [Inspected]
-  private bool IsStopped => this.agent.isStopped;
+  private bool IsStopped => agent.isStopped;
 
   [Inspected]
-  private NavMeshPathStatus PathStatus => this.agent.pathStatus;
+  private NavMeshPathStatus PathStatus => agent.pathStatus;
 
   [Inspected]
-  private float RemainingDistance => this.agent.remainingDistance;
+  private float RemainingDistance => agent.remainingDistance;
 
   [Inspected]
-  private float StoppingDistance => this.agent.stoppingDistance;
+  private float StoppingDistance => agent.stoppingDistance;
 
   [Inspected]
-  private NavMeshPathWrapper Path => new NavMeshPathWrapper(this.agent.path);
+  private NavMeshPathWrapper Path => new NavMeshPathWrapper(agent.path);
 
   [Inspected]
-  private bool IsOnNavMesh => this.agent.isOnNavMesh;
+  private bool IsOnNavMesh => agent.isOnNavMesh;
 
   [Inspected]
-  private bool AutoRepth => this.agent.autoRepath;
+  private bool AutoRepth => agent.autoRepath;
 
   [Inspected]
-  private Vector3 Velocity => this.agent.velocity;
+  private Vector3 Velocity => agent.velocity;
 
   [Inspected]
-  private Vector3 DesiredVelocity => this.agent.desiredVelocity;
+  private Vector3 DesiredVelocity => agent.desiredVelocity;
 }

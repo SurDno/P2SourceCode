@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace RootMotion
+﻿namespace RootMotion
 {
   public class DemoGUIMessage : MonoBehaviour
   {
@@ -9,8 +7,8 @@ namespace RootMotion
 
     private void OnGUI()
     {
-      GUI.color = this.color;
-      GUILayout.Label(this.text);
+      GUI.color = color;
+      GUILayout.Label(text);
       GUI.color = Color.white;
     }
   }

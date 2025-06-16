@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-public class LightShaftsPlayerCapture : MonoBehaviour
+﻿public class LightShaftsPlayerCapture : MonoBehaviour
 {
   public float farDistance = 50f;
   public float nearDistance = 5f;
@@ -8,23 +6,23 @@ public class LightShaftsPlayerCapture : MonoBehaviour
 
   private void OnValidate()
   {
-    if ((double) this.nearUpdateTime < 0.0)
-      this.nearUpdateTime = 0.0f;
-    if ((double) this.nearDistance < 0.0)
-      this.nearDistance = 0.0f;
-    if ((double) this.farDistance < 0.0)
-      this.farDistance = 0.0f;
-    if ((double) this.nearDistance <= (double) this.farDistance)
+    if (nearUpdateTime < 0.0)
+      nearUpdateTime = 0.0f;
+    if (nearDistance < 0.0)
+      nearDistance = 0.0f;
+    if (farDistance < 0.0)
+      farDistance = 0.0f;
+    if (nearDistance <= (double) farDistance)
       return;
-    this.nearDistance = (float) (((double) this.nearDistance + (double) this.farDistance) * 0.5);
-    this.farDistance = this.nearDistance;
+    nearDistance = (float) ((nearDistance + (double) farDistance) * 0.5);
+    farDistance = nearDistance;
   }
 
   private void Update()
   {
-    LightShafts.nearDistance = this.nearDistance;
-    LightShafts.farDistance = this.farDistance;
-    LightShafts.nearUpdateTime = this.nearUpdateTime;
+    LightShafts.nearDistance = nearDistance;
+    LightShafts.farDistance = farDistance;
+    LightShafts.nearUpdateTime = nearUpdateTime;
     LightShafts.playerPosition = this.transform.position;
     LightShafts.isPlayerSet = true;
   }

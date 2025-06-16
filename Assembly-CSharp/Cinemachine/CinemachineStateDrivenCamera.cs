@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace Cinemachine
 {
@@ -28,23 +27,23 @@ namespace Cinemachine
     [SerializeField]
     [HideInInspector]
     [NoSaveDuringPlay]
-    public CinemachineVirtualCameraBase[] m_ChildCameras = (CinemachineVirtualCameraBase[]) null;
+    public CinemachineVirtualCameraBase[] m_ChildCameras;
     [Tooltip("The set of instructions associating virtual cameras with states.  These instructions are used to choose the live child at any given moment")]
-    public CinemachineStateDrivenCamera.Instruction[] m_Instructions;
+    public Instruction[] m_Instructions;
     [CinemachineBlendDefinitionProperty]
     [Tooltip("The blend which is used if you don't explicitly define a blend between two Virtual Camera children")]
     public CinemachineBlendDefinition m_DefaultBlend = new CinemachineBlendDefinition(CinemachineBlendDefinition.Style.EaseInOut, 0.5f);
     [Tooltip("This is the asset which contains custom settings for specific child blends")]
-    public CinemachineBlenderSettings m_CustomBlends = (CinemachineBlenderSettings) null;
+    public CinemachineBlenderSettings m_CustomBlends = null;
     [HideInInspector]
     [SerializeField]
-    public CinemachineStateDrivenCamera.ParentHash[] m_ParentHash = (CinemachineStateDrivenCamera.ParentHash[]) null;
+    public ParentHash[] m_ParentHash = null;
     private CameraState m_State = CameraState.Default;
-    private float mActivationTime = 0.0f;
-    private CinemachineStateDrivenCamera.Instruction mActiveInstruction;
-    private float mPendingActivationTime = 0.0f;
-    private CinemachineStateDrivenCamera.Instruction mPendingInstruction;
-    private CinemachineBlend mActiveBlend = (CinemachineBlend) null;
+    private float mActivationTime;
+    private Instruction mActiveInstruction;
+    private float mPendingActivationTime;
+    private Instruction mPendingInstruction;
+    private CinemachineBlend mActiveBlend;
     private Dictionary<int, int> mInstructionDictionary;
     private Dictionary<int, int> mStateParentLookup;
     private List<AnimatorClipInfo> m_clipInfoList = new List<AnimatorClipInfo>();
@@ -53,128 +52,128 @@ namespace Cinemachine
     {
       get
       {
-        ICinemachineCamera liveChild = this.LiveChild;
-        return this.mActiveBlend == null ? (liveChild != null ? "[" + liveChild.Name + "]" : "(none)") : this.mActiveBlend.Description;
+        ICinemachineCamera liveChild = LiveChild;
+        return mActiveBlend == null ? (liveChild != null ? "[" + liveChild.Name + "]" : "(none)") : mActiveBlend.Description;
       }
     }
 
     public ICinemachineCamera LiveChild { set; get; }
 
-    public override ICinemachineCamera LiveChildOrSelf => this.LiveChild;
+    public override ICinemachineCamera LiveChildOrSelf => LiveChild;
 
     public override bool IsLiveChild(ICinemachineCamera vcam)
     {
-      return vcam == this.LiveChild || this.mActiveBlend != null && (vcam == this.mActiveBlend.CamA || vcam == this.mActiveBlend.CamB);
+      return vcam == LiveChild || mActiveBlend != null && (vcam == mActiveBlend.CamA || vcam == mActiveBlend.CamB);
     }
 
-    public override CameraState State => this.m_State;
+    public override CameraState State => m_State;
 
     public override Transform LookAt
     {
-      get => this.ResolveLookAt(this.m_LookAt);
-      set => this.m_LookAt = value;
+      get => ResolveLookAt(m_LookAt);
+      set => m_LookAt = value;
     }
 
     public override Transform Follow
     {
-      get => this.ResolveFollow(this.m_Follow);
-      set => this.m_Follow = value;
+      get => ResolveFollow(m_Follow);
+      set => m_Follow = value;
     }
 
     public override void RemovePostPipelineStageHook(
-      CinemachineVirtualCameraBase.OnPostPipelineStageDelegate d)
+      OnPostPipelineStageDelegate d)
     {
       base.RemovePostPipelineStageHook(d);
-      this.UpdateListOfChildren();
-      foreach (CinemachineVirtualCameraBase childCamera in this.m_ChildCameras)
+      UpdateListOfChildren();
+      foreach (CinemachineVirtualCameraBase childCamera in m_ChildCameras)
         childCamera.RemovePostPipelineStageHook(d);
     }
 
     public override void UpdateCameraState(Vector3 worldUp, float deltaTime)
     {
-      if (!this.PreviousStateIsValid)
+      if (!PreviousStateIsValid)
         deltaTime = -1f;
-      this.UpdateListOfChildren();
-      CinemachineVirtualCameraBase virtualCameraBase = this.ChooseCurrentCamera(deltaTime);
-      if (this.m_ChildCameras != null)
+      UpdateListOfChildren();
+      CinemachineVirtualCameraBase virtualCameraBase = ChooseCurrentCamera(deltaTime);
+      if (m_ChildCameras != null)
       {
-        for (int index = 0; index < this.m_ChildCameras.Length; ++index)
+        for (int index = 0; index < m_ChildCameras.Length; ++index)
         {
-          CinemachineVirtualCameraBase childCamera = this.m_ChildCameras[index];
+          CinemachineVirtualCameraBase childCamera = m_ChildCameras[index];
           if ((UnityEngine.Object) childCamera != (UnityEngine.Object) null)
           {
-            bool flag = this.m_EnableAllChildCameras || (UnityEngine.Object) childCamera == (UnityEngine.Object) virtualCameraBase;
+            bool flag = m_EnableAllChildCameras || (UnityEngine.Object) childCamera == (UnityEngine.Object) virtualCameraBase;
             if (flag != childCamera.VirtualCameraGameObject.activeInHierarchy)
             {
               childCamera.gameObject.SetActive(flag);
               if (flag)
-                CinemachineCore.Instance.UpdateVirtualCamera((ICinemachineCamera) childCamera, worldUp, deltaTime);
+                CinemachineCore.Instance.UpdateVirtualCamera(childCamera, worldUp, deltaTime);
             }
           }
         }
       }
-      ICinemachineCamera liveChild = this.LiveChild;
-      this.LiveChild = (ICinemachineCamera) virtualCameraBase;
-      if (liveChild != null && this.LiveChild != null && liveChild != this.LiveChild)
+      ICinemachineCamera liveChild = LiveChild;
+      LiveChild = virtualCameraBase;
+      if (liveChild != null && LiveChild != null && liveChild != LiveChild)
       {
         float duration = 0.0f;
-        AnimationCurve blendCurve = this.LookupBlendCurve(liveChild, this.LiveChild, out duration);
-        this.mActiveBlend = this.CreateBlend(liveChild, this.LiveChild, blendCurve, duration, this.mActiveBlend, deltaTime);
-        this.LiveChild.OnTransitionFromCamera(liveChild, worldUp, deltaTime);
-        CinemachineCore.Instance.GenerateCameraActivationEvent(this.LiveChild);
-        if (this.mActiveBlend == null)
-          CinemachineCore.Instance.GenerateCameraCutEvent(this.LiveChild);
+        AnimationCurve blendCurve = LookupBlendCurve(liveChild, LiveChild, out duration);
+        mActiveBlend = CreateBlend(liveChild, LiveChild, blendCurve, duration, mActiveBlend, deltaTime);
+        LiveChild.OnTransitionFromCamera(liveChild, worldUp, deltaTime);
+        CinemachineCore.Instance.GenerateCameraActivationEvent(LiveChild);
+        if (mActiveBlend == null)
+          CinemachineCore.Instance.GenerateCameraCutEvent(LiveChild);
       }
-      if (this.mActiveBlend != null)
+      if (mActiveBlend != null)
       {
-        this.mActiveBlend.TimeInBlend += (double) deltaTime >= 0.0 ? deltaTime : this.mActiveBlend.Duration;
-        if (this.mActiveBlend.IsComplete)
-          this.mActiveBlend = (CinemachineBlend) null;
+        mActiveBlend.TimeInBlend += deltaTime >= 0.0 ? deltaTime : mActiveBlend.Duration;
+        if (mActiveBlend.IsComplete)
+          mActiveBlend = null;
       }
-      if (this.mActiveBlend != null)
+      if (mActiveBlend != null)
       {
-        this.mActiveBlend.UpdateCameraState(worldUp, deltaTime);
-        this.m_State = this.mActiveBlend.State;
+        mActiveBlend.UpdateCameraState(worldUp, deltaTime);
+        m_State = mActiveBlend.State;
       }
-      else if (this.LiveChild != null)
-        this.m_State = this.LiveChild.State;
-      this.PreviousStateIsValid = true;
+      else if (LiveChild != null)
+        m_State = LiveChild.State;
+      PreviousStateIsValid = true;
     }
 
     protected override void OnEnable()
     {
       base.OnEnable();
-      this.InvalidateListOfChildren();
-      this.mActiveBlend = (CinemachineBlend) null;
+      InvalidateListOfChildren();
+      mActiveBlend = null;
     }
 
-    public void OnTransformChildrenChanged() => this.InvalidateListOfChildren();
+    public void OnTransformChildrenChanged() => InvalidateListOfChildren();
 
     public CinemachineVirtualCameraBase[] ChildCameras
     {
       get
       {
-        this.UpdateListOfChildren();
-        return this.m_ChildCameras;
+        UpdateListOfChildren();
+        return m_ChildCameras;
       }
     }
 
-    public bool IsBlending => this.mActiveBlend != null;
+    public bool IsBlending => mActiveBlend != null;
 
     public static string CreateFakeHashName(int parentHash, string stateName)
     {
-      return parentHash.ToString() + "_" + stateName;
+      return parentHash + "_" + stateName;
     }
 
     private void InvalidateListOfChildren()
     {
-      this.m_ChildCameras = (CinemachineVirtualCameraBase[]) null;
-      this.LiveChild = (ICinemachineCamera) null;
+      m_ChildCameras = null;
+      LiveChild = null;
     }
 
     private void UpdateListOfChildren()
     {
-      if (this.m_ChildCameras != null && this.mInstructionDictionary != null && this.mStateParentLookup != null)
+      if (m_ChildCameras != null && mInstructionDictionary != null && mStateParentLookup != null)
         return;
       List<CinemachineVirtualCameraBase> virtualCameraBaseList = new List<CinemachineVirtualCameraBase>();
       foreach (CinemachineVirtualCameraBase componentsInChild in this.GetComponentsInChildren<CinemachineVirtualCameraBase>(true))
@@ -182,101 +181,101 @@ namespace Cinemachine
         if ((UnityEngine.Object) componentsInChild.transform.parent == (UnityEngine.Object) this.transform)
           virtualCameraBaseList.Add(componentsInChild);
       }
-      this.m_ChildCameras = virtualCameraBaseList.ToArray();
-      this.ValidateInstructions();
+      m_ChildCameras = virtualCameraBaseList.ToArray();
+      ValidateInstructions();
     }
 
     public void ValidateInstructions()
     {
-      if (this.m_Instructions == null)
-        this.m_Instructions = new CinemachineStateDrivenCamera.Instruction[0];
-      this.mInstructionDictionary = new Dictionary<int, int>();
-      for (int index = 0; index < this.m_Instructions.Length; ++index)
+      if (m_Instructions == null)
+        m_Instructions = new Instruction[0];
+      mInstructionDictionary = new Dictionary<int, int>();
+      for (int index = 0; index < m_Instructions.Length; ++index)
       {
-        if ((UnityEngine.Object) this.m_Instructions[index].m_VirtualCamera != (UnityEngine.Object) null && (UnityEngine.Object) this.m_Instructions[index].m_VirtualCamera.transform.parent != (UnityEngine.Object) this.transform)
-          this.m_Instructions[index].m_VirtualCamera = (CinemachineVirtualCameraBase) null;
-        this.mInstructionDictionary[this.m_Instructions[index].m_FullHash] = index;
+        if ((UnityEngine.Object) m_Instructions[index].m_VirtualCamera != (UnityEngine.Object) null && (UnityEngine.Object) m_Instructions[index].m_VirtualCamera.transform.parent != (UnityEngine.Object) this.transform)
+          m_Instructions[index].m_VirtualCamera = null;
+        mInstructionDictionary[m_Instructions[index].m_FullHash] = index;
       }
-      this.mStateParentLookup = new Dictionary<int, int>();
-      if (this.m_ParentHash != null)
+      mStateParentLookup = new Dictionary<int, int>();
+      if (m_ParentHash != null)
       {
-        foreach (CinemachineStateDrivenCamera.ParentHash parentHash in this.m_ParentHash)
-          this.mStateParentLookup[parentHash.m_Hash] = parentHash.m_ParentHash;
+        foreach (ParentHash parentHash in m_ParentHash)
+          mStateParentLookup[parentHash.m_Hash] = parentHash.m_ParentHash;
       }
-      this.mActivationTime = this.mPendingActivationTime = 0.0f;
-      this.mActiveBlend = (CinemachineBlend) null;
+      mActivationTime = mPendingActivationTime = 0.0f;
+      mActiveBlend = null;
     }
 
     private CinemachineVirtualCameraBase ChooseCurrentCamera(float deltaTime)
     {
-      if (this.m_ChildCameras == null || this.m_ChildCameras.Length == 0)
+      if (m_ChildCameras == null || m_ChildCameras.Length == 0)
       {
-        this.mActivationTime = 0.0f;
-        return (CinemachineVirtualCameraBase) null;
+        mActivationTime = 0.0f;
+        return null;
       }
-      CinemachineVirtualCameraBase childCamera = this.m_ChildCameras[0];
-      if ((UnityEngine.Object) this.m_AnimatedTarget == (UnityEngine.Object) null || !this.m_AnimatedTarget.gameObject.activeSelf || (UnityEngine.Object) this.m_AnimatedTarget.runtimeAnimatorController == (UnityEngine.Object) null || this.m_LayerIndex < 0 || this.m_LayerIndex >= this.m_AnimatedTarget.layerCount)
+      CinemachineVirtualCameraBase childCamera = m_ChildCameras[0];
+      if ((UnityEngine.Object) m_AnimatedTarget == (UnityEngine.Object) null || !m_AnimatedTarget.gameObject.activeSelf || (UnityEngine.Object) m_AnimatedTarget.runtimeAnimatorController == (UnityEngine.Object) null || m_LayerIndex < 0 || m_LayerIndex >= m_AnimatedTarget.layerCount)
       {
-        this.mActivationTime = 0.0f;
+        mActivationTime = 0.0f;
         return childCamera;
       }
       int key;
-      if (this.m_AnimatedTarget.IsInTransition(this.m_LayerIndex))
+      if (m_AnimatedTarget.IsInTransition(m_LayerIndex))
       {
-        AnimatorStateInfo animatorStateInfo = this.m_AnimatedTarget.GetNextAnimatorStateInfo(this.m_LayerIndex);
+        AnimatorStateInfo animatorStateInfo = m_AnimatedTarget.GetNextAnimatorStateInfo(m_LayerIndex);
         key = animatorStateInfo.fullPathHash;
-        if (this.m_AnimatedTarget.GetNextAnimatorClipInfoCount(this.m_LayerIndex) > 1)
+        if (m_AnimatedTarget.GetNextAnimatorClipInfoCount(m_LayerIndex) > 1)
         {
-          this.m_AnimatedTarget.GetNextAnimatorClipInfo(this.m_LayerIndex, this.m_clipInfoList);
-          key = this.GetClipHash(animatorStateInfo.fullPathHash, this.m_clipInfoList);
+          m_AnimatedTarget.GetNextAnimatorClipInfo(m_LayerIndex, m_clipInfoList);
+          key = GetClipHash(animatorStateInfo.fullPathHash, m_clipInfoList);
         }
       }
       else
       {
-        AnimatorStateInfo animatorStateInfo = this.m_AnimatedTarget.GetCurrentAnimatorStateInfo(this.m_LayerIndex);
+        AnimatorStateInfo animatorStateInfo = m_AnimatedTarget.GetCurrentAnimatorStateInfo(m_LayerIndex);
         key = animatorStateInfo.fullPathHash;
-        if (this.m_AnimatedTarget.GetCurrentAnimatorClipInfoCount(this.m_LayerIndex) > 1)
+        if (m_AnimatedTarget.GetCurrentAnimatorClipInfoCount(m_LayerIndex) > 1)
         {
-          this.m_AnimatedTarget.GetCurrentAnimatorClipInfo(this.m_LayerIndex, this.m_clipInfoList);
-          key = this.GetClipHash(animatorStateInfo.fullPathHash, this.m_clipInfoList);
+          m_AnimatedTarget.GetCurrentAnimatorClipInfo(m_LayerIndex, m_clipInfoList);
+          key = GetClipHash(animatorStateInfo.fullPathHash, m_clipInfoList);
         }
       }
-      while (key != 0 && !this.mInstructionDictionary.ContainsKey(key))
-        key = this.mStateParentLookup.ContainsKey(key) ? this.mStateParentLookup[key] : 0;
+      while (key != 0 && !mInstructionDictionary.ContainsKey(key))
+        key = mStateParentLookup.ContainsKey(key) ? mStateParentLookup[key] : 0;
       float time = Time.time;
-      if ((double) this.mActivationTime != 0.0)
+      if (mActivationTime != 0.0)
       {
-        if (this.mActiveInstruction.m_FullHash == key)
+        if (mActiveInstruction.m_FullHash == key)
         {
-          this.mPendingActivationTime = 0.0f;
-          return this.mActiveInstruction.m_VirtualCamera;
+          mPendingActivationTime = 0.0f;
+          return mActiveInstruction.m_VirtualCamera;
         }
-        if ((double) deltaTime >= 0.0 && (double) this.mPendingActivationTime != 0.0 && this.mPendingInstruction.m_FullHash == key)
+        if (deltaTime >= 0.0 && mPendingActivationTime != 0.0 && mPendingInstruction.m_FullHash == key)
         {
-          if ((double) time - (double) this.mPendingActivationTime > (double) this.mPendingInstruction.m_ActivateAfter && ((double) time - (double) this.mActivationTime > (double) this.mActiveInstruction.m_MinDuration || this.mPendingInstruction.m_VirtualCamera.Priority > this.mActiveInstruction.m_VirtualCamera.Priority))
+          if (time - (double) mPendingActivationTime > mPendingInstruction.m_ActivateAfter && (time - (double) mActivationTime > mActiveInstruction.m_MinDuration || mPendingInstruction.m_VirtualCamera.Priority > mActiveInstruction.m_VirtualCamera.Priority))
           {
-            this.mActiveInstruction = this.mPendingInstruction;
-            this.mActivationTime = time;
-            this.mPendingActivationTime = 0.0f;
+            mActiveInstruction = mPendingInstruction;
+            mActivationTime = time;
+            mPendingActivationTime = 0.0f;
           }
-          return this.mActiveInstruction.m_VirtualCamera;
+          return mActiveInstruction.m_VirtualCamera;
         }
       }
-      this.mPendingActivationTime = 0.0f;
-      if (!this.mInstructionDictionary.ContainsKey(key))
-        return (double) this.mActivationTime != 0.0 ? this.mActiveInstruction.m_VirtualCamera : childCamera;
-      CinemachineStateDrivenCamera.Instruction instruction = this.m_Instructions[this.mInstructionDictionary[key]];
+      mPendingActivationTime = 0.0f;
+      if (!mInstructionDictionary.ContainsKey(key))
+        return mActivationTime != 0.0 ? mActiveInstruction.m_VirtualCamera : childCamera;
+      Instruction instruction = m_Instructions[mInstructionDictionary[key]];
       if ((UnityEngine.Object) instruction.m_VirtualCamera == (UnityEngine.Object) null)
         instruction.m_VirtualCamera = childCamera;
-      if ((double) deltaTime >= 0.0 && (double) this.mActivationTime > 0.0 && ((double) instruction.m_ActivateAfter > 0.0 || (double) time - (double) this.mActivationTime < (double) this.mActiveInstruction.m_MinDuration && instruction.m_VirtualCamera.Priority <= this.mActiveInstruction.m_VirtualCamera.Priority))
+      if (deltaTime >= 0.0 && mActivationTime > 0.0 && (instruction.m_ActivateAfter > 0.0 || time - (double) mActivationTime < mActiveInstruction.m_MinDuration && instruction.m_VirtualCamera.Priority <= mActiveInstruction.m_VirtualCamera.Priority))
       {
-        this.mPendingInstruction = instruction;
-        this.mPendingActivationTime = time;
-        return (double) this.mActivationTime != 0.0 ? this.mActiveInstruction.m_VirtualCamera : childCamera;
+        mPendingInstruction = instruction;
+        mPendingActivationTime = time;
+        return mActivationTime != 0.0 ? mActiveInstruction.m_VirtualCamera : childCamera;
       }
-      this.mActiveInstruction = instruction;
-      this.mActivationTime = time;
-      return this.mActiveInstruction.m_VirtualCamera;
+      mActiveInstruction = instruction;
+      mActivationTime = time;
+      return mActiveInstruction.m_VirtualCamera;
     }
 
     private int GetClipHash(int hash, List<AnimatorClipInfo> clips)
@@ -314,7 +313,7 @@ namespace Cinemachine
           int parentHash = hash;
           clip = clips[index1];
           string name = clip.clip.name;
-          hash = Animator.StringToHash(CinemachineStateDrivenCamera.CreateFakeHashName(parentHash, name));
+          hash = Animator.StringToHash(CreateFakeHashName(parentHash, name));
         }
       }
       return hash;
@@ -325,9 +324,9 @@ namespace Cinemachine
       ICinemachineCamera toKey,
       out float duration)
     {
-      AnimationCurve defaultCurve = this.m_DefaultBlend.BlendCurve;
-      if ((UnityEngine.Object) this.m_CustomBlends != (UnityEngine.Object) null)
-        defaultCurve = this.m_CustomBlends.GetBlendCurveForVirtualCameras(fromKey != null ? fromKey.Name : string.Empty, toKey != null ? toKey.Name : string.Empty, defaultCurve);
+      AnimationCurve defaultCurve = m_DefaultBlend.BlendCurve;
+      if ((UnityEngine.Object) m_CustomBlends != (UnityEngine.Object) null)
+        defaultCurve = m_CustomBlends.GetBlendCurveForVirtualCameras(fromKey != null ? fromKey.Name : string.Empty, toKey != null ? toKey.Name : string.Empty, defaultCurve);
       Keyframe[] keys = defaultCurve.keys;
       duration = keys == null || keys.Length == 0 ? 0.0f : keys[keys.Length - 1].time;
       return defaultCurve;
@@ -341,10 +340,10 @@ namespace Cinemachine
       CinemachineBlend activeBlend,
       float deltaTime)
     {
-      if (blendCurve == null || (double) duration <= 0.0 || camA == null && camB == null)
-        return (CinemachineBlend) null;
+      if (blendCurve == null || duration <= 0.0 || camA == null && camB == null)
+        return null;
       if (camA == null || activeBlend != null)
-        camA = (ICinemachineCamera) new StaticPointVirtualCamera(activeBlend != null ? activeBlend.State : this.State, activeBlend != null ? "Mid-blend" : "(none)");
+        camA = new StaticPointVirtualCamera(activeBlend != null ? activeBlend.State : State, activeBlend != null ? "Mid-blend" : "(none)");
       return new CinemachineBlend(camA, camB, blendCurve, duration, 0.0f);
     }
 
@@ -370,8 +369,8 @@ namespace Cinemachine
 
       public ParentHash(int h, int p)
       {
-        this.m_Hash = h;
-        this.m_ParentHash = p;
+        m_Hash = h;
+        m_ParentHash = p;
       }
     }
   }

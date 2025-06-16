@@ -1,4 +1,6 @@
-﻿using Engine.Common.Components;
+﻿using System;
+using System.Collections.Generic;
+using Engine.Common.Components;
 using Engine.Common.Components.Regions;
 using Engine.Common.Services;
 using Engine.Common.Types;
@@ -7,9 +9,6 @@ using Engine.Impl.UI.Controls;
 using Engine.Source.Components;
 using Engine.Source.Components.Utilities;
 using Engine.Source.Connections;
-using System;
-using System.Collections.Generic;
-using UnityEngine;
 
 namespace Engine.Impl.UI.Menu.Protagonist.MindMap
 {
@@ -39,54 +38,54 @@ namespace Engine.Impl.UI.Menu.Protagonist.MindMap
 
     public void Hide()
     {
-      this.targetView = (MapFastTravelPointView) null;
-      this.origin = (FastTravelComponent) null;
-      this.path.Clear();
-      this.routeView.SetRoute((IList<FastTravelPointEnum>) null);
+      targetView = null;
+      origin = null;
+      path.Clear();
+      routeView.SetRoute(null);
       this.gameObject.SetActive(false);
     }
 
-    private void LateUpdate() => this.UpdatePosition();
+    private void LateUpdate() => UpdatePosition();
 
     public void Show(FastTravelComponent origin, MapFastTravelPointView targetView)
     {
       IMapItem mapItem = targetView.Item;
-      this.time = this.graph.GetPath(origin.FastTravelPointIndex.Value, mapItem.FastTravelPoint.Value, (IList<FastTravelPointEnum>) this.path);
-      if (this.time == -1)
+      time = graph.GetPath(origin.FastTravelPointIndex.Value, mapItem.FastTravelPoint.Value, path);
+      if (time == -1)
         return;
       this.origin = origin;
       this.targetView = targetView;
-      int itemAmount = StorageUtility.GetItemAmount(ServiceLocator.GetService<ISimulation>().Player?.GetComponent<IStorageComponent>().Items, this.resourceTemplate.Value);
+      int itemAmount = StorageUtility.GetItemAmount(ServiceLocator.GetService<ISimulation>().Player?.GetComponent<IStorageComponent>().Items, resourceTemplate.Value);
       int num = origin.FastTravelPrice.Value;
-      this.enoughResource = itemAmount >= num;
+      enoughResource = itemAmount >= num;
       LocalizationService service = ServiceLocator.GetService<LocalizationService>();
       if (mapItem.Title != LocalizedText.Empty)
       {
-        this.titleView.StringValue = service.GetText(mapItem.Title);
-        this.titleView.gameObject.SetActive(true);
+        titleView.StringValue = service.GetText(mapItem.Title);
+        titleView.gameObject.SetActive(true);
       }
       else
-        this.titleView.gameObject.SetActive(false);
+        titleView.gameObject.SetActive(false);
       if (mapItem.Text != LocalizedText.Empty)
       {
-        this.textView.StringValue = service.GetText(mapItem.Text);
-        this.textView.gameObject.SetActive(true);
+        textView.StringValue = service.GetText(mapItem.Text);
+        textView.gameObject.SetActive(true);
       }
       else
-        this.textView.gameObject.SetActive(false);
-      this.timeView.StringValue = TimeSpan.FromMinutes((double) this.time).ToShortTimeString();
-      this.costView.StringValue = num.ToString() + " (" + (object) itemAmount + ")";
-      this.enoughResourcesView.Visible = this.enoughResource;
-      this.routeView.SetRoute((IList<FastTravelPointEnum>) this.path);
+        textView.gameObject.SetActive(false);
+      timeView.StringValue = TimeSpan.FromMinutes(time).ToShortTimeString();
+      costView.StringValue = num + " (" + itemAmount + ")";
+      enoughResourcesView.Visible = enoughResource;
+      routeView.SetRoute(path);
       this.gameObject.SetActive(true);
-      this.UpdatePosition();
+      UpdatePosition();
     }
 
     public void Travel()
     {
-      if (this.path.Count <= 1 || !this.enoughResource)
+      if (path.Count <= 1 || !enoughResource)
         return;
-      this.origin.FireTravelToPoint(this.targetView.Item.FastTravelPoint.Value, TimeSpan.FromMinutes((double) this.time));
+      origin.FireTravelToPoint(targetView.Item.FastTravelPoint.Value, TimeSpan.FromMinutes(time));
       ServiceLocator.GetService<UIService>().Pop();
     }
 
@@ -95,7 +94,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.MindMap
       RectTransform transform1 = (RectTransform) this.transform;
       RectTransform transform2 = (RectTransform) this.GetComponentInParent<Canvas>().transform;
       Vector2 vector2 = new Vector2(transform2.sizeDelta.x, transform2.sizeDelta.y);
-      Vector2 position = (Vector2) this.targetView.transform.position;
+      Vector2 position = (Vector2) targetView.transform.position;
       position.x = Mathf.Round(position.x);
       position.y = Mathf.Round(position.y);
       position.x /= transform2.localScale.x;

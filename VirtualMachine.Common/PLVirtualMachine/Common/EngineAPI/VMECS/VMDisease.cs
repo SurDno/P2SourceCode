@@ -1,7 +1,7 @@
-﻿using Cofe.Loggers;
+﻿using System;
+using Cofe.Loggers;
 using Engine.Common.Components;
 using PLVirtualMachine.Common.EngineAPI.VMECS.VMAttributes;
-using System;
 
 namespace PLVirtualMachine.Common.EngineAPI.VMECS
 {
@@ -13,7 +13,7 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
     [Method("Set disease value", "value, delta time", "")]
     public void SetDiseaseValue(float value, GameTime delta)
     {
-      this.Component.SetDiseaseValue(value, (TimeSpan) delta);
+      Component.SetDiseaseValue(value, (TimeSpan) delta);
     }
 
     [Property("Disease value", "", false)]
@@ -21,9 +21,9 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
     {
       get
       {
-        if (this.Component != null)
-          return this.Component.DiseaseValue;
-        Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", (object) this.Name, (object) this.Parent.Name));
+        if (Component != null)
+          return Component.DiseaseValue;
+        Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", Name, Parent.Name));
         return 0.0f;
       }
     }

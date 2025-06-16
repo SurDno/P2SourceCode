@@ -4,16 +4,16 @@
   {
     public override void Bind()
     {
-      if (!this.isActive)
+      if (!isActive)
         return;
-      this.DoNormalBinding(this.sourcePort, this.targetPort);
+      DoNormalBinding(sourcePort, targetPort);
     }
 
     public override void UnBind()
     {
-      if (!(this.targetPort is ValueInput))
+      if (!(targetPort is ValueInput))
         return;
-      (this.targetPort as ValueInput).UnBind();
+      (targetPort as ValueInput).UnBind();
     }
 
     private void DoNormalBinding(Port source, Port target)

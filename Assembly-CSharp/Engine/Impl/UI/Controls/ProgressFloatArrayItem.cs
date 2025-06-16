@@ -1,26 +1,24 @@
-﻿using UnityEngine;
-
-namespace Engine.Impl.UI.Controls
+﻿namespace Engine.Impl.UI.Controls
 {
   public class ProgressFloatArrayItem : ProgressView
   {
     [SerializeField]
-    private FloatArrayView view = (FloatArrayView) null;
+    private FloatArrayView view = null;
     [SerializeField]
     private int index;
 
     protected override void ApplyProgress()
     {
-      if (!((Object) this.view != (Object) null))
+      if (!((Object) view != (Object) null))
         return;
-      this.view.SetValue(this.index, this.Progress);
+      view.SetValue(index, Progress);
     }
 
     public override void SkipAnimation()
     {
-      if (!((Object) this.view != (Object) null))
+      if (!((Object) view != (Object) null))
         return;
-      this.view.SkipAnimation();
+      view.SkipAnimation();
     }
   }
 }

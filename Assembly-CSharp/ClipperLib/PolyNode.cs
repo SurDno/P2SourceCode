@@ -11,44 +11,44 @@ namespace ClipperLib
     internal PolyNode m_Parent;
     internal List<IntPoint> m_polygon = new List<IntPoint>();
 
-    public int ChildCount => this.m_Childs.Count;
+    public int ChildCount => m_Childs.Count;
 
-    public List<IntPoint> Contour => this.m_polygon;
+    public List<IntPoint> Contour => m_polygon;
 
-    public List<PolyNode> Childs => this.m_Childs;
+    public List<PolyNode> Childs => m_Childs;
 
-    public PolyNode Parent => this.m_Parent;
+    public PolyNode Parent => m_Parent;
 
-    public bool IsHole => this.IsHoleNode();
+    public bool IsHole => IsHoleNode();
 
     public bool IsOpen { get; set; }
 
     private bool IsHoleNode()
     {
       bool flag = true;
-      for (PolyNode parent = this.m_Parent; parent != null; parent = parent.m_Parent)
+      for (PolyNode parent = m_Parent; parent != null; parent = parent.m_Parent)
         flag = !flag;
       return flag;
     }
 
     internal void AddChild(PolyNode Child)
     {
-      int count = this.m_Childs.Count;
-      this.m_Childs.Add(Child);
+      int count = m_Childs.Count;
+      m_Childs.Add(Child);
       Child.m_Parent = this;
       Child.m_Index = count;
     }
 
     public PolyNode GetNext()
     {
-      return this.m_Childs.Count > 0 ? this.m_Childs[0] : this.GetNextSiblingUp();
+      return m_Childs.Count > 0 ? m_Childs[0] : GetNextSiblingUp();
     }
 
     internal PolyNode GetNextSiblingUp()
     {
-      if (this.m_Parent == null)
-        return (PolyNode) null;
-      return this.m_Index == this.m_Parent.m_Childs.Count - 1 ? this.m_Parent.GetNextSiblingUp() : this.m_Parent.m_Childs[this.m_Index + 1];
+      if (m_Parent == null)
+        return null;
+      return m_Index == m_Parent.m_Childs.Count - 1 ? m_Parent.GetNextSiblingUp() : m_Parent.m_Childs[m_Index + 1];
     }
   }
 }

@@ -1,7 +1,4 @@
-﻿using UnityEngine;
-using UnityEngine.EventSystems;
-
-namespace Engine.Impl.UI.Controls
+﻿namespace Engine.Impl.UI.Controls
 {
   public class PointerInsideCheck : 
     MonoBehaviour,
@@ -18,17 +15,17 @@ namespace Engine.Impl.UI.Controls
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-      this.pointerEnterEventView?.Invoke();
-      if (!((Object) this.hideableView != (Object) null))
+      pointerEnterEventView?.Invoke();
+      if (!((Object) hideableView != (Object) null))
         return;
-      this.hideableView.Visible = true;
+      hideableView.Visible = true;
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
-      if ((Object) this.hideableView != (Object) null)
-        this.hideableView.Visible = false;
-      this.pointerExitEventView?.Invoke();
+      if ((Object) hideableView != (Object) null)
+        hideableView.Visible = false;
+      pointerExitEventView?.Invoke();
     }
   }
 }

@@ -1,6 +1,4 @@
 ﻿using Engine.Source.Components;
-using UnityEngine;
-using UnityEngine.UI;
 
 public class LockpickTooltip : MonoBehaviour
 {
@@ -15,9 +13,9 @@ public class LockpickTooltip : MonoBehaviour
 
   public void SetItem(StorableComponent storable)
   {
-    this.itemIcon.sprite = storable?.Placeholder?.ImageInventorySlot.Value;
-    this.itemIcon.gameObject.SetActive((Object) this.itemIcon.sprite != (Object) null);
+    itemIcon.sprite = storable?.Placeholder?.ImageInventorySlot.Value;
+    itemIcon.gameObject.SetActive((Object) itemIcon.sprite != (Object) null);
   }
 
-  public void SetCount(int count) => this.countText.text = count.ToString();
+  public void SetCount(int count) => countText.text = count.ToString();
 }

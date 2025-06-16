@@ -1,6 +1,5 @@
-﻿using Inspectors;
-using System;
-using UnityEngine;
+﻿using System;
+using Inspectors;
 
 [Serializable]
 public class IdlePresetObject : MonoBehaviour
@@ -10,18 +9,18 @@ public class IdlePresetObject : MonoBehaviour
   private IdlePresetEnum presetAnimation;
   public bool MakeObstacle;
   public bool RandomAnimationIndex = true;
-  public int AnimationIndex = 0;
+  public int AnimationIndex;
 
   [Inspected(Mutable = true, Mode = ExecuteMode.EditAndRuntime)]
   public IdlePresetEnum PresetAnimation
   {
-    get => this.presetAnimation;
-    set => this.presetAnimation = value;
+    get => presetAnimation;
+    set => presetAnimation = value;
   }
 
   public POIAnimationEnum GetPOIAnimationEnum()
   {
-    switch (this.presetAnimation)
+    switch (presetAnimation)
     {
       case IdlePresetEnum.SitAtDesk:
         return POIAnimationEnum.S_SitAtDesk;

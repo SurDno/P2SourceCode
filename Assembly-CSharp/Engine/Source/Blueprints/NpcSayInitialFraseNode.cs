@@ -1,5 +1,4 @@
-﻿using Engine.Common.Commons;
-using Engine.Common.Components;
+﻿using Engine.Common.Components;
 using Engine.Source.Components;
 using FlowCanvas;
 using FlowCanvas.Nodes;
@@ -17,21 +16,21 @@ namespace Engine.Source.Blueprints
     protected override void RegisterPorts()
     {
       base.RegisterPorts();
-      FlowOutput output = this.AddFlowOutput("Out");
-      this.AddFlowInput("In", (FlowHandler) (() =>
+      FlowOutput output = AddFlowOutput("Out");
+      AddFlowInput("In", () =>
       {
-        ISpeakingComponent speakingComponent = this.targetInput.value;
+        ISpeakingComponent speakingComponent = targetInput.value;
         if (speakingComponent != null)
         {
           LipSyncComponent component = speakingComponent.Owner.GetComponent<LipSyncComponent>();
           if (component != null && !component.IsPlaying)
-            component.Play3D(speakingComponent.InitialPhrases.Random<ILipSyncObject>(), this.minDistance.value, this.maxDistance.value, true);
+            component.Play3D(speakingComponent.InitialPhrases.Random(), minDistance.value, maxDistance.value, true);
         }
         output.Call();
-      }));
-      this.targetInput = this.AddValueInput<ISpeakingComponent>("Speaking");
-      this.minDistance = this.AddValueInput<float>("MinDistance");
-      this.maxDistance = this.AddValueInput<float>("MaxDistance");
+      });
+      targetInput = AddValueInput<ISpeakingComponent>("Speaking");
+      minDistance = AddValueInput<float>("MinDistance");
+      maxDistance = AddValueInput<float>("MaxDistance");
     }
   }
 }

@@ -1,8 +1,6 @@
 ﻿using Engine.Source.Commons;
 using Engine.Source.Settings;
 using Engine.Source.Settings.External;
-using System;
-using UnityEngine;
 
 public class GraphicsSettingsApplier : EngineDependent
 {
@@ -11,9 +9,9 @@ public class GraphicsSettingsApplier : EngineDependent
     GraphicsGameSettings instance = InstanceByRequest<GraphicsGameSettings>.Instance;
     DynamicResolution.Instance.SetScale(instance.RenderScale.Value);
     AOField.Allowed = instance.AOFields.Value;
-    this.ApplyGameCameraSettings(instance);
-    this.ApplyGamma(instance.Gamma.Value);
-    this.ApplyQualitySettings(instance);
+    ApplyGameCameraSettings(instance);
+    ApplyGamma(instance.Gamma.Value);
+    ApplyQualitySettings(instance);
   }
 
   public void ApplyAmplifyOcclusion(Camera camera, bool value)
@@ -29,10 +27,10 @@ public class GraphicsSettingsApplier : EngineDependent
     Camera camera = gameCamera.Camera;
     if ((UnityEngine.Object) camera == (UnityEngine.Object) null)
       return;
-    this.ApplyAmplifyOcclusion(camera, settings.SSAO.Value);
-    this.ApplyContactShadows(camera, settings.ContactShadows.Value);
-    this.ApplyReflections(camera, settings.AdditionalReflections.Value);
-    this.ApplyVolumetricLight(camera, settings.VolumetricLighting.Value);
+    ApplyAmplifyOcclusion(camera, settings.SSAO.Value);
+    ApplyContactShadows(camera, settings.ContactShadows.Value);
+    ApplyReflections(camera, settings.AdditionalReflections.Value);
+    ApplyVolumetricLight(camera, settings.VolumetricLighting.Value);
   }
 
   public void ApplyContactShadows(Camera camera, bool value)
@@ -48,8 +46,8 @@ public class GraphicsSettingsApplier : EngineDependent
     GameCamera instance = GameCamera.Instance;
     if ((UnityEngine.Object) instance == (UnityEngine.Object) null)
       return;
-    this.ApplyPostProcessingOverrides(instance, settings);
-    this.ApplyCameraSettings(instance, settings);
+    ApplyPostProcessingOverrides(instance, settings);
+    ApplyCameraSettings(instance, settings);
   }
 
   private void ApplyGamma(float value) => OverlayCamera.Gamma = 4.4f / Mathf.Pow(4f, value);
@@ -118,9 +116,9 @@ public class GraphicsSettingsApplier : EngineDependent
     QualitySettings.vSyncCount = settings.VSync.Value;
     float num = settings.ShadowDistance.Value;
     QualitySettings.shadowDistance = num;
-    if ((double) num <= 5.0)
+    if (num <= 5.0)
       QualitySettings.shadowCascades = 1;
-    else if ((double) num <= 15.0)
+    else if (num <= 15.0)
     {
       QualitySettings.shadowCascades = 2;
       QualitySettings.shadowCascade2Split = 0.3333333f;
@@ -137,28 +135,28 @@ public class GraphicsSettingsApplier : EngineDependent
 
   protected override void OnConnectToEngine()
   {
-    this.UpdateScreen();
-    this.Apply();
-    InstanceByRequest<GraphicsGameSettings>.Instance.OnApply += new Action(this.Apply);
+    UpdateScreen();
+    Apply();
+    InstanceByRequest<GraphicsGameSettings>.Instance.OnApply += Apply;
   }
 
   protected override void OnDisconnectFromEngine()
   {
-    InstanceByRequest<GraphicsGameSettings>.Instance.OnApply -= new Action(this.Apply);
+    InstanceByRequest<GraphicsGameSettings>.Instance.OnApply -= Apply;
   }
 
   private void Start()
   {
-    if (this.Connected)
+    if (Connected)
       return;
-    this.ApplyGamma(InstanceByRequest<GraphicsGameSettings>.Instance.Gamma.Value);
+    ApplyGamma(InstanceByRequest<GraphicsGameSettings>.Instance.Gamma.Value);
   }
 
   private void LateUpdate()
   {
-    if (!this.Connected || Screen.width < 1 || Screen.height < 1 || Screen.width == InstanceByRequest<ScreenGameSettings>.Instance.ScreenWidth && Screen.height == InstanceByRequest<ScreenGameSettings>.Instance.ScreenHeight && Screen.fullScreenMode == InstanceByRequest<ScreenGameSettings>.Instance.FullScreenMode)
+    if (!Connected || Screen.width < 1 || Screen.height < 1 || Screen.width == InstanceByRequest<ScreenGameSettings>.Instance.ScreenWidth && Screen.height == InstanceByRequest<ScreenGameSettings>.Instance.ScreenHeight && Screen.fullScreenMode == InstanceByRequest<ScreenGameSettings>.Instance.FullScreenMode)
       return;
-    this.UpdateScreen();
+    UpdateScreen();
     InstanceByRequest<ScreenGameSettings>.Instance.Apply();
   }
 

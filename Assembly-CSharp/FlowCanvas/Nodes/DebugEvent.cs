@@ -7,7 +7,7 @@ namespace FlowCanvas.Nodes
   [Category("Events/Other")]
   public class DebugEvent : EventNode, IUpdatable
   {
-    protected override void RegisterPorts() => this.AddFlowOutput("Out");
+    protected override void RegisterPorts() => AddFlowOutput("Out");
 
     public void Update()
     {

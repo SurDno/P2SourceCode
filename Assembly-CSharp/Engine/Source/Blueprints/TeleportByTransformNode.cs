@@ -4,8 +4,6 @@ using Engine.Source.Components;
 using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
-using System;
-using UnityEngine;
 
 namespace Engine.Source.Blueprints
 {
@@ -21,46 +19,46 @@ namespace Engine.Source.Blueprints
     protected override void RegisterPorts()
     {
       base.RegisterPorts();
-      this.output = this.AddFlowOutput("Out");
-      this.AddFlowInput("In", (FlowHandler) (() =>
+      output = AddFlowOutput("Out");
+      AddFlowInput("In", () =>
       {
-        if (this.who.value == null)
-          Debug.LogError((object) (typeof (TeleportByTransformNode).ToString() + " who.value == null"));
-        else if ((UnityEngine.Object) this.targetTransform.value == (UnityEngine.Object) null)
-          Debug.LogError((object) (typeof (TeleportByTransformNode).ToString() + " targetTransform.value == null"));
-        else if (this.targetLocation.value == null)
+        if (who.value == null)
+          Debug.LogError((object) (typeof (TeleportByTransformNode) + " who.value == null"));
+        else if ((UnityEngine.Object) targetTransform.value == (UnityEngine.Object) null)
+          Debug.LogError((object) (typeof (TeleportByTransformNode) + " targetTransform.value == null"));
+        else if (targetLocation.value == null)
         {
-          Debug.LogError((object) (typeof (TeleportByTransformNode).ToString() + " targetLocation.value == null"));
+          Debug.LogError((object) (typeof (TeleportByTransformNode) + " targetLocation.value == null"));
         }
         else
         {
-          NavigationComponent component = this.who.value.GetComponent<NavigationComponent>();
+          NavigationComponent component = who.value.GetComponent<NavigationComponent>();
           if (component == null)
-            Debug.LogError((object) (typeof (TeleportByTransformNode).ToString() + " navigation == null"));
-          else if (this.wait)
+            Debug.LogError((object) (typeof (TeleportByTransformNode) + " navigation == null"));
+          else if (wait)
           {
-            Debug.LogError((object) (typeof (TeleportByTransformNode).ToString() + " is waiting"));
+            Debug.LogError((object) (typeof (TeleportByTransformNode) + " is waiting"));
           }
           else
           {
-            this.wait = true;
-            component.OnTeleport += new Action<INavigationComponent, IEntity>(this.OnTeleport);
-            component.TeleportTo(this.targetLocation.value, this.targetTransform.value.position, this.targetTransform.value.rotation);
+            wait = true;
+            component.OnTeleport += OnTeleport;
+            component.TeleportTo(targetLocation.value, targetTransform.value.position, targetTransform.value.rotation);
           }
         }
-      }));
-      this.who = this.AddValueInput<IEntity>("Who");
-      this.targetLocation = this.AddValueInput<ILocationComponent>("Location");
-      this.targetTransform = this.AddValueInput<Transform>("Transform");
+      });
+      who = AddValueInput<IEntity>("Who");
+      targetLocation = AddValueInput<ILocationComponent>("Location");
+      targetTransform = AddValueInput<Transform>("Transform");
     }
 
     private void OnTeleport(INavigationComponent owner, IEntity target)
     {
-      if (!this.wait)
+      if (!wait)
         Debug.LogError((object) "OnTeleport event is not wait");
-      this.wait = false;
-      owner.OnTeleport -= new Action<INavigationComponent, IEntity>(this.OnTeleport);
-      this.output.Call();
+      wait = false;
+      owner.OnTeleport -= OnTeleport;
+      output.Call();
     }
   }
 }

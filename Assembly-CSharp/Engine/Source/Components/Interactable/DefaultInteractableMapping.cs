@@ -1,4 +1,6 @@
-﻿using Cofe.Utility;
+﻿using System;
+using System.Collections.Generic;
+using Cofe.Utility;
 using Engine.Common.Components;
 using Engine.Common.Components.Gate;
 using Engine.Common.Components.Interactable;
@@ -10,9 +12,6 @@ using Engine.Source.Commons;
 using Engine.Source.Services.Inputs;
 using Engine.Source.Utility;
 using InputServices;
-using System;
-using System.Collections.Generic;
-using UnityEngine;
 
 namespace Engine.Source.Components.Interactable
 {
@@ -79,8 +78,8 @@ namespace Engine.Source.Components.Interactable
               if (validateItem.Reason != "")
                 text1 = text1 + "   ( " + validateItem.Reason + " )";
               text1 += "   ( ";
-              text1 = text1 + "Type : " + (object) validateItem.Item.Type + " , ";
-              text1 = text1 + "Action : " + (object) validateItem.Item.Action;
+              text1 = text1 + "Type : " + validateItem.Item.Type + " , ";
+              text1 = text1 + "Action : " + validateItem.Item.Action;
               text1 += " )";
             }
             text1 += "</color>";

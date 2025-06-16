@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace RootMotion.Dynamics
+﻿namespace RootMotion.Dynamics
 {
   public class PressureSensor : MonoBehaviour
   {
@@ -20,51 +18,51 @@ namespace RootMotion.Dynamics
 
     private void Awake()
     {
-      this.r = this.GetComponent<Rigidbody>();
-      this.center = this.transform.position;
+      r = this.GetComponent<Rigidbody>();
+      center = this.transform.position;
     }
 
-    private void OnCollisionEnter(Collision c) => this.ProcessCollision(c);
+    private void OnCollisionEnter(Collision c) => ProcessCollision(c);
 
-    private void OnCollisionStay(Collision c) => this.ProcessCollision(c);
+    private void OnCollisionStay(Collision c) => ProcessCollision(c);
 
-    private void OnCollisionExit(Collision c) => this.inContact = false;
+    private void OnCollisionExit(Collision c) => inContact = false;
 
     private void FixedUpdate()
     {
-      this.fixedFrame = true;
-      if (this.r.IsSleeping())
+      fixedFrame = true;
+      if (r.IsSleeping())
         return;
-      this.P = Vector3.zero;
-      this.count = 0;
+      P = Vector3.zero;
+      count = 0;
     }
 
     private void LateUpdate()
     {
-      if (!this.fixedFrame)
+      if (!fixedFrame)
         return;
-      if (this.count > 0)
-        this.center = this.P / (float) this.count;
-      this.fixedFrame = false;
+      if (count > 0)
+        center = P / (float) count;
+      fixedFrame = false;
     }
 
     private void ProcessCollision(Collision c)
     {
-      if (!LayerMaskExtensions.Contains(this.layers, c.gameObject.layer))
+      if (!LayerMaskExtensions.Contains(layers, c.gameObject.layer))
         return;
       Vector3 zero = Vector3.zero;
       for (int index = 0; index < c.contacts.Length; ++index)
         zero += c.contacts[index].point;
-      this.P += zero / (float) c.contacts.Length;
-      ++this.count;
-      this.inContact = true;
+      P += zero / (float) c.contacts.Length;
+      ++count;
+      inContact = true;
     }
 
     private void OnDrawGizmos()
     {
-      if (!this.visualize)
+      if (!visualize)
         return;
-      Gizmos.DrawSphere(this.center, 0.1f);
+      Gizmos.DrawSphere(center, 0.1f);
     }
   }
 }

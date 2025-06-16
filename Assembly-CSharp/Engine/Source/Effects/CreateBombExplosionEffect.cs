@@ -15,49 +15,49 @@ namespace Engine.Source.Effects
   [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
   public class CreateBombExplosionEffect : IEffect, IEntityEventsListener
   {
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected ParameterEffectQueueEnum queue = ParameterEffectQueueEnum.None;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy()]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected Typed<IEntity> template;
     private IEntity bombEntity;
 
-    public string Name => this.GetType().Name;
+    public string Name => GetType().Name;
 
     [Inspected]
     public AbilityItem AbilityItem { get; set; }
 
     public IEntity Target { get; set; }
 
-    public ParameterEffectQueueEnum Queue => this.queue;
+    public ParameterEffectQueueEnum Queue => queue;
 
     public bool Prepare(float currentRealTime, float currentGameTime)
     {
-      this.bombEntity = ServiceLocator.GetService<IFactory>().Instantiate<IEntity>(this.template.Value);
-      ((Entity) this.bombEntity).DontSave = true;
-      this.bombEntity.GetComponent<ParentComponent>()?.SetParent(this.Target);
-      ServiceLocator.GetService<ISimulation>().Add(this.bombEntity, ServiceLocator.GetService<ISimulation>().Objects);
-      LocationItemComponent component1 = this.bombEntity.GetComponent<LocationItemComponent>();
+      bombEntity = ServiceLocator.GetService<IFactory>().Instantiate(template.Value);
+      ((Entity) bombEntity).DontSave = true;
+      bombEntity.GetComponent<ParentComponent>()?.SetParent(Target);
+      ServiceLocator.GetService<ISimulation>().Add(bombEntity, ServiceLocator.GetService<ISimulation>().Objects);
+      LocationItemComponent component1 = bombEntity.GetComponent<LocationItemComponent>();
       if (component1 != null)
-        component1.Location = this.Target?.GetComponent<LocationItemComponent>()?.Location;
-      NPCWeaponService component2 = ((IEntityView) this.Target).GameObject.GetComponent<NPCWeaponService>();
-      ((IEntityView) this.bombEntity).Position = component2.ProjectileHitPosition;
-      ((IEntityView) this.bombEntity).Rotation = component2.ProjectileHitRotation;
-      ((Entity) this.Target).AddListener((IEntityEventsListener) this);
-      ((Entity) this.bombEntity).AddListener((IEntityEventsListener) this);
+        component1.Location = Target?.GetComponent<LocationItemComponent>()?.Location;
+      NPCWeaponService component2 = ((IEntityView) Target).GameObject.GetComponent<NPCWeaponService>();
+      ((IEntityView) bombEntity).Position = component2.ProjectileHitPosition;
+      ((IEntityView) bombEntity).Rotation = component2.ProjectileHitRotation;
+      ((Entity) Target).AddListener(this);
+      ((Entity) bombEntity).AddListener(this);
       return true;
     }
 
     public bool Compute(float currentRealTime, float currentGameTime)
     {
-      return !this.bombEntity.IsDisposed;
+      return !bombEntity.IsDisposed;
     }
 
     public void Cleanup()
@@ -68,15 +68,15 @@ namespace Engine.Source.Effects
     {
       if (kind != EntityEvents.DisposeEvent)
         return;
-      if (sender == this.Target)
+      if (sender == Target)
       {
-        ((Entity) this.Target).RemoveListener((IEntityEventsListener) this);
-        this.bombEntity.Dispose();
+        ((Entity) Target).RemoveListener(this);
+        bombEntity.Dispose();
       }
-      else if (sender == this.bombEntity)
+      else if (sender == bombEntity)
       {
-        ((Entity) this.Target).RemoveListener((IEntityEventsListener) this);
-        ((Entity) this.bombEntity).RemoveListener((IEntityEventsListener) this);
+        ((Entity) Target).RemoveListener(this);
+        ((Entity) bombEntity).RemoveListener(this);
       }
     }
   }

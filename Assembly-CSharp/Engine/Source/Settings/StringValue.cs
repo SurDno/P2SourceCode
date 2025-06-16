@@ -14,27 +14,27 @@ namespace Engine.Source.Settings
     {
       this.name = name;
       this.defaultValue = defaultValue;
-      this.value = PlayerSettings.Instance.GetString(name, defaultValue);
+      value = PlayerSettings.Instance.GetString(name, defaultValue);
     }
 
     [Inspected(Mutable = true)]
     public string Value
     {
-      get => this.value;
+      get => value;
       set
       {
         if (this.value == value)
           return;
         this.value = value;
-        PlayerSettings.Instance.SetString(this.name, value);
+        PlayerSettings.Instance.SetString(name, value);
         PlayerSettings.Instance.Save();
       }
     }
 
-    public string DefaultValue => this.defaultValue;
+    public string DefaultValue => defaultValue;
 
-    public string MinValue => this.defaultValue;
+    public string MinValue => defaultValue;
 
-    public string MaxValue => this.defaultValue;
+    public string MaxValue => defaultValue;
   }
 }

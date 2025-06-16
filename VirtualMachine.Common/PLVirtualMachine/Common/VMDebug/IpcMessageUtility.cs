@@ -1,9 +1,9 @@
-﻿using Cofe.Loggers;
-using PLVirtualMachine.Common.Data;
-using PLVirtualMachine.Common.EngineAPI;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Cofe.Loggers;
+using PLVirtualMachine.Common.Data;
+using PLVirtualMachine.Common.EngineAPI;
 
 namespace PLVirtualMachine.Common.VMDebug
 {
@@ -57,7 +57,7 @@ namespace PLVirtualMachine.Common.VMDebug
     public static Guid DeserializeGuid(byte[] data, ref int offset)
     {
       byte[] numArray = new byte[16];
-      Array.Copy((Array) data, offset, (Array) numArray, 0, 16);
+      Array.Copy(data, offset, numArray, 0, 16);
       Guid guid = new Guid(numArray);
       offset += numArray.Length;
       return guid;
@@ -77,7 +77,7 @@ namespace PLVirtualMachine.Common.VMDebug
       int int32 = BitConverter.ToInt32(data, offset);
       offset += 4;
       byte[] numArray = new byte[int32];
-      Array.Copy((Array) data, offset, (Array) numArray, 0, int32);
+      Array.Copy(data, offset, numArray, 0, int32);
       offset += int32;
       return Encoding.UTF8.GetString(numArray);
     }
@@ -112,9 +112,9 @@ namespace PLVirtualMachine.Common.VMDebug
       try
       {
         if (value.GetType() == typeof (GameTime))
-          value = (object) ((GameTime) value).ToString();
+          value = ((GameTime) value).ToString();
         else if (value.GetType().IsEnum)
-          value = (object) value.ToString();
+          value = value.ToString();
         byte[] byteArray = ObjectUtility.ToByteArray(value);
         foreach (byte num in BitConverter.GetBytes(byteArray.Length))
           dDestBytesList.Add(num);
@@ -132,7 +132,7 @@ namespace PLVirtualMachine.Common.VMDebug
       int int32 = BitConverter.ToInt32(data, offset);
       offset += 4;
       byte[] numArray = new byte[int32];
-      Array.Copy((Array) data, offset, (Array) numArray, 0, int32);
+      Array.Copy(data, offset, numArray, 0, int32);
       offset += int32;
       return BinarySerializer.ReadValue(numArray, valueType);
     }
@@ -150,7 +150,7 @@ namespace PLVirtualMachine.Common.VMDebug
       int int32 = BitConverter.ToInt32(data, offset);
       offset += 4;
       byte[] destinationArray = new byte[int32];
-      Array.Copy((Array) data, offset, (Array) destinationArray, 0, int32);
+      Array.Copy(data, offset, destinationArray, 0, int32);
       offset += int32;
       return destinationArray;
     }

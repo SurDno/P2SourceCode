@@ -1,5 +1,5 @@
-﻿using Facepunch.Steamworks;
-using System;
+﻿using System;
+using Facepunch.Steamworks;
 
 namespace SteamNative
 {
@@ -12,82 +12,82 @@ namespace SteamNative
     {
       this.steamworks = steamworks;
       if (Platform.IsWindows64)
-        this.platform = (Platform.Interface) new Platform.Win64(pointer);
+        platform = (Platform.Interface) new Platform.Win64(pointer);
       else if (Platform.IsWindows32)
-        this.platform = (Platform.Interface) new Platform.Win32(pointer);
+        platform = (Platform.Interface) new Platform.Win32(pointer);
       else if (Platform.IsLinux32)
-        this.platform = (Platform.Interface) new Platform.Linux32(pointer);
+        platform = (Platform.Interface) new Platform.Linux32(pointer);
       else if (Platform.IsLinux64)
       {
-        this.platform = (Platform.Interface) new Platform.Linux64(pointer);
+        platform = (Platform.Interface) new Platform.Linux64(pointer);
       }
       else
       {
         if (!Platform.IsOsx)
           return;
-        this.platform = (Platform.Interface) new Platform.Mac(pointer);
+        platform = (Platform.Interface) new Platform.Mac(pointer);
       }
     }
 
-    public bool IsValid => this.platform != null && this.platform.IsValid;
+    public bool IsValid => platform != null && platform.IsValid;
 
     public virtual void Dispose()
     {
-      if (this.platform == null)
+      if (platform == null)
         return;
-      this.platform.Dispose();
-      this.platform = (Platform.Interface) null;
+      platform.Dispose();
+      platform = (Platform.Interface) null;
     }
 
     public void CancelQuery(HServerListRequest hRequest)
     {
-      this.platform.ISteamMatchmakingServers_CancelQuery(hRequest.Value);
+      platform.ISteamMatchmakingServers_CancelQuery(hRequest.Value);
     }
 
     public void CancelServerQuery(HServerQuery hServerQuery)
     {
-      this.platform.ISteamMatchmakingServers_CancelServerQuery(hServerQuery.Value);
+      platform.ISteamMatchmakingServers_CancelServerQuery(hServerQuery.Value);
     }
 
     public int GetServerCount(HServerListRequest hRequest)
     {
-      return this.platform.ISteamMatchmakingServers_GetServerCount(hRequest.Value);
+      return platform.ISteamMatchmakingServers_GetServerCount(hRequest.Value);
     }
 
     public gameserveritem_t GetServerDetails(HServerListRequest hRequest, int iServer)
     {
-      IntPtr serverDetails = this.platform.ISteamMatchmakingServers_GetServerDetails(hRequest.Value, iServer);
+      IntPtr serverDetails = platform.ISteamMatchmakingServers_GetServerDetails(hRequest.Value, iServer);
       return serverDetails == IntPtr.Zero ? new gameserveritem_t() : gameserveritem_t.FromPointer(serverDetails);
     }
 
     public bool IsRefreshing(HServerListRequest hRequest)
     {
-      return this.platform.ISteamMatchmakingServers_IsRefreshing(hRequest.Value);
+      return platform.ISteamMatchmakingServers_IsRefreshing(hRequest.Value);
     }
 
     public HServerQuery PingServer(uint unIP, ushort usPort, IntPtr pRequestServersResponse)
     {
-      return this.platform.ISteamMatchmakingServers_PingServer(unIP, usPort, pRequestServersResponse);
+      return platform.ISteamMatchmakingServers_PingServer(unIP, usPort, pRequestServersResponse);
     }
 
     public HServerQuery PlayerDetails(uint unIP, ushort usPort, IntPtr pRequestServersResponse)
     {
-      return this.platform.ISteamMatchmakingServers_PlayerDetails(unIP, usPort, pRequestServersResponse);
+      return platform.ISteamMatchmakingServers_PlayerDetails(unIP, usPort, pRequestServersResponse);
     }
 
     public void RefreshQuery(HServerListRequest hRequest)
     {
-      this.platform.ISteamMatchmakingServers_RefreshQuery(hRequest.Value);
+      platform.ISteamMatchmakingServers_RefreshQuery(hRequest.Value);
     }
 
     public void RefreshServer(HServerListRequest hRequest, int iServer)
     {
-      this.platform.ISteamMatchmakingServers_RefreshServer(hRequest.Value, iServer);
+      platform.ISteamMatchmakingServers_RefreshServer(hRequest.Value, iServer);
     }
 
     public void ReleaseRequest(HServerListRequest hServerListRequest)
     {
-      this.platform.ISteamMatchmakingServers_ReleaseRequest(hServerListRequest.Value);
+      platform.ISteamMatchmakingServers_ReleaseRequest(hServerListRequest.Value);
     }
 
     public HServerListRequest RequestFavoritesServerList(
@@ -96,7 +96,7 @@ namespace SteamNative
       uint nFilters,
       IntPtr pRequestServersResponse)
     {
-      return this.platform.ISteamMatchmakingServers_RequestFavoritesServerList(iApp.Value, ppchFilters, nFilters, pRequestServersResponse);
+      return platform.ISteamMatchmakingServers_RequestFavoritesServerList(iApp.Value, ppchFilters, nFilters, pRequestServersResponse);
     }
 
     public HServerListRequest RequestFriendsServerList(
@@ -105,7 +105,7 @@ namespace SteamNative
       uint nFilters,
       IntPtr pRequestServersResponse)
     {
-      return this.platform.ISteamMatchmakingServers_RequestFriendsServerList(iApp.Value, ppchFilters, nFilters, pRequestServersResponse);
+      return platform.ISteamMatchmakingServers_RequestFriendsServerList(iApp.Value, ppchFilters, nFilters, pRequestServersResponse);
     }
 
     public HServerListRequest RequestHistoryServerList(
@@ -114,7 +114,7 @@ namespace SteamNative
       uint nFilters,
       IntPtr pRequestServersResponse)
     {
-      return this.platform.ISteamMatchmakingServers_RequestHistoryServerList(iApp.Value, ppchFilters, nFilters, pRequestServersResponse);
+      return platform.ISteamMatchmakingServers_RequestHistoryServerList(iApp.Value, ppchFilters, nFilters, pRequestServersResponse);
     }
 
     public HServerListRequest RequestInternetServerList(
@@ -123,12 +123,12 @@ namespace SteamNative
       uint nFilters,
       IntPtr pRequestServersResponse)
     {
-      return this.platform.ISteamMatchmakingServers_RequestInternetServerList(iApp.Value, ppchFilters, nFilters, pRequestServersResponse);
+      return platform.ISteamMatchmakingServers_RequestInternetServerList(iApp.Value, ppchFilters, nFilters, pRequestServersResponse);
     }
 
     public HServerListRequest RequestLANServerList(AppId_t iApp, IntPtr pRequestServersResponse)
     {
-      return this.platform.ISteamMatchmakingServers_RequestLANServerList(iApp.Value, pRequestServersResponse);
+      return platform.ISteamMatchmakingServers_RequestLANServerList(iApp.Value, pRequestServersResponse);
     }
 
     public HServerListRequest RequestSpectatorServerList(
@@ -137,12 +137,12 @@ namespace SteamNative
       uint nFilters,
       IntPtr pRequestServersResponse)
     {
-      return this.platform.ISteamMatchmakingServers_RequestSpectatorServerList(iApp.Value, ppchFilters, nFilters, pRequestServersResponse);
+      return platform.ISteamMatchmakingServers_RequestSpectatorServerList(iApp.Value, ppchFilters, nFilters, pRequestServersResponse);
     }
 
     public HServerQuery ServerRules(uint unIP, ushort usPort, IntPtr pRequestServersResponse)
     {
-      return this.platform.ISteamMatchmakingServers_ServerRules(unIP, usPort, pRequestServersResponse);
+      return platform.ISteamMatchmakingServers_ServerRules(unIP, usPort, pRequestServersResponse);
     }
   }
 }

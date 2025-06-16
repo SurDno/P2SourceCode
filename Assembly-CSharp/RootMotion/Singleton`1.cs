@@ -1,18 +1,16 @@
-﻿using UnityEngine;
-
-namespace RootMotion
+﻿namespace RootMotion
 {
   public abstract class Singleton<T> : MonoBehaviour where T : Singleton<T>
   {
-    private static T sInstance = default (T);
+    private static T sInstance;
 
-    public static T instance => Singleton<T>.sInstance;
+    public static T instance => sInstance;
 
     protected virtual void Awake()
     {
-      if ((Object) Singleton<T>.sInstance != (Object) null)
+      if ((Object) sInstance != (Object) null)
         Debug.LogError((object) (this.name + "error: already initialized"), (Object) this);
-      Singleton<T>.sInstance = (T) this;
+      sInstance = (T) this;
     }
   }
 }

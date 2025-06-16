@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-[CreateAssetMenu(fileName = "Plague Cloud Particles Settings", menuName = "Plague/Cloud Particles Settings")]
+﻿[CreateAssetMenu(fileName = "Plague Cloud Particles Settings", menuName = "Plague/Cloud Particles Settings")]
 public class PlagueCloudParticlesSettings : ScriptableObject
 {
   public float EmissionRadius = 2f;

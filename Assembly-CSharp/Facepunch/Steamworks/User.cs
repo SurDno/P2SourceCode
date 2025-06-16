@@ -8,26 +8,26 @@ namespace Facepunch.Steamworks
     internal Client client;
     internal Dictionary<string, string> richPresence = new Dictionary<string, string>();
 
-    internal User(Client c) => this.client = c;
+    internal User(Client c) => client = c;
 
-    public void Dispose() => this.client = (Client) null;
+    public void Dispose() => client = null;
 
     public string GetRichPresence(string key)
     {
-      string str = (string) null;
-      return this.richPresence.TryGetValue(key, out str) ? str : (string) null;
+      string str = null;
+      return richPresence.TryGetValue(key, out str) ? str : null;
     }
 
     public void SetRichPresence(string key, string value)
     {
-      this.richPresence[key] = value;
-      this.client.native.friends.SetRichPresence(key, value);
+      richPresence[key] = value;
+      client.native.friends.SetRichPresence(key, value);
     }
 
     public void ClearRichPresence()
     {
-      this.richPresence.Clear();
-      this.client.native.friends.ClearRichPresence();
+      richPresence.Clear();
+      client.native.friends.ClearRichPresence();
     }
   }
 }

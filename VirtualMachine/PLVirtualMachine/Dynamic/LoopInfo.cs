@@ -1,6 +1,6 @@
-﻿using Cofe.Loggers;
+﻿using System.Collections.Generic;
+using Cofe.Loggers;
 using PLVirtualMachine.Common;
-using System.Collections.Generic;
 
 namespace PLVirtualMachine.Dynamic
 {
@@ -15,18 +15,18 @@ namespace PLVirtualMachine.Dynamic
 
     public LoopInfo(IContextElement ownerContextElement, ICommonList loopList = null)
     {
-      this.currentIndex = 0;
+      currentIndex = 0;
       this.loopList = loopList;
       List<IVariable> contextVariables = ownerContextElement.LocalContextVariables;
       if (contextVariables.Count == 1)
-        this.loopIndexVariableName = contextVariables[0].Name;
+        loopIndexVariableName = contextVariables[0].Name;
       else if (contextVariables.Count == 2)
       {
-        this.loopListElementVariableName = contextVariables[0].Name;
-        this.loopIndexVariableName = contextVariables[1].Name;
+        loopListElementVariableName = contextVariables[0].Name;
+        loopIndexVariableName = contextVariables[1].Name;
       }
       else
-        Logger.AddError(string.Format("Invalid action loop guid={0} context variables count : {1}", (object) ownerContextElement.BaseGuid, (object) contextVariables.Count));
+        Logger.AddError(string.Format("Invalid action loop guid={0} context variables count : {1}", ownerContextElement.BaseGuid, contextVariables.Count));
     }
 
     public void RegistrLoopLocalVarsDict(
@@ -37,21 +37,21 @@ namespace PLVirtualMachine.Dynamic
 
     public int CurrentLoopIndex
     {
-      get => this.currentIndex;
+      get => currentIndex;
       set
       {
-        this.currentIndex = value;
-        if (this.loopLocalVariableValuesDict == null)
+        currentIndex = value;
+        if (loopLocalVariableValuesDict == null)
         {
-          Logger.AddError(string.Format("Loop local variables dictionary not regitered in loop info !!!"));
+          Logger.AddError("Loop local variables dictionary not regitered in loop info !!!");
         }
         else
         {
-          this.loopLocalVariableValuesDict[this.loopIndexVariableName] = (object) this.currentIndex;
-          if (this.loopList == null)
+          loopLocalVariableValuesDict[loopIndexVariableName] = currentIndex;
+          if (loopList == null)
             return;
-          this.currentListElement = this.loopList.GetObject(this.currentIndex);
-          this.loopLocalVariableValuesDict[this.loopListElementVariableName] = this.currentListElement;
+          currentListElement = loopList.GetObject(currentIndex);
+          loopLocalVariableValuesDict[loopListElementVariableName] = currentListElement;
         }
       }
     }

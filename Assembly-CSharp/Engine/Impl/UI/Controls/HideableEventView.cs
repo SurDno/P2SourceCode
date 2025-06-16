@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace Engine.Impl.UI.Controls
+﻿namespace Engine.Impl.UI.Controls
 {
   public class HideableEventView : EventView
   {
@@ -9,21 +7,21 @@ namespace Engine.Impl.UI.Controls
     [SerializeField]
     private float length = 1f;
 
-    public void Hide() => this.hideableView.Visible = false;
+    public void Hide() => hideableView.Visible = false;
 
-    public void Show() => this.hideableView.Visible = true;
+    public void Show() => hideableView.Visible = true;
 
     public override void Invoke()
     {
-      this.Show();
+      Show();
       this.CancelInvoke("Hide");
-      this.Invoke("Hide", this.length);
+      this.Invoke("Hide", length);
     }
 
     private void OnDisable()
     {
       this.CancelInvoke("Hide");
-      this.Hide();
+      Hide();
     }
   }
 }

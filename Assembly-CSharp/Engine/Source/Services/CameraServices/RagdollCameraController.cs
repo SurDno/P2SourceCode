@@ -1,5 +1,4 @@
 ﻿using Engine.Common;
-using UnityEngine;
 
 namespace Engine.Source.Services.CameraServices
 {
@@ -20,10 +19,10 @@ namespace Engine.Source.Services.CameraServices
     {
       if ((Object) gameObjectTarget == (Object) null)
         return;
-      this.smoothTime += this.speedSmoothTime * Time.deltaTime;
+      smoothTime += speedSmoothTime * Time.deltaTime;
       Transform cameraTransform = GameCamera.Instance.CameraTransform;
-      cameraTransform.position = Vector3.Lerp(cameraTransform.position, gameObjectTarget.transform.position, Time.deltaTime / this.smoothTime);
-      cameraTransform.rotation = Quaternion.Slerp(cameraTransform.rotation, gameObjectTarget.transform.rotation, Time.deltaTime / this.smoothTime);
+      cameraTransform.position = Vector3.Lerp(cameraTransform.position, gameObjectTarget.transform.position, Time.deltaTime / smoothTime);
+      cameraTransform.rotation = Quaternion.Slerp(cameraTransform.rotation, gameObjectTarget.transform.rotation, Time.deltaTime / smoothTime);
     }
   }
 }

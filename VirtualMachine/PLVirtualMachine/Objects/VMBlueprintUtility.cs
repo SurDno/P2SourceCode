@@ -1,6 +1,6 @@
-﻿using PLVirtualMachine.Common;
+﻿using System.Collections.Generic;
+using PLVirtualMachine.Common;
 using PLVirtualMachine.GameLogic;
-using System.Collections.Generic;
 
 namespace PLVirtualMachine.Objects
 {

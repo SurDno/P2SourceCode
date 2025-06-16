@@ -1,10 +1,10 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons.Cloneable;
 using Engine.Common.Commons.Converters;
 using Engine.Common.Components.Regions;
 using Engine.Source.Components;
-using System;
 
 namespace Engine.Source.Proxies
 {
@@ -19,20 +19,20 @@ namespace Engine.Source.Proxies
     public object Clone()
     {
       BuildingComponent_Generated instance = Activator.CreateInstance<BuildingComponent_Generated>();
-      this.CopyTo((object) instance);
-      return (object) instance;
+      CopyTo(instance);
+      return instance;
     }
 
-    public void CopyTo(object target2) => ((BuildingComponent) target2).building = this.building;
+    public void CopyTo(object target2) => ((BuildingComponent) target2).building = building;
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.WriteEnum<BuildingEnum>(writer, "Building", this.building);
+      DefaultDataWriteUtility.WriteEnum(writer, "Building", building);
     }
 
     public void DataRead(IDataReader reader, Type type)
     {
-      this.building = DefaultDataReadUtility.ReadEnum<BuildingEnum>(reader, "Building");
+      building = DefaultDataReadUtility.ReadEnum<BuildingEnum>(reader, "Building");
     }
   }
 }

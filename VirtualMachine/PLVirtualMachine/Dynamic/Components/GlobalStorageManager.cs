@@ -1,4 +1,8 @@
-﻿using Cofe.Loggers;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Xml;
+using Cofe.Loggers;
 using Cofe.Proxies;
 using Cofe.Serializations.Converters;
 using Cofe.Serializations.Data;
@@ -14,10 +18,6 @@ using PLVirtualMachine.Common.EngineAPI.VMECS.VMAttributes;
 using PLVirtualMachine.Common.VMSpecialAttributes;
 using PLVirtualMachine.Data.SaveLoad;
 using PLVirtualMachine.Objects;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Xml;
 
 namespace PLVirtualMachine.Dynamic.Components
 {
@@ -27,7 +27,7 @@ namespace PLVirtualMachine.Dynamic.Components
     IInitialiseComponentFromHierarchy,
     IInitialiseEvents
   {
-    private static int combinationDepth = 0;
+    private static int combinationDepth;
     private static List<VMStorage> LinearItemsAddingStorageList = new List<VMStorage>(1000);
     private const int MAX_COMBINATION_DEPTH = 10;
     private const int MAX_ATONCE_LINEAR_ADDING_STORAGES_COUNT = 1000;
@@ -51,19 +51,19 @@ namespace PLVirtualMachine.Dynamic.Components
     public override void Initialize(VMBaseEntity parent)
     {
       base.Initialize(parent);
-      if (VMGlobalStorageManager.Instance == null)
+      if (Instance == null)
       {
-        VMGlobalStorageManager.Instance = (VMGlobalStorageManager) this;
-        this.StorageGroupCommandProcessor = new StorageGroupCommandProcessor();
-        AssyncProcessManager.RegistrAssyncUpdateableObject((IAssyncUpdateable) this.StorageGroupCommandProcessor);
+        Instance = this;
+        StorageGroupCommandProcessor = new StorageGroupCommandProcessor();
+        AssyncProcessManager.RegistrAssyncUpdateableObject(StorageGroupCommandProcessor);
       }
       else
-        Logger.AddError(string.Format("Global Storage Manager component creation dublicate!"));
+        Logger.AddError("Global Storage Manager component creation dublicate!");
     }
 
     public static void ResetInstance()
     {
-      VMGlobalStorageManager.Instance = (VMGlobalStorageManager) null;
+      Instance = null;
     }
 
     public override void FreeStorages(
@@ -71,7 +71,7 @@ namespace PLVirtualMachine.Dynamic.Components
       string storageTags,
       string storageTypes)
     {
-      this.DoFreeStorages(storagesRootInfo, storageTags, storageTypes, false);
+      DoFreeStorages(storagesRootInfo, storageTags, storageTypes, false);
     }
 
     public override void FreeStoragesAssync(
@@ -79,7 +79,7 @@ namespace PLVirtualMachine.Dynamic.Components
       string storageTags,
       string storageTypes)
     {
-      this.DoFreeStorages(storagesRootInfo, storageTags, storageTypes, true);
+      DoFreeStorages(storagesRootInfo, storageTags, storageTypes, true);
     }
 
     public void DoFreeStorages(
@@ -90,7 +90,7 @@ namespace PLVirtualMachine.Dynamic.Components
     {
       if (storagesRootInfo == "0")
       {
-        Logger.AddWarning(string.Format("Free storages: empty storages guids list"));
+        Logger.AddWarning("Free storages: empty storages guids list");
       }
       else
       {
@@ -104,7 +104,7 @@ namespace PLVirtualMachine.Dynamic.Components
           VMEntity vmEntity = entityListByRootInfo[index];
           if (vmEntity.Instance == null)
           {
-            Logger.AddError(string.Format("Group operation processing: entity {0} not inited in engine at {1}", (object) vmEntity.Name, (object) DynamicFSM.CurrentStateInfo));
+            Logger.AddError(string.Format("Group operation processing: entity {0} not inited in engine at {1}", vmEntity.Name, DynamicFSM.CurrentStateInfo));
             break;
           }
           if (vmEntity != null)
@@ -114,7 +114,7 @@ namespace PLVirtualMachine.Dynamic.Components
             {
               VMStorage storageComponent = vmEntity.EntityStorageComponent;
               if (storageComponent == null)
-                Logger.AddError(string.Format("Cannot process storage types filtering in storage object {0}, because storage component not found at {1}", (object) vmEntity.Name, (object) DynamicFSM.CurrentStateInfo));
+                Logger.AddError(string.Format("Cannot process storage types filtering in storage object {0}, because storage component not found at {1}", vmEntity.Name, DynamicFSM.CurrentStateInfo));
               else if (operationTagsInfo.CheckTag(storageComponent.Component.Tag) && vmEntity.IsWorldEntity)
               {
                 if (vmEntity.Instance == null)
@@ -124,8 +124,8 @@ namespace PLVirtualMachine.Dynamic.Components
                 else
                 {
                   StorageCommand storageCommand = new StorageCommand();
-                  storageCommand.Initialize(EStorageCommandType.StorageCommandClear, storageComponent, (VMWorldObject) null);
-                  this.StorageGroupCommandProcessor.MakeStorageCommand((IStorageCommand) storageCommand, assync);
+                  storageCommand.Initialize(EStorageCommandType.StorageCommandClear, storageComponent, null);
+                  StorageGroupCommandProcessor.MakeStorageCommand(storageCommand, assync);
                 }
               }
             }
@@ -136,7 +136,7 @@ namespace PLVirtualMachine.Dynamic.Components
 
     public override void ResetTags(string storagesRootInfo)
     {
-      ((GameComponent) this.GlobalRootManager).DoResetTags(storagesRootInfo, "Storage");
+      ((GameComponent) GlobalRootManager).DoResetTags(storagesRootInfo, "Storage");
     }
 
     public override void SetTagsDistribution(
@@ -146,7 +146,7 @@ namespace PLVirtualMachine.Dynamic.Components
     {
       if (storagesRootInfo == "0")
       {
-        Logger.AddWarning(string.Format("Set tags distribution: empty storage operation root info at {0}", (object) DynamicFSM.CurrentStateInfo));
+        Logger.AddWarning(string.Format("Set tags distribution: empty storage operation root info at {0}", DynamicFSM.CurrentStateInfo));
       }
       else
       {
@@ -161,7 +161,7 @@ namespace PLVirtualMachine.Dynamic.Components
           {
             if (vmEntity.Instance == null)
             {
-              Logger.AddError(string.Format("Group operation processing: entity {0} not inited in engine at {1}", (object) vmEntity.Name, (object) DynamicFSM.CurrentStateInfo));
+              Logger.AddError(string.Format("Group operation processing: entity {0} not inited in engine at {1}", vmEntity.Name, DynamicFSM.CurrentStateInfo));
               return;
             }
             VMStorage storageComponent = vmEntity.EntityStorageComponent;
@@ -169,7 +169,7 @@ namespace PLVirtualMachine.Dynamic.Components
               dObjects.Add(vmEntity);
           }
         }
-        ((GameComponent) this.GlobalRootManager).DoSetTagsDistribution(dObjects, storagTagDistributionInfo);
+        ((GameComponent) GlobalRootManager).DoSetTagsDistribution(dObjects, storagTagDistributionInfo);
       }
     }
 
@@ -182,7 +182,7 @@ namespace PLVirtualMachine.Dynamic.Components
     {
       if (storagesRootInfo == "0")
       {
-        Logger.AddWarning(string.Format("Set container tags distribution: empty storage operation root info"));
+        Logger.AddWarning("Set container tags distribution: empty storage operation root info");
       }
       else
       {
@@ -199,19 +199,19 @@ namespace PLVirtualMachine.Dynamic.Components
           VMEntity vmEntity = entityListByRootInfo[index];
           if (vmEntity.Instance == null)
           {
-            Logger.AddError(string.Format("Group operation processing: entity {0} not inited in engine at {1}", (object) vmEntity.Name, (object) DynamicFSM.CurrentStateInfo));
+            Logger.AddError(string.Format("Group operation processing: entity {0} not inited in engine at {1}", vmEntity.Name, DynamicFSM.CurrentStateInfo));
             return;
           }
           if (vmEntity != null)
           {
             VMCommon entityCommonComponent = vmEntity.EntityCommonComponent;
             if (entityCommonComponent == null)
-              Logger.AddError(string.Format("Object {0} hasn't common component, cannot set inner containers tags at {1}", (object) vmEntity.Name, (object) DynamicFSM.CurrentStateInfo));
+              Logger.AddError(string.Format("Object {0} hasn't common component, cannot set inner containers tags at {1}", vmEntity.Name, DynamicFSM.CurrentStateInfo));
             else if (operationMultiTagsInfo.CheckTag(entityCommonComponent.CustomTag))
             {
               VMStorage storageComponent = vmEntity.EntityStorageComponent;
               if (storageComponent == null)
-                Logger.AddError(string.Format("Object {0} hasn't storage component, cannot set inner containers tags at {1}", (object) vmEntity.Name, (object) DynamicFSM.CurrentStateInfo));
+                Logger.AddError(string.Format("Object {0} hasn't storage component, cannot set inner containers tags at {1}", vmEntity.Name, DynamicFSM.CurrentStateInfo));
               else if (operationTagsInfo1.CheckTag(storageComponent.Component.Tag))
               {
                 int innerContainersCount = storageComponent.InnerContainersCount;
@@ -237,7 +237,7 @@ namespace PLVirtualMachine.Dynamic.Components
             }
           }
         }
-        List<int> list = dictionary.Keys.ToList<int>();
+        List<int> list = dictionary.Keys.ToList();
         list.Sort();
         TagDistributionInfo distributionInfo = new TagDistributionInfo();
         distributionInfo.Read(storagTagDistributionInfo);
@@ -249,22 +249,22 @@ namespace PLVirtualMachine.Dynamic.Components
             num2 += distributionInfo.TagInfoList[index].Percentage;
           if (num2 == 0)
           {
-            Logger.AddError(string.Format("Distributing tags summ is zero at {0}!", (object) DynamicFSM.CurrentStateInfo));
+            Logger.AddError(string.Format("Distributing tags summ is zero at {0}!", DynamicFSM.CurrentStateInfo));
             return;
           }
-          num1 = 1f / (float) num2;
+          num1 = 1f / num2;
         }
         List<int> intList = new List<int>();
         for (int index = 0; index < distributionInfo.TagInfoList.Count; ++index)
           intList.Add(0);
         for (int index1 = 0; index1 < list.Count; ++index1)
         {
-          float num3 = (0.5f + (float) index1) / (float) list.Count;
+          float num3 = (0.5f + index1) / list.Count;
           float num4 = 0.0f;
           for (int index2 = 0; index2 < distributionInfo.TagInfoList.Count; ++index2)
           {
-            float num5 = num4 + num1 * (float) distributionInfo.TagInfoList[index2].Percentage;
-            if ((double) num3 > (double) num4 && (double) num3 <= (double) num5)
+            float num5 = num4 + num1 * distributionInfo.TagInfoList[index2].Percentage;
+            if (num3 > (double) num4 && num3 <= (double) num5)
             {
               if (!distributionInfo.DistribInPercentage)
               {
@@ -295,7 +295,7 @@ namespace PLVirtualMachine.Dynamic.Components
     {
       if (storagesRootInfo == "0")
       {
-        Logger.AddWarning(string.Format("Set container tags complex distribution: empty operation root info at {0}", (object) DynamicFSM.CurrentStateInfo));
+        Logger.AddWarning(string.Format("Set container tags complex distribution: empty operation root info at {0}", DynamicFSM.CurrentStateInfo));
       }
       else
       {
@@ -309,7 +309,7 @@ namespace PLVirtualMachine.Dynamic.Components
         distributionInfo.Read(storagTagDistributionInfo);
         if (!distributionInfo.Complex)
         {
-          Logger.AddError(string.Format("Invalid container tags complex distribution setting: tsgs distribution info isn't complex at {0}", (object) DynamicFSM.CurrentStateInfo));
+          Logger.AddError(string.Format("Invalid container tags complex distribution setting: tsgs distribution info isn't complex at {0}", DynamicFSM.CurrentStateInfo));
         }
         else
         {
@@ -320,19 +320,19 @@ namespace PLVirtualMachine.Dynamic.Components
             VMEntity vmEntity = entityListByRootInfo[index];
             if (vmEntity.Instance == null)
             {
-              Logger.AddError(string.Format("Group operation processing: entity {0} not inited in engine at {1}", (object) vmEntity.Name, (object) DynamicFSM.CurrentStateInfo));
+              Logger.AddError(string.Format("Group operation processing: entity {0} not inited in engine at {1}", vmEntity.Name, DynamicFSM.CurrentStateInfo));
               return;
             }
             if (vmEntity != null)
             {
               VMCommon entityCommonComponent = vmEntity.EntityCommonComponent;
               if (entityCommonComponent == null)
-                Logger.AddError(string.Format("Cannot process tags filtering in storage object {0}, because common component not found at {1}", (object) vmEntity.Name, (object) DynamicFSM.CurrentStateInfo));
+                Logger.AddError(string.Format("Cannot process tags filtering in storage object {0}, because common component not found at {1}", vmEntity.Name, DynamicFSM.CurrentStateInfo));
               else if (operationMultiTagsInfo.CheckTag(entityCommonComponent.CustomTag))
               {
                 VMStorage storageComponent = vmEntity.EntityStorageComponent;
                 if (storageComponent == null)
-                  Logger.AddError(string.Format("Cannot process storage types filtering in storage object {0}, because storage component not found at {1}", (object) vmEntity.Name, (object) DynamicFSM.CurrentStateInfo));
+                  Logger.AddError(string.Format("Cannot process storage types filtering in storage object {0}, because storage component not found at {1}", vmEntity.Name, DynamicFSM.CurrentStateInfo));
                 else if (operationTagsInfo.CheckTag(storageComponent.Component.Tag))
                 {
                   bool flag = false;
@@ -350,7 +350,7 @@ namespace PLVirtualMachine.Dynamic.Components
               }
             }
           }
-          List<int> list = dictionary.Keys.ToList<int>();
+          List<int> list = dictionary.Keys.ToList();
           list.Sort();
           float num1 = 0.01f;
           List<int> intList = new List<int>();
@@ -358,26 +358,26 @@ namespace PLVirtualMachine.Dynamic.Components
             intList.Add(0);
           for (int index1 = 0; index1 < list.Count; ++index1)
           {
-            float num2 = (0.5f + (float) index1) / (float) list.Count;
+            float num2 = (0.5f + index1) / list.Count;
             float num3 = 0.0f;
             for (int index2 = 0; index2 < distributionInfo.TagInfoList.Count; ++index2)
             {
-              float num4 = num3 + num1 * (float) distributionInfo.TagInfoList[index2].Percentage;
-              if ((double) num2 > (double) num3 && (double) num2 <= (double) num4)
+              float num4 = num3 + num1 * distributionInfo.TagInfoList[index2].Percentage;
+              if (num2 > (double) num3 && num2 <= (double) num4)
               {
                 if (typeof (TagDistributionInfo) != distributionInfo.TagInfoList[index2].GetType())
                 {
-                  Logger.AddError(string.Format("Invalid complex tags distribution data: distribution part {0} by index {1} must be distribution at {2}", (object) "unknown", (object) index2, (object) DynamicFSM.CurrentStateInfo));
+                  Logger.AddError(string.Format("Invalid complex tags distribution data: distribution part {0} by index {1} must be distribution at {2}", "unknown", index2, DynamicFSM.CurrentStateInfo));
                   break;
                 }
                 if (!distributionInfo.DistribInPercentage)
                 {
                   if (intList[index2] < distributionInfo.TagInfoList[index2].Percentage)
-                    this.SetInnerContainersTagsDistribution(dictionary[list[index1]], containerTypesInfo, (TagDistributionInfo) distributionInfo.TagInfoList[index2]);
+                    SetInnerContainersTagsDistribution(dictionary[list[index1]], containerTypesInfo, (TagDistributionInfo) distributionInfo.TagInfoList[index2]);
                   intList[index2]++;
                   break;
                 }
-                this.SetInnerContainersTagsDistribution(dictionary[list[index1]], containerTypesInfo, (TagDistributionInfo) distributionInfo.TagInfoList[index2]);
+                SetInnerContainersTagsDistribution(dictionary[list[index1]], containerTypesInfo, (TagDistributionInfo) distributionInfo.TagInfoList[index2]);
                 break;
               }
               num3 = num4;
@@ -397,7 +397,7 @@ namespace PLVirtualMachine.Dynamic.Components
     {
       if (storagesRootInfo == "0")
       {
-        Logger.AddWarning(string.Format("Set storage container params: empty operation root info at {0}", (object) DynamicFSM.CurrentStateInfo));
+        Logger.AddWarning(string.Format("Set storage container params: empty operation root info at {0}", DynamicFSM.CurrentStateInfo));
       }
       else
       {
@@ -418,19 +418,19 @@ namespace PLVirtualMachine.Dynamic.Components
             VMEntity vmEntity = entityListByRootInfo[index];
             if (vmEntity.Instance == null)
             {
-              Logger.AddError(string.Format("Group operation processing: entity {0} not inited in engine at {1}", (object) vmEntity.Name, (object) DynamicFSM.CurrentStateInfo));
+              Logger.AddError(string.Format("Group operation processing: entity {0} not inited in engine at {1}", vmEntity.Name, DynamicFSM.CurrentStateInfo));
               return;
             }
             if (vmEntity != null)
             {
               VMCommon entityCommonComponent = vmEntity.EntityCommonComponent;
               if (entityCommonComponent == null)
-                Logger.AddError(string.Format("Cannot process tags filtering in storage object {0}, because common component not found at {1}", (object) vmEntity.Name, (object) DynamicFSM.CurrentStateInfo));
+                Logger.AddError(string.Format("Cannot process tags filtering in storage object {0}, because common component not found at {1}", vmEntity.Name, DynamicFSM.CurrentStateInfo));
               else if (operationMultiTagsInfo1.CheckTag(entityCommonComponent.CustomTag))
               {
                 VMStorage storageComponent = vmEntity.EntityStorageComponent;
                 if (storageComponent == null)
-                  Logger.AddError(string.Format("Cannot process storage type filtering in storage object {0}, because storage component not found at {1}", (object) vmEntity.Name, (object) DynamicFSM.CurrentStateInfo));
+                  Logger.AddError(string.Format("Cannot process storage type filtering in storage object {0}, because storage component not found at {1}", vmEntity.Name, DynamicFSM.CurrentStateInfo));
                 else if (operationTagsInfo1.CheckTag(storageComponent.Component.Tag))
                 {
                   int innerContainersCount = storageComponent.InnerContainersCount;
@@ -445,12 +445,11 @@ namespace PLVirtualMachine.Dynamic.Components
               }
             }
           }
-          IEnumerable<IVariable> byFunctionalName = EngineAPIManager.GetAbstractParametricFunctionsByFunctionalName("Storage", new List<VMType>()
-          {
+          IEnumerable<IVariable> byFunctionalName = EngineAPIManager.GetAbstractParametricFunctionsByFunctionalName("Storage", new List<VMType> {
             new VMType(typeof (IBlueprintRef), "Inventory"),
             new VMType(typeof (object))
           });
-          Dictionary<string, object> dictionary = PLVirtualMachine.Common.ParamsArray.Read(containerParamsData);
+          Dictionary<string, object> dictionary = ParamsArray.Read(containerParamsData);
           List<string> stringList = new List<string>();
           List<object> objectList = new List<object>();
           foreach (INamed named in byFunctionalName)
@@ -460,7 +459,7 @@ namespace PLVirtualMachine.Dynamic.Components
             {
               object obj = dictionary[name];
               objectList.Add(obj);
-              if (name.Contains<char>('.'))
+              if (name.Contains('.'))
                 name = name.Split('.')[1];
               stringList.Add(name);
             }
@@ -472,20 +471,20 @@ namespace PLVirtualMachine.Dynamic.Components
             IInventoryComponent innerContainer = keyValuePair.Key.GetInnerContainer(keyValuePair.Value);
             if (innerContainer != null)
             {
-              dFactParams[0] = (object) innerContainer.Owner.Template;
+              dFactParams[0] = innerContainer.Owner.Template;
               for (int index2 = 0; index2 < stringList.Count; ++index2)
               {
                 string methodName = stringList[index2];
                 object obj = objectList[index2];
                 dFactParams[1] = obj;
-                VMEngineAPIManager.ExecMethodOnComponentDirect((VMComponent) keyValuePair.Key, methodName, dFactParams);
+                VMEngineAPIManager.ExecMethodOnComponentDirect(keyValuePair.Key, methodName, dFactParams);
               }
             }
           }
         }
         catch (Exception ex)
         {
-          Logger.AddError(string.Format("Set storage container params error: {0} at {1}", (object) ex, (object) DynamicFSM.CurrentStateInfo));
+          Logger.AddError(string.Format("Set storage container params error: {0} at {1}", ex, DynamicFSM.CurrentStateInfo));
         }
       }
     }
@@ -515,7 +514,7 @@ namespace PLVirtualMachine.Dynamic.Components
           VMEntity vmEntity = entityListByRootInfo[index];
           if (vmEntity.Instance == null)
           {
-            Logger.AddError(string.Format("Group operation processing: entity {0} not inited in engine at {1}", (object) vmEntity.Name, (object) DynamicFSM.CurrentStateInfo));
+            Logger.AddError(string.Format("Group operation processing: entity {0} not inited in engine at {1}", vmEntity.Name, DynamicFSM.CurrentStateInfo));
             return;
           }
           if (vmEntity != null)
@@ -525,18 +524,18 @@ namespace PLVirtualMachine.Dynamic.Components
               IEntity instance = vmEntity.Instance;
               if (vmEntity == null)
               {
-                Logger.AddError(string.Format("Storage entity not found, cannot process storage operation at {0}!", (object) DynamicFSM.CurrentStateInfo));
+                Logger.AddError(string.Format("Storage entity not found, cannot process storage operation at {0}!", DynamicFSM.CurrentStateInfo));
               }
               else
               {
                 VMCommon componentByName1 = (VMCommon) vmEntity.GetComponentByName("Common");
                 if (componentByName1 == null)
-                  Logger.AddError(string.Format("Cannot process tags filtering in storage object {0}, because common component not found at {1}", (object) vmEntity.Name, (object) DynamicFSM.CurrentStateInfo));
+                  Logger.AddError(string.Format("Cannot process tags filtering in storage object {0}, because common component not found at {1}", vmEntity.Name, DynamicFSM.CurrentStateInfo));
                 else if (operationMultiTagsInfo.CheckTag(componentByName1.CustomTag))
                 {
                   VMStorage componentByName2 = (VMStorage) vmEntity.GetComponentByName("Storage");
                   if (componentByName2 == null)
-                    Logger.AddError(string.Format("Cannot process storage types filtering in storage object {0}, because storage component not found at {1}", (object) vmEntity.Name, (object) DynamicFSM.CurrentStateInfo));
+                    Logger.AddError(string.Format("Cannot process storage types filtering in storage object {0}, because storage component not found at {1}", vmEntity.Name, DynamicFSM.CurrentStateInfo));
                   else if (operationTagsInfo.CheckTag(componentByName2.Component.Tag))
                   {
                     float num3 = 1f;
@@ -554,20 +553,20 @@ namespace PLVirtualMachine.Dynamic.Components
         }
         if (storageAddingInfoList.Count == 0)
           return;
-        IWorldBlueprint templateByGuidStr = this.GetTemplateByGuidStr(itemTemplateGuidStr);
+        IWorldBlueprint templateByGuidStr = GetTemplateByGuidStr(itemTemplateGuidStr);
         if (templateByGuidStr == null)
-          Logger.AddError(string.Format("Template with guid {0} for linear adding not found at {1} !", (object) itemTemplateGuidStr, (object) DynamicFSM.CurrentStateInfo));
+          Logger.AddError(string.Format("Template with guid {0} for linear adding not found at {1} !", itemTemplateGuidStr, DynamicFSM.CurrentStateInfo));
         else if (!typeof (IWorldObject).IsAssignableFrom(templateByGuidStr.GetType()))
         {
-          Logger.AddError(string.Format("Template guid {0} for linear adding is invalid, this storable template must be world object at {1} !", (object) itemTemplateGuidStr, (object) DynamicFSM.CurrentStateInfo));
+          Logger.AddError(string.Format("Template guid {0} for linear adding is invalid, this storable template must be world object at {1} !", itemTemplateGuidStr, DynamicFSM.CurrentStateInfo));
         }
         else
         {
-          IParam obj = (IParam) null;
+          IParam obj = null;
           if (templateByGuidStr != null && templateByGuidStr.IsFunctionalSupport("Combination"))
             obj = templateByGuidStr.GetProperty("Combination", EngineAPIManager.GetSpecialPropertyName(ESpecialPropertyName.SPN_COMBINATION_DATA, typeof (VMCombination)));
           float randomDouble1 = (float) VMMath.GetRandomDouble();
-          int num4 = (int) Math.Round((double) num1 + (double) randomDouble1 * (double) (num2 - num1));
+          int num4 = (int) Math.Round(num1 + randomDouble1 * (double) (num2 - num1));
           int itemsToAdd = num4 / storageAddingInfoList.Count;
           if (itemsToAdd < 1)
             itemsToAdd = 1;
@@ -583,7 +582,7 @@ namespace PLVirtualMachine.Dynamic.Components
               float randomDouble2 = (float) VMMath.GetRandomDouble();
               for (int index3 = 0; index3 < storageAddingInfoList.Count; ++index3)
               {
-                if ((double) randomDouble2 >= (double) storageAddingInfoList[index3].MinRandInterval && (double) randomDouble2 < (double) storageAddingInfoList[index3].MaxRandInterval)
+                if (randomDouble2 >= (double) storageAddingInfoList[index3].MinRandInterval && randomDouble2 < (double) storageAddingInfoList[index3].MaxRandInterval)
                 {
                   index2 = index3;
                   break;
@@ -599,14 +598,14 @@ namespace PLVirtualMachine.Dynamic.Components
                 ObjectCombinationDataStruct combinationData = (ObjectCombinationDataStruct) obj.Value;
                 if (combinationData.GetElementsCount() > 0)
                 {
-                  this.AddCombinationToStorage(combinationData, storage1, (OperationTagsInfo) null, (OperationMultiTagsInfo) null);
+                  AddCombinationToStorage(combinationData, storage1, null, null);
                   num5 += itemsToAdd;
                   continue;
                 }
               }
               StorageCommand storageCommand = new StorageCommand();
               storageCommand.Initialize(EStorageCommandType.StorageCommandTypeRandomAddItem, storage1, (VMWorldObject) templateByGuidStr, itemsToAdd, num4 - num5);
-              int storage2 = this.StorageGroupCommandProcessor.ProcessRandomAddItemsToStorage(storageCommand);
+              int storage2 = StorageGroupCommandProcessor.ProcessRandomAddItemsToStorage(storageCommand);
               num5 += storage2;
             }
             if (num5 >= num4)
@@ -616,7 +615,7 @@ namespace PLVirtualMachine.Dynamic.Components
       }
       catch (Exception ex)
       {
-        Logger.AddError(string.Format("Add items to storages error: {0} at {1}", (object) ex, (object) DynamicFSM.CurrentStateInfo));
+        Logger.AddError(string.Format("Add items to storages error: {0} at {1}", ex, DynamicFSM.CurrentStateInfo));
       }
     }
 
@@ -630,7 +629,7 @@ namespace PLVirtualMachine.Dynamic.Components
     {
       if (storagesRootInfo == "0")
       {
-        Logger.AddWarning(string.Format("Add items to storages linear: empty storages guids list at {0}", (object) DynamicFSM.CurrentStateInfo));
+        Logger.AddWarning(string.Format("Add items to storages linear: empty storages guids list at {0}", DynamicFSM.CurrentStateInfo));
       }
       else
       {
@@ -645,103 +644,103 @@ namespace PLVirtualMachine.Dynamic.Components
           OperationMultiTagsInfo containerTags1 = new OperationMultiTagsInfo();
           containerTags1.Read(containerTags);
           List<VMEntity> entityListByRootInfo = GameComponent.GetStorageEntityListByRootInfo(storagesRootInfo);
-          GlobalStorageManager.LinearItemsAddingStorageList.Clear();
+          LinearItemsAddingStorageList.Clear();
           for (int index = 0; index < entityListByRootInfo.Count; ++index)
           {
             VMEntity vmEntity = entityListByRootInfo[index];
             if (vmEntity.Instance == null)
-              Logger.AddError(string.Format("Group operation processing: entity {0} not inited in engine at {1}", (object) vmEntity.Name, (object) DynamicFSM.CurrentStateInfo));
+              Logger.AddError(string.Format("Group operation processing: entity {0} not inited in engine at {1}", vmEntity.Name, DynamicFSM.CurrentStateInfo));
             else if (vmEntity != null)
             {
               VMCommon entityCommonComponent = vmEntity.EntityCommonComponent;
               if (entityCommonComponent == null)
-                Logger.AddError(string.Format("Cannot process tags filtering in storage object {0}, because component component not found at {1}", (object) vmEntity.Name, (object) DynamicFSM.CurrentStateInfo));
+                Logger.AddError(string.Format("Cannot process tags filtering in storage object {0}, because component component not found at {1}", vmEntity.Name, DynamicFSM.CurrentStateInfo));
               else if (operationMultiTagsInfo.CheckTag(entityCommonComponent.CustomTag))
               {
                 VMStorage storageComponent = vmEntity.EntityStorageComponent;
                 if (storageComponent == null)
-                  Logger.AddError(string.Format("Cannot process storage types filtering in storage object {0}, because storage component not found at {1}", (object) vmEntity.Name, (object) DynamicFSM.CurrentStateInfo));
+                  Logger.AddError(string.Format("Cannot process storage types filtering in storage object {0}, because storage component not found at {1}", vmEntity.Name, DynamicFSM.CurrentStateInfo));
                 else if (operationTagsInfo.CheckTag(storageComponent.Component.Tag) && vmEntity.IsWorldEntity)
                 {
                   IEntity instance = vmEntity.Instance;
                   if (vmEntity == null)
-                    Logger.AddError(string.Format("Storage entity not found, cannot process storage operation at {0} !", (object) DynamicFSM.CurrentStateInfo));
+                    Logger.AddError(string.Format("Storage entity not found, cannot process storage operation at {0} !", DynamicFSM.CurrentStateInfo));
                   else
-                    GlobalStorageManager.LinearItemsAddingStorageList.Add(storageComponent);
+                    LinearItemsAddingStorageList.Add(storageComponent);
                 }
               }
             }
             else
-              Logger.AddError(string.Format("Storage vm entity not found, cannot process storage operation at {0} !", (object) DynamicFSM.CurrentStateInfo));
+              Logger.AddError(string.Format("Storage vm entity not found, cannot process storage operation at {0} !", DynamicFSM.CurrentStateInfo));
           }
-          IWorldBlueprint templateByGuidStr = this.GetTemplateByGuidStr(itemTemplateGuidStr);
+          IWorldBlueprint templateByGuidStr = GetTemplateByGuidStr(itemTemplateGuidStr);
           if (templateByGuidStr == null)
-            Logger.AddError(string.Format("Template with guid {0} for linear adding not found at {1} !", (object) itemTemplateGuidStr, (object) DynamicFSM.CurrentStateInfo));
+            Logger.AddError(string.Format("Template with guid {0} for linear adding not found at {1} !", itemTemplateGuidStr, DynamicFSM.CurrentStateInfo));
           else if (!typeof (IWorldObject).IsAssignableFrom(templateByGuidStr.GetType()))
           {
-            Logger.AddError(string.Format("Template guid {0} for linear adding is invalid, this storable template must be world object at {1} !", (object) itemTemplateGuidStr, (object) DynamicFSM.CurrentStateInfo));
+            Logger.AddError(string.Format("Template guid {0} for linear adding is invalid, this storable template must be world object at {1} !", itemTemplateGuidStr, DynamicFSM.CurrentStateInfo));
           }
           else
           {
-            GlobalStorageManager.AssyncStorageGroupCommandMode = true;
-            IParam obj = (IParam) null;
+            AssyncStorageGroupCommandMode = true;
+            IParam obj = null;
             if (templateByGuidStr != null && templateByGuidStr.IsFunctionalSupport("Combination"))
               obj = templateByGuidStr.GetProperty("Combination", EngineAPIManager.GetSpecialPropertyName(ESpecialPropertyName.SPN_COMBINATION_DATA, typeof (VMCombination)));
-            for (int index = 0; index < GlobalStorageManager.LinearItemsAddingStorageList.Count; ++index)
+            for (int index = 0; index < LinearItemsAddingStorageList.Count; ++index)
             {
-              VMStorage itemsAddingStorage = GlobalStorageManager.LinearItemsAddingStorageList[index];
+              VMStorage itemsAddingStorage = LinearItemsAddingStorageList[index];
               if (obj != null)
               {
                 if (obj.Value != null && typeof (ObjectCombinationDataStruct) == obj.Value.GetType())
                 {
                   ObjectCombinationDataStruct combinationData = (ObjectCombinationDataStruct) obj.Value;
                   if (combinationData.GetElementsCount() > 0)
-                    this.AddCombinationToStorage(combinationData, itemsAddingStorage, containerTypes1, containerTags1);
+                    AddCombinationToStorage(combinationData, itemsAddingStorage, containerTypes1, containerTags1);
                 }
               }
               else
               {
                 StorageCommand storageCommand = new StorageCommand();
                 storageCommand.Initialize(EStorageCommandType.StorageCommandTypeAddItem, itemsAddingStorage, (VMWorldObject) templateByGuidStr, 1, containerTypes1, containerTags1);
-                this.StorageGroupCommandProcessor.MakeStorageCommand((IStorageCommand) storageCommand, GlobalStorageManager.AssyncStorageGroupCommandMode);
+                StorageGroupCommandProcessor.MakeStorageCommand(storageCommand, AssyncStorageGroupCommandMode);
               }
             }
-            GlobalStorageManager.AssyncStorageGroupCommandMode = false;
+            AssyncStorageGroupCommandMode = false;
           }
         }
         catch (Exception ex)
         {
-          Logger.AddError(string.Format("Add items to storages error: {0} at {1}", (object) ex, (object) DynamicFSM.CurrentStateInfo));
+          Logger.AddError(string.Format("Add items to storages error: {0} at {1}", ex, DynamicFSM.CurrentStateInfo));
         }
       }
     }
 
     public override void SetAllStorablesTitle([Template] IEntity template, ITextRef text)
     {
-      this.DoSetAllStorablesTextField(template, text, "title");
+      DoSetAllStorablesTextField(template, text, "title");
     }
 
     public override void SetAllStorablesDescription([Template] IEntity template, ITextRef text)
     {
-      this.DoSetAllStorablesTextField(template, text, "description");
+      DoSetAllStorablesTextField(template, text, "description");
     }
 
     public override void SetAllStorablesSpecialDescription([Template] IEntity template, ITextRef text)
     {
-      this.DoSetAllStorablesTextField(template, text, "specialdescription");
+      DoSetAllStorablesTextField(template, text, "specialdescription");
     }
 
     public override void SetAllStorablesTooltip([Template] IEntity template, ITextRef text)
     {
-      this.DoSetAllStorablesTextField(template, text, "tooltip");
+      DoSetAllStorablesTextField(template, text, "tooltip");
     }
 
     public void DoSetAllStorablesTextField([Template] IEntity template, ITextRef text, string textFieldName)
     {
       if (template == null)
-        Logger.AddError(string.Format("Storable entity for storable text field setting not defined !"));
+        Logger.AddError("Storable entity for storable text field setting not defined !");
       if (text == null)
-        Logger.AddError(string.Format("text object for storable text field setting not defined !"));
+        Logger.AddError("text object for storable text field setting not defined !");
       try
       {
         LocalizedText engineTextInstance = EngineAPIManager.CreateEngineTextInstance(text);
@@ -749,15 +748,15 @@ namespace PLVirtualMachine.Dynamic.Components
         List<VMBaseEntity> allChildEntities1 = VirtualMachine.Instance.WorldHierarchyRootEntity.GetAllChildEntities();
         List<VMBaseEntity> allChildEntities2 = VirtualMachine.Instance.GameRootEntity.GetAllChildEntities();
         if (allChildEntities1 != null)
-          vmBaseEntityList.AddRange((IEnumerable<VMBaseEntity>) allChildEntities1);
+          vmBaseEntityList.AddRange(allChildEntities1);
         if (allChildEntities2 != null)
-          vmBaseEntityList.AddRange((IEnumerable<VMBaseEntity>) allChildEntities2);
+          vmBaseEntityList.AddRange(allChildEntities2);
         for (int index = 0; index < vmBaseEntityList.Count; ++index)
         {
           if (vmBaseEntityList[index].Instantiated)
           {
             VMStorage storageComponent = vmBaseEntityList[index].EntityStorageComponent;
-            if (storageComponent != null && storageComponent.Component.Items.Count<IStorableComponent>() > 0)
+            if (storageComponent != null && storageComponent.Component.Items.Count() > 0)
             {
               foreach (IStorableComponent storableComponent in storageComponent.Component.Items)
               {
@@ -770,7 +769,7 @@ namespace PLVirtualMachine.Dynamic.Components
       }
       catch (Exception ex)
       {
-        Logger.AddError(string.Format("Set storables text field by template {0} error: {1} at {2}", (object) template.Name, (object) ex.ToString(), (object) DynamicFSM.CurrentStateInfo));
+        Logger.AddError(string.Format("Set storables text field by template {0} error: {1} at {2}", template.Name, ex, DynamicFSM.CurrentStateInfo));
       }
     }
 
@@ -778,20 +777,20 @@ namespace PLVirtualMachine.Dynamic.Components
       IBlueprintRef combination,
       IBlueprintRef storable)
     {
-      IBlueprint blueprint1 = (IBlueprint) null;
-      IBlueprint blueprint2 = (IBlueprint) null;
+      IBlueprint blueprint1 = null;
+      IBlueprint blueprint2 = null;
       if (combination != null && combination.Blueprint != null)
         blueprint1 = combination.Blueprint;
       if (storable != null && storable.Blueprint != null)
         blueprint2 = storable.Blueprint;
       if (blueprint1 == null)
       {
-        Logger.AddError(string.Format("Combination for checking storable containing not defined at {0} !", (object) DynamicFSM.CurrentStateInfo));
+        Logger.AddError(string.Format("Combination for checking storable containing not defined at {0} !", DynamicFSM.CurrentStateInfo));
         return false;
       }
       if (blueprint2 == null)
       {
-        Logger.AddError(string.Format("Storable for checking containing in combination not defined at {0} !", (object) DynamicFSM.CurrentStateInfo));
+        Logger.AddError(string.Format("Storable for checking containing in combination not defined at {0} !", DynamicFSM.CurrentStateInfo));
         return false;
       }
       if (blueprint1.IsFunctionalSupport("Combination"))
@@ -808,49 +807,49 @@ namespace PLVirtualMachine.Dynamic.Components
                 return combinationDataStruct.ContainsItem(blueprint2);
             }
             else
-              Logger.AddError(string.Format("Combination object {0} for checking item containing not contains Combination data at", (object) blueprint1.Name, (object) DynamicFSM.CurrentStateInfo));
+              Logger.AddError(string.Format("Combination object {0} for checking item containing not contains Combination data at", blueprint1.Name, DynamicFSM.CurrentStateInfo));
           }
           else
-            Logger.AddError(string.Format("Combination object {0} for checking item containing not contains Combination data at", (object) blueprint1.Name, (object) DynamicFSM.CurrentStateInfo));
+            Logger.AddError(string.Format("Combination object {0} for checking item containing not contains Combination data at", blueprint1.Name, DynamicFSM.CurrentStateInfo));
         }
         else
-          Logger.AddError(string.Format("Combination object {0} for checking item containing not contains ObjectCombinationDataStruct param", (object) blueprint1.Name, (object) DynamicFSM.CurrentStateInfo));
+          Logger.AddError(string.Format("Combination object {0} for checking item containing not contains ObjectCombinationDataStruct param", blueprint1.Name, DynamicFSM.CurrentStateInfo));
       }
       else
-        Logger.AddError(string.Format("Combination object {0} for checking item containing not contains Combination component at {1}", (object) blueprint1.Name, (object) DynamicFSM.CurrentStateInfo));
+        Logger.AddError(string.Format("Combination object {0} for checking item containing not contains Combination component at {1}", blueprint1.Name, DynamicFSM.CurrentStateInfo));
       return false;
     }
 
     public override void StateSave(IDataWriter writer)
     {
       base.StateSave(writer);
-      writer.Begin("TemplateRTFieldInfoList", (Type) null, true);
-      foreach (KeyValuePair<string, ITextRef> keyValuePair in this.templateRTFieldValuesDict)
+      writer.Begin("TemplateRTFieldInfoList", null, true);
+      foreach (KeyValuePair<string, ITextRef> keyValuePair in templateRTFieldValuesDict)
       {
         string key = keyValuePair.Key;
         ITextRef textRef = keyValuePair.Value;
         if (textRef != null)
         {
           VMType vmType = new VMType(textRef.GetType());
-          writer.Begin("Item", (Type) null, true);
+          writer.Begin("Item", null, true);
           SaveManagerUtility.Save(writer, "FieldKey", key);
           SaveManagerUtility.Save(writer, "FieldType", vmType.Write());
-          SaveManagerUtility.SaveCommon(writer, "FieldValue", (object) textRef);
+          SaveManagerUtility.SaveCommon(writer, "FieldValue", textRef);
           writer.End("Item", true);
         }
       }
       writer.End("TemplateRTFieldInfoList", true);
-      if (this.StorageGroupCommandProcessor == null)
+      if (StorageGroupCommandProcessor == null)
         return;
-      writer.Begin("StorageCommandProcessor", (Type) null, true);
-      this.StorageGroupCommandProcessor.StateSave(writer);
+      writer.Begin("StorageCommandProcessor", null, true);
+      StorageGroupCommandProcessor.StateSave(writer);
       writer.End("StorageCommandProcessor", true);
     }
 
     public override void LoadFromXML(XmlElement xmlNode)
     {
       base.LoadFromXML(xmlNode);
-      this.templateRTFieldValuesDict.Clear();
+      templateRTFieldValuesDict.Clear();
       for (int i1 = 0; i1 < xmlNode.ChildNodes.Count; ++i1)
       {
         if (xmlNode.ChildNodes[i1].Name == "TemplateRTFieldInfoList")
@@ -861,21 +860,21 @@ namespace PLVirtualMachine.Dynamic.Components
             XmlNode firstChild = childNode.ChildNodes[i2].FirstChild;
             string innerText = firstChild.InnerText;
             XmlNode nextSibling = firstChild.NextSibling;
-            ITextRef textRef = (ITextRef) PLVirtualMachine.Common.Data.StringSerializer.ReadValue(nextSibling.NextSibling.InnerText, VMSaveLoadManager.ReadValue<VMType>(nextSibling).BaseType);
-            this.templateRTFieldValuesDict.Add(innerText, textRef);
-            this.templateRTDataUpdated = true;
+            ITextRef textRef = (ITextRef) StringSerializer.ReadValue(nextSibling.NextSibling.InnerText, VMSaveLoadManager.ReadValue<VMType>(nextSibling).BaseType);
+            templateRTFieldValuesDict.Add(innerText, textRef);
+            templateRTDataUpdated = true;
           }
         }
-        else if (xmlNode.ChildNodes[i1].Name == "StorageCommandProcessor" && this.StorageGroupCommandProcessor != null)
-          this.StorageGroupCommandProcessor.LoadFromXML((XmlElement) xmlNode.ChildNodes[i1]);
+        else if (xmlNode.ChildNodes[i1].Name == "StorageCommandProcessor" && StorageGroupCommandProcessor != null)
+          StorageGroupCommandProcessor.LoadFromXML((XmlElement) xmlNode.ChildNodes[i1]);
       }
     }
 
     public override void AfterSaveLoading()
     {
-      if (this.StorageGroupCommandProcessor == null)
+      if (StorageGroupCommandProcessor == null)
         return;
-      this.StorageGroupCommandProcessor.AfterSaveLoading();
+      StorageGroupCommandProcessor.AfterSaveLoading();
     }
 
     public void AddCombinationToStorage(
@@ -885,11 +884,11 @@ namespace PLVirtualMachine.Dynamic.Components
       OperationMultiTagsInfo containerTags,
       bool dropIfBusy = false)
     {
-      ++GlobalStorageManager.combinationDepth;
-      if (GlobalStorageManager.combinationDepth > 10)
+      ++combinationDepth;
+      if (combinationDepth > 10)
       {
-        Logger.AddError(string.Format("Items inner combination cycling at {0} at {1}", (object) storage.Parent.Name, (object) DynamicFSM.CurrentStateInfo));
-        --GlobalStorageManager.combinationDepth;
+        Logger.AddError(string.Format("Items inner combination cycling at {0} at {1}", storage.Parent.Name, DynamicFSM.CurrentStateInfo));
+        --combinationDepth;
       }
       else
       {
@@ -905,11 +904,11 @@ namespace PLVirtualMachine.Dynamic.Components
                 ObjectCombinationVariant randomVariantByWeight = combinationElement.GetRandomVariantByWeight((float) VMMath.GetRandomDouble());
                 if (randomVariantByWeight.MinCount > randomVariantByWeight.MaxCount)
                 {
-                  Logger.AddError(string.Format("Invalid adding combination to storage {0}, combination variant {1} is invalid: min value={2} and max value={3} at {4}", (object) storage.Parent.Name, (object) randomVariantByWeight.ToString(), (object) randomVariantByWeight.MinCount, (object) randomVariantByWeight.MaxCount, (object) DynamicFSM.CurrentStateInfo));
+                  Logger.AddError(string.Format("Invalid adding combination to storage {0}, combination variant {1} is invalid: min value={2} and max value={3} at {4}", storage.Parent.Name, randomVariantByWeight, randomVariantByWeight.MinCount, randomVariantByWeight.MaxCount, DynamicFSM.CurrentStateInfo));
                   return;
                 }
                 int randomInt = VMMath.GetRandomInt(randomVariantByWeight.MinCount, randomVariantByWeight.MaxCount);
-                IBlueprint engineTemplateByGuid = (IBlueprint) ((VMGameRoot) IStaticDataContainer.StaticDataContainer.GameRoot).GetEngineTemplateByGuid(randomVariantByWeight.ObjectGuid);
+                IBlueprint engineTemplateByGuid = ((VMGameRoot) IStaticDataContainer.StaticDataContainer.GameRoot).GetEngineTemplateByGuid(randomVariantByWeight.ObjectGuid);
                 if (engineTemplateByGuid != null)
                 {
                   if (typeof (IWorldObject).IsAssignableFrom(engineTemplateByGuid.GetType()))
@@ -925,20 +924,20 @@ namespace PLVirtualMachine.Dynamic.Components
                           {
                             ObjectCombinationDataStruct combinationData1 = (ObjectCombinationDataStruct) property.Value;
                             for (int index = 0; index < randomInt; ++index)
-                              this.AddCombinationToStorage(combinationData1, storage, containerTypes, containerTags, dropIfBusy);
+                              AddCombinationToStorage(combinationData1, storage, containerTypes, containerTags, dropIfBusy);
                           }
                         }
                         else
-                          Logger.AddError(string.Format("Invalid inner combination: {0}, combination param value not defined at {1}", (object) engineTemplateByGuid.Name, (object) DynamicFSM.CurrentStateInfo));
+                          Logger.AddError(string.Format("Invalid inner combination: {0}, combination param value not defined at {1}", engineTemplateByGuid.Name, DynamicFSM.CurrentStateInfo));
                       }
                       else
-                        Logger.AddError(string.Format("Invalid inner combination: {0}, combination param not defined at {1}", (object) engineTemplateByGuid.Name, (object) DynamicFSM.CurrentStateInfo));
+                        Logger.AddError(string.Format("Invalid inner combination: {0}, combination param not defined at {1}", engineTemplateByGuid.Name, DynamicFSM.CurrentStateInfo));
                     }
                     else
                     {
                       StorageCommand storageCommand = new StorageCommand();
                       storageCommand.Initialize(EStorageCommandType.StorageCommandTypeAddItem, storage, (VMWorldObject) engineTemplateByGuid, randomInt, containerTypes, containerTags, randomVariantByWeight.CIParams, dropIfBusy);
-                      this.StorageGroupCommandProcessor.MakeStorageCommand((IStorageCommand) storageCommand, GlobalStorageManager.AssyncStorageGroupCommandMode);
+                      StorageGroupCommandProcessor.MakeStorageCommand(storageCommand, AssyncStorageGroupCommandMode);
                     }
                   }
                 }
@@ -946,11 +945,11 @@ namespace PLVirtualMachine.Dynamic.Components
             }
             catch (Exception ex)
             {
-              Logger.AddError(string.Format("Add combination to storages error: {0} at {1}", (object) ex, (object) DynamicFSM.CurrentStateInfo));
+              Logger.AddError(string.Format("Add combination to storages error: {0} at {1}", ex, DynamicFSM.CurrentStateInfo));
             }
           }
         }
-        --GlobalStorageManager.combinationDepth;
+        --combinationDepth;
       }
     }
 
@@ -958,7 +957,7 @@ namespace PLVirtualMachine.Dynamic.Components
     {
       get
       {
-        return this.StorageGroupCommandProcessor != null && this.StorageGroupCommandProcessor.IsStorageOperationsProcessing;
+        return StorageGroupCommandProcessor != null && StorageGroupCommandProcessor.IsStorageOperationsProcessing;
       }
     }
 
@@ -986,7 +985,7 @@ namespace PLVirtualMachine.Dynamic.Components
           while (!flag);
         }
       }
-      List<int> list = dictionary.Keys.ToList<int>();
+      List<int> list = dictionary.Keys.ToList();
       list.Sort();
       float num1 = 0.01f;
       if (!innerContainersTagDistribution.DistribInPercentage)
@@ -996,24 +995,24 @@ namespace PLVirtualMachine.Dynamic.Components
           num2 += innerContainersTagDistribution.TagInfoList[index].Percentage;
         if (num2 == 0)
         {
-          Logger.AddError(string.Format("Distributing tags summ is zero at {0}!", (object) DynamicFSM.CurrentStateInfo));
+          Logger.AddError(string.Format("Distributing tags summ is zero at {0}!", DynamicFSM.CurrentStateInfo));
           return;
         }
-        num1 = 1f / (float) num2;
+        num1 = 1f / num2;
       }
       List<int> intList = new List<int>();
       for (int index = 0; index < innerContainersTagDistribution.TagInfoList.Count; ++index)
         intList.Add(0);
-      float num3 = (float) (1.0 / (double) list.Count * VMMath.GetRandomDouble());
+      float num3 = (float) (1.0 / list.Count * VMMath.GetRandomDouble());
       for (int index1 = 0; index1 < list.Count; ++index1)
       {
-        float num4 = (0.0f + (float) index1) / (float) list.Count;
+        float num4 = (0.0f + index1) / list.Count;
         float num5 = 0.0f;
         for (int index2 = 0; index2 < innerContainersTagDistribution.TagInfoList.Count; ++index2)
         {
-          float num6 = num5 + num1 * (float) innerContainersTagDistribution.TagInfoList[index2].Percentage;
+          float num6 = num5 + num1 * innerContainersTagDistribution.TagInfoList[index2].Percentage;
           float num7 = num4 + num3;
-          if ((double) num7 > (double) num5 && (double) num7 <= (double) num6)
+          if (num7 > (double) num5 && num7 <= (double) num6)
           {
             if (!innerContainersTagDistribution.DistribInPercentage)
             {
@@ -1034,14 +1033,14 @@ namespace PLVirtualMachine.Dynamic.Components
       }
     }
 
-    public static bool AssyncStorageGroupCommandMode { get; set; } = false;
+    public static bool AssyncStorageGroupCommandMode { get; set; }
 
     private IWorldBlueprint GetTemplateByGuidStr(string itemTemplateGuidStr)
     {
       EGuidFormat guidFormat = GuidUtility.GetGuidFormat(itemTemplateGuidStr);
       if (guidFormat == EGuidFormat.GT_BASE)
         return ((VMGameRoot) IStaticDataContainer.StaticDataContainer.GameRoot).GetEngineTemplateByGuid(DefaultConverter.ParseUlong(itemTemplateGuidStr));
-      return EGuidFormat.GT_ENGINE == guidFormat ? ((VMGameRoot) IStaticDataContainer.StaticDataContainer.GameRoot).GetEngineTemplateByGuid(DefaultConverter.ParseGuid(itemTemplateGuidStr)) : (IWorldBlueprint) null;
+      return EGuidFormat.GT_ENGINE == guidFormat ? ((VMGameRoot) IStaticDataContainer.StaticDataContainer.GameRoot).GetEngineTemplateByGuid(DefaultConverter.ParseGuid(itemTemplateGuidStr)) : null;
     }
 
     protected StorageGroupCommandProcessor StorageGroupCommandProcessor { get; private set; }

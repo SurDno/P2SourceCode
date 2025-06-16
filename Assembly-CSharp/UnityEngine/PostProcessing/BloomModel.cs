@@ -6,15 +6,15 @@ namespace UnityEngine.PostProcessing
   public class BloomModel : PostProcessingModel
   {
     [SerializeField]
-    private BloomModel.Settings m_Settings = BloomModel.Settings.defaultSettings;
+    private Settings m_Settings = Settings.defaultSettings;
 
-    public BloomModel.Settings settings
+    public Settings settings
     {
-      get => this.m_Settings;
-      set => this.m_Settings = value;
+      get => m_Settings;
+      set => m_Settings = value;
     }
 
-    public override void Reset() => this.m_Settings = BloomModel.Settings.defaultSettings;
+    public override void Reset() => m_Settings = Settings.defaultSettings;
 
     [Serializable]
     public struct BloomSettings
@@ -36,16 +36,15 @@ namespace UnityEngine.PostProcessing
 
       public float thresholdLinear
       {
-        set => this.threshold = Mathf.LinearToGammaSpace(value);
-        get => Mathf.GammaToLinearSpace(this.threshold);
+        set => threshold = Mathf.LinearToGammaSpace(value);
+        get => Mathf.GammaToLinearSpace(threshold);
       }
 
-      public static BloomModel.BloomSettings defaultSettings
+      public static BloomSettings defaultSettings
       {
         get
         {
-          return new BloomModel.BloomSettings()
-          {
+          return new BloomSettings {
             intensity = 0.5f,
             threshold = 1.1f,
             softKnee = 0.5f,
@@ -65,12 +64,11 @@ namespace UnityEngine.PostProcessing
       [Tooltip("Amount of lens dirtiness.")]
       public float intensity;
 
-      public static BloomModel.LensDirtSettings defaultSettings
+      public static LensDirtSettings defaultSettings
       {
         get
         {
-          return new BloomModel.LensDirtSettings()
-          {
+          return new LensDirtSettings {
             texture = (Texture) null,
             intensity = 3f
           };
@@ -81,17 +79,16 @@ namespace UnityEngine.PostProcessing
     [Serializable]
     public struct Settings
     {
-      public BloomModel.BloomSettings bloom;
-      public BloomModel.LensDirtSettings lensDirt;
+      public BloomSettings bloom;
+      public LensDirtSettings lensDirt;
 
-      public static BloomModel.Settings defaultSettings
+      public static Settings defaultSettings
       {
         get
         {
-          return new BloomModel.Settings()
-          {
-            bloom = BloomModel.BloomSettings.defaultSettings,
-            lensDirt = BloomModel.LensDirtSettings.defaultSettings
+          return new Settings {
+            bloom = BloomSettings.defaultSettings,
+            lensDirt = LensDirtSettings.defaultSettings
           };
         }
       }

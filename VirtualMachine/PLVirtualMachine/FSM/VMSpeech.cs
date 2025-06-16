@@ -1,12 +1,12 @@
-﻿using Cofe.Loggers;
+﻿using System.Collections.Generic;
+using System.Xml;
+using Cofe.Loggers;
 using Engine.Common.Commons;
 using PLVirtualMachine.Base;
 using PLVirtualMachine.Common;
 using PLVirtualMachine.Common.Data;
 using PLVirtualMachine.Data;
 using PLVirtualMachine.GameLogic;
-using System.Collections.Generic;
-using System.Xml;
 using VirtualMachine.Common;
 using VirtualMachine.Common.Data;
 using VirtualMachine.Data;
@@ -34,11 +34,11 @@ namespace PLVirtualMachine.FSM
     private List<ISpeechReply> exitPoints = new List<ISpeechReply>();
     [FieldData("Text", DataFieldType.Reference)]
     private VMGameString text;
-    [FieldData("AuthorGuid", DataFieldType.None)]
+    [FieldData("AuthorGuid")]
     private ulong speechAuthorObjGuid;
-    [FieldData("OnlyOnce", DataFieldType.None)]
+    [FieldData("OnlyOnce")]
     private bool onlyOnce;
-    [FieldData("IsTrade", DataFieldType.None)]
+    [FieldData("IsTrade")]
     private bool isTrade;
     [FieldData("ParamText", DataFieldType.Reference)]
     private VMParameter speechParam;
@@ -46,53 +46,52 @@ namespace PLVirtualMachine.FSM
 
     public override void EditorDataRead(XmlReader xml, IDataCreator creator, string typeContext)
     {
-      while (xml.Read())
-      {
+      while (xml.Read()) {
         if (xml.NodeType == XmlNodeType.Element)
         {
           switch (xml.Name)
           {
             case "AuthorGuid":
-              this.speechAuthorObjGuid = EditorDataReadUtility.ReadValue(xml, this.speechAuthorObjGuid);
+              speechAuthorObjGuid = EditorDataReadUtility.ReadValue(xml, speechAuthorObjGuid);
               continue;
             case "EntryPoints":
-              this.entryPoints = EditorDataReadUtility.ReadReferenceList<IEntryPoint>(xml, creator, this.entryPoints);
+              entryPoints = EditorDataReadUtility.ReadReferenceList(xml, creator, entryPoints);
               continue;
             case "IgnoreBlock":
-              this.ignoreBlock = EditorDataReadUtility.ReadValue(xml, this.ignoreBlock);
+              ignoreBlock = EditorDataReadUtility.ReadValue(xml, ignoreBlock);
               continue;
             case "Initial":
-              this.initial = EditorDataReadUtility.ReadValue(xml, this.initial);
+              initial = EditorDataReadUtility.ReadValue(xml, initial);
               continue;
             case "InputLinks":
-              this.inputLinks = EditorDataReadUtility.ReadReferenceList<VMEventLink>(xml, creator, this.inputLinks);
+              inputLinks = EditorDataReadUtility.ReadReferenceList(xml, creator, inputLinks);
               continue;
             case "IsTrade":
-              this.isTrade = EditorDataReadUtility.ReadValue(xml, this.isTrade);
+              isTrade = EditorDataReadUtility.ReadValue(xml, isTrade);
               continue;
             case "Name":
-              this.name = EditorDataReadUtility.ReadValue(xml, this.name);
+              name = EditorDataReadUtility.ReadValue(xml, name);
               continue;
             case "OnlyOnce":
-              this.onlyOnce = EditorDataReadUtility.ReadValue(xml, this.onlyOnce);
+              onlyOnce = EditorDataReadUtility.ReadValue(xml, onlyOnce);
               continue;
             case "OutputLinks":
-              this.outputLinks = EditorDataReadUtility.ReadReferenceList<ILink>(xml, creator, this.outputLinks);
+              outputLinks = EditorDataReadUtility.ReadReferenceList(xml, creator, outputLinks);
               continue;
             case "Owner":
-              this.owner = EditorDataReadUtility.ReadReference<IContainer>(xml, creator);
+              owner = EditorDataReadUtility.ReadReference<IContainer>(xml, creator);
               continue;
             case "ParamText":
-              this.speechParam = EditorDataReadUtility.ReadReference<VMParameter>(xml, creator);
+              speechParam = EditorDataReadUtility.ReadReference<VMParameter>(xml, creator);
               continue;
             case "Parent":
-              this.parent = EditorDataReadUtility.ReadReference<IContainer>(xml, creator);
+              parent = EditorDataReadUtility.ReadReference<IContainer>(xml, creator);
               continue;
             case "Replyes":
-              this.exitPoints = EditorDataReadUtility.ReadReferenceList<ISpeechReply>(xml, creator, this.exitPoints);
+              exitPoints = EditorDataReadUtility.ReadReferenceList(xml, creator, exitPoints);
               continue;
             case "Text":
-              this.text = EditorDataReadUtility.ReadReference<VMGameString>(xml, creator);
+              text = EditorDataReadUtility.ReadReference<VMGameString>(xml, creator);
               continue;
             default:
               if (XMLDataLoader.Logs.Add(typeContext + " : " + xml.Name))
@@ -101,7 +100,8 @@ namespace PLVirtualMachine.FSM
               continue;
           }
         }
-        else if (xml.NodeType == XmlNodeType.EndElement)
+
+        if (xml.NodeType == XmlNodeType.EndElement)
           break;
       }
     }
@@ -115,9 +115,9 @@ namespace PLVirtualMachine.FSM
 
     public override EStateType StateType => EStateType.STATE_TYPE_SPEECH;
 
-    public IGameString Text => (IGameString) this.text;
+    public IGameString Text => text;
 
-    public IParam TextParam => (IParam) this.speechParam;
+    public IParam TextParam => speechParam;
 
     public IObjRef Author
     {
@@ -134,26 +134,26 @@ namespace PLVirtualMachine.FSM
           else if (typeof (IObjRef).IsAssignableFrom(this.speechAuthor.GetType()))
             return (IObjRef) this.speechAuthor;
         }
-        return (IObjRef) null;
+        return null;
       }
     }
 
-    public ulong SpeechAuthorObjGuid => this.speechAuthorObjGuid;
+    public ulong SpeechAuthorObjGuid => speechAuthorObjGuid;
 
-    public bool OnlyOnce => this.onlyOnce;
+    public bool OnlyOnce => onlyOnce;
 
-    public bool IsTrade => this.isTrade;
+    public bool IsTrade => isTrade;
 
-    public override int GetExitPointsCount() => this.exitPoints.Count;
+    public override int GetExitPointsCount() => exitPoints.Count;
 
-    public List<ISpeechReply> Replies => this.exitPoints;
+    public List<ISpeechReply> Replies => exitPoints;
 
     public IActionLine ActionLine
     {
-      get => this.entryPoints.Count > 0 ? this.entryPoints[0].ActionLine : (IActionLine) null;
+      get => entryPoints.Count > 0 ? entryPoints[0].ActionLine : null;
     }
 
-    public override bool IgnoreBlock => !this.IsTrade || base.IgnoreBlock;
+    public override bool IgnoreBlock => !IsTrade || base.IgnoreBlock;
 
     public override void Update()
     {
@@ -161,45 +161,45 @@ namespace PLVirtualMachine.FSM
 
     public override void OnAfterLoad()
     {
-      if (this.IsAfterLoaded)
+      if (IsAfterLoaded)
         return;
-      if (!VMBaseObjectUtility.CheckOrders<ISpeechReply>(this.exitPoints))
-        Logger.AddError(string.Format("Speech line id={0} has invalid replyes ordering", (object) this.BaseGuid));
+      if (!VMBaseObjectUtility.CheckOrders(exitPoints))
+        Logger.AddError(string.Format("Speech line id={0} has invalid replyes ordering", BaseGuid));
       base.OnAfterLoad();
-      this.BindAuthor();
-      for (int index = 0; index < this.Replies.Count; ++index)
+      BindAuthor();
+      for (int index = 0; index < Replies.Count; ++index)
       {
-        IActionLine actionLine = this.Replies[index].ActionLine;
+        IActionLine actionLine = Replies[index].ActionLine;
         if (actionLine != null)
-          this.MakeLocalContextElementsDependencys((IContextElement) actionLine);
+          MakeLocalContextElementsDependencys(actionLine);
       }
     }
 
     public override void Clear()
     {
       base.Clear();
-      if (this.exitPoints != null)
+      if (exitPoints != null)
       {
-        foreach (ISpeechReply exitPoint in this.exitPoints)
+        foreach (ISpeechReply exitPoint in exitPoints)
         {
           if (typeof (VMSpeechReply) == exitPoint.GetType())
             ((VMBaseObject) exitPoint).Clear();
         }
-        this.exitPoints.Clear();
-        this.exitPoints = (List<ISpeechReply>) null;
+        exitPoints.Clear();
+        exitPoints = null;
       }
-      this.text = (VMGameString) null;
-      this.speechParam = (VMParameter) null;
-      this.speechAuthor = (IVariable) null;
+      text = null;
+      speechParam = null;
+      speechAuthor = null;
     }
 
     protected void BindAuthor()
     {
-      this.Parent.Update();
-      this.speechAuthor = ((VMTalkingGraph) this.Parent).GetSpeechAuthorInfo(this.speechAuthorObjGuid);
-      if (this.speechAuthor != null)
+      Parent.Update();
+      speechAuthor = ((VMTalkingGraph) Parent).GetSpeechAuthorInfo(speechAuthorObjGuid);
+      if (speechAuthor != null)
         return;
-      Logger.AddError("Cannot bind speech author: unknown author object guid: " + this.speechAuthorObjGuid.ToString());
+      Logger.AddError("Cannot bind speech author: unknown author object guid: " + speechAuthorObjGuid);
     }
   }
 }

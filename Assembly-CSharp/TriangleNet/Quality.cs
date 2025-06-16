@@ -18,15 +18,15 @@ namespace TriangleNet
 
     public Quality(Mesh mesh)
     {
-      this.logger = SimpleLog.Instance;
-      this.badsubsegs = new Queue<BadSubseg>();
-      this.queue = new BadTriQueue();
+      logger = SimpleLog.Instance;
+      badsubsegs = new Queue<BadSubseg>();
+      queue = new BadTriQueue();
       this.mesh = mesh;
-      this.behavior = mesh.behavior;
-      this.newLocation = new NewLocation(mesh);
+      behavior = mesh.behavior;
+      newLocation = new NewLocation(mesh);
     }
 
-    public void AddBadSubseg(BadSubseg badseg) => this.badsubsegs.Enqueue(badseg);
+    public void AddBadSubseg(BadSubseg badseg) => badsubsegs.Enqueue(badseg);
 
     public bool CheckMesh()
     {
@@ -36,7 +36,7 @@ namespace TriangleNet
       bool noExact = Behavior.NoExact;
       Behavior.NoExact = false;
       int num = 0;
-      foreach (Triangle triangle in this.mesh.triangles.Values)
+      foreach (Triangle triangle in mesh.triangles.Values)
       {
         otri.triangle = triangle;
         for (otri.orient = 0; otri.orient < 3; ++otri.orient)
@@ -46,9 +46,9 @@ namespace TriangleNet
           if (otri.orient == 0)
           {
             Vertex pc = otri.Apex();
-            if (Primitives.CounterClockwise((Point) pa, (Point) pb, (Point) pc) <= 0.0)
+            if (Primitives.CounterClockwise(pa, pb, pc) <= 0.0)
             {
-              this.logger.Warning("Triangle is flat or inverted.", "Quality.CheckMesh()");
+              logger.Warning("Triangle is flat or inverted.", "Quality.CheckMesh()");
               ++num;
             }
           }
@@ -59,27 +59,27 @@ namespace TriangleNet
             if (otri.triangle != o2_2.triangle || otri.orient != o2_2.orient)
             {
               if (otri.triangle == o2_2.triangle)
-                this.logger.Warning("Asymmetric triangle-triangle bond: (Right triangle, wrong orientation)", "Quality.CheckMesh()");
+                logger.Warning("Asymmetric triangle-triangle bond: (Right triangle, wrong orientation)", "Quality.CheckMesh()");
               ++num;
             }
             Vertex vertex1 = o2_1.Org();
             Vertex vertex2 = o2_1.Dest();
-            if ((Point) pa != (Point) vertex2 || (Point) pb != (Point) vertex1)
+            if (pa != vertex2 || pb != vertex1)
             {
-              this.logger.Warning("Mismatched edge coordinates between two triangles.", "Quality.CheckMesh()");
+              logger.Warning("Mismatched edge coordinates between two triangles.", "Quality.CheckMesh()");
               ++num;
             }
           }
         }
       }
-      this.mesh.MakeVertexMap();
-      foreach (Vertex vertex in this.mesh.vertices.Values)
+      mesh.MakeVertexMap();
+      foreach (Vertex vertex in mesh.vertices.Values)
       {
         if (vertex.tri.triangle == null)
-          this.logger.Warning("Vertex (ID " + (object) vertex.id + ") not connected to mesh (duplicate input vertex?)", "Quality.CheckMesh()");
+          logger.Warning("Vertex (ID " + vertex.id + ") not connected to mesh (duplicate input vertex?)", "Quality.CheckMesh()");
       }
       if (num == 0)
-        this.logger.Info("Mesh topology appears to be consistent.");
+        logger.Info("Mesh topology appears to be consistent.");
       Behavior.NoExact = noExact;
       return num == 0;
     }
@@ -92,7 +92,7 @@ namespace TriangleNet
       bool noExact = Behavior.NoExact;
       Behavior.NoExact = false;
       int num = 0;
-      foreach (Triangle triangle in this.mesh.triangles.Values)
+      foreach (Triangle triangle in mesh.triangles.Values)
       {
         otri.triangle = triangle;
         for (otri.orient = 0; otri.orient < 3; ++otri.orient)
@@ -102,22 +102,22 @@ namespace TriangleNet
           Vertex pc = otri.Apex();
           otri.Sym(ref o2);
           Vertex pd = o2.Apex();
-          bool flag = o2.triangle != Mesh.dummytri && !Otri.IsDead(o2.triangle) && otri.triangle.id < o2.triangle.id && (Point) pa != (Point) this.mesh.infvertex1 && (Point) pa != (Point) this.mesh.infvertex2 && (Point) pa != (Point) this.mesh.infvertex3 && (Point) pb != (Point) this.mesh.infvertex1 && (Point) pb != (Point) this.mesh.infvertex2 && (Point) pb != (Point) this.mesh.infvertex3 && (Point) pc != (Point) this.mesh.infvertex1 && (Point) pc != (Point) this.mesh.infvertex2 && (Point) pc != (Point) this.mesh.infvertex3 && (Point) pd != (Point) this.mesh.infvertex1 && (Point) pd != (Point) this.mesh.infvertex2 && (Point) pd != (Point) this.mesh.infvertex3;
-          if (this.mesh.checksegments & flag)
+          bool flag = o2.triangle != Mesh.dummytri && !Otri.IsDead(o2.triangle) && otri.triangle.id < o2.triangle.id && pa != mesh.infvertex1 && pa != mesh.infvertex2 && pa != mesh.infvertex3 && pb != mesh.infvertex1 && pb != mesh.infvertex2 && pb != mesh.infvertex3 && pc != mesh.infvertex1 && pc != mesh.infvertex2 && pc != mesh.infvertex3 && pd != mesh.infvertex1 && pd != mesh.infvertex2 && pd != mesh.infvertex3;
+          if (mesh.checksegments & flag)
           {
             otri.SegPivot(ref os);
             if (os.seg != Mesh.dummysub)
               flag = false;
           }
-          if (flag && Primitives.NonRegular((Point) pa, (Point) pb, (Point) pc, (Point) pd) > 0.0)
+          if (flag && Primitives.NonRegular(pa, pb, pc, pd) > 0.0)
           {
-            this.logger.Warning(string.Format("Non-regular pair of triangles found (IDs {0}/{1}).", (object) otri.triangle.id, (object) o2.triangle.id), "Quality.CheckDelaunay()");
+            logger.Warning(string.Format("Non-regular pair of triangles found (IDs {0}/{1}).", otri.triangle.id, o2.triangle.id), "Quality.CheckDelaunay()");
             ++num;
           }
         }
       }
       if (num == 0)
-        this.logger.Info("Mesh is Delaunay.");
+        logger.Info("Mesh is Delaunay.");
       Behavior.NoExact = noExact;
       return num == 0;
     }
@@ -136,7 +136,7 @@ namespace TriangleNet
         ++num2;
         Vertex vertex3 = ot.Apex();
         double num3 = (vertex1.x - vertex3.x) * (vertex2.x - vertex3.x) + (vertex1.y - vertex3.y) * (vertex2.y - vertex3.y);
-        if (num3 < 0.0 && (this.behavior.ConformingDelaunay || num3 * num3 >= (2.0 * this.behavior.goodAngle - 1.0) * (2.0 * this.behavior.goodAngle - 1.0) * ((vertex1.x - vertex3.x) * (vertex1.x - vertex3.x) + (vertex1.y - vertex3.y) * (vertex1.y - vertex3.y)) * ((vertex2.x - vertex3.x) * (vertex2.x - vertex3.x) + (vertex2.y - vertex3.y) * (vertex2.y - vertex3.y))))
+        if (num3 < 0.0 && (behavior.ConformingDelaunay || num3 * num3 >= (2.0 * behavior.goodAngle - 1.0) * (2.0 * behavior.goodAngle - 1.0) * ((vertex1.x - vertex3.x) * (vertex1.x - vertex3.x) + (vertex1.y - vertex3.y) * (vertex1.y - vertex3.y)) * ((vertex2.x - vertex3.x) * (vertex2.x - vertex3.x) + (vertex2.y - vertex3.y) * (vertex2.y - vertex3.y))))
           num1 = 1;
       }
       testsubseg.Sym(ref o2);
@@ -146,10 +146,10 @@ namespace TriangleNet
         ++num2;
         Vertex vertex4 = ot.Apex();
         double num4 = (vertex1.x - vertex4.x) * (vertex2.x - vertex4.x) + (vertex1.y - vertex4.y) * (vertex2.y - vertex4.y);
-        if (num4 < 0.0 && (this.behavior.ConformingDelaunay || num4 * num4 >= (2.0 * this.behavior.goodAngle - 1.0) * (2.0 * this.behavior.goodAngle - 1.0) * ((vertex1.x - vertex4.x) * (vertex1.x - vertex4.x) + (vertex1.y - vertex4.y) * (vertex1.y - vertex4.y)) * ((vertex2.x - vertex4.x) * (vertex2.x - vertex4.x) + (vertex2.y - vertex4.y) * (vertex2.y - vertex4.y))))
+        if (num4 < 0.0 && (behavior.ConformingDelaunay || num4 * num4 >= (2.0 * behavior.goodAngle - 1.0) * (2.0 * behavior.goodAngle - 1.0) * ((vertex1.x - vertex4.x) * (vertex1.x - vertex4.x) + (vertex1.y - vertex4.y) * (vertex1.y - vertex4.y)) * ((vertex2.x - vertex4.x) * (vertex2.x - vertex4.x) + (vertex2.y - vertex4.y) * (vertex2.y - vertex4.y))))
           num1 += 2;
       }
-      if (num1 > 0 && (this.behavior.NoBisect == 0 || this.behavior.NoBisect == 1 && num2 == 2))
+      if (num1 > 0 && (behavior.NoBisect == 0 || behavior.NoBisect == 1 && num2 == 2))
       {
         BadSubseg badSubseg = new BadSubseg();
         if (num1 == 1)
@@ -164,7 +164,7 @@ namespace TriangleNet
           badSubseg.subsegorg = vertex2;
           badSubseg.subsegdest = vertex1;
         }
-        this.badsubsegs.Enqueue(badSubseg);
+        badsubsegs.Enqueue(badSubseg);
       }
       return num1;
     }
@@ -223,27 +223,27 @@ namespace TriangleNet
         vertex2 = enqorg;
         testtri.Lprev(ref o2_1);
       }
-      if (this.behavior.VarArea || this.behavior.fixedArea || this.behavior.Usertest)
+      if (behavior.VarArea || behavior.fixedArea || behavior.Usertest)
       {
         double num20 = 0.5 * (num1 * num4 - num2 * num3);
-        if (this.behavior.fixedArea && num20 > this.behavior.MaxArea)
+        if (behavior.fixedArea && num20 > behavior.MaxArea)
         {
-          this.queue.Enqueue(ref testtri, minedge, enqapex, enqorg, enqdest);
+          queue.Enqueue(ref testtri, minedge, enqapex, enqorg, enqdest);
           return;
         }
-        if (this.behavior.VarArea && num20 > testtri.triangle.area && testtri.triangle.area > 0.0)
+        if (behavior.VarArea && num20 > testtri.triangle.area && testtri.triangle.area > 0.0)
         {
-          this.queue.Enqueue(ref testtri, minedge, enqapex, enqorg, enqdest);
+          queue.Enqueue(ref testtri, minedge, enqapex, enqorg, enqdest);
           return;
         }
-        if (this.behavior.Usertest && this.userTest != null && this.userTest((Point) enqorg, (Point) enqdest, (Point) enqapex, num20))
+        if (behavior.Usertest && userTest != null && userTest(enqorg, enqdest, enqapex, num20))
         {
-          this.queue.Enqueue(ref testtri, minedge, enqapex, enqorg, enqdest);
+          queue.Enqueue(ref testtri, minedge, enqapex, enqorg, enqdest);
           return;
         }
       }
       double num21 = num13 <= num14 || num13 <= num15 ? (num14 <= num15 ? (num13 + num14 - num15) / (2.0 * Math.Sqrt(num13 * num14)) : (num13 + num15 - num14) / (2.0 * Math.Sqrt(num13 * num15))) : (num14 + num15 - num13) / (2.0 * Math.Sqrt(num14 * num15));
-      if (num16 <= this.behavior.goodAngle && (num21 >= this.behavior.maxGoodAngle || this.behavior.MaxAngle == 0.0))
+      if (num16 <= behavior.goodAngle && (num21 >= behavior.maxGoodAngle || behavior.MaxAngle == 0.0))
         return;
       if (vertex1.type == VertexType.SegmentVertex && vertex2.type == VertexType.SegmentVertex)
       {
@@ -267,12 +267,12 @@ namespace TriangleNet
           while (os.seg == Mesh.dummysub);
           Vertex vertex5 = os.SegOrg();
           Vertex vertex6 = os.SegDest();
-          Vertex vertex7 = (Vertex) null;
+          Vertex vertex7 = null;
           if (vertex4.x == vertex5.x && vertex4.y == vertex5.y)
             vertex7 = vertex4;
           else if (vertex3.x == vertex6.x && vertex3.y == vertex6.y)
             vertex7 = vertex3;
-          if ((Point) vertex7 != (Point) null)
+          if (vertex7 != null)
           {
             double num22 = (vertex1.x - vertex7.x) * (vertex1.x - vertex7.x) + (vertex1.y - vertex7.y) * (vertex1.y - vertex7.y);
             double num23 = (vertex2.x - vertex7.x) * (vertex2.x - vertex7.x) + (vertex2.y - vertex7.y) * (vertex2.y - vertex7.y);
@@ -281,17 +281,17 @@ namespace TriangleNet
           }
         }
       }
-      this.queue.Enqueue(ref testtri, minedge, enqapex, enqorg, enqdest);
+      queue.Enqueue(ref testtri, minedge, enqapex, enqorg, enqdest);
     }
 
     private void TallyEncs()
     {
       Osub testsubseg = new Osub();
       testsubseg.orient = 0;
-      foreach (Segment segment in this.mesh.subsegs.Values)
+      foreach (Segment segment in mesh.subsegs.Values)
       {
         testsubseg.seg = segment;
-        this.CheckSeg4Encroach(ref testsubseg);
+        CheckSeg4Encroach(ref testsubseg);
       }
     }
 
@@ -301,13 +301,13 @@ namespace TriangleNet
       Otri otri2 = new Otri();
       Osub os = new Osub();
       Osub osub = new Osub();
-      while (this.badsubsegs.Count > 0 && this.mesh.steinerleft != 0)
+      while (badsubsegs.Count > 0 && mesh.steinerleft != 0)
       {
-        BadSubseg badSubseg = this.badsubsegs.Dequeue();
+        BadSubseg badSubseg = badsubsegs.Dequeue();
         Osub encsubseg = badSubseg.encsubseg;
         Vertex pa = encsubseg.Org();
         Vertex pb = encsubseg.Dest();
-        if (!Osub.IsDead(encsubseg.seg) && (Point) pa == (Point) badSubseg.subsegorg && (Point) pb == (Point) badSubseg.subsegdest)
+        if (!Osub.IsDead(encsubseg.seg) && pa == badSubseg.subsegorg && pb == badSubseg.subsegdest)
         {
           encsubseg.TriPivot(ref otri1);
           otri1.Lnext(ref otri2);
@@ -316,12 +316,12 @@ namespace TriangleNet
           otri2.LnextSelf();
           otri2.SegPivot(ref os);
           bool flag2 = os.seg != Mesh.dummysub;
-          if (!this.behavior.ConformingDelaunay && !flag1 && !flag2)
+          if (!behavior.ConformingDelaunay && !flag1 && !flag2)
           {
             Vertex vertex = otri1.Apex();
             while (vertex.type == VertexType.FreeVertex && (pa.x - vertex.x) * (pb.x - vertex.x) + (pa.y - vertex.y) * (pb.y - vertex.y) < 0.0)
             {
-              this.mesh.DeleteVertex(ref otri2);
+              mesh.DeleteVertex(ref otri2);
               encsubseg.TriPivot(ref otri1);
               vertex = otri1.Apex();
               otri1.Lprev(ref otri2);
@@ -338,12 +338,12 @@ namespace TriangleNet
             otri2.SegPivot(ref os);
             bool flag4 = os.seg != Mesh.dummysub;
             flag1 |= flag4;
-            if (!this.behavior.ConformingDelaunay && !flag4 && !flag3)
+            if (!behavior.ConformingDelaunay && !flag4 && !flag3)
             {
               Vertex vertex = otri2.Org();
               while (vertex.type == VertexType.FreeVertex && (pa.x - vertex.x) * (pb.x - vertex.x) + (pa.y - vertex.y) * (pb.y - vertex.y) < 0.0)
               {
-                this.mesh.DeleteVertex(ref otri2);
+                mesh.DeleteVertex(ref otri2);
                 otri1.Sym(ref otri2);
                 vertex = otri2.Apex();
                 otri2.LprevSelf();
@@ -365,16 +365,16 @@ namespace TriangleNet
           }
           else
             num1 = 0.5;
-          Vertex vertex1 = new Vertex(pa.x + num1 * (pb.x - pa.x), pa.y + num1 * (pb.y - pa.y), encsubseg.Mark(), this.mesh.nextras);
+          Vertex vertex1 = new Vertex(pa.x + num1 * (pb.x - pa.x), pa.y + num1 * (pb.y - pa.y), encsubseg.Mark(), mesh.nextras);
           vertex1.type = VertexType.SegmentVertex;
-          vertex1.hash = this.mesh.hash_vtx++;
+          vertex1.hash = mesh.hash_vtx++;
           vertex1.id = vertex1.hash;
-          this.mesh.vertices.Add(vertex1.hash, vertex1);
-          for (int index = 0; index < this.mesh.nextras; ++index)
+          mesh.vertices.Add(vertex1.hash, vertex1);
+          for (int index = 0; index < mesh.nextras; ++index)
             vertex1.attributes[index] = pa.attributes[index] + num1 * (pb.attributes[index] - pa.attributes[index]);
           if (!Behavior.NoExact)
           {
-            double num4 = Primitives.CounterClockwise((Point) pa, (Point) pb, (Point) vertex1);
+            double num4 = Primitives.CounterClockwise(pa, pb, vertex1);
             double num5 = (pa.x - pb.x) * (pa.x - pb.x) + (pa.y - pb.y) * (pa.y - pb.y);
             if (num4 != 0.0 && num5 != 0.0)
             {
@@ -388,22 +388,22 @@ namespace TriangleNet
           }
           if (vertex1.x == pa.x && vertex1.y == pa.y || vertex1.x == pb.x && vertex1.y == pb.y)
           {
-            this.logger.Error("Ran out of precision: I attempted to split a segment to a smaller size than can be accommodated by the finite precision of floating point arithmetic.", "Quality.SplitEncSegs()");
+            logger.Error("Ran out of precision: I attempted to split a segment to a smaller size than can be accommodated by the finite precision of floating point arithmetic.", "Quality.SplitEncSegs()");
             throw new Exception("Ran out of precision");
           }
-          InsertVertexResult insertVertexResult = this.mesh.InsertVertex(vertex1, ref otri1, ref encsubseg, true, triflaws);
+          InsertVertexResult insertVertexResult = mesh.InsertVertex(vertex1, ref otri1, ref encsubseg, true, triflaws);
           if (insertVertexResult != InsertVertexResult.Successful && insertVertexResult != InsertVertexResult.Encroaching)
           {
-            this.logger.Error("Failure to split a segment.", "Quality.SplitEncSegs()");
+            logger.Error("Failure to split a segment.", "Quality.SplitEncSegs()");
             throw new Exception("Failure to split a segment.");
           }
-          if (this.mesh.steinerleft > 0)
-            --this.mesh.steinerleft;
-          this.CheckSeg4Encroach(ref encsubseg);
+          if (mesh.steinerleft > 0)
+            --mesh.steinerleft;
+          CheckSeg4Encroach(ref encsubseg);
           encsubseg.NextSelf();
-          this.CheckSeg4Encroach(ref encsubseg);
+          CheckSeg4Encroach(ref encsubseg);
         }
-        badSubseg.subsegorg = (Vertex) null;
+        badSubseg.subsegorg = null;
       }
     }
 
@@ -411,10 +411,10 @@ namespace TriangleNet
     {
       Otri testtri = new Otri();
       testtri.orient = 0;
-      foreach (Triangle triangle in this.mesh.triangles.Values)
+      foreach (Triangle triangle in mesh.triangles.Values)
       {
         testtri.triangle = triangle;
-        this.TestTriangle(ref testtri);
+        TestTriangle(ref testtri);
       }
     }
 
@@ -427,49 +427,48 @@ namespace TriangleNet
       Vertex torg = poortri.Org();
       Vertex tdest = poortri.Dest();
       Vertex tapex = poortri.Apex();
-      if (Otri.IsDead(poortri.triangle) || !((Point) torg == (Point) badtri.triangorg) || !((Point) tdest == (Point) badtri.triangdest) || !((Point) tapex == (Point) badtri.triangapex))
+      if (Otri.IsDead(poortri.triangle) || !(torg == badtri.triangorg) || !(tdest == badtri.triangdest) || !(tapex == badtri.triangapex))
         return;
       bool flag = false;
-      Point point = !this.behavior.fixedArea && !this.behavior.VarArea ? this.newLocation.FindLocation(torg, tdest, tapex, ref xi, ref eta, true, poortri) : Primitives.FindCircumcenter((Point) torg, (Point) tdest, (Point) tapex, ref xi, ref eta, this.behavior.offconstant);
+      Point point = !behavior.fixedArea && !behavior.VarArea ? newLocation.FindLocation(torg, tdest, tapex, ref xi, ref eta, true, poortri) : Primitives.FindCircumcenter(torg, tdest, tapex, ref xi, ref eta, behavior.offconstant);
       if (point.x == torg.x && point.y == torg.y || point.x == tdest.x && point.y == tdest.y || point.x == tapex.x && point.y == tapex.y)
       {
         if (Behavior.Verbose)
         {
-          this.logger.Warning("New vertex falls on existing vertex.", "Quality.SplitTriangle()");
+          logger.Warning("New vertex falls on existing vertex.", "Quality.SplitTriangle()");
           flag = true;
         }
       }
       else
       {
-        Vertex newvertex = new Vertex(point.x, point.y, 0, this.mesh.nextras);
+        Vertex newvertex = new Vertex(point.x, point.y, 0, mesh.nextras);
         newvertex.type = VertexType.FreeVertex;
-        for (int index = 0; index < this.mesh.nextras; ++index)
+        for (int index = 0; index < mesh.nextras; ++index)
           newvertex.attributes[index] = torg.attributes[index] + xi * (tdest.attributes[index] - torg.attributes[index]) + eta * (tapex.attributes[index] - torg.attributes[index]);
         if (eta < xi)
           poortri.LprevSelf();
         Osub splitseg = new Osub();
-        switch (this.mesh.InsertVertex(newvertex, ref poortri, ref splitseg, true, true))
+        switch (mesh.InsertVertex(newvertex, ref poortri, ref splitseg, true, true))
         {
           case InsertVertexResult.Successful:
-            newvertex.hash = this.mesh.hash_vtx++;
+            newvertex.hash = mesh.hash_vtx++;
             newvertex.id = newvertex.hash;
-            this.mesh.vertices.Add(newvertex.hash, newvertex);
-            if (this.mesh.steinerleft > 0)
+            mesh.vertices.Add(newvertex.hash, newvertex);
+            if (mesh.steinerleft > 0)
             {
-              --this.mesh.steinerleft;
-              goto case InsertVertexResult.Violating;
+              --mesh.steinerleft;
             }
-            else
-              goto case InsertVertexResult.Violating;
+
+            goto case InsertVertexResult.Violating;
           case InsertVertexResult.Encroaching:
-            this.mesh.UndoVertex();
+            mesh.UndoVertex();
             goto case InsertVertexResult.Violating;
           case InsertVertexResult.Violating:
             break;
           default:
             if (Behavior.Verbose)
             {
-              this.logger.Warning("New vertex falls on existing vertex.", "Quality.SplitTriangle()");
+              logger.Warning("New vertex falls on existing vertex.", "Quality.SplitTriangle()");
               flag = true;
             }
             goto case InsertVertexResult.Violating;
@@ -477,33 +476,33 @@ namespace TriangleNet
       }
       if (flag)
       {
-        this.logger.Error("The new vertex is at the circumcenter of triangle: This probably means that I am trying to refine triangles to a smaller size than can be accommodated by the finite precision of floating point arithmetic.", "Quality.SplitTriangle()");
+        logger.Error("The new vertex is at the circumcenter of triangle: This probably means that I am trying to refine triangles to a smaller size than can be accommodated by the finite precision of floating point arithmetic.", "Quality.SplitTriangle()");
         throw new Exception("The new vertex is at the circumcenter of triangle.");
       }
     }
 
     public void EnforceQuality()
     {
-      this.TallyEncs();
-      this.SplitEncSegs(false);
-      if (this.behavior.MinAngle > 0.0 || this.behavior.VarArea || this.behavior.fixedArea || this.behavior.Usertest)
+      TallyEncs();
+      SplitEncSegs(false);
+      if (behavior.MinAngle > 0.0 || behavior.VarArea || behavior.fixedArea || behavior.Usertest)
       {
-        this.TallyFaces();
-        this.mesh.checkquality = true;
-        while (this.queue.Count > 0 && this.mesh.steinerleft != 0)
+        TallyFaces();
+        mesh.checkquality = true;
+        while (queue.Count > 0 && mesh.steinerleft != 0)
         {
-          BadTriangle badtri = this.queue.Dequeue();
-          this.SplitTriangle(badtri);
-          if (this.badsubsegs.Count > 0)
+          BadTriangle badtri = queue.Dequeue();
+          SplitTriangle(badtri);
+          if (badsubsegs.Count > 0)
           {
-            this.queue.Enqueue(badtri);
-            this.SplitEncSegs(true);
+            queue.Enqueue(badtri);
+            SplitEncSegs(true);
           }
         }
       }
-      if (!Behavior.Verbose || !this.behavior.ConformingDelaunay || this.badsubsegs.Count <= 0 || this.mesh.steinerleft != 0)
+      if (!Behavior.Verbose || !behavior.ConformingDelaunay || badsubsegs.Count <= 0 || mesh.steinerleft != 0)
         return;
-      this.logger.Warning("I ran out of Steiner points, but the mesh has encroached subsegments, and therefore might not be truly Delaunay. If the Delaunay property is important to you, try increasing the number of Steiner points.", "Quality.EnforceQuality()");
+      logger.Warning("I ran out of Steiner points, but the mesh has encroached subsegments, and therefore might not be truly Delaunay. If the Delaunay property is important to you, try increasing the number of Steiner points.", "Quality.EnforceQuality()");
     }
   }
 }

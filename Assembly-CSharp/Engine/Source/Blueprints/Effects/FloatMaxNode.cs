@@ -1,7 +1,6 @@
 ﻿using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
-using UnityEngine;
 
 namespace Engine.Source.Blueprints.Effects
 {
@@ -14,6 +13,6 @@ namespace Engine.Source.Blueprints.Effects
     private ValueInput<float> bInput;
 
     [Port("Value")]
-    private float Value() => Mathf.Max(this.aInput.value, this.bInput.value);
+    private float Value() => Mathf.Max(aInput.value, bInput.value);
   }
 }

@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
-using UnityEngine;
 
 public class BoneDeformMemento
 {
-  private List<BoneDeformMemento.DeformData> BoneDeformation = new List<BoneDeformMemento.DeformData>();
+  private List<DeformData> BoneDeformation = new List<DeformData>();
 
   public void AccumulateDeform(
     Transform theBone,
@@ -14,7 +13,7 @@ public class BoneDeformMemento
     float ry,
     float rz)
   {
-    BoneDeformMemento.DeformData bone = this.FindBone(theBone);
+    DeformData bone = FindBone(theBone);
     bone.tx += tx;
     bone.ty += ty;
     bone.tz += tz;
@@ -25,7 +24,7 @@ public class BoneDeformMemento
 
   public void ResetBones()
   {
-    foreach (BoneDeformMemento.DeformData deformData in this.BoneDeformation)
+    foreach (DeformData deformData in BoneDeformation)
     {
       Vector3 localPosition = deformData.bone.localPosition;
       localPosition.x -= deformData.tx;
@@ -41,27 +40,27 @@ public class BoneDeformMemento
     }
   }
 
-  private BoneDeformMemento.DeformData FindBone(Transform theBone)
+  private DeformData FindBone(Transform theBone)
   {
-    foreach (BoneDeformMemento.DeformData bone in this.BoneDeformation)
+    foreach (DeformData bone in BoneDeformation)
     {
       if ((Object) bone.bone == (Object) theBone)
         return bone;
     }
-    BoneDeformMemento.DeformData bone1 = new BoneDeformMemento.DeformData();
+    DeformData bone1 = new DeformData();
     bone1.bone = theBone;
-    this.BoneDeformation.Add(bone1);
+    BoneDeformation.Add(bone1);
     return bone1;
   }
 
   public class DeformData
   {
     public Transform bone = (Transform) null;
-    public float tx = 0.0f;
-    public float ty = 0.0f;
-    public float tz = 0.0f;
-    public float rx = 0.0f;
-    public float ry = 0.0f;
-    public float rz = 0.0f;
+    public float tx;
+    public float ty;
+    public float tz;
+    public float rx;
+    public float ry;
+    public float rz;
   }
 }

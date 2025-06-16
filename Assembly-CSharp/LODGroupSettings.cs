@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-[CreateAssetMenu(menuName = "Data/LOD Group Settings")]
+﻿[CreateAssetMenu(menuName = "Data/LOD Group Settings")]
 public class LODGroupSettings : ScriptableObject
 {
   [SerializeField]
@@ -14,17 +12,17 @@ public class LODGroupSettings : ScriptableObject
 
   public void Apply(LODGroup lodGroup)
   {
-    lodGroup.fadeMode = this.crossFade ? LODFadeMode.CrossFade : LODFadeMode.None;
-    lodGroup.animateCrossFading = this.animateCrossFading;
+    lodGroup.fadeMode = crossFade ? LODFadeMode.CrossFade : LODFadeMode.None;
+    lodGroup.animateCrossFading = animateCrossFading;
     LOD[] loDs = lodGroup.GetLODs();
     for (int index = 0; index < loDs.Length; ++index)
     {
-      if (index < this.thresholds.Length)
-        loDs[index].screenRelativeTransitionHeight = this.thresholds[index];
-      else if ((double) loDs[index].screenRelativeTransitionHeight >= (double) this.thresholds[this.thresholds.Length - 1])
+      if (index < thresholds.Length)
+        loDs[index].screenRelativeTransitionHeight = thresholds[index];
+      else if ((double) loDs[index].screenRelativeTransitionHeight >= thresholds[thresholds.Length - 1])
         loDs[index].screenRelativeTransitionHeight = loDs[index - 1].screenRelativeTransitionHeight * 0.5f;
-      if (index < this.fadeTransitionWidths.Length)
-        loDs[index].fadeTransitionWidth = this.fadeTransitionWidths[index];
+      if (index < fadeTransitionWidths.Length)
+        loDs[index].fadeTransitionWidth = fadeTransitionWidths[index];
     }
     lodGroup.SetLODs(loDs);
   }

@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace RootMotion.FinalIK
+﻿namespace RootMotion.FinalIK
 {
   [HelpURL("http://www.root-motion.com/finalikdox/html/page12.html")]
   [AddComponentMenu("Scripts/RootMotion.FinalIK/Rotation Limits/Rotation Limit Hinge")]
@@ -40,25 +38,25 @@ namespace RootMotion.FinalIK
 
     protected override Quaternion LimitRotation(Quaternion rotation)
     {
-      this.lastRotation = this.LimitHinge(rotation);
-      return this.lastRotation;
+      lastRotation = LimitHinge(rotation);
+      return lastRotation;
     }
 
     private Quaternion LimitHinge(Quaternion rotation)
     {
-      if ((double) this.min == 0.0 && (double) this.max == 0.0 && this.useLimits)
-        return Quaternion.AngleAxis(0.0f, this.axis);
-      Quaternion quaternion = RotationLimit.Limit1DOF(rotation, this.axis);
-      if (!this.useLimits)
+      if (min == 0.0 && max == 0.0 && useLimits)
+        return Quaternion.AngleAxis(0.0f, axis);
+      Quaternion quaternion = Limit1DOF(rotation, axis);
+      if (!useLimits)
         return quaternion;
-      Quaternion b = quaternion * Quaternion.Inverse(this.lastRotation);
+      Quaternion b = quaternion * Quaternion.Inverse(lastRotation);
       float num = Quaternion.Angle(Quaternion.identity, b);
-      Vector3 lhs = new Vector3(this.axis.z, this.axis.x, this.axis.y);
-      Vector3 rhs = Vector3.Cross(lhs, this.axis);
+      Vector3 lhs = new Vector3(axis.z, axis.x, axis.y);
+      Vector3 rhs = Vector3.Cross(lhs, axis);
       if ((double) Vector3.Dot(b * lhs, rhs) > 0.0)
         num = -num;
-      this.lastAngle = Mathf.Clamp(this.lastAngle + num, this.min, this.max);
-      return Quaternion.AngleAxis(this.lastAngle, this.axis);
+      lastAngle = Mathf.Clamp(lastAngle + num, min, max);
+      return Quaternion.AngleAxis(lastAngle, axis);
     }
   }
 }

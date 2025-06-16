@@ -1,9 +1,7 @@
-﻿using UnityEngine;
-
-public class AttachedGameObject : MonoBehaviour
+﻿public class AttachedGameObject : MonoBehaviour
 {
   [SerializeField]
   private GameObject attached;
 
-  public GameObject Attached => this.attached;
+  public GameObject Attached => attached;
 }

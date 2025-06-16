@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEngine;
 
 public class CutsceneMecanimEvents : MonoBehaviour
 {
@@ -7,7 +6,7 @@ public class CutsceneMecanimEvents : MonoBehaviour
 
   public void AnimationEnd(string name)
   {
-    Action<string> onEndAnimationEnd = this.OnEndAnimationEnd;
+    Action<string> onEndAnimationEnd = OnEndAnimationEnd;
     if (onEndAnimationEnd == null)
       return;
     onEndAnimationEnd(name);

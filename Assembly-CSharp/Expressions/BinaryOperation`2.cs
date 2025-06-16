@@ -8,15 +8,15 @@ namespace Expressions
     where T : struct
     where TResult : struct
   {
-    [DataReadProxy(MemberEnum.None, Name = "Left")]
-    [DataWriteProxy(MemberEnum.None, Name = "Left")]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy(Name = "Left")]
+    [DataWriteProxy(Name = "Left")]
+    [CopyableProxy]
     [Inspected]
     [Inspected(Name = "a", Mutable = true, Mode = ExecuteMode.Edit)]
     protected IValue<T> a;
-    [DataReadProxy(MemberEnum.None, Name = "Right")]
-    [DataWriteProxy(MemberEnum.None, Name = "Right")]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy(Name = "Right")]
+    [DataWriteProxy(Name = "Right")]
+    [CopyableProxy()]
     [Inspected]
     [Inspected(Name = "b", Mutable = true, Mode = ExecuteMode.Edit)]
     protected IValue<T> b;
@@ -27,14 +27,14 @@ namespace Expressions
 
     public TResult GetValue(IEffect context)
     {
-      return this.a != null && this.b != null ? this.Compute(this.a.GetValue(context), this.b.GetValue(context)) : default (TResult);
+      return a != null && b != null ? Compute(a.GetValue(context), b.GetValue(context)) : default (TResult);
     }
 
     public virtual string ValueView
     {
       get
       {
-        return "(" + (this.a != null ? this.a.ValueView : "null") + " " + this.OperatorView() + " " + (this.b != null ? this.b.ValueView : "null") + ")";
+        return "(" + (a != null ? a.ValueView : "null") + " " + OperatorView() + " " + (b != null ? b.ValueView : "null") + ")";
       }
     }
 
@@ -42,7 +42,7 @@ namespace Expressions
     {
       get
       {
-        return "(" + (this.a != null ? this.a.TypeView : "null") + " " + this.OperatorView() + " " + (this.b != null ? this.b.TypeView : "null") + ")";
+        return "(" + (a != null ? a.TypeView : "null") + " " + OperatorView() + " " + (b != null ? b.TypeView : "null") + ")";
       }
     }
   }

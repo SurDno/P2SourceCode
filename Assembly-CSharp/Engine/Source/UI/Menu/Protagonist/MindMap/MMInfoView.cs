@@ -1,7 +1,5 @@
 ﻿using Engine.Common.Services;
 using Engine.Impl.Services;
-using UnityEngine;
-using UnityEngine.UI;
 
 namespace Engine.Source.UI.Menu.Protagonist.MindMap
 {
@@ -17,7 +15,7 @@ namespace Engine.Source.UI.Menu.Protagonist.MindMap
 
     public void Hide()
     {
-      this.nodeView = (MMNodeView) null;
+      nodeView = null;
       this.gameObject.SetActive(false);
       this.CancelInvoke("MarkNodeDiscovered");
     }
@@ -26,30 +24,30 @@ namespace Engine.Source.UI.Menu.Protagonist.MindMap
     {
       if (!((Object) nodeView == (Object) this.nodeView))
         return;
-      this.Hide();
+      Hide();
     }
 
     public void Show(MMNodeView nodeView, bool hasMapItem)
     {
       LocalizationService service = ServiceLocator.GetService<LocalizationService>();
       this.nodeView = nodeView;
-      this.textView.text = service.GetText(nodeView.Node.Content.Description);
-      this.mapCallTooltip.SetActive(hasMapItem);
+      textView.text = service.GetText(nodeView.Node.Content.Description);
+      mapCallTooltip.SetActive(hasMapItem);
       this.gameObject.SetActive(true);
-      this.UpdatePosition();
-      this.Invoke("MarkNodeDiscovered", this.discoveredTime);
+      UpdatePosition();
+      this.Invoke("MarkNodeDiscovered", discoveredTime);
     }
 
-    private void LateUpdate() => this.UpdatePosition();
+    private void LateUpdate() => UpdatePosition();
 
     private void UpdatePosition()
     {
-      if ((Object) this.nodeView == (Object) null)
+      if ((Object) nodeView == (Object) null)
         return;
       RectTransform transform1 = (RectTransform) this.transform;
       RectTransform transform2 = (RectTransform) this.GetComponentInParent<Canvas>().transform;
       Vector2 vector2_1 = new Vector2(transform2.sizeDelta.x, transform2.sizeDelta.y);
-      Vector2 vector2_2 = (Vector2) this.nodeView.transform.TransformPoint(Vector3.zero);
+      Vector2 vector2_2 = (Vector2) nodeView.transform.TransformPoint(Vector3.zero);
       vector2_2.x = Mathf.Round(vector2_2.x);
       vector2_2.y = Mathf.Round(vector2_2.y);
       vector2_2.x /= transform2.localScale.x;
@@ -58,6 +56,6 @@ namespace Engine.Source.UI.Menu.Protagonist.MindMap
       transform1.anchoredPosition = vector2_2;
     }
 
-    private void MarkNodeDiscovered() => this.nodeView.MarkNodeDiscovered();
+    private void MarkNodeDiscovered() => nodeView.MarkNodeDiscovered();
   }
 }

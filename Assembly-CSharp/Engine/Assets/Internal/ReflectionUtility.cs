@@ -1,64 +1,63 @@
 ﻿using System;
 using System.Reflection;
-using UnityEngine;
 
 namespace Engine.Assets.Internal
 {
   public static class ReflectionUtility
   {
-    public static void SetProperty(System.Type type, object target, string name, object value)
+    public static void SetProperty(Type type, object target, string name, object value)
     {
-      PropertyInfo property = ReflectionUtility.FindProperty(type, name);
-      if (property != (PropertyInfo) null)
+      PropertyInfo property = FindProperty(type, name);
+      if (property != null)
         property.SetValue(target, value, new object[0]);
       else
-        throw new MissingMemberException(MethodBase.GetCurrentMethod().ToString() + " : " + (object) type + " : " + name);
+        throw new MissingMemberException(MethodBase.GetCurrentMethod() + " : " + type + " : " + name);
     }
 
-    public static object GetProperty(System.Type type, object target, string name)
+    public static object GetProperty(Type type, object target, string name)
     {
-      PropertyInfo property = ReflectionUtility.FindProperty(type, name);
-      return property != (PropertyInfo) null ? property.GetValue(target, new object[0]) : throw new MissingMemberException(MethodBase.GetCurrentMethod().ToString() + " : " + (object) type + " : " + name);
+      PropertyInfo property = FindProperty(type, name);
+      return property != null ? property.GetValue(target, new object[0]) : throw new MissingMemberException(MethodBase.GetCurrentMethod() + " : " + type + " : " + name);
     }
 
-    public static PropertyInfo FindProperty(System.Type type, string name)
+    public static PropertyInfo FindProperty(Type type, string name)
     {
       for (; type != typeof (object); type = type.BaseType)
       {
         PropertyInfo property = type.GetProperty(name, BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
-        if (property != (PropertyInfo) null)
+        if (property != null)
           return property;
       }
-      return (PropertyInfo) null;
+      return null;
     }
 
-    public static FieldInfo FindField(System.Type type, string name)
+    public static FieldInfo FindField(Type type, string name)
     {
       for (; type != typeof (object); type = type.BaseType)
       {
         FieldInfo field = type.GetField(name, BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
-        if (field != (FieldInfo) null)
+        if (field != null)
           return field;
       }
-      return (FieldInfo) null;
+      return null;
     }
 
-    public static void SetField(System.Type type, object target, string name, object value)
+    public static void SetField(Type type, object target, string name, object value)
     {
-      FieldInfo field = ReflectionUtility.FindField(type, name);
-      if (field != (FieldInfo) null)
+      FieldInfo field = FindField(type, name);
+      if (field != null)
         field.SetValue(target, value);
       else
-        throw new MissingMemberException(MethodBase.GetCurrentMethod().ToString() + " : " + (object) type + " : " + name);
+        throw new MissingMemberException(MethodBase.GetCurrentMethod() + " : " + type + " : " + name);
     }
 
-    public static object GetField(System.Type type, object target, string name)
+    public static object GetField(Type type, object target, string name)
     {
-      FieldInfo field = ReflectionUtility.FindField(type, name);
-      return field != (FieldInfo) null ? field.GetValue(target) : throw new MissingMemberException(MethodBase.GetCurrentMethod().ToString() + " : " + (object) type + " : " + name);
+      FieldInfo field = FindField(type, name);
+      return field != null ? field.GetValue(target) : throw new MissingMemberException(MethodBase.GetCurrentMethod() + " : " + type + " : " + name);
     }
 
-    public static MethodInfo FindMethod(System.Type type, string name, params System.Type[] types)
+    public static MethodInfo FindMethod(Type type, string name, params Type[] types)
     {
       for (; type != typeof (object); type = type.BaseType)
       {
@@ -84,68 +83,68 @@ namespace Engine.Assets.Internal
           }
         }
       }
-      return (MethodInfo) null;
+      return null;
     }
 
-    public static object MethodInvoke(System.Type type, object target, string name, params object[] args)
+    public static object MethodInvoke(Type type, object target, string name, params object[] args)
     {
-      System.Type[] typeArray = new System.Type[args.Length];
+      Type[] typeArray = new Type[args.Length];
       for (int index = 0; index < typeArray.Length; ++index)
         typeArray[index] = args[index].GetType();
-      MethodInfo method = ReflectionUtility.FindMethod(type, name, typeArray);
-      if (method != (MethodInfo) null)
+      MethodInfo method = FindMethod(type, name, typeArray);
+      if (method != null)
         return method.Invoke(target, args);
-      throw new MissingMemberException(MethodBase.GetCurrentMethod().ToString() + " : " + (object) type + " : " + name);
+      throw new MissingMemberException(MethodBase.GetCurrentMethod() + " : " + type + " : " + name);
     }
 
-    public static System.Type GetValueType(this MemberInfo member)
+    public static Type GetValueType(this MemberInfo member)
     {
       FieldInfo fieldInfo = member as FieldInfo;
-      if (fieldInfo != (FieldInfo) null)
+      if (fieldInfo != null)
         return fieldInfo.FieldType;
       PropertyInfo propertyInfo = member as PropertyInfo;
-      if (propertyInfo != (PropertyInfo) null)
+      if (propertyInfo != null)
         return propertyInfo.PropertyType;
-      Debug.LogError((object) ("Error get value type from : " + (object) member.GetType()));
-      return (System.Type) null;
+      Debug.LogError((object) ("Error get value type from : " + member.GetType()));
+      return null;
     }
 
     public static object GetValue(this MemberInfo member, object target)
     {
       FieldInfo fieldInfo = member as FieldInfo;
-      if (fieldInfo != (FieldInfo) null)
+      if (fieldInfo != null)
         return fieldInfo.GetValue(target);
       PropertyInfo propertyInfo = member as PropertyInfo;
-      if (propertyInfo != (PropertyInfo) null)
+      if (propertyInfo != null)
       {
         MethodInfo getMethod = propertyInfo.GetGetMethod(true);
-        if (getMethod != (MethodInfo) null)
-          return getMethod.Invoke(target, (object[]) null);
+        if (getMethod != null)
+          return getMethod.Invoke(target, null);
       }
-      Debug.LogError((object) ("Error get value from : " + (object) member.GetType() + " : " + (target != null ? target : (object) "null")));
-      return (object) null;
+      Debug.LogError((object) ("Error get value from : " + member.GetType() + " : " + (target != null ? target : "null")));
+      return null;
     }
 
     public static void SetValue(this MemberInfo member, object target, object value)
     {
       FieldInfo fieldInfo = member as FieldInfo;
-      if (fieldInfo != (FieldInfo) null)
+      if (fieldInfo != null)
       {
         fieldInfo.SetValue(target, value);
       }
       else
       {
         PropertyInfo propertyInfo = member as PropertyInfo;
-        if (propertyInfo != (PropertyInfo) null)
+        if (propertyInfo != null)
         {
           MethodInfo setMethod = propertyInfo.GetSetMethod(true);
-          if (setMethod != (MethodInfo) null)
+          if (setMethod != null)
           {
             setMethod.Invoke(target, new object[1]{ value });
             return;
           }
         }
-        Debug.LogError((object) ("Error Set value from : " + (object) member.GetType() + " : " + (target != null ? target : (object) "null")));
+        Debug.LogError((object) ("Error Set value from : " + member.GetType() + " : " + (target != null ? target : "null")));
       }
     }
   }

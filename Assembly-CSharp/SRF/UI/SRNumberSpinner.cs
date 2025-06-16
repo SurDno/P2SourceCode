@@ -1,7 +1,4 @@
 ﻿using System;
-using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.UI;
 
 namespace SRF.UI
 {
@@ -65,12 +62,12 @@ namespace SRF.UI
       else
       {
         eventData.Use();
-        this._dragStartAmount = double.Parse(this.text);
-        this._currentValue = this._dragStartAmount;
+        _dragStartAmount = double.Parse(this.text);
+        _currentValue = _dragStartAmount;
         float val1 = 1f;
         if (this.contentType == InputField.ContentType.IntegerNumber)
           val1 *= 10f;
-        this._dragStep = Math.Max((double) val1, this._dragStartAmount * 0.05000000074505806);
+        _dragStep = Math.Max(val1, _dragStartAmount * 0.05000000074505806);
         if (!this.isFocused)
           return;
         this.DeactivateInputField();
@@ -82,16 +79,16 @@ namespace SRF.UI
       if (!this.interactable)
         return;
       float x = eventData.delta.x;
-      this._currentValue += Math.Abs(this._dragStep) * (double) x * (double) this.DragSensitivity;
-      this._currentValue = Math.Round(this._currentValue, 2);
-      if (this._currentValue > this.MaxValue)
-        this._currentValue = this.MaxValue;
-      if (this._currentValue < this.MinValue)
-        this._currentValue = this.MinValue;
+      _currentValue += Math.Abs(_dragStep) * x * DragSensitivity;
+      _currentValue = Math.Round(_currentValue, 2);
+      if (_currentValue > MaxValue)
+        _currentValue = MaxValue;
+      if (_currentValue < MinValue)
+        _currentValue = MinValue;
       if (this.contentType == InputField.ContentType.IntegerNumber)
-        this.text = ((int) Math.Round(this._currentValue)).ToString();
+        this.text = ((int) Math.Round(_currentValue)).ToString();
       else
-        this.text = this._currentValue.ToString();
+        this.text = _currentValue.ToString();
     }
 
     public override void OnEndDrag(PointerEventData eventData)
@@ -99,7 +96,7 @@ namespace SRF.UI
       if (!this.interactable)
         return;
       eventData.Use();
-      if (this._dragStartAmount == this._currentValue)
+      if (_dragStartAmount == _currentValue)
         return;
       this.DeactivateInputField();
       this.SendOnSubmit();

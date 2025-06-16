@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace Cinemachine
+﻿namespace Cinemachine
 {
   [DocumentationSorting(23f, DocumentationSortingAttribute.Level.UserRef)]
   [AddComponentMenu("")]
@@ -19,26 +17,26 @@ namespace Cinemachine
 
     private void OnValidate()
     {
-      this.m_HorizontalAxis.Validate();
-      this.m_VerticalAxis.Validate();
+      m_HorizontalAxis.Validate();
+      m_VerticalAxis.Validate();
     }
 
     private void OnEnable()
     {
-      this.m_HorizontalAxis.SetThresholds(-180f, 180f, true);
-      this.m_VerticalAxis.SetThresholds(-90f, 90f, false);
+      m_HorizontalAxis.SetThresholds(-180f, 180f, true);
+      m_VerticalAxis.SetThresholds(-90f, 90f, false);
     }
 
     public override void MutateCameraState(ref CameraState curState, float deltaTime)
     {
-      if (!this.IsValid)
+      if (!IsValid)
         return;
-      if ((double) deltaTime >= 0.0 || CinemachineCore.Instance.IsLive((ICinemachineCamera) this.VirtualCamera))
+      if (deltaTime >= 0.0 || CinemachineCore.Instance.IsLive(VirtualCamera))
       {
-        this.m_HorizontalAxis.Update(deltaTime);
-        this.m_VerticalAxis.Update(deltaTime);
+        m_HorizontalAxis.Update(deltaTime);
+        m_VerticalAxis.Update(deltaTime);
       }
-      Quaternion quaternion = Quaternion.Euler(this.m_VerticalAxis.Value, this.m_HorizontalAxis.Value, 0.0f) * Quaternion.FromToRotation(Vector3.up, curState.ReferenceUp);
+      Quaternion quaternion = Quaternion.Euler(m_VerticalAxis.Value, m_HorizontalAxis.Value, 0.0f) * Quaternion.FromToRotation(Vector3.up, curState.ReferenceUp);
       curState.OrientationCorrection *= quaternion;
     }
   }

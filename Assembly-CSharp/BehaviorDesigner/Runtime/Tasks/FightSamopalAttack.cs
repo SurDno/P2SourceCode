@@ -1,10 +1,10 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons;
 using Engine.Common.Commons.Converters;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
-using UnityEngine;
 
 namespace BehaviorDesigner.Runtime.Tasks
 {
@@ -16,75 +16,75 @@ namespace BehaviorDesigner.Runtime.Tasks
   [FactoryProxy(typeof (FightSamopalAttack))]
   public class FightSamopalAttack : FightBase, IStub, ISerializeDataWrite, ISerializeDataRead
   {
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [SerializeField]
     private float prepareTime;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy()]
     [SerializeField]
     private float aimingTime;
-    private bool shotInited = false;
-    private bool shotDone = false;
+    private bool shotInited;
+    private bool shotDone;
     private float prepareTimeLeft;
     private float aimingTimeLeft;
 
     public override void OnStart()
     {
       base.OnStart();
-      this.prepareTimeLeft = this.prepareTime;
-      this.shotInited = false;
-      this.shotDone = false;
+      prepareTimeLeft = prepareTime;
+      shotInited = false;
+      shotDone = false;
     }
 
     public override TaskStatus DoUpdate(float deltaTime)
     {
-      if ((UnityEngine.Object) this.owner.Enemy == (UnityEngine.Object) null)
+      if ((UnityEngine.Object) owner.Enemy == (UnityEngine.Object) null)
         return TaskStatus.Failure;
-      if (this.shotDone && !this.owner.IsAttacking)
+      if (shotDone && !owner.IsAttacking)
         return TaskStatus.Success;
-      if (this.owner.IsReacting)
+      if (owner.IsReacting)
         return TaskStatus.Running;
-      if (!this.owner.IsPushing)
-        this.prepareTimeLeft -= deltaTime;
-      if (this.shotInited)
-        this.aimingTimeLeft -= deltaTime;
-      if (!this.shotInited && (double) this.prepareTimeLeft <= 0.0 && !this.owner.IsAttacking && !this.owner.IsPushing && !this.owner.IsReacting && !this.owner.IsQuickBlock)
+      if (!owner.IsPushing)
+        prepareTimeLeft -= deltaTime;
+      if (shotInited)
+        aimingTimeLeft -= deltaTime;
+      if (!shotInited && prepareTimeLeft <= 0.0 && !owner.IsAttacking && !owner.IsPushing && !owner.IsReacting && !owner.IsQuickBlock)
       {
-        this.owner.TriggerAction(WeaponActionEnum.SamopalAim);
-        this.shotInited = true;
-        this.aimingTimeLeft = this.aimingTime;
+        owner.TriggerAction(WeaponActionEnum.SamopalAim);
+        shotInited = true;
+        aimingTimeLeft = aimingTime;
       }
-      if (this.shotInited && !this.shotDone && (double) this.aimingTimeLeft < 0.0)
+      if (shotInited && !shotDone && aimingTimeLeft < 0.0)
       {
-        this.owner.TriggerAction(WeaponActionEnum.SamopalFire);
-        this.shotDone = true;
+        owner.TriggerAction(WeaponActionEnum.SamopalFire);
+        shotDone = true;
       }
       return TaskStatus.Running;
     }
 
     public new void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.WriteSerialize<NodeData>(writer, "NodeData", this.nodeData);
-      DefaultDataWriteUtility.Write(writer, "Id", this.id);
-      DefaultDataWriteUtility.Write(writer, "FriendlyName", this.friendlyName);
-      DefaultDataWriteUtility.Write(writer, "Instant", this.instant);
-      DefaultDataWriteUtility.Write(writer, "Disabled", this.disabled);
-      DefaultDataWriteUtility.Write(writer, "PrepareTime", this.prepareTime);
-      DefaultDataWriteUtility.Write(writer, "AimingTime", this.aimingTime);
+      DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
+      DefaultDataWriteUtility.Write(writer, "Id", id);
+      DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
+      DefaultDataWriteUtility.Write(writer, "Instant", instant);
+      DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
+      DefaultDataWriteUtility.Write(writer, "PrepareTime", prepareTime);
+      DefaultDataWriteUtility.Write(writer, "AimingTime", aimingTime);
     }
 
-    public new void DataRead(IDataReader reader, System.Type type)
+    public new void DataRead(IDataReader reader, Type type)
     {
-      this.nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
-      this.id = DefaultDataReadUtility.Read(reader, "Id", this.id);
-      this.friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", this.friendlyName);
-      this.instant = DefaultDataReadUtility.Read(reader, "Instant", this.instant);
-      this.disabled = DefaultDataReadUtility.Read(reader, "Disabled", this.disabled);
-      this.prepareTime = DefaultDataReadUtility.Read(reader, "PrepareTime", this.prepareTime);
-      this.aimingTime = DefaultDataReadUtility.Read(reader, "AimingTime", this.aimingTime);
+      nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
+      id = DefaultDataReadUtility.Read(reader, "Id", id);
+      friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
+      instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
+      disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
+      prepareTime = DefaultDataReadUtility.Read(reader, "PrepareTime", prepareTime);
+      aimingTime = DefaultDataReadUtility.Read(reader, "AimingTime", aimingTime);
     }
   }
 }

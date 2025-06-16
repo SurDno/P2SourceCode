@@ -1,12 +1,11 @@
-﻿using Engine.Common;
+﻿using System.Collections.Generic;
+using Engine.Common;
 using Engine.Common.Commons;
 using Engine.Common.Components.Parameters;
 using Engine.Common.Components.Regions;
 using Engine.Common.MindMap;
 using Engine.Common.Types;
 using Engine.Source.Components.Maps;
-using System.Collections.Generic;
-using UnityEngine;
 
 public interface IMapItem
 {

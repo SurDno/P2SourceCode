@@ -16,32 +16,32 @@ namespace Engine.Source.Commons.Abilities.Controllers
     public void Initialise(AbilityItem abilityItem)
     {
       this.abilityItem = abilityItem;
-      this.controller = this.abilityItem.Ability.Owner.GetComponent<ParametersComponent>();
-      if (this.controller == null)
+      controller = this.abilityItem.Ability.Owner.GetComponent<ParametersComponent>();
+      if (controller == null)
         return;
-      this.parameter = this.controller.GetByName<bool>(ParameterNameEnum.Sleep);
-      if (this.parameter != null)
+      parameter = controller.GetByName<bool>(ParameterNameEnum.Sleep);
+      if (parameter != null)
       {
-        this.parameter.AddListener((IChangeParameterListener) this);
-        this.OnParameterChanged((IParameter) this.parameter);
+        parameter.AddListener(this);
+        OnParameterChanged(parameter);
       }
     }
 
     public void OnParameterChanged(IParameter parameter)
     {
-      this.abilityItem.Active = ((IParameter<bool>) parameter).Value;
+      abilityItem.Active = ((IParameter<bool>) parameter).Value;
     }
 
     public void Shutdown()
     {
-      if (this.controller == null)
+      if (controller == null)
         return;
-      if (this.parameter != null)
+      if (parameter != null)
       {
-        this.parameter.RemoveListener((IChangeParameterListener) this);
-        this.parameter = (IParameter<bool>) null;
+        parameter.RemoveListener(this);
+        parameter = null;
       }
-      this.controller = (ParametersComponent) null;
+      controller = null;
     }
   }
 }

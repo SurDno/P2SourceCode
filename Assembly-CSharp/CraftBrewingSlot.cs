@@ -1,17 +1,13 @@
-﻿using Engine.Common;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Engine.Common;
 using Engine.Common.Components;
 using Engine.Common.Services;
 using Engine.Impl.UI.Controls;
 using Engine.Source.Components;
 using Engine.Source.Services.Inputs;
 using InputServices;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
-using UnityEngine.Events;
-using UnityEngine.EventSystems;
-using UnityEngine.UI;
 
 public class CraftBrewingSlot : MonoBehaviour
 {
@@ -38,113 +34,113 @@ public class CraftBrewingSlot : MonoBehaviour
   private GameObject selectionFrame;
   private PointerEventData pointerData;
   private GraphicRaycaster raycaster;
-  private bool _isSelected = false;
-  private IStorableComponent craftedItem = (IStorableComponent) null;
-  private bool _IsItemCrafted = false;
-  private bool _CanTakeCraft = false;
-  private ItemCraftTimeView craftTime = (ItemCraftTimeView) null;
+  private bool _isSelected;
+  private IStorableComponent craftedItem = null;
+  private bool _IsItemCrafted;
+  private bool _CanTakeCraft;
+  private ItemCraftTimeView craftTime = null;
 
   public event Action<IInventoryComponent> CraftEvent;
 
   public event Action<IStorableComponent> TakeEvent;
 
-  public event CraftBrewingSlot.OnCraft OnCraftPerformed;
+  public event OnCraft OnCraftPerformed;
 
-  public event CraftBrewingSlot.OnCraft OnItemTaken;
+  public event OnCraft OnItemTaken;
 
   private void FireCraftEvent()
   {
-    CraftBrewingSlot.OnCraft onCraftPerformed = this.OnCraftPerformed;
+    OnCraft onCraftPerformed = OnCraftPerformed;
     if (onCraftPerformed != null)
       onCraftPerformed(this);
-    this.IsItemCrafted = true;
-    Action<IInventoryComponent> craftEvent = this.CraftEvent;
+    IsItemCrafted = true;
+    Action<IInventoryComponent> craftEvent = CraftEvent;
     if (craftEvent == null)
       return;
-    craftEvent((IInventoryComponent) this.containerView.Container);
+    craftEvent(containerView.Container);
   }
 
   private void FireTakeEvent(IStorableComponent item)
   {
-    Action<IStorableComponent> takeEvent = this.TakeEvent;
+    Action<IStorableComponent> takeEvent = TakeEvent;
     if (takeEvent != null)
       takeEvent(item);
-    CraftBrewingSlot.OnCraft onItemTaken = this.OnItemTaken;
+    OnCraft onItemTaken = OnItemTaken;
     if (onItemTaken != null)
       onItemTaken(this);
-    this.IsItemCrafted = false;
-    this.CanTakeCraft = false;
-    this.SetSelected(false);
+    IsItemCrafted = false;
+    CanTakeCraft = false;
+    SetSelected(false);
   }
 
   public void Initialize(float durabilityThreshold)
   {
-    this.durabilityRangeCheck.HiddenRange = new Vector2(0.0f, durabilityThreshold);
-    this.containerView.ItemInteractEvent += new Action<IStorableComponent>(this.FireTakeEvent);
-    this.button.onClick.AddListener(new UnityAction(this.FireCraftEvent));
-    this.IsItemCrafted = false;
-    this.SetSelected(false);
-    this.craftTime = this.GetComponentInChildren<ItemCraftTimeView>();
-    if (!((UnityEngine.Object) this.craftTime != (UnityEngine.Object) null))
+    durabilityRangeCheck.HiddenRange = new Vector2(0.0f, durabilityThreshold);
+    containerView.ItemInteractEvent += FireTakeEvent;
+    button.onClick.AddListener(new UnityAction(FireCraftEvent));
+    IsItemCrafted = false;
+    SetSelected(false);
+    craftTime = this.GetComponentInChildren<ItemCraftTimeView>();
+    if (!((UnityEngine.Object) craftTime != (UnityEngine.Object) null))
       return;
-    this.craftTime.OnItemReady += new Action(this.OnItemReady);
+    craftTime.OnItemReady += OnItemReady;
   }
 
   public void SetTarget(IEntity target, IInventoryComponent container)
   {
-    this.containerView.Container = (InventoryComponent) container;
-    this.targetView.Value = target;
+    containerView.Container = (InventoryComponent) container;
+    targetView.Value = target;
   }
 
   public void SetEnabled(bool value)
   {
-    this.button.interactable = value;
-    this.interactableView.Visible = value;
-    this.IsEnabled = value;
-    if (!this.IsEnabled)
+    button.interactable = value;
+    interactableView.Visible = value;
+    IsEnabled = value;
+    if (!IsEnabled)
     {
-      this.SetSelected(false);
-      InputService.Instance.onJoystickUsedChanged -= new Action<bool>(this.OnJoystick);
+      SetSelected(false);
+      InputService.Instance.onJoystickUsedChanged -= OnJoystick;
     }
     else
     {
-      InputService.Instance.onJoystickUsedChanged += new Action<bool>(this.OnJoystick);
-      this.brewingTextBuffer = this.brewingTextObject.text;
-      if ((UnityEngine.Object) this.raycaster == (UnityEngine.Object) null)
+      InputService.Instance.onJoystickUsedChanged += OnJoystick;
+      brewingTextBuffer = brewingTextObject.text;
+      if ((UnityEngine.Object) raycaster == (UnityEngine.Object) null)
       {
-        this.raycaster = this.GetComponentInParent<GraphicRaycaster>();
-        this.pointerData = new PointerEventData(EventSystem.current)
+        raycaster = this.GetComponentInParent<GraphicRaycaster>();
+        pointerData = new PointerEventData(EventSystem.current)
         {
-          position = (Vector2) this.button.transform.position
+          position = (Vector2) button.transform.position
         };
       }
     }
   }
 
-  public void SetCraftTime(string text) => this.timeText.StringValue = text;
+  public void SetCraftTime(string text) => timeText.StringValue = text;
 
   private void OnItemReady()
   {
-    this.CanTakeCraft = true;
-    if (!this.IsSelected)
+    CanTakeCraft = true;
+    if (!IsSelected)
       return;
-    this.takeConsoleTooltip.SetActive(true);
+    takeConsoleTooltip.SetActive(true);
   }
 
   public bool IsVisible => this.GetComponent<HideableCouple>().Visible;
 
   public bool IsSelected
   {
-    get => this._isSelected;
+    get => _isSelected;
     private set
     {
-      if (value == this._isSelected)
+      if (value == _isSelected)
         return;
       if (value)
-        ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Submit, new GameActionHandle(this.CraftTakeListener));
+        ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Submit, CraftTakeListener);
       else
-        ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Submit, new GameActionHandle(this.CraftTakeListener));
-      this._isSelected = value;
+        ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Submit, CraftTakeListener);
+      _isSelected = value;
     }
   }
 
@@ -152,43 +148,43 @@ public class CraftBrewingSlot : MonoBehaviour
   {
     get
     {
-      if (!this._IsItemCrafted)
+      if (!_IsItemCrafted)
       {
         SwitchingItemView componentInChildren = this.GetComponentInChildren<SwitchingItemView>();
         if ((UnityEngine.Object) componentInChildren != (UnityEngine.Object) null)
-          this.IsItemCrafted = componentInChildren.Storable != null;
+          IsItemCrafted = componentInChildren.Storable != null;
       }
-      return this._IsItemCrafted;
+      return _IsItemCrafted;
     }
-    private set => this._IsItemCrafted = value;
+    private set => _IsItemCrafted = value;
   }
 
   private bool CraftTakeListener(GameActionType type, bool down)
   {
-    if (!InputService.Instance.JoystickUsed || this.IsItemCrafted && !this.CanTakeCraft || !down)
+    if (!InputService.Instance.JoystickUsed || IsItemCrafted && !CanTakeCraft || !down)
       return false;
     List<RaycastResult> source = new List<RaycastResult>();
-    if (this.pointerData == null || (UnityEngine.Object) this.raycaster == (UnityEngine.Object) null)
+    if (pointerData == null || (UnityEngine.Object) raycaster == (UnityEngine.Object) null)
     {
-      this.raycaster = this.GetComponentInParent<GraphicRaycaster>();
-      this.pointerData = new PointerEventData(EventSystem.current)
+      raycaster = this.GetComponentInParent<GraphicRaycaster>();
+      pointerData = new PointerEventData(EventSystem.current)
       {
-        position = (Vector2) this.button.transform.position
+        position = (Vector2) button.transform.position
       };
     }
-    if (this.pointerData == null)
+    if (pointerData == null)
       return false;
-    this.raycaster.Raycast(this.pointerData, source);
+    raycaster.Raycast(pointerData, source);
     if (source.Count != 0)
     {
-      GameObject gameObject = source.First<RaycastResult>().gameObject;
+      GameObject gameObject = source.First().gameObject;
       if ((UnityEngine.Object) gameObject != (UnityEngine.Object) null)
       {
-        this.pointerData = new PointerEventData(EventSystem.current)
+        pointerData = new PointerEventData(EventSystem.current)
         {
-          position = (Vector2) this.button.transform.position
+          position = (Vector2) button.transform.position
         };
-        this.EmulateClickOnConsole(source.First<RaycastResult>(), gameObject);
+        EmulateClickOnConsole(source.First(), gameObject);
         return true;
       }
     }
@@ -197,104 +193,104 @@ public class CraftBrewingSlot : MonoBehaviour
 
   private void EmulateClickOnConsole(RaycastResult raycastResult, GameObject currentOverGo)
   {
-    this.pointerData.eligibleForClick = true;
-    this.pointerData.delta = Vector2.zero;
-    this.pointerData.dragging = false;
-    this.pointerData.useDragThreshold = true;
-    this.pointerData.pressPosition = this.pointerData.position;
-    this.pointerData.pointerCurrentRaycast = raycastResult;
-    this.pointerData.pointerPressRaycast = this.pointerData.pointerCurrentRaycast;
-    GameObject gameObject = ExecuteEvents.ExecuteHierarchy<IPointerDownHandler>(currentOverGo, (BaseEventData) this.pointerData, ExecuteEvents.pointerDownHandler);
+    pointerData.eligibleForClick = true;
+    pointerData.delta = Vector2.zero;
+    pointerData.dragging = false;
+    pointerData.useDragThreshold = true;
+    pointerData.pressPosition = pointerData.position;
+    pointerData.pointerCurrentRaycast = raycastResult;
+    pointerData.pointerPressRaycast = pointerData.pointerCurrentRaycast;
+    GameObject gameObject = ExecuteEvents.ExecuteHierarchy<IPointerDownHandler>(currentOverGo, (BaseEventData) pointerData, ExecuteEvents.pointerDownHandler);
     if ((UnityEngine.Object) gameObject == (UnityEngine.Object) null)
       gameObject = ExecuteEvents.GetEventHandler<IPointerClickHandler>(currentOverGo);
-    this.pointerData.clickCount = 1;
-    this.pointerData.pointerPress = gameObject;
-    this.pointerData.rawPointerPress = currentOverGo;
-    ExecuteEvents.Execute<IPointerUpHandler>(this.pointerData.pointerPress, (BaseEventData) this.pointerData, ExecuteEvents.pointerUpHandler);
-    if (!((UnityEngine.Object) this.pointerData.pointerPress == (UnityEngine.Object) ExecuteEvents.GetEventHandler<IPointerClickHandler>(currentOverGo)) || !this.pointerData.eligibleForClick)
+    pointerData.clickCount = 1;
+    pointerData.pointerPress = gameObject;
+    pointerData.rawPointerPress = currentOverGo;
+    ExecuteEvents.Execute<IPointerUpHandler>(pointerData.pointerPress, (BaseEventData) pointerData, ExecuteEvents.pointerUpHandler);
+    if (!((UnityEngine.Object) pointerData.pointerPress == (UnityEngine.Object) ExecuteEvents.GetEventHandler<IPointerClickHandler>(currentOverGo)) || !pointerData.eligibleForClick)
       return;
-    ExecuteEvents.Execute<IPointerClickHandler>(this.pointerData.pointerPress, (BaseEventData) this.pointerData, ExecuteEvents.pointerClickHandler);
+    ExecuteEvents.Execute<IPointerClickHandler>(pointerData.pointerPress, (BaseEventData) pointerData, ExecuteEvents.pointerClickHandler);
   }
 
   public bool IsEnabled { get; set; }
 
-  public bool IsSlotAvailable => this.CanTakeCraft || this.IsItemCrafted;
+  public bool IsSlotAvailable => CanTakeCraft || IsItemCrafted;
 
   public bool CanTakeCraft
   {
     get
     {
-      if ((UnityEngine.Object) this.craftTime == (UnityEngine.Object) null)
-        this.craftTime = this.GetComponentInChildren<ItemCraftTimeView>();
-      return (UnityEngine.Object) this.craftTime != (UnityEngine.Object) null && this.craftTime.IsItemReady;
+      if ((UnityEngine.Object) craftTime == (UnityEngine.Object) null)
+        craftTime = this.GetComponentInChildren<ItemCraftTimeView>();
+      return (UnityEngine.Object) craftTime != (UnityEngine.Object) null && craftTime.IsItemReady;
     }
-    private set => this._CanTakeCraft = value;
+    private set => _CanTakeCraft = value;
   }
 
   private void OnJoystick(bool joystick)
   {
-    this.selectionFrame.SetActive(joystick && this.IsSelected);
+    selectionFrame.SetActive(joystick && IsSelected);
     if (joystick)
     {
-      if (this.IsSelected && !this.IsItemCrafted)
+      if (IsSelected && !IsItemCrafted)
       {
-        this.brewConsoleTooltip.SetActive(true);
-        this.timeText.gameObject.SetActive(true);
-        this.brewingTextObject.text = string.Empty;
+        brewConsoleTooltip.SetActive(true);
+        timeText.gameObject.SetActive(true);
+        brewingTextObject.text = string.Empty;
       }
-      else if (this.IsSelected && this.IsItemCrafted && this.CanTakeCraft)
-        this.takeConsoleTooltip.SetActive(true);
+      else if (IsSelected && IsItemCrafted && CanTakeCraft)
+        takeConsoleTooltip.SetActive(true);
       else
-        this.timeText.gameObject.SetActive(false);
+        timeText.gameObject.SetActive(false);
     }
     else
     {
-      this.brewConsoleTooltip.SetActive(false);
-      if (!this.IsItemCrafted)
+      brewConsoleTooltip.SetActive(false);
+      if (!IsItemCrafted)
       {
-        this.brewingTextObject.text = this.brewingTextBuffer;
-        this.timeText.gameObject.SetActive(true);
+        brewingTextObject.text = brewingTextBuffer;
+        timeText.gameObject.SetActive(true);
       }
-      this.takeConsoleTooltip.SetActive(false);
+      takeConsoleTooltip.SetActive(false);
     }
   }
 
   private void OnDisable()
   {
-    InputService.Instance.onJoystickUsedChanged -= new Action<bool>(this.OnJoystick);
-    this.SetSelected(false);
-    if (!((UnityEngine.Object) this.craftTime != (UnityEngine.Object) null))
+    InputService.Instance.onJoystickUsedChanged -= OnJoystick;
+    SetSelected(false);
+    if (!((UnityEngine.Object) craftTime != (UnityEngine.Object) null))
       return;
-    this.craftTime.OnItemReady -= new Action(this.OnItemReady);
+    craftTime.OnItemReady -= OnItemReady;
   }
 
   public void SetSelected(bool selected)
   {
-    this.selectionFrame?.SetActive(selected);
-    this.brewingTextObject.gameObject.SetActive(selected);
-    this.IsSelected = selected;
+    selectionFrame?.SetActive(selected);
+    brewingTextObject.gameObject.SetActive(selected);
+    IsSelected = selected;
     if (selected)
     {
       if (!InputService.Instance.JoystickUsed)
         return;
-      if (this.CanTakeCraft)
+      if (CanTakeCraft)
       {
-        this.takeConsoleTooltip.SetActive(selected);
+        takeConsoleTooltip.SetActive(selected);
       }
       else
       {
-        this.brewConsoleTooltip.SetActive(selected);
-        this.timeText.gameObject.SetActive(true);
-        this.brewingTextObject.text = string.Empty;
-        this.takeConsoleTooltip.SetActive(false);
+        brewConsoleTooltip.SetActive(selected);
+        timeText.gameObject.SetActive(true);
+        brewingTextObject.text = string.Empty;
+        takeConsoleTooltip.SetActive(false);
       }
     }
     else
     {
-      this.brewConsoleTooltip.SetActive(selected);
-      this.brewingTextObject.text = this.brewingTextBuffer;
-      this.timeText.gameObject.SetActive(true);
-      this.takeConsoleTooltip.SetActive(false);
+      brewConsoleTooltip.SetActive(selected);
+      brewingTextObject.text = brewingTextBuffer;
+      timeText.gameObject.SetActive(true);
+      takeConsoleTooltip.SetActive(false);
     }
   }
 

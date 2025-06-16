@@ -1,6 +1,7 @@
-﻿using Engine.Behaviours.Components;
+﻿using System;
+using System.Collections.Generic;
+using Engine.Behaviours.Components;
 using Engine.Common;
-using Engine.Common.Commons;
 using Engine.Common.Components.AttackerPlayer;
 using Engine.Common.Components.Parameters;
 using Engine.Common.Services;
@@ -9,10 +10,6 @@ using Engine.Source.Components;
 using Engine.Source.Connections;
 using Engine.Source.Services;
 using Inspectors;
-using System;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.AI;
 
 public class EnemyBase : MonoBehaviour, IEntityAttachable
 {
@@ -24,7 +21,7 @@ public class EnemyBase : MonoBehaviour, IEntityAttachable
   private IParameter<bool> deadParameter;
   private IParameter<float> healthParameter;
   private IParameter<bool> cantBlock;
-  private float blockNormalizedTime = 0.0f;
+  private float blockNormalizedTime;
   private IParameter<float> blockStanceParameter;
   private bool blockStance;
   private IParameter<BlockTypeEnum> blocktype;
@@ -34,8 +31,8 @@ public class EnemyBase : MonoBehaviour, IEntityAttachable
   private IParameter<bool> isFighting;
   private IParameter<bool> isCombatIgnored;
   private IParameter<bool> isImmortal;
-  protected float currentWalkSpeed = 0.0f;
-  protected float desiredWalkSpeed = 0.0f;
+  protected float currentWalkSpeed;
+  protected float desiredWalkSpeed;
   private float? retreatAngle;
   private bool rotateByPath;
   private Transform rotationTarget;
@@ -47,7 +44,7 @@ public class EnemyBase : MonoBehaviour, IEntityAttachable
 
   public void FireWasWasPrepunchEvent()
   {
-    Action<EnemyBase> wasPrepunchEvent = this.WasPrepunchEvent;
+    Action<EnemyBase> wasPrepunchEvent = WasPrepunchEvent;
     if (wasPrepunchEvent == null)
       return;
     wasPrepunchEvent(this);
@@ -57,7 +54,7 @@ public class EnemyBase : MonoBehaviour, IEntityAttachable
 
   public void FireWasPunchedEvent(EnemyBase enemy)
   {
-    Action<EnemyBase> wasPunchedEvent = this.WasPunchedEvent;
+    Action<EnemyBase> wasPunchedEvent = WasPunchedEvent;
     if (wasPunchedEvent == null)
       return;
     wasPunchedEvent(enemy);
@@ -67,7 +64,7 @@ public class EnemyBase : MonoBehaviour, IEntityAttachable
 
   public void FireWasPunchedToSurrenderEvent(EnemyBase enemy)
   {
-    Action<EnemyBase> toSurrenderEvent = this.WasPunchedToSurrenderEvent;
+    Action<EnemyBase> toSurrenderEvent = WasPunchedToSurrenderEvent;
     if (toSurrenderEvent == null)
       return;
     toSurrenderEvent(enemy);
@@ -77,7 +74,7 @@ public class EnemyBase : MonoBehaviour, IEntityAttachable
 
   public void FireWasLowStaminaPunchedEvent(EnemyBase enemy)
   {
-    Action<EnemyBase> staminaPunchedEvent = this.WasLowStaminaPunchedEvent;
+    Action<EnemyBase> staminaPunchedEvent = WasLowStaminaPunchedEvent;
     if (staminaPunchedEvent == null)
       return;
     staminaPunchedEvent(enemy);
@@ -87,7 +84,7 @@ public class EnemyBase : MonoBehaviour, IEntityAttachable
 
   public void FireWasStaggeredEvent(EnemyBase enemy)
   {
-    Action<EnemyBase> wasStaggeredEvent = this.WasStaggeredEvent;
+    Action<EnemyBase> wasStaggeredEvent = WasStaggeredEvent;
     if (wasStaggeredEvent == null)
       return;
     wasStaggeredEvent(enemy);
@@ -97,7 +94,7 @@ public class EnemyBase : MonoBehaviour, IEntityAttachable
 
   public void FireWasPunchedToBlockEvent(EnemyBase enemy)
   {
-    Action<EnemyBase> punchedToBlockEvent = this.WasPunchedToBlockEvent;
+    Action<EnemyBase> punchedToBlockEvent = WasPunchedToBlockEvent;
     if (punchedToBlockEvent == null)
       return;
     punchedToBlockEvent(enemy);
@@ -107,7 +104,7 @@ public class EnemyBase : MonoBehaviour, IEntityAttachable
 
   public void FireWasPunchedToQuickBlockEvent(EnemyBase enemy)
   {
-    Action<EnemyBase> punchedToQuickBlock = this.WasPunchedToQuickBlock;
+    Action<EnemyBase> punchedToQuickBlock = WasPunchedToQuickBlock;
     if (punchedToQuickBlock == null)
       return;
     punchedToQuickBlock(enemy);
@@ -117,7 +114,7 @@ public class EnemyBase : MonoBehaviour, IEntityAttachable
 
   public void FireWasPunchedToDodgeEvent(EnemyBase enemy)
   {
-    Action<EnemyBase> punchedToDodgeEvent = this.WasPunchedToDodgeEvent;
+    Action<EnemyBase> punchedToDodgeEvent = WasPunchedToDodgeEvent;
     if (punchedToDodgeEvent == null)
       return;
     punchedToDodgeEvent(enemy);
@@ -127,7 +124,7 @@ public class EnemyBase : MonoBehaviour, IEntityAttachable
 
   public void FireWasPunchedToStaggerEvent(EnemyBase enemy)
   {
-    Action<EnemyBase> punchedToStaggerEvent = this.WasPunchedToStaggerEvent;
+    Action<EnemyBase> punchedToStaggerEvent = WasPunchedToStaggerEvent;
     if (punchedToStaggerEvent == null)
       return;
     punchedToStaggerEvent(enemy);
@@ -137,7 +134,7 @@ public class EnemyBase : MonoBehaviour, IEntityAttachable
 
   public void FireWasPushedEvent(EnemyBase enemy)
   {
-    Action<EnemyBase> wasPushedEvent = this.WasPushedEvent;
+    Action<EnemyBase> wasPushedEvent = WasPushedEvent;
     if (wasPushedEvent == null)
       return;
     wasPushedEvent(enemy);
@@ -147,7 +144,7 @@ public class EnemyBase : MonoBehaviour, IEntityAttachable
 
   public void FireWasKnockDownedEvent(EnemyBase enemy)
   {
-    Action<EnemyBase> knockDownedEvent = this.WasKnockDownedEvent;
+    Action<EnemyBase> knockDownedEvent = WasKnockDownedEvent;
     if (knockDownedEvent == null)
       return;
     knockDownedEvent(enemy);
@@ -162,7 +159,7 @@ public class EnemyBase : MonoBehaviour, IEntityAttachable
     ReactionType reaction,
     ShotSubtypeEnum subtype = ShotSubtypeEnum.None)
   {
-    Action<IEntity, ShotType, ReactionType, WeaponEnum, ShotSubtypeEnum> punchEvent = this.PunchEvent;
+    Action<IEntity, ShotType, ReactionType, WeaponEnum, ShotSubtypeEnum> punchEvent = PunchEvent;
     if (punchEvent == null)
       return;
     punchEvent(weaponEntity, punch, reaction, weapon, subtype);
@@ -172,7 +169,7 @@ public class EnemyBase : MonoBehaviour, IEntityAttachable
 
   public void FirePunchHitEvent(WeaponEnum weapon)
   {
-    Action<WeaponEnum> punchHitEvent = this.PunchHitEvent;
+    Action<WeaponEnum> punchHitEvent = PunchHitEvent;
     if (punchHitEvent == null)
       return;
     punchHitEvent(weapon);
@@ -187,17 +184,17 @@ public class EnemyBase : MonoBehaviour, IEntityAttachable
   public Vector3 CalculateRepulseVelocity(EnemyBase attacker)
   {
     Vector3 zero = Vector3.zero;
-    if (this.attackers.Count < 2)
+    if (attackers.Count < 2)
       return Vector3.zero;
     float num1 = 0.5f;
     float num2 = 2f;
-    foreach (EnemyBase attacker1 in this.attackers)
+    foreach (EnemyBase attacker1 in attackers)
     {
       if (!((UnityEngine.Object) attacker1 == (UnityEngine.Object) attacker))
       {
         Vector3 vector3 = attacker.transform.position - attacker1.transform.position;
         float num3 = num1 * num1 / vector3.sqrMagnitude;
-        if ((double) num3 >= 0.15999999642372131)
+        if (num3 >= 0.15999999642372131)
         {
           vector3.Normalize();
           zero += num3 * vector3 * num2;
@@ -251,7 +248,7 @@ public class EnemyBase : MonoBehaviour, IEntityAttachable
       }
       else
       {
-        bool flag = (double) y < 0.0;
+        bool flag = y < 0.0;
         fightReactionX = flag ? 1f : -1f;
         fightReactionY = 0.0f;
       }
@@ -265,17 +262,17 @@ public class EnemyBase : MonoBehaviour, IEntityAttachable
 
   public void PlayLipSync(CombatCryEnum cryEnum)
   {
-    if (!((UnityEngine.Object) this.pivot != (UnityEngine.Object) null) || !((UnityEngine.Object) this.pivot.SoundBank != (UnityEngine.Object) null))
+    if (!((UnityEngine.Object) pivot != (UnityEngine.Object) null) || !((UnityEngine.Object) pivot.SoundBank != (UnityEngine.Object) null))
       return;
     IEntity entity = EntityUtility.GetEntity(this.gameObject);
     if (entity != null)
     {
       LipSyncComponent component = entity.GetComponent<LipSyncComponent>();
-      NPCSoundBankCrySettings soundBankCrySettings = this.pivot.SoundBank.CombatCries.Find((Predicate<NPCSoundBankCrySettings>) (x => x.Name == cryEnum));
-      if (component != null && soundBankCrySettings != null && (double) soundBankCrySettings.Chance > (double) UnityEngine.Random.value)
+      NPCSoundBankCrySettings soundBankCrySettings = pivot.SoundBank.CombatCries.Find(x => x.Name == cryEnum);
+      if (component != null && soundBankCrySettings != null && soundBankCrySettings.Chance > (double) UnityEngine.Random.value)
       {
         LipSyncObjectSerializable description = soundBankCrySettings.Description;
-        component.Play3D((ILipSyncObject) description.Value, ScriptableObjectInstance<ResourceFromCodeData>.Instance.AudioSourceForNpcCombatReplics, true);
+        component.Play3D(description.Value, ScriptableObjectInstance<ResourceFromCodeData>.Instance.AudioSourceForNpcCombatReplics, true);
       }
     }
   }
@@ -289,20 +286,20 @@ public class EnemyBase : MonoBehaviour, IEntityAttachable
 
   private void OnDestroy()
   {
-    this.Enemy = (EnemyBase) null;
+    Enemy = null;
     ServiceLocator.GetService<CombatService>()?.UnregisterCharacter(this);
   }
 
   public void RegisterAttacker(EnemyBase enemy)
   {
-    if (this.attackers.Add(enemy))
+    if (attackers.Add(enemy))
       return;
     Debug.LogWarning((object) ("RegisterAttacker " + this.gameObject.name + " already cotains " + enemy.gameObject.name));
   }
 
   public void UnregisterAttacker(EnemyBase enemy)
   {
-    if (this.attackers.Remove(enemy))
+    if (attackers.Remove(enemy))
       return;
     Debug.LogWarning((object) ("UnregisterAttacker " + this.gameObject.name + " doesn't cotain " + enemy.gameObject.name));
   }
@@ -310,152 +307,152 @@ public class EnemyBase : MonoBehaviour, IEntityAttachable
   [Inspected]
   public EnemyBase Enemy
   {
-    get => this.enemy;
+    get => enemy;
     set
     {
-      this.enemy?.UnregisterAttacker(this);
-      this.enemy = value;
-      this.enemy?.RegisterAttacker(this);
+      enemy?.UnregisterAttacker(this);
+      enemy = value;
+      enemy?.RegisterAttacker(this);
     }
   }
 
-  public bool IsDead => this.deadParameter != null && this.deadParameter.Value;
+  public bool IsDead => deadParameter != null && deadParameter.Value;
 
-  private IParameter<float> Health => this.healthParameter;
+  private IParameter<float> Health => healthParameter;
 
   public IEntity Owner { get; private set; }
 
   public bool CantBlock
   {
-    get => this.cantBlock != null && this.cantBlock.Value;
+    get => cantBlock != null && cantBlock.Value;
     set
     {
-      if (this.cantBlock == null)
+      if (cantBlock == null)
         return;
-      this.cantBlock.Value = value;
+      cantBlock.Value = value;
     }
   }
 
   public float BlockNormalizedTime
   {
-    get => this.blockNormalizedTime;
-    set => this.blockNormalizedTime = value;
+    get => blockNormalizedTime;
+    set => blockNormalizedTime = value;
   }
 
   public virtual bool BlockStance
   {
-    get => this.blockStance;
+    get => blockStance;
     set
     {
-      this.blockStance = value;
-      if (this.blockStanceParameter == null)
+      blockStance = value;
+      if (blockStanceParameter == null)
         return;
-      this.blockStanceParameter.Value = this.blockStance ? 1f : 0.0f;
+      blockStanceParameter.Value = blockStance ? 1f : 0.0f;
     }
   }
 
   public BlockTypeEnum BlockType
   {
-    get => this.blocktype == null ? BlockTypeEnum.None : this.blocktype.Value;
+    get => blocktype == null ? BlockTypeEnum.None : blocktype.Value;
     set
     {
-      if (this.blocktype == null)
+      if (blocktype == null)
         return;
-      this.blocktype.Value = value;
+      blocktype.Value = value;
     }
   }
 
   public float Stamina
   {
-    get => this.stamina == null ? 0.0f : this.stamina.Value;
+    get => stamina == null ? 0.0f : stamina.Value;
     set
     {
-      if (this.stamina == null)
+      if (stamina == null)
         return;
-      this.stamina.Value = value;
+      stamina.Value = value;
     }
   }
 
   public bool IsPushed
   {
-    get => this.isPushed != null && this.isPushed.Value;
+    get => isPushed != null && isPushed.Value;
     set
     {
-      if (this.isPushed == null)
+      if (isPushed == null)
         return;
-      this.isPushed.Value = value;
+      isPushed.Value = value;
     }
   }
 
   public bool IsFighting
   {
-    get => this.isFighting != null && this.isFighting.Value;
+    get => isFighting != null && isFighting.Value;
     set
     {
-      if (this.isFighting == null)
+      if (isFighting == null)
         return;
-      this.isFighting.Value = value;
+      isFighting.Value = value;
     }
   }
 
   public bool IsCombatIgnored
   {
-    get => this.isCombatIgnored != null && this.isCombatIgnored.Value;
+    get => isCombatIgnored != null && isCombatIgnored.Value;
     set
     {
-      if (this.isCombatIgnored == null)
+      if (isCombatIgnored == null)
         return;
-      this.isCombatIgnored.Value = value;
+      isCombatIgnored.Value = value;
     }
   }
 
   public bool IsImmortal
   {
-    get => this.isImmortal != null && this.isImmortal.Value;
+    get => isImmortal != null && isImmortal.Value;
     set
     {
-      if (this.isImmortal == null)
+      if (isImmortal == null)
         return;
-      this.isImmortal.Value = value;
+      isImmortal.Value = value;
     }
   }
 
   public bool IsFaint
   {
-    get => this.isFaint;
-    set => this.isFaint = value;
+    get => isFaint;
+    set => isFaint = value;
   }
 
   public Transform RotationTarget
   {
-    get => this.rotationTarget;
-    set => this.rotationTarget = value;
+    get => rotationTarget;
+    set => rotationTarget = value;
   }
 
   public bool RotateByPath
   {
-    get => this.rotateByPath;
-    set => this.rotateByPath = value;
+    get => rotateByPath;
+    set => rotateByPath = value;
   }
 
   public float? RetreatAngle
   {
-    get => this.retreatAngle;
-    set => this.retreatAngle = value;
+    get => retreatAngle;
+    set => retreatAngle = value;
   }
 
   [Inspected]
   public float DesiredWalkSpeed
   {
-    get => this.desiredWalkSpeed;
-    set => this.desiredWalkSpeed = value;
+    get => desiredWalkSpeed;
+    set => desiredWalkSpeed = value;
   }
 
   [Inspected]
   public float CurrentWalkSpeed
   {
-    get => this.currentWalkSpeed;
-    set => this.currentWalkSpeed = value;
+    get => currentWalkSpeed;
+    set => currentWalkSpeed = value;
   }
 
   public virtual void Prepunch(ReactionType reactionType, WeaponEnum weapon, EnemyBase enemy)
@@ -553,10 +550,10 @@ public class EnemyBase : MonoBehaviour, IEntityAttachable
 
   protected void FixedUpdate()
   {
-    if (this.BlockType == BlockTypeEnum.Block)
-      this.BlockNormalizedTime += Time.fixedDeltaTime;
+    if (BlockType == BlockTypeEnum.Block)
+      BlockNormalizedTime += Time.fixedDeltaTime;
     else
-      this.BlockNormalizedTime = Mathf.Max(this.BlockNormalizedTime - 5f * Time.fixedDeltaTime, 0.0f);
+      BlockNormalizedTime = Mathf.Max(BlockNormalizedTime - 5f * Time.fixedDeltaTime, 0.0f);
   }
 
   public float LastThrowAngle { get; private set; }
@@ -565,45 +562,45 @@ public class EnemyBase : MonoBehaviour, IEntityAttachable
 
   public void EnqueueProjectileThrow(float angle, float v)
   {
-    this.LastThrowAngle = angle;
-    this.LastThrowV = v;
+    LastThrowAngle = angle;
+    LastThrowV = v;
   }
 
   public void Attach(IEntity owner)
   {
-    this.Owner = owner;
-    this.ClearParameters();
-    ParametersComponent component = this.Owner.GetComponent<ParametersComponent>();
+    Owner = owner;
+    ClearParameters();
+    ParametersComponent component = Owner.GetComponent<ParametersComponent>();
     if (component == null)
       return;
-    this.deadParameter = component.GetByName<bool>(ParameterNameEnum.Dead);
-    this.healthParameter = component.GetByName<float>(ParameterNameEnum.Health);
-    this.cantBlock = component.GetByName<bool>(ParameterNameEnum.BlockDisabled);
-    this.blockStanceParameter = component.GetByName<float>(ParameterNameEnum.Block);
-    this.blocktype = component.GetByName<BlockTypeEnum>(ParameterNameEnum.BlockType);
-    this.stamina = component.GetByName<float>(ParameterNameEnum.Stamina);
-    this.isPushed = component.GetByName<bool>(ParameterNameEnum.MovementControlBlock);
-    this.isFighting = component.GetByName<bool>(ParameterNameEnum.IsFighting);
-    this.isCombatIgnored = component.GetByName<bool>(ParameterNameEnum.IsCombatIgnored);
-    this.isImmortal = component.GetByName<bool>(ParameterNameEnum.Immortal);
+    deadParameter = component.GetByName<bool>(ParameterNameEnum.Dead);
+    healthParameter = component.GetByName<float>(ParameterNameEnum.Health);
+    cantBlock = component.GetByName<bool>(ParameterNameEnum.BlockDisabled);
+    blockStanceParameter = component.GetByName<float>(ParameterNameEnum.Block);
+    blocktype = component.GetByName<BlockTypeEnum>(ParameterNameEnum.BlockType);
+    stamina = component.GetByName<float>(ParameterNameEnum.Stamina);
+    isPushed = component.GetByName<bool>(ParameterNameEnum.MovementControlBlock);
+    isFighting = component.GetByName<bool>(ParameterNameEnum.IsFighting);
+    isCombatIgnored = component.GetByName<bool>(ParameterNameEnum.IsCombatIgnored);
+    isImmortal = component.GetByName<bool>(ParameterNameEnum.Immortal);
   }
 
   public void Detach()
   {
-    this.Owner = (IEntity) null;
-    this.ClearParameters();
+    Owner = null;
+    ClearParameters();
   }
 
   private void ClearParameters()
   {
-    this.deadParameter = (IParameter<bool>) null;
-    this.healthParameter = (IParameter<float>) null;
-    this.cantBlock = (IParameter<bool>) null;
-    this.blockStanceParameter = (IParameter<float>) null;
-    this.blocktype = (IParameter<BlockTypeEnum>) null;
-    this.stamina = (IParameter<float>) null;
-    this.isPushed = (IParameter<bool>) null;
-    this.isFighting = (IParameter<bool>) null;
-    this.isCombatIgnored = (IParameter<bool>) null;
+    deadParameter = null;
+    healthParameter = null;
+    cantBlock = null;
+    blockStanceParameter = null;
+    blocktype = null;
+    stamina = null;
+    isPushed = null;
+    isFighting = null;
+    isCombatIgnored = null;
   }
 }

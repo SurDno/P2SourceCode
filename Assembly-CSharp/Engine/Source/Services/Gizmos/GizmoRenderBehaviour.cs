@@ -1,5 +1,5 @@
-﻿using Engine.Common.Services;
-using UnityEngine;
+﻿using System;
+using Engine.Common.Services;
 
 namespace Engine.Source.Services.Gizmos
 {
@@ -12,8 +12,8 @@ namespace Engine.Source.Services.Gizmos
     public static GizmoRenderBehaviour Create(UnityEngine.Camera targetCamera)
     {
       if ((UnityEngine.Object) targetCamera == (UnityEngine.Object) null)
-        return (GizmoRenderBehaviour) null;
-      GameObject gameObject = new GameObject("[Camera] Debug", new System.Type[3]
+        return null;
+      GameObject gameObject = new GameObject("[Camera] Debug", new Type[3]
       {
         typeof (UnityEngine.Camera),
         typeof (GizmoRenderBehaviour),
@@ -29,26 +29,26 @@ namespace Engine.Source.Services.Gizmos
 
     private void UpdateCameraSettings()
     {
-      this.camera.CopyFrom(this.targetCamera);
-      ++this.camera.depth;
-      this.camera.cullingMask = 0;
-      this.camera.clearFlags = CameraClearFlags.Nothing;
-      this.camera.renderingPath = RenderingPath.Forward;
-      this.camera.useOcclusionCulling = false;
-      this.camera.eventMask = 0;
-      this.camera.allowHDR = false;
+      camera.CopyFrom(targetCamera);
+      ++camera.depth;
+      camera.cullingMask = 0;
+      camera.clearFlags = CameraClearFlags.Nothing;
+      camera.renderingPath = RenderingPath.Forward;
+      camera.useOcclusionCulling = false;
+      camera.eventMask = 0;
+      camera.allowHDR = false;
     }
 
-    private void OnEnable() => this.gizmoService = ServiceLocator.GetService<GizmoService>();
+    private void OnEnable() => gizmoService = ServiceLocator.GetService<GizmoService>();
 
-    private void OnDisable() => this.gizmoService.FireClear();
+    private void OnDisable() => gizmoService.FireClear();
 
-    private void OnPreCull() => this.UpdateCameraSettings();
+    private void OnPreCull() => UpdateCameraSettings();
 
-    private void OnPostRender() => this.gizmoService.FireDrawShapes();
+    private void OnPostRender() => gizmoService.FireDrawShapes();
 
-    public void OnGUI() => this.gizmoService.FireDrawTexts(this.camera);
+    public void OnGUI() => gizmoService.FireDrawTexts(camera);
 
-    public void Update() => this.gizmoService.Check();
+    public void Update() => gizmoService.Check();
   }
 }

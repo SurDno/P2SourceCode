@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace Scripts.Behaviours.LoadControllers
+﻿namespace Scripts.Behaviours.LoadControllers
 {
   public abstract class BaseLoadByDistance : MonoBehaviour
   {

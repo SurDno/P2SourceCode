@@ -1,7 +1,4 @@
-﻿using UnityEngine;
-using UnityEngine.Serialization;
-
-namespace Engine.Behaviours.Weather
+﻿namespace Engine.Behaviours.Weather
 {
   [RequireComponent(typeof (Animator))]
   [RequireComponent(typeof (AudioSource))]
@@ -64,7 +61,7 @@ namespace Engine.Behaviours.Weather
         0.0f,
         0.0f,
         0.0f,
-        (float) byte.MaxValue,
+        byte.MaxValue,
         180f,
         105f,
         100f,
@@ -152,10 +149,10 @@ namespace Engine.Behaviours.Weather
       },
       {
         0.0f,
-        (float) byte.MaxValue,
-        (float) byte.MaxValue,
+        byte.MaxValue,
+        byte.MaxValue,
         40f,
-        (float) byte.MaxValue,
+        byte.MaxValue,
         245f,
         85f,
         35f,
@@ -216,10 +213,10 @@ namespace Engine.Behaviours.Weather
       },
       {
         0.0f,
-        (float) byte.MaxValue,
-        (float) byte.MaxValue,
+        byte.MaxValue,
+        byte.MaxValue,
         40f,
-        (float) byte.MaxValue,
+        byte.MaxValue,
         245f,
         85f,
         35f,
@@ -248,7 +245,7 @@ namespace Engine.Behaviours.Weather
       },
       {
         0.0f,
-        (float) byte.MaxValue,
+        byte.MaxValue,
         180f,
         105f,
         100f,
@@ -282,30 +279,30 @@ namespace Engine.Behaviours.Weather
 
     public void Start()
     {
-      this.animator = this.gameObject.GetComponent<Animator>();
-      if ((Object) this.animator == (Object) null)
+      animator = this.gameObject.GetComponent<Animator>();
+      if ((Object) animator == (Object) null)
         throw null;
-      this.light = this.gameObject.GetComponent<Light>();
-      if ((Object) this.light == (Object) null)
+      light = this.gameObject.GetComponent<Light>();
+      if ((Object) light == (Object) null)
         throw null;
-      this.audioSource = this.gameObject.GetComponent<AudioSource>();
-      if ((Object) this.audioSource == (Object) null)
+      audioSource = this.gameObject.GetComponent<AudioSource>();
+      if ((Object) audioSource == (Object) null)
         throw null;
       UnityEngine.Camera main = UnityEngine.Camera.main;
       if ((Object) main == (Object) null)
         throw null;
-      this.distance = (main.transform.position - this.transform.position).magnitude;
-      float delay = this.distance / 331f;
-      this.audioSource.clip = this.audios[Random.Range(0, this.audios.Length)];
-      this.audioSource.PlayDelayed(delay);
-      this.flashType = Random.Range(0, this.lightningFlash.GetLength(0));
-      this.gameObject.name = "Lightning_" + (object) Lightning.index;
-      ++Lightning.index;
+      distance = (main.transform.position - this.transform.position).magnitude;
+      float delay = distance / 331f;
+      audioSource.clip = audios[Random.Range(0, audios.Length)];
+      audioSource.PlayDelayed(delay);
+      flashType = Random.Range(0, lightningFlash.GetLength(0));
+      this.gameObject.name = "Lightning_" + index;
+      ++index;
     }
 
     private void Update()
     {
-      if (this.isEnded)
+      if (isEnded)
       {
         this.gameObject.SetActive(false);
         Object.Destroy((Object) this.gameObject);
@@ -314,17 +311,17 @@ namespace Engine.Behaviours.Weather
       {
         bool flag1 = false;
         float num = 0.0333f;
-        if ((double) this.elapsed > (double) ((float) this.lightningFlash.GetLength(1) * num))
+        if (elapsed > (double) (lightningFlash.GetLength(1) * num))
         {
           flag1 = true;
-          this.light.intensity = 0.0f;
+          light.intensity = 0.0f;
         }
         else
-          this.light.intensity = this.lightningFlash[this.flashType, (int) ((double) this.elapsed / (double) num)] / (float) byte.MaxValue;
-        bool flag2 = this.animator.GetCurrentAnimatorStateInfo(0).shortNameHash == Animator.StringToHash("End");
-        if (flag1 & flag2 && !this.audioSource.isPlaying)
-          this.isEnded = true;
-        this.elapsed += Time.deltaTime;
+          light.intensity = lightningFlash[flashType, (int) (elapsed / (double) num)] / byte.MaxValue;
+        bool flag2 = animator.GetCurrentAnimatorStateInfo(0).shortNameHash == Animator.StringToHash("End");
+        if (flag1 & flag2 && !audioSource.isPlaying)
+          isEnded = true;
+        elapsed += Time.deltaTime;
         UnityEngine.Camera main = UnityEngine.Camera.main;
         if ((Object) main == (Object) null)
           return;

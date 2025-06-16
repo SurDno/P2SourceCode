@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using UnityEngine;
 
 namespace UnityStandardAssets.CinematicEffects
 {
@@ -18,7 +17,7 @@ namespace UnityStandardAssets.CinematicEffects
       temporary.filterMode = filterMode;
       temporary.wrapMode = TextureWrapMode.Clamp;
       temporary.name = "RenderTextureUtilityTempTexture";
-      this.m_TemporaryRTs.Add(temporary);
+      m_TemporaryRTs.Add(temporary);
       return temporary;
     }
 
@@ -26,22 +25,22 @@ namespace UnityStandardAssets.CinematicEffects
     {
       if ((Object) rt == (Object) null)
         return;
-      if (!this.m_TemporaryRTs.Contains(rt))
+      if (!m_TemporaryRTs.Contains(rt))
       {
         Debug.LogErrorFormat("Attempting to remove texture that was not allocated: {0}", (object) rt);
       }
       else
       {
-        this.m_TemporaryRTs.Remove(rt);
+        m_TemporaryRTs.Remove(rt);
         RenderTexture.ReleaseTemporary(rt);
       }
     }
 
     public void ReleaseAllTemporaryRenderTextures()
     {
-      for (int index = 0; index < this.m_TemporaryRTs.Count; ++index)
-        RenderTexture.ReleaseTemporary(this.m_TemporaryRTs[index]);
-      this.m_TemporaryRTs.Clear();
+      for (int index = 0; index < m_TemporaryRTs.Count; ++index)
+        RenderTexture.ReleaseTemporary(m_TemporaryRTs[index]);
+      m_TemporaryRTs.Clear();
     }
   }
 }

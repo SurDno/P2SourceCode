@@ -1,8 +1,7 @@
-﻿using Engine.Impl.UI.Menu;
-using Engine.Impl.UI.Menu.Main;
-using System;
+﻿using System;
 using System.Collections;
-using UnityEngine;
+using Engine.Impl.UI.Menu;
+using Engine.Impl.UI.Menu.Main;
 
 namespace Engine.Source.Services
 {
@@ -12,7 +11,7 @@ namespace Engine.Source.Services
       UIWindow closeWindow,
       UIWindow openWindow)
     {
-      return new Func<UIWindow, UIWindow, IEnumerator>(UITransitionFactory.DefaultTransition);
+      return DefaultTransition;
     }
 
     private static IEnumerator DefaultTransition(UIWindow closeWindow, UIWindow openWindow)
@@ -22,14 +21,14 @@ namespace Engine.Source.Services
         IEnumerator closed = closeWindow.OnClosed();
         while (closed.MoveNext())
           yield return closed.Current;
-        closed = (IEnumerator) null;
+        closed = null;
       }
       if ((UnityEngine.Object) openWindow != (UnityEngine.Object) null)
       {
         IEnumerator opened = openWindow.OnOpened();
         while (opened.MoveNext())
           yield return opened.Current;
-        opened = (IEnumerator) null;
+        opened = null;
       }
     }
 
@@ -40,7 +39,7 @@ namespace Engine.Source.Services
         IEnumerator closed = closeWindow.OnClosed();
         while (closed.MoveNext())
           yield return closed.Current;
-        closed = (IEnumerator) null;
+        closed = null;
       }
       GameWindow gameWindow = openWindow as GameWindow;
       if (!((UnityEngine.Object) gameWindow == (UnityEngine.Object) null))
@@ -52,10 +51,10 @@ namespace Engine.Source.Services
         while (true)
         {
           scale += Time.deltaTime * speed;
-          if ((double) scale < 1.0)
+          if (scale < 1.0)
           {
             gameWindow.Menu.transform.localScale = Vector3.one * EasingFunction.EaseOutElastic(0.0f, 1f, scale);
-            yield return (object) null;
+            yield return null;
           }
           else
             break;

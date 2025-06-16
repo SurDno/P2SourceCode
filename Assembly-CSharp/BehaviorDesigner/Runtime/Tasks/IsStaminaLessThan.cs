@@ -1,4 +1,5 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common;
 using Engine.Common.Commons;
@@ -8,7 +9,6 @@ using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Engine.Source.Components;
 using Scripts.Tools.Serializations.Converters;
-using UnityEngine;
 
 namespace BehaviorDesigner.Runtime.Tasks
 {
@@ -19,18 +19,18 @@ namespace BehaviorDesigner.Runtime.Tasks
   [FactoryProxy(typeof (IsStaminaLessThan))]
   public class IsStaminaLessThan : Conditional, IStub, ISerializeDataWrite, ISerializeDataRead
   {
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy()]
     [SerializeField]
-    public SharedFloat StaminaThreshold = (SharedFloat) 0.0f;
+    public SharedFloat StaminaThreshold = 0.0f;
     private IParameter<float> staminaParameter;
 
     public override void OnAwake()
     {
-      if ((UnityEngine.Object) this.gameObject == (UnityEngine.Object) null)
+      if ((UnityEngine.Object) gameObject == (UnityEngine.Object) null)
         return;
-      EngineGameObject component1 = this.gameObject.GetComponent<EngineGameObject>();
+      EngineGameObject component1 = gameObject.GetComponent<EngineGameObject>();
       if ((UnityEngine.Object) component1 == (UnityEngine.Object) null)
         return;
       IEntity owner = component1.Owner;
@@ -39,32 +39,32 @@ namespace BehaviorDesigner.Runtime.Tasks
       ParametersComponent component2 = owner.GetComponent<ParametersComponent>();
       if (component2 == null)
         return;
-      this.staminaParameter = component2.GetByName<float>(ParameterNameEnum.Stamina);
+      staminaParameter = component2.GetByName<float>(ParameterNameEnum.Stamina);
     }
 
     public override TaskStatus OnUpdate()
     {
-      return this.staminaParameter == null ? TaskStatus.Failure : ((double) this.staminaParameter.Value <= (double) this.StaminaThreshold.Value ? TaskStatus.Success : TaskStatus.Failure);
+      return staminaParameter == null ? TaskStatus.Failure : (staminaParameter.Value <= (double) StaminaThreshold.Value ? TaskStatus.Success : TaskStatus.Failure);
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.WriteSerialize<NodeData>(writer, "NodeData", this.nodeData);
-      DefaultDataWriteUtility.Write(writer, "Id", this.id);
-      DefaultDataWriteUtility.Write(writer, "FriendlyName", this.friendlyName);
-      DefaultDataWriteUtility.Write(writer, "Instant", this.instant);
-      DefaultDataWriteUtility.Write(writer, "Disabled", this.disabled);
-      BehaviorTreeDataWriteUtility.WriteShared<SharedFloat>(writer, "StaminaThreshold", this.StaminaThreshold);
+      DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
+      DefaultDataWriteUtility.Write(writer, "Id", id);
+      DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
+      DefaultDataWriteUtility.Write(writer, "Instant", instant);
+      DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
+      BehaviorTreeDataWriteUtility.WriteShared(writer, "StaminaThreshold", StaminaThreshold);
     }
 
-    public void DataRead(IDataReader reader, System.Type type)
+    public void DataRead(IDataReader reader, Type type)
     {
-      this.nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
-      this.id = DefaultDataReadUtility.Read(reader, "Id", this.id);
-      this.friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", this.friendlyName);
-      this.instant = DefaultDataReadUtility.Read(reader, "Instant", this.instant);
-      this.disabled = DefaultDataReadUtility.Read(reader, "Disabled", this.disabled);
-      this.StaminaThreshold = BehaviorTreeDataReadUtility.ReadShared<SharedFloat>(reader, "StaminaThreshold", this.StaminaThreshold);
+      nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
+      id = DefaultDataReadUtility.Read(reader, "Id", id);
+      friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
+      instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
+      disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
+      StaminaThreshold = BehaviorTreeDataReadUtility.ReadShared(reader, "StaminaThreshold", StaminaThreshold);
     }
   }
 }

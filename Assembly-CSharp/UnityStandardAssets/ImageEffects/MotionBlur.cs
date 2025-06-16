@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace UnityStandardAssets.ImageEffects
+﻿namespace UnityStandardAssets.ImageEffects
 {
   [ExecuteInEditMode]
   [AddComponentMenu("Image Effects/Blur/Motion Blur (Color Accumulation)")]
@@ -23,32 +21,32 @@ namespace UnityStandardAssets.ImageEffects
     protected override void OnDisable()
     {
       base.OnDisable();
-      Object.DestroyImmediate((Object) this.accumTexture);
+      Object.DestroyImmediate((Object) accumTexture);
     }
 
     private void OnRenderImage(RenderTexture source, RenderTexture destination)
     {
-      if ((Object) this.accumTexture == (Object) null || this.accumTexture.width != source.width || this.accumTexture.height != source.height)
+      if ((Object) accumTexture == (Object) null || accumTexture.width != source.width || accumTexture.height != source.height)
       {
-        Object.DestroyImmediate((Object) this.accumTexture);
-        this.accumTexture = new RenderTexture(source.width, source.height, 0);
-        this.accumTexture.hideFlags = HideFlags.HideAndDontSave;
-        Graphics.Blit((Texture) source, this.accumTexture);
+        Object.DestroyImmediate((Object) accumTexture);
+        accumTexture = new RenderTexture(source.width, source.height, 0);
+        accumTexture.hideFlags = HideFlags.HideAndDontSave;
+        Graphics.Blit((Texture) source, accumTexture);
       }
-      if (this.extraBlur)
+      if (extraBlur)
       {
         RenderTexture temporary = RenderTexture.GetTemporary(source.width / 4, source.height / 4, 0);
-        this.accumTexture.MarkRestoreExpected();
-        Graphics.Blit((Texture) this.accumTexture, temporary);
-        Graphics.Blit((Texture) temporary, this.accumTexture);
+        accumTexture.MarkRestoreExpected();
+        Graphics.Blit((Texture) accumTexture, temporary);
+        Graphics.Blit((Texture) temporary, accumTexture);
         RenderTexture.ReleaseTemporary(temporary);
       }
-      this.blurAmount = Mathf.Clamp(this.blurAmount, 0.0f, 0.92f);
-      this.material.SetTexture("_MainTex", (Texture) this.accumTexture);
-      this.material.SetFloat("_AccumOrig", 1f - this.blurAmount);
-      this.accumTexture.MarkRestoreExpected();
-      Graphics.Blit((Texture) source, this.accumTexture, this.material);
-      Graphics.Blit((Texture) this.accumTexture, destination);
+      blurAmount = Mathf.Clamp(blurAmount, 0.0f, 0.92f);
+      material.SetTexture("_MainTex", (Texture) accumTexture);
+      material.SetFloat("_AccumOrig", 1f - blurAmount);
+      accumTexture.MarkRestoreExpected();
+      Graphics.Blit((Texture) source, accumTexture, material);
+      Graphics.Blit((Texture) accumTexture, destination);
     }
   }
 }

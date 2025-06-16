@@ -1,20 +1,19 @@
 ﻿using ProBuilder2.Common;
-using UnityEngine;
 
 public class HighlightNearestFace : MonoBehaviour
 {
   public float travel = 50f;
   public float speed = 0.2f;
   private pb_Object target;
-  private pb_Face nearest = (pb_Face) null;
+  private pb_Face nearest = null;
 
   private void Start()
   {
-    this.target = pb_ShapeGenerator.PlaneGenerator(this.travel, this.travel, 25, 25, ProBuilder2.Common.Axis.Up, false);
-    this.target.SetFaceMaterial(this.target.faces, pb_Constant.DefaultMaterial);
-    this.target.transform.position = new Vector3(this.travel * 0.5f, 0.0f, this.travel * 0.5f);
-    this.target.ToMesh();
-    this.target.Refresh();
+    target = pb_ShapeGenerator.PlaneGenerator(travel, travel, 25, 25, Axis.Up, false);
+    target.SetFaceMaterial(target.faces, pb_Constant.DefaultMaterial);
+    target.transform.position = new Vector3(travel * 0.5f, 0.0f, travel * 0.5f);
+    target.ToMesh();
+    target.Refresh();
     Camera main = Camera.main;
     main.transform.position = new Vector3(25f, 40f, 0.0f);
     main.transform.localRotation = Quaternion.Euler(new Vector3(65f, 0.0f, 0.0f));
@@ -22,31 +21,31 @@ public class HighlightNearestFace : MonoBehaviour
 
   private void Update()
   {
-    float num1 = Time.time * this.speed;
-    this.transform.position = new Vector3(Mathf.PerlinNoise(num1, num1) * this.travel, 2f, Mathf.PerlinNoise(num1 + 1f, num1 + 1f) * this.travel);
-    if ((Object) this.target == (Object) null)
+    float num1 = Time.time * speed;
+    this.transform.position = new Vector3(Mathf.PerlinNoise(num1, num1) * travel, 2f, Mathf.PerlinNoise(num1 + 1f, num1 + 1f) * travel);
+    if ((Object) target == (Object) null)
     {
       Debug.LogWarning((object) "Missing the ProBuilder Mesh target!");
     }
     else
     {
-      Vector3 a = this.target.transform.InverseTransformPoint(this.transform.position);
-      if (this.nearest != null)
-        this.target.SetFaceColor(this.nearest, Color.white);
-      int length = this.target.faces.Length;
+      Vector3 a = target.transform.InverseTransformPoint(this.transform.position);
+      if (nearest != null)
+        target.SetFaceColor(nearest, Color.white);
+      int length = target.faces.Length;
       float num2 = float.PositiveInfinity;
-      this.nearest = this.target.faces[0];
+      nearest = target.faces[0];
       for (int index = 0; index < length; ++index)
       {
-        float num3 = Vector3.Distance(a, this.FaceCenter(this.target, this.target.faces[index]));
-        if ((double) num3 < (double) num2)
+        float num3 = Vector3.Distance(a, FaceCenter(target, target.faces[index]));
+        if (num3 < (double) num2)
         {
           num2 = num3;
-          this.nearest = this.target.faces[index];
+          nearest = target.faces[index];
         }
       }
-      this.target.SetFaceColor(this.nearest, Color.blue);
-      this.target.RefreshColors();
+      target.SetFaceColor(nearest, Color.blue);
+      target.RefreshColors();
     }
   }
 
@@ -60,7 +59,7 @@ public class HighlightNearestFace : MonoBehaviour
       zero.y += vertices[distinctIndex].y;
       zero.z += vertices[distinctIndex].z;
     }
-    float length = (float) face.distinctIndices.Length;
+    float length = face.distinctIndices.Length;
     zero.x /= length;
     zero.y /= length;
     zero.z /= length;

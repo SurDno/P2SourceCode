@@ -1,16 +1,11 @@
-﻿using Engine.Common.Services;
+﻿using System.Collections.Generic;
+using Engine.Common.Services;
 using Engine.Common.Types;
 using Engine.Impl.Services;
 using Engine.Impl.UI.Controls;
 using Engine.Source.Services;
 using Engine.Source.Services.Inputs;
 using InputServices;
-using System;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.Events;
-using UnityEngine.EventSystems;
-using UnityEngine.UI;
 
 namespace Engine.Source.UI.Menu.Protagonist.MindMap
 {
@@ -25,25 +20,25 @@ namespace Engine.Source.UI.Menu.Protagonist.MindMap
     [SerializeField]
     private RectTransform pageButtonsAnchor;
     private List<GameObject> pageButtons = new List<GameObject>();
-    private int currentIndex = 0;
+    private int currentIndex;
 
     private void OnDisable()
     {
-      ServiceLocator.GetService<MMService>().ChangeUndiscoveredEvent -= new Action(this.UpdateUndiscovered);
-      InputService.Instance.onJoystickUsedChanged -= new Action<bool>(this.OnJoystick);
+      ServiceLocator.GetService<MMService>().ChangeUndiscoveredEvent -= UpdateUndiscovered;
+      InputService.Instance.onJoystickUsedChanged -= OnJoystick;
       GameActionService service = ServiceLocator.GetService<GameActionService>();
-      service.RemoveListener(GameActionType.DPadDown, new GameActionHandle(this.ChangeChapter));
-      service.RemoveListener(GameActionType.DPadUp, new GameActionHandle(this.ChangeChapter));
+      service.RemoveListener(GameActionType.DPadDown, ChangeChapter);
+      service.RemoveListener(GameActionType.DPadUp, ChangeChapter);
     }
 
     private void OnEnable()
     {
-      ServiceLocator.GetService<MMService>().ChangeUndiscoveredEvent += new Action(this.UpdateUndiscovered);
-      InputService.Instance.onJoystickUsedChanged += new Action<bool>(this.OnJoystick);
+      ServiceLocator.GetService<MMService>().ChangeUndiscoveredEvent += UpdateUndiscovered;
+      InputService.Instance.onJoystickUsedChanged += OnJoystick;
       GameActionService service = ServiceLocator.GetService<GameActionService>();
-      service.AddListener(GameActionType.DPadDown, new GameActionHandle(this.ChangeChapter));
-      service.AddListener(GameActionType.DPadUp, new GameActionHandle(this.ChangeChapter));
-      this.OnJoystick(InputService.Instance.JoystickUsed);
+      service.AddListener(GameActionType.DPadDown, ChangeChapter);
+      service.AddListener(GameActionType.DPadUp, ChangeChapter);
+      OnJoystick(InputService.Instance.JoystickUsed);
     }
 
     private void OnJoystick(bool joystick)
@@ -51,103 +46,103 @@ namespace Engine.Source.UI.Menu.Protagonist.MindMap
       EventSystem.current.SetSelectedGameObject((GameObject) null);
       if (!joystick)
         return;
-      EventSystem.current.SetSelectedGameObject(this.pageButtons[this.currentIndex]);
+      EventSystem.current.SetSelectedGameObject(pageButtons[currentIndex]);
     }
 
     private bool ChangeChapter(GameActionType type, bool down)
     {
       if (type == GameActionType.DPadUp & down)
       {
-        --this.currentIndex;
-        this.ChangeSelection();
+        --currentIndex;
+        ChangeSelection();
         return true;
       }
       if (!(type == GameActionType.DPadDown & down))
         return false;
-      ++this.currentIndex;
-      this.ChangeSelection();
+      ++currentIndex;
+      ChangeSelection();
       return true;
     }
 
     private void ChangeSelection()
     {
-      int pageCount = this.mindMap.PageCount;
-      if (this.mindMap.GlobalPage != null)
+      int pageCount = mindMap.PageCount;
+      if (mindMap.GlobalPage != null)
         ++pageCount;
-      if (this.currentIndex > pageCount - 1)
-        this.currentIndex = 0;
-      if (this.currentIndex < 0)
-        this.currentIndex = pageCount - 1;
-      EventSystem.current.SetSelectedGameObject(this.currentIndex < this.mindMap.PageCount ? this.pageButtons[this.currentIndex] : this.globalButton);
-      ExecuteEvents.Execute<ISubmitHandler>(this.currentIndex < this.mindMap.PageCount ? this.pageButtons[this.currentIndex] : this.globalButton, (BaseEventData) new PointerEventData(EventSystem.current), ExecuteEvents.submitHandler);
+      if (currentIndex > pageCount - 1)
+        currentIndex = 0;
+      if (currentIndex < 0)
+        currentIndex = pageCount - 1;
+      EventSystem.current.SetSelectedGameObject(currentIndex < mindMap.PageCount ? pageButtons[currentIndex] : globalButton);
+      ExecuteEvents.Execute<ISubmitHandler>(currentIndex < mindMap.PageCount ? pageButtons[currentIndex] : globalButton, (BaseEventData) new PointerEventData(EventSystem.current), ExecuteEvents.submitHandler);
     }
 
     public void UpdateButtons()
     {
-      if (this.mindMap.GlobalPage != null)
+      if (mindMap.GlobalPage != null)
       {
-        this.globalButton.GetComponent<Button>().interactable = this.mindMap.OpenedPage != this.mindMap.GlobalPage;
-        string str = (string) null;
-        LocalizedText title = this.mindMap.GlobalPage.Title;
+        globalButton.GetComponent<Button>().interactable = mindMap.OpenedPage != mindMap.GlobalPage;
+        string str = null;
+        LocalizedText title = mindMap.GlobalPage.Title;
         if (title != LocalizedText.Empty)
           str = ServiceLocator.GetService<LocalizationService>().GetText(title);
         if (string.IsNullOrEmpty(str))
           str = "Global";
-        this.globalButton.GetComponent<Text>().text = str;
-        this.globalButton.SetActive(true);
-        if (this.mindMap.OpenedPage == this.mindMap.GlobalPage)
-          this.currentIndex = this.mindMap.PageCount;
+        globalButton.GetComponent<Text>().text = str;
+        globalButton.SetActive(true);
+        if (mindMap.OpenedPage == mindMap.GlobalPage)
+          currentIndex = mindMap.PageCount;
       }
       else
-        this.globalButton.SetActive(false);
-      int pageCount = this.mindMap.PageCount;
-      MMPage openedPage = this.mindMap.OpenedPage;
-      while (this.pageButtons.Count < pageCount)
+        globalButton.SetActive(false);
+      int pageCount = mindMap.PageCount;
+      MMPage openedPage = mindMap.OpenedPage;
+      while (pageButtons.Count < pageCount)
       {
-        int index = this.pageButtons.Count;
-        GameObject gameObject = UnityEngine.Object.Instantiate<GameObject>(this.pageButtonPrototype);
-        gameObject.transform.SetParent((Transform) this.pageButtonsAnchor, false);
-        this.pageButtons.Add(gameObject);
-        gameObject.GetComponent<Button>().onClick.AddListener((UnityAction) (() => this.OpenPage(index)));
+        int index = pageButtons.Count;
+        GameObject gameObject = UnityEngine.Object.Instantiate<GameObject>(pageButtonPrototype);
+        gameObject.transform.SetParent((Transform) pageButtonsAnchor, false);
+        pageButtons.Add(gameObject);
+        gameObject.GetComponent<Button>().onClick.AddListener((UnityAction) (() => OpenPage(index)));
       }
-      for (int index = 0; index < this.pageButtons.Count; ++index)
+      for (int index = 0; index < pageButtons.Count; ++index)
       {
         if (index < pageCount)
         {
-          MMPage page = this.mindMap.GetPage(index);
-          this.pageButtons[index].GetComponent<Button>().interactable = this.mindMap.OpenedPage != page;
-          string str = (string) null;
+          MMPage page = mindMap.GetPage(index);
+          pageButtons[index].GetComponent<Button>().interactable = mindMap.OpenedPage != page;
+          string str = null;
           LocalizedText title = page.Title;
           if (title != LocalizedText.Empty)
             str = ServiceLocator.GetService<LocalizationService>().GetText(title);
           if (string.IsNullOrEmpty(str))
             str = index.ToString();
-          this.pageButtons[index].GetComponent<Text>().text = str;
-          this.pageButtons[index].SetActive(true);
-          if (this.mindMap.OpenedPage == page)
-            this.currentIndex = index;
+          pageButtons[index].GetComponent<Text>().text = str;
+          pageButtons[index].SetActive(true);
+          if (mindMap.OpenedPage == page)
+            currentIndex = index;
         }
         else
-          this.pageButtons[index].SetActive(false);
+          pageButtons[index].SetActive(false);
       }
-      this.UpdateUndiscovered();
+      UpdateUndiscovered();
     }
 
     public void OpenPage(int index)
     {
-      this.currentIndex = index;
-      this.mindMap.OpenPage(this.mindMap.GetPage(index));
+      currentIndex = index;
+      mindMap.OpenPage(mindMap.GetPage(index));
     }
 
-    public void OpenGlobal() => this.mindMap.OpenPage(this.mindMap.GlobalPage);
+    public void OpenGlobal() => mindMap.OpenPage(mindMap.GlobalPage);
 
     public void UpdateUndiscovered()
     {
-      if (this.mindMap.GlobalPage != null)
-        this.globalButton.GetComponent<HideableView>().Visible = this.mindMap.GlobalPage.HasUndiscovered();
-      int pageCount = this.mindMap.PageCount;
+      if (mindMap.GlobalPage != null)
+        globalButton.GetComponent<HideableView>().Visible = mindMap.GlobalPage.HasUndiscovered();
+      int pageCount = mindMap.PageCount;
       for (int index = 0; index < pageCount; ++index)
-        this.pageButtons[index].GetComponent<HideableView>().Visible = this.mindMap.GetPage(index).HasUndiscovered();
+        pageButtons[index].GetComponent<HideableView>().Visible = mindMap.GetPage(index).HasUndiscovered();
     }
   }
 }

@@ -1,5 +1,4 @@
-﻿using UnityEngine;
-using UnityEngine.Serialization;
+﻿using System;
 
 namespace Engine.Impl.UI.Controls
 {
@@ -55,80 +54,80 @@ namespace Engine.Impl.UI.Controls
     private Gradient markerRight;
     [SerializeField]
     [Range(0.0f, 1f)]
-    private float currentValue = 0.0f;
-    private float tailValue = 0.0f;
-    private float velocity = 0.0f;
+    private float currentValue;
+    private float tailValue;
+    private float velocity;
 
     public Sprite Image
     {
-      get => this.image;
-      set => this.image = value;
+      get => image;
+      set => image = value;
     }
 
     public bool IsReversed
     {
-      get => this.isReversed;
-      set => this.isReversed = value;
+      get => isReversed;
+      set => isReversed = value;
     }
 
     public override float Progress
     {
-      get => this.CurrentValue;
-      set => this.CurrentValue = value;
+      get => CurrentValue;
+      set => CurrentValue = value;
     }
 
     public float CurrentValue
     {
-      get => this.currentValue;
+      get => currentValue;
       set
       {
-        if ((double) this.currentValue == (double) value)
+        if (currentValue == (double) value)
           return;
-        this.currentValue = value;
+        currentValue = value;
         if (this.gameObject.activeInHierarchy && this.enabled)
           return;
-        this.TailValue = value;
+        TailValue = value;
       }
     }
 
     public float TailValue
     {
-      get => this.tailValue;
+      get => tailValue;
       set
       {
-        if ((double) this.tailValue == (double) value)
+        if (tailValue == (double) value)
           return;
-        this.tailValue = value;
+        tailValue = value;
       }
     }
 
-    private Color FillColor => this.IsReversed ? this.negativeFillColor : this.positiveFillColor;
+    private Color FillColor => IsReversed ? negativeFillColor : positiveFillColor;
 
-    private Color BaseColor => this.IsReversed ? this.negativeBaseColor : this.positiveBaseColor;
+    private Color BaseColor => IsReversed ? negativeBaseColor : positiveBaseColor;
 
     private void Start()
     {
-      this.rightFill = this.CreateGradient();
-      RectTransform transform = (RectTransform) this.rightFill.transform;
+      rightFill = CreateGradient();
+      RectTransform transform = (RectTransform) rightFill.transform;
       transform.offsetMin = new Vector2(0.0f, -2f);
       transform.offsetMax = new Vector2(0.0f, -2f);
-      this.rightFill.color = this.BaseColor;
-      this.leftFill = this.CreateGradient();
-      this.leftFill.color = this.FillColor;
-      this.delta = this.CreateGradient();
+      rightFill.color = BaseColor;
+      leftFill = CreateGradient();
+      leftFill.color = FillColor;
+      delta = CreateGradient();
       Color markerColor = this.markerColor with { a = 0.0f };
-      this.markerLeft = this.CreateGradient();
-      this.markerLeft.StartColor = markerColor;
-      this.markerLeft.EndColor = this.markerColor;
-      this.markerRight = this.CreateGradient();
-      this.markerRight.StartColor = this.markerColor;
-      this.markerRight.EndColor = markerColor;
-      this.Redraw();
+      markerLeft = CreateGradient();
+      markerLeft.StartColor = markerColor;
+      markerLeft.EndColor = this.markerColor;
+      markerRight = CreateGradient();
+      markerRight.StartColor = this.markerColor;
+      markerRight.EndColor = markerColor;
+      Redraw();
     }
 
     private Gradient CreateGradient()
     {
-      GameObject gameObject = new GameObject("Gradient", new System.Type[3]
+      GameObject gameObject = new GameObject("Gradient", new Type[3]
       {
         typeof (RectTransform),
         typeof (CanvasRenderer),
@@ -141,8 +140,8 @@ namespace Engine.Impl.UI.Controls
       component1.offsetMin = Vector2.zero;
       component1.offsetMax = Vector2.zero;
       Gradient component2 = gameObject.GetComponent<Gradient>();
-      component2.Sprite = this.Image;
-      component2.material = this.material;
+      component2.Sprite = Image;
+      component2.material = material;
       return component2;
     }
 
@@ -154,72 +153,72 @@ namespace Engine.Impl.UI.Controls
 
     private void Redraw()
     {
-      float num1 = this.rightLimit - this.leftLimit;
-      float num2 = this.leftLimit + num1 * this.currentValue;
+      float num1 = rightLimit - leftLimit;
+      float num2 = leftLimit + num1 * currentValue;
       float num3;
-      if ((double) this.tailValue == (double) this.currentValue)
+      if (tailValue == (double) currentValue)
       {
         num3 = num2;
-        this.delta.gameObject.SetActive(false);
+        delta.gameObject.SetActive(false);
       }
-      else if ((double) this.tailValue < (double) this.currentValue)
+      else if (tailValue < (double) currentValue)
       {
-        num3 = this.leftLimit + num1 * this.tailValue;
+        num3 = leftLimit + num1 * tailValue;
         float num4 = num2;
-        if (this.IsReversed)
-          this.delta.color = Color.Lerp(this.FillColor, this.negativeBlinkColor, this.BlinkPhase());
+        if (IsReversed)
+          delta.color = Color.Lerp(FillColor, negativeBlinkColor, BlinkPhase());
         else
-          this.delta.color = Color.Lerp(this.BaseColor, this.positiveBlinkColor, this.BlinkPhase());
-        this.delta.StartPosition = num3;
-        this.delta.EndPosition = num4;
-        this.delta.gameObject.SetActive(true);
+          delta.color = Color.Lerp(BaseColor, positiveBlinkColor, BlinkPhase());
+        delta.StartPosition = num3;
+        delta.EndPosition = num4;
+        delta.gameObject.SetActive(true);
       }
       else
       {
         num3 = num2;
-        float num5 = this.leftLimit + num1 * this.tailValue;
-        if (this.IsReversed)
-          this.delta.color = Color.Lerp(this.positiveBaseColor, this.positiveBlinkColor, this.BlinkPhase());
+        float num5 = leftLimit + num1 * tailValue;
+        if (IsReversed)
+          delta.color = Color.Lerp(positiveBaseColor, positiveBlinkColor, BlinkPhase());
         else
-          this.delta.color = Color.Lerp(this.positiveFillColor, this.negativeBlinkColor, this.BlinkPhase());
-        this.delta.StartPosition = num3;
-        this.delta.EndPosition = num5;
-        this.delta.gameObject.SetActive(true);
+          delta.color = Color.Lerp(positiveFillColor, negativeBlinkColor, BlinkPhase());
+        delta.StartPosition = num3;
+        delta.EndPosition = num5;
+        delta.gameObject.SetActive(true);
       }
-      this.leftFill.EndPosition = num3;
-      this.leftFill.color = this.FillColor;
-      this.rightFill.color = this.BaseColor;
-      this.markerLeft.StartPosition = num2 - this.markerWidth;
-      this.markerLeft.EndPosition = num2;
-      this.markerRight.StartPosition = num2;
-      this.markerRight.EndPosition = num2 + this.markerWidth;
+      leftFill.EndPosition = num3;
+      leftFill.color = FillColor;
+      rightFill.color = BaseColor;
+      markerLeft.StartPosition = num2 - markerWidth;
+      markerLeft.EndPosition = num2;
+      markerRight.StartPosition = num2;
+      markerRight.EndPosition = num2 + markerWidth;
     }
 
     private void Update()
     {
-      if ((double) this.tailValue < (double) this.currentValue)
+      if (tailValue < (double) currentValue)
       {
-        if ((double) this.velocity < 0.0)
-          this.velocity = 0.0f;
-        this.velocity += Time.deltaTime * this.tailAcceleration;
-        this.tailValue += this.velocity * Time.deltaTime;
-        if ((double) this.tailValue > (double) this.currentValue)
-          this.tailValue = this.currentValue;
+        if (velocity < 0.0)
+          velocity = 0.0f;
+        velocity += Time.deltaTime * tailAcceleration;
+        tailValue += velocity * Time.deltaTime;
+        if (tailValue > (double) currentValue)
+          tailValue = currentValue;
       }
-      else if ((double) this.tailValue > (double) this.currentValue)
+      else if (tailValue > (double) currentValue)
       {
-        if ((double) this.velocity > 0.0)
-          this.velocity = 0.0f;
-        this.velocity -= Time.deltaTime * this.tailAcceleration;
-        this.tailValue += this.velocity * Time.deltaTime;
-        if ((double) this.tailValue < (double) this.currentValue)
-          this.tailValue = this.currentValue;
+        if (velocity > 0.0)
+          velocity = 0.0f;
+        velocity -= Time.deltaTime * tailAcceleration;
+        tailValue += velocity * Time.deltaTime;
+        if (tailValue < (double) currentValue)
+          tailValue = currentValue;
       }
-      if ((double) this.tailValue == (double) this.currentValue)
-        this.velocity = 0.0f;
-      this.Redraw();
+      if (tailValue == (double) currentValue)
+        velocity = 0.0f;
+      Redraw();
     }
 
-    public override void SkipAnimation() => this.TailValue = this.CurrentValue;
+    public override void SkipAnimation() => TailValue = CurrentValue;
   }
 }

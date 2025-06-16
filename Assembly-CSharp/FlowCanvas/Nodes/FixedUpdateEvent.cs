@@ -1,6 +1,5 @@
 ﻿using ParadoxNotion.Design;
 using ParadoxNotion.Services;
-using System;
 
 namespace FlowCanvas.Nodes
 {
@@ -11,18 +10,18 @@ namespace FlowCanvas.Nodes
   {
     private FlowOutput fixedUpdate;
 
-    protected override void RegisterPorts() => this.fixedUpdate = this.AddFlowOutput("Out");
+    protected override void RegisterPorts() => fixedUpdate = AddFlowOutput("Out");
 
     public override void OnGraphStarted()
     {
-      BlueprintManager.current.onFixedUpdate += new Action(this.FixedUpdate);
+      BlueprintManager.current.onFixedUpdate += FixedUpdate;
     }
 
     public override void OnGraphStoped()
     {
-      BlueprintManager.current.onFixedUpdate -= new Action(this.FixedUpdate);
+      BlueprintManager.current.onFixedUpdate -= FixedUpdate;
     }
 
-    private void FixedUpdate() => this.fixedUpdate.Call();
+    private void FixedUpdate() => fixedUpdate.Call();
   }
 }

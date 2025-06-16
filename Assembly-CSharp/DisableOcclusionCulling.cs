@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-public class DisableOcclusionCulling : MonoBehaviour
+﻿public class DisableOcclusionCulling : MonoBehaviour
 {
   private void Start()
   {

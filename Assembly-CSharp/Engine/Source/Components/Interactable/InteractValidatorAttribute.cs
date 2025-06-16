@@ -1,9 +1,9 @@
-﻿using Cofe.Loggers;
+﻿using System;
+using System.Reflection;
+using Cofe.Loggers;
 using Cofe.Meta;
 using Engine.Common.Components;
 using Engine.Common.Components.Interactable;
-using System;
-using System.Reflection;
 
 namespace Engine.Source.Components.Interactable
 {
@@ -18,13 +18,13 @@ namespace Engine.Source.Components.Interactable
     {
       MethodInfo methodInfo = (MethodInfo) member;
       if (!methodInfo.IsStatic || methodInfo.ReturnType != typeof (ValidateResult) || methodInfo.GetParameters().Length != 2 || methodInfo.GetParameters()[0].ParameterType != typeof (IInteractableComponent) || methodInfo.GetParameters()[1].ParameterType != typeof (InteractItem))
-        Logger.AddError("Method error : " + (object) methodInfo);
+        Logger.AddError("Method error : " + methodInfo);
       else
-        container.GetHandler(InitialiseAttribute.Id).AddHandle((ComputeHandle) ((target, data) => InteractValidationService.AddValidator(this.type, (Func<IInteractableComponent, InteractItem, ValidateResult>) ((interactable, item) => (ValidateResult) ((MethodBase) member).Invoke((object) null, new object[2]
+        container.GetHandler(Id).AddHandle((target, data) => InteractValidationService.AddValidator(type, (interactable, item) => (ValidateResult) ((MethodBase) member).Invoke(null, new object[2]
         {
-          (object) interactable,
-          (object) item
-        })))));
+          interactable,
+          item
+        })));
     }
   }
 }

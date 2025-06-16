@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEngine;
 
 namespace RootMotion.FinalIK
 {
@@ -10,7 +9,7 @@ namespace RootMotion.FinalIK
     [Tooltip("The type of the FBBIK effector.")]
     public FullBodyBipedEffector effectorType;
     [Tooltip("InteractionObject weight curve multipliers for this effector target.")]
-    public InteractionTarget.Multiplier[] multipliers;
+    public Multiplier[] multipliers;
     [Tooltip("The interaction speed multiplier for this effector. This can be used to make interactions faster/slower for specific effectors.")]
     public float interactionSpeedMlp = 1f;
     [Tooltip("The pivot to twist/swing this interaction target about. For symmetric objects that can be interacted with from a certain angular range.")]
@@ -64,45 +63,45 @@ namespace RootMotion.FinalIK
 
     public float GetValue(InteractionObject.WeightCurve.Type curveType)
     {
-      for (int index = 0; index < this.multipliers.Length; ++index)
+      for (int index = 0; index < multipliers.Length; ++index)
       {
-        if (this.multipliers[index].curve == curveType)
-          return this.multipliers[index].multiplier;
+        if (multipliers[index].curve == curveType)
+          return multipliers[index].multiplier;
       }
       return 1f;
     }
 
     public void ResetRotation()
     {
-      if (!((UnityEngine.Object) this.pivot != (UnityEngine.Object) null))
+      if (!((UnityEngine.Object) pivot != (UnityEngine.Object) null))
         return;
-      this.pivot.localRotation = this.defaultLocalRotation;
+      pivot.localRotation = defaultLocalRotation;
     }
 
     public void RotateTo(Vector3 position)
     {
-      if ((UnityEngine.Object) this.pivot == (UnityEngine.Object) null)
+      if ((UnityEngine.Object) pivot == (UnityEngine.Object) null)
         return;
-      if ((UnityEngine.Object) this.pivot != (UnityEngine.Object) this.lastPivot)
+      if ((UnityEngine.Object) pivot != (UnityEngine.Object) lastPivot)
       {
-        this.defaultLocalRotation = this.pivot.localRotation;
-        this.lastPivot = this.pivot;
+        defaultLocalRotation = pivot.localRotation;
+        lastPivot = pivot;
       }
-      this.pivot.localRotation = this.defaultLocalRotation;
-      if ((double) this.twistWeight > 0.0)
+      pivot.localRotation = defaultLocalRotation;
+      if (twistWeight > 0.0)
       {
-        Vector3 tangent1 = this.transform.position - this.pivot.position;
-        Vector3 axis = this.pivot.rotation * this.twistAxis;
+        Vector3 tangent1 = this.transform.position - pivot.position;
+        Vector3 axis = pivot.rotation * twistAxis;
         Vector3 normal1 = axis;
         Vector3.OrthoNormalize(ref normal1, ref tangent1);
         Vector3 normal2 = axis;
-        Vector3 tangent2 = position - this.pivot.position;
+        Vector3 tangent2 = position - pivot.position;
         Vector3.OrthoNormalize(ref normal2, ref tangent2);
-        this.pivot.rotation = Quaternion.Lerp(Quaternion.identity, QuaTools.FromToAroundAxis(tangent1, tangent2, axis), this.twistWeight) * this.pivot.rotation;
+        pivot.rotation = Quaternion.Lerp(Quaternion.identity, QuaTools.FromToAroundAxis(tangent1, tangent2, axis), twistWeight) * pivot.rotation;
       }
-      if ((double) this.swingWeight <= 0.0)
+      if (swingWeight <= 0.0)
         return;
-      this.pivot.rotation = Quaternion.Lerp(Quaternion.identity, Quaternion.FromToRotation(this.transform.position - this.pivot.position, position - this.pivot.position), this.swingWeight) * this.pivot.rotation;
+      pivot.rotation = Quaternion.Lerp(Quaternion.identity, Quaternion.FromToRotation(this.transform.position - pivot.position, position - pivot.position), swingWeight) * pivot.rotation;
     }
 
     [ContextMenu("User Manual")]

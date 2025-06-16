@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEngine;
 
 namespace RootMotion.FinalIK
 {
@@ -7,64 +6,64 @@ namespace RootMotion.FinalIK
   public class IKSolverHeuristic : IKSolver
   {
     public Transform target;
-    public float tolerance = 0.0f;
+    public float tolerance;
     public int maxIterations = 4;
     public bool useRotationLimits = true;
     public bool XY;
-    public IKSolver.Bone[] bones = new IKSolver.Bone[0];
+    public Bone[] bones = new Bone[0];
     protected Vector3 lastLocalDirection;
     protected float chainLength;
 
     public bool SetChain(Transform[] hierarchy, Transform root)
     {
-      if (this.bones == null || this.bones.Length != hierarchy.Length)
-        this.bones = new IKSolver.Bone[hierarchy.Length];
+      if (bones == null || bones.Length != hierarchy.Length)
+        bones = new Bone[hierarchy.Length];
       for (int index = 0; index < hierarchy.Length; ++index)
       {
-        if (this.bones[index] == null)
-          this.bones[index] = new IKSolver.Bone();
-        this.bones[index].transform = hierarchy[index];
+        if (bones[index] == null)
+          bones[index] = new Bone();
+        bones[index].transform = hierarchy[index];
       }
-      this.Initiate(root);
-      return this.initiated;
+      Initiate(root);
+      return initiated;
     }
 
     public void AddBone(Transform bone)
     {
-      Transform[] hierarchy = new Transform[this.bones.Length + 1];
-      for (int index = 0; index < this.bones.Length; ++index)
-        hierarchy[index] = this.bones[index].transform;
+      Transform[] hierarchy = new Transform[bones.Length + 1];
+      for (int index = 0; index < bones.Length; ++index)
+        hierarchy[index] = bones[index].transform;
       hierarchy[hierarchy.Length - 1] = bone;
-      this.SetChain(hierarchy, this.root);
+      SetChain(hierarchy, root);
     }
 
     public override void StoreDefaultLocalState()
     {
-      for (int index = 0; index < this.bones.Length; ++index)
-        this.bones[index].StoreDefaultLocalState();
+      for (int index = 0; index < bones.Length; ++index)
+        bones[index].StoreDefaultLocalState();
     }
 
     public override void FixTransforms()
     {
-      if (!this.initiated || (double) this.IKPositionWeight <= 0.0)
+      if (!initiated || IKPositionWeight <= 0.0)
         return;
-      for (int index = 0; index < this.bones.Length; ++index)
-        this.bones[index].FixTransform();
+      for (int index = 0; index < bones.Length; ++index)
+        bones[index].FixTransform();
     }
 
     public override bool IsValid(ref string message)
     {
-      if (this.bones.Length == 0)
+      if (bones.Length == 0)
       {
         message = "IK chain has no Bones.";
         return false;
       }
-      if (this.bones.Length < this.minBones)
+      if (bones.Length < minBones)
       {
-        message = "IK chain has less than " + (object) this.minBones + " Bones.";
+        message = "IK chain has less than " + minBones + " Bones.";
         return false;
       }
-      foreach (IKSolver.Point bone in this.bones)
+      foreach (Point bone in bones)
       {
         if ((UnityEngine.Object) bone.transform == (UnityEngine.Object) null)
         {
@@ -72,24 +71,24 @@ namespace RootMotion.FinalIK
           return false;
         }
       }
-      Transform transform = IKSolver.ContainsDuplicateBone(this.bones);
+      Transform transform = ContainsDuplicateBone(bones);
       if ((UnityEngine.Object) transform != (UnityEngine.Object) null)
       {
         message = transform.name + " is represented multiple times in the Bones.";
         return false;
       }
-      if (!this.allowCommonParent && !IKSolver.HierarchyIsValid(this.bones))
+      if (!allowCommonParent && !HierarchyIsValid(bones))
       {
         message = "Invalid bone hierarchy detected. IK requires for it's bones to be parented to each other in descending order.";
         return false;
       }
-      if (!this.boneLengthCanBeZero)
+      if (!boneLengthCanBeZero)
       {
-        for (int index = 0; index < this.bones.Length - 1; ++index)
+        for (int index = 0; index < bones.Length - 1; ++index)
         {
-          if ((double) (this.bones[index].transform.position - this.bones[index + 1].transform.position).magnitude == 0.0)
+          if ((double) (bones[index].transform.position - bones[index + 1].transform.position).magnitude == 0.0)
           {
-            message = "Bone " + (object) index + " length is zero.";
+            message = "Bone " + index + " length is zero.";
             return false;
           }
         }
@@ -97,16 +96,16 @@ namespace RootMotion.FinalIK
       return true;
     }
 
-    public override IKSolver.Point[] GetPoints() => (IKSolver.Point[]) this.bones;
+    public override Point[] GetPoints() => bones;
 
-    public override IKSolver.Point GetPoint(Transform transform)
+    public override Point GetPoint(Transform transform)
     {
-      for (int index = 0; index < this.bones.Length; ++index)
+      for (int index = 0; index < bones.Length; ++index)
       {
-        if ((UnityEngine.Object) this.bones[index].transform == (UnityEngine.Object) transform)
-          return (IKSolver.Point) this.bones[index];
+        if ((UnityEngine.Object) bones[index].transform == (UnityEngine.Object) transform)
+          return bones[index];
       }
-      return (IKSolver.Point) null;
+      return null;
     }
 
     protected virtual int minBones => 2;
@@ -125,24 +124,24 @@ namespace RootMotion.FinalIK
 
     protected void InitiateBones()
     {
-      this.chainLength = 0.0f;
-      for (int index = 0; index < this.bones.Length; ++index)
+      chainLength = 0.0f;
+      for (int index = 0; index < bones.Length; ++index)
       {
-        if (index < this.bones.Length - 1)
+        if (index < bones.Length - 1)
         {
-          this.bones[index].length = (this.bones[index].transform.position - this.bones[index + 1].transform.position).magnitude;
-          this.chainLength += this.bones[index].length;
-          Vector3 position = this.bones[index + 1].transform.position;
-          this.bones[index].axis = Quaternion.Inverse(this.bones[index].transform.rotation) * (position - this.bones[index].transform.position);
-          if ((UnityEngine.Object) this.bones[index].rotationLimit != (UnityEngine.Object) null)
+          bones[index].length = (bones[index].transform.position - bones[index + 1].transform.position).magnitude;
+          chainLength += bones[index].length;
+          Vector3 position = bones[index + 1].transform.position;
+          bones[index].axis = Quaternion.Inverse(bones[index].transform.rotation) * (position - bones[index].transform.position);
+          if ((UnityEngine.Object) bones[index].rotationLimit != (UnityEngine.Object) null)
           {
-            if (this.XY && !(this.bones[index].rotationLimit is RotationLimitHinge))
-              Warning.Log("Only Hinge Rotation Limits should be used on 2D IK solvers.", this.bones[index].transform);
-            this.bones[index].rotationLimit.Disable();
+            if (XY && !(bones[index].rotationLimit is RotationLimitHinge))
+              Warning.Log("Only Hinge Rotation Limits should be used on 2D IK solvers.", bones[index].transform);
+            bones[index].rotationLimit.Disable();
           }
         }
         else
-          this.bones[index].axis = Quaternion.Inverse(this.bones[index].transform.rotation) * (this.bones[this.bones.Length - 1].transform.position - this.bones[0].transform.position);
+          bones[index].axis = Quaternion.Inverse(bones[index].transform.rotation) * (bones[bones.Length - 1].transform.position - bones[0].transform.position);
       }
     }
 
@@ -150,35 +149,35 @@ namespace RootMotion.FinalIK
     {
       get
       {
-        return this.bones[0].transform.InverseTransformDirection(this.bones[this.bones.Length - 1].transform.position - this.bones[0].transform.position);
+        return bones[0].transform.InverseTransformDirection(bones[bones.Length - 1].transform.position - bones[0].transform.position);
       }
     }
 
     protected float positionOffset
     {
-      get => Vector3.SqrMagnitude(this.localDirection - this.lastLocalDirection);
+      get => Vector3.SqrMagnitude(localDirection - lastLocalDirection);
     }
 
     protected Vector3 GetSingularityOffset()
     {
-      if (!this.SingularityDetected())
+      if (!SingularityDetected())
         return Vector3.zero;
-      Vector3 normalized = (this.IKPosition - this.bones[0].transform.position).normalized;
+      Vector3 normalized = (IKPosition - bones[0].transform.position).normalized;
       Vector3 rhs = new Vector3(normalized.y, normalized.z, normalized.x);
-      if (this.useRotationLimits && (UnityEngine.Object) this.bones[this.bones.Length - 2].rotationLimit != (UnityEngine.Object) null && this.bones[this.bones.Length - 2].rotationLimit is RotationLimitHinge)
-        rhs = this.bones[this.bones.Length - 2].transform.rotation * this.bones[this.bones.Length - 2].rotationLimit.axis;
-      return Vector3.Cross(normalized, rhs) * this.bones[this.bones.Length - 2].length * 0.5f;
+      if (useRotationLimits && (UnityEngine.Object) bones[bones.Length - 2].rotationLimit != (UnityEngine.Object) null && bones[bones.Length - 2].rotationLimit is RotationLimitHinge)
+        rhs = bones[bones.Length - 2].transform.rotation * bones[bones.Length - 2].rotationLimit.axis;
+      return Vector3.Cross(normalized, rhs) * bones[bones.Length - 2].length * 0.5f;
     }
 
     private bool SingularityDetected()
     {
-      if (!this.initiated)
+      if (!initiated)
         return false;
-      Vector3 vector3_1 = this.bones[this.bones.Length - 1].transform.position - this.bones[0].transform.position;
-      Vector3 vector3_2 = this.IKPosition - this.bones[0].transform.position;
+      Vector3 vector3_1 = bones[bones.Length - 1].transform.position - bones[0].transform.position;
+      Vector3 vector3_2 = IKPosition - bones[0].transform.position;
       float magnitude1 = vector3_1.magnitude;
       float magnitude2 = vector3_2.magnitude;
-      return (double) magnitude1 >= (double) magnitude2 && (double) magnitude1 >= (double) this.chainLength - (double) this.bones[this.bones.Length - 2].length * 0.10000000149011612 && (double) magnitude1 != 0.0 && (double) magnitude2 != 0.0 && (double) magnitude2 <= (double) magnitude1 && (double) Vector3.Dot(vector3_1 / magnitude1, vector3_2 / magnitude2) >= 0.99900001287460327;
+      return magnitude1 >= (double) magnitude2 && magnitude1 >= chainLength - bones[bones.Length - 2].length * 0.10000000149011612 && magnitude1 != 0.0 && magnitude2 != 0.0 && magnitude2 <= (double) magnitude1 && (double) Vector3.Dot(vector3_1 / magnitude1, vector3_2 / magnitude2) >= 0.99900001287460327;
     }
   }
 }

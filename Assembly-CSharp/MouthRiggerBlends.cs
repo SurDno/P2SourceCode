@@ -1,51 +1,50 @@
 ﻿using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 public class MouthRiggerBlends : MonoBehaviour
 {
   public SkinnedMeshRenderer skinnedMesh;
   public Visemes_Count_t VisemeSet = Visemes_Count_t._Please_Set_;
   private string VisemeSelector;
-  public VisemeBlendDefine[] VisemeBlends = (VisemeBlendDefine[]) null;
-  public PhonemeVisemeMapping phnMap = (PhonemeVisemeMapping) null;
-  private bool bExpandedList = false;
-  private bool bExpandedBoneList = false;
+  public VisemeBlendDefine[] VisemeBlends = null;
+  public PhonemeVisemeMapping phnMap = null;
+  private bool bExpandedList;
+  private bool bExpandedBoneList;
   private AnnoBlendDeformer visemeBlendDeformer;
-  public BonePose[] BasePoses = (BonePose[]) null;
+  public BonePose[] BasePoses = null;
 
   public IAnnoDeformer MouthDeformer
   {
     get
     {
-      if (this.visemeBlendDeformer == null)
-        this.MakeRuntimeDeformer();
-      return (IAnnoDeformer) this.visemeBlendDeformer;
+      if (visemeBlendDeformer == null)
+        MakeRuntimeDeformer();
+      return visemeBlendDeformer;
     }
   }
 
   private void MakeRuntimeDeformer()
   {
-    if (this.visemeBlendDeformer != null || this.phnMap == null || this.VisemeBlends == null)
+    if (visemeBlendDeformer != null || phnMap == null || VisemeBlends == null)
       return;
-    if ((UnityEngine.Object) this.skinnedMesh == (UnityEngine.Object) null)
-      this.skinnedMesh = this.GetComponent<SkinnedMeshRenderer>();
-    MouthRiggerBlends.UpdateBlendIndices(this.skinnedMesh, this.VisemeBlends);
-    this.visemeBlendDeformer = new AnnoBlendDeformer(this.VisemeBlends, MouthRiggerBlends.GetActiveBlendIndices(this.skinnedMesh, this.VisemeBlends), this.skinnedMesh);
+    if ((UnityEngine.Object) skinnedMesh == (UnityEngine.Object) null)
+      skinnedMesh = this.GetComponent<SkinnedMeshRenderer>();
+    UpdateBlendIndices(skinnedMesh, VisemeBlends);
+    visemeBlendDeformer = new AnnoBlendDeformer(VisemeBlends, GetActiveBlendIndices(skinnedMesh, VisemeBlends), skinnedMesh);
   }
 
-  private void Start() => this.MakeRuntimeDeformer();
+  private void Start() => MakeRuntimeDeformer();
 
   public bool VisemesExpanded
   {
-    get => this.bExpandedList;
-    set => this.bExpandedList = value;
+    get => bExpandedList;
+    set => bExpandedList = value;
   }
 
   public bool BoneListExpanded
   {
-    get => this.bExpandedBoneList;
-    set => this.bExpandedBoneList = value;
+    get => bExpandedBoneList;
+    set => bExpandedBoneList = value;
   }
 
   private void Update()
@@ -54,57 +53,57 @@ public class MouthRiggerBlends : MonoBehaviour
 
   public Visemes_Count_t VisemeConfig
   {
-    get => this.VisemeSet;
+    get => VisemeSet;
     set
     {
-      if (value == this.VisemeSet)
+      if (value == VisemeSet)
         return;
-      this.VisemeSet = value;
-      this.InstantiatePhnToVis();
+      VisemeSet = value;
+      InstantiatePhnToVis();
     }
   }
 
   public void InstantiatePhnToVis()
   {
-    switch (this.VisemeSet)
+    switch (VisemeSet)
     {
       case Visemes_Count_t._Please_Set_:
-        this.phnMap = (PhonemeVisemeMapping) null;
+        phnMap = null;
         break;
       case Visemes_Count_t._9_Visemes:
         Visemes9 visemes9 = new Visemes9();
-        this.phnMap = new PhonemeVisemeMapping(visemes9.visNames, visemes9.mapping);
+        phnMap = new PhonemeVisemeMapping(visemes9.visNames, visemes9.mapping);
         break;
       case Visemes_Count_t._12_Visemes:
         Visemes12 visemes12 = new Visemes12();
-        this.phnMap = new PhonemeVisemeMapping(visemes12.visNames, visemes12.mapping);
+        phnMap = new PhonemeVisemeMapping(visemes12.visNames, visemes12.mapping);
         break;
       case Visemes_Count_t._17_Visemes:
         Visemes17 visemes17 = new Visemes17();
-        this.phnMap = new PhonemeVisemeMapping(visemes17.visNames, visemes17.mapping);
+        phnMap = new PhonemeVisemeMapping(visemes17.visNames, visemes17.mapping);
         break;
     }
   }
 
   public string CurrentViseme
   {
-    get => this.VisemeSelector;
-    set => this.VisemeSelector = value;
+    get => VisemeSelector;
+    set => VisemeSelector = value;
   }
 
   public int GetPopupInfo(out string[] list)
   {
-    list = (string[]) null;
-    if (this.phnMap == null)
-      this.InstantiatePhnToVis();
-    if (this.phnMap == null)
+    list = null;
+    if (phnMap == null)
+      InstantiatePhnToVis();
+    if (phnMap == null)
       return -1;
-    list = this.phnMap.GetVisemeNames();
+    list = phnMap.GetVisemeNames();
     if (list == null)
       return -1;
     for (int popupInfo = 0; popupInfo < list.Length; ++popupInfo)
     {
-      if (list[popupInfo] == this.VisemeSelector)
+      if (list[popupInfo] == VisemeSelector)
         return popupInfo;
     }
     return 0;
@@ -112,9 +111,9 @@ public class MouthRiggerBlends : MonoBehaviour
 
   public VisemeBlendDefine GetViseme(string which)
   {
-    if (this.VisemeBlends == null)
-      this.VisemeBlends = new VisemeBlendDefine[0];
-    foreach (VisemeBlendDefine visemeBlend in this.VisemeBlends)
+    if (VisemeBlends == null)
+      VisemeBlends = new VisemeBlendDefine[0];
+    foreach (VisemeBlendDefine visemeBlend in VisemeBlends)
     {
       foreach (string thePhone in visemeBlend.thePhones)
       {
@@ -122,13 +121,13 @@ public class MouthRiggerBlends : MonoBehaviour
           return visemeBlend;
       }
     }
-    int length = this.VisemeBlends.Length;
+    int length = VisemeBlends.Length;
     VisemeBlendDefine[] visemeBlendDefineArray = new VisemeBlendDefine[length + 1];
     for (int index = 0; index < length; ++index)
-      visemeBlendDefineArray[index] = this.VisemeBlends[index];
-    phn_string_array_t phonemes = this.phnMap.GetPhonemes(which);
+      visemeBlendDefineArray[index] = VisemeBlends[index];
+    phn_string_array_t phonemes = phnMap.GetPhonemes(which);
     visemeBlendDefineArray[length] = new VisemeBlendDefine(phonemes.phns);
-    this.VisemeBlends = visemeBlendDefineArray;
+    VisemeBlends = visemeBlendDefineArray;
     return visemeBlendDefineArray[length];
   }
 
@@ -139,7 +138,7 @@ public class MouthRiggerBlends : MonoBehaviour
     for (int index = 0; index < blendShapeCount; ++index)
     {
       float blendShapeWeight = obj.GetBlendShapeWeight(index);
-      if ((double) blendShapeWeight > 0.001)
+      if (blendShapeWeight > 0.001)
       {
         string blendShapeName = obj.sharedMesh.GetBlendShapeName(index);
         if (blendShapeName != null)
@@ -153,20 +152,20 @@ public class MouthRiggerBlends : MonoBehaviour
 
   public void CommitBonesForCurrentViseme()
   {
-    MouthRiggerBlends.SaveGUIToBlendDefine(this.skinnedMesh, this.GetViseme(this.CurrentViseme));
+    SaveGUIToBlendDefine(skinnedMesh, GetViseme(CurrentViseme));
   }
 
   public void DebugPrint()
   {
     string message = "";
-    if (this.VisemeBlends == null)
+    if (VisemeBlends == null)
       return;
-    foreach (VisemeBlendDefine visemeBlend in this.VisemeBlends)
+    foreach (VisemeBlendDefine visemeBlend in VisemeBlends)
     {
       foreach (string thePhone in visemeBlend.thePhones)
         message = message + thePhone + " ";
       foreach (WeightedBlendShape theBlend in visemeBlend.theBlends)
-        message = message + theBlend.blendName + "," + (object) theBlend.weight;
+        message = message + theBlend.blendName + "," + theBlend.weight;
       message += "\n";
     }
     Debug.Log((object) message);
@@ -190,7 +189,7 @@ public class MouthRiggerBlends : MonoBehaviour
     {
       foreach (WeightedBlendShape theBlend in blend.theBlends)
       {
-        int blendIndex = MouthRiggerBlends.BlendNameToBlendIndex(obj, theBlend.blendName);
+        int blendIndex = BlendNameToBlendIndex(obj, theBlend.blendName);
         theBlend.blendIdx = blendIndex;
       }
     }
@@ -200,7 +199,7 @@ public class MouthRiggerBlends : MonoBehaviour
     SkinnedMeshRenderer obj,
     VisemeBlendDefine[] blends)
   {
-    MouthRiggerBlends.UpdateBlendIndices(obj, blends);
+    UpdateBlendIndices(obj, blends);
     Dictionary<int, float> activeBlendIndices = new Dictionary<int, float>();
     foreach (VisemeBlendDefine blend in blends)
     {
@@ -215,11 +214,11 @@ public class MouthRiggerBlends : MonoBehaviour
 
   public void ShowViseme(string which)
   {
-    VisemeBlendDefine viseme = this.GetViseme(which);
-    Dictionary<int, float> activeBlendIndices = MouthRiggerBlends.GetActiveBlendIndices(this.skinnedMesh, this.VisemeBlends);
+    VisemeBlendDefine viseme = GetViseme(which);
+    Dictionary<int, float> activeBlendIndices = GetActiveBlendIndices(skinnedMesh, VisemeBlends);
     foreach (WeightedBlendShape theBlend in viseme.theBlends)
       activeBlendIndices[theBlend.blendIdx] += theBlend.weight;
     foreach (KeyValuePair<int, float> keyValuePair in activeBlendIndices)
-      this.skinnedMesh.SetBlendShapeWeight(keyValuePair.Key, keyValuePair.Value);
+      skinnedMesh.SetBlendShapeWeight(keyValuePair.Key, keyValuePair.Value);
   }
 }

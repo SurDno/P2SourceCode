@@ -1,11 +1,9 @@
-﻿using Cofe.Utility;
+﻿using System;
+using System.Collections.Generic;
+using Cofe.Utility;
 using Engine.Common;
 using Engine.Common.Services;
 using Inspectors;
-using System;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.Profiling;
 
 namespace Engine.Source.Commons
 {
@@ -21,26 +19,26 @@ namespace Engine.Source.Commons
     public DelayUpdater(float delay)
     {
       this.delay = delay;
-      this.accumulator = delay * UnityEngine.Random.value;
+      accumulator = delay * UnityEngine.Random.value;
     }
 
-    public void AddUpdatable(IUpdatable up) => this.updatable.Add(up);
+    public void AddUpdatable(IUpdatable up) => updatable.Add(up);
 
     public void RemoveUpdatable(IUpdatable up)
     {
-      int updatableIndex = this.GetUpdatableIndex(up);
+      int updatableIndex = GetUpdatableIndex(up);
       if (updatableIndex == -1)
         throw new Exception();
-      this.updatable[updatableIndex] = (IUpdatable) null;
+      updatable[updatableIndex] = null;
     }
 
     private int GetUpdatableIndex(IUpdatable up)
     {
       if (up == null)
         throw new Exception();
-      for (int index = 0; index < this.updatable.Count; ++index)
+      for (int index = 0; index < updatable.Count; ++index)
       {
-        if (this.updatable[index] == up)
+        if (updatable[index] == up)
           return index;
       }
       return -1;
@@ -48,10 +46,10 @@ namespace Engine.Source.Commons
 
     public void ComputeUpdate()
     {
-      this.accumulator += Time.deltaTime;
-      if ((double) this.accumulator < (double) this.delay || ServiceCache.OptimizationService.FrameHasSpike)
+      accumulator += Time.deltaTime;
+      if (accumulator < (double) delay || ServiceCache.OptimizationService.FrameHasSpike)
         return;
-      this.accumulator = 0.0f;
+      accumulator = 0.0f;
       int index = 0;
       while (index < this.updatable.Count)
       {

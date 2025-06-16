@@ -1,23 +1,21 @@
-﻿using UnityEngine;
-
-[RequireComponent(typeof (ParticleSystem))]
+﻿[RequireComponent(typeof (ParticleSystem))]
 public class TOD_ParticleAtDay : MonoBehaviour
 {
   public float fadeTime = 1f;
-  private float lerpTime = 0.0f;
+  private float lerpTime;
   private ParticleSystem particleComponent;
   private float particleEmission;
 
   protected void Start()
   {
-    this.particleComponent = this.GetComponent<ParticleSystem>();
-    this.particleEmission = this.particleComponent.emissionRate;
-    this.particleComponent.emissionRate = TOD_Sky.Instance.IsDay ? this.particleEmission : 0.0f;
+    particleComponent = this.GetComponent<ParticleSystem>();
+    particleEmission = particleComponent.emissionRate;
+    particleComponent.emissionRate = TOD_Sky.Instance.IsDay ? particleEmission : 0.0f;
   }
 
   protected void Update()
   {
-    this.lerpTime = Mathf.Clamp01(this.lerpTime + (TOD_Sky.Instance.IsDay ? 1f : -1f) * Time.deltaTime / this.fadeTime);
-    this.particleComponent.emissionRate = Mathf.Lerp(0.0f, this.particleEmission, this.lerpTime);
+    lerpTime = Mathf.Clamp01(lerpTime + (TOD_Sky.Instance.IsDay ? 1f : -1f) * Time.deltaTime / fadeTime);
+    particleComponent.emissionRate = Mathf.Lerp(0.0f, particleEmission, lerpTime);
   }
 }

@@ -1,4 +1,6 @@
-﻿using Cofe.Loggers;
+﻿using System;
+using System.Collections.Generic;
+using Cofe.Loggers;
 using Engine.Common;
 using Engine.Common.Commons;
 using Engine.Common.Components;
@@ -7,12 +9,10 @@ using Engine.Common.Services;
 using Engine.Common.Types;
 using PLVirtualMachine.Common.EngineAPI.VMECS.VMAttributes;
 using PLVirtualMachine.Common.VMSpecialAttributes;
-using System;
-using System.Collections.Generic;
 
 namespace PLVirtualMachine.Common.EngineAPI.VMECS
 {
-  [Info("GameComponent", null)]
+  [Info("GameComponent")]
   public class VMGameComponent : VMComponent
   {
     public const string ComponentName = "GameComponent";
@@ -55,7 +55,7 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
     public event Action<string, string> OnValueLogicEvent;
 
     [Event("Logic event with template entity", "name,template entity")]
-    public event VMGameComponent.OnEntityEventHandler OnTemplateEntityLogicEvent;
+    public event OnEntityEventHandler OnTemplateEntityLogicEvent;
 
     [Event("Logic event with entity", "name,entity")]
     public event Action<string, IEntity> OnEntityLogicEvent;
@@ -73,7 +73,7 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
     public event Action<IEntity> OnRegionLoaded;
 
     [Event("Need create drop bag event", "template object", false)]
-    public event VMGameComponent.NeedCreateDropBagEventType NeedCreateDropBagEvent;
+    public event NeedCreateDropBagEventType NeedCreateDropBagEvent;
 
     [Event("Need delete drop bag event", "object", false)]
     public event Action<IEntity> NeedDeleteDropBagEvent;
@@ -83,18 +83,18 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
     {
       if (entity == null)
       {
-        Logger.AddError(string.Format("Cannot add drop bag entity, because entity is null at {0}", (object) EngineAPIManager.Instance.CurrentFSMStateInfo));
+        Logger.AddError(string.Format("Cannot add drop bag entity, because entity is null at {0}", EngineAPIManager.Instance.CurrentFSMStateInfo));
       }
       else
       {
-        Logger.AddWarning(string.Format("Process create drop bag entity {0} at {1}", (object) entity.Name, (object) EngineAPIManager.Instance.CurrentFSMStateInfo));
+        Logger.AddWarning(string.Format("Process create drop bag entity {0} at {1}", entity.Name, EngineAPIManager.Instance.CurrentFSMStateInfo));
         try
         {
           ServiceLocator.GetService<IDropBagService>().AddEntity(entity);
         }
         catch (Exception ex)
         {
-          Logger.AddError(string.Format("Cannot add drop bag entity, error: {0} at {1}", (object) ex.ToString(), (object) EngineAPIManager.Instance.CurrentFSMStateInfo));
+          Logger.AddError(string.Format("Cannot add drop bag entity, error: {0} at {1}", ex, EngineAPIManager.Instance.CurrentFSMStateInfo));
         }
       }
     }
@@ -156,7 +156,7 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
     }
 
     [Method("Get current game mode", "", "")]
-    public virtual IGameModeRef GetCurrentGameTimeContext() => (IGameModeRef) null;
+    public virtual IGameModeRef GetCurrentGameTimeContext() => null;
 
     [Method("Get current game time", "", "")]
     [SpecialFunction(ESpecialFunctionName.SFN_GET_GAME_TIME)]
@@ -205,7 +205,7 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
     public virtual EVMGameLocalizationName GetGameLocalization() => EVMGameLocalizationName.english;
 
     [Method("Create object", "Template", "")]
-    public virtual IObjRef CreateObject(IBlueprintRef staticObj) => (IObjRef) null;
+    public virtual IObjRef CreateObject(IBlueprintRef staticObj) => null;
 
     [Method("Remove object", "Object", "")]
     public virtual void RemoveObject(IObjRef remObj)
@@ -233,7 +233,7 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
     [Method("Create object in point", "Template,Point", "")]
     public virtual IObjRef CreateObjectTo(IBlueprintRef staticObj, IObjRef milestone)
     {
-      return (IObjRef) null;
+      return null;
     }
 
     [Method("Start timer", "Interval", "")]
@@ -320,7 +320,7 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
 
     [Method("Get object template", "Object", "")]
     [SpecialFunction(ESpecialFunctionName.SFN_GET_OBJECT_CLASS)]
-    public virtual IBlueprintRef GetObjectClass(IObjRef objRef) => (IBlueprintRef) null;
+    public virtual IBlueprintRef GetObjectClass(IObjRef objRef) => null;
 
     [Method("Is object derived from class", "Object,class", "")]
     public virtual bool IsObjectDerivedFromClass(IObjRef objRef, IBlueprintRef classRef) => false;
@@ -338,11 +338,11 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
     [Method("Get nearest owner by functional", "Object,Type", "")]
     public virtual IObjRef GetNearestOwnerByFunctional(IObjRef objRef, VMType type)
     {
-      return (IObjRef) null;
+      return null;
     }
 
     [Method("Get object with tag", "Object, tag", "")]
-    public virtual IObjRef GetObjectWithTag(IObjRef objRef, string tag) => (IObjRef) null;
+    public virtual IObjRef GetObjectWithTag(IObjRef objRef, string tag) => null;
 
     [Method("Add Notification", "Notification, List of texts", "")]
     public void AddNotification(NotificationEnum notification, VMCommonList textList)
@@ -351,7 +351,7 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
       {
         INotificationService service = ServiceLocator.GetService<INotificationService>();
         if (service == null)
-          Logger.AddError(string.Format("Add notification function call error: notification service not defined"));
+          Logger.AddError("Add notification function call error: notification service not defined");
         else if (textList != null)
         {
           List<LocalizedText> localizedTextList = new List<LocalizedText>();
@@ -364,14 +364,14 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
               localizedTextList.Add(engineTextInstance);
             }
           }
-          service.AddNotify(notification, (object) localizedTextList);
+          service.AddNotify(notification, localizedTextList);
         }
         else
           service.AddNotify(notification);
       }
       catch (Exception ex)
       {
-        Logger.AddError(string.Format("Add notification function call error: {0}", (object) ex.ToString()));
+        Logger.AddError(string.Format("Add notification function call error: {0}", ex));
       }
     }
 
@@ -382,15 +382,15 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
       {
         INotificationService service = ServiceLocator.GetService<INotificationService>();
         if (service == null)
-          Logger.AddError(string.Format("Add notification function call error: notification service not defined"));
+          Logger.AddError("Add notification function call error: notification service not defined");
         else if (target != null)
-          service.AddNotify(notification, (object) target);
+          service.AddNotify(notification, target);
         else
           service.AddNotify(notification);
       }
       catch (Exception ex)
       {
-        Logger.AddError(string.Format("Add notification function call error: {0}", (object) ex.ToString()));
+        Logger.AddError(string.Format("Add notification function call error: {0}", ex));
       }
     }
 
@@ -401,15 +401,15 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
       {
         INotificationService service = ServiceLocator.GetService<INotificationService>();
         if (service == null)
-          Logger.AddError(string.Format("Add notification template function call error: notification service not defined"));
+          Logger.AddError("Add notification template function call error: notification service not defined");
         else if (target != null)
-          service.AddNotify(notification, (object) target);
+          service.AddNotify(notification, target);
         else
           service.AddNotify(notification);
       }
       catch (Exception ex)
       {
-        Logger.AddError(string.Format("Add notification template function call error: {0}", (object) ex.ToString()));
+        Logger.AddError(string.Format("Add notification template function call error: {0}", ex));
       }
     }
 
@@ -420,13 +420,13 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
       {
         INotificationService service = ServiceLocator.GetService<INotificationService>();
         if (service == null)
-          Logger.AddError(string.Format("Add notification index function call error: notification service not defined"));
+          Logger.AddError("Add notification index function call error: notification service not defined");
         else
-          service.AddNotify(notification, (object) index);
+          service.AddNotify(notification, index);
       }
       catch (Exception ex)
       {
-        Logger.AddError(string.Format("Add notification index function call error: {0}", (object) ex.ToString()));
+        Logger.AddError(string.Format("Add notification index function call error: {0}", ex));
       }
     }
 
@@ -437,13 +437,13 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
       {
         INotificationService service = ServiceLocator.GetService<INotificationService>();
         if (service == null)
-          Logger.AddError(string.Format("Block notification type function call error: notification service not defined"));
+          Logger.AddError("Block notification type function call error: notification service not defined");
         else
           service.BlockType(type);
       }
       catch (Exception ex)
       {
-        Logger.AddError(string.Format("Block notification type function call error: {0}", (object) ex.ToString()));
+        Logger.AddError(string.Format("Block notification type function call error: {0}", ex));
       }
     }
 
@@ -454,13 +454,13 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
       {
         INotificationService service = ServiceLocator.GetService<INotificationService>();
         if (service == null)
-          Logger.AddError(string.Format("Unblock notification type function call error: notification service not defined"));
+          Logger.AddError("Unblock notification type function call error: notification service not defined");
         else
           service.UnblockType(type);
       }
       catch (Exception ex)
       {
-        Logger.AddError(string.Format("Unblock notification type function call error: {0}", (object) ex.ToString()));
+        Logger.AddError(string.Format("Unblock notification type function call error: {0}", ex));
       }
     }
 
@@ -469,7 +469,7 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
     {
       if (obj == null)
       {
-        Logger.AddError(string.Format("Get plague level object not defined"));
+        Logger.AddError("Get plague level object not defined");
         return 0.0f;
       }
       try
@@ -478,7 +478,7 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
       }
       catch (Exception ex)
       {
-        Logger.AddError(string.Format("Get plague level error at object {0}: {1}", (object) obj.Name, (object) ex));
+        Logger.AddError(string.Format("Get plague level error at object {0}: {1}", obj.Name, ex));
         return 0.0f;
       }
     }
@@ -652,7 +652,7 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
     [Method("Start blueprint", "blueprint,target", "")]
     public void StartBlueprint(IBlueprintObject blueprint, IEntity target)
     {
-      ServiceLocator.GetService<IBlueprintService>().Start(blueprint, target, (Action) null);
+      ServiceLocator.GetService<IBlueprintService>().Start(blueprint, target, null);
     }
 
     [Method("Jerboa syncronize", "", "")]
@@ -663,12 +663,12 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
 
     public virtual void OnRegionDiseaseLevelChanged(IRegionComponent region, int level)
     {
-      this.OnRegionDiseaseLevelChangedEvent(region.Owner, level);
+      OnRegionDiseaseLevelChangedEvent(region.Owner, level);
     }
 
     public virtual void OnRegionReputationChanged(IRegionComponent region, float value)
     {
-      this.OnRegionReputationChangedEvent(region.Owner, value);
+      OnRegionReputationChangedEvent(region.Owner, value);
     }
 
     public virtual int ReadIntParamValue(string valueStr) => 0;
@@ -677,13 +677,13 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
 
     public void OnGameModeChange()
     {
-      Action onGameModeChanged = this.OnGameModeChanged;
+      Action onGameModeChanged = OnGameModeChanged;
       if (onGameModeChanged == null)
         return;
       onGameModeChanged();
     }
 
-    public static VMGameComponent Instance => VMGameComponent.instance;
+    public static VMGameComponent Instance => instance;
 
     private void FireEntityEvent(string name, IEntity entity)
     {
@@ -691,61 +691,61 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
       {
         if (entity.IsTemplate)
         {
-          VMGameComponent.OnEntityEventHandler entityLogicEvent = this.OnTemplateEntityLogicEvent;
+          OnEntityEventHandler entityLogicEvent = OnTemplateEntityLogicEvent;
           if (entityLogicEvent == null)
             return;
           entityLogicEvent(name, entity);
         }
         else
         {
-          Action<string, IEntity> entityLogicEvent = this.OnEntityLogicEvent;
+          Action<string, IEntity> entityLogicEvent = OnEntityLogicEvent;
           if (entityLogicEvent == null)
             return;
           entityLogicEvent(name, entity);
         }
       }
       else
-        Logger.AddError(string.Format("Fire entity not defined for FireEntityEvent calling at {0}!", (object) EngineAPIManager.Instance.CurrentFSMStateInfo));
+        Logger.AddError(string.Format("Fire entity not defined for FireEntityEvent calling at {0}!", EngineAPIManager.Instance.CurrentFSMStateInfo));
     }
 
     public override void OnCreate()
     {
       ILogicEventService service1 = ServiceLocator.GetService<ILogicEventService>();
-      service1.OnCommonEvent += new Action<string>(this.FireCommonEvent);
-      service1.OnValueEvent += new Action<string, string>(this.FireValueEvent);
-      service1.OnEntityEvent += new Action<string, IEntity>(this.FireEntityEvent);
+      service1.OnCommonEvent += FireCommonEvent;
+      service1.OnValueEvent += FireValueEvent;
+      service1.OnEntityEvent += FireEntityEvent;
       ISpreadingService service2 = ServiceLocator.GetService<ISpreadingService>();
-      service2.OnFurnitureLoadedOnce += new Action<IEntity, IEntity, BuildingEnum, DiseasedStateEnum>(this.FireFurnitureLoadedOnce);
-      service2.OnFurnitureLoaded += new Action<IEntity, IEntity, BuildingEnum, DiseasedStateEnum>(this.FireFurnitureLoaded);
-      service2.OnRegionLoadedOnce += new Action<IEntity>(this.FireRegionLoadedOnce);
-      service2.OnRegionLoaded += new Action<IEntity>(this.FireRegionLoaded);
+      service2.OnFurnitureLoadedOnce += FireFurnitureLoadedOnce;
+      service2.OnFurnitureLoaded += FireFurnitureLoaded;
+      service2.OnRegionLoadedOnce += FireRegionLoadedOnce;
+      service2.OnRegionLoaded += FireRegionLoaded;
       IDropBagService service3 = ServiceLocator.GetService<IDropBagService>();
-      service3.OnCreateEntity += new Action<IEntity>(this.DropBagService_OnCreateEntity);
-      service3.OnDeleteEntity += new Action<IEntity>(this.DropBagService_OnDeleteEntity);
+      service3.OnCreateEntity += DropBagService_OnCreateEntity;
+      service3.OnDeleteEntity += DropBagService_OnDeleteEntity;
     }
 
     public override void Clear()
     {
-      if (!this.InstanceValid)
+      if (!InstanceValid)
         return;
       ILogicEventService service1 = ServiceLocator.GetService<ILogicEventService>();
-      service1.OnCommonEvent -= new Action<string>(this.FireCommonEvent);
-      service1.OnValueEvent -= new Action<string, string>(this.FireValueEvent);
-      service1.OnEntityEvent -= new Action<string, IEntity>(this.FireEntityEvent);
+      service1.OnCommonEvent -= FireCommonEvent;
+      service1.OnValueEvent -= FireValueEvent;
+      service1.OnEntityEvent -= FireEntityEvent;
       ISpreadingService service2 = ServiceLocator.GetService<ISpreadingService>();
-      service2.OnFurnitureLoadedOnce -= new Action<IEntity, IEntity, BuildingEnum, DiseasedStateEnum>(this.FireFurnitureLoadedOnce);
-      service2.OnFurnitureLoaded -= new Action<IEntity, IEntity, BuildingEnum, DiseasedStateEnum>(this.FireFurnitureLoaded);
-      service2.OnRegionLoadedOnce -= new Action<IEntity>(this.FireRegionLoadedOnce);
-      service2.OnRegionLoaded -= new Action<IEntity>(this.FireRegionLoaded);
+      service2.OnFurnitureLoadedOnce -= FireFurnitureLoadedOnce;
+      service2.OnFurnitureLoaded -= FireFurnitureLoaded;
+      service2.OnRegionLoadedOnce -= FireRegionLoadedOnce;
+      service2.OnRegionLoaded -= FireRegionLoaded;
       IDropBagService service3 = ServiceLocator.GetService<IDropBagService>();
-      service3.OnCreateEntity -= new Action<IEntity>(this.DropBagService_OnCreateEntity);
-      service3.OnDeleteEntity -= new Action<IEntity>(this.DropBagService_OnDeleteEntity);
+      service3.OnCreateEntity -= DropBagService_OnCreateEntity;
+      service3.OnDeleteEntity -= DropBagService_OnDeleteEntity;
       base.Clear();
     }
 
     private void FireRegionLoadedOnce(IEntity region)
     {
-      Action<IEntity> regionLoadedOnce = this.OnRegionLoadedOnce;
+      Action<IEntity> regionLoadedOnce = OnRegionLoadedOnce;
       if (regionLoadedOnce == null)
         return;
       regionLoadedOnce(region);
@@ -753,7 +753,7 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
 
     private void FireRegionLoaded(IEntity region)
     {
-      Action<IEntity> onRegionLoaded = this.OnRegionLoaded;
+      Action<IEntity> onRegionLoaded = OnRegionLoaded;
       if (onRegionLoaded == null)
         return;
       onRegionLoaded(region);
@@ -765,7 +765,7 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
       BuildingEnum building,
       DiseasedStateEnum diseased)
     {
-      Action<IEntity, IEntity, BuildingEnum, DiseasedStateEnum> furnitureLoadedOnce = this.OnFurnitureLoadedOnce;
+      Action<IEntity, IEntity, BuildingEnum, DiseasedStateEnum> furnitureLoadedOnce = OnFurnitureLoadedOnce;
       if (furnitureLoadedOnce == null)
         return;
       furnitureLoadedOnce(entity, region, building, diseased);
@@ -777,7 +777,7 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
       BuildingEnum building,
       DiseasedStateEnum diseased)
     {
-      Action<IEntity, IEntity, BuildingEnum, DiseasedStateEnum> onFurnitureLoaded = this.OnFurnitureLoaded;
+      Action<IEntity, IEntity, BuildingEnum, DiseasedStateEnum> onFurnitureLoaded = OnFurnitureLoaded;
       if (onFurnitureLoaded == null)
         return;
       onFurnitureLoaded(entity, region, building, diseased);
@@ -785,7 +785,7 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
 
     private void FireValueEvent(string name, string value)
     {
-      Action<string, string> onValueLogicEvent = this.OnValueLogicEvent;
+      Action<string, string> onValueLogicEvent = OnValueLogicEvent;
       if (onValueLogicEvent == null)
         return;
       onValueLogicEvent(name, value);
@@ -793,7 +793,7 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
 
     private void FireCommonEvent(string name)
     {
-      Action<string> commonConsoleEvent = this.OnCommonConsoleEvent;
+      Action<string> commonConsoleEvent = OnCommonConsoleEvent;
       if (commonConsoleEvent == null)
         return;
       commonConsoleEvent(name);
@@ -801,7 +801,7 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
 
     private void DropBagService_OnDeleteEntity(IEntity entity)
     {
-      Action<IEntity> deleteDropBagEvent = this.NeedDeleteDropBagEvent;
+      Action<IEntity> deleteDropBagEvent = NeedDeleteDropBagEvent;
       if (deleteDropBagEvent == null)
         return;
       deleteDropBagEvent(entity);
@@ -809,7 +809,7 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
 
     private void DropBagService_OnCreateEntity(IEntity entity)
     {
-      VMGameComponent.NeedCreateDropBagEventType createDropBagEvent = this.NeedCreateDropBagEvent;
+      NeedCreateDropBagEventType createDropBagEvent = NeedCreateDropBagEvent;
       if (createDropBagEvent == null)
         return;
       createDropBagEvent(entity);

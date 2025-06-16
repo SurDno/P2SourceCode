@@ -1,8 +1,6 @@
 ﻿using Engine.Behaviours.Components;
 using Engine.Source.Commons;
 using Inspectors;
-using UnityEngine;
-using UnityEngine.AI;
 
 public class NpcStateIdlePlagueCloud : INpcState
 {
@@ -21,12 +19,12 @@ public class NpcStateIdlePlagueCloud : INpcState
 
   private bool TryInit()
   {
-    if (this.inited)
+    if (inited)
       return true;
-    this.behavior = this.pivot.GetBehavior();
-    this.agent = this.pivot.GetAgent();
-    this.failed = false;
-    this.inited = true;
+    behavior = pivot.GetBehavior();
+    agent = pivot.GetAgent();
+    failed = false;
+    inited = true;
     return true;
   }
 
@@ -34,39 +32,39 @@ public class NpcStateIdlePlagueCloud : INpcState
   {
     this.npcState = npcState;
     this.pivot = pivot;
-    this.GameObject = npcState.gameObject;
+    GameObject = npcState.gameObject;
   }
 
   public void Activate()
   {
-    if (!this.TryInit() || !(bool) (Object) this.agent)
+    if (!TryInit() || !(bool) (Object) agent)
       return;
-    this.agentWasEnabled = this.agent.enabled;
-    this.agent.enabled = true;
+    agentWasEnabled = agent.enabled;
+    agent.enabled = true;
   }
 
   public void Shutdown()
   {
-    if (this.failed || !(bool) (Object) this.agent)
+    if (failed || !(bool) (Object) agent)
       return;
-    this.agent.enabled = this.agentWasEnabled;
+    agent.enabled = agentWasEnabled;
   }
 
   public void OnAnimatorMove()
   {
-    if (!this.failed)
+    if (!failed)
       ;
   }
 
   public void OnAnimatorEventEvent(string obj)
   {
-    if (!this.failed)
+    if (!failed)
       ;
   }
 
   public void Update()
   {
-    if (this.failed || !InstanceByRequest<EngineApplication>.Instance.IsPaused)
+    if (failed || !InstanceByRequest<EngineApplication>.Instance.IsPaused)
       ;
   }
 

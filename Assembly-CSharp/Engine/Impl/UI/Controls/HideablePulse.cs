@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace Engine.Impl.UI.Controls
+﻿namespace Engine.Impl.UI.Controls
 {
   public class HideablePulse : HideableView
   {
@@ -10,43 +8,43 @@ namespace Engine.Impl.UI.Controls
     private float upTime = 0.5f;
     [SerializeField]
     private float downTime = 0.5f;
-    private bool goesUp = false;
+    private bool goesUp;
 
     private void Update()
     {
-      if ((Object) this.view == (Object) null)
+      if ((Object) view == (Object) null)
         return;
-      float progress = this.view.Progress;
+      float progress = view.Progress;
       float num;
-      if (this.goesUp)
+      if (goesUp)
       {
-        num = Mathf.MoveTowards(progress, 1f, (double) this.upTime != 0.0 ? Time.deltaTime / this.upTime : 1f);
-        if ((double) num == 1.0)
-          this.goesUp = false;
+        num = Mathf.MoveTowards(progress, 1f, upTime != 0.0 ? Time.deltaTime / upTime : 1f);
+        if (num == 1.0)
+          goesUp = false;
       }
       else
       {
-        num = Mathf.MoveTowards(progress, 0.0f, (double) this.downTime != 0.0 ? Time.deltaTime / this.downTime : 1f);
-        if ((double) num == 0.0 && this.Visible)
-          this.goesUp = true;
+        num = Mathf.MoveTowards(progress, 0.0f, downTime != 0.0 ? Time.deltaTime / downTime : 1f);
+        if (num == 0.0 && Visible)
+          goesUp = true;
       }
-      this.view.Progress = num;
+      view.Progress = num;
     }
 
     protected override void ApplyVisibility()
     {
       if (!Application.isPlaying)
-        this.SkipAnimation();
-      this.goesUp = this.goesUp && this.Visible;
+        SkipAnimation();
+      goesUp = goesUp && Visible;
     }
 
     public override void SkipAnimation()
     {
       base.SkipAnimation();
-      this.goesUp = this.Visible;
-      if (!((Object) this.view != (Object) null))
+      goesUp = Visible;
+      if (!((Object) view != (Object) null))
         return;
-      this.view.Progress = 0.0f;
+      view.Progress = 0.0f;
     }
   }
 }

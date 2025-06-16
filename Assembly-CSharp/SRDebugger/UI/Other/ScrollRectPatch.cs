@@ -1,7 +1,4 @@
-﻿using UnityEngine;
-using UnityEngine.UI;
-
-namespace SRDebugger.UI.Other
+﻿namespace SRDebugger.UI.Other
 {
   [RequireComponent(typeof (ScrollRect))]
   [ExecuteInEditMode]
@@ -14,14 +11,14 @@ namespace SRDebugger.UI.Other
     private void Awake()
     {
       ScrollRect component = this.GetComponent<ScrollRect>();
-      component.content = this.Content;
-      component.viewport = this.Viewport;
-      if (!((Object) this.ReplaceMask != (Object) null))
+      component.content = Content;
+      component.viewport = Viewport;
+      if (!((Object) ReplaceMask != (Object) null))
         return;
-      GameObject gameObject = this.ReplaceMask.gameObject;
+      GameObject gameObject = ReplaceMask.gameObject;
       Object.Destroy((Object) gameObject.GetComponent<Graphic>());
       Object.Destroy((Object) gameObject.GetComponent<CanvasRenderer>());
-      Object.Destroy((Object) this.ReplaceMask);
+      Object.Destroy((Object) ReplaceMask);
       gameObject.AddComponent<RectMask2D>();
     }
   }

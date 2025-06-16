@@ -4,14 +4,14 @@ using System.Linq;
 
 public static class ContainerUtility
 {
-  private static System.Random rng = new System.Random(DateTime.UtcNow.Millisecond);
+  private static Random rng = new Random(DateTime.UtcNow.Millisecond);
 
   public static void Cleanup<T>(this List<T> list) where T : class
   {
     int index = 0;
     while (index < list.Count)
     {
-      if ((object) list[index] == null)
+      if (list[index] == null)
       {
         list[index] = list[list.Count - 1];
         list.RemoveAt(list.Count - 1);
@@ -26,7 +26,7 @@ public static class ContainerUtility
     for (int index = 0; index < source.Count; ++index)
     {
       T obj = source[index];
-      if ((object) obj != null && compute(obj))
+      if (obj != null && compute(obj))
         return obj;
     }
     return default (T);
@@ -38,7 +38,7 @@ public static class ContainerUtility
     while (count > 1)
     {
       --count;
-      int index = ContainerUtility.rng.Next(count + 1);
+      int index = rng.Next(count + 1);
       T obj = list[index];
       list[index] = list[count];
       list[count] = obj;
@@ -74,7 +74,7 @@ public static class ContainerUtility
     }
   }
 
-  public static T Random<T>(this IEnumerable<T> source) => source.ToList<T>().Random<T>();
+  public static T Random<T>(this IEnumerable<T> source) => source.ToList().Random();
 
   public static int FindIndex<T>(this IEnumerable<T> items, Func<T, bool> predicate)
   {
@@ -94,7 +94,7 @@ public static class ContainerUtility
 
   public static int IndexOf<T>(this IEnumerable<T> items, T item)
   {
-    return items.FindIndex<T>((Func<T, bool>) (i => EqualityComparer<T>.Default.Equals(item, i)));
+    return items.FindIndex(i => EqualityComparer<T>.Default.Equals(item, i));
   }
 
   public static TValue GetOrCreateValue<TKey, TValue>(this Dictionary<TKey, TValue> map, TKey key) where TValue : new()

@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-[CreateAssetMenu(menuName = "Data/Texture Settings")]
+﻿[CreateAssetMenu(menuName = "Data/Texture Settings")]
 public class TextureSettings : ScriptableObject
 {
   [SerializeField]
@@ -14,10 +12,10 @@ public class TextureSettings : ScriptableObject
 
   public void Apply()
   {
-    QualitySettings.streamingMipmapsMemoryBudget = this.memoryBudget;
-    QualitySettings.streamingMipmapsMaxLevelReduction = this.maxLevelReduction;
-    QualitySettings.streamingMipmapsMaxFileIORequests = this.maxFileIORequests;
+    QualitySettings.streamingMipmapsMemoryBudget = memoryBudget;
+    QualitySettings.streamingMipmapsMaxLevelReduction = maxLevelReduction;
+    QualitySettings.streamingMipmapsMaxFileIORequests = maxFileIORequests;
   }
 
-  public bool CheckMemoryRequirement() => this.memoryRequirement <= SystemInfo.graphicsMemorySize;
+  public bool CheckMemoryRequirement() => memoryRequirement <= SystemInfo.graphicsMemorySize;
 }

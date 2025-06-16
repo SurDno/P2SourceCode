@@ -10,15 +10,15 @@ namespace TriangleNet.Geometry
     internal double x;
     internal double y;
 
-    public int ID => this.id;
+    public int ID => id;
 
-    public double X => this.x;
+    public double X => x;
 
-    public double Y => this.y;
+    public double Y => y;
 
-    public int Boundary => this.mark;
+    public int Boundary => mark;
 
-    public double[] Attributes => this.attributes;
+    public double[] Attributes => attributes;
 
     public Point()
       : this(0.0, 0.0, 0)
@@ -39,14 +39,14 @@ namespace TriangleNet.Geometry
 
     public int CompareTo(Point other)
     {
-      return this.x == other.x && this.y == other.y ? 0 : (this.x < other.x || this.x == other.x && this.y < other.y ? -1 : 1);
+      return x == other.x && y == other.y ? 0 : (x < other.x || x == other.x && y < other.y ? -1 : 1);
     }
 
-    public bool Equals(Point p) => (object) p != null && this.x == p.x && this.y == p.y;
+    public bool Equals(Point p) => (object) p != null && x == p.x && y == p.y;
 
     public static bool operator ==(Point a, Point b)
     {
-      if ((object) a == (object) b)
+      if (a == (object) b)
         return true;
       return (object) a != null && (object) b != null && a.Equals(b);
     }
@@ -58,14 +58,14 @@ namespace TriangleNet.Geometry
       if (obj == null)
         return false;
       Point point = obj as Point;
-      return (object) point != null && this.x == point.x && this.y == point.y;
+      return (object) point != null && x == point.x && y == point.y;
     }
 
-    public override int GetHashCode() => this.x.GetHashCode() ^ this.y.GetHashCode();
+    public override int GetHashCode() => x.GetHashCode() ^ y.GetHashCode();
 
     public override string ToString()
     {
-      return string.Format("[{0},{1}]", (object) this.x, (object) this.y);
+      return string.Format("[{0},{1}]", x, y);
     }
   }
 }

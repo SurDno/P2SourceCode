@@ -1,7 +1,7 @@
-﻿using SteamNative;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using SteamNative;
 
 namespace Facepunch.Steamworks
 {
@@ -18,68 +18,68 @@ namespace Facepunch.Steamworks
 
     internal Achievements(Client c)
     {
-      this.client = c;
-      this.All = new Achievement[0];
-      UserStatsReceived_t.RegisterCallback((BaseSteamworks) c, new Action<UserStatsReceived_t, bool>(this.UserStatsReceived));
-      UserStatsStored_t.RegisterCallback((BaseSteamworks) c, new Action<UserStatsStored_t, bool>(this.UserStatsStored));
-      this.Refresh();
+      client = c;
+      All = new Achievement[0];
+      UserStatsReceived_t.RegisterCallback(c, UserStatsReceived);
+      UserStatsStored_t.RegisterCallback(c, UserStatsStored);
+      Refresh();
     }
 
     public void Refresh()
     {
-      Achievement[] old = this.All;
-      this.All = Enumerable.Range(0, (int) this.client.native.userstats.GetNumAchievements()).Select<int, Achievement>((Func<int, Achievement>) (x =>
+      Achievement[] old = All;
+      All = Enumerable.Range(0, (int) client.native.userstats.GetNumAchievements()).Select(x =>
       {
         if (old != null)
         {
-          string name = this.client.native.userstats.GetAchievementName((uint) x);
-          Achievement achievement = ((IEnumerable<Achievement>) old).FirstOrDefault<Achievement>((Func<Achievement, bool>) (y => y.Id == name));
+          string name = client.native.userstats.GetAchievementName((uint) x);
+          Achievement achievement = old.FirstOrDefault(y => y.Id == name);
           if (achievement != null)
           {
             if (achievement.Refresh())
-              this.unlockedRecently.Add(achievement);
+              unlockedRecently.Add(achievement);
             return achievement;
           }
         }
-        return new Achievement(this.client, x);
-      })).ToArray<Achievement>();
-      foreach (Achievement a in this.unlockedRecently)
-        this.OnUnlocked(a);
-      this.unlockedRecently.Clear();
+        return new Achievement(client, x);
+      }).ToArray();
+      foreach (Achievement a in unlockedRecently)
+        OnUnlocked(a);
+      unlockedRecently.Clear();
     }
 
     internal void OnUnlocked(Achievement a)
     {
-      Action<Achievement> achievementStateChanged = this.OnAchievementStateChanged;
+      Action<Achievement> achievementStateChanged = OnAchievementStateChanged;
       if (achievementStateChanged == null)
         return;
       achievementStateChanged(a);
     }
 
-    public void Dispose() => this.client = (Client) null;
+    public void Dispose() => client = null;
 
     public Achievement Find(string identifier)
     {
-      return ((IEnumerable<Achievement>) this.All).FirstOrDefault<Achievement>((Func<Achievement, bool>) (x => x.Id == identifier));
+      return All.FirstOrDefault(x => x.Id == identifier);
     }
 
     public bool Trigger(string identifier, bool apply = true)
     {
-      Achievement achievement = this.Find(identifier);
+      Achievement achievement = Find(identifier);
       return achievement != null && achievement.Trigger(apply);
     }
 
     public bool Reset(string identifier)
     {
-      return this.client.native.userstats.ClearAchievement(identifier);
+      return client.native.userstats.ClearAchievement(identifier);
     }
 
     private void UserStatsReceived(UserStatsReceived_t stats, bool isError)
     {
-      if (isError || (long) stats.GameID != (long) this.client.AppId)
+      if (isError || (long) stats.GameID != client.AppId)
         return;
-      this.Refresh();
-      Action onUpdated = this.OnUpdated;
+      Refresh();
+      Action onUpdated = OnUpdated;
       if (onUpdated == null)
         return;
       onUpdated();
@@ -87,10 +87,10 @@ namespace Facepunch.Steamworks
 
     private void UserStatsStored(UserStatsStored_t stats, bool isError)
     {
-      if (isError || (long) stats.GameID != (long) this.client.AppId)
+      if (isError || (long) stats.GameID != client.AppId)
         return;
-      this.Refresh();
-      Action onUpdated = this.OnUpdated;
+      Refresh();
+      Action onUpdated = OnUpdated;
       if (onUpdated == null)
         return;
       onUpdated();

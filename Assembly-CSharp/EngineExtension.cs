@@ -1,5 +1,4 @@
 ﻿using Engine.Common.Types;
-using UnityEngine;
 
 public static class EngineExtension
 {

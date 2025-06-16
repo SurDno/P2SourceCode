@@ -1,4 +1,5 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons;
 using Engine.Common.Commons.Converters;
@@ -6,7 +7,6 @@ using Engine.Common.Generator;
 using Engine.Common.Services;
 using Engine.Impl.Services.Factories;
 using Engine.Source.Services;
-using UnityEngine;
 
 namespace BehaviorDesigner.Runtime.Tasks
 {
@@ -17,43 +17,43 @@ namespace BehaviorDesigner.Runtime.Tasks
   [FactoryProxy(typeof (CombatCry))]
   public class CombatCry : Action, IStub, ISerializeDataWrite, ISerializeDataRead
   {
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy()]
     [SerializeField]
     public CombatCryEnum cryType;
 
     public override void OnStart()
     {
       CombatService service = ServiceLocator.GetService<CombatService>();
-      if (service == null || (UnityEngine.Object) this.Owner == (UnityEngine.Object) null)
+      if (service == null || (UnityEngine.Object) Owner == (UnityEngine.Object) null)
         return;
-      EnemyBase component = this.Owner.GetComponent<EnemyBase>();
+      EnemyBase component = Owner.GetComponent<EnemyBase>();
       if ((UnityEngine.Object) component == (UnityEngine.Object) null)
         return;
-      service.CharacterCry(component, this.cryType);
+      service.CharacterCry(component, cryType);
     }
 
     public override TaskStatus OnUpdate() => TaskStatus.Success;
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.WriteSerialize<NodeData>(writer, "NodeData", this.nodeData);
-      DefaultDataWriteUtility.Write(writer, "Id", this.id);
-      DefaultDataWriteUtility.Write(writer, "FriendlyName", this.friendlyName);
-      DefaultDataWriteUtility.Write(writer, "Instant", this.instant);
-      DefaultDataWriteUtility.Write(writer, "Disabled", this.disabled);
-      DefaultDataWriteUtility.WriteEnum<CombatCryEnum>(writer, "CryType", this.cryType);
+      DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
+      DefaultDataWriteUtility.Write(writer, "Id", id);
+      DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
+      DefaultDataWriteUtility.Write(writer, "Instant", instant);
+      DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
+      DefaultDataWriteUtility.WriteEnum(writer, "CryType", cryType);
     }
 
-    public void DataRead(IDataReader reader, System.Type type)
+    public void DataRead(IDataReader reader, Type type)
     {
-      this.nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
-      this.id = DefaultDataReadUtility.Read(reader, "Id", this.id);
-      this.friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", this.friendlyName);
-      this.instant = DefaultDataReadUtility.Read(reader, "Instant", this.instant);
-      this.disabled = DefaultDataReadUtility.Read(reader, "Disabled", this.disabled);
-      this.cryType = DefaultDataReadUtility.ReadEnum<CombatCryEnum>(reader, "CryType");
+      nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
+      id = DefaultDataReadUtility.Read(reader, "Id", id);
+      friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
+      instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
+      disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
+      cryType = DefaultDataReadUtility.ReadEnum<CombatCryEnum>(reader, "CryType");
     }
   }
 }

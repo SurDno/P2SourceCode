@@ -1,9 +1,9 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons.Cloneable;
 using Engine.Common.Commons.Converters;
 using Engine.Source.Components;
-using System;
 
 namespace Engine.Source.Proxies
 {
@@ -20,8 +20,8 @@ namespace Engine.Source.Proxies
     public object Clone()
     {
       MessangerComponent_Generated instance = Activator.CreateInstance<MessangerComponent_Generated>();
-      this.CopyTo((object) instance);
-      return (object) instance;
+      CopyTo(instance);
+      return instance;
     }
 
     public void CopyTo(object target2)
@@ -38,12 +38,12 @@ namespace Engine.Source.Proxies
 
     public void StateSave(IDataWriter writer)
     {
-      DefaultDataWriteUtility.Write(writer, "Registred", this.registred);
+      DefaultDataWriteUtility.Write(writer, "Registred", registred);
     }
 
     public void StateLoad(IDataReader reader, Type type)
     {
-      this.registred = DefaultDataReadUtility.Read(reader, "Registred", this.registred);
+      registred = DefaultDataReadUtility.Read(reader, "Registred", registred);
     }
   }
 }

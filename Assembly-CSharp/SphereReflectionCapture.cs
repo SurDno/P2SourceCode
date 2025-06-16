@@ -1,21 +1,20 @@
-﻿using UnityEngine;
-using UnityEngine.Rendering;
+﻿using System;
 
 [ExecuteInEditMode]
 public class SphereReflectionCapture : MonoBehaviour
 {
-  public SphereReflectionCapture.TextureSize Resolution = SphereReflectionCapture.TextureSize.Square128;
+  public TextureSize Resolution = TextureSize.Square128;
   public LayerMask CullingMask = (LayerMask) 1;
   public float NearClip = 0.15f;
   public float FarClip = 500f;
   public float AmbientIntensity = 1f;
   private RenderTexture outputCubemap = (RenderTexture) null;
-  private int currentFace = 0;
+  private int currentFace;
   private Camera captureCamera = (Camera) null;
 
   public static SphereReflectionCapture Create()
   {
-    GameObject gameObject = new GameObject("Spherical Reflection Capture", new System.Type[2]
+    GameObject gameObject = new GameObject("Spherical Reflection Capture", new Type[2]
     {
       typeof (ReflectionProbe),
       typeof (SphereReflectionCapture)
@@ -29,33 +28,33 @@ public class SphereReflectionCapture : MonoBehaviour
 
   private void CheckCamera()
   {
-    if ((UnityEngine.Object) this.captureCamera == (UnityEngine.Object) null)
+    if ((UnityEngine.Object) captureCamera == (UnityEngine.Object) null)
     {
-      this.captureCamera = this.GetComponent<Camera>();
-      if ((UnityEngine.Object) this.captureCamera == (UnityEngine.Object) null)
-        this.captureCamera = this.gameObject.AddComponent<Camera>();
-      this.captureCamera.hideFlags = HideFlags.HideAndDontSave;
-      this.captureCamera.enabled = false;
-      this.captureCamera.fieldOfView = 90f;
-      this.captureCamera.clearFlags = CameraClearFlags.Skybox;
-      this.captureCamera.useOcclusionCulling = false;
-      this.captureCamera.allowHDR = true;
+      captureCamera = this.GetComponent<Camera>();
+      if ((UnityEngine.Object) captureCamera == (UnityEngine.Object) null)
+        captureCamera = this.gameObject.AddComponent<Camera>();
+      captureCamera.hideFlags = HideFlags.HideAndDontSave;
+      captureCamera.enabled = false;
+      captureCamera.fieldOfView = 90f;
+      captureCamera.clearFlags = CameraClearFlags.Skybox;
+      captureCamera.useOcclusionCulling = false;
+      captureCamera.allowHDR = true;
     }
-    this.captureCamera.cullingMask = (int) this.CullingMask;
-    this.captureCamera.nearClipPlane = this.NearClip;
-    this.captureCamera.farClipPlane = this.FarClip;
+    captureCamera.cullingMask = (int) CullingMask;
+    captureCamera.nearClipPlane = NearClip;
+    captureCamera.farClipPlane = FarClip;
   }
 
   private bool CheckRenderTexture(ref RenderTexture rt, bool recreateOnResize = false)
   {
-    if (!((UnityEngine.Object) rt == (UnityEngine.Object) null) && (!recreateOnResize || (SphereReflectionCapture.TextureSize) rt.width == this.Resolution))
+    if (!((UnityEngine.Object) rt == (UnityEngine.Object) null) && (!recreateOnResize || (TextureSize) rt.width == Resolution))
       return false;
     if ((UnityEngine.Object) rt != (UnityEngine.Object) null)
     {
       rt.Release();
       UnityEngine.Object.Destroy((UnityEngine.Object) rt);
     }
-    rt = new RenderTexture((int) this.Resolution, (int) this.Resolution, 16, RenderTextureFormat.DefaultHDR);
+    rt = new RenderTexture((int) Resolution, (int) Resolution, 16, RenderTextureFormat.DefaultHDR);
     rt.name = "Reflection Cubemap";
     rt.dimension = TextureDimension.Cube;
     rt.hideFlags = HideFlags.HideAndDontSave;
@@ -67,16 +66,16 @@ public class SphereReflectionCapture : MonoBehaviour
 
   private void Clear(bool keepOutput = false)
   {
-    if (!keepOutput && (UnityEngine.Object) this.outputCubemap != (UnityEngine.Object) null)
+    if (!keepOutput && (UnityEngine.Object) outputCubemap != (UnityEngine.Object) null)
     {
       Shader.SetGlobalInt("Pathologic_AmbientCubemapSteps", 0);
       Shader.SetGlobalTexture("Pathologic_AmbientCubemap", (Texture) null);
-      this.DestroyRenderTexutre(ref this.outputCubemap);
+      DestroyRenderTexutre(ref outputCubemap);
     }
-    if (!((UnityEngine.Object) this.captureCamera != (UnityEngine.Object) null))
+    if (!((UnityEngine.Object) captureCamera != (UnityEngine.Object) null))
       return;
-    UnityEngine.Object.Destroy((UnityEngine.Object) this.captureCamera);
-    this.captureCamera = (Camera) null;
+    UnityEngine.Object.Destroy((UnityEngine.Object) captureCamera);
+    captureCamera = (Camera) null;
   }
 
   private void DestroyRenderTexutre(ref RenderTexture rt)
@@ -88,29 +87,29 @@ public class SphereReflectionCapture : MonoBehaviour
     rt = (RenderTexture) null;
   }
 
-  private void OnDestroy() => this.Clear();
+  private void OnDestroy() => Clear();
 
-  private void OnDisable() => this.Clear();
+  private void OnDisable() => Clear();
 
   private void LateUpdate()
   {
-    this.CheckCamera();
-    if (this.CheckRenderTexture(ref this.outputCubemap, true))
+    CheckCamera();
+    if (CheckRenderTexture(ref outputCubemap, true))
     {
-      this.captureCamera.RenderToCubemap(this.outputCubemap);
-      this.currentFace = 0;
+      captureCamera.RenderToCubemap(outputCubemap);
+      currentFace = 0;
     }
     else
     {
-      this.captureCamera.RenderToCubemap(this.outputCubemap, 1 << this.currentFace);
-      if (this.currentFace < 5)
-        ++this.currentFace;
+      captureCamera.RenderToCubemap(outputCubemap, 1 << currentFace);
+      if (currentFace < 5)
+        ++currentFace;
       else
-        this.currentFace = 0;
+        currentFace = 0;
     }
-    Shader.SetGlobalInt("Pathologic_AmbientCubemapSteps", Mathf.RoundToInt(Mathf.Log((float) this.Resolution, 2f)));
-    Shader.SetGlobalFloat("Pathologic_AmbientCubemapIntensity", this.AmbientIntensity);
-    Shader.SetGlobalTexture("Pathologic_AmbientCubemap", (Texture) this.outputCubemap);
+    Shader.SetGlobalInt("Pathologic_AmbientCubemapSteps", Mathf.RoundToInt(Mathf.Log((float) Resolution, 2f)));
+    Shader.SetGlobalFloat("Pathologic_AmbientCubemapIntensity", AmbientIntensity);
+    Shader.SetGlobalTexture("Pathologic_AmbientCubemap", (Texture) outputCubemap);
   }
 
   public enum TextureSize

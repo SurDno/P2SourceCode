@@ -1,5 +1,5 @@
-﻿using Engine.Source.Connections;
-using System;
+﻿using System;
+using Engine.Source.Connections;
 
 [Serializable]
 public struct LoadWindowGameDataItem
@@ -10,7 +10,7 @@ public struct LoadWindowGameDataItem
   public LoadWindowStorableData LoadStorables;
   public LoadWindowStringData LoadTooltips;
 
-  public bool IsNull => this.GameDataName == null;
+  public bool IsNull => GameDataName == null;
 
   public static LoadWindowGameDataItem Null => new LoadWindowGameDataItem();
 }

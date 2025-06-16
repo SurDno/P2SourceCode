@@ -1,8 +1,8 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons.Cloneable;
 using Engine.Common.Commons.Converters;
-using System;
 
 namespace Engine.Source.Proxies
 {
@@ -17,27 +17,27 @@ namespace Engine.Source.Proxies
     public object Clone()
     {
       StorableTooltipSimple_Generated instance = Activator.CreateInstance<StorableTooltipSimple_Generated>();
-      this.CopyTo((object) instance);
-      return (object) instance;
+      CopyTo(instance);
+      return instance;
     }
 
     public void CopyTo(object target2)
     {
       StorableTooltipSimple_Generated tooltipSimpleGenerated = (StorableTooltipSimple_Generated) target2;
-      tooltipSimpleGenerated.isEnabled = this.isEnabled;
-      tooltipSimpleGenerated.info = CloneableObjectUtility.Clone<StorableTooltipInfo>(this.info);
+      tooltipSimpleGenerated.isEnabled = isEnabled;
+      tooltipSimpleGenerated.info = CloneableObjectUtility.Clone(info);
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.Write(writer, "IsEnabled", this.isEnabled);
-      DefaultDataWriteUtility.WriteSerialize<StorableTooltipInfo>(writer, "Info", this.info);
+      DefaultDataWriteUtility.Write(writer, "IsEnabled", isEnabled);
+      DefaultDataWriteUtility.WriteSerialize(writer, "Info", info);
     }
 
     public void DataRead(IDataReader reader, Type type)
     {
-      this.isEnabled = DefaultDataReadUtility.Read(reader, "IsEnabled", this.isEnabled);
-      this.info = DefaultDataReadUtility.ReadSerialize<StorableTooltipInfo>(reader, "Info");
+      isEnabled = DefaultDataReadUtility.Read(reader, "IsEnabled", isEnabled);
+      info = DefaultDataReadUtility.ReadSerialize<StorableTooltipInfo>(reader, "Info");
     }
   }
 }

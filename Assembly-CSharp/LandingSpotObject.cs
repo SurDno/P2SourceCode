@@ -1,6 +1,5 @@
 ﻿using Engine.Common.Services;
 using Engine.Source.Services;
-using UnityEngine;
 
 public class LandingSpotObject : MonoBehaviour
 {
@@ -11,40 +10,40 @@ public class LandingSpotObject : MonoBehaviour
   private bool preseted = true;
   private FlockObject flock;
 
-  public FlockChildTypeEnum SupportedFlocks => this.supportedFlocks;
+  public FlockChildTypeEnum SupportedFlocks => supportedFlocks;
 
   public LandingSpotController LandingController
   {
     get
     {
-      if ((Object) this != (Object) null && (Object) this.landingController == (Object) null)
-        this.landingController = this.GetComponent<LandingSpotController>();
-      return this.landingController;
+      if ((Object) this != (Object) null && (Object) landingController == (Object) null)
+        landingController = this.GetComponent<LandingSpotController>();
+      return landingController;
     }
   }
 
-  public bool Preseted => this.preseted;
+  public bool Preseted => preseted;
 
   public FlockObject Flock
   {
-    get => this.flock;
+    get => flock;
     set
     {
-      this.flock = value;
-      if ((Object) this.LandingController == (Object) null || !((Object) this.flock != (Object) null))
+      flock = value;
+      if ((Object) LandingController == (Object) null || !((Object) flock != (Object) null))
         return;
-      this.LandingController._flock = this.flock.FlockController;
-      this.LandingController.LandAll();
+      LandingController._flock = flock.FlockController;
+      LandingController.LandAll();
     }
   }
 
   private void Start()
   {
-    if ((Object) this.LandingController != (Object) null)
+    if ((Object) LandingController != (Object) null)
     {
-      this.preseted = (Object) this.LandingController._flock != (Object) null;
-      this.LandingController._onlyBirdsAbove = true;
-      this.LandingController._maxBirdDistance = 30f;
+      preseted = (Object) LandingController._flock != (Object) null;
+      LandingController._onlyBirdsAbove = true;
+      LandingController._maxBirdDistance = 30f;
     }
     ServiceLocator.GetService<FlockService>()?.RegisterLandingZone(this);
   }
@@ -56,8 +55,8 @@ public class LandingSpotObject : MonoBehaviour
 
   public void Scare()
   {
-    if ((Object) this.LandingController == (Object) null)
+    if ((Object) LandingController == (Object) null)
       return;
-    this.LandingController.ScareAll();
+    LandingController.ScareAll();
   }
 }

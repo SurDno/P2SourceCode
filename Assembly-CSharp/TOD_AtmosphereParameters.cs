@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEngine;
 
 [Serializable]
 public class TOD_AtmosphereParameters
@@ -21,5 +20,5 @@ public class TOD_AtmosphereParameters
   public float Directionality = 0.7f;
   [Tooltip("Density of the fog covering the sky.")]
   [TOD_Range(0.0f, 1f)]
-  public float Fogginess = 0.0f;
+  public float Fogginess;
 }

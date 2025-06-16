@@ -1,7 +1,4 @@
 ﻿using InputServices;
-using System;
-using UnityEngine;
-using UnityEngine.UI;
 
 [RequireComponent(typeof (Image))]
 public class PlatformDependentImage : MonoBehaviour
@@ -16,25 +13,25 @@ public class PlatformDependentImage : MonoBehaviour
   [SerializeField]
   private Text text;
 
-  private void Awake() => this.imageObject = this.GetComponent<Image>();
+  private void Awake() => imageObject = this.GetComponent<Image>();
 
   private void OnEnable()
   {
-    InputService.Instance.onJoystickUsedChanged += new Action<bool>(this.SetupImage);
-    this.SetupImage(InputService.Instance.JoystickUsed);
+    InputService.Instance.onJoystickUsedChanged += SetupImage;
+    SetupImage(InputService.Instance.JoystickUsed);
   }
 
   private void OnDisable()
   {
-    InputService.Instance.onJoystickUsedChanged -= new Action<bool>(this.SetupImage);
+    InputService.Instance.onJoystickUsedChanged -= SetupImage;
   }
 
   private void SetupImage(bool joystick)
   {
-    this.imageObject.sprite = joystick ? this.thumbnailXBox : this.thumbnail;
-    ((RectTransform) this.transform).sizeDelta = this.imageObject.sprite.rect.size;
-    if (!((UnityEngine.Object) this.text != (UnityEngine.Object) null))
+    imageObject.sprite = joystick ? thumbnailXBox : thumbnail;
+    ((RectTransform) this.transform).sizeDelta = imageObject.sprite.rect.size;
+    if (!((UnityEngine.Object) text != (UnityEngine.Object) null))
       return;
-    this.text.gameObject.SetActive(!joystick && (UnityEngine.Object) this.imageObject.sprite == (UnityEngine.Object) null);
+    text.gameObject.SetActive(!joystick && (UnityEngine.Object) imageObject.sprite == (UnityEngine.Object) null);
   }
 }

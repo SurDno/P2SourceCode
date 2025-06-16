@@ -1,16 +1,13 @@
-﻿using Engine.Source.Settings.External;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.Profiling;
-using UnityEngine.Serialization;
+using Engine.Source.Settings.External;
 
 [ExecuteInEditMode]
 public class TerrainDetailLayer : MonoBehaviour
 {
   private static DynamicMeshBuffers meshBuffers;
   private static int frame = -1;
-  private static int chunksCreatedThisFrame = 0;
+  private static int chunksCreatedThisFrame;
   [SerializeField]
   [FormerlySerializedAs("PrototypeMesh")]
   private Mesh prototypeMesh;
@@ -26,7 +23,7 @@ public class TerrainDetailLayer : MonoBehaviour
   [FormerlySerializedAs("CastShadows")]
   private bool castShadows = false;
   [SerializeField]
-  private TerrainDetailLayer.BendingCalculation bendingCalculation = TerrainDetailLayer.BendingCalculation.Off;
+  private BendingCalculation bendingCalculation = BendingCalculation.Off;
   private TerrainDetailChunk[,] chunks;
   private Vector2 chunkWorldSize;
   private Mesh[] chunkMeshes;
@@ -36,7 +33,7 @@ public class TerrainDetailLayer : MonoBehaviour
   private int minActiveChunkY = int.MaxValue;
   private int maxActiveChunkY = int.MinValue;
   private Coroutine preloading;
-  private bool preloaded = false;
+  private bool preloaded;
 
   public Vector2 DetailTexelSize { get; set; }
 
@@ -48,88 +45,88 @@ public class TerrainDetailLayer : MonoBehaviour
 
   public TerrainData TerrainData { get; set; }
 
-  public bool CastShadows => this.castShadows;
+  public bool CastShadows => castShadows;
 
-  public int LayerIndex => this.layerIndex;
+  public int LayerIndex => layerIndex;
 
-  public Material Material => this.material;
+  public Material Material => material;
 
   private IEnumerator Preload()
   {
-    if ((Object) this.chunkPrefab != (Object) null)
+    if ((Object) chunkPrefab != (Object) null)
     {
-      int iLength = this.chunks.GetLength(0);
-      int jLength = this.chunks.GetLength(1);
+      int iLength = chunks.GetLength(0);
+      int jLength = chunks.GetLength(1);
       for (int i = 0; i < iLength; ++i)
       {
         for (int j = 0; j < jLength; ++j)
         {
-          TerrainDetailChunk chunk = this.chunks[i, j];
+          TerrainDetailChunk chunk = chunks[i, j];
           if ((Object) chunk == (Object) null)
           {
-            chunk = TerrainDetailChunk.Create(this.chunkPrefab, this, i, j);
-            this.chunks[i, j] = chunk;
+            chunk = TerrainDetailChunk.Create(chunkPrefab, this, i, j);
+            chunks[i, j] = chunk;
           }
           chunk.Preload();
-          chunk = (TerrainDetailChunk) null;
+          chunk = null;
         }
-        yield return (object) null;
+        yield return null;
       }
     }
-    this.preloading = (Coroutine) null;
+    preloading = (Coroutine) null;
   }
 
   private Mesh CreateMesh(int capacity)
   {
-    bool flag1 = this.prototypeBuffers.HasColors();
-    bool flag2 = this.prototypeBuffers.HasUV();
-    bool flag3 = this.prototypeBuffers.HasNormals();
-    bool flag4 = this.prototypeBuffers.HasTangents();
+    bool flag1 = prototypeBuffers.HasColors();
+    bool flag2 = prototypeBuffers.HasUV();
+    bool flag3 = prototypeBuffers.HasNormals();
+    bool flag4 = prototypeBuffers.HasTangents();
     Mesh mesh = new Mesh();
     mesh.hideFlags = HideFlags.HideAndDontSave;
-    mesh.name = "Terrain Detail " + (object) this.layerIndex + " (" + (object) capacity + ")";
-    if (TerrainDetailLayer.meshBuffers == null)
-      TerrainDetailLayer.meshBuffers = new DynamicMeshBuffers();
-    TerrainDetailLayer.PrepareClearList<Vector3>(ref TerrainDetailLayer.meshBuffers.Vertices);
+    mesh.name = "Terrain Detail " + layerIndex + " (" + capacity + ")";
+    if (meshBuffers == null)
+      meshBuffers = new DynamicMeshBuffers();
+    PrepareClearList(ref meshBuffers.Vertices);
     if (flag1)
-      TerrainDetailLayer.PrepareClearList<Color32>(ref TerrainDetailLayer.meshBuffers.Colors);
+      PrepareClearList(ref meshBuffers.Colors);
     if (flag2)
-      TerrainDetailLayer.PrepareClearList<Vector2>(ref TerrainDetailLayer.meshBuffers.UV);
-    TerrainDetailLayer.PrepareClearList<Vector2>(ref TerrainDetailLayer.meshBuffers.UV2);
+      PrepareClearList(ref meshBuffers.UV);
+    PrepareClearList(ref meshBuffers.UV2);
     if (flag3)
-      TerrainDetailLayer.PrepareClearList<Vector3>(ref TerrainDetailLayer.meshBuffers.Normals);
+      PrepareClearList(ref meshBuffers.Normals);
     if (flag4)
-      TerrainDetailLayer.PrepareClearList<Vector4>(ref TerrainDetailLayer.meshBuffers.Tangents);
-    TerrainDetailLayer.PrepareClearList<int>(ref TerrainDetailLayer.meshBuffers.Triangles);
+      PrepareClearList(ref meshBuffers.Tangents);
+    PrepareClearList(ref meshBuffers.Triangles);
     for (int index1 = 0; index1 < capacity; ++index1)
     {
-      for (int index2 = 0; index2 < this.prototypeBuffers.TriangleCount; ++index2)
-        TerrainDetailLayer.meshBuffers.Triangles.Add(this.prototypeBuffers.Triangles[index2] + TerrainDetailLayer.meshBuffers.Vertices.Count);
-      for (int index3 = 0; index3 < this.prototypeBuffers.VertexCount; ++index3)
+      for (int index2 = 0; index2 < prototypeBuffers.TriangleCount; ++index2)
+        meshBuffers.Triangles.Add(prototypeBuffers.Triangles[index2] + meshBuffers.Vertices.Count);
+      for (int index3 = 0; index3 < prototypeBuffers.VertexCount; ++index3)
       {
-        TerrainDetailLayer.meshBuffers.Vertices.Add(this.prototypeBuffers.Vertices[index3]);
-        TerrainDetailLayer.meshBuffers.UV2.Add(new Vector2((0.5f + (float) index1) / (float) capacity, 0.0f));
+        meshBuffers.Vertices.Add(prototypeBuffers.Vertices[index3]);
+        meshBuffers.UV2.Add(new Vector2((0.5f + index1) / capacity, 0.0f));
         if (flag1)
-          TerrainDetailLayer.meshBuffers.Colors.Add(this.prototypeBuffers.Colors[index3]);
+          meshBuffers.Colors.Add(prototypeBuffers.Colors[index3]);
         if (flag2)
-          TerrainDetailLayer.meshBuffers.UV.Add(this.prototypeBuffers.UV[index3]);
+          meshBuffers.UV.Add(prototypeBuffers.UV[index3]);
         if (flag3)
-          TerrainDetailLayer.meshBuffers.Normals.Add(this.prototypeBuffers.Normals[index3]);
+          meshBuffers.Normals.Add(prototypeBuffers.Normals[index3]);
         if (flag4)
-          TerrainDetailLayer.meshBuffers.Tangents.Add(this.prototypeBuffers.Tangents[index3]);
+          meshBuffers.Tangents.Add(prototypeBuffers.Tangents[index3]);
       }
     }
-    mesh.SetVertices(TerrainDetailLayer.meshBuffers.Vertices);
-    mesh.SetUVs(1, TerrainDetailLayer.meshBuffers.UV2);
-    mesh.SetTriangles(TerrainDetailLayer.meshBuffers.Triangles, 0, false);
+    mesh.SetVertices(meshBuffers.Vertices);
+    mesh.SetUVs(1, meshBuffers.UV2);
+    mesh.SetTriangles(meshBuffers.Triangles, 0, false);
     if (flag1)
-      mesh.SetColors(TerrainDetailLayer.meshBuffers.Colors);
+      mesh.SetColors(meshBuffers.Colors);
     if (flag2)
-      mesh.SetUVs(0, TerrainDetailLayer.meshBuffers.UV);
+      mesh.SetUVs(0, meshBuffers.UV);
     if (flag3)
-      mesh.SetNormals(TerrainDetailLayer.meshBuffers.Normals);
+      mesh.SetNormals(meshBuffers.Normals);
     if (flag4)
-      mesh.SetTangents(TerrainDetailLayer.meshBuffers.Tangents);
+      mesh.SetTangents(meshBuffers.Tangents);
     mesh.bounds = new Bounds(new Vector3(0.5f, 0.5f, 0.5f), Vector3.one);
     mesh.UploadMeshData(true);
     return mesh;
@@ -138,65 +135,65 @@ public class TerrainDetailLayer : MonoBehaviour
   public Mesh GetMesh(int pointCount, out int capacity)
   {
     int num = pointCount * 8;
-    int index = num / this.MaxChunkCapacity - 1;
-    if (num % this.MaxChunkCapacity > 0)
+    int index = num / MaxChunkCapacity - 1;
+    if (num % MaxChunkCapacity > 0)
       ++index;
-    capacity = (index + 1) * this.MaxChunkCapacity / 8;
-    if ((Object) this.chunkMeshes[index] == (Object) null)
-      this.chunkMeshes[index] = this.CreateMesh(capacity);
-    return this.chunkMeshes[index];
+    capacity = (index + 1) * MaxChunkCapacity / 8;
+    if ((Object) chunkMeshes[index] == (Object) null)
+      chunkMeshes[index] = CreateMesh(capacity);
+    return chunkMeshes[index];
   }
 
   private void OnEnable()
   {
-    Camera.onPreCull -= new Camera.CameraCallback(this.OnPreCullEvent);
-    Camera.onPreCull += new Camera.CameraCallback(this.OnPreCullEvent);
+    Camera.onPreCull -= new Camera.CameraCallback(OnPreCullEvent);
+    Camera.onPreCull += new Camera.CameraCallback(OnPreCullEvent);
   }
 
   private void OnDisable()
   {
-    if (this.preloading != null)
+    if (preloading != null)
     {
-      this.StopCoroutine(this.preloading);
-      this.preloading = (Coroutine) null;
+      this.StopCoroutine(preloading);
+      preloading = (Coroutine) null;
     }
-    this.preloaded = false;
-    Camera.onPreCull -= new Camera.CameraCallback(this.OnPreCullEvent);
-    this.TerrainData = (TerrainData) null;
-    if (this.chunks != null)
+    preloaded = false;
+    Camera.onPreCull -= new Camera.CameraCallback(OnPreCullEvent);
+    TerrainData = (TerrainData) null;
+    if (chunks != null)
     {
-      int length1 = this.chunks.GetLength(0);
-      int length2 = this.chunks.GetLength(1);
+      int length1 = chunks.GetLength(0);
+      int length2 = chunks.GetLength(1);
       for (int index1 = 0; index1 < length1; ++index1)
       {
         for (int index2 = 0; index2 < length2; ++index2)
         {
-          if ((Object) this.chunks[index1, index2] != (Object) null)
+          if ((Object) chunks[index1, index2] != (Object) null)
           {
-            Object.Destroy((Object) this.chunks[index1, index2].gameObject);
-            this.chunks[index1, index2] = (TerrainDetailChunk) null;
+            Object.Destroy((Object) chunks[index1, index2].gameObject);
+            chunks[index1, index2] = null;
           }
         }
       }
-      this.chunks = (TerrainDetailChunk[,]) null;
+      chunks = null;
     }
-    if (this.chunkMeshes != null)
+    if (chunkMeshes != null)
     {
-      for (int index = 0; index < this.chunkMeshes.Length; ++index)
+      for (int index = 0; index < chunkMeshes.Length; ++index)
       {
-        Object.Destroy((Object) this.chunkMeshes[index]);
-        this.chunkMeshes[index] = (Mesh) null;
+        Object.Destroy((Object) chunkMeshes[index]);
+        chunkMeshes[index] = (Mesh) null;
       }
-      this.chunkMeshes = (Mesh[]) null;
+      chunkMeshes = (Mesh[]) null;
     }
-    this.prototypeBuffers = (StaticMeshBuffers) null;
+    prototypeBuffers = null;
   }
 
   private void OnPreCullEvent(Camera camera)
   {
     if (Profiler.enabled)
       Profiler.BeginSample(nameof (TerrainDetailLayer));
-    this.OnPreCullEvent2(camera);
+    OnPreCullEvent2(camera);
     if (!Profiler.enabled)
       return;
     Profiler.EndSample();
@@ -204,65 +201,65 @@ public class TerrainDetailLayer : MonoBehaviour
 
   private void OnPreCullEvent2(Camera camera)
   {
-    if (ExternalSettingsInstance<ExternalOptimizationSettings>.Instance.DisableGrass || (Object) this.prototypeMesh == (Object) null || (Object) this.material == (Object) null || (Object) this.Terrain == (Object) null || (Object) this.chunkPrefab == (Object) null || (Object) camera == (Object) null || (camera.cullingMask & 1 << this.gameObject.layer) == 0)
+    if (ExternalSettingsInstance<ExternalOptimizationSettings>.Instance.DisableGrass || (Object) prototypeMesh == (Object) null || (Object) material == (Object) null || (Object) Terrain == (Object) null || (Object) chunkPrefab == (Object) null || (Object) camera == (Object) null || (camera.cullingMask & 1 << this.gameObject.layer) == 0)
       return;
-    if (this.chunks == null)
+    if (chunks == null)
     {
-      this.TerrainData = this.Terrain.terrainData;
-      this.DetailTexelSize = new Vector2(this.TerrainData.size.x / (float) this.TerrainData.detailWidth, this.TerrainData.size.z / (float) this.TerrainData.detailHeight);
-      this.chunkWorldSize = this.DetailTexelSize * 104f;
-      int length1 = this.TerrainData.detailWidth / 104;
-      if (this.TerrainData.detailWidth % 104 > 0)
+      TerrainData = Terrain.terrainData;
+      DetailTexelSize = new Vector2(TerrainData.size.x / (float) TerrainData.detailWidth, TerrainData.size.z / (float) TerrainData.detailHeight);
+      chunkWorldSize = DetailTexelSize * 104f;
+      int length1 = TerrainData.detailWidth / 104;
+      if (TerrainData.detailWidth % 104 > 0)
         ++length1;
-      int length2 = this.TerrainData.detailHeight / 104;
-      if (this.TerrainData.detailHeight % 104 > 0)
+      int length2 = TerrainData.detailHeight / 104;
+      if (TerrainData.detailHeight % 104 > 0)
         ++length2;
-      this.chunks = new TerrainDetailChunk[length1, length2];
-      this.minActiveChunkX = int.MaxValue;
-      this.maxActiveChunkX = int.MinValue;
-      this.minActiveChunkY = int.MaxValue;
-      this.maxActiveChunkY = int.MinValue;
-      this.chunkMeshes = new Mesh[8];
-      this.prototypeBuffers = new StaticMeshBuffers(this.prototypeMesh);
-      this.MaxChunkCapacity = 8192 / this.prototypeBuffers.VertexCount;
-      Bounds bounds = this.prototypeMesh.bounds;
+      chunks = new TerrainDetailChunk[length1, length2];
+      minActiveChunkX = int.MaxValue;
+      maxActiveChunkX = int.MinValue;
+      minActiveChunkY = int.MaxValue;
+      maxActiveChunkY = int.MinValue;
+      chunkMeshes = new Mesh[8];
+      prototypeBuffers = new StaticMeshBuffers(prototypeMesh);
+      MaxChunkCapacity = 8192 / prototypeBuffers.VertexCount;
+      Bounds bounds = prototypeMesh.bounds;
       Vector3 vector3 = -bounds.min;
       Vector3 max = bounds.max;
-      this.PrototypeExtents = new Vector3(Mathf.Max(Mathf.Max(vector3.x, vector3.z), Mathf.Max(max.x, max.z)), max.y, vector3.y);
-      if (this.bendingCalculation != 0)
+      PrototypeExtents = new Vector3(Mathf.Max(Mathf.Max(vector3.x, vector3.z), Mathf.Max(max.x, max.z)), max.y, vector3.y);
+      if (bendingCalculation != 0)
       {
-        Vector3[] vertices = this.prototypeBuffers.Vertices;
-        Color32[] color32Array = this.prototypeBuffers.Colors;
+        Vector3[] vertices = prototypeBuffers.Vertices;
+        Color32[] color32Array = prototypeBuffers.Colors;
         if (color32Array == null)
         {
-          color32Array = new Color32[this.prototypeBuffers.VertexCount];
-          this.prototypeBuffers.Colors = color32Array;
+          color32Array = new Color32[prototypeBuffers.VertexCount];
+          prototypeBuffers.Colors = color32Array;
         }
-        bool flag = this.bendingCalculation == TerrainDetailLayer.BendingCalculation.Vertical;
-        float num1 = !flag ? Mathf.Max(this.PrototypeExtents.y, this.PrototypeExtents.x) : this.PrototypeExtents.y;
+        bool flag = bendingCalculation == BendingCalculation.Vertical;
+        float num1 = !flag ? Mathf.Max(PrototypeExtents.y, PrototypeExtents.x) : PrototypeExtents.y;
         for (int index = 0; index < color32Array.Length; ++index)
         {
           Color32 color32 = color32Array[index];
           float num2 = !flag ? vertices[index].magnitude : vertices[index].y;
-          color32.a = (byte) ((double) Mathf.Clamp01(num2 / num1) * (double) byte.MaxValue + 0.44999998807907104);
+          color32.a = (byte) ((double) Mathf.Clamp01(num2 / num1) * byte.MaxValue + 0.44999998807907104);
           color32Array[index] = color32;
         }
       }
     }
-    if (!this.preloaded && Application.isPlaying && ExternalSettingsInstance<ExternalOptimizationSettings>.Instance.PreloadGrass)
+    if (!preloaded && Application.isPlaying && ExternalSettingsInstance<ExternalOptimizationSettings>.Instance.PreloadGrass)
     {
-      this.preloaded = true;
-      this.preloading = this.StartCoroutine(this.Preload());
+      preloaded = true;
+      preloading = this.StartCoroutine(Preload());
     }
-    Vector4 vector = this.material.GetVector("_DrawDistance");
+    Vector4 vector = material.GetVector("_DrawDistance");
     float drawDistance = vector.x + vector.y;
-    Vector3 vector3_1 = camera.transform.position - this.Terrain.transform.position;
-    int num3 = Mathf.FloorToInt((vector3_1.x - drawDistance) / this.chunkWorldSize.x);
-    int num4 = Mathf.FloorToInt((vector3_1.x + drawDistance) / this.chunkWorldSize.x);
-    int num5 = Mathf.FloorToInt((vector3_1.z - drawDistance) / this.chunkWorldSize.y);
-    int num6 = Mathf.FloorToInt((vector3_1.z + drawDistance) / this.chunkWorldSize.y);
-    int upperBound1 = this.chunks.GetUpperBound(0);
-    int upperBound2 = this.chunks.GetUpperBound(1);
+    Vector3 vector3_1 = camera.transform.position - Terrain.transform.position;
+    int num3 = Mathf.FloorToInt((vector3_1.x - drawDistance) / chunkWorldSize.x);
+    int num4 = Mathf.FloorToInt((vector3_1.x + drawDistance) / chunkWorldSize.x);
+    int num5 = Mathf.FloorToInt((vector3_1.z - drawDistance) / chunkWorldSize.y);
+    int num6 = Mathf.FloorToInt((vector3_1.z + drawDistance) / chunkWorldSize.y);
+    int upperBound1 = chunks.GetUpperBound(0);
+    int upperBound2 = chunks.GetUpperBound(1);
     if (num3 < 0)
       num3 = 0;
     if (num4 > upperBound1)
@@ -271,30 +268,30 @@ public class TerrainDetailLayer : MonoBehaviour
       num5 = 0;
     if (num6 > upperBound2)
       num6 = upperBound2;
-    if (this.minActiveChunkX < num3)
-      num3 = this.minActiveChunkX;
-    if (this.maxActiveChunkX > num4)
-      num4 = this.maxActiveChunkX;
-    if (this.minActiveChunkY < num5)
-      num5 = this.minActiveChunkY;
-    if (this.maxActiveChunkY > num6)
-      num6 = this.maxActiveChunkY;
-    this.minActiveChunkX = int.MaxValue;
-    this.maxActiveChunkX = int.MinValue;
-    this.minActiveChunkY = int.MaxValue;
-    this.maxActiveChunkY = int.MinValue;
+    if (minActiveChunkX < num3)
+      num3 = minActiveChunkX;
+    if (maxActiveChunkX > num4)
+      num4 = maxActiveChunkX;
+    if (minActiveChunkY < num5)
+      num5 = minActiveChunkY;
+    if (maxActiveChunkY > num6)
+      num6 = maxActiveChunkY;
+    minActiveChunkX = int.MaxValue;
+    maxActiveChunkX = int.MinValue;
+    minActiveChunkY = int.MaxValue;
+    maxActiveChunkY = int.MinValue;
     for (int chunkX = num3; chunkX <= num4; ++chunkX)
     {
       for (int chunkY = num5; chunkY <= num6; ++chunkY)
       {
         if (chunkX < 0 || chunkX > upperBound1 || chunkY < 0 || chunkY > upperBound2)
         {
-          Debug.LogError((object) ("TerrainDetailLayer : Chunk [" + (object) chunkX + ", " + (object) chunkY + "] is out of bounds [" + (object) upperBound1 + ", " + (object) upperBound2 + "]."));
+          Debug.LogError((object) ("TerrainDetailLayer : Chunk [" + chunkX + ", " + chunkY + "] is out of bounds [" + upperBound1 + ", " + upperBound2 + "]."));
         }
         else
         {
-          Vector3 vector3_2 = new Vector3((float) chunkX * this.chunkWorldSize.x - this.PrototypeExtents.x, -this.PrototypeExtents.z, (float) chunkY * this.chunkWorldSize.y - this.PrototypeExtents.x);
-          Vector3 vector3_3 = new Vector3((float) (chunkX + 1) * this.chunkWorldSize.x + this.PrototypeExtents.x, this.TerrainData.size.y + this.PrototypeExtents.y, (float) (chunkY + 1) * this.chunkWorldSize.y + this.PrototypeExtents.x);
+          Vector3 vector3_2 = new Vector3((float) chunkX * chunkWorldSize.x - PrototypeExtents.x, -PrototypeExtents.z, (float) chunkY * chunkWorldSize.y - PrototypeExtents.x);
+          Vector3 vector3_3 = new Vector3((float) (chunkX + 1) * chunkWorldSize.x + PrototypeExtents.x, TerrainData.size.y + PrototypeExtents.y, (float) (chunkY + 1) * chunkWorldSize.y + PrototypeExtents.x);
           Vector3 b = vector3_1;
           if ((double) b.x < (double) vector3_2.x)
             b.x = vector3_2.x;
@@ -309,40 +306,40 @@ public class TerrainDetailLayer : MonoBehaviour
           if ((double) b.z > (double) vector3_3.z)
             b.z = vector3_3.z;
           float num7 = Vector3.Distance(vector3_1, b);
-          bool flag = (double) num7 < (double) drawDistance;
+          bool flag = num7 < (double) drawDistance;
           if (flag)
           {
-            if ((Object) this.chunks[chunkX, chunkY] == (Object) null)
+            if ((Object) chunks[chunkX, chunkY] == (Object) null)
             {
-              if (TerrainDetailLayer.frame != Time.frameCount)
+              if (frame != Time.frameCount)
               {
-                TerrainDetailLayer.frame = Time.frameCount;
-                TerrainDetailLayer.chunksCreatedThisFrame = 0;
+                frame = Time.frameCount;
+                chunksCreatedThisFrame = 0;
               }
-              if ((double) num7 < 3.0 || TerrainDetailLayer.chunksCreatedThisFrame < 1)
+              if (num7 < 3.0 || chunksCreatedThisFrame < 1)
               {
-                ++TerrainDetailLayer.chunksCreatedThisFrame;
-                this.chunks[chunkX, chunkY] = TerrainDetailChunk.Create(this.chunkPrefab, this, chunkX, chunkY);
-                flag = this.chunks[chunkX, chunkY].UpdateVisibility(vector3_1, drawDistance);
+                ++chunksCreatedThisFrame;
+                chunks[chunkX, chunkY] = TerrainDetailChunk.Create(chunkPrefab, this, chunkX, chunkY);
+                flag = chunks[chunkX, chunkY].UpdateVisibility(vector3_1, drawDistance);
               }
               else
                 flag = false;
             }
             else
-              flag = this.chunks[chunkX, chunkY].UpdateVisibility(vector3_1, drawDistance);
+              flag = chunks[chunkX, chunkY].UpdateVisibility(vector3_1, drawDistance);
           }
-          else if ((Object) this.chunks[chunkX, chunkY] != (Object) null)
-            flag = this.chunks[chunkX, chunkY].HideAll();
+          else if ((Object) chunks[chunkX, chunkY] != (Object) null)
+            flag = chunks[chunkX, chunkY].HideAll();
           if (flag)
           {
-            if (chunkX < this.minActiveChunkX)
-              this.minActiveChunkX = chunkX;
-            if (chunkX > this.maxActiveChunkX)
-              this.maxActiveChunkX = chunkX;
-            if (chunkY < this.minActiveChunkY)
-              this.minActiveChunkY = chunkY;
-            if (chunkY > this.maxActiveChunkY)
-              this.maxActiveChunkY = chunkY;
+            if (chunkX < minActiveChunkX)
+              minActiveChunkX = chunkX;
+            if (chunkX > maxActiveChunkX)
+              maxActiveChunkX = chunkX;
+            if (chunkY < minActiveChunkY)
+              minActiveChunkY = chunkY;
+            if (chunkY > maxActiveChunkY)
+              maxActiveChunkY = chunkY;
           }
         }
       }

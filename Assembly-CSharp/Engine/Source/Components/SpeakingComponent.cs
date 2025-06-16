@@ -1,4 +1,6 @@
-﻿using Engine.Common;
+﻿using System;
+using System.Collections.Generic;
+using Engine.Common;
 using Engine.Common.Commons;
 using Engine.Common.Components;
 using Engine.Common.Components.Speaking;
@@ -7,8 +9,6 @@ using Engine.Common.Types;
 using Engine.Impl.Services.Factories;
 using Engine.Source.Commons;
 using Inspectors;
-using System;
-using System.Collections.Generic;
 
 namespace Engine.Source.Components
 {
@@ -17,11 +17,11 @@ namespace Engine.Source.Components
   [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite | TypeEnum.StateSave | TypeEnum.StateLoad)]
   public class SpeakingComponent : EngineComponent, ISpeakingComponent, IComponent, INeedSave
   {
-    [StateSaveProxy(MemberEnum.None)]
-    [StateLoadProxy(MemberEnum.None)]
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [StateSaveProxy]
+    [StateLoadProxy]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy()]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected bool isEnabled = true;
     [StateSaveProxy(MemberEnum.CustomListReference)]
@@ -43,22 +43,22 @@ namespace Engine.Source.Components
     [Inspected(Mutable = true)]
     public bool IsEnabled
     {
-      get => this.isEnabled;
-      set => this.isEnabled = value;
+      get => isEnabled;
+      set => isEnabled = value;
     }
 
-    [StateSaveProxy(MemberEnum.None)]
-    [StateLoadProxy(MemberEnum.None)]
+    [StateSaveProxy]
+    [StateLoadProxy]
     [Inspected]
     public bool SpeakAvailable
     {
-      get => this.speakAvailable;
+      get => speakAvailable;
       set
       {
-        if (this.speakAvailable == value)
+        if (speakAvailable == value)
           return;
-        this.speakAvailable = value;
-        Action<bool> speakAvailableChange = this.OnSpeakAvailableChange;
+        speakAvailable = value;
+        Action<bool> speakAvailableChange = OnSpeakAvailableChange;
         if (speakAvailableChange == null)
           return;
         speakAvailableChange(value);
@@ -67,20 +67,20 @@ namespace Engine.Source.Components
 
     public IEnumerable<ILipSyncObject> InitialPhrases
     {
-      get => (IEnumerable<ILipSyncObject>) this.initialPhrases;
+      get => initialPhrases;
     }
 
-    public void AddInitialPhrase(ILipSyncObject lipsync) => this.initialPhrases.Add(lipsync);
+    public void AddInitialPhrase(ILipSyncObject lipsync) => initialPhrases.Add(lipsync);
 
-    public void RemoveInitialPhrase(ILipSyncObject lipsync) => this.initialPhrases.Remove(lipsync);
+    public void RemoveInitialPhrase(ILipSyncObject lipsync) => initialPhrases.Remove(lipsync);
 
-    public void ClearInitialPhrases() => this.initialPhrases.Clear();
+    public void ClearInitialPhrases() => initialPhrases.Clear();
 
     public bool NeedSave => true;
 
     public void FireBeginTalking()
     {
-      Action onBeginTalking = this.OnBeginTalking;
+      Action onBeginTalking = OnBeginTalking;
       if (onBeginTalking == null)
         return;
       onBeginTalking();
@@ -88,7 +88,7 @@ namespace Engine.Source.Components
 
     public void FireSpeechReply(ulong reply)
     {
-      Action<ulong> onSpeechReply = this.OnSpeechReply;
+      Action<ulong> onSpeechReply = OnSpeechReply;
       if (onSpeechReply == null)
         return;
       onSpeechReply(reply);
@@ -96,7 +96,7 @@ namespace Engine.Source.Components
 
     public void Speech(LocalizedText speech, List<DialogString> replies)
     {
-      Action<LocalizedText, List<DialogString>> onBeginSpeech = this.OnBeginSpeech;
+      Action<LocalizedText, List<DialogString>> onBeginSpeech = OnBeginSpeech;
       if (onBeginSpeech == null)
         return;
       onBeginSpeech(speech, replies);
@@ -104,7 +104,7 @@ namespace Engine.Source.Components
 
     public void ExitTalking()
     {
-      Action onExitTalking = this.OnExitTalking;
+      Action onExitTalking = OnExitTalking;
       if (onExitTalking == null)
         return;
       onExitTalking();

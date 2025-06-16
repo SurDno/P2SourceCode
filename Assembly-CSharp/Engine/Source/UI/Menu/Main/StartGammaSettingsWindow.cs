@@ -1,5 +1,5 @@
-﻿using Engine.Impl.UI.Menu.Main;
-using System;
+﻿using System;
+using Engine.Impl.UI.Menu.Main;
 
 namespace Engine.Source.UI.Menu.Main
 {
@@ -7,7 +7,7 @@ namespace Engine.Source.UI.Menu.Main
   {
     protected override void RegisterLayer()
     {
-      this.RegisterLayer<IStartGammaSettingsWindow>((IStartGammaSettingsWindow) this);
+      RegisterLayer((IStartGammaSettingsWindow) this);
     }
 
     public override Type GetWindowType() => typeof (IStartGammaSettingsWindow);

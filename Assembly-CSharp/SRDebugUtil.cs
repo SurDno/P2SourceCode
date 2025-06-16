@@ -1,8 +1,7 @@
-﻿using SRF;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using UnityEngine;
+using SRF;
 
 public static class SRDebugUtil
 {
@@ -14,13 +13,13 @@ public static class SRDebugUtil
   [DebuggerStepThrough]
   public static void AssertNotNull(object value, string message = null, MonoBehaviour instance = null)
   {
-    if (EqualityComparer<object>.Default.Equals(value, (object) null))
+    if (EqualityComparer<object>.Default.Equals(value, null))
     {
       string str;
       if (message == null)
         str = "Assert Failed";
       else
-        str = "NotNullAssert Failed: {0}".Fmt((object) message);
+        str = "NotNullAssert Failed: {0}".Fmt(message);
       message = str;
       UnityEngine.Debug.LogError((object) message, (UnityEngine.Object) instance);
       if ((UnityEngine.Object) instance != (UnityEngine.Object) null)
@@ -39,7 +38,7 @@ public static class SRDebugUtil
       if (message == null)
         str = "Assert Failed";
       else
-        str = "Assert Failed: {0}".Fmt((object) message);
+        str = "Assert Failed: {0}".Fmt(message);
       message = str;
       UnityEngine.Debug.LogError((object) message, (UnityEngine.Object) instance);
       throw new Exception(message);
@@ -51,7 +50,7 @@ public static class SRDebugUtil
   [DebuggerStepThrough]
   public static void EditorAssertNotNull(object value, string message = null, MonoBehaviour instance = null)
   {
-    SRDebugUtil.AssertNotNull(value, message, instance);
+    AssertNotNull(value, message, instance);
   }
 
   [Conditional("UNITY_EDITOR")]
@@ -59,6 +58,6 @@ public static class SRDebugUtil
   [DebuggerStepThrough]
   public static void EditorAssert(bool condition, string message = null, MonoBehaviour instance = null)
   {
-    SRDebugUtil.Assert(condition, message, instance);
+    Assert(condition, message, instance);
   }
 }

@@ -1,4 +1,7 @@
-﻿using Engine.Behaviours.Components;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Engine.Behaviours.Components;
 using Engine.Behaviours.Engines.Services;
 using Engine.Common;
 using Engine.Common.Components;
@@ -16,10 +19,6 @@ using Engine.Source.Commons;
 using Engine.Source.Inventory;
 using Engine.Source.Services.Inputs;
 using Engine.Source.Utility;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
 
 namespace Engine.Source.Components
 {
@@ -38,7 +37,7 @@ namespace Engine.Source.Components
     private bool wasUnholsteredWhenVisir;
     private int lastAlphaNumericalWeapon = -1;
 
-    public int currentWeapon { get; private set; } = 0;
+    public int currentWeapon { get; private set; }
 
     public event Action<WeaponKind> WeaponHolsterStartEvent;
 
@@ -52,16 +51,16 @@ namespace Engine.Source.Components
 
     public event Action CurrentWeaponUnholstered;
 
-    public IEntity CurrentWeaponItem => this.avaliableWeaponItems[this.currentWeapon];
+    public IEntity CurrentWeaponItem => avaliableWeaponItems[currentWeapon];
 
     public IEnumerable<IEntity> AvailableWeaponItems
     {
-      get => (IEnumerable<IEntity>) this.avaliableWeaponItems;
+      get => avaliableWeaponItems;
     }
 
     public bool IsUnholstered { get; private set; }
 
-    public void ResetWeapon() => this.playerWeaponService.ResetWeapon();
+    public void ResetWeapon() => playerWeaponService.ResetWeapon();
 
     private bool WeaponListener(GameActionType type, bool down)
     {
@@ -70,16 +69,16 @@ namespace Engine.Source.Components
       switch (type)
       {
         case GameActionType.Weapon1:
-          this.SetWeaponIndex(0);
+          SetWeaponIndex(0);
           break;
         case GameActionType.Weapon2:
-          this.SetWeaponIndex(1);
+          SetWeaponIndex(1);
           break;
         case GameActionType.Weapon3:
-          this.SetWeaponIndex(2);
+          SetWeaponIndex(2);
           break;
         case GameActionType.Weapon4:
-          this.SetWeaponIndex(3);
+          SetWeaponIndex(3);
           break;
       }
       return true;
@@ -87,35 +86,35 @@ namespace Engine.Source.Components
 
     private void SetWeaponIndex(int index)
     {
-      if (index == 0 && this.avaliableWeapons[index] == WeaponKind.Unknown)
+      if (index == 0 && avaliableWeapons[index] == WeaponKind.Unknown)
         return;
-      if (this.avaliableWeapons[index] == WeaponKind.Unknown)
+      if (avaliableWeapons[index] == WeaponKind.Unknown)
       {
-        this.currentWeapon = 0;
-        if (this.lastAlphaNumericalWeapon == index)
-          this.ToggleCurrentWeapon();
+        currentWeapon = 0;
+        if (lastAlphaNumericalWeapon == index)
+          ToggleCurrentWeapon();
         else
-          this.HandsUnholster();
+          HandsUnholster();
       }
-      else if (this.currentWeapon == index)
+      else if (currentWeapon == index)
       {
-        this.ToggleCurrentWeapon();
+        ToggleCurrentWeapon();
       }
       else
       {
-        this.currentWeapon = index;
-        this.HandsUnholster();
+        currentWeapon = index;
+        HandsUnholster();
       }
-      this.lastAlphaNumericalWeapon = index;
+      lastAlphaNumericalWeapon = index;
     }
 
     public void ToggleCurrentWeapon()
     {
-      this.IsUnholstered = this.playerWeaponService.IsWeaponOn();
-      if (this.IsUnholstered)
-        this.HandsHolster();
+      IsUnholstered = playerWeaponService.IsWeaponOn();
+      if (IsUnholstered)
+        HandsHolster();
       else
-        this.HandsUnholster();
+        HandsUnholster();
     }
 
     private void OnInventoryChanged(IStorableComponent storable, IInventoryComponent container)
@@ -123,66 +122,66 @@ namespace Engine.Source.Components
       UIWindow active = ServiceLocator.GetService<UIService>().Active;
       if ((UnityEngine.Object) active != (UnityEngine.Object) null && active is IBaseInventoryWindow)
         return;
-      this.ApplyInventoryChange();
+      ApplyInventoryChange();
     }
 
     public void ApplyInventoryChange()
     {
-      bool flag1 = this.avaliableWeapons[1] != 0;
-      bool flag2 = this.avaliableWeapons[2] != 0;
-      this.GetAvailiableWeapons();
-      bool flag3 = this.avaliableWeapons[1] != 0;
-      bool flag4 = this.avaliableWeapons[2] != 0;
+      bool flag1 = avaliableWeapons[1] != 0;
+      bool flag2 = avaliableWeapons[2] != 0;
+      GetAvailiableWeapons();
+      bool flag3 = avaliableWeapons[1] != 0;
+      bool flag4 = avaliableWeapons[2] != 0;
       if (!flag1 & flag3)
-        this.currentWeapon = 1;
+        currentWeapon = 1;
       else if (flag1 && !flag3)
-        this.currentWeapon = 0;
+        currentWeapon = 0;
       else if (((flag1 || flag3 ? 0 : (!flag2 ? 1 : 0)) & (flag4 ? 1 : 0)) != 0)
-        this.currentWeapon = 2;
+        currentWeapon = 2;
       else if (((flag1 ? 0 : (!flag3 ? 1 : 0)) & (flag2 ? 1 : 0)) != 0 && !flag4)
-        this.currentWeapon = 0;
-      else if (this.avaliableWeapons[this.currentWeapon] == WeaponKind.Unknown)
-        this.currentWeapon = this.avaliableWeapons[1] == 0 ? (this.avaliableWeapons[2] == 0 ? (this.avaliableWeapons[3] == 0 ? 0 : 3) : 2) : 1;
-      if (!((UnityEngine.Object) this.playerWeaponService != (UnityEngine.Object) null) || !this.IsUnholstered || !this.IsUnholstered)
+        currentWeapon = 0;
+      else if (avaliableWeapons[currentWeapon] == WeaponKind.Unknown)
+        currentWeapon = avaliableWeapons[1] == 0 ? (avaliableWeapons[2] == 0 ? (avaliableWeapons[3] == 0 ? 0 : 3) : 2) : 1;
+      if (!((UnityEngine.Object) playerWeaponService != (UnityEngine.Object) null) || !IsUnholstered || !IsUnholstered)
         return;
-      this.playerWeaponService.SetWeapon(this.avaliableWeapons[this.currentWeapon], this.avaliableWeaponItems[this.currentWeapon]);
-      if (this.avaliableWeapons[this.currentWeapon] == WeaponKind.Unknown)
-        this.HandsHolster();
+      playerWeaponService.SetWeapon(avaliableWeapons[currentWeapon], avaliableWeaponItems[currentWeapon]);
+      if (avaliableWeapons[currentWeapon] == WeaponKind.Unknown)
+        HandsHolster();
     }
 
     private void GetAvailiableWeapons()
     {
-      IStorageComponent component = this.Owner.GetComponent<IStorageComponent>();
-      this.avaliableWeapons[0] = this.avaliableWeapons[1] = this.avaliableWeapons[2] = this.avaliableWeapons[3] = WeaponKind.Unknown;
-      this.avaliableWeaponItems[0] = this.avaliableWeaponItems[1] = this.avaliableWeaponItems[2] = this.avaliableWeaponItems[3] = (IEntity) null;
+      IStorageComponent component = Owner.GetComponent<IStorageComponent>();
+      avaliableWeapons[0] = avaliableWeapons[1] = avaliableWeapons[2] = avaliableWeapons[3] = WeaponKind.Unknown;
+      avaliableWeaponItems[0] = avaliableWeaponItems[1] = avaliableWeaponItems[2] = avaliableWeaponItems[3] = null;
       foreach (IStorableComponent storableComponent in component.Items)
       {
         if (storableComponent != null && storableComponent.Container != null)
         {
           IEnumerable<StorableGroup> limitations = storableComponent.Container.GetLimitations();
-          if (limitations.Contains<StorableGroup>(StorableGroup.Weapons_Hands))
+          if (limitations.Contains(StorableGroup.Weapons_Hands))
           {
-            this.avaliableWeapons[0] = this.GetWeaponFromItem(storableComponent.Owner);
-            this.avaliableWeaponItems[0] = storableComponent.Owner;
+            avaliableWeapons[0] = GetWeaponFromItem(storableComponent.Owner);
+            avaliableWeaponItems[0] = storableComponent.Owner;
           }
-          if (limitations.Contains<StorableGroup>(StorableGroup.Weapons_Primary))
+          if (limitations.Contains(StorableGroup.Weapons_Primary))
           {
-            this.avaliableWeapons[1] = this.GetWeaponFromItem(storableComponent.Owner);
-            this.avaliableWeaponItems[1] = storableComponent.Owner;
+            avaliableWeapons[1] = GetWeaponFromItem(storableComponent.Owner);
+            avaliableWeaponItems[1] = storableComponent.Owner;
           }
-          if (limitations.Contains<StorableGroup>(StorableGroup.Weapons_Secondary))
+          if (limitations.Contains(StorableGroup.Weapons_Secondary))
           {
-            this.avaliableWeapons[2] = this.GetWeaponFromItem(storableComponent.Owner);
-            this.avaliableWeaponItems[2] = storableComponent.Owner;
+            avaliableWeapons[2] = GetWeaponFromItem(storableComponent.Owner);
+            avaliableWeaponItems[2] = storableComponent.Owner;
           }
-          if (limitations.Contains<StorableGroup>(StorableGroup.Weapons_Lamp))
+          if (limitations.Contains(StorableGroup.Weapons_Lamp))
           {
-            this.avaliableWeapons[3] = this.GetWeaponFromItem(storableComponent.Owner);
-            this.avaliableWeaponItems[3] = storableComponent.Owner;
+            avaliableWeapons[3] = GetWeaponFromItem(storableComponent.Owner);
+            avaliableWeaponItems[3] = storableComponent.Owner;
           }
         }
       }
-      Action itemsChangeEvent = this.AvailableWeaponItemsChangeEvent;
+      Action itemsChangeEvent = AvailableWeaponItemsChangeEvent;
       if (itemsChangeEvent == null)
         return;
       itemsChangeEvent();
@@ -200,19 +199,19 @@ namespace Engine.Source.Components
       return WeaponKind.Unknown;
     }
 
-    public void SetWeaponByIndex(AttackerPlayerComponent.Slots slot)
+    public void SetWeaponByIndex(Slots slot)
     {
-      this.SetWeaponIndex((int) slot);
+      SetWeaponIndex((int) slot);
     }
 
     public void NextWeapon()
     {
-      for (int index = 0; index < this.avaliableWeapons.Length; ++index)
+      for (int index = 0; index < avaliableWeapons.Length; ++index)
       {
-        this.currentWeapon = (this.currentWeapon + 1) % 4;
-        if (this.avaliableWeapons[this.currentWeapon] != 0)
+        currentWeapon = (currentWeapon + 1) % 4;
+        if (avaliableWeapons[currentWeapon] != 0)
         {
-          this.playerWeaponService.SetWeapon(this.avaliableWeapons[this.currentWeapon], this.avaliableWeaponItems[this.currentWeapon]);
+          playerWeaponService.SetWeapon(avaliableWeapons[currentWeapon], avaliableWeaponItems[currentWeapon]);
           break;
         }
       }
@@ -220,12 +219,12 @@ namespace Engine.Source.Components
 
     public void PrevWeapon()
     {
-      for (int index = 0; index < this.avaliableWeapons.Length; ++index)
+      for (int index = 0; index < avaliableWeapons.Length; ++index)
       {
-        this.currentWeapon = (this.currentWeapon - 1 + 4) % 4;
-        if (this.avaliableWeapons[this.currentWeapon] != 0)
+        currentWeapon = (currentWeapon - 1 + 4) % 4;
+        if (avaliableWeapons[currentWeapon] != 0)
         {
-          this.playerWeaponService.SetWeapon(this.avaliableWeapons[this.currentWeapon], this.avaliableWeaponItems[this.currentWeapon]);
+          playerWeaponService.SetWeapon(avaliableWeapons[currentWeapon], avaliableWeaponItems[currentWeapon]);
           break;
         }
       }
@@ -235,7 +234,7 @@ namespace Engine.Source.Components
     {
       get
       {
-        return (UnityEngine.Object) this.playerWeaponService != (UnityEngine.Object) null ? this.playerWeaponService.KindBase : WeaponKind.Unknown;
+        return (UnityEngine.Object) playerWeaponService != (UnityEngine.Object) null ? playerWeaponService.KindBase : WeaponKind.Unknown;
       }
     }
 
@@ -243,29 +242,29 @@ namespace Engine.Source.Components
     {
       if (weaponKind == WeaponKind.Unknown)
       {
-        this.IsUnholstered = false;
-        this.playerWeaponService.SetWeapon(weaponKind, (IEntity) null);
+        IsUnholstered = false;
+        playerWeaponService.SetWeapon(weaponKind, null);
       }
       else
       {
         for (int index = 0; index < 4; ++index)
         {
-          if (weaponKind == this.avaliableWeapons[index])
+          if (weaponKind == avaliableWeapons[index])
           {
-            this.IsUnholstered = true;
-            this.playerWeaponService.SetWeapon(this.avaliableWeapons[index], this.avaliableWeaponItems[index]);
+            IsUnholstered = true;
+            playerWeaponService.SetWeapon(avaliableWeapons[index], avaliableWeaponItems[index]);
             return;
           }
         }
-        this.playerWeaponService.SetWeapon(weaponKind, (IEntity) null);
+        playerWeaponService.SetWeapon(weaponKind, null);
       }
     }
 
     public void HandsUnholster()
     {
-      this.IsUnholstered = true;
-      this.playerWeaponService.SetWeapon(this.avaliableWeapons[this.currentWeapon], this.avaliableWeaponItems[this.currentWeapon]);
-      Action weaponUnholstered = this.CurrentWeaponUnholstered;
+      IsUnholstered = true;
+      playerWeaponService.SetWeapon(avaliableWeapons[currentWeapon], avaliableWeaponItems[currentWeapon]);
+      Action weaponUnholstered = CurrentWeaponUnholstered;
       if (weaponUnholstered == null)
         return;
       weaponUnholstered();
@@ -273,16 +272,16 @@ namespace Engine.Source.Components
 
     public void HandsHolster()
     {
-      this.IsUnholstered = false;
-      this.playerWeaponService.SetWeapon(WeaponKind.Unknown, (IEntity) null);
+      IsUnholstered = false;
+      playerWeaponService.SetWeapon(WeaponKind.Unknown, null);
     }
 
     public void WeaponHandsUnholster()
     {
-      if (this.avaliableWeapons[0] != 0)
+      if (avaliableWeapons[0] != 0)
       {
-        this.IsUnholstered = true;
-        this.playerWeaponService.SetWeapon(this.avaliableWeapons[0], this.avaliableWeaponItems[0]);
+        IsUnholstered = true;
+        playerWeaponService.SetWeapon(avaliableWeapons[0], avaliableWeaponItems[0]);
       }
       else
         Debug.LogError((object) (typeof (AttackerPlayerComponent).Name + " has no weapon in slot Weapon1"));
@@ -290,10 +289,10 @@ namespace Engine.Source.Components
 
     public void WeaponFirearmUnholster()
     {
-      if (this.avaliableWeapons[1] != 0)
+      if (avaliableWeapons[1] != 0)
       {
-        this.IsUnholstered = true;
-        this.playerWeaponService.SetWeapon(this.avaliableWeapons[1], this.avaliableWeaponItems[1]);
+        IsUnholstered = true;
+        playerWeaponService.SetWeapon(avaliableWeapons[1], avaliableWeaponItems[1]);
       }
       else
         Debug.LogError((object) (typeof (AttackerPlayerComponent).Name + " has no weapon in slot Weapon2"));
@@ -301,10 +300,10 @@ namespace Engine.Source.Components
 
     public void WeaponMeleeUnholster()
     {
-      if (this.avaliableWeapons[2] != 0)
+      if (avaliableWeapons[2] != 0)
       {
-        this.IsUnholstered = true;
-        this.playerWeaponService.SetWeapon(this.avaliableWeapons[2], this.avaliableWeaponItems[2]);
+        IsUnholstered = true;
+        playerWeaponService.SetWeapon(avaliableWeapons[2], avaliableWeaponItems[2]);
       }
       else
         Debug.LogError((object) (typeof (AttackerPlayerComponent).Name + " has no weapon in slot Weapon3"));
@@ -312,10 +311,10 @@ namespace Engine.Source.Components
 
     public void WeaponLampUnholster()
     {
-      if (this.avaliableWeapons[3] != 0)
+      if (avaliableWeapons[3] != 0)
       {
-        this.IsUnholstered = true;
-        this.playerWeaponService.SetWeapon(this.avaliableWeapons[3], this.avaliableWeaponItems[3]);
+        IsUnholstered = true;
+        playerWeaponService.SetWeapon(avaliableWeapons[3], avaliableWeaponItems[3]);
       }
       else
         Debug.LogError((object) (typeof (AttackerPlayerComponent).Name + " has no weapon in slot Weapon4"));
@@ -323,45 +322,45 @@ namespace Engine.Source.Components
 
     public bool Reaction(IEntity target, NPCAttackKind attackKind, int randomSubkind)
     {
-      this.Clear();
+      Clear();
       return true;
     }
 
     private void OnGameObjectChangedEvent()
     {
-      IEntityView owner = (IEntityView) this.Owner;
-      if ((UnityEngine.Object) owner.GameObject == (UnityEngine.Object) null || (UnityEngine.Object) this.playerWeaponService != (UnityEngine.Object) null)
+      IEntityView owner = (IEntityView) Owner;
+      if ((UnityEngine.Object) owner.GameObject == (UnityEngine.Object) null || (UnityEngine.Object) playerWeaponService != (UnityEngine.Object) null)
         return;
-      this.playerWeaponService = owner.GameObject.GetComponent<PlayerWeaponServiceNew>();
-      if ((UnityEngine.Object) this.playerWeaponService == (UnityEngine.Object) null)
+      playerWeaponService = owner.GameObject.GetComponent<PlayerWeaponServiceNew>();
+      if ((UnityEngine.Object) playerWeaponService == (UnityEngine.Object) null)
         return;
-      this.playerWeaponService.SetWeapon(WeaponKind.Unknown, (IEntity) null);
-      this.playerWeaponService.WeaponHolsterStartEvent += (Action<WeaponKind>) (weapon =>
+      playerWeaponService.SetWeapon(WeaponKind.Unknown, null);
+      playerWeaponService.WeaponHolsterStartEvent += weapon =>
       {
-        Action<WeaponKind> holsterStartEvent = this.WeaponHolsterStartEvent;
+        Action<WeaponKind> holsterStartEvent = WeaponHolsterStartEvent;
         if (holsterStartEvent == null)
           return;
         holsterStartEvent(weapon);
-      });
-      this.playerWeaponService.WeaponUnholsterEndEvent += (Action<WeaponKind>) (weapon =>
+      };
+      playerWeaponService.WeaponUnholsterEndEvent += weapon =>
       {
-        Action<WeaponKind> unholsterEndEvent = this.WeaponUnholsterEndEvent;
+        Action<WeaponKind> unholsterEndEvent = WeaponUnholsterEndEvent;
         if (unholsterEndEvent == null)
           return;
         unholsterEndEvent(weapon);
-      });
-      this.playerWeaponService.WeaponShootEvent += (Action<WeaponKind, IEntity, ShotType, ReactionType, ShotSubtypeEnum>) ((weapon, weaponEntity, shotType, reactionType, shotSubtype) =>
+      };
+      playerWeaponService.WeaponShootEvent += (weapon, weaponEntity, shotType, reactionType, shotSubtype) =>
       {
-        Action<WeaponKind, IEntity, ShotType, ShotSubtypeEnum> weaponShootStartEvent = this.WeaponShootStartEvent;
+        Action<WeaponKind, IEntity, ShotType, ShotSubtypeEnum> weaponShootStartEvent = WeaponShootStartEvent;
         if (weaponShootStartEvent == null)
           return;
         weaponShootStartEvent(weapon, weaponEntity, shotType, shotSubtype);
-      });
+      };
     }
 
     public void Clear()
     {
-      if (!((UnityEngine.Object) ((IEntityView) this.Owner).GameObject == (UnityEngine.Object) null))
+      if (!((UnityEngine.Object) ((IEntityView) Owner).GameObject == (UnityEngine.Object) null))
         ;
     }
 
@@ -369,48 +368,48 @@ namespace Engine.Source.Components
     {
       if (InstanceByRequest<EngineApplication>.Instance.IsPaused)
         return;
-      IEntityView owner = (IEntityView) this.Owner;
+      IEntityView owner = (IEntityView) Owner;
       if ((UnityEngine.Object) owner.GameObject == (UnityEngine.Object) null || !((UnityEngine.Object) owner.GameObject.GetComponent<Animator>() == (UnityEngine.Object) null))
         ;
     }
 
     public void LateUpdate()
     {
-      IEntityView owner = (IEntityView) this.Owner;
+      IEntityView owner = (IEntityView) Owner;
       if ((UnityEngine.Object) owner.GameObject == (UnityEngine.Object) null || (UnityEngine.Object) owner.GameObject.GetComponent<Animator>() == (UnityEngine.Object) null)
         return;
       PivotPlayer component = owner.GameObject.GetComponent<PivotPlayer>();
       if (!((UnityEngine.Object) component != (UnityEngine.Object) null))
         return;
-      component.ApplyWeaponTransform(this.playerWeaponService.KindBase);
+      component.ApplyWeaponTransform(playerWeaponService.KindBase);
     }
 
-    public PlayerWeaponServiceNew GetPlayerWeaponService() => this.playerWeaponService;
+    public PlayerWeaponServiceNew GetPlayerWeaponService() => playerWeaponService;
 
     public void PlayerActivated()
     {
-      InstanceByRequest<UpdateService>.Instance.Updater.AddUpdatable((IUpdatable) this);
-      ((IEntityView) this.Owner).OnGameObjectChangedEvent += new Action(this.OnGameObjectChangedEvent);
-      this.OnGameObjectChangedEvent();
-      this.Owner.GetComponent<StorageComponent>().OnAddItemEvent += new Action<IStorableComponent, IInventoryComponent>(this.OnInventoryChanged);
-      this.Owner.GetComponent<StorageComponent>().OnRemoveItemEvent += new Action<IStorableComponent, IInventoryComponent>(this.OnInventoryChanged);
-      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Weapon1, new GameActionHandle(this.WeaponListener));
-      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Weapon2, new GameActionHandle(this.WeaponListener));
-      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Weapon3, new GameActionHandle(this.WeaponListener));
-      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Weapon4, new GameActionHandle(this.WeaponListener));
-      this.GetAvailiableWeapons();
+      InstanceByRequest<UpdateService>.Instance.Updater.AddUpdatable(this);
+      ((IEntityView) Owner).OnGameObjectChangedEvent += OnGameObjectChangedEvent;
+      OnGameObjectChangedEvent();
+      Owner.GetComponent<StorageComponent>().OnAddItemEvent += OnInventoryChanged;
+      Owner.GetComponent<StorageComponent>().OnRemoveItemEvent += OnInventoryChanged;
+      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Weapon1, WeaponListener);
+      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Weapon2, WeaponListener);
+      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Weapon3, WeaponListener);
+      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Weapon4, WeaponListener);
+      GetAvailiableWeapons();
     }
 
     public void PlayerDeactivated()
     {
-      InstanceByRequest<UpdateService>.Instance.Updater.RemoveUpdatable((IUpdatable) this);
-      ((IEntityView) this.Owner).OnGameObjectChangedEvent -= new Action(this.OnGameObjectChangedEvent);
-      this.Owner.GetComponent<StorageComponent>().OnAddItemEvent -= new Action<IStorableComponent, IInventoryComponent>(this.OnInventoryChanged);
-      this.Owner.GetComponent<StorageComponent>().OnRemoveItemEvent -= new Action<IStorableComponent, IInventoryComponent>(this.OnInventoryChanged);
-      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Weapon1, new GameActionHandle(this.WeaponListener));
-      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Weapon2, new GameActionHandle(this.WeaponListener));
-      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Weapon3, new GameActionHandle(this.WeaponListener));
-      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Weapon4, new GameActionHandle(this.WeaponListener));
+      InstanceByRequest<UpdateService>.Instance.Updater.RemoveUpdatable(this);
+      ((IEntityView) Owner).OnGameObjectChangedEvent -= OnGameObjectChangedEvent;
+      Owner.GetComponent<StorageComponent>().OnAddItemEvent -= OnInventoryChanged;
+      Owner.GetComponent<StorageComponent>().OnRemoveItemEvent -= OnInventoryChanged;
+      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Weapon1, WeaponListener);
+      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Weapon2, WeaponListener);
+      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Weapon3, WeaponListener);
+      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Weapon4, WeaponListener);
     }
 
     public enum Slots

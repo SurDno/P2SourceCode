@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace Cinemachine.Utility
+﻿namespace Cinemachine.Utility
 {
   internal class PositionPredictor
   {
@@ -12,49 +10,49 @@ namespace Cinemachine.Utility
 
     public float Smoothing
     {
-      get => this.mSmoothing;
+      get => mSmoothing;
       set
       {
-        if ((double) value == (double) this.mSmoothing)
+        if (value == (double) mSmoothing)
           return;
-        this.mSmoothing = value;
+        mSmoothing = value;
         int maxKernelRadius = Mathf.Max(10, Mathf.FloorToInt(value * 1.5f));
-        this.m_Velocity = new GaussianWindow1D_Vector3(this.mSmoothing, maxKernelRadius);
-        this.m_Accel = new GaussianWindow1D_Vector3(this.mSmoothing, maxKernelRadius);
+        m_Velocity = new GaussianWindow1D_Vector3(mSmoothing, maxKernelRadius);
+        m_Accel = new GaussianWindow1D_Vector3(mSmoothing, maxKernelRadius);
       }
     }
 
-    public bool IsEmpty => this.m_Velocity.IsEmpty();
+    public bool IsEmpty => m_Velocity.IsEmpty();
 
     public void Reset()
     {
-      this.m_Velocity.Reset();
-      this.m_Accel.Reset();
+      m_Velocity.Reset();
+      m_Accel.Reset();
     }
 
     public void AddPosition(Vector3 pos)
     {
-      if (this.IsEmpty)
+      if (IsEmpty)
       {
-        this.m_Velocity.AddValue(Vector3.zero);
+        m_Velocity.AddValue(Vector3.zero);
       }
       else
       {
-        Vector3 vector3 = this.m_Velocity.Value();
-        Vector3 v = (pos - this.m_Position) / Time.deltaTime;
-        this.m_Velocity.AddValue(v);
-        this.m_Accel.AddValue(v - vector3);
+        Vector3 vector3 = m_Velocity.Value();
+        Vector3 v = (pos - m_Position) / Time.deltaTime;
+        m_Velocity.AddValue(v);
+        m_Accel.AddValue(v - vector3);
       }
-      this.m_Position = pos;
+      m_Position = pos;
     }
 
     public Vector3 PredictPosition(float lookaheadTime)
     {
       int num1 = Mathf.Min(Mathf.RoundToInt(lookaheadTime / Time.deltaTime), 6);
-      float num2 = lookaheadTime / (float) num1;
-      Vector3 position = this.m_Position;
-      Vector3 fromDirection = this.m_Velocity.IsEmpty() ? Vector3.zero : this.m_Velocity.Value();
-      Vector3 vector3 = this.m_Accel.IsEmpty() ? Vector3.zero : this.m_Accel.Value();
+      float num2 = lookaheadTime / num1;
+      Vector3 position = m_Position;
+      Vector3 fromDirection = m_Velocity.IsEmpty() ? Vector3.zero : m_Velocity.Value();
+      Vector3 vector3 = m_Accel.IsEmpty() ? Vector3.zero : m_Accel.Value();
       for (int index = 0; index < num1; ++index)
       {
         position += fromDirection * num2;

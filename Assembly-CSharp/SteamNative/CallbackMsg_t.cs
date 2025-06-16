@@ -13,7 +13,7 @@ namespace SteamNative
 
     public static CallbackMsg_t FromPointer(IntPtr p)
     {
-      return Platform.PackSmall ? (CallbackMsg_t) (CallbackMsg_t.PackSmall) Marshal.PtrToStructure(p, typeof (CallbackMsg_t.PackSmall)) : (CallbackMsg_t) Marshal.PtrToStructure(p, typeof (CallbackMsg_t));
+      return Platform.PackSmall ? (PackSmall) Marshal.PtrToStructure(p, typeof (PackSmall)) : (CallbackMsg_t) Marshal.PtrToStructure(p, typeof (CallbackMsg_t));
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
@@ -24,10 +24,9 @@ namespace SteamNative
       public IntPtr ParamPtr;
       public int ParamCount;
 
-      public static implicit operator CallbackMsg_t(CallbackMsg_t.PackSmall d)
+      public static implicit operator CallbackMsg_t(PackSmall d)
       {
-        return new CallbackMsg_t()
-        {
+        return new CallbackMsg_t {
           SteamUser = d.SteamUser,
           Callback = d.Callback,
           ParamPtr = d.ParamPtr,

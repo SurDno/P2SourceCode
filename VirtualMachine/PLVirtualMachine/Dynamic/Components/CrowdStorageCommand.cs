@@ -1,7 +1,7 @@
-﻿using Engine.Common;
+﻿using System;
+using Engine.Common;
 using PLVirtualMachine.Common.EngineAPI.VMECS;
 using PLVirtualMachine.Common.EngineAPI.VMECS.VMAttributes;
-using System;
 
 namespace PLVirtualMachine.Dynamic.Components
 {
@@ -17,19 +17,19 @@ namespace PLVirtualMachine.Dynamic.Components
       int needCount,
       bool dropIfBusy = false)
     {
-      this.StorageCommandType = commandType;
-      this.TargetStorage = storage;
-      this.TargetContainer = containerEntity;
-      this.TargetItemTemplate = template;
-      this.NeedItemsCount = needCount;
-      this.DropIfBusyMode = dropIfBusy;
+      StorageCommandType = commandType;
+      TargetStorage = storage;
+      TargetContainer = containerEntity;
+      TargetItemTemplate = template;
+      NeedItemsCount = needCount;
+      DropIfBusyMode = dropIfBusy;
     }
 
     public void Clear()
     {
-      this.TargetStorage = (VMStorage) null;
-      this.TargetItemTemplate = (IEntity) null;
-      this.TargetContainer = (IEntity) null;
+      TargetStorage = null;
+      TargetItemTemplate = null;
+      TargetContainer = null;
     }
 
     public EStorageCommandType StorageCommandType { get; private set; }

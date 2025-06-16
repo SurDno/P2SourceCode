@@ -1,10 +1,9 @@
-﻿using Engine.Common.Components;
+﻿using System.Collections.Generic;
+using Engine.Common.Components;
 using Engine.Common.Components.Regions;
 using Engine.Common.Services;
 using Engine.Common.Types;
 using Engine.Impl.Services;
-using System.Collections.Generic;
-using UnityEngine;
 
 namespace Engine.Source.Components.Regions
 {
@@ -15,7 +14,7 @@ namespace Engine.Source.Components.Regions
     public static RegionComponent GetRegionByName(RegionEnum name)
     {
       RegionComponent regionByName;
-      RegionUtility.regions.TryGetValue(name, out regionByName);
+      regions.TryGetValue(name, out regionByName);
       return regionByName;
     }
 
@@ -24,11 +23,11 @@ namespace Engine.Source.Components.Regions
       RegionEnum name = RegionLocator.GetRegionName(position);
       if (name == RegionEnum.None)
         name = ScriptableObjectInstance<GameSettingsData>.Instance.DefaultRegionName;
-      RegionComponent regionByName = RegionUtility.GetRegionByName(name);
+      RegionComponent regionByName = GetRegionByName(name);
       if (regionByName == null)
       {
-        Debug.LogWarning((object) ("Region not found, name = " + (object) name + " , position : " + (object) position));
-        regionByName = RegionUtility.GetRegionByName(ScriptableObjectInstance<GameSettingsData>.Instance.DefaultRegionName);
+        Debug.LogWarning((object) ("Region not found, name = " + name + " , position : " + (object) position));
+        regionByName = GetRegionByName(ScriptableObjectInstance<GameSettingsData>.Instance.DefaultRegionName);
       }
       return regionByName;
     }
@@ -51,16 +50,16 @@ namespace Engine.Source.Components.Regions
     public static void AddRegion(RegionEnum name, RegionComponent region)
     {
       if (name == RegionEnum.None)
-        Debug.LogError((object) ("Region type : " + (object) name + " , region : " + region.Owner.GetInfo()));
-      if (RegionUtility.regions.ContainsKey(name))
-        Debug.LogError((object) ("Region type : " + (object) name + " , already exist, current : " + RegionUtility.regions[name].Owner.GetInfo() + " , new : " + region.Owner.GetInfo()));
+        Debug.LogError((object) ("Region type : " + name + " , region : " + region.Owner.GetInfo()));
+      if (regions.ContainsKey(name))
+        Debug.LogError((object) ("Region type : " + name + " , already exist, current : " + regions[name].Owner.GetInfo() + " , new : " + region.Owner.GetInfo()));
       else
-        RegionUtility.regions.Add(name, region);
+        regions.Add(name, region);
     }
 
     public static void RemoveRegion(RegionEnum name, RegionComponent region)
     {
-      RegionUtility.regions.Remove(name);
+      regions.Remove(name);
     }
   }
 }

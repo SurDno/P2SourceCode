@@ -9,7 +9,7 @@ namespace Scripts.Utility
     {
       using (MemoryStream memoryStream = new MemoryStream())
       {
-        using (GZipStream gzipStream = new GZipStream((Stream) memoryStream, CompressionMode.Compress))
+        using (GZipStream gzipStream = new GZipStream(memoryStream, CompressionMode.Compress))
           gzipStream.Write(data, 0, data.Length);
         return memoryStream.ToArray();
       }
@@ -19,11 +19,11 @@ namespace Scripts.Utility
     {
       using (MemoryStream memoryStream = new MemoryStream(data))
       {
-        using (GZipStream gzipStream = new GZipStream((Stream) memoryStream, CompressionMode.Decompress))
+        using (GZipStream gzipStream = new GZipStream(memoryStream, CompressionMode.Decompress))
         {
           using (MemoryStream destination = new MemoryStream())
           {
-            gzipStream.CopyTo((Stream) destination);
+            gzipStream.CopyTo(destination);
             return destination.ToArray();
           }
         }

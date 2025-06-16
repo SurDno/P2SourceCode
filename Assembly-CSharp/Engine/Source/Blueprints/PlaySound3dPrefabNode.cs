@@ -1,11 +1,9 @@
-﻿using Engine.Source.Audio;
+﻿using System;
+using Engine.Source.Audio;
 using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
 using SoundPropagation;
-using System;
-using UnityEngine;
-using UnityEngine.Audio;
 
 namespace Engine.Source.Blueprints
 {
@@ -14,11 +12,11 @@ namespace Engine.Source.Blueprints
   {
     [Port("Prefab")]
     private ValueInput<GameObject> sourcePrefab;
-    [Port("Volume", new object[] {1f})]
+    [Port("Volume", 1f)]
     private ValueInput<float> volumeInput;
-    [Port("FadeTime", new object[] {0.0f})]
+    [Port("FadeTime", 0.0f)]
     private ValueInput<float> fadeTime;
-    [Port("Use Pause", new object[] {true})]
+    [Port("Use Pause", true)]
     private ValueInput<bool> usePause;
     [Port("Target")]
     private ValueInput<GameObject> target;
@@ -33,26 +31,26 @@ namespace Engine.Source.Blueprints
     protected override void RegisterPorts()
     {
       base.RegisterPorts();
-      FlowOutput output = this.AddFlowOutput("Out");
-      this.AddFlowInput("In", (FlowHandler) (() =>
+      FlowOutput output = AddFlowOutput("Out");
+      AddFlowInput("In", () =>
       {
-        AudioClip clip = this.clipInput.value;
+        AudioClip clip = clipInput.value;
         if (!((UnityEngine.Object) clip != (UnityEngine.Object) null))
           return;
-        AudioMixerGroup mixer = this.mixerInput.value;
+        AudioMixerGroup mixer = mixerInput.value;
         if ((UnityEngine.Object) mixer != (UnityEngine.Object) null)
         {
-          GameObject gameObject = this.target.value;
+          GameObject gameObject = target.value;
           if ((UnityEngine.Object) gameObject != (UnityEngine.Object) null)
           {
             float unscaledTime = Time.unscaledTime;
             Transform transform = gameObject.transform;
-            AudioState audioState = SoundUtility.PlayAudioClip(this.sourcePrefab.value, transform, clip, mixer, this.volumeInput.value, this.fadeTime.value, this.usePause.value, "(blueprint) " + this.graph.agent.name, (Action) (() => output.Call()));
-            if (this.propagationInput.value && (UnityEngine.Object) transform != (UnityEngine.Object) null)
+            AudioState audioState = SoundUtility.PlayAudioClip(sourcePrefab.value, transform, clip, mixer, volumeInput.value, fadeTime.value, usePause.value, "(blueprint) " + graph.agent.name, (Action) (() => output.Call()));
+            if (propagationInput.value && (UnityEngine.Object) transform != (UnityEngine.Object) null)
               audioState.AudioSource.gameObject.AddComponent<SPAudioSource>().Origin = transform;
           }
         }
-      }));
+      });
     }
   }
 }

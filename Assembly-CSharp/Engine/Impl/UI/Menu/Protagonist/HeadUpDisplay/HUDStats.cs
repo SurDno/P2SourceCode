@@ -1,11 +1,8 @@
-﻿using Engine.Behaviours.Localization;
+﻿using System;
+using System.Collections.Generic;
+using Engine.Behaviours.Localization;
 using Engine.Common.Components.Parameters;
 using Engine.Impl.UI.Controls;
-using System;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.Serialization;
-using UnityEngine.UI;
 
 namespace Engine.Impl.UI.Menu.Protagonist.HeadUpDisplay
 {
@@ -32,7 +29,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.HeadUpDisplay
     [Space]
     [SerializeField]
     [FormerlySerializedAs("Stats")]
-    private HUDStats.Stat[] stats;
+    private Stat[] stats;
     [Header("Layout")]
     [SerializeField]
     [FormerlySerializedAs("FirstNamePosition")]
@@ -70,36 +67,36 @@ namespace Engine.Impl.UI.Menu.Protagonist.HeadUpDisplay
     private CanvasGroup[] barCanvasGroup;
     private StatBar[] bars;
     private bool[] visibility;
-    private HUDStats.Animation currentAnimation = HUDStats.Animation.Idle;
+    private Animation currentAnimation = Animation.Idle;
     private int animatedStatIndex;
     private float animationPhase;
 
     private void Start()
     {
-      this.nameCanvasGroup = new CanvasGroup[this.stats.Length];
-      this.barCanvasGroup = new CanvasGroup[this.stats.Length];
-      this.bars = new StatBar[this.stats.Length];
-      this.visibility = new bool[this.stats.Length];
-      for (int index = 0; index < this.stats.Length; ++index)
+      nameCanvasGroup = new CanvasGroup[stats.Length];
+      barCanvasGroup = new CanvasGroup[stats.Length];
+      bars = new StatBar[stats.Length];
+      visibility = new bool[stats.Length];
+      for (int index = 0; index < stats.Length; ++index)
       {
-        this.statMap[this.stats[index].Name] = index;
-        GameObject gameObject1 = UnityEngine.Object.Instantiate<GameObject>(this.namePrototype.gameObject);
-        gameObject1.name = this.namePrototype.name + " " + (object) this.stats[index].Name;
-        gameObject1.transform.SetParent(this.fadedLayer.transform, false);
-        this.nameCanvasGroup[index] = gameObject1.GetComponent<CanvasGroup>();
-        string str = this.localizerPrefix + (object) this.stats[index].Name + this.localizerSuffix;
-        gameObject1.GetComponent<Text>().text = this.stats[index].Name.ToString();
+        statMap[stats[index].Name] = index;
+        GameObject gameObject1 = UnityEngine.Object.Instantiate<GameObject>(namePrototype.gameObject);
+        gameObject1.name = namePrototype.name + " " + stats[index].Name;
+        gameObject1.transform.SetParent(fadedLayer.transform, false);
+        nameCanvasGroup[index] = gameObject1.GetComponent<CanvasGroup>();
+        string str = localizerPrefix + stats[index].Name + localizerSuffix;
+        gameObject1.GetComponent<Text>().text = stats[index].Name.ToString();
         gameObject1.GetComponent<Localizer>().Signature = str;
         gameObject1.SetActive(false);
-        GameObject gameObject2 = UnityEngine.Object.Instantiate<GameObject>(this.barPrototype.gameObject);
-        gameObject2.name = this.barPrototype.name + " " + (object) this.stats[index].Name;
-        gameObject2.transform.SetParent(this.fadedLayer.transform, false);
-        this.barCanvasGroup[index] = gameObject2.GetComponent<CanvasGroup>();
-        this.bars[index] = gameObject2.GetComponent<StatBar>();
-        this.bars[index].Image = this.stats[index].Image;
-        this.bars[index].IsReversed = this.stats[index].IsReversed;
-        this.bars[index].CurrentValue = this.stats[index].Value;
-        this.bars[index].TailValue = this.stats[index].Value;
+        GameObject gameObject2 = UnityEngine.Object.Instantiate<GameObject>(barPrototype.gameObject);
+        gameObject2.name = barPrototype.name + " " + stats[index].Name;
+        gameObject2.transform.SetParent(fadedLayer.transform, false);
+        barCanvasGroup[index] = gameObject2.GetComponent<CanvasGroup>();
+        bars[index] = gameObject2.GetComponent<StatBar>();
+        bars[index].Image = stats[index].Image;
+        bars[index].IsReversed = stats[index].IsReversed;
+        bars[index].CurrentValue = stats[index].Value;
+        bars[index].TailValue = stats[index].Value;
         gameObject2.SetActive(false);
       }
     }
@@ -107,129 +104,129 @@ namespace Engine.Impl.UI.Menu.Protagonist.HeadUpDisplay
     public void TrySetValue(ParameterNameEnum name, float value)
     {
       int index;
-      if (!this.statMap.TryGetValue(name, out index))
+      if (!statMap.TryGetValue(name, out index))
         return;
-      this.stats[index].Value = Mathf.Clamp01(value);
+      stats[index].Value = Mathf.Clamp01(value);
     }
 
     public void TrySetThreshold(ParameterNameEnum name, float value)
     {
       int index;
-      if (!this.statMap.TryGetValue(name, out index))
+      if (!statMap.TryGetValue(name, out index))
         return;
-      this.stats[index].VisibilityThreshold = Mathf.Clamp01(value);
+      stats[index].VisibilityThreshold = Mathf.Clamp01(value);
     }
 
     private void Update()
     {
-      switch (this.currentAnimation)
+      switch (currentAnimation)
       {
-        case HUDStats.Animation.Idle:
-          for (int index = 0; index < this.stats.Length; ++index)
+        case Animation.Idle:
+          for (int index = 0; index < stats.Length; ++index)
           {
-            if (this.visibility[index] && (double) Mathf.Abs(this.bars[index].CurrentValue - this.stats[index].Value) >= (double) this.alertedValueChange)
+            if (visibility[index] && (double) Mathf.Abs(bars[index].CurrentValue - stats[index].Value) >= alertedValueChange)
             {
-              this.currentAnimation = HUDStats.Animation.Alert;
-              this.animatedStatIndex = index;
-              this.animationPhase = 0.0f;
-              this.barCanvasGroup[index].transform.SetParent(this.transform);
-              this.nameCanvasGroup[index].transform.SetParent(this.transform);
+              currentAnimation = Animation.Alert;
+              animatedStatIndex = index;
+              animationPhase = 0.0f;
+              barCanvasGroup[index].transform.SetParent(this.transform);
+              nameCanvasGroup[index].transform.SetParent(this.transform);
               break;
             }
-            bool flag = this.stats[index].IsReversed ? (double) this.stats[index].Value > (double) this.stats[index].VisibilityThreshold : (double) this.stats[index].Value < (double) this.stats[index].VisibilityThreshold;
-            if (flag && !this.visibility[index])
+            bool flag = stats[index].IsReversed ? stats[index].Value > (double) stats[index].VisibilityThreshold : stats[index].Value < (double) stats[index].VisibilityThreshold;
+            if (flag && !visibility[index])
             {
-              this.visibility[index] = true;
-              this.currentAnimation = HUDStats.Animation.Show;
-              this.animatedStatIndex = index;
-              this.animationPhase = 0.0f;
-              this.barCanvasGroup[index].alpha = 0.0f;
-              this.nameCanvasGroup[index].alpha = 0.0f;
-              this.barCanvasGroup[index].gameObject.SetActive(true);
-              this.nameCanvasGroup[index].gameObject.SetActive(true);
-              this.barCanvasGroup[index].transform.SetParent(this.transform);
-              this.nameCanvasGroup[index].transform.SetParent(this.transform);
+              visibility[index] = true;
+              currentAnimation = Animation.Show;
+              animatedStatIndex = index;
+              animationPhase = 0.0f;
+              barCanvasGroup[index].alpha = 0.0f;
+              nameCanvasGroup[index].alpha = 0.0f;
+              barCanvasGroup[index].gameObject.SetActive(true);
+              nameCanvasGroup[index].gameObject.SetActive(true);
+              barCanvasGroup[index].transform.SetParent(this.transform);
+              nameCanvasGroup[index].transform.SetParent(this.transform);
               break;
             }
-            if (!flag && this.visibility[index])
+            if (!flag && visibility[index])
             {
-              this.currentAnimation = HUDStats.Animation.Hide;
-              this.animatedStatIndex = index;
-              this.animationPhase = 0.0f;
+              currentAnimation = Animation.Hide;
+              animatedStatIndex = index;
+              animationPhase = 0.0f;
               break;
             }
           }
-          if (this.currentAnimation != HUDStats.Animation.Idle)
+          if (currentAnimation != Animation.Idle)
             break;
-          for (int index = 0; index < this.stats.Length; ++index)
-            this.bars[index].CurrentValue = this.stats[index].Value;
+          for (int index = 0; index < stats.Length; ++index)
+            bars[index].CurrentValue = stats[index].Value;
           break;
-        case HUDStats.Animation.Show:
-          this.animationPhase += Time.unscaledDeltaTime;
+        case Animation.Show:
+          animationPhase += Time.unscaledDeltaTime;
           float visibilityPhase1 = 1f;
           float scalePhase1 = 0.0f;
-          if ((double) this.animationPhase < (double) this.showTime)
+          if (animationPhase < (double) showTime)
           {
             scalePhase1 = 1f;
-            visibilityPhase1 = Mathf.SmoothStep(0.0f, 1f, this.animationPhase / this.showTime);
+            visibilityPhase1 = Mathf.SmoothStep(0.0f, 1f, animationPhase / showTime);
           }
-          else if ((double) this.animationPhase < (double) this.showTime + (double) this.waitTime)
+          else if (animationPhase < showTime + (double) waitTime)
           {
             scalePhase1 = 1f;
             visibilityPhase1 = 1f;
           }
-          else if ((double) this.animationPhase < (double) this.showTime + (double) this.waitTime + (double) this.returnTime)
+          else if (animationPhase < showTime + (double) waitTime + returnTime)
           {
-            scalePhase1 = Mathf.SmoothStep(1f, 0.0f, (this.animationPhase - this.showTime - this.waitTime) / this.returnTime);
+            scalePhase1 = Mathf.SmoothStep(1f, 0.0f, (animationPhase - showTime - waitTime) / returnTime);
             visibilityPhase1 = 1f;
           }
           else
           {
-            this.barCanvasGroup[this.animatedStatIndex].transform.SetParent(this.fadedLayer.transform, false);
-            this.nameCanvasGroup[this.animatedStatIndex].transform.SetParent(this.fadedLayer.transform, false);
-            this.currentAnimation = HUDStats.Animation.Idle;
+            barCanvasGroup[animatedStatIndex].transform.SetParent(fadedLayer.transform, false);
+            nameCanvasGroup[animatedStatIndex].transform.SetParent(fadedLayer.transform, false);
+            currentAnimation = Animation.Idle;
           }
-          this.UpdateLayout(visibilityPhase1, scalePhase1);
-          this.bars[this.animatedStatIndex].CurrentValue = this.stats[this.animatedStatIndex].Value;
+          UpdateLayout(visibilityPhase1, scalePhase1);
+          bars[animatedStatIndex].CurrentValue = stats[animatedStatIndex].Value;
           break;
-        case HUDStats.Animation.Alert:
-          this.animationPhase += Time.unscaledDeltaTime;
+        case Animation.Alert:
+          animationPhase += Time.unscaledDeltaTime;
           float visibilityPhase2 = 1f;
           float scalePhase2 = 0.0f;
-          if ((double) this.animationPhase < (double) this.showTime)
-            scalePhase2 = Mathf.SmoothStep(0.0f, 1f, this.animationPhase / this.showTime);
-          else if ((double) this.animationPhase < (double) this.showTime + (double) this.waitTime)
+          if (animationPhase < (double) showTime)
+            scalePhase2 = Mathf.SmoothStep(0.0f, 1f, animationPhase / showTime);
+          else if (animationPhase < showTime + (double) waitTime)
             scalePhase2 = 1f;
-          else if ((double) this.animationPhase < (double) this.showTime + (double) this.waitTime + (double) this.returnTime)
+          else if (animationPhase < showTime + (double) waitTime + returnTime)
           {
-            scalePhase2 = Mathf.SmoothStep(1f, 0.0f, (this.animationPhase - this.showTime - this.waitTime) / this.returnTime);
+            scalePhase2 = Mathf.SmoothStep(1f, 0.0f, (animationPhase - showTime - waitTime) / returnTime);
           }
           else
           {
-            this.barCanvasGroup[this.animatedStatIndex].transform.SetParent(this.fadedLayer.transform, false);
-            this.nameCanvasGroup[this.animatedStatIndex].transform.SetParent(this.fadedLayer.transform, false);
-            this.currentAnimation = HUDStats.Animation.Idle;
+            barCanvasGroup[animatedStatIndex].transform.SetParent(fadedLayer.transform, false);
+            nameCanvasGroup[animatedStatIndex].transform.SetParent(fadedLayer.transform, false);
+            currentAnimation = Animation.Idle;
           }
-          this.UpdateLayout(visibilityPhase2, scalePhase2);
-          this.bars[this.animatedStatIndex].CurrentValue = this.stats[this.animatedStatIndex].Value;
+          UpdateLayout(visibilityPhase2, scalePhase2);
+          bars[animatedStatIndex].CurrentValue = stats[animatedStatIndex].Value;
           break;
-        case HUDStats.Animation.Hide:
-          this.animationPhase += Time.unscaledDeltaTime;
+        case Animation.Hide:
+          animationPhase += Time.unscaledDeltaTime;
           float visibilityPhase3 = 0.0f;
           float scalePhase3 = 0.0f;
-          if ((double) this.animationPhase < (double) this.waitTime)
+          if (animationPhase < (double) waitTime)
           {
-            visibilityPhase3 = Mathf.SmoothStep(1f, 0.0f, this.animationPhase / this.waitTime);
+            visibilityPhase3 = Mathf.SmoothStep(1f, 0.0f, animationPhase / waitTime);
           }
           else
           {
-            this.visibility[this.animatedStatIndex] = false;
-            this.barCanvasGroup[this.animatedStatIndex].gameObject.SetActive(false);
-            this.nameCanvasGroup[this.animatedStatIndex].gameObject.SetActive(false);
-            this.currentAnimation = HUDStats.Animation.Idle;
+            visibility[animatedStatIndex] = false;
+            barCanvasGroup[animatedStatIndex].gameObject.SetActive(false);
+            nameCanvasGroup[animatedStatIndex].gameObject.SetActive(false);
+            currentAnimation = Animation.Idle;
           }
-          this.UpdateLayout(visibilityPhase3, scalePhase3);
-          this.bars[this.animatedStatIndex].CurrentValue = this.stats[this.animatedStatIndex].Value;
+          UpdateLayout(visibilityPhase3, scalePhase3);
+          bars[animatedStatIndex].CurrentValue = stats[animatedStatIndex].Value;
           break;
       }
     }
@@ -238,53 +235,53 @@ namespace Engine.Impl.UI.Menu.Protagonist.HeadUpDisplay
     {
       Vector2 firstNamePosition = this.firstNamePosition;
       Vector2 firstBarPosition = this.firstBarPosition;
-      for (int index = 0; index < this.visibility.Length; ++index)
+      for (int index = 0; index < visibility.Length; ++index)
       {
-        if (this.visibility[index])
+        if (visibility[index])
         {
-          this.nameCanvasGroup[index].GetComponent<RectTransform>().anchoredPosition = firstNamePosition;
-          RectTransform component = this.barCanvasGroup[index].GetComponent<RectTransform>();
-          if (index == this.animatedStatIndex)
+          nameCanvasGroup[index].GetComponent<RectTransform>().anchoredPosition = firstNamePosition;
+          RectTransform component = barCanvasGroup[index].GetComponent<RectTransform>();
+          if (index == animatedStatIndex)
           {
             float t = scalePhase * scalePhase;
             float num1 = 1f - scalePhase;
-            float num2 = (float) (1.0 - (double) num1 * (double) num1);
-            float num3 = Mathf.Lerp(1f, this.barScale, t);
-            component.anchoredPosition = firstBarPosition + new Vector2(0.0f, this.barShift * num2);
+            float num2 = (float) (1.0 - num1 * (double) num1);
+            float num3 = Mathf.Lerp(1f, barScale, t);
+            component.anchoredPosition = firstBarPosition + new Vector2(0.0f, barShift * num2);
             component.localScale = new Vector3(num3, num3, num3);
-            this.nameCanvasGroup[index].alpha = visibilityPhase;
-            this.barCanvasGroup[index].alpha = visibilityPhase;
+            nameCanvasGroup[index].alpha = visibilityPhase;
+            barCanvasGroup[index].alpha = visibilityPhase;
           }
           else
           {
             component.anchoredPosition = firstBarPosition;
             component.localScale = Vector3.one;
-            this.nameCanvasGroup[index].alpha = 1f;
-            this.barCanvasGroup[index].alpha = 1f;
+            nameCanvasGroup[index].alpha = 1f;
+            barCanvasGroup[index].alpha = 1f;
             component.anchoredPosition = firstBarPosition;
           }
-          if (index == this.animatedStatIndex)
+          if (index == animatedStatIndex)
           {
-            firstNamePosition.y += this.heightStep * visibilityPhase;
-            firstBarPosition.y += this.heightStep * visibilityPhase;
+            firstNamePosition.y += heightStep * visibilityPhase;
+            firstBarPosition.y += heightStep * visibilityPhase;
           }
           else
           {
-            firstNamePosition.y += this.heightStep;
-            firstBarPosition.y += this.heightStep;
+            firstNamePosition.y += heightStep;
+            firstBarPosition.y += heightStep;
           }
         }
       }
-      if ((double) scalePhase > 0.0)
+      if (scalePhase > 0.0)
       {
-        this.fadedLayer.alpha = Mathf.Lerp(1f, this.fadedLayerOpacity, scalePhase * visibilityPhase);
-        this.splashLayer.alpha = scalePhase * visibilityPhase;
-        this.splashLayer.gameObject.SetActive(true);
+        fadedLayer.alpha = Mathf.Lerp(1f, fadedLayerOpacity, scalePhase * visibilityPhase);
+        splashLayer.alpha = scalePhase * visibilityPhase;
+        splashLayer.gameObject.SetActive(true);
       }
       else
       {
-        this.fadedLayer.alpha = 1f;
-        this.splashLayer.gameObject.SetActive(false);
+        fadedLayer.alpha = 1f;
+        splashLayer.gameObject.SetActive(false);
       }
     }
 

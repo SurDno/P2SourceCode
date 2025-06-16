@@ -1,100 +1,100 @@
-﻿using Engine.Common.Commons;
+﻿using System;
+using Engine.Common.Commons;
 using Engine.Common.Services;
 using Engine.Impl.Services;
 using Engine.Impl.UI.Menu;
 using Engine.Source.UI;
 using InputServices;
-using System;
 
 public class SimplePlayerWindowSwapper
 {
-  private static IWindow lastOpenedPlayerWindow = (IWindow) null;
-  private static Type lastOpenedPlayerWindowType = (Type) null;
-  private static Type bufferedPlayerWindowType = (Type) null;
-  private static IWindow bufferedPlayerWindow = (IWindow) null;
-  private static bool isSessionStateSubscribed = false;
+  private static IWindow lastOpenedPlayerWindow = null;
+  private static Type lastOpenedPlayerWindowType = null;
+  private static Type bufferedPlayerWindowType = null;
+  private static IWindow bufferedPlayerWindow = null;
+  private static bool isSessionStateSubscribed;
 
   public static IWindow LastOpenedPlayerWindow
   {
-    get => SimplePlayerWindowSwapper.lastOpenedPlayerWindow;
-    private set => SimplePlayerWindowSwapper.lastOpenedPlayerWindow = value;
+    get => lastOpenedPlayerWindow;
+    private set => lastOpenedPlayerWindow = value;
   }
 
   public static Type LastOpenedPlayerWindowType
   {
     get
     {
-      return SimplePlayerWindowSwapper.lastOpenedPlayerWindowType == (Type) null ? typeof (IInventoryWindow) : SimplePlayerWindowSwapper.lastOpenedPlayerWindowType;
+      return lastOpenedPlayerWindowType == null ? typeof (IInventoryWindow) : lastOpenedPlayerWindowType;
     }
-    private set => SimplePlayerWindowSwapper.lastOpenedPlayerWindowType = value;
+    private set => lastOpenedPlayerWindowType = value;
   }
 
   public static bool CanPushLastWindow
   {
-    get => ((UIWindow) SimplePlayerWindowSwapper.LastOpenedPlayerWindow).IsWindowAvailable;
+    get => ((UIWindow) LastOpenedPlayerWindow).IsWindowAvailable;
   }
 
   public static void SetLastOpenedPlayerWindow<T>(IWindow window) where T : class, IWindow
   {
-    SimplePlayerWindowSwapper.LastOpenedPlayerWindow = window;
-    SimplePlayerWindowSwapper.LastOpenedPlayerWindowType = typeof (T);
-    if (SimplePlayerWindowSwapper.isSessionStateSubscribed)
+    LastOpenedPlayerWindow = window;
+    LastOpenedPlayerWindowType = typeof (T);
+    if (isSessionStateSubscribed)
       return;
-    InputService.Instance.OnSessionStateChanged += new Action(SimplePlayerWindowSwapper.OnChangeSessionReset);
-    SimplePlayerWindowSwapper.isSessionStateSubscribed = true;
+    InputService.Instance.OnSessionStateChanged += OnChangeSessionReset;
+    isSessionStateSubscribed = true;
   }
 
   public static void SetNotificationTempWindow(NotificationEnum type)
   {
     if (type == NotificationEnum.None)
     {
-      if (SimplePlayerWindowSwapper.bufferedPlayerWindow != null && SimplePlayerWindowSwapper.bufferedPlayerWindowType != (Type) null)
+      if (bufferedPlayerWindow != null && bufferedPlayerWindowType != null)
       {
-        SimplePlayerWindowSwapper.LastOpenedPlayerWindow = SimplePlayerWindowSwapper.bufferedPlayerWindow;
-        SimplePlayerWindowSwapper.LastOpenedPlayerWindowType = SimplePlayerWindowSwapper.bufferedPlayerWindowType;
+        LastOpenedPlayerWindow = bufferedPlayerWindow;
+        LastOpenedPlayerWindowType = bufferedPlayerWindowType;
       }
-      SimplePlayerWindowSwapper.bufferedPlayerWindow = (IWindow) null;
-      SimplePlayerWindowSwapper.bufferedPlayerWindowType = (Type) null;
+      bufferedPlayerWindow = null;
+      bufferedPlayerWindowType = null;
     }
     else
     {
-      SimplePlayerWindowSwapper.bufferedPlayerWindow = SimplePlayerWindowSwapper.LastOpenedPlayerWindow;
-      SimplePlayerWindowSwapper.bufferedPlayerWindowType = SimplePlayerWindowSwapper.LastOpenedPlayerWindowType;
+      bufferedPlayerWindow = LastOpenedPlayerWindow;
+      bufferedPlayerWindowType = LastOpenedPlayerWindowType;
       switch (type - 1025)
       {
         case NotificationEnum.None:
-          SimplePlayerWindowSwapper.LastOpenedPlayerWindowType = typeof (IMapWindow);
+          LastOpenedPlayerWindowType = typeof (IMapWindow);
           break;
         case (NotificationEnum) 1:
-          SimplePlayerWindowSwapper.LastOpenedPlayerWindowType = typeof (IMMWindow);
+          LastOpenedPlayerWindowType = typeof (IMMWindow);
           break;
         case (NotificationEnum) 3:
-          SimplePlayerWindowSwapper.LastOpenedPlayerWindowType = typeof (IBoundCharactersWindow);
+          LastOpenedPlayerWindowType = typeof (IBoundCharactersWindow);
           break;
       }
-      if (SimplePlayerWindowSwapper.LastOpenedPlayerWindowType != SimplePlayerWindowSwapper.bufferedPlayerWindowType)
-        SimplePlayerWindowSwapper.LastOpenedPlayerWindow = (IWindow) ServiceLocator.GetService<UIService>().Get(SimplePlayerWindowSwapper.LastOpenedPlayerWindowType);
+      if (LastOpenedPlayerWindowType != bufferedPlayerWindowType)
+        LastOpenedPlayerWindow = ServiceLocator.GetService<UIService>().Get(LastOpenedPlayerWindowType);
       else
-        SimplePlayerWindowSwapper.SetNotificationTempWindow(NotificationEnum.None);
+        SetNotificationTempWindow(NotificationEnum.None);
     }
   }
 
   private static void OnChangeSessionReset()
   {
-    SimplePlayerWindowSwapper.lastOpenedPlayerWindow = (IWindow) null;
-    SimplePlayerWindowSwapper.LastOpenedPlayerWindowType = (Type) null;
+    lastOpenedPlayerWindow = null;
+    LastOpenedPlayerWindowType = null;
   }
 
   public static bool CanCallLastPlayerWindow()
   {
-    return SimplePlayerWindowSwapper.LastOpenedPlayerWindow != null && SimplePlayerWindowSwapper.CanPushLastWindow;
+    return LastOpenedPlayerWindow != null && CanPushLastWindow;
   }
 
   public static bool CallLastPlayerWindow()
   {
-    if (!SimplePlayerWindowSwapper.CanCallLastPlayerWindow())
+    if (!CanCallLastPlayerWindow())
       return false;
-    ServiceLocator.GetService<UIService>().Push(SimplePlayerWindowSwapper.LastOpenedPlayerWindowType);
+    ServiceLocator.GetService<UIService>().Push(LastOpenedPlayerWindowType);
     return true;
   }
 }

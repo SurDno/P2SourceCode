@@ -1,8 +1,8 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons.Converters;
 using Engine.Impl.Services;
-using System;
 
 namespace Engine.Source.Proxies
 {
@@ -14,18 +14,18 @@ namespace Engine.Source.Proxies
   {
     public void StateSave(IDataWriter writer)
     {
-      DefaultDataWriteUtility.Write(writer, "BrownTwyreAmount", this.BrownTwyreAmount);
-      DefaultDataWriteUtility.Write(writer, "BloodTwyreAmount", this.BloodTwyreAmount);
-      DefaultDataWriteUtility.Write(writer, "BlackTwyreAmount", this.BlackTwyreAmount);
-      DefaultDataWriteUtility.Write(writer, "SweveryAmount", this.SweveryAmount);
+      DefaultDataWriteUtility.Write(writer, "BrownTwyreAmount", BrownTwyreAmount);
+      DefaultDataWriteUtility.Write(writer, "BloodTwyreAmount", BloodTwyreAmount);
+      DefaultDataWriteUtility.Write(writer, "BlackTwyreAmount", BlackTwyreAmount);
+      DefaultDataWriteUtility.Write(writer, "SweveryAmount", SweveryAmount);
     }
 
     public void StateLoad(IDataReader reader, Type type)
     {
-      this.BrownTwyreAmount = DefaultDataReadUtility.Read(reader, "BrownTwyreAmount", this.BrownTwyreAmount);
-      this.BloodTwyreAmount = DefaultDataReadUtility.Read(reader, "BloodTwyreAmount", this.BloodTwyreAmount);
-      this.BlackTwyreAmount = DefaultDataReadUtility.Read(reader, "BlackTwyreAmount", this.BlackTwyreAmount);
-      this.SweveryAmount = DefaultDataReadUtility.Read(reader, "SweveryAmount", this.SweveryAmount);
+      BrownTwyreAmount = DefaultDataReadUtility.Read(reader, "BrownTwyreAmount", BrownTwyreAmount);
+      BloodTwyreAmount = DefaultDataReadUtility.Read(reader, "BloodTwyreAmount", BloodTwyreAmount);
+      BlackTwyreAmount = DefaultDataReadUtility.Read(reader, "BlackTwyreAmount", BlackTwyreAmount);
+      SweveryAmount = DefaultDataReadUtility.Read(reader, "SweveryAmount", SweveryAmount);
     }
   }
 }

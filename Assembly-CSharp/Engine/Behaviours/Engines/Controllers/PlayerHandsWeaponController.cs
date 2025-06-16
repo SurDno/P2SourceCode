@@ -8,14 +8,14 @@ namespace Engine.Behaviours.Engines.Controllers
 
     protected override void ApplyVisibility()
     {
-      this.pivot.HandsGeometryVisible = this.geometryVisible;
-      this.ApplyLayerWeight(this.geometryVisible ? 1f : 0.0f);
+      pivot.HandsGeometryVisible = geometryVisible;
+      ApplyLayerWeight(geometryVisible ? 1f : 0.0f);
     }
 
     protected override void ApplyLayerWeight(float layerWeight)
     {
-      this.animatorState.HandsLayerWeight = layerWeight;
-      this.animatorState.ReactionLayerWeight = layerWeight;
+      animatorState.HandsLayerWeight = layerWeight;
+      animatorState.ReactionLayerWeight = layerWeight;
     }
 
     protected override WeaponKind WeaponKind => WeaponKind.Hands;

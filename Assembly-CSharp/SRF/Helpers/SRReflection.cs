@@ -12,7 +12,7 @@ namespace SRF.Helpers
 
     public static object GetPropertyValue(object obj, PropertyInfo p)
     {
-      return p.GetGetMethod().Invoke(obj, (object[]) null);
+      return p.GetGetMethod().Invoke(obj, null);
     }
 
     public static T GetAttribute<T>(MemberInfo t) where T : Attribute

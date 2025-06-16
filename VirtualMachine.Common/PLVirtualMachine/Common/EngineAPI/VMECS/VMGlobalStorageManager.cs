@@ -1,12 +1,12 @@
-﻿using Cofe.Loggers;
+﻿using System.Collections.Generic;
+using Cofe.Loggers;
 using Engine.Common;
 using PLVirtualMachine.Common.EngineAPI.VMECS.VMAttributes;
 using PLVirtualMachine.Common.VMSpecialAttributes;
-using System.Collections.Generic;
 
 namespace PLVirtualMachine.Common.EngineAPI.VMECS
 {
-  [Info("GlobalStorageManager", null)]
+  [Info("GlobalStorageManager")]
   public class VMGlobalStorageManager : VMComponent
   {
     public const string ComponentName = "GlobalStorageManager";
@@ -149,13 +149,13 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
     [Method("Set storables template title", "Item template:Storable, text", "")]
     public virtual void SetStorablesTemplateTitle(IBlueprintRef templateRef, ITextRef text)
     {
-      this.DoSetTemplateFieldValue(templateRef, EngineAPIManager.GetSpecialPropertyName(ESpecialPropertyName.SPN_STORABLE_TITLE, typeof (VMStorable)), text);
+      DoSetTemplateFieldValue(templateRef, EngineAPIManager.GetSpecialPropertyName(ESpecialPropertyName.SPN_STORABLE_TITLE, typeof (VMStorable)), text);
     }
 
     [Method("Set storables template description", "Item template:Storable, text", "")]
     public virtual void SetStorablesTemplateDescription(IBlueprintRef templateRef, ITextRef text)
     {
-      this.DoSetTemplateFieldValue(templateRef, EngineAPIManager.GetSpecialPropertyName(ESpecialPropertyName.SPN_STORABLE_DESCRIPTION, typeof (VMStorable)), text);
+      DoSetTemplateFieldValue(templateRef, EngineAPIManager.GetSpecialPropertyName(ESpecialPropertyName.SPN_STORABLE_DESCRIPTION, typeof (VMStorable)), text);
     }
 
     [Method("Set storables template special description", "Item template:Storable, text", "")]
@@ -163,21 +163,21 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
       IBlueprintRef templateRef,
       ITextRef text)
     {
-      this.DoSetTemplateFieldValue(templateRef, EngineAPIManager.GetSpecialPropertyName(ESpecialPropertyName.SPN_STORABLE_SPECIALDESCRIPTION, typeof (VMStorable)), text);
+      DoSetTemplateFieldValue(templateRef, EngineAPIManager.GetSpecialPropertyName(ESpecialPropertyName.SPN_STORABLE_SPECIALDESCRIPTION, typeof (VMStorable)), text);
     }
 
     [Method("Set storables template tooltip", "Item template:Storable, text", "")]
     public virtual void SetStorablesTemplateTooltip(IBlueprintRef templateRef, ITextRef text)
     {
-      this.DoSetTemplateFieldValue(templateRef, EngineAPIManager.GetSpecialPropertyName(ESpecialPropertyName.SPN_STORABLE_TOOLTIP, typeof (VMStorable)), text);
+      DoSetTemplateFieldValue(templateRef, EngineAPIManager.GetSpecialPropertyName(ESpecialPropertyName.SPN_STORABLE_TOOLTIP, typeof (VMStorable)), text);
     }
 
-    public bool TemplateRTDataUpdated => this.templateRTDataUpdated;
+    public bool TemplateRTDataUpdated => templateRTDataUpdated;
 
     public ITextRef GetTemplateRTFieldValue(string fieldKey)
     {
-      ITextRef templateRtFieldValue = (ITextRef) null;
-      this.templateRTFieldValuesDict.TryGetValue(fieldKey, out templateRtFieldValue);
+      ITextRef templateRtFieldValue = null;
+      templateRTFieldValuesDict.TryGetValue(fieldKey, out templateRtFieldValue);
       return templateRtFieldValue;
     }
 
@@ -187,20 +187,20 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
       ITextRef value)
     {
       if (templateRef == null)
-        Logger.AddError(string.Format("template for field value setting not defined !"));
+        Logger.AddError("template for field value setting not defined !");
       if (value == null)
-        Logger.AddError(string.Format("value for template field setting not defined !"));
+        Logger.AddError("value for template field setting not defined !");
       IBlueprint blueprint = templateRef.Blueprint;
       if (templateRef == null)
-        Logger.AddError(string.Format("template for field value setting not found !"));
-      this.templateRTFieldValuesDict[blueprint.BaseGuid.ToString() + fieldName] = value;
-      this.OnModify();
-      this.templateRTDataUpdated = true;
+        Logger.AddError("template for field value setting not found !");
+      templateRTFieldValuesDict[blueprint.BaseGuid + fieldName] = value;
+      OnModify();
+      templateRTDataUpdated = true;
     }
 
     public VMGameComponent GlobalRootManager
     {
-      get => (VMGameComponent) this.Parent.GetComponentByName("GameComponent");
+      get => (VMGameComponent) Parent.GetComponentByName("GameComponent");
     }
 
     public static VMGlobalStorageManager Instance { get; protected set; }

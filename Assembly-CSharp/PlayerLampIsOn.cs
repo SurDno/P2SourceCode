@@ -1,4 +1,5 @@
-﻿using BehaviorDesigner.Runtime;
+﻿using System;
+using BehaviorDesigner.Runtime;
 using BehaviorDesigner.Runtime.Tasks;
 using Cofe.Proxies;
 using Cofe.Serializations.Data;
@@ -10,7 +11,6 @@ using Engine.Common.Generator;
 using Engine.Common.Services;
 using Engine.Impl.Services.Factories;
 using Engine.Source.Components;
-using UnityEngine;
 
 [TaskDescription("Player lamp is on")]
 [TaskCategory("Pathologic")]
@@ -19,9 +19,9 @@ using UnityEngine;
 [FactoryProxy(typeof (PlayerLampIsOn))]
 public class PlayerLampIsOn : Conditional, IStub, ISerializeDataWrite, ISerializeDataRead
 {
-  [DataReadProxy(MemberEnum.None)]
-  [DataWriteProxy(MemberEnum.None)]
-  [CopyableProxy(MemberEnum.None)]
+  [DataReadProxy]
+  [DataWriteProxy]
+  [CopyableProxy()]
   [SerializeField]
   public bool LampOn = true;
 
@@ -34,26 +34,26 @@ public class PlayerLampIsOn : Conditional, IStub, ISerializeDataWrite, ISerializ
     if (component == null)
       return TaskStatus.Failure;
     IParameter<bool> byName = component.GetByName<bool>(ParameterNameEnum.Flashlight);
-    return byName == null ? TaskStatus.Failure : (this.LampOn == byName.Value ? TaskStatus.Success : TaskStatus.Failure);
+    return byName == null ? TaskStatus.Failure : (LampOn == byName.Value ? TaskStatus.Success : TaskStatus.Failure);
   }
 
   public void DataWrite(IDataWriter writer)
   {
-    DefaultDataWriteUtility.WriteSerialize<NodeData>(writer, "NodeData", this.nodeData);
-    DefaultDataWriteUtility.Write(writer, "Id", this.id);
-    DefaultDataWriteUtility.Write(writer, "FriendlyName", this.friendlyName);
-    DefaultDataWriteUtility.Write(writer, "Instant", this.instant);
-    DefaultDataWriteUtility.Write(writer, "Disabled", this.disabled);
-    DefaultDataWriteUtility.Write(writer, "LampOn", this.LampOn);
+    DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
+    DefaultDataWriteUtility.Write(writer, "Id", id);
+    DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
+    DefaultDataWriteUtility.Write(writer, "Instant", instant);
+    DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
+    DefaultDataWriteUtility.Write(writer, "LampOn", LampOn);
   }
 
-  public void DataRead(IDataReader reader, System.Type type)
+  public void DataRead(IDataReader reader, Type type)
   {
-    this.nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
-    this.id = DefaultDataReadUtility.Read(reader, "Id", this.id);
-    this.friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", this.friendlyName);
-    this.instant = DefaultDataReadUtility.Read(reader, "Instant", this.instant);
-    this.disabled = DefaultDataReadUtility.Read(reader, "Disabled", this.disabled);
-    this.LampOn = DefaultDataReadUtility.Read(reader, "LampOn", this.LampOn);
+    nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
+    id = DefaultDataReadUtility.Read(reader, "Id", id);
+    friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
+    instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
+    disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
+    LampOn = DefaultDataReadUtility.Read(reader, "LampOn", LampOn);
   }
 }

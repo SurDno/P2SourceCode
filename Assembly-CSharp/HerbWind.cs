@@ -1,5 +1,4 @@
 ﻿using Engine.Source.Commons;
-using UnityEngine;
 
 public class HerbWind : MonoBehaviour
 {
@@ -19,7 +18,7 @@ public class HerbWind : MonoBehaviour
   private Vector2 speed = Vector2.one;
   [SerializeField]
   private Vector2 emissionRateRange = new Vector2(1f, 2f);
-  private float timeToChange = 0.0f;
+  private float timeToChange;
   private Vector2 targetWind = Vector2.zero;
   private Vector2 currentWind = Vector2.zero;
   private Vector2 windChangeVelocity = Vector2.zero;
@@ -27,49 +26,49 @@ public class HerbWind : MonoBehaviour
 
   private bool Active
   {
-    get => this.active;
+    get => active;
     set
     {
-      if (this.active == value)
+      if (active == value)
         return;
-      this.active = value;
-      if ((Object) this.particles == (Object) null)
+      active = value;
+      if ((Object) particles == (Object) null)
         return;
-      this.particles.emission.enabled = this.active;
+      particles.emission.enabled = active;
     }
   }
 
-  private void OnEnable() => this.Active = false;
+  private void OnEnable() => Active = false;
 
   private void Update()
   {
-    this.Active = (double) Vector3.Distance(this.transform.position, EngineApplication.PlayerPosition) < (double) this.maxPlayerDistance;
-    if (!this.Active)
+    Active = (double) Vector3.Distance(this.transform.position, EngineApplication.PlayerPosition) < maxPlayerDistance;
+    if (!Active)
       return;
-    this.timeToChange -= Time.deltaTime;
-    if ((double) this.timeToChange <= 0.0)
+    timeToChange -= Time.deltaTime;
+    if (timeToChange <= 0.0)
     {
-      this.timeToChange += this.changeTime;
-      while ((double) this.timeToChange <= 0.0)
-        this.timeToChange += this.changeTime;
-      this.targetWind = Random.insideUnitCircle;
+      timeToChange += changeTime;
+      while (timeToChange <= 0.0)
+        timeToChange += changeTime;
+      targetWind = Random.insideUnitCircle;
     }
-    this.currentWind = Vector2.SmoothDamp(this.currentWind, this.targetWind, ref this.windChangeVelocity, this.smoothness, float.MaxValue, Time.deltaTime);
-    this.transform.eulerAngles = new Vector3(this.currentWind.y * this.bendAngle, 0.0f, -this.currentWind.x * this.bendAngle);
-    this.UpdateParticles();
+    currentWind = Vector2.SmoothDamp(currentWind, targetWind, ref windChangeVelocity, smoothness, float.MaxValue, Time.deltaTime);
+    this.transform.eulerAngles = new Vector3(currentWind.y * bendAngle, 0.0f, -currentWind.x * bendAngle);
+    UpdateParticles();
   }
 
   private void UpdateParticles()
   {
-    if ((Object) this.particles == (Object) null)
+    if ((Object) particles == (Object) null)
       return;
-    float magnitude = this.currentWind.magnitude;
-    this.particles.emission.rateOverTime = new ParticleSystem.MinMaxCurve(Mathf.Lerp(this.emissionRateRange.x, this.emissionRateRange.y, magnitude));
-    ParticleSystem.VelocityOverLifetimeModule velocityOverLifetime = this.particles.velocityOverLifetime with
+    float magnitude = currentWind.magnitude;
+    particles.emission.rateOverTime = new ParticleSystem.MinMaxCurve(Mathf.Lerp(emissionRateRange.x, emissionRateRange.y, magnitude));
+    ParticleSystem.VelocityOverLifetimeModule velocityOverLifetime = particles.velocityOverLifetime with
     {
-      x = (ParticleSystem.MinMaxCurve) (this.currentWind.x * this.speed.x),
-      y = (ParticleSystem.MinMaxCurve) (magnitude * this.speed.y),
-      z = (ParticleSystem.MinMaxCurve) (this.currentWind.y * this.speed.x)
+      x = (ParticleSystem.MinMaxCurve) (currentWind.x * speed.x),
+      y = (ParticleSystem.MinMaxCurve) (magnitude * speed.y),
+      z = (ParticleSystem.MinMaxCurve) (currentWind.y * speed.x)
     };
   }
 }

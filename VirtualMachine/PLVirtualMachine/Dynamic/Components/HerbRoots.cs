@@ -1,6 +1,5 @@
 ﻿using Cofe.Proxies;
 using PLVirtualMachine.Objects;
-using System;
 using VirtualMachine.Common.EngineAPI.VMECS.VMComponents;
 
 namespace PLVirtualMachine.Dynamic.Components
@@ -19,22 +18,22 @@ namespace PLVirtualMachine.Dynamic.Components
       switch (target.Name)
       {
         case "TriggerEnterEvent":
-          this.TriggerEnterEvent += (Action) (() => target.RaiseFromEngineImpl());
+          TriggerEnterEvent += () => target.RaiseFromEngineImpl();
           break;
         case "TriggerLeaveEvent":
-          this.TriggerLeaveEvent += (Action) (() => target.RaiseFromEngineImpl());
+          TriggerLeaveEvent += () => target.RaiseFromEngineImpl();
           break;
         case "ActivateStartEvent":
-          this.ActivateStartEvent += (Action) (() => target.RaiseFromEngineImpl());
+          ActivateStartEvent += () => target.RaiseFromEngineImpl();
           break;
         case "ActivateEndEvent":
-          this.ActivateEndEvent += (Action) (() => target.RaiseFromEngineImpl());
+          ActivateEndEvent += () => target.RaiseFromEngineImpl();
           break;
         case "HerbSpawnEvent":
-          this.HerbSpawnEvent += (Action) (() => target.RaiseFromEngineImpl());
+          HerbSpawnEvent += () => target.RaiseFromEngineImpl();
           break;
         case "LastHerbSpawnEvent":
-          this.LastHerbSpawnEvent += (Action) (() => target.RaiseFromEngineImpl());
+          LastHerbSpawnEvent += () => target.RaiseFromEngineImpl();
           break;
       }
     }

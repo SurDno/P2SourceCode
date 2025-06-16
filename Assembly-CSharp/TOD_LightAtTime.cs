@@ -1,10 +1,7 @@
-﻿using UnityEngine;
-
-[RequireComponent(typeof (Light))]
+﻿[RequireComponent(typeof (Light))]
 public class TOD_LightAtTime : MonoBehaviour
 {
-  public AnimationCurve Intensity = new AnimationCurve()
-  {
+  public AnimationCurve Intensity = new AnimationCurve {
     keys = new Keyframe[3]
     {
       new Keyframe(0.0f, 0.0f),
@@ -14,11 +11,11 @@ public class TOD_LightAtTime : MonoBehaviour
   };
   private Light lightComponent;
 
-  protected void Start() => this.lightComponent = this.GetComponent<Light>();
+  protected void Start() => lightComponent = this.GetComponent<Light>();
 
   protected void Update()
   {
-    this.lightComponent.intensity = this.Intensity.Evaluate(TOD_Sky.Instance.Cycle.Hour);
-    this.lightComponent.enabled = (double) this.lightComponent.intensity > 0.0;
+    lightComponent.intensity = Intensity.Evaluate(TOD_Sky.Instance.Cycle.Hour);
+    lightComponent.enabled = (double) lightComponent.intensity > 0.0;
   }
 }

@@ -1,11 +1,11 @@
-﻿using Engine.Common.Components;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Engine.Common.Components;
 using Engine.Common.Components.Storable;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Engine.Source.Commons;
 using Inspectors;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Engine.Source.Components
 {
@@ -13,22 +13,22 @@ namespace Engine.Source.Components
   [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
   public class RepairerComponent : EngineComponent
   {
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy()]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected List<StorableGroup> repairableGroups = new List<StorableGroup>();
 
     public IEnumerable<StorableGroup> RepairableGroups
     {
-      get => (IEnumerable<StorableGroup>) this.repairableGroups;
+      get => repairableGroups;
     }
 
     public bool CanRepairItem(IStorableComponent item)
     {
-      foreach (StorableGroup repairableGroup in this.repairableGroups)
+      foreach (StorableGroup repairableGroup in repairableGroups)
       {
-        if (item.Groups.Contains<StorableGroup>(repairableGroup))
+        if (item.Groups.Contains(repairableGroup))
           return true;
       }
       return false;

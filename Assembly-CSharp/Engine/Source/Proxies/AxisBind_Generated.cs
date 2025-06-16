@@ -1,9 +1,9 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons.Cloneable;
 using Engine.Common.Commons.Converters;
 using Engine.Source.Services.Inputs;
-using System;
 
 namespace Engine.Source.Proxies
 {
@@ -18,33 +18,33 @@ namespace Engine.Source.Proxies
     public object Clone()
     {
       AxisBind_Generated instance = Activator.CreateInstance<AxisBind_Generated>();
-      this.CopyTo((object) instance);
-      return (object) instance;
+      CopyTo(instance);
+      return instance;
     }
 
     public void CopyTo(object target2)
     {
       AxisBind_Generated axisBindGenerated = (AxisBind_Generated) target2;
-      axisBindGenerated.Name = this.Name;
-      axisBindGenerated.Axis = this.Axis;
-      axisBindGenerated.Dead = this.Dead;
-      axisBindGenerated.Normalize = this.Normalize;
+      axisBindGenerated.Name = Name;
+      axisBindGenerated.Axis = Axis;
+      axisBindGenerated.Dead = Dead;
+      axisBindGenerated.Normalize = Normalize;
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.Write(writer, "Name", this.Name);
-      DefaultDataWriteUtility.Write(writer, "Axis", this.Axis);
-      DefaultDataWriteUtility.Write(writer, "Dead", this.Dead);
-      DefaultDataWriteUtility.Write(writer, "Normalize", this.Normalize);
+      DefaultDataWriteUtility.Write(writer, "Name", Name);
+      DefaultDataWriteUtility.Write(writer, "Axis", Axis);
+      DefaultDataWriteUtility.Write(writer, "Dead", Dead);
+      DefaultDataWriteUtility.Write(writer, "Normalize", Normalize);
     }
 
     public void DataRead(IDataReader reader, Type type)
     {
-      this.Name = DefaultDataReadUtility.Read(reader, "Name", this.Name);
-      this.Axis = DefaultDataReadUtility.Read(reader, "Axis", this.Axis);
-      this.Dead = DefaultDataReadUtility.Read(reader, "Dead", this.Dead);
-      this.Normalize = DefaultDataReadUtility.Read(reader, "Normalize", this.Normalize);
+      Name = DefaultDataReadUtility.Read(reader, "Name", Name);
+      Axis = DefaultDataReadUtility.Read(reader, "Axis", Axis);
+      Dead = DefaultDataReadUtility.Read(reader, "Dead", Dead);
+      Normalize = DefaultDataReadUtility.Read(reader, "Normalize", Normalize);
     }
   }
 }

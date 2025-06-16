@@ -1,4 +1,8 @@
-﻿using Engine.Common.Commons;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Text.RegularExpressions;
+using Engine.Common.Commons;
 using Engine.Common.Services;
 using Engine.Common.Types;
 using Engine.Impl.Services;
@@ -8,12 +12,6 @@ using Engine.Source.Services;
 using Engine.Source.Services.Notifications;
 using InputServices;
 using Inspectors;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Text.RegularExpressions;
-using UnityEngine;
-using UnityEngine.Audio;
 
 namespace Engine.Impl.UI.Controls
 {
@@ -33,18 +31,18 @@ namespace Engine.Impl.UI.Controls
     private UIService ui;
     private bool play;
     private float alpha = -1f;
-    private bool shutdown = false;
-    private float timer = 0.0f;
-    private bool useTimeout = false;
-    private object[] vals = (object[]) null;
+    private bool shutdown;
+    private float timer;
+    private bool useTimeout;
+    private object[] vals = null;
 
     private CanvasGroup CanvasGroup
     {
       get
       {
-        if ((UnityEngine.Object) this.canvasGroup == (UnityEngine.Object) null)
-          this.canvasGroup = this.GetComponent<CanvasGroup>();
-        return this.canvasGroup;
+        if ((UnityEngine.Object) canvasGroup == (UnityEngine.Object) null)
+          canvasGroup = this.GetComponent<CanvasGroup>();
+        return canvasGroup;
       }
     }
 
@@ -56,52 +54,52 @@ namespace Engine.Impl.UI.Controls
 
     private void Update()
     {
-      if (!(this.ui.Active is HudWindow))
+      if (!(ui.Active is HudWindow))
         return;
-      if (!this.play)
+      if (!play)
       {
-        this.Play();
-        this.play = true;
+        Play();
+        play = true;
       }
-      if (this.useTimeout)
+      if (useTimeout)
       {
-        this.timer -= Time.deltaTime;
-        if ((double) this.timer <= 0.0)
+        timer -= Time.deltaTime;
+        if (timer <= 0.0)
         {
-          this.Complete = true;
-          this.useTimeout = false;
+          Complete = true;
+          useTimeout = false;
         }
       }
-      if (this.shutdown)
+      if (shutdown)
       {
-        this.alpha -= Time.deltaTime / this.fade;
-        if ((double) this.alpha <= 0.0)
+        alpha -= Time.deltaTime / fade;
+        if (alpha <= 0.0)
         {
-          JoystickLayoutSwitcher.Instance.OnLayoutChanged -= new Action<JoystickLayoutSwitcher.KeyLayouts>(this.ChangeLayout);
-          InputService.Instance.onJoystickUsedChanged -= new Action<bool>(this.OnJoystick);
-          ServiceLocator.GetService<LocalizationService>().LocalizationChanged -= new Action(this.ChangeLanguage);
+          JoystickLayoutSwitcher.Instance.OnLayoutChanged -= ChangeLayout;
+          InputService.Instance.onJoystickUsedChanged -= OnJoystick;
+          ServiceLocator.GetService<LocalizationService>().LocalizationChanged -= ChangeLanguage;
           UnityEngine.Object.Destroy((UnityEngine.Object) this.gameObject);
         }
         else
-          this.CanvasGroup.alpha = this.alpha;
+          CanvasGroup.alpha = alpha;
       }
       else
       {
-        if ((double) this.alpha >= 1.0)
+        if (alpha >= 1.0)
           return;
-        this.alpha += Time.deltaTime / this.fade;
-        if ((double) this.alpha > 1.0)
-          this.alpha = 1f;
-        this.CanvasGroup.alpha = this.alpha;
+        alpha += Time.deltaTime / fade;
+        if (alpha > 1.0)
+          alpha = 1f;
+        CanvasGroup.alpha = alpha;
       }
     }
 
     protected override void Awake()
     {
       base.Awake();
-      this.ui = ServiceLocator.GetService<UIService>();
-      this.alpha = 0.0f;
-      this.CanvasGroup.alpha = this.alpha;
+      ui = ServiceLocator.GetService<UIService>();
+      alpha = 0.0f;
+      CanvasGroup.alpha = alpha;
     }
 
     private void Append(StringBuilder sb, string s)
@@ -132,38 +130,38 @@ namespace Engine.Impl.UI.Controls
 
     private void Play()
     {
-      if ((UnityEngine.Object) this.clip == (UnityEngine.Object) null || (UnityEngine.Object) this.mixer == (UnityEngine.Object) null)
+      if ((UnityEngine.Object) clip == (UnityEngine.Object) null || (UnityEngine.Object) mixer == (UnityEngine.Object) null)
         return;
-      SoundUtility.PlayAudioClip2D(this.clip, this.mixer, 1f, 0.0f, context: this.gameObject.GetFullName());
+      SoundUtility.PlayAudioClip2D(clip, mixer, 1f, 0.0f, context: this.gameObject.GetFullName());
     }
 
     public void ResetTooltip()
     {
       CoroutineService.Instance.WaitFrame(1, (Action) (() =>
       {
-        this.timer = 0.0f;
-        this.useTimeout = false;
-        if (this.vals == null)
+        timer = 0.0f;
+        useTimeout = false;
+        if (vals == null)
           return;
-        this.BuildNotification(this.Type, this.vals);
+        BuildNotification(Type, vals);
       }));
     }
 
-    public void OnJoystick(bool joystick) => this.ResetTooltip();
+    public void OnJoystick(bool joystick) => ResetTooltip();
 
-    public void ChangeLayout(JoystickLayoutSwitcher.KeyLayouts layout) => this.ResetTooltip();
+    public void ChangeLayout(JoystickLayoutSwitcher.KeyLayouts layout) => ResetTooltip();
 
-    private void ChangeLanguage() => this.ResetTooltip();
+    private void ChangeLanguage() => ResetTooltip();
 
     private void BuildNotification(NotificationEnum type, object[] values)
     {
-      this.Type = type;
-      this.vals = values;
-      string text1 = (string) null;
-      string text2 = (string) null;
-      object input = values.Length != 0 ? values[0] : (object) null;
-      object obj = values.Length > 1 ? values[1] : (object) null;
-      this.useTimeout = false;
+      Type = type;
+      vals = values;
+      string text1 = null;
+      string text2 = null;
+      object input = values.Length != 0 ? values[0] : null;
+      object obj = values.Length > 1 ? values[1] : null;
+      useTimeout = false;
       switch (input)
       {
         case string _:
@@ -173,7 +171,6 @@ namespace Engine.Impl.UI.Controls
             if (!string.IsNullOrEmpty(tag))
             {
               text1 = ServiceLocator.GetService<LocalizationService>().GetText(tag);
-              break;
             }
             break;
           }
@@ -188,7 +185,7 @@ namespace Engine.Impl.UI.Controls
             text2 = stringList[0];
           StringBuilder sb1 = new StringBuilder();
           for (int index = 1; index < stringList.Count; ++index)
-            this.Append(sb1, stringList[index]);
+            Append(sb1, stringList[index]);
           text1 = sb1.ToString();
           break;
         case List<LocalizedText> _:
@@ -198,51 +195,51 @@ namespace Engine.Impl.UI.Controls
             text2 = service.GetText(localizedTextList[0]);
           StringBuilder sb2 = new StringBuilder();
           for (int index = 1; index < localizedTextList.Count; ++index)
-            this.Append(sb2, service.GetText(localizedTextList[index]));
+            Append(sb2, service.GetText(localizedTextList[index]));
           text1 = sb2.ToString();
           break;
       }
       if (string.IsNullOrEmpty(text1) && string.IsNullOrEmpty(text2))
       {
-        Debug.LogWarning((object) ("Notification : " + type.ToString() + " : No text. Expects value[0] as string, LocalizedText, List<string> or List<LocalizedText>"));
-        this.textView.StringValue = (string) null;
-        if (!((UnityEngine.Object) this.optionalHeaderView != (UnityEngine.Object) null))
+        Debug.LogWarning((object) ("Notification : " + type + " : No text. Expects value[0] as string, LocalizedText, List<string> or List<LocalizedText>"));
+        textView.StringValue = null;
+        if (!((UnityEngine.Object) optionalHeaderView != (UnityEngine.Object) null))
           return;
-        this.optionalHeaderView.StringValue = (string) null;
+        optionalHeaderView.StringValue = null;
       }
       else
       {
         string a = TextHelper.ReplaceTags(text2, "<b><color=#e4b450>", "</color></b>");
         string source = TextHelper.ReplaceTags(text1, "<b><color=#e4b450>", "</color></b>");
         string b = ServiceLocator.GetService<TextContextService>().ComputeText(source);
-        if ((UnityEngine.Object) this.optionalHeaderView != (UnityEngine.Object) null)
+        if ((UnityEngine.Object) optionalHeaderView != (UnityEngine.Object) null)
         {
-          this.optionalHeaderView.StringValue = a;
-          this.optionalHeaderView.gameObject.SetActive(!string.IsNullOrEmpty(a));
+          optionalHeaderView.StringValue = a;
+          optionalHeaderView.gameObject.SetActive(!string.IsNullOrEmpty(a));
         }
         else
-          b = this.Concat(a, b);
-        this.textView.StringValue = b;
+          b = Concat(a, b);
+        textView.StringValue = b;
         if (obj == null || !(obj is float))
           return;
         float num = (float) obj;
-        if ((double) num > 0.0)
+        if (num > 0.0)
         {
-          this.useTimeout = true;
-          this.timer = num;
+          useTimeout = true;
+          timer = num;
         }
       }
     }
 
     public void Initialise(NotificationEnum type, object[] values)
     {
-      JoystickLayoutSwitcher.Instance.OnLayoutChanged += new Action<JoystickLayoutSwitcher.KeyLayouts>(this.ChangeLayout);
-      InputService.Instance.onJoystickUsedChanged += new Action<bool>(this.OnJoystick);
-      ServiceLocator.GetService<LocalizationService>().LocalizationChanged += new Action(this.ChangeLanguage);
-      this.BuildNotification(type, values);
+      JoystickLayoutSwitcher.Instance.OnLayoutChanged += ChangeLayout;
+      InputService.Instance.onJoystickUsedChanged += OnJoystick;
+      ServiceLocator.GetService<LocalizationService>().LocalizationChanged += ChangeLanguage;
+      BuildNotification(type, values);
     }
 
-    public void Shutdown() => this.shutdown = true;
+    public void Shutdown() => shutdown = true;
 
     private void ApplyValue<T>(ref T result, object[] values, int index)
     {

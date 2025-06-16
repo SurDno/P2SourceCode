@@ -1,24 +1,23 @@
-﻿using ParadoxNotion.Design;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using ParadoxNotion.Design;
 
 namespace FlowCanvas.Nodes
 {
   [Category("Flow Controllers/Switchers")]
   [Description("Branch the Flow based on a string value. The Default output is called if there is no other matching output same as the input value")]
-  [ContextDefinedInputs(new Type[] {typeof (string)})]
+  [ContextDefinedInputs(typeof (string))]
   public class SwitchString : FlowControlNode
   {
     public List<string> comparisonOutputs = new List<string>();
 
     protected override void RegisterPorts()
     {
-      ValueInput<string> name = this.AddValueInput<string>("Value");
+      ValueInput<string> name = AddValueInput<string>("Value");
       List<FlowOutput> outs = new List<FlowOutput>();
-      for (int index = 0; index < this.comparisonOutputs.Count; ++index)
-        outs.Add(this.AddFlowOutput(string.Format("\"{0}\"", (object) this.comparisonOutputs[index]), index.ToString()));
-      FlowOutput def = this.AddFlowOutput("Default");
-      this.AddFlowInput("In", (FlowHandler) (() =>
+      for (int index = 0; index < comparisonOutputs.Count; ++index)
+        outs.Add(AddFlowOutput(string.Format("\"{0}\"", comparisonOutputs[index]), index.ToString()));
+      FlowOutput def = AddFlowOutput("Default");
+      AddFlowInput("In", () =>
       {
         string str = name.value;
         if (str == null)
@@ -28,14 +27,14 @@ namespace FlowCanvas.Nodes
         else
         {
           bool flag = false;
-          for (int index = 0; index < this.comparisonOutputs.Count; ++index)
+          for (int index = 0; index < comparisonOutputs.Count; ++index)
           {
-            if (string.IsNullOrEmpty(str) && string.IsNullOrEmpty(this.comparisonOutputs[index]))
+            if (string.IsNullOrEmpty(str) && string.IsNullOrEmpty(comparisonOutputs[index]))
             {
               outs[index].Call();
               flag = true;
             }
-            else if (this.comparisonOutputs[index].Trim().ToLower() == str.Trim().ToLower())
+            else if (comparisonOutputs[index].Trim().ToLower() == str.Trim().ToLower())
             {
               outs[index].Call();
               flag = true;
@@ -45,7 +44,7 @@ namespace FlowCanvas.Nodes
             return;
           def.Call();
         }
-      }));
+      });
     }
   }
 }

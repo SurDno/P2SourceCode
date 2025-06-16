@@ -1,4 +1,5 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons;
 using Engine.Common.Commons.Converters;
@@ -6,8 +7,6 @@ using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Engine.Source.Components.Utilities;
 using Scripts.Tools.Serializations.Converters;
-using UnityEngine;
-using UnityEngine.AI;
 
 namespace BehaviorDesigner.Runtime.Tasks
 {
@@ -19,19 +18,19 @@ namespace BehaviorDesigner.Runtime.Tasks
   [FactoryProxy(typeof (MeleeFightFollow))]
   public class MeleeFightFollow : MeleeFightBase, IStub, ISerializeDataWrite, ISerializeDataRead
   {
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [SerializeField]
-    public SharedFloat followTime = (SharedFloat) 0.0f;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    public SharedFloat followTime = 0.0f;
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [SerializeField]
     public SharedBool Aim;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy()]
     [SerializeField]
     private FollowDescription description;
     private float desiredWalkSpeed;
@@ -42,121 +41,121 @@ namespace BehaviorDesigner.Runtime.Tasks
 
     private bool IsEnemyRunningAway()
     {
-      return (double) this.owner.Enemy.Velocity.magnitude >= 0.5 && (double) Vector3.Dot(this.transform.forward, (this.owner.Enemy.transform.position - this.owner.transform.position).normalized) > 0.25;
+      return (double) owner.Enemy.Velocity.magnitude >= 0.5 && (double) Vector3.Dot(transform.forward, (owner.Enemy.transform.position - owner.transform.position).normalized) > 0.25;
     }
 
     public override void OnStart()
     {
       base.OnStart();
-      this.fighter = this.owner as NPCEnemy;
-      this.waitDuration = this.followTime.Value;
-      this.desiredWalkSpeed = 0.0f;
-      this.agent.enabled = true;
-      this.npcState.FightIdle(this.Aim.Value);
+      fighter = owner as NPCEnemy;
+      waitDuration = followTime.Value;
+      desiredWalkSpeed = 0.0f;
+      agent.enabled = true;
+      npcState.FightIdle(Aim.Value);
     }
 
     public override TaskStatus DoUpdate(float deltaTime)
     {
-      if ((double) this.followTime.Value > 0.0 && (double) this.startTime + (double) this.waitDuration < (double) Time.time)
+      if (followTime.Value > 0.0 && startTime + (double) waitDuration < (double) Time.time)
         return TaskStatus.Success;
-      if ((UnityEngine.Object) this.description == (UnityEngine.Object) null)
+      if ((UnityEngine.Object) description == (UnityEngine.Object) null)
       {
-        Debug.LogWarning((object) (typeof (MeleeFightFollow).Name + " has no " + typeof (FollowDescription).Name + " attached"), (UnityEngine.Object) this.gameObject);
+        Debug.LogWarning((object) (typeof (MeleeFightFollow).Name + " has no " + typeof (FollowDescription).Name + " attached"), (UnityEngine.Object) gameObject);
         return TaskStatus.Failure;
       }
-      if ((UnityEngine.Object) this.owner.Enemy == (UnityEngine.Object) null)
+      if ((UnityEngine.Object) owner.Enemy == (UnityEngine.Object) null)
         return TaskStatus.Failure;
-      this.UpdatePath();
-      this.owner.RotationTarget = (Transform) null;
-      this.owner.RotateByPath = false;
-      this.owner.RetreatAngle = new float?();
-      if ((bool) (UnityEngine.Object) this.fighter && (this.fighter.IsReacting || this.fighter.IsQuickBlock))
+      UpdatePath();
+      owner.RotationTarget = (Transform) null;
+      owner.RotateByPath = false;
+      owner.RetreatAngle = new float?();
+      if ((bool) (UnityEngine.Object) fighter && (fighter.IsReacting || fighter.IsQuickBlock))
       {
-        if (this.fighter.IsContrReacting && (UnityEngine.Object) this.fighter.CounterReactionEnemy != (UnityEngine.Object) null)
-          this.owner.RotationTarget = this.fighter.CounterReactionEnemy.transform;
-        else if (this.fighter.IsQuickBlock && (UnityEngine.Object) this.fighter.PrePunchEnemy != (UnityEngine.Object) null)
-          this.owner.RotationTarget = this.fighter.PrePunchEnemy.transform;
+        if (fighter.IsContrReacting && (UnityEngine.Object) fighter.CounterReactionEnemy != (UnityEngine.Object) null)
+          owner.RotationTarget = fighter.CounterReactionEnemy.transform;
+        else if (fighter.IsQuickBlock && (UnityEngine.Object) fighter.PrePunchEnemy != (UnityEngine.Object) null)
+          owner.RotationTarget = fighter.PrePunchEnemy.transform;
         return TaskStatus.Running;
       }
-      Vector3 lhs = this.owner.Enemy.transform.position - this.owner.transform.position;
+      Vector3 lhs = owner.Enemy.transform.position - owner.transform.position;
       float magnitude = lhs.magnitude;
       lhs.Normalize();
-      if ((bool) (UnityEngine.Object) this.fighter && (this.fighter.IsAttacking || this.fighter.IsContrReacting))
+      if ((bool) (UnityEngine.Object) fighter && (fighter.IsAttacking || fighter.IsContrReacting))
       {
-        this.owner.RotationTarget = this.owner.Enemy.transform;
+        owner.RotationTarget = owner.Enemy.transform;
         return TaskStatus.Running;
       }
-      float num = Vector3.Dot(lhs, this.owner.Enemy.Velocity);
-      if (NavMesh.Raycast(this.owner.transform.position, this.owner.Enemy.transform.position, out NavMeshHit _, -1))
+      float num = Vector3.Dot(lhs, owner.Enemy.Velocity);
+      if (NavMesh.Raycast(owner.transform.position, owner.Enemy.transform.position, out NavMeshHit _, -1))
       {
-        if (!this.agent.hasPath)
+        if (!agent.hasPath)
           return TaskStatus.Running;
-        if ((double) this.agent.remainingDistance > (double) this.description.StopDistance)
+        if ((double) agent.remainingDistance > description.StopDistance)
         {
-          this.desiredWalkSpeed = (double) num <= 1.0 ? (!this.IsEnemyRunningAway() ? ((double) this.agent.remainingDistance > (double) this.description.RunDistance ? 2f : 1f) : 2f) : 2f;
-          this.owner.RotationTarget = this.owner.Enemy.transform;
-          this.owner.RotateByPath = true;
-          this.owner.RetreatAngle = new float?();
+          desiredWalkSpeed = num <= 1.0 ? (!IsEnemyRunningAway() ? ((double) agent.remainingDistance > description.RunDistance ? 2f : 1f) : 2f) : 2f;
+          owner.RotationTarget = owner.Enemy.transform;
+          owner.RotateByPath = true;
+          owner.RetreatAngle = new float?();
         }
       }
-      else if ((double) magnitude > (double) this.description.StopDistance)
+      else if (magnitude > (double) description.StopDistance)
       {
-        this.desiredWalkSpeed = (double) num <= 1.0 ? (!this.IsEnemyRunningAway() ? ((double) this.agent.remainingDistance > (double) this.description.RunDistance ? 2f : 1f) : 2f) : 2f;
-        this.owner.RotationTarget = this.owner.Enemy.transform;
+        desiredWalkSpeed = num <= 1.0 ? (!IsEnemyRunningAway() ? ((double) agent.remainingDistance > description.RunDistance ? 2f : 1f) : 2f) : 2f;
+        owner.RotationTarget = owner.Enemy.transform;
       }
       else
       {
-        this.desiredWalkSpeed = 0.0f;
-        if ((bool) (UnityEngine.Object) this.fighter && (this.fighter.IsContrReacting || !this.fighter.IsReacting))
-          this.owner.RotationTarget = this.owner.Enemy.transform;
-        this.animator.GetInteger("Fight.AttackType");
-        if (this.fightAnimatorState.IsAttacking)
-          this.owner.RotationTarget = this.owner.Enemy.transform;
+        desiredWalkSpeed = 0.0f;
+        if ((bool) (UnityEngine.Object) fighter && (fighter.IsContrReacting || !fighter.IsReacting))
+          owner.RotationTarget = owner.Enemy.transform;
+        animator.GetInteger("Fight.AttackType");
+        if (fightAnimatorState.IsAttacking)
+          owner.RotationTarget = owner.Enemy.transform;
       }
-      this.owner.DesiredWalkSpeed = this.desiredWalkSpeed;
-      this.agent.nextPosition = this.animator.rootPosition;
-      if (this.owner.Enemy is PlayerEnemy && this.UpdatePlayerKnockDdown(this.owner.Enemy as PlayerEnemy) || (double) magnitude >= (double) this.description.AttackDistance)
+      owner.DesiredWalkSpeed = desiredWalkSpeed;
+      agent.nextPosition = animator.rootPosition;
+      if (owner.Enemy is PlayerEnemy && UpdatePlayerKnockDdown(owner.Enemy as PlayerEnemy) || magnitude >= (double) description.AttackDistance)
         return TaskStatus.Running;
-      if (this.owner.Enemy is PlayerEnemy && (double) this.owner.Enemy.BlockNormalizedTime > (double) this.description.PushIfBlockTimeMoreThan && !this.fightAnimatorState.IsPushing && !this.fightAnimatorState.IsReaction && !this.fightAnimatorState.IsAttacking)
+      if (owner.Enemy is PlayerEnemy && owner.Enemy.BlockNormalizedTime > (double) description.PushIfBlockTimeMoreThan && !fightAnimatorState.IsPushing && !fightAnimatorState.IsReaction && !fightAnimatorState.IsAttacking)
       {
         if ((double) UnityEngine.Random.value < 0.5)
         {
-          this.animatorState.SetTrigger("Fight.Triggers/Push");
+          animatorState.SetTrigger("Fight.Triggers/Push");
         }
         else
         {
-          this.animatorState.SetTrigger("Fight.Triggers/Attack");
-          this.animator.SetInteger("Fight.AttackType", 8);
+          animatorState.SetTrigger("Fight.Triggers/Attack");
+          animator.SetInteger("Fight.AttackType", 8);
         }
         return TaskStatus.Running;
       }
-      if (!this.fightAnimatorState.IsAttacking && !this.fightAnimatorState.IsPushing)
-        this.attackCooldownTime -= deltaTime;
-      if ((double) this.attackCooldownTime <= 0.0 && !this.fightAnimatorState.IsAttacking && !this.fightAnimatorState.IsPushing && !this.fightAnimatorState.IsReaction && !this.fightAnimatorState.IsQuickBlock)
+      if (!fightAnimatorState.IsAttacking && !fightAnimatorState.IsPushing)
+        attackCooldownTime -= deltaTime;
+      if (attackCooldownTime <= 0.0 && !fightAnimatorState.IsAttacking && !fightAnimatorState.IsPushing && !fightAnimatorState.IsReaction && !fightAnimatorState.IsQuickBlock)
       {
-        if ((double) this.desiredWalkSpeed > 0.5)
+        if (desiredWalkSpeed > 0.5)
         {
-          this.animatorState.SetTrigger("Fight.Triggers/RunPunch");
-          this.attackCooldownTime = 2f;
+          animatorState.SetTrigger("Fight.Triggers/RunPunch");
+          attackCooldownTime = 2f;
         }
-        else if ((double) magnitude < 0.60000002384185791 * (double) Fight.Description.NPCHitDistance)
+        else if (magnitude < 0.60000002384185791 * Fight.Description.NPCHitDistance)
         {
-          this.animatorState.SetTrigger("Fight.Triggers/Attack");
-          this.animator.SetInteger("Fight.AttackType", 0);
-          this.attackCooldownTime = this.description.PunchCooldownTime;
+          animatorState.SetTrigger("Fight.Triggers/Attack");
+          animator.SetInteger("Fight.AttackType", 0);
+          attackCooldownTime = description.PunchCooldownTime;
         }
-        else if ((double) magnitude < 1.0 * (double) Fight.Description.NPCHitDistance)
+        else if (magnitude < 1.0 * Fight.Description.NPCHitDistance)
         {
-          this.animatorState.SetTrigger("Fight.Triggers/Attack");
-          this.animator.SetInteger("Fight.AttackType", 1);
-          this.attackCooldownTime = this.description.StepPunchCooldownTime;
+          animatorState.SetTrigger("Fight.Triggers/Attack");
+          animator.SetInteger("Fight.AttackType", 1);
+          attackCooldownTime = description.StepPunchCooldownTime;
         }
-        else if ((double) magnitude < (double) this.description.AttackDistance)
+        else if (magnitude < (double) description.AttackDistance)
         {
-          this.animatorState.SetTrigger("Fight.Triggers/Attack");
-          this.animator.SetInteger("Fight.AttackType", 3);
-          this.animator.SetBool("Fight.AttackAfterCheat", (double) UnityEngine.Random.value > (double) this.description.CheatProbability);
-          this.attackCooldownTime = this.description.TelegraphPunchCooldownTime;
+          animatorState.SetTrigger("Fight.Triggers/Attack");
+          animator.SetInteger("Fight.AttackType", 3);
+          animator.SetBool("Fight.AttackAfterCheat", (double) UnityEngine.Random.value > description.CheatProbability);
+          attackCooldownTime = description.TelegraphPunchCooldownTime;
         }
       }
       return TaskStatus.Running;
@@ -164,53 +163,53 @@ namespace BehaviorDesigner.Runtime.Tasks
 
     private void UpdatePath()
     {
-      if ((double) (this.lastPlayerPosition - this.owner.Enemy.transform.position).magnitude <= 0.33000001311302185)
+      if ((double) (lastPlayerPosition - owner.Enemy.transform.position).magnitude <= 0.33000001311302185)
         return;
-      if (!this.agent.isOnNavMesh)
-        this.agent.Warp(this.transform.position);
-      if (this.agent.isOnNavMesh)
-        this.agent.destination = this.owner.Enemy.transform.position;
-      NavMeshUtility.DrawPath(this.agent);
-      this.lastPlayerPosition = this.owner.Enemy.transform.position;
+      if (!agent.isOnNavMesh)
+        agent.Warp(transform.position);
+      if (agent.isOnNavMesh)
+        agent.destination = owner.Enemy.transform.position;
+      NavMeshUtility.DrawPath(agent);
+      lastPlayerPosition = owner.Enemy.transform.position;
     }
 
     private bool UpdatePlayerKnockDdown(PlayerEnemy player)
     {
-      this.playerKnockdownCooldownLeft -= Time.fixedDeltaTime;
-      if ((double) this.playerKnockdownCooldownLeft > 0.0)
+      playerKnockdownCooldownLeft -= Time.fixedDeltaTime;
+      if (playerKnockdownCooldownLeft > 0.0)
         return false;
-      Vector3 vector3 = player.transform.position - this.owner.transform.position;
+      Vector3 vector3 = player.transform.position - owner.transform.position;
       float magnitude = vector3.magnitude;
       Vector3 lhs = vector3 / magnitude;
-      if ((double) magnitude > 5.0 || (double) Vector3.Dot(lhs, player.transform.forward) < 0.0 || (double) magnitude >= 3.0)
+      if (magnitude > 5.0 || (double) Vector3.Dot(lhs, player.transform.forward) < 0.0 || magnitude >= 3.0)
         return false;
-      this.fighter.TriggerAction(WeaponActionEnum.KnockDown);
-      this.playerKnockdownCooldownLeft = this.description.KnockDownCooldownTime;
+      fighter.TriggerAction(WeaponActionEnum.KnockDown);
+      playerKnockdownCooldownLeft = description.KnockDownCooldownTime;
       return true;
     }
 
     public new void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.WriteSerialize<NodeData>(writer, "NodeData", this.nodeData);
-      DefaultDataWriteUtility.Write(writer, "Id", this.id);
-      DefaultDataWriteUtility.Write(writer, "FriendlyName", this.friendlyName);
-      DefaultDataWriteUtility.Write(writer, "Instant", this.instant);
-      DefaultDataWriteUtility.Write(writer, "Disabled", this.disabled);
-      BehaviorTreeDataWriteUtility.WriteShared<SharedFloat>(writer, "FollowTime", this.followTime);
-      BehaviorTreeDataWriteUtility.WriteShared<SharedBool>(writer, "Aim", this.Aim);
-      BehaviorTreeDataWriteUtility.WriteUnity<FollowDescription>(writer, "Description", this.description);
+      DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
+      DefaultDataWriteUtility.Write(writer, "Id", id);
+      DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
+      DefaultDataWriteUtility.Write(writer, "Instant", instant);
+      DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
+      BehaviorTreeDataWriteUtility.WriteShared(writer, "FollowTime", followTime);
+      BehaviorTreeDataWriteUtility.WriteShared(writer, "Aim", Aim);
+      BehaviorTreeDataWriteUtility.WriteUnity<FollowDescription>(writer, "Description", description);
     }
 
-    public new void DataRead(IDataReader reader, System.Type type)
+    public new void DataRead(IDataReader reader, Type type)
     {
-      this.nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
-      this.id = DefaultDataReadUtility.Read(reader, "Id", this.id);
-      this.friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", this.friendlyName);
-      this.instant = DefaultDataReadUtility.Read(reader, "Instant", this.instant);
-      this.disabled = DefaultDataReadUtility.Read(reader, "Disabled", this.disabled);
-      this.followTime = BehaviorTreeDataReadUtility.ReadShared<SharedFloat>(reader, "FollowTime", this.followTime);
-      this.Aim = BehaviorTreeDataReadUtility.ReadShared<SharedBool>(reader, "Aim", this.Aim);
-      this.description = BehaviorTreeDataReadUtility.ReadUnity<FollowDescription>(reader, "Description", this.description);
+      nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
+      id = DefaultDataReadUtility.Read(reader, "Id", id);
+      friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
+      instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
+      disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
+      followTime = BehaviorTreeDataReadUtility.ReadShared(reader, "FollowTime", followTime);
+      Aim = BehaviorTreeDataReadUtility.ReadShared(reader, "Aim", Aim);
+      description = BehaviorTreeDataReadUtility.ReadUnity<FollowDescription>(reader, "Description", description);
     }
   }
 }

@@ -1,10 +1,9 @@
-﻿using Cofe.Meta;
+﻿using System;
+using Cofe.Meta;
 using Engine.Common.Services;
 using Engine.Source.Commons;
 using Engine.Source.Services.Gizmos;
 using Engine.Source.Utility;
-using System;
-using UnityEngine;
 
 namespace Engine.Source.Debugs
 {
@@ -18,18 +17,18 @@ namespace Engine.Source.Debugs
     private static Color trueColor = Color.white;
     private static Color falseColor = ColorPreset.LightGray;
 
-    public static bool IsGroupVisible => GroupDebugService.IsGroupVisible(HerbRootsGroupDebug.name);
+    public static bool IsGroupVisible => GroupDebugService.IsGroupVisible(name);
 
-    [Cofe.Meta.Initialise]
+    [Initialise]
     private static void Initialise()
     {
-      InstanceByRequest<EngineApplication>.Instance.OnInitialized += (Action) (() => GroupDebugService.RegisterGroup(HerbRootsGroupDebug.name, HerbRootsGroupDebug.key, HerbRootsGroupDebug.modifficators, new Action(HerbRootsGroupDebug.Update)));
+      InstanceByRequest<EngineApplication>.Instance.OnInitialized += (Action) (() => GroupDebugService.RegisterGroup(name, key, modifficators, Update));
     }
 
     public static void DrawHeader()
     {
-      string text = "\n" + HerbRootsGroupDebug.name + " (" + InputUtility.GetHotKeyText(HerbRootsGroupDebug.key, HerbRootsGroupDebug.modifficators) + ")";
-      ServiceLocator.GetService<GizmoService>().DrawText(text, HerbRootsGroupDebug.headerColor);
+      string text = "\n" + name + " (" + InputUtility.GetHotKeyText(key, modifficators) + ")";
+      ServiceLocator.GetService<GizmoService>().DrawText(text, headerColor);
     }
 
     private static void Update()

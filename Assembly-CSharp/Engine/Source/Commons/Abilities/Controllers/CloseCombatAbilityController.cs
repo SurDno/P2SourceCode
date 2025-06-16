@@ -1,4 +1,5 @@
-﻿using Engine.Common;
+﻿using System.Collections.Generic;
+using Engine.Common;
 using Engine.Common.Components;
 using Engine.Common.Components.AttackerPlayer;
 using Engine.Common.Generator;
@@ -6,9 +7,6 @@ using Engine.Impl.Services.Factories;
 using Engine.Source.Components;
 using Engine.Source.Effects.Values;
 using Inspectors;
-using System;
-using System.Collections.Generic;
-using UnityEngine;
 
 namespace Engine.Source.Commons.Abilities.Controllers
 {
@@ -16,19 +14,19 @@ namespace Engine.Source.Commons.Abilities.Controllers
   [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
   public class CloseCombatAbilityController : IAbilityController, IAbilityValueContainer
   {
-    [DataReadProxy(MemberEnum.None, Name = "Punch")]
-    [DataWriteProxy(MemberEnum.None, Name = "Punch")]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy(Name = "Punch")]
+    [DataWriteProxy(Name = "Punch")]
+    [CopyableProxy]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected ShotType punchType;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected ShotSubtypeEnum punchSubtype;
-    [DataReadProxy(MemberEnum.None, Name = "weapon")]
-    [DataWriteProxy(MemberEnum.None, Name = "weapon")]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy(Name = "weapon")]
+    [DataWriteProxy(Name = "weapon")]
+    [CopyableProxy()]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected WeaponEnum weaponKind;
     [Inspected]
@@ -40,68 +38,68 @@ namespace Engine.Source.Commons.Abilities.Controllers
 
     public ReactionType ReactionType { get; set; }
 
-    public WeaponEnum WeaponKind => this.weaponKind;
+    public WeaponEnum WeaponKind => weaponKind;
 
     public void Initialise(AbilityItem abilityItem)
     {
       this.abilityItem = abilityItem;
-      this.Subcribe();
+      Subcribe();
     }
 
     private void Subcribe()
     {
-      this.Unsubscribe();
-      this.storable = this.abilityItem.Ability.Owner.GetComponent<StorableComponent>();
-      if (this.storable == null)
+      Unsubscribe();
+      storable = abilityItem.Ability.Owner.GetComponent<StorableComponent>();
+      if (storable == null)
         return;
-      this.storable.ChangeStorageEvent += new Action<IStorableComponent>(this.ChangeStorageEvent);
-      if (this.storable.Storage == null)
+      storable.ChangeStorageEvent += ChangeStorageEvent;
+      if (storable.Storage == null)
         return;
-      this.itemOwner = this.storable.Storage.Owner;
-      if (this.itemOwner == null)
+      itemOwner = storable.Storage.Owner;
+      if (itemOwner == null)
         return;
-      ((IEntityView) this.itemOwner).OnGameObjectChangedEvent += new Action(this.OnGameObjectChanged);
-      GameObject gameObject = ((IEntityView) this.itemOwner).GameObject;
+      ((IEntityView) itemOwner).OnGameObjectChangedEvent += OnGameObjectChanged;
+      GameObject gameObject = ((IEntityView) itemOwner).GameObject;
       if ((UnityEngine.Object) gameObject == (UnityEngine.Object) null)
         return;
-      AbilityCache abilityCache = this.abilityItem.Ability.AbilityCache;
+      AbilityCache abilityCache = abilityItem.Ability.AbilityCache;
       if ((UnityEngine.Object) abilityCache.EnemyBase != (UnityEngine.Object) null && (UnityEngine.Object) abilityCache.EnemyBase.gameObject == (UnityEngine.Object) gameObject)
-        this.attacker = abilityCache.EnemyBase;
+        attacker = abilityCache.EnemyBase;
       else
-        abilityCache.EnemyBase = this.attacker = gameObject.GetComponentNonAlloc<EnemyBase>();
-      if ((UnityEngine.Object) this.attacker == (UnityEngine.Object) null)
+        abilityCache.EnemyBase = attacker = gameObject.GetComponentNonAlloc<EnemyBase>();
+      if ((UnityEngine.Object) attacker == (UnityEngine.Object) null)
         return;
-      this.attacker.PunchEvent += new Action<IEntity, ShotType, ReactionType, WeaponEnum, ShotSubtypeEnum>(this.OnPunchEvent);
+      attacker.PunchEvent += OnPunchEvent;
     }
 
     private void Unsubscribe()
     {
-      if ((UnityEngine.Object) this.attacker != (UnityEngine.Object) null)
+      if ((UnityEngine.Object) attacker != (UnityEngine.Object) null)
       {
-        this.attacker.PunchEvent -= new Action<IEntity, ShotType, ReactionType, WeaponEnum, ShotSubtypeEnum>(this.OnPunchEvent);
-        this.attacker = (EnemyBase) null;
+        attacker.PunchEvent -= OnPunchEvent;
+        attacker = null;
       }
-      if (this.itemOwner != null)
+      if (itemOwner != null)
       {
-        ((IEntityView) this.itemOwner).OnGameObjectChangedEvent -= new Action(this.OnGameObjectChanged);
-        this.itemOwner = (IEntity) null;
+        ((IEntityView) itemOwner).OnGameObjectChangedEvent -= OnGameObjectChanged;
+        itemOwner = null;
       }
-      if (this.storable == null)
+      if (storable == null)
         return;
-      this.storable.ChangeStorageEvent -= new Action<IStorableComponent>(this.ChangeStorageEvent);
-      this.storable = (StorableComponent) null;
+      storable.ChangeStorageEvent -= ChangeStorageEvent;
+      storable = null;
     }
 
     public void Shutdown()
     {
-      if (this.storable != null)
-        this.abilityItem.Active = false;
-      this.Unsubscribe();
+      if (storable != null)
+        abilityItem.Active = false;
+      Unsubscribe();
     }
 
-    private void ChangeStorageEvent(IStorableComponent sender) => this.Subcribe();
+    private void ChangeStorageEvent(IStorableComponent sender) => Subcribe();
 
-    private void OnGameObjectChanged() => this.Subcribe();
+    private void OnGameObjectChanged() => Subcribe();
 
     private void OnPunchEvent(
       IEntity weaponEntity,
@@ -110,18 +108,18 @@ namespace Engine.Source.Commons.Abilities.Controllers
       WeaponEnum weapon,
       ShotSubtypeEnum subtype = ShotSubtypeEnum.None)
     {
-      if (weapon != this.weaponKind || weaponEntity != null && weaponEntity != this.storable.Owner || punch != this.punchType && this.punchType != ShotType.None || subtype != this.punchSubtype && this.punchSubtype != ShotSubtypeEnum.None)
+      if (weapon != weaponKind || weaponEntity != null && weaponEntity != storable.Owner || punch != punchType && punchType != ShotType.None || subtype != punchSubtype && punchSubtype != ShotSubtypeEnum.None)
         return;
-      this.ReactionType = reactionType;
-      this.PrepareData();
-      this.abilityItem.Active = true;
-      this.abilityItem.Active = false;
+      ReactionType = reactionType;
+      PrepareData();
+      abilityItem.Active = true;
+      abilityItem.Active = false;
     }
 
     private void PrepareData()
     {
-      this.values.Clear();
-      NPCWeaponService component = ((IEntityView) this.itemOwner).GameObject.GetComponent<NPCWeaponService>();
+      values.Clear();
+      NPCWeaponService component = ((IEntityView) itemOwner).GameObject.GetComponent<NPCWeaponService>();
       if ((UnityEngine.Object) component == (UnityEngine.Object) null)
         return;
       Vector3 knifeSpeed = component.KnifeSpeed;
@@ -137,16 +135,13 @@ namespace Engine.Source.Commons.Abilities.Controllers
       float num3 = Mathf.Clamp01(viewportPoint.y) - 0.5f;
       float max = 0.4f;
       Vector2 vector2 = new Vector2(Mathf.Clamp(num2, -max, max), Mathf.Clamp(num3, -max, max));
-      this.values.Add(AbilityValueNameEnum.ScarPosition, (IAbilityValue) new AbilityValue<Vector2>()
-      {
+      values.Add(AbilityValueNameEnum.ScarPosition, (IAbilityValue) new AbilityValue<Vector2> {
         Value = vector2
       });
-      this.values.Add(AbilityValueNameEnum.ScarAngle, (IAbilityValue) new AbilityValue<float>()
-      {
+      values.Add(AbilityValueNameEnum.ScarAngle, new AbilityValue<float> {
         Value = num1
       });
-      this.values.Add(AbilityValueNameEnum.ScarScale, (IAbilityValue) new AbilityValue<float>()
-      {
+      values.Add(AbilityValueNameEnum.ScarScale, new AbilityValue<float> {
         Value = 0.5f
       });
     }
@@ -154,7 +149,7 @@ namespace Engine.Source.Commons.Abilities.Controllers
     public IAbilityValue<T> GetAbilityValue<T>(AbilityValueNameEnum parameter) where T : struct
     {
       IAbilityValue abilityValue;
-      this.values.TryGetValue(parameter, out abilityValue);
+      values.TryGetValue(parameter, out abilityValue);
       return abilityValue as IAbilityValue<T>;
     }
   }

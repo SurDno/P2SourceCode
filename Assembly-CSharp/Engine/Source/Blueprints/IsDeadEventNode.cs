@@ -3,7 +3,6 @@ using Engine.Source.Services;
 using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
-using System;
 
 namespace Engine.Source.Blueprints
 {
@@ -16,28 +15,28 @@ namespace Engine.Source.Blueprints
     public override void OnGraphStarted()
     {
       base.OnGraphStarted();
-      ServiceLocator.GetService<IsDeadListener>().OnIsDeadChanged += new Action<bool>(this.OnIsDeadChanged);
+      ServiceLocator.GetService<IsDeadListener>().OnIsDeadChanged += OnIsDeadChanged;
     }
 
     public override void OnGraphStoped()
     {
-      ServiceLocator.GetService<IsDeadListener>().OnIsDeadChanged -= new Action<bool>(this.OnIsDeadChanged);
+      ServiceLocator.GetService<IsDeadListener>().OnIsDeadChanged -= OnIsDeadChanged;
       base.OnGraphStoped();
     }
 
     private void OnIsDeadChanged(bool visible)
     {
       if (visible)
-        this.deadOutput.Call();
+        deadOutput.Call();
       else
-        this.resurrectOutput.Call();
+        resurrectOutput.Call();
     }
 
     protected override void RegisterPorts()
     {
       base.RegisterPorts();
-      this.deadOutput = this.AddFlowOutput("Dead");
-      this.resurrectOutput = this.AddFlowOutput("Resurrect");
+      deadOutput = AddFlowOutput("Dead");
+      resurrectOutput = AddFlowOutput("Resurrect");
     }
   }
 }

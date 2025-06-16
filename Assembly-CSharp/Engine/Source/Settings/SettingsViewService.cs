@@ -1,12 +1,11 @@
-﻿using Cofe.Utility;
+﻿using System.Collections.Generic;
+using Cofe.Utility;
 using Engine.Source.Services;
 using Inspectors;
-using System;
-using System.Collections.Generic;
 
 namespace Engine.Source.Settings
 {
-  [RuntimeService(new Type[] {typeof (SettingsViewService)})]
+  [RuntimeService(typeof (SettingsViewService))]
   public class SettingsViewService
   {
     [Inspected]
@@ -14,8 +13,8 @@ namespace Engine.Source.Settings
 
     public static void AddSettings(object setting)
     {
-      SettingsViewService.settings.Add(setting);
-      SettingsViewService.settings.Sort((Comparison<object>) ((a, b) => TypeUtility.GetTypeName(a.GetType()).CompareTo(TypeUtility.GetTypeName(b.GetType()))));
+      settings.Add(setting);
+      settings.Sort((a, b) => TypeUtility.GetTypeName(a.GetType()).CompareTo(TypeUtility.GetTypeName(b.GetType())));
     }
   }
 }

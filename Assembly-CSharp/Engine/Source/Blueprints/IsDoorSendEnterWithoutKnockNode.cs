@@ -13,12 +13,12 @@ namespace Engine.Source.Blueprints
     protected override void RegisterPorts()
     {
       base.RegisterPorts();
-      this.AddValueOutput<bool>("SendEnterWithoutKnock", (ValueHandler<bool>) (() =>
+      AddValueOutput("SendEnterWithoutKnock", () =>
       {
-        IDoorComponent doorComponent = this.doorInput.value;
+        IDoorComponent doorComponent = doorInput.value;
         return doorComponent != null && doorComponent.SendEnterWithoutKnock.Value;
-      }));
-      this.doorInput = this.AddValueInput<IDoorComponent>("Door");
+      });
+      doorInput = AddValueInput<IDoorComponent>("Door");
     }
   }
 }

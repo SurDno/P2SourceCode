@@ -1,7 +1,6 @@
 ﻿using Engine.Common.Commons;
 using Engine.Common.Components.Parameters;
 using Engine.Source.Components;
-using UnityEngine;
 
 namespace Engine.Impl.UI.Controls
 {
@@ -17,49 +16,49 @@ namespace Engine.Impl.UI.Controls
 
     protected override void ApplyValue()
     {
-      if (this.parameter != null)
-        this.parameter.RemoveListener((IChangeParameterListener) this);
-      this.parameter = this.Value?.GetComponent<ParametersComponent>()?.GetByName<StammKind>(this.parameterName);
-      if (this.parameter != null)
-        this.parameter.AddListener((IChangeParameterListener) this);
-      this.ApplyParameter();
+      if (parameter != null)
+        parameter.RemoveListener(this);
+      parameter = Value?.GetComponent<ParametersComponent>()?.GetByName<StammKind>(parameterName);
+      if (parameter != null)
+        parameter.AddListener(this);
+      ApplyParameter();
     }
 
     private void ApplyParameter()
     {
-      if (!((Object) this.view != (Object) null))
+      if (!((Object) view != (Object) null))
         return;
-      if (this.parameter == null)
+      if (parameter == null)
       {
-        this.view.Visible = false;
+        view.Visible = false;
       }
       else
       {
         bool flag = false;
-        for (int index = 0; index < this.stamms.Length; ++index)
+        for (int index = 0; index < stamms.Length; ++index)
         {
-          if (this.stamms[index] == this.parameter.Value)
+          if (stamms[index] == parameter.Value)
           {
             flag = true;
             break;
           }
         }
-        this.view.Visible = flag;
+        view.Visible = flag;
       }
     }
 
     public override void SkipAnimation()
     {
-      if (!((Object) this.view != (Object) null))
+      if (!((Object) view != (Object) null))
         return;
-      this.view.SkipAnimation();
+      view.SkipAnimation();
     }
 
     public void OnParameterChanged(IParameter parameter)
     {
       if (parameter != this.parameter)
         return;
-      this.ApplyParameter();
+      ApplyParameter();
     }
   }
 }

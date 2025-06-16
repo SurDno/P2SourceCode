@@ -1,9 +1,9 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons.Cloneable;
 using Engine.Common.Commons.Converters;
 using Engine.Impl.Weather.Element;
-using System;
 
 namespace Engine.Source.Proxies
 {
@@ -18,30 +18,30 @@ namespace Engine.Source.Proxies
     public object Clone()
     {
       ThunderStorm_Generated instance = Activator.CreateInstance<ThunderStorm_Generated>();
-      this.CopyTo((object) instance);
-      return (object) instance;
+      CopyTo(instance);
+      return instance;
     }
 
     public void CopyTo(object target2)
     {
       ThunderStorm_Generated thunderStormGenerated = (ThunderStorm_Generated) target2;
-      thunderStormGenerated.distanceFrom = this.distanceFrom;
-      thunderStormGenerated.distanceTo = this.distanceTo;
-      thunderStormGenerated.frequency = this.frequency;
+      thunderStormGenerated.distanceFrom = distanceFrom;
+      thunderStormGenerated.distanceTo = distanceTo;
+      thunderStormGenerated.frequency = frequency;
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.Write(writer, "DistanceFrom", this.distanceFrom);
-      DefaultDataWriteUtility.Write(writer, "DistanceTo", this.distanceTo);
-      DefaultDataWriteUtility.Write(writer, "Frequency", this.frequency);
+      DefaultDataWriteUtility.Write(writer, "DistanceFrom", distanceFrom);
+      DefaultDataWriteUtility.Write(writer, "DistanceTo", distanceTo);
+      DefaultDataWriteUtility.Write(writer, "Frequency", frequency);
     }
 
     public void DataRead(IDataReader reader, Type type)
     {
-      this.distanceFrom = DefaultDataReadUtility.Read(reader, "DistanceFrom", this.distanceFrom);
-      this.distanceTo = DefaultDataReadUtility.Read(reader, "DistanceTo", this.distanceTo);
-      this.frequency = DefaultDataReadUtility.Read(reader, "Frequency", this.frequency);
+      distanceFrom = DefaultDataReadUtility.Read(reader, "DistanceFrom", distanceFrom);
+      distanceTo = DefaultDataReadUtility.Read(reader, "DistanceTo", distanceTo);
+      frequency = DefaultDataReadUtility.Read(reader, "Frequency", frequency);
     }
   }
 }

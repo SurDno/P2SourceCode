@@ -1,11 +1,11 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons;
 using Engine.Common.Commons.Converters;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Scripts.Tools.Serializations.Converters;
-using UnityEngine;
 
 namespace BehaviorDesigner.Runtime.Tasks
 {
@@ -17,27 +17,27 @@ namespace BehaviorDesigner.Runtime.Tasks
   [FactoryProxy(typeof (FightFollow))]
   public class FightFollow : FightBase, IStub, ISerializeDataWrite, ISerializeDataRead
   {
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [SerializeField]
-    public SharedFloat followTime = (SharedFloat) 0.0f;
+    public SharedFloat followTime = 0.0f;
     [Header("Передвижение")]
     [Tooltip("Если игрок удалился на эту дистанцию, но NPC переходит на бег.")]
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [SerializeField]
-    public SharedFloat RunDistance = (SharedFloat) 5f;
+    public SharedFloat RunDistance = 5f;
     [Tooltip("Если игрок удалился на эту дистанцию, но NPC останавливается.")]
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [SerializeField]
-    public SharedFloat StopDistance = (SharedFloat) 1.2f;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    public SharedFloat StopDistance = 1.2f;
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy()]
     [SerializeField]
     public SharedBool Aim;
     private NpcState npcState;
@@ -45,25 +45,25 @@ namespace BehaviorDesigner.Runtime.Tasks
     public override void OnStart()
     {
       base.OnStart();
-      if ((UnityEngine.Object) this.npcState == (UnityEngine.Object) null)
+      if ((UnityEngine.Object) npcState == (UnityEngine.Object) null)
       {
-        this.npcState = this.gameObject.GetComponent<NpcState>();
-        if ((UnityEngine.Object) this.npcState == (UnityEngine.Object) null)
+        npcState = gameObject.GetComponent<NpcState>();
+        if ((UnityEngine.Object) npcState == (UnityEngine.Object) null)
         {
-          Debug.LogWarning((object) (this.gameObject.name + ": doesn't contain " + typeof (NpcState).Name + " engine component"), (UnityEngine.Object) this.gameObject);
+          Debug.LogWarning((object) (gameObject.name + ": doesn't contain " + typeof (NpcState).Name + " engine component"), (UnityEngine.Object) gameObject);
           return;
         }
       }
-      this.npcState.FightFollow(this.StopDistance.Value, this.RunDistance.Value, this.Aim.Value);
+      npcState.FightFollow(StopDistance.Value, RunDistance.Value, Aim.Value);
     }
 
     public override TaskStatus DoUpdate(float deltaTime)
     {
-      if ((double) this.followTime.Value > 0.0 && (double) this.startTime + (double) this.waitDuration < (double) Time.time)
+      if (followTime.Value > 0.0 && startTime + (double) waitDuration < (double) Time.time)
         return TaskStatus.Success;
-      if (this.npcState.CurrentNpcState != NpcStateEnum.FightFollow)
+      if (npcState.CurrentNpcState != NpcStateEnum.FightFollow)
         return TaskStatus.Failure;
-      switch (this.npcState.Status)
+      switch (npcState.Status)
       {
         case NpcStateStatusEnum.Success:
           return TaskStatus.Success;
@@ -76,28 +76,28 @@ namespace BehaviorDesigner.Runtime.Tasks
 
     public new void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.WriteSerialize<NodeData>(writer, "NodeData", this.nodeData);
-      DefaultDataWriteUtility.Write(writer, "Id", this.id);
-      DefaultDataWriteUtility.Write(writer, "FriendlyName", this.friendlyName);
-      DefaultDataWriteUtility.Write(writer, "Instant", this.instant);
-      DefaultDataWriteUtility.Write(writer, "Disabled", this.disabled);
-      BehaviorTreeDataWriteUtility.WriteShared<SharedFloat>(writer, "FollowTime", this.followTime);
-      BehaviorTreeDataWriteUtility.WriteShared<SharedFloat>(writer, "RunDistance", this.RunDistance);
-      BehaviorTreeDataWriteUtility.WriteShared<SharedFloat>(writer, "StopDistance", this.StopDistance);
-      BehaviorTreeDataWriteUtility.WriteShared<SharedBool>(writer, "Aim", this.Aim);
+      DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
+      DefaultDataWriteUtility.Write(writer, "Id", id);
+      DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
+      DefaultDataWriteUtility.Write(writer, "Instant", instant);
+      DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
+      BehaviorTreeDataWriteUtility.WriteShared(writer, "FollowTime", followTime);
+      BehaviorTreeDataWriteUtility.WriteShared(writer, "RunDistance", RunDistance);
+      BehaviorTreeDataWriteUtility.WriteShared(writer, "StopDistance", StopDistance);
+      BehaviorTreeDataWriteUtility.WriteShared(writer, "Aim", Aim);
     }
 
-    public new void DataRead(IDataReader reader, System.Type type)
+    public new void DataRead(IDataReader reader, Type type)
     {
-      this.nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
-      this.id = DefaultDataReadUtility.Read(reader, "Id", this.id);
-      this.friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", this.friendlyName);
-      this.instant = DefaultDataReadUtility.Read(reader, "Instant", this.instant);
-      this.disabled = DefaultDataReadUtility.Read(reader, "Disabled", this.disabled);
-      this.followTime = BehaviorTreeDataReadUtility.ReadShared<SharedFloat>(reader, "FollowTime", this.followTime);
-      this.RunDistance = BehaviorTreeDataReadUtility.ReadShared<SharedFloat>(reader, "RunDistance", this.RunDistance);
-      this.StopDistance = BehaviorTreeDataReadUtility.ReadShared<SharedFloat>(reader, "StopDistance", this.StopDistance);
-      this.Aim = BehaviorTreeDataReadUtility.ReadShared<SharedBool>(reader, "Aim", this.Aim);
+      nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
+      id = DefaultDataReadUtility.Read(reader, "Id", id);
+      friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
+      instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
+      disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
+      followTime = BehaviorTreeDataReadUtility.ReadShared(reader, "FollowTime", followTime);
+      RunDistance = BehaviorTreeDataReadUtility.ReadShared(reader, "RunDistance", RunDistance);
+      StopDistance = BehaviorTreeDataReadUtility.ReadShared(reader, "StopDistance", StopDistance);
+      Aim = BehaviorTreeDataReadUtility.ReadShared(reader, "Aim", Aim);
     }
   }
 }

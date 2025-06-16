@@ -1,13 +1,12 @@
 ﻿using ParadoxNotion.Design;
 using ParadoxNotion.FlowCanvas.Module;
-using System;
 
 namespace FlowCanvas.Nodes
 {
   [Description("Perform a for loop")]
   [Category("Flow Controllers/Iterators")]
-  [ContextDefinedInputs(new Type[] {typeof (int)})]
-  [ContextDefinedOutputs(new Type[] {typeof (int)})]
+  [ContextDefinedInputs(typeof (int))]
+  [ContextDefinedOutputs(typeof (int))]
   public class ForLoop : FlowControlNode
   {
     private int current;
@@ -15,22 +14,22 @@ namespace FlowCanvas.Nodes
 
     protected override void RegisterPorts()
     {
-      ValueInput<int> n = this.AddValueInput<int>("Loops");
-      this.AddValueOutput<int>("Index", (ValueHandler<int>) (() => this.current));
-      FlowOutput fCurrent = this.AddFlowOutput("Do");
-      FlowOutput fFinish = this.AddFlowOutput("Done");
-      this.AddFlowInput("In", (FlowHandler) (() =>
+      ValueInput<int> n = AddValueInput<int>("Loops");
+      AddValueOutput("Index", () => current);
+      FlowOutput fCurrent = AddFlowOutput("Do");
+      FlowOutput fFinish = AddFlowOutput("Done");
+      AddFlowInput("In", () =>
       {
-        this.current = 0;
-        this.broken = false;
-        for (int index = 0; index < n.value && !this.broken; ++index)
+        current = 0;
+        broken = false;
+        for (int index = 0; index < n.value && !broken; ++index)
         {
-          this.current = index;
+          current = index;
           fCurrent.Call();
         }
         fFinish.Call();
-      }));
-      this.AddFlowInput("Break", (FlowHandler) (() => this.broken = true));
+      });
+      AddFlowInput("Break", () => broken = true);
     }
   }
 }

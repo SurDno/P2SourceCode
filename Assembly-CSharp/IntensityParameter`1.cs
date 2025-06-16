@@ -5,6 +5,6 @@
 
   public override string ToString()
   {
-    return string.Format("{0} : {1}\n{2} : {3}", (object) "Intensity", (object) this.Intensity, (object) "Value", (object) this.Value.ToString());
+    return string.Format("{0} : {1}\n{2} : {3}", "Intensity", Intensity, "Value", Value.ToString());
   }
 }

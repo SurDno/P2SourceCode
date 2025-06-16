@@ -1,14 +1,13 @@
-﻿using Engine.Behaviours.Localization;
+﻿using System;
+using Engine.Behaviours.Localization;
 using Engine.Common.Services;
-using System;
-using UnityEngine;
 
 [RequireComponent(typeof (Localizer))]
 public class GameTimeView : MonoBehaviour
 {
   private Localizer localizer;
 
-  private void OnEnable() => this.Redraw();
+  private void OnEnable() => Redraw();
 
   private void Redraw()
   {
@@ -18,7 +17,7 @@ public class GameTimeView : MonoBehaviour
     TimeSpan gameTime = service.GameTime;
     if (gameTime.Days < 1)
     {
-      this.localizer.Signature = string.Empty;
+      localizer.Signature = string.Empty;
     }
     else
     {
@@ -31,5 +30,5 @@ public class GameTimeView : MonoBehaviour
     }
   }
 
-  private void Update() => this.Redraw();
+  private void Update() => Redraw();
 }

@@ -1,11 +1,11 @@
-﻿using Engine.Common;
+﻿using System;
+using System.Collections.Generic;
+using Engine.Common;
 using Engine.Common.Blenders;
 using Engine.Common.Commons.Cloneable;
 using Engine.Common.Services;
 using Engine.Source.Commons;
 using Inspectors;
-using System;
-using System.Collections.Generic;
 
 namespace Engine.Source.Blenders
 {
@@ -25,71 +25,71 @@ namespace Engine.Source.Blenders
     {
       get
       {
-        if (this.invalidate)
+        if (invalidate)
         {
-          this.Compute();
-          this.invalidate = false;
+          Compute();
+          invalidate = false;
         }
-        return this.current;
+        return current;
       }
     }
 
     public IEnumerable<ILayerBlenderItem<T>> Items
     {
-      get => (IEnumerable<ILayerBlenderItem<T>>) this.items;
+      get => items;
     }
 
     public event Action<ILayerBlender<T>> OnChanged;
 
     public LayerBlender()
     {
-      this.current = ServiceLocator.GetService<IFactory>().Create<T>();
-      this.empty = ServiceLocator.GetService<IFactory>().Create<T>();
-      this.tmp = ServiceLocator.GetService<IFactory>().Create<T>();
+      current = ServiceLocator.GetService<IFactory>().Create<T>();
+      empty = ServiceLocator.GetService<IFactory>().Create<T>();
+      tmp = ServiceLocator.GetService<IFactory>().Create<T>();
     }
 
     public void AddItem(ILayerBlenderItem<T> item)
     {
-      item.OnChanged += new Action<ILayerBlenderItem<T>>(this.ItemOnChanged);
-      this.items.Add(item);
-      this.invalidate = true;
-      Action<ILayerBlender<T>> onChanged = this.OnChanged;
+      item.OnChanged += ItemOnChanged;
+      items.Add(item);
+      invalidate = true;
+      Action<ILayerBlender<T>> onChanged = OnChanged;
       if (onChanged == null)
         return;
-      onChanged((ILayerBlender<T>) this);
+      onChanged(this);
     }
 
     public void RemoveItem(ILayerBlenderItem<T> item)
     {
-      item.OnChanged -= new Action<ILayerBlenderItem<T>>(this.ItemOnChanged);
-      this.items.Remove(item);
-      this.invalidate = true;
-      Action<ILayerBlender<T>> onChanged = this.OnChanged;
+      item.OnChanged -= ItemOnChanged;
+      items.Remove(item);
+      invalidate = true;
+      Action<ILayerBlender<T>> onChanged = OnChanged;
       if (onChanged == null)
         return;
-      onChanged((ILayerBlender<T>) this);
+      onChanged(this);
     }
 
     private void ItemOnChanged(ILayerBlenderItem<T> item)
     {
-      this.invalidate = true;
-      Action<ILayerBlender<T>> onChanged = this.OnChanged;
+      invalidate = true;
+      Action<ILayerBlender<T>> onChanged = OnChanged;
       if (onChanged == null)
         return;
-      onChanged((ILayerBlender<T>) this);
+      onChanged(this);
     }
 
     private void Compute()
     {
-      ((ICopyable) (object) this.empty).CopyTo((object) this.current);
-      foreach (ILayerBlenderItem<T> layerBlenderItem in this.items)
+      ((ICopyable) empty).CopyTo(current);
+      foreach (ILayerBlenderItem<T> layerBlenderItem in items)
       {
         ISmoothBlender<T> blender = layerBlenderItem.Blender;
         if (blender != null)
         {
-          this.opacityBlendOperation.Opacity = layerBlenderItem.Opacity;
-          ((ICopyable) (object) this.current).CopyTo((object) this.tmp);
-          this.current.Blend(this.tmp, blender.Current, (IPureBlendOperation) this.opacityBlendOperation);
+          opacityBlendOperation.Opacity = layerBlenderItem.Opacity;
+          ((ICopyable) current).CopyTo(tmp);
+          current.Blend(tmp, blender.Current, opacityBlendOperation);
         }
       }
     }

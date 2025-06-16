@@ -1,4 +1,6 @@
-﻿using Engine.Common;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Engine.Common;
 using Engine.Common.Components.Gate;
 using Engine.Common.Services;
 using Engine.Source.Commons;
@@ -6,10 +8,6 @@ using Engine.Source.Components;
 using Engine.Source.Settings.External;
 using Inspectors;
 using SoundPropagation;
-using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
-using UnityEngine.AI;
 
 public class InteriorDoor : MonoBehaviour, IEntityAttachable
 {
@@ -35,93 +33,93 @@ public class InteriorDoor : MonoBehaviour, IEntityAttachable
   {
     get
     {
-      return this.gate.Opened.Value || this.targets.Count != 0 && this.gate.LockState.Value == LockState.Unlocked;
+      return gate.Opened.Value || targets.Count != 0 && gate.LockState.Value == LockState.Unlocked;
     }
   }
 
   public void Attach(IEntity owner)
   {
-    this.update = true;
-    this.gate = owner.GetComponent<DoorComponent>();
-    if (this.gate != null)
+    update = true;
+    gate = owner.GetComponent<DoorComponent>();
+    if (gate != null)
     {
-      this.openned = this.IsOppening;
-      this.UpdateAngle();
+      openned = IsOppening;
+      UpdateAngle();
     }
-    this.UpdateOcclusion();
-    this.UpdateObstacle();
+    UpdateOcclusion();
+    UpdateObstacle();
   }
 
-  public void Detach() => this.gate = (DoorComponent) null;
+  public void Detach() => gate = null;
 
   public void Update()
   {
-    if (this.gate == null)
+    if (gate == null)
       return;
-    if (this.openned != this.IsOppening)
+    if (openned != IsOppening)
     {
-      this.openned = this.IsOppening;
-      this.UpdateAngle();
+      openned = IsOppening;
+      UpdateAngle();
     }
-    if (!this.update)
+    if (!update)
       return;
     float num = Time.deltaTime * ExternalSettingsInstance<ExternalCommonSettings>.Instance.DoorSpeed;
-    float f = this.IsOppening ? this.GetAngle() : 0.0f;
+    float f = IsOppening ? GetAngle() : 0.0f;
     if (float.IsNaN(f))
       return;
-    if ((double) this.currentAngle > (double) f)
+    if (currentAngle > (double) f)
     {
-      this.currentAngle -= num;
-      if ((double) this.currentAngle <= (double) f)
+      currentAngle -= num;
+      if (currentAngle <= (double) f)
       {
-        this.currentAngle = f;
-        this.update = false;
+        currentAngle = f;
+        update = false;
       }
     }
-    else if ((double) this.currentAngle < (double) f)
+    else if (currentAngle < (double) f)
     {
-      this.currentAngle += num;
-      if ((double) this.currentAngle >= (double) f)
+      currentAngle += num;
+      if (currentAngle >= (double) f)
       {
-        this.currentAngle = f;
-        this.update = false;
+        currentAngle = f;
+        update = false;
       }
     }
     else
-      this.update = false;
-    this.transform.localRotation = Quaternion.Euler(0.0f, this.currentAngle, 0.0f);
-    this.UpdateOcclusion();
-    this.UpdateObstacle();
+      update = false;
+    this.transform.localRotation = Quaternion.Euler(0.0f, currentAngle, 0.0f);
+    UpdateOcclusion();
+    UpdateObstacle();
   }
 
   private void UpdateOcclusion()
   {
-    if ((Object) this.occlusionPortal != (Object) null)
-      this.occlusionPortal.open = (double) this.currentAngle != 0.0;
-    if (!((Object) this.soundPropagationPortal != (Object) null))
+    if ((Object) occlusionPortal != (Object) null)
+      occlusionPortal.open = currentAngle != 0.0;
+    if (!((Object) soundPropagationPortal != (Object) null))
       return;
-    this.soundPropagationPortal.Occlusion = (float) ((1.0 - (double) Mathf.Min(1f, Mathf.Abs(this.currentAngle) / 45f)) * 1.5);
+    soundPropagationPortal.Occlusion = (float) ((1.0 - (double) Mathf.Min(1f, Mathf.Abs(currentAngle) / 45f)) * 1.5);
   }
 
   private void UpdateObstacle()
   {
-    if (!((Object) this.navMeshObstacle != (Object) null))
+    if (!((Object) navMeshObstacle != (Object) null))
       return;
-    bool flag = Mathf.Approximately(Mathf.Abs(this.currentAngle), Mathf.Abs(this.angle));
-    if (this.navMeshObstacle.enabled != flag)
-      this.navMeshObstacle.enabled = flag;
+    bool flag = Mathf.Approximately(Mathf.Abs(currentAngle), Mathf.Abs(angle));
+    if (navMeshObstacle.enabled != flag)
+      navMeshObstacle.enabled = flag;
   }
 
   private float GetAngle()
   {
-    return this.targets.Count != 0 ? this.GetAngle(this.targets.First<IEntity>()) : this.GetAngle(ServiceLocator.GetService<ISimulation>().Player);
+    return targets.Count != 0 ? GetAngle(targets.First()) : GetAngle(ServiceLocator.GetService<ISimulation>().Player);
   }
 
   private void UpdateAngle()
   {
-    if (this.update || (this.IsOppening ? (double) this.GetAngle() : 0.0) == (double) this.currentAngle)
+    if (update || (IsOppening ? GetAngle() : 0.0) == currentAngle)
       return;
-    this.update = true;
+    update = true;
   }
 
   private float GetAngle(IEntity entity)
@@ -130,12 +128,12 @@ public class InteriorDoor : MonoBehaviour, IEntityAttachable
     if ((Object) gameObject == (Object) null)
       return float.NaN;
     float num = Mathf.Sign(Vector3.Dot(this.transform.parent.rotation * Vector3.forward, gameObject.transform.rotation * Vector3.forward));
-    return Mathf.Abs(this.angle) * -num;
+    return Mathf.Abs(angle) * -num;
   }
 
   public void Invalidate(HashSet<IEntity> targets)
   {
     this.targets = targets;
-    this.update = true;
+    update = true;
   }
 }

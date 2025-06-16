@@ -1,25 +1,23 @@
-﻿using UnityEngine;
-
-namespace Engine.Impl.UI.Controls
+﻿namespace Engine.Impl.UI.Controls
 {
   public abstract class FloatViewBase : FloatView
   {
     [SerializeField]
-    private float floatValue = 0.0f;
+    private float floatValue;
 
     public override float FloatValue
     {
-      get => this.floatValue;
+      get => floatValue;
       set
       {
-        if ((double) this.floatValue == (double) value)
+        if (floatValue == (double) value)
           return;
-        this.floatValue = value;
-        this.ApplyFloatValue();
+        floatValue = value;
+        ApplyFloatValue();
       }
     }
 
-    protected virtual void OnValidate() => this.ApplyFloatValue();
+    protected virtual void OnValidate() => ApplyFloatValue();
 
     protected abstract void ApplyFloatValue();
   }

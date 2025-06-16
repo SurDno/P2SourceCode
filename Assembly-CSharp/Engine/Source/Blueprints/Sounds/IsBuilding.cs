@@ -19,7 +19,7 @@ namespace Engine.Source.Blueprints.Sounds
     [Port("Value")]
     private bool Value()
     {
-      IEntity player = this.simulation.Player;
+      IEntity player = simulation.Player;
       if (player != null)
       {
         INavigationComponent component = player.GetComponent<INavigationComponent>();
@@ -27,7 +27,7 @@ namespace Engine.Source.Blueprints.Sounds
         {
           IBuildingComponent building = component.Building;
           if (building != null)
-            return building.Building == this.buildingInput.value;
+            return building.Building == buildingInput.value;
         }
       }
       return false;

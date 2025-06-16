@@ -1,10 +1,8 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
-using Engine.Common;
-using Engine.Common.Components;
 using Engine.Source.Components.Saves;
 using Scripts.Tools.Serializations.Converters;
-using System;
 
 namespace Engine.Source.Proxies
 {
@@ -13,18 +11,18 @@ namespace Engine.Source.Proxies
   {
     public void StateSave(IDataWriter writer)
     {
-      CustomStateSaveUtility.SaveReference(writer, "Location", (object) this.Location);
-      CustomStateSaveUtility.SaveReference(writer, "Target", (object) this.Target);
-      UnityDataWriteUtility.Write(writer, "Position", this.Position);
-      UnityDataWriteUtility.Write(writer, "Rotation", this.Rotation);
+      CustomStateSaveUtility.SaveReference(writer, "Location", Location);
+      CustomStateSaveUtility.SaveReference(writer, "Target", Target);
+      UnityDataWriteUtility.Write(writer, "Position", Position);
+      UnityDataWriteUtility.Write(writer, "Rotation", Rotation);
     }
 
     public void StateLoad(IDataReader reader, Type type)
     {
-      this.Location = CustomStateLoadUtility.LoadReference<ILocationComponent>(reader, "Location", this.Location);
-      this.Target = CustomStateLoadUtility.LoadReference<IEntity>(reader, "Target", this.Target);
-      this.Position = UnityDataReadUtility.Read(reader, "Position", this.Position);
-      this.Rotation = UnityDataReadUtility.Read(reader, "Rotation", this.Rotation);
+      Location = CustomStateLoadUtility.LoadReference(reader, "Location", Location);
+      Target = CustomStateLoadUtility.LoadReference(reader, "Target", Target);
+      Position = UnityDataReadUtility.Read(reader, "Position", Position);
+      Rotation = UnityDataReadUtility.Read(reader, "Rotation", Rotation);
     }
   }
 }

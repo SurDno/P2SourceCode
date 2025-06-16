@@ -1,10 +1,7 @@
-﻿using Engine.Behaviours.Localization;
+﻿using System;
+using Engine.Behaviours.Localization;
 using Engine.Impl.UI.Controls;
 using Engine.Source.Settings;
-using System;
-using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.UI;
 
 public abstract class SettingsValueView<T> : 
   MonoBehaviour,
@@ -25,7 +22,7 @@ public abstract class SettingsValueView<T> :
   [SerializeField]
   protected Slider slider;
   private bool interactable = true;
-  private bool selected = false;
+  private bool selected;
   public Action<SettingsValueView<T>> VisibleValueChangeEvent;
   public Action<SettingsValueView<T>> PointerEnterEvent;
   public Action<SettingsValueView<T>> PointerExitEvent;
@@ -34,7 +31,7 @@ public abstract class SettingsValueView<T> :
 
   protected void FireVisibleValueChangeEvent()
   {
-    Action<SettingsValueView<T>> valueChangeEvent = this.VisibleValueChangeEvent;
+    Action<SettingsValueView<T>> valueChangeEvent = VisibleValueChangeEvent;
     if (valueChangeEvent == null)
       return;
     valueChangeEvent(this);
@@ -42,43 +39,43 @@ public abstract class SettingsValueView<T> :
 
   public void ResetValue()
   {
-    if (this.SettingsValue == null)
+    if (SettingsValue == null)
       return;
-    this.SettingsValue.Value = this.SettingsValue.DefaultValue;
-    this.RevertVisibleValue();
+    SettingsValue.Value = SettingsValue.DefaultValue;
+    RevertVisibleValue();
   }
 
   public bool Interactable
   {
-    get => this.interactable;
+    get => interactable;
     set
     {
-      if (this.interactable == value)
+      if (interactable == value)
         return;
-      this.interactable = value;
-      if (!((UnityEngine.Object) this.interactableView != (UnityEngine.Object) null))
+      interactable = value;
+      if (!((UnityEngine.Object) interactableView != (UnityEngine.Object) null))
         return;
-      this.interactableView.Visible = this.interactable;
+      interactableView.Visible = interactable;
     }
   }
 
   public bool Selected
   {
-    get => this.selected;
+    get => selected;
     set
     {
-      if (this.selected == value)
+      if (selected == value)
         return;
-      this.selected = value;
-      if (!((UnityEngine.Object) this.selectedView != (UnityEngine.Object) null))
+      selected = value;
+      if (!((UnityEngine.Object) selectedView != (UnityEngine.Object) null))
         return;
-      this.selectedView.Visible = value;
+      selectedView.Visible = value;
     }
   }
 
   public void OnPointerEnter(PointerEventData eventData)
   {
-    Action<SettingsValueView<T>> pointerEnterEvent = this.PointerEnterEvent;
+    Action<SettingsValueView<T>> pointerEnterEvent = PointerEnterEvent;
     if (pointerEnterEvent == null)
       return;
     pointerEnterEvent(this);
@@ -86,7 +83,7 @@ public abstract class SettingsValueView<T> :
 
   public void OnPointerExit(PointerEventData eventData)
   {
-    Action<SettingsValueView<T>> pointerExitEvent = this.PointerExitEvent;
+    Action<SettingsValueView<T>> pointerExitEvent = PointerExitEvent;
     if (pointerExitEvent == null)
       return;
     pointerExitEvent(this);
@@ -94,12 +91,12 @@ public abstract class SettingsValueView<T> :
 
   public void SetName(string signature)
   {
-    if (!((UnityEngine.Object) this.nameText != (UnityEngine.Object) null))
+    if (!((UnityEngine.Object) nameText != (UnityEngine.Object) null))
       return;
-    this.nameText.Signature = signature;
+    nameText.Signature = signature;
   }
 
-  public void SetSetting(IValue<T> settingsValue) => this.SettingsValue = settingsValue;
+  public void SetSetting(IValue<T> settingsValue) => SettingsValue = settingsValue;
 
   public abstract T VisibleValue { get; set; }
 
@@ -115,7 +112,7 @@ public abstract class SettingsValueView<T> :
 
   public void OnSelect()
   {
-    Action<SettingsValueView<T>> pointerEnterEvent = this.PointerEnterEvent;
+    Action<SettingsValueView<T>> pointerEnterEvent = PointerEnterEvent;
     if (pointerEnterEvent == null)
       return;
     pointerEnterEvent(this);
@@ -123,7 +120,7 @@ public abstract class SettingsValueView<T> :
 
   public void OnDeSelect()
   {
-    Action<SettingsValueView<T>> pointerExitEvent = this.PointerExitEvent;
+    Action<SettingsValueView<T>> pointerExitEvent = PointerExitEvent;
     if (pointerExitEvent == null)
       return;
     pointerExitEvent(this);

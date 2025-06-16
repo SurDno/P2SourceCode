@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace RootMotion.FinalIK
+﻿namespace RootMotion.FinalIK
 {
   [HelpURL("https://www.youtube.com/watch?v=wT8fViZpLmQ&index=3&list=PLVxSIA1OaTOu8Nos3CalXbJ2DrKnntMv6")]
   [AddComponentMenu("Scripts/RootMotion.FinalIK/IK/Aim IK")]
@@ -38,6 +36,6 @@ namespace RootMotion.FinalIK
       Application.OpenURL("http://forum.unity3d.com/threads/final-ik-full-body-ik-aim-look-at-fabrik-ccd-ik-1-0-released.222685/");
     }
 
-    public override IKSolver GetIKSolver() => (IKSolver) this.solver;
+    public override IKSolver GetIKSolver() => solver;
   }
 }

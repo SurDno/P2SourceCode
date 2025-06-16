@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using UnityEngine;
 
 namespace Rain
 {
@@ -13,25 +12,25 @@ namespace Rain
 
     public void SetCapacity(int vertexCount, int indexCount)
     {
-      if (this.vertices.Capacity < vertexCount)
+      if (vertices.Capacity < vertexCount)
       {
-        this.vertices.Capacity = vertexCount;
-        this.colors.Capacity = vertexCount;
-        this.uvs.Capacity = vertexCount;
-        this.normals.Capacity = vertexCount;
+        vertices.Capacity = vertexCount;
+        colors.Capacity = vertexCount;
+        uvs.Capacity = vertexCount;
+        normals.Capacity = vertexCount;
       }
-      if (this.triangles.Capacity >= indexCount)
+      if (triangles.Capacity >= indexCount)
         return;
-      this.triangles.Capacity = indexCount;
+      triangles.Capacity = indexCount;
     }
 
     public void Clear()
     {
-      this.vertices.Clear();
-      this.colors.Clear();
-      this.uvs.Clear();
-      this.normals.Clear();
-      this.triangles.Clear();
+      vertices.Clear();
+      colors.Clear();
+      uvs.Clear();
+      normals.Clear();
+      triangles.Clear();
     }
   }
 }

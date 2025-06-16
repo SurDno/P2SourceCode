@@ -1,12 +1,10 @@
-﻿using UnityEngine;
-
-public class TOD_WeatherManager : MonoBehaviour
+﻿public class TOD_WeatherManager : MonoBehaviour
 {
   public ParticleSystem RainParticleSystem = (ParticleSystem) null;
   public float FadeTime = 10f;
-  public TOD_WeatherManager.RainType Rain = TOD_WeatherManager.RainType.None;
-  public TOD_WeatherManager.CloudType Clouds = TOD_WeatherManager.CloudType.None;
-  public TOD_WeatherManager.AtmosphereType Atmosphere = TOD_WeatherManager.AtmosphereType.Clear;
+  public RainType Rain = RainType.None;
+  public CloudType Clouds = CloudType.None;
+  public AtmosphereType Atmosphere = AtmosphereType.Clear;
   private float cloudOpacityMax;
   private float cloudBrightnessMax;
   private float atmosphereBrightnessMax;
@@ -21,88 +19,88 @@ public class TOD_WeatherManager : MonoBehaviour
   protected void Start()
   {
     TOD_Sky instance = TOD_Sky.Instance;
-    this.cloudOpacity = instance.Clouds.Opacity;
-    this.cloudCoverage = instance.Clouds.Coverage;
-    this.cloudBrightness = instance.Clouds.Brightness;
-    this.atmosphereFog = instance.Atmosphere.Fogginess;
-    this.atmosphereBrightness = instance.Atmosphere.Brightness;
-    this.rainEmission = (bool) (Object) this.RainParticleSystem ? this.RainParticleSystem.emissionRate : 0.0f;
-    this.cloudOpacityMax = this.cloudOpacity;
-    this.cloudBrightnessMax = this.cloudBrightness;
-    this.atmosphereBrightnessMax = this.atmosphereBrightness;
-    this.rainEmissionMax = this.rainEmission;
+    cloudOpacity = instance.Clouds.Opacity;
+    cloudCoverage = instance.Clouds.Coverage;
+    cloudBrightness = instance.Clouds.Brightness;
+    atmosphereFog = instance.Atmosphere.Fogginess;
+    atmosphereBrightness = instance.Atmosphere.Brightness;
+    rainEmission = (bool) (Object) RainParticleSystem ? RainParticleSystem.emissionRate : 0.0f;
+    cloudOpacityMax = cloudOpacity;
+    cloudBrightnessMax = cloudBrightness;
+    atmosphereBrightnessMax = atmosphereBrightness;
+    rainEmissionMax = rainEmission;
   }
 
   protected void Update()
   {
     TOD_Sky instance = TOD_Sky.Instance;
-    switch (this.Rain)
+    switch (Rain)
     {
-      case TOD_WeatherManager.RainType.None:
-        this.rainEmission = 0.0f;
+      case RainType.None:
+        rainEmission = 0.0f;
         break;
-      case TOD_WeatherManager.RainType.Light:
-        this.rainEmission = this.rainEmissionMax * 0.5f;
+      case RainType.Light:
+        rainEmission = rainEmissionMax * 0.5f;
         break;
-      case TOD_WeatherManager.RainType.Heavy:
-        this.rainEmission = this.rainEmissionMax;
+      case RainType.Heavy:
+        rainEmission = rainEmissionMax;
         break;
     }
-    switch (this.Clouds)
+    switch (Clouds)
     {
-      case TOD_WeatherManager.CloudType.None:
-        this.cloudOpacity = 0.0f;
-        this.cloudCoverage = 0.0f;
+      case CloudType.None:
+        cloudOpacity = 0.0f;
+        cloudCoverage = 0.0f;
         break;
-      case TOD_WeatherManager.CloudType.Few:
-        this.cloudOpacity = this.cloudOpacityMax;
-        this.cloudCoverage = 0.1f;
+      case CloudType.Few:
+        cloudOpacity = cloudOpacityMax;
+        cloudCoverage = 0.1f;
         break;
-      case TOD_WeatherManager.CloudType.Scattered:
-        this.cloudOpacity = this.cloudOpacityMax;
-        this.cloudCoverage = 0.3f;
+      case CloudType.Scattered:
+        cloudOpacity = cloudOpacityMax;
+        cloudCoverage = 0.3f;
         break;
-      case TOD_WeatherManager.CloudType.Broken:
-        this.cloudOpacity = this.cloudOpacityMax;
-        this.cloudCoverage = 0.6f;
+      case CloudType.Broken:
+        cloudOpacity = cloudOpacityMax;
+        cloudCoverage = 0.6f;
         break;
-      case TOD_WeatherManager.CloudType.Overcast:
-        this.cloudOpacity = this.cloudOpacityMax;
-        this.cloudCoverage = 1f;
+      case CloudType.Overcast:
+        cloudOpacity = cloudOpacityMax;
+        cloudCoverage = 1f;
         break;
     }
-    switch (this.Atmosphere)
+    switch (Atmosphere)
     {
-      case TOD_WeatherManager.AtmosphereType.Clear:
-        this.cloudBrightness = this.cloudBrightnessMax;
-        this.atmosphereBrightness = this.atmosphereBrightnessMax;
-        this.atmosphereFog = 0.0f;
+      case AtmosphereType.Clear:
+        cloudBrightness = cloudBrightnessMax;
+        atmosphereBrightness = atmosphereBrightnessMax;
+        atmosphereFog = 0.0f;
         break;
-      case TOD_WeatherManager.AtmosphereType.Storm:
-        this.cloudBrightness = this.cloudBrightnessMax * 0.3f;
-        this.atmosphereBrightness = this.atmosphereBrightnessMax * 0.5f;
-        this.atmosphereFog = 1f;
+      case AtmosphereType.Storm:
+        cloudBrightness = cloudBrightnessMax * 0.3f;
+        atmosphereBrightness = atmosphereBrightnessMax * 0.5f;
+        atmosphereFog = 1f;
         break;
-      case TOD_WeatherManager.AtmosphereType.Dust:
-        this.cloudBrightness = this.cloudBrightnessMax;
-        this.atmosphereBrightness = this.atmosphereBrightnessMax;
-        this.atmosphereFog = 0.5f;
+      case AtmosphereType.Dust:
+        cloudBrightness = cloudBrightnessMax;
+        atmosphereBrightness = atmosphereBrightnessMax;
+        atmosphereFog = 0.5f;
         break;
-      case TOD_WeatherManager.AtmosphereType.Fog:
-        this.cloudBrightness = this.cloudBrightnessMax;
-        this.atmosphereBrightness = this.atmosphereBrightnessMax;
-        this.atmosphereFog = 1f;
+      case AtmosphereType.Fog:
+        cloudBrightness = cloudBrightnessMax;
+        atmosphereBrightness = atmosphereBrightnessMax;
+        atmosphereFog = 1f;
         break;
     }
-    float t = Time.deltaTime / this.FadeTime;
-    instance.Clouds.Opacity = Mathf.Lerp(instance.Clouds.Opacity, this.cloudOpacity, t);
-    instance.Clouds.Coverage = Mathf.Lerp(instance.Clouds.Coverage, this.cloudCoverage, t);
-    instance.Clouds.Brightness = Mathf.Lerp(instance.Clouds.Brightness, this.cloudBrightness, t);
-    instance.Atmosphere.Fogginess = Mathf.Lerp(instance.Atmosphere.Fogginess, this.atmosphereFog, t);
-    instance.Atmosphere.Brightness = Mathf.Lerp(instance.Atmosphere.Brightness, this.atmosphereBrightness, t);
-    if (!(bool) (Object) this.RainParticleSystem)
+    float t = Time.deltaTime / FadeTime;
+    instance.Clouds.Opacity = Mathf.Lerp(instance.Clouds.Opacity, cloudOpacity, t);
+    instance.Clouds.Coverage = Mathf.Lerp(instance.Clouds.Coverage, cloudCoverage, t);
+    instance.Clouds.Brightness = Mathf.Lerp(instance.Clouds.Brightness, cloudBrightness, t);
+    instance.Atmosphere.Fogginess = Mathf.Lerp(instance.Atmosphere.Fogginess, atmosphereFog, t);
+    instance.Atmosphere.Brightness = Mathf.Lerp(instance.Atmosphere.Brightness, atmosphereBrightness, t);
+    if (!(bool) (Object) RainParticleSystem)
       return;
-    this.RainParticleSystem.emissionRate = Mathf.Lerp(this.RainParticleSystem.emissionRate, this.rainEmission, t);
+    RainParticleSystem.emissionRate = Mathf.Lerp(RainParticleSystem.emissionRate, rainEmission, t);
   }
 
   public enum RainType

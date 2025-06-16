@@ -5,7 +5,7 @@ namespace Engine.Source.Achievements
 {
   public class AchievementServiceStub : IAchievementServiceImpl
   {
-    public IEnumerable<string> Ids => (IEnumerable<string>) Array.Empty<string>();
+    public IEnumerable<string> Ids => Array.Empty<string>();
 
     public void Initialise()
     {

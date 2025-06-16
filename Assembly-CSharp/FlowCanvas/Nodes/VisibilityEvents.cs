@@ -1,5 +1,4 @@
 ﻿using ParadoxNotion.Design;
-using UnityEngine;
 
 namespace FlowCanvas.Nodes
 {
@@ -22,12 +21,12 @@ namespace FlowCanvas.Nodes
 
     protected override void RegisterPorts()
     {
-      this.onVisible = this.AddFlowOutput("Became Visible");
-      this.onInvisible = this.AddFlowOutput("Became Invisible");
+      onVisible = AddFlowOutput("Became Visible");
+      onInvisible = AddFlowOutput("Became Invisible");
     }
 
-    private void OnBecameVisible() => this.onVisible.Call();
+    private void OnBecameVisible() => onVisible.Call();
 
-    private void OnBecameInvisible() => this.onInvisible.Call();
+    private void OnBecameInvisible() => onInvisible.Call();
   }
 }

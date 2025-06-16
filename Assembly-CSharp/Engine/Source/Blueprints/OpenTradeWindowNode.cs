@@ -1,4 +1,5 @@
-﻿using Engine.Common.Components;
+﻿using System;
+using Engine.Common.Components;
 using Engine.Common.Services;
 using Engine.Source.Components;
 using Engine.Source.Services.Utilities;
@@ -6,7 +7,6 @@ using Engine.Source.UI;
 using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
-using System;
 
 namespace Engine.Source.Blueprints
 {
@@ -18,20 +18,20 @@ namespace Engine.Source.Blueprints
     protected override void RegisterPorts()
     {
       base.RegisterPorts();
-      FlowOutput output = this.AddFlowOutput("Out");
-      this.AddFlowInput("In", (FlowHandler) (() =>
+      FlowOutput output = AddFlowOutput("Out");
+      AddFlowInput("In", () =>
       {
-        IMarketComponent target = this.targetInput.value;
+        IMarketComponent target = targetInput.value;
         if (target == null)
           return;
         ((MarketComponent) target).FillPrices();
-        UIServiceUtility.PushWindow<ITradeWindow>(output, (Action<ITradeWindow>) (window =>
+        UIServiceUtility.PushWindow(output, (Action<ITradeWindow>) (window =>
         {
           window.Actor = ServiceLocator.GetService<ISimulation>().Player.GetComponent<IStorageComponent>();
           window.Market = target;
         }));
-      }));
-      this.targetInput = this.AddValueInput<IMarketComponent>("Market");
+      });
+      targetInput = AddValueInput<IMarketComponent>("Market");
     }
   }
 }

@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using UnityEngine;
 
 namespace RootMotion.FinalIK
 {
@@ -11,36 +10,36 @@ namespace RootMotion.FinalIK
     public VRIK ik;
     private float lastTime;
 
-    protected float deltaTime => Time.time - this.lastTime;
+    protected float deltaTime => Time.time - lastTime;
 
     protected abstract void OnModifyOffset();
 
-    protected virtual void Start() => this.StartCoroutine(this.Initiate());
+    protected virtual void Start() => this.StartCoroutine(Initiate());
 
     private IEnumerator Initiate()
     {
-      while ((Object) this.ik == (Object) null)
-        yield return (object) null;
-      IKSolverVR solver = this.ik.solver;
-      solver.OnPreUpdate = solver.OnPreUpdate + new IKSolver.UpdateDelegate(this.ModifyOffset);
-      this.lastTime = Time.time;
+      while ((Object) ik == (Object) null)
+        yield return null;
+      IKSolverVR solver = ik.solver;
+      solver.OnPreUpdate = solver.OnPreUpdate + ModifyOffset;
+      lastTime = Time.time;
     }
 
     private void ModifyOffset()
     {
-      if (!this.enabled || (double) this.weight <= 0.0 || (double) this.deltaTime <= 0.0 || (Object) this.ik == (Object) null)
+      if (!this.enabled || weight <= 0.0 || deltaTime <= 0.0 || (Object) ik == (Object) null)
         return;
-      this.weight = Mathf.Clamp(this.weight, 0.0f, 1f);
-      this.OnModifyOffset();
-      this.lastTime = Time.time;
+      weight = Mathf.Clamp(weight, 0.0f, 1f);
+      OnModifyOffset();
+      lastTime = Time.time;
     }
 
     protected virtual void OnDestroy()
     {
-      if (!((Object) this.ik != (Object) null))
+      if (!((Object) ik != (Object) null))
         return;
-      IKSolverVR solver = this.ik.solver;
-      solver.OnPreUpdate = solver.OnPreUpdate - new IKSolver.UpdateDelegate(this.ModifyOffset);
+      IKSolverVR solver = ik.solver;
+      solver.OnPreUpdate = solver.OnPreUpdate - ModifyOffset;
     }
   }
 }

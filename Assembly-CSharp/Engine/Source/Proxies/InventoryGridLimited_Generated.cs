@@ -1,10 +1,10 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons.Cloneable;
 using Engine.Common.Commons.Converters;
 using Engine.Common.Services;
 using Engine.Source.Inventory;
-using System;
 
 namespace Engine.Source.Proxies
 {
@@ -18,26 +18,26 @@ namespace Engine.Source.Proxies
   {
     public object Clone()
     {
-      return (object) ServiceCache.Factory.Instantiate<InventoryGridLimited_Generated>(this);
+      return ServiceCache.Factory.Instantiate(this);
     }
 
     public void CopyTo(object target2)
     {
       InventoryGridLimited_Generated limitedGenerated = (InventoryGridLimited_Generated) target2;
-      limitedGenerated.name = this.name;
-      CloneableObjectUtility.CopyListTo<Cell>(limitedGenerated.cells, this.cells);
+      limitedGenerated.name = name;
+      CloneableObjectUtility.CopyListTo(limitedGenerated.cells, cells);
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.Write(writer, "Id", this.id);
-      DefaultDataWriteUtility.WriteListSerialize<Cell>(writer, "Cells", this.cells);
+      DefaultDataWriteUtility.Write(writer, "Id", id);
+      DefaultDataWriteUtility.WriteListSerialize(writer, "Cells", cells);
     }
 
     public void DataRead(IDataReader reader, Type type)
     {
-      this.id = DefaultDataReadUtility.Read(reader, "Id", this.id);
-      this.cells = DefaultDataReadUtility.ReadListSerialize<Cell>(reader, "Cells", this.cells);
+      id = DefaultDataReadUtility.Read(reader, "Id", id);
+      cells = DefaultDataReadUtility.ReadListSerialize(reader, "Cells", cells);
     }
   }
 }

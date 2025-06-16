@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace UnityStandardAssets.ImageEffects
+﻿namespace UnityStandardAssets.ImageEffects
 {
   [ExecuteInEditMode]
   [RequireComponent(typeof (Camera))]
@@ -8,7 +6,7 @@ namespace UnityStandardAssets.ImageEffects
   {
     private void OnRenderImage(RenderTexture source, RenderTexture destination)
     {
-      this.OnRenderImage_Internal(source, destination);
+      OnRenderImage_Internal(source, destination);
     }
   }
 }

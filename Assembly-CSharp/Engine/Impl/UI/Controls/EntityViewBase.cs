@@ -10,13 +10,13 @@ namespace Engine.Impl.UI.Controls
 
     public override IEntity Value
     {
-      get => this.value;
+      get => value;
       set
       {
         if (this.value == value)
           return;
         this.value = value;
-        this.ApplyValue();
+        ApplyValue();
       }
     }
 

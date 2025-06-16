@@ -1,10 +1,10 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons.Cloneable;
 using Engine.Common.Commons.Converters;
 using Engine.Common.Components.Storable;
 using Engine.Source.Commons.Abilities.Controllers;
-using System;
 
 namespace Engine.Source.Proxies
 {
@@ -19,20 +19,20 @@ namespace Engine.Source.Proxies
     public object Clone()
     {
       ItemMountAbilityController_Generated instance = Activator.CreateInstance<ItemMountAbilityController_Generated>();
-      this.CopyTo((object) instance);
-      return (object) instance;
+      CopyTo(instance);
+      return instance;
     }
 
-    public void CopyTo(object target2) => ((ItemMountAbilityController) target2).group = this.group;
+    public void CopyTo(object target2) => ((ItemMountAbilityController) target2).group = group;
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.WriteEnum<InventoryGroup>(writer, "Group", this.group);
+      DefaultDataWriteUtility.WriteEnum(writer, "Group", group);
     }
 
     public void DataRead(IDataReader reader, Type type)
     {
-      this.group = DefaultDataReadUtility.ReadEnum<InventoryGroup>(reader, "Group");
+      group = DefaultDataReadUtility.ReadEnum<InventoryGroup>(reader, "Group");
     }
   }
 }

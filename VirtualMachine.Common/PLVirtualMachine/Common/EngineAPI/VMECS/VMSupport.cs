@@ -2,7 +2,7 @@
 
 namespace PLVirtualMachine.Common.EngineAPI.VMECS
 {
-  [Info("Support", null)]
+  [Info("Support")]
   public class VMSupport : VMComponent
   {
     public const string ComponentName = "Support";
@@ -25,28 +25,28 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
     public virtual int MinMaxIntNextRand(int minValue, int maxValue, int prevValue) => 0;
 
     [Method("Poisson second random time", "Flow per second", "")]
-    public virtual GameTime PoissonRandTime(float flowPerSecond) => (GameTime) null;
+    public virtual GameTime PoissonRandTime(float flowPerSecond) => null;
 
     [Method("Poisson hour random time", "Flow per hour", "")]
     public virtual GameTime PoissonHourRandTime(float flowPerHour)
     {
-      return this.PoissonRandTime(flowPerHour / 3600f);
+      return PoissonRandTime(flowPerHour / 3600f);
     }
 
     [Method("Poisson day random time", "Flow per day", "")]
     public virtual GameTime PoissonDayRandTime(float flowPerDay)
     {
-      return this.PoissonRandTime(flowPerDay / 86400f);
+      return PoissonRandTime(flowPerDay / 86400f);
     }
 
     [Method("Get list objects count", "list", "")]
     public virtual int GetListObjectsCount(VMCommonList objList) => 0;
 
     [Method("Get list object type", "list,index", "")]
-    public virtual VMType GetListObjectType(VMCommonList objList, int index) => (VMType) null;
+    public virtual VMType GetListObjectType(VMCommonList objList, int index) => null;
 
     [Method("Get list object", "list,index", "")]
-    public virtual object GetListObject(VMCommonList objList, int index) => (object) null;
+    public virtual object GetListObject(VMCommonList objList, int index) => null;
 
     [Method("Set list value", "list,value,index", "")]
     public virtual void SetListValue(VMCommonList objList, object val, int index)
@@ -54,7 +54,7 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
     }
 
     [Method("Get random list object", "list", "")]
-    public virtual object GetRandomListObject(VMCommonList objList) => (object) null;
+    public virtual object GetRandomListObject(VMCommonList objList) => null;
 
     [Method("Clear list", "List", "")]
     public virtual void ClearList(VMCommonList objList)

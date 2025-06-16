@@ -1,12 +1,11 @@
-﻿using ParadoxNotion.Design;
+﻿using System.Collections.Generic;
+using ParadoxNotion.Design;
 using ParadoxNotion.FlowCanvas.Module;
-using System.Collections.Generic;
-using UnityEngine;
 
 namespace FlowCanvas.Nodes
 {
   [Description("Calls one random output each time In is called")]
-  [ContextDefinedOutputs(new System.Type[] {typeof (int)})]
+  [ContextDefinedOutputs(typeof (int))]
   public class Random : FlowControlNode, IMultiPortNode
   {
     [SerializeField]
@@ -15,21 +14,21 @@ namespace FlowCanvas.Nodes
 
     public int portCount
     {
-      get => this._portCount;
-      set => this._portCount = value;
+      get => _portCount;
+      set => _portCount = value;
     }
 
     protected override void RegisterPorts()
     {
       List<FlowOutput> outs = new List<FlowOutput>();
-      for (int index = 0; index < this.portCount; ++index)
-        outs.Add(this.AddFlowOutput(index.ToString()));
-      this.AddFlowInput("In", (FlowHandler) (() =>
+      for (int index = 0; index < portCount; ++index)
+        outs.Add(AddFlowOutput(index.ToString()));
+      AddFlowInput("In", () =>
       {
-        this.current = UnityEngine.Random.Range(0, this.portCount);
-        outs[this.current].Call();
-      }));
-      this.AddValueOutput<int>("Current", (ValueHandler<int>) (() => this.current));
+        current = UnityEngine.Random.Range(0, portCount);
+        outs[current].Call();
+      });
+      AddValueOutput("Current", () => current);
     }
   }
 }

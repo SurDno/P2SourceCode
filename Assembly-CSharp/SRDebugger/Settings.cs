@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
 
 namespace SRDebugger
 {
@@ -17,9 +16,9 @@ namespace SRDebugger
     [SerializeField]
     private bool _enableKeyboardShortcuts = true;
     [SerializeField]
-    private Settings.KeyboardShortcut[] _keyboardShortcuts;
+    private KeyboardShortcut[] _keyboardShortcuts;
     [SerializeField]
-    private Settings.KeyboardShortcut[] _newKeyboardShortcuts = new Settings.KeyboardShortcut[0];
+    private KeyboardShortcut[] _newKeyboardShortcuts = new KeyboardShortcut[0];
     [SerializeField]
     private bool _keyboardModifierControl = true;
     [SerializeField]
@@ -39,95 +38,94 @@ namespace SRDebugger
     {
       get
       {
-        if ((UnityEngine.Object) Settings._instance == (UnityEngine.Object) null)
-          Settings._instance = Settings.GetOrCreateInstance();
-        if (Settings._instance._keyboardShortcuts != null && Settings._instance._keyboardShortcuts.Length != 0)
-          Settings._instance.UpgradeKeyboardShortcuts();
-        return Settings._instance;
+        if ((UnityEngine.Object) _instance == (UnityEngine.Object) null)
+          _instance = GetOrCreateInstance();
+        if (_instance._keyboardShortcuts != null && _instance._keyboardShortcuts.Length != 0)
+          _instance.UpgradeKeyboardShortcuts();
+        return _instance;
       }
     }
 
     private void UpgradeKeyboardShortcuts()
     {
       Debug.Log((object) "[SRDebugger] Upgrading Settings format");
-      List<Settings.KeyboardShortcut> keyboardShortcutList = new List<Settings.KeyboardShortcut>();
-      for (int index = 0; index < this._keyboardShortcuts.Length; ++index)
+      List<KeyboardShortcut> keyboardShortcutList = new List<KeyboardShortcut>();
+      for (int index = 0; index < _keyboardShortcuts.Length; ++index)
       {
-        Settings.KeyboardShortcut keyboardShortcut = this._keyboardShortcuts[index];
-        keyboardShortcutList.Add(new Settings.KeyboardShortcut()
-        {
+        KeyboardShortcut keyboardShortcut = _keyboardShortcuts[index];
+        keyboardShortcutList.Add(new KeyboardShortcut {
           Action = keyboardShortcut.Action,
           Key = keyboardShortcut.Key,
-          Alt = this._keyboardModifierAlt,
-          Shift = this._keyboardModifierShift,
-          Control = this._keyboardModifierControl
+          Alt = _keyboardModifierAlt,
+          Shift = _keyboardModifierShift,
+          Control = _keyboardModifierControl
         });
       }
-      this._keyboardShortcuts = new Settings.KeyboardShortcut[0];
-      this._newKeyboardShortcuts = keyboardShortcutList.ToArray();
+      _keyboardShortcuts = new KeyboardShortcut[0];
+      _newKeyboardShortcuts = keyboardShortcutList.ToArray();
     }
 
     public bool IsEnabled
     {
-      get => this._isEnabled;
-      set => this._isEnabled = value;
+      get => _isEnabled;
+      set => _isEnabled = value;
     }
 
     public DefaultTabs DefaultTab
     {
-      get => this._defaultTab;
-      set => this._defaultTab = value;
+      get => _defaultTab;
+      set => _defaultTab = value;
     }
 
     public bool EnableKeyboardShortcuts
     {
-      get => this._enableKeyboardShortcuts;
-      set => this._enableKeyboardShortcuts = value;
+      get => _enableKeyboardShortcuts;
+      set => _enableKeyboardShortcuts = value;
     }
 
-    public IList<Settings.KeyboardShortcut> KeyboardShortcuts
+    public IList<KeyboardShortcut> KeyboardShortcuts
     {
-      get => (IList<Settings.KeyboardShortcut>) this._newKeyboardShortcuts;
-      set => this._newKeyboardShortcuts = value.ToArray<Settings.KeyboardShortcut>();
+      get => _newKeyboardShortcuts;
+      set => _newKeyboardShortcuts = value.ToArray();
     }
 
     public bool KeyboardEscapeClose
     {
-      get => this._keyboardEscapeClose;
-      set => this._keyboardEscapeClose = value;
+      get => _keyboardEscapeClose;
+      set => _keyboardEscapeClose = value;
     }
 
     public bool CollapseDuplicateLogEntries
     {
-      get => this._collapseDuplicateLogEntries;
-      set => this._collapseDuplicateLogEntries = value;
+      get => _collapseDuplicateLogEntries;
+      set => _collapseDuplicateLogEntries = value;
     }
 
     public PinAlignment ProfilerAlignment
     {
-      get => this._profilerAlignment;
+      get => _profilerAlignment;
       set
       {
         if (value == PinAlignment.CenterRight || value == PinAlignment.CenterLeft || value == PinAlignment.TopCenter || value == PinAlignment.BottomCenter)
         {
           int num = 0;
           if (num < 4)
-            this._profilerAlignment = (PinAlignment) num;
+            _profilerAlignment = (PinAlignment) num;
           else
-            this._profilerAlignment = PinAlignment.BottomLeft;
+            _profilerAlignment = PinAlignment.BottomLeft;
         }
         else
         {
-          PinAlignment profilerAlignment = this._profilerAlignment;
-          this._profilerAlignment = value;
+          PinAlignment profilerAlignment = _profilerAlignment;
+          _profilerAlignment = value;
         }
       }
     }
 
     public ConsoleAlignment ConsoleAlignment
     {
-      get => this._consoleAlignment;
-      set => this._consoleAlignment = value;
+      get => _consoleAlignment;
+      set => _consoleAlignment = value;
     }
 
     private static Settings GetOrCreateInstance()
@@ -157,7 +155,7 @@ namespace SRDebugger
     public sealed class KeyboardShortcut
     {
       [SerializeField]
-      public Settings.ShortcutActions Action;
+      public ShortcutActions Action;
       [SerializeField]
       public bool Alt;
       [SerializeField]

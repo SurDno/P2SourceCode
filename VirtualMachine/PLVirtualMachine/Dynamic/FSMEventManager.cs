@@ -1,12 +1,12 @@
-﻿using Cofe.Loggers;
+﻿using System;
+using System.Collections.Generic;
+using System.Xml;
+using Cofe.Loggers;
 using Cofe.Serializations.Data;
 using PLVirtualMachine.Common;
 using PLVirtualMachine.Common.Data;
 using PLVirtualMachine.Common.EngineAPI;
 using PLVirtualMachine.Common.EngineAPI.VMECS;
-using System;
-using System.Collections.Generic;
-using System.Xml;
 
 namespace PLVirtualMachine.Dynamic
 {
@@ -23,9 +23,9 @@ namespace PLVirtualMachine.Dynamic
       try
       {
         if (fsm.FSMStaticObject.DirectEngineCreated)
-          this.LoadEventsFromEngineDirect();
+          LoadEventsFromEngineDirect();
         else
-          this.LoadEvents();
+          LoadEvents();
       }
       catch (Exception ex)
       {
@@ -35,23 +35,23 @@ namespace PLVirtualMachine.Dynamic
 
     public void Clear()
     {
-      if (this.fsmEvents != null)
+      if (fsmEvents != null)
       {
-        foreach (KeyValuePair<ulong, DynamicEvent> fsmEvent in this.fsmEvents)
+        foreach (KeyValuePair<ulong, DynamicEvent> fsmEvent in fsmEvents)
           fsmEvent.Value.ClearSubscribtions();
       }
-      if (this.fsmEvents != null)
-        this.fsmEvents.Clear();
-      if (this.fsmEventsByName != null)
-        this.fsmEventsByName.Clear();
-      if (this.savedExecutedEventsInfo == null)
+      if (fsmEvents != null)
+        fsmEvents.Clear();
+      if (fsmEventsByName != null)
+        fsmEventsByName.Clear();
+      if (savedExecutedEventsInfo == null)
         return;
-      this.savedExecutedEventsInfo.Clear();
+      savedExecutedEventsInfo.Clear();
     }
 
     public void PreLoading()
     {
-      foreach (KeyValuePair<ulong, DynamicEvent> fsmEvent in this.fsmEvents)
+      foreach (KeyValuePair<ulong, DynamicEvent> fsmEvent in fsmEvents)
         fsmEvent.Value.ClearSubscribtions();
     }
 
@@ -59,7 +59,7 @@ namespace PLVirtualMachine.Dynamic
     {
       get
       {
-        foreach (KeyValuePair<ulong, DynamicEvent> fsmEvent in this.fsmEvents)
+        foreach (KeyValuePair<ulong, DynamicEvent> fsmEvent in fsmEvents)
           yield return fsmEvent.Value;
       }
     }
@@ -67,32 +67,32 @@ namespace PLVirtualMachine.Dynamic
     public DynamicEvent GetContextEvent(string eventName)
     {
       DynamicEvent dynamicEvent;
-      return this.fsmEventsByName != null && this.fsmEventsByName.TryGetValue(eventName, out dynamicEvent) ? dynamicEvent : (DynamicEvent) null;
+      return fsmEventsByName != null && fsmEventsByName.TryGetValue(eventName, out dynamicEvent) ? dynamicEvent : null;
     }
 
     public DynamicEvent GetContextEvent(ulong eventId)
     {
       DynamicEvent dynamicEvent;
-      return this.fsmEvents.TryGetValue(eventId, out dynamicEvent) ? dynamicEvent : (DynamicEvent) null;
+      return fsmEvents.TryGetValue(eventId, out dynamicEvent) ? dynamicEvent : null;
     }
 
     public DynamicEvent FindEventByStaticGuid(ulong stEventGuid)
     {
-      foreach (KeyValuePair<ulong, DynamicEvent> fsmEvent in this.fsmEvents)
+      foreach (KeyValuePair<ulong, DynamicEvent> fsmEvent in fsmEvents)
       {
         if ((long) fsmEvent.Value.StaticGuid == (long) stEventGuid)
           return fsmEvent.Value;
       }
-      return (DynamicEvent) null;
+      return null;
     }
 
     public void AfterSaveLoading()
     {
-      foreach (KeyValuePair<ulong, DynamicEvent> fsmEvent in this.fsmEvents)
+      foreach (KeyValuePair<ulong, DynamicEvent> fsmEvent in fsmEvents)
       {
         DynamicEvent dynamicEvent = fsmEvent.Value;
         bool flag = false;
-        if (this.savedExecutedEventsInfo != null && this.savedExecutedEventsInfo.Contains(fsmEvent.Key))
+        if (savedExecutedEventsInfo != null && savedExecutedEventsInfo.Contains(fsmEvent.Key))
           flag = true;
         if (flag)
           dynamicEvent.Active = false;
@@ -103,64 +103,64 @@ namespace PLVirtualMachine.Dynamic
 
     public void LoadFSMEvent(DynamicEvent dynamicEvent, bool byFuncName)
     {
-      this.fsmEvents[dynamicEvent.BaseGuid] = dynamicEvent;
+      fsmEvents[dynamicEvent.BaseGuid] = dynamicEvent;
       if (dynamicEvent.IsManual)
-        this.HasActiveEvents = true;
+        HasActiveEvents = true;
       else
-        this.fsmEventsByName[byFuncName ? dynamicEvent.FunctionalName : dynamicEvent.Name] = dynamicEvent;
+        fsmEventsByName[byFuncName ? dynamicEvent.FunctionalName : dynamicEvent.Name] = dynamicEvent;
     }
 
     public void StateSave(IDataWriter writer)
     {
-      this.SaveExecutedEventsInfo(writer, "ExecutedEvents");
+      SaveExecutedEventsInfo(writer, "ExecutedEvents");
     }
 
     public void LoadFromXML(XmlElement xmlNode)
     {
       if (!(xmlNode.Name == "ExecutedEvents"))
         return;
-      this.LoadExecutedEventsInfo(xmlNode);
+      LoadExecutedEventsInfo(xmlNode);
     }
 
     public bool HasActiveEvents { get; set; }
 
     private void LoadEvents()
     {
-      int count = this.fsm.FSMStaticObject.Events.Count;
+      int count = fsm.FSMStaticObject.Events.Count;
       int num = 0;
-      if (this.fsm.FSMStaticObject.CustomEvents != null)
-        num = this.fsm.FSMStaticObject.CustomEvents.Count;
-      this.fsmEvents = new Dictionary<ulong, DynamicEvent>(count);
-      this.fsmEventsByName = new Dictionary<string, DynamicEvent>(count - num);
-      if (this.fsm.FSMStaticObject.Events == null)
+      if (fsm.FSMStaticObject.CustomEvents != null)
+        num = fsm.FSMStaticObject.CustomEvents.Count;
+      fsmEvents = new Dictionary<ulong, DynamicEvent>(count);
+      fsmEventsByName = new Dictionary<string, DynamicEvent>(count - num);
+      if (fsm.FSMStaticObject.Events == null)
         return;
-      foreach (IEvent staticEvent in this.fsm.FSMStaticObject.Events)
-        this.LoadFSMEvent(new DynamicEvent(this.fsm.Entity, staticEvent, this.fsm), true);
+      foreach (IEvent staticEvent in fsm.FSMStaticObject.Events)
+        LoadFSMEvent(new DynamicEvent(fsm.Entity, staticEvent, fsm), true);
     }
 
     private void LoadEventsFromEngineDirect()
     {
-      if (this.fsmEvents == null)
-        this.fsmEvents = new Dictionary<ulong, DynamicEvent>();
+      if (fsmEvents == null)
+        fsmEvents = new Dictionary<ulong, DynamicEvent>();
       else
-        this.fsmEvents.Clear();
-      if (this.fsmEvents == null)
-        this.fsmEventsByName = new Dictionary<string, DynamicEvent>();
+        fsmEvents.Clear();
+      if (fsmEvents == null)
+        fsmEventsByName = new Dictionary<string, DynamicEvent>();
       else
-        this.fsmEventsByName.Clear();
-      foreach (VMComponent component in this.fsm.Entity.Components)
+        fsmEventsByName.Clear();
+      foreach (VMComponent component in fsm.Entity.Components)
       {
         ComponentInfo functionalComponentByName = EngineAPIManager.GetFunctionalComponentByName(component.Name);
         if (functionalComponentByName == null)
         {
-          Logger.AddError(string.Format("Component with name {0} not found in virtual machine api", (object) component.Name));
+          Logger.AddError(string.Format("Component with name {0} not found in virtual machine api", component.Name));
         }
         else
         {
           for (int index = 0; index < functionalComponentByName.Events.Count; ++index)
           {
             APIEventInfo apiEventInfo = functionalComponentByName.Events[index];
-            this.LoadFSMEvent(new DynamicEvent(this.fsm.Entity, component, apiEventInfo, this.fsm), true);
+            LoadFSMEvent(new DynamicEvent(fsm.Entity, component, apiEventInfo, fsm), true);
           }
         }
       }
@@ -168,13 +168,13 @@ namespace PLVirtualMachine.Dynamic
 
     private void SaveExecutedEventsInfo(IDataWriter writer, string name)
     {
-      writer.Begin(name, (Type) null, true);
-      foreach (KeyValuePair<ulong, DynamicEvent> fsmEvent in this.fsmEvents)
+      writer.Begin(name, null, true);
+      foreach (KeyValuePair<ulong, DynamicEvent> fsmEvent in fsmEvents)
       {
         DynamicEvent dynamicEvent = fsmEvent.Value;
         if (dynamicEvent.IsManual && !dynamicEvent.Active)
         {
-          writer.Begin("Item", (Type) null, true);
+          writer.Begin("Item", null, true);
           SaveManagerUtility.Save(writer, "EventGuid", fsmEvent.Key);
           SaveManagerUtility.Save(writer, "EventName", dynamicEvent.Name);
           writer.End("Item", true);
@@ -185,15 +185,15 @@ namespace PLVirtualMachine.Dynamic
 
     private void LoadExecutedEventsInfo(XmlElement rootNode)
     {
-      if (this.savedExecutedEventsInfo == null && rootNode.ChildNodes.Count > 0)
-        this.savedExecutedEventsInfo = new HashSet<ulong>();
-      if (this.savedExecutedEventsInfo != null)
-        this.savedExecutedEventsInfo.Clear();
+      if (savedExecutedEventsInfo == null && rootNode.ChildNodes.Count > 0)
+        savedExecutedEventsInfo = new HashSet<ulong>();
+      if (savedExecutedEventsInfo != null)
+        savedExecutedEventsInfo.Clear();
       for (int i = 0; i < rootNode.ChildNodes.Count; ++i)
       {
         XmlNode firstChild = rootNode.ChildNodes[i].FirstChild;
         if (firstChild != null)
-          this.savedExecutedEventsInfo.Add(StringUtility.ToUInt64(firstChild.InnerText));
+          savedExecutedEventsInfo.Add(StringUtility.ToUInt64(firstChild.InnerText));
       }
     }
   }

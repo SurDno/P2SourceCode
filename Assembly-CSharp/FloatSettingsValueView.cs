@@ -1,6 +1,5 @@
-﻿using Engine.Behaviours.Localization;
-using System;
-using UnityEngine.Events;
+﻿using System;
+using Engine.Behaviours.Localization;
 
 public class FloatSettingsValueView : SettingsValueView<float>
 {
@@ -12,29 +11,29 @@ public class FloatSettingsValueView : SettingsValueView<float>
 
   public override float VisibleValue
   {
-    get => this.visibleValue;
-    set => this.SetVisibleValue(value);
+    get => visibleValue;
+    set => SetVisibleValue(value);
   }
 
-  public override void ApplyVisibleValue() => this.SettingsValue.Value = this.visibleValue;
+  public override void ApplyVisibleValue() => SettingsValue.Value = visibleValue;
 
   private void Awake()
   {
-    this.slider.onValueChanged.AddListener(new UnityAction<float>(this.OnValueChanged));
+    slider.onValueChanged.AddListener(new UnityAction<float>(OnValueChanged));
   }
 
   private void OnValueChanged(float value)
   {
-    if (this.changeEventDisabled)
+    if (changeEventDisabled)
       return;
     float visibleValue = this.visibleValue;
-    this.SetVisibleValue(value);
-    if ((double) this.visibleValue == (double) visibleValue)
+    SetVisibleValue(value);
+    if (this.visibleValue == (double) visibleValue)
       return;
-    this.FireVisibleValueChangeEvent();
+    FireVisibleValueChangeEvent();
   }
 
-  public override void RevertVisibleValue() => this.SetVisibleValue(this.SettingsValue.Value);
+  public override void RevertVisibleValue() => SetVisibleValue(SettingsValue.Value);
 
   public void SetValueNameFunction(Func<float, string> valueNameFunction)
   {
@@ -44,48 +43,48 @@ public class FloatSettingsValueView : SettingsValueView<float>
   public void SetValueValidationFunction(Func<float, float> valueValidationFunction, float step = 1f)
   {
     this.valueValidationFunction = valueValidationFunction;
-    this._step = step;
+    _step = step;
   }
 
-  public void SetMaxValue(float maxValue) => this.slider.maxValue = maxValue;
+  public void SetMaxValue(float maxValue) => slider.maxValue = maxValue;
 
-  public void SetMinValue(float minValue) => this.slider.minValue = minValue;
+  public void SetMinValue(float minValue) => slider.minValue = minValue;
 
   private void SetVisibleValue(float value)
   {
-    this.changeEventDisabled = true;
-    this.visibleValue = this.ValidateValue(value);
-    this.slider.value = this.visibleValue;
-    this.UpdateName();
-    this.changeEventDisabled = false;
+    changeEventDisabled = true;
+    visibleValue = ValidateValue(value);
+    slider.value = visibleValue;
+    UpdateName();
+    changeEventDisabled = false;
   }
 
   private void UpdateName()
   {
     Localizer valueText = this.valueText;
     Func<float, string> valueNameFunction = this.valueNameFunction;
-    string str = valueNameFunction != null ? valueNameFunction(this.visibleValue) : (string) null;
+    string str = valueNameFunction != null ? valueNameFunction(visibleValue) : null;
     valueText.Signature = str;
   }
 
   private float ValidateValue(float value)
   {
-    return this.valueValidationFunction == null ? value : this.valueValidationFunction(value);
+    return valueValidationFunction == null ? value : valueValidationFunction(value);
   }
 
   public override void IncrementValue()
   {
-    this.visibleValue += this._step;
-    this.visibleValue = (double) this.visibleValue > (double) this.slider.maxValue ? this.slider.maxValue : this.visibleValue;
-    this.OnValueChanged(this.visibleValue);
-    this.FireVisibleValueChangeEvent();
+    visibleValue += _step;
+    visibleValue = visibleValue > (double) slider.maxValue ? slider.maxValue : visibleValue;
+    OnValueChanged(visibleValue);
+    FireVisibleValueChangeEvent();
   }
 
   public override void DecrementValue()
   {
-    this.visibleValue -= this._step;
-    this.visibleValue = (double) this.visibleValue < (double) this.slider.minValue ? this.slider.minValue : this.visibleValue;
-    this.OnValueChanged(this.visibleValue);
-    this.FireVisibleValueChangeEvent();
+    visibleValue -= _step;
+    visibleValue = visibleValue < (double) slider.minValue ? slider.minValue : visibleValue;
+    OnValueChanged(visibleValue);
+    FireVisibleValueChangeEvent();
   }
 }

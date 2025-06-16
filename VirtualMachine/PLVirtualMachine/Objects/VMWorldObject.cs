@@ -1,11 +1,12 @@
-﻿using Cofe.Loggers;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Cofe.Loggers;
 using Engine.Common;
 using Engine.Common.Types;
 using PLVirtualMachine.Common;
 using PLVirtualMachine.Common.Data;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using IObject = PLVirtualMachine.Common.IObject;
 
 namespace PLVirtualMachine.Objects
 {
@@ -15,7 +16,7 @@ namespace PLVirtualMachine.Objects
     IBlueprint,
     IGameObjectContext,
     IContainer,
-    PLVirtualMachine.Common.IObject,
+    IObject,
     IEditorBaseTemplate,
     INamedElement,
     INamed,
@@ -25,13 +26,13 @@ namespace PLVirtualMachine.Objects
     IWorldObject,
     IEngineTemplated
   {
-    [FieldData("WorldPositionGuid", DataFieldType.None)]
+    [FieldData("WorldPositionGuid")]
     protected HierarchyGuid worldPositionGuid = HierarchyGuid.Empty;
-    [FieldData("EngineTemplateID", DataFieldType.None)]
+    [FieldData("EngineTemplateID")]
     protected Guid engineTemplateID = Guid.Empty;
-    [FieldData("EngineBaseTemplateID", DataFieldType.None)]
+    [FieldData("EngineBaseTemplateID")]
     protected Guid engineBaseTemplateID = Guid.Empty;
-    [FieldData("Instantiated", DataFieldType.None)]
+    [FieldData("Instantiated")]
     protected bool isInstantiated;
     private IWorldBlueprint engineBaseTemplate;
     private bool vmInited;
@@ -42,24 +43,24 @@ namespace PLVirtualMachine.Objects
     {
     }
 
-    public Guid EngineTemplateGuid => this.engineTemplateID;
+    public Guid EngineTemplateGuid => engineTemplateID;
 
-    public Guid EngineBaseTemplateGuid => this.engineBaseTemplateID;
+    public Guid EngineBaseTemplateGuid => engineBaseTemplateID;
 
     public override string GuidStr
     {
       get
       {
-        return this.EngineTemplateGuid != Guid.Empty ? GuidUtility.GetGuidString(this.EngineTemplateGuid) : base.GuidStr;
+        return EngineTemplateGuid != Guid.Empty ? GuidUtility.GetGuidString(EngineTemplateGuid) : base.GuidStr;
       }
     }
 
-    public override bool IsEqual(PLVirtualMachine.Common.IObject other)
+    public override bool IsEqual(IObject other)
     {
       return other != null && typeof (VMWorldObject).IsAssignableFrom(other.GetType()) && base.IsEqual(other);
     }
 
-    public HierarchyGuid WorldPositionGuid => this.worldPositionGuid;
+    public HierarchyGuid WorldPositionGuid => worldPositionGuid;
 
     public override IFiniteStateMachine StateGraph
     {
@@ -67,7 +68,7 @@ namespace PLVirtualMachine.Objects
       {
         if (base.StateGraph != null)
           return base.StateGraph;
-        return this.engineBaseTemplate != null && (long) this.engineBaseTemplate.BaseGuid != (long) this.BaseGuid ? this.engineBaseTemplate.StateGraph : (IFiniteStateMachine) null;
+        return engineBaseTemplate != null && (long) engineBaseTemplate.BaseGuid != (long) BaseGuid ? engineBaseTemplate.StateGraph : null;
       }
     }
 
@@ -78,63 +79,63 @@ namespace PLVirtualMachine.Objects
 
     public override void OnAfterLoad()
     {
-      if (this.engineBaseTemplateID != Guid.Empty && this.engineBaseTemplate == null)
-        this.engineBaseTemplate = ((VMGameRoot) IStaticDataContainer.StaticDataContainer.GameRoot).GetEngineTemplateByGuid(this.engineBaseTemplateID);
+      if (engineBaseTemplateID != Guid.Empty && engineBaseTemplate == null)
+        engineBaseTemplate = ((VMGameRoot) IStaticDataContainer.StaticDataContainer.GameRoot).GetEngineTemplateByGuid(engineBaseTemplateID);
       base.OnAfterLoad();
-      if (this.EngineTemplateGuid != Guid.Empty && !this.vmInited)
+      if (EngineTemplateGuid != Guid.Empty && !vmInited)
       {
         WorldEntityUtility.RegistrStaticWorldTemplate(this);
-        this.vmInited = true;
+        vmInited = true;
       }
-      if (!this.IsEngineRoot)
+      if (!IsEngineRoot)
         return;
       VMWorldHierarchyObject hierarchyRootObject = new VMWorldHierarchyObject();
-      hierarchyRootObject.Initialize((IWorldBlueprint) this);
-      HierarchyManager.RegistrGameHierarchyRoot((IWorldHierarchyObject) hierarchyRootObject);
+      hierarchyRootObject.Initialize(this);
+      HierarchyManager.RegistrGameHierarchyRoot(hierarchyRootObject);
     }
 
     public virtual bool IsPhysic => true;
 
-    public bool Instantiated => this.isInstantiated;
+    public bool Instantiated => isInstantiated;
 
-    public bool IsEngineRoot => this.worldPositionGuid.TemplateGuid == ulong.MaxValue;
+    public bool IsEngineRoot => worldPositionGuid.TemplateGuid == ulong.MaxValue;
 
-    public override bool DirectEngineCreated => this.directEngineCreated;
+    public override bool DirectEngineCreated => directEngineCreated;
 
     public void InitTemplateFromEngineDirect(IEntity engEntity)
     {
       if (!((VMGameRoot) IStaticDataContainer.StaticDataContainer.GameRoot).WorldObjectSaveOptimizedMode)
-        Logger.AddError(string.Format("Invalid world object '{0}' enginedirect template creation in not optimized xml saving mode", (object) this.Name));
-      if (engEntity == null || this.engineTemplateID != Guid.Empty)
+        Logger.AddError(string.Format("Invalid world object '{0}' enginedirect template creation in not optimized xml saving mode", Name));
+      if (engEntity == null || engineTemplateID != Guid.Empty)
         return;
-      if (!this.IsEngineRoot)
+      if (!IsEngineRoot)
       {
-        this.isInstantiated = false;
-        this.isStatic = false;
-        this.name = engEntity.Name;
-        this.engineTemplateID = engEntity.Id;
+        isInstantiated = false;
+        isStatic = false;
+        name = engEntity.Name;
+        engineTemplateID = engEntity.Id;
         IEntity baseTemplate = HierarchyManager.GetBaseTemplate(engEntity);
         if (baseTemplate != null)
-          this.engineBaseTemplateID = baseTemplate.Id;
-        this.directEngineCreated = true;
+          engineBaseTemplateID = baseTemplate.Id;
+        directEngineCreated = true;
       }
-      this.Update();
+      Update();
     }
 
     public bool IsPhantom
     {
       get
       {
-        return this.engineTemplateID == Guid.Empty && this.engineBaseTemplateID == Guid.Empty && this.name == "";
+        return engineTemplateID == Guid.Empty && engineBaseTemplateID == Guid.Empty && name == "";
       }
     }
 
     protected override void MakeInheritanceMapping()
     {
-      List<IBlueprint> list = this.GetClassHierarchy().ToList<IBlueprint>();
-      if (this.engineBaseTemplate != null && (long) this.engineBaseTemplate.BaseGuid != (long) this.BaseGuid)
-        list.Add((IBlueprint) this.engineBaseTemplate);
-      this.MakeInheritanceMapping((IEnumerable<IBlueprint>) list);
+      List<IBlueprint> list = GetClassHierarchy().ToList();
+      if (engineBaseTemplate != null && (long) engineBaseTemplate.BaseGuid != (long) BaseGuid)
+        list.Add(engineBaseTemplate);
+      MakeInheritanceMapping(list);
     }
   }
 }

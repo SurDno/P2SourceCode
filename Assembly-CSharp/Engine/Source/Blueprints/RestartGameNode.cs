@@ -18,7 +18,7 @@ namespace Engine.Source.Blueprints
     {
       InstanceByRequest<GameDataService>.Instance.SetCurrentGameData("");
       ServiceLocator.GetService<GameLauncher>().RestartGame();
-      this.output.Call();
+      output.Call();
     }
   }
 }

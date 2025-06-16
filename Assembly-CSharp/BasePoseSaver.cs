@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using UnityEngine;
 
 public class BasePoseSaver : MonoBehaviour
 {
@@ -18,20 +17,20 @@ public class BasePoseSaver : MonoBehaviour
         bonePoseList.Add(bonePose);
       }
     }
-    this.PoseList = new BonePose[bonePoseList.Count];
+    PoseList = new BonePose[bonePoseList.Count];
     int index = 0;
     foreach (BonePose bonePose in bonePoseList)
     {
-      this.PoseList[index] = bonePose;
+      PoseList[index] = bonePose;
       ++index;
     }
   }
 
   public void ShowBones()
   {
-    if (this.PoseList == null)
+    if (PoseList == null)
       return;
-    foreach (BonePose pose in this.PoseList)
+    foreach (BonePose pose in PoseList)
       pose.ResetToThisTransform();
   }
 }

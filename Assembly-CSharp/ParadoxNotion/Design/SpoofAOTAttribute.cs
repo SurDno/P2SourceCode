@@ -2,7 +2,7 @@
 
 namespace ParadoxNotion.Design
 {
-  [AttributeUsage(AttributeTargets.Class | AttributeTargets.Delegate, AllowMultiple = false, Inherited = true)]
+  [AttributeUsage(AttributeTargets.Class | AttributeTargets.Delegate)]
   public class SpoofAOTAttribute : Attribute
   {
   }

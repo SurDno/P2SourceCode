@@ -19,7 +19,7 @@ namespace Engine.Source.Blueprints.Sounds
     [Port("Value")]
     private bool Value()
     {
-      IEntity player = this.simulation.Player;
+      IEntity player = simulation.Player;
       if (player != null)
       {
         NavigationComponent component = player.GetComponent<NavigationComponent>();
@@ -27,7 +27,7 @@ namespace Engine.Source.Blueprints.Sounds
         {
           RegionComponent region = (RegionComponent) component.Region;
           if (region != null)
-            return region.Region == this.regionInput.value;
+            return region.Region == regionInput.value;
         }
       }
       return false;

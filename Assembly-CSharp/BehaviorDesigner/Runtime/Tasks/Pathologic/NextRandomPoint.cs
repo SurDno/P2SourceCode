@@ -1,4 +1,5 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common;
 using Engine.Common.Commons;
@@ -10,8 +11,6 @@ using Engine.Impl.Services.Factories;
 using Engine.Source.Components;
 using Engine.Source.Components.Regions;
 using Scripts.Tools.Serializations.Converters;
-using UnityEngine;
-using UnityEngine.AI;
 
 namespace BehaviorDesigner.Runtime.Tasks.Pathologic
 {
@@ -21,47 +20,47 @@ namespace BehaviorDesigner.Runtime.Tasks.Pathologic
   [Factory]
   [GeneratePartial(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
   [FactoryProxy(typeof (NextRandomPoint))]
-  public class NextRandomPoint : BehaviorDesigner.Runtime.Tasks.Action, IStub, ISerializeDataWrite, ISerializeDataRead
+  public class NextRandomPoint : Action, IStub, ISerializeDataWrite, ISerializeDataRead
   {
-    [BehaviorDesigner.Runtime.Tasks.Tooltip("Wander radius")]
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [Tooltip("Wander radius")]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [SerializeField]
-    public SharedFloat SearchRadius = (SharedFloat) 50f;
-    [BehaviorDesigner.Runtime.Tasks.Tooltip("Walk area type")]
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    public SharedFloat SearchRadius = 50f;
+    [Tooltip("Walk area type")]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [SerializeField]
-    public NextRandomPoint.WalkArea WalkAreaType = NextRandomPoint.WalkArea.All;
-    [BehaviorDesigner.Runtime.Tasks.Tooltip("Point will be written to this variable.")]
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    public WalkArea WalkAreaType = WalkArea.All;
+    [Tooltip("Point will be written to this variable.")]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [SerializeField]
     public SharedVector3 Result;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy()]
     [SerializeField]
-    public SharedBool SameRegionOnly = (SharedBool) true;
+    public SharedBool SameRegionOnly = true;
     private IRegionComponent region;
 
     public override void OnStart()
     {
-      if (!this.SameRegionOnly.Value)
+      if (!SameRegionOnly.Value)
         return;
-      IEntity entity = EntityUtility.GetEntity(this.gameObject);
+      IEntity entity = EntityUtility.GetEntity(gameObject);
       if (entity == null)
         return;
       NavigationComponent component = entity.GetComponent<NavigationComponent>();
       if (component == null)
         return;
-      this.region = component.Region;
+      region = component.Region;
     }
 
-    public override TaskStatus OnUpdate() => this.Next() ? TaskStatus.Success : TaskStatus.Failure;
+    public override TaskStatus OnUpdate() => Next() ? TaskStatus.Success : TaskStatus.Failure;
 
     public bool Next()
     {
@@ -69,28 +68,28 @@ namespace BehaviorDesigner.Runtime.Tasks.Pathologic
       float maxDistance1 = 5f;
       NavMeshHit hit = new NavMeshHit();
       int mask;
-      if (this.WalkAreaType == NextRandomPoint.WalkArea.Road)
+      if (WalkAreaType == WalkArea.Road)
         mask = AreaEnum.Road.ToMask();
-      else if (this.WalkAreaType == NextRandomPoint.WalkArea.RadAndFootpath)
+      else if (WalkAreaType == WalkArea.RadAndFootpath)
         mask = AreaEnum.RoadFootPath.ToMask();
-      else if (this.WalkAreaType == NextRandomPoint.WalkArea.All)
+      else if (WalkAreaType == WalkArea.All)
       {
         mask = AreaEnum.All.ToMask();
       }
       else
       {
-        Debug.LogWarningFormat("{0} not supported area type", (object) this.gameObject.name);
+        Debug.LogWarningFormat("{0} not supported area type", (object) gameObject.name);
         return false;
       }
       for (int index = 0; index < num; ++index)
       {
         float f = (float) UnityEngine.Random.Range(0, 360);
-        Vector3 position = this.gameObject.transform.position;
-        position.x += this.SearchRadius.Value * Mathf.Sin(f);
-        position.z += this.SearchRadius.Value * Mathf.Cos(f);
-        if (NavMesh.SamplePosition(position, out hit, maxDistance1, mask) && this.CheckRegion(hit.position))
+        Vector3 position = gameObject.transform.position;
+        position.x += SearchRadius.Value * Mathf.Sin(f);
+        position.z += SearchRadius.Value * Mathf.Cos(f);
+        if (NavMesh.SamplePosition(position, out hit, maxDistance1, mask) && CheckRegion(hit.position))
         {
-          this.Result.Value = hit.position;
+          Result.Value = hit.position;
           return true;
         }
       }
@@ -98,12 +97,12 @@ namespace BehaviorDesigner.Runtime.Tasks.Pathologic
       for (int index = 0; index < num; ++index)
       {
         float f = (float) UnityEngine.Random.Range(0, 360);
-        Vector3 position = this.gameObject.transform.position;
-        position.x += this.SearchRadius.Value * Mathf.Sin(f);
-        position.z += this.SearchRadius.Value * Mathf.Cos(f);
-        if (NavMesh.SamplePosition(position, out hit, maxDistance2, mask) && this.CheckRegion(hit.position))
+        Vector3 position = gameObject.transform.position;
+        position.x += SearchRadius.Value * Mathf.Sin(f);
+        position.z += SearchRadius.Value * Mathf.Cos(f);
+        if (NavMesh.SamplePosition(position, out hit, maxDistance2, mask) && CheckRegion(hit.position))
         {
-          this.Result.Value = hit.position;
+          Result.Value = hit.position;
           return true;
         }
       }
@@ -112,36 +111,36 @@ namespace BehaviorDesigner.Runtime.Tasks.Pathologic
 
     private bool CheckRegion(Vector3 position)
     {
-      if (!this.SameRegionOnly.Value || this.region == null)
+      if (!SameRegionOnly.Value || region == null)
         return true;
       RegionComponent regionByPosition = RegionUtility.GetRegionByPosition(position);
-      return regionByPosition != null && this.region.Region == regionByPosition.Region;
+      return regionByPosition != null && region.Region == regionByPosition.Region;
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.WriteSerialize<NodeData>(writer, "NodeData", this.nodeData);
-      DefaultDataWriteUtility.Write(writer, "Id", this.id);
-      DefaultDataWriteUtility.Write(writer, "FriendlyName", this.friendlyName);
-      DefaultDataWriteUtility.Write(writer, "Instant", this.instant);
-      DefaultDataWriteUtility.Write(writer, "Disabled", this.disabled);
-      BehaviorTreeDataWriteUtility.WriteShared<SharedFloat>(writer, "SearchRadius", this.SearchRadius);
-      DefaultDataWriteUtility.WriteEnum<NextRandomPoint.WalkArea>(writer, "WalkAreaType", this.WalkAreaType);
-      BehaviorTreeDataWriteUtility.WriteShared<SharedVector3>(writer, "Result", this.Result);
-      BehaviorTreeDataWriteUtility.WriteShared<SharedBool>(writer, "SameRegionOnly", this.SameRegionOnly);
+      DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
+      DefaultDataWriteUtility.Write(writer, "Id", id);
+      DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
+      DefaultDataWriteUtility.Write(writer, "Instant", instant);
+      DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
+      BehaviorTreeDataWriteUtility.WriteShared(writer, "SearchRadius", SearchRadius);
+      DefaultDataWriteUtility.WriteEnum(writer, "WalkAreaType", WalkAreaType);
+      BehaviorTreeDataWriteUtility.WriteShared(writer, "Result", Result);
+      BehaviorTreeDataWriteUtility.WriteShared(writer, "SameRegionOnly", SameRegionOnly);
     }
 
-    public void DataRead(IDataReader reader, System.Type type)
+    public void DataRead(IDataReader reader, Type type)
     {
-      this.nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
-      this.id = DefaultDataReadUtility.Read(reader, "Id", this.id);
-      this.friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", this.friendlyName);
-      this.instant = DefaultDataReadUtility.Read(reader, "Instant", this.instant);
-      this.disabled = DefaultDataReadUtility.Read(reader, "Disabled", this.disabled);
-      this.SearchRadius = BehaviorTreeDataReadUtility.ReadShared<SharedFloat>(reader, "SearchRadius", this.SearchRadius);
-      this.WalkAreaType = DefaultDataReadUtility.ReadEnum<NextRandomPoint.WalkArea>(reader, "WalkAreaType");
-      this.Result = BehaviorTreeDataReadUtility.ReadShared<SharedVector3>(reader, "Result", this.Result);
-      this.SameRegionOnly = BehaviorTreeDataReadUtility.ReadShared<SharedBool>(reader, "SameRegionOnly", this.SameRegionOnly);
+      nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
+      id = DefaultDataReadUtility.Read(reader, "Id", id);
+      friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
+      instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
+      disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
+      SearchRadius = BehaviorTreeDataReadUtility.ReadShared(reader, "SearchRadius", SearchRadius);
+      WalkAreaType = DefaultDataReadUtility.ReadEnum<WalkArea>(reader, "WalkAreaType");
+      Result = BehaviorTreeDataReadUtility.ReadShared(reader, "Result", Result);
+      SameRegionOnly = BehaviorTreeDataReadUtility.ReadShared(reader, "SameRegionOnly", SameRegionOnly);
     }
 
     public enum WalkArea

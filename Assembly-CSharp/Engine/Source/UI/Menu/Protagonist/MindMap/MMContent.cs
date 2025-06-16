@@ -1,9 +1,9 @@
-﻿using Engine.Common.MindMap;
+﻿using System;
+using Engine.Common.MindMap;
 using Engine.Common.Types;
 using Engine.Impl.Services.Factories;
 using Engine.Source.Commons;
 using Inspectors;
-using System;
 
 namespace Engine.Source.UI.Menu.Protagonist.MindMap
 {

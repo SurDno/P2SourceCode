@@ -8,7 +8,7 @@ namespace SteamNative
 
     public static implicit operator BREAKPAD_HANDLE(IntPtr value)
     {
-      return new BREAKPAD_HANDLE() { Value = value };
+      return new BREAKPAD_HANDLE { Value = value };
     }
 
     public static implicit operator IntPtr(BREAKPAD_HANDLE value) => value.Value;

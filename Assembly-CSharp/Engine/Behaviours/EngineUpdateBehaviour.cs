@@ -1,7 +1,6 @@
 ﻿using Engine.Common;
 using Engine.Common.Services;
 using Engine.Source.Commons;
-using UnityEngine;
 
 namespace Engine.Behaviours
 {
@@ -12,8 +11,8 @@ namespace Engine.Behaviours
 
     private void Awake()
     {
-      this.computeConsole = !Application.isEditor && ScriptableObjectInstance<BuildData>.Instance.Development && ScriptableObjectInstance<BuildData>.Instance.Release;
-      if (!this.computeConsole)
+      computeConsole = !Application.isEditor && ScriptableObjectInstance<BuildData>.Instance.Development && ScriptableObjectInstance<BuildData>.Instance.Release;
+      if (!computeConsole)
         return;
       Debug.ClearDeveloperConsole();
       Debug.developerConsoleVisible = false;
@@ -31,7 +30,7 @@ namespace Engine.Behaviours
       if (player != null)
         EngineApplication.PlayerPosition = ((IEntityView) player).Position;
       EngineApplication.FrameCount = Time.frameCount;
-      if (!this.computeConsole || !Debug.developerConsoleVisible)
+      if (!computeConsole || !Debug.developerConsoleVisible)
         return;
       Debug.ClearDeveloperConsole();
       Debug.developerConsoleVisible = false;

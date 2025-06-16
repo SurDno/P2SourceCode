@@ -1,6 +1,6 @@
-﻿using Facepunch.Steamworks;
-using System;
+﻿using System;
 using System.Runtime.InteropServices;
+using Facepunch.Steamworks;
 
 namespace SteamNative
 {
@@ -17,36 +17,36 @@ namespace SteamNative
 
     public void Dispose()
     {
-      if (this.CallResult)
-        this.UnregisterCallResult();
+      if (CallResult)
+        UnregisterCallResult();
       else
-        this.UnregisterCallback();
-      if (this.FuncA.IsAllocated)
-        this.FuncA.Free();
-      if (this.FuncB.IsAllocated)
-        this.FuncB.Free();
-      if (this.FuncC.IsAllocated)
-        this.FuncC.Free();
-      if (this.PinnedCallback.IsAllocated)
-        this.PinnedCallback.Free();
-      if (!(this.vTablePtr != IntPtr.Zero))
+        UnregisterCallback();
+      if (FuncA.IsAllocated)
+        FuncA.Free();
+      if (FuncB.IsAllocated)
+        FuncB.Free();
+      if (FuncC.IsAllocated)
+        FuncC.Free();
+      if (PinnedCallback.IsAllocated)
+        PinnedCallback.Free();
+      if (!(vTablePtr != IntPtr.Zero))
         return;
-      Marshal.FreeHGlobal(this.vTablePtr);
-      this.vTablePtr = IntPtr.Zero;
+      Marshal.FreeHGlobal(vTablePtr);
+      vTablePtr = IntPtr.Zero;
     }
 
     private void UnregisterCallback()
     {
-      if (!this.PinnedCallback.IsAllocated)
+      if (!PinnedCallback.IsAllocated)
         return;
-      this.steamworks.native.api.SteamAPI_UnregisterCallback(this.PinnedCallback.AddrOfPinnedObject());
+      steamworks.native.api.SteamAPI_UnregisterCallback(PinnedCallback.AddrOfPinnedObject());
     }
 
     private void UnregisterCallResult()
     {
-      if ((ulong) this.CallResultHandle == 0UL || !this.PinnedCallback.IsAllocated)
+      if (CallResultHandle == 0UL || !PinnedCallback.IsAllocated)
         return;
-      this.steamworks.native.api.SteamAPI_UnregisterCallResult(this.PinnedCallback.AddrOfPinnedObject(), this.CallResultHandle);
+      steamworks.native.api.SteamAPI_UnregisterCallResult(PinnedCallback.AddrOfPinnedObject(), CallResultHandle);
     }
   }
 }

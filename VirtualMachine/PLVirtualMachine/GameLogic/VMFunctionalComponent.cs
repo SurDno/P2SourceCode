@@ -1,4 +1,7 @@
-﻿using Cofe.Loggers;
+﻿using System;
+using System.Collections.Generic;
+using System.Xml;
+using Cofe.Loggers;
 using Engine.Common.Commons;
 using Engine.Common.Reflection;
 using PLVirtualMachine.Base;
@@ -7,9 +10,6 @@ using PLVirtualMachine.Common.Data;
 using PLVirtualMachine.Common.EngineAPI;
 using PLVirtualMachine.Common.EngineAPI.VMECS.VMAttributes;
 using PLVirtualMachine.Data;
-using System;
-using System.Collections.Generic;
-using System.Xml;
 using VirtualMachine.Common;
 using VirtualMachine.Common.Data;
 using VirtualMachine.Data;
@@ -32,9 +32,9 @@ namespace PLVirtualMachine.GameLogic
   {
     [FieldData("Events", DataFieldType.Reference)]
     private List<IEvent> eventsList = new List<IEvent>();
-    [FieldData("Main", DataFieldType.None)]
+    [FieldData("Main")]
     private bool isMain;
-    [FieldData("LoadPriority", DataFieldType.None)]
+    [FieldData("LoadPriority")]
     private long loadPriority = long.MaxValue;
     private string dependedComponentName;
     private List<BaseFunction> functions = new List<BaseFunction>();
@@ -43,26 +43,25 @@ namespace PLVirtualMachine.GameLogic
 
     public virtual void EditorDataRead(XmlReader xml, IDataCreator creator, string typeContext)
     {
-      while (xml.Read())
-      {
+      while (xml.Read()) {
         if (xml.NodeType == XmlNodeType.Element)
         {
           switch (xml.Name)
           {
             case "Events":
-              this.eventsList = EditorDataReadUtility.ReadReferenceList<IEvent>(xml, creator, this.eventsList);
+              eventsList = EditorDataReadUtility.ReadReferenceList(xml, creator, eventsList);
               continue;
             case "Main":
-              this.isMain = EditorDataReadUtility.ReadValue(xml, this.isMain);
+              isMain = EditorDataReadUtility.ReadValue(xml, isMain);
               continue;
             case "LoadPriority":
-              this.loadPriority = EditorDataReadUtility.ReadValue(xml, this.loadPriority);
+              loadPriority = EditorDataReadUtility.ReadValue(xml, loadPriority);
               continue;
             case "Name":
-              this.name = EditorDataReadUtility.ReadValue(xml, this.name);
+              name = EditorDataReadUtility.ReadValue(xml, name);
               continue;
             case "Parent":
-              this.parent = EditorDataReadUtility.ReadReference<IContainer>(xml, creator);
+              parent = EditorDataReadUtility.ReadReference<IContainer>(xml, creator);
               continue;
             default:
               if (XMLDataLoader.Logs.Add(typeContext + " : " + xml.Name))
@@ -71,7 +70,8 @@ namespace PLVirtualMachine.GameLogic
               continue;
           }
         }
-        else if (xml.NodeType == XmlNodeType.EndElement)
+
+        if (xml.NodeType == XmlNodeType.EndElement)
           break;
       }
     }
@@ -83,63 +83,63 @@ namespace PLVirtualMachine.GameLogic
 
     public override EObjectCategory GetCategory() => EObjectCategory.OBJECT_CATEGORY_FUNC_COMPONENT;
 
-    public string DependedComponentName => this.dependedComponentName;
+    public string DependedComponentName => dependedComponentName;
 
-    public Type ComponentType => this.componentType;
+    public Type ComponentType => componentType;
 
-    public List<IEvent> EngineEvents => this.eventsList;
+    public List<IEvent> EngineEvents => eventsList;
 
-    public List<BaseFunction> EngineFunctions => this.functions;
+    public List<BaseFunction> EngineFunctions => functions;
 
-    public bool Main => this.isMain;
+    public bool Main => isMain;
 
-    public bool Inited => this.componentType != (Type) null;
+    public bool Inited => componentType != null;
 
-    public long LoadPriority => this.loadPriority;
+    public long LoadPriority => loadPriority;
 
     public void OnAfterLoad()
     {
-      this.componentType = EngineAPIManager.GetComponentTypeByName(this.name);
-      if ((Type) null == this.componentType)
+      componentType = EngineAPIManager.GetComponentTypeByName(name);
+      if (null == componentType)
         return;
-      ComponentReplectionInfo componentInfo = InfoAttribute.GetComponentInfo(this.Name);
+      ComponentReplectionInfo componentInfo = InfoAttribute.GetComponentInfo(Name);
       if (componentInfo != null)
-        this.dependedComponentName = componentInfo.DependedComponentName;
-      this.LoadAPIFunctions();
-      for (int index = 0; index < this.eventsList.Count; ++index)
-        ((VMEvent) this.eventsList[index]).OnAfterLoad();
-      this.afterLoaded = true;
+        dependedComponentName = componentInfo.DependedComponentName;
+      LoadAPIFunctions();
+      for (int index = 0; index < eventsList.Count; ++index)
+        ((VMEvent) eventsList[index]).OnAfterLoad();
+      afterLoaded = true;
     }
 
-    public bool IsAfterLoaded => this.afterLoaded;
+    public bool IsAfterLoaded => afterLoaded;
 
     public override void Clear()
     {
       base.Clear();
-      if (this.eventsList != null)
+      if (eventsList != null)
       {
-        foreach (IContainer events in this.eventsList)
+        foreach (IContainer events in eventsList)
           events.Clear();
-        this.eventsList.Clear();
-        this.eventsList = (List<IEvent>) null;
+        eventsList.Clear();
+        eventsList = null;
       }
-      if (this.functions == null)
+      if (functions == null)
         return;
-      foreach (BaseFunction function in this.functions)
+      foreach (BaseFunction function in functions)
         function.Clear();
-      this.functions.Clear();
-      this.functions = (List<BaseFunction>) null;
+      functions.Clear();
+      functions = null;
     }
 
     private void LoadAPIFunctions()
     {
-      this.functions.Clear();
-      ComponentInfo functionalComponentByName = EngineAPIManager.GetFunctionalComponentByName(this.Name);
+      functions.Clear();
+      ComponentInfo functionalComponentByName = EngineAPIManager.GetFunctionalComponentByName(Name);
       for (int index = 0; index < functionalComponentByName.Methods.Count; ++index)
       {
-        BaseFunction baseFunction = new BaseFunction(functionalComponentByName.Methods[index].MethodName, (IFunctionalComponent) this);
+        BaseFunction baseFunction = new BaseFunction(functionalComponentByName.Methods[index].MethodName, this);
         baseFunction.InitParams(functionalComponentByName.Methods[index].InputParams, functionalComponentByName.Methods[index].ReturnParam);
-        this.functions.Add(baseFunction);
+        functions.Add(baseFunction);
       }
     }
   }

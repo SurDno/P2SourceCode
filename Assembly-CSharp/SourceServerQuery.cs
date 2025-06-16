@@ -13,7 +13,7 @@ internal class SourceServerQuery : IDisposable
   private int send_timeout = 2500;
   private int receive_timeout = 2500;
   private byte[] raw_data;
-  private int offset = 0;
+  private int offset;
   private readonly byte[] FFFFFFFF = new byte[4]
   {
     byte.MaxValue,
@@ -24,65 +24,64 @@ internal class SourceServerQuery : IDisposable
 
   public SourceServerQuery(string ip, int port)
   {
-    this.endPoint = new IPEndPoint(IPAddress.Parse(ip), port);
+    endPoint = new IPEndPoint(IPAddress.Parse(ip), port);
   }
 
-  public SourceServerQuery.PlayersResponse GetPlayerList()
+  public PlayersResponse GetPlayerList()
   {
-    this.GetSocket();
-    this.offset = 5;
+    GetSocket();
+    offset = 5;
     try
     {
-      SourceServerQuery.PlayersResponse playerList = new SourceServerQuery.PlayersResponse();
-      byte[] challenge = this.GetChallenge((byte) 85);
-      byte[] numArray = new byte[challenge.Length + this.FFFFFFFF.Length + 1];
-      Array.Copy((Array) this.FFFFFFFF, 0, (Array) numArray, 0, this.FFFFFFFF.Length);
-      numArray[this.FFFFFFFF.Length] = (byte) 85;
-      Array.Copy((Array) challenge, 0, (Array) numArray, this.FFFFFFFF.Length + 1, challenge.Length);
-      this.socket.Send(numArray);
-      this.raw_data = new byte[2048];
-      this.socket.Receive(this.raw_data);
-      byte num1 = this.ReadByte();
-      for (int index = 0; index < (int) num1; ++index)
+      PlayersResponse playerList = new PlayersResponse();
+      byte[] challenge = GetChallenge(85);
+      byte[] numArray = new byte[challenge.Length + FFFFFFFF.Length + 1];
+      Array.Copy(FFFFFFFF, 0, numArray, 0, FFFFFFFF.Length);
+      numArray[FFFFFFFF.Length] = 85;
+      Array.Copy(challenge, 0, numArray, FFFFFFFF.Length + 1, challenge.Length);
+      socket.Send(numArray);
+      raw_data = new byte[2048];
+      socket.Receive(raw_data);
+      byte num1 = ReadByte();
+      for (int index = 0; index < num1; ++index)
       {
-        int num2 = (int) this.ReadByte();
-        playerList.players.Add(new SourceServerQuery.PlayersResponse.Player()
-        {
-          name = this.ReadString(),
-          score = this.ReadInt32(),
-          playtime = this.ReadFloat()
+        int num2 = ReadByte();
+        playerList.players.Add(new PlayersResponse.Player {
+          name = ReadString(),
+          score = ReadInt32(),
+          playtime = ReadFloat()
         });
       }
-      playerList.player_count = (short) num1;
+      playerList.player_count = num1;
       return playerList;
     }
     catch (SocketException ex)
     {
-      return (SourceServerQuery.PlayersResponse) null;
+      return null;
     }
   }
 
   public Dictionary<string, string> GetRules()
   {
-    this.GetClient();
+    GetClient();
     try
     {
       Dictionary<string, string> rules = new Dictionary<string, string>();
-      byte[] challenge = this.GetChallenge((byte) 86, false);
-      byte[] numArray1 = new byte[challenge.Length + this.FFFFFFFF.Length + 1];
-      Array.Copy((Array) this.FFFFFFFF, 0, (Array) numArray1, 0, this.FFFFFFFF.Length);
-      numArray1[this.FFFFFFFF.Length] = (byte) 86;
-      Array.Copy((Array) challenge, 0, (Array) numArray1, this.FFFFFFFF.Length + 1, challenge.Length);
-      this.client.Send(numArray1, numArray1.Length);
+      byte[] challenge = GetChallenge(86, false);
+      byte[] numArray1 = new byte[challenge.Length + FFFFFFFF.Length + 1];
+      Array.Copy(FFFFFFFF, 0, numArray1, 0, FFFFFFFF.Length);
+      numArray1[FFFFFFFF.Length] = 86;
+      Array.Copy(challenge, 0, numArray1, FFFFFFFF.Length + 1, challenge.Length);
+      client.Send(numArray1, numArray1.Length);
       byte[] numArray2 = new byte[4096];
-      this.raw_data = this.client.Receive(ref this.endPoint);
-      int length1 = this.raw_data.Length;
-      this.offset = 0;
-      int paket = this.ReadInt32();
-      this.ReadInt32();
-      this.offset = 4;
+      raw_data = client.Receive(ref endPoint);
+      int length1 = raw_data.Length;
+      offset = 0;
+      int paket = ReadInt32();
+      ReadInt32();
+      offset = 4;
       byte[] numArray3;
-      if (this.PacketIsSplit(paket))
+      if (PacketIsSplit(paket))
       {
         int num1 = 1;
         int packetChecksum = 0;
@@ -94,10 +93,10 @@ internal class SourceServerQuery : IDisposable
         int num4;
         do
         {
-          flag = this.PacketIsCompressed(this.ReverseBytes(this.ReadInt32()));
-          num3 = (int) this.ReadByte();
-          int num5 = (int) this.ReadByte() + 1;
-          short length2 = (short) ((int) this.ReadInt16() - 4);
+          flag = PacketIsCompressed(ReverseBytes(ReadInt32()));
+          num3 = ReadByte();
+          int num5 = ReadByte() + 1;
+          short length2 = (short) (ReadInt16() - 4);
           if (num1 == 1)
           {
             for (int index = 0; index < num3; ++index)
@@ -105,38 +104,38 @@ internal class SourceServerQuery : IDisposable
           }
           if (flag)
           {
-            uncompressedSize = this.ReverseBytes(this.ReadInt32());
-            packetChecksum = this.ReverseBytes(this.ReadInt32());
+            uncompressedSize = ReverseBytes(ReadInt32());
+            packetChecksum = ReverseBytes(ReadInt32());
           }
           if (num5 == 1)
-            this.ReadInt32();
-          byte[] numArray4 = new byte[(int) length2];
-          splitPackets[num5 - 1] = this.ReadBytes();
-          if (splitPackets[num5 - 1].Length - 1 > 0 && splitPackets[num5 - 1][splitPackets[num5 - 1].Length - 1] > (byte) 0)
-            splitPackets[num5 - 1][splitPackets[num5 - 1].Length - 1] = (byte) 0;
-          this.offset = 0;
+            ReadInt32();
+          byte[] numArray4 = new byte[length2];
+          splitPackets[num5 - 1] = ReadBytes();
+          if (splitPackets[num5 - 1].Length - 1 > 0 && splitPackets[num5 - 1][splitPackets[num5 - 1].Length - 1] > 0)
+            splitPackets[num5 - 1][splitPackets[num5 - 1].Length - 1] = 0;
+          offset = 0;
           if (num1 < num3)
           {
-            this.raw_data = this.client.Receive(ref this.endPoint);
-            num4 = this.raw_data.Length;
-            num2 = this.ReadInt32();
+            raw_data = client.Receive(ref endPoint);
+            num4 = raw_data.Length;
+            num2 = ReadInt32();
             ++num1;
           }
           else
             num4 = 0;
         }
         while (num1 <= num3 && num4 > 0 && num2 == -2);
-        numArray3 = !flag ? this.ReassemblePacket(splitPackets, false, 0, 0) : this.ReassemblePacket(splitPackets, true, uncompressedSize, packetChecksum);
+        numArray3 = !flag ? ReassemblePacket(splitPackets, false, 0, 0) : ReassemblePacket(splitPackets, true, uncompressedSize, packetChecksum);
       }
       else
-        numArray3 = this.raw_data;
-      this.raw_data = numArray3;
-      ++this.offset;
-      short num = this.ReadInt16();
-      for (int index = 0; index < (int) num; ++index)
+        numArray3 = raw_data;
+      raw_data = numArray3;
+      ++offset;
+      short num = ReadInt16();
+      for (int index = 0; index < num; ++index)
       {
-        string key = this.ReadString();
-        string str = this.ReadString();
+        string key = ReadString();
+        string str = ReadString();
         if (!rules.ContainsKey(key))
           rules.Add(key, str);
       }
@@ -144,39 +143,39 @@ internal class SourceServerQuery : IDisposable
     }
     catch (SocketException ex)
     {
-      Console.WriteLine((object) ex);
-      return (Dictionary<string, string>) null;
+      Console.WriteLine(ex);
+      return null;
     }
   }
 
   public void Dispose()
   {
-    if (this.socket != null)
-      this.socket.Close();
-    if (this.client == null)
+    if (socket != null)
+      socket.Close();
+    if (client == null)
       return;
-    this.client.Close();
+    client.Close();
   }
 
   private void GetSocket()
   {
-    if (this.socket != null)
+    if (socket != null)
       return;
-    this.socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-    this.socket.SendTimeout = this.send_timeout;
-    this.socket.ReceiveTimeout = this.receive_timeout;
-    this.socket.Connect((EndPoint) this.endPoint);
+    socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+    socket.SendTimeout = send_timeout;
+    socket.ReceiveTimeout = receive_timeout;
+    socket.Connect(endPoint);
   }
 
   private void GetClient()
   {
-    if (this.client != null)
+    if (client != null)
       return;
-    this.client = new UdpClient();
-    this.client.Connect(this.endPoint);
-    this.client.DontFragment = true;
-    this.client.Client.SendTimeout = this.send_timeout;
-    this.client.Client.ReceiveTimeout = this.receive_timeout;
+    client = new UdpClient();
+    client.Connect(endPoint);
+    client.DontFragment = true;
+    client.Client.SendTimeout = send_timeout;
+    client.Client.ReceiveTimeout = receive_timeout;
   }
 
   private byte[] ReassemblePacket(
@@ -205,7 +204,7 @@ internal class SourceServerQuery : IDisposable
   {
     byte[] bytes = BitConverter.GetBytes(value);
     if (BitConverter.IsLittleEndian)
-      Array.Reverse((Array) bytes);
+      Array.Reverse(bytes);
     return BitConverter.ToInt32(bytes, 0);
   }
 
@@ -215,10 +214,10 @@ internal class SourceServerQuery : IDisposable
 
   private byte[] GetChallenge(byte type, bool socket = true)
   {
-    byte[] numArray1 = new byte[this.FFFFFFFF.Length + this.FFFFFFFF.Length + 1];
-    Array.Copy((Array) this.FFFFFFFF, 0, (Array) numArray1, 0, this.FFFFFFFF.Length);
-    numArray1[this.FFFFFFFF.Length] = type;
-    Array.Copy((Array) this.FFFFFFFF, 0, (Array) numArray1, this.FFFFFFFF.Length + 1, this.FFFFFFFF.Length);
+    byte[] numArray1 = new byte[FFFFFFFF.Length + FFFFFFFF.Length + 1];
+    Array.Copy(FFFFFFFF, 0, numArray1, 0, FFFFFFFF.Length);
+    numArray1[FFFFFFFF.Length] = type;
+    Array.Copy(FFFFFFFF, 0, numArray1, FFFFFFFF.Length + 1, FFFFFFFF.Length);
     byte[] numArray2 = new byte[24];
     byte[] destinationArray = new byte[4];
     if (socket)
@@ -228,65 +227,65 @@ internal class SourceServerQuery : IDisposable
     }
     else
     {
-      this.client.Send(numArray1, numArray1.Length);
-      numArray2 = this.client.Receive(ref this.endPoint);
+      client.Send(numArray1, numArray1.Length);
+      numArray2 = client.Receive(ref endPoint);
     }
-    Array.Copy((Array) numArray2, 5, (Array) destinationArray, 0, 4);
+    Array.Copy(numArray2, 5, destinationArray, 0, 4);
     return destinationArray;
   }
 
   private byte ReadByte()
   {
     byte[] destinationArray = new byte[1];
-    Array.Copy((Array) this.raw_data, this.offset, (Array) destinationArray, 0, 1);
-    ++this.offset;
+    Array.Copy(raw_data, offset, destinationArray, 0, 1);
+    ++offset;
     return destinationArray[0];
   }
 
   private byte[] ReadBytes()
   {
-    int length = this.raw_data.Length - this.offset - 4;
+    int length = raw_data.Length - offset - 4;
     if (length < 1)
       return new byte[0];
     byte[] destinationArray = new byte[length];
-    Array.Copy((Array) this.raw_data, this.offset, (Array) destinationArray, 0, this.raw_data.Length - this.offset - 4);
-    this.offset += this.raw_data.Length - this.offset - 4;
+    Array.Copy(raw_data, offset, destinationArray, 0, raw_data.Length - offset - 4);
+    offset += raw_data.Length - offset - 4;
     return destinationArray;
   }
 
   private int ReadInt32()
   {
     byte[] destinationArray = new byte[4];
-    Array.Copy((Array) this.raw_data, this.offset, (Array) destinationArray, 0, 4);
-    this.offset += 4;
+    Array.Copy(raw_data, offset, destinationArray, 0, 4);
+    offset += 4;
     return BitConverter.ToInt32(destinationArray, 0);
   }
 
   private short ReadInt16()
   {
     byte[] destinationArray = new byte[2];
-    Array.Copy((Array) this.raw_data, this.offset, (Array) destinationArray, 0, 2);
-    this.offset += 2;
+    Array.Copy(raw_data, offset, destinationArray, 0, 2);
+    offset += 2;
     return BitConverter.ToInt16(destinationArray, 0);
   }
 
   private float ReadFloat()
   {
     byte[] destinationArray = new byte[4];
-    Array.Copy((Array) this.raw_data, this.offset, (Array) destinationArray, 0, 4);
-    this.offset += 4;
+    Array.Copy(raw_data, offset, destinationArray, 0, 4);
+    offset += 4;
     return BitConverter.ToSingle(destinationArray, 0);
   }
 
   private string ReadString()
   {
-    byte[] numArray = new byte[1]{ (byte) 1 };
+    byte[] numArray = new byte[1] { 1 };
     string str = "";
-    while (numArray[0] > (byte) 0 && this.offset != this.raw_data.Length)
+    while (numArray[0] > 0 && offset != raw_data.Length)
     {
-      Array.Copy((Array) this.raw_data, this.offset, (Array) numArray, 0, 1);
-      ++this.offset;
-      if (numArray[0] > (byte) 0)
+      Array.Copy(raw_data, offset, numArray, 0, 1);
+      ++offset;
+      if (numArray[0] > 0)
         str += Encoding.UTF8.GetString(numArray);
     }
     return str;
@@ -295,7 +294,7 @@ internal class SourceServerQuery : IDisposable
   public class PlayersResponse
   {
     public short player_count;
-    public List<SourceServerQuery.PlayersResponse.Player> players = new List<SourceServerQuery.PlayersResponse.Player>();
+    public List<Player> players = new List<Player>();
 
     public class Player
     {

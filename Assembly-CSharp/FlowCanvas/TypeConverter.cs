@@ -1,47 +1,45 @@
-﻿using Cofe.Utility;
-using Engine.Common;
-using ParadoxNotion;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using UnityEngine;
+using Cofe.Utility;
+using Engine.Common;
+using ParadoxNotion;
 
 namespace FlowCanvas
 {
   public static class TypeConverter
   {
-    public static ValueHandler<object> GetConverterFuncFromTo(System.Type targetType, ValueOutput source)
+    public static ValueHandler<object> GetConverterFuncFromTo(Type targetType, ValueOutput source)
     {
-      System.Type type = source.type;
-      ValueHandler<object> sourceFunc = new ValueHandler<object>(source.GetValue);
-      return TypeConverter.GetConverterFuncFromTo(targetType, type, sourceFunc);
+      Type type = source.type;
+      ValueHandler<object> sourceFunc = source.GetValue;
+      return GetConverterFuncFromTo(targetType, type, sourceFunc);
     }
 
     public static ValueHandler<object> GetConverterFuncFromTo(
-      System.Type targetType,
-      System.Type sourceType,
+      Type targetType,
+      Type sourceType,
       ValueHandler<object> sourceFunc)
     {
       if (targetType.RTIsAssignableFrom(sourceType))
         return sourceFunc;
       if (typeof (IConvertible).RTIsAssignableFrom(targetType) && typeof (IConvertible).RTIsAssignableFrom(sourceType))
-        return (ValueHandler<object>) (() => Convert.ChangeType(sourceFunc(), targetType));
+        return () => Convert.ChangeType(sourceFunc(), targetType);
       if (targetType == typeof (string) && sourceType != typeof (void))
-        return (ValueHandler<object>) (() =>
+        return () =>
         {
           try
           {
-            return (object) sourceFunc().ToString();
+            return sourceFunc().ToString();
           }
           catch
           {
-            return (object) null;
+            return null;
           }
-        });
+        };
       if (targetType == typeof (Vector3) && typeof (Component).RTIsAssignableFrom(sourceType))
-        return (ValueHandler<object>) (() =>
+        return () =>
         {
           try
           {
@@ -51,9 +49,9 @@ namespace FlowCanvas
           {
             return (object) Vector3.zero;
           }
-        });
+        };
       if (targetType == typeof (Vector3) && sourceType == typeof (GameObject))
-        return (ValueHandler<object>) (() =>
+        return () =>
         {
           try
           {
@@ -63,9 +61,9 @@ namespace FlowCanvas
           {
             return (object) Vector3.zero;
           }
-        });
+        };
       if (targetType == typeof (Quaternion) && typeof (Component).RTIsAssignableFrom(sourceType))
-        return (ValueHandler<object>) (() =>
+        return () =>
         {
           try
           {
@@ -75,9 +73,9 @@ namespace FlowCanvas
           {
             return (object) Quaternion.identity;
           }
-        });
+        };
       if (targetType == typeof (Quaternion) && sourceType == typeof (GameObject))
-        return (ValueHandler<object>) (() =>
+        return () =>
         {
           try
           {
@@ -87,9 +85,9 @@ namespace FlowCanvas
           {
             return (object) Quaternion.identity;
           }
-        });
+        };
       if (typeof (Component).RTIsAssignableFrom(targetType) && typeof (Component).RTIsAssignableFrom(sourceType))
-        return (ValueHandler<object>) (() =>
+        return () =>
         {
           try
           {
@@ -97,11 +95,11 @@ namespace FlowCanvas
           }
           catch
           {
-            return (object) null;
+            return null;
           }
-        });
+        };
       if (typeof (Component).RTIsAssignableFrom(targetType) && sourceType == typeof (GameObject))
-        return (ValueHandler<object>) (() =>
+        return () =>
         {
           try
           {
@@ -109,11 +107,11 @@ namespace FlowCanvas
           }
           catch
           {
-            return (object) null;
+            return null;
           }
-        });
+        };
       if (targetType == typeof (GameObject) && typeof (Component).RTIsAssignableFrom(sourceType))
-        return (ValueHandler<object>) (() =>
+        return () =>
         {
           try
           {
@@ -121,120 +119,120 @@ namespace FlowCanvas
           }
           catch
           {
-            return (object) null;
+            return null;
           }
-        });
+        };
       if (targetType == typeof (bool) && typeof (UnityEngine.Object).RTIsAssignableFrom(sourceType))
-        return (ValueHandler<object>) (() => (object) (sourceFunc() as UnityEngine.Object != (UnityEngine.Object) null));
+        return () => (object) (sourceFunc() as UnityEngine.Object != (UnityEngine.Object) null);
       if (targetType == typeof (int) && sourceType == typeof (LayerMask))
-        return (ValueHandler<object>) (() => (object) ((LayerMask) sourceFunc()).value);
+        return () => (object) ((LayerMask) sourceFunc()).value;
       if (targetType.RTIsSubclassOf(sourceType))
         return sourceFunc;
       if (typeof (IList).RTIsAssignableFrom(sourceType) && typeof (IList).RTIsAssignableFrom(targetType))
       {
         try
         {
-          System.Type second = sourceType.IsArray ? sourceType.GetElementType() : sourceType.GetGenericArguments()[0];
+          Type second = sourceType.IsArray ? sourceType.GetElementType() : sourceType.GetGenericArguments()[0];
           if ((targetType.IsArray ? targetType.GetElementType() : targetType.GetGenericArguments()[0]).RTIsAssignableFrom(second))
-            return (ValueHandler<object>) (() =>
+            return () =>
             {
               List<object> source = new List<object>();
               IList list = sourceFunc() as IList;
               for (int index = 0; index < list.Count; ++index)
                 source.Add(list[index]);
-              return targetType.RTIsArray() ? (object) source.ToArray() : (object) source.ToList<object>();
-            });
+              return targetType.RTIsArray() ? source.ToArray() : source.ToList();
+            };
         }
         catch
         {
-          return (ValueHandler<object>) null;
+          return null;
         }
       }
-      return ((IEnumerable<MethodInfo>) sourceType.RTGetMethods()).Any<MethodInfo>((Func<MethodInfo, bool>) (m =>
+      return sourceType.RTGetMethods().Any(m =>
       {
         if (!(m.ReturnType == targetType))
           return false;
         return m.Name == "op_Implicit" || m.Name == "op_Explicit";
-      })) ? sourceFunc : TypeConverter.EngineConvert(targetType, sourceType, sourceFunc);
+      }) ? sourceFunc : EngineConvert(targetType, sourceType, sourceFunc);
     }
 
     private static ValueHandler<object> EngineConvert(
-      System.Type targetType,
-      System.Type sourceType,
+      Type targetType,
+      Type sourceType,
       ValueHandler<object> sourceFunc)
     {
       if (typeof (IEnumerable).RTIsAssignableFrom(sourceType) && typeof (IEnumerable).RTIsAssignableFrom(targetType))
       {
-        System.Type second = sourceType.IsArray ? sourceType.GetElementType() : sourceType.GetGenericArguments()[0];
-        System.Type elementTo = targetType.IsArray ? targetType.GetElementType() : targetType.GetGenericArguments()[0];
+        Type second = sourceType.IsArray ? sourceType.GetElementType() : sourceType.GetGenericArguments()[0];
+        Type elementTo = targetType.IsArray ? targetType.GetElementType() : targetType.GetGenericArguments()[0];
         if (typeof (IComponent).RTIsAssignableFrom(second))
         {
           if (typeof (IComponent).RTIsAssignableFrom(elementTo))
-            return (ValueHandler<object>) (() =>
+            return () =>
             {
               IList instance = (IList) Activator.CreateInstance(typeof (List<>).MakeGenericType(elementTo));
               foreach (IComponent component1 in (IEnumerable) sourceFunc())
               {
                 IComponent component2 = component1.Owner.GetComponent(elementTo);
                 if (component2 != null)
-                  instance.Add((object) component2);
+                  instance.Add(component2);
               }
-              return (object) instance;
-            });
+              return instance;
+            };
           if (typeof (IEntity).RTIsAssignableFrom(elementTo))
-            return (ValueHandler<object>) (() =>
+            return () =>
             {
               IList instance = (IList) Activator.CreateInstance(typeof (List<>).MakeGenericType(elementTo));
               foreach (IComponent component in (IEnumerable) sourceFunc())
-                instance.Add((object) component.Owner);
-              return (object) instance;
-            });
+                instance.Add(component.Owner);
+              return instance;
+            };
         }
         else if (typeof (IEntity).RTIsAssignableFrom(second) && typeof (IComponent).RTIsAssignableFrom(elementTo))
-          return (ValueHandler<object>) (() =>
+          return () =>
           {
             IList instance = (IList) Activator.CreateInstance(typeof (List<>).MakeGenericType(elementTo));
             foreach (IEntity entity in (IEnumerable) sourceFunc())
             {
               IComponent component = entity.GetComponent(elementTo);
               if (component != null)
-                instance.Add((object) component);
+                instance.Add(component);
             }
-            return (object) instance;
-          });
-        return (ValueHandler<object>) null;
+            return instance;
+          };
+        return null;
       }
       if (typeof (IComponent).RTIsAssignableFrom(targetType) && typeof (GameObject).RTIsAssignableFrom(sourceType))
-        return (ValueHandler<object>) (() =>
+        return () =>
         {
           GameObject gameObject = sourceFunc() as GameObject;
           if ((UnityEngine.Object) gameObject != (UnityEngine.Object) null)
           {
             IEntity entity = EntityUtility.GetEntity(gameObject);
             if (entity != null)
-              return (object) entity.GetComponent(targetType);
+              return entity.GetComponent(targetType);
           }
-          return (object) null;
-        });
+          return null;
+        };
       if (targetType == typeof (IEntity) && typeof (GameObject).RTIsAssignableFrom(sourceType))
-        return (ValueHandler<object>) (() =>
+        return () =>
         {
           GameObject gameObject = sourceFunc() as GameObject;
-          return (UnityEngine.Object) gameObject != (UnityEngine.Object) null ? (object) EntityUtility.GetEntity(gameObject) : (object) null;
-        });
+          return (UnityEngine.Object) gameObject != (UnityEngine.Object) null ? EntityUtility.GetEntity(gameObject) : (object) null;
+        };
       if (TypeUtility.IsAssignableFrom(typeof (IObject), sourceType) && TypeUtility.IsAssignableFrom(typeof (IObject), targetType))
-        return (ValueHandler<object>) (() => !(sourceFunc() is IObject @object) ? (object) null : (object) @object);
+        return () => !(sourceFunc() is IObject @object) ? null : (object) @object;
       if (TypeUtility.IsAssignableFrom(typeof (IObject), sourceType) && TypeUtility.IsAssignableFrom(typeof (IComponent), targetType))
-        return (ValueHandler<object>) (() => !(sourceFunc() is IEntity entity1) ? (object) null : (object) entity1.GetComponent(targetType));
+        return () => !(sourceFunc() is IEntity entity1) ? null : (object) entity1.GetComponent(targetType);
       if (TypeUtility.IsAssignableFrom(typeof (IComponent), sourceType) && TypeUtility.IsAssignableFrom(typeof (IObject), targetType))
-        return (ValueHandler<object>) (() => !(sourceFunc() is IComponent component3) || !TypeUtility.IsAssignableFrom(typeof (IEntity), targetType) ? (object) null : (object) component3.Owner);
-      return TypeUtility.IsAssignableFrom(typeof (IComponent), sourceType) && TypeUtility.IsAssignableFrom(typeof (IComponent), targetType) ? (ValueHandler<object>) (() => !(sourceFunc() is IComponent component4) || component4.Owner == null ? (object) null : (object) component4.Owner.GetComponent(targetType)) : (ValueHandler<object>) null;
+        return () => !(sourceFunc() is IComponent component3) || !TypeUtility.IsAssignableFrom(typeof (IEntity), targetType) ? null : (object) component3.Owner;
+      return TypeUtility.IsAssignableFrom(typeof (IComponent), sourceType) && TypeUtility.IsAssignableFrom(typeof (IComponent), targetType) ? () => !(sourceFunc() is IComponent component4) || component4.Owner == null ? null : (object) component4.Owner.GetComponent(targetType) : null;
     }
 
-    public static bool HasConvertion(System.Type sourceType, System.Type targetType)
+    public static bool HasConvertion(Type sourceType, Type targetType)
     {
-      ValueHandler<object> sourceFunc = (ValueHandler<object>) (() => (object) null);
-      return TypeConverter.GetConverterFuncFromTo(targetType, sourceType, sourceFunc) != null;
+      ValueHandler<object> sourceFunc = () => null;
+      return GetConverterFuncFromTo(targetType, sourceType, sourceFunc) != null;
     }
 
     public static bool TryConnect(object dest, ValueOutput source)
@@ -244,13 +242,13 @@ namespace FlowCanvas
         ValueOutput<float> sourceFloat = source as ValueOutput<float>;
         if (sourceFloat != null)
         {
-          valueInput1.getter = (ValueHandler<int>) (() => (int) sourceFloat.getter());
+          valueInput1.getter = () => (int) sourceFloat.getter();
           return true;
         }
         ValueOutput<bool> sourceBool = source as ValueOutput<bool>;
         if (sourceBool != null)
         {
-          valueInput1.getter = (ValueHandler<int>) (() => sourceBool.getter() ? 1 : 0);
+          valueInput1.getter = () => sourceBool.getter() ? 1 : 0;
           return true;
         }
       }
@@ -259,13 +257,13 @@ namespace FlowCanvas
         ValueOutput<int> sourceInt = source as ValueOutput<int>;
         if (sourceInt != null)
         {
-          valueInput2.getter = (ValueHandler<float>) (() => (float) sourceInt.getter());
+          valueInput2.getter = () => sourceInt.getter();
           return true;
         }
         ValueOutput<bool> sourceBool = source as ValueOutput<bool>;
         if (sourceBool != null)
         {
-          valueInput2.getter = (ValueHandler<float>) (() => sourceBool.getter() ? 1f : 0.0f);
+          valueInput2.getter = () => sourceBool.getter() ? 1f : 0.0f;
           return true;
         }
       }
@@ -274,13 +272,13 @@ namespace FlowCanvas
         ValueOutput<int> sourceInt = source as ValueOutput<int>;
         if (sourceInt != null)
         {
-          valueInput3.getter = (ValueHandler<bool>) (() => sourceInt.getter() != 0);
+          valueInput3.getter = () => sourceInt.getter() != 0;
           return true;
         }
         ValueOutput<float> sourceFloat = source as ValueOutput<float>;
         if (sourceFloat != null)
         {
-          valueInput3.getter = (ValueHandler<bool>) (() => (double) sourceFloat.getter() > 0.5);
+          valueInput3.getter = () => sourceFloat.getter() > 0.5;
           return true;
         }
       }

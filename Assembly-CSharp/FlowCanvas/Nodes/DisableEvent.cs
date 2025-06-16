@@ -9,8 +9,8 @@ namespace FlowCanvas.Nodes
   {
     private FlowOutput disable;
 
-    public override void OnGraphStoped() => this.disable.Call();
+    public override void OnGraphStoped() => disable.Call();
 
-    protected override void RegisterPorts() => this.disable = this.AddFlowOutput("Out");
+    protected override void RegisterPorts() => disable = AddFlowOutput("Out");
   }
 }

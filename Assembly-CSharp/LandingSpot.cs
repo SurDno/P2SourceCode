@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using UnityEngine;
 
 public class LandingSpot : MonoBehaviour
 {
@@ -15,9 +14,9 @@ public class LandingSpot : MonoBehaviour
 
   public void StraightenBird()
   {
-    if ((double) this.landingChild.transform.eulerAngles.x == 0.0)
+    if ((double) landingChild.transform.eulerAngles.x == 0.0)
       return;
-    this.landingChild.transform.eulerAngles = this.landingChild.transform.eulerAngles with
+    landingChild.transform.eulerAngles = landingChild.transform.eulerAngles with
     {
       z = 0.0f
     };
@@ -25,16 +24,16 @@ public class LandingSpot : MonoBehaviour
 
   public void RotateBird()
   {
-    if (this._controller._randomRotate && this._idle)
+    if (_controller._randomRotate && _idle)
       return;
-    ++this.lerpCounter;
-    Quaternion rotation = this.landingChild.transform.rotation;
+    ++lerpCounter;
+    Quaternion rotation = landingChild.transform.rotation;
     Vector3 eulerAngles = rotation.eulerAngles with
     {
-      y = Mathf.LerpAngle(this.landingChild.transform.rotation.eulerAngles.y, this.transform.rotation.eulerAngles.y, (float) this.lerpCounter * Time.deltaTime * this._controller._landedRotateSpeed)
+      y = Mathf.LerpAngle(landingChild.transform.rotation.eulerAngles.y, this.transform.rotation.eulerAngles.y, (float) lerpCounter * Time.deltaTime * _controller._landedRotateSpeed)
     };
     rotation.eulerAngles = eulerAngles;
-    this.landingChild.transform.rotation = rotation;
+    landingChild.transform.rotation = rotation;
   }
 
   public IEnumerator GetFlockChild(float minDelay, float maxDelay)

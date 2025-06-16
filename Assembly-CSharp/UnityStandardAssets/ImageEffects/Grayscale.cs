@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace UnityStandardAssets.ImageEffects
+﻿namespace UnityStandardAssets.ImageEffects
 {
   [ExecuteInEditMode]
   [AddComponentMenu("Image Effects/Color Adjustments/Grayscale")]
@@ -12,9 +10,9 @@ namespace UnityStandardAssets.ImageEffects
 
     private void OnRenderImage(RenderTexture source, RenderTexture destination)
     {
-      this.material.SetTexture("_RampTex", this.textureRamp);
-      this.material.SetFloat("_RampOffset", this.rampOffset);
-      Graphics.Blit((Texture) source, destination, this.material);
+      material.SetTexture("_RampTex", textureRamp);
+      material.SetFloat("_RampOffset", rampOffset);
+      Graphics.Blit((Texture) source, destination, material);
     }
   }
 }

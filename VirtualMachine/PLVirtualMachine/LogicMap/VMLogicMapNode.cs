@@ -1,11 +1,11 @@
-﻿using Cofe.Loggers;
+﻿using System.Collections.Generic;
+using System.Xml;
+using Cofe.Loggers;
 using Engine.Common.Commons;
 using PLVirtualMachine.Base;
 using PLVirtualMachine.Common;
 using PLVirtualMachine.Common.Data;
 using PLVirtualMachine.Data;
-using System.Collections.Generic;
-using System.Xml;
 using VirtualMachine.Common;
 using VirtualMachine.Common.Data;
 using VirtualMachine.Data;
@@ -31,46 +31,45 @@ namespace PLVirtualMachine.LogicMap
     private List<ILink> inputLinks = new List<ILink>();
     [FieldData("OutputLinks", DataFieldType.Reference)]
     private List<ILink> outputLinks = new List<ILink>();
-    [FieldData("LogicMapNodeType", DataFieldType.None)]
+    [FieldData("LogicMapNodeType")]
     private ELogicMapNodeType logicMapNodeType = ELogicMapNodeType.LM_NODE_TYPE_COMMON;
     [FieldData("NodeContent", DataFieldType.Reference)]
     private List<VMLogicMapNodeContent> nodeContentList = new List<VMLogicMapNodeContent>();
-    [FieldData("GameScreenPosX", DataFieldType.None)]
+    [FieldData("GameScreenPosX")]
     private float gameScreenPosX;
-    [FieldData("GameScreenPosY", DataFieldType.None)]
+    [FieldData("GameScreenPosY")]
     private float gameScreenPosY;
 
     public virtual void EditorDataRead(XmlReader xml, IDataCreator creator, string typeContext)
     {
-      while (xml.Read())
-      {
+      while (xml.Read()) {
         if (xml.NodeType == XmlNodeType.Element)
         {
           switch (xml.Name)
           {
             case "GameScreenPosX":
-              this.gameScreenPosX = EditorDataReadUtility.ReadValue(xml, this.gameScreenPosX);
+              gameScreenPosX = EditorDataReadUtility.ReadValue(xml, gameScreenPosX);
               continue;
             case "GameScreenPosY":
-              this.gameScreenPosY = EditorDataReadUtility.ReadValue(xml, this.gameScreenPosY);
+              gameScreenPosY = EditorDataReadUtility.ReadValue(xml, gameScreenPosY);
               continue;
             case "InputLinks":
-              this.inputLinks = EditorDataReadUtility.ReadReferenceList<ILink>(xml, creator, this.inputLinks);
+              inputLinks = EditorDataReadUtility.ReadReferenceList(xml, creator, inputLinks);
               continue;
             case "LogicMapNodeType":
-              this.logicMapNodeType = EditorDataReadUtility.ReadEnum<ELogicMapNodeType>(xml);
+              logicMapNodeType = EditorDataReadUtility.ReadEnum<ELogicMapNodeType>(xml);
               continue;
             case "Name":
-              this.name = EditorDataReadUtility.ReadValue(xml, this.name);
+              name = EditorDataReadUtility.ReadValue(xml, name);
               continue;
             case "NodeContent":
-              this.nodeContentList = EditorDataReadUtility.ReadReferenceList<VMLogicMapNodeContent>(xml, creator, this.nodeContentList);
+              nodeContentList = EditorDataReadUtility.ReadReferenceList(xml, creator, nodeContentList);
               continue;
             case "OutputLinks":
-              this.outputLinks = EditorDataReadUtility.ReadReferenceList<ILink>(xml, creator, this.outputLinks);
+              outputLinks = EditorDataReadUtility.ReadReferenceList(xml, creator, outputLinks);
               continue;
             case "Parent":
-              this.parent = EditorDataReadUtility.ReadReference<IContainer>(xml, creator);
+              parent = EditorDataReadUtility.ReadReference<IContainer>(xml, creator);
               continue;
             default:
               if (XMLDataLoader.Logs.Add(typeContext + " : " + xml.Name))
@@ -79,7 +78,8 @@ namespace PLVirtualMachine.LogicMap
               continue;
           }
         }
-        else if (xml.NodeType == XmlNodeType.EndElement)
+
+        if (xml.NodeType == XmlNodeType.EndElement)
           break;
       }
     }
@@ -89,30 +89,30 @@ namespace PLVirtualMachine.LogicMap
     {
     }
 
-    public ELogicMapNodeType NodeType => this.logicMapNodeType;
+    public ELogicMapNodeType NodeType => logicMapNodeType;
 
     public override EObjectCategory GetCategory() => EObjectCategory.OBJECT_CATEGORY_NONE;
 
-    public float GameScreenPositionX => this.gameScreenPosX;
+    public float GameScreenPositionX => gameScreenPosX;
 
-    public float GameScreenPositionY => this.gameScreenPosY;
+    public float GameScreenPositionY => gameScreenPosY;
 
-    public List<VMLogicMapNodeContent> Contents => this.nodeContentList;
+    public List<VMLogicMapNodeContent> Contents => nodeContentList;
 
     public VMLogicMapNodeContent GetContentByGuid(ulong contentId)
     {
-      foreach (VMLogicMapNodeContent nodeContent in this.nodeContentList)
+      foreach (VMLogicMapNodeContent nodeContent in nodeContentList)
       {
         if ((long) nodeContent.BaseGuid == (long) contentId)
           return nodeContent;
       }
-      Logger.AddError(string.Format("Logic map node content with id {0} not found in mindmap node {1}", (object) contentId, (object) this.Name));
-      return (VMLogicMapNodeContent) null;
+      Logger.AddError(string.Format("Logic map node content with id {0} not found in mindmap node {1}", contentId, Name));
+      return null;
     }
 
-    public void OnAfterLoad() => this.UpdateLinks();
+    public void OnAfterLoad() => UpdateLinks();
 
-    public List<ILink> OutputLinks => this.outputLinks;
+    public List<ILink> OutputLinks => outputLinks;
 
     public virtual List<IVariable> GetLocalContextVariables(
       EContextVariableCategory eContextVarCategory,
@@ -126,35 +126,35 @@ namespace PLVirtualMachine.LogicMap
       string variableUniName,
       IContextElement currentElement = null)
     {
-      return (IVariable) null;
+      return null;
     }
 
     public override void Clear()
     {
-      if (this.nodeContentList != null)
+      if (nodeContentList != null)
       {
-        foreach (VMBaseObject nodeContent in this.nodeContentList)
+        foreach (VMBaseObject nodeContent in nodeContentList)
           nodeContent.Clear();
-        this.nodeContentList.Clear();
-        this.nodeContentList = (List<VMLogicMapNodeContent>) null;
+        nodeContentList.Clear();
+        nodeContentList = null;
       }
-      if (this.inputLinks != null)
+      if (inputLinks != null)
       {
-        this.inputLinks.Clear();
-        this.inputLinks = (List<ILink>) null;
+        inputLinks.Clear();
+        inputLinks = null;
       }
-      if (this.outputLinks == null)
+      if (outputLinks == null)
         return;
-      this.outputLinks.Clear();
-      this.outputLinks = (List<ILink>) null;
+      outputLinks.Clear();
+      outputLinks = null;
     }
 
     protected void UpdateLinks()
     {
-      for (int index = 0; index < this.inputLinks.Count; ++index)
-        this.inputLinks[index].Update();
-      for (int index = 0; index < this.outputLinks.Count; ++index)
-        this.outputLinks[index].Update();
+      for (int index = 0; index < inputLinks.Count; ++index)
+        inputLinks[index].Update();
+      for (int index = 0; index < outputLinks.Count; ++index)
+        outputLinks[index].Update();
     }
   }
 }

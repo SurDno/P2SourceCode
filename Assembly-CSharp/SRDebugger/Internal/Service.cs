@@ -12,9 +12,9 @@ namespace SRDebugger.Internal
     {
       get
       {
-        if (SRDebugger.Internal.Service._debugPanelService == null)
-          SRDebugger.Internal.Service._debugPanelService = SRServiceManager.GetService<IDebugPanelService>();
-        return SRDebugger.Internal.Service._debugPanelService;
+        if (_debugPanelService == null)
+          _debugPanelService = SRServiceManager.GetService<IDebugPanelService>();
+        return _debugPanelService;
       }
     }
 
@@ -22,9 +22,9 @@ namespace SRDebugger.Internal
     {
       get
       {
-        if (SRDebugger.Internal.Service._pinnedUiService == null)
-          SRDebugger.Internal.Service._pinnedUiService = SRServiceManager.GetService<IPinnedUIService>();
-        return SRDebugger.Internal.Service._pinnedUiService;
+        if (_pinnedUiService == null)
+          _pinnedUiService = SRServiceManager.GetService<IPinnedUIService>();
+        return _pinnedUiService;
       }
     }
   }

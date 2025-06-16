@@ -1,7 +1,6 @@
-﻿using BehaviorDesigner.Runtime;
+﻿using System.Collections.Generic;
+using BehaviorDesigner.Runtime;
 using BehaviorDesigner.Runtime.Tasks;
-using System.Collections.Generic;
-using UnityEngine;
 
 namespace Scripts.Tools.Serializations.Converters
 {

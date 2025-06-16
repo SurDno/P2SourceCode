@@ -4,8 +4,6 @@ using Engine.Source.Commons;
 using Engine.Source.Components;
 using Engine.Source.Components.Utilities;
 using Engine.Source.Services.Gizmos;
-using UnityEngine;
-using UnityEngine.AI;
 
 namespace Engine.Source.Debugs
 {
@@ -25,7 +23,7 @@ namespace Engine.Source.Debugs
       int num = NavMeshUtility.DrawPath(component, service);
       string text = "NavMeshAgent status : " + (object) component.pathStatus + "\nNavMeshAgent hasPath : " + component.hasPath.ToString() + "\nNavMeshAgent isOnNavMesh : " + component.isOnNavMesh.ToString();
       if (component.hasPath && component.isOnNavMesh)
-        text = text + "\nNavMeshAgent remaining distance : " + (object) component.remainingDistance + "\nCorner count : " + (object) num;
+        text = text + "\nNavMeshAgent remaining distance : " + (object) component.remainingDistance + "\nCorner count : " + num;
       service.DrawText3d(go.transform.position, text, TextCorner.Down, Color.white);
     }
 
@@ -59,7 +57,7 @@ namespace Engine.Source.Debugs
             }
           }
         }
-        string text = "Eye" + " , Angle : " + (object) eyeAngle + " , Base Distance : " + (object) baseEyeDistance + " , Distance : " + (object) eyeDistance + " , Count : " + (object) num;
+        string text = "Eye" + " , Angle : " + eyeAngle + " , Base Distance : " + baseEyeDistance + " , Distance : " + eyeDistance + " , Count : " + num;
         service.DrawText3d(text, TextCorner.Down, yellow);
       }
       if (!hearingVisible)
@@ -85,7 +83,7 @@ namespace Engine.Source.Debugs
           }
         }
       }
-      string text1 = "Hearing" + " , Base Distance : " + (object) baseHearingDistance + " , Distance : " + (object) hearingDistance + " , Count : " + (object) num1;
+      string text1 = "Hearing" + " , Base Distance : " + baseHearingDistance + " , Distance : " + hearingDistance + " , Count : " + num1;
       service.DrawText3d(text1, TextCorner.Down, red);
     }
 
@@ -101,14 +99,14 @@ namespace Engine.Source.Debugs
         Color green = Color.green;
         ServiceLocator.GetService<GizmoService>().DrawCircle(position, detectable.BaseVisibleDistance, green, false);
         ServiceLocator.GetService<GizmoService>().DrawCircle(position, detectable.VisibleDistance, green);
-        string text = "Visible" + " , Distance : " + (object) detectable.BaseVisibleDistance + " , Current distance : " + (object) detectable.VisibleDistance + " , Detect type : " + (object) detectable.VisibleDetectType;
+        string text = "Visible" + " , Distance : " + detectable.BaseVisibleDistance + " , Current distance : " + detectable.VisibleDistance + " , Detect type : " + detectable.VisibleDetectType;
         ServiceLocator.GetService<GizmoService>().DrawText3d(text, TextCorner.Down, green);
       }
       if (!hearingVisible)
         return;
       Color magenta = Color.magenta;
       ServiceLocator.GetService<GizmoService>().DrawCircle(position, detectable.NoiseDistance, magenta);
-      string text1 = "Noise" + " , Distance : " + (object) detectable.NoiseDistance + " , Detect type : " + (object) detectable.NoiseDetectType;
+      string text1 = "Noise" + " , Distance : " + detectable.NoiseDistance + " , Detect type : " + detectable.NoiseDetectType;
       ServiceLocator.GetService<GizmoService>().DrawText3d(text1, TextCorner.Down, magenta);
     }
 

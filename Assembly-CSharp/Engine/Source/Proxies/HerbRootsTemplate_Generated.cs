@@ -1,11 +1,10 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
-using Engine.Common;
 using Engine.Common.Commons.Cloneable;
 using Engine.Common.Commons.Converters;
 using Engine.Source.Components.Crowds;
 using Scripts.Tools.Serializations.Converters;
-using System;
 
 namespace Engine.Source.Proxies
 {
@@ -22,27 +21,27 @@ namespace Engine.Source.Proxies
     public object Clone()
     {
       HerbRootsTemplate_Generated instance = Activator.CreateInstance<HerbRootsTemplate_Generated>();
-      this.CopyTo((object) instance);
-      return (object) instance;
+      CopyTo(instance);
+      return instance;
     }
 
     public void CopyTo(object target2)
     {
       HerbRootsTemplate_Generated templateGenerated = (HerbRootsTemplate_Generated) target2;
-      templateGenerated.Template = this.Template;
-      templateGenerated.Weight = this.Weight;
+      templateGenerated.Template = Template;
+      templateGenerated.Weight = Weight;
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      UnityDataWriteUtility.Write<IEntity>(writer, "Template", this.Template);
-      DefaultDataWriteUtility.Write(writer, "Weight", this.Weight);
+      UnityDataWriteUtility.Write(writer, "Template", Template);
+      DefaultDataWriteUtility.Write(writer, "Weight", Weight);
     }
 
     public void DataRead(IDataReader reader, Type type)
     {
-      this.Template = UnityDataReadUtility.Read<IEntity>(reader, "Template", this.Template);
-      this.Weight = DefaultDataReadUtility.Read(reader, "Weight", this.Weight);
+      Template = UnityDataReadUtility.Read(reader, "Template", Template);
+      Weight = DefaultDataReadUtility.Read(reader, "Weight", Weight);
     }
 
     public void StateSave(IDataWriter writer)

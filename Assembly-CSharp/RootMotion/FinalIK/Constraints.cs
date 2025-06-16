@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEngine;
 
 namespace RootMotion.FinalIK
 {
@@ -17,30 +16,30 @@ namespace RootMotion.FinalIK
     [Range(0.0f, 1f)]
     public float rotationWeight;
 
-    public bool IsValid() => (UnityEngine.Object) this.transform != (UnityEngine.Object) null;
+    public bool IsValid() => (UnityEngine.Object) transform != (UnityEngine.Object) null;
 
     public void Initiate(Transform transform)
     {
       this.transform = transform;
-      this.position = transform.position;
-      this.rotation = transform.eulerAngles;
+      position = transform.position;
+      rotation = transform.eulerAngles;
     }
 
     public void Update()
     {
-      if (!this.IsValid())
+      if (!IsValid())
         return;
-      if ((UnityEngine.Object) this.target != (UnityEngine.Object) null)
-        this.position = this.target.position;
-      this.transform.position += this.positionOffset;
-      if ((double) this.positionWeight > 0.0)
-        this.transform.position = Vector3.Lerp(this.transform.position, this.position, this.positionWeight);
-      if ((UnityEngine.Object) this.target != (UnityEngine.Object) null)
-        this.rotation = this.target.eulerAngles;
-      this.transform.rotation = Quaternion.Euler(this.rotationOffset) * this.transform.rotation;
-      if ((double) this.rotationWeight <= 0.0)
+      if ((UnityEngine.Object) target != (UnityEngine.Object) null)
+        position = target.position;
+      transform.position += positionOffset;
+      if (positionWeight > 0.0)
+        transform.position = Vector3.Lerp(transform.position, position, positionWeight);
+      if ((UnityEngine.Object) target != (UnityEngine.Object) null)
+        rotation = target.eulerAngles;
+      transform.rotation = Quaternion.Euler(rotationOffset) * transform.rotation;
+      if (rotationWeight <= 0.0)
         return;
-      this.transform.rotation = Quaternion.Slerp(this.transform.rotation, Quaternion.Euler(this.rotation), this.rotationWeight);
+      transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(rotation), rotationWeight);
     }
   }
 }

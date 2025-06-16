@@ -4,9 +4,6 @@ using Engine.Source.Commons;
 using Engine.Source.Services;
 using Engine.Source.Settings.External;
 using Inspectors;
-using System;
-using UnityEngine;
-using UnityEngine.Audio;
 
 namespace Engine.Behaviours.Engines.Controllers
 {
@@ -23,7 +20,7 @@ namespace Engine.Behaviours.Engines.Controllers
     {
       get
       {
-        return this.Indoor ? ScriptableObjectInstance<GameSettingsData>.Instance.NpcFootIndoorMixer : ScriptableObjectInstance<GameSettingsData>.Instance.NpcFootOutdoorMixer;
+        return Indoor ? ScriptableObjectInstance<GameSettingsData>.Instance.NpcFootIndoorMixer : ScriptableObjectInstance<GameSettingsData>.Instance.NpcFootOutdoorMixer;
       }
     }
 
@@ -32,36 +29,36 @@ namespace Engine.Behaviours.Engines.Controllers
     {
       get
       {
-        return this.Indoor ? ScriptableObjectInstance<GameSettingsData>.Instance.NpcFootEffectsIndoorMixer : ScriptableObjectInstance<GameSettingsData>.Instance.NpcFootEffectsOutdoorMixer;
+        return Indoor ? ScriptableObjectInstance<GameSettingsData>.Instance.NpcFootEffectsIndoorMixer : ScriptableObjectInstance<GameSettingsData>.Instance.NpcFootEffectsOutdoorMixer;
       }
     }
 
     protected void Start()
     {
-      this.pivot = this.gameObject.GetComponent<Pivot>();
-      if ((UnityEngine.Object) this.pivot == (UnityEngine.Object) null)
+      pivot = this.gameObject.GetComponent<Pivot>();
+      if ((UnityEngine.Object) pivot == (UnityEngine.Object) null)
       {
         Debug.LogError((object) ("Please move " + typeof (NpcStepsController).Name + " to root of prefab and make sure " + typeof (Pivot).Name + " is also at the same level."), (UnityEngine.Object) this.gameObject);
       }
       else
       {
-        this.pivot.GetAnimatorEventProxy().AnimatorEventEvent += new Action<string>(this.AnimatorEvent);
-        this.pivot.IndoorChangedEvent += new Action<bool>(this.Pivot_IndoorChangedEvent);
-        this.Pivot_IndoorChangedEvent(this.pivot.Indoor);
+        pivot.GetAnimatorEventProxy().AnimatorEventEvent += AnimatorEvent;
+        pivot.IndoorChangedEvent += Pivot_IndoorChangedEvent;
+        Pivot_IndoorChangedEvent(pivot.Indoor);
       }
     }
 
     protected void OnDestroy()
     {
-      if (!((UnityEngine.Object) this.pivot != (UnityEngine.Object) null))
+      if (!((UnityEngine.Object) pivot != (UnityEngine.Object) null))
         return;
-      this.pivot.IndoorChangedEvent -= new Action<bool>(this.Pivot_IndoorChangedEvent);
+      pivot.IndoorChangedEvent -= Pivot_IndoorChangedEvent;
     }
 
     private void Pivot_IndoorChangedEvent(bool indoor)
     {
-      this.Indoor = indoor;
-      this.RefreshMixers();
+      Indoor = indoor;
+      RefreshMixers();
     }
 
     protected void AnimatorEvent(string data)
@@ -69,7 +66,7 @@ namespace Engine.Behaviours.Engines.Controllers
       string str = data;
       if (!(str == "Skeleton.Humanoid.Foot_Left") && !(str == "Skeleton.Humanoid.Foot_Right") || !DetectorUtility.CheckDistance(EngineApplication.PlayerPosition, this.transform.position, ExternalSettingsInstance<ExternalCommonSettings>.Instance.StepsDistance))
         return;
-      this.OnStep(data, this.Indoor);
+      OnStep(data, Indoor);
     }
   }
 }

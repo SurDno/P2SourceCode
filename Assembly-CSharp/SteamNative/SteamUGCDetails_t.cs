@@ -43,7 +43,7 @@ namespace SteamNative
 
     public static SteamUGCDetails_t FromPointer(IntPtr p)
     {
-      return Platform.PackSmall ? (SteamUGCDetails_t) (SteamUGCDetails_t.PackSmall) Marshal.PtrToStructure(p, typeof (SteamUGCDetails_t.PackSmall)) : (SteamUGCDetails_t) Marshal.PtrToStructure(p, typeof (SteamUGCDetails_t));
+      return Platform.PackSmall ? (PackSmall) Marshal.PtrToStructure(p, typeof (PackSmall)) : (SteamUGCDetails_t) Marshal.PtrToStructure(p, typeof (SteamUGCDetails_t));
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
@@ -84,10 +84,9 @@ namespace SteamNative
       public float Score;
       public uint NumChildren;
 
-      public static implicit operator SteamUGCDetails_t(SteamUGCDetails_t.PackSmall d)
+      public static implicit operator SteamUGCDetails_t(PackSmall d)
       {
-        return new SteamUGCDetails_t()
-        {
+        return new SteamUGCDetails_t {
           PublishedFileId = d.PublishedFileId,
           Result = d.Result,
           FileType = d.FileType,

@@ -12,8 +12,8 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
     [Property("Model name", "", false)]
     public IModel Object
     {
-      get => this.Component.Model;
-      set => this.Component.Model = value;
+      get => Component.Model;
+      set => Component.Model = value;
     }
   }
 }

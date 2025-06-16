@@ -1,6 +1,6 @@
-﻿using Engine.Common;
+﻿using System.Collections.Generic;
+using Engine.Common;
 using Engine.Common.Components.Parameters;
-using System.Collections.Generic;
 
 namespace Engine.Source.Components.Crowds
 {

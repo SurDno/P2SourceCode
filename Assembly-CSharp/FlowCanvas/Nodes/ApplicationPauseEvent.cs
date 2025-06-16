@@ -1,6 +1,5 @@
 ﻿using ParadoxNotion.Design;
 using ParadoxNotion.Services;
-using System;
 
 namespace FlowCanvas.Nodes
 {
@@ -14,24 +13,24 @@ namespace FlowCanvas.Nodes
 
     public override void OnGraphStarted()
     {
-      BlueprintManager.current.onApplicationPause += new Action<bool>(this.ApplicationPause);
+      BlueprintManager.current.onApplicationPause += ApplicationPause;
     }
 
     public override void OnGraphStoped()
     {
-      BlueprintManager.current.onApplicationPause -= new Action<bool>(this.ApplicationPause);
+      BlueprintManager.current.onApplicationPause -= ApplicationPause;
     }
 
     private void ApplicationPause(bool isPause)
     {
       this.isPause = isPause;
-      this.pause.Call();
+      pause.Call();
     }
 
     protected override void RegisterPorts()
     {
-      this.pause = this.AddFlowOutput("Out");
-      this.AddValueOutput<bool>("Is Pause", (ValueHandler<bool>) (() => this.isPause));
+      pause = AddFlowOutput("Out");
+      AddValueOutput("Is Pause", () => isPause);
     }
   }
 }

@@ -1,7 +1,4 @@
-﻿using UnityEngine;
-using UnityEngine.Rendering;
-
-namespace StateSetters
+﻿namespace StateSetters
 {
   [StateSetter("{FAB40A49-AD2A-423C-8776-A0DBA9B2B9CD}")]
   public class CastShadowsItemController : IStateSetterItemController
@@ -11,7 +8,7 @@ namespace StateSetters
       MeshRenderer objectValue1 = item.ObjectValue1 as MeshRenderer;
       if ((Object) objectValue1 == (Object) null)
         return;
-      if ((double) value != 0.0)
+      if (value != 0.0)
         objectValue1.shadowCastingMode = (ShadowCastingMode) item.IntValue1;
       else
         objectValue1.shadowCastingMode = (ShadowCastingMode) item.IntValue2;

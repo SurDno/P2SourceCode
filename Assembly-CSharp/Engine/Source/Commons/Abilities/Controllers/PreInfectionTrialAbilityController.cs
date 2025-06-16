@@ -1,4 +1,5 @@
-﻿using Engine.Common;
+﻿using System.Collections.Generic;
+using Engine.Common;
 using Engine.Common.Components.Parameters;
 using Engine.Common.Generator;
 using Engine.Common.Services;
@@ -7,8 +8,6 @@ using Engine.Impl.Services.Factories;
 using Engine.Source.Components;
 using Engine.Source.Effects.Values;
 using Inspectors;
-using System.Collections.Generic;
-using UnityEngine;
 
 namespace Engine.Source.Commons.Abilities.Controllers
 {
@@ -20,24 +19,24 @@ namespace Engine.Source.Commons.Abilities.Controllers
     IUpdatable,
     IChangeParameterListener
   {
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected float thresholdValue = 0.3f;
-    [DataReadProxy(MemberEnum.None, Name = "BeakCoeficient1")]
-    [DataWriteProxy(MemberEnum.None, Name = "BeakCoeficient1")]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy(Name = "BeakCoeficient1")]
+    [DataWriteProxy(Name = "BeakCoeficient1")]
+    [CopyableProxy]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected float breakCoeficient1 = 2.05f;
-    [DataReadProxy(MemberEnum.None, Name = "BeakCoeficient2")]
-    [DataWriteProxy(MemberEnum.None, Name = "BeakCoeficient2")]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy(Name = "BeakCoeficient2")]
+    [DataWriteProxy(Name = "BeakCoeficient2")]
+    [CopyableProxy]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected float breakCoeficient2 = 0.3f;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy()]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected float preinfectionCheckInterval = 20f;
     private AbilityItem abilityItem;
@@ -53,66 +52,65 @@ namespace Engine.Source.Commons.Abilities.Controllers
     public void Initialise(AbilityItem abilityItem)
     {
       this.abilityItem = abilityItem;
-      this.timeService = ServiceLocator.GetService<TimeService>();
-      this.parameters = this.abilityItem.Ability.Owner.GetComponent<ParametersComponent>();
-      this.parameterPreInfection = this.parameters.GetByName<float>(ParameterNameEnum.PreInfection);
-      if (this.parameterPreInfection != null)
+      timeService = ServiceLocator.GetService<TimeService>();
+      parameters = this.abilityItem.Ability.Owner.GetComponent<ParametersComponent>();
+      parameterPreInfection = parameters.GetByName<float>(ParameterNameEnum.PreInfection);
+      if (parameterPreInfection != null)
       {
-        this.lastPreinfectionValue = this.parameterPreInfection.Value;
-        this.parameterPreInfection.AddListener((IChangeParameterListener) this);
-        this.CheckParameter();
+        lastPreinfectionValue = parameterPreInfection.Value;
+        parameterPreInfection.AddListener(this);
+        CheckParameter();
       }
-      this.parameterInfection = this.parameters.GetByName<float>(ParameterNameEnum.Infection);
-      this.gotPreinfectionHit = false;
-      InstanceByRequest<UpdateService>.Instance.Updater.AddUpdatable((IUpdatable) this);
+      parameterInfection = parameters.GetByName<float>(ParameterNameEnum.Infection);
+      gotPreinfectionHit = false;
+      InstanceByRequest<UpdateService>.Instance.Updater.AddUpdatable(this);
     }
 
     public void Shutdown()
     {
-      if (this.parameterPreInfection != null)
+      if (parameterPreInfection != null)
       {
-        this.parameterPreInfection.RemoveListener((IChangeParameterListener) this);
-        this.abilityItem.Active = false;
+        parameterPreInfection.RemoveListener(this);
+        abilityItem.Active = false;
       }
-      this.abilityItem = (AbilityItem) null;
-      InstanceByRequest<UpdateService>.Instance.Updater.RemoveUpdatable((IUpdatable) this);
+      abilityItem = null;
+      InstanceByRequest<UpdateService>.Instance.Updater.RemoveUpdatable(this);
     }
 
     private void CheckParameter()
     {
-      if (this.parameterPreInfection == null)
+      if (parameterPreInfection == null)
         return;
-      if ((double) this.parameterPreInfection.Value > (double) this.thresholdValue && (double) this.parameterPreInfection.Value > (double) this.lastPreinfectionValue)
-        this.gotPreinfectionHit = true;
-      this.lastPreinfectionValue = this.parameterPreInfection.Value;
+      if (parameterPreInfection.Value > (double) thresholdValue && parameterPreInfection.Value > (double) lastPreinfectionValue)
+        gotPreinfectionHit = true;
+      lastPreinfectionValue = parameterPreInfection.Value;
     }
 
     public void ComputeUpdate()
     {
-      if (this.gotPreinfectionHit && this.timeService.AbsoluteGameTime.TotalSeconds > (double) this.nextCheckTime)
+      if (gotPreinfectionHit && timeService.AbsoluteGameTime.TotalSeconds > nextCheckTime)
       {
-        if ((double) (this.breakCoeficient1 * Mathf.Pow(this.parameterPreInfection.Value - this.breakCoeficient2, 2f)) >= (double) Random.value)
+        if (breakCoeficient1 * Mathf.Pow(parameterPreInfection.Value - breakCoeficient2, 2f) >= (double) Random.value)
         {
-          this.values.Clear();
-          this.values.Add(AbilityValueNameEnum.PreInfectionSuccessTrial, (IAbilityValue) new AbilityValue<float>()
-          {
-            Value = this.parameterPreInfection.Value
+          values.Clear();
+          values.Add(AbilityValueNameEnum.PreInfectionSuccessTrial, new AbilityValue<float> {
+            Value = parameterPreInfection.Value
           });
-          this.abilityItem.Active = true;
-          this.abilityItem.Active = false;
+          abilityItem.Active = true;
+          abilityItem.Active = false;
         }
-        this.nextCheckTime = (float) this.timeService.AbsoluteGameTime.TotalSeconds + this.preinfectionCheckInterval;
+        nextCheckTime = (float) timeService.AbsoluteGameTime.TotalSeconds + preinfectionCheckInterval;
       }
-      this.gotPreinfectionHit = false;
+      gotPreinfectionHit = false;
     }
 
     public IAbilityValue<T> GetAbilityValue<T>(AbilityValueNameEnum parameter) where T : struct
     {
       IAbilityValue abilityValue;
-      this.values.TryGetValue(parameter, out abilityValue);
+      values.TryGetValue(parameter, out abilityValue);
       return abilityValue as IAbilityValue<T>;
     }
 
-    public void OnParameterChanged(IParameter parameter) => this.CheckParameter();
+    public void OnParameterChanged(IParameter parameter) => CheckParameter();
   }
 }

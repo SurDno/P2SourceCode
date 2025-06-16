@@ -1,8 +1,5 @@
 ﻿using Engine.Source.Commons;
 using Engine.Source.Settings;
-using System;
-using UnityEngine;
-using UnityEngine.Audio;
 
 public class SoundSettingsApplier : MonoBehaviour
 {
@@ -17,31 +14,31 @@ public class SoundSettingsApplier : MonoBehaviour
 
   private void Start()
   {
-    this.Apply();
-    InstanceByRequest<SoundGameSettings>.Instance.OnApply += new Action(this.Apply);
+    Apply();
+    InstanceByRequest<SoundGameSettings>.Instance.OnApply += Apply;
   }
 
   private void OnDestroy()
   {
-    InstanceByRequest<SoundGameSettings>.Instance.OnApply -= new Action(this.Apply);
+    InstanceByRequest<SoundGameSettings>.Instance.OnApply -= Apply;
   }
 
   private void Apply()
   {
-    this.Apply(this.masterMixer, InstanceByRequest<SoundGameSettings>.Instance.MasterVolume.Value);
-    this.Apply(this.effectsMixers, InstanceByRequest<SoundGameSettings>.Instance.EffectsVolume.Value);
-    this.Apply(this.musicMixers, InstanceByRequest<SoundGameSettings>.Instance.MusicVolume.Value);
-    this.Apply(this.voiceMixers, InstanceByRequest<SoundGameSettings>.Instance.VoiceVolume.Value);
+    Apply(masterMixer, InstanceByRequest<SoundGameSettings>.Instance.MasterVolume.Value);
+    Apply(effectsMixers, InstanceByRequest<SoundGameSettings>.Instance.EffectsVolume.Value);
+    Apply(musicMixers, InstanceByRequest<SoundGameSettings>.Instance.MusicVolume.Value);
+    Apply(voiceMixers, InstanceByRequest<SoundGameSettings>.Instance.VoiceVolume.Value);
   }
 
   private void Apply(AudioMixer mixer, float value)
   {
-    mixer.SetFloat("Master+Base{0}::Volume", this.ValueToVolume(value));
+    mixer.SetFloat("Master+Base{0}::Volume", ValueToVolume(value));
   }
 
   private void Apply(AudioMixer[] mixers, float value)
   {
-    float volume = this.ValueToVolume(value);
+    float volume = ValueToVolume(value);
     foreach (AudioMixer mixer in mixers)
       mixer.SetFloat("Master+Base{0}::Volume", volume);
   }

@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEngine;
 
 namespace RootMotion.Dynamics
 {
@@ -8,7 +7,7 @@ namespace RootMotion.Dynamics
   public class BehaviourPuppet : BehaviourBase
   {
     [LargeHeader("Collision And Recovery")]
-    public BehaviourPuppet.MasterProps masterProps = new BehaviourPuppet.MasterProps();
+    public MasterProps masterProps = new MasterProps();
     [Tooltip("Will ground the target to those layers when getting up.")]
     public LayerMask groundLayers;
     [Tooltip("Will unpin the muscles that collide with those layers.")]
@@ -17,7 +16,7 @@ namespace RootMotion.Dynamics
     public float collisionThreshold;
     public Weight collisionResistance = new Weight(3f, "Smaller value means more unpinning from collisions so the characters get knocked out more easily. If using a curve, the value will be evaluated by each muscle's target velocity magnitude. This can be used to make collision resistance higher while the character moves or animates faster.");
     [Tooltip("Multiplies collision resistance for the specified layers.")]
-    public BehaviourPuppet.CollisionResistanceMultiplier[] collisionResistanceMultipliers;
+    public CollisionResistanceMultiplier[] collisionResistanceMultipliers;
     [Tooltip("An optimisation. Will only process up to this number of collisions per physics step.")]
     [Range(1f, 30f)]
     public int maxCollisions = 30;
@@ -28,9 +27,9 @@ namespace RootMotion.Dynamics
     public float boostFalloff = 1f;
     [LargeHeader("Muscle Group Properties")]
     [Tooltip("The default muscle properties. If there are no 'Group Overrides', this will be used for all muscles.")]
-    public BehaviourPuppet.MuscleProps defaults;
+    public MuscleProps defaults;
     [Tooltip("Overriding default muscle properties for some muscle groups (for example making the feet stiffer or the hands looser).")]
-    public BehaviourPuppet.MusclePropsGroup[] groupOverrides;
+    public MusclePropsGroup[] groupOverrides;
     [LargeHeader("Losing Balance")]
     [Tooltip("If the distance from the muscle to it's target is larger than this value, the character will be knocked out.")]
     [Range(0.001f, 10f)]
@@ -70,18 +69,18 @@ namespace RootMotion.Dynamics
     public Vector3 getUpOffsetSupine;
     [LargeHeader("Events")]
     [Tooltip("Called when the character starts getting up from a prone pose (facing down).")]
-    public BehaviourBase.PuppetEvent onGetUpProne;
+    public PuppetEvent onGetUpProne;
     [Tooltip("Called when the character starts getting up from a supine pose (facing up).")]
-    public BehaviourBase.PuppetEvent onGetUpSupine;
+    public PuppetEvent onGetUpSupine;
     [Tooltip("Called when the character is knocked out (loses balance). Doesn't matter from which state.")]
-    public BehaviourBase.PuppetEvent onLoseBalance;
+    public PuppetEvent onLoseBalance;
     [Tooltip("Called when the character is knocked out (loses balance) only from the normal Puppet state.")]
-    public BehaviourBase.PuppetEvent onLoseBalanceFromPuppet;
+    public PuppetEvent onLoseBalanceFromPuppet;
     [Tooltip("Called when the character is knocked out (loses balance) only from the GetUp state.")]
-    public BehaviourBase.PuppetEvent onLoseBalanceFromGetUp;
+    public PuppetEvent onLoseBalanceFromGetUp;
     [Tooltip("Called when the character has fully recovered and switched to the Puppet state.")]
-    public BehaviourBase.PuppetEvent onRegainBalance;
-    public BehaviourPuppet.CollisionImpulseDelegate OnCollisionImpulse;
+    public PuppetEvent onRegainBalance;
+    public CollisionImpulseDelegate OnCollisionImpulse;
     [HideInInspector]
     public bool canMoveTarget = true;
     private float unpinnedTimer;
@@ -91,7 +90,7 @@ namespace RootMotion.Dynamics
     private float getupAnimationBlendWeight;
     private float getupAnimationBlendWeightV;
     private bool getUpTargetFixed;
-    private BehaviourPuppet.NormalMode lastNormalMode;
+    private NormalMode lastNormalMode;
     private int collisions;
     private bool eventsEnabled;
     private float lastKnockOutDistance;
@@ -115,20 +114,20 @@ namespace RootMotion.Dynamics
       Application.OpenURL("http://root-motion.com/puppetmasterdox/html/class_root_motion_1_1_dynamics_1_1_behaviour_puppet.html");
     }
 
-    public BehaviourPuppet.State state { get; private set; }
+    public State state { get; private set; }
 
     public override void OnReactivate()
     {
-      this.state = this.puppetMaster.state == PuppetMaster.State.Alive ? BehaviourPuppet.State.Puppet : BehaviourPuppet.State.Unpinned;
-      this.getUpTimer = 0.0f;
-      this.unpinnedTimer = 0.0f;
-      this.getupAnimationBlendWeight = 0.0f;
-      this.getupAnimationBlendWeightV = 0.0f;
-      this.getUpTargetFixed = false;
-      this.getupDisabled = this.puppetMaster.state != 0;
-      this.state = this.puppetMaster.state == PuppetMaster.State.Alive ? BehaviourPuppet.State.Puppet : BehaviourPuppet.State.Unpinned;
-      foreach (Muscle muscle in this.puppetMaster.muscles)
-        this.SetColliders(muscle, this.state == BehaviourPuppet.State.Unpinned);
+      state = puppetMaster.state == PuppetMaster.State.Alive ? State.Puppet : State.Unpinned;
+      getUpTimer = 0.0f;
+      unpinnedTimer = 0.0f;
+      getupAnimationBlendWeight = 0.0f;
+      getupAnimationBlendWeightV = 0.0f;
+      getUpTargetFixed = false;
+      getupDisabled = puppetMaster.state != 0;
+      state = puppetMaster.state == PuppetMaster.State.Alive ? State.Puppet : State.Unpinned;
+      foreach (Muscle muscle in puppetMaster.muscles)
+        SetColliders(muscle, state == State.Unpinned);
       this.enabled = true;
     }
 
@@ -143,39 +142,39 @@ namespace RootMotion.Dynamics
       Vector3 pivot,
       bool moveToTarget)
     {
-      this.getUpPosition = pivot + deltaRotation * (this.getUpPosition - pivot) + deltaPosition;
+      getUpPosition = pivot + deltaRotation * (getUpPosition - pivot) + deltaPosition;
       if (!moveToTarget)
         return;
-      this.getupAnimationBlendWeight = 0.0f;
-      this.getupAnimationBlendWeightV = 0.0f;
+      getupAnimationBlendWeight = 0.0f;
+      getupAnimationBlendWeightV = 0.0f;
     }
 
     protected override void OnInitiate()
     {
-      foreach (BehaviourPuppet.CollisionResistanceMultiplier resistanceMultiplier in this.collisionResistanceMultipliers)
+      foreach (CollisionResistanceMultiplier resistanceMultiplier in collisionResistanceMultipliers)
       {
         if ((int) resistanceMultiplier.layers == 0)
           Debug.LogWarning((object) "BehaviourPuppet has a Collision Resistance Multiplier that's layers is set to Nothing. Please add some layers.", (UnityEngine.Object) this.transform);
       }
-      foreach (Muscle muscle in this.puppetMaster.muscles)
+      foreach (Muscle muscle in puppetMaster.muscles)
       {
-        if (muscle.joint.gameObject.layer == this.puppetMaster.targetRoot.gameObject.layer)
+        if (muscle.joint.gameObject.layer == puppetMaster.targetRoot.gameObject.layer)
           Debug.LogWarning((object) "One of the ragdoll bones is on the same layer as the animated character. This might make the ragdoll collide with the character controller.");
-        if (!Physics.GetIgnoreLayerCollision(muscle.joint.gameObject.layer, this.puppetMaster.targetRoot.gameObject.layer))
-          Debug.LogWarning((object) ("The ragdoll layer (" + (object) muscle.joint.gameObject.layer + ") and the character controller layer (" + (object) this.puppetMaster.targetRoot.gameObject.layer + ") are not set to ignore each other in Edit/Project Settings/Physics/Layer Collision Matrix. This might cause the ragdoll bones to collide with the character controller."));
+        if (!Physics.GetIgnoreLayerCollision(muscle.joint.gameObject.layer, puppetMaster.targetRoot.gameObject.layer))
+          Debug.LogWarning((object) ("The ragdoll layer (" + (object) muscle.joint.gameObject.layer + ") and the character controller layer (" + (object) puppetMaster.targetRoot.gameObject.layer + ") are not set to ignore each other in Edit/Project Settings/Physics/Layer Collision Matrix. This might cause the ragdoll bones to collide with the character controller."));
       }
-      this.hipsForward = Quaternion.Inverse(this.puppetMaster.muscles[0].transform.rotation) * this.puppetMaster.targetRoot.forward;
-      this.hipsUp = Quaternion.Inverse(this.puppetMaster.muscles[0].transform.rotation) * this.puppetMaster.targetRoot.up;
-      this.state = BehaviourPuppet.State.Unpinned;
-      this.eventsEnabled = true;
+      hipsForward = Quaternion.Inverse(puppetMaster.muscles[0].transform.rotation) * puppetMaster.targetRoot.forward;
+      hipsUp = Quaternion.Inverse(puppetMaster.muscles[0].transform.rotation) * puppetMaster.targetRoot.up;
+      state = State.Unpinned;
+      eventsEnabled = true;
     }
 
     protected override void OnActivate()
     {
       bool flag = true;
-      foreach (Muscle muscle in this.puppetMaster.muscles)
+      foreach (Muscle muscle in puppetMaster.muscles)
       {
-        if ((double) muscle.state.pinWeightMlp > 0.5)
+        if (muscle.state.pinWeightMlp > 0.5)
         {
           flag = false;
           break;
@@ -184,54 +183,54 @@ namespace RootMotion.Dynamics
       bool eventsEnabled = this.eventsEnabled;
       this.eventsEnabled = false;
       if (flag)
-        this.SetState(BehaviourPuppet.State.Unpinned);
+        SetState(State.Unpinned);
       else
-        this.SetState(BehaviourPuppet.State.Puppet);
+        SetState(State.Puppet);
       this.eventsEnabled = eventsEnabled;
     }
 
     public override void KillStart()
     {
-      this.getupDisabled = true;
-      foreach (Muscle muscle in this.puppetMaster.muscles)
+      getupDisabled = true;
+      foreach (Muscle muscle in puppetMaster.muscles)
       {
         muscle.state.pinWeightMlp = 0.0f;
-        if (this.hasBoosted)
+        if (hasBoosted)
           muscle.state.immunity = 0.0f;
-        this.SetColliders(muscle, true);
+        SetColliders(muscle, true);
       }
     }
 
-    public override void KillEnd() => this.SetState(BehaviourPuppet.State.Unpinned);
+    public override void KillEnd() => SetState(State.Unpinned);
 
     public override void Resurrect()
     {
-      this.getupDisabled = false;
-      if (this.state != BehaviourPuppet.State.Unpinned)
+      getupDisabled = false;
+      if (state != State.Unpinned)
         return;
-      this.getUpTimer = float.PositiveInfinity;
-      this.unpinnedTimer = float.PositiveInfinity;
-      this.getupAnimationBlendWeight = 0.0f;
-      this.getupAnimationBlendWeightV = 0.0f;
-      foreach (Muscle muscle in this.puppetMaster.muscles)
+      getUpTimer = float.PositiveInfinity;
+      unpinnedTimer = float.PositiveInfinity;
+      getupAnimationBlendWeight = 0.0f;
+      getupAnimationBlendWeightV = 0.0f;
+      foreach (Muscle muscle in puppetMaster.muscles)
         muscle.state.pinWeightMlp = 0.0f;
     }
 
-    protected override void OnDeactivate() => this.state = BehaviourPuppet.State.Unpinned;
+    protected override void OnDeactivate() => state = State.Unpinned;
 
     protected override void OnFixedUpdate()
     {
-      this.collisions = 0;
-      if (this.dropPropFlag)
+      collisions = 0;
+      if (dropPropFlag)
       {
-        this.RemoveMusclesOfGroup(Muscle.Group.Prop);
-        this.dropPropFlag = false;
+        RemoveMusclesOfGroup(Muscle.Group.Prop);
+        dropPropFlag = false;
       }
-      if (!this.puppetMaster.isActive)
-        this.SetState(BehaviourPuppet.State.Puppet);
-      else if (!this.puppetMaster.isAlive)
+      if (!puppetMaster.isActive)
+        SetState(State.Puppet);
+      else if (!puppetMaster.isAlive)
       {
-        foreach (Muscle muscle in this.puppetMaster.muscles)
+        foreach (Muscle muscle in puppetMaster.muscles)
         {
           muscle.state.pinWeightMlp = 0.0f;
           muscle.state.mappingWeightMlp = Mathf.MoveTowards(muscle.state.mappingWeightMlp, 1f, Time.deltaTime * 5f);
@@ -239,120 +238,120 @@ namespace RootMotion.Dynamics
       }
       else
       {
-        if (this.hasBoosted)
+        if (hasBoosted)
         {
-          foreach (Muscle muscle in this.puppetMaster.muscles)
+          foreach (Muscle muscle in puppetMaster.muscles)
           {
-            muscle.state.immunity = Mathf.MoveTowards(muscle.state.immunity, 0.0f, Time.deltaTime * this.boostFalloff);
-            muscle.state.impulseMlp = Mathf.Lerp(muscle.state.impulseMlp, 1f, Time.deltaTime * this.boostFalloff);
+            muscle.state.immunity = Mathf.MoveTowards(muscle.state.immunity, 0.0f, Time.deltaTime * boostFalloff);
+            muscle.state.impulseMlp = Mathf.Lerp(muscle.state.impulseMlp, 1f, Time.deltaTime * boostFalloff);
           }
         }
-        if (this.state == BehaviourPuppet.State.Unpinned)
+        if (state == State.Unpinned)
         {
-          this.unpinnedTimer += Time.deltaTime;
-          if ((double) this.unpinnedTimer >= (double) this.getUpDelay && this.canGetUp && !this.getupDisabled && (double) this.puppetMaster.muscles[0].rigidbody.velocity.magnitude < (double) this.maxGetUpVelocity)
+          unpinnedTimer += Time.deltaTime;
+          if (unpinnedTimer >= (double) getUpDelay && canGetUp && !getupDisabled && (double) puppetMaster.muscles[0].rigidbody.velocity.magnitude < maxGetUpVelocity)
           {
-            this.SetState(BehaviourPuppet.State.GetUp);
+            SetState(State.GetUp);
             return;
           }
-          foreach (Muscle muscle in this.puppetMaster.muscles)
+          foreach (Muscle muscle in puppetMaster.muscles)
           {
             muscle.state.pinWeightMlp = 0.0f;
-            muscle.state.mappingWeightMlp = Mathf.MoveTowards(muscle.state.mappingWeightMlp, 1f, Time.deltaTime * this.masterProps.mappingBlendSpeed);
+            muscle.state.mappingWeightMlp = Mathf.MoveTowards(muscle.state.mappingWeightMlp, 1f, Time.deltaTime * masterProps.mappingBlendSpeed);
           }
         }
-        if (this.state != BehaviourPuppet.State.Unpinned)
+        if (state != State.Unpinned)
         {
-          if ((double) this.knockOutDistance != (double) this.lastKnockOutDistance)
+          if (knockOutDistance != (double) lastKnockOutDistance)
           {
-            this.knockOutDistanceSqr = Mathf.Sqrt(this.knockOutDistance);
-            this.lastKnockOutDistance = this.knockOutDistance;
+            knockOutDistanceSqr = Mathf.Sqrt(knockOutDistance);
+            lastKnockOutDistance = knockOutDistance;
           }
-          foreach (Muscle muscle in this.puppetMaster.muscles)
+          foreach (Muscle muscle in puppetMaster.muscles)
           {
-            BehaviourPuppet.MuscleProps props = this.GetProps(muscle.props.group);
+            MuscleProps props = GetProps(muscle.props.group);
             float b = 1f;
-            if (this.state == BehaviourPuppet.State.GetUp)
-              b = Mathf.Lerp(this.getUpKnockOutDistanceMlp, b, muscle.state.pinWeightMlp);
-            float num1 = this.unpinnedMuscleKnockout ? muscle.positionOffset.sqrMagnitude : muscle.positionOffset.sqrMagnitude * muscle.props.pinWeight;
-            if (this.hasCollidedSinceGetUp && !this.puppetMaster.isBlending && (double) num1 > 0.0 && (double) muscle.state.pinWeightMlp < (double) this.pinWeightThreshold && (double) num1 > (double) props.knockOutDistance * (double) this.knockOutDistanceSqr * (double) b)
+            if (state == State.GetUp)
+              b = Mathf.Lerp(getUpKnockOutDistanceMlp, b, muscle.state.pinWeightMlp);
+            float num1 = unpinnedMuscleKnockout ? muscle.positionOffset.sqrMagnitude : muscle.positionOffset.sqrMagnitude * muscle.props.pinWeight;
+            if (hasCollidedSinceGetUp && !puppetMaster.isBlending && num1 > 0.0 && muscle.state.pinWeightMlp < (double) pinWeightThreshold && num1 > props.knockOutDistance * (double) knockOutDistanceSqr * b)
             {
-              if (this.state == BehaviourPuppet.State.GetUp && !this.getUpTargetFixed)
+              if (state == State.GetUp && !getUpTargetFixed)
                 return;
-              this.SetState(BehaviourPuppet.State.Unpinned);
+              SetState(State.Unpinned);
               return;
             }
-            muscle.state.muscleWeightMlp = Mathf.Lerp(this.unpinnedMuscleWeightMlp, 1f, muscle.state.pinWeightMlp);
-            if (this.state == BehaviourPuppet.State.GetUp)
+            muscle.state.muscleWeightMlp = Mathf.Lerp(unpinnedMuscleWeightMlp, 1f, muscle.state.pinWeightMlp);
+            if (state == State.GetUp)
               muscle.state.muscleDamperAdd = 0.0f;
-            if (!this.puppetMaster.isKilling)
+            if (!puppetMaster.isKilling)
             {
               float num2 = 1f;
-              if (this.state == BehaviourPuppet.State.GetUp)
-                num2 = Mathf.Lerp(this.getUpRegainPinSpeedMlp, 1f, muscle.state.pinWeightMlp);
-              muscle.state.pinWeightMlp += Time.deltaTime * props.regainPinSpeed * this.regainPinSpeed * num2;
+              if (state == State.GetUp)
+                num2 = Mathf.Lerp(getUpRegainPinSpeedMlp, 1f, muscle.state.pinWeightMlp);
+              muscle.state.pinWeightMlp += Time.deltaTime * props.regainPinSpeed * regainPinSpeed * num2;
             }
           }
           float num = 1f;
-          foreach (Muscle muscle in this.puppetMaster.muscles)
+          foreach (Muscle muscle in puppetMaster.muscles)
           {
-            if ((muscle.props.group == Muscle.Group.Leg || muscle.props.group == Muscle.Group.Foot) && (double) muscle.state.pinWeightMlp < (double) num)
+            if ((muscle.props.group == Muscle.Group.Leg || muscle.props.group == Muscle.Group.Foot) && muscle.state.pinWeightMlp < (double) num)
               num = muscle.state.pinWeightMlp;
           }
-          foreach (Muscle muscle in this.puppetMaster.muscles)
+          foreach (Muscle muscle in puppetMaster.muscles)
             muscle.state.pinWeightMlp = Mathf.Clamp(muscle.state.pinWeightMlp, 0.0f, num * 5f);
         }
-        if (this.state != BehaviourPuppet.State.GetUp)
+        if (state != State.GetUp)
           return;
-        this.getUpTimer += Time.deltaTime;
-        if ((double) this.getUpTimer > (double) this.minGetUpDuration)
+        getUpTimer += Time.deltaTime;
+        if (getUpTimer > (double) minGetUpDuration)
         {
-          this.getUpTimer = 0.0f;
-          this.SetState(BehaviourPuppet.State.Puppet);
+          getUpTimer = 0.0f;
+          SetState(State.Puppet);
         }
       }
     }
 
     protected override void OnLateUpdate()
     {
-      this.forceActive = this.state != 0;
-      if (!this.puppetMaster.isAlive)
+      forceActive = state != 0;
+      if (!puppetMaster.isAlive)
         return;
-      if (this.masterProps.normalMode != this.lastNormalMode)
+      if (masterProps.normalMode != lastNormalMode)
       {
-        if (this.lastNormalMode == BehaviourPuppet.NormalMode.Unmapped)
+        if (lastNormalMode == NormalMode.Unmapped)
         {
-          foreach (Muscle muscle in this.puppetMaster.muscles)
+          foreach (Muscle muscle in puppetMaster.muscles)
             muscle.state.mappingWeightMlp = 1f;
         }
-        if (this.lastNormalMode == BehaviourPuppet.NormalMode.Kinematic && this.puppetMaster.mode == PuppetMaster.Mode.Kinematic)
-          this.puppetMaster.mode = PuppetMaster.Mode.Active;
-        this.lastNormalMode = this.masterProps.normalMode;
+        if (lastNormalMode == NormalMode.Kinematic && puppetMaster.mode == PuppetMaster.Mode.Kinematic)
+          puppetMaster.mode = PuppetMaster.Mode.Active;
+        lastNormalMode = masterProps.normalMode;
       }
-      switch (this.masterProps.normalMode)
+      switch (masterProps.normalMode)
       {
-        case BehaviourPuppet.NormalMode.Unmapped:
-          if (!this.puppetMaster.isActive)
+        case NormalMode.Unmapped:
+          if (!puppetMaster.isActive)
             break;
           bool to = false;
-          for (int muscleIndex = 0; muscleIndex < this.puppetMaster.muscles.Length; ++muscleIndex)
-            this.BlendMuscleMapping(muscleIndex, ref to);
+          for (int muscleIndex = 0; muscleIndex < puppetMaster.muscles.Length; ++muscleIndex)
+            BlendMuscleMapping(muscleIndex, ref to);
           break;
-        case BehaviourPuppet.NormalMode.Kinematic:
-          if (!this.SetKinematic())
+        case NormalMode.Kinematic:
+          if (!SetKinematic())
             break;
-          this.puppetMaster.mode = PuppetMaster.Mode.Kinematic;
+          puppetMaster.mode = PuppetMaster.Mode.Kinematic;
           break;
       }
     }
 
     private bool SetKinematic()
     {
-      if (!this.puppetMaster.isActive || this.state != 0 || this.puppetMaster.isBlending || (double) this.getupAnimationBlendWeight > 0.0 || !this.puppetMaster.isAlive)
+      if (!puppetMaster.isActive || state != 0 || puppetMaster.isBlending || getupAnimationBlendWeight > 0.0 || !puppetMaster.isAlive)
         return false;
-      foreach (Muscle muscle in this.puppetMaster.muscles)
+      foreach (Muscle muscle in puppetMaster.muscles)
       {
-        if ((double) muscle.state.pinWeightMlp < 1.0)
+        if (muscle.state.pinWeightMlp < 1.0)
           return false;
       }
       return true;
@@ -362,82 +361,82 @@ namespace RootMotion.Dynamics
     {
       if (!this.enabled)
         return;
-      if (!this.puppetMaster.isFrozen && this.state == BehaviourPuppet.State.Unpinned && this.puppetMaster.isActive)
+      if (!puppetMaster.isFrozen && state == State.Unpinned && puppetMaster.isActive)
       {
-        this.MoveTarget(this.puppetMaster.muscles[0].rigidbody.position);
-        this.GroundTarget(this.groundLayers);
-        this.getUpPosition = this.puppetMaster.targetRoot.position;
+        MoveTarget(puppetMaster.muscles[0].rigidbody.position);
+        GroundTarget(groundLayers);
+        getUpPosition = puppetMaster.targetRoot.position;
       }
-      if ((double) this.getupAnimationBlendWeight > 0.0)
+      if (getupAnimationBlendWeight > 0.0)
       {
-        this.getUpPosition += Vector3.Project(this.puppetMaster.targetRoot.position - this.getUpPosition, this.puppetMaster.targetRoot.up);
-        this.MoveTarget(this.getUpPosition);
-        this.getupAnimationBlendWeight = Mathf.SmoothDamp(this.getupAnimationBlendWeight, 0.0f, ref this.getupAnimationBlendWeightV, this.blendToAnimationTime);
-        if ((double) this.getupAnimationBlendWeight < 0.0099999997764825821)
-          this.getupAnimationBlendWeight = 0.0f;
-        this.puppetMaster.FixTargetToSampledState(this.getupAnimationBlendWeight);
+        getUpPosition += Vector3.Project(puppetMaster.targetRoot.position - getUpPosition, puppetMaster.targetRoot.up);
+        MoveTarget(getUpPosition);
+        getupAnimationBlendWeight = Mathf.SmoothDamp(getupAnimationBlendWeight, 0.0f, ref getupAnimationBlendWeightV, blendToAnimationTime);
+        if (getupAnimationBlendWeight < 0.0099999997764825821)
+          getupAnimationBlendWeight = 0.0f;
+        puppetMaster.FixTargetToSampledState(getupAnimationBlendWeight);
       }
-      this.getUpTargetFixed = true;
+      getUpTargetFixed = true;
     }
 
     private void BlendMuscleMapping(int muscleIndex, ref bool to)
     {
-      if ((double) this.puppetMaster.muscles[muscleIndex].state.pinWeightMlp < 1.0)
+      if (puppetMaster.muscles[muscleIndex].state.pinWeightMlp < 1.0)
         to = true;
-      BehaviourPuppet.MuscleProps props = this.GetProps(this.puppetMaster.muscles[muscleIndex].props.group);
-      float target = to ? (this.state == BehaviourPuppet.State.Puppet ? props.maxMappingWeight : 1f) : props.minMappingWeight;
-      this.puppetMaster.muscles[muscleIndex].state.mappingWeightMlp = Mathf.MoveTowards(this.puppetMaster.muscles[muscleIndex].state.mappingWeightMlp, target, Time.deltaTime * this.masterProps.mappingBlendSpeed);
+      MuscleProps props = GetProps(puppetMaster.muscles[muscleIndex].props.group);
+      float target = to ? (state == State.Puppet ? props.maxMappingWeight : 1f) : props.minMappingWeight;
+      puppetMaster.muscles[muscleIndex].state.mappingWeightMlp = Mathf.MoveTowards(puppetMaster.muscles[muscleIndex].state.mappingWeightMlp, target, Time.deltaTime * masterProps.mappingBlendSpeed);
     }
 
     public override void OnMuscleAdded(Muscle m)
     {
       base.OnMuscleAdded(m);
-      this.SetColliders(m, this.state == BehaviourPuppet.State.Unpinned);
+      SetColliders(m, state == State.Unpinned);
     }
 
     public override void OnMuscleRemoved(Muscle m)
     {
       base.OnMuscleRemoved(m);
-      this.SetColliders(m, true);
+      SetColliders(m, true);
     }
 
     protected void MoveTarget(Vector3 position)
     {
-      if (!this.canMoveTarget)
+      if (!canMoveTarget)
         return;
-      this.puppetMaster.targetRoot.position = position;
+      puppetMaster.targetRoot.position = position;
     }
 
     protected void RotateTarget(Quaternion rotation)
     {
-      if (!this.canMoveTarget)
+      if (!canMoveTarget)
         return;
-      this.puppetMaster.targetRoot.rotation = rotation;
+      puppetMaster.targetRoot.rotation = rotation;
     }
 
     protected override void GroundTarget(LayerMask layers)
     {
-      if (!this.canMoveTarget)
+      if (!canMoveTarget)
         return;
       base.GroundTarget(layers);
     }
 
     private void OnDrawGizmosSelected()
     {
-      for (int index1 = 0; index1 < this.groupOverrides.Length; ++index1)
+      for (int index1 = 0; index1 < groupOverrides.Length; ++index1)
       {
-        this.groupOverrides[index1].name = string.Empty;
-        if (this.groupOverrides[index1].groups.Length != 0)
+        groupOverrides[index1].name = string.Empty;
+        if (groupOverrides[index1].groups.Length != 0)
         {
-          for (int index2 = 0; index2 < this.groupOverrides[index1].groups.Length; ++index2)
+          for (int index2 = 0; index2 < groupOverrides[index1].groups.Length; ++index2)
           {
             if (index2 > 0)
             {
               // ISSUE: explicit reference operation
-              ^ref this.groupOverrides[index1].name += ", ";
+              ^ref groupOverrides[index1].name += ", ";
             }
             // ISSUE: explicit reference operation
-            ^ref this.groupOverrides[index1].name += this.groupOverrides[index1].groups[index2].ToString();
+            ^ref groupOverrides[index1].name += groupOverrides[index1].groups[index2].ToString();
           }
         }
       }
@@ -445,16 +444,16 @@ namespace RootMotion.Dynamics
 
     public void Boost(float immunity, float impulseMlp)
     {
-      this.hasBoosted = true;
-      for (int muscleIndex = 0; muscleIndex < this.puppetMaster.muscles.Length; ++muscleIndex)
-        this.Boost(muscleIndex, immunity, impulseMlp);
+      hasBoosted = true;
+      for (int muscleIndex = 0; muscleIndex < puppetMaster.muscles.Length; ++muscleIndex)
+        Boost(muscleIndex, immunity, impulseMlp);
     }
 
     public void Boost(int muscleIndex, float immunity, float impulseMlp)
     {
-      this.hasBoosted = true;
-      this.BoostImmunity(muscleIndex, immunity);
-      this.BoostImpulseMlp(muscleIndex, impulseMlp);
+      hasBoosted = true;
+      BoostImmunity(muscleIndex, immunity);
+      BoostImpulseMlp(muscleIndex, impulseMlp);
     }
 
     public void Boost(
@@ -464,34 +463,34 @@ namespace RootMotion.Dynamics
       float boostParents,
       float boostChildren)
     {
-      this.hasBoosted = true;
-      if ((double) boostParents <= 0.0 && (double) boostChildren <= 0.0)
+      hasBoosted = true;
+      if (boostParents <= 0.0 && boostChildren <= 0.0)
       {
-        this.Boost(muscleIndex, immunity, impulseMlp);
+        Boost(muscleIndex, immunity, impulseMlp);
       }
       else
       {
-        for (int index = 0; index < this.puppetMaster.muscles.Length; ++index)
+        for (int index = 0; index < puppetMaster.muscles.Length; ++index)
         {
-          float falloff = this.GetFalloff(index, muscleIndex, boostParents, boostChildren);
-          this.Boost(index, immunity * falloff, impulseMlp * falloff);
+          float falloff = GetFalloff(index, muscleIndex, boostParents, boostChildren);
+          Boost(index, immunity * falloff, impulseMlp * falloff);
         }
       }
     }
 
     public void BoostImmunity(float immunity)
     {
-      this.hasBoosted = true;
-      if ((double) immunity < 0.0)
+      hasBoosted = true;
+      if (immunity < 0.0)
         return;
-      for (int muscleIndex = 0; muscleIndex < this.puppetMaster.muscles.Length; ++muscleIndex)
-        this.BoostImmunity(muscleIndex, immunity);
+      for (int muscleIndex = 0; muscleIndex < puppetMaster.muscles.Length; ++muscleIndex)
+        BoostImmunity(muscleIndex, immunity);
     }
 
     public void BoostImmunity(int muscleIndex, float immunity)
     {
-      this.hasBoosted = true;
-      this.puppetMaster.muscles[muscleIndex].state.immunity = Mathf.Clamp(immunity, this.puppetMaster.muscles[muscleIndex].state.immunity, 1f);
+      hasBoosted = true;
+      puppetMaster.muscles[muscleIndex].state.immunity = Mathf.Clamp(immunity, puppetMaster.muscles[muscleIndex].state.immunity, 1f);
     }
 
     public void BoostImmunity(
@@ -500,25 +499,25 @@ namespace RootMotion.Dynamics
       float boostParents,
       float boostChildren)
     {
-      this.hasBoosted = true;
-      for (int index = 0; index < this.puppetMaster.muscles.Length; ++index)
+      hasBoosted = true;
+      for (int index = 0; index < puppetMaster.muscles.Length; ++index)
       {
-        float falloff = this.GetFalloff(index, muscleIndex, boostParents, boostChildren);
-        this.BoostImmunity(index, immunity * falloff);
+        float falloff = GetFalloff(index, muscleIndex, boostParents, boostChildren);
+        BoostImmunity(index, immunity * falloff);
       }
     }
 
     public void BoostImpulseMlp(float impulseMlp)
     {
-      this.hasBoosted = true;
-      for (int muscleIndex = 0; muscleIndex < this.puppetMaster.muscles.Length; ++muscleIndex)
-        this.BoostImpulseMlp(muscleIndex, impulseMlp);
+      hasBoosted = true;
+      for (int muscleIndex = 0; muscleIndex < puppetMaster.muscles.Length; ++muscleIndex)
+        BoostImpulseMlp(muscleIndex, impulseMlp);
     }
 
     public void BoostImpulseMlp(int muscleIndex, float impulseMlp)
     {
-      this.hasBoosted = true;
-      this.puppetMaster.muscles[muscleIndex].state.impulseMlp = Mathf.Max(impulseMlp, this.puppetMaster.muscles[muscleIndex].state.impulseMlp);
+      hasBoosted = true;
+      puppetMaster.muscles[muscleIndex].state.impulseMlp = Mathf.Max(impulseMlp, puppetMaster.muscles[muscleIndex].state.impulseMlp);
     }
 
     public void BoostImpulseMlp(
@@ -527,61 +526,61 @@ namespace RootMotion.Dynamics
       float boostParents,
       float boostChildren)
     {
-      this.hasBoosted = true;
-      for (int index = 0; index < this.puppetMaster.muscles.Length; ++index)
+      hasBoosted = true;
+      for (int index = 0; index < puppetMaster.muscles.Length; ++index)
       {
-        float falloff = this.GetFalloff(index, muscleIndex, boostParents, boostChildren);
-        this.BoostImpulseMlp(index, impulseMlp * falloff);
+        float falloff = GetFalloff(index, muscleIndex, boostParents, boostChildren);
+        BoostImpulseMlp(index, impulseMlp * falloff);
       }
     }
 
     public void Unpin()
     {
       Debug.Log((object) "BehaviourPuppet.Unpin() has been deprecated. Use SetState(BehaviourPuppet.State) instead.");
-      this.SetState(BehaviourPuppet.State.Unpinned);
+      SetState(State.Unpinned);
     }
 
     protected override void OnMuscleHitBehaviour(MuscleHit hit)
     {
-      if (this.masterProps.normalMode == BehaviourPuppet.NormalMode.Kinematic)
-        this.puppetMaster.mode = PuppetMaster.Mode.Active;
-      this.UnPin(hit.muscleIndex, hit.unPin);
-      this.puppetMaster.muscles[hit.muscleIndex].rigidbody.isKinematic = false;
-      this.puppetMaster.muscles[hit.muscleIndex].rigidbody.AddForceAtPosition(hit.force, hit.position);
+      if (masterProps.normalMode == NormalMode.Kinematic)
+        puppetMaster.mode = PuppetMaster.Mode.Active;
+      UnPin(hit.muscleIndex, hit.unPin);
+      puppetMaster.muscles[hit.muscleIndex].rigidbody.isKinematic = false;
+      puppetMaster.muscles[hit.muscleIndex].rigidbody.AddForceAtPosition(hit.force, hit.position);
     }
 
     protected override void OnMuscleCollisionBehaviour(MuscleCollision m)
     {
-      if (!this.enabled || this.state == BehaviourPuppet.State.Unpinned || this.collisions > this.maxCollisions || !LayerMaskExtensions.Contains(this.collisionLayers, m.collision.gameObject.layer) || this.masterProps.normalMode == BehaviourPuppet.NormalMode.Kinematic && !this.puppetMaster.isActive && !this.masterProps.activateOnStaticCollisions && m.collision.gameObject.isStatic)
+      if (!this.enabled || state == State.Unpinned || collisions > maxCollisions || !LayerMaskExtensions.Contains(collisionLayers, m.collision.gameObject.layer) || masterProps.normalMode == NormalMode.Kinematic && !puppetMaster.isActive && !masterProps.activateOnStaticCollisions && m.collision.gameObject.isStatic)
         return;
       float collisionThreshold = this.collisionThreshold;
-      float impulse = this.GetImpulse(m, ref collisionThreshold);
-      if (this.OnCollisionImpulse != null)
-        this.OnCollisionImpulse(m, impulse);
-      float num1 = (UnityEngine.Object) Singleton<PuppetMasterSettings>.instance != (UnityEngine.Object) null ? (float) (1.0 + (double) Singleton<PuppetMasterSettings>.instance.currentlyActivePuppets * (double) Singleton<PuppetMasterSettings>.instance.activePuppetCollisionThresholdMlp) : 1f;
+      float impulse = GetImpulse(m, ref collisionThreshold);
+      if (OnCollisionImpulse != null)
+        OnCollisionImpulse(m, impulse);
+      float num1 = (UnityEngine.Object) Singleton<PuppetMasterSettings>.instance != (UnityEngine.Object) null ? (float) (1.0 + Singleton<PuppetMasterSettings>.instance.currentlyActivePuppets * (double) Singleton<PuppetMasterSettings>.instance.activePuppetCollisionThresholdMlp) : 1f;
       float num2 = collisionThreshold * num1;
-      if ((double) impulse <= (double) num2)
+      if (impulse <= (double) num2)
         return;
-      ++this.collisions;
+      ++collisions;
       if ((UnityEngine.Object) m.collision.collider.attachedRigidbody != (UnityEngine.Object) null)
       {
-        this.broadcaster = m.collision.collider.attachedRigidbody.GetComponent<MuscleCollisionBroadcaster>();
-        if ((UnityEngine.Object) this.broadcaster != (UnityEngine.Object) null && this.broadcaster.muscleIndex < this.broadcaster.puppetMaster.muscles.Length)
-          impulse *= this.broadcaster.puppetMaster.muscles[this.broadcaster.muscleIndex].state.impulseMlp;
+        broadcaster = m.collision.collider.attachedRigidbody.GetComponent<MuscleCollisionBroadcaster>();
+        if ((UnityEngine.Object) broadcaster != (UnityEngine.Object) null && broadcaster.muscleIndex < broadcaster.puppetMaster.muscles.Length)
+          impulse *= broadcaster.puppetMaster.muscles[broadcaster.muscleIndex].state.impulseMlp;
       }
-      if (this.Activate(m.collision, impulse))
-        this.puppetMaster.mode = PuppetMaster.Mode.Active;
-      this.UnPin(m.muscleIndex, impulse);
+      if (Activate(m.collision, impulse))
+        puppetMaster.mode = PuppetMaster.Mode.Active;
+      UnPin(m.muscleIndex, impulse);
     }
 
     private float GetImpulse(MuscleCollision m, ref float layerThreshold)
     {
-      float impulse = m.collision.impulse.sqrMagnitude / this.puppetMaster.muscles[m.muscleIndex].rigidbody.mass * 0.3f;
-      foreach (BehaviourPuppet.CollisionResistanceMultiplier resistanceMultiplier in this.collisionResistanceMultipliers)
+      float impulse = m.collision.impulse.sqrMagnitude / puppetMaster.muscles[m.muscleIndex].rigidbody.mass * 0.3f;
+      foreach (CollisionResistanceMultiplier resistanceMultiplier in collisionResistanceMultipliers)
       {
         if (LayerMaskExtensions.Contains(resistanceMultiplier.layers, m.collision.collider.gameObject.layer))
         {
-          if ((double) resistanceMultiplier.multiplier <= 0.0)
+          if (resistanceMultiplier.multiplier <= 0.0)
             impulse = float.PositiveInfinity;
           else
             impulse /= resistanceMultiplier.multiplier;
@@ -594,45 +593,45 @@ namespace RootMotion.Dynamics
 
     private void UnPin(int muscleIndex, float unpin)
     {
-      if (muscleIndex >= this.puppetMaster.muscles.Length)
+      if (muscleIndex >= puppetMaster.muscles.Length)
         return;
-      BehaviourPuppet.MuscleProps props = this.GetProps(this.puppetMaster.muscles[muscleIndex].props.group);
-      for (int index = 0; index < this.puppetMaster.muscles.Length; ++index)
-        this.UnPinMuscle(index, unpin * this.GetFalloff(index, muscleIndex, props.unpinParents, props.unpinChildren, props.unpinGroup));
-      this.hasCollidedSinceGetUp = true;
+      MuscleProps props = GetProps(puppetMaster.muscles[muscleIndex].props.group);
+      for (int index = 0; index < puppetMaster.muscles.Length; ++index)
+        UnPinMuscle(index, unpin * GetFalloff(index, muscleIndex, props.unpinParents, props.unpinChildren, props.unpinGroup));
+      hasCollidedSinceGetUp = true;
     }
 
     private void UnPinMuscle(int muscleIndex, float unpin)
     {
-      if ((double) unpin <= 0.0 || (double) this.puppetMaster.muscles[muscleIndex].state.immunity >= 1.0)
+      if (unpin <= 0.0 || puppetMaster.muscles[muscleIndex].state.immunity >= 1.0)
         return;
-      BehaviourPuppet.MuscleProps props = this.GetProps(this.puppetMaster.muscles[muscleIndex].props.group);
+      MuscleProps props = GetProps(puppetMaster.muscles[muscleIndex].props.group);
       float num1 = 1f;
-      if (this.state == BehaviourPuppet.State.GetUp)
-        num1 = Mathf.Lerp(this.getUpCollisionResistanceMlp, 1f, this.puppetMaster.muscles[muscleIndex].state.pinWeightMlp);
-      float num2 = this.collisionResistance.mode == Weight.Mode.Float ? this.collisionResistance.floatValue : this.collisionResistance.GetValue(this.puppetMaster.muscles[muscleIndex].targetVelocity.magnitude);
-      float num3 = unpin / (props.collisionResistance * num2 * num1) * (1f - this.puppetMaster.muscles[muscleIndex].state.immunity);
-      this.puppetMaster.muscles[muscleIndex].state.pinWeightMlp -= num3;
+      if (state == State.GetUp)
+        num1 = Mathf.Lerp(getUpCollisionResistanceMlp, 1f, puppetMaster.muscles[muscleIndex].state.pinWeightMlp);
+      float num2 = collisionResistance.mode == Weight.Mode.Float ? collisionResistance.floatValue : collisionResistance.GetValue(puppetMaster.muscles[muscleIndex].targetVelocity.magnitude);
+      float num3 = unpin / (props.collisionResistance * num2 * num1) * (1f - puppetMaster.muscles[muscleIndex].state.immunity);
+      puppetMaster.muscles[muscleIndex].state.pinWeightMlp -= num3;
     }
 
     private bool Activate(Collision collision, float impulse)
     {
-      if (this.masterProps.normalMode != BehaviourPuppet.NormalMode.Kinematic || this.puppetMaster.mode != PuppetMaster.Mode.Kinematic || (double) impulse < (double) this.masterProps.activateOnImpulse)
+      if (masterProps.normalMode != NormalMode.Kinematic || puppetMaster.mode != PuppetMaster.Mode.Kinematic || impulse < (double) masterProps.activateOnImpulse)
         return false;
-      return !collision.gameObject.isStatic || this.masterProps.activateOnStaticCollisions;
+      return !collision.gameObject.isStatic || masterProps.activateOnStaticCollisions;
     }
 
     public bool IsProne()
     {
-      return (double) Vector3.Dot(this.puppetMaster.muscles[0].transform.rotation * this.hipsForward, this.puppetMaster.targetRoot.up) < 0.0;
+      return (double) Vector3.Dot(puppetMaster.muscles[0].transform.rotation * hipsForward, puppetMaster.targetRoot.up) < 0.0;
     }
 
     private float GetFalloff(int i, int muscleIndex, float falloffParents, float falloffChildren)
     {
       if (i == muscleIndex)
         return 1f;
-      bool childFlag = this.puppetMaster.muscles[muscleIndex].childFlags[i];
-      int kinshipDegree = this.puppetMaster.muscles[muscleIndex].kinshipDegrees[i];
+      bool childFlag = puppetMaster.muscles[muscleIndex].childFlags[i];
+      int kinshipDegree = puppetMaster.muscles[muscleIndex].kinshipDegrees[i];
       return Mathf.Pow(childFlag ? falloffChildren : falloffParents, (float) kinshipDegree);
     }
 
@@ -643,8 +642,8 @@ namespace RootMotion.Dynamics
       float falloffChildren,
       float falloffGroup)
     {
-      float a = this.GetFalloff(i, muscleIndex, falloffParents, falloffChildren);
-      if ((double) falloffGroup > 0.0 && i != muscleIndex && this.InGroup(this.puppetMaster.muscles[i].props.group, this.puppetMaster.muscles[muscleIndex].props.group))
+      float a = GetFalloff(i, muscleIndex, falloffParents, falloffChildren);
+      if (falloffGroup > 0.0 && i != muscleIndex && InGroup(puppetMaster.muscles[i].props.group, puppetMaster.muscles[muscleIndex].props.group))
         a = Mathf.Max(a, falloffGroup);
       return a;
     }
@@ -653,7 +652,7 @@ namespace RootMotion.Dynamics
     {
       if (group1 == group2)
         return true;
-      foreach (BehaviourPuppet.MusclePropsGroup groupOverride in this.groupOverrides)
+      foreach (MusclePropsGroup groupOverride in groupOverrides)
       {
         foreach (Muscle.Group group3 in groupOverride.groups)
         {
@@ -670,9 +669,9 @@ namespace RootMotion.Dynamics
       return false;
     }
 
-    private BehaviourPuppet.MuscleProps GetProps(Muscle.Group group)
+    private MuscleProps GetProps(Muscle.Group group)
     {
-      foreach (BehaviourPuppet.MusclePropsGroup groupOverride in this.groupOverrides)
+      foreach (MusclePropsGroup groupOverride in groupOverrides)
       {
         foreach (Muscle.Group group1 in groupOverride.groups)
         {
@@ -680,136 +679,135 @@ namespace RootMotion.Dynamics
             return groupOverride.props;
         }
       }
-      return this.defaults;
+      return defaults;
     }
 
-    public void SetState(BehaviourPuppet.State newState)
+    public void SetState(State newState)
     {
-      if (this.state == newState)
+      if (state == newState)
         return;
       switch (newState)
       {
-        case BehaviourPuppet.State.Puppet:
-          this.puppetMaster.SampleTargetMappedState();
-          this.unpinnedTimer = 0.0f;
-          this.getUpTimer = 0.0f;
-          if (this.state == BehaviourPuppet.State.Unpinned)
+        case State.Puppet:
+          puppetMaster.SampleTargetMappedState();
+          unpinnedTimer = 0.0f;
+          getUpTimer = 0.0f;
+          if (state == State.Unpinned)
           {
-            foreach (Muscle muscle in this.puppetMaster.muscles)
+            foreach (Muscle muscle in puppetMaster.muscles)
             {
               muscle.state.pinWeightMlp = 1f;
               muscle.state.muscleWeightMlp = 1f;
               muscle.state.muscleDamperAdd = 0.0f;
-              this.SetColliders(muscle, false);
+              SetColliders(muscle, false);
             }
           }
-          this.state = BehaviourPuppet.State.Puppet;
-          if (this.eventsEnabled)
+          state = State.Puppet;
+          if (eventsEnabled)
           {
-            this.onRegainBalance.Trigger(this.puppetMaster);
-            if (this.onRegainBalance.switchBehaviour)
+            onRegainBalance.Trigger(puppetMaster);
+            if (onRegainBalance.switchBehaviour)
               return;
-            break;
           }
           break;
-        case BehaviourPuppet.State.Unpinned:
-          this.unpinnedTimer = 0.0f;
-          this.getUpTimer = 0.0f;
-          this.getupAnimationBlendWeight = 0.0f;
-          this.getupAnimationBlendWeightV = 0.0f;
-          foreach (Muscle muscle in this.puppetMaster.muscles)
+        case State.Unpinned:
+          unpinnedTimer = 0.0f;
+          getUpTimer = 0.0f;
+          getupAnimationBlendWeight = 0.0f;
+          getupAnimationBlendWeightV = 0.0f;
+          foreach (Muscle muscle in puppetMaster.muscles)
           {
-            if (this.hasBoosted)
+            if (hasBoosted)
               muscle.state.immunity = 0.0f;
-            if ((double) this.maxRigidbodyVelocity != double.PositiveInfinity)
-              muscle.rigidbody.velocity = Vector3.ClampMagnitude(muscle.rigidbody.velocity, this.maxRigidbodyVelocity);
-            this.SetColliders(muscle, true);
+            if (maxRigidbodyVelocity != double.PositiveInfinity)
+              muscle.rigidbody.velocity = Vector3.ClampMagnitude(muscle.rigidbody.velocity, maxRigidbodyVelocity);
+            SetColliders(muscle, true);
           }
-          if (this.dropProps)
-            this.dropPropFlag = true;
-          foreach (Muscle muscle in this.puppetMaster.muscles)
-            muscle.state.muscleWeightMlp = this.puppetMaster.isAlive ? this.unpinnedMuscleWeightMlp : this.puppetMaster.stateSettings.deadMuscleWeight;
-          this.onLoseBalance.Trigger(this.puppetMaster, this.puppetMaster.isAlive);
-          if (this.onLoseBalance.switchBehaviour)
+          if (dropProps)
+            dropPropFlag = true;
+          foreach (Muscle muscle in puppetMaster.muscles)
+            muscle.state.muscleWeightMlp = puppetMaster.isAlive ? unpinnedMuscleWeightMlp : puppetMaster.stateSettings.deadMuscleWeight;
+          onLoseBalance.Trigger(puppetMaster, puppetMaster.isAlive);
+          if (onLoseBalance.switchBehaviour)
           {
-            this.state = BehaviourPuppet.State.Unpinned;
+            state = State.Unpinned;
             return;
           }
-          if (this.state == BehaviourPuppet.State.Puppet)
+          if (state == State.Puppet)
           {
-            this.onLoseBalanceFromPuppet.Trigger(this.puppetMaster, this.puppetMaster.isAlive);
-            if (this.onLoseBalanceFromPuppet.switchBehaviour)
+            onLoseBalanceFromPuppet.Trigger(puppetMaster, puppetMaster.isAlive);
+            if (onLoseBalanceFromPuppet.switchBehaviour)
             {
-              this.state = BehaviourPuppet.State.Unpinned;
+              state = State.Unpinned;
               return;
             }
           }
           else
           {
-            this.onLoseBalanceFromGetUp.Trigger(this.puppetMaster, this.puppetMaster.isAlive);
-            if (this.onLoseBalanceFromGetUp.switchBehaviour)
+            onLoseBalanceFromGetUp.Trigger(puppetMaster, puppetMaster.isAlive);
+            if (onLoseBalanceFromGetUp.switchBehaviour)
             {
-              this.state = BehaviourPuppet.State.Unpinned;
+              state = State.Unpinned;
               return;
             }
           }
-          foreach (Muscle muscle in this.puppetMaster.muscles)
+          foreach (Muscle muscle in puppetMaster.muscles)
             muscle.state.pinWeightMlp = 0.0f;
           break;
-        case BehaviourPuppet.State.GetUp:
-          this.unpinnedTimer = 0.0f;
-          this.getUpTimer = 0.0f;
-          this.hasCollidedSinceGetUp = false;
-          bool flag = this.IsProne();
-          this.state = BehaviourPuppet.State.GetUp;
+        case State.GetUp:
+          unpinnedTimer = 0.0f;
+          getUpTimer = 0.0f;
+          hasCollidedSinceGetUp = false;
+          bool flag = IsProne();
+          state = State.GetUp;
           if (flag)
           {
-            this.onGetUpProne.Trigger(this.puppetMaster);
-            if (this.onGetUpProne.switchBehaviour)
+            onGetUpProne.Trigger(puppetMaster);
+            if (onGetUpProne.switchBehaviour)
               return;
           }
           else
           {
-            this.onGetUpSupine.Trigger(this.puppetMaster);
-            if (this.onGetUpSupine.switchBehaviour)
+            onGetUpSupine.Trigger(puppetMaster);
+            if (onGetUpSupine.switchBehaviour)
               return;
           }
-          foreach (Muscle muscle in this.puppetMaster.muscles)
+          foreach (Muscle muscle in puppetMaster.muscles)
           {
             muscle.state.muscleWeightMlp = 0.0f;
             muscle.state.pinWeightMlp = 0.0f;
             muscle.state.muscleDamperAdd = 0.0f;
-            this.SetColliders(muscle, false);
+            SetColliders(muscle, false);
           }
-          Vector3 tangent = this.puppetMaster.muscles[0].rigidbody.rotation * this.hipsUp;
-          Vector3 up = this.puppetMaster.targetRoot.up;
+          Vector3 tangent = puppetMaster.muscles[0].rigidbody.rotation * hipsUp;
+          Vector3 up = puppetMaster.targetRoot.up;
           Vector3.OrthoNormalize(ref up, ref tangent);
-          this.RotateTarget(Quaternion.LookRotation(flag ? tangent : -tangent, this.puppetMaster.targetRoot.up));
-          this.puppetMaster.SampleTargetMappedState();
-          this.MoveTarget(this.puppetMaster.muscles[0].rigidbody.position + this.puppetMaster.targetRoot.rotation * (flag ? this.getUpOffsetProne : this.getUpOffsetSupine));
-          this.GroundTarget(this.groundLayers);
-          this.getUpPosition = this.puppetMaster.targetRoot.position;
-          this.getupAnimationBlendWeight = 1f;
-          this.getUpTargetFixed = false;
+          RotateTarget(Quaternion.LookRotation(flag ? tangent : -tangent, puppetMaster.targetRoot.up));
+          puppetMaster.SampleTargetMappedState();
+          MoveTarget(puppetMaster.muscles[0].rigidbody.position + puppetMaster.targetRoot.rotation * (flag ? getUpOffsetProne : getUpOffsetSupine));
+          GroundTarget(groundLayers);
+          getUpPosition = puppetMaster.targetRoot.position;
+          getupAnimationBlendWeight = 1f;
+          getUpTargetFixed = false;
           break;
       }
-      this.state = newState;
+      state = newState;
     }
 
     public void SetColliders(bool unpinned)
     {
-      foreach (Muscle muscle in this.puppetMaster.muscles)
-        this.SetColliders(muscle, unpinned);
+      foreach (Muscle muscle in puppetMaster.muscles)
+        SetColliders(muscle, unpinned);
     }
 
     private void SetColliders(Muscle m, bool unpinned)
     {
-      BehaviourPuppet.MuscleProps props = this.GetProps(m.props.group);
+      MuscleProps props = GetProps(m.props.group);
       if (unpinned)
       {
         foreach (Collider collider in m.colliders)
         {
-          collider.material = (UnityEngine.Object) props.unpinnedMaterial != (UnityEngine.Object) null ? props.unpinnedMaterial : this.defaults.unpinnedMaterial;
+          collider.material = (UnityEngine.Object) props.unpinnedMaterial != (UnityEngine.Object) null ? props.unpinnedMaterial : defaults.unpinnedMaterial;
           if (props.disableColliders)
             collider.enabled = true;
         }
@@ -818,7 +816,7 @@ namespace RootMotion.Dynamics
       {
         foreach (Collider collider in m.colliders)
         {
-          collider.material = (UnityEngine.Object) props.puppetMaterial != (UnityEngine.Object) null ? props.puppetMaterial : this.defaults.puppetMaterial;
+          collider.material = (UnityEngine.Object) props.puppetMaterial != (UnityEngine.Object) null ? props.puppetMaterial : defaults.puppetMaterial;
           if (props.disableColliders)
             collider.enabled = false;
         }
@@ -844,10 +842,10 @@ namespace RootMotion.Dynamics
     [Serializable]
     public class MasterProps
     {
-      public BehaviourPuppet.NormalMode normalMode;
+      public NormalMode normalMode;
       public float mappingBlendSpeed = 10f;
       public bool activateOnStaticCollisions;
-      public float activateOnImpulse = 0.0f;
+      public float activateOnImpulse;
     }
 
     [Serializable]
@@ -890,7 +888,7 @@ namespace RootMotion.Dynamics
       [Tooltip("Muscle groups to which those properties apply.")]
       public Muscle.Group[] groups;
       [Tooltip("The muscle properties for those muscle groups.")]
-      public BehaviourPuppet.MuscleProps props;
+      public MuscleProps props;
     }
 
     [Serializable]

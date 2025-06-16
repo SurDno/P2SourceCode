@@ -1,9 +1,9 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons.Cloneable;
 using Engine.Common.Commons.Converters;
 using Expressions;
-using System;
 
 namespace Engine.Source.Proxies
 {
@@ -18,27 +18,27 @@ namespace Engine.Source.Proxies
     public object Clone()
     {
       MaxIntOperation_Generated instance = Activator.CreateInstance<MaxIntOperation_Generated>();
-      this.CopyTo((object) instance);
-      return (object) instance;
+      CopyTo(instance);
+      return instance;
     }
 
     public void CopyTo(object target2)
     {
       MaxIntOperation_Generated operationGenerated = (MaxIntOperation_Generated) target2;
-      operationGenerated.a = CloneableObjectUtility.Clone<IValue<int>>(this.a);
-      operationGenerated.b = CloneableObjectUtility.Clone<IValue<int>>(this.b);
+      operationGenerated.a = CloneableObjectUtility.Clone(a);
+      operationGenerated.b = CloneableObjectUtility.Clone(b);
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.WriteSerialize<IValue<int>>(writer, "Left", this.a);
-      DefaultDataWriteUtility.WriteSerialize<IValue<int>>(writer, "Right", this.b);
+      DefaultDataWriteUtility.WriteSerialize(writer, "Left", a);
+      DefaultDataWriteUtility.WriteSerialize(writer, "Right", b);
     }
 
     public void DataRead(IDataReader reader, Type type)
     {
-      this.a = DefaultDataReadUtility.ReadSerialize<IValue<int>>(reader, "Left");
-      this.b = DefaultDataReadUtility.ReadSerialize<IValue<int>>(reader, "Right");
+      a = DefaultDataReadUtility.ReadSerialize<IValue<int>>(reader, "Left");
+      b = DefaultDataReadUtility.ReadSerialize<IValue<int>>(reader, "Right");
     }
   }
 }

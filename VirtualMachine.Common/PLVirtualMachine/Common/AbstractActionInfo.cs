@@ -1,6 +1,6 @@
-﻿using PLVirtualMachine.Common.Data;
+﻿using System.Collections.Generic;
+using PLVirtualMachine.Common.Data;
 using PLVirtualMachine.Common.EngineAPI;
-using System.Collections.Generic;
 
 namespace PLVirtualMachine.Common
 {
@@ -11,32 +11,32 @@ namespace PLVirtualMachine.Common
     private IEventRef targetEvent;
     private bool isValid;
 
-    public AbstractActionInfo(IAbstractAction actionInstance) => this.instance = actionInstance;
+    public AbstractActionInfo(IAbstractAction actionInstance) => instance = actionInstance;
 
-    public BaseFunction TargetFunctionInstance => this.targetFunction;
+    public BaseFunction TargetFunctionInstance => targetFunction;
 
-    public bool IsValid => this.isValid;
+    public bool IsValid => isValid;
 
     public void Update()
     {
-      this.isValid = true;
+      isValid = true;
       IGameRoot gameRoot = IStaticDataContainer.StaticDataContainer.GameRoot;
-      if (this.instance.ActionType == EActionType.ACTION_TYPE_NONE)
+      if (instance.ActionType == EActionType.ACTION_TYPE_NONE)
         return;
-      CommonVariable targetObject = this.instance.TargetObject;
+      CommonVariable targetObject = instance.TargetObject;
       if (targetObject == null)
       {
-        this.isValid = false;
+        isValid = false;
       }
       else
       {
-        IContextElement contextElement = (IContextElement) null;
-        if (typeof (IContextElement).IsAssignableFrom(this.instance.GetType()))
-          contextElement = (IContextElement) this.instance;
+        IContextElement contextElement = null;
+        if (typeof (IContextElement).IsAssignableFrom(instance.GetType()))
+          contextElement = (IContextElement) instance;
         IGameObjectContext ownerContext1 = (IGameObjectContext) gameRoot;
-        if (this.instance.LocalContext != null && this.instance.LocalContext.Owner != null)
-          ownerContext1 = (IGameObjectContext) this.instance.LocalContext.Owner;
-        targetObject.Bind((IContext) ownerContext1, new VMType(typeof (IObjRef)), this.instance.LocalContext, contextElement);
+        if (instance.LocalContext != null && instance.LocalContext.Owner != null)
+          ownerContext1 = (IGameObjectContext) instance.LocalContext.Owner;
+        targetObject.Bind(ownerContext1, new VMType(typeof (IObjRef)), instance.LocalContext, contextElement);
         if (targetObject.IsBinded)
         {
           if (targetObject.VariableContext != null)
@@ -44,36 +44,36 @@ namespace PLVirtualMachine.Common
             IContext variableContext = targetObject.VariableContext;
             if (typeof (IBlueprint).IsAssignableFrom(variableContext.GetType()) && !((ILogicObject) variableContext).Static && ownerContext1 != null && typeof (IBlueprint).IsAssignableFrom(ownerContext1.GetType()) && !((IBlueprint) ownerContext1).IsDerivedFrom(((IEditorBaseTemplate) variableContext).BaseGuid, true))
             {
-              this.isValid = false;
+              isValid = false;
               return;
             }
           }
           List<VMType> vmTypeList = new List<VMType>();
-          if (this.instance.ActionType == EActionType.ACTION_TYPE_DO_FUNCTION)
+          if (instance.ActionType == EActionType.ACTION_TYPE_DO_FUNCTION)
           {
-            this.targetFunction = (BaseFunction) null;
-            IVariable contextVariable = targetObject.GetContextVariable(this.instance.TargetFunction);
+            targetFunction = null;
+            IVariable contextVariable = targetObject.GetContextVariable(instance.TargetFunction);
             if (contextVariable == null)
             {
-              if (typeof (IAbstractEditableAction).IsAssignableFrom(this.instance.GetType()))
-                ((IAbstractEditableAction) this.instance).CheckFunctionUpdate();
-              contextVariable = targetObject.GetContextVariable(this.instance.TargetFunction);
+              if (typeof (IAbstractEditableAction).IsAssignableFrom(instance.GetType()))
+                ((IAbstractEditableAction) instance).CheckFunctionUpdate();
+              contextVariable = targetObject.GetContextVariable(instance.TargetFunction);
             }
             if (contextVariable != null && typeof (BaseFunction).IsAssignableFrom(contextVariable.GetType()))
-              this.targetFunction = (BaseFunction) contextVariable;
-            if (this.targetFunction != null)
+              targetFunction = (BaseFunction) contextVariable;
+            if (targetFunction != null)
             {
-              for (int index = 0; index < this.targetFunction.InputParams.Count; ++index)
-                vmTypeList.Add(this.targetFunction.InputParams[index].Type);
-              if (this.instance.TargetParam != null && !this.instance.TargetParam.IsNull && this.targetFunction.HasOutput)
+              for (int index = 0; index < targetFunction.InputParams.Count; ++index)
+                vmTypeList.Add(targetFunction.InputParams[index].Type);
+              if (instance.TargetParam != null && !instance.TargetParam.IsNull && targetFunction.HasOutput)
               {
-                ILocalContext localContext = this.instance.LocalContext;
+                ILocalContext localContext = instance.LocalContext;
                 if (localContext != null && localContext.Owner != null)
                 {
-                  this.instance.TargetParam.Bind((IContext) localContext.Owner, this.targetFunction.OutputParam.Type, localContext);
-                  if (!this.instance.TargetParam.IsBinded)
+                  instance.TargetParam.Bind((IContext) localContext.Owner, targetFunction.OutputParam.Type, localContext);
+                  if (!instance.TargetParam.IsBinded)
                   {
-                    this.isValid = false;
+                    isValid = false;
                     return;
                   }
                 }
@@ -81,106 +81,106 @@ namespace PLVirtualMachine.Common
             }
             else
             {
-              this.isValid = false;
+              isValid = false;
               return;
             }
           }
-          else if (this.instance.ActionType == EActionType.ACTION_TYPE_SET_PARAM || this.instance.ActionType == EActionType.ACTION_TYPE_MATH || this.instance.ActionType == EActionType.ACTION_TYPE_SET_EXPRESSION)
+          else if (instance.ActionType == EActionType.ACTION_TYPE_SET_PARAM || instance.ActionType == EActionType.ACTION_TYPE_MATH || instance.ActionType == EActionType.ACTION_TYPE_SET_EXPRESSION)
           {
-            this.targetFunction = (BaseFunction) null;
-            ILocalContext localContext = this.instance.LocalContext;
+            targetFunction = null;
+            ILocalContext localContext = instance.LocalContext;
             IContext ownerContext2 = (IContext) localContext.Owner;
             if (targetObject != null && targetObject.VariableContext != null)
               ownerContext2 = targetObject.VariableContext;
-            this.instance.TargetParam.Bind(ownerContext2, localContext: localContext, contextElement: contextElement);
-            if (this.instance.TargetParam.IsBinded)
+            instance.TargetParam.Bind(ownerContext2, localContext: localContext, contextElement: contextElement);
+            if (instance.TargetParam.IsBinded)
             {
-              VMType type = this.instance.TargetParam.Type;
-              if (this.instance.ActionType == EActionType.ACTION_TYPE_MATH && !type.IsNumber)
+              VMType type = instance.TargetParam.Type;
+              if (instance.ActionType == EActionType.ACTION_TYPE_MATH && !type.IsNumber)
               {
-                this.isValid = false;
+                isValid = false;
                 return;
               }
-              if (this.instance.ActionType == EActionType.ACTION_TYPE_MATH && this.instance.MathOperationType == EMathOperationType.ACTION_OPERATION_TYPE_NONE)
+              if (instance.ActionType == EActionType.ACTION_TYPE_MATH && instance.MathOperationType == EMathOperationType.ACTION_OPERATION_TYPE_NONE)
               {
-                this.isValid = false;
+                isValid = false;
                 return;
               }
-              vmTypeList.Add(this.instance.TargetParam.Type);
+              vmTypeList.Add(instance.TargetParam.Type);
             }
             else
             {
-              this.isValid = false;
+              isValid = false;
               return;
             }
           }
-          else if (this.instance.ActionType == EActionType.ACTION_TYPE_RAISE_EVENT)
+          else if (instance.ActionType == EActionType.ACTION_TYPE_RAISE_EVENT)
           {
-            this.targetFunction = (BaseFunction) null;
-            this.targetEvent = (IEventRef) null;
-            IVariable contextVariable = targetObject.GetContextVariable(this.instance.TargetFunction);
+            targetFunction = null;
+            targetEvent = null;
+            IVariable contextVariable = targetObject.GetContextVariable(instance.TargetFunction);
             if (contextVariable != null && typeof (IEventRef).IsAssignableFrom(contextVariable.GetType()))
-              this.targetEvent = (IEventRef) contextVariable;
-            if (this.targetEvent == null)
+              targetEvent = (IEventRef) contextVariable;
+            if (targetEvent == null)
             {
-              this.isValid = false;
+              isValid = false;
               return;
             }
-            for (int index = 0; index < this.targetEvent.Event.ReturnMessages.Count; ++index)
-              vmTypeList.Add(this.targetEvent.Event.ReturnMessages[index].Type);
+            for (int index = 0; index < targetEvent.Event.ReturnMessages.Count; ++index)
+              vmTypeList.Add(targetEvent.Event.ReturnMessages[index].Type);
           }
           if (vmTypeList.Count <= 0)
             return;
-          if (this.instance.ActionType == EActionType.ACTION_TYPE_SET_EXPRESSION && typeof (ISingleAction).IsAssignableFrom(this.instance.GetType()))
+          if (instance.ActionType == EActionType.ACTION_TYPE_SET_EXPRESSION && typeof (ISingleAction).IsAssignableFrom(instance.GetType()))
           {
-            if (((ISingleAction) this.instance).SourceExpression == null)
+            if (((ISingleAction) instance).SourceExpression == null)
             {
-              this.isValid = false;
+              isValid = false;
             }
             else
             {
-              if (!((ISingleAction) this.instance).SourceExpression.IsValid)
-                ((ISingleAction) this.instance).SourceExpression.Update();
-              if (VMTypeUtility.IsTypesCompatible(this.instance.TargetParam.Type, ((ISingleAction) this.instance).SourceExpression.ResultType))
+              if (!((ISingleAction) instance).SourceExpression.IsValid)
+                ((ISingleAction) instance).SourceExpression.Update();
+              if (VMTypeUtility.IsTypesCompatible(instance.TargetParam.Type, ((ISingleAction) instance).SourceExpression.ResultType))
                 return;
-              this.isValid = false;
+              isValid = false;
             }
           }
-          else if (this.instance.SourceConstant != null && vmTypeList.Count == 1)
+          else if (instance.SourceConstant != null && vmTypeList.Count == 1)
           {
-            if (VMTypeUtility.IsTypesCompatible(vmTypeList[0], this.instance.SourceConstant.Type))
+            if (VMTypeUtility.IsTypesCompatible(vmTypeList[0], instance.SourceConstant.Type))
               return;
-            this.isValid = false;
+            isValid = false;
           }
           else
           {
             for (int index = 0; index < vmTypeList.Count; ++index)
             {
-              if (index >= this.instance.SourceParams.Count)
+              if (index >= instance.SourceParams.Count)
               {
-                this.isValid = false;
+                isValid = false;
               }
               else
               {
-                ILocalContext localContext = this.instance.LocalContext;
-                CommonVariable sourceParam = this.instance.SourceParams[index];
+                ILocalContext localContext = instance.LocalContext;
+                CommonVariable sourceParam = instance.SourceParams[index];
                 sourceParam.Bind((IContext) localContext.Owner, vmTypeList[index], localContext, contextElement);
                 if (!sourceParam.IsBinded)
-                  this.isValid = false;
+                  isValid = false;
               }
             }
           }
         }
         else
-          this.isValid = false;
+          isValid = false;
       }
     }
 
     public void Clear()
     {
-      this.instance = (IAbstractAction) null;
-      this.targetFunction = (BaseFunction) null;
-      this.targetEvent = (IEventRef) null;
+      instance = null;
+      targetFunction = null;
+      targetEvent = null;
     }
   }
 }

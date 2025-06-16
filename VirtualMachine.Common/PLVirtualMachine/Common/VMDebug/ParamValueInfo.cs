@@ -10,9 +10,9 @@ namespace PLVirtualMachine.Common.VMDebug
 
     public ParamValueInfo(ulong paramGuid, Type paramType, object paramValue)
     {
-      this.ParamGuid = paramGuid;
-      this.ParamValueType = paramType;
-      this.ParamValue = paramValue;
+      ParamGuid = paramGuid;
+      ParamValueType = paramType;
+      ParamValue = paramValue;
     }
   }
 }

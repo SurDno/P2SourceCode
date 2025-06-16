@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 [Serializable]
 public class POIAnimationSetupQuick : POIAnimationSetupBase
@@ -12,7 +11,7 @@ public class POIAnimationSetupQuick : POIAnimationSetupBase
   {
     get
     {
-      return new List<POIAnimationSetupElementBase>((IEnumerable<POIAnimationSetupElementBase>) this.ElementsNew);
+      return new List<POIAnimationSetupElementBase>(ElementsNew);
     }
   }
 }

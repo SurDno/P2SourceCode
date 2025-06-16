@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-public class PrefabAnchor : MonoBehaviour
+﻿public class PrefabAnchor : MonoBehaviour
 {
   [SerializeField]
   private GameObject prefab;
@@ -12,35 +10,35 @@ public class PrefabAnchor : MonoBehaviour
 
   private void OnEnable()
   {
-    if ((Object) this.instance == (Object) null)
+    if ((Object) instance == (Object) null)
     {
-      if (!((Object) this.prefab != (Object) null))
+      if (!((Object) prefab != (Object) null))
         return;
-      this.instance = !this.worldSpace ? Object.Instantiate<GameObject>(this.prefab, this.transform, false) : Object.Instantiate<GameObject>(this.prefab);
-      this.instance.name = this.prefab.name;
+      instance = !worldSpace ? Object.Instantiate<GameObject>(prefab, this.transform, false) : Object.Instantiate<GameObject>(prefab);
+      instance.name = prefab.name;
     }
     else
     {
-      if (!this.worldSpace)
+      if (!worldSpace)
         return;
-      this.instance.SetActive(true);
+      instance.SetActive(true);
     }
   }
 
   private void OnDisable()
   {
-    if ((Object) this.instance == (Object) null)
+    if ((Object) instance == (Object) null)
       return;
-    if (this.destroyOnDisable)
+    if (destroyOnDisable)
     {
-      Object.Destroy((Object) this.instance);
-      this.instance = (GameObject) null;
+      Object.Destroy((Object) instance);
+      instance = (GameObject) null;
     }
     else
     {
-      if (!this.worldSpace)
+      if (!worldSpace)
         return;
-      this.instance.SetActive(false);
+      instance.SetActive(false);
     }
   }
 }

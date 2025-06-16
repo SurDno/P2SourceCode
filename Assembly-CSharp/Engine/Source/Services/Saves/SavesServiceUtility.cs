@@ -1,40 +1,38 @@
-﻿using Cofe.Serializations.Data;
-using Cofe.Serializations.Data.Xml;
-using Engine.Source.Saves;
-using System;
+﻿using System;
 using System.IO;
 using System.IO.Compression;
 using System.Text;
 using System.Xml;
-using UnityEngine;
+using Cofe.Serializations.Data.Xml;
+using Engine.Source.Saves;
 
 namespace Engine.Source.Services.Saves
 {
   public static class SavesServiceUtility
   {
-    public static XmlDocument LoadDocument(string fileName)
-    {
+    public static XmlDocument LoadDocument(string fileName) {
       if (File.Exists(fileName + ".gz"))
       {
         try
         {
           using (FileStream fileStream = File.OpenRead(fileName + ".gz"))
           {
-            using (GZipStream inStream = new GZipStream((Stream) fileStream, CompressionMode.Decompress))
+            using (GZipStream inStream = new GZipStream(fileStream, CompressionMode.Decompress))
             {
               XmlDocument xmlDocument = new XmlDocument();
-              xmlDocument.Load((Stream) inStream);
+              xmlDocument.Load(inStream);
               return xmlDocument;
             }
           }
         }
         catch (Exception ex)
         {
-          Debug.LogError((object) ("Error open file : " + fileName + ".gz , error : " + (object) ex));
-          return (XmlDocument) null;
+          Debug.LogError((object) ("Error open file : " + fileName + ".gz , error : " + ex));
+          return null;
         }
       }
-      else if (File.Exists(fileName))
+
+      if (File.Exists(fileName))
       {
         try
         {
@@ -44,15 +42,13 @@ namespace Engine.Source.Services.Saves
         }
         catch (Exception ex)
         {
-          Debug.LogError((object) ("Error open file : " + fileName + " , error : " + (object) ex));
-          return (XmlDocument) null;
+          Debug.LogError((object) ("Error open file : " + fileName + " , error : " + ex));
+          return null;
         }
       }
-      else
-      {
-        Debug.LogError((object) ("File not found : " + fileName));
-        return (XmlDocument) null;
-      }
+
+      Debug.LogError((object) ("File not found : " + fileName));
+      return null;
     }
 
     public static void SaveToFile(
@@ -65,13 +61,13 @@ namespace Engine.Source.Services.Saves
       {
         using (FileStream fileStream = File.Create(fileName + ".gz"))
         {
-          using (GZipStream gzipStream = new GZipStream((Stream) fileStream, CompressionMode.Compress))
+          using (GZipStream gzipStream = new GZipStream(fileStream, CompressionMode.Compress))
           {
-            using (StreamWriter stream = new StreamWriter((Stream) gzipStream, Encoding.UTF8))
+            using (StreamWriter stream = new StreamWriter(gzipStream, Encoding.UTF8))
             {
               StreamDataWriter element = new StreamDataWriter(stream);
-              element.Begin(nodeName, (System.Type) null, true);
-              serializable.Save((IDataWriter) element, fileName);
+              element.Begin(nodeName, null, true);
+              serializable.Save(element, fileName);
               element.End(nodeName, true);
             }
           }
@@ -82,8 +78,8 @@ namespace Engine.Source.Services.Saves
         using (StreamWriter stream = new StreamWriter(fileName, false, Encoding.UTF8))
         {
           StreamDataWriter element = new StreamDataWriter(stream);
-          element.Begin(nodeName, (System.Type) null, true);
-          serializable.Save((IDataWriter) element, fileName);
+          element.Begin(nodeName, null, true);
+          serializable.Save(element, fileName);
           element.End(nodeName, true);
         }
       }

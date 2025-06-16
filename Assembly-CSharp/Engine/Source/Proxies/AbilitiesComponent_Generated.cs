@@ -1,11 +1,9 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
-using Engine.Common.Commons;
 using Engine.Common.Commons.Cloneable;
 using Engine.Source.Components;
-using Engine.Source.Connections;
 using Scripts.Tools.Serializations.Converters;
-using System;
 
 namespace Engine.Source.Proxies
 {
@@ -22,23 +20,23 @@ namespace Engine.Source.Proxies
     public object Clone()
     {
       AbilitiesComponent_Generated instance = Activator.CreateInstance<AbilitiesComponent_Generated>();
-      this.CopyTo((object) instance);
-      return (object) instance;
+      CopyTo(instance);
+      return instance;
     }
 
     public void CopyTo(object target2)
     {
-      CloneableObjectUtility.FillListTo<Typed<IAbility>>(((AbilitiesComponent) target2).resourceAbilities, this.resourceAbilities);
+      CloneableObjectUtility.FillListTo(((AbilitiesComponent) target2).resourceAbilities, resourceAbilities);
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      UnityDataWriteUtility.WriteList<IAbility>(writer, "Abilities", this.resourceAbilities);
+      UnityDataWriteUtility.WriteList(writer, "Abilities", resourceAbilities);
     }
 
     public void DataRead(IDataReader reader, Type type)
     {
-      this.resourceAbilities = UnityDataReadUtility.ReadList<IAbility>(reader, "Abilities", this.resourceAbilities);
+      resourceAbilities = UnityDataReadUtility.ReadList(reader, "Abilities", resourceAbilities);
     }
 
     public void StateSave(IDataWriter writer)

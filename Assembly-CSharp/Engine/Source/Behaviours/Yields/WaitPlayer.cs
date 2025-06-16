@@ -2,7 +2,6 @@
 using Engine.Common.Services;
 using Engine.Source.Commons;
 using Engine.Source.Components;
-using UnityEngine;
 
 namespace Engine.Source.Behaviours.Yields
 {

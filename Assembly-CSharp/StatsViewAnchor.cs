@@ -1,8 +1,6 @@
-﻿using UnityEngine;
-
-public class StatsViewAnchor : MonoBehaviour
+﻿public class StatsViewAnchor : MonoBehaviour
 {
-  private static StatsView viewInstance = (StatsView) null;
+  private static StatsView viewInstance = null;
   [SerializeField]
   private StatsView prefab;
   [SerializeField]
@@ -10,10 +8,10 @@ public class StatsViewAnchor : MonoBehaviour
 
   private void OnEnable()
   {
-    if ((Object) StatsViewAnchor.viewInstance == (Object) null)
-      StatsViewAnchor.viewInstance = Object.Instantiate<StatsView>(this.prefab, this.transform, false);
+    if ((Object) viewInstance == (Object) null)
+      viewInstance = Object.Instantiate<StatsView>(prefab, this.transform, false);
     else
-      StatsViewAnchor.viewInstance.transform.SetParent(this.transform, false);
-    StatsViewAnchor.viewInstance.SetFullVersion(this.fullVersion);
+      viewInstance.transform.SetParent(this.transform, false);
+    viewInstance.SetFullVersion(fullVersion);
   }
 }

@@ -1,12 +1,11 @@
-﻿using Engine.Behaviours.Components;
+﻿using System;
+using System.Collections;
+using Engine.Behaviours.Components;
 using Engine.Common.Services;
 using Engine.Source.Components.Utilities;
 using Engine.Source.Services.CameraServices;
 using Inspectors;
 using RootMotion.FinalIK;
-using System;
-using System.Collections;
-using UnityEngine;
 
 namespace Engine.Behaviours.Engines.Controllers
 {
@@ -42,8 +41,8 @@ namespace Engine.Behaviours.Engines.Controllers
     private float initialLookAtHeadWeight;
     private GameObject targetAimDummy;
     private GameObject lookAtTargetDummy;
-    private float weightAim = 0.0f;
-    private float weigthLookAt = 0.0f;
+    private float weightAim;
+    private float weigthLookAt;
     private Coroutine coroutine;
     private bool lookEyeContactOnly;
     private WaitForFixedUpdate waitForFixedUpdate = new WaitForFixedUpdate();
@@ -56,31 +55,31 @@ namespace Engine.Behaviours.Engines.Controllers
 
     public Transform WeaponTarget
     {
-      set => this.weaponTarget = value;
-      get => this.weaponTarget;
+      set => weaponTarget = value;
+      get => weaponTarget;
     }
 
     public Pivot.AimWeaponType WeaponAimTo
     {
-      set => this.weaponAimTo = value;
-      get => this.weaponAimTo;
+      set => weaponAimTo = value;
+      get => weaponAimTo;
     }
 
     public Transform LookTarget
     {
-      get => this.lookAtTarget;
+      get => lookAtTarget;
       set
       {
         if ((UnityEngine.Object) value == (UnityEngine.Object) null)
         {
-          this.lookAtTarget = (Transform) null;
+          lookAtTarget = (Transform) null;
         }
         else
         {
           PivotPlayer component1 = value.GetComponent<PivotPlayer>();
           if ((UnityEngine.Object) component1 != (UnityEngine.Object) null)
           {
-            this.lookAtTarget = component1.AnimatedCameraBone;
+            lookAtTarget = component1.AnimatedCameraBone;
           }
           else
           {
@@ -88,10 +87,10 @@ namespace Engine.Behaviours.Engines.Controllers
             if ((UnityEngine.Object) component2 != (UnityEngine.Object) null)
             {
               Transform aimTransform = component2.GetAimTransform(Pivot.AimWeaponType.Head);
-              this.lookAtTarget = !((UnityEngine.Object) aimTransform != (UnityEngine.Object) null) ? value : aimTransform;
+              lookAtTarget = !((UnityEngine.Object) aimTransform != (UnityEngine.Object) null) ? value : aimTransform;
             }
             else
-              this.lookAtTarget = value;
+              lookAtTarget = value;
           }
         }
       }
@@ -99,87 +98,87 @@ namespace Engine.Behaviours.Engines.Controllers
 
     public bool LookEyeContactOnly
     {
-      get => this.TestMode ? this.TestModeLookEyeContactOnly : this.lookEyeContactOnly;
-      set => this.lookEyeContactOnly = value;
+      get => TestMode ? TestModeLookEyeContactOnly : lookEyeContactOnly;
+      set => lookEyeContactOnly = value;
     }
 
     public bool StopIfOutOfLimits { get; set; }
 
     private void Awake()
     {
-      if ((UnityEngine.Object) this.pivot == (UnityEngine.Object) null)
+      if ((UnityEngine.Object) pivot == (UnityEngine.Object) null)
         Debug.LogError((object) (this.gameObject.name + " doesn't contain " + typeof (Pivot).Name + " unity component."));
-      else if ((UnityEngine.Object) this.animator == (UnityEngine.Object) null)
+      else if ((UnityEngine.Object) animator == (UnityEngine.Object) null)
       {
         Debug.LogError((object) (this.gameObject.name + " doesn't contain " + typeof (Animator).Name + " unity component."));
       }
       else
       {
-        if ((UnityEngine.Object) this.aimIK != (UnityEngine.Object) null)
+        if ((UnityEngine.Object) aimIK != (UnityEngine.Object) null)
         {
-          this.targetAimDummy = new GameObject("[AimWeapon] Target Dummy");
-          this.targetAimDummy.transform.parent = this.transform;
-          if ((UnityEngine.Object) this.pivot.AimTransform != (UnityEngine.Object) null)
-            this.aimIK.solver.transform = this.pivot.AimTransform.transform;
-          this.aimIK.solver.axis = this.pivot.AimAxis.normalized;
-          this.aimIK.solver.poleAxis = this.pivot.PoleAxis.normalized;
-          this.aimIK.solver.target = this.targetAimDummy.transform;
-          IKSolverAim solver1 = this.aimIK.solver;
-          solver1.OnPreUpdate = solver1.OnPreUpdate + new IKSolver.UpdateDelegate(this.PreAimUpdate);
-          IKSolverAim solver2 = this.aimIK.solver;
-          solver2.OnPostUpdate = solver2.OnPostUpdate + new IKSolver.UpdateDelegate(this.PostAimUpdate);
-          this.aimIK.solver.IKPositionWeight = 0.0f;
+          targetAimDummy = new GameObject("[AimWeapon] Target Dummy");
+          targetAimDummy.transform.parent = this.transform;
+          if ((UnityEngine.Object) pivot.AimTransform != (UnityEngine.Object) null)
+            aimIK.solver.transform = pivot.AimTransform.transform;
+          aimIK.solver.axis = pivot.AimAxis.normalized;
+          aimIK.solver.poleAxis = pivot.PoleAxis.normalized;
+          aimIK.solver.target = targetAimDummy.transform;
+          IKSolverAim solver1 = aimIK.solver;
+          solver1.OnPreUpdate = solver1.OnPreUpdate + PreAimUpdate;
+          IKSolverAim solver2 = aimIK.solver;
+          solver2.OnPostUpdate = solver2.OnPostUpdate + PostAimUpdate;
+          aimIK.solver.IKPositionWeight = 0.0f;
         }
-        if ((UnityEngine.Object) this.lookAtIK == (UnityEngine.Object) null)
+        if ((UnityEngine.Object) lookAtIK == (UnityEngine.Object) null)
         {
           Debug.LogWarningFormat("{0} doesn't contain {1} unity component. Aiming is impossible.", (object) this.gameObject.name, (object) typeof (LookAtIK).Name);
         }
         else
         {
-          this.lookAtTargetDummy = new GameObject("[LookAtIK] Target Dummy");
-          this.lookAtTargetDummy.transform.parent = this.transform;
-          this.lookAtIK.solver.target = this.lookAtTargetDummy.transform;
-          this.lookAtIK.solver.IKPositionWeight = 0.0f;
-          IKSolverLookAt solver = this.lookAtIK.solver;
-          solver.OnPreUpdate = solver.OnPreUpdate + new IKSolver.UpdateDelegate(this.OnPreLookAtIKUpdate);
-          this.initialLookAtBodyWeight = this.lookAtIK.solver.bodyWeight;
-          this.initialLookAtHeadWeight = this.lookAtIK.solver.headWeight;
+          lookAtTargetDummy = new GameObject("[LookAtIK] Target Dummy");
+          lookAtTargetDummy.transform.parent = this.transform;
+          lookAtIK.solver.target = lookAtTargetDummy.transform;
+          lookAtIK.solver.IKPositionWeight = 0.0f;
+          IKSolverLookAt solver = lookAtIK.solver;
+          solver.OnPreUpdate = solver.OnPreUpdate + OnPreLookAtIKUpdate;
+          initialLookAtBodyWeight = lookAtIK.solver.bodyWeight;
+          initialLookAtHeadWeight = lookAtIK.solver.headWeight;
         }
       }
     }
 
     private void OnEnable()
     {
-      this.coroutine = this.StartCoroutine(this.UpdateIKRightAfterPhysicsUpdate());
+      coroutine = this.StartCoroutine(UpdateIKRightAfterPhysicsUpdate());
     }
 
     private void OnDisable()
     {
-      if (this.coroutine == null)
+      if (coroutine == null)
         return;
-      this.StopCoroutine(this.coroutine);
-      this.coroutine = (Coroutine) null;
+      this.StopCoroutine(coroutine);
+      coroutine = (Coroutine) null;
     }
 
     private IEnumerator UpdateIKRightAfterPhysicsUpdate()
     {
       while (true)
       {
-        if (this.animator.updateMode == AnimatorUpdateMode.AnimatePhysics)
-          this.UpdateIK();
-        yield return (object) this.waitForFixedUpdate;
+        if (animator.updateMode == AnimatorUpdateMode.AnimatePhysics)
+          UpdateIK();
+        yield return (object) waitForFixedUpdate;
       }
     }
 
     private bool ClampTargetDirection()
     {
-      Vector3 vector3_1 = this.targetAimDummy.transform.position - this.pivot.AimTransform.transform.position;
-      Vector3 vector3_2 = this.pivot.AimTransform.transform.rotation * this.pivot.AimAxis.normalized;
-      if ((double) Vector3.Angle(vector3_2, vector3_1) < (double) this.MaxWeaponAimAngle)
+      Vector3 vector3_1 = targetAimDummy.transform.position - pivot.AimTransform.transform.position;
+      Vector3 vector3_2 = pivot.AimTransform.transform.rotation * pivot.AimAxis.normalized;
+      if ((double) Vector3.Angle(vector3_2, vector3_1) < MaxWeaponAimAngle)
         return false;
       float magnitude = vector3_1.magnitude;
       Quaternion to = Quaternion.LookRotation(vector3_1);
-      this.targetAimDummy.transform.position = this.pivot.AimTransform.transform.position + Quaternion.RotateTowards(Quaternion.LookRotation(vector3_2), to, this.MaxWeaponAimAngle) * Vector3.forward * magnitude;
+      targetAimDummy.transform.position = pivot.AimTransform.transform.position + Quaternion.RotateTowards(Quaternion.LookRotation(vector3_2), to, MaxWeaponAimAngle) * Vector3.forward * magnitude;
       return true;
     }
 
@@ -191,23 +190,23 @@ namespace Engine.Behaviours.Engines.Controllers
     {
       clamped = false;
       float f1 = Mathf.Atan2(targetDirection.y, Mathf.Sqrt((float) ((double) targetDirection.x * (double) targetDirection.x + (double) targetDirection.z * (double) targetDirection.z)));
-      if ((double) f1 > (double) verticalAngleLimit)
+      if (f1 > (double) verticalAngleLimit)
       {
         f1 = verticalAngleLimit;
         clamped = true;
       }
-      else if ((double) f1 < -(double) verticalAngleLimit)
+      else if (f1 < -(double) verticalAngleLimit)
       {
         f1 = -verticalAngleLimit;
         clamped = true;
       }
       float f2 = Mathf.Atan2(targetDirection.x, targetDirection.z);
-      if ((double) f2 > (double) horizontalAngleLimit)
+      if (f2 > (double) horizontalAngleLimit)
       {
         f2 = horizontalAngleLimit;
         clamped = true;
       }
-      else if ((double) f2 < -(double) horizontalAngleLimit)
+      else if (f2 < -(double) horizontalAngleLimit)
       {
         f2 = -horizontalAngleLimit;
         clamped = true;
@@ -217,120 +216,120 @@ namespace Engine.Behaviours.Engines.Controllers
 
     private void OnPreLookAtIKUpdate()
     {
-      if ((UnityEngine.Object) this.pivot == (UnityEngine.Object) null)
+      if ((UnityEngine.Object) pivot == (UnityEngine.Object) null)
         return;
       CameraService service = ServiceLocator.GetService<CameraService>();
       bool flag1 = service != null && service.Kind == CameraKindEnum.FirstPerson_Controlling;
-      Transform aimTransform = this.pivot.GetAimTransform(Pivot.AimWeaponType.Head);
-      if ((UnityEngine.Object) this.lookAtTarget == (UnityEngine.Object) null || this.lookAtIK.solver.eyes.Length == 0 || (UnityEngine.Object) aimTransform == (UnityEngine.Object) null)
+      Transform aimTransform = pivot.GetAimTransform(Pivot.AimWeaponType.Head);
+      if ((UnityEngine.Object) lookAtTarget == (UnityEngine.Object) null || lookAtIK.solver.eyes.Length == 0 || (UnityEngine.Object) aimTransform == (UnityEngine.Object) null)
       {
-        this.weigthLookAt = Mathf.Clamp01(this.weigthLookAt - Time.deltaTime / this.LookTime);
-        this.lookAtIK.solver.IKPositionWeight = SmoothUtility.Smooth22(this.weigthLookAt);
+        weigthLookAt = Mathf.Clamp01(weigthLookAt - Time.deltaTime / LookTime);
+        lookAtIK.solver.IKPositionWeight = SmoothUtility.Smooth22(weigthLookAt);
         if ((UnityEngine.Object) aimTransform == (UnityEngine.Object) null)
           return;
-        if ((double) this.lookAtIK.solver.IKPositionWeight < 0.0099999997764825821)
+        if (lookAtIK.solver.IKPositionWeight < 0.0099999997764825821)
         {
-          this.lookAtTargetDummy.transform.position = aimTransform.position + this.transform.forward * 1f;
+          lookAtTargetDummy.transform.position = aimTransform.position + this.transform.forward * 1f;
         }
         else
         {
-          Vector3 normalized = (this.lookAtTargetDummy.transform.position - aimTransform.position).normalized;
+          Vector3 normalized = (lookAtTargetDummy.transform.position - aimTransform.position).normalized;
           Vector3 forward = this.transform.forward;
-          float num = Mathf.Clamp01(Vector3.Angle(normalized, forward) / (this.MaxAngleHorizontal * 0.3f)) + 0.01f;
-          Vector3 vector3 = Vector3.RotateTowards(normalized, forward, (float) ((double) num * (double) this.MaxAngleHorizontal * (Math.PI / 180.0)) * Time.deltaTime / this.LookTime, 0.0f);
-          this.lookAtTargetDummy.transform.position = aimTransform.position + vector3;
+          float num = Mathf.Clamp01(Vector3.Angle(normalized, forward) / (MaxAngleHorizontal * 0.3f)) + 0.01f;
+          Vector3 vector3 = Vector3.RotateTowards(normalized, forward, (float) (num * (double) MaxAngleHorizontal * (Math.PI / 180.0)) * Time.deltaTime / LookTime, 0.0f);
+          lookAtTargetDummy.transform.position = aimTransform.position + vector3;
         }
       }
       else
       {
         bool clamped = false;
-        Vector3 targetDirection = this.transform.InverseTransformDirection(this.lookAtTarget.position - aimTransform.position);
-        Vector3 vector3_1 = this.transform.TransformDirection(!this.LookEyeContactOnly ? this.ClampLookAtDirectionInForwardSpace(targetDirection, this.MaxAngleVertical * ((float) Math.PI / 180f), this.MaxAngleHorizontal * ((float) Math.PI / 180f), out clamped) : this.ClampLookAtDirectionInForwardSpace(targetDirection, 0.157079637f, 0.34906584f, out clamped));
-        bool flag2 = !this.StopIfOutOfLimits || !clamped;
-        if (this.LookEyeContactOnly)
+        Vector3 targetDirection = this.transform.InverseTransformDirection(lookAtTarget.position - aimTransform.position);
+        Vector3 vector3_1 = this.transform.TransformDirection(!LookEyeContactOnly ? ClampLookAtDirectionInForwardSpace(targetDirection, MaxAngleVertical * ((float) Math.PI / 180f), MaxAngleHorizontal * ((float) Math.PI / 180f), out clamped) : ClampLookAtDirectionInForwardSpace(targetDirection, 0.157079637f, 0.34906584f, out clamped));
+        bool flag2 = !StopIfOutOfLimits || !clamped;
+        if (LookEyeContactOnly)
         {
-          this.lookAtIK.solver.bodyWeight = Mathf.MoveTowards(this.lookAtIK.solver.bodyWeight, 0.0f, Time.deltaTime / this.LookTime);
-          this.lookAtIK.solver.headWeight = Mathf.MoveTowards(this.lookAtIK.solver.headWeight, 0.0f, Time.deltaTime / this.LookTime);
-          this.weigthLookAt = Mathf.Clamp01(this.weigthLookAt + (float) ((double) Time.deltaTime * (flag2 ? 1.0 : -1.0) / 0.10000000149011612));
+          lookAtIK.solver.bodyWeight = Mathf.MoveTowards(lookAtIK.solver.bodyWeight, 0.0f, Time.deltaTime / LookTime);
+          lookAtIK.solver.headWeight = Mathf.MoveTowards(lookAtIK.solver.headWeight, 0.0f, Time.deltaTime / LookTime);
+          weigthLookAt = Mathf.Clamp01(weigthLookAt + (float) ((double) Time.deltaTime * (flag2 ? 1.0 : -1.0) / 0.10000000149011612));
         }
         else
         {
-          this.lookAtIK.solver.bodyWeight = Mathf.MoveTowards(this.lookAtIK.solver.bodyWeight, this.initialLookAtBodyWeight, Time.deltaTime / this.LookTime);
-          this.lookAtIK.solver.headWeight = Mathf.MoveTowards(this.lookAtIK.solver.headWeight, this.initialLookAtBodyWeight, Time.deltaTime / this.LookTime);
-          this.weigthLookAt = Mathf.Clamp01(this.weigthLookAt + Time.deltaTime * (flag2 ? 1f : -1f) / this.LookTime);
+          lookAtIK.solver.bodyWeight = Mathf.MoveTowards(lookAtIK.solver.bodyWeight, initialLookAtBodyWeight, Time.deltaTime / LookTime);
+          lookAtIK.solver.headWeight = Mathf.MoveTowards(lookAtIK.solver.headWeight, initialLookAtBodyWeight, Time.deltaTime / LookTime);
+          weigthLookAt = Mathf.Clamp01(weigthLookAt + Time.deltaTime * (flag2 ? 1f : -1f) / LookTime);
         }
-        Vector3 vector3_2 = this.lookAtTargetDummy.transform.position - aimTransform.position;
-        float num = Mathf.Clamp01(Vector3.Angle(vector3_2, vector3_1) / (this.MaxAngleHorizontal * 0.3f)) + 0.01f;
-        Vector3 vector3_3 = Vector3.RotateTowards(vector3_2, vector3_1, (float) ((double) num * (double) this.MaxAngleHorizontal * (Math.PI / 180.0)) * Time.deltaTime / this.LookTime, 0.0f);
-        this.lookAtTargetDummy.transform.position = aimTransform.position + vector3_3;
-        if (this.TestMode)
-          this.lookAtIK.solver.IKPositionWeight = SmoothUtility.Smooth22(this.weigthLookAt);
+        Vector3 vector3_2 = lookAtTargetDummy.transform.position - aimTransform.position;
+        float num = Mathf.Clamp01(Vector3.Angle(vector3_2, vector3_1) / (MaxAngleHorizontal * 0.3f)) + 0.01f;
+        Vector3 vector3_3 = Vector3.RotateTowards(vector3_2, vector3_1, (float) (num * (double) MaxAngleHorizontal * (Math.PI / 180.0)) * Time.deltaTime / LookTime, 0.0f);
+        lookAtTargetDummy.transform.position = aimTransform.position + vector3_3;
+        if (TestMode)
+          lookAtIK.solver.IKPositionWeight = SmoothUtility.Smooth22(weigthLookAt);
         else
-          this.lookAtIK.solver.IKPositionWeight = flag1 ? SmoothUtility.Smooth22(this.weigthLookAt) : 0.0f;
+          lookAtIK.solver.IKPositionWeight = flag1 ? SmoothUtility.Smooth22(weigthLookAt) : 0.0f;
       }
     }
 
     public void PreAimUpdate()
     {
-      if ((UnityEngine.Object) this.weaponTarget != (UnityEngine.Object) null)
+      if ((UnityEngine.Object) weaponTarget != (UnityEngine.Object) null)
       {
-        if ((UnityEngine.Object) this.pivot.AimTransform != (UnityEngine.Object) null && (UnityEngine.Object) this.aimIK.solver.transform != (UnityEngine.Object) this.pivot.AimTransform.transform)
-          this.aimIK.solver.transform = this.pivot.AimTransform.transform;
-        if ((UnityEngine.Object) this.aimIK.solver.transform == (UnityEngine.Object) null)
+        if ((UnityEngine.Object) pivot.AimTransform != (UnityEngine.Object) null && (UnityEngine.Object) aimIK.solver.transform != (UnityEngine.Object) pivot.AimTransform.transform)
+          aimIK.solver.transform = pivot.AimTransform.transform;
+        if ((UnityEngine.Object) aimIK.solver.transform == (UnityEngine.Object) null)
           return;
-        Vector3 position = this.weaponTarget.position;
-        Pivot component = this.weaponTarget.GetComponent<Pivot>();
+        Vector3 position = weaponTarget.position;
+        Pivot component = weaponTarget.GetComponent<Pivot>();
         if ((UnityEngine.Object) component != (UnityEngine.Object) null)
         {
-          Transform aimTransform = component.GetAimTransform(this.weaponAimTo == Pivot.AimWeaponType.Unknown ? this.pivot.AimType : this.weaponAimTo);
+          Transform aimTransform = component.GetAimTransform(weaponAimTo == Pivot.AimWeaponType.Unknown ? pivot.AimType : weaponAimTo);
           if ((UnityEngine.Object) aimTransform != (UnityEngine.Object) null)
             position = aimTransform.position;
         }
-        this.targetAimDummy.transform.position = position;
-        if (this.ClampTargetDirection())
+        targetAimDummy.transform.position = position;
+        if (ClampTargetDirection())
         {
-          if ((double) this.weightAim <= 0.0)
+          if (weightAim <= 0.0)
             return;
-          this.weightAim = Mathf.Clamp01(this.weightAim - Time.deltaTime / (3f * this.WeaponAimTime));
-          this.aimIK.solver.IKPositionWeight = this.weightAim;
+          weightAim = Mathf.Clamp01(weightAim - Time.deltaTime / (3f * WeaponAimTime));
+          aimIK.solver.IKPositionWeight = weightAim;
         }
         else
         {
-          if ((double) this.weightAim >= 1.0)
+          if (weightAim >= 1.0)
             return;
-          this.weightAim = Mathf.Clamp01(this.weightAim + Time.deltaTime / this.WeaponAimTime);
-          this.aimIK.solver.IKPositionWeight = this.weightAim;
+          weightAim = Mathf.Clamp01(weightAim + Time.deltaTime / WeaponAimTime);
+          aimIK.solver.IKPositionWeight = weightAim;
         }
       }
-      else if ((double) this.weightAim > 0.0)
+      else if (weightAim > 0.0)
       {
-        this.weightAim = Mathf.Clamp01(this.weightAim - Time.deltaTime / this.WeaponAimTime);
-        this.aimIK.solver.IKPositionWeight = this.weightAim;
+        weightAim = Mathf.Clamp01(weightAim - Time.deltaTime / WeaponAimTime);
+        aimIK.solver.IKPositionWeight = weightAim;
       }
     }
 
     public void PostAimUpdate()
     {
-      if (!((UnityEngine.Object) this.pivot.WeaponDummyTransform != (UnityEngine.Object) null) || !((UnityEngine.Object) this.pivot.WeaponTransform != (UnityEngine.Object) null))
+      if (!((UnityEngine.Object) pivot.WeaponDummyTransform != (UnityEngine.Object) null) || !((UnityEngine.Object) pivot.WeaponTransform != (UnityEngine.Object) null))
         return;
-      this.pivot.WeaponTransform.transform.position = this.pivot.WeaponDummyTransform.transform.position;
-      this.pivot.WeaponTransform.transform.rotation = this.pivot.WeaponDummyTransform.transform.rotation;
+      pivot.WeaponTransform.transform.position = pivot.WeaponDummyTransform.transform.position;
+      pivot.WeaponTransform.transform.rotation = pivot.WeaponDummyTransform.transform.rotation;
     }
 
     private void LateUpdate()
     {
-      if (!((UnityEngine.Object) this.animator != (UnityEngine.Object) null) || this.animator.updateMode == AnimatorUpdateMode.AnimatePhysics)
+      if (!((UnityEngine.Object) animator != (UnityEngine.Object) null) || animator.updateMode == AnimatorUpdateMode.AnimatePhysics)
         return;
-      this.UpdateIK();
+      UpdateIK();
     }
 
     private void UpdateIK()
     {
-      if ((UnityEngine.Object) this.aimIK != (UnityEngine.Object) null)
-        this.aimIK.solver.Update();
-      if (!((UnityEngine.Object) this.lookAtIK != (UnityEngine.Object) null))
+      if ((UnityEngine.Object) aimIK != (UnityEngine.Object) null)
+        aimIK.solver.Update();
+      if (!((UnityEngine.Object) lookAtIK != (UnityEngine.Object) null))
         return;
-      this.lookAtIK.solver.Update();
+      lookAtIK.solver.Update();
     }
   }
 }

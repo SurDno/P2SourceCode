@@ -1,7 +1,4 @@
-﻿using UnityEngine;
-using UnityEngine.UI;
-
-namespace Engine.Impl.UI.Controls
+﻿namespace Engine.Impl.UI.Controls
 {
   public class ProgressGraphicColor : ProgressView
   {
@@ -18,9 +15,9 @@ namespace Engine.Impl.UI.Controls
 
     protected override void ApplyProgress()
     {
-      if (!((Object) this.graphic != (Object) null))
+      if (!((Object) graphic != (Object) null))
         return;
-      this.graphic.color = Color.Lerp(this.minColor, this.maxColor, this.Progress);
+      graphic.color = Color.Lerp(minColor, maxColor, Progress);
     }
   }
 }

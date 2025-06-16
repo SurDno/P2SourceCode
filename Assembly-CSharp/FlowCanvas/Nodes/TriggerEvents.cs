@@ -1,5 +1,4 @@
 ﻿using ParadoxNotion.Design;
-using UnityEngine;
 
 namespace FlowCanvas.Nodes
 {
@@ -25,28 +24,28 @@ namespace FlowCanvas.Nodes
 
     protected override void RegisterPorts()
     {
-      this.enter = this.AddFlowOutput("Enter");
-      this.stay = this.AddFlowOutput("Stay");
-      this.exit = this.AddFlowOutput("Exit");
-      this.AddValueOutput<GameObject>("Other", (ValueHandler<GameObject>) (() => this.other));
+      enter = AddFlowOutput("Enter");
+      stay = AddFlowOutput("Stay");
+      exit = AddFlowOutput("Exit");
+      AddValueOutput("Other", (ValueHandler<GameObject>) (() => other));
     }
 
     private void OnTriggerEnter(Collider other)
     {
       this.other = other.gameObject;
-      this.enter.Call();
+      enter.Call();
     }
 
     private void OnTriggerStay(Collider other)
     {
       this.other = other.gameObject;
-      this.stay.Call();
+      stay.Call();
     }
 
     private void OnTriggerExit(Collider other)
     {
       this.other = other.gameObject;
-      this.exit.Call();
+      exit.Call();
     }
   }
 }

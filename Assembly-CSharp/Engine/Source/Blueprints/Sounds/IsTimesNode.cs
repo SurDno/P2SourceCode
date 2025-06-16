@@ -17,7 +17,7 @@ namespace Engine.Source.Blueprints.Sounds
     [Port("Value")]
     private bool Value()
     {
-      return TimesOfDayUtility.HasValue(this.timesInput.value, this.timeService.SolarTime.GetTimesOfDay());
+      return TimesOfDayUtility.HasValue(timesInput.value, timeService.SolarTime.GetTimesOfDay());
     }
   }
 }

@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace StateSetters
+﻿namespace StateSetters
 {
   [StateSetter("{8E333D23-032D-4598-89D7-25C6D94A20B4}")]
   public class ShowGameObjectItemController : IStateSetterItemController
@@ -10,7 +8,7 @@ namespace StateSetters
       GameObject objectValue1 = item.ObjectValue1 as GameObject;
       if ((Object) objectValue1 == (Object) null)
         return;
-      bool flag = item.BoolValue1 != ((double) value != 0.0);
+      bool flag = item.BoolValue1 != (value != 0.0);
       objectValue1.SetActive(flag);
     }
   }

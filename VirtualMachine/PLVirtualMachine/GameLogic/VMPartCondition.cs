@@ -1,4 +1,6 @@
-﻿using Cofe.Loggers;
+﻿using System.Collections.Generic;
+using System.Xml;
+using Cofe.Loggers;
 using Engine.Common.Commons;
 using PLVirtualMachine.Common;
 using PLVirtualMachine.Common.Data;
@@ -6,8 +8,6 @@ using PLVirtualMachine.Common.EngineAPI;
 using PLVirtualMachine.Common.EngineAPI.VMECS;
 using PLVirtualMachine.Common.VMSpecialAttributes;
 using PLVirtualMachine.Data;
-using System.Collections.Generic;
-using System.Xml;
 using VirtualMachine.Common;
 using VirtualMachine.Common.Data;
 using VirtualMachine.Data;
@@ -26,39 +26,38 @@ namespace PLVirtualMachine.GameLogic
     IStaticUpdateable
   {
     protected ulong guid;
-    [FieldData("Name", DataFieldType.None)]
+    [FieldData("Name")]
     protected string name = "";
-    [FieldData("ConditionType", DataFieldType.None)]
+    [FieldData("ConditionType")]
     private EConditionType conditionType = EConditionType.CONDITION_TYPE_CONST_FALSE;
     [FieldData("FirstExpression", DataFieldType.Reference)]
     private IExpression firstExpression;
     [FieldData("SecondExpression", DataFieldType.Reference)]
     private IExpression secondExpression;
-    [FieldData("OrderIndex", DataFieldType.None)]
+    [FieldData("OrderIndex")]
     protected int orderIndex;
 
     public virtual void EditorDataRead(XmlReader xml, IDataCreator creator, string typeContext)
     {
-      while (xml.Read())
-      {
+      while (xml.Read()) {
         if (xml.NodeType == XmlNodeType.Element)
         {
           switch (xml.Name)
           {
             case "Name":
-              this.name = EditorDataReadUtility.ReadValue(xml, this.name);
+              name = EditorDataReadUtility.ReadValue(xml, name);
               continue;
             case "ConditionType":
-              this.conditionType = EditorDataReadUtility.ReadEnum<EConditionType>(xml);
+              conditionType = EditorDataReadUtility.ReadEnum<EConditionType>(xml);
               continue;
             case "FirstExpression":
-              this.firstExpression = EditorDataReadUtility.ReadReference<IExpression>(xml, creator);
+              firstExpression = EditorDataReadUtility.ReadReference<IExpression>(xml, creator);
               continue;
             case "SecondExpression":
-              this.secondExpression = EditorDataReadUtility.ReadReference<IExpression>(xml, creator);
+              secondExpression = EditorDataReadUtility.ReadReference<IExpression>(xml, creator);
               continue;
             case "OrderIndex":
-              this.orderIndex = EditorDataReadUtility.ReadValue(xml, this.orderIndex);
+              orderIndex = EditorDataReadUtility.ReadValue(xml, orderIndex);
               continue;
             default:
               if (XMLDataLoader.Logs.Add(typeContext + " : " + xml.Name))
@@ -67,74 +66,75 @@ namespace PLVirtualMachine.GameLogic
               continue;
           }
         }
-        else if (xml.NodeType == XmlNodeType.EndElement)
+
+        if (xml.NodeType == XmlNodeType.EndElement)
           break;
       }
     }
 
     public VMPartCondition(ulong guid) => this.guid = guid;
 
-    public ulong BaseGuid => this.guid;
+    public ulong BaseGuid => guid;
 
-    public string Name => this.name;
+    public string Name => name;
 
-    public int Order => this.orderIndex;
+    public int Order => orderIndex;
 
     public virtual bool IsPart() => true;
 
-    public EConditionType ConditionType => this.conditionType;
+    public EConditionType ConditionType => conditionType;
 
-    public IExpression FirstExpression => this.firstExpression;
+    public IExpression FirstExpression => firstExpression;
 
-    public IExpression SecondExpression => this.secondExpression;
+    public IExpression SecondExpression => secondExpression;
 
     public virtual void Update()
     {
-      if (this.firstExpression != null)
-        this.firstExpression.Update();
-      if (this.secondExpression == null)
+      if (firstExpression != null)
+        firstExpression.Update();
+      if (secondExpression == null)
         return;
-      this.secondExpression.Update();
+      secondExpression.Update();
     }
 
     public virtual bool IsUpdated
     {
       get
       {
-        return (this.firstExpression == null || this.firstExpression.IsUpdated) && (this.secondExpression == null || this.secondExpression.IsUpdated);
+        return (firstExpression == null || firstExpression.IsUpdated) && (secondExpression == null || secondExpression.IsUpdated);
       }
     }
 
     public virtual List<GameTime> GetCheckRaisingTimePoints()
     {
       List<GameTime> raisingTimePoints = new List<GameTime>();
-      if ((this.ConditionType == EConditionType.CONDITION_TYPE_VALUE_EQUAL || this.ConditionType == EConditionType.CONDITION_TYPE_VALUE_LARGER_EQUAL || this.ConditionType == EConditionType.CONDITION_TYPE_VALUE_LARGER) && this.firstExpression != null && this.firstExpression.Type == ExpressionType.EXPRESSION_SRC_FUNCTION && this.firstExpression.TargetFunction != null && this.firstExpression.TargetFunction.EndsWith(EngineAPIManager.GetSpecialFunctionName(ESpecialFunctionName.SFN_GET_GAME_TIME, typeof (VMGameComponent))) && this.secondExpression != null && this.secondExpression.Type == ExpressionType.EXPRESSION_SRC_CONST && this.secondExpression.ResultType.BaseType == typeof (GameTime) && this.secondExpression.TargetConstant != null && this.secondExpression.TargetConstant.Value != null && this.secondExpression.TargetConstant.Value.GetType() == typeof (GameTime))
-        raisingTimePoints.Add((GameTime) this.secondExpression.TargetConstant.Value);
+      if ((ConditionType == EConditionType.CONDITION_TYPE_VALUE_EQUAL || ConditionType == EConditionType.CONDITION_TYPE_VALUE_LARGER_EQUAL || ConditionType == EConditionType.CONDITION_TYPE_VALUE_LARGER) && firstExpression != null && firstExpression.Type == ExpressionType.EXPRESSION_SRC_FUNCTION && firstExpression.TargetFunction != null && firstExpression.TargetFunction.EndsWith(EngineAPIManager.GetSpecialFunctionName(ESpecialFunctionName.SFN_GET_GAME_TIME, typeof (VMGameComponent))) && secondExpression != null && secondExpression.Type == ExpressionType.EXPRESSION_SRC_CONST && secondExpression.ResultType.BaseType == typeof (GameTime) && secondExpression.TargetConstant != null && secondExpression.TargetConstant.Value != null && secondExpression.TargetConstant.Value.GetType() == typeof (GameTime))
+        raisingTimePoints.Add((GameTime) secondExpression.TargetConstant.Value);
       return raisingTimePoints;
     }
 
     public virtual List<VMParameter> GetCheckRaisingParams()
     {
       List<VMParameter> checkRaisingParams = new List<VMParameter>();
-      if (this.conditionType != EConditionType.CONDITION_TYPE_CONST_FALSE && this.conditionType != EConditionType.CONDITION_TYPE_CONST_TRUE)
+      if (conditionType != EConditionType.CONDITION_TYPE_CONST_FALSE && conditionType != EConditionType.CONDITION_TYPE_CONST_TRUE)
       {
-        if (this.firstExpression != null && this.firstExpression.Type == ExpressionType.EXPRESSION_SRC_PARAM && ((VMExpression) this.firstExpression).TargetParam != null)
+        if (firstExpression != null && firstExpression.Type == ExpressionType.EXPRESSION_SRC_PARAM && ((VMExpression) firstExpression).TargetParam != null)
         {
-          if (!((VMExpression) this.firstExpression).TargetParam.IsBinded)
-            this.firstExpression.Update();
-          if (((VMExpression) this.firstExpression).TargetParam.IsBinded && typeof (VMParameter) == ((VMExpression) this.firstExpression).TargetParam.Variable.GetType())
+          if (!((VMExpression) firstExpression).TargetParam.IsBinded)
+            firstExpression.Update();
+          if (((VMExpression) firstExpression).TargetParam.IsBinded && typeof (VMParameter) == ((VMExpression) firstExpression).TargetParam.Variable.GetType())
           {
-            VMParameter variable = (VMParameter) ((VMExpression) this.firstExpression).TargetParam.Variable;
+            VMParameter variable = (VMParameter) ((VMExpression) firstExpression).TargetParam.Variable;
             checkRaisingParams.Add(variable);
           }
         }
-        if (this.secondExpression != null && this.secondExpression.Type == ExpressionType.EXPRESSION_SRC_PARAM && ((VMExpression) this.secondExpression).TargetParam != null)
+        if (secondExpression != null && secondExpression.Type == ExpressionType.EXPRESSION_SRC_PARAM && ((VMExpression) secondExpression).TargetParam != null)
         {
-          if (!((VMExpression) this.secondExpression).TargetParam.IsBinded)
-            this.secondExpression.Update();
-          if (((VMExpression) this.secondExpression).TargetParam.IsBinded && typeof (VMParameter) == ((VMExpression) this.secondExpression).TargetParam.Variable.GetType())
+          if (!((VMExpression) secondExpression).TargetParam.IsBinded)
+            secondExpression.Update();
+          if (((VMExpression) secondExpression).TargetParam.IsBinded && typeof (VMParameter) == ((VMExpression) secondExpression).TargetParam.Variable.GetType())
           {
-            VMParameter variable = (VMParameter) ((VMExpression) this.secondExpression).TargetParam.Variable;
+            VMParameter variable = (VMParameter) ((VMExpression) secondExpression).TargetParam.Variable;
             checkRaisingParams.Add(variable);
           }
         }
@@ -145,21 +145,21 @@ namespace PLVirtualMachine.GameLogic
     public virtual List<BaseFunction> GetCheckRaisingFunctions()
     {
       List<BaseFunction> raisingFunctions = new List<BaseFunction>();
-      if (this.conditionType != EConditionType.CONDITION_TYPE_CONST_FALSE && this.conditionType != EConditionType.CONDITION_TYPE_CONST_TRUE)
+      if (conditionType != EConditionType.CONDITION_TYPE_CONST_FALSE && conditionType != EConditionType.CONDITION_TYPE_CONST_TRUE)
       {
-        if (this.firstExpression != null && this.firstExpression.Type == ExpressionType.EXPRESSION_SRC_FUNCTION)
+        if (firstExpression != null && firstExpression.Type == ExpressionType.EXPRESSION_SRC_FUNCTION)
         {
-          if (((VMExpression) this.firstExpression).TargetFunctionInstance == null)
-            this.firstExpression.Update();
-          if (((VMExpression) this.firstExpression).TargetFunctionInstance != null)
-            raisingFunctions.Add(((VMExpression) this.firstExpression).TargetFunctionInstance);
+          if (((VMExpression) firstExpression).TargetFunctionInstance == null)
+            firstExpression.Update();
+          if (((VMExpression) firstExpression).TargetFunctionInstance != null)
+            raisingFunctions.Add(((VMExpression) firstExpression).TargetFunctionInstance);
         }
-        if (this.secondExpression != null && this.secondExpression.Type == ExpressionType.EXPRESSION_SRC_FUNCTION)
+        if (secondExpression != null && secondExpression.Type == ExpressionType.EXPRESSION_SRC_FUNCTION)
         {
-          if (((VMExpression) this.secondExpression).TargetFunctionInstance == null)
-            this.secondExpression.Update();
-          if (((VMExpression) this.secondExpression).TargetFunctionInstance != null)
-            raisingFunctions.Add(((VMExpression) this.secondExpression).TargetFunctionInstance);
+          if (((VMExpression) secondExpression).TargetFunctionInstance == null)
+            secondExpression.Update();
+          if (((VMExpression) secondExpression).TargetFunctionInstance != null)
+            raisingFunctions.Add(((VMExpression) secondExpression).TargetFunctionInstance);
         }
       }
       return raisingFunctions;
@@ -167,23 +167,23 @@ namespace PLVirtualMachine.GameLogic
 
     public virtual bool IsConstant()
     {
-      return this.conditionType == EConditionType.CONDITION_TYPE_CONST_FALSE || this.conditionType == EConditionType.CONDITION_TYPE_CONST_TRUE;
+      return conditionType == EConditionType.CONDITION_TYPE_CONST_FALSE || conditionType == EConditionType.CONDITION_TYPE_CONST_TRUE;
     }
 
     public bool IsEqual(IObject other)
     {
-      return other != null && typeof (VMPartCondition) == other.GetType() && (long) this.BaseGuid == (long) ((VMPartCondition) other).BaseGuid;
+      return other != null && typeof (VMPartCondition) == other.GetType() && (long) BaseGuid == (long) ((VMPartCondition) other).BaseGuid;
     }
 
-    public string GuidStr => this.guid.ToString();
+    public string GuidStr => guid.ToString();
 
     public virtual void Clear()
     {
-      if (this.firstExpression != null)
-        ((VMExpression) this.firstExpression).Clear();
-      if (this.secondExpression == null)
+      if (firstExpression != null)
+        ((VMExpression) firstExpression).Clear();
+      if (secondExpression == null)
         return;
-      ((VMExpression) this.secondExpression).Clear();
+      ((VMExpression) secondExpression).Clear();
     }
   }
 }

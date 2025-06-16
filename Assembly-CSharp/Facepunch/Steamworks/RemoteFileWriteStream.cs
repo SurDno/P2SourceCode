@@ -1,6 +1,6 @@
-﻿using SteamNative;
-using System;
+﻿using System;
 using System.IO;
+using SteamNative;
 
 namespace Facepunch.Steamworks
 {
@@ -14,9 +14,9 @@ namespace Facepunch.Steamworks
 
     internal RemoteFileWriteStream(RemoteStorage r, RemoteFile file)
     {
-      this.remoteStorage = r;
-      this._handle = this.remoteStorage.native.FileWriteStreamOpen(file.FileName);
-      this._file = file;
+      remoteStorage = r;
+      _handle = remoteStorage.native.FileWriteStreamOpen(file.FileName);
+      _file = file;
     }
 
     public override void Flush()
@@ -37,12 +37,12 @@ namespace Facepunch.Steamworks
 
     public override unsafe void Write(byte[] buffer, int offset, int count)
     {
-      if (this._closed)
-        throw new ObjectDisposedException(this.ToString());
+      if (_closed)
+        throw new ObjectDisposedException(ToString());
       fixed (byte* numPtr = buffer)
       {
-        if (this.remoteStorage.native.FileWriteStreamWriteChunk(this._handle, (IntPtr) (void*) (numPtr + offset), count))
-          this._written += count;
+        if (remoteStorage.native.FileWriteStreamWriteChunk(_handle, (IntPtr) (numPtr + offset), count))
+          _written += count;
       }
     }
 
@@ -52,35 +52,35 @@ namespace Facepunch.Steamworks
 
     public override bool CanWrite => true;
 
-    public override long Length => (long) this._written;
+    public override long Length => _written;
 
     public override long Position
     {
-      get => (long) this._written;
+      get => _written;
       set => throw new NotImplementedException();
     }
 
     public void Cancel()
     {
-      if (this._closed)
+      if (_closed)
         return;
-      this._closed = true;
-      this.remoteStorage.native.FileWriteStreamCancel(this._handle);
+      _closed = true;
+      remoteStorage.native.FileWriteStreamCancel(_handle);
     }
 
     public override void Close()
     {
-      if (this._closed)
+      if (_closed)
         return;
-      this._closed = true;
-      this.remoteStorage.native.FileWriteStreamClose(this._handle);
-      this._file.remoteStorage.OnWrittenNewFile(this._file);
+      _closed = true;
+      remoteStorage.native.FileWriteStreamClose(_handle);
+      _file.remoteStorage.OnWrittenNewFile(_file);
     }
 
     protected override void Dispose(bool disposing)
     {
       if (disposing)
-        this.Close();
+        Close();
       base.Dispose(disposing);
     }
   }

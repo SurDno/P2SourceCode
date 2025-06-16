@@ -1,4 +1,5 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons.Cloneable;
 using Engine.Common.Commons.Converters;
@@ -6,7 +7,6 @@ using Engine.Common.Components.Parameters;
 using Engine.Source.Commons.Abilities;
 using Engine.Source.Commons.Effects;
 using Engine.Source.Effects;
-using System;
 
 namespace Engine.Source.Proxies
 {
@@ -21,45 +21,45 @@ namespace Engine.Source.Proxies
     public object Clone()
     {
       ApplyDamageToInfectionNPCEffect_Generated instance = Activator.CreateInstance<ApplyDamageToInfectionNPCEffect_Generated>();
-      this.CopyTo((object) instance);
-      return (object) instance;
+      CopyTo(instance);
+      return instance;
     }
 
     public void CopyTo(object target2)
     {
       ApplyDamageToInfectionNPCEffect_Generated npcEffectGenerated = (ApplyDamageToInfectionNPCEffect_Generated) target2;
-      npcEffectGenerated.queue = this.queue;
-      npcEffectGenerated.enable = this.enable;
-      npcEffectGenerated.durationType = this.durationType;
-      npcEffectGenerated.realTime = this.realTime;
-      npcEffectGenerated.duration = this.duration;
-      npcEffectGenerated.interval = this.interval;
-      npcEffectGenerated.infectionDamageParameterName = this.infectionDamageParameterName;
-      npcEffectGenerated.infectionParameterName = this.infectionParameterName;
+      npcEffectGenerated.queue = queue;
+      npcEffectGenerated.enable = enable;
+      npcEffectGenerated.durationType = durationType;
+      npcEffectGenerated.realTime = realTime;
+      npcEffectGenerated.duration = duration;
+      npcEffectGenerated.interval = interval;
+      npcEffectGenerated.infectionDamageParameterName = infectionDamageParameterName;
+      npcEffectGenerated.infectionParameterName = infectionParameterName;
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.WriteEnum<ParameterEffectQueueEnum>(writer, "Queue", this.queue);
-      DefaultDataWriteUtility.Write(writer, "Enable", this.enable);
-      DefaultDataWriteUtility.WriteEnum<DurationTypeEnum>(writer, "DurationType", this.durationType);
-      DefaultDataWriteUtility.Write(writer, "RealTime", this.realTime);
-      DefaultDataWriteUtility.Write(writer, "Duration", this.duration);
-      DefaultDataWriteUtility.Write(writer, "Interval", this.interval);
-      DefaultDataWriteUtility.WriteEnum<ParameterNameEnum>(writer, "InfectionDamageParameterName", this.infectionDamageParameterName);
-      DefaultDataWriteUtility.WriteEnum<ParameterNameEnum>(writer, "InfectionParameterName", this.infectionParameterName);
+      DefaultDataWriteUtility.WriteEnum(writer, "Queue", queue);
+      DefaultDataWriteUtility.Write(writer, "Enable", enable);
+      DefaultDataWriteUtility.WriteEnum(writer, "DurationType", durationType);
+      DefaultDataWriteUtility.Write(writer, "RealTime", realTime);
+      DefaultDataWriteUtility.Write(writer, "Duration", duration);
+      DefaultDataWriteUtility.Write(writer, "Interval", interval);
+      DefaultDataWriteUtility.WriteEnum(writer, "InfectionDamageParameterName", infectionDamageParameterName);
+      DefaultDataWriteUtility.WriteEnum(writer, "InfectionParameterName", infectionParameterName);
     }
 
     public void DataRead(IDataReader reader, Type type)
     {
-      this.queue = DefaultDataReadUtility.ReadEnum<ParameterEffectQueueEnum>(reader, "Queue");
-      this.enable = DefaultDataReadUtility.Read(reader, "Enable", this.enable);
-      this.durationType = DefaultDataReadUtility.ReadEnum<DurationTypeEnum>(reader, "DurationType");
-      this.realTime = DefaultDataReadUtility.Read(reader, "RealTime", this.realTime);
-      this.duration = DefaultDataReadUtility.Read(reader, "Duration", this.duration);
-      this.interval = DefaultDataReadUtility.Read(reader, "Interval", this.interval);
-      this.infectionDamageParameterName = DefaultDataReadUtility.ReadEnum<ParameterNameEnum>(reader, "InfectionDamageParameterName");
-      this.infectionParameterName = DefaultDataReadUtility.ReadEnum<ParameterNameEnum>(reader, "InfectionParameterName");
+      queue = DefaultDataReadUtility.ReadEnum<ParameterEffectQueueEnum>(reader, "Queue");
+      enable = DefaultDataReadUtility.Read(reader, "Enable", enable);
+      durationType = DefaultDataReadUtility.ReadEnum<DurationTypeEnum>(reader, "DurationType");
+      realTime = DefaultDataReadUtility.Read(reader, "RealTime", realTime);
+      duration = DefaultDataReadUtility.Read(reader, "Duration", duration);
+      interval = DefaultDataReadUtility.Read(reader, "Interval", interval);
+      infectionDamageParameterName = DefaultDataReadUtility.ReadEnum<ParameterNameEnum>(reader, "InfectionDamageParameterName");
+      infectionParameterName = DefaultDataReadUtility.ReadEnum<ParameterNameEnum>(reader, "InfectionParameterName");
     }
   }
 }

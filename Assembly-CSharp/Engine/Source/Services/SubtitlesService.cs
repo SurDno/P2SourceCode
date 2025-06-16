@@ -1,10 +1,10 @@
-﻿using Engine.Common;
+﻿using System;
+using Engine.Common;
 using Engine.Source.Audio;
-using System;
 
 namespace Engine.Source.Services
 {
-  [RuntimeService(new System.Type[] {typeof (SubtitlesService)})]
+  [RuntimeService(typeof (SubtitlesService))]
   public class SubtitlesService
   {
     public Action<IEntity, string, AudioState, UnityEngine.Object> AddSubtitlesEvent;
@@ -16,7 +16,7 @@ namespace Engine.Source.Services
 
     public void AddSubtitles(IEntity actor, string tag, AudioState state, UnityEngine.Object context)
     {
-      Action<IEntity, string, AudioState, UnityEngine.Object> addSubtitlesEvent = this.AddSubtitlesEvent;
+      Action<IEntity, string, AudioState, UnityEngine.Object> addSubtitlesEvent = AddSubtitlesEvent;
       if (addSubtitlesEvent == null)
         return;
       addSubtitlesEvent(actor, tag, state, context);
@@ -24,7 +24,7 @@ namespace Engine.Source.Services
 
     public void RemoveSubtitles(IEntity actor)
     {
-      Action<IEntity> removeSubtitlesEvent = this.RemoveSubtitlesEvent;
+      Action<IEntity> removeSubtitlesEvent = RemoveSubtitlesEvent;
       if (removeSubtitlesEvent == null)
         return;
       removeSubtitlesEvent(actor);

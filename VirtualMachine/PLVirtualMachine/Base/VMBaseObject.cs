@@ -12,7 +12,7 @@ namespace PLVirtualMachine.Base
     IStaticUpdateable
   {
     private ulong guid;
-    [FieldData("Name", DataFieldType.None)]
+    [FieldData("Name")]
     protected string name = "";
     [FieldData("Parent", DataFieldType.Reference)]
     protected IContainer parent;
@@ -21,31 +21,31 @@ namespace PLVirtualMachine.Base
 
     public abstract EObjectCategory GetCategory();
 
-    public bool IsVirtual => this.guid == 0UL;
+    public bool IsVirtual => guid == 0UL;
 
-    public string Name => this.name;
+    public string Name => name;
 
-    public ulong BaseGuid => this.guid;
+    public ulong BaseGuid => guid;
 
-    public virtual string GuidStr => this.BaseGuid.ToString();
+    public virtual string GuidStr => BaseGuid.ToString();
 
-    public IContainer Parent => this.parent;
+    public IContainer Parent => parent;
 
-    public virtual IContainer Owner => this.Parent;
+    public virtual IContainer Owner => Parent;
 
-    public virtual void Update() => this.IsUpdated = true;
+    public virtual void Update() => IsUpdated = true;
 
     public bool IsUpdated { get; private set; }
 
     public virtual bool IsEqual(IObject other)
     {
-      return other != null && (long) this.BaseGuid == (long) other.BaseGuid;
+      return other != null && (long) BaseGuid == (long) other.BaseGuid;
     }
 
     public virtual void OnPostLoad()
     {
     }
 
-    public virtual void Clear() => this.parent = (IContainer) null;
+    public virtual void Clear() => parent = null;
   }
 }

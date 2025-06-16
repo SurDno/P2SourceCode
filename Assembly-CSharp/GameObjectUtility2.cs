@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public static class GameObjectUtility2
 {
@@ -32,12 +30,12 @@ public static class GameObjectUtility2
 
   public static T GetComponentNonAlloc<T>(this GameObject go) where T : Component
   {
-    GameObjectUtility2.tmp.Clear();
-    go.GetComponents(typeof (T), GameObjectUtility2.tmp);
-    if (GameObjectUtility2.tmp.Count == 0)
+    tmp.Clear();
+    go.GetComponents(typeof (T), tmp);
+    if (tmp.Count == 0)
       return default (T);
-    T componentNonAlloc = (T) GameObjectUtility2.tmp[0];
-    GameObjectUtility2.tmp.Clear();
+    T componentNonAlloc = (T) tmp[0];
+    tmp.Clear();
     return componentNonAlloc;
   }
 
@@ -47,7 +45,7 @@ public static class GameObjectUtility2
     if (paths.Length < 2)
       return (GameObject) null;
     Scene sceneByName = SceneManager.GetSceneByName(paths[0]);
-    return !sceneByName.IsValid() ? (GameObject) null : GameObjectUtility2.GetChildGameObject((IEnumerable<GameObject>) sceneByName.GetRootGameObjects(), paths, 1);
+    return !sceneByName.IsValid() ? (GameObject) null : GetChildGameObject((IEnumerable<GameObject>) sceneByName.GetRootGameObjects(), paths, 1);
   }
 
   private static GameObject GetChildGameObject(
@@ -59,7 +57,7 @@ public static class GameObjectUtility2
     foreach (GameObject go in gos)
     {
       if (go.name == path)
-        return pathIndex == paths.Length - 1 ? go : GameObjectUtility2.GetChildGameObject(go.GetChilds(), paths, pathIndex + 1);
+        return pathIndex == paths.Length - 1 ? go : GetChildGameObject(go.GetChilds(), paths, pathIndex + 1);
     }
     return (GameObject) null;
   }
@@ -80,7 +78,7 @@ public static class GameObjectUtility2
   public static IEnumerable<GameObject> GetAllGameObjects(GameObject go)
   {
     yield return go;
-    foreach (GameObject child2 in GameObjectUtility2.GetAllChildren(go))
+    foreach (GameObject child2 in GetAllChildren(go))
       yield return child2;
   }
 
@@ -90,7 +88,7 @@ public static class GameObjectUtility2
     {
       GameObject child = go.transform.GetChild(index).gameObject;
       yield return child;
-      foreach (GameObject child2 in GameObjectUtility2.GetAllChildren(child))
+      foreach (GameObject child2 in GetAllChildren(child))
         yield return child2;
       child = (GameObject) null;
     }

@@ -13,7 +13,7 @@ namespace Engine.Source.Blueprints.Sounds
 
     public void Update()
     {
-      float num = this.valueInput.value;
+      float num = valueInput.value;
     }
   }
 }

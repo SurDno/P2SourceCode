@@ -1,19 +1,17 @@
-﻿using UnityEngine;
-
-namespace SoundPropagation
+﻿namespace SoundPropagation
 {
   public abstract class Shape : MonoBehaviour
   {
-    private bool initialized = false;
+    private bool initialized;
 
     public bool ClosestPointToSegment(Vector3 pointA, Vector3 pointB, out Vector3 output)
     {
-      if (!this.initialized)
+      if (!initialized)
       {
-        this.Initialize();
-        this.initialized = true;
+        Initialize();
+        initialized = true;
       }
-      return this.ClosestPointToSegmentInternal(pointA, pointB, out output);
+      return ClosestPointToSegmentInternal(pointA, pointB, out output);
     }
 
     protected abstract bool ClosestPointToSegmentInternal(

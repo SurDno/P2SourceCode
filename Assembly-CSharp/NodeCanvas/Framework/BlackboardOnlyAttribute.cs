@@ -2,7 +2,7 @@
 
 namespace NodeCanvas.Framework
 {
-  [AttributeUsage(AttributeTargets.Field, AllowMultiple = false, Inherited = false)]
+  [AttributeUsage(AttributeTargets.Field)]
   public class BlackboardOnlyAttribute : Attribute
   {
   }

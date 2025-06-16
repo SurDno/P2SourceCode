@@ -8,7 +8,6 @@ using Engine.Source.Commons.Effects;
 using Engine.Source.Components;
 using Engine.Source.Difficulties;
 using Inspectors;
-using UnityEngine;
 
 namespace Engine.Source.Effects
 {
@@ -16,73 +15,73 @@ namespace Engine.Source.Effects
   [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
   public class IncreaseThirstEffect : IEffect
   {
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected ParameterEffectQueueEnum queue = ParameterEffectQueueEnum.None;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected(Mutable = true, Mode = ExecuteMode.EditAndRuntime)]
     protected bool enable = true;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected ParameterNameEnum staminaParameterName;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected ParameterNameEnum thirstParameterName;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected ParameterNameEnum runParameterName;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected ParameterNameEnum lowStaminaParameterName;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected DurationTypeEnum durationType = DurationTypeEnum.None;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected bool realTime;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected float duration;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected float interval;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected float increaseThirstStepLowStaminaValue = 0.00015f;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy()]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected float increaseThirstStepMiddleStaminaValue = 0.0001f;
@@ -94,67 +93,67 @@ namespace Engine.Source.Effects
 
     public IEntity Target { get; set; }
 
-    public string Name => this.GetType().Name;
+    public string Name => GetType().Name;
 
-    public ParameterEffectQueueEnum Queue => this.queue;
+    public ParameterEffectQueueEnum Queue => queue;
 
     public bool Prepare(float currentRealTime, float currentGameTime)
     {
-      float num = this.realTime ? currentRealTime : currentGameTime;
-      if (this.durationType == DurationTypeEnum.ByAbility)
-        this.AbilityItem.AddDependEffect((IEffect) this);
-      this.startTime = num;
-      this.lastTime = num;
+      float num = realTime ? currentRealTime : currentGameTime;
+      if (durationType == DurationTypeEnum.ByAbility)
+        AbilityItem.AddDependEffect(this);
+      startTime = num;
+      lastTime = num;
       return true;
     }
 
     public bool Compute(float currentRealTime, float currentGameTime)
     {
-      float num = this.realTime ? currentRealTime : currentGameTime;
-      if (this.durationType == DurationTypeEnum.ByDuration && (double) num - (double) this.startTime > (double) this.duration || this.durationType == DurationTypeEnum.ByAbility && (this.AbilityItem == null || !this.AbilityItem.Active))
+      float num = realTime ? currentRealTime : currentGameTime;
+      if (durationType == DurationTypeEnum.ByDuration && num - (double) startTime > duration || durationType == DurationTypeEnum.ByAbility && (AbilityItem == null || !AbilityItem.Active))
         return false;
-      if ((double) this.interval == 0.0)
+      if (interval == 0.0)
       {
-        this.lastTime = num;
-        this.ComputeEffect();
+        lastTime = num;
+        ComputeEffect();
       }
       else
       {
-        while ((double) num - (double) this.lastTime >= (double) this.interval)
+        while (num - (double) this.lastTime >= interval)
         {
           float lastTime = this.lastTime;
-          this.lastTime += this.interval;
-          if ((double) lastTime == (double) this.lastTime)
+          this.lastTime += interval;
+          if (lastTime == (double) this.lastTime)
           {
-            Debug.LogError((object) ("Error compute effects, effect name : " + this.Name + " , target : " + this.Target.GetInfo()));
+            Debug.LogError((object) ("Error compute effects, effect name : " + Name + " , target : " + Target.GetInfo()));
             break;
           }
-          this.ComputeEffect();
+          ComputeEffect();
         }
       }
-      return this.durationType != DurationTypeEnum.None && this.durationType != DurationTypeEnum.Once;
+      return durationType != DurationTypeEnum.None && durationType != DurationTypeEnum.Once;
     }
 
     public void ComputeEffect()
     {
-      if (!this.enable)
+      if (!enable)
         return;
-      ParametersComponent component = this.Target?.GetComponent<ParametersComponent>();
-      IParameter<bool> byName1 = component?.GetByName<bool>(this.runParameterName);
+      ParametersComponent component = Target?.GetComponent<ParametersComponent>();
+      IParameter<bool> byName1 = component?.GetByName<bool>(runParameterName);
       if (byName1 != null && byName1.Value)
         return;
-      IParameter<float> byName2 = component?.GetByName<float>(this.staminaParameterName);
-      if (byName2 == null || (double) byName2.Value >= (double) byName2.MaxValue)
+      IParameter<float> byName2 = component?.GetByName<float>(staminaParameterName);
+      if (byName2 == null || byName2.Value >= (double) byName2.MaxValue)
         return;
-      IParameter<float> byName3 = component?.GetByName<float>(this.thirstParameterName);
-      if (byName3 == null || (double) byName3.Value >= (double) byName3.MaxValue)
+      IParameter<float> byName3 = component?.GetByName<float>(thirstParameterName);
+      if (byName3 == null || byName3.Value >= (double) byName3.MaxValue)
         return;
-      IParameter<bool> byName4 = component?.GetByName<bool>(this.lowStaminaParameterName);
+      IParameter<bool> byName4 = component?.GetByName<bool>(lowStaminaParameterName);
       if (byName4 == null)
         return;
       float num1 = InstanceByRequest<DifficultySettings>.Instance.GetValue("Thirst_Speed");
       float num2 = byName3.Value;
-      float num3 = !byName4.Value ? num2 + num1 * this.increaseThirstStepMiddleStaminaValue : num2 + num1 * this.increaseThirstStepLowStaminaValue * byName2.MaxValue;
+      float num3 = !byName4.Value ? num2 + num1 * increaseThirstStepMiddleStaminaValue : num2 + num1 * increaseThirstStepLowStaminaValue * byName2.MaxValue;
       byName3.Value = num3;
     }
 

@@ -16,18 +16,18 @@ namespace TriangleNet.Log
 
     public SimpleLogItem(LogLevel level, string message, string info)
     {
-      this.time = DateTime.Now;
+      time = DateTime.Now;
       this.level = level;
       this.message = message;
       this.info = info;
     }
 
-    public DateTime Time => this.time;
+    public DateTime Time => time;
 
-    public LogLevel Level => this.level;
+    public LogLevel Level => level;
 
-    public string Message => this.message;
+    public string Message => message;
 
-    public string Info => this.info;
+    public string Info => info;
   }
 }

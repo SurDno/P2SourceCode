@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-[AddComponentMenu("Utilities/HUDFPS")]
+﻿[AddComponentMenu("Utilities/HUDFPS")]
 public class HUDFPS : MonoBehaviour
 {
   private float accum;
@@ -13,24 +11,24 @@ public class HUDFPS : MonoBehaviour
 
   private void Update()
   {
-    this.accum += Time.deltaTime;
-    ++this.frames;
-    if (this.frames < this.frequency)
+    accum += Time.deltaTime;
+    ++frames;
+    if (frames < frequency)
       return;
-    this.sFPS = Mathf.Round((float) this.frames / this.accum).ToString();
-    this.accum = 0.0f;
-    this.frames = 0;
+    sFPS = Mathf.Round(frames / accum).ToString();
+    accum = 0.0f;
+    frames = 0;
   }
 
   private void OnGUI()
   {
-    if (this.style == null)
+    if (style == null)
     {
-      this.style = new GUIStyle(GUI.skin.label);
-      this.style.normal.textColor = Color.white;
-      this.style.fontStyle = FontStyle.Bold;
-      this.style.alignment = TextAnchor.MiddleCenter;
+      style = new GUIStyle(GUI.skin.label);
+      style.normal.textColor = Color.white;
+      style.fontStyle = FontStyle.Bold;
+      style.alignment = TextAnchor.MiddleCenter;
     }
-    GUI.Label(new Rect(0.0f, 0.0f, this.startRect.width, this.startRect.height), this.sFPS + " FPS", this.style);
+    GUI.Label(new Rect(0.0f, 0.0f, startRect.width, startRect.height), sFPS + " FPS", style);
   }
 }

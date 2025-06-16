@@ -1,11 +1,9 @@
-﻿using Engine.Common.DateTime;
+﻿using System.Collections;
+using System.Collections.Generic;
+using Engine.Common.DateTime;
 using Engine.Common.Services;
-using Engine.Source.Audio;
 using Engine.Source.Commons;
 using Engine.Source.Settings.External;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 
 [RequireComponent(typeof (AudioSource))]
 public class SoundPlayer : MonoBehaviour
@@ -24,22 +22,22 @@ public class SoundPlayer : MonoBehaviour
 
   private IEnumerator Start()
   {
-    if ((Object) this.audioSource == (Object) null)
+    if ((Object) audioSource == (Object) null)
     {
       Debug.LogError((object) ("Null audio source, gameobject (need to fix by level designer), trying to get component: " + this.GetInfo()), (Object) this.gameObject);
-      this.audioSource = this.GetComponent<AudioSource>();
-      if ((Object) this.audioSource == (Object) null)
+      audioSource = this.GetComponent<AudioSource>();
+      if ((Object) audioSource == (Object) null)
       {
         Debug.LogError((object) ("Can't get component: " + this.GetInfo()), (Object) this.gameObject);
         yield break;
       }
     }
-    if ((Object) this.audioSource.clip != (Object) null)
+    if ((Object) audioSource.clip != (Object) null)
       Debug.LogError((object) ("clip != null, gameobject : " + this.gameObject.name), (Object) this.gameObject);
     else if (!ExternalSettingsInstance<ExternalOptimizationSettings>.Instance.DisableAudio)
     {
-      this.clips.Cleanup<AudioClip>();
-      if (this.clips.Count != 0)
+      clips.Cleanup<AudioClip>();
+      if (clips.Count != 0)
       {
         WaitForSeconds wait = new WaitForSeconds(ExternalSettingsInstance<ExternalOptimizationSettings>.Instance.SoundUpdateDelay);
         while (true)
@@ -56,47 +54,47 @@ public class SoundPlayer : MonoBehaviour
                   if (!ExternalSettingsInstance<ExternalOptimizationSettings>.Instance.DisableAudio)
                   {
                     yield return (object) wait;
-                    this.UpdateEnable();
+                    UpdateEnable();
                   }
                   else
                     goto label_9;
                 }
-                while (!this.audioSource.enabled);
+                while (!audioSource.enabled);
                 TimesOfDay timeOfDay = ServiceLocator.GetService<ITimeService>().SolarTime.GetTimesOfDay();
-                inTimeOfDay = TimesOfDayUtility.HasValue(this.timesOfDay, timeOfDay);
+                inTimeOfDay = TimesOfDayUtility.HasValue(timesOfDay, timeOfDay);
               }
               while (!inTimeOfDay);
-              if (!((Object) this.audioSource.clip != (Object) null))
+              if (!((Object) audioSource.clip != (Object) null))
                 goto label_19;
             }
-            while (this.audioSource.isPlaying);
-            if (this.audioSource.clip.loadState != AudioDataLoadState.Unloaded)
+            while (audioSource.isPlaying);
+            if (audioSource.clip.loadState != AudioDataLoadState.Unloaded)
             {
-              if (this.audioSource.clip.loadState == AudioDataLoadState.Failed)
+              if (audioSource.clip.loadState == AudioDataLoadState.Failed)
                 goto label_17;
             }
             else
               goto label_15;
           }
-          while (this.audioSource.clip.loadState == AudioDataLoadState.Loading);
+          while (audioSource.clip.loadState == AudioDataLoadState.Loading);
           goto label_20;
 label_9:
           yield return (object) wait;
           continue;
 label_15:
-          this.audioSource.clip.LoadAudioData();
+          audioSource.clip.LoadAudioData();
           continue;
 label_17:
-          this.audioSource.clip = (AudioClip) null;
+          audioSource.clip = (AudioClip) null;
           continue;
 label_19:
-          AudioClip clip = this.clips.Random<AudioClip>();
-          this.audioSource.clip = clip;
+          AudioClip clip = clips.Random();
+          audioSource.clip = clip;
           continue;
 label_20:
-          this.audioSource.PlayAndCheck();
-          Debug.Log((object) ObjectInfoUtility.GetStream().Append("[Sounds]").Append(" Play sound, name : ").Append(this.audioSource.clip.name).Append(" , context : ").GetFullName(this.gameObject));
-          float delay2 = (this.playInstantly ? 0.0f : this.audioSource.clip.length) + Random.Range(this.delay.Min, this.delay.Max);
+          audioSource.PlayAndCheck();
+          Debug.Log((object) ObjectInfoUtility.GetStream().Append("[Sounds]").Append(" Play sound, name : ").Append(audioSource.clip.name).Append(" , context : ").GetFullName(this.gameObject));
+          float delay2 = (playInstantly ? 0.0f : audioSource.clip.length) + Random.Range(delay.Min, delay.Max);
           yield return (object) new WaitForSeconds(delay2);
         }
       }
@@ -105,9 +103,9 @@ label_20:
 
   private void UpdateEnable()
   {
-    bool flag = (double) (this.transform.position - EngineApplication.PlayerPosition).sqrMagnitude < (double) (this.audioSource.maxDistance * this.audioSource.maxDistance);
-    if (this.audioSource.enabled == flag)
+    bool flag = (double) (this.transform.position - EngineApplication.PlayerPosition).sqrMagnitude < (double) (audioSource.maxDistance * audioSource.maxDistance);
+    if (audioSource.enabled == flag)
       return;
-    this.audioSource.enabled = flag;
+    audioSource.enabled = flag;
   }
 }

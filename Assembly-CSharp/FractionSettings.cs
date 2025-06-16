@@ -1,7 +1,6 @@
-﻿using Engine.Common.Commons;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using UnityEngine;
+using Engine.Common.Commons;
 
 [Serializable]
 public class FractionSettings

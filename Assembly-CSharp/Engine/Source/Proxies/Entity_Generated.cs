@@ -1,12 +1,11 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
-using Engine.Common;
 using Engine.Common.Commons.Cloneable;
 using Engine.Common.Commons.Converters;
 using Engine.Common.Services;
 using Engine.Source.Commons;
 using Scripts.Tools.Serializations.Converters;
-using System;
 
 namespace Engine.Source.Proxies
 {
@@ -20,44 +19,44 @@ namespace Engine.Source.Proxies
     ISerializeStateSave,
     ISerializeStateLoad
   {
-    public object Clone() => (object) ServiceCache.Factory.Instantiate<Entity_Generated>(this);
+    public object Clone() => ServiceCache.Factory.Instantiate(this);
 
     public void CopyTo(object target2)
     {
       Entity_Generated entityGenerated = (Entity_Generated) target2;
-      entityGenerated.name = this.name;
-      CloneableObjectUtility.CopyListTo<IComponent>(entityGenerated.components, this.components);
-      entityGenerated.isEnabled = this.isEnabled;
+      entityGenerated.name = name;
+      CloneableObjectUtility.CopyListTo(entityGenerated.components, components);
+      entityGenerated.isEnabled = isEnabled;
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.Write(writer, "Id", this.id);
-      DefaultDataWriteUtility.WriteListSerialize<IComponent>(writer, "Components", this.components);
-      DefaultDataWriteUtility.Write(writer, "IsEnabled", this.isEnabled);
+      DefaultDataWriteUtility.Write(writer, "Id", id);
+      DefaultDataWriteUtility.WriteListSerialize(writer, "Components", components);
+      DefaultDataWriteUtility.Write(writer, "IsEnabled", isEnabled);
     }
 
     public void DataRead(IDataReader reader, Type type)
     {
-      this.id = DefaultDataReadUtility.Read(reader, "Id", this.id);
-      this.components = DefaultDataReadUtility.ReadListSerialize<IComponent>(reader, "Components", this.components);
-      this.isEnabled = DefaultDataReadUtility.Read(reader, "IsEnabled", this.isEnabled);
+      id = DefaultDataReadUtility.Read(reader, "Id", id);
+      components = DefaultDataReadUtility.ReadListSerialize(reader, "Components", components);
+      isEnabled = DefaultDataReadUtility.Read(reader, "IsEnabled", isEnabled);
     }
 
     public void StateSave(IDataWriter writer)
     {
-      DefaultDataWriteUtility.Write(writer, "Id", this.id);
-      DefaultDataWriteUtility.Write(writer, "Name", this.name);
-      CustomStateSaveUtility.SaveListComponents(writer, "Components", this.components);
-      DefaultDataWriteUtility.Write(writer, "IsEnabled", this.isEnabled);
-      DefaultDataWriteUtility.Write(writer, "HierarchyPath", this.HierarchyPath);
+      DefaultDataWriteUtility.Write(writer, "Id", id);
+      DefaultDataWriteUtility.Write(writer, "Name", name);
+      CustomStateSaveUtility.SaveListComponents(writer, "Components", components);
+      DefaultDataWriteUtility.Write(writer, "IsEnabled", isEnabled);
+      DefaultDataWriteUtility.Write(writer, "HierarchyPath", HierarchyPath);
     }
 
     public void StateLoad(IDataReader reader, Type type)
     {
-      this.name = DefaultDataReadUtility.Read(reader, "Name", this.name);
-      this.components = CustomStateLoadUtility.LoadListComponents(reader, "Components", this.components);
-      this.isEnabled = DefaultDataReadUtility.Read(reader, "IsEnabled", this.isEnabled);
+      name = DefaultDataReadUtility.Read(reader, "Name", name);
+      components = CustomStateLoadUtility.LoadListComponents(reader, "Components", components);
+      isEnabled = DefaultDataReadUtility.Read(reader, "IsEnabled", isEnabled);
     }
   }
 }

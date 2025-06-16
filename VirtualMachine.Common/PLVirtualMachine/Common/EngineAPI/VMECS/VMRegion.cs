@@ -1,7 +1,7 @@
-﻿using Cofe.Loggers;
+﻿using System;
+using Cofe.Loggers;
 using Engine.Common.Components;
 using PLVirtualMachine.Common.EngineAPI.VMECS.VMAttributes;
-using System;
 
 namespace PLVirtualMachine.Common.EngineAPI.VMECS
 {
@@ -15,17 +15,17 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
     {
       get
       {
-        if (this.Component != null)
-          return this.Component.DiseaseLevel.Value;
-        Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", (object) this.Name, (object) this.Parent.Name));
+        if (Component != null)
+          return Component.DiseaseLevel.Value;
+        Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", Name, Parent.Name));
         return 0;
       }
       set
       {
-        if (this.Component == null)
-          Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", (object) this.Name, (object) this.Parent.Name));
+        if (Component == null)
+          Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", Name, Parent.Name));
         else
-          this.Component.DiseaseLevel.Value = value;
+          Component.DiseaseLevel.Value = value;
       }
     }
 
@@ -34,17 +34,17 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
     {
       get
       {
-        if (this.Component != null)
-          return this.Component.Reputation.Value;
-        Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", (object) this.Name, (object) this.Parent.Name));
+        if (Component != null)
+          return Component.Reputation.Value;
+        Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", Name, Parent.Name));
         return 0.0f;
       }
       set
       {
-        if (this.Component == null)
-          Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", (object) this.Name, (object) this.Parent.Name));
+        if (Component == null)
+          Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", Name, Parent.Name));
         else
-          this.Component.Reputation.Value = value;
+          Component.Reputation.Value = value;
       }
     }
 
@@ -53,19 +53,19 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
 
     public override void Clear()
     {
-      if (!this.InstanceValid)
+      if (!InstanceValid)
         return;
-      this.Component.DiseaseLevel.ChangeValueEvent -= new Action<int>(this.OnDiseaseLevelChanged);
-      this.Component.Reputation.ChangeValueEvent -= new Action<float>(this.OnReputationChanged);
+      Component.DiseaseLevel.ChangeValueEvent -= OnDiseaseLevelChanged;
+      Component.Reputation.ChangeValueEvent -= OnReputationChanged;
       base.Clear();
     }
 
     protected override void Init()
     {
-      if (this.IsTemplate)
+      if (IsTemplate)
         return;
-      this.Component.DiseaseLevel.ChangeValueEvent += new Action<int>(this.OnDiseaseLevelChanged);
-      this.Component.Reputation.ChangeValueEvent += new Action<float>(this.OnReputationChanged);
+      Component.DiseaseLevel.ChangeValueEvent += OnDiseaseLevelChanged;
+      Component.Reputation.ChangeValueEvent += OnReputationChanged;
     }
 
     [Event("Reputation changed", "level of disease")]
@@ -73,12 +73,12 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
 
     public void OnReputationChanged(float value)
     {
-      Action<float> reputationChanged = this.ReputationChanged;
+      Action<float> reputationChanged = ReputationChanged;
       if (reputationChanged != null)
         reputationChanged(value);
       if (VMGameComponent.Instance == null)
         return;
-      VMGameComponent.Instance.OnRegionReputationChanged(this.Component, value);
+      VMGameComponent.Instance.OnRegionReputationChanged(Component, value);
     }
 
     [Event("Disease level changed", "level of disease")]
@@ -86,10 +86,10 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
 
     public void OnDiseaseLevelChanged(int value)
     {
-      Action<int> diseaseLevelChanged = this.DiseaseLevelChanged;
+      Action<int> diseaseLevelChanged = DiseaseLevelChanged;
       if (diseaseLevelChanged != null)
         diseaseLevelChanged(value);
-      VMGameComponent.Instance.OnRegionDiseaseLevelChanged(this.Component, value);
+      VMGameComponent.Instance.OnRegionDiseaseLevelChanged(Component, value);
     }
   }
 }

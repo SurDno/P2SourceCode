@@ -17,7 +17,7 @@ namespace Engine.Source.Effects
         case EffectContextEnum.Target:
           return context.Target;
         default:
-          return (IEntity) null;
+          return null;
       }
     }
   }

@@ -1,11 +1,11 @@
-﻿using SRF;
+﻿using System;
+using SRDebugger.Internal;
+using SRF;
 using SRF.Service;
-using System;
-using UnityEngine;
 
 namespace SRDebugger.Services.Implementation
 {
-  [SRF.Service.Service(typeof (IDebugService))]
+  [Service(typeof (IDebugService))]
   public class SRDebugService : IDebugService
   {
     private readonly IDebugPanelService _debugPanelService;
@@ -13,11 +13,11 @@ namespace SRDebugger.Services.Implementation
 
     public SRDebugService()
     {
-      SRServiceManager.RegisterService<IDebugService>((object) this);
+      SRServiceManager.RegisterService<IDebugService>(this);
       SRServiceManager.GetService<IProfilerService>();
-      this._debugPanelService = SRServiceManager.GetService<IDebugPanelService>();
-      this._debugPanelService.VisibilityChanged += new Action<IDebugPanelService, bool>(this.DebugPanelServiceOnVisibilityChanged);
-      if (this.Settings.EnableKeyboardShortcuts)
+      _debugPanelService = SRServiceManager.GetService<IDebugPanelService>();
+      _debugPanelService.VisibilityChanged += DebugPanelServiceOnVisibilityChanged;
+      if (Settings.EnableKeyboardShortcuts)
         SRServiceManager.GetService<KeyboardShortcutListenerService>();
       UnityEngine.Object.DontDestroyOnLoad((UnityEngine.Object) Hierarchy.Get("SRDebugger").gameObject);
     }
@@ -26,11 +26,11 @@ namespace SRDebugger.Services.Implementation
 
     public bool IsDebugging
     {
-      get => this._IsDebugging;
+      get => _IsDebugging;
       set
       {
-        this._IsDebugging = value;
-        Action debuggingChanged = this.OnDebuggingChanged;
+        _IsDebugging = value;
+        Action debuggingChanged = OnDebuggingChanged;
         if (debuggingChanged == null)
           return;
         debuggingChanged();
@@ -39,39 +39,39 @@ namespace SRDebugger.Services.Implementation
 
     public event Action OnDebuggingChanged;
 
-    public bool IsDebugPanelVisible => this._debugPanelService.IsVisible;
+    public bool IsDebugPanelVisible => _debugPanelService.IsVisible;
 
     public bool IsProfilerDocked
     {
-      get => SRDebugger.Internal.Service.PinnedUI.IsProfilerPinned;
-      set => SRDebugger.Internal.Service.PinnedUI.IsProfilerPinned = value;
+      get => Service.PinnedUI.IsProfilerPinned;
+      set => Service.PinnedUI.IsProfilerPinned = value;
     }
 
-    public void ShowDebugPanel() => this._debugPanelService.IsVisible = true;
+    public void ShowDebugPanel() => _debugPanelService.IsVisible = true;
 
     public void ShowDebugPanel(DefaultTabs tab)
     {
-      this._debugPanelService.IsVisible = true;
-      this._debugPanelService.OpenTab(tab);
+      _debugPanelService.IsVisible = true;
+      _debugPanelService.OpenTab(tab);
     }
 
-    public void HideDebugPanel() => this._debugPanelService.IsVisible = false;
+    public void HideDebugPanel() => _debugPanelService.IsVisible = false;
 
     public void DestroyDebugPanel()
     {
-      this._debugPanelService.IsVisible = false;
-      this._debugPanelService.Unload();
+      _debugPanelService.IsVisible = false;
+      _debugPanelService.Unload();
     }
 
     public event VisibilityChangedDelegate PanelVisibilityChanged;
 
     private void DebugPanelServiceOnVisibilityChanged(IDebugPanelService debugPanelService, bool b)
     {
-      if (this.PanelVisibilityChanged == null)
+      if (PanelVisibilityChanged == null)
         return;
       try
       {
-        this.PanelVisibilityChanged(b);
+        PanelVisibilityChanged(b);
       }
       catch (Exception ex)
       {

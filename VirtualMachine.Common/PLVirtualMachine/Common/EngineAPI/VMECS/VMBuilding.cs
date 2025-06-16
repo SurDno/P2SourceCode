@@ -10,6 +10,6 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
     public const string ComponentName = "Building";
 
     [Property("Building", "", true)]
-    public BuildingEnum Building => this.Component.Building;
+    public BuildingEnum Building => Component.Building;
   }
 }

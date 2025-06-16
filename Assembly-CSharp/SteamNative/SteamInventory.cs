@@ -1,8 +1,7 @@
-﻿using Facepunch.Steamworks;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Linq;
 using System.Text;
+using Facepunch.Steamworks;
 
 namespace SteamNative
 {
@@ -15,36 +14,36 @@ namespace SteamNative
     {
       this.steamworks = steamworks;
       if (Platform.IsWindows64)
-        this.platform = (Platform.Interface) new Platform.Win64(pointer);
+        platform = (Platform.Interface) new Platform.Win64(pointer);
       else if (Platform.IsWindows32)
-        this.platform = (Platform.Interface) new Platform.Win32(pointer);
+        platform = (Platform.Interface) new Platform.Win32(pointer);
       else if (Platform.IsLinux32)
-        this.platform = (Platform.Interface) new Platform.Linux32(pointer);
+        platform = (Platform.Interface) new Platform.Linux32(pointer);
       else if (Platform.IsLinux64)
       {
-        this.platform = (Platform.Interface) new Platform.Linux64(pointer);
+        platform = (Platform.Interface) new Platform.Linux64(pointer);
       }
       else
       {
         if (!Platform.IsOsx)
           return;
-        this.platform = (Platform.Interface) new Platform.Mac(pointer);
+        platform = (Platform.Interface) new Platform.Mac(pointer);
       }
     }
 
-    public bool IsValid => this.platform != null && this.platform.IsValid;
+    public bool IsValid => platform != null && platform.IsValid;
 
     public virtual void Dispose()
     {
-      if (this.platform == null)
+      if (platform == null)
         return;
-      this.platform.Dispose();
-      this.platform = (Platform.Interface) null;
+      platform.Dispose();
+      platform = (Platform.Interface) null;
     }
 
     public bool AddPromoItem(ref SteamInventoryResult_t pResultHandle, SteamItemDef_t itemDef)
     {
-      return this.platform.ISteamInventory_AddPromoItem(ref pResultHandle.Value, itemDef.Value);
+      return platform.ISteamInventory_AddPromoItem(ref pResultHandle.Value, itemDef.Value);
     }
 
     public bool AddPromoItems(
@@ -52,12 +51,12 @@ namespace SteamNative
       SteamItemDef_t[] pArrayItemDefs,
       uint unArrayLength)
     {
-      return this.platform.ISteamInventory_AddPromoItems(ref pResultHandle.Value, ((IEnumerable<SteamItemDef_t>) pArrayItemDefs).Select<SteamItemDef_t, int>((Func<SteamItemDef_t, int>) (x => x.Value)).ToArray<int>(), unArrayLength);
+      return platform.ISteamInventory_AddPromoItems(ref pResultHandle.Value, pArrayItemDefs.Select(x => x.Value).ToArray(), unArrayLength);
     }
 
     public bool CheckResultSteamID(SteamInventoryResult_t resultHandle, CSteamID steamIDExpected)
     {
-      return this.platform.ISteamInventory_CheckResultSteamID(resultHandle.Value, steamIDExpected.Value);
+      return platform.ISteamInventory_CheckResultSteamID(resultHandle.Value, steamIDExpected.Value);
     }
 
     public bool ConsumeItem(
@@ -65,7 +64,7 @@ namespace SteamNative
       SteamItemInstanceID_t itemConsume,
       uint unQuantity)
     {
-      return this.platform.ISteamInventory_ConsumeItem(ref pResultHandle.Value, itemConsume.Value, unQuantity);
+      return platform.ISteamInventory_ConsumeItem(ref pResultHandle.Value, itemConsume.Value, unQuantity);
     }
 
     public bool DeserializeResult(
@@ -74,12 +73,12 @@ namespace SteamNative
       uint unBufferSize,
       bool bRESERVED_MUST_BE_FALSE)
     {
-      return this.platform.ISteamInventory_DeserializeResult(ref pOutResultHandle.Value, pBuffer, unBufferSize, bRESERVED_MUST_BE_FALSE);
+      return platform.ISteamInventory_DeserializeResult(ref pOutResultHandle.Value, pBuffer, unBufferSize, bRESERVED_MUST_BE_FALSE);
     }
 
     public void DestroyResult(SteamInventoryResult_t resultHandle)
     {
-      this.platform.ISteamInventory_DestroyResult(resultHandle.Value);
+      platform.ISteamInventory_DestroyResult(resultHandle.Value);
     }
 
     public bool ExchangeItems(
@@ -91,7 +90,7 @@ namespace SteamNative
       uint[] punArrayDestroyQuantity,
       uint unArrayDestroyLength)
     {
-      return this.platform.ISteamInventory_ExchangeItems(ref pResultHandle.Value, ((IEnumerable<SteamItemDef_t>) pArrayGenerate).Select<SteamItemDef_t, int>((Func<SteamItemDef_t, int>) (x => x.Value)).ToArray<int>(), punArrayGenerateQuantity, unArrayGenerateLength, ((IEnumerable<SteamItemInstanceID_t>) pArrayDestroy).Select<SteamItemInstanceID_t, ulong>((Func<SteamItemInstanceID_t, ulong>) (x => x.Value)).ToArray<ulong>(), punArrayDestroyQuantity, unArrayDestroyLength);
+      return platform.ISteamInventory_ExchangeItems(ref pResultHandle.Value, pArrayGenerate.Select(x => x.Value).ToArray(), punArrayGenerateQuantity, unArrayGenerateLength, pArrayDestroy.Select(x => x.Value).ToArray(), punArrayDestroyQuantity, unArrayDestroyLength);
     }
 
     public bool GenerateItems(
@@ -100,32 +99,32 @@ namespace SteamNative
       uint[] punArrayQuantity,
       uint unArrayLength)
     {
-      return this.platform.ISteamInventory_GenerateItems(ref pResultHandle.Value, ((IEnumerable<SteamItemDef_t>) pArrayItemDefs).Select<SteamItemDef_t, int>((Func<SteamItemDef_t, int>) (x => x.Value)).ToArray<int>(), punArrayQuantity, unArrayLength);
+      return platform.ISteamInventory_GenerateItems(ref pResultHandle.Value, pArrayItemDefs.Select(x => x.Value).ToArray(), punArrayQuantity, unArrayLength);
     }
 
     public bool GetAllItems(ref SteamInventoryResult_t pResultHandle)
     {
-      return this.platform.ISteamInventory_GetAllItems(ref pResultHandle.Value);
+      return platform.ISteamInventory_GetAllItems(ref pResultHandle.Value);
     }
 
     public unsafe SteamItemDef_t[] GetEligiblePromoItemDefinitionIDs(CSteamID steamID)
     {
       uint punItemDefIDsArraySize = 0;
-      if (!this.platform.ISteamInventory_GetEligiblePromoItemDefinitionIDs(steamID.Value, IntPtr.Zero, out punItemDefIDsArraySize) || punItemDefIDsArraySize == 0U)
-        return (SteamItemDef_t[]) null;
+      if (!platform.ISteamInventory_GetEligiblePromoItemDefinitionIDs(steamID.Value, IntPtr.Zero, out punItemDefIDsArraySize) || punItemDefIDsArraySize == 0U)
+        return null;
       SteamItemDef_t[] steamItemDefTArray = new SteamItemDef_t[(int) punItemDefIDsArraySize];
       fixed (SteamItemDef_t* pItemDefIDs = steamItemDefTArray)
-        return !this.platform.ISteamInventory_GetEligiblePromoItemDefinitionIDs(steamID.Value, (IntPtr) (void*) pItemDefIDs, out punItemDefIDsArraySize) ? (SteamItemDef_t[]) null : steamItemDefTArray;
+        return !platform.ISteamInventory_GetEligiblePromoItemDefinitionIDs(steamID.Value, (IntPtr) pItemDefIDs, out punItemDefIDsArraySize) ? null : steamItemDefTArray;
     }
 
     public unsafe SteamItemDef_t[] GetItemDefinitionIDs()
     {
       uint punItemDefIDsArraySize = 0;
-      if (!this.platform.ISteamInventory_GetItemDefinitionIDs(IntPtr.Zero, out punItemDefIDsArraySize) || punItemDefIDsArraySize == 0U)
-        return (SteamItemDef_t[]) null;
+      if (!platform.ISteamInventory_GetItemDefinitionIDs(IntPtr.Zero, out punItemDefIDsArraySize) || punItemDefIDsArraySize == 0U)
+        return null;
       SteamItemDef_t[] steamItemDefTArray = new SteamItemDef_t[(int) punItemDefIDsArraySize];
       fixed (SteamItemDef_t* pItemDefIDs = steamItemDefTArray)
-        return !this.platform.ISteamInventory_GetItemDefinitionIDs((IntPtr) (void*) pItemDefIDs, out punItemDefIDsArraySize) ? (SteamItemDef_t[]) null : steamItemDefTArray;
+        return !platform.ISteamInventory_GetItemDefinitionIDs((IntPtr) pItemDefIDs, out punItemDefIDsArraySize) ? null : steamItemDefTArray;
     }
 
     public bool GetItemDefinitionProperty(
@@ -136,7 +135,7 @@ namespace SteamNative
       pchValueBuffer = string.Empty;
       StringBuilder stringBuilder = Helpers.TakeStringBuilder();
       uint punValueBufferSizeOut = 4096;
-      bool definitionProperty = this.platform.ISteamInventory_GetItemDefinitionProperty(iDefinition.Value, pchPropertyName, stringBuilder, out punValueBufferSizeOut);
+      bool definitionProperty = platform.ISteamInventory_GetItemDefinitionProperty(iDefinition.Value, pchPropertyName, stringBuilder, out punValueBufferSizeOut);
       if (!definitionProperty)
         return definitionProperty;
       pchValueBuffer = stringBuilder.ToString();
@@ -148,7 +147,7 @@ namespace SteamNative
       SteamItemInstanceID_t[] pInstanceIDs,
       uint unCountInstanceIDs)
     {
-      return this.platform.ISteamInventory_GetItemsByID(ref pResultHandle.Value, ((IEnumerable<SteamItemInstanceID_t>) pInstanceIDs).Select<SteamItemInstanceID_t, ulong>((Func<SteamItemInstanceID_t, ulong>) (x => x.Value)).ToArray<ulong>(), unCountInstanceIDs);
+      return platform.ISteamInventory_GetItemsByID(ref pResultHandle.Value, pInstanceIDs.Select(x => x.Value).ToArray(), unCountInstanceIDs);
     }
 
     public bool GetResultItemProperty(
@@ -160,7 +159,7 @@ namespace SteamNative
       pchValueBuffer = string.Empty;
       StringBuilder stringBuilder = Helpers.TakeStringBuilder();
       uint punValueBufferSizeOut = 4096;
-      bool resultItemProperty = this.platform.ISteamInventory_GetResultItemProperty(resultHandle.Value, unItemIndex, pchPropertyName, stringBuilder, out punValueBufferSizeOut);
+      bool resultItemProperty = platform.ISteamInventory_GetResultItemProperty(resultHandle.Value, unItemIndex, pchPropertyName, stringBuilder, out punValueBufferSizeOut);
       if (!resultItemProperty)
         return resultItemProperty;
       pchValueBuffer = stringBuilder.ToString();
@@ -170,47 +169,47 @@ namespace SteamNative
     public unsafe SteamItemDetails_t[] GetResultItems(SteamInventoryResult_t resultHandle)
     {
       uint punOutItemsArraySize = 0;
-      if (!this.platform.ISteamInventory_GetResultItems(resultHandle.Value, IntPtr.Zero, out punOutItemsArraySize) || punOutItemsArraySize == 0U)
-        return (SteamItemDetails_t[]) null;
+      if (!platform.ISteamInventory_GetResultItems(resultHandle.Value, IntPtr.Zero, out punOutItemsArraySize) || punOutItemsArraySize == 0U)
+        return null;
       SteamItemDetails_t[] steamItemDetailsTArray = new SteamItemDetails_t[(int) punOutItemsArraySize];
       fixed (SteamItemDetails_t* pOutItemsArray = steamItemDetailsTArray)
-        return !this.platform.ISteamInventory_GetResultItems(resultHandle.Value, (IntPtr) (void*) pOutItemsArray, out punOutItemsArraySize) ? (SteamItemDetails_t[]) null : steamItemDetailsTArray;
+        return !platform.ISteamInventory_GetResultItems(resultHandle.Value, (IntPtr) pOutItemsArray, out punOutItemsArraySize) ? null : steamItemDetailsTArray;
     }
 
     public Result GetResultStatus(SteamInventoryResult_t resultHandle)
     {
-      return this.platform.ISteamInventory_GetResultStatus(resultHandle.Value);
+      return platform.ISteamInventory_GetResultStatus(resultHandle.Value);
     }
 
     public uint GetResultTimestamp(SteamInventoryResult_t resultHandle)
     {
-      return this.platform.ISteamInventory_GetResultTimestamp(resultHandle.Value);
+      return platform.ISteamInventory_GetResultTimestamp(resultHandle.Value);
     }
 
     public bool GrantPromoItems(ref SteamInventoryResult_t pResultHandle)
     {
-      return this.platform.ISteamInventory_GrantPromoItems(ref pResultHandle.Value);
+      return platform.ISteamInventory_GrantPromoItems(ref pResultHandle.Value);
     }
 
-    public bool LoadItemDefinitions() => this.platform.ISteamInventory_LoadItemDefinitions();
+    public bool LoadItemDefinitions() => platform.ISteamInventory_LoadItemDefinitions();
 
     public CallbackHandle RequestEligiblePromoItemDefinitionsIDs(
       CSteamID steamID,
       Action<SteamInventoryEligiblePromoItemDefIDs_t, bool> CallbackFunction = null)
     {
-      SteamAPICall_t steamApiCallT = (SteamAPICall_t) 0UL;
-      SteamAPICall_t call = this.platform.ISteamInventory_RequestEligiblePromoItemDefinitionsIDs(steamID.Value);
-      return CallbackFunction == null ? (CallbackHandle) null : SteamInventoryEligiblePromoItemDefIDs_t.CallResult(this.steamworks, call, CallbackFunction);
+      SteamAPICall_t steamApiCallT = 0UL;
+      SteamAPICall_t call = platform.ISteamInventory_RequestEligiblePromoItemDefinitionsIDs(steamID.Value);
+      return CallbackFunction == null ? null : SteamInventoryEligiblePromoItemDefIDs_t.CallResult(steamworks, call, CallbackFunction);
     }
 
-    public void SendItemDropHeartbeat() => this.platform.ISteamInventory_SendItemDropHeartbeat();
+    public void SendItemDropHeartbeat() => platform.ISteamInventory_SendItemDropHeartbeat();
 
     public bool SerializeResult(
       SteamInventoryResult_t resultHandle,
       IntPtr pOutBuffer,
       out uint punOutBufferSize)
     {
-      return this.platform.ISteamInventory_SerializeResult(resultHandle.Value, pOutBuffer, out punOutBufferSize);
+      return platform.ISteamInventory_SerializeResult(resultHandle.Value, pOutBuffer, out punOutBufferSize);
     }
 
     public bool TradeItems(
@@ -223,7 +222,7 @@ namespace SteamNative
       uint[] pArrayGetQuantity,
       uint nArrayGetLength)
     {
-      return this.platform.ISteamInventory_TradeItems(ref pResultHandle.Value, steamIDTradePartner.Value, ((IEnumerable<SteamItemInstanceID_t>) pArrayGive).Select<SteamItemInstanceID_t, ulong>((Func<SteamItemInstanceID_t, ulong>) (x => x.Value)).ToArray<ulong>(), pArrayGiveQuantity, nArrayGiveLength, ((IEnumerable<SteamItemInstanceID_t>) pArrayGet).Select<SteamItemInstanceID_t, ulong>((Func<SteamItemInstanceID_t, ulong>) (x => x.Value)).ToArray<ulong>(), pArrayGetQuantity, nArrayGetLength);
+      return platform.ISteamInventory_TradeItems(ref pResultHandle.Value, steamIDTradePartner.Value, pArrayGive.Select(x => x.Value).ToArray(), pArrayGiveQuantity, nArrayGiveLength, pArrayGet.Select(x => x.Value).ToArray(), pArrayGetQuantity, nArrayGetLength);
     }
 
     public bool TransferItemQuantity(
@@ -232,14 +231,14 @@ namespace SteamNative
       uint unQuantity,
       SteamItemInstanceID_t itemIdDest)
     {
-      return this.platform.ISteamInventory_TransferItemQuantity(ref pResultHandle.Value, itemIdSource.Value, unQuantity, itemIdDest.Value);
+      return platform.ISteamInventory_TransferItemQuantity(ref pResultHandle.Value, itemIdSource.Value, unQuantity, itemIdDest.Value);
     }
 
     public bool TriggerItemDrop(
       ref SteamInventoryResult_t pResultHandle,
       SteamItemDef_t dropListDefinition)
     {
-      return this.platform.ISteamInventory_TriggerItemDrop(ref pResultHandle.Value, dropListDefinition.Value);
+      return platform.ISteamInventory_TriggerItemDrop(ref pResultHandle.Value, dropListDefinition.Value);
     }
   }
 }

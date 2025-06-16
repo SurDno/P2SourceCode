@@ -1,9 +1,9 @@
-﻿using Assets.Engine.Source.Services.Profiles;
+﻿using System;
+using Assets.Engine.Source.Services.Profiles;
 using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons.Cloneable;
 using Engine.Common.Commons.Converters;
-using System;
 
 namespace Engine.Source.Proxies
 {
@@ -18,27 +18,27 @@ namespace Engine.Source.Proxies
     public object Clone()
     {
       CustomProfileData_Generated instance = Activator.CreateInstance<CustomProfileData_Generated>();
-      this.CopyTo((object) instance);
-      return (object) instance;
+      CopyTo(instance);
+      return instance;
     }
 
     public void CopyTo(object target2)
     {
       CustomProfileData_Generated profileDataGenerated = (CustomProfileData_Generated) target2;
-      profileDataGenerated.Name = this.Name;
-      profileDataGenerated.Value = this.Value;
+      profileDataGenerated.Name = Name;
+      profileDataGenerated.Value = Value;
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.Write(writer, "Name", this.Name);
-      DefaultDataWriteUtility.Write(writer, "Value", this.Value);
+      DefaultDataWriteUtility.Write(writer, "Name", Name);
+      DefaultDataWriteUtility.Write(writer, "Value", Value);
     }
 
     public void DataRead(IDataReader reader, Type type)
     {
-      this.Name = DefaultDataReadUtility.Read(reader, "Name", this.Name);
-      this.Value = DefaultDataReadUtility.Read(reader, "Value", this.Value);
+      Name = DefaultDataReadUtility.Read(reader, "Name", Name);
+      Value = DefaultDataReadUtility.Read(reader, "Value", Value);
     }
   }
 }

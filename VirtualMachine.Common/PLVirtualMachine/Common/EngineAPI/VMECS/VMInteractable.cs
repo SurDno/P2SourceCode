@@ -1,8 +1,8 @@
-﻿using Engine.Common;
+﻿using System;
+using Engine.Common;
 using Engine.Common.Components;
 using Engine.Common.Components.Interactable;
 using PLVirtualMachine.Common.EngineAPI.VMECS.VMAttributes;
-using System;
 
 namespace PLVirtualMachine.Common.EngineAPI.VMECS
 {
@@ -15,11 +15,11 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
     [Property("Title", "", true)]
     public ITextRef ObjectName
     {
-      get => this.title;
+      get => title;
       set
       {
-        this.title = value;
-        this.Component.Title = EngineAPIManager.CreateEngineTextInstance(this.title);
+        title = value;
+        Component.Title = EngineAPIManager.CreateEngineTextInstance(title);
       }
     }
 
@@ -30,23 +30,23 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
     public event Action<IEntity, IEntity, InteractType> EndIteractEvent;
 
     [Method("Enable component", "Enable", "")]
-    public void EnableComponent(bool enable) => this.Component.IsEnabled = enable;
+    public void EnableComponent(bool enable) => Component.IsEnabled = enable;
 
     public override void Clear()
     {
-      if (!this.InstanceValid)
+      if (!InstanceValid)
         return;
-      this.Component.BeginInteractEvent -= new Action<IEntity, IInteractableComponent, IInteractItem>(this.FireBeginInteractEvent);
-      this.Component.EndInteractEvent -= new Action<IEntity, IInteractableComponent, IInteractItem>(this.FireEndInteractEvent);
+      Component.BeginInteractEvent -= FireBeginInteractEvent;
+      Component.EndInteractEvent -= FireEndInteractEvent;
       base.Clear();
     }
 
     protected override void Init()
     {
-      if (this.IsTemplate)
+      if (IsTemplate)
         return;
-      this.Component.BeginInteractEvent += new Action<IEntity, IInteractableComponent, IInteractItem>(this.FireBeginInteractEvent);
-      this.Component.EndInteractEvent += new Action<IEntity, IInteractableComponent, IInteractItem>(this.FireEndInteractEvent);
+      Component.BeginInteractEvent += FireBeginInteractEvent;
+      Component.EndInteractEvent += FireEndInteractEvent;
     }
 
     private void FireBeginInteractEvent(
@@ -54,7 +54,7 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
       IInteractableComponent target,
       IInteractItem item)
     {
-      Action<IEntity, IEntity, InteractType> beginIteractEvent = this.BeginIteractEvent;
+      Action<IEntity, IEntity, InteractType> beginIteractEvent = BeginIteractEvent;
       if (beginIteractEvent == null)
         return;
       beginIteractEvent(owner, target.Owner, item.Type);
@@ -65,7 +65,7 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
       IInteractableComponent target,
       IInteractItem item)
     {
-      Action<IEntity, IEntity, InteractType> endIteractEvent = this.EndIteractEvent;
+      Action<IEntity, IEntity, InteractType> endIteractEvent = EndIteractEvent;
       if (endIteractEvent == null)
         return;
       endIteractEvent(owner, target.Owner, item.Type);

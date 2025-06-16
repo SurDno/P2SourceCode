@@ -1,9 +1,9 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons.Cloneable;
 using Engine.Common.Commons.Converters;
 using Engine.Source.OutdoorCrowds;
-using System;
 
 namespace Engine.Source.Proxies
 {
@@ -18,27 +18,27 @@ namespace Engine.Source.Proxies
     public object Clone()
     {
       OutdoorCrowdTemplates_Generated instance = Activator.CreateInstance<OutdoorCrowdTemplates_Generated>();
-      this.CopyTo((object) instance);
-      return (object) instance;
+      CopyTo(instance);
+      return instance;
     }
 
     public void CopyTo(object target2)
     {
       OutdoorCrowdTemplates_Generated templatesGenerated = (OutdoorCrowdTemplates_Generated) target2;
-      templatesGenerated.Name = this.Name;
-      CloneableObjectUtility.CopyListTo<OutdoorCrowdTemplate>(templatesGenerated.Templates, this.Templates);
+      templatesGenerated.Name = Name;
+      CloneableObjectUtility.CopyListTo(templatesGenerated.Templates, Templates);
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.Write(writer, "Name", this.Name);
-      DefaultDataWriteUtility.WriteListSerialize<OutdoorCrowdTemplate>(writer, "Templates", this.Templates);
+      DefaultDataWriteUtility.Write(writer, "Name", Name);
+      DefaultDataWriteUtility.WriteListSerialize(writer, "Templates", Templates);
     }
 
     public void DataRead(IDataReader reader, Type type)
     {
-      this.Name = DefaultDataReadUtility.Read(reader, "Name", this.Name);
-      this.Templates = DefaultDataReadUtility.ReadListSerialize<OutdoorCrowdTemplate>(reader, "Templates", this.Templates);
+      Name = DefaultDataReadUtility.Read(reader, "Name", Name);
+      Templates = DefaultDataReadUtility.ReadListSerialize(reader, "Templates", Templates);
     }
   }
 }

@@ -1,4 +1,6 @@
-﻿using AssetDatabases;
+﻿using System;
+using System.Collections.Generic;
+using AssetDatabases;
 using Cofe.Utility;
 using Engine.Common;
 using Engine.Common.Commons;
@@ -6,15 +8,12 @@ using Engine.Source.Commons;
 using Engine.Source.Commons.Abilities;
 using Engine.Source.Connections;
 using FlowCanvas;
-using System;
-using System.Collections.Generic;
-using UnityEngine;
 
 namespace Engine.Source.Services
 {
   public static class BlueprintServiceUtility
   {
-    private static Dictionary<ResourceRequest, BlueprintServiceUtility.Description> asyncRequests = new Dictionary<ResourceRequest, BlueprintServiceUtility.Description>();
+    private static Dictionary<ResourceRequest, Description> asyncRequests = new Dictionary<ResourceRequest, Description>();
 
     public static FlowScriptController Start(
       GameObject blueprintPrefab,
@@ -28,35 +27,35 @@ namespace Engine.Source.Services
         Action action = complete;
         if (action != null)
           action();
-        return (FlowScriptController) null;
+        return null;
       }
-      Debug.Log((object) ObjectInfoUtility.GetStream().Append("Start blueprint : ").Append(blueprintPrefab.name).Append(" , target : ").GetInfo((object) target).Append(" , context : ").Append(context));
+      Debug.Log((object) ObjectInfoUtility.GetStream().Append("Start blueprint : ").Append(blueprintPrefab.name).Append(" , target : ").GetInfo(target).Append(" , context : ").Append(context));
       if ((UnityEngine.Object) blueprintPrefab.GetComponent<FlowScriptController>() == (UnityEngine.Object) null)
       {
         Debug.LogError((object) (typeof (FlowScriptController).Name + " not found , context : " + context));
         Action action = complete;
         if (action != null)
           action();
-        return (FlowScriptController) null;
+        return null;
       }
       GameObject gameObject1 = UnityFactory.Instantiate(blueprintPrefab, "[Blueprints]");
       gameObject1.name = blueprintPrefab.name;
       FlowScriptController component = gameObject1.GetComponent<FlowScriptController>();
-      Action<FlowScriptController> destroy = (Action<FlowScriptController>) null;
-      destroy = (Action<FlowScriptController>) (graph =>
+      Action<FlowScriptController> destroy = null;
+      destroy = graph =>
       {
         graph.DestroyEvent -= destroy;
         Action action = complete;
         if (action == null)
           return;
         action();
-      });
+      };
       component.DestroyEvent += destroy;
       component.enableAction = FlowScriptController.EnableAction.DoNothing;
       component.StartBehaviour();
       if (target != null)
       {
-        component.SetValue("Target", (object) target);
+        component.SetValue("Target", target);
         GameObject gameObject2 = ((IEntityView) target).GameObject;
         if ((UnityEngine.Object) gameObject2 != (UnityEngine.Object) null)
           component.SetValue("TargetGameObject", (object) gameObject2);
@@ -73,11 +72,11 @@ namespace Engine.Source.Services
     {
       BlueprintObject blueprintObject = (BlueprintObject) bp;
       if (blueprintObject != null)
-        return BlueprintServiceUtility.Start(blueprintObject.GameObject, target, complete, context);
+        return Start(blueprintObject.GameObject, target, complete, context);
       Debug.LogError((object) ("Blueprint is null , context : " + context));
       if (complete != null)
         complete();
-      return (FlowScriptController) null;
+      return null;
     }
 
     public static void Start(
@@ -94,8 +93,8 @@ namespace Engine.Source.Services
         return;
       component.WaitForThreadFinish();
       component.StartBehaviour();
-      component.SetValue("AbilityValueContainer", (object) container);
-      component.SetValue("Target", (object) target);
+      component.SetValue("AbilityValueContainer", container);
+      component.SetValue("Target", target);
       GameObject gameObject = ((IEntityView) target).GameObject;
       if ((UnityEngine.Object) gameObject == (UnityEngine.Object) null)
         Debug.LogError((object) ("Blueprint start failed, GameObject not found, target : " + target.GetInfo() + " , context : " + context));
@@ -111,7 +110,7 @@ namespace Engine.Source.Services
       bool onlyResourcesAsync,
       string context = "")
     {
-      BlueprintServiceUtility.StartAsync(blueprint, (IAbilityValueContainer) null, target, resourcesLoaded, complete, onlyResourcesAsync, context);
+      StartAsync(blueprint, null, target, resourcesLoaded, complete, onlyResourcesAsync, context);
     }
 
     public static void StartAsync(
@@ -129,9 +128,8 @@ namespace Engine.Source.Services
       ResourceRequest key = Resources.LoadAsync(resourcePath);
       if (key == null)
         return;
-      key.completed += new Action<AsyncOperation>(BlueprintServiceUtility.Request_completed);
-      BlueprintServiceUtility.asyncRequests.Add(key, new BlueprintServiceUtility.Description()
-      {
+      key.completed += new Action<AsyncOperation>(Request_completed);
+      asyncRequests.Add(key, new Description {
         Blueprint = blueprint,
         Container = container,
         Target = target,
@@ -144,9 +142,9 @@ namespace Engine.Source.Services
 
     private static void Request_completed(AsyncOperation operation)
     {
-      operation.completed -= new Action<AsyncOperation>(BlueprintServiceUtility.Request_completed);
-      BlueprintServiceUtility.Description description = BlueprintServiceUtility.asyncRequests[(ResourceRequest) operation];
-      BlueprintServiceUtility.asyncRequests.Remove((ResourceRequest) operation);
+      operation.completed -= new Action<AsyncOperation>(Request_completed);
+      Description description = asyncRequests[(ResourceRequest) operation];
+      asyncRequests.Remove((ResourceRequest) operation);
       Action resourcesLoaded = description.ResourcesLoaded;
       if (resourcesLoaded != null)
         resourcesLoaded();
@@ -168,19 +166,19 @@ namespace Engine.Source.Services
         if (description.OnlyResourcesAsync)
           component.WaitForThreadFinish();
         if (description.Container != null)
-          component.SetValue("AbilityValueContainer", (object) description.Container);
+          component.SetValue("AbilityValueContainer", description.Container);
         if (description.Target != null)
-          component.SetValue("Target", (object) description.Target);
+          component.SetValue("Target", description.Target);
         component.SetValue("TargetGameObject", (object) gameObject);
-        Action<FlowScriptController> destroy = (Action<FlowScriptController>) null;
-        destroy = (Action<FlowScriptController>) (graph =>
+        Action<FlowScriptController> destroy = null;
+        destroy = graph =>
         {
           graph.DestroyEvent -= destroy;
           Action complete = description.Complete;
           if (complete == null)
             return;
           complete();
-        });
+        };
         component.DestroyEvent += destroy;
         component.enableAction = FlowScriptController.EnableAction.DoNothing;
         component.StartBehaviour();

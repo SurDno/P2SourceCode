@@ -1,9 +1,9 @@
-﻿using Engine.Common.Services;
+﻿using System.Collections;
+using Engine.Common.Services;
 using Engine.Services.Engine.Assets;
 using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
-using System.Collections;
 
 namespace Engine.Source.Blueprints
 {
@@ -13,15 +13,15 @@ namespace Engine.Source.Blueprints
     protected override void RegisterPorts()
     {
       base.RegisterPorts();
-      FlowOutput output = this.AddFlowOutput("Out");
-      this.AddFlowInput("In", (FlowHandler) (() => this.StartCoroutine(this.WaitingPlayerCanControlling(output))));
+      FlowOutput output = AddFlowOutput("Out");
+      AddFlowInput("In", (FlowHandler) (() => StartCoroutine(WaitingPlayerCanControlling(output))));
     }
 
     private IEnumerator WaitingPlayerCanControlling(FlowOutput output)
     {
       AssetLoader assetLoader = ServiceLocator.GetService<AssetLoader>();
       while (!assetLoader.IsEmpty)
-        yield return (object) null;
+        yield return null;
       output.Call();
     }
   }

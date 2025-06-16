@@ -25,7 +25,7 @@ namespace PLVirtualMachine.Common.Data
     public static Guid ReadGuid(byte[] data)
     {
       byte[] numArray = new byte[16];
-      Array.Copy((Array) data, 0, (Array) numArray, 0, 16);
+      Array.Copy(data, 0, numArray, 0, 16);
       return new Guid(numArray);
     }
   }

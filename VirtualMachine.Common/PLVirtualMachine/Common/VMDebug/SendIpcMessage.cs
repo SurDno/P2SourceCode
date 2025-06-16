@@ -18,32 +18,32 @@ namespace PLVirtualMachine.Common.VMDebug
 
     public void CopyData(ReciveIpcMessage message)
     {
-      this.debugObjectEngineGuid = message.DebugObjectEngGuid;
-      this.stateGuid = message.StateGuid;
-      this.staticGuidsList.Clear();
+      debugObjectEngineGuid = message.DebugObjectEngGuid;
+      stateGuid = message.StateGuid;
+      staticGuidsList.Clear();
       for (int index = 0; index < message.RaisedEvents.Count; ++index)
-        this.staticGuidsList.Add(message.RaisedEvents[index]);
-      this.paramsChanged.Clear();
+        staticGuidsList.Add(message.RaisedEvents[index]);
+      paramsChanged.Clear();
       for (int index = 0; index < message.ChangedParams.Count; ++index)
-        this.AddParamChange(message.ChangedParams[index], message.ChangedParamValues[index]);
+        AddParamChange(message.ChangedParams[index], message.ChangedParamValues[index]);
     }
 
     public Guid DebugObjectEngGuid
     {
-      get => this.debugObjectEngineGuid;
-      set => this.debugObjectEngineGuid = value;
+      get => debugObjectEngineGuid;
+      set => debugObjectEngineGuid = value;
     }
 
     public ulong StateGuid
     {
-      get => this.stateGuid;
-      set => this.stateGuid = value;
+      get => stateGuid;
+      set => stateGuid = value;
     }
 
     public void AddParamChange(ulong paramId, object paramVal)
     {
-      this.paramsChanged.Add(paramId);
-      this.paramsValues.Add(paramVal);
+      paramsChanged.Add(paramId);
+      paramsValues.Add(paramVal);
     }
 
     public byte[] Serialize()
@@ -51,32 +51,32 @@ namespace PLVirtualMachine.Common.VMDebug
       try
       {
         List<byte> dDestBytesList = new List<byte>();
-        IpcMessageUtility.SerializeInt((int) this.messageType, dDestBytesList);
-        if (this.messageType == EDebugIPCMessageType.IPC_MESSAGE_SERVER_EVENT_ADD_DEBUG_OBJECT || this.messageType == EDebugIPCMessageType.IPC_MESSAGE_SERVER_EVENT_REMOVE_DEBUG_OBJECT || this.messageType == EDebugIPCMessageType.IPC_MESSAGE_REQUEST_SET_DEBUG_OBJECT || this.messageType == EDebugIPCMessageType.IPC_MESSAGE_RESPONSE_SET_DEBUG_OBJECT || this.messageType == EDebugIPCMessageType.IPC_MESSAGE_REQUEST_SET_BREAKPOINT || this.messageType == EDebugIPCMessageType.IPC_MESSAGE_RESPONSE_SET_BREAKPOINT || this.messageType == EDebugIPCMessageType.IPC_MESSAGE_REQUEST_REMOVE_BREAKPOINT || this.messageType == EDebugIPCMessageType.IPC_MESSAGE_RESPONSE_REMOVE_BREAKPOINT || this.messageType == EDebugIPCMessageType.IPC_MESSAGE_REQUEST_STEP_INTO || this.messageType == EDebugIPCMessageType.IPC_MESSAGE_REQUEST_STEP_OVER || this.messageType == EDebugIPCMessageType.IPC_MESSAGE_SERVER_EVENT_INPUT_STATE || this.messageType == EDebugIPCMessageType.IPC_MESSAGE_SERVER_EVENT_OUTPUT_STATE || this.messageType == EDebugIPCMessageType.IPC_MESSAGE_SERVER_EVENT_PARAM_VALUE_CHANGE || this.messageType == EDebugIPCMessageType.IPC_MESSAGE_REQUEST_SET_DEBUG_CAMERA)
-          IpcMessageUtility.SerializeGuid(this.debugObjectEngineGuid, dDestBytesList);
-        if (this.messageType == EDebugIPCMessageType.IPC_MESSAGE_SERVER_EVENT_UPDATE_OBJECTS_END)
-          IpcMessageUtility.SerializeUInt64(this.stateGuid, dDestBytesList);
-        else if (this.messageType == EDebugIPCMessageType.IPC_MESSAGE_SERVER_EVENT_ADD_DEBUG_OBJECT || this.messageType == EDebugIPCMessageType.IPC_MESSAGE_SERVER_EVENT_REMOVE_DEBUG_OBJECT || this.messageType == EDebugIPCMessageType.IPC_MESSAGE_REQUEST_SET_DEBUG_OBJECT || this.messageType == EDebugIPCMessageType.IPC_MESSAGE_RESPONSE_SET_DEBUG_OBJECT || this.messageType == EDebugIPCMessageType.IPC_MESSAGE_REQUEST_SET_BREAKPOINT || this.messageType == EDebugIPCMessageType.IPC_MESSAGE_RESPONSE_SET_BREAKPOINT || this.messageType == EDebugIPCMessageType.IPC_MESSAGE_REQUEST_REMOVE_BREAKPOINT || this.messageType == EDebugIPCMessageType.IPC_MESSAGE_RESPONSE_REMOVE_BREAKPOINT || this.messageType == EDebugIPCMessageType.IPC_MESSAGE_SERVER_EVENT_INPUT_STATE || this.messageType == EDebugIPCMessageType.IPC_MESSAGE_SERVER_EVENT_OUTPUT_STATE)
-          IpcMessageUtility.SerializeUInt64(this.stateGuid, dDestBytesList);
-        if (this.messageType == EDebugIPCMessageType.IPC_MESSAGE_SERVER_EVENT_INPUT_STATE)
-          IpcMessageUtility.SerializeUInt64List(this.staticGuidsList, dDestBytesList);
-        if (this.messageType == EDebugIPCMessageType.IPC_MESSAGE_SERVER_EVENT_PARAM_VALUE_CHANGE || this.messageType == EDebugIPCMessageType.IPC_MESSAGE_SERVER_EVENT_INPUT_STATE)
+        IpcMessageUtility.SerializeInt((int) messageType, dDestBytesList);
+        if (messageType == EDebugIPCMessageType.IPC_MESSAGE_SERVER_EVENT_ADD_DEBUG_OBJECT || messageType == EDebugIPCMessageType.IPC_MESSAGE_SERVER_EVENT_REMOVE_DEBUG_OBJECT || messageType == EDebugIPCMessageType.IPC_MESSAGE_REQUEST_SET_DEBUG_OBJECT || messageType == EDebugIPCMessageType.IPC_MESSAGE_RESPONSE_SET_DEBUG_OBJECT || messageType == EDebugIPCMessageType.IPC_MESSAGE_REQUEST_SET_BREAKPOINT || messageType == EDebugIPCMessageType.IPC_MESSAGE_RESPONSE_SET_BREAKPOINT || messageType == EDebugIPCMessageType.IPC_MESSAGE_REQUEST_REMOVE_BREAKPOINT || messageType == EDebugIPCMessageType.IPC_MESSAGE_RESPONSE_REMOVE_BREAKPOINT || messageType == EDebugIPCMessageType.IPC_MESSAGE_REQUEST_STEP_INTO || messageType == EDebugIPCMessageType.IPC_MESSAGE_REQUEST_STEP_OVER || messageType == EDebugIPCMessageType.IPC_MESSAGE_SERVER_EVENT_INPUT_STATE || messageType == EDebugIPCMessageType.IPC_MESSAGE_SERVER_EVENT_OUTPUT_STATE || messageType == EDebugIPCMessageType.IPC_MESSAGE_SERVER_EVENT_PARAM_VALUE_CHANGE || messageType == EDebugIPCMessageType.IPC_MESSAGE_REQUEST_SET_DEBUG_CAMERA)
+          IpcMessageUtility.SerializeGuid(debugObjectEngineGuid, dDestBytesList);
+        if (messageType == EDebugIPCMessageType.IPC_MESSAGE_SERVER_EVENT_UPDATE_OBJECTS_END)
+          IpcMessageUtility.SerializeUInt64(stateGuid, dDestBytesList);
+        else if (messageType == EDebugIPCMessageType.IPC_MESSAGE_SERVER_EVENT_ADD_DEBUG_OBJECT || messageType == EDebugIPCMessageType.IPC_MESSAGE_SERVER_EVENT_REMOVE_DEBUG_OBJECT || messageType == EDebugIPCMessageType.IPC_MESSAGE_REQUEST_SET_DEBUG_OBJECT || messageType == EDebugIPCMessageType.IPC_MESSAGE_RESPONSE_SET_DEBUG_OBJECT || messageType == EDebugIPCMessageType.IPC_MESSAGE_REQUEST_SET_BREAKPOINT || messageType == EDebugIPCMessageType.IPC_MESSAGE_RESPONSE_SET_BREAKPOINT || messageType == EDebugIPCMessageType.IPC_MESSAGE_REQUEST_REMOVE_BREAKPOINT || messageType == EDebugIPCMessageType.IPC_MESSAGE_RESPONSE_REMOVE_BREAKPOINT || messageType == EDebugIPCMessageType.IPC_MESSAGE_SERVER_EVENT_INPUT_STATE || messageType == EDebugIPCMessageType.IPC_MESSAGE_SERVER_EVENT_OUTPUT_STATE)
+          IpcMessageUtility.SerializeUInt64(stateGuid, dDestBytesList);
+        if (messageType == EDebugIPCMessageType.IPC_MESSAGE_SERVER_EVENT_INPUT_STATE)
+          IpcMessageUtility.SerializeUInt64List(staticGuidsList, dDestBytesList);
+        if (messageType == EDebugIPCMessageType.IPC_MESSAGE_SERVER_EVENT_PARAM_VALUE_CHANGE || messageType == EDebugIPCMessageType.IPC_MESSAGE_SERVER_EVENT_INPUT_STATE)
         {
-          IpcMessageUtility.SerializeInt(this.paramsChanged.Count, dDestBytesList);
-          for (int index = 0; index < this.paramsChanged.Count; ++index)
+          IpcMessageUtility.SerializeInt(paramsChanged.Count, dDestBytesList);
+          for (int index = 0; index < paramsChanged.Count; ++index)
           {
-            if (this.paramsValues[index] != null)
+            if (paramsValues[index] != null)
             {
-              IpcMessageUtility.SerializeUInt64(this.paramsChanged[index], dDestBytesList);
-              IpcMessageUtility.SerializeString(this.paramsValues[index].GetType().ToString(), dDestBytesList);
-              IpcMessageUtility.SerializeValue(this.paramsValues[index], dDestBytesList);
+              IpcMessageUtility.SerializeUInt64(paramsChanged[index], dDestBytesList);
+              IpcMessageUtility.SerializeString(paramsValues[index].GetType().ToString(), dDestBytesList);
+              IpcMessageUtility.SerializeValue(paramsValues[index], dDestBytesList);
             }
           }
         }
-        if (this.messageType == EDebugIPCMessageType.IPC_MESSAGE_REQUEST_RAISE_EVENT)
+        if (messageType == EDebugIPCMessageType.IPC_MESSAGE_REQUEST_RAISE_EVENT)
         {
-          IpcMessageUtility.SerializeString(this.debugObjectUniName, dDestBytesList);
-          IpcMessageUtility.SerializeUInt64(this.stateGuid, dDestBytesList);
+          IpcMessageUtility.SerializeString(debugObjectUniName, dDestBytesList);
+          IpcMessageUtility.SerializeUInt64(stateGuid, dDestBytesList);
         }
         byte[] numArray = new byte[dDestBytesList.Count];
         for (int index = 0; index < dDestBytesList.Count; ++index)
@@ -85,13 +85,13 @@ namespace PLVirtualMachine.Common.VMDebug
       }
       catch (Exception ex)
       {
-        this.lastError = string.Format("Ipc message serialize error: {0}", (object) ex.ToString());
-        return (byte[]) null;
+        lastError = string.Format("Ipc message serialize error: {0}", ex.ToString());
+        return null;
       }
     }
 
-    public string LastError => this.lastError;
+    public string LastError => lastError;
 
-    public bool IsValid => this.lastError.Length == 0;
+    public bool IsValid => lastError.Length == 0;
   }
 }

@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-[CreateAssetMenu(fileName = "Follow", menuName = "Pathologic2/States/Follow", order = 101)]
+﻿[CreateAssetMenu(fileName = "Follow", menuName = "Pathologic2/States/Follow", order = 101)]
 public class FollowDescription : ScriptableObject
 {
   [Header("Передвижение")]

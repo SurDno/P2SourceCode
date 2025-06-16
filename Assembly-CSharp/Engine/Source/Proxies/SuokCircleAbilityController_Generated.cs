@@ -1,9 +1,9 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons.Cloneable;
 using Engine.Common.Commons.Converters;
 using Engine.Source.Commons.Abilities.Controllers;
-using System;
 
 namespace Engine.Source.Proxies
 {
@@ -18,23 +18,23 @@ namespace Engine.Source.Proxies
     public object Clone()
     {
       SuokCircleAbilityController_Generated instance = Activator.CreateInstance<SuokCircleAbilityController_Generated>();
-      this.CopyTo((object) instance);
-      return (object) instance;
+      CopyTo(instance);
+      return instance;
     }
 
     public void CopyTo(object target2)
     {
-      ((SuokCircleAbilityController) target2).state = this.state;
+      ((SuokCircleAbilityController) target2).state = state;
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.WriteEnum<SuokCircleTutorialStateEnum>(writer, "State", this.state);
+      DefaultDataWriteUtility.WriteEnum(writer, "State", state);
     }
 
     public void DataRead(IDataReader reader, Type type)
     {
-      this.state = DefaultDataReadUtility.ReadEnum<SuokCircleTutorialStateEnum>(reader, "State");
+      state = DefaultDataReadUtility.ReadEnum<SuokCircleTutorialStateEnum>(reader, "State");
     }
   }
 }

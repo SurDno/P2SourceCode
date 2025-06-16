@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-public class POIPlane : POIBase
+﻿public class POIPlane : POIBase
 {
   public float Width;
   public float Length;
@@ -16,11 +14,11 @@ public class POIPlane : POIBase
     out Quaternion closestTargetRotation)
   {
     Vector3 closestSurfacePosition;
-    this.GetClosestSurfacePoint(currentPosition, out closestSurfacePosition, out Quaternion _);
+    GetClosestSurfacePoint(currentPosition, out closestSurfacePosition, out Quaternion _);
     closestTargetRotation = character.transform.rotation;
     closestTargetPosition = this.transform.TransformPoint(this.transform.InverseTransformPoint(closestSurfacePosition));
-    this.lastSurfacePosition = closestSurfacePosition;
-    this.lastClosestTargetPosition = closestTargetPosition;
+    lastSurfacePosition = closestSurfacePosition;
+    lastClosestTargetPosition = closestTargetPosition;
   }
 
   private void GetClosestSurfacePoint(
@@ -29,7 +27,7 @@ public class POIPlane : POIBase
     out Quaternion closestSurfaceRotation)
   {
     Vector3 vector3 = this.transform.InverseTransformPoint(surfacePosition);
-    Vector3 position = new Vector3(Mathf.Clamp(vector3.x, (float) (-(double) this.Width / 2.0), this.Width / 2f), 0.0f, Mathf.Clamp(vector3.z, (float) (-(double) this.Length / 2.0), this.Length / 2f));
+    Vector3 position = new Vector3(Mathf.Clamp(vector3.x, (float) (-(double) Width / 2.0), Width / 2f), 0.0f, Mathf.Clamp(vector3.z, (float) (-(double) Length / 2.0), Length / 2f));
     closestSurfacePosition = this.transform.TransformPoint(position);
     closestSurfaceRotation = this.transform.rotation;
   }
@@ -37,7 +35,7 @@ public class POIPlane : POIBase
   public void GetRandomPointOnSurface(out Vector3 position, out Quaternion rotation)
   {
     rotation = this.transform.rotation;
-    position = this.transform.position + this.transform.right * this.Width / 2f * (float) (2.0 * ((double) Random.value - 0.5)) + this.transform.forward * this.Length / 2f * (float) (2.0 * ((double) Random.value - 0.5));
+    position = this.transform.position + this.transform.right * Width / 2f * (float) (2.0 * ((double) Random.value - 0.5)) + this.transform.forward * Length / 2f * (float) (2.0 * ((double) Random.value - 0.5));
   }
 
   public override void GetRandomTargetPoint(
@@ -49,7 +47,7 @@ public class POIPlane : POIBase
   {
     Vector3 position;
     Quaternion rotation;
-    this.GetRandomPointOnSurface(out position, out rotation);
+    GetRandomPointOnSurface(out position, out rotation);
     targetRotation = rotation;
     targetPosition = position;
   }

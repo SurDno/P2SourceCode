@@ -1,31 +1,29 @@
-﻿using UnityEngine;
-
-public class TextTooltipViewAnchor : TextTooltipView
+﻿public class TextTooltipViewAnchor : TextTooltipView
 {
   [SerializeField]
   private TextTooltipView prefab;
   private TextTooltipView view;
 
-  public override void Hide() => this.view?.Hide();
+  public override void Hide() => view?.Hide();
 
   private void OnEnable()
   {
-    if (!((Object) TextTooltipView.Current == (Object) null))
+    if (!((Object) Current == (Object) null))
       return;
-    TextTooltipView.Current = (TextTooltipView) this;
+    Current = this;
   }
 
   private void OnDisable()
   {
-    if (!((Object) TextTooltipView.Current == (Object) this))
+    if (!((Object) Current == (Object) this))
       return;
-    TextTooltipView.Current = (TextTooltipView) null;
+    Current = null;
   }
 
   public override void Show(Vector2 screenPosition, string text)
   {
-    if ((Object) this.view == (Object) null)
-      this.view = Object.Instantiate<TextTooltipView>(this.prefab, this.transform, false);
-    this.view.Show(screenPosition, text);
+    if ((Object) view == (Object) null)
+      view = Object.Instantiate<TextTooltipView>(prefab, this.transform, false);
+    view.Show(screenPosition, text);
   }
 }

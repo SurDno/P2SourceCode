@@ -1,8 +1,8 @@
-﻿using Engine.Common.Types;
+﻿using System;
+using System.Collections.Generic;
+using Engine.Common.Types;
 using PLVirtualMachine.Common.Data;
 using PLVirtualMachine.Common.EngineAPI;
-using System;
-using System.Collections.Generic;
 
 namespace PLVirtualMachine.Common.VMDebug
 {
@@ -23,12 +23,12 @@ namespace PLVirtualMachine.Common.VMDebug
       string typeStr,
       string path)
     {
-      this.ObjectType = objectType;
-      this.EngineTemplateInfo = GuidUtility.GetGuidString(templateGuid);
-      this.Name = name;
-      this.Static = false;
-      this.EngineData = typeStr;
-      this.EnginePath = path;
+      ObjectType = objectType;
+      EngineTemplateInfo = GuidUtility.GetGuidString(templateGuid);
+      Name = name;
+      Static = false;
+      EngineData = typeStr;
+      EnginePath = path;
     }
 
     public EngineObjectCreationInfo(
@@ -39,12 +39,12 @@ namespace PLVirtualMachine.Common.VMDebug
       string name,
       bool bStatic)
     {
-      this.ObjectType = objectType;
-      this.EngineTemplateInfo = GuidUtility.GetGuidString(engineTemplateGuid);
-      this.EngineData = engineData;
-      this.EnginePath = enginePath;
-      this.Name = name;
-      this.Static = bStatic;
+      ObjectType = objectType;
+      EngineTemplateInfo = GuidUtility.GetGuidString(engineTemplateGuid);
+      EngineData = engineData;
+      EnginePath = enginePath;
+      Name = name;
+      Static = bStatic;
     }
   }
 }

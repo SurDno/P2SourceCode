@@ -1,7 +1,7 @@
-﻿using ParadoxNotion;
-using ParadoxNotion.Design;
-using System;
+﻿using System;
 using System.Reflection;
+using ParadoxNotion;
+using ParadoxNotion.Design;
 
 namespace FlowCanvas.Nodes
 {
@@ -17,12 +17,12 @@ namespace FlowCanvas.Nodes
     {
       get
       {
-        if (string.IsNullOrEmpty(this._name))
+        if (string.IsNullOrEmpty(_name))
         {
-          NameAttribute attribute = ReflectionTools.RTGetAttribute<NameAttribute>(this.GetType(), false);
-          this._name = attribute != null ? attribute.name : this.GetType().FriendlyName().SplitCamelCase();
+          NameAttribute attribute = GetType().RTGetAttribute<NameAttribute>(false);
+          _name = attribute != null ? attribute.name : GetType().FriendlyName().SplitCamelCase();
         }
-        return this._name;
+        return _name;
       }
     }
 
@@ -30,12 +30,12 @@ namespace FlowCanvas.Nodes
     {
       get
       {
-        if (string.IsNullOrEmpty(this._description))
+        if (string.IsNullOrEmpty(_description))
         {
-          DescriptionAttribute attribute = ReflectionTools.RTGetAttribute<DescriptionAttribute>(this.GetType(), false);
-          this._description = attribute != null ? attribute.description : "No Description";
+          DescriptionAttribute attribute = GetType().RTGetAttribute<DescriptionAttribute>(false);
+          _description = attribute != null ? attribute.description : "No Description";
         }
-        return this._description;
+        return _description;
       }
     }
 
@@ -43,17 +43,17 @@ namespace FlowCanvas.Nodes
     {
       get
       {
-        return this.GetType().GetMethod("Invoke", BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public).GetParameters();
+        return GetType().GetMethod("Invoke", BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public).GetParameters();
       }
     }
 
     public void RegisterPorts(FlowNode node)
     {
-      this.OnRegisterPorts(node);
-      foreach (PropertyInfo property in this.GetType().GetProperties(BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public))
+      OnRegisterPorts(node);
+      foreach (PropertyInfo property in GetType().GetProperties(BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public))
       {
         if (property.CanRead && !property.GetGetMethod().IsVirtual)
-          node.AddPropertyOutput(property, (object) this);
+          node.AddPropertyOutput(property, this);
       }
     }
 

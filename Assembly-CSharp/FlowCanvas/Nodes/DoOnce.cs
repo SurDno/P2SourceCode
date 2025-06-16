@@ -8,19 +8,19 @@ namespace FlowCanvas.Nodes
   {
     private bool called;
 
-    public override void OnGraphStarted() => this.called = false;
+    public override void OnGraphStarted() => called = false;
 
     protected override void RegisterPorts()
     {
-      FlowOutput o = this.AddFlowOutput("Out");
-      this.AddFlowInput("In", (FlowHandler) (() =>
+      FlowOutput o = AddFlowOutput("Out");
+      AddFlowInput("In", () =>
       {
-        if (this.called)
+        if (called)
           return;
-        this.called = true;
+        called = true;
         o.Call();
-      }));
-      this.AddFlowInput("Reset", (FlowHandler) (() => this.called = false));
+      });
+      AddFlowInput("Reset", () => called = false);
     }
   }
 }

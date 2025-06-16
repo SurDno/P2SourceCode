@@ -13,6 +13,6 @@ namespace Engine.Source.Blueprints.Effects
     private ValueInput<float> multiplierInput;
 
     [Port("Value")]
-    private float Value() => this.valueInput.value * this.multiplierInput.value;
+    private float Value() => valueInput.value * multiplierInput.value;
   }
 }

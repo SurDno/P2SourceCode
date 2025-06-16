@@ -1,4 +1,5 @@
-﻿using Engine.Common;
+﻿using Cofe.Serializations.Data;
+using Engine.Common;
 using Engine.Common.Commons;
 using Engine.Common.Components;
 using Engine.Common.Generator;
@@ -14,8 +15,8 @@ namespace Engine.Source.Components
   [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite | TypeEnum.StateSave | TypeEnum.StateLoad)]
   public class MessangerComponent : EngineComponent, IMessangerComponent, IComponent, INeedSave
   {
-    [StateSaveProxy(MemberEnum.None)]
-    [StateLoadProxy(MemberEnum.None)]
+    [StateSaveProxy]
+    [StateLoadProxy()]
     [Inspected]
     protected bool registred;
     private int areaMask = -1;
@@ -28,29 +29,29 @@ namespace Engine.Source.Components
 
     public override void OnRemoved()
     {
-      if (!this.registred)
+      if (!registred)
         return;
-      this.StopTeleporting();
+      StopTeleporting();
     }
 
     public void StartTeleporting()
     {
-      ServiceLocator.GetService<PostmanTeleportService>().RegisterPostman(this.Owner, this.areaMask);
-      this.registred = true;
+      ServiceLocator.GetService<PostmanTeleportService>().RegisterPostman(Owner, areaMask);
+      registred = true;
     }
 
     public void StopTeleporting()
     {
-      ServiceLocator.GetService<PostmanTeleportService>().UnregisterPostman(this.Owner);
-      this.registred = false;
+      ServiceLocator.GetService<PostmanTeleportService>().UnregisterPostman(Owner);
+      registred = false;
     }
 
-    [Cofe.Serializations.Data.OnLoaded]
+    [OnLoaded]
     protected void OnLoaded()
     {
-      if (!this.registred)
+      if (!registred)
         return;
-      ServiceLocator.GetService<PostmanTeleportService>().RegisterPostman(this.Owner, this.areaMask);
+      ServiceLocator.GetService<PostmanTeleportService>().RegisterPostman(Owner, areaMask);
     }
   }
 }

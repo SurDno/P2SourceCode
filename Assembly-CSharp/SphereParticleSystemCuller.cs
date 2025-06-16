@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-internal class SphereParticleSystemCuller : MonoBehaviour
+﻿internal class SphereParticleSystemCuller : MonoBehaviour
 {
   [SerializeField]
   private float raduis = 3f;
@@ -15,47 +13,47 @@ internal class SphereParticleSystemCuller : MonoBehaviour
 
   private void OnEnable()
   {
-    this.cullingGroup = new CullingGroup();
-    this.boundingSpheres[0] = new BoundingSphere(this.transform.position + this.offset, this.raduis);
-    this.cullingGroup.SetBoundingSpheres(this.boundingSpheres);
-    this.cullingGroup.onStateChanged += new CullingGroup.StateChanged(this.StateChanged);
-    if (this.renderers == null)
+    cullingGroup = new CullingGroup();
+    boundingSpheres[0] = new BoundingSphere(this.transform.position + offset, raduis);
+    cullingGroup.SetBoundingSpheres(boundingSpheres);
+    cullingGroup.onStateChanged += new CullingGroup.StateChanged(StateChanged);
+    if (renderers == null)
     {
-      this.renderers = this.gameObject.GetComponentsInChildren<ParticleSystemRenderer>();
-      this.renderersIsEnabled = new bool[this.renderers.Length];
-      for (int index = 0; index < this.renderers.Length; ++index)
-        this.renderersIsEnabled[index] = this.renderers[index].enabled;
-      this.particleSystems = this.gameObject.GetComponentsInChildren<ParticleSystem>();
-      this.particleSystemsIsPlaying = new bool[this.particleSystems.Length];
-      for (int index = 0; index < this.particleSystems.Length; ++index)
-        this.particleSystemsIsPlaying[index] = this.particleSystems[index].isPlaying;
+      renderers = this.gameObject.GetComponentsInChildren<ParticleSystemRenderer>();
+      renderersIsEnabled = new bool[renderers.Length];
+      for (int index = 0; index < renderers.Length; ++index)
+        renderersIsEnabled[index] = renderers[index].enabled;
+      particleSystems = this.gameObject.GetComponentsInChildren<ParticleSystem>();
+      particleSystemsIsPlaying = new bool[particleSystems.Length];
+      for (int index = 0; index < particleSystems.Length; ++index)
+        particleSystemsIsPlaying[index] = particleSystems[index].isPlaying;
     }
-    Camera.onPreCull += new Camera.CameraCallback(this.OnPreCullEvent);
+    Camera.onPreCull += new Camera.CameraCallback(OnPreCullEvent);
   }
 
   private void OnDisable()
   {
-    this.cullingGroup.onStateChanged -= new CullingGroup.StateChanged(this.StateChanged);
-    Camera.onPreCull -= new Camera.CameraCallback(this.OnPreCullEvent);
-    this.cullingGroup.Dispose();
-    this.cullingGroup = (CullingGroup) null;
+    cullingGroup.onStateChanged -= new CullingGroup.StateChanged(StateChanged);
+    Camera.onPreCull -= new Camera.CameraCallback(OnPreCullEvent);
+    cullingGroup.Dispose();
+    cullingGroup = (CullingGroup) null;
   }
 
   public void StateChanged(CullingGroupEvent sphere)
   {
-    for (int index = 0; index < this.renderers.Length; ++index)
+    for (int index = 0; index < renderers.Length; ++index)
     {
-      if (this.renderersIsEnabled[index])
-        this.renderers[index].enabled = sphere.isVisible;
+      if (renderersIsEnabled[index])
+        renderers[index].enabled = sphere.isVisible;
     }
-    for (int index = 0; index < this.particleSystems.Length; ++index)
+    for (int index = 0; index < particleSystems.Length; ++index)
     {
-      if (this.particleSystemsIsPlaying[index])
+      if (particleSystemsIsPlaying[index])
       {
         if (sphere.isVisible)
-          this.particleSystems[index].Play();
+          particleSystems[index].Play();
         else
-          this.particleSystems[index].Pause();
+          particleSystems[index].Pause();
       }
     }
   }
@@ -64,12 +62,12 @@ internal class SphereParticleSystemCuller : MonoBehaviour
   {
     if ((Object) GameCamera.Instance == (Object) null || (Object) camera != (Object) GameCamera.Instance.Camera)
       return;
-    this.cullingGroup.targetCamera = camera;
+    cullingGroup.targetCamera = camera;
   }
 
   private void OnDrawGizmos()
   {
     Gizmos.color = Color.red;
-    Gizmos.DrawWireSphere(this.transform.position + this.offset, this.raduis);
+    Gizmos.DrawWireSphere(this.transform.position + offset, raduis);
   }
 }

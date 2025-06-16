@@ -1,11 +1,10 @@
-﻿using Engine.Common.Commons;
+﻿using System;
+using Engine.Common.Commons;
 using Engine.Common.Services;
 using Engine.Impl.Services;
 using Engine.Impl.UI.Controls;
 using Engine.Source.Audio;
 using Engine.Source.Components.BoundCharacters;
-using System;
-using UnityEngine;
 
 public class BoundCharacterStateChangeView : MonoBehaviour
 {
@@ -50,18 +49,18 @@ public class BoundCharacterStateChangeView : MonoBehaviour
 
   public event Action FinishEvent;
 
-  public void ContinueWithoutRoll() => this.Invoke("Reveal", this.delayWithoutRoll);
+  public void ContinueWithoutRoll() => this.Invoke("Reveal", delayWithoutRoll);
 
   private float FakeRoll(float min, float max)
   {
     float num = UnityEngine.Random.value;
-    float t = (float) (0.10000000149011612 + (double) (num * num) * 0.89999997615814209);
+    float t = (float) (0.10000000149011612 + num * num * 0.89999997615814209);
     return Mathf.LerpUnclamped(min, max, t);
   }
 
   public void Finish()
   {
-    Action finishEvent = this.FinishEvent;
+    Action finishEvent = FinishEvent;
     if (finishEvent == null)
       return;
     finishEvent();
@@ -69,104 +68,104 @@ public class BoundCharacterStateChangeView : MonoBehaviour
 
   public void ImmunityRoll(bool success)
   {
-    this.hadImmunity.Visible = true;
-    this.roll.Set(this.FakeRoll(this.character.PreRollStatValue, success ? 0.0f : 1f), success);
-    this.roll.FinishEvent += new Action(this.Reveal);
+    hadImmunity.Visible = true;
+    roll.Set(FakeRoll(character.PreRollStatValue, success ? 0.0f : 1f), success);
+    roll.FinishEvent += Reveal;
   }
 
   public void InfectionRoll(bool success)
   {
-    this.hadInfection.Visible = true;
-    this.roll.Set(this.FakeRoll(this.character.PreRollStatValue, success ? 1f : 0.0f), success);
-    this.roll.FinishEvent += new Action(this.Reveal);
+    hadInfection.Visible = true;
+    roll.Set(FakeRoll(character.PreRollStatValue, success ? 1f : 0.0f), success);
+    roll.FinishEvent += Reveal;
   }
 
   public void Reveal()
   {
-    this.revealed = true;
-    this.portrait.SetValue(BoundCharacterUtility.StateLargeSprite(this.character, this.character.BoundHealthState.Value), false);
-    this.time = this.roll.Duration;
-    if (this.character.PreRollHealthState == BoundHealthStateEnum.Diseased && this.character.PreRollHealthState == BoundHealthStateEnum.Diseased)
-      this.stat.FloatValue = this.character.Infection.Value;
-    if (this.character.BoundHealthState.Value == BoundHealthStateEnum.Dead)
-      this.died.Invoke();
-    else if (this.character.BoundHealthState.Value == BoundHealthStateEnum.Diseased)
+    revealed = true;
+    portrait.SetValue(BoundCharacterUtility.StateLargeSprite(character, character.BoundHealthState.Value), false);
+    time = roll.Duration;
+    if (character.PreRollHealthState == BoundHealthStateEnum.Diseased && character.PreRollHealthState == BoundHealthStateEnum.Diseased)
+      stat.FloatValue = character.Infection.Value;
+    if (character.BoundHealthState.Value == BoundHealthStateEnum.Dead)
+      died.Invoke();
+    else if (character.BoundHealthState.Value == BoundHealthStateEnum.Diseased)
     {
-      if (this.character.PreRollHealthState == BoundHealthStateEnum.Diseased)
-        this.survived.Invoke();
+      if (character.PreRollHealthState == BoundHealthStateEnum.Diseased)
+        survived.Invoke();
       else
-        this.infected.Invoke();
+        infected.Invoke();
     }
     else
     {
-      if (this.character.BoundHealthState.Value != BoundHealthStateEnum.Normal || this.character.PreRollHealthState != BoundHealthStateEnum.Danger)
+      if (character.BoundHealthState.Value != BoundHealthStateEnum.Normal || character.PreRollHealthState != BoundHealthStateEnum.Danger)
         return;
-      this.notInfected.Invoke();
+      notInfected.Invoke();
     }
   }
 
   public void Show(BoundCharacterComponent character)
   {
-    this.duration = this.resultDuration + this.roll.Duration;
-    this.time = 0.0f;
-    this.opacity.FloatValue = 0.0f;
+    duration = resultDuration + roll.Duration;
+    time = 0.0f;
+    opacity.FloatValue = 0.0f;
     this.character = character;
-    this.portrait.SetValue(BoundCharacterUtility.StateLargeSprite(character, character.PreRollHealthState), true);
+    portrait.SetValue(BoundCharacterUtility.StateLargeSprite(character, character.PreRollHealthState), true);
     Gender gender = BoundCharacterUtility.GetGender(character);
-    this.female.Visible = gender == Gender.Female;
-    this.male.Visible = gender == Gender.Male;
-    this.nameView.StringValue = ServiceLocator.GetService<LocalizationService>().GetText(character.Name);
-    this.medicated.Visible = character.PreRollMedicated;
-    this.stat.FloatValue = character.PreRollStatValue;
-    this.stat.SkipAnimation();
+    female.Visible = gender == Gender.Female;
+    male.Visible = gender == Gender.Male;
+    nameView.StringValue = ServiceLocator.GetService<LocalizationService>().GetText(character.Name);
+    medicated.Visible = character.PreRollMedicated;
+    stat.FloatValue = character.PreRollStatValue;
+    stat.SkipAnimation();
     if (character.BoundHealthState.Value == BoundHealthStateEnum.Dead)
     {
       if (character.PreRollHealthState == BoundHealthStateEnum.Danger)
-        this.ImmunityRoll(false);
+        ImmunityRoll(false);
       else if (character.PreRollHealthState == BoundHealthStateEnum.Diseased)
-        this.InfectionRoll(false);
+        InfectionRoll(false);
       else
-        this.ContinueWithoutRoll();
+        ContinueWithoutRoll();
     }
     else if (character.BoundHealthState.Value == BoundHealthStateEnum.Diseased)
     {
       if (character.PreRollHealthState == BoundHealthStateEnum.Danger)
-        this.ImmunityRoll(false);
+        ImmunityRoll(false);
       else if (character.PreRollHealthState == BoundHealthStateEnum.Diseased)
-        this.InfectionRoll(true);
+        InfectionRoll(true);
       else
-        this.ContinueWithoutRoll();
+        ContinueWithoutRoll();
     }
     else if (character.BoundHealthState.Value == BoundHealthStateEnum.Normal)
     {
       if (character.PreRollHealthState == BoundHealthStateEnum.Danger)
-        this.ImmunityRoll(true);
+        ImmunityRoll(true);
       else
-        this.ContinueWithoutRoll();
+        ContinueWithoutRoll();
     }
     else
-      this.ContinueWithoutRoll();
+      ContinueWithoutRoll();
     character.PreRollStateStored = false;
   }
 
   public void Skip()
   {
-    if (!this.revealed)
-      this.roll.Skip();
+    if (!revealed)
+      roll.Skip();
     else
-      this.Finish();
+      Finish();
   }
 
   private void Update()
   {
-    if ((double) this.time == (double) this.duration)
+    if (time == (double) duration)
       return;
-    this.time += Time.deltaTime;
-    if ((double) this.time > (double) this.duration)
-      this.time = this.duration;
-    this.opacity.FloatValue = SoundUtility.ComputeFade(this.time, this.duration, this.fadeTime);
-    if ((double) this.time != (double) this.duration)
+    time += Time.deltaTime;
+    if (time > (double) duration)
+      time = duration;
+    opacity.FloatValue = SoundUtility.ComputeFade(time, duration, fadeTime);
+    if (time != (double) duration)
       return;
-    this.Finish();
+    Finish();
   }
 }

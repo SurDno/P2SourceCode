@@ -6,23 +6,23 @@
     {
       get
       {
-        UserLutModel.Settings settings = this.model.settings;
-        return this.model.enabled && (Object) settings.lut != (Object) null && (double) settings.contribution > 0.0 && settings.lut.height == (int) Mathf.Sqrt((float) settings.lut.width) && !this.context.interrupted;
+        UserLutModel.Settings settings = model.settings;
+        return model.enabled && (Object) settings.lut != (Object) null && settings.contribution > 0.0 && settings.lut.height == (int) Mathf.Sqrt((float) settings.lut.width) && !context.interrupted;
       }
     }
 
     public override void Prepare(Material uberMaterial)
     {
-      UserLutModel.Settings settings = this.model.settings;
+      UserLutModel.Settings settings = model.settings;
       uberMaterial.EnableKeyword("USER_LUT");
-      uberMaterial.SetTexture(UserLutComponent.Uniforms._UserLut, (Texture) settings.lut);
-      uberMaterial.SetVector(UserLutComponent.Uniforms._UserLut_Params, new Vector4(1f / (float) settings.lut.width, 1f / (float) settings.lut.height, (float) settings.lut.height - 1f, settings.contribution));
+      uberMaterial.SetTexture(Uniforms._UserLut, (Texture) settings.lut);
+      uberMaterial.SetVector(Uniforms._UserLut_Params, new Vector4(1f / (float) settings.lut.width, 1f / (float) settings.lut.height, (float) settings.lut.height - 1f, settings.contribution));
     }
 
     public void OnGUI()
     {
-      UserLutModel.Settings settings = this.model.settings;
-      GUI.DrawTexture(new Rect((float) ((double) this.context.viewport.x * (double) Screen.width + 8.0), 8f, (float) settings.lut.width, (float) settings.lut.height), (Texture) settings.lut);
+      UserLutModel.Settings settings = model.settings;
+      GUI.DrawTexture(new Rect((float) ((double) context.viewport.x * (double) Screen.width + 8.0), 8f, (float) settings.lut.width, (float) settings.lut.height), (Texture) settings.lut);
     }
 
     private static class Uniforms

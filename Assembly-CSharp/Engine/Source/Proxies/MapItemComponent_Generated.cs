@@ -1,14 +1,10 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
-using Engine.Common;
-using Engine.Common.Commons;
 using Engine.Common.Commons.Cloneable;
 using Engine.Common.Commons.Converters;
-using Engine.Common.Maps;
-using Engine.Common.MindMap;
 using Engine.Source.Components.Maps;
 using Scripts.Tools.Serializations.Converters;
-using System;
 
 namespace Engine.Source.Proxies
 {
@@ -25,51 +21,51 @@ namespace Engine.Source.Proxies
     public object Clone()
     {
       MapItemComponent_Generated instance = Activator.CreateInstance<MapItemComponent_Generated>();
-      this.CopyTo((object) instance);
-      return (object) instance;
+      CopyTo(instance);
+      return instance;
     }
 
     public void CopyTo(object target2)
     {
       MapItemComponent_Generated componentGenerated = (MapItemComponent_Generated) target2;
-      componentGenerated.isEnabled = this.isEnabled;
-      componentGenerated.placeholder = this.placeholder;
+      componentGenerated.isEnabled = isEnabled;
+      componentGenerated.placeholder = placeholder;
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.Write(writer, "IsEnabled", this.isEnabled);
-      UnityDataWriteUtility.Write<IMapPlaceholder>(writer, "Placeholder", this.placeholder);
+      DefaultDataWriteUtility.Write(writer, "IsEnabled", isEnabled);
+      UnityDataWriteUtility.Write(writer, "Placeholder", placeholder);
     }
 
     public void DataRead(IDataReader reader, Type type)
     {
-      this.isEnabled = DefaultDataReadUtility.Read(reader, "IsEnabled", this.isEnabled);
-      this.placeholder = UnityDataReadUtility.Read<IMapPlaceholder>(reader, "Placeholder", this.placeholder);
+      isEnabled = DefaultDataReadUtility.Read(reader, "IsEnabled", isEnabled);
+      placeholder = UnityDataReadUtility.Read(reader, "Placeholder", placeholder);
     }
 
     public void StateSave(IDataWriter writer)
     {
-      CustomStateSaveUtility.SaveReference(writer, "BoundCharacter", (object) this.BoundCharacter);
-      EngineDataWriteUtility.Write(writer, "Text", this.Text);
-      EngineDataWriteUtility.Write(writer, "TooltipText", this.TooltipText);
-      DefaultDataWriteUtility.Write(writer, "IsEnabled", this.isEnabled);
-      CustomStateSaveUtility.SaveListReferences<IMMNode>(writer, "Nodes", this.nodes);
-      CustomStateSaveUtility.SaveReference(writer, "TooltipResource", (object) this.tooltipResource);
-      DefaultDataWriteUtility.Write(writer, "Discovered", this.discovered);
-      EngineDataWriteUtility.Write(writer, "Title", this.title);
+      CustomStateSaveUtility.SaveReference(writer, "BoundCharacter", BoundCharacter);
+      EngineDataWriteUtility.Write(writer, "Text", Text);
+      EngineDataWriteUtility.Write(writer, "TooltipText", TooltipText);
+      DefaultDataWriteUtility.Write(writer, "IsEnabled", isEnabled);
+      CustomStateSaveUtility.SaveListReferences(writer, "Nodes", nodes);
+      CustomStateSaveUtility.SaveReference(writer, "TooltipResource", tooltipResource);
+      DefaultDataWriteUtility.Write(writer, "Discovered", discovered);
+      EngineDataWriteUtility.Write(writer, "Title", title);
     }
 
     public void StateLoad(IDataReader reader, Type type)
     {
-      this.BoundCharacter = CustomStateLoadUtility.LoadReference<IEntity>(reader, "BoundCharacter", this.BoundCharacter);
-      this.Text = EngineDataReadUtility.Read(reader, "Text", this.Text);
-      this.TooltipText = EngineDataReadUtility.Read(reader, "TooltipText", this.TooltipText);
-      this.isEnabled = DefaultDataReadUtility.Read(reader, "IsEnabled", this.isEnabled);
-      this.nodes = CustomStateLoadUtility.LoadListReferences<IMMNode>(reader, "Nodes", this.nodes);
-      this.tooltipResource = CustomStateLoadUtility.LoadReference<IMapTooltipResource>(reader, "TooltipResource", this.tooltipResource);
-      this.discovered = DefaultDataReadUtility.Read(reader, "Discovered", this.discovered);
-      this.title = EngineDataReadUtility.Read(reader, "Title", this.title);
+      BoundCharacter = CustomStateLoadUtility.LoadReference(reader, "BoundCharacter", BoundCharacter);
+      Text = EngineDataReadUtility.Read(reader, "Text", Text);
+      TooltipText = EngineDataReadUtility.Read(reader, "TooltipText", TooltipText);
+      isEnabled = DefaultDataReadUtility.Read(reader, "IsEnabled", isEnabled);
+      nodes = CustomStateLoadUtility.LoadListReferences(reader, "Nodes", nodes);
+      tooltipResource = CustomStateLoadUtility.LoadReference(reader, "TooltipResource", tooltipResource);
+      discovered = DefaultDataReadUtility.Read(reader, "Discovered", discovered);
+      title = EngineDataReadUtility.Read(reader, "Title", title);
     }
   }
 }

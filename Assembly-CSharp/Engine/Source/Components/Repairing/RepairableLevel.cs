@@ -1,7 +1,7 @@
-﻿using Engine.Common.Generator;
+﻿using System.Collections.Generic;
+using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Inspectors;
-using System.Collections.Generic;
 
 namespace Engine.Source.Components.Repairing
 {
@@ -9,21 +9,21 @@ namespace Engine.Source.Components.Repairing
   [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
   public class RepairableLevel
   {
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    [CopyableProxy(MemberEnum.None)]
+    [CopyableProxy]
     protected float maxDurability;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    [CopyableProxy(MemberEnum.None)]
+    [CopyableProxy()]
     protected List<RepairableCostItem> cost = new List<RepairableCostItem>();
 
     [Inspected]
-    public float MaxDurability => this.maxDurability;
+    public float MaxDurability => maxDurability;
 
     [Inspected]
-    public List<RepairableCostItem> Сost => this.cost;
+    public List<RepairableCostItem> Сost => cost;
   }
 }

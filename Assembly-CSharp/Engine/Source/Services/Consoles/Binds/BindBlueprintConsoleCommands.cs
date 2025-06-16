@@ -1,4 +1,6 @@
-﻿using Cofe.Meta;
+﻿using System;
+using System.Linq;
+using Cofe.Meta;
 using Cofe.Serializations.Converters;
 using Engine.Common;
 using Engine.Common.Commons;
@@ -7,19 +9,16 @@ using Engine.Services;
 using Engine.Source.Commons;
 using FlowCanvas;
 using NodeCanvas.Framework;
-using System;
-using System.Linq;
-using UnityEngine;
 
 namespace Engine.Source.Services.Consoles.Binds
 {
   [Initialisable]
   public class BindBlueprintConsoleCommands
   {
-    [Cofe.Meta.Initialise]
+    [Initialise]
     private static void Initialise()
     {
-      ConsoleTargetService.AddTarget("-blueprint", (Func<string, object>) (value => (object) ServiceLocator.GetService<ITemplateService>().GetTemplates<IBlueprintObject>().FirstOrDefault<IBlueprintObject>((Func<IBlueprintObject, bool>) (o => o.Name == value))));
+      ConsoleTargetService.AddTarget("-blueprint", value => ServiceLocator.GetService<ITemplateService>().GetTemplates<IBlueprintObject>().FirstOrDefault(o => o.Name == value));
       EnumConsoleCommand.AddBind("-blueprint", (Func<string>) (() =>
       {
         string str = "\nBlueprints :\n";
@@ -50,7 +49,7 @@ namespace Engine.Source.Services.Consoles.Binds
       selection.name = gameObject.name;
       ServiceLocator.GetService<SelectionService>().SetSelection(index, (object) selection);
       selection.GetComponent<FlowScriptController>().StartBehaviour();
-      return "Create blueprint : " + target.Name + " , in slot : " + (object) index;
+      return "Create blueprint : " + target.Name + " , in slot : " + index;
     }
 
     [ConsoleCommand("blueprint_send_event")]
@@ -86,7 +85,7 @@ namespace Engine.Source.Services.Consoles.Binds
       Blackboard component = target1.GetComponent<Blackboard>();
       if ((UnityEngine.Object) component == (UnityEngine.Object) null)
         return typeof (Blackboard).Name + " not found";
-      component.SetValue(name, (object) target2);
+      component.SetValue(name, target2);
       return "Blueprint set value : " + name;
     }
   }

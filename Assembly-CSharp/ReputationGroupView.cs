@@ -6,8 +6,6 @@ using Engine.Impl.Services.Simulations;
 using Engine.Impl.UI.Controls;
 using Engine.Source.Components;
 using Engine.Source.Services.Saves;
-using System;
-using UnityEngine;
 
 public class ReputationGroupView : MonoBehaviour
 {
@@ -32,84 +30,84 @@ public class ReputationGroupView : MonoBehaviour
 
   private void Awake()
   {
-    this.views = new ReputationView[this.regions.Length];
-    for (int index = 0; index < this.regions.Length; ++index)
+    views = new ReputationView[regions.Length];
+    for (int index = 0; index < regions.Length; ++index)
     {
-      ReputationView reputationView = UnityEngine.Object.Instantiate<ReputationView>(this.reputationViewPrefab, this.transform);
-      reputationView.Initialize(this.regions[index], this.currentLayout, this.otherLayout);
-      reputationView.ReputationHighDownEvent += new Action(this.OnReputationDown);
-      reputationView.ReputationHighUpEvent += new Action(this.OnReputationUp);
-      this.views[index] = reputationView;
+      ReputationView reputationView = UnityEngine.Object.Instantiate<ReputationView>(reputationViewPrefab, this.transform);
+      reputationView.Initialize(regions[index], currentLayout, otherLayout);
+      reputationView.ReputationHighDownEvent += OnReputationDown;
+      reputationView.ReputationHighUpEvent += OnReputationUp;
+      views[index] = reputationView;
     }
-    ServiceLocator.GetService<SavesService>().UnloadEvent += new Action(this.OnGameUnloaded);
+    ServiceLocator.GetService<SavesService>().UnloadEvent += OnGameUnloaded;
   }
 
   private void OnDestroy()
   {
-    ServiceLocator.GetService<SavesService>().UnloadEvent -= new Action(this.OnGameUnloaded);
+    ServiceLocator.GetService<SavesService>().UnloadEvent -= OnGameUnloaded;
   }
 
   private void OnDisable()
   {
-    ServiceLocator.GetService<Simulation>().OnPlayerChanged -= new Action<IEntity>(this.SetPlayer);
-    this.SetPlayer((IEntity) null);
+    ServiceLocator.GetService<Simulation>().OnPlayerChanged -= SetPlayer;
+    SetPlayer(null);
   }
 
   private void OnEnable()
   {
     Simulation service = ServiceLocator.GetService<Simulation>();
-    service.OnPlayerChanged += new Action<IEntity>(this.SetPlayer);
-    this.SetPlayer(service.Player);
+    service.OnPlayerChanged += SetPlayer;
+    SetPlayer(service.Player);
   }
 
-  private void OnGameUnloaded() => this.updatedAfterGameLoad = false;
+  private void OnGameUnloaded() => updatedAfterGameLoad = false;
 
   private void SetCurrentRegion(IRegionComponent region)
   {
     RegionEnum currentRegionId = region != null ? region.Region : RegionEnum.None;
-    for (int index = 0; index < this.views.Length; ++index)
-      this.views[index].SetCurrentRegion(currentRegionId, !this.updatedAfterGameLoad);
-    this.updatedAfterGameLoad = true;
+    for (int index = 0; index < views.Length; ++index)
+      views[index].SetCurrentRegion(currentRegionId, !updatedAfterGameLoad);
+    updatedAfterGameLoad = true;
   }
 
   private void SetPlayer(IEntity entity)
   {
     NavigationComponent component = entity?.GetComponent<NavigationComponent>();
-    if (this.playerNavigation == component)
+    if (playerNavigation == component)
       return;
-    if (this.playerNavigation != null)
+    if (playerNavigation != null)
     {
-      this.playerNavigation.EnterRegionEvent -= new RegionHandler(this.OnRegionEnter);
-      this.playerNavigation.ExitRegionEvent -= new RegionHandler(this.OnRegionExit);
+      playerNavigation.EnterRegionEvent -= OnRegionEnter;
+      playerNavigation.ExitRegionEvent -= OnRegionExit;
     }
-    this.playerNavigation = component;
-    if (this.playerNavigation != null)
+    playerNavigation = component;
+    if (playerNavigation != null)
     {
-      this.playerNavigation.EnterRegionEvent += new RegionHandler(this.OnRegionEnter);
-      this.playerNavigation.ExitRegionEvent += new RegionHandler(this.OnRegionExit);
-      this.SetCurrentRegion(this.playerNavigation.Region);
+      playerNavigation.EnterRegionEvent += OnRegionEnter;
+      playerNavigation.ExitRegionEvent += OnRegionExit;
+      SetCurrentRegion(playerNavigation.Region);
     }
     else
-      this.SetCurrentRegion((IRegionComponent) null);
+      SetCurrentRegion(null);
   }
 
   private void OnRegionExit(
     ref EventArgument<IEntity, IRegionComponent> eventArguments)
   {
-    if (this.currentRegion != eventArguments.Target)
+    if (currentRegion != eventArguments.Target)
       return;
-    this.SetCurrentRegion((IRegionComponent) null);
+    SetCurrentRegion(null);
   }
 
   private void OnRegionEnter(
     ref EventArgument<IEntity, IRegionComponent> eventArguments)
   {
-    if (this.currentRegion == eventArguments.Target)
+    if (currentRegion == eventArguments.Target)
       return;
-    this.SetCurrentRegion(eventArguments.Target);
+    SetCurrentRegion(eventArguments.Target);
   }
 
-  private void OnReputationUp() => this.onReputationUp?.Invoke();
+  private void OnReputationUp() => onReputationUp?.Invoke();
 
-  private void OnReputationDown() => this.onReputationDown?.Invoke();
+  private void OnReputationDown() => onReputationDown?.Invoke();
 }

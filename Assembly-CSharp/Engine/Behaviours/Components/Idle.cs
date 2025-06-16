@@ -1,8 +1,6 @@
-﻿using Engine.Impl.Tasks;
+﻿using System;
+using Engine.Impl.Tasks;
 using Engine.Source.Commons;
-using System;
-using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Engine.Behaviours.Components
 {
@@ -13,95 +11,95 @@ namespace Engine.Behaviours.Components
     private AnimatorOverrideController animatorOverrideController;
     [SerializeField]
     [FormerlySerializedAs("_Clips")]
-    private Idle.Clip[] clips;
+    private Clip[] clips;
     private bool isInitialized;
     private MecanimKinds.MovableIdleStateKind localState = MecanimKinds.MovableIdleStateKind.Unknown;
-    private Idle.Parameter[] parameters;
+    private Parameter[] parameters;
 
     public Animator Animator
     {
-      get => this.animator;
-      protected set => this.animator = value;
+      get => animator;
+      protected set => animator = value;
     }
 
     private void OnPauseEvent()
     {
-      if ((UnityEngine.Object) this.animator == (UnityEngine.Object) null)
+      if ((UnityEngine.Object) animator == (UnityEngine.Object) null)
         return;
       if (InstanceByRequest<EngineApplication>.Instance.IsPaused)
-        this.animator.SetFloat("Mecanim.Speed", 0.0f);
+        animator.SetFloat("Mecanim.Speed", 0.0f);
       else
-        this.animator.SetFloat("Mecanim.Speed", 1f);
+        animator.SetFloat("Mecanim.Speed", 1f);
     }
 
     private void Initialize()
     {
-      if (this.isInitialized)
+      if (isInitialized)
         return;
-      this.animator = this.GetComponent<Animator>();
-      if ((UnityEngine.Object) this.animator == (UnityEngine.Object) null)
+      animator = this.GetComponent<Animator>();
+      if ((UnityEngine.Object) animator == (UnityEngine.Object) null)
         return;
-      this.animatorOverrideController = this.animator.runtimeAnimatorController as AnimatorOverrideController;
-      if ((UnityEngine.Object) this.animatorOverrideController == (UnityEngine.Object) null)
+      animatorOverrideController = animator.runtimeAnimatorController as AnimatorOverrideController;
+      if ((UnityEngine.Object) animatorOverrideController == (UnityEngine.Object) null)
         return;
-      this.parameters = new Idle.Parameter[this.animator.parameterCount];
-      AnimatorControllerParameter[] parameters = this.animator.parameters;
+      this.parameters = new Parameter[animator.parameterCount];
+      AnimatorControllerParameter[] parameters = animator.parameters;
       for (int index = 0; index < this.parameters.Length; ++index)
       {
-        Idle.Parameter parameter = new Idle.Parameter();
-        parameter.CopyFrom(this.animator, parameters[index]);
+        Parameter parameter = new Parameter();
+        parameter.CopyFrom(animator, parameters[index]);
         this.parameters[index] = parameter;
       }
-      this.isInitialized = true;
-      InstanceByRequest<EngineApplication>.Instance.OnPauseEvent += new Action(this.OnPauseEvent);
-      this.OnPauseEvent();
+      isInitialized = true;
+      InstanceByRequest<EngineApplication>.Instance.OnPauseEvent += OnPauseEvent;
+      OnPauseEvent();
     }
 
     private void Update()
     {
-      this.Initialize();
-      if ((UnityEngine.Object) this.animator == (UnityEngine.Object) null || (UnityEngine.Object) this.animatorOverrideController == (UnityEngine.Object) null || !this.animator.isInitialized || !this.isInitialized)
+      Initialize();
+      if ((UnityEngine.Object) animator == (UnityEngine.Object) null || (UnityEngine.Object) animatorOverrideController == (UnityEngine.Object) null || !animator.isInitialized || !isInitialized)
         return;
-      if (true & this.animator.GetInteger("Movable.State.Control") == 1)
+      if (true & animator.GetInteger("Movable.State.Control") == 1)
       {
-        this.animatorState = (MecanimKinds.MovableIdleStateKind) this.animator.GetInteger("Movable.Idle.Current");
-        if (this.localState == MecanimKinds.MovableIdleStateKind.Unknown)
+        animatorState = (MecanimKinds.MovableIdleStateKind) animator.GetInteger("Movable.Idle.Current");
+        if (localState == MecanimKinds.MovableIdleStateKind.Unknown)
         {
-          this.SetClip(MecanimKinds.MovableIdleStateKind.Primary);
+          SetClip(MecanimKinds.MovableIdleStateKind.Primary);
         }
         else
         {
-          if (this.localState != this.animatorState || this.animator.IsInTransition(0))
+          if (localState != animatorState || animator.IsInTransition(0))
             return;
-          switch (this.localState)
+          switch (localState)
           {
             case MecanimKinds.MovableIdleStateKind.Primary:
-              this.SetClip(MecanimKinds.MovableIdleStateKind.Secondary);
+              SetClip(MecanimKinds.MovableIdleStateKind.Secondary);
               break;
             case MecanimKinds.MovableIdleStateKind.Secondary:
-              this.SetClip(MecanimKinds.MovableIdleStateKind.Primary);
+              SetClip(MecanimKinds.MovableIdleStateKind.Primary);
               break;
           }
         }
       }
       else
       {
-        this.localState = MecanimKinds.MovableIdleStateKind.Unknown;
-        this.animatorState = MecanimKinds.MovableIdleStateKind.Unknown;
+        localState = MecanimKinds.MovableIdleStateKind.Unknown;
+        animatorState = MecanimKinds.MovableIdleStateKind.Unknown;
       }
     }
 
     private void SetClip(MecanimKinds.MovableIdleStateKind state)
     {
-      this.localState = state;
-      Idle.Clip clip = new Idle.Clip();
+      localState = state;
+      Clip clip = new Clip();
       bool flag = false;
       float num1 = UnityEngine.Random.value;
       float num2 = 0.0f;
       for (int index = 0; index < this.clips.Length; ++index)
       {
         clip = this.clips[index];
-        if ((double) num1 - (double) num2 > 0.0 && (double) num1 - (double) num2 - (double) clip.Probability <= 0.0)
+        if (num1 - (double) num2 > 0.0 && num1 - (double) num2 - clip.Probability <= 0.0)
         {
           flag = true;
           break;
@@ -110,10 +108,10 @@ namespace Engine.Behaviours.Components
       }
       if (!flag)
         return;
-      AnimatorOverrideController animatorController = this.animator.runtimeAnimatorController as AnimatorOverrideController;
+      AnimatorOverrideController animatorController = animator.runtimeAnimatorController as AnimatorOverrideController;
       if ((UnityEngine.Object) animatorController == (UnityEngine.Object) null)
         return;
-      string str = (string) null;
+      string str = null;
       switch (state)
       {
         case MecanimKinds.MovableIdleStateKind.Primary:
@@ -129,26 +127,26 @@ namespace Engine.Behaviours.Components
         if (clips[index].originalClip.name == str)
           clips[index].overrideClip = clip.Animation;
       }
-      for (int index = 0; index < this.parameters.Length; ++index)
+      for (int index = 0; index < parameters.Length; ++index)
       {
-        Idle.Parameter parameter = new Idle.Parameter();
-        parameter.CopyFrom(this.animator);
-        this.parameters[index] = parameter;
+        Parameter parameter = new Parameter();
+        parameter.CopyFrom(animator);
+        parameters[index] = parameter;
       }
-      AnimatorStateInfo[] animatorStateInfoArray = new AnimatorStateInfo[this.animator.layerCount];
-      for (int layerIndex = 0; layerIndex < this.animator.layerCount; ++layerIndex)
-        animatorStateInfoArray[layerIndex] = this.animator.GetCurrentAnimatorStateInfo(layerIndex);
+      AnimatorStateInfo[] animatorStateInfoArray = new AnimatorStateInfo[animator.layerCount];
+      for (int layerIndex = 0; layerIndex < animator.layerCount; ++layerIndex)
+        animatorStateInfoArray[layerIndex] = animator.GetCurrentAnimatorStateInfo(layerIndex);
       animatorController.clips = clips;
-      this.animator.Update(0.0f);
-      for (int index = 0; index < this.parameters.Length; ++index)
+      animator.Update(0.0f);
+      for (int index = 0; index < parameters.Length; ++index)
       {
-        Idle.Parameter parameter = new Idle.Parameter();
-        parameter.CopyTo(this.animator);
-        this.parameters[index] = parameter;
+        Parameter parameter = new Parameter();
+        parameter.CopyTo(animator);
+        parameters[index] = parameter;
       }
-      for (int layer = 0; layer < this.animator.layerCount; ++layer)
-        this.animator.Play(animatorStateInfoArray[layer].fullPathHash, layer, animatorStateInfoArray[layer].normalizedTime);
-      this.animator.Update(0.0f);
+      for (int layer = 0; layer < animator.layerCount; ++layer)
+        animator.Play(animatorStateInfoArray[layer].fullPathHash, layer, animatorStateInfoArray[layer].normalizedTime);
+      animator.Update(0.0f);
     }
 
     private struct Parameter
@@ -161,52 +159,52 @@ namespace Engine.Behaviours.Components
 
       public void CopyTo(Animator Animator)
       {
-        switch (this.Type)
+        switch (Type)
         {
           case AnimatorControllerParameterType.Float:
-            Animator.SetFloat(this.Name, this.Float);
+            Animator.SetFloat(Name, Float);
             break;
           case AnimatorControllerParameterType.Int:
-            Animator.SetInteger(this.Name, this.Int);
+            Animator.SetInteger(Name, Int);
             break;
           case AnimatorControllerParameterType.Bool:
-            Animator.SetBool(this.Name, this.Bool);
+            Animator.SetBool(Name, Bool);
             break;
           case AnimatorControllerParameterType.Trigger:
-            if (this.Bool)
+            if (Bool)
             {
-              Animator.SetTrigger(this.Name);
+              Animator.SetTrigger(Name);
               break;
             }
-            Animator.ResetTrigger(this.Name);
+            Animator.ResetTrigger(Name);
             break;
         }
       }
 
       public void CopyFrom(Animator Animator)
       {
-        switch (this.Type)
+        switch (Type)
         {
           case AnimatorControllerParameterType.Float:
-            this.Float = Animator.GetFloat(this.Name);
+            Float = Animator.GetFloat(Name);
             break;
           case AnimatorControllerParameterType.Int:
-            this.Int = Animator.GetInteger(this.Name);
+            Int = Animator.GetInteger(Name);
             break;
           case AnimatorControllerParameterType.Bool:
-            this.Bool = Animator.GetBool(this.Name);
+            Bool = Animator.GetBool(Name);
             break;
           case AnimatorControllerParameterType.Trigger:
-            this.Bool = Animator.GetBool(this.Name);
+            Bool = Animator.GetBool(Name);
             break;
         }
       }
 
       public void CopyFrom(Animator Animator, AnimatorControllerParameter Parameter)
       {
-        this.Type = Parameter.type;
-        this.Name = Parameter.name;
-        this.CopyFrom(Animator);
+        Type = Parameter.type;
+        Name = Parameter.name;
+        CopyFrom(Animator);
       }
     }
 

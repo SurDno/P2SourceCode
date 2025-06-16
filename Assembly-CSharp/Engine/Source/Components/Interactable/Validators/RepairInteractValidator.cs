@@ -15,7 +15,7 @@ namespace Engine.Source.Components.Interactable.Validators
       if (component == null)
         return new ValidateResult(false, "ParametersComponent not found");
       IParameter<float> byName = component.GetByName<float>(ParameterNameEnum.Durability);
-      if (byName == null || (double) byName.Value >= (double) byName.MaxValue)
+      if (byName == null || byName.Value >= (double) byName.MaxValue)
         return new ValidateResult(false, "Durability >= max");
       return interactable.GetComponent<RepairableComponent>() == null ? new ValidateResult(false, "RepairableComponent not found") : new ValidateResult(true);
     }

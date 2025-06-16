@@ -1,38 +1,37 @@
-﻿using ParadoxNotion.Design;
-using System.Collections;
-using UnityEngine;
+﻿using System.Collections;
+using ParadoxNotion.Design;
 
 namespace FlowCanvas.Nodes
 {
   [Name("While True")]
   [Category("Flow Controllers/Repeaters")]
   [Description("Once called, will continuously call 'Do' while the input boolean condition is true. Once condition becomes or is false, 'Done' is called")]
-  [ContextDefinedInputs(new System.Type[] {typeof (bool)})]
+  [ContextDefinedInputs(typeof (bool))]
   public class While : FlowControlNode
   {
     private Coroutine coroutine;
 
-    public override void OnGraphStarted() => this.coroutine = (Coroutine) null;
+    public override void OnGraphStarted() => coroutine = (Coroutine) null;
 
     public override void OnGraphStoped()
     {
-      if (this.coroutine == null)
+      if (coroutine == null)
         return;
-      this.StopCoroutine(this.coroutine);
-      this.coroutine = (Coroutine) null;
+      StopCoroutine(coroutine);
+      coroutine = (Coroutine) null;
     }
 
     protected override void RegisterPorts()
     {
-      ValueInput<bool> c = this.AddValueInput<bool>("Condition");
-      FlowOutput fCurrent = this.AddFlowOutput("Do");
-      FlowOutput fFinish = this.AddFlowOutput("Done");
-      this.AddFlowInput("In", (FlowHandler) (() =>
+      ValueInput<bool> c = AddValueInput<bool>("Condition");
+      FlowOutput fCurrent = AddFlowOutput("Do");
+      FlowOutput fFinish = AddFlowOutput("Done");
+      AddFlowInput("In", () =>
       {
-        if (this.coroutine != null)
+        if (coroutine != null)
           return;
-        this.coroutine = this.StartCoroutine(this.DoWhile(fCurrent, fFinish, c));
-      }));
+        coroutine = StartCoroutine(DoWhile(fCurrent, fFinish, c));
+      });
     }
 
     private IEnumerator DoWhile(
@@ -42,12 +41,12 @@ namespace FlowCanvas.Nodes
     {
       while (condition.value)
       {
-        while (this.graph.isPaused)
-          yield return (object) null;
+        while (graph.isPaused)
+          yield return null;
         fCurrent.Call();
-        yield return (object) null;
+        yield return null;
       }
-      this.coroutine = (Coroutine) null;
+      coroutine = (Coroutine) null;
       fFinish.Call();
     }
   }

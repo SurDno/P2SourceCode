@@ -14,31 +14,28 @@ namespace Engine.Source.Effects
   [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
   public class ItemNotificationEffect : IEffect
   {
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy()]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected ParameterEffectQueueEnum queue = ParameterEffectQueueEnum.None;
 
-    public string Name => this.GetType().Name;
+    public string Name => GetType().Name;
 
     [Inspected]
     public AbilityItem AbilityItem { get; set; }
 
     public IEntity Target { get; set; }
 
-    public ParameterEffectQueueEnum Queue => this.queue;
+    public ParameterEffectQueueEnum Queue => queue;
 
     public bool Prepare(float currentRealTime, float currentGameTime) => true;
 
     public bool Compute(float currentRealTime, float currentGameTime)
     {
-      IEntity entity = this.AbilityItem.Item;
-      ServiceLocator.GetService<NotificationService>().AddNotify(NotificationEnum.ItemBroken, new object[1]
-      {
-        (object) entity.Template
-      });
+      IEntity entity = AbilityItem.Item;
+      ServiceLocator.GetService<NotificationService>().AddNotify(NotificationEnum.ItemBroken, entity.Template);
       return false;
     }
 

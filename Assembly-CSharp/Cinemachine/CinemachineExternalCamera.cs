@@ -1,7 +1,4 @@
-﻿using Cinemachine.Utility;
-using UnityEngine;
-
-namespace Cinemachine
+﻿namespace Cinemachine
 {
   [DocumentationSorting(14f, DocumentationSortingAttribute.Level.UserRef)]
   [RequireComponent(typeof (Camera))]
@@ -16,32 +13,32 @@ namespace Cinemachine
     private Camera m_Camera;
     private CameraState m_State = CameraState.Default;
 
-    public override CameraState State => this.m_State;
+    public override CameraState State => m_State;
 
     public override Transform LookAt
     {
-      get => this.m_LookAt;
-      set => this.m_LookAt = value;
+      get => m_LookAt;
+      set => m_LookAt = value;
     }
 
     public override Transform Follow { get; set; }
 
     public override void UpdateCameraState(Vector3 worldUp, float deltaTime)
     {
-      if ((Object) this.m_Camera == (Object) null)
-        this.m_Camera = this.GetComponent<Camera>();
-      this.m_State = CameraState.Default;
-      this.m_State.RawPosition = this.transform.position;
-      this.m_State.RawOrientation = this.transform.rotation;
-      this.m_State.ReferenceUp = this.m_State.RawOrientation * Vector3.up;
-      if ((Object) this.m_Camera != (Object) null)
-        this.m_State.Lens = LensSettings.FromCamera(this.m_Camera);
-      if (!((Object) this.m_LookAt != (Object) null))
+      if ((Object) m_Camera == (Object) null)
+        m_Camera = this.GetComponent<Camera>();
+      m_State = CameraState.Default;
+      m_State.RawPosition = this.transform.position;
+      m_State.RawOrientation = this.transform.rotation;
+      m_State.ReferenceUp = m_State.RawOrientation * Vector3.up;
+      if ((Object) m_Camera != (Object) null)
+        m_State.Lens = LensSettings.FromCamera(m_Camera);
+      if (!((Object) m_LookAt != (Object) null))
         return;
-      this.m_State.ReferenceLookAt = this.m_LookAt.transform.position;
-      Vector3 vector3 = this.m_State.ReferenceLookAt - this.State.RawPosition;
+      m_State.ReferenceLookAt = m_LookAt.transform.position;
+      Vector3 vector3 = m_State.ReferenceLookAt - State.RawPosition;
       if (!vector3.AlmostZero())
-        this.m_State.ReferenceLookAt = this.m_State.RawPosition + Vector3.Project(vector3, this.State.RawOrientation * Vector3.forward);
+        m_State.ReferenceLookAt = m_State.RawPosition + Vector3.Project(vector3, State.RawOrientation * Vector3.forward);
     }
   }
 }

@@ -1,5 +1,4 @@
 ﻿using AmplifyColor;
-using UnityEngine;
 
 [AddComponentMenu("")]
 public class AmplifyColorVolumeBase : MonoBehaviour
@@ -14,7 +13,7 @@ public class AmplifyColorVolumeBase : MonoBehaviour
 
   private void OnDrawGizmos()
   {
-    if (!this.ShowInSceneView)
+    if (!ShowInSceneView)
       return;
     BoxCollider component = this.GetComponent<BoxCollider>();
     if ((Object) component != (Object) null)

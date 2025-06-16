@@ -3,7 +3,6 @@ using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Engine.Source.Connections;
 using Inspectors;
-using UnityEngine;
 
 namespace Engine.Source.Commons
 {
@@ -11,13 +10,13 @@ namespace Engine.Source.Commons
   [GenerateProxy(TypeEnum.Copyable | TypeEnum.EngineCloneable | TypeEnum.DataRead | TypeEnum.DataWrite)]
   public class Model : EngineObject, IModel, IObject
   {
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy()]
     [Inspected(Name = "Prefab", Mutable = true, Mode = ExecuteMode.Edit)]
     protected UnityAsset<GameObject> connection;
 
     [Inspected]
-    public UnityAsset<GameObject> Connection => this.connection;
+    public UnityAsset<GameObject> Connection => connection;
   }
 }

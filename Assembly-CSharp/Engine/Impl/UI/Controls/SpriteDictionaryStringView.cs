@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace Engine.Impl.UI.Controls
+﻿namespace Engine.Impl.UI.Controls
 {
   public class SpriteDictionaryStringView : StringView
   {
@@ -15,18 +13,18 @@ namespace Engine.Impl.UI.Controls
 
     protected override void ApplyStringValue()
     {
-      if (this.dictionary == null || (Object) this.view == (Object) null)
+      if (dictionary == null || (Object) view == (Object) null)
         return;
       Sprite sprite = (Sprite) null;
-      foreach (StringSpritePair stringSpritePair in this.dictionary)
+      foreach (StringSpritePair stringSpritePair in dictionary)
       {
-        if (stringSpritePair.Key == this.StringValue)
+        if (stringSpritePair.Key == StringValue)
         {
           sprite = stringSpritePair.Value;
           break;
         }
       }
-      this.view.SetValue(sprite, false);
+      view.SetValue(sprite, false);
     }
   }
 }

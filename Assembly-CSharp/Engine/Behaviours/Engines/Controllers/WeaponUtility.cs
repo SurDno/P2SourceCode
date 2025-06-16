@@ -1,8 +1,8 @@
-﻿using Engine.Common;
+﻿using System.Collections.Generic;
+using Engine.Common;
 using Engine.Common.Components.Parameters;
 using Engine.Source.Components;
 using Engine.Source.Settings.External;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace Engine.Behaviours.Engines.Controllers
@@ -15,13 +15,13 @@ namespace Engine.Behaviours.Engines.Controllers
     {
       Vector3 forward = GameCamera.Instance.CameraTransform.forward;
       Vector3 position = GameCamera.Instance.CameraTransform.position;
-      EffectsComponent component1 = (EffectsComponent) null;
+      EffectsComponent component1 = null;
       if (ExternalSettingsInstance<ExternalCommonSettings>.Instance.ChildGunJam)
       {
-        PhysicsUtility.Raycast(WeaponUtility.hits, position, forward, float.MaxValue, -1, QueryTriggerInteraction.Ignore);
-        for (int index = 0; index < WeaponUtility.hits.Count; ++index)
+        PhysicsUtility.Raycast(hits, position, forward, float.MaxValue, -1, QueryTriggerInteraction.Ignore);
+        for (int index = 0; index < hits.Count; ++index)
         {
-          GameObject gameObject1 = WeaponUtility.hits[index].collider.gameObject;
+          GameObject gameObject1 = hits[index].collider.gameObject;
           if (!((Object) gameObject1 == (Object) gameObject))
           {
             IEntity entity = EntityUtility.GetEntity(gameObject1);
@@ -31,7 +31,6 @@ namespace Engine.Behaviours.Engines.Controllers
               if (component2 != null)
               {
                 component1 = component2;
-                break;
               }
               break;
             }

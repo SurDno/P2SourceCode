@@ -1,6 +1,5 @@
 ﻿using AssetDatabases;
 using Inspectors;
-using UnityEngine;
 
 namespace Engine.Services.Engine.Assets
 {
@@ -28,40 +27,40 @@ namespace Engine.Services.Engine.Assets
     public PrefabAsset(string path)
     {
       this.path = path;
-      this.async = AssetDatabaseService.Instance.LoadAsync<GameObject>(path);
+      async = AssetDatabaseService.Instance.LoadAsync<GameObject>(path);
     }
 
     public void Update()
     {
-      if (this.IsError)
+      if (IsError)
         return;
-      if (!this.isDone)
+      if (!isDone)
       {
-        if (this.async == null)
+        if (async == null)
         {
-          this.IsError = true;
+          IsError = true;
           return;
         }
-        this.isDone = this.async.IsDone;
-        if (!this.isDone)
+        isDone = async.IsDone;
+        if (!isDone)
           return;
       }
-      if (!this.IsLoaded)
+      if (!IsLoaded)
       {
-        this.IsLoaded = true;
-        if (!this.IsDisposed)
-          this.Prefab = (GameObject) this.async.Asset;
+        IsLoaded = true;
+        if (!IsDisposed)
+          Prefab = (GameObject) async.Asset;
       }
-      if (!this.IsDisposed)
+      if (!IsDisposed)
         return;
-      this.Prefab = (GameObject) null;
-      this.IsReadyToDispose = true;
+      Prefab = (GameObject) null;
+      IsReadyToDispose = true;
     }
 
-    public void Dispose(string reason) => this.IsDisposed = true;
+    public void Dispose(string reason) => IsDisposed = true;
 
-    public bool IsValid => (Object) this.Prefab != (Object) null;
+    public bool IsValid => (Object) Prefab != (Object) null;
 
-    public string Path => this.Prefab.GetFullName();
+    public string Path => Prefab.GetFullName();
   }
 }

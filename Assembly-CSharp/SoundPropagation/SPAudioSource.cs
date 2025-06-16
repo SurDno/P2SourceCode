@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using UnityEngine;
 
 namespace SoundPropagation
 {
@@ -15,18 +14,18 @@ namespace SoundPropagation
 
     private void OnValidate()
     {
-      if ((double) this.lowpassStrength < 1.0)
-        this.lowpassStrength = 1f;
-      if ((double) this.volumeSupression >= 1.0)
+      if (lowpassStrength < 1.0)
+        lowpassStrength = 1f;
+      if (volumeSupression >= 1.0)
         return;
-      this.volumeSupression = 1f;
+      volumeSupression = 1f;
     }
 
     private void LateUpdate()
     {
-      if ((Object) this.Origin == (Object) null)
-        this.Origin = this.transform.parent;
-      if ((Object) this.Origin == (Object) null)
+      if ((Object) Origin == (Object) null)
+        Origin = this.transform.parent;
+      if ((Object) Origin == (Object) null)
       {
         Debug.LogError((object) ("SPAudioSource : " + this.name + " : Needs parent transform or custom Origin to work. Disabled for now."));
         this.enabled = false;
@@ -42,7 +41,7 @@ namespace SoundPropagation
         else
         {
           bool logPathfinding = false;
-          Vector3 position1 = this.Origin.position;
+          Vector3 position1 = Origin.position;
           SPCell originCell = SPCell.Find(position1, instance.LayerMask);
           Vector3 position2 = instance.Position;
           Vector3 direction = instance.Direction;
@@ -59,14 +58,14 @@ namespace SoundPropagation
             AudioLowPassFilter audioLowPassFilter = this.GetComponent<AudioLowPassFilter>();
             if ((Object) audioLowPassFilter == (Object) null)
               audioLowPassFilter = this.gameObject.AddComponent<AudioLowPassFilter>();
-            if ((double) location.Filtering.Occlusion > 0.0)
+            if (location.Filtering.Occlusion > 0.0)
             {
               audioLowPassFilter.enabled = true;
-              audioLowPassFilter.cutoffFrequency = 22000f / Mathf.Pow(this.lowpassStrength, location.Filtering.Occlusion);
+              audioLowPassFilter.cutoffFrequency = 22000f / Mathf.Pow(lowpassStrength, location.Filtering.Occlusion);
             }
             else
               audioLowPassFilter.enabled = false;
-            this.GetComponent<AudioSource>().volume = 1f / Mathf.Pow(this.volumeSupression, location.Filtering.Occlusion);
+            this.GetComponent<AudioSource>().volume = 1f / Mathf.Pow(volumeSupression, location.Filtering.Occlusion);
             this.GetComponent<AudioSource>().mute = false;
           }
           else

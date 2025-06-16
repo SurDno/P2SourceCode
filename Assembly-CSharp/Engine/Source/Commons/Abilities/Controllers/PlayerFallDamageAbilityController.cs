@@ -2,8 +2,6 @@
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Inspectors;
-using System;
-using UnityEngine;
 
 namespace Engine.Source.Commons.Abilities.Controllers
 {
@@ -11,14 +9,14 @@ namespace Engine.Source.Commons.Abilities.Controllers
   [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
   public class PlayerFallDamageAbilityController : IAbilityController
   {
-    [DataReadProxy(MemberEnum.None, Name = "minFall")]
-    [DataWriteProxy(MemberEnum.None, Name = "minFall")]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy(Name = "minFall")]
+    [DataWriteProxy(Name = "minFall")]
+    [CopyableProxy]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected float minFall;
-    [DataReadProxy(MemberEnum.None, Name = "maxFall")]
-    [DataWriteProxy(MemberEnum.None, Name = "maxFall")]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy(Name = "maxFall")]
+    [DataWriteProxy(Name = "maxFall")]
+    [CopyableProxy()]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected float maxFall;
     private AbilityItem abilityItem;
@@ -29,38 +27,38 @@ namespace Engine.Source.Commons.Abilities.Controllers
       this.abilityItem = abilityItem;
       IEntityView owner = (IEntityView) this.abilityItem.Ability.Owner;
       if ((UnityEngine.Object) owner.GameObject == (UnityEngine.Object) null)
-        owner.OnGameObjectChangedEvent += new Action(this.OnViewGameObjectChanged);
+        owner.OnGameObjectChangedEvent += OnViewGameObjectChanged;
       else
-        this.OnViewGameObjectChanged();
+        OnViewGameObjectChanged();
     }
 
     private void OnViewGameObjectChanged()
     {
-      IEntityView owner = (IEntityView) this.abilityItem.Ability.Owner;
+      IEntityView owner = (IEntityView) abilityItem.Ability.Owner;
       if ((UnityEngine.Object) owner.GameObject == (UnityEngine.Object) null)
         return;
-      this.playerMoveController = owner.GameObject.GetComponent<PlayerMoveController>();
-      if (!(bool) (UnityEngine.Object) this.playerMoveController)
+      playerMoveController = owner.GameObject.GetComponent<PlayerMoveController>();
+      if (!(bool) (UnityEngine.Object) playerMoveController)
         return;
-      owner.OnGameObjectChangedEvent -= new Action(this.OnViewGameObjectChanged);
-      this.playerMoveController.FallDamageEvent += new Action<float>(this.OnFallDamageEvent);
+      owner.OnGameObjectChangedEvent -= OnViewGameObjectChanged;
+      playerMoveController.FallDamageEvent += OnFallDamageEvent;
     }
 
     public void Shutdown()
     {
-      ((IEntityView) this.abilityItem.Ability.Owner).OnGameObjectChangedEvent -= new Action(this.OnViewGameObjectChanged);
-      if (!(bool) (UnityEngine.Object) this.playerMoveController)
+      ((IEntityView) abilityItem.Ability.Owner).OnGameObjectChangedEvent -= OnViewGameObjectChanged;
+      if (!(bool) (UnityEngine.Object) playerMoveController)
         return;
-      this.playerMoveController.FallDamageEvent -= new Action<float>(this.OnFallDamageEvent);
+      playerMoveController.FallDamageEvent -= OnFallDamageEvent;
     }
 
     private void OnFallDamageEvent(float fallDistance)
     {
-      if ((double) fallDistance < (double) this.minFall || (double) fallDistance > (double) this.maxFall)
+      if (fallDistance < (double) minFall || fallDistance > (double) maxFall)
         return;
-      Debug.Log((object) ObjectInfoUtility.GetStream().Append("<color=red>Fall damage : ").Append(fallDistance).Append("</color> , min : ").Append(this.minFall).Append(" , max : ").Append(this.maxFall));
-      this.abilityItem.Active = true;
-      this.abilityItem.Active = false;
+      Debug.Log((object) ObjectInfoUtility.GetStream().Append("<color=red>Fall damage : ").Append(fallDistance).Append("</color> , min : ").Append(minFall).Append(" , max : ").Append(maxFall));
+      abilityItem.Active = true;
+      abilityItem.Active = false;
     }
   }
 }

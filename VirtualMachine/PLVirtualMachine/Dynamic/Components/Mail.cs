@@ -15,14 +15,14 @@ namespace PLVirtualMachine.Dynamic.Components
     {
       IParam obj1;
       if (((IBlueprint) templateObject).TryGetProperty("Mail.Header", out obj1))
-        this.Header = (ITextRef) obj1.Value;
+        Header = (ITextRef) obj1.Value;
       IParam obj2;
       if (((IBlueprint) templateObject).TryGetProperty("Mail.Text", out obj2))
-        this.Text = (ITextRef) obj2.Value;
+        Text = (ITextRef) obj2.Value;
       IParam obj3;
       if (!((IBlueprint) templateObject).TryGetProperty("Mail.State", out obj3))
         return;
-      this.State = (MailStateEnum) obj3.Value;
+      State = (MailStateEnum) obj3.Value;
     }
 
     public void InitialiseEvent(DynamicEvent target)

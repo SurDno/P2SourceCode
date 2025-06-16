@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Runtime;
 using System.Text;
-using UnityEngine;
-using UnityEngine.Profiling;
 
 namespace Engine.Source.Services
 {
@@ -17,7 +15,7 @@ namespace Engine.Source.Services
       return info;
     }
 
-    public static string GetMemoryText(long memory) => ((memory >> 10) / 1024L).ToString() + " mb";
+    public static string GetMemoryText(long memory) => ((memory >> 10) / 1024L) + " mb";
 
     public static void Alloc(long need)
     {
@@ -48,7 +46,7 @@ namespace Engine.Source.Services
             break;
         }
         for (int index = 0; index < numArrayList.Count; ++index)
-          numArrayList[index] = (int[]) null;
+          numArrayList[index] = null;
         numArrayList.Clear();
         numArrayList.Capacity = 0;
       }
@@ -56,7 +54,7 @@ namespace Engine.Source.Services
       {
         Debug.LogException(ex);
       }
-      OptimizationUtility.ForceCollect();
+      ForceCollect();
       Debug.Log((object) ObjectInfoUtility.GetStream().Append("Result allock memory, used : ").GetMemoryText(Profiler.GetMonoUsedSizeLong()).Append(" , max : ").GetMemoryText(Profiler.GetMonoHeapSizeLong()));
     }
 

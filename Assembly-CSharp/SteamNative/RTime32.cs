@@ -6,7 +6,7 @@
 
     public static implicit operator RTime32(uint value)
     {
-      return new RTime32() { Value = value };
+      return new RTime32 { Value = value };
     }
 
     public static implicit operator uint(RTime32 value) => value.Value;

@@ -1,12 +1,12 @@
-﻿using Cofe.Loggers;
+﻿using System;
+using System.Collections.Generic;
+using Cofe.Loggers;
 using Cofe.Proxies;
 using Engine.Common;
 using Engine.Common.Components.Movable;
 using Engine.Common.Services;
 using Engine.Common.Types;
 using PLVirtualMachine.Common.EngineAPI.VMECS.VMAttributes;
-using System;
-using System.Collections.Generic;
 
 namespace PLVirtualMachine.Common.EngineAPI.VMECS
 {
@@ -37,15 +37,15 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
     {
       if (!typeof (IWorldObject).IsAssignableFrom(templateObj.GetType()))
       {
-        Logger.AddError(string.Format("Creating object {0} must be world object", (object) templateObj.Name));
+        Logger.AddError(string.Format("Creating object {0} must be world object", templateObj.Name));
       }
       else
       {
-        this.editorTemplate = templateObj;
+        editorTemplate = templateObj;
         if (typeof (IHierarchyObject).IsAssignableFrom(templateObj.GetType()))
-          this.InstantiateEngineEntity(((IEngineInstanced) templateObj).EngineGuid);
+          InstantiateEngineEntity(((IEngineInstanced) templateObj).EngineGuid);
         else
-          this.InstantiateEngineEntity();
+          InstantiateEngineEntity();
       }
     }
 
@@ -53,7 +53,7 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
     {
       if (templateObj == null)
         return;
-      this.editorTemplate = templateObj;
+      editorTemplate = templateObj;
       bool flag1 = false;
       bool flag2 = false;
       if (typeof (IWorldObject).IsAssignableFrom(templateObj.GetType()))
@@ -67,35 +67,35 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
         Logger.AddError("!!! Такого быть не должно !!!");
       else if (flag2)
       {
-        this.InstantiateEngineEntity(engineGuid);
-        if (this.engineEntity == null)
+        InstantiateEngineEntity(engineGuid);
+        if (engineEntity == null)
         {
           string str = "unknown";
-          if (this.editorTemplate != null)
-            str = this.editorTemplate.Name;
-          Logger.AddError(string.Format("Cannot create object {0}, engine instance creation failed", (object) str));
+          if (editorTemplate != null)
+            str = editorTemplate.Name;
+          Logger.AddError(string.Format("Cannot create object {0}, engine instance creation failed", str));
           return;
         }
-        this.Instantiated = true;
-        if (typeof (IEntity).IsAssignableFrom(this.engineEntity.GetType()))
+        Instantiated = true;
+        if (typeof (IEntity).IsAssignableFrom(engineEntity.GetType()))
         {
-          this.LoadComponentsFromEntityInstance(this.engineEntity);
-          this.AddNewComponent("Common");
+          LoadComponentsFromEntityInstance(engineEntity);
+          AddNewComponent("Common");
         }
         else
-          this.LoadComponentsFromVMTemplate(templateObj.Blueprint);
-        this.MakeEngineData();
+          LoadComponentsFromVMTemplate(templateObj.Blueprint);
+        MakeEngineData();
       }
       else
       {
-        this.engineEntityTemplate = (IEntity) null;
-        this.engineEntity = !(engineGuid != Guid.Empty) ? ServiceCache.Factory.Create<IEntity>() : ServiceCache.Factory.Create<IEntity>(engineGuid);
-        this.Instantiated = true;
-        this.LoadComponentsFromVMTemplate(templateObj.Blueprint);
+        engineEntityTemplate = null;
+        engineEntity = !(engineGuid != Guid.Empty) ? ServiceCache.Factory.Create<IEntity>() : ServiceCache.Factory.Create<IEntity>(engineGuid);
+        Instantiated = true;
+        LoadComponentsFromVMTemplate(templateObj.Blueprint);
       }
-      if (this.engineEntity == null)
+      if (engineEntity == null)
         return;
-      this.engineEntity.Name = templateObj.Name;
+      engineEntity.Name = templateObj.Name;
     }
 
     public virtual void Initialize(
@@ -108,55 +108,55 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
         string str = "none";
         if (engInstance != null)
           str = engInstance.Name;
-        Logger.AddError(string.Format("Editor template for entity {0} initialization not defined", (object) str));
+        Logger.AddError(string.Format("Editor template for entity {0} initialization not defined", str));
       }
       else
       {
-        this.engineEntityTemplate = (IEntity) engInstance.Template;
-        this.engineEntity = engInstance;
-        this.Instantiated = true;
-        this.isDynamicChild = bDynamicChild;
-        this.editorTemplate = templateObj;
-        if (this.engineEntity == null)
-          Logger.AddError(string.Format("Entity for editor template {0} not found in engine", (object) templateObj.Name));
+        engineEntityTemplate = (IEntity) engInstance.Template;
+        engineEntity = engInstance;
+        Instantiated = true;
+        isDynamicChild = bDynamicChild;
+        editorTemplate = templateObj;
+        if (engineEntity == null)
+          Logger.AddError(string.Format("Entity for editor template {0} not found in engine", templateObj.Name));
         else
-          this.LoadComponentsFromEntityInstance(this.engineEntity);
+          LoadComponentsFromEntityInstance(engineEntity);
       }
     }
 
     public virtual void InitSimpleChild(IHierarchyObject simpleChildTemplate)
     {
-      this.editorTemplate = (ILogicObject) simpleChildTemplate.EditorTemplate;
-      this.InstantiateEngineEntity(simpleChildTemplate.EngineGuid);
-      this.Instantiated = true;
-      this.isSimple = true;
+      editorTemplate = simpleChildTemplate.EditorTemplate;
+      InstantiateEngineEntity(simpleChildTemplate.EngineGuid);
+      Instantiated = true;
+      isSimple = true;
     }
 
-    public bool IsDynamicChild => this.isDynamicChild;
+    public bool IsDynamicChild => isDynamicChild;
 
-    public bool IsSimple => this.isSimple;
+    public bool IsSimple => isSimple;
 
     public ulong BaseGuid
     {
-      get => this.editorTemplate != null ? this.editorTemplate.Blueprint.BaseGuid : 0UL;
+      get => editorTemplate != null ? editorTemplate.Blueprint.BaseGuid : 0UL;
     }
 
-    public Guid EngineGuid => this.engineEntity != null ? this.engineEntity.Id : Guid.Empty;
+    public Guid EngineGuid => engineEntity != null ? engineEntity.Id : Guid.Empty;
 
     public Guid EngineTemplateGuid
     {
-      get => this.engineEntityTemplate == null ? Guid.Empty : this.engineEntityTemplate.Id;
+      get => engineEntityTemplate == null ? Guid.Empty : engineEntityTemplate.Id;
     }
 
-    public IEntity Instance => this.engineEntity;
+    public IEntity Instance => engineEntity;
 
-    public IBlueprint EditorTemplate => this.editorTemplate.Blueprint;
+    public IBlueprint EditorTemplate => editorTemplate.Blueprint;
 
     public bool IsWorldEntity
     {
       get
       {
-        return this.engineEntity != null && typeof (IEntity).IsAssignableFrom(this.engineEntity.GetType());
+        return engineEntity != null && typeof (IEntity).IsAssignableFrom(engineEntity.GetType());
       }
     }
 
@@ -164,9 +164,9 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
     {
       get
       {
-        if (this.IsSimple)
+        if (IsSimple)
           return true;
-        return this.editorTemplate != null && typeof (IHierarchyObject).IsAssignableFrom(this.editorTemplate.GetType()) && ((IHierarchyObject) this.editorTemplate).HierarchyGuid.IsHierarchy;
+        return editorTemplate != null && typeof (IHierarchyObject).IsAssignableFrom(editorTemplate.GetType()) && ((IHierarchyObject) editorTemplate).HierarchyGuid.IsHierarchy;
       }
     }
 
@@ -174,22 +174,22 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
     {
       get
       {
-        return this.editorTemplate != null && typeof (IHierarchyObject).IsAssignableFrom(this.editorTemplate.GetType()) ? ((IHierarchyObject) this.editorTemplate).HierarchyGuid : HierarchyGuid.Empty;
+        return editorTemplate != null && typeof (IHierarchyObject).IsAssignableFrom(editorTemplate.GetType()) ? ((IHierarchyObject) editorTemplate).HierarchyGuid : HierarchyGuid.Empty;
       }
     }
 
-    public string Name => this.engineEntity == null ? "" : this.engineEntity.Name;
+    public string Name => engineEntity == null ? "" : engineEntity.Name;
 
-    public List<VMComponent> Components => this.components;
+    public List<VMComponent> Components => components;
 
     public VMComponent GetComponentByName(string componentName)
     {
-      foreach (VMComponent component in this.components)
+      foreach (VMComponent component in components)
       {
         if (component.Name == componentName)
           return component;
       }
-      return (VMComponent) null;
+      return null;
     }
 
     public static string GetComponentName(IComponent engComponent)
@@ -207,43 +207,43 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
     {
       try
       {
-        Type componentTypeByName = this.GetComponentTypeByName(componentName);
-        if (componentTypeByName != (Type) null)
+        Type componentTypeByName = GetComponentTypeByName(componentName);
+        if (componentTypeByName != null)
         {
           VMComponent instance = (VMComponent) Activator.CreateInstance(componentTypeByName);
           instance.Initialize(this);
-          this.DoAddComponent(componentName, instance);
+          DoAddComponent(componentName, instance);
         }
         else
-          Logger.AddError(string.Format("Entity {0} component {1} creation error", (object) this.Name, (object) componentName));
+          Logger.AddError(string.Format("Entity {0} component {1} creation error", Name, componentName));
       }
       catch (Exception ex)
       {
-        Logger.AddError(string.Format("Entity {0} component {1} creation error: {2}", (object) this.Name, (object) componentName, (object) ex));
+        Logger.AddError(string.Format("Entity {0} component {1} creation error: {2}", Name, componentName, ex));
       }
     }
 
     private void AddNewComponentFromEngine(IComponent component)
     {
-      string componentName = VMBaseEntity.GetComponentName(component);
-      Type componentTypeByName = this.GetComponentTypeByName(componentName);
-      if ((Type) null == componentTypeByName)
+      string componentName = GetComponentName(component);
+      Type componentTypeByName = GetComponentTypeByName(componentName);
+      if (null == componentTypeByName)
         return;
       try
       {
         VMComponent newComponent = (VMComponent) ProxyFactory.Create(componentTypeByName);
         newComponent.Initialize(this, component);
-        this.DoAddComponent(componentName, newComponent);
+        DoAddComponent(componentName, newComponent);
       }
       catch (Exception ex)
       {
-        string str = (string) null;
+        string str = null;
         if (component == null)
           return;
         string name = component.GetType().Name;
         if (component.Owner != null)
           str = component.Owner.Name;
-        Logger.AddError(string.Format("Component {0} in entity {1} creation error: {2}", (object) name, (object) str, (object) ex));
+        Logger.AddError(string.Format("Component {0} in entity {1} creation error: {2}", name, str, ex));
       }
     }
 
@@ -267,21 +267,21 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
     {
       try
       {
-        if (this.idDisposed)
+        if (idDisposed)
         {
-          Logger.AddWarning(string.Format("You try to remove already removed object: {0} at {1}", (object) this.Name, (object) EngineAPIManager.Instance.CurrentFSMStateInfo));
+          Logger.AddWarning(string.Format("You try to remove already removed object: {0} at {1}", Name, EngineAPIManager.Instance.CurrentFSMStateInfo));
         }
         else
         {
-          ((VMCommon) this.GetComponentByName("Common")).OnRemove();
+          ((VMCommon) GetComponentByName("Common")).OnRemove();
           if (EngineAPIManager.ObjectCreationExtraDebugInfoMode)
-            Logger.AddWarning(string.Format("Extra debug info: removing object: {0} name = {1}", (object) this.Instance.Id, (object) this.Name));
-          this.DisposeInstance();
+            Logger.AddWarning(string.Format("Extra debug info: removing object: {0} name = {1}", Instance.Id, Name));
+          DisposeInstance();
         }
       }
       catch (Exception ex)
       {
-        Logger.AddError(string.Format("Object id={0} removing error: {1}", (object) this.Name, (object) ex));
+        Logger.AddError(string.Format("Object id={0} removing error: {1}", Name, ex));
       }
     }
 
@@ -289,56 +289,56 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
     {
       try
       {
-        foreach (VMComponent component in this.Components)
+        foreach (VMComponent component in Components)
           component.Clear();
-        if (this.engineEntity != null)
-          this.engineEntity.Dispose();
-        this.engineEntity = (IEntity) null;
-        this.Instantiated = false;
-        this.idDisposed = true;
-        if (this.childs != null)
+        if (engineEntity != null)
+          engineEntity.Dispose();
+        engineEntity = null;
+        Instantiated = false;
+        idDisposed = true;
+        if (childs != null)
         {
-          for (int index = 0; index < this.childs.Count; ++index)
-            this.childs[index].DisposeInstance(clear);
+          for (int index = 0; index < childs.Count; ++index)
+            childs[index].DisposeInstance(clear);
         }
         if (clear)
         {
-          if (this.childs != null)
-            this.childs.Clear();
-          if (this.allChilds != null)
-            this.allChilds.Clear();
+          if (childs != null)
+            childs.Clear();
+          if (allChilds != null)
+            allChilds.Clear();
         }
-        else if (this.childs != null)
+        else if (childs != null)
         {
-          for (int index = 0; index < this.dynamicChilds.Count; ++index)
-            this.childs.Remove(this.dynamicChilds[index]);
+          for (int index = 0; index < dynamicChilds.Count; ++index)
+            childs.Remove(dynamicChilds[index]);
         }
-        if (this.dynamicChilds == null)
+        if (dynamicChilds == null)
           return;
-        this.dynamicChilds.Clear();
+        dynamicChilds.Clear();
       }
       catch (Exception ex)
       {
-        Logger.AddError(string.Format("Object id={0} removing error: {1}", (object) this.Name, (object) ex));
+        Logger.AddError(string.Format("Object id={0} removing error: {1}", Name, ex));
       }
     }
 
-    public bool IsDisposed => this.idDisposed;
+    public bool IsDisposed => idDisposed;
 
     public bool Instantiated { get; set; }
 
-    public bool IsEngineRoot => this.isEngineRoot;
+    public bool IsEngineRoot => isEngineRoot;
 
     public bool IsFunctionalSupport(string componentName)
     {
-      return this.GetComponentByName(componentName) != null;
+      return GetComponentByName(componentName) != null;
     }
 
     public bool IsFunctionalSupport(IEnumerable<string> functionals)
     {
       foreach (string functional in functionals)
       {
-        if (this.GetComponentByName(functional) == null)
+        if (GetComponentByName(functional) == null)
           return false;
       }
       return true;
@@ -354,17 +354,17 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
           stringList.Add(keyValuePair.Key);
       }
       for (int index = 0; index < stringList.Count; ++index)
-        this.TryAddComponent(stringList[index]);
+        TryAddComponent(stringList[index]);
     }
 
     private void TryAddComponent(string name)
     {
-      foreach (VMComponent component in this.components)
+      foreach (VMComponent component in components)
       {
         if (component.Name == name)
           return;
       }
-      this.AddNewComponent(name);
+      AddNewComponent(name);
     }
 
     public void LoadComponentsFromEntityInstance(IEntity entity)
@@ -375,7 +375,7 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
         {
           try
           {
-            this.AddNewComponentFromEngine(component);
+            AddNewComponentFromEngine(component);
           }
           catch (Exception ex)
           {
@@ -387,63 +387,63 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
 
     public void AddChildEntity(VMBaseEntity childEntity)
     {
-      if (this.childs == null)
-        this.childs = new List<VMBaseEntity>();
-      this.childs.Add(childEntity);
+      if (childs == null)
+        childs = new List<VMBaseEntity>();
+      childs.Add(childEntity);
       childEntity.ParentEntity = this;
       if (!childEntity.IsDynamicChild)
       {
         if (childEntity.IsSimple)
           return;
-        this.AddAggregateChild(childEntity);
+        AddAggregateChild(childEntity);
       }
       else
       {
-        if (this.dynamicChilds == null)
-          this.dynamicChilds = new List<VMBaseEntity>();
-        this.dynamicChilds.Add(childEntity);
+        if (dynamicChilds == null)
+          dynamicChilds = new List<VMBaseEntity>();
+        dynamicChilds.Add(childEntity);
       }
     }
 
     public VMBaseEntity ParentEntity
     {
-      get => this.parentEntity;
-      set => this.parentEntity = value;
+      get => parentEntity;
+      set => parentEntity = value;
     }
 
-    public List<VMBaseEntity> GetAllChildEntities() => this.allChilds;
+    public List<VMBaseEntity> GetAllChildEntities() => allChilds;
 
-    public List<VMBaseEntity> GetChildEntities() => this.childs;
+    public List<VMBaseEntity> GetChildEntities() => childs;
 
     public virtual void OnCreate(bool afterLoad = false)
     {
-      foreach (VMComponent component in this.components)
+      foreach (VMComponent component in components)
         component.OnCreate();
     }
 
     public void AfterCreate()
     {
-      if (this.childs != null)
+      if (childs != null)
       {
-        for (int index = 0; index < this.childs.Count; ++index)
+        for (int index = 0; index < childs.Count; ++index)
         {
-          if (typeof (VMBaseEntity).IsAssignableFrom(this.childs[index].GetType()))
-            this.childs[index].AfterCreate();
+          if (typeof (VMBaseEntity).IsAssignableFrom(childs[index].GetType()))
+            childs[index].AfterCreate();
         }
       }
-      foreach (VMComponent component in this.Components)
+      foreach (VMComponent component in Components)
         component.AfterCreate();
     }
 
     public string GetCustomTag()
     {
-      VMComponent componentByName = this.GetComponentByName("Common");
+      VMComponent componentByName = GetComponentByName("Common");
       return componentByName != null ? ((VMCommon) componentByName).CustomTag : "";
     }
 
     public void SetCustomTag(string sTag)
     {
-      VMComponent componentByName = this.GetComponentByName("Common");
+      VMComponent componentByName = GetComponentByName("Common");
       if (componentByName == null)
         return;
       ((VMCommon) componentByName).CustomTag = sTag;
@@ -451,9 +451,9 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
 
     public VMBaseEntity GetNearestOwnerByFunctional(VMType type)
     {
-      if (this.IsFunctionalSupport(type.GetFunctionalParts()))
+      if (IsFunctionalSupport(type.GetFunctionalParts()))
         return this;
-      return this.ParentEntity != null ? this.ParentEntity.GetNearestOwnerByFunctional(type) : (VMBaseEntity) null;
+      return ParentEntity != null ? ParentEntity.GetNearestOwnerByFunctional(type) : null;
     }
 
     public VMStorage EntityStorageComponent { get; protected set; }
@@ -471,80 +471,80 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
 
     protected void InstantiateEngineEntity(Guid engDynGuid = default (Guid))
     {
-      if (this.editorTemplate == null)
+      if (editorTemplate == null)
         return;
-      if (typeof (IWorldObject).IsAssignableFrom(this.editorTemplate.GetType()))
+      if (typeof (IWorldObject).IsAssignableFrom(editorTemplate.GetType()))
       {
         try
         {
-          Guid id = ((IEngineTemplated) this.editorTemplate).EngineTemplateGuid;
+          Guid id = ((IEngineTemplated) editorTemplate).EngineTemplateGuid;
           if (id == Guid.Empty)
-            id = ((IWorldObject) this.editorTemplate).EngineBaseTemplateGuid;
-          this.engineEntityTemplate = ServiceCache.TemplateService.GetTemplate<IEntity>(id);
-          if (this.engineEntityTemplate == null)
+            id = ((IWorldObject) editorTemplate).EngineBaseTemplateGuid;
+          engineEntityTemplate = ServiceCache.TemplateService.GetTemplate<IEntity>(id);
+          if (engineEntityTemplate == null)
           {
-            Logger.AddError(string.Format("Object by template {0} creation failed!, Template with engine guid {1} not found in engine", (object) this.editorTemplate.Name, (object) id));
+            Logger.AddError(string.Format("Object by template {0} creation failed!, Template with engine guid {1} not found in engine", editorTemplate.Name, id));
           }
           else
           {
-            this.engineEntity = !(engDynGuid == Guid.Empty) ? ServiceCache.Factory.Instantiate<IEntity>(this.engineEntityTemplate, engDynGuid) : ServiceCache.Factory.Instantiate<IEntity>(this.engineEntityTemplate);
-            this.idDisposed = false;
+            engineEntity = !(engDynGuid == Guid.Empty) ? ServiceCache.Factory.Instantiate(engineEntityTemplate, engDynGuid) : ServiceCache.Factory.Instantiate(engineEntityTemplate);
+            idDisposed = false;
           }
         }
         catch (Exception ex)
         {
-          Logger.AddError(string.Format("Object {0} with id {1} engine instancing error: {2}", (object) this.Name, (object) engDynGuid, (object) ex.ToString()));
+          Logger.AddError(string.Format("Object {0} with id {1} engine instancing error: {2}", Name, engDynGuid, ex.ToString()));
         }
       }
       else
       {
         try
         {
-          this.engineEntity = ServiceCache.Factory.Create<IEntity>(engDynGuid);
-          this.idDisposed = false;
-          this.engineEntity.Name = this.editorTemplate.Name;
+          engineEntity = ServiceCache.Factory.Create<IEntity>(engDynGuid);
+          idDisposed = false;
+          engineEntity.Name = editorTemplate.Name;
         }
         catch (Exception ex)
         {
-          Logger.AddError(string.Format("Object {0} with id {1} engine instancing error: {2}", (object) this.Name, (object) engDynGuid, (object) ex.ToString()));
+          Logger.AddError(string.Format("Object {0} with id {1} engine instancing error: {2}", Name, engDynGuid, ex.ToString()));
         }
       }
     }
 
     protected virtual void AddAggregateChild(VMBaseEntity childEntity)
     {
-      if (this.allChilds == null)
-        this.allChilds = new List<VMBaseEntity>();
-      this.allChilds.Add(childEntity);
-      if (this.ParentEntity == null)
+      if (allChilds == null)
+        allChilds = new List<VMBaseEntity>();
+      allChilds.Add(childEntity);
+      if (ParentEntity == null)
         return;
-      this.ParentEntity.AddAggregateChild(childEntity);
+      ParentEntity.AddAggregateChild(childEntity);
     }
 
     protected void CreateEntityByEngineTemplate(IEntity engTemplate)
     {
       if (engTemplate == null)
       {
-        Logger.AddError(string.Format("Cannot create entity by engine template: engine template is null !!!"));
+        Logger.AddError("Cannot create entity by engine template: engine template is null !!!");
       }
       else
       {
-        this.engineEntityTemplate = engTemplate;
-        this.LoadComponentsFromEntityInstance(this.engineEntityTemplate);
-        this.AddNewComponent("Common");
-        this.MakeEngineData();
+        engineEntityTemplate = engTemplate;
+        LoadComponentsFromEntityInstance(engineEntityTemplate);
+        AddNewComponent("Common");
+        MakeEngineData();
       }
     }
 
     private void DoAddComponent(string componentName, VMComponent newComponent)
     {
       if (newComponent.Name == "Storage")
-        this.EntityStorageComponent = (VMStorage) newComponent;
+        EntityStorageComponent = (VMStorage) newComponent;
       else if (newComponent.Name == "Common")
-        this.EntityCommonComponent = (VMCommon) newComponent;
+        EntityCommonComponent = (VMCommon) newComponent;
       else if (newComponent.Name == "CrowdItemComponent")
-        this.isCrowdItem = true;
-      this.components.Add(newComponent);
+        isCrowdItem = true;
+      components.Add(newComponent);
     }
   }
 }

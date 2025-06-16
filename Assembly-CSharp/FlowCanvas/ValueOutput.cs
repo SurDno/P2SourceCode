@@ -1,5 +1,5 @@
-﻿using ParadoxNotion;
-using System;
+﻿using System;
+using ParadoxNotion;
 
 namespace FlowCanvas
 {
@@ -22,11 +22,11 @@ namespace FlowCanvas
       ValueHandler<object> getter)
     {
       if (getter == null)
-        getter = (ValueHandler<object>) (() => (object) null);
+        getter = () => null;
       return (ValueOutput) Activator.CreateInstance(typeof (ValueOutput<>).RTMakeGenericType(new Type[1]
       {
         type
-      }), (object) parent, (object) name, (object) id, (object) getter);
+      }), parent, name, id, getter);
     }
 
     public abstract object GetValue();

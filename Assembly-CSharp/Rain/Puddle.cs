@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.Rendering;
 
 namespace Rain
 {
@@ -10,7 +8,7 @@ namespace Rain
   {
     private const CameraEvent RenderTime = CameraEvent.BeforeReflections;
     public Material material;
-    private Ripple rippleListRoot = (Ripple) null;
+    private Ripple rippleListRoot = null;
     private CommandBuffer _ldrBuffer;
     private List<Camera> _ldrCameras;
     private CommandBuffer _hdrBuffer;
@@ -21,37 +19,37 @@ namespace Rain
     {
       Wetness = float.NaN;
       RainManager instance = RainManager.Instance;
-      if ((Object) instance == (Object) null || (double) instance.puddleWetness <= 0.0 || (Object) this.material == (Object) null)
+      if ((Object) instance == (Object) null || instance.puddleWetness <= 0.0 || (Object) material == (Object) null)
         return false;
-      Texture2D mainTexture = this.material.mainTexture as Texture2D;
+      Texture2D mainTexture = material.mainTexture as Texture2D;
       if ((Object) mainTexture == (Object) null)
         return false;
       Color pixelBilinear = mainTexture.GetPixelBilinear(Hit.textureCoord.x, Hit.textureCoord.y);
-      Color color1 = this.material.GetColor("_MainMask");
+      Color color1 = material.GetColor("_MainMask");
       PuddleCutter component = this.GetComponent<PuddleCutter>();
       if ((Object) component != (Object) null)
         color1 *= component.ColorMask;
-      Color color2 = this.material.GetColor("_WorldMask");
-      float num1 = this.material.GetFloat("_MaxSize");
-      float num2 = this.material.GetFloat("_AuraSize");
+      Color color2 = material.GetColor("_WorldMask");
+      float num1 = material.GetFloat("_MaxSize");
+      float num2 = material.GetFloat("_AuraSize");
       float num3 = 1f - (float) ((1.0 - (double) pixelBilinear.r) * (double) color1.r + (1.0 - (double) pixelBilinear.g) * (double) color1.g + (1.0 - (double) pixelBilinear.b) * (double) color1.b + (1.0 - (double) pixelBilinear.a) * (double) color1.a) + (float) (((double) color2.r + (double) color2.g + (double) color2.b + (double) color2.a) * 0.5);
       Wetness = num1 * instance.puddleWetness - num3;
       Wetness /= num2;
       return true;
     }
 
-    public static Puddle.Hit Raycast(Ray ray, float maxDistance)
+    public static Hit Raycast(Ray ray, float maxDistance)
     {
       RainManager instance = RainManager.Instance;
       RaycastHit hitInfo;
-      if ((Object) instance == (Object) null || (double) instance.puddleWetness <= 0.0 || !Physics.Raycast(ray, out hitInfo, maxDistance, (int) instance.puddleLayers))
-        return (Puddle.Hit) null;
+      if ((Object) instance == (Object) null || instance.puddleWetness <= 0.0 || !Physics.Raycast(ray, out hitInfo, maxDistance, (int) instance.puddleLayers))
+        return null;
       Puddle component1 = hitInfo.collider.GetComponent<Puddle>();
       if ((Object) component1 == (Object) null)
-        return (Puddle.Hit) null;
+        return null;
       Material material = component1.material;
       if ((Object) material == (Object) null)
-        return (Puddle.Hit) null;
+        return null;
       Color pixelBilinear = (material.mainTexture as Texture2D).GetPixelBilinear(hitInfo.textureCoord.x, hitInfo.textureCoord.y);
       Color color1 = material.GetColor("_MainMask");
       PuddleCutter component2 = component1.GetComponent<PuddleCutter>();
@@ -62,38 +60,38 @@ namespace Rain
       float num2 = material.GetFloat("_AuraSize");
       float num3 = 1f - (float) ((1.0 - (double) pixelBilinear.r) * (double) color1.r + (1.0 - (double) pixelBilinear.g) * (double) color1.g + (1.0 - (double) pixelBilinear.b) * (double) color1.b + (1.0 - (double) pixelBilinear.a) * (double) color1.a) + (float) (((double) color2.r + (double) color2.g + (double) color2.b + (double) color2.a) * 0.5);
       float wetness = (num1 * instance.puddleWetness - num3) / num2;
-      return new Puddle.Hit(component1, hitInfo.point, wetness);
+      return new Hit(component1, hitInfo.point, wetness);
     }
 
     private MeshRenderer meshRenderer
     {
       get
       {
-        if ((Object) this._meshRenderer == (Object) null)
-          this._meshRenderer = this.GetComponent<MeshRenderer>();
-        return this._meshRenderer;
+        if ((Object) _meshRenderer == (Object) null)
+          _meshRenderer = this.GetComponent<MeshRenderer>();
+        return _meshRenderer;
       }
     }
 
     public void AddRipple(Vector3 worldPosition, float startRadius, float endRadius)
     {
-      this.rippleListRoot = new Ripple(this.rippleListRoot, this.material, worldPosition, startRadius, endRadius);
-      this.DestroyBuffers();
+      rippleListRoot = new Ripple(rippleListRoot, material, worldPosition, startRadius, endRadius);
+      DestroyBuffers();
     }
 
     private void AssignBuffer(Camera cam)
     {
       if (cam.allowHDR)
       {
-        if (!this.CheckBuffer(true) || this._hdrCameras.Contains(cam))
+        if (!CheckBuffer(true) || _hdrCameras.Contains(cam))
           return;
-        cam.AddCommandBuffer(CameraEvent.BeforeReflections, this._hdrBuffer);
-        this._hdrCameras.Add(cam);
+        cam.AddCommandBuffer(CameraEvent.BeforeReflections, _hdrBuffer);
+        _hdrCameras.Add(cam);
       }
-      else if (this.CheckBuffer(false) && !this._ldrCameras.Contains(cam))
+      else if (CheckBuffer(false) && !_ldrCameras.Contains(cam))
       {
-        cam.AddCommandBuffer(CameraEvent.BeforeReflections, this._ldrBuffer);
-        this._ldrCameras.Add(cam);
+        cam.AddCommandBuffer(CameraEvent.BeforeReflections, _ldrBuffer);
+        _ldrCameras.Add(cam);
       }
     }
 
@@ -101,26 +99,26 @@ namespace Rain
     {
       if (hdr)
       {
-        if (this._hdrBuffer == null)
+        if (_hdrBuffer == null)
         {
-          this._hdrBuffer = this.CreateBuffer(true);
-          if (this._hdrBuffer != null)
-            this._hdrCameras = new List<Camera>();
+          _hdrBuffer = CreateBuffer(true);
+          if (_hdrBuffer != null)
+            _hdrCameras = new List<Camera>();
         }
-        return this._hdrBuffer != null;
+        return _hdrBuffer != null;
       }
-      if (this._ldrBuffer == null)
+      if (_ldrBuffer == null)
       {
-        this._ldrBuffer = this.CreateBuffer(false);
-        if (this._ldrBuffer != null)
-          this._ldrCameras = new List<Camera>();
+        _ldrBuffer = CreateBuffer(false);
+        if (_ldrBuffer != null)
+          _ldrCameras = new List<Camera>();
       }
-      return this._ldrBuffer != null;
+      return _ldrBuffer != null;
     }
 
     private CommandBuffer CreateBuffer(bool hdr)
     {
-      if (!(bool) (Object) this.material)
+      if (!(bool) (Object) material)
         return (CommandBuffer) null;
       CommandBuffer buffer = new CommandBuffer();
       buffer.name = "Decal " + this.name;
@@ -134,58 +132,58 @@ namespace Rain
       if (hdr)
         colors[3] = (RenderTargetIdentifier) BuiltinRenderTextureType.CameraTarget;
       buffer.SetRenderTarget(colors, (RenderTargetIdentifier) BuiltinRenderTextureType.CameraTarget);
-      buffer.DrawRenderer((Renderer) this.meshRenderer, this.material, 0, 0);
-      if (this.rippleListRoot != null)
+      buffer.DrawRenderer((Renderer) meshRenderer, material, 0, 0);
+      if (rippleListRoot != null)
       {
         buffer.SetRenderTarget((RenderTargetIdentifier) BuiltinRenderTextureType.GBuffer2);
-        for (Ripple ripple = this.rippleListRoot; ripple != null; ripple = ripple.nextNode)
-          buffer.DrawRenderer((Renderer) this.meshRenderer, ripple.material, 0, 1);
+        for (Ripple ripple = rippleListRoot; ripple != null; ripple = ripple.nextNode)
+          buffer.DrawRenderer((Renderer) meshRenderer, ripple.material, 0, 1);
       }
       return buffer;
     }
 
     private void DestroyBuffers()
     {
-      if (this._ldrBuffer != null)
+      if (_ldrBuffer != null)
       {
-        foreach (Camera ldrCamera in this._ldrCameras)
+        foreach (Camera ldrCamera in _ldrCameras)
         {
           if ((bool) (Object) ldrCamera)
-            ldrCamera.RemoveCommandBuffer(CameraEvent.BeforeReflections, this._ldrBuffer);
+            ldrCamera.RemoveCommandBuffer(CameraEvent.BeforeReflections, _ldrBuffer);
         }
       }
-      this._ldrBuffer = (CommandBuffer) null;
-      this._ldrCameras = (List<Camera>) null;
-      if (this._hdrBuffer != null)
+      _ldrBuffer = (CommandBuffer) null;
+      _ldrCameras = (List<Camera>) null;
+      if (_hdrBuffer != null)
       {
-        foreach (Camera hdrCamera in this._hdrCameras)
+        foreach (Camera hdrCamera in _hdrCameras)
         {
           if ((bool) (Object) hdrCamera)
-            hdrCamera.RemoveCommandBuffer(CameraEvent.BeforeReflections, this._hdrBuffer);
+            hdrCamera.RemoveCommandBuffer(CameraEvent.BeforeReflections, _hdrBuffer);
         }
       }
-      this._hdrBuffer = (CommandBuffer) null;
-      this._hdrCameras = (List<Camera>) null;
+      _hdrBuffer = (CommandBuffer) null;
+      _hdrCameras = (List<Camera>) null;
     }
 
-    private void OnBecameInvisible() => this.DestroyBuffers();
+    private void OnBecameInvisible() => DestroyBuffers();
 
-    private void OnDisable() => this.DestroyBuffers();
+    private void OnDisable() => DestroyBuffers();
 
     private void OnWillRenderObject()
     {
-      if (!this.enabled || (Object) RainManager.Instance == (Object) null || (double) RainManager.Instance.puddleWetness <= 0.0 || Camera.current.actualRenderingPath != RenderingPath.DeferredShading)
+      if (!this.enabled || (Object) RainManager.Instance == (Object) null || RainManager.Instance.puddleWetness <= 0.0 || Camera.current.actualRenderingPath != RenderingPath.DeferredShading)
         return;
-      this.AssignBuffer(Camera.current);
+      AssignBuffer(Camera.current);
     }
 
     private void Update()
     {
-      if (this.rippleListRoot == null)
+      if (rippleListRoot == null)
         return;
       bool flag = false;
-      Ripple ripple1 = (Ripple) null;
-      Ripple ripple2 = this.rippleListRoot;
+      Ripple ripple1 = null;
+      Ripple ripple2 = rippleListRoot;
       while (ripple2 != null)
       {
         if (ripple2.Update())
@@ -195,7 +193,7 @@ namespace Rain
           if (ripple1 != null)
             ripple1.nextNode = ripple2;
           else
-            this.rippleListRoot = ripple2;
+            rippleListRoot = ripple2;
         }
         else
         {
@@ -204,7 +202,7 @@ namespace Rain
         }
       }
       if (flag)
-        this.DestroyBuffers();
+        DestroyBuffers();
     }
 
     public class Hit

@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using System;
+using System.Collections.Generic;
 
 namespace ParadoxNotion.Serialization.FullSerializer.Internal.DirectConverters
 {
@@ -7,19 +7,19 @@ namespace ParadoxNotion.Serialization.FullSerializer.Internal.DirectConverters
   {
     protected override fsResult DoSerialize(LayerMask model, Dictionary<string, fsData> serialized)
     {
-      return fsResult.Success + this.SerializeMember<int>(serialized, (System.Type) null, "value", model.value);
+      return fsResult.Success + SerializeMember<int>(serialized, null, "value", model.value);
     }
 
     protected override fsResult DoDeserialize(Dictionary<string, fsData> data, ref LayerMask model)
     {
       fsResult success = fsResult.Success;
       int num = model.value;
-      fsResult fsResult = success + this.DeserializeMember<int>(data, (System.Type) null, "value", out num);
+      fsResult fsResult = success + DeserializeMember(data, null, "value", out num);
       model.value = num;
       return fsResult;
     }
 
-    public override object CreateInstance(fsData data, System.Type storageType)
+    public override object CreateInstance(fsData data, Type storageType)
     {
       return (object) new LayerMask();
     }

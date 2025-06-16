@@ -1,6 +1,4 @@
 ﻿using System;
-using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Cinemachine
 {
@@ -40,78 +38,78 @@ namespace Cinemachine
       string name,
       bool invert)
     {
-      this.m_MaxSpeed = maxSpeed;
-      this.m_AccelTime = accelTime;
-      this.m_DecelTime = decelTime;
-      this.Value = val;
-      this.m_InputAxisName = name;
-      this.m_InputAxisValue = 0.0f;
-      this.m_InvertAxis = invert;
-      this.mCurrentSpeed = 0.0f;
-      this.mMinValue = 0.0f;
-      this.mMaxValue = 0.0f;
-      this.mWrapAround = false;
+      m_MaxSpeed = maxSpeed;
+      m_AccelTime = accelTime;
+      m_DecelTime = decelTime;
+      Value = val;
+      m_InputAxisName = name;
+      m_InputAxisValue = 0.0f;
+      m_InvertAxis = invert;
+      mCurrentSpeed = 0.0f;
+      mMinValue = 0.0f;
+      mMaxValue = 0.0f;
+      mWrapAround = false;
     }
 
     public void Validate()
     {
-      this.m_MaxSpeed = Mathf.Max(0.0f, this.m_MaxSpeed);
-      this.m_AccelTime = Mathf.Max(0.0f, this.m_AccelTime);
-      this.m_DecelTime = Mathf.Max(0.0f, this.m_DecelTime);
+      m_MaxSpeed = Mathf.Max(0.0f, m_MaxSpeed);
+      m_AccelTime = Mathf.Max(0.0f, m_AccelTime);
+      m_DecelTime = Mathf.Max(0.0f, m_DecelTime);
     }
 
     public void SetThresholds(float minValue, float maxValue, bool wrapAround)
     {
-      this.mMinValue = minValue;
-      this.mMaxValue = maxValue;
-      this.mWrapAround = wrapAround;
+      mMinValue = minValue;
+      mMaxValue = maxValue;
+      mWrapAround = wrapAround;
     }
 
     public bool Update(float deltaTime)
     {
-      if (!string.IsNullOrEmpty(this.m_InputAxisName))
+      if (!string.IsNullOrEmpty(m_InputAxisName))
       {
         try
         {
-          this.m_InputAxisValue = 0.0f;
+          m_InputAxisValue = 0.0f;
         }
         catch (ArgumentException ex)
         {
           Debug.LogError((object) ex.ToString());
         }
       }
-      float inputAxisValue = this.m_InputAxisValue;
-      if (this.m_InvertAxis)
+      float inputAxisValue = m_InputAxisValue;
+      if (m_InvertAxis)
         inputAxisValue *= -1f;
-      if ((double) this.m_MaxSpeed > 9.9999997473787516E-05)
+      if (m_MaxSpeed > 9.9999997473787516E-05)
       {
-        float f = inputAxisValue * this.m_MaxSpeed;
-        if ((double) Mathf.Abs(f) < 9.9999997473787516E-05 || (double) Mathf.Sign(this.mCurrentSpeed) == (double) Mathf.Sign(f) && (double) Mathf.Abs(f) < (double) Mathf.Abs(this.mCurrentSpeed))
+        float f = inputAxisValue * m_MaxSpeed;
+        if ((double) Mathf.Abs(f) < 9.9999997473787516E-05 || (double) Mathf.Sign(mCurrentSpeed) == (double) Mathf.Sign(f) && (double) Mathf.Abs(f) < (double) Mathf.Abs(mCurrentSpeed))
         {
-          float num = Mathf.Min(Mathf.Abs(f - this.mCurrentSpeed) / Mathf.Max(0.0001f, this.m_DecelTime) * deltaTime, Mathf.Abs(this.mCurrentSpeed));
-          this.mCurrentSpeed -= Mathf.Sign(this.mCurrentSpeed) * num;
+          float num = Mathf.Min(Mathf.Abs(f - mCurrentSpeed) / Mathf.Max(0.0001f, m_DecelTime) * deltaTime, Mathf.Abs(mCurrentSpeed));
+          mCurrentSpeed -= Mathf.Sign(mCurrentSpeed) * num;
         }
         else
         {
-          float num = Mathf.Abs(f - this.mCurrentSpeed) / Mathf.Max(0.0001f, this.m_AccelTime);
-          this.mCurrentSpeed += Mathf.Sign(f) * num * deltaTime;
-          if ((double) Mathf.Sign(this.mCurrentSpeed) == (double) Mathf.Sign(f) && (double) Mathf.Abs(this.mCurrentSpeed) > (double) Mathf.Abs(f))
-            this.mCurrentSpeed = f;
+          float num = Mathf.Abs(f - mCurrentSpeed) / Mathf.Max(0.0001f, m_AccelTime);
+          mCurrentSpeed += Mathf.Sign(f) * num * deltaTime;
+          if ((double) Mathf.Sign(mCurrentSpeed) == (double) Mathf.Sign(f) && (double) Mathf.Abs(mCurrentSpeed) > (double) Mathf.Abs(f))
+            mCurrentSpeed = f;
         }
       }
-      float maxSpeed = this.GetMaxSpeed();
-      this.mCurrentSpeed = Mathf.Clamp(this.mCurrentSpeed, -maxSpeed, maxSpeed);
-      this.Value += this.mCurrentSpeed * deltaTime;
-      if ((double) this.Value > (double) this.mMaxValue || (double) this.Value < (double) this.mMinValue)
+      float maxSpeed = GetMaxSpeed();
+      mCurrentSpeed = Mathf.Clamp(mCurrentSpeed, -maxSpeed, maxSpeed);
+      Value += mCurrentSpeed * deltaTime;
+      if (Value > (double) mMaxValue || Value < (double) mMinValue)
       {
-        if (this.mWrapAround)
+        if (mWrapAround)
         {
-          this.Value = (double) this.Value <= (double) this.mMaxValue ? this.mMaxValue + (this.Value - this.mMinValue) : this.mMinValue + (this.Value - this.mMaxValue);
+          Value = Value <= (double) mMaxValue ? mMaxValue + (Value - mMinValue) : mMinValue + (Value - mMaxValue);
         }
         else
         {
-          this.Value = Mathf.Clamp(this.Value, this.mMinValue, this.mMaxValue);
-          this.mCurrentSpeed = 0.0f;
+          Value = Mathf.Clamp(Value, mMinValue, mMaxValue);
+          mCurrentSpeed = 0.0f;
         }
       }
       return (double) Mathf.Abs(inputAxisValue) > 9.9999997473787516E-05;
@@ -119,16 +117,16 @@ namespace Cinemachine
 
     private float GetMaxSpeed()
     {
-      float num1 = this.mMaxValue - this.mMinValue;
-      if (!this.mWrapAround && (double) num1 > 0.0)
+      float num1 = mMaxValue - mMinValue;
+      if (!mWrapAround && num1 > 0.0)
       {
         float num2 = num1 / 10f;
-        if ((double) this.mCurrentSpeed > 0.0 && (double) this.mMaxValue - (double) this.Value < (double) num2)
-          return Mathf.Lerp(0.0f, this.m_MaxSpeed, (this.mMaxValue - this.Value) / num2);
-        if ((double) this.mCurrentSpeed < 0.0 && (double) this.Value - (double) this.mMinValue < (double) num2)
-          return Mathf.Lerp(0.0f, this.m_MaxSpeed, (this.Value - this.mMinValue) / num2);
+        if (mCurrentSpeed > 0.0 && mMaxValue - (double) Value < num2)
+          return Mathf.Lerp(0.0f, m_MaxSpeed, (mMaxValue - Value) / num2);
+        if (mCurrentSpeed < 0.0 && Value - (double) mMinValue < num2)
+          return Mathf.Lerp(0.0f, m_MaxSpeed, (Value - mMinValue) / num2);
       }
-      return this.m_MaxSpeed;
+      return m_MaxSpeed;
     }
   }
 }

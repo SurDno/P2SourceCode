@@ -1,10 +1,10 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons;
 using Engine.Common.Commons.Cloneable;
 using Engine.Common.Commons.Converters;
 using Engine.Source.OutdoorCrowds;
-using System;
 
 namespace Engine.Source.Proxies
 {
@@ -19,27 +19,27 @@ namespace Engine.Source.Proxies
     public object Clone()
     {
       OutdoorCrowdState_Generated instance = Activator.CreateInstance<OutdoorCrowdState_Generated>();
-      this.CopyTo((object) instance);
-      return (object) instance;
+      CopyTo(instance);
+      return instance;
     }
 
     public void CopyTo(object target2)
     {
       OutdoorCrowdState_Generated crowdStateGenerated = (OutdoorCrowdState_Generated) target2;
-      crowdStateGenerated.State = this.State;
-      CloneableObjectUtility.CopyListTo<OutdoorCrowdTemplateLink>(crowdStateGenerated.TemplateLinks, this.TemplateLinks);
+      crowdStateGenerated.State = State;
+      CloneableObjectUtility.CopyListTo(crowdStateGenerated.TemplateLinks, TemplateLinks);
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.WriteEnum<DiseasedStateEnum>(writer, "State", this.State);
-      DefaultDataWriteUtility.WriteListSerialize<OutdoorCrowdTemplateLink>(writer, "TemplateLinks", this.TemplateLinks);
+      DefaultDataWriteUtility.WriteEnum(writer, "State", State);
+      DefaultDataWriteUtility.WriteListSerialize(writer, "TemplateLinks", TemplateLinks);
     }
 
     public void DataRead(IDataReader reader, Type type)
     {
-      this.State = DefaultDataReadUtility.ReadEnum<DiseasedStateEnum>(reader, "State");
-      this.TemplateLinks = DefaultDataReadUtility.ReadListSerialize<OutdoorCrowdTemplateLink>(reader, "TemplateLinks", this.TemplateLinks);
+      State = DefaultDataReadUtility.ReadEnum<DiseasedStateEnum>(reader, "State");
+      TemplateLinks = DefaultDataReadUtility.ReadListSerialize(reader, "TemplateLinks", TemplateLinks);
     }
   }
 }

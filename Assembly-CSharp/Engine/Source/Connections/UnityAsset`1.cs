@@ -1,5 +1,5 @@
-﻿using Inspectors;
-using System;
+﻿using System;
+using Inspectors;
 
 namespace Engine.Source.Connections
 {
@@ -8,13 +8,13 @@ namespace Engine.Source.Connections
     private Guid id;
 
     [Inspected]
-    public Guid Id => this.id;
+    public Guid Id => id;
 
     public UnityAsset(Guid id) => this.id = id;
 
-    public T Value => UnityAssetUtility.GetValue<T>(this.id);
+    public T Value => UnityAssetUtility.GetValue<T>(id);
 
-    public override int GetHashCode() => this.id.GetHashCode();
+    public override int GetHashCode() => id.GetHashCode();
 
     public override bool Equals(object a) => a is UnityAsset<T> unityAsset && this == unityAsset;
 

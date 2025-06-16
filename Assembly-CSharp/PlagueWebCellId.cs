@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEngine;
 
 public struct PlagueWebCellId : IEquatable<PlagueWebCellId>
 {
@@ -8,21 +7,21 @@ public struct PlagueWebCellId : IEquatable<PlagueWebCellId>
 
   public PlagueWebCellId(int x, int z)
   {
-    this.X = x;
-    this.Z = z;
+    X = x;
+    Z = z;
   }
 
   public PlagueWebCellId(Vector3 worldPosition, float cellSize)
   {
-    this.X = Mathf.FloorToInt(worldPosition.x / cellSize);
-    this.Z = Mathf.FloorToInt(worldPosition.z / cellSize);
+    X = Mathf.FloorToInt(worldPosition.x / cellSize);
+    Z = Mathf.FloorToInt(worldPosition.z / cellSize);
   }
 
-  public bool Equals(PlagueWebCellId other) => this.X == other.X && this.Z == other.Z;
+  public bool Equals(PlagueWebCellId other) => X == other.X && Z == other.Z;
 
-  public override bool Equals(object obj) => obj is PlagueWebCellId other && this.Equals(other);
+  public override bool Equals(object obj) => obj is PlagueWebCellId other && Equals(other);
 
-  public override int GetHashCode() => this.X ^ this.Z;
+  public override int GetHashCode() => X ^ Z;
 
   public static bool operator ==(PlagueWebCellId a, PlagueWebCellId b) => a.Equals(b);
 

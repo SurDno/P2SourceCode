@@ -1,7 +1,6 @@
 ﻿using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
-using UnityEngine;
 
 namespace Engine.Source.Blueprints.Effects
 {
@@ -16,6 +15,6 @@ namespace Engine.Source.Blueprints.Effects
     private ValueInput<float> tInput;
 
     [Port("Value")]
-    private float Value() => Mathf.Lerp(this.aInput.value, this.bInput.value, this.tInput.value);
+    private float Value() => Mathf.Lerp(aInput.value, bInput.value, tInput.value);
   }
 }

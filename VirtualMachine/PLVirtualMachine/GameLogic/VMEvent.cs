@@ -1,4 +1,7 @@
-﻿using Cofe.Loggers;
+﻿using System;
+using System.Collections.Generic;
+using System.Xml;
+using Cofe.Loggers;
 using Engine.Common.Commons;
 using PLVirtualMachine.Base;
 using PLVirtualMachine.Common;
@@ -7,9 +10,6 @@ using PLVirtualMachine.Common.EngineAPI;
 using PLVirtualMachine.Common.EngineAPI.VMECS;
 using PLVirtualMachine.Common.VMSpecialAttributes;
 using PLVirtualMachine.Data;
-using System;
-using System.Collections.Generic;
-using System.Xml;
 using VirtualMachine.Common;
 using VirtualMachine.Common.Data;
 using VirtualMachine.Data;
@@ -32,23 +32,23 @@ namespace PLVirtualMachine.GameLogic
     IStaticUpdateable,
     ILocalContext
   {
-    [FieldData("Manual", DataFieldType.None)]
+    [FieldData("Manual")]
     private bool isManual = true;
     [FieldData("Condition", DataFieldType.Reference)]
     private ICondition eventCondition;
-    [FieldData("ChangeTo", DataFieldType.None)]
+    [FieldData("ChangeTo")]
     private bool changeTo = true;
-    [FieldData("Repeated", DataFieldType.None)]
+    [FieldData("Repeated")]
     private bool repeated = true;
     [FieldData("GameTimeContext", DataFieldType.Reference)]
     private IGameMode gameTimeContext;
-    [FieldData("MessagesInfo", DataFieldType.None)]
+    [FieldData("MessagesInfo")]
     private List<NameTypeData> messageInfoData;
-    [FieldData("EventRaisingType", DataFieldType.None)]
+    [FieldData("EventRaisingType")]
     private EEventRaisingType eventRaisingType;
     [FieldData("EventParameter", DataFieldType.Reference)]
     private VMParameter eventParameter;
-    [FieldData("EventTime", DataFieldType.None)]
+    [FieldData("EventTime")]
     private GameTime eventTime;
     private List<BaseMessage> messages;
     private IContainer owner;
@@ -57,44 +57,43 @@ namespace PLVirtualMachine.GameLogic
 
     public virtual void EditorDataRead(XmlReader xml, IDataCreator creator, string typeContext)
     {
-      while (xml.Read())
-      {
+      while (xml.Read()) {
         if (xml.NodeType == XmlNodeType.Element)
         {
           switch (xml.Name)
           {
             case "ChangeTo":
-              this.changeTo = EditorDataReadUtility.ReadValue(xml, this.changeTo);
+              changeTo = EditorDataReadUtility.ReadValue(xml, changeTo);
               continue;
             case "Condition":
-              this.eventCondition = EditorDataReadUtility.ReadReference<ICondition>(xml, creator);
+              eventCondition = EditorDataReadUtility.ReadReference<ICondition>(xml, creator);
               continue;
             case "EventParameter":
-              this.eventParameter = EditorDataReadUtility.ReadReference<VMParameter>(xml, creator);
+              eventParameter = EditorDataReadUtility.ReadReference<VMParameter>(xml, creator);
               continue;
             case "EventRaisingType":
-              this.eventRaisingType = EditorDataReadUtility.ReadEnum<EEventRaisingType>(xml);
+              eventRaisingType = EditorDataReadUtility.ReadEnum<EEventRaisingType>(xml);
               continue;
             case "EventTime":
-              this.eventTime = EditorDataReadUtility.ReadSerializable<GameTime>(xml);
+              eventTime = EditorDataReadUtility.ReadSerializable<GameTime>(xml);
               continue;
             case "GameTimeContext":
-              this.gameTimeContext = EditorDataReadUtility.ReadReference<IGameMode>(xml, creator);
+              gameTimeContext = EditorDataReadUtility.ReadReference<IGameMode>(xml, creator);
               continue;
             case "Manual":
-              this.isManual = EditorDataReadUtility.ReadValue(xml, this.isManual);
+              isManual = EditorDataReadUtility.ReadValue(xml, isManual);
               continue;
             case "MessagesInfo":
-              this.messageInfoData = EditorDataReadUtility.ReadEditorDataSerializableList<NameTypeData>(xml, creator, this.messageInfoData);
+              messageInfoData = EditorDataReadUtility.ReadEditorDataSerializableList(xml, creator, messageInfoData);
               continue;
             case "Name":
-              this.name = EditorDataReadUtility.ReadValue(xml, this.name);
+              name = EditorDataReadUtility.ReadValue(xml, name);
               continue;
             case "Parent":
-              this.parent = EditorDataReadUtility.ReadReference<IContainer>(xml, creator);
+              parent = EditorDataReadUtility.ReadReference<IContainer>(xml, creator);
               continue;
             case "Repeated":
-              this.repeated = EditorDataReadUtility.ReadValue(xml, this.repeated);
+              repeated = EditorDataReadUtility.ReadValue(xml, repeated);
               continue;
             default:
               if (XMLDataLoader.Logs.Add(typeContext + " : " + xml.Name))
@@ -103,7 +102,8 @@ namespace PLVirtualMachine.GameLogic
               continue;
           }
         }
-        else if (xml.NodeType == XmlNodeType.EndElement)
+
+        if (xml.NodeType == XmlNodeType.EndElement)
           break;
       }
     }
@@ -115,53 +115,53 @@ namespace PLVirtualMachine.GameLogic
 
     public override EObjectCategory GetCategory() => EObjectCategory.OBJECT_CATEGORY_EVENT;
 
-    public bool IsManual => this.isManual;
+    public bool IsManual => isManual;
 
-    public EEventRaisingType EventRaisingType => this.eventRaisingType;
+    public EEventRaisingType EventRaisingType => eventRaisingType;
 
     public string FunctionalName
     {
-      get => this.Parent == null ? this.Name : this.Parent.Name + "." + this.Name;
+      get => Parent == null ? Name : Parent.Name + "." + Name;
     }
 
-    public override IContainer Owner => this.owner;
+    public override IContainer Owner => owner;
 
     public bool IsInitial(IObject obj)
     {
       try
       {
-        if (!this.afterLoaded)
-          this.OnAfterLoad();
-        return this.owner != null && obj.IsEqual((IObject) this.owner) && !this.IsManual && this.Name == EngineAPIManager.GetSpecialEventName(ESpecialEventName.SEN_START_OBJECT_FSM, typeof (VMCommon));
+        if (!afterLoaded)
+          OnAfterLoad();
+        return owner != null && obj.IsEqual(owner) && !IsManual && Name == EngineAPIManager.GetSpecialEventName(ESpecialEventName.SEN_START_OBJECT_FSM, typeof (VMCommon));
       }
       catch (Exception ex)
       {
-        Logger.AddError(string.Format("Event {0} initial checking error: {1}", (object) this.Name, (object) ex.ToString()));
+        Logger.AddError(string.Format("Event {0} initial checking error: {1}", Name, ex));
       }
       return false;
     }
 
-    public ICondition Condition => this.eventCondition;
+    public ICondition Condition => eventCondition;
 
-    public IParam EventParameter => (IParam) this.eventParameter;
+    public IParam EventParameter => eventParameter;
 
-    public GameTime EventTime => this.eventTime;
+    public GameTime EventTime => eventTime;
 
-    public bool ChangeTo => this.changeTo;
+    public bool ChangeTo => changeTo;
 
-    public bool Repeated => this.repeated;
+    public bool Repeated => repeated;
 
-    public bool AtOnce => this.atOnce;
+    public bool AtOnce => atOnce;
 
-    public IGameMode GameTimeContext => this.gameTimeContext;
+    public IGameMode GameTimeContext => gameTimeContext;
 
     public List<BaseMessage> ReturnMessages
     {
       get
       {
-        if (!this.IsUpdated)
-          this.Update();
-        return this.messages;
+        if (!IsUpdated)
+          Update();
+        return messages;
       }
     }
 
@@ -175,91 +175,91 @@ namespace PLVirtualMachine.GameLogic
 
     public IVariable GetLocalContextVariable(string variableUniName, IContextElement currentElement = null)
     {
-      return (IVariable) null;
+      return null;
     }
 
     public void OnAfterLoad()
     {
-      this.owner = this.IsManual ? this.Parent : (!typeof (IFunctionalComponent).IsAssignableFrom(this.Parent.GetType()) ? this.Parent : this.Parent.Parent);
-      if (this.owner == null)
+      owner = IsManual ? Parent : (!typeof (IFunctionalComponent).IsAssignableFrom(Parent.GetType()) ? Parent : Parent.Parent);
+      if (owner == null)
       {
-        Logger.AddError(string.Format("Invalid event: id={0}", (object) this.BaseGuid));
+        Logger.AddError(string.Format("Invalid event: id={0}", BaseGuid));
       }
       else
       {
-        if (this.messages == null)
-          this.LoadEventMessages();
-        this.afterLoaded = true;
+        if (messages == null)
+          LoadEventMessages();
+        afterLoaded = true;
       }
     }
 
-    public bool IsAfterLoaded => this.afterLoaded;
+    public bool IsAfterLoaded => afterLoaded;
 
     public override void Clear()
     {
-      if (this.eventCondition != null)
+      if (eventCondition != null)
       {
-        ((VMPartCondition) this.eventCondition).Clear();
-        this.eventCondition = (ICondition) null;
+        ((VMPartCondition) eventCondition).Clear();
+        eventCondition = null;
       }
-      this.gameTimeContext = (IGameMode) null;
-      if (this.messageInfoData != null)
+      gameTimeContext = null;
+      if (messageInfoData != null)
       {
-        this.messageInfoData.Clear();
-        this.messageInfoData = (List<NameTypeData>) null;
+        messageInfoData.Clear();
+        messageInfoData = null;
       }
-      this.eventParameter = (VMParameter) null;
-      this.eventTime = (GameTime) null;
-      this.owner = (IContainer) null;
-      if (this.messages == null)
+      eventParameter = null;
+      eventTime = null;
+      owner = null;
+      if (messages == null)
         return;
-      foreach (ContextVariable message in this.messages)
+      foreach (ContextVariable message in messages)
         message.Clear();
-      this.messages.Clear();
-      this.messages = (List<BaseMessage>) null;
+      messages.Clear();
+      messages = null;
     }
 
     private void LoadEventMessages()
     {
-      this.messages = new List<BaseMessage>();
-      if (!this.IsManual)
+      messages = new List<BaseMessage>();
+      if (!IsManual)
       {
-        if (this.Parent == null)
+        if (Parent == null)
         {
           Logger.AddError("Standart messages loading requires parent component");
         }
         else
         {
-          APIEventInfo apiEventInfoByName = EngineAPIManager.GetAPIEventInfoByName(this.Parent.Name, this.Name);
+          APIEventInfo apiEventInfoByName = EngineAPIManager.GetAPIEventInfoByName(Parent.Name, Name);
           if (apiEventInfoByName == null)
           {
-            Logger.AddError(string.Format("Component {0} haven't info for event {1}", (object) this.Parent.Name, (object) this.Name));
+            Logger.AddError(string.Format("Component {0} haven't info for event {1}", Parent.Name, Name));
           }
           else
           {
             for (int index = 0; index < apiEventInfoByName.MessageParams.Count; ++index)
             {
               VMType type = apiEventInfoByName.MessageParams[index].Type;
-              string name = this.Name + "_message_" + apiEventInfoByName.MessageParams[index].Name;
+              string name = Name + "_message_" + apiEventInfoByName.MessageParams[index].Name;
               BaseMessage baseMessage = new BaseMessage();
               baseMessage.Initialize(name, type);
-              this.messages.Add(baseMessage);
+              messages.Add(baseMessage);
             }
-            this.atOnce = apiEventInfoByName.AtOnce;
+            atOnce = apiEventInfoByName.AtOnce;
           }
         }
       }
       else
       {
-        if (this.messageInfoData == null)
+        if (messageInfoData == null)
           return;
-        foreach (NameTypeData nameTypeData in this.messageInfoData)
+        foreach (NameTypeData nameTypeData in messageInfoData)
         {
           BaseMessage baseMessage = new BaseMessage();
           baseMessage.Initialize(nameTypeData.Name, nameTypeData.Type);
-          this.messages.Add(baseMessage);
+          messages.Add(baseMessage);
         }
-        this.messageInfoData = (List<NameTypeData>) null;
+        messageInfoData = null;
       }
     }
   }

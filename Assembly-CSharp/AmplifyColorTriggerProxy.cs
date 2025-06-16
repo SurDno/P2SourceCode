@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-[RequireComponent(typeof (Rigidbody))]
+﻿[RequireComponent(typeof (Rigidbody))]
 [RequireComponent(typeof (SphereCollider))]
 [AddComponentMenu("")]
 public class AmplifyColorTriggerProxy : AmplifyColorTriggerProxyBase
@@ -10,17 +8,17 @@ public class AmplifyColorTriggerProxy : AmplifyColorTriggerProxyBase
 
   private void Start()
   {
-    this.sphereCollider = this.GetComponent<SphereCollider>();
-    this.sphereCollider.radius = 0.01f;
-    this.sphereCollider.isTrigger = true;
-    this.rigidBody = this.GetComponent<Rigidbody>();
-    this.rigidBody.useGravity = false;
-    this.rigidBody.isKinematic = true;
+    sphereCollider = this.GetComponent<SphereCollider>();
+    sphereCollider.radius = 0.01f;
+    sphereCollider.isTrigger = true;
+    rigidBody = this.GetComponent<Rigidbody>();
+    rigidBody.useGravity = false;
+    rigidBody.isKinematic = true;
   }
 
   private void LateUpdate()
   {
-    this.transform.position = this.Reference.position;
-    this.transform.rotation = this.Reference.rotation;
+    this.transform.position = Reference.position;
+    this.transform.rotation = Reference.rotation;
   }
 }

@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace RootMotion.FinalIK
+﻿namespace RootMotion.FinalIK
 {
   public class AimController : MonoBehaviour
   {
@@ -50,86 +48,86 @@ namespace RootMotion.FinalIK
 
     private void Start()
     {
-      this.lastPosition = this.ik.solver.IKPosition;
-      this.dir = this.ik.solver.IKPosition - this.pivot;
-      this.ik.solver.target = (Transform) null;
+      lastPosition = ik.solver.IKPosition;
+      dir = ik.solver.IKPosition - pivot;
+      ik.solver.target = (Transform) null;
     }
 
     private void LateUpdate()
     {
-      if ((Object) this.target != (Object) this.lastTarget)
+      if ((Object) target != (Object) lastTarget)
       {
-        if ((Object) this.lastTarget == (Object) null && (Object) this.target != (Object) null)
+        if ((Object) lastTarget == (Object) null && (Object) target != (Object) null)
         {
-          this.lastPosition = this.target.position;
-          this.dir = this.target.position - this.pivot;
-          this.ik.solver.IKPosition = this.target.position + this.offset;
+          lastPosition = target.position;
+          dir = target.position - pivot;
+          ik.solver.IKPosition = target.position + offset;
         }
         else
         {
-          this.lastPosition = this.ik.solver.IKPosition;
-          this.dir = this.ik.solver.IKPosition - this.pivot;
+          lastPosition = ik.solver.IKPosition;
+          dir = ik.solver.IKPosition - pivot;
         }
-        this.switchWeight = 0.0f;
-        this.lastTarget = this.target;
+        switchWeight = 0.0f;
+        lastTarget = target;
       }
-      this.ik.solver.IKPositionWeight = Mathf.SmoothDamp(this.ik.solver.IKPositionWeight, (Object) this.target != (Object) null ? this.weight : 0.0f, ref this.weightV, this.weightSmoothTime);
-      if ((double) this.ik.solver.IKPositionWeight >= 0.99900001287460327)
-        this.ik.solver.IKPositionWeight = 1f;
-      if ((double) this.ik.solver.IKPositionWeight <= 1.0 / 1000.0)
-        this.ik.solver.IKPositionWeight = 0.0f;
-      if ((double) this.ik.solver.IKPositionWeight <= 0.0)
+      ik.solver.IKPositionWeight = Mathf.SmoothDamp(ik.solver.IKPositionWeight, (Object) target != (Object) null ? weight : 0.0f, ref weightV, weightSmoothTime);
+      if (ik.solver.IKPositionWeight >= 0.99900001287460327)
+        ik.solver.IKPositionWeight = 1f;
+      if (ik.solver.IKPositionWeight <= 1.0 / 1000.0)
+        ik.solver.IKPositionWeight = 0.0f;
+      if (ik.solver.IKPositionWeight <= 0.0)
         return;
-      this.switchWeight = Mathf.SmoothDamp(this.switchWeight, 1f, ref this.switchWeightV, this.targetSwitchSmoothTime);
-      if ((double) this.switchWeight >= 0.99900001287460327)
-        this.switchWeight = 1f;
-      if ((Object) this.target != (Object) null)
-        this.ik.solver.IKPosition = Vector3.Lerp(this.lastPosition, this.target.position + this.offset, this.switchWeight);
-      if (this.smoothTurnTowardsTarget != this.lastSmoothTowardsTarget)
+      switchWeight = Mathf.SmoothDamp(switchWeight, 1f, ref switchWeightV, targetSwitchSmoothTime);
+      if (switchWeight >= 0.99900001287460327)
+        switchWeight = 1f;
+      if ((Object) target != (Object) null)
+        ik.solver.IKPosition = Vector3.Lerp(lastPosition, target.position + offset, switchWeight);
+      if (smoothTurnTowardsTarget != lastSmoothTowardsTarget)
       {
-        this.dir = this.ik.solver.IKPosition - this.pivot;
-        this.lastSmoothTowardsTarget = this.smoothTurnTowardsTarget;
+        dir = ik.solver.IKPosition - pivot;
+        lastSmoothTowardsTarget = smoothTurnTowardsTarget;
       }
-      if (this.smoothTurnTowardsTarget)
+      if (smoothTurnTowardsTarget)
       {
-        Vector3 vector3 = this.ik.solver.IKPosition - this.pivot;
-        this.dir = Vector3.Slerp(this.dir, vector3, Time.deltaTime * this.slerpSpeed);
-        this.dir = Vector3.RotateTowards(this.dir, vector3, Time.deltaTime * this.maxRadiansDelta, this.maxMagnitudeDelta);
-        this.ik.solver.IKPosition = this.pivot + this.dir;
+        Vector3 vector3 = ik.solver.IKPosition - pivot;
+        dir = Vector3.Slerp(dir, vector3, Time.deltaTime * slerpSpeed);
+        dir = Vector3.RotateTowards(dir, vector3, Time.deltaTime * maxRadiansDelta, maxMagnitudeDelta);
+        ik.solver.IKPosition = pivot + dir;
       }
-      this.ApplyMinDistance();
-      this.RootRotation();
-      if (!this.useAnimatedAimDirection)
+      ApplyMinDistance();
+      RootRotation();
+      if (!useAnimatedAimDirection)
         return;
-      this.ik.solver.axis = this.ik.solver.transform.InverseTransformVector(this.ik.transform.rotation * this.animatedAimDirection);
+      ik.solver.axis = ik.solver.transform.InverseTransformVector(ik.transform.rotation * animatedAimDirection);
     }
 
     private Vector3 pivot
     {
-      get => this.ik.transform.position + this.ik.transform.rotation * this.pivotOffsetFromRoot;
+      get => ik.transform.position + ik.transform.rotation * pivotOffsetFromRoot;
     }
 
     private void ApplyMinDistance()
     {
       Vector3 pivot = this.pivot;
-      Vector3 vector3 = this.ik.solver.IKPosition - pivot;
-      vector3 = vector3.normalized * Mathf.Max(vector3.magnitude, this.minDistance);
-      this.ik.solver.IKPosition = pivot + vector3;
+      Vector3 vector3 = ik.solver.IKPosition - pivot;
+      vector3 = vector3.normalized * Mathf.Max(vector3.magnitude, minDistance);
+      ik.solver.IKPosition = pivot + vector3;
     }
 
     private void RootRotation()
     {
-      float num1 = Mathf.Lerp(180f, this.maxRootAngle, this.ik.solver.IKPositionWeight);
-      if ((double) num1 >= 180.0)
+      float num1 = Mathf.Lerp(180f, maxRootAngle, ik.solver.IKPositionWeight);
+      if (num1 >= 180.0)
         return;
-      Vector3 vector3 = Quaternion.Inverse(this.ik.transform.rotation) * (this.ik.solver.IKPosition - this.pivot);
+      Vector3 vector3 = Quaternion.Inverse(ik.transform.rotation) * (ik.solver.IKPosition - pivot);
       float num2 = Mathf.Atan2(vector3.x, vector3.z) * 57.29578f;
       float angle = 0.0f;
-      if ((double) num2 > (double) num1)
+      if (num2 > (double) num1)
         angle = num2 - num1;
-      if ((double) num2 < -(double) num1)
+      if (num2 < -(double) num1)
         angle = num2 + num1;
-      this.ik.transform.rotation = Quaternion.AngleAxis(angle, this.ik.transform.up) * this.ik.transform.rotation;
+      ik.transform.rotation = Quaternion.AngleAxis(angle, ik.transform.up) * ik.transform.rotation;
     }
   }
 }

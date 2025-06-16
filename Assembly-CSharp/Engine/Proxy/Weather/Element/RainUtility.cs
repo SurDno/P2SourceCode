@@ -1,11 +1,10 @@
 ﻿using Rain;
-using UnityEngine;
 
 namespace Engine.Proxy.Weather.Element
 {
   public class RainUtility
   {
-    public static void CopyTo(Engine.Impl.Weather.Element.Rain rain)
+    public static void CopyTo(Impl.Weather.Element.Rain rain)
     {
       RainManager instance = RainManager.Instance;
       if ((Object) instance == (Object) null)
@@ -18,7 +17,7 @@ namespace Engine.Proxy.Weather.Element
       rain.Direction = instance.windVector;
     }
 
-    public static void CopyFrom(Engine.Impl.Weather.Element.Rain rain)
+    public static void CopyFrom(Impl.Weather.Element.Rain rain)
     {
       RainManager instance = RainManager.Instance;
       if ((Object) instance == (Object) null)

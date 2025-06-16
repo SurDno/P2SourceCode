@@ -4,8 +4,6 @@ using Engine.Common.Services;
 using Engine.Source.Components;
 using Engine.Source.Services;
 using Inspectors;
-using System;
-using UnityEngine;
 
 public class DisableInIsolatedIndoor : EngineDependent
 {
@@ -17,54 +15,54 @@ public class DisableInIsolatedIndoor : EngineDependent
 
   protected override void OnConnectToEngine()
   {
-    if (this.connected)
+    if (connected)
       return;
-    this.insideIndoor = ServiceLocator.GetService<InsideIndoorListener>().InsideIndoor;
-    this.isolatedIndoor = ServiceLocator.GetService<InsideIndoorListener>().IsolatedIndoor;
-    this.Apply();
-    ServiceLocator.GetService<InsideIndoorListener>().OnInsideIndoorChanged += new Action<bool>(this.OnInsideIndoorChanged);
-    ServiceLocator.GetService<InsideIndoorListener>().OnPlayerBeginsExit += new Action(this.OnPlayerBeginsExit);
+    insideIndoor = ServiceLocator.GetService<InsideIndoorListener>().InsideIndoor;
+    isolatedIndoor = ServiceLocator.GetService<InsideIndoorListener>().IsolatedIndoor;
+    Apply();
+    ServiceLocator.GetService<InsideIndoorListener>().OnInsideIndoorChanged += OnInsideIndoorChanged;
+    ServiceLocator.GetService<InsideIndoorListener>().OnPlayerBeginsExit += OnPlayerBeginsExit;
   }
 
   protected override void OnDisconnectFromEngine()
   {
-    ServiceLocator.GetService<InsideIndoorListener>().OnInsideIndoorChanged -= new Action<bool>(this.OnInsideIndoorChanged);
-    ServiceLocator.GetService<InsideIndoorListener>().OnPlayerBeginsExit -= new Action(this.OnPlayerBeginsExit);
-    this.connected = false;
+    ServiceLocator.GetService<InsideIndoorListener>().OnInsideIndoorChanged -= OnInsideIndoorChanged;
+    ServiceLocator.GetService<InsideIndoorListener>().OnPlayerBeginsExit -= OnPlayerBeginsExit;
+    connected = false;
   }
 
   private void OnPlayerBeginsExit()
   {
-    if (this.insideIndoor)
+    if (insideIndoor)
     {
-      this.insideIndoor = false;
-      this.isolatedIndoor = false;
+      insideIndoor = false;
+      isolatedIndoor = false;
     }
-    this.Apply();
+    Apply();
   }
 
   private void OnInsideIndoorChanged(bool inside)
   {
-    this.insideIndoor = false;
-    this.isolatedIndoor = false;
+    insideIndoor = false;
+    isolatedIndoor = false;
     IEntity player = ServiceLocator.GetService<ISimulation>().Player;
     if (player != null)
     {
       LocationItemComponent component = player.GetComponent<LocationItemComponent>();
       if (component != null)
       {
-        this.insideIndoor = component.IsIndoor;
+        insideIndoor = component.IsIndoor;
         IBuildingComponent building = player.GetComponent<NavigationComponent>().Building;
         if (building != null)
-          this.isolatedIndoor = ScriptableObjectInstance<IndoorSettingsData>.Instance.IsIndoorIsolated(building.Building);
+          isolatedIndoor = ScriptableObjectInstance<IndoorSettingsData>.Instance.IsIndoorIsolated(building.Building);
       }
       else
         Debug.LogError((object) ("LocationItemComponent not found, owner : " + player.GetInfo()));
     }
-    this.Apply();
+    Apply();
   }
 
-  private void Apply() => this.gameObject.SetActive(!this.isolatedIndoor);
+  private void Apply() => this.gameObject.SetActive(!isolatedIndoor);
 
   protected override void OnDisable()
   {

@@ -1,6 +1,4 @@
 ﻿using Engine.Source.Components.Utilities;
-using UnityEngine;
-using UnityEngine.AI;
 
 public class DrawPath : MonoBehaviour
 {

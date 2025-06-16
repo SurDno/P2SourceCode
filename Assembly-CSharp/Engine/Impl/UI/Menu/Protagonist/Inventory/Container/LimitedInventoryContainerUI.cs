@@ -1,11 +1,9 @@
-﻿using Engine.Common.Components;
+﻿using System;
+using Engine.Common.Components;
 using Engine.Impl.UI.Menu.Protagonist.Inventory.Grid;
 using Engine.Source.Inventory;
 using Engine.Source.UI.Menu.Protagonist.Inventory;
 using Engine.Source.UI.Menu.Protagonist.Inventory.Grid;
-using System;
-using System.Collections.Generic;
-using UnityEngine;
 
 namespace Engine.Impl.UI.Menu.Protagonist.Inventory.Container
 {
@@ -20,7 +18,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory.Container
       GameObject gameObject = UnityEngine.Object.Instantiate<GameObject>(prefab);
       gameObject.name = "[Container] " + container.Owner.Name;
       LimitedInventoryContainerUI component1 = gameObject.GetComponent<LimitedInventoryContainerUI>();
-      component1.content = (UIControl) component1;
+      component1.content = component1;
       component1.InventoryContainer = container;
       Vector2 gridPosition = InventoryUtility.CalculateGridPosition(container.GetPosition().To(), style);
       component1.Transform.localPosition = (Vector3) gridPosition;
@@ -30,13 +28,13 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory.Container
       if (container.GetGrid() is IInventoryGridLimited)
       {
         IInventoryGridLimited grid = (IInventoryGridLimited) container.GetGrid();
-        foreach (Cell cell in (IEnumerable<Cell>) ((InventoryGridLimited) grid).Cells)
+        foreach (Cell cell in ((InventoryGridLimited) grid).Cells)
         {
           InventoryCellUI inventoryCellUi = InventoryCellUI.Instantiate(cell, style);
           inventoryCellUi.Transform.SetParent(component1.grid.transform, false);
           component1.cells.Add(cell, inventoryCellUi);
         }
-        Vector2 outerSize = InventoryUtility.CalculateOuterSize((IInventoryGridBase) grid, style);
+        Vector2 outerSize = InventoryUtility.CalculateOuterSize(grid, style);
         component1.Transform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, outerSize.x);
         component1.Transform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, outerSize.y);
         if ((UnityEngine.Object) style.OutlinePrefab != (UnityEngine.Object) null)

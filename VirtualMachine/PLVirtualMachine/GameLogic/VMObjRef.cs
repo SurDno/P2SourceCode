@@ -1,10 +1,10 @@
-﻿using Engine.Common.Types;
+﻿using System;
+using Engine.Common.Types;
 using PLVirtualMachine.Common;
 using PLVirtualMachine.Common.Data;
 using PLVirtualMachine.Common.EngineAPI;
 using PLVirtualMachine.Common.EngineAPI.VMECS;
 using PLVirtualMachine.Objects;
-using System;
 
 namespace PLVirtualMachine.GameLogic
 {
@@ -27,29 +27,29 @@ namespace PLVirtualMachine.GameLogic
     public void Initialize(Guid engineGuid)
     {
       this.engineGuid = engineGuid;
-      this.Load();
+      Load();
     }
 
     public void Initialize(HierarchyGuid hGuid)
     {
-      this.hierarchyGuid = hGuid;
-      this.BaseGuid = this.hierarchyGuid.TemplateGuid;
-      this.Load();
+      hierarchyGuid = hGuid;
+      BaseGuid = hierarchyGuid.TemplateGuid;
+      Load();
     }
 
-    public void Initialize(IBlueprint obj) => this.LoadStaticInstance((IObject) obj);
+    public void Initialize(IBlueprint obj) => LoadStaticInstance(obj);
 
     public void InitializeInstance(IEngineRTInstance instance)
     {
-      this.engineInstance = instance;
-      this.LoadStaticInstance((IObject) instance.EditorTemplate);
+      engineInstance = instance;
+      LoadStaticInstance(instance.EditorTemplate);
     }
 
     public override EContextVariableCategory Category
     {
       get
       {
-        return this.Object == null || this.Object.GetCategory() != EObjectCategory.OBJECT_CATEGORY_GAME ? EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_OBJECT : EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_GAME;
+        return Object == null || Object.GetCategory() != EObjectCategory.OBJECT_CATEGORY_GAME ? EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_OBJECT : EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_GAME;
       }
     }
 
@@ -57,26 +57,26 @@ namespace PLVirtualMachine.GameLogic
     {
       get
       {
-        if (this.engineInstance != null)
-          return this.engineInstance.EngineTemplateGuid;
-        return this.Object != null && typeof (IWorldObject).IsAssignableFrom(this.Object.GetType()) ? ((IEngineTemplated) this.Object).EngineTemplateGuid : Guid.Empty;
+        if (engineInstance != null)
+          return engineInstance.EngineTemplateGuid;
+        return Object != null && typeof (IWorldObject).IsAssignableFrom(Object.GetType()) ? ((IEngineTemplated) Object).EngineTemplateGuid : Guid.Empty;
       }
     }
 
     public Guid EngineGuid
     {
-      get => this.EngineInstance != null ? this.EngineInstance.EngineGuid : this.engineGuid;
+      get => EngineInstance != null ? EngineInstance.EngineGuid : engineGuid;
     }
 
-    public HierarchyGuid HierarchyGuid => this.hierarchyGuid;
+    public HierarchyGuid HierarchyGuid => hierarchyGuid;
 
     public IBlueprint Object
     {
       get
       {
-        if (this.StaticInstance == null && (this.BaseGuid != 0UL || this.hierarchyGuid != HierarchyGuid.Empty))
-          this.Load();
-        return (IBlueprint) this.StaticInstance;
+        if (StaticInstance == null && (BaseGuid != 0UL || hierarchyGuid != HierarchyGuid.Empty))
+          Load();
+        return (IBlueprint) StaticInstance;
       }
     }
 
@@ -84,21 +84,21 @@ namespace PLVirtualMachine.GameLogic
     {
       get
       {
-        if (this.engineInstance == null)
-          this.LoadDynamic();
-        if (this.engineInstance != null && this.engineInstance.IsDisposed)
-          this.LoadDynamic();
-        return (IEngineInstanced) this.engineInstance;
+        if (engineInstance == null)
+          LoadDynamic();
+        if (engineInstance != null && engineInstance.IsDisposed)
+          LoadDynamic();
+        return engineInstance;
       }
     }
 
-    public IBlueprint EditorTemplate => this.Object;
+    public IBlueprint EditorTemplate => Object;
 
     public override VMType Type
     {
       get
       {
-        return this.StaticInstance == null ? new VMType(typeof (IObjRef)) : new VMType(typeof (IObjRef), this.StaticInstance.BaseGuid.ToString());
+        return StaticInstance == null ? new VMType(typeof (IObjRef)) : new VMType(typeof (IObjRef), StaticInstance.BaseGuid.ToString());
       }
     }
 
@@ -108,45 +108,45 @@ namespace PLVirtualMachine.GameLogic
         return false;
       if (typeof (IObjRef).IsAssignableFrom(other.GetType()))
       {
-        if (this.EngineInstance != null && ((IObjRef) other).EngineInstance != null)
-          return this.EngineInstance.EngineGuid == ((IObjRef) other).EngineInstance.EngineGuid;
-        if (this.engineGuid != Guid.Empty || ((VMObjRef) other).EngineGuid != Guid.Empty)
-          return this.engineGuid == ((VMObjRef) other).EngineGuid;
-        if (!this.hierarchyGuid.IsEmpty || !((VMObjRef) other).hierarchyGuid.IsEmpty)
-          return this.hierarchyGuid == ((VMObjRef) other).hierarchyGuid;
+        if (EngineInstance != null && ((IObjRef) other).EngineInstance != null)
+          return EngineInstance.EngineGuid == ((IObjRef) other).EngineInstance.EngineGuid;
+        if (engineGuid != Guid.Empty || ((VMObjRef) other).EngineGuid != Guid.Empty)
+          return engineGuid == ((VMObjRef) other).EngineGuid;
+        if (!hierarchyGuid.IsEmpty || !((VMObjRef) other).hierarchyGuid.IsEmpty)
+          return hierarchyGuid == ((VMObjRef) other).hierarchyGuid;
       }
       return base.IsEqual(other);
     }
 
     public override bool Empty
     {
-      get => !this.Static && this.EngineInstance == null && Guid.Empty == this.engineGuid;
+      get => !Static && EngineInstance == null && Guid.Empty == engineGuid;
     }
 
     public override bool Exist
     {
-      get => this.EngineInstance != null && ((VMBaseEntity) this.EngineInstance).Instantiated;
+      get => EngineInstance != null && ((VMBaseEntity) EngineInstance).Instantiated;
     }
 
     public bool Static
     {
       get
       {
-        if (this.StaticInstance != null)
-          return ((ILogicObject) this.StaticInstance).Static;
-        return this.engineInstance != null && this.hierarchyGuid.IsHierarchy;
+        if (StaticInstance != null)
+          return ((ILogicObject) StaticInstance).Static;
+        return engineInstance != null && hierarchyGuid.IsHierarchy;
       }
     }
 
-    public override bool IsDynamic => this.engineInstance != null || this.engineGuid != Guid.Empty;
+    public override bool IsDynamic => engineInstance != null || engineGuid != Guid.Empty;
 
-    public bool IsHierarchy => !this.hierarchyGuid.IsEmpty;
+    public bool IsHierarchy => !hierarchyGuid.IsEmpty;
 
     public override string Write()
     {
-      if (!this.HierarchyGuid.IsEmpty)
-        return this.HierarchyGuid.Write();
-      return this.EngineInstance != null ? GuidUtility.GetGuidString(this.EngineInstance.EngineGuid) : base.Write();
+      if (!HierarchyGuid.IsEmpty)
+        return HierarchyGuid.Write();
+      return EngineInstance != null ? GuidUtility.GetGuidString(EngineInstance.EngineGuid) : base.Write();
     }
 
     public override void Read(string data)
@@ -154,12 +154,12 @@ namespace PLVirtualMachine.GameLogic
       switch (GuidUtility.GetGuidFormat(data))
       {
         case EGuidFormat.GT_HIERARCHY:
-          this.hierarchyGuid = new HierarchyGuid(data);
-          this.Load();
+          hierarchyGuid = new HierarchyGuid(data);
+          Load();
           break;
         case EGuidFormat.GT_ENGINE:
-          this.engineGuid = new Guid(data);
-          this.Load();
+          engineGuid = new Guid(data);
+          Load();
           break;
         default:
           base.Read(data);
@@ -167,49 +167,49 @@ namespace PLVirtualMachine.GameLogic
       }
     }
 
-    public IBlueprint TypeTemplate => this.Object;
+    public IBlueprint TypeTemplate => Object;
 
     protected override void Load()
     {
-      if (!this.hierarchyGuid.IsEmpty)
+      if (!hierarchyGuid.IsEmpty)
       {
-        ILogicObject hierarhyObjectByGuid = (ILogicObject) ((VMGameRoot) IStaticDataContainer.StaticDataContainer.GameRoot).GetWorldHierarhyObjectByGuid(this.hierarchyGuid);
+        ILogicObject hierarhyObjectByGuid = ((VMGameRoot) IStaticDataContainer.StaticDataContainer.GameRoot).GetWorldHierarhyObjectByGuid(hierarchyGuid);
         if (hierarhyObjectByGuid != null)
-          this.LoadStaticInstance((IObject) hierarhyObjectByGuid.Blueprint);
+          LoadStaticInstance(hierarhyObjectByGuid.Blueprint);
       }
-      else if (Guid.Empty != this.engineGuid && this.StaticInstance == null)
+      else if (Guid.Empty != engineGuid && StaticInstance == null)
       {
-        IBlueprint templateByEngineGuid = WorldEntityUtility.GetEditorTemplateByEngineGuid(this.engineGuid);
+        IBlueprint templateByEngineGuid = WorldEntityUtility.GetEditorTemplateByEngineGuid(engineGuid);
         if (templateByEngineGuid != null)
-          this.LoadStaticInstance((IObject) templateByEngineGuid);
+          LoadStaticInstance(templateByEngineGuid);
       }
       else
         base.Load();
-      this.LoadDynamic();
+      LoadDynamic();
     }
 
     public override string Name
     {
       get
       {
-        if (this.engineInstance != null)
-          return GuidUtility.GetGuidString(this.engineInstance.EngineGuid);
-        return !this.hierarchyGuid.IsEmpty ? this.hierarchyGuid.Write() : base.Name;
+        if (engineInstance != null)
+          return GuidUtility.GetGuidString(engineInstance.EngineGuid);
+        return !hierarchyGuid.IsEmpty ? hierarchyGuid.Write() : base.Name;
       }
     }
 
-    protected override System.Type NeedInstanceType => typeof (IBlueprint);
+    protected override Type NeedInstanceType => typeof (IBlueprint);
 
     private void LoadDynamic()
     {
-      this.engineInstance = (IEngineRTInstance) null;
-      if (Guid.Empty != this.engineGuid)
-        this.engineInstance = (IEngineRTInstance) WorldEntityUtility.GetDynamicObjectEntityByEngineGuid(this.engineGuid);
-      if (this.engineInstance == null && !this.hierarchyGuid.IsEmpty)
-        this.engineInstance = (IEngineRTInstance) WorldEntityUtility.GetDynamicObjectEntityByHierarchyGuid(this.hierarchyGuid);
-      if (this.engineInstance != null || !this.Static)
+      engineInstance = null;
+      if (Guid.Empty != engineGuid)
+        engineInstance = WorldEntityUtility.GetDynamicObjectEntityByEngineGuid(engineGuid);
+      if (engineInstance == null && !hierarchyGuid.IsEmpty)
+        engineInstance = WorldEntityUtility.GetDynamicObjectEntityByHierarchyGuid(hierarchyGuid);
+      if (engineInstance != null || !Static)
         return;
-      this.engineInstance = (IEngineRTInstance) WorldEntityUtility.GetDynamicObjectEntityByStaticGuid(this.StaticInstance.BaseGuid);
+      engineInstance = WorldEntityUtility.GetDynamicObjectEntityByStaticGuid(StaticInstance.BaseGuid);
     }
   }
 }

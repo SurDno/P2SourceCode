@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.Rendering;
 
 namespace JerboaAnimationInstancing
 {
@@ -20,34 +18,33 @@ namespace JerboaAnimationInstancing
     private ComparerHash comparer;
     private AnimationInfo searchInfo;
     [NonSerialized]
-    public JerboaInstance.LodInfo[] lodInfo;
+    public LodInfo[] lodInfo;
     [NonSerialized]
     public int lodLevel;
     private Transform[] allTransforms;
 
     private void Awake()
     {
-      this.layer = this.gameObject.layer;
+      layer = this.gameObject.layer;
       switch (QualitySettings.blendWeights)
       {
         case BlendWeights.OneBone:
-          this.bonePerVertex = 1;
+          bonePerVertex = 1;
           break;
         case BlendWeights.TwoBones:
-          this.bonePerVertex = this.bonePerVertex > 2 ? 2 : this.bonePerVertex;
+          bonePerVertex = bonePerVertex > 2 ? 2 : bonePerVertex;
           break;
       }
       LODGroup component = this.GetComponent<LODGroup>();
       if ((UnityEngine.Object) component != (UnityEngine.Object) null)
       {
-        this.lodInfo = new JerboaInstance.LodInfo[component.lodCount];
+        this.lodInfo = new LodInfo[component.lodCount];
         LOD[] loDs = component.GetLODs();
         for (int index1 = 0; index1 != loDs.Length; ++index1)
         {
           if (loDs[index1].renderers != null)
           {
-            JerboaInstance.LodInfo lodInfo = new JerboaInstance.LodInfo()
-            {
+            LodInfo lodInfo = new LodInfo {
               lodLevel = index1,
               vertexCacheList = new JerboaInstancingManager.VertexCache[loDs[index1].renderers.Length]
             };
@@ -72,9 +69,8 @@ namespace JerboaAnimationInstancing
       }
       else
       {
-        this.lodInfo = new JerboaInstance.LodInfo[1];
-        JerboaInstance.LodInfo lodInfo = new JerboaInstance.LodInfo()
-        {
+        this.lodInfo = new LodInfo[1];
+        LodInfo lodInfo = new LodInfo {
           lodLevel = 0,
           skinnedMeshRenderer = this.GetComponentsInChildren<SkinnedMeshRenderer>(),
           meshRenderer = this.GetComponentsInChildren<MeshRenderer>(),
@@ -94,9 +90,9 @@ namespace JerboaAnimationInstancing
     {
     }
 
-    private void OnEnable() => this.playSpeed = 1f;
+    private void OnEnable() => playSpeed = 1f;
 
-    private void OnDisable() => this.playSpeed = 0.0f;
+    private void OnDisable() => playSpeed = 0.0f;
 
     public bool InitializeAnimation(
       JerboaInstancingManager jerboaInstancingManager,
@@ -110,11 +106,11 @@ namespace JerboaAnimationInstancing
       JerboaAnimationManager.InstanceAnimationInfo animationInfo = jerboaAnimationManager.FindAnimationInfo(jerboaInstancingManager, textAsset, this.prototype, this);
       if (animationInfo != null)
       {
-        this.aniInfo = animationInfo.listAniInfo;
-        this.Prepare(jerboaInstancingManager, this.aniInfo, animationInfo.extraBoneInfo);
+        aniInfo = animationInfo.listAniInfo;
+        Prepare(jerboaInstancingManager, aniInfo, animationInfo.extraBoneInfo);
       }
-      this.searchInfo = new AnimationInfo();
-      this.comparer = new ComparerHash();
+      searchInfo = new AnimationInfo();
+      comparer = new ComparerHash();
       return true;
     }
 
@@ -123,10 +119,10 @@ namespace JerboaAnimationInstancing
       AnimationInfo[] infoList,
       ExtraBoneInfo extraBoneInfo)
     {
-      this.aniInfo = infoList;
+      aniInfo = infoList;
       List<Matrix4x4> bindPose = new List<Matrix4x4>(150);
       Transform[] collection = RuntimeHelper.MergeBone(this.lodInfo[0].skinnedMeshRenderer, bindPose);
-      this.allTransforms = collection;
+      allTransforms = collection;
       if (extraBoneInfo != null)
       {
         List<Transform> transformList = new List<Transform>();
@@ -141,16 +137,16 @@ namespace JerboaAnimationInstancing
           }
           bindPose.Add(extraBoneInfo.extraBindPose[index1]);
         }
-        this.allTransforms = transformList.ToArray();
+        allTransforms = transformList.ToArray();
       }
-      jerboaInstancingManager.AddMeshVertex(this.prototype.name, this.lodInfo, this.allTransforms, bindPose, this.bonePerVertex);
-      foreach (JerboaInstance.LodInfo lodInfo in this.lodInfo)
+      jerboaInstancingManager.AddMeshVertex(prototype.name, this.lodInfo, allTransforms, bindPose, bonePerVertex);
+      foreach (LodInfo lodInfo in this.lodInfo)
       {
         foreach (JerboaInstancingManager.VertexCache vertexCache in lodInfo.vertexCacheList)
         {
-          vertexCache.shadowcastingMode = this.shadowCastingMode;
-          vertexCache.receiveShadow = this.receiveShadow;
-          vertexCache.layer = this.layer;
+          vertexCache.shadowcastingMode = shadowCastingMode;
+          vertexCache.receiveShadow = receiveShadow;
+          vertexCache.layer = layer;
         }
       }
       UnityEngine.Object.Destroy((UnityEngine.Object) this.GetComponent<Animator>());
@@ -158,18 +154,18 @@ namespace JerboaAnimationInstancing
 
     public int FindAnimationInfo(int hash)
     {
-      if (this.aniInfo == null)
+      if (aniInfo == null)
         return -1;
-      this.searchInfo.animationNameHash = hash;
-      for (int animationInfo = 0; animationInfo < this.aniInfo.Length; ++animationInfo)
+      searchInfo.animationNameHash = hash;
+      for (int animationInfo = 0; animationInfo < aniInfo.Length; ++animationInfo)
       {
-        if (this.aniInfo[animationInfo].animationNameHash == hash)
+        if (aniInfo[animationInfo].animationNameHash == hash)
           return animationInfo;
       }
       return -1;
     }
 
-    public int GetAnimationCount() => this.aniInfo != null ? this.aniInfo.Length : 0;
+    public int GetAnimationCount() => aniInfo != null ? aniInfo.Length : 0;
 
     public class LodInfo
     {

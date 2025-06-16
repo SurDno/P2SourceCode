@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace RootMotion.FinalIK
+﻿namespace RootMotion.FinalIK
 {
   [HelpURL("http://www.root-motion.com/finalikdox/html/page12.html")]
   [AddComponentMenu("Scripts/RootMotion.FinalIK/Rotation Limits/Rotation Limit Angle")]
@@ -37,16 +35,16 @@ namespace RootMotion.FinalIK
 
     protected override Quaternion LimitRotation(Quaternion rotation)
     {
-      return RotationLimit.LimitTwist(this.LimitSwing(rotation), this.axis, this.secondaryAxis, this.twistLimit);
+      return LimitTwist(LimitSwing(rotation), axis, secondaryAxis, twistLimit);
     }
 
     private Quaternion LimitSwing(Quaternion rotation)
     {
-      if (this.axis == Vector3.zero || rotation == Quaternion.identity || (double) this.limit >= 180.0)
+      if (axis == Vector3.zero || rotation == Quaternion.identity || limit >= 180.0)
         return rotation;
-      Vector3 vector3 = rotation * this.axis;
-      Quaternion quaternion = Quaternion.RotateTowards(Quaternion.identity, Quaternion.FromToRotation(this.axis, vector3), this.limit);
-      return Quaternion.FromToRotation(vector3, quaternion * this.axis) * rotation;
+      Vector3 vector3 = rotation * axis;
+      Quaternion quaternion = Quaternion.RotateTowards(Quaternion.identity, Quaternion.FromToRotation(axis, vector3), limit);
+      return Quaternion.FromToRotation(vector3, quaternion * axis) * rotation;
     }
   }
 }

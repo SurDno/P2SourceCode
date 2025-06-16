@@ -1,12 +1,9 @@
-﻿using Engine.Common.Components;
+﻿using System;
+using System.Globalization;
+using Engine.Common.Components;
 using Engine.Common.Services;
 using Engine.Impl.Services;
 using Engine.Source.Components;
-using System;
-using System.Globalization;
-using UnityEngine;
-using UnityEngine.Serialization;
-using UnityEngine.UI;
 
 namespace Engine.Impl.UI.Menu.Protagonist.Inventory.Windows
 {
@@ -36,34 +33,34 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory.Windows
 
     public IStorableComponent Target
     {
-      get => this.target;
+      get => target;
       set
       {
-        if (this.target == value)
+        if (target == value)
           return;
-        this.target = value;
-        if (this.target == null || this.target.IsDisposed)
+        target = value;
+        if (target == null || target.IsDisposed)
           return;
         LocalizationService service = ServiceLocator.GetService<LocalizationService>();
-        this.unityName.text = service.GetText(this.target.Title);
-        this.unityInformation.text = service.GetText(this.target.Tooltip);
-        this.unityImage.sprite = ((StorableComponent) this.target).Placeholder.ImageInformation.Value;
-        if ((UnityEngine.Object) this.unityImage.sprite == (UnityEngine.Object) null)
-          this.unityImage.color = Color.black;
+        unityName.text = service.GetText(target.Title);
+        unityInformation.text = service.GetText(target.Tooltip);
+        unityImage.sprite = ((StorableComponent) target).Placeholder.ImageInformation.Value;
+        if ((UnityEngine.Object) unityImage.sprite == (UnityEngine.Object) null)
+          unityImage.color = Color.black;
         else
-          this.unityImage.color = Color.white;
+          unityImage.color = Color.white;
       }
     }
 
     public float Price
     {
-      get => this.price;
+      get => price;
       set
       {
-        this.price = (float) Math.Round((double) value);
-        if (!((UnityEngine.Object) this.unityPrice != (UnityEngine.Object) null))
+        price = (float) Math.Round(value);
+        if (!((UnityEngine.Object) unityPrice != (UnityEngine.Object) null))
           return;
-        this.unityPrice.text = value.ToString((IFormatProvider) CultureInfo.InvariantCulture);
+        unityPrice.text = value.ToString(CultureInfo.InvariantCulture);
       }
     }
 

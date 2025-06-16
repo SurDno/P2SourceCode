@@ -1,9 +1,9 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons.Cloneable;
 using Engine.Common.Commons.Converters;
 using Expressions;
-using System;
 
 namespace Engine.Source.Proxies
 {
@@ -18,23 +18,23 @@ namespace Engine.Source.Proxies
     public object Clone()
     {
       PlusFloatPolyOperation_Generated instance = Activator.CreateInstance<PlusFloatPolyOperation_Generated>();
-      this.CopyTo((object) instance);
-      return (object) instance;
+      CopyTo(instance);
+      return instance;
     }
 
     public void CopyTo(object target2)
     {
-      CloneableObjectUtility.CopyListTo<IValue<float>>(((PolyOperation<float>) target2).values, this.values);
+      CloneableObjectUtility.CopyListTo(((PolyOperation<float>) target2).values, values);
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.WriteListSerialize<IValue<float>>(writer, "Parameters", this.values);
+      DefaultDataWriteUtility.WriteListSerialize(writer, "Parameters", values);
     }
 
     public void DataRead(IDataReader reader, Type type)
     {
-      this.values = DefaultDataReadUtility.ReadListSerialize<IValue<float>>(reader, "Parameters", this.values);
+      values = DefaultDataReadUtility.ReadListSerialize(reader, "Parameters", values);
     }
   }
 }

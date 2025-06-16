@@ -1,5 +1,4 @@
 ﻿using Engine.Common.Generator;
-using UnityEngine;
 
 namespace BehaviorDesigner.Runtime.Tasks
 {
@@ -9,26 +8,26 @@ namespace BehaviorDesigner.Runtime.Tasks
   public abstract class BehaviorReference : Action
   {
     [Tooltip("External behavior array that this task should reference")]
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [SerializeField]
     public ExternalBehaviorTree[] externalBehaviors;
     [Tooltip("Any variables that should be set for the specific tree")]
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [SerializeField]
     public SharedNamedVariable[] variables;
     [HideInInspector]
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy()]
     [SerializeField]
     public bool collapsed;
 
-    public ExternalBehaviorTree[] GetExternalBehaviors() => this.externalBehaviors;
+    public ExternalBehaviorTree[] GetExternalBehaviors() => externalBehaviors;
 
-    public override void OnReset() => this.externalBehaviors = (ExternalBehaviorTree[]) null;
+    public override void OnReset() => externalBehaviors = null;
   }
 }

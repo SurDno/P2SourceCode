@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace StateSetters
+﻿namespace StateSetters
 {
   [StateSetter("{1EC03228-53CC-4E8C-B2BC-FBFB513323CC}")]
   public class MaterialFloatItemController : MaterialPropertyItemController

@@ -2,10 +2,10 @@
 
 namespace SRF.Service
 {
-  [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
+  [AttributeUsage(AttributeTargets.Method, Inherited = false)]
   public sealed class ServiceSelectorAttribute : Attribute
   {
-    public ServiceSelectorAttribute(Type serviceType) => this.ServiceType = serviceType;
+    public ServiceSelectorAttribute(Type serviceType) => ServiceType = serviceType;
 
     public Type ServiceType { get; private set; }
   }

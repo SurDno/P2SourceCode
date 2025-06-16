@@ -4,7 +4,6 @@ using Engine.Common.Components;
 using Engine.Common.Components.Interactable;
 using Engine.Common.Components.Parameters;
 using Engine.Common.Services;
-using System;
 
 namespace Engine.Source.Components.Interactable.Validators
 {
@@ -30,7 +29,7 @@ namespace Engine.Source.Components.Interactable.Validators
       IParameter<FractionEnum> fraction = component1.GetByName<FractionEnum>(ParameterNameEnum.Fraction);
       if (fraction != null)
       {
-        FractionSettings fractionSettings = ScriptableObjectInstance<FractionsSettingsData>.Instance.Fractions.Find((Predicate<FractionSettings>) (x => x.Name == fraction.Value));
+        FractionSettings fractionSettings = ScriptableObjectInstance<FractionsSettingsData>.Instance.Fractions.Find(x => x.Name == fraction.Value);
         if (fractionSettings != null)
           num = fractionSettings.PlayerTradeReputationThreshold;
       }
@@ -43,8 +42,8 @@ namespace Engine.Source.Components.Interactable.Validators
       IRegionComponent region = component2.Region;
       if (region == null)
         return new ValidateResult(false, "Region not found");
-      if ((double) region.Reputation.Value >= (double) num)
-        return new ValidateResult(false, "Reputation " + (object) region.Reputation.Value + " >= " + (object) num);
+      if (region.Reputation.Value >= (double) num)
+        return new ValidateResult(false, "Reputation " + region.Reputation.Value + " >= " + num);
       IParameter<bool> byName5 = ServiceLocator.GetService<ISimulation>().Player.GetComponent<ParametersComponent>().GetByName<bool>(ParameterNameEnum.CanTrade);
       return byName5 != null && !byName5.Value ? new ValidateResult(false, "CanTrade is false") : new ValidateResult(true);
     }

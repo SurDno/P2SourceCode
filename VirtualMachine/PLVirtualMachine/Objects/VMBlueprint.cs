@@ -1,11 +1,11 @@
-﻿using Cofe.Loggers;
+﻿using System.Collections.Generic;
+using System.Xml;
+using Cofe.Loggers;
 using Engine.Common.Commons;
 using Engine.Common.Comparers;
 using PLVirtualMachine.Common;
 using PLVirtualMachine.Common.Data;
 using PLVirtualMachine.Data;
-using System.Collections.Generic;
-using System.Xml;
 using VirtualMachine.Common;
 using VirtualMachine.Common.Data;
 using VirtualMachine.Data;
@@ -29,7 +29,7 @@ namespace PLVirtualMachine.Objects
     IContext,
     ILogicObject
   {
-    [FieldData("Static", DataFieldType.None)]
+    [FieldData("Static")]
     protected bool isStatic;
     [FieldData("InheritanceInfo", DataFieldType.Reference)]
     protected List<IBlueprint> baseBlueprints;
@@ -40,44 +40,43 @@ namespace PLVirtualMachine.Objects
 
     public virtual void EditorDataRead(XmlReader xml, IDataCreator creator, string typeContext)
     {
-      while (xml.Read())
-      {
+      while (xml.Read()) {
         if (xml.NodeType == XmlNodeType.Element)
         {
           switch (xml.Name)
           {
             case "ChildObjects":
-              this.gameObjects = EditorDataReadUtility.ReadReferenceList<IContainer>(xml, creator, this.gameObjects);
+              gameObjects = EditorDataReadUtility.ReadReferenceList(xml, creator, gameObjects);
               continue;
             case "CustomParams":
-              this.customParamsDict = EditorDataReadUtility.ReadStringReferenceDictionary<IParam>(xml, creator, this.customParamsDict);
+              customParamsDict = EditorDataReadUtility.ReadStringReferenceDictionary(xml, creator, customParamsDict);
               continue;
             case "EventGraph":
-              this.stateGraph = EditorDataReadUtility.ReadReference<IFiniteStateMachine>(xml, creator);
+              stateGraph = EditorDataReadUtility.ReadReference<IFiniteStateMachine>(xml, creator);
               continue;
             case "Events":
-              this.customEventsList = EditorDataReadUtility.ReadReferenceList<IEvent>(xml, creator, this.customEventsList);
+              customEventsList = EditorDataReadUtility.ReadReferenceList(xml, creator, customEventsList);
               continue;
             case "FunctionalComponents":
-              this.functionalComponents = EditorDataReadUtility.ReadReferenceList<IFunctionalComponent>(xml, creator, this.functionalComponents);
+              functionalComponents = EditorDataReadUtility.ReadReferenceList(xml, creator, functionalComponents);
               continue;
             case "GameTimeContext":
-              this.gameTimeContext = EditorDataReadUtility.ReadReference<IGameMode>(xml, creator);
+              gameTimeContext = EditorDataReadUtility.ReadReference<IGameMode>(xml, creator);
               continue;
             case "InheritanceInfo":
-              this.baseBlueprints = EditorDataReadUtility.ReadReferenceList<IBlueprint>(xml, creator, this.baseBlueprints);
+              baseBlueprints = EditorDataReadUtility.ReadReferenceList(xml, creator, baseBlueprints);
               continue;
             case "Name":
-              this.name = EditorDataReadUtility.ReadValue(xml, this.name);
+              name = EditorDataReadUtility.ReadValue(xml, name);
               continue;
             case "Parent":
-              this.parent = EditorDataReadUtility.ReadReference<IContainer>(xml, creator);
+              parent = EditorDataReadUtility.ReadReference<IContainer>(xml, creator);
               continue;
             case "StandartParams":
-              this.standartParamsDict = EditorDataReadUtility.ReadStringReferenceDictionary<IParam>(xml, creator, this.standartParamsDict);
+              standartParamsDict = EditorDataReadUtility.ReadStringReferenceDictionary(xml, creator, standartParamsDict);
               continue;
             case "Static":
-              this.isStatic = EditorDataReadUtility.ReadValue(xml, this.isStatic);
+              isStatic = EditorDataReadUtility.ReadValue(xml, isStatic);
               continue;
             default:
               if (XMLDataLoader.Logs.Add(typeContext + " : " + xml.Name))
@@ -86,7 +85,8 @@ namespace PLVirtualMachine.Objects
               continue;
           }
         }
-        else if (xml.NodeType == XmlNodeType.EndElement)
+
+        if (xml.NodeType == XmlNodeType.EndElement)
           break;
       }
     }
@@ -96,21 +96,21 @@ namespace PLVirtualMachine.Objects
     {
     }
 
-    public List<IBlueprint> BaseBlueprints => this.baseBlueprints;
+    public List<IBlueprint> BaseBlueprints => baseBlueprints;
 
     public override EObjectCategory GetCategory() => EObjectCategory.OBJECT_CATEGORY_CLASS;
 
-    public override bool Static => this.isStatic;
+    public override bool Static => isStatic;
 
-    public override IBlueprint Blueprint => (IBlueprint) this;
+    public override IBlueprint Blueprint => this;
 
     public override Dictionary<string, IFunctionalComponent> FunctionalComponents
     {
       get
       {
-        if (this.allFunctionalComponentsDict == null)
-          this.allFunctionalComponentsDict = this.GetAllFunctionalComponents();
-        return this.allFunctionalComponentsDict;
+        if (allFunctionalComponentsDict == null)
+          allFunctionalComponentsDict = GetAllFunctionalComponents();
+        return allFunctionalComponentsDict;
       }
     }
 
@@ -119,10 +119,10 @@ namespace PLVirtualMachine.Objects
       get
       {
         List<IEvent> mergedEventsTo = new List<IEvent>();
-        if (this.baseBlueprints != null)
+        if (baseBlueprints != null)
         {
-          for (int index = 0; index < this.baseBlueprints.Count; ++index)
-            VMBlueprintUtility.MergeCustomEvents(mergedEventsTo, ((VMLogicObject) this.baseBlueprints[index]).CustomEvents);
+          for (int index = 0; index < baseBlueprints.Count; ++index)
+            VMBlueprintUtility.MergeCustomEvents(mergedEventsTo, ((VMLogicObject) baseBlueprints[index]).CustomEvents);
         }
         VMBlueprintUtility.MergeCustomEvents(mergedEventsTo, base.CustomEvents);
         return mergedEventsTo;
@@ -136,10 +136,10 @@ namespace PLVirtualMachine.Objects
       {
         case EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_PARAM:
           List<IVariable> mergedParamsTo = new List<IVariable>();
-          if (this.baseBlueprints != null)
+          if (baseBlueprints != null)
           {
-            for (int index = 0; index < this.baseBlueprints.Count; ++index)
-              VMBlueprintUtility.MergeContextParams(mergedParamsTo, this.baseBlueprints[index].GetContextVariables(contextVarCategory));
+            for (int index = 0; index < baseBlueprints.Count; ++index)
+              VMBlueprintUtility.MergeContextParams(mergedParamsTo, baseBlueprints[index].GetContextVariables(contextVarCategory));
           }
           VMBlueprintUtility.MergeContextParams(mergedParamsTo, base.GetContextVariables(contextVarCategory));
           foreach (IVariable contextVariable in mergedParamsTo)
@@ -156,13 +156,13 @@ namespace PLVirtualMachine.Objects
 
     public override bool IsDerivedFrom(ulong iBlueprintGuid, bool bWithSelf = false)
     {
-      if (bWithSelf && iBlueprintGuid != 0UL && (long) this.BaseGuid == (long) iBlueprintGuid)
+      if (bWithSelf && iBlueprintGuid != 0UL && (long) BaseGuid == (long) iBlueprintGuid)
         return true;
-      if (this.baseBlueprints != null)
+      if (baseBlueprints != null)
       {
-        for (int index = 0; index < this.baseBlueprints.Count; ++index)
+        for (int index = 0; index < baseBlueprints.Count; ++index)
         {
-          if ((long) this.baseBlueprints[index].BaseGuid == (long) iBlueprintGuid || this.baseBlueprints[index].IsDerivedFrom(iBlueprintGuid))
+          if ((long) baseBlueprints[index].BaseGuid == (long) iBlueprintGuid || baseBlueprints[index].IsDerivedFrom(iBlueprintGuid))
             return true;
         }
       }
@@ -173,11 +173,11 @@ namespace PLVirtualMachine.Objects
     {
       foreach (IStateRef objectState in base.GetObjectStates())
         yield return objectState;
-      if (this.baseBlueprints != null)
+      if (baseBlueprints != null)
       {
-        for (int i = 0; i < this.baseBlueprints.Count; ++i)
+        for (int i = 0; i < baseBlueprints.Count; ++i)
         {
-          foreach (IStateRef objectState in this.baseBlueprints[i].GetObjectStates())
+          foreach (IStateRef objectState in baseBlueprints[i].GetObjectStates())
             yield return objectState;
         }
       }
@@ -185,53 +185,53 @@ namespace PLVirtualMachine.Objects
 
     public virtual ulong GetInheritanceMappedEventGuid(ulong stEventGuid)
     {
-      if (this.VirtualObjectTemplate != null)
-        return ((VMBlueprint) this.VirtualObjectTemplate).GetInheritanceMappedEventGuid(stEventGuid);
-      if (!this.isInheritanceMapLoaded)
-        this.MakeInheritanceMapping();
-      return this.inheritancyMappedEventGuids != null && this.inheritancyMappedEventGuids.ContainsKey(stEventGuid) ? this.inheritancyMappedEventGuids[stEventGuid] : stEventGuid;
+      if (VirtualObjectTemplate != null)
+        return ((VMBlueprint) VirtualObjectTemplate).GetInheritanceMappedEventGuid(stEventGuid);
+      if (!isInheritanceMapLoaded)
+        MakeInheritanceMapping();
+      return inheritancyMappedEventGuids != null && inheritancyMappedEventGuids.ContainsKey(stEventGuid) ? inheritancyMappedEventGuids[stEventGuid] : stEventGuid;
     }
 
     public Dictionary<string, IEvent> FunctionalMappedEvents
     {
       get
       {
-        if (this.functionalMappedEventsDict == null)
-          this.LoadFunctionalMappedEvents();
-        else if (this.functionalMappedEventsDict.Count == 0)
-          this.LoadFunctionalMappedEvents();
-        return this.functionalMappedEventsDict;
+        if (functionalMappedEventsDict == null)
+          LoadFunctionalMappedEvents();
+        else if (functionalMappedEventsDict.Count == 0)
+          LoadFunctionalMappedEvents();
+        return functionalMappedEventsDict;
       }
     }
 
     public override void OnAfterLoad()
     {
       base.OnAfterLoad();
-      this.MakeInheritanceMapping();
+      MakeInheritanceMapping();
     }
 
-    public virtual IContainer VirtualObjectTemplate => (IContainer) null;
+    public virtual IContainer VirtualObjectTemplate => null;
 
     protected override void UpdateContextVariablesTotalCache()
     {
       base.UpdateContextVariablesTotalCache();
-      foreach (IVariable contextVariable in this.GetContextVariables(EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_PARAM))
-        this.LoadContextVaraiblesTotalCache(contextVariable);
+      foreach (IVariable contextVariable in GetContextVariables(EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_PARAM))
+        LoadContextVaraiblesTotalCache(contextVariable);
     }
 
     protected override bool CanReloadVariablesTotalCache()
     {
-      return this.baseBlueprints != null && this.baseBlueprints.Count > 0 || base.CanReloadVariablesTotalCache();
+      return baseBlueprints != null && baseBlueprints.Count > 0 || base.CanReloadVariablesTotalCache();
     }
 
     private Dictionary<string, IFunctionalComponent> GetAllFunctionalComponents()
     {
       Dictionary<string, IFunctionalComponent> mergeTo = new Dictionary<string, IFunctionalComponent>();
-      if (this.baseBlueprints != null)
+      if (baseBlueprints != null)
       {
-        for (int index = 0; index < this.baseBlueprints.Count; ++index)
+        for (int index = 0; index < baseBlueprints.Count; ++index)
         {
-          Dictionary<string, IFunctionalComponent> functionalComponents = ((VMBlueprint) this.baseBlueprints[index]).GetAllFunctionalComponents();
+          Dictionary<string, IFunctionalComponent> functionalComponents = ((VMBlueprint) baseBlueprints[index]).GetAllFunctionalComponents();
           VMBlueprintUtility.MergeInheritedComponents(mergeTo, functionalComponents);
         }
       }
@@ -241,43 +241,43 @@ namespace PLVirtualMachine.Objects
 
     protected virtual void MakeInheritanceMapping()
     {
-      this.MakeInheritanceMapping(this.GetClassHierarchy());
+      MakeInheritanceMapping(GetClassHierarchy());
     }
 
     protected void MakeInheritanceMapping(IEnumerable<IBlueprint> classHierarchyList)
     {
-      if (this.events != null)
+      if (events != null)
       {
-        for (int index = 0; index < this.events.Count; ++index)
+        for (int index = 0; index < events.Count; ++index)
         {
-          string key = this.events[index].Parent.Name + "." + this.events[index].Name;
+          string key = events[index].Parent.Name + "." + events[index].Name;
           foreach (VMBlueprint classHierarchy in classHierarchyList)
           {
             Dictionary<string, IEvent> functionalMappedEvents = classHierarchy.FunctionalMappedEvents;
             if (functionalMappedEvents != null && functionalMappedEvents.ContainsKey(key))
             {
               IEvent @event = functionalMappedEvents[key];
-              if (this.inheritancyMappedEventGuids == null)
-                this.inheritancyMappedEventGuids = new Dictionary<ulong, ulong>((IEqualityComparer<ulong>) UlongComparer.Instance);
-              if (!this.inheritancyMappedEventGuids.ContainsKey(@event.BaseGuid))
-                this.inheritancyMappedEventGuids.Add(@event.BaseGuid, this.events[index].BaseGuid);
+              if (inheritancyMappedEventGuids == null)
+                inheritancyMappedEventGuids = new Dictionary<ulong, ulong>(UlongComparer.Instance);
+              if (!inheritancyMappedEventGuids.ContainsKey(@event.BaseGuid))
+                inheritancyMappedEventGuids.Add(@event.BaseGuid, events[index].BaseGuid);
               else
-                Logger.AddError(string.Format("Inheritance mapped event with id={0} is dublicated in {1}", (object) @event.BaseGuid, (object) this.Name));
+                Logger.AddError(string.Format("Inheritance mapped event with id={0} is dublicated in {1}", @event.BaseGuid, Name));
             }
           }
         }
       }
-      this.isInheritanceMapLoaded = true;
+      isInheritanceMapLoaded = true;
     }
 
     protected IEnumerable<IBlueprint> GetClassHierarchy()
     {
-      if (this.baseBlueprints != null)
+      if (baseBlueprints != null)
       {
-        for (int i = 0; i < this.baseBlueprints.Count; ++i)
+        for (int i = 0; i < baseBlueprints.Count; ++i)
         {
-          yield return this.baseBlueprints[i];
-          foreach (IBlueprint blueprint in ((VMBlueprint) this.baseBlueprints[i]).GetClassHierarchy())
+          yield return baseBlueprints[i];
+          foreach (IBlueprint blueprint in ((VMBlueprint) baseBlueprints[i]).GetClassHierarchy())
             yield return blueprint;
         }
       }
@@ -285,21 +285,21 @@ namespace PLVirtualMachine.Objects
 
     private void LoadFunctionalMappedEvents()
     {
-      if (this.functionalMappedEventsDict != null)
-        this.functionalMappedEventsDict.Clear();
-      for (int index1 = 0; index1 < this.functionalComponents.Count; ++index1)
+      if (functionalMappedEventsDict != null)
+        functionalMappedEventsDict.Clear();
+      for (int index1 = 0; index1 < functionalComponents.Count; ++index1)
       {
-        List<IEvent> engineEvents = this.functionalComponents[index1].EngineEvents;
+        List<IEvent> engineEvents = functionalComponents[index1].EngineEvents;
         for (int index2 = 0; index2 < engineEvents.Count; ++index2)
         {
           IEvent @event = engineEvents[index2];
-          string key = this.functionalComponents[index1].Name + "." + @event.Name;
-          if (this.functionalMappedEventsDict == null)
-            this.functionalMappedEventsDict = new Dictionary<string, IEvent>();
-          if (!this.functionalMappedEventsDict.ContainsKey(key))
-            this.functionalMappedEventsDict.Add(key, @event);
+          string key = functionalComponents[index1].Name + "." + @event.Name;
+          if (functionalMappedEventsDict == null)
+            functionalMappedEventsDict = new Dictionary<string, IEvent>();
+          if (!functionalMappedEventsDict.ContainsKey(key))
+            functionalMappedEventsDict.Add(key, @event);
           else
-            Logger.AddError(string.Format("Event with name {0} is dublicated in {1}", (object) key, (object) this.Name));
+            Logger.AddError(string.Format("Event with name {0} is dublicated in {1}", key, Name));
         }
       }
     }

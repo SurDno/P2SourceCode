@@ -16,21 +16,21 @@ namespace Engine.Source.Components
     [Inspected]
     public IEntity Crowd { get; private set; }
 
-    public AreaEnum Area => this.Point == null ? AreaEnum.Unknown : this.Point.Area;
+    public AreaEnum Area => Point == null ? AreaEnum.Unknown : Point.Area;
 
     [Inspected]
     public PointInfo Point { get; private set; }
 
     public void AttachToCrowd(IEntity crowd, PointInfo point)
     {
-      this.Crowd = crowd;
-      this.Point = point;
+      Crowd = crowd;
+      Point = point;
     }
 
     public void DetachFromCrowd()
     {
-      this.Crowd = (IEntity) null;
-      this.Point = (PointInfo) null;
+      Crowd = null;
+      Point = null;
     }
   }
 }

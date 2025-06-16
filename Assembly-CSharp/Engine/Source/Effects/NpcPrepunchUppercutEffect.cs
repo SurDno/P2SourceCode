@@ -6,7 +6,6 @@ using Engine.Source.Commons.Abilities;
 using Engine.Source.Commons.Abilities.Controllers;
 using Engine.Source.Commons.Effects;
 using Inspectors;
-using UnityEngine;
 
 namespace Engine.Source.Effects
 {
@@ -14,26 +13,26 @@ namespace Engine.Source.Effects
   [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
   public class NpcPrepunchUppercutEffect : IEffect
   {
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected(Header = true, Mutable = true, Mode = ExecuteMode.EditAndRuntime)]
     protected string name = "";
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy()]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected ParameterEffectQueueEnum queue = ParameterEffectQueueEnum.None;
 
-    public string Name => this.name;
+    public string Name => name;
 
     [Inspected]
     public AbilityItem AbilityItem { get; set; }
 
     public IEntity Target { get; set; }
 
-    public ParameterEffectQueueEnum Queue => this.queue;
+    public ParameterEffectQueueEnum Queue => queue;
 
     public void Cleanup()
     {
@@ -41,9 +40,9 @@ namespace Engine.Source.Effects
 
     public bool Prepare(float currentRealTime, float currentGameTime)
     {
-      EnemyBase component1 = ((IEntityView) this.AbilityItem.Self).GameObject.GetComponent<EnemyBase>();
-      EnemyBase component2 = ((IEntityView) this.Target).GameObject.GetComponent<EnemyBase>();
-      if (!(this.AbilityItem.AbilityController is CloseCombatAbilityController abilityController))
+      EnemyBase component1 = ((IEntityView) AbilityItem.Self).GameObject.GetComponent<EnemyBase>();
+      EnemyBase component2 = ((IEntityView) Target).GameObject.GetComponent<EnemyBase>();
+      if (!(AbilityItem.AbilityController is CloseCombatAbilityController abilityController))
       {
         Debug.LogError((object) (typeof (NpcPunchEffect).Name + " requires " + typeof (CloseCombatAbilityController).Name));
         return false;

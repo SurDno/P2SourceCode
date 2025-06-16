@@ -9,77 +9,74 @@ namespace ParadoxNotion.Serialization.FullSerializer
     private static readonly string[] EmptyStringArray = new string[0];
     private bool _success;
     private List<string> _messages;
-    public static fsResult Success = new fsResult()
-    {
+    public static fsResult Success = new fsResult {
       _success = true
     };
 
     public void AddMessage(string message)
     {
-      if (this._messages == null)
-        this._messages = new List<string>();
-      this._messages.Add(message);
+      if (_messages == null)
+        _messages = new List<string>();
+      _messages.Add(message);
     }
 
     public void AddMessages(fsResult result)
     {
       if (result._messages == null)
         return;
-      if (this._messages == null)
-        this._messages = new List<string>();
-      this._messages.AddRange((IEnumerable<string>) result._messages);
+      if (_messages == null)
+        _messages = new List<string>();
+      _messages.AddRange(result._messages);
     }
 
     public fsResult Merge(fsResult other)
     {
-      this._success = this._success && other._success;
+      _success = _success && other._success;
       if (other._messages != null)
       {
-        if (this._messages == null)
-          this._messages = new List<string>((IEnumerable<string>) other._messages);
+        if (_messages == null)
+          _messages = new List<string>(other._messages);
         else
-          this._messages.AddRange((IEnumerable<string>) other._messages);
+          _messages.AddRange(other._messages);
       }
       return this;
     }
 
     public static fsResult Warn(string warning)
     {
-      return new fsResult()
-      {
+      return new fsResult {
         _success = true,
-        _messages = new List<string>() { warning }
+        _messages = new List<string> { warning }
       };
     }
 
     public static fsResult Fail(string warning)
     {
-      return new fsResult()
-      {
+      return new fsResult {
         _success = false,
-        _messages = new List<string>() { warning }
+        _messages = new List<string> { warning }
       };
     }
 
     public static fsResult operator +(fsResult a, fsResult b) => a.Merge(b);
 
-    public bool Failed => !this._success;
+    public bool Failed => !_success;
 
-    public bool Succeeded => this._success;
+    public bool Succeeded => _success;
 
-    public bool HasWarnings => this._messages != null && this._messages.Any<string>();
+    public bool HasWarnings => _messages != null && _messages.Any();
 
     public fsResult AssertSuccess()
     {
-      if (this.Failed)
-        throw this.AsException;
+      if (Failed)
+        throw AsException;
       return this;
     }
 
     public fsResult AssertSuccessWithoutWarnings()
     {
-      if (this.Failed || this.RawMessages.Any<string>())
-        throw this.AsException;
+      if (Failed || RawMessages.Any())
+        throw AsException;
       return this;
     }
 
@@ -87,9 +84,9 @@ namespace ParadoxNotion.Serialization.FullSerializer
     {
       get
       {
-        if (!this.Failed && !this.RawMessages.Any<string>())
+        if (!Failed && !RawMessages.Any())
           throw new Exception("Only a failed result can be converted to an exception");
-        return new Exception(this.FormattedMessages);
+        return new Exception(FormattedMessages);
       }
     }
 
@@ -97,10 +94,10 @@ namespace ParadoxNotion.Serialization.FullSerializer
     {
       get
       {
-        return this._messages != null ? (IEnumerable<string>) this._messages : (IEnumerable<string>) fsResult.EmptyStringArray;
+        return _messages != null ? _messages : EmptyStringArray;
       }
     }
 
-    public string FormattedMessages => string.Join(",\n", this.RawMessages.ToArray<string>());
+    public string FormattedMessages => string.Join(",\n", RawMessages.ToArray());
   }
 }

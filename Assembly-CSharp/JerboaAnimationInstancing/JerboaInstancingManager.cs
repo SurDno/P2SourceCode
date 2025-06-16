@@ -1,22 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using UnityEngine;
-using UnityEngine.Profiling;
-using UnityEngine.Rendering;
 
 namespace JerboaAnimationInstancing
 {
   public class JerboaInstancingManager : IDisposable
   {
     private List<JerboaInstanceDescription> aniInstancingList;
-    private Dictionary<int, JerboaInstancingManager.VertexCache> vertexCachePool;
-    private Dictionary<int, JerboaInstancingManager.InstanceData> instanceDataPool;
+    private Dictionary<int, VertexCache> vertexCachePool;
+    private Dictionary<int, InstanceData> instanceDataPool;
     private const int InstancingSizePerPackage = 1001;
     private int instancingPackageSize = 1001;
-    private List<JerboaInstancingManager.AnimationTexture> animationTextureList = new List<JerboaInstancingManager.AnimationTexture>();
+    private List<AnimationTexture> animationTextureList = new List<AnimationTexture>();
     private BoundingSphere[] boundingSphere;
-    private int usedBoundingSphereCount = 0;
+    private int usedBoundingSphereCount;
     private CullingGroup cullingGroup;
     private JerboaManager jerboaManager;
     private int jerboaCountPrevFrame = -1;
@@ -24,32 +21,32 @@ namespace JerboaAnimationInstancing
 
     public int InstancingPackageSize
     {
-      get => this.instancingPackageSize;
-      set => this.instancingPackageSize = value;
+      get => instancingPackageSize;
+      set => instancingPackageSize = value;
     }
 
     public JerboaInstancingManager(JerboaManager jerboaManager)
     {
       this.jerboaManager = jerboaManager;
-      this.boundingSphere = new BoundingSphere[5000];
-      this.InitializeCullingGroup();
-      this.aniInstancingList = new List<JerboaInstanceDescription>(1000);
-      this.vertexCachePool = new Dictionary<int, JerboaInstancingManager.VertexCache>();
-      this.instanceDataPool = new Dictionary<int, JerboaInstancingManager.InstanceData>();
+      boundingSphere = new BoundingSphere[5000];
+      InitializeCullingGroup();
+      aniInstancingList = new List<JerboaInstanceDescription>(1000);
+      vertexCachePool = new Dictionary<int, VertexCache>();
+      instanceDataPool = new Dictionary<int, InstanceData>();
     }
 
     public void Dispose()
     {
-      this.ReleaseBuffer();
-      this.cullingGroup.Dispose();
-      this.cullingGroup = (CullingGroup) null;
+      ReleaseBuffer();
+      cullingGroup.Dispose();
+      cullingGroup = (CullingGroup) null;
     }
 
     private void OnApplicationFocus(bool focus)
     {
       if (!focus)
         return;
-      this.RefreshMaterial();
+      RefreshMaterial();
     }
 
     private void Start()
@@ -58,45 +55,45 @@ namespace JerboaAnimationInstancing
 
     private void InitializeCullingGroup()
     {
-      this.cullingGroup = new CullingGroup();
-      this.cullingGroup.targetCamera = Camera.main;
-      this.cullingGroup.onStateChanged = new CullingGroup.StateChanged(this.CullingStateChanged);
-      this.cullingGroup.SetBoundingSpheres(this.boundingSphere);
-      this.usedBoundingSphereCount = 0;
-      this.cullingGroup.SetBoundingSphereCount(this.usedBoundingSphereCount);
+      cullingGroup = new CullingGroup();
+      cullingGroup.targetCamera = Camera.main;
+      cullingGroup.onStateChanged = new CullingGroup.StateChanged(CullingStateChanged);
+      cullingGroup.SetBoundingSpheres(boundingSphere);
+      usedBoundingSphereCount = 0;
+      cullingGroup.SetBoundingSphereCount(usedBoundingSphereCount);
     }
 
     public void Update(Vector3 playerPosition)
     {
-      if (!this.jerboaManager.Visible)
+      if (!jerboaManager.Visible)
         return;
-      int jerboaCountThisFrame = (int) ((double) this.aniInstancingList.Count * (double) this.jerboaManager.SmoothedJerboaWeight);
-      if (this.jerboaCountPrevFrame == -1)
-        this.jerboaCountPrevFrame = jerboaCountThisFrame;
-      this.ApplyBoneMatrix(playerPosition, this.jerboaCountPrevFrame, jerboaCountThisFrame);
-      this.Render();
-      this.jerboaCountPrevFrame = jerboaCountThisFrame;
+      int jerboaCountThisFrame = (int) (aniInstancingList.Count * (double) jerboaManager.SmoothedJerboaWeight);
+      if (jerboaCountPrevFrame == -1)
+        jerboaCountPrevFrame = jerboaCountThisFrame;
+      ApplyBoneMatrix(playerPosition, jerboaCountPrevFrame, jerboaCountThisFrame);
+      Render();
+      jerboaCountPrevFrame = jerboaCountThisFrame;
     }
 
     private void Render()
     {
-      foreach (KeyValuePair<int, JerboaInstancingManager.VertexCache> keyValuePair in this.vertexCachePool)
+      foreach (KeyValuePair<int, VertexCache> keyValuePair in vertexCachePool)
       {
-        JerboaInstancingManager.VertexCache vertexCache = keyValuePair.Value;
-        foreach (KeyValuePair<int, JerboaInstancingManager.MaterialBlock> instanceBlock in vertexCache.instanceBlockList)
+        VertexCache vertexCache = keyValuePair.Value;
+        foreach (KeyValuePair<int, MaterialBlock> instanceBlock in vertexCache.instanceBlockList)
         {
-          List<JerboaInstancingManager.InstancingPackage>[] packageList = instanceBlock.Value.packageList;
+          List<InstancingPackage>[] packageList = instanceBlock.Value.packageList;
           for (int aniTextureIndex = 0; aniTextureIndex != packageList.Length; ++aniTextureIndex)
           {
             for (int index = 0; index != packageList[aniTextureIndex].Count; ++index)
             {
-              JerboaInstancingManager.InstancingPackage package = packageList[aniTextureIndex][index];
+              InstancingPackage package = packageList[aniTextureIndex][index];
               if (package.instancingCount != 0)
               {
                 for (int submeshIndex = 0; submeshIndex != package.subMeshCount; ++submeshIndex)
                 {
-                  JerboaInstancingManager.InstanceData instanceData = instanceBlock.Value.instanceData;
-                  this.PreparePackageMaterial(package, vertexCache, aniTextureIndex);
+                  InstanceData instanceData = instanceBlock.Value.instanceData;
+                  PreparePackageMaterial(package, vertexCache, aniTextureIndex);
                   package.propertyBlock.SetFloatArray("frameIndex", instanceData.frameIndex[aniTextureIndex][index]);
                   package.propertyBlock.SetFloatArray("preFrameIndex", instanceData.preFrameIndex[aniTextureIndex][index]);
                   package.propertyBlock.SetFloatArray("transitionProgress", instanceData.transitionProgress[aniTextureIndex][index]);
@@ -113,40 +110,40 @@ namespace JerboaAnimationInstancing
 
     public void Clear()
     {
-      this.aniInstancingList.Clear();
-      this.cullingGroup.Dispose();
-      this.vertexCachePool.Clear();
-      this.instanceDataPool.Clear();
-      this.InitializeCullingGroup();
+      aniInstancingList.Clear();
+      cullingGroup.Dispose();
+      vertexCachePool.Clear();
+      instanceDataPool.Clear();
+      InitializeCullingGroup();
     }
 
-    public void AddInstance(JerboaInstanceDescription obj) => this.aniInstancingList.Add(obj);
+    public void AddInstance(JerboaInstanceDescription obj) => aniInstancingList.Add(obj);
 
     public void RemoveInstance(JerboaInstanceDescription instance)
     {
-      Debug.Assert(this.aniInstancingList != null);
-      if (!this.aniInstancingList.Remove(instance))
+      Debug.Assert(aniInstancingList != null);
+      if (!aniInstancingList.Remove(instance))
         return;
-      --this.usedBoundingSphereCount;
-      this.cullingGroup.SetBoundingSphereCount(this.usedBoundingSphereCount);
-      Debug.Assert(this.usedBoundingSphereCount >= 0);
-      if (this.usedBoundingSphereCount < 0)
+      --usedBoundingSphereCount;
+      cullingGroup.SetBoundingSphereCount(usedBoundingSphereCount);
+      Debug.Assert(usedBoundingSphereCount >= 0);
+      if (usedBoundingSphereCount < 0)
         Debug.DebugBreak();
     }
 
     private void RefreshMaterial()
     {
-      if (this.vertexCachePool == null)
+      if (vertexCachePool == null)
         return;
-      foreach (KeyValuePair<int, JerboaInstancingManager.VertexCache> keyValuePair in this.vertexCachePool)
+      foreach (KeyValuePair<int, VertexCache> keyValuePair in vertexCachePool)
       {
-        JerboaInstancingManager.VertexCache vertexCache = keyValuePair.Value;
-        foreach (KeyValuePair<int, JerboaInstancingManager.MaterialBlock> instanceBlock in vertexCache.instanceBlockList)
+        VertexCache vertexCache = keyValuePair.Value;
+        foreach (KeyValuePair<int, MaterialBlock> instanceBlock in vertexCache.instanceBlockList)
         {
           for (int aniTextureIndex = 0; aniTextureIndex != instanceBlock.Value.packageList.Length; ++aniTextureIndex)
           {
             for (int index = 0; index != instanceBlock.Value.packageList[aniTextureIndex].Count; ++index)
-              this.PreparePackageMaterial(instanceBlock.Value.packageList[aniTextureIndex][index], vertexCache, aniTextureIndex);
+              PreparePackageMaterial(instanceBlock.Value.packageList[aniTextureIndex][index], vertexCache, aniTextureIndex);
           }
         }
       }
@@ -159,46 +156,46 @@ namespace JerboaAnimationInstancing
     {
       if (jerboaCountThisFrame == 0)
         return;
-      this.ApplyRootMotion(playerPosition, jerboaCountPrevFrame, jerboaCountThisFrame);
-      this.MoveBoundingSpheres(jerboaCountThisFrame);
+      ApplyRootMotion(playerPosition, jerboaCountPrevFrame, jerboaCountThisFrame);
+      MoveBoundingSpheres(jerboaCountThisFrame);
       for (int index1 = 0; index1 < jerboaCountThisFrame; ++index1)
       {
-        JerboaInstanceDescription aniInstancing = this.aniInstancingList[index1];
+        JerboaInstanceDescription aniInstancing = aniInstancingList[index1];
         if (aniInstancing.visible)
         {
           JerboaInstance.LodInfo lodInfo = aniInstancing.Source.lodInfo[0];
           int aniTextureIndex = aniInstancing.aniTextureIndex;
           for (int index2 = 0; index2 != lodInfo.vertexCacheList.Length; ++index2)
           {
-            JerboaInstancingManager.VertexCache vertexCache = lodInfo.vertexCacheList[index2];
-            JerboaInstancingManager.MaterialBlock materialBlock = lodInfo.materialBlockList[index2];
+            VertexCache vertexCache = lodInfo.vertexCacheList[index2];
+            MaterialBlock materialBlock = lodInfo.materialBlockList[index2];
             int index3 = materialBlock.runtimePackageIndex[aniTextureIndex];
-            JerboaInstancingManager.InstancingPackage instancingPackage = materialBlock.packageList[aniTextureIndex][index3];
-            if (instancingPackage.instancingCount + 1 > this.instancingPackageSize)
+            InstancingPackage instancingPackage = materialBlock.packageList[aniTextureIndex][index3];
+            if (instancingPackage.instancingCount + 1 > instancingPackageSize)
             {
               ++materialBlock.runtimePackageIndex[aniTextureIndex];
               int index4 = materialBlock.runtimePackageIndex[aniTextureIndex];
               if (index4 >= materialBlock.packageList[aniTextureIndex].Count)
               {
-                JerboaInstancingManager.InstancingPackage package = this.CreatePackage(materialBlock.instanceData, vertexCache.mesh, vertexCache.materials, aniTextureIndex);
+                InstancingPackage package = CreatePackage(materialBlock.instanceData, vertexCache.mesh, vertexCache.materials, aniTextureIndex);
                 materialBlock.packageList[aniTextureIndex].Add(package);
-                this.PreparePackageMaterial(package, vertexCache, aniTextureIndex);
+                PreparePackageMaterial(package, vertexCache, aniTextureIndex);
                 package.instancingCount = 1;
               }
               materialBlock.packageList[aniTextureIndex][index4].instancingCount = 1;
             }
             else
               ++instancingPackage.instancingCount;
-            JerboaInstancingManager.InstanceData instanceData = materialBlock.instanceData;
+            InstanceData instanceData = materialBlock.instanceData;
             int index5 = materialBlock.runtimePackageIndex[aniTextureIndex];
             int index6 = materialBlock.packageList[aniTextureIndex][index5].instancingCount - 1;
             if (index6 >= 0)
             {
               instanceData.worldMatrix[aniTextureIndex][index5][index6] = Matrix4x4.TRS(aniInstancing.Position, aniInstancing.Rotation, Vector3.one);
               float num1 = -1f;
-              float num2 = (float) aniInstancing.Source.aniInfo[aniInstancing.aniIndex].animationIndex + aniInstancing.curFrame;
+              float num2 = aniInstancing.Source.aniInfo[aniInstancing.aniIndex].animationIndex + aniInstancing.curFrame;
               if (aniInstancing.preAniIndex >= 0)
-                num1 = (float) aniInstancing.Source.aniInfo[aniInstancing.preAniIndex].animationIndex + aniInstancing.preAniFrame;
+                num1 = aniInstancing.Source.aniInfo[aniInstancing.preAniIndex].animationIndex + aniInstancing.preAniFrame;
               float transitionProgress = aniInstancing.transitionProgress;
               instanceData.frameIndex[aniTextureIndex][index5][index6] = num2;
               instanceData.preFrameIndex[aniTextureIndex][index5][index6] = num1;
@@ -216,11 +213,11 @@ namespace JerboaAnimationInstancing
     {
       float deltaTime = Time.deltaTime;
       for (int index = jerboaCountPrevFrame; index < jerboaCountThisFrame; ++index)
-        this.aniInstancingList[index].Respawn();
-      int layerMask = this.jerboaManager.RaycasLayerMask.value;
+        aniInstancingList[index].Respawn();
+      int layerMask = jerboaManager.RaycasLayerMask.value;
       for (int index = 0; index < jerboaCountThisFrame; ++index)
       {
-        JerboaInstanceDescription aniInstancing = this.aniInstancingList[index];
+        JerboaInstanceDescription aniInstancing = aniInstancingList[index];
         AnimationInfo animationInfoUnsafe = aniInstancing.GetCurrentAnimationInfoUnsafe();
         int curFrame = (int) aniInstancing.curFrame;
         aniInstancing.Position += aniInstancing.Rotation * animationInfoUnsafe.velocity[curFrame] * deltaTime;
@@ -233,41 +230,41 @@ namespace JerboaAnimationInstancing
     private void MoveBoundingSpheres(int jerboaCount)
     {
       int num = jerboaCount / 20 + 1;
-      for (int boundingSpheresIndex = this.currentMoveBoundingSpheresIndex; boundingSpheresIndex < this.currentMoveBoundingSpheresIndex + num; ++boundingSpheresIndex)
+      for (int boundingSpheresIndex = currentMoveBoundingSpheresIndex; boundingSpheresIndex < currentMoveBoundingSpheresIndex + num; ++boundingSpheresIndex)
       {
         int index = boundingSpheresIndex % jerboaCount;
-        JerboaInstanceDescription aniInstancing = this.aniInstancingList[index];
+        JerboaInstanceDescription aniInstancing = aniInstancingList[index];
         aniInstancing.BoundingSphere.position = aniInstancing.Position;
-        this.boundingSphere[index] = aniInstancing.BoundingSphere;
+        boundingSphere[index] = aniInstancing.BoundingSphere;
       }
-      this.currentMoveBoundingSpheresIndex = (this.currentMoveBoundingSpheresIndex + num) % jerboaCount;
+      currentMoveBoundingSpheresIndex = (currentMoveBoundingSpheresIndex + num) % jerboaCount;
     }
 
     private int FindTexture_internal(string name)
     {
-      for (int index = 0; index != this.animationTextureList.Count; ++index)
+      for (int index = 0; index != animationTextureList.Count; ++index)
       {
-        if (this.animationTextureList[index].name == name)
+        if (animationTextureList[index].name == name)
           return index;
       }
       return -1;
     }
 
-    public JerboaInstancingManager.AnimationTexture FindTexture(string name)
+    public AnimationTexture FindTexture(string name)
     {
-      int textureInternal = this.FindTexture_internal(name);
-      return textureInternal >= 0 ? this.animationTextureList[textureInternal] : (JerboaInstancingManager.AnimationTexture) null;
+      int textureInternal = FindTexture_internal(name);
+      return textureInternal >= 0 ? animationTextureList[textureInternal] : null;
     }
 
-    public JerboaInstancingManager.AnimationTexture FindTexture(int index)
+    public AnimationTexture FindTexture(int index)
     {
-      return 0 <= index && index < this.animationTextureList.Count ? this.animationTextureList[index] : (JerboaInstancingManager.AnimationTexture) null;
+      return 0 <= index && index < animationTextureList.Count ? animationTextureList[index] : null;
     }
 
-    public JerboaInstancingManager.VertexCache FindVertexCache(int renderName)
+    public VertexCache FindVertexCache(int renderName)
     {
-      JerboaInstancingManager.VertexCache vertexCache = (JerboaInstancingManager.VertexCache) null;
-      this.vertexCachePool.TryGetValue(renderName, out vertexCache);
+      VertexCache vertexCache = null;
+      vertexCachePool.TryGetValue(renderName, out vertexCache);
       return vertexCache;
     }
 
@@ -279,12 +276,12 @@ namespace JerboaAnimationInstancing
       int length = reader.ReadInt32();
       int num1 = reader.ReadInt32();
       int num2 = reader.ReadInt32();
-      JerboaInstancingManager.AnimationTexture animationTexture = new JerboaInstancingManager.AnimationTexture();
+      AnimationTexture animationTexture = new AnimationTexture();
       animationTexture.boneTexture = new Texture2D[length];
       animationTexture.name = prefabName;
       animationTexture.blockWidth = num1;
       animationTexture.blockHeight = num2;
-      this.animationTextureList.Add(animationTexture);
+      animationTextureList.Add(animationTexture);
       for (int index = 0; index != length; ++index)
       {
         int width = reader.ReadInt32();
@@ -302,26 +299,26 @@ namespace JerboaAnimationInstancing
 
     public bool ImportAnimationTexture(string prefabName, BinaryReader reader)
     {
-      if (this.FindTexture_internal(prefabName) >= 0)
+      if (FindTexture_internal(prefabName) >= 0)
         return true;
-      this.ReadTexture(reader, prefabName);
+      ReadTexture(reader, prefabName);
       return true;
     }
 
     private void ReleaseBuffer()
     {
-      if (this.vertexCachePool == null)
+      if (vertexCachePool == null)
         return;
-      this.vertexCachePool.Clear();
+      vertexCachePool.Clear();
     }
 
-    public JerboaInstancingManager.InstancingPackage CreatePackage(
-      JerboaInstancingManager.InstanceData data,
+    public InstancingPackage CreatePackage(
+      InstanceData data,
       Mesh mesh,
       Material[] originalMaterial,
       int animationIndex)
     {
-      JerboaInstancingManager.InstancingPackage package = new JerboaInstancingManager.InstancingPackage();
+      InstancingPackage package = new InstancingPackage();
       package.material = new Material[mesh.subMeshCount];
       package.subMeshCount = mesh.subMeshCount;
       package.size = 1;
@@ -334,10 +331,10 @@ namespace JerboaAnimationInstancing
         package.material[index].EnableKeyword("USE_CONSTANT_BUFFER");
         package.material[index].DisableKeyword("USE_COMPUTE_BUFFER");
       }
-      Matrix4x4[] matrix4x4Array = new Matrix4x4[this.instancingPackageSize];
-      float[] numArray1 = new float[this.instancingPackageSize];
-      float[] numArray2 = new float[this.instancingPackageSize];
-      float[] numArray3 = new float[this.instancingPackageSize];
+      Matrix4x4[] matrix4x4Array = new Matrix4x4[instancingPackageSize];
+      float[] numArray1 = new float[instancingPackageSize];
+      float[] numArray2 = new float[instancingPackageSize];
+      float[] numArray3 = new float[instancingPackageSize];
       data.worldMatrix[animationIndex].Add(matrix4x4Array);
       data.frameIndex[animationIndex].Add(numArray1);
       data.preFrameIndex[animationIndex].Add(numArray2);
@@ -353,9 +350,9 @@ namespace JerboaAnimationInstancing
       return identify;
     }
 
-    private JerboaInstancingManager.InstanceData CreateInstanceData(int packageCount)
+    private InstanceData CreateInstanceData(int packageCount)
     {
-      JerboaInstancingManager.InstanceData instanceData = new JerboaInstancingManager.InstanceData();
+      InstanceData instanceData = new InstanceData();
       instanceData.worldMatrix = new List<Matrix4x4[]>[packageCount];
       instanceData.frameIndex = new List<float[]>[packageCount];
       instanceData.preFrameIndex = new List<float[]>[packageCount];
@@ -389,14 +386,14 @@ namespace JerboaAnimationInstancing
           if (!((UnityEngine.Object) sharedMesh == (UnityEngine.Object) null))
           {
             int hashCode = lodInfo1.skinnedMeshRenderer[index2].name.GetHashCode();
-            int identify = this.GetIdentify(lodInfo1.skinnedMeshRenderer[index2].sharedMaterials);
-            JerboaInstancingManager.VertexCache cache = (JerboaInstancingManager.VertexCache) null;
-            if (this.vertexCachePool.TryGetValue(hashCode, out cache))
+            int identify = GetIdentify(lodInfo1.skinnedMeshRenderer[index2].sharedMaterials);
+            VertexCache cache = null;
+            if (vertexCachePool.TryGetValue(hashCode, out cache))
             {
-              JerboaInstancingManager.MaterialBlock materialBlock = (JerboaInstancingManager.MaterialBlock) null;
+              MaterialBlock materialBlock = null;
               if (!cache.instanceBlockList.TryGetValue(identify, out materialBlock))
               {
-                materialBlock = this.CreateBlock(cache, lodInfo1.skinnedMeshRenderer[index2].sharedMaterials);
+                materialBlock = CreateBlock(cache, lodInfo1.skinnedMeshRenderer[index2].sharedMaterials);
                 cache.instanceBlockList.Add(identify, materialBlock);
               }
               lodInfo1.vertexCacheList[index2] = cache;
@@ -404,11 +401,11 @@ namespace JerboaAnimationInstancing
             }
             else
             {
-              JerboaInstancingManager.VertexCache vertexCache = this.CreateVertexCache(prefabName, hashCode, 0, sharedMesh);
+              VertexCache vertexCache = CreateVertexCache(prefabName, hashCode, 0, sharedMesh);
               vertexCache.bindPose = bindPose.ToArray();
-              JerboaInstancingManager.MaterialBlock block = this.CreateBlock(vertexCache, lodInfo1.skinnedMeshRenderer[index2].sharedMaterials);
+              MaterialBlock block = CreateBlock(vertexCache, lodInfo1.skinnedMeshRenderer[index2].sharedMaterials);
               vertexCache.instanceBlockList.Add(identify, block);
-              this.SetupVertexCache(vertexCache, block, lodInfo1.skinnedMeshRenderer[index2], bones, bonePerVertex);
+              SetupVertexCache(vertexCache, block, lodInfo1.skinnedMeshRenderer[index2], bones, bonePerVertex);
               lodInfo1.vertexCacheList[index2] = vertexCache;
               lodInfo1.materialBlockList[index2] = block;
             }
@@ -423,14 +420,14 @@ namespace JerboaAnimationInstancing
           {
             int hashCode1 = lodInfo1.meshRenderer[index3].name.GetHashCode();
             int hashCode2 = alias != null ? alias.GetHashCode() : 0;
-            int identify = this.GetIdentify(lodInfo1.meshRenderer[index3].sharedMaterials);
-            JerboaInstancingManager.VertexCache cache = (JerboaInstancingManager.VertexCache) null;
-            if (this.vertexCachePool.TryGetValue(hashCode1 + hashCode2, out cache))
+            int identify = GetIdentify(lodInfo1.meshRenderer[index3].sharedMaterials);
+            VertexCache cache = null;
+            if (vertexCachePool.TryGetValue(hashCode1 + hashCode2, out cache))
             {
-              JerboaInstancingManager.MaterialBlock materialBlock = (JerboaInstancingManager.MaterialBlock) null;
+              MaterialBlock materialBlock = null;
               if (!cache.instanceBlockList.TryGetValue(identify, out materialBlock))
               {
-                materialBlock = this.CreateBlock(cache, lodInfo1.meshRenderer[index3].sharedMaterials);
+                materialBlock = CreateBlock(cache, lodInfo1.meshRenderer[index3].sharedMaterials);
                 cache.instanceBlockList.Add(identify, materialBlock);
               }
               lodInfo1.vertexCacheList[length] = cache;
@@ -438,12 +435,12 @@ namespace JerboaAnimationInstancing
             }
             else
             {
-              JerboaInstancingManager.VertexCache vertexCache = this.CreateVertexCache(prefabName, hashCode1, hashCode2, sharedMesh);
+              VertexCache vertexCache = CreateVertexCache(prefabName, hashCode1, hashCode2, sharedMesh);
               if (bindPose != null)
                 vertexCache.bindPose = bindPose.ToArray();
-              JerboaInstancingManager.MaterialBlock block = this.CreateBlock(vertexCache, lodInfo1.meshRenderer[index3].sharedMaterials);
+              MaterialBlock block = CreateBlock(vertexCache, lodInfo1.meshRenderer[index3].sharedMaterials);
               vertexCache.instanceBlockList.Add(identify, block);
-              this.SetupVertexCache(vertexCache, block, lodInfo1.meshRenderer[index3], sharedMesh, bones, bonePerVertex);
+              SetupVertexCache(vertexCache, block, lodInfo1.meshRenderer[index3], sharedMesh, bones, bonePerVertex);
               lodInfo1.vertexCacheList[lodInfo1.skinnedMeshRenderer.Length + index3] = vertexCache;
               lodInfo1.materialBlockList[lodInfo1.skinnedMeshRenderer.Length + index3] = block;
             }
@@ -457,68 +454,68 @@ namespace JerboaAnimationInstancing
       Profiler.EndSample();
     }
 
-    private int GetPackageCount(JerboaInstancingManager.VertexCache vertexCache)
+    private int GetPackageCount(VertexCache vertexCache)
     {
       int packageCount = 1;
       if (vertexCache.boneTextureIndex >= 0)
-        packageCount = this.animationTextureList[vertexCache.boneTextureIndex].boneTexture.Length;
+        packageCount = animationTextureList[vertexCache.boneTextureIndex].boneTexture.Length;
       return packageCount;
     }
 
-    private JerboaInstancingManager.MaterialBlock CreateBlock(
-      JerboaInstancingManager.VertexCache cache,
+    private MaterialBlock CreateBlock(
+      VertexCache cache,
       Material[] materials)
     {
-      JerboaInstancingManager.MaterialBlock block = new JerboaInstancingManager.MaterialBlock();
-      int packageCount = this.GetPackageCount(cache);
-      block.instanceData = this.CreateInstanceData(packageCount);
-      block.packageList = new List<JerboaInstancingManager.InstancingPackage>[packageCount];
+      MaterialBlock block = new MaterialBlock();
+      int packageCount = GetPackageCount(cache);
+      block.instanceData = CreateInstanceData(packageCount);
+      block.packageList = new List<InstancingPackage>[packageCount];
       for (int index = 0; index != block.packageList.Length; ++index)
       {
-        block.packageList[index] = new List<JerboaInstancingManager.InstancingPackage>();
-        JerboaInstancingManager.InstancingPackage package = this.CreatePackage(block.instanceData, cache.mesh, materials, index);
+        block.packageList[index] = new List<InstancingPackage>();
+        InstancingPackage package = CreatePackage(block.instanceData, cache.mesh, materials, index);
         block.packageList[index].Add(package);
-        this.PreparePackageMaterial(package, cache, index);
+        PreparePackageMaterial(package, cache, index);
         package.instancingCount = 1;
       }
       block.runtimePackageIndex = new int[packageCount];
       return block;
     }
 
-    private JerboaInstancingManager.VertexCache CreateVertexCache(
+    private VertexCache CreateVertexCache(
       string prefabName,
       int renderName,
       int alias,
       Mesh mesh)
     {
-      JerboaInstancingManager.VertexCache vertexCache = new JerboaInstancingManager.VertexCache();
+      VertexCache vertexCache = new VertexCache();
       int key1 = renderName + alias;
-      this.vertexCachePool[key1] = vertexCache;
+      vertexCachePool[key1] = vertexCache;
       vertexCache.nameCode = key1;
       vertexCache.mesh = mesh;
-      vertexCache.boneTextureIndex = this.FindTexture_internal(prefabName);
+      vertexCache.boneTextureIndex = FindTexture_internal(prefabName);
       vertexCache.weight = new Vector4[mesh.vertexCount];
       vertexCache.boneIndex = new Vector4[mesh.vertexCount];
-      int packageCount = this.GetPackageCount(vertexCache);
-      JerboaInstancingManager.InstanceData instanceData1 = (JerboaInstancingManager.InstanceData) null;
+      int packageCount = GetPackageCount(vertexCache);
+      InstanceData instanceData1 = null;
       int key2 = prefabName.GetHashCode() + alias;
-      if (!this.instanceDataPool.TryGetValue(key2, out instanceData1))
+      if (!instanceDataPool.TryGetValue(key2, out instanceData1))
       {
-        JerboaInstancingManager.InstanceData instanceData2 = this.CreateInstanceData(packageCount);
-        this.instanceDataPool.Add(key2, instanceData2);
+        InstanceData instanceData2 = CreateInstanceData(packageCount);
+        instanceDataPool.Add(key2, instanceData2);
       }
-      vertexCache.instanceBlockList = new Dictionary<int, JerboaInstancingManager.MaterialBlock>();
+      vertexCache.instanceBlockList = new Dictionary<int, MaterialBlock>();
       return vertexCache;
     }
 
     private void SetupVertexCache(
-      JerboaInstancingManager.VertexCache vertexCache,
-      JerboaInstancingManager.MaterialBlock block,
+      VertexCache vertexCache,
+      MaterialBlock block,
       SkinnedMeshRenderer render,
       Transform[] boneTransform,
       int bonePerVertex)
     {
-      int[] numArray = (int[]) null;
+      int[] numArray = null;
       if (render.bones.Length != boneTransform.Length)
       {
         if (render.bones.Length == 0)
@@ -551,7 +548,7 @@ namespace JerboaAnimationInstancing
             }
           }
           if (numArray.Length == 0)
-            numArray = (int[]) null;
+            numArray = null;
         }
       }
       if (Profiler.enabled)
@@ -566,10 +563,10 @@ namespace JerboaAnimationInstancing
         vertexCache.weight[index].y = boneWeights[index].weight1;
         vertexCache.weight[index].z = boneWeights[index].weight2;
         vertexCache.weight[index].w = boneWeights[index].weight3;
-        vertexCache.boneIndex[index].x = numArray == null ? (float) boneWeights[index].boneIndex0 : (float) numArray[boneWeights[index].boneIndex0];
-        vertexCache.boneIndex[index].y = numArray == null ? (float) boneWeights[index].boneIndex1 : (float) numArray[boneWeights[index].boneIndex1];
-        vertexCache.boneIndex[index].z = numArray == null ? (float) boneWeights[index].boneIndex2 : (float) numArray[boneWeights[index].boneIndex2];
-        vertexCache.boneIndex[index].w = numArray == null ? (float) boneWeights[index].boneIndex3 : (float) numArray[boneWeights[index].boneIndex3];
+        vertexCache.boneIndex[index].x = numArray == null ? (float) boneWeights[index].boneIndex0 : numArray[boneWeights[index].boneIndex0];
+        vertexCache.boneIndex[index].y = numArray == null ? (float) boneWeights[index].boneIndex1 : numArray[boneWeights[index].boneIndex1];
+        vertexCache.boneIndex[index].z = numArray == null ? (float) boneWeights[index].boneIndex2 : numArray[boneWeights[index].boneIndex2];
+        vertexCache.boneIndex[index].w = numArray == null ? (float) boneWeights[index].boneIndex3 : numArray[boneWeights[index].boneIndex3];
         Debug.Assert((double) vertexCache.boneIndex[index].x >= 0.0);
         switch (bonePerVertex)
         {
@@ -599,18 +596,18 @@ namespace JerboaAnimationInstancing
         Profiler.EndSample();
       if (vertexCache.materials == null)
         vertexCache.materials = render.sharedMaterials;
-      this.SetupAdditionalData(vertexCache);
+      SetupAdditionalData(vertexCache);
       for (int index = 0; index != block.packageList.Length; ++index)
       {
-        JerboaInstancingManager.InstancingPackage package = this.CreatePackage(block.instanceData, vertexCache.mesh, render.sharedMaterials, index);
+        InstancingPackage package = CreatePackage(block.instanceData, vertexCache.mesh, render.sharedMaterials, index);
         block.packageList[index].Add(package);
-        this.PreparePackageMaterial(package, vertexCache, index);
+        PreparePackageMaterial(package, vertexCache, index);
       }
     }
 
     private void SetupVertexCache(
-      JerboaInstancingManager.VertexCache vertexCache,
-      JerboaInstancingManager.MaterialBlock block,
+      VertexCache vertexCache,
+      MaterialBlock block,
       MeshRenderer render,
       Mesh mesh,
       Transform[] boneTransform,
@@ -629,19 +626,19 @@ namespace JerboaAnimationInstancing
         }
       }
       if (boneIndex >= 0)
-        this.BindAttachment(vertexCache, vertexCache, vertexCache.mesh, boneIndex);
+        BindAttachment(vertexCache, vertexCache, vertexCache.mesh, boneIndex);
       if (vertexCache.materials == null)
         vertexCache.materials = render.sharedMaterials;
-      this.SetupAdditionalData(vertexCache);
+      SetupAdditionalData(vertexCache);
       for (int index = 0; index != block.packageList.Length; ++index)
       {
-        JerboaInstancingManager.InstancingPackage package = this.CreatePackage(block.instanceData, vertexCache.mesh, render.sharedMaterials, index);
+        InstancingPackage package = CreatePackage(block.instanceData, vertexCache.mesh, render.sharedMaterials, index);
         block.packageList[index].Add(package);
-        this.PreparePackageMaterial(package, vertexCache, index);
+        PreparePackageMaterial(package, vertexCache, index);
       }
     }
 
-    public void SetupAdditionalData(JerboaInstancingManager.VertexCache vertexCache)
+    public void SetupAdditionalData(VertexCache vertexCache)
     {
       Color[] colorArray = new Color[vertexCache.weight.Length];
       for (int index = 0; index != colorArray.Length; ++index)
@@ -660,48 +657,48 @@ namespace JerboaAnimationInstancing
     }
 
     public void PreparePackageMaterial(
-      JerboaInstancingManager.InstancingPackage package,
-      JerboaInstancingManager.VertexCache vertexCache,
+      InstancingPackage package,
+      VertexCache vertexCache,
       int aniTextureIndex)
     {
       if (vertexCache.boneTextureIndex < 0)
         return;
       for (int index = 0; index != package.subMeshCount; ++index)
       {
-        JerboaInstancingManager.AnimationTexture animationTexture = this.animationTextureList[vertexCache.boneTextureIndex];
+        AnimationTexture animationTexture = animationTextureList[vertexCache.boneTextureIndex];
         package.material[index].SetTexture("_boneTexture", (Texture) animationTexture.boneTexture[aniTextureIndex]);
         package.material[index].SetInt("_boneTextureWidth", animationTexture.boneTexture[aniTextureIndex].width);
         package.material[index].SetInt("_boneTextureHeight", animationTexture.boneTexture[aniTextureIndex].height);
         package.material[index].SetInt("_boneTextureBlockWidth", animationTexture.blockWidth);
         package.material[index].SetInt("_boneTextureBlockHeight", animationTexture.blockHeight);
-        package.material[index].color = this.jerboaManager.Color;
+        package.material[index].color = jerboaManager.Color;
       }
     }
 
     public void AddBoundingSphere(JerboaInstanceDescription instance)
     {
-      this.boundingSphere[this.usedBoundingSphereCount++] = instance.BoundingSphere;
-      this.cullingGroup.SetBoundingSphereCount(this.usedBoundingSphereCount);
-      instance.visible = this.cullingGroup.IsVisible(this.usedBoundingSphereCount - 1);
+      boundingSphere[usedBoundingSphereCount++] = instance.BoundingSphere;
+      cullingGroup.SetBoundingSphereCount(usedBoundingSphereCount);
+      instance.visible = cullingGroup.IsVisible(usedBoundingSphereCount - 1);
     }
 
     private void CullingStateChanged(CullingGroupEvent evt)
     {
-      Debug.Assert(evt.index < this.usedBoundingSphereCount);
+      Debug.Assert(evt.index < usedBoundingSphereCount);
       if (evt.hasBecomeVisible)
       {
-        Debug.Assert(evt.index < this.aniInstancingList.Count);
-        this.aniInstancingList[evt.index].visible = true;
+        Debug.Assert(evt.index < aniInstancingList.Count);
+        aniInstancingList[evt.index].visible = true;
       }
       if (!evt.hasBecomeInvisible)
         return;
-      Debug.Assert(evt.index < this.aniInstancingList.Count);
-      this.aniInstancingList[evt.index].visible = false;
+      Debug.Assert(evt.index < aniInstancingList.Count);
+      aniInstancingList[evt.index].visible = false;
     }
 
     public void BindAttachment(
-      JerboaInstancingManager.VertexCache parentCache,
-      JerboaInstancingManager.VertexCache attachmentCache,
+      VertexCache parentCache,
+      VertexCache attachmentCache,
       Mesh sharedMesh,
       int boneIndex)
     {
@@ -746,16 +743,16 @@ namespace JerboaAnimationInstancing
 
     public class MaterialBlock
     {
-      public JerboaInstancingManager.InstanceData instanceData;
+      public InstanceData instanceData;
       public int[] runtimePackageIndex;
-      public List<JerboaInstancingManager.InstancingPackage>[] packageList;
+      public List<InstancingPackage>[] packageList;
     }
 
     public class VertexCache
     {
       public int nameCode;
       public Mesh mesh = (Mesh) null;
-      public Dictionary<int, JerboaInstancingManager.MaterialBlock> instanceBlockList;
+      public Dictionary<int, MaterialBlock> instanceBlockList;
       public Vector4[] weight;
       public Vector4[] boneIndex;
       public Material[] materials = (Material[]) null;

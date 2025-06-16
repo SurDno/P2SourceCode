@@ -4,9 +4,6 @@ using Engine.Source.Commons;
 using Engine.Source.Connections;
 using Engine.Source.Inventory;
 using InputServices;
-using System;
-using UnityEngine;
-using UnityEngine.UI;
 
 namespace Engine.Impl.UI.Menu.Main
 {
@@ -24,33 +21,33 @@ namespace Engine.Impl.UI.Menu.Main
     private Slider progress;
     [SerializeField]
     private GameObject loadingSpinner;
-    private int gameDay = 0;
+    private int gameDay;
     private LoadWindowMode mode = LoadWindowMode.Initial;
-    private string bufferedTooltip = (string) null;
+    private string bufferedTooltip;
 
     public static LoadWindow Instance { get; private set; }
 
     public int GameDay
     {
-      get => this.gameDay;
+      get => gameDay;
       set
       {
-        if (this.gameDay == value)
+        if (gameDay == value)
           return;
-        this.gameDay = value;
-        this.Invalidate();
+        gameDay = value;
+        Invalidate();
       }
     }
 
     public LoadWindowMode Mode
     {
-      get => this.mode;
+      get => mode;
       set
       {
-        if (this.mode == value)
+        if (mode == value)
           return;
-        this.mode = value;
-        this.Invalidate();
+        mode = value;
+        Invalidate();
       }
     }
 
@@ -62,36 +59,36 @@ namespace Engine.Impl.UI.Menu.Main
 
     public bool ShowProgress
     {
-      get => this.progress.gameObject.activeSelf;
-      set => this.progress.gameObject.SetActive(value);
+      get => progress.gameObject.activeSelf;
+      set => progress.gameObject.SetActive(value);
     }
 
     public float Progress
     {
-      get => this.progress.value;
-      set => this.progress.value = value;
+      get => progress.value;
+      set => progress.value = value;
     }
 
-    private void Awake() => LoadWindow.Instance = this;
+    private void Awake() => Instance = this;
 
     private void Build()
     {
-      this.defaultSprite.Visible = this.mode == LoadWindowMode.Initial;
+      defaultSprite.Visible = mode == LoadWindowMode.Initial;
       Sprite sprite1 = (Sprite) null;
-      string str = (string) null;
-      if (this.mode == LoadWindowMode.StartGameData || this.mode == LoadWindowMode.LoadSavedGame)
+      string str = null;
+      if (mode == LoadWindowMode.StartGameData || mode == LoadWindowMode.LoadSavedGame)
       {
-        LoadWindowGameDataItem windowGameDataItem = this.gameDataSettings.GetItem(InstanceByRequest<GameDataService>.Instance.GetCurrentGameData().Name);
+        LoadWindowGameDataItem windowGameDataItem = gameDataSettings.GetItem(InstanceByRequest<GameDataService>.Instance.GetCurrentGameData().Name);
         if (!windowGameDataItem.IsNull)
         {
           UnitySubAsset<Sprite> imageInformation;
-          if (this.mode == LoadWindowMode.LoadSavedGame)
+          if (mode == LoadWindowMode.LoadSavedGame)
           {
             IProfilesService service = ServiceLocator.GetService<IProfilesService>();
             int intValue = service != null ? service.GetIntValue("Deaths") : 0;
             if ((UnityEngine.Object) windowGameDataItem.LoadStorables != (UnityEngine.Object) null && InstanceByRequest<EngineApplication>.Instance.IsInitialized)
             {
-              IInventoryPlaceholderSerializable placeholderSerializable = this.Evaluate<IInventoryPlaceholderSerializable>((LoadWindowDataItem<IInventoryPlaceholderSerializable>[]) windowGameDataItem.LoadStorables.Items, this.GameDay, intValue);
+              IInventoryPlaceholderSerializable placeholderSerializable = Evaluate(windowGameDataItem.LoadStorables.Items, GameDay, intValue);
               if (placeholderSerializable != new IInventoryPlaceholderSerializable())
               {
                 Sprite sprite2;
@@ -108,7 +105,7 @@ namespace Engine.Impl.UI.Menu.Main
               }
             }
             if ((UnityEngine.Object) windowGameDataItem.LoadTooltips != (UnityEngine.Object) null)
-              str = this.Evaluate<string>((LoadWindowDataItem<string>[]) windowGameDataItem.LoadTooltips.Items, this.GameDay, intValue);
+              str = Evaluate(windowGameDataItem.LoadTooltips.Items, GameDay, intValue);
           }
           if ((UnityEngine.Object) sprite1 == (UnityEngine.Object) null)
           {
@@ -128,16 +125,16 @@ namespace Engine.Impl.UI.Menu.Main
             str = windowGameDataItem.StartTooltip;
         }
       }
-      this.spriteView.SetValue(sprite1, true);
-      this.tooltipTagView.StringValue = str;
-      this.bufferedTooltip = str;
+      spriteView.SetValue(sprite1, true);
+      tooltipTagView.StringValue = str;
+      bufferedTooltip = str;
     }
 
     private void Clear()
     {
-      this.spriteView.SetValue((Sprite) null, true);
-      this.tooltipTagView.StringValue = (string) null;
-      this.bufferedTooltip = (string) null;
+      spriteView.SetValue((Sprite) null, true);
+      tooltipTagView.StringValue = null;
+      bufferedTooltip = null;
     }
 
     private bool Evaluate<T>(LoadWindowDataItem<T> item, int gameDay, int deathCount)
@@ -151,7 +148,7 @@ namespace Engine.Impl.UI.Menu.Main
       for (int index = 0; index < items.Length; ++index)
       {
         LoadWindowDataItem<T> loadWindowDataItem = items[index];
-        if (this.Evaluate<T>(loadWindowDataItem, gameDay, deathCount))
+        if (Evaluate(loadWindowDataItem, gameDay, deathCount))
           max += loadWindowDataItem.Weight;
       }
       if (max == 0)
@@ -161,7 +158,7 @@ namespace Engine.Impl.UI.Menu.Main
       for (int index = 0; index < items.Length; ++index)
       {
         LoadWindowDataItem<T> loadWindowDataItem = items[index];
-        if (this.Evaluate<T>(loadWindowDataItem, gameDay, deathCount))
+        if (Evaluate(loadWindowDataItem, gameDay, deathCount))
         {
           num2 += loadWindowDataItem.Weight;
           if (num1 < num2)
@@ -175,28 +172,28 @@ namespace Engine.Impl.UI.Menu.Main
     {
       if (!this.isActiveAndEnabled)
         return;
-      this.Build();
+      Build();
     }
 
     private void OnDisable()
     {
-      this.Clear();
-      InputService.Instance.onJoystickUsedChanged -= new Action<bool>(this.OnJoystick);
+      Clear();
+      InputService.Instance.onJoystickUsedChanged -= OnJoystick;
     }
 
     private void OnEnable()
     {
-      this.loadingSpinner.SetActive(true);
-      this.Build();
-      InputService.Instance.onJoystickUsedChanged += new Action<bool>(this.OnJoystick);
+      loadingSpinner.SetActive(true);
+      Build();
+      InputService.Instance.onJoystickUsedChanged += OnJoystick;
     }
 
     private void OnJoystick(bool joystick)
     {
-      if (this.bufferedTooltip == null)
+      if (bufferedTooltip == null)
         return;
-      this.tooltipTagView.StringValue = (string) null;
-      this.tooltipTagView.StringValue = this.bufferedTooltip;
+      tooltipTagView.StringValue = null;
+      tooltipTagView.StringValue = bufferedTooltip;
     }
   }
 }

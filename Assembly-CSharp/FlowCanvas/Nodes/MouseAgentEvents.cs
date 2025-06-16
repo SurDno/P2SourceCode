@@ -1,5 +1,4 @@
 ﻿using ParadoxNotion.Design;
-using UnityEngine;
 
 namespace FlowCanvas.Nodes
 {
@@ -31,54 +30,54 @@ namespace FlowCanvas.Nodes
 
     protected override void RegisterPorts()
     {
-      this.down = this.AddFlowOutput("Down");
-      this.up = this.AddFlowOutput("Up");
-      this.enter = this.AddFlowOutput("Enter");
-      this.over = this.AddFlowOutput("Over");
-      this.exit = this.AddFlowOutput("Exit");
-      this.drag = this.AddFlowOutput("Drag");
-      this.AddValueOutput<RaycastHit>("Info", (ValueHandler<RaycastHit>) (() => this.hit));
+      down = AddFlowOutput("Down");
+      up = AddFlowOutput("Up");
+      enter = AddFlowOutput("Enter");
+      over = AddFlowOutput("Over");
+      exit = AddFlowOutput("Exit");
+      drag = AddFlowOutput("Drag");
+      AddValueOutput("Info", (ValueHandler<RaycastHit>) (() => hit));
     }
 
     private void OnMouseEnter()
     {
-      this.StoreHit();
-      this.enter.Call();
+      StoreHit();
+      enter.Call();
     }
 
     private void OnMouseOver()
     {
-      this.StoreHit();
-      this.over.Call();
+      StoreHit();
+      over.Call();
     }
 
     private void OnMouseExit()
     {
-      this.StoreHit();
-      this.exit.Call();
+      StoreHit();
+      exit.Call();
     }
 
     private void OnMouseDown()
     {
-      this.StoreHit();
-      this.down.Call();
+      StoreHit();
+      down.Call();
     }
 
     private void OnMouseUp()
     {
-      this.StoreHit();
-      this.up.Call();
+      StoreHit();
+      up.Call();
     }
 
     private void OnMouseDrag()
     {
-      this.StoreHit();
-      this.drag.Call();
+      StoreHit();
+      drag.Call();
     }
 
     private void StoreHit()
     {
-      Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out this.hit, float.PositiveInfinity);
+      Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, float.PositiveInfinity);
     }
   }
 }

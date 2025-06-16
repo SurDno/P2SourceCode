@@ -1,8 +1,7 @@
-﻿using Engine.Common.Components.Storable;
+﻿using System.Linq;
+using Engine.Common.Components.Storable;
 using Engine.Impl.UI.Controls;
 using Engine.Source.Components;
-using System.Linq;
-using UnityEngine;
 
 public class GroupCheckItemView : ItemView
 {
@@ -14,28 +13,28 @@ public class GroupCheckItemView : ItemView
 
   public override StorableComponent Storable
   {
-    get => this.storable;
+    get => storable;
     set
     {
-      if (this.storable == value)
+      if (storable == value)
         return;
-      this.storable = value;
-      if ((Object) this.hideableView == (Object) null)
+      storable = value;
+      if ((Object) hideableView == (Object) null)
         return;
-      if (this.storable != null)
+      if (storable != null)
       {
-        foreach (StorableGroup group in this.groups)
+        foreach (StorableGroup group in groups)
         {
-          if (this.storable.Groups.Contains<StorableGroup>(group))
+          if (storable.Groups.Contains(group))
           {
-            this.hideableView.Visible = true;
+            hideableView.Visible = true;
             return;
           }
         }
       }
-      this.hideableView.Visible = false;
+      hideableView.Visible = false;
     }
   }
 
-  public override void SkipAnimation() => this.hideableView?.SkipAnimation();
+  public override void SkipAnimation() => hideableView?.SkipAnimation();
 }

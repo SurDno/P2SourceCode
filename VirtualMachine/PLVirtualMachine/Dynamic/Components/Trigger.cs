@@ -1,8 +1,6 @@
 ﻿using Cofe.Proxies;
-using Engine.Common;
 using PLVirtualMachine.Common.EngineAPI.VMECS;
 using PLVirtualMachine.Objects;
-using System;
 
 namespace PLVirtualMachine.Dynamic.Components
 {
@@ -20,10 +18,10 @@ namespace PLVirtualMachine.Dynamic.Components
       switch (target.Name)
       {
         case "ObjectEnterEvent":
-          this.ObjectEnterEvent += (Action<IEntity>) (p1 => target.RaiseFromEngineImpl((object) p1));
+          ObjectEnterEvent += p1 => target.RaiseFromEngineImpl(p1);
           break;
         case "ObjectExitEvent":
-          this.ObjectExitEvent += (Action<IEntity>) (p1 => target.RaiseFromEngineImpl((object) p1));
+          ObjectExitEvent += p1 => target.RaiseFromEngineImpl(p1);
           break;
       }
     }

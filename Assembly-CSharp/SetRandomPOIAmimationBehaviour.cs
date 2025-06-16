@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-public class SetRandomPOIAmimationBehaviour : StateMachineBehaviour
+﻿public class SetRandomPOIAmimationBehaviour : StateMachineBehaviour
 {
   public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
   {

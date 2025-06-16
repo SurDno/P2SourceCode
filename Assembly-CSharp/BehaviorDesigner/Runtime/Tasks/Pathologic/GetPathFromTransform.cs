@@ -1,12 +1,12 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using System.Collections.Generic;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons;
 using Engine.Common.Commons.Converters;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Scripts.Tools.Serializations.Converters;
-using System.Collections.Generic;
-using UnityEngine;
 
 namespace BehaviorDesigner.Runtime.Tasks.Pathologic
 {
@@ -16,85 +16,85 @@ namespace BehaviorDesigner.Runtime.Tasks.Pathologic
   [Factory]
   [GeneratePartial(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
   [FactoryProxy(typeof (GetPathFromTransform))]
-  public class GetPathFromTransform : BehaviorDesigner.Runtime.Tasks.Action, IStub, ISerializeDataWrite, ISerializeDataRead
+  public class GetPathFromTransform : Action, IStub, ISerializeDataWrite, ISerializeDataRead
   {
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [SerializeField]
     public SharedTransformList Result;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [SerializeField]
     public SharedTransform Target;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [SerializeField]
     public SharedInt PointIndex;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy()]
     [SerializeField]
-    public SharedBool InversePath = (SharedBool) false;
-    private bool success = false;
+    public SharedBool InversePath = false;
+    private bool success;
 
     public override void OnStart()
     {
-      this.success = false;
-      PathPart component1 = this.Target.Value.GetComponent<PathPart>();
+      success = false;
+      PathPart component1 = Target.Value.GetComponent<PathPart>();
       if ((UnityEngine.Object) component1 != (UnityEngine.Object) null)
       {
-        this.Result.Value = component1.PointsList;
-        this.success = true;
+        Result.Value = component1.PointsList;
+        success = true;
       }
       else
       {
-        PatrolPath component2 = this.Target.Value.GetComponent<PatrolPath>();
+        PatrolPath component2 = Target.Value.GetComponent<PatrolPath>();
         if ((UnityEngine.Object) component2 != (UnityEngine.Object) null)
         {
-          List<Transform> presetPath = component2.GetPresetPath(this.PointIndex.Value, this.InversePath.Value);
+          List<Transform> presetPath = component2.GetPresetPath(PointIndex.Value, InversePath.Value);
           if (presetPath != null)
           {
-            this.Result.Value = presetPath;
-            this.success = true;
+            Result.Value = presetPath;
+            success = true;
             return;
           }
         }
-        Debug.LogError((object) (this.gameObject.name + "  has wrong path!"));
+        Debug.LogError((object) (gameObject.name + "  has wrong path!"));
       }
     }
 
     public override TaskStatus OnUpdate()
     {
-      return !this.success ? TaskStatus.Failure : TaskStatus.Success;
+      return !success ? TaskStatus.Failure : TaskStatus.Success;
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.WriteSerialize<NodeData>(writer, "NodeData", this.nodeData);
-      DefaultDataWriteUtility.Write(writer, "Id", this.id);
-      DefaultDataWriteUtility.Write(writer, "FriendlyName", this.friendlyName);
-      DefaultDataWriteUtility.Write(writer, "Instant", this.instant);
-      DefaultDataWriteUtility.Write(writer, "Disabled", this.disabled);
-      BehaviorTreeDataWriteUtility.WriteShared<SharedTransformList>(writer, "Result", this.Result);
-      BehaviorTreeDataWriteUtility.WriteShared<SharedTransform>(writer, "Target", this.Target);
-      BehaviorTreeDataWriteUtility.WriteShared<SharedInt>(writer, "PointIndex", this.PointIndex);
-      BehaviorTreeDataWriteUtility.WriteShared<SharedBool>(writer, "InversePath", this.InversePath);
+      DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
+      DefaultDataWriteUtility.Write(writer, "Id", id);
+      DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
+      DefaultDataWriteUtility.Write(writer, "Instant", instant);
+      DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
+      BehaviorTreeDataWriteUtility.WriteShared(writer, "Result", Result);
+      BehaviorTreeDataWriteUtility.WriteShared(writer, "Target", Target);
+      BehaviorTreeDataWriteUtility.WriteShared(writer, "PointIndex", PointIndex);
+      BehaviorTreeDataWriteUtility.WriteShared(writer, "InversePath", InversePath);
     }
 
-    public void DataRead(IDataReader reader, System.Type type)
+    public void DataRead(IDataReader reader, Type type)
     {
-      this.nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
-      this.id = DefaultDataReadUtility.Read(reader, "Id", this.id);
-      this.friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", this.friendlyName);
-      this.instant = DefaultDataReadUtility.Read(reader, "Instant", this.instant);
-      this.disabled = DefaultDataReadUtility.Read(reader, "Disabled", this.disabled);
-      this.Result = BehaviorTreeDataReadUtility.ReadShared<SharedTransformList>(reader, "Result", this.Result);
-      this.Target = BehaviorTreeDataReadUtility.ReadShared<SharedTransform>(reader, "Target", this.Target);
-      this.PointIndex = BehaviorTreeDataReadUtility.ReadShared<SharedInt>(reader, "PointIndex", this.PointIndex);
-      this.InversePath = BehaviorTreeDataReadUtility.ReadShared<SharedBool>(reader, "InversePath", this.InversePath);
+      nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
+      id = DefaultDataReadUtility.Read(reader, "Id", id);
+      friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
+      instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
+      disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
+      Result = BehaviorTreeDataReadUtility.ReadShared(reader, "Result", Result);
+      Target = BehaviorTreeDataReadUtility.ReadShared(reader, "Target", Target);
+      PointIndex = BehaviorTreeDataReadUtility.ReadShared(reader, "PointIndex", PointIndex);
+      InversePath = BehaviorTreeDataReadUtility.ReadShared(reader, "InversePath", InversePath);
     }
   }
 }

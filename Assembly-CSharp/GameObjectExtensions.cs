@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-public static class GameObjectExtensions
+﻿public static class GameObjectExtensions
 {
   public static GameObject GetSceneInstance(this GameObject @object)
   {

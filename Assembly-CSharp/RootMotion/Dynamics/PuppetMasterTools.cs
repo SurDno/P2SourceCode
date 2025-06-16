@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace RootMotion.Dynamics
+﻿namespace RootMotion.Dynamics
 {
   public static class PuppetMasterTools
   {
@@ -72,7 +70,7 @@ namespace RootMotion.Dynamics
           if ((Object) component2 != (Object) null)
           {
             vector3 = component2.transform.TransformVector(component2.center);
-            direction = component2.transform.TransformVector(PuppetMasterTools.DirectionIntToVector3(component2.direction));
+            direction = component2.transform.TransformVector(DirectionIntToVector3(component2.direction));
           }
           SphereCollider component3 = muscle.joint.GetComponent<SphereCollider>();
           Vector3 vector4 = Vector3.zero;
@@ -90,7 +88,7 @@ namespace RootMotion.Dynamics
           {
             component2.center = component2.transform.InverseTransformVector(vector3);
             Vector3 dir = component2.transform.InverseTransformDirection(direction);
-            component2.direction = PuppetMasterTools.DirectionVector3ToInt(dir);
+            component2.direction = DirectionVector3ToInt(dir);
           }
           if ((Object) component3 != (Object) null)
             component3.center = component3.transform.InverseTransformVector(vector4);
@@ -118,9 +116,9 @@ namespace RootMotion.Dynamics
       float num2 = Mathf.Abs(f2);
       float num3 = Mathf.Abs(f3);
       int num4 = 0;
-      if ((double) num2 > (double) num1 && (double) num2 > (double) num3)
+      if (num2 > (double) num1 && num2 > (double) num3)
         num4 = 1;
-      if ((double) num3 > (double) num1 && (double) num3 > (double) num2)
+      if (num3 > (double) num1 && num3 > (double) num2)
         num4 = 2;
       return num4;
     }

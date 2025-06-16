@@ -1,4 +1,5 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons;
 using Engine.Common.Commons.Cloneable;
@@ -6,7 +7,6 @@ using Engine.Common.Commons.Converters;
 using Engine.Common.Components.Parameters;
 using Engine.Source.Commons;
 using Engine.Source.Commons.Parameters;
-using System;
 
 namespace Engine.Source.Proxies
 {
@@ -26,53 +26,53 @@ namespace Engine.Source.Proxies
 
     public void ComputeNeedSave(object target2)
     {
-      this.NeedSave = true;
+      NeedSave = true;
       ResetableBoolParameter_Generated parameterGenerated = (ResetableBoolParameter_Generated) target2;
-      if (parameterGenerated.name != this.name || parameterGenerated.value != this.value || parameterGenerated.baseValue != this.baseValue)
+      if (parameterGenerated.name != name || parameterGenerated.value != value || parameterGenerated.baseValue != baseValue)
         return;
-      this.NeedSave = false;
+      NeedSave = false;
     }
 
     public object Clone()
     {
       ResetableBoolParameter_Generated instance = Activator.CreateInstance<ResetableBoolParameter_Generated>();
-      this.CopyTo((object) instance);
-      return (object) instance;
+      CopyTo(instance);
+      return instance;
     }
 
     public void CopyTo(object target2)
     {
       ResetableBoolParameter_Generated parameterGenerated = (ResetableBoolParameter_Generated) target2;
-      parameterGenerated.name = this.name;
-      parameterGenerated.value = this.value;
-      parameterGenerated.baseValue = this.baseValue;
+      parameterGenerated.name = name;
+      parameterGenerated.value = value;
+      parameterGenerated.baseValue = baseValue;
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.WriteEnum<ParameterNameEnum>(writer, "Name", this.name);
-      DefaultDataWriteUtility.Write(writer, "Value", this.value);
-      DefaultDataWriteUtility.Write(writer, "BaseValue", this.baseValue);
+      DefaultDataWriteUtility.WriteEnum(writer, "Name", name);
+      DefaultDataWriteUtility.Write(writer, "Value", value);
+      DefaultDataWriteUtility.Write(writer, "BaseValue", baseValue);
     }
 
     public void DataRead(IDataReader reader, Type type)
     {
-      this.name = DefaultDataReadUtility.ReadEnum<ParameterNameEnum>(reader, "Name");
-      this.value = DefaultDataReadUtility.Read(reader, "Value", this.value);
-      this.baseValue = DefaultDataReadUtility.Read(reader, "BaseValue", this.baseValue);
+      name = DefaultDataReadUtility.ReadEnum<ParameterNameEnum>(reader, "Name");
+      value = DefaultDataReadUtility.Read(reader, "Value", value);
+      baseValue = DefaultDataReadUtility.Read(reader, "BaseValue", baseValue);
     }
 
     public void StateSave(IDataWriter writer)
     {
-      DefaultDataWriteUtility.WriteEnum<ParameterNameEnum>(writer, "Name", this.name);
-      DefaultDataWriteUtility.Write(writer, "Value", this.value);
-      DefaultDataWriteUtility.Write(writer, "BaseValue", this.baseValue);
+      DefaultDataWriteUtility.WriteEnum(writer, "Name", name);
+      DefaultDataWriteUtility.Write(writer, "Value", value);
+      DefaultDataWriteUtility.Write(writer, "BaseValue", baseValue);
     }
 
     public void StateLoad(IDataReader reader, Type type)
     {
-      this.value = DefaultDataReadUtility.Read(reader, "Value", this.value);
-      this.baseValue = DefaultDataReadUtility.Read(reader, "BaseValue", this.baseValue);
+      value = DefaultDataReadUtility.Read(reader, "Value", value);
+      baseValue = DefaultDataReadUtility.Read(reader, "BaseValue", baseValue);
     }
   }
 }

@@ -44,17 +44,17 @@ namespace TriangleNet
     internal int undeads;
     internal Dictionary<int, Vertex> vertices;
 
-    public Behavior Behavior => this.behavior;
+    public Behavior Behavior => behavior;
 
-    public BoundingBox Bounds => this.bounds;
+    public BoundingBox Bounds => bounds;
 
-    public ICollection<Vertex> Vertices => (ICollection<Vertex>) this.vertices.Values;
+    public ICollection<Vertex> Vertices => vertices.Values;
 
-    public IList<Point> Holes => (IList<Point>) this.holes;
+    public IList<Point> Holes => holes;
 
-    public ICollection<Triangle> Triangles => (ICollection<Triangle>) this.triangles.Values;
+    public ICollection<Triangle> Triangles => triangles.Values;
 
-    public ICollection<Segment> Segments => (ICollection<Segment>) this.subsegs.Values;
+    public ICollection<Segment> Segments => subsegs.Values;
 
     public IEnumerable<Edge> Edges
     {
@@ -66,13 +66,13 @@ namespace TriangleNet
       }
     }
 
-    public int NumberOfInputPoints => this.invertices;
+    public int NumberOfInputPoints => invertices;
 
-    public int NumberOfEdges => this.edges;
+    public int NumberOfEdges => edges;
 
-    public bool IsPolygon => this.insegments > 0;
+    public bool IsPolygon => insegments > 0;
 
-    public NodeNumbering CurrentNumbering => this.numbering;
+    public NodeNumbering CurrentNumbering => numbering;
 
     public Mesh()
       : this(new Behavior())
@@ -82,20 +82,20 @@ namespace TriangleNet
     public Mesh(Behavior behavior)
     {
       this.behavior = behavior;
-      this.logger = SimpleLog.Instance;
+      logger = SimpleLog.Instance;
       behavior = new Behavior();
-      this.vertices = new Dictionary<int, Vertex>();
-      this.triangles = new Dictionary<int, Triangle>();
-      this.subsegs = new Dictionary<int, Segment>();
-      this.flipstack = new Stack<Otri>();
-      this.holes = new List<Point>();
-      this.regions = new List<RegionPointer>();
-      this.quality = new Quality(this);
-      this.locator = new TriangleLocator(this);
+      vertices = new Dictionary<int, Vertex>();
+      triangles = new Dictionary<int, Triangle>();
+      subsegs = new Dictionary<int, Segment>();
+      flipstack = new Stack<Otri>();
+      holes = new List<Point>();
+      regions = new List<RegionPointer>();
+      quality = new Quality(this);
+      locator = new TriangleLocator(this);
       Primitives.ExactInit();
-      if (Mesh.dummytri != null)
+      if (dummytri != null)
         return;
-      this.DummyInit();
+      DummyInit();
     }
 
     public void Load(string filename)
@@ -105,69 +105,69 @@ namespace TriangleNet
       FileReader.Read(filename, out geometry, out triangles);
       if (geometry == null || triangles == null)
         return;
-      this.Load(geometry, triangles);
+      Load(geometry, triangles);
     }
 
     public void Load(InputGeometry input, List<ITriangle> triangles)
     {
       if (input == null || triangles == null)
         throw new ArgumentException("Invalid input (argument is null).");
-      this.ResetData();
+      ResetData();
       if (input.HasSegments)
       {
-        this.behavior.Poly = true;
-        this.holes.AddRange((IEnumerable<Point>) input.Holes);
+        behavior.Poly = true;
+        holes.AddRange(input.Holes);
       }
-      if (!this.behavior.Poly)
+      if (!behavior.Poly)
       {
-        this.behavior.VarArea = false;
-        this.behavior.useRegions = false;
+        behavior.VarArea = false;
+        behavior.useRegions = false;
       }
-      this.behavior.useRegions = input.Regions.Count > 0;
-      this.TransferNodes(input);
-      this.hullsize = DataReader.Reconstruct(this, input, triangles.ToArray());
-      this.edges = (3 * triangles.Count + this.hullsize) / 2;
+      behavior.useRegions = input.Regions.Count > 0;
+      TransferNodes(input);
+      hullsize = DataReader.Reconstruct(this, input, triangles.ToArray());
+      edges = (3 * triangles.Count + hullsize) / 2;
     }
 
-    public void Triangulate(string inputFile) => this.Triangulate(FileReader.Read(inputFile));
+    public void Triangulate(string inputFile) => Triangulate(FileReader.Read(inputFile));
 
     public void Triangulate(InputGeometry input)
     {
-      this.ResetData();
-      this.behavior.Poly = input.HasSegments;
-      if (!this.behavior.Poly)
+      ResetData();
+      behavior.Poly = input.HasSegments;
+      if (!behavior.Poly)
       {
-        this.behavior.VarArea = false;
-        this.behavior.useRegions = false;
+        behavior.VarArea = false;
+        behavior.useRegions = false;
       }
-      this.behavior.useRegions = input.Regions.Count > 0;
-      this.steinerleft = this.behavior.SteinerPoints;
-      this.TransferNodes(input);
-      this.hullsize = this.Delaunay();
-      this.infvertex1 = (Vertex) null;
-      this.infvertex2 = (Vertex) null;
-      this.infvertex3 = (Vertex) null;
-      if (this.behavior.useSegments)
+      behavior.useRegions = input.Regions.Count > 0;
+      steinerleft = behavior.SteinerPoints;
+      TransferNodes(input);
+      hullsize = Delaunay();
+      infvertex1 = null;
+      infvertex2 = null;
+      infvertex3 = null;
+      if (behavior.useSegments)
       {
-        this.checksegments = true;
-        this.FormSkeleton(input);
+        checksegments = true;
+        FormSkeleton(input);
       }
-      if (this.behavior.Poly && this.triangles.Count > 0)
+      if (behavior.Poly && triangles.Count > 0)
       {
         foreach (Point hole in input.holes)
-          this.holes.Add(hole);
+          holes.Add(hole);
         foreach (RegionPointer region in input.regions)
-          this.regions.Add(region);
+          regions.Add(region);
         new Carver(this).CarveHoles();
       }
       else
       {
-        this.holes.Clear();
-        this.regions.Clear();
+        holes.Clear();
+        regions.Clear();
       }
-      if (this.behavior.Quality && this.triangles.Count > 0)
-        this.quality.EnforceQuality();
-      this.edges = (3 * this.triangles.Count + this.hullsize) / 2;
+      if (behavior.Quality && triangles.Count > 0)
+        quality.EnforceQuality();
+      edges = (3 * triangles.Count + hullsize) / 2;
     }
 
     public void Refine(bool halfArea)
@@ -175,62 +175,62 @@ namespace TriangleNet
       if (halfArea)
       {
         double num1 = 0.0;
-        foreach (Triangle triangle in this.triangles.Values)
+        foreach (Triangle triangle in triangles.Values)
         {
           double num2 = Math.Abs((triangle.vertices[2].x - triangle.vertices[0].x) * (triangle.vertices[1].y - triangle.vertices[0].y) - (triangle.vertices[1].x - triangle.vertices[0].x) * (triangle.vertices[2].y - triangle.vertices[0].y)) / 2.0;
           if (num2 > num1)
             num1 = num2;
         }
-        this.Refine(num1 / 2.0);
+        Refine(num1 / 2.0);
       }
       else
-        this.Refine();
+        Refine();
     }
 
     public void Refine(double areaConstraint)
     {
-      this.behavior.fixedArea = true;
-      this.behavior.MaxArea = areaConstraint;
-      this.Refine();
-      this.behavior.fixedArea = false;
-      this.behavior.MaxArea = -1.0;
+      behavior.fixedArea = true;
+      behavior.MaxArea = areaConstraint;
+      Refine();
+      behavior.fixedArea = false;
+      behavior.MaxArea = -1.0;
     }
 
     public void Refine()
     {
-      this.inelements = this.triangles.Count;
-      this.invertices = this.vertices.Count;
-      if (this.behavior.Poly)
-        this.insegments = !this.behavior.useSegments ? this.hullsize : this.subsegs.Count;
-      this.Reset();
-      this.steinerleft = this.behavior.SteinerPoints;
-      this.infvertex1 = (Vertex) null;
-      this.infvertex2 = (Vertex) null;
-      this.infvertex3 = (Vertex) null;
-      if (this.behavior.useSegments)
-        this.checksegments = true;
-      if (this.triangles.Count > 0)
-        this.quality.EnforceQuality();
-      this.edges = (3 * this.triangles.Count + this.hullsize) / 2;
+      inelements = triangles.Count;
+      invertices = vertices.Count;
+      if (behavior.Poly)
+        insegments = !behavior.useSegments ? hullsize : subsegs.Count;
+      Reset();
+      steinerleft = behavior.SteinerPoints;
+      infvertex1 = null;
+      infvertex2 = null;
+      infvertex3 = null;
+      if (behavior.useSegments)
+        checksegments = true;
+      if (triangles.Count > 0)
+        quality.EnforceQuality();
+      edges = (3 * triangles.Count + hullsize) / 2;
     }
 
     public void Smooth()
     {
-      this.numbering = NodeNumbering.None;
+      numbering = NodeNumbering.None;
       new SimpleSmoother(this).Smooth();
     }
 
-    public void Renumber() => this.Renumber(NodeNumbering.Linear);
+    public void Renumber() => Renumber(NodeNumbering.Linear);
 
     public void Renumber(NodeNumbering num)
     {
-      if (num == this.numbering)
+      if (num == numbering)
         return;
       switch (num)
       {
         case NodeNumbering.Linear:
           int num1 = 0;
-          using (Dictionary<int, Vertex>.ValueCollection.Enumerator enumerator = this.vertices.Values.GetEnumerator())
+          using (Dictionary<int, Vertex>.ValueCollection.Enumerator enumerator = vertices.Values.GetEnumerator())
           {
             while (enumerator.MoveNext())
               enumerator.Current.id = num1++;
@@ -238,7 +238,7 @@ namespace TriangleNet
           }
         case NodeNumbering.CuthillMcKee:
           int[] numArray = new CuthillMcKee().Renumber(this);
-          using (Dictionary<int, Vertex>.ValueCollection.Enumerator enumerator = this.vertices.Values.GetEnumerator())
+          using (Dictionary<int, Vertex>.ValueCollection.Enumerator enumerator = vertices.Values.GetEnumerator())
           {
             while (enumerator.MoveNext())
             {
@@ -248,47 +248,47 @@ namespace TriangleNet
             break;
           }
       }
-      this.numbering = num;
+      numbering = num;
       int num2 = 0;
-      foreach (Triangle triangle in this.triangles.Values)
+      foreach (Triangle triangle in triangles.Values)
         triangle.id = num2++;
     }
 
     public void Check(out bool isConsistent, out bool isDelaunay)
     {
-      isConsistent = this.quality.CheckMesh();
-      isDelaunay = this.quality.CheckDelaunay();
+      isConsistent = quality.CheckMesh();
+      isDelaunay = quality.CheckDelaunay();
     }
 
     private int Delaunay()
     {
-      int num = this.behavior.Algorithm != TriangulationAlgorithm.Dwyer ? (this.behavior.Algorithm != TriangulationAlgorithm.SweepLine ? new Incremental().Triangulate(this) : new SweepLine().Triangulate(this)) : new Dwyer().Triangulate(this);
-      return this.triangles.Count == 0 ? 0 : num;
+      int num = behavior.Algorithm != TriangulationAlgorithm.Dwyer ? (behavior.Algorithm != TriangulationAlgorithm.SweepLine ? new Incremental().Triangulate(this) : new SweepLine().Triangulate(this)) : new Dwyer().Triangulate(this);
+      return triangles.Count == 0 ? 0 : num;
     }
 
     private void ResetData()
     {
-      this.vertices.Clear();
-      this.triangles.Clear();
-      this.subsegs.Clear();
-      this.holes.Clear();
-      this.regions.Clear();
-      this.hash_vtx = 0;
-      this.hash_seg = 0;
-      this.hash_tri = 0;
-      this.flipstack.Clear();
-      this.hullsize = 0;
-      this.edges = 0;
-      this.Reset();
-      this.locator.Reset();
+      vertices.Clear();
+      triangles.Clear();
+      subsegs.Clear();
+      holes.Clear();
+      regions.Clear();
+      hash_vtx = 0;
+      hash_seg = 0;
+      hash_tri = 0;
+      flipstack.Clear();
+      hullsize = 0;
+      edges = 0;
+      Reset();
+      locator.Reset();
     }
 
     private void Reset()
     {
-      this.numbering = NodeNumbering.None;
-      this.undeads = 0;
-      this.checksegments = false;
-      this.checkquality = false;
+      numbering = NodeNumbering.None;
+      undeads = 0;
+      checksegments = false;
+      checkquality = false;
       Statistic.InCircleCount = 0L;
       Statistic.CounterClockwiseCount = 0L;
       Statistic.InCircleCountDecimal = 0L;
@@ -301,47 +301,47 @@ namespace TriangleNet
 
     private void DummyInit()
     {
-      Mesh.dummytri = new Triangle();
-      Mesh.dummytri.hash = -1;
-      Mesh.dummytri.id = -1;
-      Mesh.dummytri.neighbors[0].triangle = Mesh.dummytri;
-      Mesh.dummytri.neighbors[1].triangle = Mesh.dummytri;
-      Mesh.dummytri.neighbors[2].triangle = Mesh.dummytri;
-      if (!this.behavior.useSegments)
+      dummytri = new Triangle();
+      dummytri.hash = -1;
+      dummytri.id = -1;
+      dummytri.neighbors[0].triangle = dummytri;
+      dummytri.neighbors[1].triangle = dummytri;
+      dummytri.neighbors[2].triangle = dummytri;
+      if (!behavior.useSegments)
         return;
-      Mesh.dummysub = new Segment();
-      Mesh.dummysub.hash = -1;
-      Mesh.dummysub.subsegs[0].seg = Mesh.dummysub;
-      Mesh.dummysub.subsegs[1].seg = Mesh.dummysub;
-      Mesh.dummytri.subsegs[0].seg = Mesh.dummysub;
-      Mesh.dummytri.subsegs[1].seg = Mesh.dummysub;
-      Mesh.dummytri.subsegs[2].seg = Mesh.dummysub;
+      dummysub = new Segment();
+      dummysub.hash = -1;
+      dummysub.subsegs[0].seg = dummysub;
+      dummysub.subsegs[1].seg = dummysub;
+      dummytri.subsegs[0].seg = dummysub;
+      dummytri.subsegs[1].seg = dummysub;
+      dummytri.subsegs[2].seg = dummysub;
     }
 
     private void TransferNodes(InputGeometry data)
     {
       List<Vertex> points = data.points;
-      this.invertices = points.Count;
-      this.mesh_dim = 2;
-      if (this.invertices < 3)
+      invertices = points.Count;
+      mesh_dim = 2;
+      if (invertices < 3)
       {
-        this.logger.Error("Input must have at least three input vertices.", "MeshReader.TransferNodes()");
+        logger.Error("Input must have at least three input vertices.", "MeshReader.TransferNodes()");
         throw new Exception("Input must have at least three input vertices.");
       }
-      this.nextras = points[0].attributes == null ? 0 : points[0].attributes.Length;
+      nextras = points[0].attributes == null ? 0 : points[0].attributes.Length;
       foreach (Vertex vertex in points)
       {
-        vertex.hash = this.hash_vtx++;
+        vertex.hash = hash_vtx++;
         vertex.id = vertex.hash;
-        this.vertices.Add(vertex.hash, vertex);
+        vertices.Add(vertex.hash, vertex);
       }
-      this.bounds = data.Bounds;
+      bounds = data.Bounds;
     }
 
     internal void MakeVertexMap()
     {
       Otri otri = new Otri();
-      foreach (Triangle triangle in this.triangles.Values)
+      foreach (Triangle triangle in triangles.Values)
       {
         otri.triangle = triangle;
         for (otri.orient = 0; otri.orient < 3; ++otri.orient)
@@ -351,23 +351,22 @@ namespace TriangleNet
 
     internal void MakeTriangle(ref Otri newotri)
     {
-      Triangle triangle = new Triangle()
-      {
-        hash = this.hash_tri++
+      Triangle triangle = new Triangle {
+        hash = hash_tri++
       };
       triangle.id = triangle.hash;
       newotri.triangle = triangle;
       newotri.orient = 0;
-      this.triangles.Add(triangle.hash, triangle);
+      triangles.Add(triangle.hash, triangle);
     }
 
     internal void MakeSegment(ref Osub newsubseg)
     {
       Segment segment = new Segment();
-      segment.hash = this.hash_seg++;
+      segment.hash = hash_seg++;
       newsubseg.seg = segment;
       newsubseg.orient = 0;
-      this.subsegs.Add(segment.hash, segment);
+      subsegs.Add(segment.hash, segment);
     }
 
     internal InsertVertexResult InsertVertex(
@@ -402,17 +401,17 @@ namespace TriangleNet
       LocateResult locateResult;
       if (splitseg.seg == null)
       {
-        if (searchtri.triangle == Mesh.dummytri)
+        if (searchtri.triangle == dummytri)
         {
-          otri1.triangle = Mesh.dummytri;
+          otri1.triangle = dummytri;
           otri1.orient = 0;
           otri1.SymSelf();
-          locateResult = this.locator.Locate((Point) newvertex, ref otri1);
+          locateResult = locator.Locate(newvertex, ref otri1);
         }
         else
         {
           searchtri.Copy(ref otri1);
-          locateResult = this.locator.PreciseLocate((Point) newvertex, ref otri1, true);
+          locateResult = locator.PreciseLocate(newvertex, ref otri1, true);
         }
       }
       else
@@ -428,7 +427,7 @@ namespace TriangleNet
           break;
         case LocateResult.OnVertex:
           otri1.Copy(ref searchtri);
-          this.locator.Update(ref otri1);
+          locator.Update(ref otri1);
           return InsertVertexResult.Duplicate;
         default:
           num1 = locateResult == LocateResult.Outside ? 1 : 0;
@@ -436,45 +435,44 @@ namespace TriangleNet
       }
       if (num1 != 0)
       {
-        if (this.checksegments && splitseg.seg == null)
+        if (checksegments && splitseg.seg == null)
         {
           otri1.SegPivot(ref os5);
-          if (os5.seg != Mesh.dummysub)
+          if (os5.seg != dummysub)
           {
             if (segmentflaws)
             {
-              bool flag = this.behavior.NoBisect != 2;
-              if (flag && this.behavior.NoBisect == 1)
+              bool flag = behavior.NoBisect != 2;
+              if (flag && behavior.NoBisect == 1)
               {
                 otri1.Sym(ref o2_10);
-                flag = o2_10.triangle != Mesh.dummytri;
+                flag = o2_10.triangle != dummytri;
               }
               if (flag)
-                this.quality.AddBadSubseg(new BadSubseg()
-                {
+                quality.AddBadSubseg(new BadSubseg {
                   encsubseg = os5,
                   subsegorg = os5.Org(),
                   subsegdest = os5.Dest()
                 });
             }
             otri1.Copy(ref searchtri);
-            this.locator.Update(ref otri1);
+            locator.Update(ref otri1);
             return InsertVertexResult.Violating;
           }
         }
         otri1.Lprev(ref o2_3);
         o2_3.Sym(ref o2_7);
         otri1.Sym(ref o2_5);
-        bool flag1 = o2_5.triangle != Mesh.dummytri;
+        bool flag1 = o2_5.triangle != dummytri;
         if (flag1)
         {
           o2_5.LnextSelf();
           o2_5.Sym(ref o2_9);
-          this.MakeTriangle(ref newotri);
+          MakeTriangle(ref newotri);
         }
         else
-          ++this.hullsize;
-        this.MakeTriangle(ref otri3);
+          ++hullsize;
+        MakeTriangle(ref otri3);
         Vertex ptr1 = otri1.Org();
         otri1.Dest();
         Vertex ptr2 = otri1.Apex();
@@ -483,7 +481,7 @@ namespace TriangleNet
         otri3.SetApex(newvertex);
         otri1.SetOrg(newvertex);
         otri3.triangle.region = o2_3.triangle.region;
-        if (this.behavior.VarArea)
+        if (behavior.VarArea)
           otri3.triangle.area = o2_3.triangle.area;
         if (flag1)
         {
@@ -493,13 +491,13 @@ namespace TriangleNet
           newotri.SetApex(newvertex);
           o2_5.SetOrg(newvertex);
           newotri.triangle.region = o2_5.triangle.region;
-          if (this.behavior.VarArea)
+          if (behavior.VarArea)
             newotri.triangle.area = o2_5.triangle.area;
         }
-        if (this.checksegments)
+        if (checksegments)
         {
           o2_3.SegPivot(ref os2);
-          if (os2.seg != Mesh.dummysub)
+          if (os2.seg != dummysub)
           {
             o2_3.SegDissolve();
             otri3.SegBond(ref os2);
@@ -507,7 +505,7 @@ namespace TriangleNet
           if (flag1)
           {
             o2_5.SegPivot(ref os4);
-            if (os4.seg != Mesh.dummysub)
+            if (os4.seg != dummysub)
             {
               o2_5.SegDissolve();
               newotri.SegBond(ref os4);
@@ -533,7 +531,7 @@ namespace TriangleNet
           Vertex ptr5 = splitseg.SegDest();
           splitseg.SymSelf();
           splitseg.Pivot(ref o2_11);
-          this.InsertSubseg(ref otri3, splitseg.seg.boundary);
+          InsertSubseg(ref otri3, splitseg.seg.boundary);
           otri3.SegPivot(ref osub2);
           osub2.SetSegOrg(ptr4);
           osub2.SetSegDest(ptr5);
@@ -544,11 +542,11 @@ namespace TriangleNet
           if (newvertex.mark == 0)
             newvertex.mark = splitseg.seg.boundary;
         }
-        if (this.checkquality)
+        if (checkquality)
         {
-          this.flipstack.Clear();
-          this.flipstack.Push(new Otri());
-          this.flipstack.Push(otri1);
+          flipstack.Clear();
+          flipstack.Push(new Otri());
+          flipstack.Push(otri1);
         }
         otri1.LnextSelf();
       }
@@ -558,8 +556,8 @@ namespace TriangleNet
         otri1.Lprev(ref o2_3);
         o2_2.Sym(ref o2_6);
         o2_3.Sym(ref o2_7);
-        this.MakeTriangle(ref otri2);
-        this.MakeTriangle(ref otri3);
+        MakeTriangle(ref otri2);
+        MakeTriangle(ref otri3);
         Vertex ptr6 = otri1.Org();
         Vertex ptr7 = otri1.Dest();
         Vertex ptr8 = otri1.Apex();
@@ -572,22 +570,22 @@ namespace TriangleNet
         otri1.SetApex(newvertex);
         otri2.triangle.region = otri1.triangle.region;
         otri3.triangle.region = otri1.triangle.region;
-        if (this.behavior.VarArea)
+        if (behavior.VarArea)
         {
           double area = otri1.triangle.area;
           otri2.triangle.area = area;
           otri3.triangle.area = area;
         }
-        if (this.checksegments)
+        if (checksegments)
         {
           o2_2.SegPivot(ref os1);
-          if (os1.seg != Mesh.dummysub)
+          if (os1.seg != dummysub)
           {
             o2_2.SegDissolve();
             otri2.SegBond(ref os1);
           }
           o2_3.SegPivot(ref os2);
-          if (os2.seg != Mesh.dummysub)
+          if (os2.seg != dummysub)
           {
             o2_3.SegDissolve();
             otri3.SegBond(ref os2);
@@ -602,10 +600,10 @@ namespace TriangleNet
         o2_2.Bond(ref otri2);
         otri3.LprevSelf();
         o2_3.Bond(ref otri3);
-        if (this.checkquality)
+        if (checkquality)
         {
-          this.flipstack.Clear();
-          this.flipstack.Push(otri1);
+          flipstack.Clear();
+          flipstack.Push(otri1);
         }
       }
       InsertVertexResult insertVertexResult = InsertVertexResult.Successful;
@@ -615,27 +613,27 @@ namespace TriangleNet
       while (true)
       {
         bool flag = true;
-        if (this.checksegments)
+        if (checksegments)
         {
           otri1.SegPivot(ref osub1);
-          if (osub1.seg != Mesh.dummysub)
+          if (osub1.seg != dummysub)
           {
             flag = false;
-            if (segmentflaws && this.quality.CheckSeg4Encroach(ref osub1) > 0)
+            if (segmentflaws && quality.CheckSeg4Encroach(ref osub1) > 0)
               insertVertexResult = InsertVertexResult.Encroaching;
           }
         }
         if (flag)
         {
           otri1.Sym(ref o2_1);
-          if (o2_1.triangle == Mesh.dummytri)
+          if (o2_1.triangle == dummytri)
           {
             flag = false;
           }
           else
           {
             Vertex vertex4 = o2_1.Apex();
-            flag = !((Point) vertex3 == (Point) this.infvertex1) && !((Point) vertex3 == (Point) this.infvertex2) && !((Point) vertex3 == (Point) this.infvertex3) ? (!((Point) vertex2 == (Point) this.infvertex1) && !((Point) vertex2 == (Point) this.infvertex2) && !((Point) vertex2 == (Point) this.infvertex3) ? !((Point) vertex4 == (Point) this.infvertex1) && !((Point) vertex4 == (Point) this.infvertex2) && !((Point) vertex4 == (Point) this.infvertex3) && Primitives.InCircle((Point) vertex3, (Point) newvertex, (Point) vertex2, (Point) vertex4) > 0.0 : Primitives.CounterClockwise((Point) vertex4, (Point) vertex3, (Point) newvertex) > 0.0) : Primitives.CounterClockwise((Point) newvertex, (Point) vertex2, (Point) vertex4) > 0.0;
+            flag = !(vertex3 == infvertex1) && !(vertex3 == infvertex2) && !(vertex3 == infvertex3) ? (!(vertex2 == infvertex1) && !(vertex2 == infvertex2) && !(vertex2 == infvertex3) ? !(vertex4 == infvertex1) && !(vertex4 == infvertex2) && !(vertex4 == infvertex3) && Primitives.InCircle(vertex3, newvertex, vertex2, vertex4) > 0.0 : Primitives.CounterClockwise(vertex4, vertex3, newvertex) > 0.0) : Primitives.CounterClockwise(newvertex, vertex2, vertex4) > 0.0;
             if (flag)
             {
               o2_1.Lprev(ref o2_4);
@@ -650,25 +648,25 @@ namespace TriangleNet
               o2_2.Bond(ref o2_7);
               o2_3.Bond(ref o2_9);
               o2_5.Bond(ref o2_8);
-              if (this.checksegments)
+              if (checksegments)
               {
                 o2_4.SegPivot(ref os3);
                 o2_2.SegPivot(ref os1);
                 o2_3.SegPivot(ref os2);
                 o2_5.SegPivot(ref os4);
-                if (os3.seg == Mesh.dummysub)
+                if (os3.seg == dummysub)
                   o2_5.SegDissolve();
                 else
                   o2_5.SegBond(ref os3);
-                if (os1.seg == Mesh.dummysub)
+                if (os1.seg == dummysub)
                   o2_4.SegDissolve();
                 else
                   o2_4.SegBond(ref os1);
-                if (os2.seg == Mesh.dummysub)
+                if (os2.seg == dummysub)
                   o2_2.SegDissolve();
                 else
                   o2_2.SegBond(ref os2);
-                if (os4.seg == Mesh.dummysub)
+                if (os4.seg == dummysub)
                   o2_3.SegDissolve();
                 else
                   o2_3.SegBond(ref os4);
@@ -682,14 +680,14 @@ namespace TriangleNet
               int num2 = Math.Min(o2_1.triangle.region, otri1.triangle.region);
               o2_1.triangle.region = num2;
               otri1.triangle.region = num2;
-              if (this.behavior.VarArea)
+              if (behavior.VarArea)
               {
                 double num3 = o2_1.triangle.area > 0.0 && otri1.triangle.area > 0.0 ? 0.5 * (o2_1.triangle.area + otri1.triangle.area) : -1.0;
                 o2_1.triangle.area = num3;
                 otri1.triangle.area = num3;
               }
-              if (this.checkquality)
-                this.flipstack.Push(otri1);
+              if (checkquality)
+                flipstack.Push(otri1);
               otri1.LprevSelf();
               vertex3 = vertex4;
             }
@@ -698,10 +696,10 @@ namespace TriangleNet
         if (!flag)
         {
           if (triflaws)
-            this.quality.TestTriangle(ref otri1);
+            quality.TestTriangle(ref otri1);
           otri1.LnextSelf();
           otri1.Sym(ref o2_10);
-          if (!((Point) vertex3 == (Point) vertex1) && o2_10.triangle != Mesh.dummytri)
+          if (!(vertex3 == vertex1) && o2_10.triangle != dummytri)
           {
             o2_10.Lnext(ref otri1);
             vertex2 = vertex3;
@@ -714,7 +712,7 @@ namespace TriangleNet
       otri1.Lnext(ref searchtri);
       Otri otri4 = new Otri();
       otri1.Lnext(ref otri4);
-      this.locator.Update(ref otri4);
+      locator.Update(ref otri4);
       return insertVertexResult;
     }
 
@@ -729,9 +727,9 @@ namespace TriangleNet
       if (ptr2.mark == 0)
         ptr2.mark = subsegmark;
       tri.SegPivot(ref osub);
-      if (osub.seg == Mesh.dummysub)
+      if (osub.seg == dummysub)
       {
-        this.MakeSegment(ref osub);
+        MakeSegment(ref osub);
         osub.SetOrg(ptr2);
         osub.SetDest(ptr1);
         osub.SetSegOrg(ptr2);
@@ -778,25 +776,25 @@ namespace TriangleNet
       o2_1.Bond(ref o2_7);
       o2_2.Bond(ref o2_9);
       o2_4.Bond(ref o2_8);
-      if (this.checksegments)
+      if (checksegments)
       {
         o2_3.SegPivot(ref os3);
         o2_1.SegPivot(ref os1);
         o2_2.SegPivot(ref os2);
         o2_4.SegPivot(ref os4);
-        if (os3.seg == Mesh.dummysub)
+        if (os3.seg == dummysub)
           o2_4.SegDissolve();
         else
           o2_4.SegBond(ref os3);
-        if (os1.seg == Mesh.dummysub)
+        if (os1.seg == dummysub)
           o2_3.SegDissolve();
         else
           o2_3.SegBond(ref os1);
-        if (os2.seg == Mesh.dummysub)
+        if (os2.seg == dummysub)
           o2_1.SegDissolve();
         else
           o2_1.SegBond(ref os2);
-        if (os4.seg == Mesh.dummysub)
+        if (os4.seg == dummysub)
           o2_2.SegDissolve();
         else
           o2_2.SegBond(ref os4);
@@ -841,25 +839,25 @@ namespace TriangleNet
       o2_1.Bond(ref o2_8);
       o2_2.Bond(ref o2_6);
       o2_4.Bond(ref o2_7);
-      if (this.checksegments)
+      if (checksegments)
       {
         o2_3.SegPivot(ref os3);
         o2_1.SegPivot(ref os1);
         o2_2.SegPivot(ref os2);
         o2_4.SegPivot(ref os4);
-        if (os3.seg == Mesh.dummysub)
+        if (os3.seg == dummysub)
           o2_1.SegDissolve();
         else
           o2_1.SegBond(ref os3);
-        if (os1.seg == Mesh.dummysub)
+        if (os1.seg == dummysub)
           o2_2.SegDissolve();
         else
           o2_2.SegBond(ref os1);
-        if (os2.seg == Mesh.dummysub)
+        if (os2.seg == dummysub)
           o2_4.SegDissolve();
         else
           o2_4.SegBond(ref os2);
-        if (os4.seg == Mesh.dummysub)
+        if (os4.seg == dummysub)
           o2_3.SegDissolve();
         else
           o2_3.SegBond(ref os4);
@@ -892,7 +890,7 @@ namespace TriangleNet
       {
         otri.OnextSelf();
         Vertex pd = otri.Dest();
-        if (Primitives.InCircle((Point) pa, (Point) pb, (Point) pc, (Point) pd) > 0.0)
+        if (Primitives.InCircle(pa, pb, pc, pd) > 0.0)
         {
           otri.Copy(ref firstedge1);
           pc = pd;
@@ -902,21 +900,21 @@ namespace TriangleNet
       if (num > 1)
       {
         firstedge1.Oprev(ref o2);
-        this.TriangulatePolygon(firstedge, o2, num + 1, true, triflaws);
+        TriangulatePolygon(firstedge, o2, num + 1, true, triflaws);
       }
       if (num < edgecount - 2)
       {
         firstedge1.Sym(ref o2);
-        this.TriangulatePolygon(firstedge1, lastedge, edgecount - num, true, triflaws);
+        TriangulatePolygon(firstedge1, lastedge, edgecount - num, true, triflaws);
         o2.Sym(ref firstedge1);
       }
       if (doflip)
       {
-        this.Flip(ref firstedge1);
+        Flip(ref firstedge1);
         if (triflaws)
         {
           firstedge1.Sym(ref otri);
-          this.quality.TestTriangle(ref otri);
+          quality.TestTriangle(ref otri);
         }
       }
       firstedge1.Copy(ref lastedge);
@@ -934,7 +932,7 @@ namespace TriangleNet
       Otri o2_8 = new Otri();
       Osub os1 = new Osub();
       Osub os2 = new Osub();
-      this.VertexDealloc(deltri.Org());
+      VertexDealloc(deltri.Org());
       deltri.Onext(ref o2_1);
       int edgecount = 1;
       while (!deltri.Equal(o2_1))
@@ -946,7 +944,7 @@ namespace TriangleNet
       {
         deltri.Onext(ref o2_2);
         deltri.Oprev(ref o2_3);
-        this.TriangulatePolygon(o2_2, o2_3, edgecount, false, this.behavior.NoBisect == 0);
+        TriangulatePolygon(o2_2, o2_3, edgecount, false, behavior.NoBisect == 0);
       }
       deltri.Lprev(ref o2_4);
       deltri.Dnext(ref o2_5);
@@ -956,17 +954,17 @@ namespace TriangleNet
       deltri.Bond(ref o2_7);
       o2_4.Bond(ref o2_8);
       o2_5.SegPivot(ref os1);
-      if (os1.seg != Mesh.dummysub)
+      if (os1.seg != dummysub)
         deltri.SegBond(ref os1);
       o2_6.SegPivot(ref os2);
-      if (os2.seg != Mesh.dummysub)
+      if (os2.seg != dummysub)
         o2_4.SegBond(ref os2);
       Vertex ptr = o2_5.Org();
       deltri.SetOrg(ptr);
-      if (this.behavior.NoBisect == 0)
-        this.quality.TestTriangle(ref deltri);
-      this.TriangleDealloc(o2_5.triangle);
-      this.TriangleDealloc(o2_6.triangle);
+      if (behavior.NoBisect == 0)
+        quality.TestTriangle(ref deltri);
+      TriangleDealloc(o2_5.triangle);
+      TriangleDealloc(o2_6.triangle);
     }
 
     internal void UndoVertex()
@@ -981,10 +979,10 @@ namespace TriangleNet
       Osub os1 = new Osub();
       Osub os2 = new Osub();
       Osub os3 = new Osub();
-      while (this.flipstack.Count > 0)
+      while (flipstack.Count > 0)
       {
-        Otri flipedge = this.flipstack.Pop();
-        if (this.flipstack.Count == 0)
+        Otri flipedge = flipstack.Pop();
+        if (flipstack.Count == 0)
         {
           flipedge.Dprev(ref o2_1);
           o2_1.LnextSelf();
@@ -1002,10 +1000,10 @@ namespace TriangleNet
           flipedge.Bond(ref o2_5);
           o2_2.SegPivot(ref os2);
           flipedge.SegBond(ref os2);
-          this.TriangleDealloc(o2_1.triangle);
-          this.TriangleDealloc(o2_2.triangle);
+          TriangleDealloc(o2_1.triangle);
+          TriangleDealloc(o2_2.triangle);
         }
-        else if (this.flipstack.Peek().triangle == null)
+        else if (flipstack.Peek().triangle == null)
         {
           flipedge.Lprev(ref o2_7);
           o2_7.Sym(ref o2_2);
@@ -1016,9 +1014,9 @@ namespace TriangleNet
           o2_7.Bond(ref o2_5);
           o2_2.SegPivot(ref os2);
           o2_7.SegBond(ref os2);
-          this.TriangleDealloc(o2_2.triangle);
+          TriangleDealloc(o2_2.triangle);
           flipedge.Sym(ref o2_7);
-          if (o2_7.triangle != Mesh.dummytri)
+          if (o2_7.triangle != dummytri)
           {
             o2_7.LnextSelf();
             o2_7.Dnext(ref o2_3);
@@ -1027,12 +1025,12 @@ namespace TriangleNet
             o2_7.Bond(ref o2_6);
             o2_3.SegPivot(ref os3);
             o2_7.SegBond(ref os3);
-            this.TriangleDealloc(o2_3.triangle);
+            TriangleDealloc(o2_3.triangle);
           }
-          this.flipstack.Clear();
+          flipstack.Clear();
         }
         else
-          this.Unflip(ref flipedge);
+          Unflip(ref flipedge);
       }
     }
 
@@ -1042,14 +1040,14 @@ namespace TriangleNet
       Vertex vertex = searchtri.Org();
       Vertex pc1 = searchtri.Dest();
       Vertex pc2 = searchtri.Apex();
-      double num1 = Primitives.CounterClockwise((Point) searchpoint, (Point) vertex, (Point) pc2);
+      double num1 = Primitives.CounterClockwise(searchpoint, vertex, pc2);
       bool flag1 = num1 > 0.0;
-      double num2 = Primitives.CounterClockwise((Point) vertex, (Point) searchpoint, (Point) pc1);
+      double num2 = Primitives.CounterClockwise(vertex, searchpoint, pc1);
       bool flag2 = num2 > 0.0;
       if (flag1 & flag2)
       {
         searchtri.Onext(ref o2);
-        if (o2.triangle == Mesh.dummytri)
+        if (o2.triangle == dummytri)
           flag1 = false;
         else
           flag2 = false;
@@ -1057,26 +1055,26 @@ namespace TriangleNet
       for (; flag1; flag1 = num1 > 0.0)
       {
         searchtri.OnextSelf();
-        if (searchtri.triangle == Mesh.dummytri)
+        if (searchtri.triangle == dummytri)
         {
-          this.logger.Error("Unable to find a triangle on path.", "Mesh.FindDirection().1");
+          logger.Error("Unable to find a triangle on path.", "Mesh.FindDirection().1");
           throw new Exception("Unable to find a triangle on path.");
         }
         Vertex pc3 = searchtri.Apex();
         num2 = num1;
-        num1 = Primitives.CounterClockwise((Point) searchpoint, (Point) vertex, (Point) pc3);
+        num1 = Primitives.CounterClockwise(searchpoint, vertex, pc3);
       }
       for (; flag2; flag2 = num2 > 0.0)
       {
         searchtri.OprevSelf();
-        if (searchtri.triangle == Mesh.dummytri)
+        if (searchtri.triangle == dummytri)
         {
-          this.logger.Error("Unable to find a triangle on path.", "Mesh.FindDirection().2");
+          logger.Error("Unable to find a triangle on path.", "Mesh.FindDirection().2");
           throw new Exception("Unable to find a triangle on path.");
         }
         Vertex pc4 = searchtri.Dest();
         num1 = num2;
-        num2 = Primitives.CounterClockwise((Point) vertex, (Point) searchpoint, (Point) pc4);
+        num2 = Primitives.CounterClockwise(vertex, searchpoint, pc4);
       }
       if (num1 == 0.0)
         return FindDirectionResult.Leftcollinear;
@@ -1098,24 +1096,24 @@ namespace TriangleNet
       double num7 = num2 * num3 - num1 * num4;
       if (num7 == 0.0)
       {
-        this.logger.Error("Attempt to find intersection of parallel segments.", "Mesh.SegmentIntersection()");
+        logger.Error("Attempt to find intersection of parallel segments.", "Mesh.SegmentIntersection()");
         throw new Exception("Attempt to find intersection of parallel segments.");
       }
       double num8 = (num4 * num5 - num3 * num6) / num7;
-      Vertex vertex3 = new Vertex(vertex1.x + num8 * (vertex2.x - vertex1.x), vertex1.y + num8 * (vertex2.y - vertex1.y), splitsubseg.seg.boundary, this.nextras);
-      vertex3.hash = this.hash_vtx++;
+      Vertex vertex3 = new Vertex(vertex1.x + num8 * (vertex2.x - vertex1.x), vertex1.y + num8 * (vertex2.y - vertex1.y), splitsubseg.seg.boundary, nextras);
+      vertex3.hash = hash_vtx++;
       vertex3.id = vertex3.hash;
-      for (int index = 0; index < this.nextras; ++index)
+      for (int index = 0; index < nextras; ++index)
         vertex3.attributes[index] = vertex1.attributes[index] + num8 * (vertex2.attributes[index] - vertex1.attributes[index]);
-      this.vertices.Add(vertex3.hash, vertex3);
-      if (this.InsertVertex(vertex3, ref splittri, ref splitsubseg, false, false) != 0)
+      vertices.Add(vertex3.hash, vertex3);
+      if (InsertVertex(vertex3, ref splittri, ref splitsubseg, false, false) != 0)
       {
-        this.logger.Error("Failure to split a segment.", "Mesh.SegmentIntersection()");
+        logger.Error("Failure to split a segment.", "Mesh.SegmentIntersection()");
         throw new Exception("Failure to split a segment.");
       }
       vertex3.tri = splittri;
-      if (this.steinerleft > 0)
-        --this.steinerleft;
+      if (steinerleft > 0)
+        --steinerleft;
       splitsubseg.SymSelf();
       splitsubseg.Pivot(ref o2);
       splitsubseg.Dissolve();
@@ -1125,21 +1123,21 @@ namespace TriangleNet
         splitsubseg.SetSegOrg(vertex3);
         splitsubseg.NextSelf();
       }
-      while (splitsubseg.seg != Mesh.dummysub);
+      while (splitsubseg.seg != dummysub);
       do
       {
         o2.SetSegOrg(vertex3);
         o2.NextSelf();
       }
-      while (o2.seg != Mesh.dummysub);
-      int direction = (int) this.FindDirection(ref splittri, searchpoint);
+      while (o2.seg != dummysub);
+      int direction = (int) FindDirection(ref splittri, searchpoint);
       Vertex vertex4 = splittri.Dest();
       Vertex vertex5 = splittri.Apex();
       if (vertex5.x == searchpoint.x && vertex5.y == searchpoint.y)
         splittri.OnextSelf();
       else if (vertex4.x != searchpoint.x || vertex4.y != searchpoint.y)
       {
-        this.logger.Error("Topological inconsistency after splitting a segment.", "Mesh.SegmentIntersection()");
+        logger.Error("Topological inconsistency after splitting a segment.", "Mesh.SegmentIntersection()");
         throw new Exception("Topological inconsistency after splitting a segment.");
       }
     }
@@ -1148,36 +1146,36 @@ namespace TriangleNet
     {
       Otri otri = new Otri();
       Osub osub = new Osub();
-      FindDirectionResult direction = this.FindDirection(ref searchtri, endpoint2);
+      FindDirectionResult direction = FindDirection(ref searchtri, endpoint2);
       Vertex vertex1 = searchtri.Dest();
       Vertex vertex2 = searchtri.Apex();
       if (vertex2.x == endpoint2.x && vertex2.y == endpoint2.y || vertex1.x == endpoint2.x && vertex1.y == endpoint2.y)
       {
         if (vertex2.x == endpoint2.x && vertex2.y == endpoint2.y)
           searchtri.LprevSelf();
-        this.InsertSubseg(ref searchtri, newmark);
+        InsertSubseg(ref searchtri, newmark);
         return true;
       }
       if (direction == FindDirectionResult.Leftcollinear)
       {
         searchtri.LprevSelf();
-        this.InsertSubseg(ref searchtri, newmark);
-        return this.ScoutSegment(ref searchtri, endpoint2, newmark);
+        InsertSubseg(ref searchtri, newmark);
+        return ScoutSegment(ref searchtri, endpoint2, newmark);
       }
       if (direction == FindDirectionResult.Rightcollinear)
       {
-        this.InsertSubseg(ref searchtri, newmark);
+        InsertSubseg(ref searchtri, newmark);
         searchtri.LnextSelf();
-        return this.ScoutSegment(ref searchtri, endpoint2, newmark);
+        return ScoutSegment(ref searchtri, endpoint2, newmark);
       }
       searchtri.Lnext(ref otri);
       otri.SegPivot(ref osub);
-      if (osub.seg == Mesh.dummysub)
+      if (osub.seg == dummysub)
         return false;
-      this.SegmentIntersection(ref otri, ref osub, endpoint2);
+      SegmentIntersection(ref otri, ref osub, endpoint2);
       otri.Copy(ref searchtri);
-      this.InsertSubseg(ref searchtri, newmark);
-      return this.ScoutSegment(ref searchtri, endpoint2, newmark);
+      InsertSubseg(ref searchtri, newmark);
+      return ScoutSegment(ref searchtri, endpoint2, newmark);
     }
 
     private void DelaunayFixup(ref Otri fixuptri, bool leftside)
@@ -1187,10 +1185,10 @@ namespace TriangleNet
       Osub os = new Osub();
       fixuptri.Lnext(ref otri1);
       otri1.Sym(ref otri2);
-      if (otri2.triangle == Mesh.dummytri)
+      if (otri2.triangle == dummytri)
         return;
       otri1.SegPivot(ref os);
-      if (os.seg != Mesh.dummysub)
+      if (os.seg != dummysub)
         return;
       Vertex vertex1 = otri1.Apex();
       Vertex vertex2 = otri1.Org();
@@ -1198,17 +1196,17 @@ namespace TriangleNet
       Vertex vertex4 = otri2.Apex();
       if (leftside)
       {
-        if (Primitives.CounterClockwise((Point) vertex1, (Point) vertex2, (Point) vertex4) <= 0.0)
+        if (Primitives.CounterClockwise(vertex1, vertex2, vertex4) <= 0.0)
           return;
       }
-      else if (Primitives.CounterClockwise((Point) vertex4, (Point) vertex3, (Point) vertex1) <= 0.0)
+      else if (Primitives.CounterClockwise(vertex4, vertex3, vertex1) <= 0.0)
         return;
-      if (Primitives.CounterClockwise((Point) vertex3, (Point) vertex2, (Point) vertex4) > 0.0 && Primitives.InCircle((Point) vertex2, (Point) vertex4, (Point) vertex3, (Point) vertex1) <= 0.0)
+      if (Primitives.CounterClockwise(vertex3, vertex2, vertex4) > 0.0 && Primitives.InCircle(vertex2, vertex4, vertex3, vertex1) <= 0.0)
         return;
-      this.Flip(ref otri1);
+      Flip(ref otri1);
       fixuptri.LprevSelf();
-      this.DelaunayFixup(ref fixuptri, leftside);
-      this.DelaunayFixup(ref otri2, leftside);
+      DelaunayFixup(ref fixuptri, leftside);
+      DelaunayFixup(ref otri2, leftside);
     }
 
     private void ConstrainedEdge(ref Otri starttri, Vertex endpoint2, int newmark)
@@ -1218,7 +1216,7 @@ namespace TriangleNet
       Osub osub = new Osub();
       Vertex pa = starttri.Org();
       starttri.Lnext(ref otri1);
-      this.Flip(ref otri1);
+      Flip(ref otri1);
       bool flag1 = false;
       bool flag2 = false;
       do
@@ -1227,19 +1225,19 @@ namespace TriangleNet
         if (pc.x == endpoint2.x && pc.y == endpoint2.y)
         {
           otri1.Oprev(ref otri2);
-          this.DelaunayFixup(ref otri1, false);
-          this.DelaunayFixup(ref otri2, true);
+          DelaunayFixup(ref otri1, false);
+          DelaunayFixup(ref otri2, true);
           flag2 = true;
         }
         else
         {
-          double num = Primitives.CounterClockwise((Point) pa, (Point) endpoint2, (Point) pc);
+          double num = Primitives.CounterClockwise(pa, endpoint2, pc);
           if (num == 0.0)
           {
             flag1 = true;
             otri1.Oprev(ref otri2);
-            this.DelaunayFixup(ref otri1, false);
-            this.DelaunayFixup(ref otri2, true);
+            DelaunayFixup(ref otri1, false);
+            DelaunayFixup(ref otri2, true);
             flag2 = true;
           }
           else
@@ -1247,78 +1245,78 @@ namespace TriangleNet
             if (num > 0.0)
             {
               otri1.Oprev(ref otri2);
-              this.DelaunayFixup(ref otri2, true);
+              DelaunayFixup(ref otri2, true);
               otri1.LprevSelf();
             }
             else
             {
-              this.DelaunayFixup(ref otri1, false);
+              DelaunayFixup(ref otri1, false);
               otri1.OprevSelf();
             }
             otri1.SegPivot(ref osub);
-            if (osub.seg == Mesh.dummysub)
+            if (osub.seg == dummysub)
             {
-              this.Flip(ref otri1);
+              Flip(ref otri1);
             }
             else
             {
               flag1 = true;
-              this.SegmentIntersection(ref otri1, ref osub, endpoint2);
+              SegmentIntersection(ref otri1, ref osub, endpoint2);
               flag2 = true;
             }
           }
         }
       }
       while (!flag2);
-      this.InsertSubseg(ref otri1, newmark);
-      if (!flag1 || this.ScoutSegment(ref otri1, endpoint2, newmark))
+      InsertSubseg(ref otri1, newmark);
+      if (!flag1 || ScoutSegment(ref otri1, endpoint2, newmark))
         return;
-      this.ConstrainedEdge(ref otri1, endpoint2, newmark);
+      ConstrainedEdge(ref otri1, endpoint2, newmark);
     }
 
     private void InsertSegment(Vertex endpoint1, Vertex endpoint2, int newmark)
     {
       Otri otri1 = new Otri();
       Otri otri2 = new Otri();
-      Vertex vertex1 = (Vertex) null;
+      Vertex vertex1 = null;
       Otri tri1 = endpoint1.tri;
       if (tri1.triangle != null)
         vertex1 = tri1.Org();
-      if ((Point) vertex1 != (Point) endpoint1)
+      if (vertex1 != endpoint1)
       {
-        tri1.triangle = Mesh.dummytri;
+        tri1.triangle = dummytri;
         tri1.orient = 0;
         tri1.SymSelf();
-        if (this.locator.Locate((Point) endpoint1, ref tri1) != LocateResult.OnVertex)
+        if (locator.Locate(endpoint1, ref tri1) != LocateResult.OnVertex)
         {
-          this.logger.Error("Unable to locate PSLG vertex in triangulation.", "Mesh.InsertSegment().1");
+          logger.Error("Unable to locate PSLG vertex in triangulation.", "Mesh.InsertSegment().1");
           throw new Exception("Unable to locate PSLG vertex in triangulation.");
         }
       }
-      this.locator.Update(ref tri1);
-      if (this.ScoutSegment(ref tri1, endpoint2, newmark))
+      locator.Update(ref tri1);
+      if (ScoutSegment(ref tri1, endpoint2, newmark))
         return;
       endpoint1 = tri1.Org();
-      Vertex vertex2 = (Vertex) null;
+      Vertex vertex2 = null;
       Otri tri2 = endpoint2.tri;
       if (tri2.triangle != null)
         vertex2 = tri2.Org();
-      if ((Point) vertex2 != (Point) endpoint2)
+      if (vertex2 != endpoint2)
       {
-        tri2.triangle = Mesh.dummytri;
+        tri2.triangle = dummytri;
         tri2.orient = 0;
         tri2.SymSelf();
-        if (this.locator.Locate((Point) endpoint2, ref tri2) != LocateResult.OnVertex)
+        if (locator.Locate(endpoint2, ref tri2) != LocateResult.OnVertex)
         {
-          this.logger.Error("Unable to locate PSLG vertex in triangulation.", "Mesh.InsertSegment().2");
+          logger.Error("Unable to locate PSLG vertex in triangulation.", "Mesh.InsertSegment().2");
           throw new Exception("Unable to locate PSLG vertex in triangulation.");
         }
       }
-      this.locator.Update(ref tri2);
-      if (this.ScoutSegment(ref tri2, endpoint1, newmark))
+      locator.Update(ref tri2);
+      if (ScoutSegment(ref tri2, endpoint1, newmark))
         return;
       endpoint2 = tri2.Org();
-      this.ConstrainedEdge(ref tri1, endpoint2, newmark);
+      ConstrainedEdge(ref tri1, endpoint2, newmark);
     }
 
     private void MarkHull()
@@ -1326,16 +1324,16 @@ namespace TriangleNet
       Otri otri = new Otri();
       Otri o2_1 = new Otri();
       Otri o2_2 = new Otri();
-      otri.triangle = Mesh.dummytri;
+      otri.triangle = dummytri;
       otri.orient = 0;
       otri.SymSelf();
       otri.Copy(ref o2_2);
       do
       {
-        this.InsertSubseg(ref otri, 1);
+        InsertSubseg(ref otri, 1);
         otri.LnextSelf();
         otri.Oprev(ref o2_1);
-        while (o2_1.triangle != Mesh.dummytri)
+        while (o2_1.triangle != dummytri)
         {
           o2_1.Copy(ref otri);
           otri.Oprev(ref o2_1);
@@ -1346,64 +1344,64 @@ namespace TriangleNet
 
     private void FormSkeleton(InputGeometry input)
     {
-      this.insegments = 0;
-      if (this.behavior.Poly)
+      insegments = 0;
+      if (behavior.Poly)
       {
-        if (this.triangles.Count == 0)
+        if (triangles.Count == 0)
           return;
         if (input.HasSegments)
-          this.MakeVertexMap();
+          MakeVertexMap();
         foreach (Edge segment in input.segments)
         {
-          ++this.insegments;
+          ++insegments;
           int p0 = segment.P0;
           int p1 = segment.P1;
           int boundary = segment.Boundary;
-          if (p0 < 0 || p0 >= this.invertices)
+          if (p0 < 0 || p0 >= invertices)
           {
             if (Behavior.Verbose)
-              this.logger.Warning("Invalid first endpoint of segment.", "Mesh.FormSkeleton().1");
+              logger.Warning("Invalid first endpoint of segment.", "Mesh.FormSkeleton().1");
           }
-          else if (p1 < 0 || p1 >= this.invertices)
+          else if (p1 < 0 || p1 >= invertices)
           {
             if (Behavior.Verbose)
-              this.logger.Warning("Invalid second endpoint of segment.", "Mesh.FormSkeleton().2");
+              logger.Warning("Invalid second endpoint of segment.", "Mesh.FormSkeleton().2");
           }
           else
           {
-            Vertex vertex1 = this.vertices[p0];
-            Vertex vertex2 = this.vertices[p1];
+            Vertex vertex1 = vertices[p0];
+            Vertex vertex2 = vertices[p1];
             if (vertex1.x == vertex2.x && vertex1.y == vertex2.y)
             {
               if (Behavior.Verbose)
-                this.logger.Warning("Endpoints of segments are coincident.", "Mesh.FormSkeleton()");
+                logger.Warning("Endpoints of segments are coincident.", "Mesh.FormSkeleton()");
             }
             else
-              this.InsertSegment(vertex1, vertex2, boundary);
+              InsertSegment(vertex1, vertex2, boundary);
           }
         }
       }
-      if (!this.behavior.Convex && this.behavior.Poly)
+      if (!behavior.Convex && behavior.Poly)
         return;
-      this.MarkHull();
+      MarkHull();
     }
 
     internal void TriangleDealloc(Triangle dyingtriangle)
     {
       Otri.Kill(dyingtriangle);
-      this.triangles.Remove(dyingtriangle.hash);
+      triangles.Remove(dyingtriangle.hash);
     }
 
     internal void VertexDealloc(Vertex dyingvertex)
     {
       dyingvertex.type = VertexType.DeadVertex;
-      this.vertices.Remove(dyingvertex.hash);
+      vertices.Remove(dyingvertex.hash);
     }
 
     internal void SubsegDealloc(Segment dyingsubseg)
     {
       Osub.Kill(dyingsubseg);
-      this.subsegs.Remove(dyingsubseg.hash);
+      subsegs.Remove(dyingsubseg.hash);
     }
   }
 }

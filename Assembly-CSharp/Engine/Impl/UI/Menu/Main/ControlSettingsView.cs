@@ -1,8 +1,6 @@
 ﻿using Engine.Source.Commons;
 using Engine.Source.Settings;
 using InputServices;
-using System;
-using UnityEngine;
 
 namespace Engine.Impl.UI.Menu.Main
 {
@@ -16,80 +14,80 @@ namespace Engine.Impl.UI.Menu.Main
 
     protected override void Awake()
     {
-      this.inputGameSettings = InstanceByRequest<InputGameSetting>.Instance;
-      this.layout = UnityEngine.Object.Instantiate<LayoutContainer>(this.listLayoutPrefab, this.transform, false);
-      this.ApplySettings();
+      inputGameSettings = InstanceByRequest<InputGameSetting>.Instance;
+      layout = UnityEngine.Object.Instantiate<LayoutContainer>(listLayoutPrefab, this.transform, false);
+      ApplySettings();
       base.Awake();
     }
 
     private void ApplySettings()
     {
-      this.mouseSensitivityView = UnityEngine.Object.Instantiate<FloatSettingsValueView>(this.floatValueViewPrefab, (Transform) this.layout.Content, false);
+      this.mouseSensitivityView = UnityEngine.Object.Instantiate<FloatSettingsValueView>(floatValueViewPrefab, (Transform) layout.Content, false);
       this.mouseSensitivityView.SetName("{UI.Menu.Main.Settings.Control.Mouse.Sensitivity}");
-      this.mouseSensitivityView.SetMinValue(this.inputGameSettings.MouseSensitivity.MinValue);
-      this.mouseSensitivityView.SetMaxValue(this.inputGameSettings.MouseSensitivity.MaxValue);
-      this.mouseSensitivityView.SetValueNameFunction(new Func<float, string>(this.SensitivityName));
-      this.mouseSensitivityView.SetSetting(this.inputGameSettings.MouseSensitivity);
-      this.mouseSensitivityView.SetValueValidationFunction(new Func<float, float>(this.SensitivityRound), 0.1f);
+      this.mouseSensitivityView.SetMinValue(inputGameSettings.MouseSensitivity.MinValue);
+      this.mouseSensitivityView.SetMaxValue(inputGameSettings.MouseSensitivity.MaxValue);
+      this.mouseSensitivityView.SetValueNameFunction(SensitivityName);
+      this.mouseSensitivityView.SetSetting(inputGameSettings.MouseSensitivity);
+      this.mouseSensitivityView.SetValueValidationFunction(SensitivityRound, 0.1f);
       FloatSettingsValueView mouseSensitivityView = this.mouseSensitivityView;
-      mouseSensitivityView.VisibleValueChangeEvent = mouseSensitivityView.VisibleValueChangeEvent + new Action<SettingsValueView<float>>(this.OnAutoValueChange<float>);
-      this.mouseInvertView = UnityEngine.Object.Instantiate<BoolSettingsValueView>(this.boolValueViewPrefab, (Transform) this.layout.Content, false);
+      mouseSensitivityView.VisibleValueChangeEvent = mouseSensitivityView.VisibleValueChangeEvent + OnAutoValueChange;
+      this.mouseInvertView = UnityEngine.Object.Instantiate<BoolSettingsValueView>(boolValueViewPrefab, (Transform) layout.Content, false);
       this.mouseInvertView.SetName("{UI.Menu.Main.Settings.Control.Mouse.Invert}");
-      this.mouseInvertView.SetSetting(this.inputGameSettings.MouseInvert);
+      this.mouseInvertView.SetSetting(inputGameSettings.MouseInvert);
       BoolSettingsValueView mouseInvertView = this.mouseInvertView;
-      mouseInvertView.VisibleValueChangeEvent = mouseInvertView.VisibleValueChangeEvent + new Action<SettingsValueView<bool>>(this.OnAutoValueChange<bool>);
-      this.joystickSensitivityView = UnityEngine.Object.Instantiate<FloatSettingsValueView>(this.floatValueViewPrefab, (Transform) this.layout.Content, false);
+      mouseInvertView.VisibleValueChangeEvent = mouseInvertView.VisibleValueChangeEvent + OnAutoValueChange;
+      this.joystickSensitivityView = UnityEngine.Object.Instantiate<FloatSettingsValueView>(floatValueViewPrefab, (Transform) layout.Content, false);
       this.joystickSensitivityView.SetName("{UI.Menu.Main.Settings.Control.Joystick.Sensitivity}");
-      this.joystickSensitivityView.SetMinValue(this.inputGameSettings.JoystickSensitivity.MinValue);
-      this.joystickSensitivityView.SetMaxValue(this.inputGameSettings.JoystickSensitivity.MaxValue);
-      this.joystickSensitivityView.SetValueNameFunction(new Func<float, string>(this.SensitivityName));
-      this.joystickSensitivityView.SetSetting(this.inputGameSettings.JoystickSensitivity);
-      this.joystickSensitivityView.SetValueValidationFunction(new Func<float, float>(this.SensitivityRound), 0.1f);
+      this.joystickSensitivityView.SetMinValue(inputGameSettings.JoystickSensitivity.MinValue);
+      this.joystickSensitivityView.SetMaxValue(inputGameSettings.JoystickSensitivity.MaxValue);
+      this.joystickSensitivityView.SetValueNameFunction(SensitivityName);
+      this.joystickSensitivityView.SetSetting(inputGameSettings.JoystickSensitivity);
+      this.joystickSensitivityView.SetValueValidationFunction(SensitivityRound, 0.1f);
       FloatSettingsValueView joystickSensitivityView = this.joystickSensitivityView;
-      joystickSensitivityView.VisibleValueChangeEvent = joystickSensitivityView.VisibleValueChangeEvent + new Action<SettingsValueView<float>>(this.OnAutoValueChange<float>);
-      this.joystickInvertView = UnityEngine.Object.Instantiate<BoolSettingsValueView>(this.boolValueViewPrefab, (Transform) this.layout.Content, false);
+      joystickSensitivityView.VisibleValueChangeEvent = joystickSensitivityView.VisibleValueChangeEvent + OnAutoValueChange;
+      this.joystickInvertView = UnityEngine.Object.Instantiate<BoolSettingsValueView>(boolValueViewPrefab, (Transform) layout.Content, false);
       this.joystickInvertView.SetName("{UI.Menu.Main.Settings.Control.Joystick.Invert}");
-      this.joystickInvertView.SetSetting(this.inputGameSettings.JoystickInvert);
+      this.joystickInvertView.SetSetting(inputGameSettings.JoystickInvert);
       BoolSettingsValueView joystickInvertView = this.joystickInvertView;
-      joystickInvertView.VisibleValueChangeEvent = joystickInvertView.VisibleValueChangeEvent + new Action<SettingsValueView<bool>>(this.OnAutoValueChange<bool>);
+      joystickInvertView.VisibleValueChangeEvent = joystickInvertView.VisibleValueChangeEvent + OnAutoValueChange;
     }
 
     private void OnAutoValueChange<T>(SettingsValueView<T> view)
     {
       view.ApplyVisibleValue();
-      this.inputGameSettings.Apply();
+      inputGameSettings.Apply();
     }
 
     protected override void OnButtonReset()
     {
-      this.mouseSensitivityView.ResetValue();
-      this.mouseInvertView.ResetValue();
-      this.joystickSensitivityView.ResetValue();
-      this.joystickInvertView.ResetValue();
-      this.inputGameSettings.Apply();
-      this.UpdateViews();
+      mouseSensitivityView.ResetValue();
+      mouseInvertView.ResetValue();
+      joystickSensitivityView.ResetValue();
+      joystickInvertView.ResetValue();
+      inputGameSettings.Apply();
+      UpdateViews();
     }
 
     protected override void OnJoystick(bool isUsed)
     {
       base.OnJoystick(isUsed);
       bool joystickPresent = InputService.Instance.JoystickPresent;
-      this.joystickSensitivityView.gameObject.SetActive(joystickPresent | isUsed);
-      this.joystickInvertView.gameObject.SetActive(joystickPresent | isUsed);
+      joystickSensitivityView.gameObject.SetActive(joystickPresent | isUsed);
+      joystickInvertView.gameObject.SetActive(joystickPresent | isUsed);
     }
 
     protected override void OnEnable()
     {
       base.OnEnable();
-      this.UpdateViews();
+      UpdateViews();
     }
 
     private void UpdateViews()
     {
-      this.mouseSensitivityView.RevertVisibleValue();
-      this.mouseInvertView.RevertVisibleValue();
-      this.joystickSensitivityView.RevertVisibleValue();
-      this.joystickInvertView.RevertVisibleValue();
+      mouseSensitivityView.RevertVisibleValue();
+      mouseInvertView.RevertVisibleValue();
+      joystickSensitivityView.RevertVisibleValue();
+      joystickInvertView.RevertVisibleValue();
     }
 
     private string SensitivityName(float value) => value.ToString("n1");

@@ -1,10 +1,10 @@
-﻿using Cofe.Loggers;
+﻿using System.Collections.Generic;
+using System.Xml;
+using Cofe.Loggers;
 using Engine.Common.Commons;
 using PLVirtualMachine.Common;
 using PLVirtualMachine.Common.Data;
 using PLVirtualMachine.Data;
-using System.Collections.Generic;
-using System.Xml;
 using VirtualMachine.Common;
 using VirtualMachine.Common.Data;
 using VirtualMachine.Data;
@@ -29,13 +29,13 @@ namespace PLVirtualMachine.GameLogic
     IFunctionalPoint
   {
     protected ulong guid;
-    [FieldData("Name", DataFieldType.None)]
+    [FieldData("Name")]
     private string name = "";
-    [FieldData("ActionType", DataFieldType.None)]
+    [FieldData("ActionType")]
     private EActionType actionType;
-    [FieldData("MathOperationType", DataFieldType.None)]
+    [FieldData("MathOperationType")]
     private EMathOperationType mathOperationType;
-    [FieldData("TargetFuncName", DataFieldType.None)]
+    [FieldData("TargetFuncName")]
     private string targetFunctionName;
     [FieldData("LocalContext", DataFieldType.Reference)]
     private ILocalContext localContext;
@@ -43,57 +43,56 @@ namespace PLVirtualMachine.GameLogic
     private VMParameter sourceConst;
     [FieldData("SourceExpression", DataFieldType.Reference)]
     private VMExpression sourceExpression;
-    [FieldData("OrderIndex", DataFieldType.None)]
+    [FieldData("OrderIndex")]
     private int orderIndex;
-    [FieldData("TargetObject", DataFieldType.None)]
+    [FieldData("TargetObject")]
     private CommonVariable targetObject;
-    [FieldData("TargetParam", DataFieldType.None)]
+    [FieldData("TargetParam")]
     private CommonVariable targetParam;
-    [FieldData("SourceParams", DataFieldType.None)]
+    [FieldData("SourceParams")]
     private List<CommonVariable> sourceParams = new List<CommonVariable>();
     private AbstractActionInfo actionInfo;
     private bool isUpdated;
 
     public virtual void EditorDataRead(XmlReader xml, IDataCreator creator, string typeContext)
     {
-      while (xml.Read())
-      {
+      while (xml.Read()) {
         if (xml.NodeType == XmlNodeType.Element)
         {
           switch (xml.Name)
           {
             case "ActionType":
-              this.actionType = EditorDataReadUtility.ReadEnum<EActionType>(xml);
+              actionType = EditorDataReadUtility.ReadEnum<EActionType>(xml);
               continue;
             case "LocalContext":
-              this.localContext = EditorDataReadUtility.ReadReference<ILocalContext>(xml, creator);
+              localContext = EditorDataReadUtility.ReadReference<ILocalContext>(xml, creator);
               continue;
             case "MathOperationType":
-              this.mathOperationType = EditorDataReadUtility.ReadEnum<EMathOperationType>(xml);
+              mathOperationType = EditorDataReadUtility.ReadEnum<EMathOperationType>(xml);
               continue;
             case "Name":
-              this.name = EditorDataReadUtility.ReadValue(xml, this.name);
+              name = EditorDataReadUtility.ReadValue(xml, name);
               continue;
             case "OrderIndex":
-              this.orderIndex = EditorDataReadUtility.ReadValue(xml, this.orderIndex);
+              orderIndex = EditorDataReadUtility.ReadValue(xml, orderIndex);
               continue;
             case "SourceConst":
-              this.sourceConst = EditorDataReadUtility.ReadReference<VMParameter>(xml, creator);
+              sourceConst = EditorDataReadUtility.ReadReference<VMParameter>(xml, creator);
               continue;
             case "SourceExpression":
-              this.sourceExpression = EditorDataReadUtility.ReadReference<VMExpression>(xml, creator);
+              sourceExpression = EditorDataReadUtility.ReadReference<VMExpression>(xml, creator);
               continue;
             case "SourceParams":
-              this.sourceParams = EditorDataReadUtility.ReadSerializableList<CommonVariable>(xml, this.sourceParams);
+              sourceParams = EditorDataReadUtility.ReadSerializableList(xml, sourceParams);
               continue;
             case "TargetFuncName":
-              this.targetFunctionName = EditorDataReadUtility.ReadValue(xml, this.targetFunctionName);
+              targetFunctionName = EditorDataReadUtility.ReadValue(xml, targetFunctionName);
               continue;
             case "TargetObject":
-              this.targetObject = EditorDataReadUtility.ReadSerializable<CommonVariable>(xml);
+              targetObject = EditorDataReadUtility.ReadSerializable<CommonVariable>(xml);
               continue;
             case "TargetParam":
-              this.targetParam = EditorDataReadUtility.ReadSerializable<CommonVariable>(xml);
+              targetParam = EditorDataReadUtility.ReadSerializable<CommonVariable>(xml);
               continue;
             default:
               if (XMLDataLoader.Logs.Add(typeContext + " : " + xml.Name))
@@ -102,7 +101,8 @@ namespace PLVirtualMachine.GameLogic
               continue;
           }
         }
-        else if (xml.NodeType == XmlNodeType.EndElement)
+
+        if (xml.NodeType == XmlNodeType.EndElement)
           break;
       }
     }
@@ -110,100 +110,100 @@ namespace PLVirtualMachine.GameLogic
     public VMGameAction(ulong guid)
     {
       this.guid = guid;
-      this.actionInfo = new AbstractActionInfo((IAbstractAction) this);
+      actionInfo = new AbstractActionInfo(this);
     }
 
-    public ulong BaseGuid => this.guid;
+    public ulong BaseGuid => guid;
 
-    public string Name => this.name;
+    public string Name => name;
 
-    public ILocalContext LocalContext => this.localContext;
+    public ILocalContext LocalContext => localContext;
 
-    public int Order => this.orderIndex;
+    public int Order => orderIndex;
 
     public virtual List<IVariable> LocalContextVariables => new List<IVariable>();
 
-    public virtual IVariable GetLocalContextVariable(string varUniName) => (IVariable) null;
+    public virtual IVariable GetLocalContextVariable(string varUniName) => null;
 
-    public bool IsValid => this.actionInfo.IsValid;
+    public bool IsValid => actionInfo.IsValid;
 
-    public EActionType ActionType => this.actionType;
+    public EActionType ActionType => actionType;
 
-    public EMathOperationType MathOperationType => this.mathOperationType;
+    public EMathOperationType MathOperationType => mathOperationType;
 
     public string TargetFunction
     {
-      get => this.targetFunctionName == null ? string.Empty : this.targetFunctionName;
+      get => targetFunctionName == null ? string.Empty : targetFunctionName;
     }
 
     public string TargetEvent
     {
-      get => this.targetFunctionName == null ? string.Empty : this.targetFunctionName;
+      get => targetFunctionName == null ? string.Empty : targetFunctionName;
     }
 
-    public IParam SourceConstant => (IParam) this.sourceConst;
+    public IParam SourceConstant => sourceConst;
 
-    public IExpression SourceExpression => (IExpression) this.sourceExpression;
+    public IExpression SourceExpression => sourceExpression;
 
     public void Update()
     {
-      if (this.isUpdated && this.actionInfo.IsValid)
+      if (isUpdated && actionInfo.IsValid)
         return;
-      this.actionInfo.Update();
-      this.isUpdated = this.actionInfo.IsValid;
+      actionInfo.Update();
+      isUpdated = actionInfo.IsValid;
     }
 
-    public bool IsUpdated => this.isUpdated;
+    public bool IsUpdated => isUpdated;
 
-    public BaseFunction TargetFunctionInstance => this.actionInfo.TargetFunctionInstance;
+    public BaseFunction TargetFunctionInstance => actionInfo.TargetFunctionInstance;
 
-    public CommonVariable TargetObject => this.targetObject;
+    public CommonVariable TargetObject => targetObject;
 
-    public CommonVariable TargetParam => this.targetParam;
+    public CommonVariable TargetParam => targetParam;
 
-    public List<CommonVariable> SourceParams => this.sourceParams;
+    public List<CommonVariable> SourceParams => sourceParams;
 
     public bool IsEqual(IObject other)
     {
-      return other != null && typeof (VMGameAction) == other.GetType() && (long) this.BaseGuid == (long) ((VMGameAction) other).BaseGuid;
+      return other != null && typeof (VMGameAction) == other.GetType() && (long) BaseGuid == (long) ((VMGameAction) other).BaseGuid;
     }
 
-    public string GuidStr => this.guid.ToString();
+    public string GuidStr => guid.ToString();
 
     public void Clear()
     {
-      this.localContext = (ILocalContext) null;
-      if (this.sourceConst != null)
+      localContext = null;
+      if (sourceConst != null)
       {
-        this.sourceConst.Clear();
-        this.sourceConst = (VMParameter) null;
+        sourceConst.Clear();
+        sourceConst = null;
       }
-      if (this.sourceExpression != null)
+      if (sourceExpression != null)
       {
-        this.sourceExpression.Clear();
-        this.sourceExpression = (VMExpression) null;
+        sourceExpression.Clear();
+        sourceExpression = null;
       }
-      if (this.targetObject != null)
+      if (targetObject != null)
       {
-        this.targetObject.Clear();
-        this.targetObject = (CommonVariable) null;
+        targetObject.Clear();
+        targetObject = null;
       }
-      if (this.targetParam != null)
+      if (targetParam != null)
       {
-        this.targetParam.Clear();
-        this.targetParam = (CommonVariable) null;
+        targetParam.Clear();
+        targetParam = null;
       }
-      if (this.sourceParams != null)
+      if (sourceParams != null)
       {
-        foreach (ContextVariable sourceParam in this.sourceParams)
+        foreach (ContextVariable sourceParam in sourceParams)
           sourceParam.Clear();
-        this.sourceParams.Clear();
-        this.sourceParams = (List<CommonVariable>) null;
+        sourceParams.Clear();
+        sourceParams = null;
       }
-      if (this.actionInfo == null)
+      if (actionInfo == null)
         return;
-      this.actionInfo.Clear();
-      this.actionInfo = (AbstractActionInfo) null;
+      actionInfo.Clear();
+      actionInfo = null;
     }
   }
 }

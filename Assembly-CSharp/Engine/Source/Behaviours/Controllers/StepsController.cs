@@ -1,11 +1,8 @@
-﻿using Engine.Assets.Objects;
-using Engine.Source.Audio;
+﻿using System;
+using System.Collections.Generic;
+using Engine.Assets.Objects;
 using Inspectors;
 using Rain;
-using System;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.Audio;
 
 namespace Engine.Source.Behaviours.Controllers
 {
@@ -25,7 +22,7 @@ namespace Engine.Source.Behaviours.Controllers
     protected const string footRightEventName = "Skeleton.Humanoid.Foot_Right";
     [SerializeField]
     private StepsData stepsData;
-    private Dictionary<StepsEvent, StepsController.Info> footActions = new Dictionary<StepsEvent, StepsController.Info>();
+    private Dictionary<StepsEvent, Info> footActions = new Dictionary<StepsEvent, Info>();
     private Dictionary<StepsReaction, float> footReactions = new Dictionary<StepsReaction, float>();
     [Inspected]
     private List<AudioSource> footLeftAudioSources = new List<AudioSource>();
@@ -33,7 +30,7 @@ namespace Engine.Source.Behaviours.Controllers
     private List<AudioSource> footRightAudioSources = new List<AudioSource>();
     [Inspected]
     private List<AudioSource> footEffectAudioSources = new List<AudioSource>();
-    private static List<KeyValuePair<StepsEvent, StepsController.Info>> tmp = new List<KeyValuePair<StepsEvent, StepsController.Info>>();
+    private static List<KeyValuePair<StepsEvent, Info>> tmp = new List<KeyValuePair<StepsEvent, Info>>();
 
     protected abstract AudioMixerGroup FootAudioMixer { get; }
 
@@ -41,9 +38,9 @@ namespace Engine.Source.Behaviours.Controllers
 
     protected void RefreshMixers()
     {
-      this.footLeftAudioSources.ForEach((Action<AudioSource>) (audioSource => audioSource.outputAudioMixerGroup = this.FootAudioMixer));
-      this.footRightAudioSources.ForEach((Action<AudioSource>) (audioSource => audioSource.outputAudioMixerGroup = this.FootAudioMixer));
-      this.footEffectAudioSources.ForEach((Action<AudioSource>) (audioSource => audioSource.outputAudioMixerGroup = this.FootEffectsAudioMixer));
+      footLeftAudioSources.ForEach((Action<AudioSource>) (audioSource => audioSource.outputAudioMixerGroup = FootAudioMixer));
+      footRightAudioSources.ForEach((Action<AudioSource>) (audioSource => audioSource.outputAudioMixerGroup = FootAudioMixer));
+      footEffectAudioSources.ForEach((Action<AudioSource>) (audioSource => audioSource.outputAudioMixerGroup = FootEffectsAudioMixer));
     }
 
     protected virtual void Awake()
@@ -52,16 +49,16 @@ namespace Engine.Source.Behaviours.Controllers
 
     protected void OnStep(string data, bool isIndoor)
     {
-      if ((UnityEngine.Object) this.stepsData == (UnityEngine.Object) null || string.IsNullOrEmpty(data))
+      if ((UnityEngine.Object) stepsData == (UnityEngine.Object) null || string.IsNullOrEmpty(data))
         return;
-      this.UpdateMaterial(data, this.transform.position, isIndoor);
+      UpdateMaterial(data, this.transform.position, isIndoor);
       float val1 = 0.0f;
-      this.footActions.Clear();
-      this.footReactions.Clear();
-      for (int index1 = 0; index1 < this.stepsData.Actions.Length; ++index1)
+      footActions.Clear();
+      footReactions.Clear();
+      for (int index1 = 0; index1 < stepsData.Actions.Length; ++index1)
       {
-        StepsAction action = this.stepsData.Actions[index1];
-        if (action != null && this.actions.ContainsKey(action.Material.name))
+        StepsAction action = stepsData.Actions[index1];
+        if (action != null && actions.ContainsKey(action.Material.name))
         {
           for (int index2 = 0; index2 < action.Events.Length; ++index2)
           {
@@ -69,111 +66,108 @@ namespace Engine.Source.Behaviours.Controllers
             if (key != null && key.Name == data)
             {
               val1 = Math.Max(val1, key.ReactionIntensity);
-              StepsController.Info info = new StepsController.Info()
-              {
+              Info info = new Info {
                 Action = action,
-                Intensity = this.actions[action.Material.name]
+                Intensity = actions[action.Material.name]
               };
-              this.footActions.Add(key, info);
+              footActions.Add(key, info);
             }
           }
         }
       }
-      for (int index = 0; index < this.stepsData.Reactions.Length; ++index)
+      for (int index = 0; index < stepsData.Reactions.Length; ++index)
       {
-        StepsReaction reaction = this.stepsData.Reactions[index];
-        if (reaction != null && this.reactions.ContainsKey(reaction.Material.name))
-          this.footReactions.Add(reaction, this.reactions[reaction.Material.name]);
+        StepsReaction reaction = stepsData.Reactions[index];
+        if (reaction != null && reactions.ContainsKey(reaction.Material.name))
+          footReactions.Add(reaction, reactions[reaction.Material.name]);
       }
       int index3 = 0;
       bool flag = false;
-      StepsController.tmp.Clear();
-      foreach (KeyValuePair<StepsEvent, StepsController.Info> footAction in this.footActions)
-        StepsController.tmp.Add(footAction);
-      foreach (KeyValuePair<StepsEvent, StepsController.Info> keyValuePair in StepsController.tmp)
+      tmp.Clear();
+      foreach (KeyValuePair<StepsEvent, Info> footAction in footActions)
+        tmp.Add(footAction);
+      foreach (KeyValuePair<StepsEvent, Info> keyValuePair in tmp)
       {
-        if (!((UnityEngine.Object) keyValuePair.Value.Action.Material != (UnityEngine.Object) this.puddlePhysicMaterial))
+        if (!((UnityEngine.Object) keyValuePair.Value.Action.Material != (UnityEngine.Object) puddlePhysicMaterial))
         {
           float num = !float.IsNaN(keyValuePair.Value.Intensity) ? keyValuePair.Value.Intensity : keyValuePair.Key.ActionIntensity;
-          if ((double) num < (double) keyValuePair.Value.Action.MinThesholdIntensity || (double) num > (double) keyValuePair.Value.Action.MaxThesholdIntensity)
+          if (num < (double) keyValuePair.Value.Action.MinThesholdIntensity || num > (double) keyValuePair.Value.Action.MaxThesholdIntensity)
           {
-            this.footActions.Remove(keyValuePair.Key);
+            footActions.Remove(keyValuePair.Key);
             break;
           }
-          this.footActions.Clear();
-          this.footReactions.Clear();
-          this.footActions.Add(keyValuePair.Key, keyValuePair.Value);
+          footActions.Clear();
+          footReactions.Clear();
+          footActions.Add(keyValuePair.Key, keyValuePair.Value);
           break;
         }
       }
       switch (data)
       {
         case "Skeleton.Humanoid.Foot_Left":
-          if ((UnityEngine.Object) this.footAudioModel != (UnityEngine.Object) null)
+          if ((UnityEngine.Object) footAudioModel != (UnityEngine.Object) null)
           {
-            this.FillAudioModelInstance(this.gameObject, this.footAudioModel, (IList<AudioSource>) this.footLeftAudioSources, this.FootAudioMixer, this.footActions.Count);
-            using (Dictionary<StepsEvent, StepsController.Info>.Enumerator enumerator = this.footActions.GetEnumerator())
+            FillAudioModelInstance(this.gameObject, footAudioModel, (IList<AudioSource>) footLeftAudioSources, FootAudioMixer, footActions.Count);
+            using (Dictionary<StepsEvent, Info>.Enumerator enumerator = footActions.GetEnumerator())
             {
               while (enumerator.MoveNext())
               {
-                KeyValuePair<StepsEvent, StepsController.Info> current = enumerator.Current;
+                KeyValuePair<StepsEvent, Info> current = enumerator.Current;
                 float num = !float.IsNaN(current.Value.Intensity) ? current.Value.Intensity : current.Key.ActionIntensity;
-                if ((double) num >= (double) current.Value.Action.MinThesholdIntensity && (double) num <= (double) current.Value.Action.MaxThesholdIntensity)
+                if (num >= (double) current.Value.Action.MinThesholdIntensity && num <= (double) current.Value.Action.MaxThesholdIntensity)
                 {
                   flag |= current.Key.HaveReaction;
-                  AudioSource footLeftAudioSource = this.footLeftAudioSources[index3];
-                  AudioClip audioClip = ((IEnumerable<AudioClip>) current.Key.Clips).Random<AudioClip>();
+                  AudioSource footLeftAudioSource = footLeftAudioSources[index3];
+                  AudioClip audioClip = ((IEnumerable<AudioClip>) current.Key.Clips).Random();
                   footLeftAudioSource.volume = num;
                   footLeftAudioSource.clip = audioClip;
                   footLeftAudioSource.PlayAndCheck();
                   ++index3;
                 }
               }
-              break;
             }
           }
-          else
-            break;
+
+          break;
         case "Skeleton.Humanoid.Foot_Right":
-          if ((UnityEngine.Object) this.footAudioModel != (UnityEngine.Object) null)
+          if ((UnityEngine.Object) footAudioModel != (UnityEngine.Object) null)
           {
-            this.FillAudioModelInstance(this.gameObject, this.footAudioModel, (IList<AudioSource>) this.footRightAudioSources, this.FootAudioMixer, this.footActions.Count);
-            using (Dictionary<StepsEvent, StepsController.Info>.Enumerator enumerator = this.footActions.GetEnumerator())
+            FillAudioModelInstance(this.gameObject, footAudioModel, (IList<AudioSource>) footRightAudioSources, FootAudioMixer, footActions.Count);
+            using (Dictionary<StepsEvent, Info>.Enumerator enumerator = footActions.GetEnumerator())
             {
               while (enumerator.MoveNext())
               {
-                KeyValuePair<StepsEvent, StepsController.Info> current = enumerator.Current;
+                KeyValuePair<StepsEvent, Info> current = enumerator.Current;
                 float num = !float.IsNaN(current.Value.Intensity) ? current.Value.Intensity : current.Key.ActionIntensity;
-                if ((double) num >= (double) current.Value.Action.MinThesholdIntensity && (double) num <= (double) current.Value.Action.MaxThesholdIntensity)
+                if (num >= (double) current.Value.Action.MinThesholdIntensity && num <= (double) current.Value.Action.MaxThesholdIntensity)
                 {
                   flag |= current.Key.HaveReaction;
-                  AudioSource rightAudioSource = this.footRightAudioSources[index3];
-                  AudioClip audioClip = ((IEnumerable<AudioClip>) current.Key.Clips).Random<AudioClip>();
+                  AudioSource rightAudioSource = footRightAudioSources[index3];
+                  AudioClip audioClip = ((IEnumerable<AudioClip>) current.Key.Clips).Random();
                   rightAudioSource.volume = num;
                   rightAudioSource.clip = audioClip;
                   rightAudioSource.PlayAndCheck();
                   ++index3;
                 }
               }
-              break;
             }
           }
-          else
-            break;
+
+          break;
         default:
           return;
       }
       int index4 = 0;
-      if (!((UnityEngine.Object) this.footEffectAudioModel != (UnityEngine.Object) null))
+      if (!((UnityEngine.Object) footEffectAudioModel != (UnityEngine.Object) null))
         return;
-      this.FillAudioModelInstance(this.gameObject, this.footEffectAudioModel, (IList<AudioSource>) this.footEffectAudioSources, this.FootEffectsAudioMixer, this.footReactions.Count);
-      foreach (KeyValuePair<StepsReaction, float> footReaction in this.footReactions)
+      FillAudioModelInstance(this.gameObject, footEffectAudioModel, (IList<AudioSource>) footEffectAudioSources, FootEffectsAudioMixer, footReactions.Count);
+      foreach (KeyValuePair<StepsReaction, float> footReaction in footReactions)
       {
         float num = (!float.IsNaN(footReaction.Value) ? footReaction.Value : footReaction.Key.Intensity) * val1;
-        if ((double) num >= (double) footReaction.Key.MinThesholdIntensity && (double) num <= (double) footReaction.Key.MaxThesholdIntensity)
+        if (num >= (double) footReaction.Key.MinThesholdIntensity && num <= (double) footReaction.Key.MaxThesholdIntensity)
         {
-          AudioSource effectAudioSource = this.footEffectAudioSources[index4];
-          AudioClip audioClip = ((IEnumerable<AudioClip>) footReaction.Key.Clips).Random<AudioClip>();
+          AudioSource effectAudioSource = footEffectAudioSources[index4];
+          AudioClip audioClip = ((IEnumerable<AudioClip>) footReaction.Key.Clips).Random();
           effectAudioSource.volume = num;
           effectAudioSource.clip = audioClip;
           effectAudioSource.PlayAndCheck();
@@ -213,43 +207,43 @@ namespace Engine.Source.Behaviours.Controllers
         return;
       TerrainData terrainData = component.terrainData;
       Vector3 vector3_1 = position - go.transform.position;
-      if ((UnityEngine.Object) this.stepsData == (UnityEngine.Object) null)
+      if ((UnityEngine.Object) stepsData == (UnityEngine.Object) null)
         return;
       Vector3 vector3_2 = vector3_1 / component.terrainData.size.x * (float) component.terrainData.alphamapResolution;
       float[,,] alphamaps = terrainData.GetAlphamaps((int) vector3_2.x, (int) vector3_2.z, 1, 1);
       int index1 = -1;
       float f1 = float.NaN;
-      for (int index2 = 0; index2 < this.stepsData.TileLayers.Length; ++index2)
+      for (int index2 = 0; index2 < stepsData.TileLayers.Length; ++index2)
       {
         float num = alphamaps[0, 0, index2];
-        if (float.IsNaN(f1) || (double) f1 <= (double) num)
+        if (float.IsNaN(f1) || f1 <= (double) num)
         {
           f1 = num;
           index1 = index2;
         }
       }
-      if (!float.IsNaN(f1) && this.stepsData.TileLayers.Length != 0 && (double) f1 > 0.0)
-        this.actions.Add(this.stepsData.TileLayers[index1].name, float.NaN);
+      if (!float.IsNaN(f1) && stepsData.TileLayers.Length != 0 && f1 > 0.0)
+        actions.Add(stepsData.TileLayers[index1].name, float.NaN);
       Vector3 vector3_3 = vector3_1 / component.terrainData.size.x * (float) component.terrainData.detailResolution;
       int index3 = -1;
       float f2 = float.NaN;
-      for (int layer = 0; layer < this.stepsData.DetailLayers.Length; ++layer)
+      for (int layer = 0; layer < stepsData.DetailLayers.Length; ++layer)
       {
         float num = (float) terrainData.GetDetailLayer((int) vector3_3.x, (int) vector3_3.z, 1, 1, layer)[0, 0];
-        if (float.IsNaN(f2) || (double) f2 <= (double) num)
+        if (float.IsNaN(f2) || f2 <= (double) num)
         {
           f2 = num;
           index3 = layer;
         }
       }
-      if (!float.IsNaN(f2) && this.stepsData.DetailLayers.Length != 0 && (double) f2 > 0.0)
-        this.reactions.Add(this.stepsData.DetailLayers[index3].name, float.NaN);
+      if (!float.IsNaN(f2) && stepsData.DetailLayers.Length != 0 && f2 > 0.0)
+        reactions.Add(stepsData.DetailLayers[index3].name, float.NaN);
     }
 
     private void UpdateMaterial(string data, Vector3 position, bool isIndoor)
     {
-      this.actions.Clear();
-      this.reactions.Clear();
+      actions.Clear();
+      reactions.Clear();
       float maxDistance = 1f;
       LayerMask puddlesLayer = ScriptableObjectInstance<GameSettingsData>.Instance.PuddlesLayer;
       RaycastHit hitInfo1;
@@ -262,7 +256,7 @@ namespace Engine.Source.Behaviours.Controllers
           float Wetness;
           if ((UnityEngine.Object) component != (UnityEngine.Object) null && component.GetWetness(hitInfo1, out Wetness))
           {
-            this.actions.Add(this.puddlePhysicMaterial.name, Wetness);
+            actions.Add(puddlePhysicMaterial.name, Wetness);
             component.AddRipple(hitInfo1.point, 0.1f, 1f);
           }
         }
@@ -278,12 +272,12 @@ namespace Engine.Source.Behaviours.Controllers
         if ((UnityEngine.Object) collider != (UnityEngine.Object) null)
         {
           PhysicMaterial rainPhysicMaterial = this.rainPhysicMaterial;
-          if ((double) instance.rainIntensity > 1.4012984643248171E-45 && (UnityEngine.Object) rainPhysicMaterial != (UnityEngine.Object) null && !isIndoor)
-            this.reactions.Add(rainPhysicMaterial.name, instance.rainIntensity);
+          if (instance.rainIntensity > 1.4012984643248171E-45 && (UnityEngine.Object) rainPhysicMaterial != (UnityEngine.Object) null && !isIndoor)
+            reactions.Add(rainPhysicMaterial.name, instance.rainIntensity);
           if ((UnityEngine.Object) (collider as TerrainCollider) != (UnityEngine.Object) null)
-            this.UpdateTerrainMaterial(collider.gameObject, position);
+            UpdateTerrainMaterial(collider.gameObject, position);
           else
-            this.UpdateMeshMaterial(collider);
+            UpdateMeshMaterial(collider);
         }
       }
     }
@@ -293,9 +287,9 @@ namespace Engine.Source.Behaviours.Controllers
       if ((UnityEngine.Object) collider == (UnityEngine.Object) null)
         return;
       if ((UnityEngine.Object) collider.sharedMaterial == (UnityEngine.Object) null)
-        this.actions.Add(collider.material.name, float.NaN);
+        actions.Add(collider.material.name, float.NaN);
       else
-        this.actions.Add(collider.sharedMaterial.name, float.NaN);
+        actions.Add(collider.sharedMaterial.name, float.NaN);
     }
 
     public struct Info

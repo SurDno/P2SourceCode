@@ -12,8 +12,8 @@ namespace Engine.Source.Blueprints
     protected override void RegisterPorts()
     {
       base.RegisterPorts();
-      FlowOutput output = this.AddFlowOutput("Out");
-      this.AddFlowInput("In", (FlowHandler) (() => UIServiceUtility.PushWindow<IEndCreditsWindow>(output)));
+      FlowOutput output = AddFlowOutput("Out");
+      AddFlowInput("In", () => UIServiceUtility.PushWindow<IEndCreditsWindow>(output));
     }
   }
 }

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections;
-using UnityEngine;
 
 public class CoroutineService : MonoBehaviour
 {
@@ -10,9 +9,9 @@ public class CoroutineService : MonoBehaviour
   {
     get
     {
-      if ((UnityEngine.Object) CoroutineService.instance == (UnityEngine.Object) null)
-        CoroutineService.instance = new GameObject(typeof (CoroutineService).Name).AddComponent<CoroutineService>();
-      return CoroutineService.instance;
+      if ((UnityEngine.Object) instance == (UnityEngine.Object) null)
+        instance = new GameObject(typeof (CoroutineService).Name).AddComponent<CoroutineService>();
+      return instance;
     }
   }
 
@@ -20,20 +19,20 @@ public class CoroutineService : MonoBehaviour
 
   public void WaitSecond(float delay, Action action)
   {
-    this.StartCoroutine(this.WaitSecondRoute(delay, action));
+    this.StartCoroutine(WaitSecondRoute(delay, action));
   }
 
   public void WaitFrame(int count, Action action)
   {
-    this.StartCoroutine(this.WaitFrameRoute(count, action));
+    this.StartCoroutine(WaitFrameRoute(count, action));
   }
 
-  public void WaitFrame(Action action) => this.StartCoroutine(this.WaitFrameRoute(1, action));
+  public void WaitFrame(Action action) => this.StartCoroutine(WaitFrameRoute(1, action));
 
   private IEnumerator WaitFrameRoute(int count, Action action)
   {
     for (int index = 0; index < count; ++index)
-      yield return (object) null;
+      yield return null;
     try
     {
       action();

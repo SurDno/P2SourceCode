@@ -1,8 +1,4 @@
-﻿using Engine.Source.Audio;
-using UnityEngine;
-using UnityEngine.Audio;
-
-public class SamopalObject : MonoBehaviour
+﻿public class SamopalObject : MonoBehaviour
 {
   public GameObject AimPoint;
   public ParticleBurster ShotEffect;
@@ -10,46 +6,46 @@ public class SamopalObject : MonoBehaviour
   public AudioSource FireLoopAudio;
   public AudioSource FireShootAudio;
   private AudioMixerGroup mixer;
-  private bool needShot = false;
+  private bool needShot;
 
   public void SetIndoor(bool indoor)
   {
-    this.mixer = indoor ? ScriptableObjectInstance<GameSettingsData>.Instance.NpcWeaponIndoorMixer : ScriptableObjectInstance<GameSettingsData>.Instance.NpcWeaponOutdoorMixer;
-    this.FireBeginAudio.outputAudioMixerGroup = this.mixer;
-    this.FireLoopAudio.outputAudioMixerGroup = this.mixer;
-    this.FireShootAudio.outputAudioMixerGroup = this.mixer;
+    mixer = indoor ? ScriptableObjectInstance<GameSettingsData>.Instance.NpcWeaponIndoorMixer : ScriptableObjectInstance<GameSettingsData>.Instance.NpcWeaponOutdoorMixer;
+    FireBeginAudio.outputAudioMixerGroup = mixer;
+    FireLoopAudio.outputAudioMixerGroup = mixer;
+    FireShootAudio.outputAudioMixerGroup = mixer;
   }
 
   private void Start()
   {
-    if ((Object) this.FireBeginAudio != (Object) null)
-      this.FireBeginAudio.PlayAndCheck();
-    if (!((Object) this.FireLoopAudio != (Object) null))
+    if ((Object) FireBeginAudio != (Object) null)
+      FireBeginAudio.PlayAndCheck();
+    if (!((Object) FireLoopAudio != (Object) null))
       return;
-    this.FireLoopAudio.PlayAndCheck();
+    FireLoopAudio.PlayAndCheck();
   }
 
   private void LateUpdate()
   {
-    if (!this.needShot)
+    if (!needShot)
       return;
-    this.ShotEffect.Fire(this.mixer);
-    this.needShot = false;
+    ShotEffect.Fire(mixer);
+    needShot = false;
   }
 
   public void Shoot()
   {
-    if ((Object) this.FireLoopAudio != (Object) null)
-      this.FireLoopAudio.PlayAndCheck();
-    if ((Object) this.FireShootAudio != (Object) null)
-      this.FireShootAudio.PlayAndCheck();
-    this.needShot = true;
+    if ((Object) FireLoopAudio != (Object) null)
+      FireLoopAudio.PlayAndCheck();
+    if ((Object) FireShootAudio != (Object) null)
+      FireShootAudio.PlayAndCheck();
+    needShot = true;
   }
 
   public void Stop()
   {
-    if (!((Object) this.FireLoopAudio != (Object) null))
+    if (!((Object) FireLoopAudio != (Object) null))
       return;
-    this.FireLoopAudio.PlayAndCheck();
+    FireLoopAudio.PlayAndCheck();
   }
 }

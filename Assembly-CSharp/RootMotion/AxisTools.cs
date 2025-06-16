@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace RootMotion
+﻿namespace RootMotion
 {
   public class AxisTools
   {
@@ -17,16 +15,16 @@ namespace RootMotion
       float num2 = Mathf.Abs(v.y);
       float num3 = Mathf.Abs(v.z);
       Axis axis = Axis.X;
-      if ((double) num2 > (double) num1 && (double) num2 > (double) num3)
+      if (num2 > (double) num1 && num2 > (double) num3)
         axis = Axis.Y;
-      if ((double) num3 > (double) num1 && (double) num3 > (double) num2)
+      if (num3 > (double) num1 && num3 > (double) num2)
         axis = Axis.Z;
       return axis;
     }
 
     public static Axis GetAxisToPoint(Transform t, Vector3 worldPosition)
     {
-      Vector3 axisVectorToPoint = AxisTools.GetAxisVectorToPoint(t, worldPosition);
+      Vector3 axisVectorToPoint = GetAxisVectorToPoint(t, worldPosition);
       if (axisVectorToPoint == Vector3.right)
         return Axis.X;
       return axisVectorToPoint == Vector3.up ? Axis.Y : Axis.Z;
@@ -34,7 +32,7 @@ namespace RootMotion
 
     public static Axis GetAxisToDirection(Transform t, Vector3 direction)
     {
-      Vector3 vectorToDirection = AxisTools.GetAxisVectorToDirection(t, direction);
+      Vector3 vectorToDirection = GetAxisVectorToDirection(t, direction);
       if (vectorToDirection == Vector3.right)
         return Axis.X;
       return vectorToDirection == Vector3.up ? Axis.Y : Axis.Z;
@@ -42,7 +40,7 @@ namespace RootMotion
 
     public static Vector3 GetAxisVectorToPoint(Transform t, Vector3 worldPosition)
     {
-      return AxisTools.GetAxisVectorToDirection(t, worldPosition - t.position);
+      return GetAxisVectorToDirection(t, worldPosition - t.position);
     }
 
     public static Vector3 GetAxisVectorToDirection(Transform t, Vector3 direction)
@@ -51,10 +49,10 @@ namespace RootMotion
       Vector3 vectorToDirection = Vector3.right;
       float num1 = Mathf.Abs(Vector3.Dot(Vector3.Normalize(t.right), direction));
       float num2 = Mathf.Abs(Vector3.Dot(Vector3.Normalize(t.up), direction));
-      if ((double) num2 > (double) num1)
+      if (num2 > (double) num1)
         vectorToDirection = Vector3.up;
       float num3 = Mathf.Abs(Vector3.Dot(Vector3.Normalize(t.forward), direction));
-      if ((double) num3 > (double) num1 && (double) num3 > (double) num2)
+      if (num3 > (double) num1 && num3 > (double) num2)
         vectorToDirection = Vector3.forward;
       return vectorToDirection;
     }

@@ -1,5 +1,5 @@
-﻿using Cofe.Meta;
-using Engine.Common;
+﻿using System;
+using Cofe.Meta;
 using Engine.Common.Services;
 using Engine.Impl.Services;
 using Engine.Source.Commons;
@@ -8,18 +8,16 @@ using Engine.Source.Services.Gizmos;
 using Engine.Source.Utility;
 using InputServices;
 using SRF;
-using System;
-using UnityEngine;
 
 namespace Engine.Source.Debugs
 {
   [Initialisable]
   public static class CommonGroupDebug
   {
-    [Cofe.Meta.Initialise]
+    [Initialise]
     private static void Initialise()
     {
-      InstanceByRequest<EngineApplication>.Instance.OnInitialized += (Action) (() => InstanceByRequest<UpdateService>.Instance.Updater.AddUpdatable((IUpdatable) new UpdatableProxy((Action) (() => CommonGroupDebug.Update()))));
+      InstanceByRequest<EngineApplication>.Instance.OnInitialized += (Action) (() => InstanceByRequest<UpdateService>.Instance.Updater.AddUpdatable(new UpdatableProxy((Action) (() => Update()))));
     }
 
     private static void Update()

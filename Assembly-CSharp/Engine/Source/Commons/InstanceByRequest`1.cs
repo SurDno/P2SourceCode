@@ -8,9 +8,9 @@
     {
       get
       {
-        if ((object) InstanceByRequest<T>.instance == null)
-          InstanceByRequest<T>.instance = new T();
-        return InstanceByRequest<T>.instance;
+        if (instance == null)
+          instance = new T();
+        return instance;
       }
     }
   }

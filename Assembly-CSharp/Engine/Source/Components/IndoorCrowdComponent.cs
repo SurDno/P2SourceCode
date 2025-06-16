@@ -1,4 +1,7 @@
-﻿using Engine.Behaviours;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Engine.Behaviours;
 using Engine.Common;
 using Engine.Common.Components;
 using Engine.Common.Components.Movable;
@@ -12,10 +15,6 @@ using Engine.Source.Components.Utilities;
 using Engine.Source.Connections;
 using Engine.Source.Services;
 using Inspectors;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
 
 namespace Engine.Source.Components
 {
@@ -29,15 +28,15 @@ namespace Engine.Source.Components
     IUpdatable,
     IEntityEventsListener
   {
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected SceneGameObject region;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy()]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected List<CrowdAreaInfo> areas = new List<CrowdAreaInfo>();
@@ -60,36 +59,36 @@ namespace Engine.Source.Components
 
     public event Action<IEntity> OnDeleteEntity;
 
-    private bool IsAvailable => this.pointsReady && this.Owner.IsEnabledInHierarchy;
+    private bool IsAvailable => pointsReady && Owner.IsEnabledInHierarchy;
 
     public override void OnAdded()
     {
       base.OnAdded();
-      this.UpdateRandom();
-      this.locationItem.OnHibernationChanged += new Action<ILocationItemComponent>(this.OnChangeHibernation);
-      this.OnChangeHibernation((ILocationItemComponent) this.locationItem);
-      ((Entity) this.Owner).AddListener((IEntityEventsListener) this);
-      this.OnEnableChangedEvent();
-      InstanceByRequest<UpdateService>.Instance.IndoorCrowdUpdater.AddUpdatable((IUpdatable) this);
+      UpdateRandom();
+      locationItem.OnHibernationChanged += OnChangeHibernation;
+      OnChangeHibernation(locationItem);
+      ((Entity) Owner).AddListener(this);
+      OnEnableChangedEvent();
+      InstanceByRequest<UpdateService>.Instance.IndoorCrowdUpdater.AddUpdatable(this);
     }
 
     public override void OnRemoved()
     {
-      InstanceByRequest<UpdateService>.Instance.IndoorCrowdUpdater.RemoveUpdatable((IUpdatable) this);
-      ((Entity) this.Owner).RemoveListener((IEntityEventsListener) this);
-      this.locationItem.OnHibernationChanged -= new Action<ILocationItemComponent>(this.OnChangeHibernation);
-      this.locationItem = (LocationItemComponent) null;
-      if (this.targetCrowdPointsComponent != null)
+      InstanceByRequest<UpdateService>.Instance.IndoorCrowdUpdater.RemoveUpdatable(this);
+      ((Entity) Owner).RemoveListener(this);
+      locationItem.OnHibernationChanged -= OnChangeHibernation;
+      locationItem = null;
+      if (targetCrowdPointsComponent != null)
       {
-        this.targetCrowdPointsComponent.ChangePointsEvent -= new Action<ICrowdPointsComponent, bool>(this.CrowdPointsComponent_ChangePointsEvent);
-        this.targetCrowdPointsComponent = (CrowdPointsComponent) null;
+        targetCrowdPointsComponent.ChangePointsEvent -= CrowdPointsComponent_ChangePointsEvent;
+        targetCrowdPointsComponent = null;
       }
       base.OnRemoved();
     }
 
     private void UpdateRandom()
     {
-      foreach (CrowdAreaInfo area in this.areas)
+      foreach (CrowdAreaInfo area in areas)
       {
         if (area != null)
         {
@@ -97,53 +96,53 @@ namespace Engine.Source.Components
             templateInfo.Seed = 0;
         }
         else
-          Debug.LogWarning((object) ("info == null : " + this.Owner.GetInfo()));
+          Debug.LogWarning((object) ("info == null : " + Owner.GetInfo()));
       }
     }
 
     private void OnChangeHibernation(ILocationItemComponent sender)
     {
-      if (this.locationItem.IsHibernation)
+      if (locationItem.IsHibernation)
         return;
-      GameObject gameObject1 = ((IEntityView) this.Owner).GameObject;
+      GameObject gameObject1 = ((IEntityView) Owner).GameObject;
       if ((UnityEngine.Object) gameObject1 == (UnityEngine.Object) null)
       {
-        Debug.LogError((object) ("GameObject not found , " + this.Owner.GetInfo()));
+        Debug.LogError((object) ("GameObject not found , " + Owner.GetInfo()));
       }
       else
       {
         SceneObjectContainer container = SceneObjectContainer.GetContainer(gameObject1.scene);
         if ((UnityEngine.Object) container == (UnityEngine.Object) null)
         {
-          Debug.LogError((object) ("SceneObjectContainer not found in scene " + gameObject1.scene.name + " , " + this.Owner.GetInfo()));
+          Debug.LogError((object) ("SceneObjectContainer not found in scene " + gameObject1.scene.name + " , " + Owner.GetInfo()));
         }
         else
         {
-          GameObject gameObject2 = container.GetGameObject(this.region.Id);
+          GameObject gameObject2 = container.GetGameObject(region.Id);
           if ((UnityEngine.Object) gameObject2 == (UnityEngine.Object) null)
           {
-            Debug.LogError((object) string.Format("GameObject region not found : {0} , {1}", (object) this.region.Id, (object) this.Owner.GetInfo()));
+            Debug.LogError((object) string.Format("GameObject region not found : {0} , {1}", region.Id, Owner.GetInfo()));
           }
           else
           {
             IEntity entity = EntityUtility.GetEntity(gameObject2);
             if (entity == null)
             {
-              Debug.LogError((object) ("Entity not found : " + this.Owner.GetInfo()), (UnityEngine.Object) gameObject2);
+              Debug.LogError((object) ("Entity not found : " + Owner.GetInfo()), (UnityEngine.Object) gameObject2);
             }
             else
             {
-              this.targetCrowdPointsComponent = entity.GetComponent<CrowdPointsComponent>();
-              if (this.targetCrowdPointsComponent == null)
+              targetCrowdPointsComponent = entity.GetComponent<CrowdPointsComponent>();
+              if (targetCrowdPointsComponent == null)
               {
-                Debug.LogError((object) ("CrowdPointsComponent not found : " + this.Owner.GetInfo()), (UnityEngine.Object) gameObject2);
+                Debug.LogError((object) ("CrowdPointsComponent not found : " + Owner.GetInfo()), (UnityEngine.Object) gameObject2);
               }
               else
               {
-                this.targetCrowdPointsComponent.ChangePointsEvent += new Action<ICrowdPointsComponent, bool>(this.CrowdPointsComponent_ChangePointsEvent);
-                if (!this.targetCrowdPointsComponent.PointsReady)
+                targetCrowdPointsComponent.ChangePointsEvent += CrowdPointsComponent_ChangePointsEvent;
+                if (!targetCrowdPointsComponent.PointsReady)
                   return;
-                this.CrowdPointsComponent_ChangePointsEvent((ICrowdPointsComponent) this.targetCrowdPointsComponent, this.targetCrowdPointsComponent.PointsReady);
+                CrowdPointsComponent_ChangePointsEvent(targetCrowdPointsComponent, targetCrowdPointsComponent.PointsReady);
               }
             }
           }
@@ -157,32 +156,32 @@ namespace Engine.Source.Components
     {
       this.pointsReady = pointsReady;
       if (pointsReady)
-        this.ComputePoints();
+        ComputePoints();
       else
-        this.DestroyEntities();
+        DestroyEntities();
     }
 
     public void AddEntity(IEntity entity)
     {
       CrowdUtility.SetAsCrowd(entity);
-      if (this.points.FirstOrDefault<IndoorPointInfo>((Func<IndoorPointInfo, bool>) (o => o.Entity == entity)) != null)
+      if (points.FirstOrDefault(o => o.Entity == entity) != null)
       {
         Debug.LogError((object) ("Entity already added : " + entity.GetInfo()));
       }
       else
       {
         IndoorPointInfo waitingPoint = this.waitingPoint;
-        this.waitingPoint = (IndoorPointInfo) null;
+        this.waitingPoint = null;
         if (waitingPoint == null)
         {
-          Debug.LogError((object) ("Point not found : " + this.Owner.GetInfo()));
+          Debug.LogError((object) ("Point not found : " + Owner.GetInfo()));
         }
         else
         {
           waitingPoint.Entity = entity;
           CrowdItemComponent component1 = entity.GetComponent<CrowdItemComponent>();
           if (component1 != null)
-            component1.AttachToCrowd(this.Owner, (PointInfo) waitingPoint);
+            component1.AttachToCrowd(Owner, waitingPoint);
           else
             Debug.LogError((object) ("CrowdItemComponent not found : " + entity.GetInfo()));
           foreach (ICrowdContextComponent component2 in entity.GetComponents<ICrowdContextComponent>())
@@ -206,10 +205,10 @@ namespace Engine.Source.Components
           }
           else
             Debug.LogError((object) ("NavigationComponent not found : " + entity.GetInfo()));
-          if (!this.IsAvailable)
-            this.RemoveEntity(waitingPoint);
+          if (!IsAvailable)
+            RemoveEntity(waitingPoint);
           else
-            this.ComputeModel(waitingPoint.Entity);
+            ComputeModel(waitingPoint.Entity);
         }
       }
     }
@@ -217,12 +216,12 @@ namespace Engine.Source.Components
     private void RemoveEntity(IndoorPointInfo info)
     {
       IEntity entity = info.Entity;
-      info.Entity = (IEntity) null;
+      info.Entity = null;
       info.States.Clear();
       foreach (ICrowdContextComponent component in entity.GetComponents<ICrowdContextComponent>())
         component.StoreState(info.States, true);
       entity.GetComponent<CrowdItemComponent>()?.DetachFromCrowd();
-      Action<IEntity> onDeleteEntity = this.OnDeleteEntity;
+      Action<IEntity> onDeleteEntity = OnDeleteEntity;
       if (onDeleteEntity == null)
         return;
       onDeleteEntity(entity);
@@ -230,20 +229,20 @@ namespace Engine.Source.Components
 
     public void Reset()
     {
-      this.DestroyEntities();
-      this.UpdateRandom();
+      DestroyEntities();
+      UpdateRandom();
     }
 
     private void ComputePoints()
     {
-      if (this.initialise)
+      if (initialise)
         return;
-      this.initialise = true;
-      foreach (CrowdAreaInfo area in this.areas)
+      initialise = true;
+      foreach (CrowdAreaInfo area in areas)
       {
         CrowdUtility.Points.Clear();
-        this.targetCrowdPointsComponent.GetEnabledPoints(area.Area, area.TemplateInfos.Sum<CrowdTemplateInfo>((Func<CrowdTemplateInfo, int>) (o => o.Max)), CrowdUtility.Points);
-        CrowdUtility.Points.Shuffle<CrowdPointInfo>();
+        targetCrowdPointsComponent.GetEnabledPoints(area.Area, area.TemplateInfos.Sum(o => o.Max), CrowdUtility.Points);
+        CrowdUtility.Points.Shuffle();
         int index1 = 0;
         foreach (CrowdTemplateInfo templateInfo in area.TemplateInfos)
         {
@@ -251,7 +250,7 @@ namespace Engine.Source.Components
             templateInfo.Seed = UnityEngine.Random.Range(int.MinValue, int.MaxValue);
           UnityEngine.Random.InitState(templateInfo.Seed);
           int num = UnityEngine.Random.Range(templateInfo.Min, templateInfo.Max + 1);
-          if ((double) templateInfo.Chance < (double) UnityEngine.Random.value)
+          if (templateInfo.Chance < (double) UnityEngine.Random.value)
             num = 0;
           for (int index2 = 0; index2 < num; ++index2)
           {
@@ -259,7 +258,7 @@ namespace Engine.Source.Components
             {
               CrowdPointInfo point = CrowdUtility.Points[index1];
               IndoorPointInfo indoorPointInfo = new IndoorPointInfo();
-              indoorPointInfo.Region = this.targetCrowdPointsComponent.Owner;
+              indoorPointInfo.Region = targetCrowdPointsComponent.Owner;
               indoorPointInfo.Area = point.Area;
               indoorPointInfo.Position = point.Position;
               indoorPointInfo.Rotation = point.Rotation;
@@ -267,7 +266,7 @@ namespace Engine.Source.Components
               indoorPointInfo.Template = templateInfo.Templates[UnityEngine.Random.Range(0, templateInfo.Templates.Count)].Value;
               indoorPointInfo.EntityPoint = point.EntityPoint;
               indoorPointInfo.OnNavMesh = point.OnNavMesh;
-              this.points.Add(indoorPointInfo);
+              points.Add(indoorPointInfo);
               ++index1;
             }
           }
@@ -277,25 +276,25 @@ namespace Engine.Source.Components
 
     private void DestroyEntities()
     {
-      foreach (IndoorPointInfo point in this.points)
+      foreach (IndoorPointInfo point in points)
       {
         if (point.Entity != null)
-          this.RemoveEntity(point);
+          RemoveEntity(point);
       }
     }
 
     public void ComputeUpdate()
     {
-      if (InstanceByRequest<EngineApplication>.Instance.IsPaused || !this.IsAvailable || this.waitingPoint != null)
+      if (InstanceByRequest<EngineApplication>.Instance.IsPaused || !IsAvailable || waitingPoint != null)
         return;
-      this.waitingPoint = this.points.FirstOrDefaultNoAlloc<IndoorPointInfo>((Func<IndoorPointInfo, bool>) (o => o.Entity == null && o.Template != null));
-      if (this.waitingPoint == null)
+      waitingPoint = points.FirstOrDefaultNoAlloc(o => o.Entity == null && o.Template != null);
+      if (waitingPoint == null)
         return;
       DynamicModelComponent.GroupContext = "[IndoorCrowds]";
-      Action<IEntity> onCreateEntity = this.OnCreateEntity;
+      Action<IEntity> onCreateEntity = OnCreateEntity;
       if (onCreateEntity == null)
         return;
-      onCreateEntity(this.waitingPoint.Template);
+      onCreateEntity(waitingPoint.Template);
     }
 
     private void ComputeModel(IEntity entity)
@@ -303,7 +302,7 @@ namespace Engine.Source.Components
       DynamicModelComponent component1 = entity.GetComponent<DynamicModelComponent>();
       if (component1 == null)
         return;
-      List<IModel> list = component1.Models.ToList<IModel>();
+      List<IModel> list = component1.Models.ToList();
       if (list.Count == 0)
         return;
       ParametersComponent component2 = entity.GetComponent<ParametersComponent>();
@@ -320,16 +319,16 @@ namespace Engine.Source.Components
 
     private void OnEnableChangedEvent()
     {
-      if (this.Owner.IsEnabledInHierarchy)
+      if (Owner.IsEnabledInHierarchy)
         return;
-      this.DestroyEntities();
+      DestroyEntities();
     }
 
     public void OnEntityEvent(IEntity sender, EntityEvents kind)
     {
       if (kind != EntityEvents.EnableChangedEvent)
         return;
-      this.OnEnableChangedEvent();
+      OnEnableChangedEvent();
     }
   }
 }

@@ -3,7 +3,7 @@ using PLVirtualMachine.Common.EngineAPI.VMECS.VMAttributes;
 
 namespace PLVirtualMachine.Common.EngineAPI.VMECS
 {
-  [Info("Weather", null)]
+  [Info("Weather")]
   public class VMWeather : VMComponent
   {
     public const string ComponentName = "Weather";

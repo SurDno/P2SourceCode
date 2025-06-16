@@ -1,7 +1,7 @@
-﻿using Cofe.Loggers;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Cofe.Loggers;
 
 namespace PLVirtualMachine.Common.EngineAPI
 {
@@ -9,7 +9,7 @@ namespace PLVirtualMachine.Common.EngineAPI
   {
     public static bool IsTypeNumber(Type type)
     {
-      return VMTypeUtility.IsTypeIntegerNumber(type) || type == typeof (float) || type == typeof (double);
+      return IsTypeIntegerNumber(type) || type == typeof (float) || type == typeof (double);
     }
 
     public static bool IsTypeIntegerNumber(Type type)
@@ -25,7 +25,7 @@ namespace PLVirtualMachine.Common.EngineAPI
           return true;
         if (secondType == null)
         {
-          Logger.AddError(string.Format("Types compatibility checking error: second type not defined at {0})", (object) EngineAPIManager.Instance.CurrentFSMStateInfo));
+          Logger.AddError(string.Format("Types compatibility checking error: second type not defined at {0})", EngineAPIManager.Instance.CurrentFSMStateInfo));
           return false;
         }
         if (firstType.BaseType == typeof (object) || secondType.BaseType == typeof (object))
@@ -39,7 +39,7 @@ namespace PLVirtualMachine.Common.EngineAPI
           if (!typeof (IRef).IsAssignableFrom(firstType.BaseType) && !typeof (ICommonList).IsAssignableFrom(firstType.BaseType) || isWeak)
             return true;
           if (typeof (ICommonList).IsAssignableFrom(firstType.BaseType) && firstType.GetListElementType() != null && secondType.GetListElementType() != null)
-            return VMTypeUtility.IsTypesCompatible(firstType.GetListElementType(), secondType.GetListElementType());
+            return IsTypesCompatible(firstType.GetListElementType(), secondType.GetListElementType());
           string specialType1 = firstType.SpecialType;
           string specialType2 = secondType.SpecialType;
           if (specialType1 == "" || (firstType.BaseType == typeof (IObjRef) || firstType.BaseType == typeof (IBlueprintRef) || firstType.BaseType == typeof (ISampleRef)) && specialType2 == "" || specialType1 == specialType2)
@@ -50,14 +50,14 @@ namespace PLVirtualMachine.Common.EngineAPI
           if (firstType.IsFunctionalSpecial)
           {
             if (firstType.SpecialTypeBlueprint == null)
-              return VMTypeUtility.CompareFunctionalList(firstType, secondType);
-            return secondType.SpecialTypeBlueprint != null && ((long) secondType.SpecialTypeBlueprint.BaseGuid == (long) firstType.SpecialTypeBlueprint.BaseGuid || secondType.SpecialTypeBlueprint.IsDerivedFrom(firstType.SpecialTypeBlueprint.BaseGuid) || VMTypeUtility.CompareFunctionalList(firstType, secondType));
+              return CompareFunctionalList(firstType, secondType);
+            return secondType.SpecialTypeBlueprint != null && ((long) secondType.SpecialTypeBlueprint.BaseGuid == (long) firstType.SpecialTypeBlueprint.BaseGuid || secondType.SpecialTypeBlueprint.IsDerivedFrom(firstType.SpecialTypeBlueprint.BaseGuid) || CompareFunctionalList(firstType, secondType));
           }
         }
       }
       catch (Exception ex)
       {
-        Logger.AddError(string.Format("Types compatibility checking error: {0} at {1})", (object) ex.ToString(), (object) EngineAPIManager.Instance.CurrentFSMStateInfo));
+        Logger.AddError(string.Format("Types compatibility checking error: {0} at {1})", ex, EngineAPIManager.Instance.CurrentFSMStateInfo));
       }
       return false;
     }
@@ -67,7 +67,7 @@ namespace PLVirtualMachine.Common.EngineAPI
       IEnumerable<string> functionalParts = secondType.GetFunctionalParts(true);
       foreach (string functionalPart in firstType.GetFunctionalParts())
       {
-        if (functionalPart != "Common" && !functionalParts.Contains<string>(functionalPart))
+        if (functionalPart != "Common" && !functionalParts.Contains(functionalPart))
           return false;
       }
       return true;

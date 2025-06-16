@@ -6,8 +6,7 @@
 
     public static implicit operator ControllerActionSetHandle_t(ulong value)
     {
-      return new ControllerActionSetHandle_t()
-      {
+      return new ControllerActionSetHandle_t {
         Value = value
       };
     }

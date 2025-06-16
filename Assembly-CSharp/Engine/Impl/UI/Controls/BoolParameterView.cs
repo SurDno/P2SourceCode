@@ -1,7 +1,5 @@
 ﻿using Engine.Common.Components.Parameters;
 using Engine.Source.Components;
-using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Engine.Impl.UI.Controls
 {
@@ -18,33 +16,33 @@ namespace Engine.Impl.UI.Controls
 
     protected override void ApplyValue()
     {
-      if (this.parameter != null)
-        this.parameter.RemoveListener((IChangeParameterListener) this);
-      this.parameter = this.Value?.GetComponent<ParametersComponent>()?.GetByName<bool>(this.parameterName);
-      if (this.parameter != null)
-        this.parameter.AddListener((IChangeParameterListener) this);
-      this.ApplyParameter();
+      if (parameter != null)
+        parameter.RemoveListener(this);
+      parameter = Value?.GetComponent<ParametersComponent>()?.GetByName<bool>(parameterName);
+      if (parameter != null)
+        parameter.AddListener(this);
+      ApplyParameter();
     }
 
     private void ApplyParameter()
     {
-      if (!((Object) this.view != (Object) null))
+      if (!((Object) view != (Object) null))
         return;
-      this.view.Visible = this.parameter != null ? this.parameter.Value : this.defaultValue;
+      view.Visible = parameter != null ? parameter.Value : defaultValue;
     }
 
     public override void SkipAnimation()
     {
-      if (!((Object) this.view != (Object) null))
+      if (!((Object) view != (Object) null))
         return;
-      this.view.SkipAnimation();
+      view.SkipAnimation();
     }
 
     public void OnParameterChanged(IParameter parameter)
     {
       if (parameter != this.parameter)
         return;
-      this.ApplyParameter();
+      ApplyParameter();
     }
   }
 }

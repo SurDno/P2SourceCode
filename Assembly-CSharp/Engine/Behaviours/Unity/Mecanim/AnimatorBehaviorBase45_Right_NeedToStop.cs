@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace Engine.Behaviours.Unity.Mecanim
+﻿namespace Engine.Behaviours.Unity.Mecanim
 {
   public class AnimatorBehaviorBase45_Right_NeedToStop : StateMachineBehaviour
   {

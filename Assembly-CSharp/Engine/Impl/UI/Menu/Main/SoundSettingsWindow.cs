@@ -5,11 +5,6 @@ using Engine.Source.Services.CameraServices;
 using Engine.Source.Services.Inputs;
 using Engine.Source.Settings;
 using InputServices;
-using UnityEngine;
-using UnityEngine.Events;
-using UnityEngine.EventSystems;
-using UnityEngine.Serialization;
-using UnityEngine.UI;
 
 namespace Engine.Impl.UI.Menu.Main
 {
@@ -47,19 +42,19 @@ namespace Engine.Impl.UI.Menu.Main
 
     public override void Initialize()
     {
-      this.RegisterLayer();
-      this.soundGameSettings = InstanceByRequest<SoundGameSettings>.Instance;
-      this.sliderMasterVolume.onValueChanged.AddListener(new UnityAction<float>(this.Slider_Master_Volume_Value_Changed_Handler));
-      this.sliderMusicVolume.onValueChanged.AddListener(new UnityAction<float>(this.Slider_Music_Volume_Value_Changed_Handler));
-      this.sliderEffectsVolume.onValueChanged.AddListener(new UnityAction<float>(this.Slider_Effects_Volume_Value_Changed_Handler));
-      this.sliderVoiceVolume.onValueChanged.AddListener(new UnityAction<float>(this.Slider_Voice_Volume_Value_Changed_Handler));
+      RegisterLayer();
+      soundGameSettings = InstanceByRequest<SoundGameSettings>.Instance;
+      sliderMasterVolume.onValueChanged.AddListener(new UnityAction<float>(Slider_Master_Volume_Value_Changed_Handler));
+      sliderMusicVolume.onValueChanged.AddListener(new UnityAction<float>(Slider_Music_Volume_Value_Changed_Handler));
+      sliderEffectsVolume.onValueChanged.AddListener(new UnityAction<float>(Slider_Effects_Volume_Value_Changed_Handler));
+      sliderVoiceVolume.onValueChanged.AddListener(new UnityAction<float>(Slider_Voice_Volume_Value_Changed_Handler));
       Button[] componentsInChildren = this.GetComponentsInChildren<Button>(true);
       for (int index = 0; index < componentsInChildren.Length; ++index)
       {
         componentsInChildren[index].gameObject.AddComponent<EventTrigger>();
         EventTrigger.Entry entry = new EventTrigger.Entry();
         entry.eventID = EventTriggerType.PointerClick;
-        entry.callback.AddListener((UnityAction<BaseEventData>) (eventData => this.Button_Click_Handler()));
+        entry.callback.AddListener((UnityAction<BaseEventData>) (eventData => Button_Click_Handler()));
         componentsInChildren[index].gameObject.GetComponent<EventTrigger>().triggers.Add(entry);
       }
       base.Initialize();
@@ -67,66 +62,66 @@ namespace Engine.Impl.UI.Menu.Main
 
     private void UpdateSliders()
     {
-      this.sliderMasterVolume.value = this.soundGameSettings.MasterVolume.Value;
-      this.sliderMusicVolume.value = this.soundGameSettings.MusicVolume.Value;
-      this.sliderEffectsVolume.value = this.soundGameSettings.EffectsVolume.Value;
-      this.sliderVoiceVolume.value = this.soundGameSettings.VoiceVolume.Value;
+      sliderMasterVolume.value = soundGameSettings.MasterVolume.Value;
+      sliderMusicVolume.value = soundGameSettings.MusicVolume.Value;
+      sliderEffectsVolume.value = soundGameSettings.EffectsVolume.Value;
+      sliderVoiceVolume.value = soundGameSettings.VoiceVolume.Value;
     }
 
     public void Button_Click_Handler()
     {
       if (!this.gameObject.activeInHierarchy)
         return;
-      this.gameObject.GetComponent<AudioSource>().PlayOneShot(this.clickSound);
+      this.gameObject.GetComponent<AudioSource>().PlayOneShot(clickSound);
     }
 
     public void Button_Back_Click_Handler() => ServiceLocator.GetService<UIService>().Pop();
 
     public void Button_Reset_Click_Handler()
     {
-      this.soundGameSettings.MasterVolume.Value = this.soundGameSettings.MasterVolume.DefaultValue;
-      this.soundGameSettings.EffectsVolume.Value = this.soundGameSettings.EffectsVolume.DefaultValue;
-      this.soundGameSettings.MusicVolume.Value = this.soundGameSettings.MusicVolume.DefaultValue;
-      this.soundGameSettings.VoiceVolume.Value = this.soundGameSettings.VoiceVolume.DefaultValue;
-      this.soundGameSettings.Apply();
-      this.UpdateSliders();
+      soundGameSettings.MasterVolume.Value = soundGameSettings.MasterVolume.DefaultValue;
+      soundGameSettings.EffectsVolume.Value = soundGameSettings.EffectsVolume.DefaultValue;
+      soundGameSettings.MusicVolume.Value = soundGameSettings.MusicVolume.DefaultValue;
+      soundGameSettings.VoiceVolume.Value = soundGameSettings.VoiceVolume.DefaultValue;
+      soundGameSettings.Apply();
+      UpdateSliders();
     }
 
     public void Slider_Master_Volume_Value_Changed_Handler(float value)
     {
-      if (!this.TryChangeValue(this.soundGameSettings.MasterVolume, value))
+      if (!TryChangeValue(soundGameSettings.MasterVolume, value))
         return;
-      this.soundGameSettings.Apply();
+      soundGameSettings.Apply();
     }
 
     public void Slider_Effects_Volume_Value_Changed_Handler(float value)
     {
-      if (!this.TryChangeValue(this.soundGameSettings.EffectsVolume, value))
+      if (!TryChangeValue(soundGameSettings.EffectsVolume, value))
         return;
-      this.soundGameSettings.Apply();
-      this.audioSourceVoice.GetComponent<AudioSource>().Stop();
-      this.audioSourceEffects.GetComponent<AudioSource>().Play();
+      soundGameSettings.Apply();
+      audioSourceVoice.GetComponent<AudioSource>().Stop();
+      audioSourceEffects.GetComponent<AudioSource>().Play();
     }
 
     public void Slider_Music_Volume_Value_Changed_Handler(float value)
     {
-      if (!this.TryChangeValue(this.soundGameSettings.MusicVolume, value))
+      if (!TryChangeValue(soundGameSettings.MusicVolume, value))
         return;
-      this.soundGameSettings.Apply();
+      soundGameSettings.Apply();
     }
 
     public void Slider_Voice_Volume_Value_Changed_Handler(float value)
     {
-      if (!this.TryChangeValue(this.soundGameSettings.VoiceVolume, value))
+      if (!TryChangeValue(soundGameSettings.VoiceVolume, value))
         return;
-      this.soundGameSettings.Apply();
-      this.audioSourceEffects.GetComponent<AudioSource>().Stop();
-      this.audioSourceVoice.GetComponent<AudioSource>().Play();
+      soundGameSettings.Apply();
+      audioSourceEffects.GetComponent<AudioSource>().Stop();
+      audioSourceVoice.GetComponent<AudioSource>().Play();
     }
 
     private bool TryChangeValue(IValue<float> setting, float value)
     {
-      if ((double) setting.Value == (double) value)
+      if (setting.Value == (double) value)
         return false;
       setting.Value = value;
       return true;
@@ -135,8 +130,8 @@ namespace Engine.Impl.UI.Menu.Main
     protected override void OnEnable()
     {
       base.OnEnable();
-      this.UpdateSliders();
-      this.lastCameraKind = ServiceLocator.GetService<CameraService>().Kind;
+      UpdateSliders();
+      lastCameraKind = ServiceLocator.GetService<CameraService>().Kind;
       ServiceLocator.GetService<CameraService>().Kind = CameraKindEnum.Unknown;
       InstanceByRequest<EngineApplication>.Instance.IsPaused = true;
       CursorService.Instance.Free = CursorService.Instance.Visible = true;
@@ -145,7 +140,7 @@ namespace Engine.Impl.UI.Menu.Main
 
     protected override void OnDisable()
     {
-      ServiceLocator.GetService<CameraService>().Kind = this.lastCameraKind;
+      ServiceLocator.GetService<CameraService>().Kind = lastCameraKind;
       InstanceByRequest<EngineApplication>.Instance.IsPaused = false;
       ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Cancel, new GameActionHandle(((UIWindow) this).CancelListener));
       base.OnDisable();

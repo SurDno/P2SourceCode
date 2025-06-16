@@ -1,12 +1,11 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
-using Engine.Common;
 using Engine.Common.Commons.Cloneable;
 using Engine.Common.Commons.Converters;
 using Engine.Source.Commons.Effects;
 using Engine.Source.Effects;
 using Scripts.Tools.Serializations.Converters;
-using System;
 
 namespace Engine.Source.Proxies
 {
@@ -21,27 +20,27 @@ namespace Engine.Source.Proxies
     public object Clone()
     {
       CreateBombExplosionEffect_Generated instance = Activator.CreateInstance<CreateBombExplosionEffect_Generated>();
-      this.CopyTo((object) instance);
-      return (object) instance;
+      CopyTo(instance);
+      return instance;
     }
 
     public void CopyTo(object target2)
     {
       CreateBombExplosionEffect_Generated explosionEffectGenerated = (CreateBombExplosionEffect_Generated) target2;
-      explosionEffectGenerated.queue = this.queue;
-      explosionEffectGenerated.template = this.template;
+      explosionEffectGenerated.queue = queue;
+      explosionEffectGenerated.template = template;
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.WriteEnum<ParameterEffectQueueEnum>(writer, "Queue", this.queue);
-      UnityDataWriteUtility.Write<IEntity>(writer, "Template", this.template);
+      DefaultDataWriteUtility.WriteEnum(writer, "Queue", queue);
+      UnityDataWriteUtility.Write(writer, "Template", template);
     }
 
     public void DataRead(IDataReader reader, Type type)
     {
-      this.queue = DefaultDataReadUtility.ReadEnum<ParameterEffectQueueEnum>(reader, "Queue");
-      this.template = UnityDataReadUtility.Read<IEntity>(reader, "Template", this.template);
+      queue = DefaultDataReadUtility.ReadEnum<ParameterEffectQueueEnum>(reader, "Queue");
+      template = UnityDataReadUtility.Read(reader, "Template", template);
     }
   }
 }

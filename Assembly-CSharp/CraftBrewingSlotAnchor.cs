@@ -1,9 +1,8 @@
-﻿using Engine.Common;
+﻿using System;
+using Engine.Common;
 using Engine.Common.Components;
 using Engine.Source.Components.Utilities;
 using Engine.Source.Connections;
-using System;
-using UnityEngine;
 
 public class CraftBrewingSlotAnchor : MonoBehaviour
 {
@@ -17,11 +16,11 @@ public class CraftBrewingSlotAnchor : MonoBehaviour
 
   public event Action<IStorableComponent> TakeEvent;
 
-  public CraftBrewingSlot Slot => this.slot;
+  public CraftBrewingSlot Slot => slot;
 
   private void FireCraftEvent(IInventoryComponent container)
   {
-    Action<IInventoryComponent> craftEvent = this.CraftEvent;
+    Action<IInventoryComponent> craftEvent = CraftEvent;
     if (craftEvent == null)
       return;
     craftEvent(container);
@@ -29,7 +28,7 @@ public class CraftBrewingSlotAnchor : MonoBehaviour
 
   private void FireTakeEvent(IStorableComponent item)
   {
-    Action<IStorableComponent> takeEvent = this.TakeEvent;
+    Action<IStorableComponent> takeEvent = TakeEvent;
     if (takeEvent == null)
       return;
     takeEvent(item);
@@ -37,23 +36,23 @@ public class CraftBrewingSlotAnchor : MonoBehaviour
 
   public void Initialize(CraftBrewingSlot slotPrefab)
   {
-    this.slot = UnityEngine.Object.Instantiate<CraftBrewingSlot>(slotPrefab, this.transform, false);
-    this.slot.Initialize(this.durabilityThreshold);
-    this.slot.CraftEvent += new Action<IInventoryComponent>(this.FireCraftEvent);
-    this.slot.TakeEvent += new Action<IStorableComponent>(this.FireTakeEvent);
+    slot = UnityEngine.Object.Instantiate<CraftBrewingSlot>(slotPrefab, this.transform, false);
+    slot.Initialize(durabilityThreshold);
+    slot.CraftEvent += FireCraftEvent;
+    slot.TakeEvent += FireTakeEvent;
   }
 
   public void SetTarget(IEntity target)
   {
     if (target == null)
     {
-      this.slot.SetTarget((IEntity) null, (IInventoryComponent) null);
+      slot.SetTarget(null, null);
     }
     else
     {
       IStorageComponent component = target.GetComponent<IStorageComponent>();
-      IInventoryComponent containerByTemplate = component != null ? StorageUtility.GetContainerByTemplate(component, this.containerTemplate.Value) : (IInventoryComponent) null;
-      this.slot.SetTarget(target, containerByTemplate);
+      IInventoryComponent containerByTemplate = component != null ? StorageUtility.GetContainerByTemplate(component, containerTemplate.Value) : null;
+      slot.SetTarget(target, containerByTemplate);
     }
   }
 }

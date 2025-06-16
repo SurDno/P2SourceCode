@@ -1,7 +1,6 @@
-﻿using NodeCanvas.Framework;
+﻿using System;
+using NodeCanvas.Framework;
 using ParadoxNotion;
-using System;
-using UnityEngine;
 
 namespace FlowCanvas
 {
@@ -18,23 +17,23 @@ namespace FlowCanvas
 
     public string sourcePortId
     {
-      get => this.sourcePort != null ? this.sourcePort.id : this._sourcePortName;
-      set => this._sourcePortName = value;
+      get => sourcePort != null ? sourcePort.id : _sourcePortName;
+      set => _sourcePortName = value;
     }
 
     public string targetPortId
     {
-      get => this.targetPort != null ? this.targetPort.id : this._targetPortName;
-      private set => this._targetPortName = value;
+      get => targetPort != null ? targetPort.id : _targetPortName;
+      private set => _targetPortName = value;
     }
 
     public Port sourcePort
     {
       get
       {
-        if (this._sourcePort == null && this.sourceNode is FlowNode)
-          this._sourcePort = (this.sourceNode as FlowNode).GetOutputPort(this._sourcePortName);
-        return this._sourcePort;
+        if (_sourcePort == null && sourceNode is FlowNode)
+          _sourcePort = (sourceNode as FlowNode).GetOutputPort(_sourcePortName);
+        return _sourcePort;
       }
     }
 
@@ -42,36 +41,36 @@ namespace FlowCanvas
     {
       get
       {
-        if (this._targetPort == null && this.targetNode is FlowNode)
-          this._targetPort = (this.targetNode as FlowNode).GetInputPort(this._targetPortName);
-        return this._targetPort;
+        if (_targetPort == null && targetNode is FlowNode)
+          _targetPort = (targetNode as FlowNode).GetInputPort(_targetPortName);
+        return _targetPort;
       }
     }
 
-    public System.Type bindingType
+    public Type bindingType
     {
       get
       {
-        return this.GetType().RTIsGenericType() ? this.GetType().RTGetGenericArguments()[0] : typeof (void);
+        return GetType().RTIsGenericType() ? GetType().RTGetGenericArguments()[0] : typeof (void);
       }
     }
 
     public void GatherAndValidateSourcePort()
     {
-      this._sourcePort = (Port) null;
-      if (this.sourcePort != null && TypeConverter.HasConvertion(this.sourcePort.type, this.bindingType))
-        ++this.sourcePort.connections;
+      _sourcePort = null;
+      if (sourcePort != null && TypeConverter.HasConvertion(sourcePort.type, bindingType))
+        ++sourcePort.connections;
       else
-        this.graph.RemoveConnection((Connection) this, false);
+        graph.RemoveConnection(this, false);
     }
 
     public void GatherAndValidateTargetPort()
     {
-      this._targetPort = (Port) null;
-      if (this.targetPort != null && this.targetPort.type == this.bindingType)
-        ++this.targetPort.connections;
+      _targetPort = null;
+      if (targetPort != null && targetPort.type == bindingType)
+        ++targetPort.connections;
       else
-        this.graph.RemoveConnection((Connection) this, false);
+        graph.RemoveConnection(this, false);
     }
 
     public static BinderConnection Create(Port source, Port target)
@@ -79,27 +78,27 @@ namespace FlowCanvas
       if (source == null || target == null)
       {
         Debug.LogError((object) "Source Port or Target Port is null when making a new Binder Connection");
-        return (BinderConnection) null;
+        return null;
       }
       if (!source.CanAcceptConnections())
       {
         Debug.LogWarning((object) "Source port can accept no more connections");
-        return (BinderConnection) null;
+        return null;
       }
       if (!target.CanAcceptConnections())
       {
         Debug.LogWarning((object) "Target port can accept no more connections");
-        return (BinderConnection) null;
+        return null;
       }
       if (source.parent == target.parent)
       {
         Debug.LogWarning((object) "Can't connect ports on the same parent node");
-        return (BinderConnection) null;
+        return null;
       }
       if (source is FlowOutput && !(target is FlowInput))
       {
         Debug.LogWarning((object) "Flow ports can only be connected to other Flow ports");
-        return (BinderConnection) null;
+        return null;
       }
       int num1;
       switch (source)
@@ -117,7 +116,7 @@ namespace FlowCanvas
       if (num1 != 0)
       {
         Debug.LogWarning((object) "Can't connect input to input");
-        return (BinderConnection) null;
+        return null;
       }
       int num2;
       switch (source)
@@ -135,12 +134,12 @@ namespace FlowCanvas
       if (num2 != 0)
       {
         Debug.LogWarning((object) "Can't connect output to output");
-        return (BinderConnection) null;
+        return null;
       }
       if (!TypeConverter.HasConvertion(source.type, target.type))
       {
-        Debug.LogWarning((object) string.Format("Can't connect ports. Type '{0}' is not assignable from Type '{1}' and there exists no internal convertion for those types.", (object) target.type.FriendlyName(), (object) source.type.FriendlyName()));
-        return (BinderConnection) null;
+        Debug.LogWarning((object) string.Format("Can't connect ports. Type '{0}' is not assignable from Type '{1}' and there exists no internal convertion for those types.", target.type.FriendlyName(), source.type.FriendlyName()));
+        return null;
       }
       if (source is FlowOutput && target is FlowInput)
       {
@@ -149,8 +148,8 @@ namespace FlowCanvas
         return binderConnection;
       }
       if (!(source is ValueOutput) || !(target is ValueInput))
-        return (BinderConnection) null;
-      BinderConnection instance = (BinderConnection) Activator.CreateInstance(typeof (BinderConnection<>).RTMakeGenericType(new System.Type[1]
+        return null;
+      BinderConnection instance = (BinderConnection) Activator.CreateInstance(typeof (BinderConnection<>).RTMakeGenericType(new Type[1]
       {
         target.type
       }));
@@ -160,42 +159,42 @@ namespace FlowCanvas
 
     public virtual void Bind()
     {
-      if (!this.isActive || !(this.sourcePort is FlowOutput) || !(this.targetPort is FlowInput))
+      if (!isActive || !(sourcePort is FlowOutput) || !(targetPort is FlowInput))
         return;
-      (this.sourcePort as FlowOutput).BindTo((FlowInput) this.targetPort);
+      (sourcePort as FlowOutput).BindTo((FlowInput) targetPort);
     }
 
     public virtual void UnBind()
     {
-      if (!(this.sourcePort is FlowOutput))
+      if (!(sourcePort is FlowOutput))
         return;
-      (this.sourcePort as FlowOutput).UnBind();
+      (sourcePort as FlowOutput).UnBind();
     }
 
     private void OnCreate(Port source, Port target)
     {
-      this.sourceNode = (Node) source.parent;
-      this.targetNode = (Node) target.parent;
-      this.sourcePortId = source.id;
-      this.targetPortId = target.id;
-      this.sourceNode.outConnections.Add((Connection) this);
-      this.targetNode.inConnections.Add((Connection) this);
+      sourceNode = source.parent;
+      targetNode = target.parent;
+      sourcePortId = source.id;
+      targetPortId = target.id;
+      sourceNode.outConnections.Add(this);
+      targetNode.inConnections.Add(this);
       ++source.connections;
       ++target.connections;
       if (!Application.isPlaying)
         return;
-      this.Bind();
+      Bind();
     }
 
     public override void OnDestroy()
     {
-      if (this.sourcePort != null)
-        --this.sourcePort.connections;
-      if (this.targetPort != null)
-        --this.targetPort.connections;
+      if (sourcePort != null)
+        --sourcePort.connections;
+      if (targetPort != null)
+        --targetPort.connections;
       if (!Application.isPlaying)
         return;
-      this.UnBind();
+      UnBind();
     }
   }
 }

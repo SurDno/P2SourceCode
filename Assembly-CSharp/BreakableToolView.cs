@@ -1,8 +1,6 @@
 ﻿using Engine.Common.Components;
 using Engine.Common.Components.Parameters;
 using Engine.Source.Components;
-using UnityEngine;
-using UnityEngine.UI;
 
 public class BreakableToolView : ItemView
 {
@@ -18,42 +16,42 @@ public class BreakableToolView : ItemView
 
   public override StorableComponent Storable
   {
-    get => this.storable;
+    get => storable;
     set
     {
-      if (this.storable == value)
+      if (storable == value)
         return;
-      this.storable = value;
-      Sprite sprite = this.storable?.Placeholder?.ImageInventorySlot.Value;
+      storable = value;
+      Sprite sprite = storable?.Placeholder?.ImageInventorySlot.Value;
       if ((Object) sprite == (Object) null)
-        this.storableImage.gameObject.SetActive(false);
-      this.storableImage.sprite = sprite;
+        storableImage.gameObject.SetActive(false);
+      storableImage.sprite = sprite;
       if ((Object) sprite != (Object) null)
-        this.storableImage.gameObject.SetActive(true);
-      this.UpdateFill();
+        storableImage.gameObject.SetActive(true);
+      UpdateFill();
     }
   }
 
   private void Initialize()
   {
-    if (this.initialized)
+    if (initialized)
       return;
-    this.baseFillSize = this.fillImage.sizeDelta;
-    this.initialized = true;
+    baseFillSize = fillImage.sizeDelta;
+    initialized = true;
   }
 
-  private void OnEnable() => this.UpdateFill();
+  private void OnEnable() => UpdateFill();
 
-  private void Update() => this.UpdateFill();
+  private void Update() => UpdateFill();
 
   private void UpdateFill()
   {
-    this.Initialize();
-    float f = BreakableToolView.GetDurability((IStorableComponent) this.storable);
+    Initialize();
+    float f = GetDurability(storable);
     if (float.IsNaN(f))
       f = 1f;
-    this.fillImage.sizeDelta = new Vector2(this.baseFillSize.x, this.baseFillSize.y * (1f - f));
-    this.brokenImage.SetActive((double) f == 0.0);
+    fillImage.sizeDelta = new Vector2(baseFillSize.x, baseFillSize.y * (1f - f));
+    brokenImage.SetActive(f == 0.0);
   }
 
   public static float GetDurability(IStorableComponent storable)

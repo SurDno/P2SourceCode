@@ -6,15 +6,15 @@ namespace UnityEngine.PostProcessing
   public class ColorGradingModel : PostProcessingModel
   {
     [SerializeField]
-    private ColorGradingModel.Settings m_Settings = ColorGradingModel.Settings.defaultSettings;
+    private Settings m_Settings = Settings.defaultSettings;
 
-    public ColorGradingModel.Settings settings
+    public Settings settings
     {
-      get => this.m_Settings;
+      get => m_Settings;
       set
       {
-        this.m_Settings = value;
-        this.OnValidate();
+        m_Settings = value;
+        OnValidate();
       }
     }
 
@@ -24,11 +24,11 @@ namespace UnityEngine.PostProcessing
 
     public override void Reset()
     {
-      this.m_Settings = ColorGradingModel.Settings.defaultSettings;
-      this.OnValidate();
+      m_Settings = Settings.defaultSettings;
+      OnValidate();
     }
 
-    public override void OnValidate() => this.isDirty = true;
+    public override void OnValidate() => isDirty = true;
 
     public enum Tonemapper
     {
@@ -41,7 +41,7 @@ namespace UnityEngine.PostProcessing
     public struct TonemappingSettings
     {
       [Tooltip("Tonemapping algorithm to use at the end of the color grading process. Use \"Neutral\" if you need a customizable tonemapper or \"Filmic\" to give a standard filmic look to your scenes.")]
-      public ColorGradingModel.Tonemapper tonemapper;
+      public Tonemapper tonemapper;
       [Range(-0.1f, 0.1f)]
       public float neutralBlackIn;
       [Range(1f, 20f)]
@@ -55,13 +55,12 @@ namespace UnityEngine.PostProcessing
       [Range(1f, 10f)]
       public float neutralWhiteClip;
 
-      public static ColorGradingModel.TonemappingSettings defaultSettings
+      public static TonemappingSettings defaultSettings
       {
         get
         {
-          return new ColorGradingModel.TonemappingSettings()
-          {
-            tonemapper = ColorGradingModel.Tonemapper.Neutral,
+          return new TonemappingSettings {
+            tonemapper = Tonemapper.Neutral,
             neutralBlackIn = 0.02f,
             neutralWhiteIn = 10f,
             neutralBlackOut = 0.0f,
@@ -94,12 +93,11 @@ namespace UnityEngine.PostProcessing
       [Tooltip("Expands or shrinks the overall range of tonal values.")]
       public float contrast;
 
-      public static ColorGradingModel.BasicSettings defaultSettings
+      public static BasicSettings defaultSettings
       {
         get
         {
-          return new ColorGradingModel.BasicSettings()
-          {
+          return new BasicSettings {
             postExposure = 0.0f,
             temperature = 0.0f,
             tint = 0.0f,
@@ -120,12 +118,11 @@ namespace UnityEngine.PostProcessing
       [HideInInspector]
       public int currentEditingChannel;
 
-      public static ColorGradingModel.ChannelMixerSettings defaultSettings
+      public static ChannelMixerSettings defaultSettings
       {
         get
         {
-          return new ColorGradingModel.ChannelMixerSettings()
-          {
+          return new ChannelMixerSettings {
             red = new Vector3(1f, 0.0f, 0.0f),
             green = new Vector3(0.0f, 1f, 0.0f),
             blue = new Vector3(0.0f, 0.0f, 1f),
@@ -145,12 +142,11 @@ namespace UnityEngine.PostProcessing
       [Trackball("GetOffsetValue")]
       public Color offset;
 
-      public static ColorGradingModel.LogWheelsSettings defaultSettings
+      public static LogWheelsSettings defaultSettings
       {
         get
         {
-          return new ColorGradingModel.LogWheelsSettings()
-          {
+          return new LogWheelsSettings {
             slope = Color.clear,
             power = Color.clear,
             offset = Color.clear
@@ -169,12 +165,11 @@ namespace UnityEngine.PostProcessing
       [Trackball("GetGainValue")]
       public Color gain;
 
-      public static ColorGradingModel.LinearWheelsSettings defaultSettings
+      public static LinearWheelsSettings defaultSettings
       {
         get
         {
-          return new ColorGradingModel.LinearWheelsSettings()
-          {
+          return new LinearWheelsSettings {
             lift = Color.clear,
             gamma = Color.clear,
             gain = Color.clear
@@ -192,21 +187,20 @@ namespace UnityEngine.PostProcessing
     [Serializable]
     public struct ColorWheelsSettings
     {
-      public ColorGradingModel.ColorWheelMode mode;
+      public ColorWheelMode mode;
       [TrackballGroup]
-      public ColorGradingModel.LogWheelsSettings log;
+      public LogWheelsSettings log;
       [TrackballGroup]
-      public ColorGradingModel.LinearWheelsSettings linear;
+      public LinearWheelsSettings linear;
 
-      public static ColorGradingModel.ColorWheelsSettings defaultSettings
+      public static ColorWheelsSettings defaultSettings
       {
         get
         {
-          return new ColorGradingModel.ColorWheelsSettings()
-          {
-            mode = ColorGradingModel.ColorWheelMode.Log,
-            log = ColorGradingModel.LogWheelsSettings.defaultSettings,
-            linear = ColorGradingModel.LinearWheelsSettings.defaultSettings
+          return new ColorWheelsSettings {
+            mode = ColorWheelMode.Log,
+            log = LogWheelsSettings.defaultSettings,
+            linear = LinearWheelsSettings.defaultSettings
           };
         }
       }
@@ -234,12 +228,11 @@ namespace UnityEngine.PostProcessing
       [HideInInspector]
       public bool e_CurveB;
 
-      public static ColorGradingModel.CurvesSettings defaultSettings
+      public static CurvesSettings defaultSettings
       {
         get
         {
-          return new ColorGradingModel.CurvesSettings()
-          {
+          return new CurvesSettings {
             master = new ColorGradingCurve(new AnimationCurve(new Keyframe[2]
             {
               new Keyframe(0.0f, 0.0f, 1f, 1f),
@@ -277,23 +270,22 @@ namespace UnityEngine.PostProcessing
     [Serializable]
     public struct Settings
     {
-      public ColorGradingModel.TonemappingSettings tonemapping;
-      public ColorGradingModel.BasicSettings basic;
-      public ColorGradingModel.ChannelMixerSettings channelMixer;
-      public ColorGradingModel.ColorWheelsSettings colorWheels;
-      public ColorGradingModel.CurvesSettings curves;
+      public TonemappingSettings tonemapping;
+      public BasicSettings basic;
+      public ChannelMixerSettings channelMixer;
+      public ColorWheelsSettings colorWheels;
+      public CurvesSettings curves;
 
-      public static ColorGradingModel.Settings defaultSettings
+      public static Settings defaultSettings
       {
         get
         {
-          return new ColorGradingModel.Settings()
-          {
-            tonemapping = ColorGradingModel.TonemappingSettings.defaultSettings,
-            basic = ColorGradingModel.BasicSettings.defaultSettings,
-            channelMixer = ColorGradingModel.ChannelMixerSettings.defaultSettings,
-            colorWheels = ColorGradingModel.ColorWheelsSettings.defaultSettings,
-            curves = ColorGradingModel.CurvesSettings.defaultSettings
+          return new Settings {
+            tonemapping = TonemappingSettings.defaultSettings,
+            basic = BasicSettings.defaultSettings,
+            channelMixer = ChannelMixerSettings.defaultSettings,
+            colorWheels = ColorWheelsSettings.defaultSettings,
+            curves = CurvesSettings.defaultSettings
           };
         }
       }

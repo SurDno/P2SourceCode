@@ -1,9 +1,9 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons.Cloneable;
 using Engine.Common.Commons.Converters;
 using Engine.Source.Otimizations;
-using System;
 
 namespace Engine.Source.Proxies
 {
@@ -18,23 +18,23 @@ namespace Engine.Source.Proxies
     public object Clone()
     {
       ForceCollectMemoryStrategy_Generated instance = Activator.CreateInstance<ForceCollectMemoryStrategy_Generated>();
-      this.CopyTo((object) instance);
-      return (object) instance;
+      CopyTo(instance);
+      return instance;
     }
 
     public void CopyTo(object target2)
     {
-      ((ForceCollectMemoryStrategy) target2).disableGC = this.disableGC;
+      ((ForceCollectMemoryStrategy) target2).disableGC = disableGC;
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.Write(writer, "DisableGC", this.disableGC);
+      DefaultDataWriteUtility.Write(writer, "DisableGC", disableGC);
     }
 
     public void DataRead(IDataReader reader, Type type)
     {
-      this.disableGC = DefaultDataReadUtility.Read(reader, "DisableGC", this.disableGC);
+      disableGC = DefaultDataReadUtility.Read(reader, "DisableGC", disableGC);
     }
   }
 }

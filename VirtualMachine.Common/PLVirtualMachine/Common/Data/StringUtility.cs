@@ -1,10 +1,10 @@
-﻿using Cofe.Serializations.Converters;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Reflection;
 using System.Text;
+using Cofe.Serializations.Converters;
 
 namespace PLVirtualMachine.Common.Data
 {
@@ -13,40 +13,40 @@ namespace PLVirtualMachine.Common.Data
     public static object To(string text, Type type)
     {
       if (type == typeof (Guid))
-        return (object) StringUtility.ToGuid(text);
+        return ToGuid(text);
       if (type == typeof (ulong))
-        return (object) StringUtility.ToUInt64(text);
+        return ToUInt64(text);
       if (type == typeof (HierarchyGuid))
-        return (object) new HierarchyGuid(text);
+        return new HierarchyGuid(text);
       if (type == typeof (long))
-        return (object) StringUtility.ToInt64(text);
+        return ToInt64(text);
       if (type == typeof (uint))
-        return (object) StringUtility.ToUInt32(text);
+        return ToUInt32(text);
       if (type == typeof (int))
-        return (object) StringUtility.ToInt32(text);
+        return ToInt32(text);
       if (type == typeof (ushort))
-        return (object) StringUtility.ToUInt16(text);
+        return ToUInt16(text);
       if (type == typeof (short))
-        return (object) StringUtility.ToInt16(text);
+        return ToInt16(text);
       if (type == typeof (byte))
-        return (object) StringUtility.ToByte(text);
+        return ToByte(text);
       if (type == typeof (sbyte))
-        return (object) StringUtility.ToSByte(text);
+        return ToSByte(text);
       if (type == typeof (double))
-        return (object) StringUtility.ToDouble(text);
+        return ToDouble(text);
       if (type == typeof (float))
-        return (object) StringUtility.ToSingle(text);
+        return ToSingle(text);
       if (type == typeof (bool))
-        return (object) StringUtility.ToBoolean(text);
+        return ToBoolean(text);
       if (type.IsEnum)
-        return StringUtility.ToEnum(text, type);
+        return ToEnum(text, type);
       if (type == typeof (Type))
-        return (object) StringUtility.ToType(text);
+        return ToType(text);
       if (type == typeof (DateTime))
-        return (object) StringUtility.ToDateTime(text);
+        return ToDateTime(text);
       if (type == typeof (byte[]))
-        return (object) Encoding.UTF8.GetBytes(text);
-      return type.IsGenericType && type.GetGenericTypeDefinition() == typeof (List<>) ? (object) (IList) Activator.CreateInstance(type) : (object) text;
+        return Encoding.UTF8.GetBytes(text);
+      return type.IsGenericType && type.GetGenericTypeDefinition() == typeof (List<>) ? (IList) Activator.CreateInstance(type) : (object) text;
     }
 
     public static Guid ToGuid(string text) => "" == text ? Guid.Empty : new Guid(text);
@@ -166,7 +166,7 @@ namespace PLVirtualMachine.Common.Data
     public static DateTime ToDateTime(string text)
     {
       DateTime result = DateTime.MinValue;
-      if (!DateTime.TryParse(text, (IFormatProvider) CultureInfo.InvariantCulture, DateTimeStyles.None, out result))
+      if (!DateTime.TryParse(text, CultureInfo.InvariantCulture, DateTimeStyles.None, out result))
         throw new Exception("Cannot convert " + text + " to DateTime");
       return result;
     }

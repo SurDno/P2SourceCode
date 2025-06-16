@@ -1,8 +1,4 @@
-﻿using UnityEngine;
-using UnityEngine.Serialization;
-using UnityEngine.UI;
-
-namespace Engine.Impl.UI.Controls
+﻿namespace Engine.Impl.UI.Controls
 {
   public class CompareMeter : MonoBehaviour
   {
@@ -24,80 +20,80 @@ namespace Engine.Impl.UI.Controls
 
     public float TargetValue
     {
-      get => this.targetValue;
+      get => targetValue;
       set
       {
-        this.targetValue = value;
-        this.Calculate();
+        targetValue = value;
+        Calculate();
       }
     }
 
     public float CurrentValue
     {
-      get => this.currentValue;
+      get => currentValue;
       set
       {
-        this.currentValue = value;
-        this.Calculate();
+        currentValue = value;
+        Calculate();
       }
     }
 
-    public float Factor => this.factor;
+    public float Factor => factor;
 
-    protected void Start() => this.Calculate();
+    protected void Start() => Calculate();
 
     protected void Calculate()
     {
       bool flag = false;
-      if (Mathf.Approximately(this.currentValue, this.targetValue))
+      if (Mathf.Approximately(currentValue, targetValue))
       {
-        this.factor = 1f;
+        factor = 1f;
         flag = true;
       }
-      else if ((double) this.currentValue < (double) this.targetValue)
+      else if (currentValue < (double) targetValue)
       {
-        this.factor = this.currentValue / this.targetValue;
+        factor = currentValue / targetValue;
       }
       else
       {
-        this.factor = this.targetValue / this.currentValue;
-        this.factor = (float) (1.0 - (double) this.factor + 1.0);
+        factor = targetValue / currentValue;
+        factor = (float) (1.0 - factor + 1.0);
       }
-      if (float.IsNaN(this.factor) || float.IsPositiveInfinity(this.factor) || float.IsNegativeInfinity(this.factor))
+      if (float.IsNaN(factor) || float.IsPositiveInfinity(factor) || float.IsNegativeInfinity(factor))
       {
-        this.unityAllowed.interactable = false;
-        this.unityForbidden.interactable = false;
-        this.unityMarker.gameObject.SetActive(false);
+        unityAllowed.interactable = false;
+        unityForbidden.interactable = false;
+        unityMarker.gameObject.SetActive(false);
       }
       else if (flag)
       {
-        this.unityAllowed.interactable = true;
-        this.unityForbidden.interactable = false;
-        this.unityMarker.gameObject.SetActive(true);
-        Vector3 position = this.unityMarker.gameObject.transform.position;
-        Rect rect = this.unitySeparator.GetComponent<RectTransform>().rect;
-        position.x = this.unitySeparator.gameObject.transform.position.x + rect.size.x * 0.5f;
-        this.unityMarker.gameObject.transform.position = position;
+        unityAllowed.interactable = true;
+        unityForbidden.interactable = false;
+        unityMarker.gameObject.SetActive(true);
+        Vector3 position = unityMarker.gameObject.transform.position;
+        Rect rect = unitySeparator.GetComponent<RectTransform>().rect;
+        position.x = unitySeparator.gameObject.transform.position.x + rect.size.x * 0.5f;
+        unityMarker.gameObject.transform.position = position;
       }
-      else if ((double) this.factor < 1.0)
+      else if (factor < 1.0)
       {
-        this.unityAllowed.interactable = false;
-        this.unityForbidden.interactable = true;
-        this.unityMarker.gameObject.SetActive(true);
-        Vector3 position = this.unityMarker.gameObject.transform.position;
-        Rect rect = this.unityForbidden.GetComponent<RectTransform>().rect;
-        position.x = this.unityForbidden.gameObject.transform.position.x + (this.unitySeparator.gameObject.transform.position.x - this.unityForbidden.gameObject.transform.position.x) * Mathf.Clamp(this.factor, 0.0f, 1f);
-        this.unityMarker.gameObject.transform.position = position;
+        unityAllowed.interactable = false;
+        unityForbidden.interactable = true;
+        unityMarker.gameObject.SetActive(true);
+        Vector3 position = unityMarker.gameObject.transform.position;
+        Rect rect = unityForbidden.GetComponent<RectTransform>().rect;
+        position.x = unityForbidden.gameObject.transform.position.x + (unitySeparator.gameObject.transform.position.x - unityForbidden.gameObject.transform.position.x) * Mathf.Clamp(factor, 0.0f, 1f);
+        unityMarker.gameObject.transform.position = position;
       }
       else
       {
-        this.unityAllowed.interactable = true;
-        this.unityForbidden.interactable = false;
-        this.unityMarker.gameObject.SetActive(true);
-        Vector3 position = this.unityMarker.gameObject.transform.position;
-        Rect rect = this.unityAllowed.GetComponent<RectTransform>().rect;
-        position.x = this.unitySeparator.gameObject.transform.position.x + (this.unityAllowed.gameObject.transform.position.x - this.unitySeparator.gameObject.transform.position.x) * Mathf.Clamp(this.factor - 1f, 0.0f, 1f);
-        this.unityMarker.gameObject.transform.position = position;
+        unityAllowed.interactable = true;
+        unityForbidden.interactable = false;
+        unityMarker.gameObject.SetActive(true);
+        Vector3 position = unityMarker.gameObject.transform.position;
+        Rect rect = unityAllowed.GetComponent<RectTransform>().rect;
+        position.x = unitySeparator.gameObject.transform.position.x + (unityAllowed.gameObject.transform.position.x - unitySeparator.gameObject.transform.position.x) * Mathf.Clamp(factor - 1f, 0.0f, 1f);
+        unityMarker.gameObject.transform.position = position;
       }
     }
   }

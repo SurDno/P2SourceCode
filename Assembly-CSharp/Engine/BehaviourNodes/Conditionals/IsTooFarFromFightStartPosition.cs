@@ -1,4 +1,5 @@
-﻿using BehaviorDesigner.Runtime;
+﻿using System;
+using BehaviorDesigner.Runtime;
 using BehaviorDesigner.Runtime.Tasks;
 using Cofe.Proxies;
 using Cofe.Serializations.Data;
@@ -8,7 +9,6 @@ using Engine.Common.Generator;
 using Engine.Common.Services;
 using Engine.Impl.Services.Factories;
 using Engine.Source.Services;
-using UnityEngine;
 
 namespace Engine.BehaviourNodes.Conditionals
 {
@@ -23,42 +23,42 @@ namespace Engine.BehaviourNodes.Conditionals
     ISerializeDataWrite,
     ISerializeDataRead
   {
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy()]
     [SerializeField]
     public float Distance;
     private CombatServiceCharacterInfo owner;
 
     public override void OnAwake()
     {
-      EnemyBase component = this.gameObject.GetComponent<EnemyBase>();
-      this.owner = ServiceLocator.GetService<CombatService>().GetCharacterInfo(component);
+      EnemyBase component = gameObject.GetComponent<EnemyBase>();
+      owner = ServiceLocator.GetService<CombatService>().GetCharacterInfo(component);
     }
 
     public override TaskStatus OnUpdate()
     {
-      return this.owner == null ? TaskStatus.Failure : ((double) (this.owner.FightStartPosition - this.gameObject.transform.position).magnitude > (double) this.Distance ? TaskStatus.Success : TaskStatus.Failure);
+      return owner == null ? TaskStatus.Failure : ((double) (owner.FightStartPosition - gameObject.transform.position).magnitude > Distance ? TaskStatus.Success : TaskStatus.Failure);
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.WriteSerialize<NodeData>(writer, "NodeData", this.nodeData);
-      DefaultDataWriteUtility.Write(writer, "Id", this.id);
-      DefaultDataWriteUtility.Write(writer, "FriendlyName", this.friendlyName);
-      DefaultDataWriteUtility.Write(writer, "Instant", this.instant);
-      DefaultDataWriteUtility.Write(writer, "Disabled", this.disabled);
-      DefaultDataWriteUtility.Write(writer, "Distance", this.Distance);
+      DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
+      DefaultDataWriteUtility.Write(writer, "Id", id);
+      DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
+      DefaultDataWriteUtility.Write(writer, "Instant", instant);
+      DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
+      DefaultDataWriteUtility.Write(writer, "Distance", Distance);
     }
 
-    public void DataRead(IDataReader reader, System.Type type)
+    public void DataRead(IDataReader reader, Type type)
     {
-      this.nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
-      this.id = DefaultDataReadUtility.Read(reader, "Id", this.id);
-      this.friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", this.friendlyName);
-      this.instant = DefaultDataReadUtility.Read(reader, "Instant", this.instant);
-      this.disabled = DefaultDataReadUtility.Read(reader, "Disabled", this.disabled);
-      this.Distance = DefaultDataReadUtility.Read(reader, "Distance", this.Distance);
+      nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
+      id = DefaultDataReadUtility.Read(reader, "Id", id);
+      friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
+      instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
+      disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
+      Distance = DefaultDataReadUtility.Read(reader, "Distance", Distance);
     }
   }
 }

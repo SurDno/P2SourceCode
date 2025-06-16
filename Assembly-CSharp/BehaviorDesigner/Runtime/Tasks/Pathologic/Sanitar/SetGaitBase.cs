@@ -1,6 +1,5 @@
 ﻿using Engine.Behaviours.Components;
 using Engine.Source.Components;
-using UnityEngine;
 
 namespace BehaviorDesigner.Runtime.Tasks.Pathologic.Sanitar
 {
@@ -12,16 +11,16 @@ namespace BehaviorDesigner.Runtime.Tasks.Pathologic.Sanitar
 
     public override TaskStatus OnUpdate()
     {
-      if ((Object) this.behavior == (Object) null)
+      if ((Object) behavior == (Object) null)
       {
-        this.behavior = this.gameObject.GetComponent<EngineBehavior>();
-        if ((Object) this.behavior == (Object) null)
+        behavior = gameObject.GetComponent<EngineBehavior>();
+        if ((Object) behavior == (Object) null)
         {
-          Debug.LogWarning((object) (this.gameObject.name + ": doesn't contain " + typeof (BehaviorComponent).Name + " engine component"), (Object) this.gameObject);
+          Debug.LogWarning((object) (gameObject.name + ": doesn't contain " + typeof (BehaviorComponent).Name + " engine component"), (Object) gameObject);
           return TaskStatus.Failure;
         }
       }
-      this.behavior.Gait = this.GetGait();
+      behavior.Gait = GetGait();
       return TaskStatus.Success;
     }
   }

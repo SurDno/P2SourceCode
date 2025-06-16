@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-public class TOD_Resources : MonoBehaviour
+﻿public class TOD_Resources : MonoBehaviour
 {
   public Material Skybox;
   public Mesh MoonLOD0;
@@ -117,53 +115,53 @@ public class TOD_Resources : MonoBehaviour
 
   public void Initialize()
   {
-    this.ID_SunLightColor = Shader.PropertyToID("TOD_SunLightColor");
-    this.ID_MoonLightColor = Shader.PropertyToID("TOD_MoonLightColor");
-    this.ID_SunSkyColor = Shader.PropertyToID("TOD_SunSkyColor");
-    this.ID_MoonSkyColor = Shader.PropertyToID("TOD_MoonSkyColor");
-    this.ID_SunMeshColor = Shader.PropertyToID("TOD_SunMeshColor");
-    this.ID_MoonMeshColor = Shader.PropertyToID("TOD_MoonMeshColor");
-    this.ID_SunCloudColor = Shader.PropertyToID("TOD_SunCloudColor");
-    this.ID_MoonCloudColor = Shader.PropertyToID("TOD_MoonCloudColor");
-    this.ID_FogColor = Shader.PropertyToID("TOD_FogColor");
-    this.ID_GroundColor = Shader.PropertyToID("TOD_GroundColor");
-    this.ID_AmbientColor = Shader.PropertyToID("TOD_AmbientColor");
-    this.ID_SunDirection = Shader.PropertyToID("TOD_SunDirection");
-    this.ID_MoonDirection = Shader.PropertyToID("TOD_MoonDirection");
-    this.ID_LightDirection = Shader.PropertyToID("TOD_LightDirection");
-    this.ID_LocalSunDirection = Shader.PropertyToID("TOD_LocalSunDirection");
-    this.ID_LocalMoonDirection = Shader.PropertyToID("TOD_LocalMoonDirection");
-    this.ID_LocalLightDirection = Shader.PropertyToID("TOD_LocalLightDirection");
-    this.ID_Contrast = Shader.PropertyToID("TOD_Contrast");
-    this.ID_Brightness = Shader.PropertyToID("TOD_Brightness");
-    this.ID_Fogginess = Shader.PropertyToID("TOD_Fogginess");
-    this.ID_Directionality = Shader.PropertyToID("TOD_Directionality");
-    this.ID_MoonHaloPower = Shader.PropertyToID("TOD_MoonHaloPower");
-    this.ID_MoonHaloColor = Shader.PropertyToID("TOD_MoonHaloColor");
-    this.ID_CloudSize = Shader.PropertyToID("TOD_CloudSize");
-    this.ID_CloudOpacity = Shader.PropertyToID("TOD_CloudOpacity");
-    this.ID_CloudCoverage = Shader.PropertyToID("TOD_CloudCoverage");
-    this.ID_CloudSharpness = Shader.PropertyToID("TOD_CloudSharpness");
-    this.ID_CloudDensity = Shader.PropertyToID("TOD_CloudDensity");
-    this.ID_CloudAttenuation = Shader.PropertyToID("TOD_CloudAttenuation");
-    this.ID_CloudSaturation = Shader.PropertyToID("TOD_CloudSaturation");
-    this.ID_CloudScattering = Shader.PropertyToID("TOD_CloudScattering");
-    this.ID_CloudBrightness = Shader.PropertyToID("TOD_CloudBrightness");
-    this.ID_CloudOffset = Shader.PropertyToID("TOD_CloudOffset");
-    this.ID_CloudWind = Shader.PropertyToID("TOD_CloudWind");
-    this.ID_StarSize = Shader.PropertyToID("TOD_StarSize");
-    this.ID_StarBrightness = Shader.PropertyToID("TOD_StarBrightness");
-    this.ID_StarVisibility = Shader.PropertyToID("TOD_StarVisibility");
-    this.ID_SunMeshContrast = Shader.PropertyToID("TOD_SunMeshContrast");
-    this.ID_SunMeshBrightness = Shader.PropertyToID("TOD_SunMeshBrightness");
-    this.ID_MoonMeshContrast = Shader.PropertyToID("TOD_MoonMeshContrast");
-    this.ID_MoonMeshBrightness = Shader.PropertyToID("TOD_MoonMeshBrightness");
-    this.ID_kBetaMie = Shader.PropertyToID("TOD_kBetaMie");
-    this.ID_kSun = Shader.PropertyToID("TOD_kSun");
-    this.ID_k4PI = Shader.PropertyToID("TOD_k4PI");
-    this.ID_kRadius = Shader.PropertyToID("TOD_kRadius");
-    this.ID_kScale = Shader.PropertyToID("TOD_kScale");
-    this.ID_World2Sky = Shader.PropertyToID("TOD_World2Sky");
-    this.ID_Sky2World = Shader.PropertyToID("TOD_Sky2World");
+    ID_SunLightColor = Shader.PropertyToID("TOD_SunLightColor");
+    ID_MoonLightColor = Shader.PropertyToID("TOD_MoonLightColor");
+    ID_SunSkyColor = Shader.PropertyToID("TOD_SunSkyColor");
+    ID_MoonSkyColor = Shader.PropertyToID("TOD_MoonSkyColor");
+    ID_SunMeshColor = Shader.PropertyToID("TOD_SunMeshColor");
+    ID_MoonMeshColor = Shader.PropertyToID("TOD_MoonMeshColor");
+    ID_SunCloudColor = Shader.PropertyToID("TOD_SunCloudColor");
+    ID_MoonCloudColor = Shader.PropertyToID("TOD_MoonCloudColor");
+    ID_FogColor = Shader.PropertyToID("TOD_FogColor");
+    ID_GroundColor = Shader.PropertyToID("TOD_GroundColor");
+    ID_AmbientColor = Shader.PropertyToID("TOD_AmbientColor");
+    ID_SunDirection = Shader.PropertyToID("TOD_SunDirection");
+    ID_MoonDirection = Shader.PropertyToID("TOD_MoonDirection");
+    ID_LightDirection = Shader.PropertyToID("TOD_LightDirection");
+    ID_LocalSunDirection = Shader.PropertyToID("TOD_LocalSunDirection");
+    ID_LocalMoonDirection = Shader.PropertyToID("TOD_LocalMoonDirection");
+    ID_LocalLightDirection = Shader.PropertyToID("TOD_LocalLightDirection");
+    ID_Contrast = Shader.PropertyToID("TOD_Contrast");
+    ID_Brightness = Shader.PropertyToID("TOD_Brightness");
+    ID_Fogginess = Shader.PropertyToID("TOD_Fogginess");
+    ID_Directionality = Shader.PropertyToID("TOD_Directionality");
+    ID_MoonHaloPower = Shader.PropertyToID("TOD_MoonHaloPower");
+    ID_MoonHaloColor = Shader.PropertyToID("TOD_MoonHaloColor");
+    ID_CloudSize = Shader.PropertyToID("TOD_CloudSize");
+    ID_CloudOpacity = Shader.PropertyToID("TOD_CloudOpacity");
+    ID_CloudCoverage = Shader.PropertyToID("TOD_CloudCoverage");
+    ID_CloudSharpness = Shader.PropertyToID("TOD_CloudSharpness");
+    ID_CloudDensity = Shader.PropertyToID("TOD_CloudDensity");
+    ID_CloudAttenuation = Shader.PropertyToID("TOD_CloudAttenuation");
+    ID_CloudSaturation = Shader.PropertyToID("TOD_CloudSaturation");
+    ID_CloudScattering = Shader.PropertyToID("TOD_CloudScattering");
+    ID_CloudBrightness = Shader.PropertyToID("TOD_CloudBrightness");
+    ID_CloudOffset = Shader.PropertyToID("TOD_CloudOffset");
+    ID_CloudWind = Shader.PropertyToID("TOD_CloudWind");
+    ID_StarSize = Shader.PropertyToID("TOD_StarSize");
+    ID_StarBrightness = Shader.PropertyToID("TOD_StarBrightness");
+    ID_StarVisibility = Shader.PropertyToID("TOD_StarVisibility");
+    ID_SunMeshContrast = Shader.PropertyToID("TOD_SunMeshContrast");
+    ID_SunMeshBrightness = Shader.PropertyToID("TOD_SunMeshBrightness");
+    ID_MoonMeshContrast = Shader.PropertyToID("TOD_MoonMeshContrast");
+    ID_MoonMeshBrightness = Shader.PropertyToID("TOD_MoonMeshBrightness");
+    ID_kBetaMie = Shader.PropertyToID("TOD_kBetaMie");
+    ID_kSun = Shader.PropertyToID("TOD_kSun");
+    ID_k4PI = Shader.PropertyToID("TOD_k4PI");
+    ID_kRadius = Shader.PropertyToID("TOD_kRadius");
+    ID_kScale = Shader.PropertyToID("TOD_kScale");
+    ID_World2Sky = Shader.PropertyToID("TOD_World2Sky");
+    ID_Sky2World = Shader.PropertyToID("TOD_Sky2World");
   }
 }

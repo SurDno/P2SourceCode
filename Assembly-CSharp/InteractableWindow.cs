@@ -1,11 +1,9 @@
-﻿using Cofe.Utility;
+﻿using System.Collections.Generic;
+using Cofe.Utility;
 using Engine.Impl.UI.Controls;
 using Engine.Source.Services.Inputs;
 using Engine.Source.Utility;
 using InputServices;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UI;
 
 public class InteractableWindow : MonoBehaviour
 {
@@ -27,9 +25,9 @@ public class InteractableWindow : MonoBehaviour
   private List<GameActionType> listeners = new List<GameActionType>();
   private List<KeyValuePair<GameActionType, bool>> cachedActions;
 
-  public void SetInfo(InteractableWindow.IconType info, string text)
+  public void SetInfo(IconType info, string text)
   {
-    this.DeactivateAllTitles();
+    DeactivateAllTitles();
     if (!text.IsNullOrEmpty())
     {
       this.text.gameObject.SetActive(true);
@@ -37,96 +35,96 @@ public class InteractableWindow : MonoBehaviour
     }
     switch (info)
     {
-      case InteractableWindow.IconType.Normal:
-        this.normalImage.gameObject.SetActive(true);
+      case IconType.Normal:
+        normalImage.gameObject.SetActive(true);
         break;
-      case InteractableWindow.IconType.Locked:
-        this.lockedImage.gameObject.SetActive(true);
+      case IconType.Locked:
+        lockedImage.gameObject.SetActive(true);
         break;
-      case InteractableWindow.IconType.Blocked:
-        this.blockedImage.gameObject.SetActive(true);
+      case IconType.Blocked:
+        blockedImage.gameObject.SetActive(true);
         break;
     }
   }
 
   public void SetInfo(
-    InteractableWindow.IconType info,
+    IconType info,
     string[] texts,
     List<KeyValuePair<Sprite, bool>> iconSprites,
     List<KeyValuePair<GameActionType, bool>> actions)
   {
-    this.normalImage.gameObject.SetActive(false);
-    this.lockedImage.gameObject.SetActive(false);
-    this.blockedImage.gameObject.SetActive(false);
-    this.text.gameObject.SetActive(false);
-    this.progressCircle.Progress = 0.0f;
-    this.cachedActions = actions;
+    normalImage.gameObject.SetActive(false);
+    lockedImage.gameObject.SetActive(false);
+    blockedImage.gameObject.SetActive(false);
+    text.gameObject.SetActive(false);
+    progressCircle.Progress = 0.0f;
+    cachedActions = actions;
     int index = 0;
-    for (int length = texts.Length; index < length || index < this._spawnedTitleList.Count; ++index)
+    for (int length = texts.Length; index < length || index < _spawnedTitleList.Count; ++index)
     {
       if (index < length)
       {
-        if (index >= this._spawnedTitleList.Count)
-          this._spawnedTitleList.Add(Object.Instantiate<Title>(this.titlePrefab, this.textGroupContainer));
-        Title spawnedTitle = this._spawnedTitleList[index];
+        if (index >= _spawnedTitleList.Count)
+          _spawnedTitleList.Add(Object.Instantiate<Title>(titlePrefab, textGroupContainer));
+        Title spawnedTitle = _spawnedTitleList[index];
         if (!spawnedTitle.gameObject.activeSelf)
           spawnedTitle.gameObject.SetActive(true);
         KeyValuePair<Sprite, bool> iconSprite = iconSprites[index];
         spawnedTitle.SetText(texts[index], iconSprite.Key, iconSprite.Value);
       }
-      else if (this._spawnedTitleList[index].gameObject.activeSelf)
-        this._spawnedTitleList[index].gameObject.SetActive(false);
+      else if (_spawnedTitleList[index].gameObject.activeSelf)
+        _spawnedTitleList[index].gameObject.SetActive(false);
     }
-    this.UpdateProgress();
+    UpdateProgress();
     switch (info)
     {
-      case InteractableWindow.IconType.Normal:
-        this.normalImage.gameObject.SetActive(true);
+      case IconType.Normal:
+        normalImage.gameObject.SetActive(true);
         break;
-      case InteractableWindow.IconType.Locked:
-        this.lockedImage.gameObject.SetActive(true);
+      case IconType.Locked:
+        lockedImage.gameObject.SetActive(true);
         break;
-      case InteractableWindow.IconType.Blocked:
-        this.blockedImage.gameObject.SetActive(true);
+      case IconType.Blocked:
+        blockedImage.gameObject.SetActive(true);
         break;
     }
-    LayoutRebuilder.ForceRebuildLayoutImmediate(this.textGroupContainer.GetComponent<RectTransform>());
+    LayoutRebuilder.ForceRebuildLayoutImmediate(textGroupContainer.GetComponent<RectTransform>());
   }
 
   public void UpdateProgress()
   {
     float num = 0.0f;
-    if (this.cachedActions != null)
+    if (cachedActions != null)
     {
-      for (int index = 0; index < this.cachedActions.Count; ++index)
+      for (int index = 0; index < cachedActions.Count; ++index)
       {
-        KeyValuePair<GameActionType, bool> cachedAction = this.cachedActions[index];
+        KeyValuePair<GameActionType, bool> cachedAction = cachedActions[index];
         if (cachedAction.Value)
         {
           InputService instance = InputService.Instance;
-          cachedAction = this.cachedActions[index];
+          cachedAction = cachedActions[index];
           string actionWithoutHold = InputUtility.GetHotKeyNameByActionWithoutHold(cachedAction.Key);
           float holdProgress = instance.GetHoldProgress(actionWithoutHold);
-          if ((double) holdProgress > (double) num)
+          if (holdProgress > (double) num)
             num = holdProgress;
         }
       }
     }
-    this.progressCircle.Progress = num;
+    progressCircle.Progress = num;
   }
 
   public void DeactivateAllTitles()
   {
-    this.progressCircle.Progress = 0.0f;
-    this.normalImage.gameObject.SetActive(false);
-    this.lockedImage.gameObject.SetActive(false);
-    this.blockedImage.gameObject.SetActive(false);
-    this.text.gameObject.SetActive(false);
+    progressCircle.Progress = 0.0f;
+    normalImage.gameObject.SetActive(false);
+    lockedImage.gameObject.SetActive(false);
+    blockedImage.gameObject.SetActive(false);
+    text.gameObject.SetActive(false);
     int index = 0;
-    for (int count = this._spawnedTitleList.Count; index < count; ++index)
+    for (int count = _spawnedTitleList.Count; index < count; ++index)
     {
-      if (this._spawnedTitleList[index].gameObject.activeSelf)
-        this._spawnedTitleList[index].gameObject.SetActive(false);
+      if (_spawnedTitleList[index].gameObject.activeSelf)
+        _spawnedTitleList[index].gameObject.SetActive(false);
     }
   }
 

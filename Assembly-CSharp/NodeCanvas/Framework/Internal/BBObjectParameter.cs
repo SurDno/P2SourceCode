@@ -1,6 +1,5 @@
-﻿using ParadoxNotion;
-using System;
-using UnityEngine;
+﻿using System;
+using ParadoxNotion;
 
 namespace NodeCanvas.Framework.Internal
 {
@@ -8,21 +7,21 @@ namespace NodeCanvas.Framework.Internal
   public class BBObjectParameter : BBParameter<object>
   {
     [SerializeField]
-    private System.Type _type;
+    private Type _type;
 
-    public BBObjectParameter() => this.SetType(typeof (object));
+    public BBObjectParameter() => SetType(typeof (object));
 
-    public BBObjectParameter(System.Type t) => this.SetType(t);
+    public BBObjectParameter(Type t) => SetType(t);
 
-    public override System.Type varType => this._type;
+    public override Type varType => _type;
 
-    public void SetType(System.Type t)
+    public void SetType(Type t)
     {
-      if (t == (System.Type) null)
+      if (t == null)
         t = typeof (object);
-      if (t != this._type)
-        this._value = t.RTIsValueType() ? Activator.CreateInstance(t) : (object) null;
-      this._type = t;
+      if (t != _type)
+        _value = t.RTIsValueType() ? Activator.CreateInstance(t) : null;
+      _type = t;
     }
   }
 }

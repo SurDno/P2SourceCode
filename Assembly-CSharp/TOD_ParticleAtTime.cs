@@ -1,10 +1,7 @@
-﻿using UnityEngine;
-
-[RequireComponent(typeof (ParticleSystem))]
+﻿[RequireComponent(typeof (ParticleSystem))]
 public class TOD_ParticleAtTime : MonoBehaviour
 {
-  public AnimationCurve Emission = new AnimationCurve()
-  {
+  public AnimationCurve Emission = new AnimationCurve {
     keys = new Keyframe[3]
     {
       new Keyframe(0.0f, 0.0f),
@@ -14,10 +11,10 @@ public class TOD_ParticleAtTime : MonoBehaviour
   };
   private ParticleSystem particleComponent;
 
-  protected void Start() => this.particleComponent = this.GetComponent<ParticleSystem>();
+  protected void Start() => particleComponent = this.GetComponent<ParticleSystem>();
 
   protected void Update()
   {
-    this.particleComponent.emissionRate = this.Emission.Evaluate(TOD_Sky.Instance.Cycle.Hour);
+    particleComponent.emissionRate = Emission.Evaluate(TOD_Sky.Instance.Cycle.Hour);
   }
 }

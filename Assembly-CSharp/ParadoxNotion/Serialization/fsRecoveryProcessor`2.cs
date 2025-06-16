@@ -1,8 +1,8 @@
-﻿using ParadoxNotion.Serialization.FullSerializer;
-using ParadoxNotion.Serialization.FullSerializer.Internal;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ParadoxNotion.Serialization.FullSerializer;
+using ParadoxNotion.Serialization.FullSerializer.Internal;
 
 namespace ParadoxNotion.Serialization
 {
@@ -19,7 +19,7 @@ namespace ParadoxNotion.Serialization
       if (!json.TryGetValue("$type", out fsData))
         return;
       Type type1 = fsTypeCache.GetType(fsData.AsString, storageType);
-      if (type1 == (Type) null)
+      if (type1 == null)
       {
         json["missingType"] = new fsData(fsData.AsString);
         json["recoveryState"] = new fsData(data.ToString());
@@ -28,10 +28,10 @@ namespace ParadoxNotion.Serialization
       if (type1 == typeof (TMissing))
       {
         Type type2 = fsTypeCache.GetType(json["missingType"].AsString, storageType);
-        if (type2 != (Type) null)
+        if (type2 != null)
         {
           Dictionary<string, fsData> asDictionary = fsJsonParser.Parse(json["recoveryState"].AsString).AsDictionary;
-          json = json.Concat<KeyValuePair<string, fsData>>(asDictionary.Where<KeyValuePair<string, fsData>>((Func<KeyValuePair<string, fsData>, bool>) (kvp => !json.ContainsKey(kvp.Key)))).ToDictionary<KeyValuePair<string, fsData>, string, fsData>((Func<KeyValuePair<string, fsData>, string>) (c => c.Key), (Func<KeyValuePair<string, fsData>, fsData>) (c => c.Value));
+          json = json.Concat(asDictionary.Where(kvp => !json.ContainsKey(kvp.Key))).ToDictionary(c => c.Key, c => c.Value);
           json["$type"] = new fsData(type2.FullName);
           data = new fsData(json);
         }

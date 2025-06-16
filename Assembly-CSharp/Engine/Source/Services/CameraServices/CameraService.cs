@@ -1,56 +1,54 @@
-﻿using Engine.Common;
-using Engine.Source.Commons;
-using Inspectors;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-using UnityEngine;
+using Engine.Common;
+using Engine.Source.Commons;
+using Inspectors;
 
 namespace Engine.Source.Services.CameraServices
 {
-  [RuntimeService(new System.Type[] {typeof (CameraService)})]
+  [RuntimeService(typeof (CameraService))]
   public class CameraService : IInitialisable, IUpdatable
   {
     private CameraKindEnum kind = CameraKindEnum.Unknown;
     private IEntity target;
     private GameObject gameObjectTarget;
-    private ICameraController emptyCameraController = (ICameraController) new EmptyCameraController();
+    private ICameraController emptyCameraController = new EmptyCameraController();
     private bool initialise;
     [Inspected]
     private ICameraController currentCameraController;
-    private Dictionary<CameraKindEnum, ICameraController> controllers = new Dictionary<CameraKindEnum, ICameraController>()
-    {
+    private Dictionary<CameraKindEnum, ICameraController> controllers = new Dictionary<CameraKindEnum, ICameraController> {
       {
         CameraKindEnum.Fly,
-        (ICameraController) new FlyCameraController()
+        new FlyCameraController()
       },
       {
         CameraKindEnum.FirstPerson_Controlling,
-        (ICameraController) new FirstPersonCameraController()
+        new FirstPersonCameraController()
       },
       {
         CameraKindEnum.FirstPerson_Tracking,
-        (ICameraController) new TrackingCameraController()
+        new TrackingCameraController()
       },
       {
         CameraKindEnum.Cutscene,
-        (ICameraController) new CutsceneCameraController()
+        new CutsceneCameraController()
       },
       {
         CameraKindEnum.Cutscene_Cinemachine,
-        (ICameraController) new CutsceneCinemachineCameraController()
+        new CutsceneCinemachineCameraController()
       },
       {
         CameraKindEnum.Ragdoll,
-        (ICameraController) new RagdollCameraController()
+        new RagdollCameraController()
       },
       {
         CameraKindEnum.Dialog,
-        (ICameraController) new DialogCameraController(ScriptableObjectInstance<ResourceFromCodeData>.Instance.DialogRigPrefab)
+        new DialogCameraController(ScriptableObjectInstance<ResourceFromCodeData>.Instance.DialogRigPrefab)
       },
       {
         CameraKindEnum.Trade,
-        (ICameraController) new DialogCameraController(ScriptableObjectInstance<ResourceFromCodeData>.Instance.TradeRigPrefab)
+        new DialogCameraController(ScriptableObjectInstance<ResourceFromCodeData>.Instance.TradeRigPrefab)
       }
     };
 
@@ -59,23 +57,23 @@ namespace Engine.Source.Services.CameraServices
     {
       get
       {
-        if (!this.initialise)
-          throw new Exception(this.GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
-        return this.kind;
+        if (!initialise)
+          throw new Exception(GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
+        return kind;
       }
       set
       {
-        if (!this.initialise)
-          throw new Exception(this.GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
-        if (this.kind == value)
+        if (!initialise)
+          throw new Exception(GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
+        if (kind == value)
           return;
-        this.kind = value;
-        if (this.currentCameraController == null)
+        kind = value;
+        if (currentCameraController == null)
           return;
-        this.currentCameraController.Shutdown();
-        if (!this.controllers.TryGetValue(this.kind, out this.currentCameraController))
-          this.currentCameraController = this.emptyCameraController;
-        this.currentCameraController.Initialise();
+        currentCameraController.Shutdown();
+        if (!controllers.TryGetValue(kind, out currentCameraController))
+          currentCameraController = emptyCameraController;
+        currentCameraController.Initialise();
       }
     }
 
@@ -84,17 +82,17 @@ namespace Engine.Source.Services.CameraServices
     {
       get
       {
-        if (!this.initialise)
-          throw new Exception(this.GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
-        return this.target;
+        if (!initialise)
+          throw new Exception(GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
+        return target;
       }
       set
       {
-        if (!this.initialise)
-          throw new Exception(this.GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
-        if (this.target == value)
+        if (!initialise)
+          throw new Exception(GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
+        if (target == value)
           return;
-        this.target = value;
+        target = value;
       }
     }
 
@@ -103,37 +101,37 @@ namespace Engine.Source.Services.CameraServices
     {
       get
       {
-        if (!this.initialise)
-          throw new Exception(this.GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
-        return this.gameObjectTarget;
+        if (!initialise)
+          throw new Exception(GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
+        return gameObjectTarget;
       }
       set
       {
-        if (!this.initialise)
-          throw new Exception(this.GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
-        this.gameObjectTarget = value;
+        if (!initialise)
+          throw new Exception(GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
+        gameObjectTarget = value;
       }
     }
 
     public void ComputeUpdate()
     {
-      if (!this.initialise)
-        throw new Exception(this.GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
-      this.currentCameraController.Update(this.target, this.gameObjectTarget);
+      if (!initialise)
+        throw new Exception(GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
+      currentCameraController.Update(target, gameObjectTarget);
     }
 
     public void Initialise()
     {
-      this.initialise = true;
-      InstanceByRequest<UpdateService>.Instance.CameraUpdater.AddUpdatable((IUpdatable) this);
-      this.currentCameraController = this.emptyCameraController;
-      this.currentCameraController.Initialise();
+      initialise = true;
+      InstanceByRequest<UpdateService>.Instance.CameraUpdater.AddUpdatable(this);
+      currentCameraController = emptyCameraController;
+      currentCameraController.Initialise();
     }
 
     public void Terminate()
     {
-      InstanceByRequest<UpdateService>.Instance.CameraUpdater.RemoveUpdatable((IUpdatable) this);
-      this.initialise = false;
+      InstanceByRequest<UpdateService>.Instance.CameraUpdater.RemoveUpdatable(this);
+      initialise = false;
     }
   }
 }

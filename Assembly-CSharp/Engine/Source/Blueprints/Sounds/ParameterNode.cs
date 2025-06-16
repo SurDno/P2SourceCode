@@ -21,19 +21,19 @@ namespace Engine.Source.Blueprints.Sounds
     [Port("Value")]
     private float Value()
     {
-      IEntity player = this.simulation.Player;
+      IEntity player = simulation.Player;
       if (player == null)
-        return this.defaultValue.value;
+        return defaultValue.value;
       ParametersComponent component = player.GetComponent<ParametersComponent>();
       if (component == null)
-        return this.defaultValue.value;
-      IParameter<float> byName1 = component.GetByName<float>(this.parameterInput.value);
-      IParameter<bool> byName2 = component.GetByName<bool>(this.parameterInput.value);
+        return defaultValue.value;
+      IParameter<float> byName1 = component.GetByName<float>(parameterInput.value);
+      IParameter<bool> byName2 = component.GetByName<bool>(parameterInput.value);
       if (byName1 == null && byName2 == null)
-        return this.defaultValue.value;
+        return defaultValue.value;
       if (byName1 != null)
         return byName1.Value;
-      return byName2 != null ? (byName2.Value ? 1f : 0.0f) : this.defaultValue.value;
+      return byName2 != null ? (byName2.Value ? 1f : 0.0f) : defaultValue.value;
     }
   }
 }

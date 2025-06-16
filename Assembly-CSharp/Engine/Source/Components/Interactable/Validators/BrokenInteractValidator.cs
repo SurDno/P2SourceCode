@@ -17,7 +17,7 @@ namespace Engine.Source.Components.Interactable.Validators
       IParameter<float> byName = component.GetByName<float>(ParameterNameEnum.Durability);
       if (byName == null)
         return new ValidateResult(false, "Durability not found");
-      return (double) byName.Value > 0.0 ? new ValidateResult(false, "Durability " + (object) byName.Value) : new ValidateResult(true);
+      return byName.Value > 0.0 ? new ValidateResult(false, "Durability " + byName.Value) : new ValidateResult(true);
     }
   }
 }

@@ -1,12 +1,11 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons.Cloneable;
 using Engine.Common.Commons.Converters;
 using Engine.Common.Services;
 using Engine.Source.Components.BoundCharacters;
 using Scripts.Tools.Serializations.Converters;
-using System;
-using UnityEngine;
 
 namespace Engine.Source.Proxies
 {
@@ -20,53 +19,53 @@ namespace Engine.Source.Proxies
   {
     public object Clone()
     {
-      return (object) ServiceCache.Factory.Instantiate<BoundCharacterPlaceholder_Generated>(this);
+      return ServiceCache.Factory.Instantiate(this);
     }
 
     public void CopyTo(object target2)
     {
       BoundCharacterPlaceholder_Generated placeholderGenerated = (BoundCharacterPlaceholder_Generated) target2;
-      placeholderGenerated.name = this.name;
-      placeholderGenerated.Gender = this.Gender;
-      placeholderGenerated.normalSprite = this.normalSprite;
-      placeholderGenerated.dangerSprite = this.dangerSprite;
-      placeholderGenerated.deadSprite = this.deadSprite;
-      placeholderGenerated.diseasedSprite = this.diseasedSprite;
-      placeholderGenerated.undiscoveredNormalSprite = this.undiscoveredNormalSprite;
-      placeholderGenerated.largeNormalSprite = this.largeNormalSprite;
-      placeholderGenerated.largeDangerSprite = this.largeDangerSprite;
-      placeholderGenerated.largeDeadSprite = this.largeDeadSprite;
-      placeholderGenerated.largeDiseasedSprite = this.largeDiseasedSprite;
+      placeholderGenerated.name = name;
+      placeholderGenerated.Gender = Gender;
+      placeholderGenerated.normalSprite = normalSprite;
+      placeholderGenerated.dangerSprite = dangerSprite;
+      placeholderGenerated.deadSprite = deadSprite;
+      placeholderGenerated.diseasedSprite = diseasedSprite;
+      placeholderGenerated.undiscoveredNormalSprite = undiscoveredNormalSprite;
+      placeholderGenerated.largeNormalSprite = largeNormalSprite;
+      placeholderGenerated.largeDangerSprite = largeDangerSprite;
+      placeholderGenerated.largeDeadSprite = largeDeadSprite;
+      placeholderGenerated.largeDiseasedSprite = largeDiseasedSprite;
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.Write(writer, "Id", this.id);
-      DefaultDataWriteUtility.WriteEnum<Gender>(writer, "Gender", this.Gender);
-      UnityDataWriteUtility.Write<Sprite>(writer, "NormalSprite", this.normalSprite);
-      UnityDataWriteUtility.Write<Sprite>(writer, "DangerSprite", this.dangerSprite);
-      UnityDataWriteUtility.Write<Sprite>(writer, "DeadSprite", this.deadSprite);
-      UnityDataWriteUtility.Write<Sprite>(writer, "DiseasedSprite", this.diseasedSprite);
-      UnityDataWriteUtility.Write<Sprite>(writer, "UndiscoveredNormalSprite", this.undiscoveredNormalSprite);
-      UnityDataWriteUtility.Write<Sprite>(writer, "LargeNormalSprite", this.largeNormalSprite);
-      UnityDataWriteUtility.Write<Sprite>(writer, "LargeDangerSprite", this.largeDangerSprite);
-      UnityDataWriteUtility.Write<Sprite>(writer, "LargeDeadSprite", this.largeDeadSprite);
-      UnityDataWriteUtility.Write<Sprite>(writer, "LargeDiseasedSprite", this.largeDiseasedSprite);
+      DefaultDataWriteUtility.Write(writer, "Id", id);
+      DefaultDataWriteUtility.WriteEnum(writer, "Gender", Gender);
+      UnityDataWriteUtility.Write(writer, "NormalSprite", normalSprite);
+      UnityDataWriteUtility.Write(writer, "DangerSprite", dangerSprite);
+      UnityDataWriteUtility.Write(writer, "DeadSprite", deadSprite);
+      UnityDataWriteUtility.Write(writer, "DiseasedSprite", diseasedSprite);
+      UnityDataWriteUtility.Write(writer, "UndiscoveredNormalSprite", undiscoveredNormalSprite);
+      UnityDataWriteUtility.Write(writer, "LargeNormalSprite", largeNormalSprite);
+      UnityDataWriteUtility.Write(writer, "LargeDangerSprite", largeDangerSprite);
+      UnityDataWriteUtility.Write(writer, "LargeDeadSprite", largeDeadSprite);
+      UnityDataWriteUtility.Write(writer, "LargeDiseasedSprite", largeDiseasedSprite);
     }
 
-    public void DataRead(IDataReader reader, System.Type type)
+    public void DataRead(IDataReader reader, Type type)
     {
-      this.id = DefaultDataReadUtility.Read(reader, "Id", this.id);
-      this.Gender = DefaultDataReadUtility.ReadEnum<Gender>(reader, "Gender");
-      this.normalSprite = UnityDataReadUtility.Read<Sprite>(reader, "NormalSprite", this.normalSprite);
-      this.dangerSprite = UnityDataReadUtility.Read<Sprite>(reader, "DangerSprite", this.dangerSprite);
-      this.deadSprite = UnityDataReadUtility.Read<Sprite>(reader, "DeadSprite", this.deadSprite);
-      this.diseasedSprite = UnityDataReadUtility.Read<Sprite>(reader, "DiseasedSprite", this.diseasedSprite);
-      this.undiscoveredNormalSprite = UnityDataReadUtility.Read<Sprite>(reader, "UndiscoveredNormalSprite", this.undiscoveredNormalSprite);
-      this.largeNormalSprite = UnityDataReadUtility.Read<Sprite>(reader, "LargeNormalSprite", this.largeNormalSprite);
-      this.largeDangerSprite = UnityDataReadUtility.Read<Sprite>(reader, "LargeDangerSprite", this.largeDangerSprite);
-      this.largeDeadSprite = UnityDataReadUtility.Read<Sprite>(reader, "LargeDeadSprite", this.largeDeadSprite);
-      this.largeDiseasedSprite = UnityDataReadUtility.Read<Sprite>(reader, "LargeDiseasedSprite", this.largeDiseasedSprite);
+      id = DefaultDataReadUtility.Read(reader, "Id", id);
+      Gender = DefaultDataReadUtility.ReadEnum<Gender>(reader, "Gender");
+      normalSprite = UnityDataReadUtility.Read(reader, "NormalSprite", normalSprite);
+      dangerSprite = UnityDataReadUtility.Read(reader, "DangerSprite", dangerSprite);
+      deadSprite = UnityDataReadUtility.Read(reader, "DeadSprite", deadSprite);
+      diseasedSprite = UnityDataReadUtility.Read(reader, "DiseasedSprite", diseasedSprite);
+      undiscoveredNormalSprite = UnityDataReadUtility.Read(reader, "UndiscoveredNormalSprite", undiscoveredNormalSprite);
+      largeNormalSprite = UnityDataReadUtility.Read(reader, "LargeNormalSprite", largeNormalSprite);
+      largeDangerSprite = UnityDataReadUtility.Read(reader, "LargeDangerSprite", largeDangerSprite);
+      largeDeadSprite = UnityDataReadUtility.Read(reader, "LargeDeadSprite", largeDeadSprite);
+      largeDiseasedSprite = UnityDataReadUtility.Read(reader, "LargeDiseasedSprite", largeDiseasedSprite);
     }
   }
 }

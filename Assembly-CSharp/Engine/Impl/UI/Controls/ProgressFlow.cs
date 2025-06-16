@@ -1,8 +1,4 @@
-﻿using UnityEngine;
-using UnityEngine.Serialization;
-using UnityEngine.UI;
-
-namespace Engine.Impl.UI.Controls
+﻿namespace Engine.Impl.UI.Controls
 {
   [DisallowMultipleComponent]
   [ExecuteInEditMode]
@@ -24,10 +20,10 @@ namespace Engine.Impl.UI.Controls
       Image component = this.GetComponent<Image>();
       if ((Object) component == (Object) null)
         return;
-      float num1 = Mathf.Clamp01((float) ((1.0 - (double) this.Progress) * (1.0 + (double) this.overlap)));
-      float num2 = Mathf.Clamp01(this.Progress * (1f + this.overlap));
+      float num1 = Mathf.Clamp01((float) ((1.0 - Progress) * (1.0 + overlap)));
+      float num2 = Mathf.Clamp01(Progress * (1f + overlap));
       Color color = component.color;
-      if (this.invert)
+      if (invert)
       {
         color.r = num2;
         color.g = num1;

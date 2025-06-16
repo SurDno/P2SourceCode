@@ -1,11 +1,11 @@
-﻿using BehaviorDesigner.Runtime;
+﻿using System;
+using System.Collections.Generic;
+using BehaviorDesigner.Runtime;
 using BehaviorDesigner.Runtime.Tasks;
 using Cofe.Proxies;
 using Cofe.Serializations.Converters;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons.Converters;
-using System.Collections.Generic;
-using UnityEngine;
 
 namespace Scripts.Tools.Serializations.Converters
 {
@@ -13,21 +13,21 @@ namespace Scripts.Tools.Serializations.Converters
   {
     public static void WriteShared<T>(IDataWriter writer, string name, T value, bool common = false) where T : SharedVariable
     {
-      if ((object) value == null)
+      if (value == null)
         return;
       if (value is ISerializeDataWrite serializeDataWrite)
       {
-        System.Type type = ProxyFactory.GetType(value.GetType());
+        Type type = ProxyFactory.GetType(value.GetType());
         if (value.IsShared && !common)
         {
-          writer.Begin(name, type != typeof (T) ? type : (System.Type) null, true);
+          writer.Begin(name, type != typeof (T) ? type : null, true);
           writer.WriteSimple("IsShared", DefaultConverter.ToString(value.IsShared));
           writer.WriteSimple("Name", value.Name);
           writer.End(name, true);
         }
         else
         {
-          writer.Begin(name, type != typeof (T) ? type : (System.Type) null, true);
+          writer.Begin(name, type != typeof (T) ? type : null, true);
           serializeDataWrite.DataWrite(writer);
           writer.End(name, true);
         }
@@ -38,7 +38,7 @@ namespace Scripts.Tools.Serializations.Converters
 
     public static void WriteCommonSharedList<T>(IDataWriter writer, string name, List<T> value) where T : SharedVariable
     {
-      BehaviorTreeDataWriteUtility.WriteSharedList<T>(writer, name, value, true);
+      WriteSharedList(writer, name, value, true);
     }
 
     public static void WriteSharedList<T>(
@@ -50,10 +50,10 @@ namespace Scripts.Tools.Serializations.Converters
     {
       if (value == null)
         return;
-      System.Type type = typeof (T);
-      writer.Begin(name, (System.Type) null, true);
+      Type type = typeof (T);
+      writer.Begin(name, null, true);
       foreach (T obj in value)
-        BehaviorTreeDataWriteUtility.WriteShared<T>(writer, "Item", obj, common);
+        WriteShared(writer, "Item", obj, common);
       writer.End(name, true);
     }
 
@@ -61,21 +61,21 @@ namespace Scripts.Tools.Serializations.Converters
     {
       if (value == null)
         return;
-      System.Type type = typeof (T);
-      writer.Begin(name, (System.Type) null, true);
+      Type type = typeof (T);
+      writer.Begin(name, null, true);
       foreach (T obj in value)
-        BehaviorTreeDataWriteUtility.WriteShared<T>(writer, "Item", obj);
+        WriteShared(writer, "Item", obj);
       writer.End(name, true);
     }
 
     public static void WriteTask<T>(IDataWriter writer, string name, T value) where T : Task
     {
-      DefaultDataWriteUtility.WriteSerialize<T>(writer, name, value);
+      DefaultDataWriteUtility.WriteSerialize(writer, name, value);
     }
 
     public static void WriteTaskReference<T>(IDataWriter writer, string name, T value) where T : Task
     {
-      if ((object) value != null)
+      if (value != null)
       {
         if (value.Id == -1)
           Debug.LogError((object) ("Node is not deserialized, name : " + name));
@@ -85,7 +85,7 @@ namespace Scripts.Tools.Serializations.Converters
       }
       else
       {
-        writer.Begin(name, (System.Type) null, false);
+        writer.Begin(name, null, false);
         writer.Write(DefaultConverter.ToString(-1));
         writer.End(name, false);
       }
@@ -95,10 +95,10 @@ namespace Scripts.Tools.Serializations.Converters
     {
       if (value == null)
         value = new List<T>();
-      System.Type type = typeof (T);
-      writer.Begin(name, (System.Type) null, true);
+      Type type = typeof (T);
+      writer.Begin(name, null, true);
       foreach (T obj in value)
-        BehaviorTreeDataWriteUtility.WriteTask<T>(writer, "Item", obj);
+        WriteTask(writer, "Item", obj);
       writer.End(name, true);
     }
 
@@ -137,10 +137,10 @@ namespace Scripts.Tools.Serializations.Converters
     {
       if (value == null)
         return;
-      System.Type type = typeof (T);
-      writer.Begin(name, (System.Type) null, true);
+      Type type = typeof (T);
+      writer.Begin(name, null, true);
       foreach (T obj in value)
-        BehaviorTreeDataWriteUtility.WriteUnity<T>(writer, "Item", obj);
+        WriteUnity(writer, "Item", obj);
       writer.End(name, true);
     }
 
@@ -148,10 +148,10 @@ namespace Scripts.Tools.Serializations.Converters
     {
       if (value == null)
         return;
-      System.Type type = typeof (T);
-      writer.Begin(name, (System.Type) null, true);
+      Type type = typeof (T);
+      writer.Begin(name, null, true);
       foreach (T obj in value)
-        BehaviorTreeDataWriteUtility.WriteUnity<T>(writer, "Item", obj);
+        WriteUnity(writer, "Item", obj);
       writer.End(name, true);
     }
   }

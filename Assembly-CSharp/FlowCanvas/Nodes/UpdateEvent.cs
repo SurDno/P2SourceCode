@@ -10,8 +10,8 @@ namespace FlowCanvas.Nodes
   {
     private FlowOutput update;
 
-    protected override void RegisterPorts() => this.update = this.AddFlowOutput("Out");
+    protected override void RegisterPorts() => update = AddFlowOutput("Out");
 
-    public void Update() => this.update.Call();
+    public void Update() => update.Call();
   }
 }

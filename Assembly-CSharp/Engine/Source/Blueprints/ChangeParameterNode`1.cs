@@ -19,14 +19,14 @@ namespace Engine.Source.Blueprints
     [Port("In")]
     private void In()
     {
-      ParametersComponent parametersComponent = this.parametersInput.value;
+      ParametersComponent parametersComponent = parametersInput.value;
       if (parametersComponent != null)
       {
-        IParameter<T> byName = parametersComponent.GetByName<T>(this.nameInput.value);
+        IParameter<T> byName = parametersComponent.GetByName<T>(nameInput.value);
         if (byName != null)
-          byName.Value = this.valueInput.value;
+          byName.Value = valueInput.value;
       }
-      this.output.Call();
+      output.Call();
     }
   }
 }

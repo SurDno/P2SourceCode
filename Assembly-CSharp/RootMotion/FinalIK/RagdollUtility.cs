@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections;
-using UnityEngine;
 
 namespace RootMotion.FinalIK
 {
@@ -18,8 +17,8 @@ namespace RootMotion.FinalIK
     [Tooltip("How much angular velocity to transfer from animation to ragdoll?")]
     public float applyAngularVelocity = 1f;
     private Animator animator;
-    private RagdollUtility.Rigidbone[] rigidbones = new RagdollUtility.Rigidbone[0];
-    private RagdollUtility.Child[] children = new RagdollUtility.Child[0];
+    private Rigidbone[] rigidbones = new Rigidbone[0];
+    private Child[] children = new Child[0];
     private bool enableRagdollFlag;
     private AnimatorUpdateMode animatorUpdateMode;
     private IK[] allIKComponents = new IK[0];
@@ -31,72 +30,72 @@ namespace RootMotion.FinalIK
 
     public void EnableRagdoll()
     {
-      if (this.isRagdoll)
+      if (isRagdoll)
         return;
       this.StopAllCoroutines();
-      this.enableRagdollFlag = true;
+      enableRagdollFlag = true;
     }
 
     public void DisableRagdoll()
     {
-      if (!this.isRagdoll)
+      if (!isRagdoll)
         return;
-      this.StoreLocalState();
+      StoreLocalState();
       this.StopAllCoroutines();
-      this.StartCoroutine(this.DisableRagdollSmooth());
+      this.StartCoroutine(DisableRagdollSmooth());
     }
 
     public void Start()
     {
-      this.animator = this.GetComponent<Animator>();
-      this.allIKComponents = this.GetComponentsInChildren<IK>();
-      this.disabledIKComponents = new bool[this.allIKComponents.Length];
-      this.fixTransforms = new bool[this.allIKComponents.Length];
-      if ((UnityEngine.Object) this.ik != (UnityEngine.Object) null)
-        this.ik.GetIKSolver().OnPostUpdate += new IKSolver.UpdateDelegate(this.AfterLastIK);
+      animator = this.GetComponent<Animator>();
+      allIKComponents = this.GetComponentsInChildren<IK>();
+      disabledIKComponents = new bool[allIKComponents.Length];
+      fixTransforms = new bool[allIKComponents.Length];
+      if ((UnityEngine.Object) ik != (UnityEngine.Object) null)
+        ik.GetIKSolver().OnPostUpdate += AfterLastIK;
       Rigidbody[] componentsInChildren1 = this.GetComponentsInChildren<Rigidbody>();
       int num = (UnityEngine.Object) componentsInChildren1[0].gameObject == (UnityEngine.Object) this.gameObject ? 1 : 0;
-      this.rigidbones = new RagdollUtility.Rigidbone[num == 0 ? componentsInChildren1.Length : componentsInChildren1.Length - 1];
-      for (int index = 0; index < this.rigidbones.Length; ++index)
-        this.rigidbones[index] = new RagdollUtility.Rigidbone(componentsInChildren1[index + num]);
+      rigidbones = new Rigidbone[num == 0 ? componentsInChildren1.Length : componentsInChildren1.Length - 1];
+      for (int index = 0; index < rigidbones.Length; ++index)
+        rigidbones[index] = new Rigidbone(componentsInChildren1[index + num]);
       Transform[] componentsInChildren2 = this.GetComponentsInChildren<Transform>();
-      this.children = new RagdollUtility.Child[componentsInChildren2.Length - 1];
-      for (int index = 0; index < this.children.Length; ++index)
-        this.children[index] = new RagdollUtility.Child(componentsInChildren2[index + 1]);
+      children = new Child[componentsInChildren2.Length - 1];
+      for (int index = 0; index < children.Length; ++index)
+        children[index] = new Child(componentsInChildren2[index + 1]);
     }
 
     private IEnumerator DisableRagdollSmooth()
     {
-      for (int i = 0; i < this.rigidbones.Length; ++i)
-        this.rigidbones[i].r.isKinematic = true;
-      for (int i = 0; i < this.allIKComponents.Length; ++i)
+      for (int i = 0; i < rigidbones.Length; ++i)
+        rigidbones[i].r.isKinematic = true;
+      for (int i = 0; i < allIKComponents.Length; ++i)
       {
-        this.allIKComponents[i].fixTransforms = this.fixTransforms[i];
-        if (this.disabledIKComponents[i])
-          this.allIKComponents[i].enabled = true;
+        allIKComponents[i].fixTransforms = fixTransforms[i];
+        if (disabledIKComponents[i])
+          allIKComponents[i].enabled = true;
       }
-      this.animator.updateMode = this.animatorUpdateMode;
-      this.animator.enabled = true;
-      while ((double) this.ragdollWeight > 0.0)
+      animator.updateMode = animatorUpdateMode;
+      animator.enabled = true;
+      while (ragdollWeight > 0.0)
       {
-        this.ragdollWeight = Mathf.SmoothDamp(this.ragdollWeight, 0.0f, ref this.ragdollWeightV, this.ragdollToAnimationTime);
-        if ((double) this.ragdollWeight < 1.0 / 1000.0)
-          this.ragdollWeight = 0.0f;
-        yield return (object) null;
+        ragdollWeight = Mathf.SmoothDamp(ragdollWeight, 0.0f, ref ragdollWeightV, ragdollToAnimationTime);
+        if (ragdollWeight < 1.0 / 1000.0)
+          ragdollWeight = 0.0f;
+        yield return null;
       }
-      yield return (object) null;
+      yield return null;
     }
 
     private void Update()
     {
-      if (!this.isRagdoll)
+      if (!isRagdoll)
         return;
-      if (!this.applyIkOnRagdoll)
+      if (!applyIkOnRagdoll)
       {
         bool flag = false;
-        for (int index = 0; index < this.allIKComponents.Length; ++index)
+        for (int index = 0; index < allIKComponents.Length; ++index)
         {
-          if (this.allIKComponents[index].enabled)
+          if (allIKComponents[index].enabled)
           {
             flag = true;
             break;
@@ -104,24 +103,24 @@ namespace RootMotion.FinalIK
         }
         if (flag)
         {
-          for (int index = 0; index < this.allIKComponents.Length; ++index)
-            this.disabledIKComponents[index] = false;
+          for (int index = 0; index < allIKComponents.Length; ++index)
+            disabledIKComponents[index] = false;
         }
-        for (int index = 0; index < this.allIKComponents.Length; ++index)
+        for (int index = 0; index < allIKComponents.Length; ++index)
         {
-          if (this.allIKComponents[index].enabled)
+          if (allIKComponents[index].enabled)
           {
-            this.allIKComponents[index].enabled = false;
-            this.disabledIKComponents[index] = true;
+            allIKComponents[index].enabled = false;
+            disabledIKComponents[index] = true;
           }
         }
       }
       else
       {
         bool flag = false;
-        for (int index = 0; index < this.allIKComponents.Length; ++index)
+        for (int index = 0; index < allIKComponents.Length; ++index)
         {
-          if (this.disabledIKComponents[index])
+          if (disabledIKComponents[index])
           {
             flag = true;
             break;
@@ -129,94 +128,94 @@ namespace RootMotion.FinalIK
         }
         if (flag)
         {
-          for (int index = 0; index < this.allIKComponents.Length; ++index)
+          for (int index = 0; index < allIKComponents.Length; ++index)
           {
-            if (this.disabledIKComponents[index])
-              this.allIKComponents[index].enabled = true;
+            if (disabledIKComponents[index])
+              allIKComponents[index].enabled = true;
           }
-          for (int index = 0; index < this.allIKComponents.Length; ++index)
-            this.disabledIKComponents[index] = false;
+          for (int index = 0; index < allIKComponents.Length; ++index)
+            disabledIKComponents[index] = false;
         }
       }
     }
 
     private void FixedUpdate()
     {
-      if (this.isRagdoll && this.applyIkOnRagdoll)
-        this.FixTransforms(1f);
-      this.fixedFrame = true;
+      if (isRagdoll && applyIkOnRagdoll)
+        FixTransforms(1f);
+      fixedFrame = true;
     }
 
     private void LateUpdate()
     {
-      if (this.animator.updateMode != AnimatorUpdateMode.AnimatePhysics || this.animator.updateMode == AnimatorUpdateMode.AnimatePhysics && this.fixedFrame)
-        this.AfterAnimation();
-      this.fixedFrame = false;
-      if (this.ikUsed)
+      if (animator.updateMode != AnimatorUpdateMode.AnimatePhysics || animator.updateMode == AnimatorUpdateMode.AnimatePhysics && fixedFrame)
+        AfterAnimation();
+      fixedFrame = false;
+      if (ikUsed)
         return;
-      this.OnFinalPose();
+      OnFinalPose();
     }
 
     private void AfterLastIK()
     {
-      if (!this.ikUsed)
+      if (!ikUsed)
         return;
-      this.OnFinalPose();
+      OnFinalPose();
     }
 
     private void AfterAnimation()
     {
-      if (this.isRagdoll)
-        this.StoreLocalState();
+      if (isRagdoll)
+        StoreLocalState();
       else
-        this.FixTransforms(this.ragdollWeight);
+        FixTransforms(ragdollWeight);
     }
 
     private void OnFinalPose()
     {
-      if (!this.isRagdoll)
-        this.RecordVelocities();
-      if (!this.enableRagdollFlag)
+      if (!isRagdoll)
+        RecordVelocities();
+      if (!enableRagdollFlag)
         return;
-      this.RagdollEnabler();
+      RagdollEnabler();
     }
 
     private void RagdollEnabler()
     {
-      this.StoreLocalState();
-      for (int index = 0; index < this.allIKComponents.Length; ++index)
-        this.disabledIKComponents[index] = false;
-      if (!this.applyIkOnRagdoll)
+      StoreLocalState();
+      for (int index = 0; index < allIKComponents.Length; ++index)
+        disabledIKComponents[index] = false;
+      if (!applyIkOnRagdoll)
       {
-        for (int index = 0; index < this.allIKComponents.Length; ++index)
+        for (int index = 0; index < allIKComponents.Length; ++index)
         {
-          if (this.allIKComponents[index].enabled)
+          if (allIKComponents[index].enabled)
           {
-            this.allIKComponents[index].enabled = false;
-            this.disabledIKComponents[index] = true;
+            allIKComponents[index].enabled = false;
+            disabledIKComponents[index] = true;
           }
         }
       }
-      this.animatorUpdateMode = this.animator.updateMode;
-      this.animator.updateMode = AnimatorUpdateMode.AnimatePhysics;
-      this.animator.enabled = false;
-      for (int index = 0; index < this.rigidbones.Length; ++index)
-        this.rigidbones[index].WakeUp(this.applyVelocity, this.applyAngularVelocity);
-      for (int index = 0; index < this.fixTransforms.Length; ++index)
+      animatorUpdateMode = animator.updateMode;
+      animator.updateMode = AnimatorUpdateMode.AnimatePhysics;
+      animator.enabled = false;
+      for (int index = 0; index < rigidbones.Length; ++index)
+        rigidbones[index].WakeUp(applyVelocity, applyAngularVelocity);
+      for (int index = 0; index < fixTransforms.Length; ++index)
       {
-        this.fixTransforms[index] = this.allIKComponents[index].fixTransforms;
-        this.allIKComponents[index].fixTransforms = false;
+        fixTransforms[index] = allIKComponents[index].fixTransforms;
+        allIKComponents[index].fixTransforms = false;
       }
-      this.ragdollWeight = 1f;
-      this.ragdollWeightV = 0.0f;
-      this.enableRagdollFlag = false;
+      ragdollWeight = 1f;
+      ragdollWeightV = 0.0f;
+      enableRagdollFlag = false;
     }
 
-    private bool isRagdoll => !this.rigidbones[0].r.isKinematic && !this.animator.enabled;
+    private bool isRagdoll => !rigidbones[0].r.isKinematic && !animator.enabled;
 
     private void RecordVelocities()
     {
-      foreach (RagdollUtility.Rigidbone rigidbone in this.rigidbones)
+      foreach (Rigidbone rigidbone in rigidbones)
         rigidbone.RecordVelocity();
     }
 
@@ -224,13 +223,13 @@ namespace RootMotion.FinalIK
     {
       get
       {
-        if ((UnityEngine.Object) this.ik == (UnityEngine.Object) null)
+        if ((UnityEngine.Object) ik == (UnityEngine.Object) null)
           return false;
-        if (this.ik.enabled && (double) this.ik.GetIKSolver().IKPositionWeight > 0.0)
+        if (ik.enabled && ik.GetIKSolver().IKPositionWeight > 0.0)
           return true;
-        foreach (IK allIkComponent in this.allIKComponents)
+        foreach (IK allIkComponent in allIKComponents)
         {
-          if (allIkComponent.enabled && (double) allIkComponent.GetIKSolver().IKPositionWeight > 0.0)
+          if (allIkComponent.enabled && allIkComponent.GetIKSolver().IKPositionWeight > 0.0)
             return true;
         }
         return false;
@@ -239,21 +238,21 @@ namespace RootMotion.FinalIK
 
     private void StoreLocalState()
     {
-      foreach (RagdollUtility.Child child in this.children)
+      foreach (Child child in children)
         child.StoreLocalState();
     }
 
     private void FixTransforms(float weight)
     {
-      foreach (RagdollUtility.Child child in this.children)
+      foreach (Child child in children)
         child.FixTransform(weight);
     }
 
     private void OnDestroy()
     {
-      if (!((UnityEngine.Object) this.ik != (UnityEngine.Object) null))
+      if (!((UnityEngine.Object) ik != (UnityEngine.Object) null))
         return;
-      this.ik.GetIKSolver().OnPostUpdate -= new IKSolver.UpdateDelegate(this.AfterLastIK);
+      ik.GetIKSolver().OnPostUpdate -= AfterLastIK;
     }
 
     public class Rigidbone
@@ -273,44 +272,44 @@ namespace RootMotion.FinalIK
       public Rigidbone(Rigidbody r)
       {
         this.r = r;
-        this.t = r.transform;
-        this.joint = this.t.GetComponent<Joint>();
-        this.collider = this.t.GetComponent<Collider>();
-        if ((UnityEngine.Object) this.joint != (UnityEngine.Object) null)
+        t = r.transform;
+        joint = t.GetComponent<Joint>();
+        collider = t.GetComponent<Collider>();
+        if ((UnityEngine.Object) joint != (UnityEngine.Object) null)
         {
-          this.c = this.joint.connectedBody;
-          this.updateAnchor = (UnityEngine.Object) this.c != (UnityEngine.Object) null;
+          c = joint.connectedBody;
+          updateAnchor = (UnityEngine.Object) c != (UnityEngine.Object) null;
         }
-        this.lastPosition = this.t.position;
-        this.lastRotation = this.t.rotation;
+        lastPosition = t.position;
+        lastRotation = t.rotation;
       }
 
       public void RecordVelocity()
       {
-        this.deltaPosition = this.t.position - this.lastPosition;
-        this.lastPosition = this.t.position;
-        this.deltaRotation = QuaTools.FromToRotation(this.lastRotation, this.t.rotation);
-        this.lastRotation = this.t.rotation;
-        this.deltaTime = Time.deltaTime;
+        deltaPosition = t.position - lastPosition;
+        lastPosition = t.position;
+        deltaRotation = QuaTools.FromToRotation(lastRotation, t.rotation);
+        lastRotation = t.rotation;
+        deltaTime = Time.deltaTime;
       }
 
       public void WakeUp(float velocityWeight, float angularVelocityWeight)
       {
-        if (this.updateAnchor)
-          this.joint.connectedAnchor = this.t.InverseTransformPoint(this.c.position);
-        this.r.isKinematic = false;
-        if ((double) velocityWeight != 0.0)
-          this.r.velocity = this.deltaPosition / this.deltaTime * velocityWeight;
-        if ((double) angularVelocityWeight != 0.0)
+        if (updateAnchor)
+          joint.connectedAnchor = t.InverseTransformPoint(c.position);
+        r.isKinematic = false;
+        if (velocityWeight != 0.0)
+          r.velocity = deltaPosition / deltaTime * velocityWeight;
+        if (angularVelocityWeight != 0.0)
         {
           float angle = 0.0f;
           Vector3 axis = Vector3.zero;
-          this.deltaRotation.ToAngleAxis(out angle, out axis);
+          deltaRotation.ToAngleAxis(out angle, out axis);
           angle *= (float) Math.PI / 180f;
-          float num = angle / this.deltaTime;
-          this.r.angularVelocity = Vector3.ClampMagnitude(axis * (num * angularVelocityWeight), this.r.maxAngularVelocity);
+          float num = angle / deltaTime;
+          r.angularVelocity = Vector3.ClampMagnitude(axis * (num * angularVelocityWeight), r.maxAngularVelocity);
         }
-        this.r.WakeUp();
+        r.WakeUp();
       }
     }
 
@@ -322,31 +321,31 @@ namespace RootMotion.FinalIK
 
       public Child(Transform transform)
       {
-        this.t = transform;
-        this.localPosition = this.t.localPosition;
-        this.localRotation = this.t.localRotation;
+        t = transform;
+        localPosition = t.localPosition;
+        localRotation = t.localRotation;
       }
 
       public void FixTransform(float weight)
       {
-        if ((double) weight <= 0.0)
+        if (weight <= 0.0)
           return;
-        if ((double) weight >= 1.0)
+        if (weight >= 1.0)
         {
-          this.t.localPosition = this.localPosition;
-          this.t.localRotation = this.localRotation;
+          t.localPosition = localPosition;
+          t.localRotation = localRotation;
         }
         else
         {
-          this.t.localPosition = Vector3.Lerp(this.t.localPosition, this.localPosition, weight);
-          this.t.localRotation = Quaternion.Lerp(this.t.localRotation, this.localRotation, weight);
+          t.localPosition = Vector3.Lerp(t.localPosition, localPosition, weight);
+          t.localRotation = Quaternion.Lerp(t.localRotation, localRotation, weight);
         }
       }
 
       public void StoreLocalState()
       {
-        this.localPosition = this.t.localPosition;
-        this.localRotation = this.t.localRotation;
+        localPosition = t.localPosition;
+        localRotation = t.localRotation;
       }
     }
   }

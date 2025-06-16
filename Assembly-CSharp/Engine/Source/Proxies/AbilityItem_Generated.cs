@@ -1,10 +1,9 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons.Cloneable;
 using Engine.Common.Commons.Converters;
 using Engine.Source.Commons.Abilities;
-using Engine.Source.Commons.Effects;
-using System;
 
 namespace Engine.Source.Proxies
 {
@@ -19,36 +18,36 @@ namespace Engine.Source.Proxies
     public object Clone()
     {
       AbilityItem_Generated instance = Activator.CreateInstance<AbilityItem_Generated>();
-      this.CopyTo((object) instance);
-      return (object) instance;
+      CopyTo(instance);
+      return instance;
     }
 
     public void CopyTo(object target2)
     {
       AbilityItem_Generated abilityItemGenerated = (AbilityItem_Generated) target2;
-      abilityItemGenerated.name = this.name;
-      abilityItemGenerated.controller = CloneableObjectUtility.Clone<IAbilityController>(this.controller);
-      abilityItemGenerated.projectile = CloneableObjectUtility.Clone<IAbilityProjectile>(this.projectile);
-      abilityItemGenerated.targets = this.targets;
-      CloneableObjectUtility.CopyListTo<IEffect>(abilityItemGenerated.effects, this.effects);
+      abilityItemGenerated.name = name;
+      abilityItemGenerated.controller = CloneableObjectUtility.Clone(controller);
+      abilityItemGenerated.projectile = CloneableObjectUtility.Clone(projectile);
+      abilityItemGenerated.targets = targets;
+      CloneableObjectUtility.CopyListTo(abilityItemGenerated.effects, effects);
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.Write(writer, "Name", this.name);
-      DefaultDataWriteUtility.WriteSerialize<IAbilityController>(writer, "AbilityController", this.controller);
-      DefaultDataWriteUtility.WriteSerialize<IAbilityProjectile>(writer, "AbilityProjectile", this.projectile);
-      DefaultDataWriteUtility.WriteEnum<AbilityTargetEnum>(writer, "Targets", this.targets);
-      DefaultDataWriteUtility.WriteListSerialize<IEffect>(writer, "Effects", this.effects);
+      DefaultDataWriteUtility.Write(writer, "Name", name);
+      DefaultDataWriteUtility.WriteSerialize(writer, "AbilityController", controller);
+      DefaultDataWriteUtility.WriteSerialize(writer, "AbilityProjectile", projectile);
+      DefaultDataWriteUtility.WriteEnum(writer, "Targets", targets);
+      DefaultDataWriteUtility.WriteListSerialize(writer, "Effects", effects);
     }
 
     public void DataRead(IDataReader reader, Type type)
     {
-      this.name = DefaultDataReadUtility.Read(reader, "Name", this.name);
-      this.controller = DefaultDataReadUtility.ReadSerialize<IAbilityController>(reader, "AbilityController");
-      this.projectile = DefaultDataReadUtility.ReadSerialize<IAbilityProjectile>(reader, "AbilityProjectile");
-      this.targets = DefaultDataReadUtility.ReadEnum<AbilityTargetEnum>(reader, "Targets");
-      this.effects = DefaultDataReadUtility.ReadListSerialize<IEffect>(reader, "Effects", this.effects);
+      name = DefaultDataReadUtility.Read(reader, "Name", name);
+      controller = DefaultDataReadUtility.ReadSerialize<IAbilityController>(reader, "AbilityController");
+      projectile = DefaultDataReadUtility.ReadSerialize<IAbilityProjectile>(reader, "AbilityProjectile");
+      targets = DefaultDataReadUtility.ReadEnum<AbilityTargetEnum>(reader, "Targets");
+      effects = DefaultDataReadUtility.ReadListSerialize(reader, "Effects", effects);
     }
   }
 }

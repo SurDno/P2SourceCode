@@ -1,6 +1,5 @@
-﻿using Inspectors;
-using System;
-using UnityEngine;
+﻿using System;
+using Inspectors;
 
 namespace Engine.Source.Commons
 {
@@ -19,17 +18,17 @@ namespace Engine.Source.Commons
 
     public void InvokeEvent()
     {
-      if (this.OnGameObjectChangedEvent == null)
+      if (OnGameObjectChangedEvent == null)
         return;
-      foreach (Delegate invocation in this.OnGameObjectChangedEvent.GetInvocationList())
+      foreach (Delegate invocation in OnGameObjectChangedEvent.GetInvocationList())
       {
         try
         {
-          invocation.DynamicInvoke((object[]) null);
+          invocation.DynamicInvoke(null);
         }
         catch (Exception ex)
         {
-          Debug.LogError((object) ("Error invoke listener, target : " + invocation.Target.GetInfo() + " , owner : " + this.GetInfo() + " , ex : " + (object) ex));
+          Debug.LogError((object) ("Error invoke listener, target : " + invocation.Target.GetInfo() + " , owner : " + this.GetInfo() + " , ex : " + ex));
         }
       }
     }

@@ -1,4 +1,5 @@
-﻿using Cofe.Loggers;
+﻿using System;
+using Cofe.Loggers;
 using Engine.Common;
 using Engine.Common.Binders;
 using Engine.Common.MindMap;
@@ -9,7 +10,7 @@ using PLVirtualMachine.Common.EngineAPI.VMECS;
 using PLVirtualMachine.Dynamic;
 using PLVirtualMachine.GameLogic;
 using PLVirtualMachine.Objects;
-using System;
+using IObject = Engine.Common.IObject;
 
 namespace PLVirtualMachine
 {
@@ -24,7 +25,7 @@ namespace PLVirtualMachine
         if (engineGuid != Guid.Empty)
           return ServiceCache.Simulation.Get(engineGuid);
       }
-      return (IEntity) null;
+      return null;
     }
 
     public static object ConvertEditorTypeToEngineType(
@@ -34,13 +35,13 @@ namespace PLVirtualMachine
     {
       if (vmValue == null)
       {
-        Logger.AddWarning(string.Format("Converted to engine api value not defined at {0}", (object) DynamicFSM.CurrentStateInfo));
-        return (object) null;
+        Logger.AddWarning(string.Format("Converted to engine api value not defined at {0}", DynamicFSM.CurrentStateInfo));
+        return null;
       }
       if (valueVMType == null)
       {
-        Logger.AddError(string.Format("Cannot convert value {0}, value type not defined at {1}", vmValue, (object) DynamicFSM.CurrentStateInfo));
-        return (object) null;
+        Logger.AddError(string.Format("Cannot convert value {0}, value type not defined at {1}", vmValue, DynamicFSM.CurrentStateInfo));
+        return null;
       }
       try
       {
@@ -49,39 +50,39 @@ namespace PLVirtualMachine
           IObjRef engineType1;
           if (typeof (IObjRef).IsAssignableFrom(vmValue.GetType()))
             engineType1 = (IObjRef) vmValue;
-          else if (typeof (Engine.Common.IObject).IsAssignableFrom(vmValue.GetType()))
+          else if (typeof (IObject).IsAssignableFrom(vmValue.GetType()))
           {
-            engineType1 = (IObjRef) ExpressionUtility.GetRefByEngineInstance((Engine.Common.IObject) vmValue, valueVMType.BaseType);
+            engineType1 = (IObjRef) ExpressionUtility.GetRefByEngineInstance((IObject) vmValue, valueVMType.BaseType);
           }
           else
           {
-            Logger.AddError(string.Format("Cannot convert value with type {0} to IObjRef at {1}", (object) vmValue.GetType(), (object) DynamicFSM.CurrentStateInfo));
-            return (object) null;
+            Logger.AddError(string.Format("Cannot convert value with type {0} to IObjRef at {1}", vmValue.GetType(), DynamicFSM.CurrentStateInfo));
+            return null;
           }
           if (engineType1.Empty)
-            return (object) null;
+            return null;
           if (engType == typeof (IObjRef))
-            return (object) engineType1;
+            return engineType1;
           if (engType == typeof (IEntity))
           {
             Guid engineGuid = engineType1.EngineGuid;
             IEntity engineType2 = ServiceCache.Simulation.Get(engineGuid);
             if (engineType2 == null)
-              Logger.AddError(string.Format("Object with engine guid {0} not found in engine at {1}", (object) engineGuid, (object) DynamicFSM.CurrentStateInfo));
-            return (object) engineType2;
+              Logger.AddError(string.Format("Object with engine guid {0} not found in engine at {1}", engineGuid, DynamicFSM.CurrentStateInfo));
+            return engineType2;
           }
           if (engType == typeof (VMBaseEntity))
           {
             VMEntity entityByEngineGuid = WorldEntityUtility.GetDynamicObjectEntityByEngineGuid(engineType1.EngineGuid);
             if (entityByEngineGuid != null)
-              return (object) entityByEngineGuid;
-            Logger.AddError(string.Format("Dynamic object FSM with guid={0} not found in virtual machine at {1}", (object) engineType1.EngineGuid, (object) DynamicFSM.CurrentStateInfo));
-            return (object) null;
+              return entityByEngineGuid;
+            Logger.AddError(string.Format("Dynamic object FSM with guid={0} not found in virtual machine at {1}", engineType1.EngineGuid, DynamicFSM.CurrentStateInfo));
+            return null;
           }
         }
         else if (valueVMType.BaseType == typeof (IBlueprintRef))
         {
-          IBlueprintRef engineType = (IBlueprintRef) null;
+          IBlueprintRef engineType = null;
           if (typeof (IBlueprintRef).IsAssignableFrom(vmValue.GetType()))
             engineType = (IBlueprintRef) vmValue;
           else if (typeof (IObjRef).IsAssignableFrom(vmValue.GetType()))
@@ -89,29 +90,29 @@ namespace PLVirtualMachine
             VMObjRef vmObjRef = (VMObjRef) vmValue;
             if (vmObjRef.Object != null && !((VMLogicObject) vmObjRef.Object).Static)
             {
-              engineType = (IBlueprintRef) new VMBlueprintRef();
+              engineType = new VMBlueprintRef();
               ((VMBlueprintRef) engineType).Initialize(vmObjRef.Object);
             }
             if (engineType == null)
             {
-              Logger.AddError(string.Format("Cannot convert object ref {0} to blueprint ref: must be not empty and not static at {1}", (object) vmObjRef.EngineGuid, (object) DynamicFSM.CurrentStateInfo));
-              return (object) null;
+              Logger.AddError(string.Format("Cannot convert object ref {0} to blueprint ref: must be not empty and not static at {1}", vmObjRef.EngineGuid, DynamicFSM.CurrentStateInfo));
+              return null;
             }
           }
           else
           {
-            Logger.AddError(string.Format("Cannot convert value with type {0} to IBlueprintRef at {1}", (object) vmValue.GetType(), (object) DynamicFSM.CurrentStateInfo));
-            return (object) null;
+            Logger.AddError(string.Format("Cannot convert value with type {0} to IBlueprintRef at {1}", vmValue.GetType(), DynamicFSM.CurrentStateInfo));
+            return null;
           }
           if (engType == typeof (IBlueprintRef))
-            return (object) engineType;
+            return engineType;
           if (typeof (IEntity).IsAssignableFrom(engType))
           {
             VMBlueprint blueprint = (VMBlueprint) engineType.Blueprint;
             if (blueprint == null)
             {
-              Logger.AddError(string.Format("Template not found by reference {0} at {1}", (object) engineType.Name, (object) DynamicFSM.CurrentStateInfo));
-              return (object) null;
+              Logger.AddError(string.Format("Template not found by reference {0} at {1}", engineType.Name, DynamicFSM.CurrentStateInfo));
+              return null;
             }
             if (typeof (VMWorldObject).IsAssignableFrom(blueprint.GetType()))
             {
@@ -120,13 +121,13 @@ namespace PLVirtualMachine
               {
                 IEntity template = ServiceCache.TemplateService.GetTemplate<IEntity>(engineTemplateGuid);
                 if (template != null)
-                  return (object) template;
-                Logger.AddError(string.Format("Template with Guid={0} not found in engine at {1}", (object) engineTemplateGuid, (object) DynamicFSM.CurrentStateInfo));
-                return (object) null;
+                  return template;
+                Logger.AddError(string.Format("Template with Guid={0} not found in engine at {1}", engineTemplateGuid, DynamicFSM.CurrentStateInfo));
+                return null;
               }
             }
-            Logger.AddError(string.Format("Engine template blueprint {0} must be world object at {1}", (object) engineType.Name, (object) DynamicFSM.CurrentStateInfo));
-            return (object) null;
+            Logger.AddError(string.Format("Engine template blueprint {0} must be world object at {1}", engineType.Name, DynamicFSM.CurrentStateInfo));
+            return null;
           }
         }
         else
@@ -137,28 +138,28 @@ namespace PLVirtualMachine
             {
               ISampleRef engineType3 = (ISampleRef) vmValue;
               if (engType == typeof (ISampleRef))
-                return (object) engineType3;
-              if (typeof (Engine.Common.IObject).IsAssignableFrom(engType))
+                return engineType3;
+              if (typeof (IObject).IsAssignableFrom(engType))
               {
                 Guid engineTemplateGuid = engineType3.EngineTemplateGuid;
                 if (!(engineTemplateGuid != Guid.Empty))
-                  return (object) null;
-                Engine.Common.IObject engineType4 = (Engine.Common.IObject) null;
+                  return null;
+                IObject engineType4 = null;
                 Type result;
                 if (SampleAttribute.TryGetValue(valueVMType.SpecialType, out result))
                   engineType4 = ServiceCache.TemplateService.GetTemplate(result, engineTemplateGuid);
                 if (engineType4 == null)
-                  engineType4 = (Engine.Common.IObject) ServiceCache.TemplateService.GetTemplate<IEntity>(engineTemplateGuid);
+                  engineType4 = ServiceCache.TemplateService.GetTemplate<IEntity>(engineTemplateGuid);
                 if (engineType4 != null)
-                  return (object) engineType4;
-                Logger.AddWarning(string.Format("Sample with Guid={0} not found in engine at {1}", (object) engineType3, (object) DynamicFSM.CurrentStateInfo));
-                return (object) null;
+                  return engineType4;
+                Logger.AddWarning(string.Format("Sample with Guid={0} not found in engine at {1}", engineType3, DynamicFSM.CurrentStateInfo));
+                return null;
               }
-              Logger.AddError(string.Format("Cannot convert sample value to type {0} at {1}", (object) engType, (object) DynamicFSM.CurrentStateInfo));
-              return (object) null;
+              Logger.AddError(string.Format("Cannot convert sample value to type {0} at {1}", engType, DynamicFSM.CurrentStateInfo));
+              return null;
             }
-            Logger.AddError(string.Format("Cannot convert value with type {0} to ISampleRef at {1}", (object) vmValue.GetType(), (object) DynamicFSM.CurrentStateInfo));
-            return (object) null;
+            Logger.AddError(string.Format("Cannot convert value with type {0} to ISampleRef at {1}", vmValue.GetType(), DynamicFSM.CurrentStateInfo));
+            return null;
           }
           if (valueVMType.BaseType == typeof (ILogicMapNodeRef))
           {
@@ -166,27 +167,27 @@ namespace PLVirtualMachine
             {
               ILogicMapNodeRef engineType = (ILogicMapNodeRef) vmValue;
               if (engType == typeof (ILogicMapNodeRef))
-                return (object) engineType;
+                return engineType;
               if (typeof (IMMNode).IsAssignableFrom(engType))
-                return (object) DynamicMindMap.GetEngineNodeByStaticGuid(engineType.LogicMapNode.BaseGuid);
-              Logger.AddError(string.Format("Cannot convert logic map node value to type {0} at {1}", (object) engType, (object) DynamicFSM.CurrentStateInfo));
-              return (object) null;
+                return DynamicMindMap.GetEngineNodeByStaticGuid(engineType.LogicMapNode.BaseGuid);
+              Logger.AddError(string.Format("Cannot convert logic map node value to type {0} at {1}", engType, DynamicFSM.CurrentStateInfo));
+              return null;
             }
-            Logger.AddError(string.Format("Cannot convert value with type {0} to ILogicMapNodeRef at {1}", (object) vmValue.GetType(), (object) DynamicFSM.CurrentStateInfo));
-            return (object) null;
+            Logger.AddError(string.Format("Cannot convert value with type {0} to ILogicMapNodeRef at {1}", vmValue.GetType(), DynamicFSM.CurrentStateInfo));
+            return null;
           }
           if (engType.IsAssignableFrom(vmValue.GetType()))
             return vmValue;
           if (engType.IsPrimitive)
             return Convert.ChangeType(vmValue, engType);
         }
-        Logger.AddError(string.Format("Cannot convert value with type {0} to {1} at {2}", (object) vmValue.GetType(), (object) engType, (object) DynamicFSM.CurrentStateInfo));
-        return (object) null;
+        Logger.AddError(string.Format("Cannot convert value with type {0} to {1} at {2}", vmValue.GetType(), engType, DynamicFSM.CurrentStateInfo));
+        return null;
       }
       catch (Exception ex)
       {
-        Logger.AddError(string.Format("Cannot convert value {0}, error: {1} at {2}", vmValue, (object) ex.ToString(), (object) DynamicFSM.CurrentStateInfo));
-        return (object) null;
+        Logger.AddError(string.Format("Cannot convert value {0}, error: {1} at {2}", vmValue, ex, DynamicFSM.CurrentStateInfo));
+        return null;
       }
     }
   }

@@ -5,7 +5,6 @@ using Engine.Source.Commons;
 using Engine.Source.Commons.Abilities;
 using Engine.Source.Commons.Effects;
 using Inspectors;
-using System;
 
 namespace Engine.Source.Effects
 {
@@ -13,46 +12,46 @@ namespace Engine.Source.Effects
   [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
   public class NpcSetWeaponEffect : IEffect
   {
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected ParameterEffectQueueEnum queue = ParameterEffectQueueEnum.None;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy()]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected WeaponEnum weapon = WeaponEnum.Hands;
 
-    public string Name => this.GetType().Name;
+    public string Name => GetType().Name;
 
     [Inspected]
     public AbilityItem AbilityItem { get; set; }
 
     public IEntity Target { get; set; }
 
-    public ParameterEffectQueueEnum Queue => this.queue;
+    public ParameterEffectQueueEnum Queue => queue;
 
     public bool Prepare(float currentRealTime, float currentGameTime)
     {
-      if ((UnityEngine.Object) ((IEntityView) this.Target).GameObject == (UnityEngine.Object) null || (UnityEngine.Object) ((IEntityView) this.Target).GameObject.GetComponent<EnemyBase>() == (UnityEngine.Object) null)
+      if ((UnityEngine.Object) ((IEntityView) Target).GameObject == (UnityEngine.Object) null || (UnityEngine.Object) ((IEntityView) Target).GameObject.GetComponent<EnemyBase>() == (UnityEngine.Object) null)
       {
-        ((IEntityView) this.Target).OnGameObjectChangedEvent -= new Action(this.SetWeapon);
-        ((IEntityView) this.Target).OnGameObjectChangedEvent += new Action(this.SetWeapon);
+        ((IEntityView) Target).OnGameObjectChangedEvent -= SetWeapon;
+        ((IEntityView) Target).OnGameObjectChangedEvent += SetWeapon;
       }
       else
-        this.SetWeapon();
+        SetWeapon();
       return true;
     }
 
     private void SetWeapon()
     {
-      if (!((UnityEngine.Object) ((IEntityView) this.Target).GameObject != (UnityEngine.Object) null) || !((UnityEngine.Object) ((IEntityView) this.Target).GameObject.GetComponent<EnemyBase>() != (UnityEngine.Object) null))
+      if (!((UnityEngine.Object) ((IEntityView) Target).GameObject != (UnityEngine.Object) null) || !((UnityEngine.Object) ((IEntityView) Target).GameObject.GetComponent<EnemyBase>() != (UnityEngine.Object) null))
         return;
-      ((IEntityView) this.Target).OnGameObjectChangedEvent -= new Action(this.SetWeapon);
-      ((IEntityView) this.Target).GameObject.GetComponent<WeaponServiceBase>().Weapon = this.weapon;
+      ((IEntityView) Target).OnGameObjectChangedEvent -= SetWeapon;
+      ((IEntityView) Target).GameObject.GetComponent<WeaponServiceBase>().Weapon = weapon;
     }
 
     public bool Compute(float currentRealTime, float currentGameTime) => false;

@@ -1,26 +1,26 @@
-﻿using Cofe.Meta;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using Cofe.Meta;
 using Cofe.Utility;
 using Engine.Common;
 using Engine.Common.Services;
 using Engine.Source.Services;
 using Scripts.Utility;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 
 namespace Engine.Source.Commons
 {
   public static class InitialiseServices
   {
-    private static List<IInitialisable> services = (List<IInitialisable>) null;
+    private static List<IInitialisable> services;
 
     public static bool IsInitialised { get; private set; }
 
     public static IEnumerator Initialise()
     {
-      if (InitialiseServices.IsInitialised)
+      if (IsInitialised)
         throw new Exception();
       Stopwatch sw = new Stopwatch();
       sw.Restart();
@@ -28,31 +28,31 @@ namespace Engine.Source.Commons
       foreach (object service in ServiceLocator.GetServices())
       {
         UnityEngine.Debug.Log((object) ObjectInfoUtility.GetStream().Append("[Engine]").Append(" ").Append(TypeUtility.GetTypeName(service.GetType())));
-        MetaService.GetContainer(service.GetType()).GetHandler(FromLocatorAttribute.Id).Compute(service, (object) null);
+        MetaService.GetContainer(service.GetType()).GetHandler(FromLocatorAttribute.Id).Compute(service, null);
       }
-      InitialiseServices.services = RuntimeServiceAttribute.GetServices().Select<object, IInitialisable>((Func<object, IInitialisable>) (o => o as IInitialisable)).Where<IInitialisable>((Func<IInitialisable, bool>) (o => o != null)).ToList<IInitialisable>();
-      InitialiseServices.services = ServiceLocatorUtility.SortServices<IInitialisable, DependAttribute>(InitialiseServices.services);
+      services = RuntimeServiceAttribute.GetServices().Select(o => o as IInitialisable).Where(o => o != null).ToList();
+      services = ServiceLocatorUtility.SortServices<IInitialisable, DependAttribute>(services);
       int step = 500;
-      int maxCount = InitialiseServices.services.Count * step;
-      foreach (IInitialisable service in InitialiseServices.services)
+      int maxCount = services.Count * step;
+      foreach (IInitialisable service in services)
       {
         if (service is IAsyncInitializable async)
           maxCount += async.AsyncCount;
-        async = (IAsyncInitializable) null;
+        async = null;
       }
       progressService.Begin(maxCount);
       sw.Stop();
-      UnityEngine.Debug.Log((object) ObjectInfoUtility.GetStream().Append("[Engine]").Append(" Prepare initialise, count : ").Append(InitialiseServices.services.Count).Append(" , elapsed : ").Append((object) sw.Elapsed));
-      for (int index = 0; index < InitialiseServices.services.Count; ++index)
+      UnityEngine.Debug.Log((object) ObjectInfoUtility.GetStream().Append("[Engine]").Append(" Prepare initialise, count : ").Append(services.Count).Append(" , elapsed : ").Append(sw.Elapsed));
+      for (int index = 0; index < services.Count; ++index)
       {
-        IInitialisable service = InitialiseServices.services[index];
+        IInitialisable service = services[index];
         UnityEngine.Debug.Log((object) ObjectInfoUtility.GetStream().Append("[Engine]").Append(" Initialise service : ").Append(TypeUtility.GetTypeName(service.GetType())));
         progressService.Progress += step;
         progressService.Update(nameof (InitialiseServices), TypeUtility.GetTypeName(service.GetType()));
         sw.Restart();
         if (service is IAsyncInitializable async)
         {
-          yield return (object) async.AsyncInitialize();
+          yield return async.AsyncInitialize();
         }
         else
         {
@@ -66,21 +66,21 @@ namespace Engine.Source.Commons
           }
         }
         sw.Stop();
-        UnityEngine.Debug.Log((object) ObjectInfoUtility.GetStream().Append("[Engine]").Append(" Initialise service complete : ").Append(TypeUtility.GetTypeName(service.GetType())).Append(" , elapsed : ").Append((object) sw.Elapsed));
-        yield return (object) null;
-        service = (IInitialisable) null;
-        async = (IAsyncInitializable) null;
+        UnityEngine.Debug.Log((object) ObjectInfoUtility.GetStream().Append("[Engine]").Append(" Initialise service complete : ").Append(TypeUtility.GetTypeName(service.GetType())).Append(" , elapsed : ").Append(sw.Elapsed));
+        yield return null;
+        service = null;
+        async = null;
       }
       progressService.End();
-      InitialiseServices.IsInitialised = true;
+      IsInitialised = true;
     }
 
     public static void Terminate()
     {
-      InitialiseServices.IsInitialised = InitialiseServices.IsInitialised ? false : throw new Exception();
-      for (int index = InitialiseServices.services.Count - 1; index >= 0; --index)
+      IsInitialised = IsInitialised ? false : throw new Exception();
+      for (int index = services.Count - 1; index >= 0; --index)
       {
-        IInitialisable service = InitialiseServices.services[index];
+        IInitialisable service = services[index];
         try
         {
           service.Terminate();
@@ -90,7 +90,7 @@ namespace Engine.Source.Commons
           UnityEngine.Debug.LogException(ex);
         }
       }
-      InitialiseServices.services = (List<IInitialisable>) null;
+      services = null;
     }
   }
 }

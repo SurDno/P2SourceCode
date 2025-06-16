@@ -1,10 +1,10 @@
-﻿using Cofe.Serializations.Data;
+﻿using System.Xml;
+using Cofe.Serializations.Data;
 using PLVirtualMachine.Common;
 using PLVirtualMachine.Common.Data;
 using PLVirtualMachine.Common.EngineAPI;
 using PLVirtualMachine.Common.Serialization;
 using PLVirtualMachine.Data.SaveLoad;
-using System.Xml;
 
 namespace PLVirtualMachine.Dynamic
 {
@@ -18,48 +18,48 @@ namespace PLVirtualMachine.Dynamic
   {
     private object messageValue;
 
-    public EventMessage() => this.Initialize("simple_mesage", new VMType(typeof (object)));
+    public EventMessage() => Initialize("simple_mesage", new VMType(typeof (object)));
 
     public void Initialize(BaseMessage staticMessage, object value)
     {
-      this.Initialize(staticMessage.Name, staticMessage.Type);
-      this.messageValue = value;
+      Initialize(staticMessage.Name, staticMessage.Type);
+      messageValue = value;
     }
 
     public void Initialize(string name, VMType type, object value)
     {
-      this.Initialize(name, type);
-      this.messageValue = value;
+      Initialize(name, type);
+      messageValue = value;
     }
 
     public void Copy(EventMessage copyMessage)
     {
-      this.Initialize(copyMessage.Name, copyMessage.Type);
-      this.messageValue = copyMessage.Value;
+      Initialize(copyMessage.Name, copyMessage.Type);
+      messageValue = copyMessage.Value;
     }
 
     public object Value
     {
-      get => this.messageValue;
-      set => this.messageValue = value;
+      get => messageValue;
+      set => messageValue = value;
     }
 
     public bool Implicit => false;
 
     public void StateSave(IDataWriter writer)
     {
-      VMType vmType = this.Type ?? new VMType(typeof (object));
-      SaveManagerUtility.Save(writer, "Name", this.Name);
-      SaveManagerUtility.SaveSerializable(writer, "Type", (IVMStringSerializable) vmType);
-      SaveManagerUtility.SaveCommon(writer, "Value", this.messageValue);
+      VMType vmType = Type ?? new VMType(typeof (object));
+      SaveManagerUtility.Save(writer, "Name", Name);
+      SaveManagerUtility.SaveSerializable(writer, "Type", vmType);
+      SaveManagerUtility.SaveCommon(writer, "Value", messageValue);
     }
 
     public void LoadFromXML(XmlElement objNode)
     {
-      XmlNode valueNode = (XmlNode) null;
-      string name = (string) null;
-      VMType type = (VMType) null;
-      this.messageValue = (object) null;
+      XmlNode valueNode = null;
+      string name = null;
+      VMType type = null;
+      messageValue = null;
       for (int i = 0; i < objNode.ChildNodes.Count; ++i)
       {
         if (objNode.ChildNodes[i].Name == "Name")
@@ -69,12 +69,12 @@ namespace PLVirtualMachine.Dynamic
         else if (objNode.ChildNodes[i].Name == "Value")
           valueNode = objNode.ChildNodes[i];
       }
-      this.Initialize(name, type);
+      Initialize(name, type);
       if (valueNode == null)
         return;
-      this.messageValue = VMSaveLoadManager.ReadValue(valueNode, this.Type.BaseType);
+      messageValue = VMSaveLoadManager.ReadValue(valueNode, Type.BaseType);
     }
 
-    public IGameObjectContext OwnerContext => (IGameObjectContext) null;
+    public IGameObjectContext OwnerContext => null;
   }
 }

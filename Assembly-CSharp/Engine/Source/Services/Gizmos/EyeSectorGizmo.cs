@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace Engine.Source.Services.Gizmos
+﻿namespace Engine.Source.Services.Gizmos
 {
   public struct EyeSectorGizmo
   {

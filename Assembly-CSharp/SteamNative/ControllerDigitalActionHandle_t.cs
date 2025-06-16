@@ -6,8 +6,7 @@
 
     public static implicit operator ControllerDigitalActionHandle_t(ulong value)
     {
-      return new ControllerDigitalActionHandle_t()
-      {
+      return new ControllerDigitalActionHandle_t {
         Value = value
       };
     }

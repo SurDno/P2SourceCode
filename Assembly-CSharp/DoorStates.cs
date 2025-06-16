@@ -3,9 +3,6 @@ using Engine.Common.Components;
 using Engine.Source.Commons;
 using Engine.Source.Components;
 using Inspectors;
-using System;
-using UnityEngine;
-using UnityEngine.Serialization;
 
 public class DoorStates : MonoBehaviour, IEntityAttachable
 {
@@ -21,31 +18,31 @@ public class DoorStates : MonoBehaviour, IEntityAttachable
 
   public void Attach(IEntity owner)
   {
-    this.gate = owner.GetComponent<DoorComponent>();
-    if (this.gate == null)
+    gate = owner.GetComponent<DoorComponent>();
+    if (gate == null)
       return;
-    this.gate.OnInvalidate += new Action<IDoorComponent>(this.OnInvalidate);
-    this.OnInvalidate((IDoorComponent) this.gate);
+    gate.OnInvalidate += OnInvalidate;
+    OnInvalidate(gate);
   }
 
   public void Detach()
   {
-    if (this.gate == null)
+    if (gate == null)
       return;
-    this.gate.OnInvalidate -= new Action<IDoorComponent>(this.OnInvalidate);
-    this.gate = (DoorComponent) null;
+    gate.OnInvalidate -= OnInvalidate;
+    gate = null;
   }
 
   private void OnInvalidate(IDoorComponent sender)
   {
-    if ((UnityEngine.Object) this.marked != (UnityEngine.Object) null && this.marked.activeSelf != sender.Marked.Value)
-      this.marked.SetActive(sender.Marked.Value);
-    if ((UnityEngine.Object) this.bolted != (UnityEngine.Object) null && this.bolted.activeSelf != sender.Bolted.Value)
-      this.bolted.SetActive(sender.Bolted.Value);
-    if (!((UnityEngine.Object) this.navigation != (UnityEngine.Object) null))
+    if ((UnityEngine.Object) marked != (UnityEngine.Object) null && marked.activeSelf != sender.Marked.Value)
+      marked.SetActive(sender.Marked.Value);
+    if ((UnityEngine.Object) bolted != (UnityEngine.Object) null && bolted.activeSelf != sender.Bolted.Value)
+      bolted.SetActive(sender.Bolted.Value);
+    if (!((UnityEngine.Object) navigation != (UnityEngine.Object) null))
       return;
     bool flag = sender.LockState.Value != 0;
-    if (this.navigation.activeSelf != flag)
-      this.navigation.SetActive(flag);
+    if (navigation.activeSelf != flag)
+      navigation.SetActive(flag);
   }
 }

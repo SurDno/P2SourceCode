@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-public static class Fight
+﻿public static class Fight
 {
   private static FightDescription description;
 
@@ -8,9 +6,9 @@ public static class Fight
   {
     get
     {
-      if ((Object) Fight.description == (Object) null)
-        Fight.description = ScriptableObjectInstance<FightSettingsData>.Instance.Description;
-      return Fight.description;
+      if ((Object) description == (Object) null)
+        description = ScriptableObjectInstance<FightSettingsData>.Instance.Description;
+      return description;
     }
   }
 }

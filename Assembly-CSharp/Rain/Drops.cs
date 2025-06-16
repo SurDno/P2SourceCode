@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEngine;
 
 namespace Rain
 {
@@ -10,22 +9,22 @@ namespace Rain
     public float farRadius = 25f;
     public int maxParticles = 8192;
     public DropsMesh[] dropsMeshes;
-    private float _animationPhase = 0.0f;
-    private int _dropMeshToUpdate = 0;
+    private float _animationPhase;
+    private int _dropMeshToUpdate;
     private Material _material;
     private VertexBuffer _buffer;
-    private int _activeMeshes = 0;
+    private int _activeMeshes;
 
     private void DecreaseActiveMeshCount()
     {
-      if (this._activeMeshes == 0)
+      if (_activeMeshes == 0)
       {
         Debug.LogError((object) "Drops : Trying to decrease active mesh count when it is aready zero.");
       }
       else
       {
-        --this._activeMeshes;
-        if (this._activeMeshes != 0)
+        --_activeMeshes;
+        if (_activeMeshes != 0)
           return;
         GameCamera.Instance.Camera.GetComponent<BlurBehind>().enabled = false;
       }
@@ -33,39 +32,39 @@ namespace Rain
 
     private void IncreaseActiveMeshCount()
     {
-      if (this._activeMeshes == 0)
+      if (_activeMeshes == 0)
         GameCamera.Instance.Camera.GetComponent<BlurBehind>().enabled = true;
-      ++this._activeMeshes;
+      ++_activeMeshes;
     }
 
     private void Start()
     {
-      MeshRenderer component = this.dropsMeshes[0].GetComponent<MeshRenderer>();
-      this._material = new Material(component.sharedMaterial);
-      this._material.name += " (Instance)";
-      component.sharedMaterial = this._material;
-      this._buffer = new VertexBuffer();
+      MeshRenderer component = dropsMeshes[0].GetComponent<MeshRenderer>();
+      _material = new Material(component.sharedMaterial);
+      _material.name += " (Instance)";
+      component.sharedMaterial = _material;
+      _buffer = new VertexBuffer();
     }
 
     private void Update()
     {
-      DropsMesh dropsMesh = this.dropsMeshes[this._dropMeshToUpdate];
+      DropsMesh dropsMesh = dropsMeshes[_dropMeshToUpdate];
       RainManager instance = RainManager.Instance;
-      int num1 = !((UnityEngine.Object) instance != (UnityEngine.Object) null) ? 0 : Mathf.RoundToInt(instance.actualRainIntensity * (float) this.maxParticles / (float) this.dropsMeshes.Length);
+      int num1 = !((UnityEngine.Object) instance != (UnityEngine.Object) null) ? 0 : Mathf.RoundToInt(instance.actualRainIntensity * maxParticles / dropsMeshes.Length);
       if (num1 > 0)
       {
-        float num2 = Mathf.Lerp(this.nearRadius, this.farRadius, (float) this._dropMeshToUpdate / (float) (this.dropsMeshes.Length - 1));
+        float num2 = Mathf.Lerp(nearRadius, farRadius, _dropMeshToUpdate / (float) (dropsMeshes.Length - 1));
         if ((UnityEngine.Object) dropsMesh == (UnityEngine.Object) null)
         {
-          GameObject gameObject = UnityEngine.Object.Instantiate<GameObject>(this.dropsMeshes[0].gameObject);
+          GameObject gameObject = UnityEngine.Object.Instantiate<GameObject>(dropsMeshes[0].gameObject);
           gameObject.transform.SetParent(this.transform, false);
-          gameObject.name = "Drops Mesh " + this._dropMeshToUpdate.ToString();
+          gameObject.name = "Drops Mesh " + _dropMeshToUpdate;
           DropsMesh component = gameObject.GetComponent<DropsMesh>();
           component.count = num1;
           component.radius = num2;
           component.gameObject.SetActive(true);
-          this.dropsMeshes[this._dropMeshToUpdate] = component;
-          this.IncreaseActiveMeshCount();
+          dropsMeshes[_dropMeshToUpdate] = component;
+          IncreaseActiveMeshCount();
         }
         else
         {
@@ -73,38 +72,38 @@ namespace Rain
           dropsMesh.radius = num2;
           if (dropsMesh.gameObject.activeSelf)
           {
-            dropsMesh.UpdateMesh(this._buffer);
+            dropsMesh.UpdateMesh(_buffer);
           }
           else
           {
-            dropsMesh.CreateMesh(this._buffer);
+            dropsMesh.CreateMesh(_buffer);
             dropsMesh.gameObject.SetActive(true);
-            this.IncreaseActiveMeshCount();
+            IncreaseActiveMeshCount();
           }
         }
       }
-      else if (this._dropMeshToUpdate == 0)
+      else if (_dropMeshToUpdate == 0)
       {
         if ((UnityEngine.Object) dropsMesh == (UnityEngine.Object) null)
           throw new Exception("updatingMesh == null");
         if (dropsMesh.gameObject.activeSelf)
         {
           dropsMesh.gameObject.SetActive(false);
-          this.DecreaseActiveMeshCount();
+          DecreaseActiveMeshCount();
         }
       }
       else if ((UnityEngine.Object) dropsMesh != (UnityEngine.Object) null)
       {
         UnityEngine.Object.Destroy((UnityEngine.Object) dropsMesh.gameObject);
-        this.dropsMeshes[this._dropMeshToUpdate] = (DropsMesh) null;
-        this.DecreaseActiveMeshCount();
+        dropsMeshes[_dropMeshToUpdate] = null;
+        DecreaseActiveMeshCount();
       }
-      ++this._dropMeshToUpdate;
-      if (this._dropMeshToUpdate >= this.dropsMeshes.Length)
-        this._dropMeshToUpdate = 0;
-      this._animationPhase += Time.deltaTime / this.animationLength;
-      double num3 = (double) Mathf.Repeat(this._animationPhase, 1f);
-      this._material.SetFloat("_Phase", this._animationPhase);
+      ++_dropMeshToUpdate;
+      if (_dropMeshToUpdate >= dropsMeshes.Length)
+        _dropMeshToUpdate = 0;
+      _animationPhase += Time.deltaTime / animationLength;
+      double num3 = (double) Mathf.Repeat(_animationPhase, 1f);
+      _material.SetFloat("_Phase", _animationPhase);
     }
   }
 }

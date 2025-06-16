@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using System;
+using System.Collections.Generic;
 
 namespace ParadoxNotion.Serialization.FullSerializer.Internal.DirectConverters
 {
@@ -7,22 +7,22 @@ namespace ParadoxNotion.Serialization.FullSerializer.Internal.DirectConverters
   {
     protected override fsResult DoSerialize(Bounds model, Dictionary<string, fsData> serialized)
     {
-      return fsResult.Success + this.SerializeMember<Vector3>(serialized, (System.Type) null, "center", model.center) + this.SerializeMember<Vector3>(serialized, (System.Type) null, "size", model.size);
+      return fsResult.Success + SerializeMember<Vector3>(serialized, null, "center", model.center) + SerializeMember<Vector3>(serialized, null, "size", model.size);
     }
 
     protected override fsResult DoDeserialize(Dictionary<string, fsData> data, ref Bounds model)
     {
       fsResult success = fsResult.Success;
       Vector3 center = model.center;
-      fsResult fsResult1 = success + this.DeserializeMember<Vector3>(data, (System.Type) null, "center", out center);
+      fsResult fsResult1 = success + DeserializeMember(data, null, "center", out center);
       model.center = center;
       Vector3 size = model.size;
-      fsResult fsResult2 = fsResult1 + this.DeserializeMember<Vector3>(data, (System.Type) null, "size", out size);
+      fsResult fsResult2 = fsResult1 + DeserializeMember(data, null, "size", out size);
       model.size = size;
       return fsResult2;
     }
 
-    public override object CreateInstance(fsData data, System.Type storageType)
+    public override object CreateInstance(fsData data, Type storageType)
     {
       return (object) new Bounds();
     }

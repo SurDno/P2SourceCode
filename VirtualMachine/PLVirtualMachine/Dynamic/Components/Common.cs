@@ -1,7 +1,6 @@
 ﻿using Cofe.Proxies;
 using PLVirtualMachine.Common.EngineAPI.VMECS;
 using PLVirtualMachine.Objects;
-using System;
 
 namespace PLVirtualMachine.Dynamic.Components
 {
@@ -19,10 +18,10 @@ namespace PLVirtualMachine.Dynamic.Components
       switch (target.Name)
       {
         case "StartEvent":
-          this.StartEvent += (Action) (() => target.RaiseFromEngineImpl());
+          StartEvent += () => target.RaiseFromEngineImpl();
           break;
         case "RemoveEvent":
-          this.RemoveEvent += (Action) (() => target.RaiseFromEngineImpl());
+          RemoveEvent += () => target.RaiseFromEngineImpl();
           break;
       }
     }

@@ -1,20 +1,19 @@
 ﻿using System.Collections.Generic;
-using UnityEngine;
 
 [ExecuteInEditMode]
 public class PathPart : MonoBehaviour
 {
   private List<Transform> pointsList = new List<Transform>();
 
-  private void Start() => this.UpdateList();
+  private void Start() => UpdateList();
 
-  public List<Transform> PointsList => this.pointsList;
+  public List<Transform> PointsList => pointsList;
 
   private void UpdateList()
   {
-    this.pointsList.Clear();
+    pointsList.Clear();
     int childCount = this.transform.childCount;
     for (int index = 0; index < childCount; ++index)
-      this.pointsList.Add(this.transform.GetChild(index));
+      pointsList.Add(this.transform.GetChild(index));
   }
 }

@@ -1,8 +1,6 @@
 ﻿using Cofe.Proxies;
-using Engine.Common.Components.AttackerPlayer;
 using PLVirtualMachine.Common.EngineAPI.VMECS;
 using PLVirtualMachine.Objects;
-using System;
 
 namespace PLVirtualMachine.Dynamic.Components
 {
@@ -23,10 +21,10 @@ namespace PLVirtualMachine.Dynamic.Components
       switch (target.Name)
       {
         case "HandsHolsteredEvent":
-          this.HandsHolsteredEvent += (Action<WeaponKind>) (p1 => target.RaiseFromEngineImpl((object) p1));
+          HandsHolsteredEvent += p1 => target.RaiseFromEngineImpl(p1);
           break;
         case "HandsUnholsteredEvent":
-          this.HandsUnholsteredEvent += (Action<WeaponKind>) (p1 => target.RaiseFromEngineImpl((object) p1));
+          HandsUnholsteredEvent += p1 => target.RaiseFromEngineImpl(p1);
           break;
       }
     }

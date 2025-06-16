@@ -1,9 +1,7 @@
-﻿using SRDebugger.UI.Other;
-using SRF;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Linq;
-using UnityEngine;
+using SRDebugger.UI.Other;
+using SRF;
 
 namespace SRDebugger.Scripts
 {
@@ -17,38 +15,38 @@ namespace SRDebugger.Scripts
     {
       get
       {
-        DefaultTabs tab = this.TabController.ActiveTab.Tab;
-        return !Enum.IsDefined(typeof (DefaultTabs), (object) tab) ? new DefaultTabs?() : new DefaultTabs?(tab);
+        DefaultTabs tab = TabController.ActiveTab.Tab;
+        return !Enum.IsDefined(typeof (DefaultTabs), tab) ? new DefaultTabs?() : tab;
       }
     }
 
     protected void Start()
     {
-      this._hasStarted = true;
+      _hasStarted = true;
       SRTab[] srTabArray = Resources.LoadAll<SRTab>("SRDebugger/UI/Prefabs");
       Enum.GetNames(typeof (DefaultTabs));
       foreach (SRTab prefab in srTabArray)
       {
         if (!(prefab.GetComponent(typeof (IEnableTab)) is IEnableTab component) || component.IsEnabled)
-          this.TabController.AddTab(SRInstantiate.Instantiate<SRTab>(prefab));
+          TabController.AddTab(SRInstantiate.Instantiate<SRTab>(prefab));
       }
-      if (this.OpenTab((DefaultTabs) ((int) this._activeTab ?? (int) Settings.Instance.DefaultTab)))
+      if (OpenTab((DefaultTabs) ((int) _activeTab ?? (int) Settings.Instance.DefaultTab)))
         return;
-      this.TabController.ActiveTab = this.TabController.Tabs.FirstOrDefault<SRTab>();
+      TabController.ActiveTab = TabController.Tabs.FirstOrDefault();
     }
 
     public bool OpenTab(DefaultTabs tab)
     {
-      if (!this._hasStarted)
+      if (!_hasStarted)
       {
-        this._activeTab = new DefaultTabs?(tab);
+        _activeTab = tab;
         return true;
       }
-      foreach (SRTab tab1 in (IEnumerable<SRTab>) this.TabController.Tabs)
+      foreach (SRTab tab1 in TabController.Tabs)
       {
         if (tab1.Tab == tab)
         {
-          this.TabController.ActiveTab = tab1;
+          TabController.ActiveTab = tab1;
           return true;
         }
       }

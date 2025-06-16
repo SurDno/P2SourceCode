@@ -1,6 +1,6 @@
-﻿using Cofe.Loggers;
+﻿using System;
+using Cofe.Loggers;
 using PLVirtualMachine.Common;
-using System;
 
 namespace PLVirtualMachine.Dynamic
 {
@@ -14,7 +14,7 @@ namespace PLVirtualMachine.Dynamic
     public DynamicObject(VMEntity entity, bool bActive = true)
     {
       this.entity = entity;
-      this.active = bActive;
+      active = bActive;
     }
 
     public abstract void Think();
@@ -28,28 +28,28 @@ namespace PLVirtualMachine.Dynamic
 
     public virtual bool Active
     {
-      get => this.active;
-      set => this.active = value;
+      get => active;
+      set => active = value;
     }
 
-    public VMEntity Entity => this.entity;
+    public VMEntity Entity => entity;
 
-    public IObject StaticObject => this.staticObject;
+    public IObject StaticObject => staticObject;
 
-    public Guid DynamicGuid => this.Entity == null ? Guid.Empty : this.entity.EngineGuid;
+    public Guid DynamicGuid => Entity == null ? Guid.Empty : entity.EngineGuid;
 
-    public ulong StaticGuid => this.staticObject == null ? 0UL : this.staticObject.BaseGuid;
+    public ulong StaticGuid => staticObject == null ? 0UL : staticObject.BaseGuid;
 
     public virtual void OnModify()
     {
-      this.modified = true;
-      if (this.ModifiableParent == null)
+      modified = true;
+      if (ModifiableParent == null)
         return;
-      this.ModifiableParent.OnModify();
+      ModifiableParent.OnModify();
     }
 
-    public bool Modified => this.modified;
+    public bool Modified => modified;
 
-    public IRealTimeModifiable ModifiableParent => (IRealTimeModifiable) this.entity;
+    public IRealTimeModifiable ModifiableParent => entity;
   }
 }

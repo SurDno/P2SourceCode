@@ -3,11 +3,6 @@ using Engine.Common.Services;
 using Engine.Source.Components;
 using Engine.Source.Services.Inputs;
 using InputServices;
-using System;
-using UnityEngine;
-using UnityEngine.Events;
-using UnityEngine.EventSystems;
-using UnityEngine.UI;
 
 namespace Engine.Impl.UI.Menu.Protagonist.Inventory.Windows
 {
@@ -32,40 +27,40 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory.Windows
     private Button buttonSelect;
     [SerializeField]
     private Button buttonCancel;
-    private bool isReverted = false;
+    private bool isReverted;
     [SerializeField]
     private GameObject controls;
 
     public bool IsReverted
     {
-      get => this.isReverted;
-      set => this.isReverted = value;
+      get => isReverted;
+      set => isReverted = value;
     }
 
     public IStorableComponent Actor
     {
-      get => this.actor;
+      get => actor;
       set
       {
-        this.actor = value;
-        this.target = (IStorableComponent) null;
-        this.ResetSlider();
-        if (this.actor == null)
+        actor = value;
+        target = null;
+        ResetSlider();
+        if (actor == null)
           return;
-        this.itemImage.sprite = ((StorableComponent) this.actor).Placeholder.ImageInventorySlot.Value;
+        itemImage.sprite = ((StorableComponent) actor).Placeholder.ImageInventorySlot.Value;
       }
     }
 
-    public IStorableComponent Target => this.target;
+    public IStorableComponent Target => target;
 
-    public bool IsCanceled => this.isCanceled;
+    public bool IsCanceled => isCanceled;
 
     protected override void Awake()
     {
       base.Awake();
-      this.buttonSelect.onClick.AddListener(new UnityAction(this.Select));
-      this.buttonCancel.onClick.AddListener(new UnityAction(this.Cancel));
-      this.unitySlider.onValueChanged.AddListener(new UnityAction<float>(this.OnSliderValueChange));
+      buttonSelect.onClick.AddListener(new UnityAction(Select));
+      buttonCancel.onClick.AddListener(new UnityAction(Cancel));
+      unitySlider.onValueChanged.AddListener(new UnityAction<float>(OnSliderValueChange));
     }
 
     protected override void OnEnable()
@@ -73,12 +68,12 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory.Windows
       base.OnEnable();
       if ((UnityEngine.Object) EventSystem.current == (UnityEngine.Object) null)
         return;
-      ServiceLocator.GetService<GameActionService>()?.AddListener(GameActionType.Cancel, new GameActionHandle(this.BasicListener));
-      InputService.Instance.onJoystickUsedChanged += new Action<bool>(this.OnJoystick);
-      this.OnJoystick(InputService.Instance.JoystickUsed);
-      ServiceLocator.GetService<GameActionService>()?.AddListener(GameActionType.Submit, new GameActionHandle(this.BasicListener));
-      ServiceLocator.GetService<GameActionService>()?.AddListener(GameActionType.LStickLeft, new GameActionHandle(this.BasicListener));
-      ServiceLocator.GetService<GameActionService>()?.AddListener(GameActionType.LStickRight, new GameActionHandle(this.BasicListener));
+      ServiceLocator.GetService<GameActionService>()?.AddListener(GameActionType.Cancel, BasicListener);
+      InputService.Instance.onJoystickUsedChanged += OnJoystick;
+      OnJoystick(InputService.Instance.JoystickUsed);
+      ServiceLocator.GetService<GameActionService>()?.AddListener(GameActionType.Submit, BasicListener);
+      ServiceLocator.GetService<GameActionService>()?.AddListener(GameActionType.LStickLeft, BasicListener);
+      ServiceLocator.GetService<GameActionService>()?.AddListener(GameActionType.LStickRight, BasicListener);
     }
 
     private bool BasicListener(GameActionType type, bool down)
@@ -87,39 +82,39 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory.Windows
         return false;
       if (type == GameActionType.Submit & down)
       {
-        this.Select();
+        Select();
         return true;
       }
       if (type == GameActionType.LStickLeft & down)
       {
-        --this.unitySlider.value;
+        --unitySlider.value;
         return true;
       }
       if (type == GameActionType.LStickRight & down)
       {
-        ++this.unitySlider.value;
+        ++unitySlider.value;
         return true;
       }
       if (type == GameActionType.Cancel & down)
-        this.Cancel();
+        Cancel();
       return false;
     }
 
     private void OnJoystick(bool joystick)
     {
-      this.buttonCancel.gameObject.SetActive(!joystick);
-      this.buttonSelect.gameObject.SetActive(!joystick);
-      this.controls.SetActive(joystick);
+      buttonCancel.gameObject.SetActive(!joystick);
+      buttonSelect.gameObject.SetActive(!joystick);
+      controls.SetActive(joystick);
     }
 
     protected override void OnDisable()
     {
       base.OnDisable();
-      ServiceLocator.GetService<GameActionService>()?.RemoveListener(GameActionType.Cancel, new GameActionHandle(this.BasicListener));
-      InputService.Instance.onJoystickUsedChanged -= new Action<bool>(this.OnJoystick);
-      ServiceLocator.GetService<GameActionService>()?.RemoveListener(GameActionType.Submit, new GameActionHandle(this.BasicListener));
-      ServiceLocator.GetService<GameActionService>()?.RemoveListener(GameActionType.LStickLeft, new GameActionHandle(this.BasicListener));
-      ServiceLocator.GetService<GameActionService>()?.RemoveListener(GameActionType.LStickRight, new GameActionHandle(this.BasicListener));
+      ServiceLocator.GetService<GameActionService>()?.RemoveListener(GameActionType.Cancel, BasicListener);
+      InputService.Instance.onJoystickUsedChanged -= OnJoystick;
+      ServiceLocator.GetService<GameActionService>()?.RemoveListener(GameActionType.Submit, BasicListener);
+      ServiceLocator.GetService<GameActionService>()?.RemoveListener(GameActionType.LStickLeft, BasicListener);
+      ServiceLocator.GetService<GameActionService>()?.RemoveListener(GameActionType.LStickRight, BasicListener);
     }
 
     public void OnPointerDown(PointerEventData eventData)
@@ -130,46 +125,46 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory.Windows
     {
     }
 
-    private void OnSliderValueChange(float value) => this.UpdateCount();
+    private void OnSliderValueChange(float value) => UpdateCount();
 
     private void Select()
     {
-      int count = Mathf.RoundToInt(this.unitySlider.value);
-      if (this.isReverted)
-        count = this.actor.Count - count;
-      this.isCanceled = false;
-      if (this.actor == null || this.actor.IsDisposed)
-        this.isCanceled = true;
+      int count = Mathf.RoundToInt(unitySlider.value);
+      if (isReverted)
+        count = actor.Count - count;
+      isCanceled = false;
+      if (actor == null || actor.IsDisposed)
+        isCanceled = true;
       else if (count == 0)
-        this.isCanceled = true;
+        isCanceled = true;
       else
-        this.target = this.actor.Count != count ? this.actor.Split(count) : this.actor;
-      this.IsEnabled = false;
-      this.IsReverted = false;
+        target = actor.Count != count ? actor.Split(count) : actor;
+      IsEnabled = false;
+      IsReverted = false;
     }
 
     private void Cancel()
     {
-      this.isCanceled = true;
-      this.IsEnabled = false;
-      this.IsReverted = false;
+      isCanceled = true;
+      IsEnabled = false;
+      IsReverted = false;
     }
 
     protected void ResetSlider()
     {
-      if (this.actor == null || this.actor.IsDisposed)
+      if (actor == null || actor.IsDisposed)
         return;
-      this.unitySlider.minValue = 1f;
-      this.unitySlider.maxValue = (float) this.actor.Count - 1f;
-      this.unitySlider.value = 1f;
-      this.UpdateCount();
+      unitySlider.minValue = 1f;
+      unitySlider.maxValue = actor.Count - 1f;
+      unitySlider.value = 1f;
+      UpdateCount();
     }
 
     public void UpdateCount()
     {
-      if (this.actor == null || this.actor.IsDisposed)
+      if (actor == null || actor.IsDisposed)
         return;
-      this.itemAmountText.text = "× " + Mathf.RoundToInt(this.unitySlider.value).ToString();
+      itemAmountText.text = "× " + Mathf.RoundToInt(unitySlider.value).ToString();
     }
 
     public static SplitGraphic Instantiate(GameObject prefab)
@@ -183,8 +178,8 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory.Windows
     {
       if (!down)
         return false;
-      this.isCanceled = true;
-      this.IsEnabled = false;
+      isCanceled = true;
+      IsEnabled = false;
       return true;
     }
   }

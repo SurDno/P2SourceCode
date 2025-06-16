@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEngine;
 
 namespace RootMotion.FinalIK
 {
@@ -14,37 +13,37 @@ namespace RootMotion.FinalIK
     public float maintainRotationWeight;
     [Range(0.0f, 1f)]
     public float weight = 1f;
-    private IKMapping.BoneMap boneMapParent = new IKMapping.BoneMap();
-    private IKMapping.BoneMap boneMap1 = new IKMapping.BoneMap();
-    private IKMapping.BoneMap boneMap2 = new IKMapping.BoneMap();
-    private IKMapping.BoneMap boneMap3 = new IKMapping.BoneMap();
+    private BoneMap boneMapParent = new BoneMap();
+    private BoneMap boneMap1 = new BoneMap();
+    private BoneMap boneMap2 = new BoneMap();
+    private BoneMap boneMap3 = new BoneMap();
 
     public override bool IsValid(IKSolver solver, ref string message)
     {
-      return base.IsValid(solver, ref message) && this.BoneIsValid(this.bone1, solver, ref message) && this.BoneIsValid(this.bone2, solver, ref message) && this.BoneIsValid(this.bone3, solver, ref message);
+      return base.IsValid(solver, ref message) && BoneIsValid(bone1, solver, ref message) && BoneIsValid(bone2, solver, ref message) && BoneIsValid(bone3, solver, ref message);
     }
 
-    public IKMapping.BoneMap GetBoneMap(IKMappingLimb.BoneMapType boneMap)
+    public BoneMap GetBoneMap(BoneMapType boneMap)
     {
       switch (boneMap)
       {
-        case IKMappingLimb.BoneMapType.Parent:
-          if ((UnityEngine.Object) this.parentBone == (UnityEngine.Object) null)
-            Warning.Log("This limb does not have a parent (shoulder) bone", this.bone1);
-          return this.boneMapParent;
-        case IKMappingLimb.BoneMapType.Bone1:
-          return this.boneMap1;
-        case IKMappingLimb.BoneMapType.Bone2:
-          return this.boneMap2;
+        case BoneMapType.Parent:
+          if ((UnityEngine.Object) parentBone == (UnityEngine.Object) null)
+            Warning.Log("This limb does not have a parent (shoulder) bone", bone1);
+          return boneMapParent;
+        case BoneMapType.Bone1:
+          return boneMap1;
+        case BoneMapType.Bone2:
+          return boneMap2;
         default:
-          return this.boneMap3;
+          return boneMap3;
       }
     }
 
     public void SetLimbOrientation(Vector3 upper, Vector3 lower)
     {
-      this.boneMap1.defaultLocalTargetRotation = Quaternion.Inverse(Quaternion.Inverse(this.bone1.rotation) * Quaternion.LookRotation(this.bone2.position - this.bone1.position, this.bone1.rotation * -upper));
-      this.boneMap2.defaultLocalTargetRotation = Quaternion.Inverse(Quaternion.Inverse(this.bone2.rotation) * Quaternion.LookRotation(this.bone3.position - this.bone2.position, this.bone2.rotation * -lower));
+      boneMap1.defaultLocalTargetRotation = Quaternion.Inverse(Quaternion.Inverse(bone1.rotation) * Quaternion.LookRotation(bone2.position - bone1.position, bone1.rotation * -upper));
+      boneMap2.defaultLocalTargetRotation = Quaternion.Inverse(Quaternion.Inverse(bone2.rotation) * Quaternion.LookRotation(bone3.position - bone2.position, bone2.rotation * -lower));
     }
 
     public IKMappingLimb()
@@ -53,7 +52,7 @@ namespace RootMotion.FinalIK
 
     public IKMappingLimb(Transform bone1, Transform bone2, Transform bone3, Transform parentBone = null)
     {
-      this.SetBones(bone1, bone2, bone3, parentBone);
+      SetBones(bone1, bone2, bone3, parentBone);
     }
 
     public void SetBones(Transform bone1, Transform bone2, Transform bone3, Transform parentBone = null)
@@ -66,66 +65,66 @@ namespace RootMotion.FinalIK
 
     public void StoreDefaultLocalState()
     {
-      if ((UnityEngine.Object) this.parentBone != (UnityEngine.Object) null)
-        this.boneMapParent.StoreDefaultLocalState();
-      this.boneMap1.StoreDefaultLocalState();
-      this.boneMap2.StoreDefaultLocalState();
-      this.boneMap3.StoreDefaultLocalState();
+      if ((UnityEngine.Object) parentBone != (UnityEngine.Object) null)
+        boneMapParent.StoreDefaultLocalState();
+      boneMap1.StoreDefaultLocalState();
+      boneMap2.StoreDefaultLocalState();
+      boneMap3.StoreDefaultLocalState();
     }
 
     public void FixTransforms()
     {
-      if ((UnityEngine.Object) this.parentBone != (UnityEngine.Object) null)
-        this.boneMapParent.FixTransform(false);
-      this.boneMap1.FixTransform(true);
-      this.boneMap2.FixTransform(false);
-      this.boneMap3.FixTransform(false);
+      if ((UnityEngine.Object) parentBone != (UnityEngine.Object) null)
+        boneMapParent.FixTransform(false);
+      boneMap1.FixTransform(true);
+      boneMap2.FixTransform(false);
+      boneMap3.FixTransform(false);
     }
 
     public override void Initiate(IKSolverFullBody solver)
     {
-      if (this.boneMapParent == null)
-        this.boneMapParent = new IKMapping.BoneMap();
-      if (this.boneMap1 == null)
-        this.boneMap1 = new IKMapping.BoneMap();
-      if (this.boneMap2 == null)
-        this.boneMap2 = new IKMapping.BoneMap();
-      if (this.boneMap3 == null)
-        this.boneMap3 = new IKMapping.BoneMap();
-      if ((UnityEngine.Object) this.parentBone != (UnityEngine.Object) null)
-        this.boneMapParent.Initiate(this.parentBone, solver);
-      this.boneMap1.Initiate(this.bone1, solver);
-      this.boneMap2.Initiate(this.bone2, solver);
-      this.boneMap3.Initiate(this.bone3, solver);
-      this.boneMap1.SetPlane(solver, this.boneMap1.transform, this.boneMap2.transform, this.boneMap3.transform);
-      this.boneMap2.SetPlane(solver, this.boneMap2.transform, this.boneMap3.transform, this.boneMap1.transform);
-      if (!((UnityEngine.Object) this.parentBone != (UnityEngine.Object) null))
+      if (boneMapParent == null)
+        boneMapParent = new BoneMap();
+      if (boneMap1 == null)
+        boneMap1 = new BoneMap();
+      if (boneMap2 == null)
+        boneMap2 = new BoneMap();
+      if (boneMap3 == null)
+        boneMap3 = new BoneMap();
+      if ((UnityEngine.Object) parentBone != (UnityEngine.Object) null)
+        boneMapParent.Initiate(parentBone, solver);
+      boneMap1.Initiate(bone1, solver);
+      boneMap2.Initiate(bone2, solver);
+      boneMap3.Initiate(bone3, solver);
+      boneMap1.SetPlane(solver, boneMap1.transform, boneMap2.transform, boneMap3.transform);
+      boneMap2.SetPlane(solver, boneMap2.transform, boneMap3.transform, boneMap1.transform);
+      if (!((UnityEngine.Object) parentBone != (UnityEngine.Object) null))
         return;
-      this.boneMapParent.SetLocalSwingAxis(this.boneMap1);
+      boneMapParent.SetLocalSwingAxis(boneMap1);
     }
 
     public void ReadPose()
     {
-      this.boneMap1.UpdatePlane(true, true);
-      this.boneMap2.UpdatePlane(true, false);
-      this.weight = Mathf.Clamp(this.weight, 0.0f, 1f);
-      this.boneMap3.MaintainRotation();
+      boneMap1.UpdatePlane(true, true);
+      boneMap2.UpdatePlane(true, false);
+      weight = Mathf.Clamp(weight, 0.0f, 1f);
+      boneMap3.MaintainRotation();
     }
 
     public void WritePose(IKSolverFullBody solver, bool fullBody)
     {
-      if ((double) this.weight <= 0.0)
+      if (weight <= 0.0)
         return;
       if (fullBody)
       {
-        if ((UnityEngine.Object) this.parentBone != (UnityEngine.Object) null)
-          this.boneMapParent.Swing(solver.GetNode(this.boneMap1.chainIndex, this.boneMap1.nodeIndex).solverPosition, this.weight);
-        this.boneMap1.FixToNode(solver, this.weight);
+        if ((UnityEngine.Object) parentBone != (UnityEngine.Object) null)
+          boneMapParent.Swing(solver.GetNode(boneMap1.chainIndex, boneMap1.nodeIndex).solverPosition, weight);
+        boneMap1.FixToNode(solver, weight);
       }
-      this.boneMap1.RotateToPlane(solver, this.weight);
-      this.boneMap2.RotateToPlane(solver, this.weight);
-      this.boneMap3.RotateToMaintain(this.maintainRotationWeight * this.weight * solver.IKPositionWeight);
-      this.boneMap3.RotateToEffector(solver, this.weight);
+      boneMap1.RotateToPlane(solver, weight);
+      boneMap2.RotateToPlane(solver, weight);
+      boneMap3.RotateToMaintain(maintainRotationWeight * weight * solver.IKPositionWeight);
+      boneMap3.RotateToEffector(solver, weight);
     }
 
     [Serializable]

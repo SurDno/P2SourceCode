@@ -1,11 +1,11 @@
-﻿using SRF;
+﻿using System.Collections.Generic;
+using SRDebugger.Internal;
+using SRF;
 using SRF.Service;
-using System.Collections.Generic;
-using UnityEngine;
 
 namespace SRDebugger.Services.Implementation
 {
-  [SRF.Service.Service(typeof (KeyboardShortcutListenerService))]
+  [Service(typeof (KeyboardShortcutListenerService))]
   public class KeyboardShortcutListenerService : SRServiceBase<KeyboardShortcutListenerService>
   {
     private List<Settings.KeyboardShortcut> shortcuts;
@@ -14,14 +14,14 @@ namespace SRDebugger.Services.Implementation
     protected override void Awake()
     {
       base.Awake();
-      this.CachedTransform.SetParent(Hierarchy.Get("SRDebugger"));
-      this.shortcuts = new List<Settings.KeyboardShortcut>((IEnumerable<Settings.KeyboardShortcut>) Settings.Instance.KeyboardShortcuts);
+      CachedTransform.SetParent(Hierarchy.Get("SRDebugger"));
+      shortcuts = new List<Settings.KeyboardShortcut>(Settings.Instance.KeyboardShortcuts);
     }
 
     private void ToggleTab(DefaultTabs t)
     {
-      DefaultTabs? activeTab = SRDebugger.Internal.Service.Panel.ActiveTab;
-      if (SRDebugger.Internal.Service.Panel.IsVisible && activeTab.HasValue && activeTab.Value == t)
+      DefaultTabs? activeTab = Service.Panel.ActiveTab;
+      if (Service.Panel.IsVisible && activeTab.HasValue && activeTab.Value == t)
         SRDebug.Instance.HideDebugPanel();
       else
         SRDebug.Instance.ShowDebugPanel(t);
@@ -35,19 +35,19 @@ namespace SRDebugger.Services.Implementation
           SRDebug.Instance.IsDebugging = !SRDebug.Instance.IsDebugging;
           break;
         case Settings.ShortcutActions.OpenSystemInfoTab:
-          this.ToggleTab(DefaultTabs.SystemInformation);
+          ToggleTab(DefaultTabs.SystemInformation);
           break;
         case Settings.ShortcutActions.OpenLoggerTab:
-          this.ToggleTab(DefaultTabs.Logger);
+          ToggleTab(DefaultTabs.Logger);
           break;
         case Settings.ShortcutActions.OpenProfilerTab:
-          this.ToggleTab(DefaultTabs.Profiler);
+          ToggleTab(DefaultTabs.Profiler);
           break;
         case Settings.ShortcutActions.OpenConsoleTab:
-          this.ToggleTab(DefaultTabs.Console);
+          ToggleTab(DefaultTabs.Console);
           break;
         case Settings.ShortcutActions.OpenInspectorTab:
-          this.ToggleTab(DefaultTabs.Inspector);
+          ToggleTab(DefaultTabs.Inspector);
           break;
         case Settings.ShortcutActions.ClosePanel:
           SRDebug.Instance.HideDebugPanel();
@@ -67,24 +67,24 @@ namespace SRDebugger.Services.Implementation
           SRDebug.Instance.IsProfilerDocked = !SRDebug.Instance.IsProfilerDocked;
           break;
         default:
-          Debug.LogWarning((object) ("[SRDebugger] Unhandled keyboard shortcut: " + (object) shortcut.Action));
+          Debug.LogWarning((object) ("[SRDebugger] Unhandled keyboard shortcut: " + shortcut.Action));
           break;
       }
     }
 
     private void Update()
     {
-      if (Settings.Instance.KeyboardEscapeClose && Input.GetKeyUp(KeyCode.Escape) && SRDebugger.Internal.Service.Panel.IsVisible)
+      if (Settings.Instance.KeyboardEscapeClose && Input.GetKeyUp(KeyCode.Escape) && Service.Panel.IsVisible)
         SRDebug.Instance.HideDebugPanel();
       bool flag1 = Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl);
       bool flag2 = Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt);
       bool flag3 = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
-      for (int index = 0; index < this.shortcuts.Count; ++index)
+      for (int index = 0; index < shortcuts.Count; ++index)
       {
-        Settings.KeyboardShortcut shortcut = this.shortcuts[index];
+        Settings.KeyboardShortcut shortcut = shortcuts[index];
         if ((!shortcut.Control || flag1) && (!shortcut.Shift || flag3) && (!shortcut.Alt || flag2) && Input.GetKeyDown(shortcut.Key))
         {
-          this.ExecuteShortcut(shortcut);
+          ExecuteShortcut(shortcut);
           break;
         }
       }

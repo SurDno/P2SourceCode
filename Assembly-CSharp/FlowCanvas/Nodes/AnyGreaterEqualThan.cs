@@ -1,5 +1,5 @@
-﻿using ParadoxNotion.Design;
-using System;
+﻿using System;
+using ParadoxNotion.Design;
 
 namespace FlowCanvas.Nodes
 {
@@ -9,7 +9,7 @@ namespace FlowCanvas.Nodes
   {
     public override bool Invoke(IComparable a, IComparable b)
     {
-      return a.CompareTo((object) b) == 1 || object.Equals((object) a, (object) b);
+      return a.CompareTo(b) == 1 || Equals(a, b);
     }
   }
 }

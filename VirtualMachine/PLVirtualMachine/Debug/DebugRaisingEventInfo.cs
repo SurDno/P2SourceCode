@@ -11,8 +11,8 @@
       this.eventGuid = eventGuid;
     }
 
-    public string EventOwnerUniName => this.eventOwnerUniName;
+    public string EventOwnerUniName => eventOwnerUniName;
 
-    public ulong EventGuid => this.eventGuid;
+    public ulong EventGuid => eventGuid;
   }
 }

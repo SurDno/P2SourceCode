@@ -1,7 +1,7 @@
-﻿using ParadoxNotion.Services;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
+using NodeCanvas;
+using ParadoxNotion.Services;
 
 namespace FlowCanvas.Nodes
 {
@@ -18,71 +18,71 @@ namespace FlowCanvas.Nodes
     {
       get
       {
-        return this.queue.Count > 0 ? string.Format("{0} [{1}]", (object) base.name, (object) this.queue.Count.ToString()) : base.name;
+        return queue.Count > 0 ? string.Format("{0} [{1}]", base.name, queue.Count.ToString()) : base.name;
       }
     }
 
     public override sealed void OnGraphStarted()
     {
-      this.queue = new Queue<IEnumerator>();
-      this.currentCoroutine = (Coroutine) null;
+      queue = new Queue<IEnumerator>();
+      currentCoroutine = (Coroutine) null;
     }
 
-    public override sealed void OnGraphStoped() => this.Break();
+    public override sealed void OnGraphStoped() => Break();
 
-    public override sealed void OnGraphPaused() => this.graphPaused = true;
+    public override sealed void OnGraphPaused() => graphPaused = true;
 
-    public override sealed void OnGraphUnpaused() => this.graphPaused = false;
+    public override sealed void OnGraphUnpaused() => graphPaused = false;
 
     protected void Begin(IEnumerator enumerator)
     {
-      if (!this.queue.Contains(enumerator))
-        this.queue.Enqueue(enumerator);
-      if (this.currentCoroutine != null)
+      if (!queue.Contains(enumerator))
+        queue.Enqueue(enumerator);
+      if (currentCoroutine != null)
         return;
-      this.currentCoroutine = BlueprintManager.current.StartCoroutine(this.InternalCoroutine(enumerator));
+      currentCoroutine = BlueprintManager.current.StartCoroutine(InternalCoroutine(enumerator));
     }
 
     protected void Break()
     {
-      if (this.currentCoroutine == null)
+      if (currentCoroutine == null)
         return;
-      BlueprintManager.current.StopCoroutine(this.currentCoroutine);
-      this.queue = new Queue<IEnumerator>();
-      this.currentCoroutine = (Coroutine) null;
-      this.outFlow.parent.SetStatus(NodeCanvas.Status.Resting);
-      this.OnBreak();
-      this.done.Call();
+      BlueprintManager.current.StopCoroutine(currentCoroutine);
+      queue = new Queue<IEnumerator>();
+      currentCoroutine = (Coroutine) null;
+      outFlow.parent.SetStatus(Status.Resting);
+      OnBreak();
+      done.Call();
     }
 
     private IEnumerator InternalCoroutine(IEnumerator enumerator)
     {
-      FlowNode parentNode = this.outFlow.parent;
-      parentNode.SetStatus(NodeCanvas.Status.Running);
-      this.outFlow.Call();
+      FlowNode parentNode = outFlow.parent;
+      parentNode.SetStatus(Status.Running);
+      outFlow.Call();
       while (enumerator.MoveNext())
       {
-        while (this.graphPaused)
-          yield return (object) null;
-        this.doing.Call();
+        while (graphPaused)
+          yield return null;
+        doing.Call();
         yield return enumerator.Current;
       }
-      parentNode.SetStatus(NodeCanvas.Status.Resting);
-      this.done.Call();
-      this.currentCoroutine = (Coroutine) null;
-      if (this.queue.Count > 0)
+      parentNode.SetStatus(Status.Resting);
+      done.Call();
+      currentCoroutine = (Coroutine) null;
+      if (queue.Count > 0)
       {
-        this.queue.Dequeue();
-        if (this.queue.Count > 0)
-          this.Begin(this.queue.Peek());
+        queue.Dequeue();
+        if (queue.Count > 0)
+          Begin(queue.Peek());
       }
     }
 
     protected override void OnRegisterPorts(FlowNode node)
     {
-      this.outFlow = node.AddFlowOutput("Start", "Out");
-      this.doing = node.AddFlowOutput("Update", "Doing");
-      this.done = node.AddFlowOutput("Finish", "Done");
+      outFlow = node.AddFlowOutput("Start", "Out");
+      doing = node.AddFlowOutput("Update", "Doing");
+      done = node.AddFlowOutput("Finish", "Done");
     }
 
     public virtual void OnBreak()

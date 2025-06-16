@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace Engine.Source.UI.Menu.Protagonist.LockPicking
+﻿namespace Engine.Source.UI.Menu.Protagonist.LockPicking
 {
   public class LockPickingPin : MonoBehaviour
   {
@@ -16,7 +14,7 @@ namespace Engine.Source.UI.Menu.Protagonist.LockPicking
     private Vector2 rotationRange;
     private float lockPosition;
     private LockPickingSettings settings;
-    private LockPickingPin.Spot[] spots;
+    private Spot[] spots;
     private float position = -1f;
     private float velocity;
 
@@ -26,20 +24,20 @@ namespace Engine.Source.UI.Menu.Protagonist.LockPicking
 
     private float Position
     {
-      get => this.position;
+      get => position;
       set
       {
         value = Mathf.Clamp01(value);
-        if ((double) this.position == (double) value)
+        if (position == (double) value)
           return;
-        this.position = value;
-        this.transform.localEulerAngles = new Vector3(0.0f, 0.0f, Mathf.Lerp(this.rotationRange.x, this.rotationRange.y, this.position));
+        position = value;
+        this.transform.localEulerAngles = new Vector3(0.0f, 0.0f, Mathf.Lerp(rotationRange.x, rotationRange.y, position));
       }
     }
 
     public void Build(LockPickingSettings settings)
     {
-      this.Clear();
+      Clear();
       this.settings = settings;
       LockPickingSettings.Pattern pattern = settings.Patterns[Random.Range(0, settings.Patterns.Length)];
       if (pattern.SpotCount < 1)
@@ -48,52 +46,52 @@ namespace Engine.Source.UI.Menu.Protagonist.LockPicking
         pattern.SweetSpotPosition = 0;
       else if (pattern.SweetSpotPosition >= pattern.SpotCount)
         pattern.SweetSpotPosition = pattern.SpotCount - 1;
-      this.spots = new LockPickingPin.Spot[pattern.SpotCount];
+      spots = new Spot[pattern.SpotCount];
       float num1 = Random.value;
       float num2 = 0.0f;
-      for (int index = 0; index < this.spots.Length; ++index)
+      for (int index = 0; index < spots.Length; ++index)
       {
         bool sweet = index == pattern.SweetSpotPosition;
-        this.spots[index].Sweet = sweet;
-        this.spots[index].View = this.CreateView(sweet, index);
-        this.spots[index].Min = Random.value;
-        num1 += this.spots[index].Min;
-        this.spots[index].Max = !sweet ? Random.Range(settings.SourSpotMinSize, settings.SourSpotMaxSize) : settings.SweetSpotSize;
-        num2 += this.spots[index].Max;
+        spots[index].Sweet = sweet;
+        spots[index].View = CreateView(sweet, index);
+        spots[index].Min = Random.value;
+        num1 += spots[index].Min;
+        spots[index].Max = !sweet ? Random.Range(settings.SourSpotMinSize, settings.SourSpotMaxSize) : settings.SweetSpotSize;
+        num2 += spots[index].Max;
       }
-      float num3 = (1f - (float) ((double) num2 + (double) settings.LowerDeadZone + (double) settings.UpperDeadZone + (double) settings.MiddleDeadZones * (double) (pattern.SpotCount - 1))) / num1;
-      for (int index = 0; index < this.spots.Length; ++index)
+      float num3 = (1f - (float) (num2 + (double) settings.LowerDeadZone + settings.UpperDeadZone + settings.MiddleDeadZones * (double) (pattern.SpotCount - 1))) / num1;
+      for (int index = 0; index < spots.Length; ++index)
       {
         if (index == 0)
         {
-          this.spots[index].Min = settings.LowerDeadZone + this.spots[index].Min * num3;
-          this.spots[index].Max += this.spots[index].Min;
+          spots[index].Min = settings.LowerDeadZone + spots[index].Min * num3;
+          spots[index].Max += spots[index].Min;
         }
         else
         {
-          this.spots[index].Min = (float) ((double) this.spots[index - 1].Max + (double) settings.MiddleDeadZones + (double) this.spots[index].Min * (double) num3);
-          this.spots[index].Max += this.spots[index].Min;
+          spots[index].Min = (float) (spots[index - 1].Max + (double) settings.MiddleDeadZones + spots[index].Min * (double) num3);
+          spots[index].Max += spots[index].Min;
         }
-        if (this.spots[index].Sweet)
-          this.lockPosition = (float) (((double) this.spots[index].Min + (double) this.spots[index].Max) * 0.5);
-        LockPickingPinSpot view = this.spots[index].View;
-        view.Setup((float) (((double) this.spots[index].Max + (double) this.spots[index].Min) * 0.5), this.spots[index].Max - this.spots[index].Min);
+        if (spots[index].Sweet)
+          lockPosition = (float) ((spots[index].Min + (double) spots[index].Max) * 0.5);
+        LockPickingPinSpot view = spots[index].View;
+        view.Setup((float) ((spots[index].Max + (double) spots[index].Min) * 0.5), spots[index].Max - spots[index].Min);
         view.gameObject.SetActive(true);
       }
     }
 
     public void Clear()
     {
-      this.settings = (LockPickingSettings) null;
-      this.Locked = false;
-      this.Position = 0.0f;
-      this.velocity = 0.0f;
-      this.InSweetSpot = false;
-      if (this.spots == null)
+      settings = null;
+      Locked = false;
+      Position = 0.0f;
+      velocity = 0.0f;
+      InSweetSpot = false;
+      if (spots == null)
         return;
-      foreach (LockPickingPin.Spot spot in this.spots)
+      foreach (Spot spot in spots)
         Object.Destroy((Object) spot.View.gameObject);
-      this.spots = (LockPickingPin.Spot[]) null;
+      spots = null;
     }
 
     public LockPickingPinSpot CreateView(bool sweet, int index)
@@ -101,13 +99,13 @@ namespace Engine.Source.UI.Menu.Protagonist.LockPicking
       LockPickingPinSpot original;
       if (sweet)
       {
-        index %= this.sweetSpotPrototypes.Length;
-        original = this.sweetSpotPrototypes[index];
+        index %= sweetSpotPrototypes.Length;
+        original = sweetSpotPrototypes[index];
       }
       else
       {
-        index %= this.sourSpotPrototypes.Length;
-        original = this.sourSpotPrototypes[index];
+        index %= sourSpotPrototypes.Length;
+        original = sourSpotPrototypes[index];
       }
       LockPickingPinSpot view = Object.Instantiate<LockPickingPinSpot>(original, original.transform.parent);
       view.transform.SetParent(original.transform.parent, false);
@@ -116,46 +114,46 @@ namespace Engine.Source.UI.Menu.Protagonist.LockPicking
 
     private void Update()
     {
-      if (this.settings == null)
+      if (settings == null)
         return;
-      if (this.Locked)
+      if (Locked)
       {
-        this.Position = this.lockPosition;
-        this.velocity = 0.0f;
+        Position = lockPosition;
+        velocity = 0.0f;
       }
       else
       {
-        this.velocity -= this.settings.GravityForce * Time.deltaTime;
-        this.velocity = Mathf.Clamp(this.velocity, -this.settings.MaxVelocity, this.settings.MaxVelocity);
-        this.Position += this.velocity * Time.deltaTime;
+        velocity -= settings.GravityForce * Time.deltaTime;
+        velocity = Mathf.Clamp(velocity, -settings.MaxVelocity, settings.MaxVelocity);
+        Position += velocity * Time.deltaTime;
       }
-      this.InSweetSpot = false;
+      InSweetSpot = false;
       bool flag = false;
-      for (int index = 0; index < this.spots.Length; ++index)
+      for (int index = 0; index < spots.Length; ++index)
       {
-        if ((double) this.Position > (double) this.spots[index].Min && (double) this.Position <= (double) this.spots[index].Max)
+        if (Position > (double) spots[index].Min && Position <= (double) spots[index].Max)
         {
-          if (this.spots[index].Sweet)
-            this.InSweetSpot = true;
+          if (spots[index].Sweet)
+            InSweetSpot = true;
           else
             flag = true;
         }
       }
       if (flag)
-        this.velocity *= Mathf.Pow(0.5f, this.settings.SourSpotDrag * Time.deltaTime);
-      if ((double) this.velocity < 0.0 && (double) this.Position == 0.0)
-        this.velocity = 0.0f;
-      if ((double) this.velocity > 0.0 && (double) this.Position == 1.0)
-        this.velocity = 0.0f;
-      this.sweetIndicator.SetActive(this.InSweetSpot);
-      this.sourIndicator.SetActive(flag);
+        velocity *= Mathf.Pow(0.5f, settings.SourSpotDrag * Time.deltaTime);
+      if (velocity < 0.0 && Position == 0.0)
+        velocity = 0.0f;
+      if (velocity > 0.0 && Position == 1.0)
+        velocity = 0.0f;
+      sweetIndicator.SetActive(InSweetSpot);
+      sourIndicator.SetActive(flag);
     }
 
     public void Bump()
     {
-      if (this.Locked)
+      if (Locked)
         return;
-      this.velocity = this.settings.MouseForce;
+      velocity = settings.MouseForce;
     }
 
     private struct Spot

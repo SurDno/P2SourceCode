@@ -1,10 +1,8 @@
-﻿using Cofe.Utility;
-using JetBrains.Annotations;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using UnityEngine;
+using Cofe.Utility;
 
 namespace UnityHeapCrawler
 {
@@ -27,32 +25,32 @@ namespace UnityHeapCrawler
 
     public CrawlItem([CanBeNull] CrawlItem parent, [NotNull] object o, [NotNull] string name)
     {
-      this.Parent = parent;
-      this.Object = o;
-      this.Name = name;
+      Parent = parent;
+      Object = o;
+      Name = name;
     }
 
     public void AddChild([NotNull] CrawlItem child)
     {
-      if (this.Children == null)
-        this.Children = new List<CrawlItem>();
-      this.Children.Add(child);
+      if (Children == null)
+        Children = new List<CrawlItem>();
+      Children.Add(child);
     }
 
     public void UpdateSize()
     {
       try
       {
-        this.SelfSize = this.CalculateSelfSize();
-        this.TotalSize = this.SelfSize;
-        if (this.Children == null)
+        SelfSize = CalculateSelfSize();
+        TotalSize = SelfSize;
+        if (Children == null)
           return;
-        foreach (CrawlItem child in this.Children)
+        foreach (CrawlItem child in Children)
         {
           child.UpdateSize();
-          this.TotalSize += child.TotalSize;
+          TotalSize += child.TotalSize;
         }
-        this.Children.Sort();
+        Children.Sort();
       }
       finally
       {
@@ -62,89 +60,89 @@ namespace UnityHeapCrawler
 
     public void Cleanup(CrawlSettings crawlSettings)
     {
-      this.CleanupUnchanged();
-      this.CleanupInternal(crawlSettings);
+      CleanupUnchanged();
+      CleanupInternal(crawlSettings);
     }
 
     private void CleanupUnchanged()
     {
-      if (this.Children != null)
+      if (Children != null)
       {
-        foreach (CrawlItem child in this.Children)
+        foreach (CrawlItem child in Children)
           child.CleanupUnchanged();
-        this.Children.RemoveAll((Predicate<CrawlItem>) (c => !c.SubtreeUpdated));
-        this.SubtreeUpdated = this.Children.Count > 0;
+        Children.RemoveAll(c => !c.SubtreeUpdated);
+        SubtreeUpdated = Children.Count > 0;
       }
-      this.SubtreeUpdated = ((this.SubtreeUpdated ? 1 : 0) | 1) != 0;
+      SubtreeUpdated = ((SubtreeUpdated ? 1 : 0) | 1) != 0;
     }
 
     public void CleanupInternal(CrawlSettings crawlSettings)
     {
       if (!crawlSettings.PrintChildren)
-        this.Children = (List<CrawlItem>) null;
-      if (crawlSettings.MaxDepth > 0 && CrawlItem.depth >= crawlSettings.MaxDepth)
-        this.Children = (List<CrawlItem>) null;
-      UnityEngine.Object @object = this.Object as UnityEngine.Object;
+        Children = null;
+      if (crawlSettings.MaxDepth > 0 && depth >= crawlSettings.MaxDepth)
+        Children = null;
+      UnityEngine.Object @object = Object as UnityEngine.Object;
       if ((object) @object != null && !(bool) @object)
       {
-        this.Name = !string.IsNullOrWhiteSpace(this.Name) ? this.Name + " (destroyed Unity Object)" : "(destroyed Unity Object)";
-        this.Children = (List<CrawlItem>) null;
+        Name = !string.IsNullOrWhiteSpace(Name) ? Name + " (destroyed Unity Object)" : "(destroyed Unity Object)";
+        Children = null;
       }
-      if (this.Children == null)
+      if (Children == null)
         return;
       if (crawlSettings.PrintOnlyGameObjects)
-        this.Children.RemoveAll((Predicate<CrawlItem>) (c => !(c.Object is GameObject)));
-      int count = this.Children.Count;
+        Children.RemoveAll(c => !(c.Object is GameObject));
+      int count = Children.Count;
       if (crawlSettings.MinItemSize > 0)
-        this.Children.RemoveAll((Predicate<CrawlItem>) (c => c.TotalSize < crawlSettings.MinItemSize));
-      if (crawlSettings.MaxChildren > 0 && this.Children.Count > crawlSettings.MaxChildren)
-        this.Children.RemoveRange(crawlSettings.MaxChildren, this.Children.Count - crawlSettings.MaxChildren);
-      if (this.Children.Count < count)
-        this.childrenFiltered = true;
-      ++CrawlItem.depth;
-      foreach (CrawlItem child in this.Children)
+        Children.RemoveAll(c => c.TotalSize < crawlSettings.MinItemSize);
+      if (crawlSettings.MaxChildren > 0 && Children.Count > crawlSettings.MaxChildren)
+        Children.RemoveRange(crawlSettings.MaxChildren, Children.Count - crawlSettings.MaxChildren);
+      if (Children.Count < count)
+        childrenFiltered = true;
+      ++depth;
+      foreach (CrawlItem child in Children)
         child.CleanupInternal(crawlSettings);
-      --CrawlItem.depth;
+      --depth;
     }
 
     public void Print([NotNull] StreamWriter w, SizeFormat sizeFormat)
     {
-      for (int index = 0; index < CrawlItem.depth; ++index)
+      for (int index = 0; index < depth; ++index)
         w.Write("  ");
-      if (!string.IsNullOrWhiteSpace(this.Name))
+      if (!string.IsNullOrWhiteSpace(Name))
       {
-        w.Write(this.Name);
+        w.Write(Name);
         w.Write(" ");
       }
       w.Write("[");
-      UnityEngine.Object @object = this.Object as UnityEngine.Object;
+      UnityEngine.Object @object = Object as UnityEngine.Object;
       if (@object != (UnityEngine.Object) null)
       {
         w.Write(@object.name);
         w.Write(": ");
-        w.Write(TypeUtility.GetTypeName(this.Object.GetType()));
+        w.Write(TypeUtility.GetTypeName(Object.GetType()));
         w.Write(" (");
         w.Write(@object.GetInstanceID());
         w.Write(")");
       }
       else
-        w.Write(TypeUtility.GetTypeName(this.Object.GetType()));
+        w.Write(TypeUtility.GetTypeName(Object.GetType()));
       w.Write("]");
       w.Write(" ");
-      w.Write(sizeFormat.Format((long) this.TotalSize));
+      w.Write(sizeFormat.Format(TotalSize));
       w.WriteLine();
-      if (this.Children == null)
+      if (Children == null)
         return;
-      ++CrawlItem.depth;
-      foreach (CrawlItem child in this.Children)
+      ++depth;
+      foreach (CrawlItem child in Children)
         child.Print(w, sizeFormat);
-      if (this.childrenFiltered && this.Children.Count > 0)
+      if (childrenFiltered && Children.Count > 0)
       {
-        for (int index = 0; index < CrawlItem.depth; ++index)
+        for (int index = 0; index < depth; ++index)
           w.Write("  ");
         w.WriteLine("...");
       }
-      --CrawlItem.depth;
+      --depth;
     }
 
     public string GetRootPath()
@@ -158,12 +156,12 @@ namespace UnityHeapCrawler
       }
       while (crawlItem != null);
       source.Reverse();
-      return string.Join(".", source.Select<CrawlItem, string>((Func<CrawlItem, string>) (i => i.Name)).ToArray<string>());
+      return string.Join(".", source.Select(i => i.Name).ToArray());
     }
 
     private int CalculateSelfSize()
     {
-      if (this.Object is string str)
+      if (Object is string str)
       {
         int selfSize = 3 * IntPtr.Size + 2 + str.Length * 2;
         int num = selfSize % IntPtr.Size;
@@ -171,10 +169,10 @@ namespace UnityHeapCrawler
           selfSize += IntPtr.Size - num;
         return selfSize;
       }
-      if (!this.Object.GetType().IsArray)
-        return TypeData.Get(this.Object.GetType()).Size;
-      System.Type elementType = this.Object.GetType().GetElementType();
-      return elementType != (System.Type) null && (elementType.IsValueType || elementType.IsPrimitive || elementType.IsEnum) ? 0 : IntPtr.Size * CrawlItem.GetTotalArrayLength((Array) this.Object);
+      if (!Object.GetType().IsArray)
+        return TypeData.Get(Object.GetType()).Size;
+      Type elementType = Object.GetType().GetElementType();
+      return elementType != null && (elementType.IsValueType || elementType.IsPrimitive || elementType.IsEnum) ? 0 : IntPtr.Size * GetTotalArrayLength((Array) Object);
     }
 
     private static int GetTotalArrayLength(Array val)
@@ -189,9 +187,9 @@ namespace UnityHeapCrawler
     {
       if (this == other)
         return 0;
-      return other == null ? 1 : other.TotalSize.CompareTo(this.TotalSize);
+      return other == null ? 1 : other.TotalSize.CompareTo(TotalSize);
     }
 
-    public override string ToString() => this.Object.ToString();
+    public override string ToString() => Object.ToString();
   }
 }

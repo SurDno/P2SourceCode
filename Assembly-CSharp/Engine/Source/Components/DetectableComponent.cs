@@ -9,8 +9,6 @@ using Engine.Impl.Services.Factories;
 using Engine.Source.Commons;
 using Engine.Source.Services;
 using Inspectors;
-using System;
-using UnityEngine;
 
 namespace Engine.Source.Components
 {
@@ -19,12 +17,12 @@ namespace Engine.Source.Components
   [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite | TypeEnum.StateSave | TypeEnum.StateLoad)]
   public class DetectableComponent : EngineComponent, IDetectableComponent, IComponent, INeedSave
   {
-    [StateSaveProxy(MemberEnum.None)]
-    [StateLoadProxy(MemberEnum.None)]
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
+    [StateSaveProxy]
+    [StateLoadProxy]
+    [DataReadProxy]
+    [DataWriteProxy]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    [CopyableProxy(MemberEnum.None)]
+    [CopyableProxy()]
     protected bool isEnabled = true;
     private IParameter<float> visibleDistanceParameter;
     private IParameter<DetectType> visibleDetectTypeParameter;
@@ -38,24 +36,24 @@ namespace Engine.Source.Components
     [Inspected(Mutable = true)]
     public bool IsEnabled
     {
-      get => this.isEnabled;
+      get => isEnabled;
       set
       {
-        this.isEnabled = value;
-        this.OnChangeEnabled();
+        isEnabled = value;
+        OnChangeEnabled();
       }
     }
 
     [Inspected]
     public float BaseVisibleDistance
     {
-      get => this.visibleDistanceParameter != null ? this.visibleDistanceParameter.BaseValue : 0.0f;
+      get => visibleDistanceParameter != null ? visibleDistanceParameter.BaseValue : 0.0f;
     }
 
     [Inspected]
     public float VisibleDistance
     {
-      get => this.visibleDistanceParameter != null ? this.visibleDistanceParameter.Value : 0.0f;
+      get => visibleDistanceParameter != null ? visibleDistanceParameter.Value : 0.0f;
     }
 
     [Inspected]
@@ -63,14 +61,14 @@ namespace Engine.Source.Components
     {
       get
       {
-        return this.visibleDetectTypeParameter != null ? this.visibleDetectTypeParameter.Value : DetectType.None;
+        return visibleDetectTypeParameter != null ? visibleDetectTypeParameter.Value : DetectType.None;
       }
     }
 
     [Inspected]
     public float NoiseDistance
     {
-      get => this.noiseDistanceParameter != null ? this.noiseDistanceParameter.Value : 0.0f;
+      get => noiseDistanceParameter != null ? noiseDistanceParameter.Value : 0.0f;
     }
 
     [Inspected]
@@ -78,7 +76,7 @@ namespace Engine.Source.Components
     {
       get
       {
-        return this.noiseDetectTypeParameter != null ? this.noiseDetectTypeParameter.Value : DetectType.None;
+        return noiseDetectTypeParameter != null ? noiseDetectTypeParameter.Value : DetectType.None;
       }
     }
 
@@ -86,63 +84,63 @@ namespace Engine.Source.Components
     {
       get
       {
-        if (!(this.Owner.Template is IEntity template))
+        if (!(Owner.Template is IEntity template))
         {
-          Debug.LogError((object) ("Template not found, owner : " + this.Owner.GetInfo()));
+          Debug.LogError((object) ("Template not found, owner : " + Owner.GetInfo()));
           return true;
         }
         DetectableComponent component = template.GetComponent<DetectableComponent>();
         if (component == null)
         {
-          Debug.LogError((object) (this.GetType().Name + " not found, owner : " + this.Owner.GetInfo()));
+          Debug.LogError((object) (GetType().Name + " not found, owner : " + Owner.GetInfo()));
           return true;
         }
-        return this.isEnabled != component.isEnabled;
+        return isEnabled != component.isEnabled;
       }
     }
 
     public override void OnAdded()
     {
       base.OnAdded();
-      if (this.parametersComponent != null)
+      if (parametersComponent != null)
       {
-        this.visibleDistanceParameter = this.parametersComponent.GetByName<float>(ParameterNameEnum.VisibleDistance);
-        this.visibleDetectTypeParameter = this.parametersComponent.GetByName<DetectType>(ParameterNameEnum.VisibleDetectType);
-        this.noiseDistanceParameter = this.parametersComponent.GetByName<float>(ParameterNameEnum.NoiseDistance);
-        this.noiseDetectTypeParameter = this.parametersComponent.GetByName<DetectType>(ParameterNameEnum.NoiseDetectType);
+        visibleDistanceParameter = parametersComponent.GetByName<float>(ParameterNameEnum.VisibleDistance);
+        visibleDetectTypeParameter = parametersComponent.GetByName<DetectType>(ParameterNameEnum.VisibleDetectType);
+        noiseDistanceParameter = parametersComponent.GetByName<float>(ParameterNameEnum.NoiseDistance);
+        noiseDetectTypeParameter = parametersComponent.GetByName<DetectType>(ParameterNameEnum.NoiseDetectType);
       }
-      ((IEntityView) this.Owner).OnGameObjectChangedEvent += new Action(this.OnGameObjectChangedEvent);
-      this.locationItemComponent.OnHibernationChanged += new Action<ILocationItemComponent>(this.OnHibernationChanged);
-      this.UpdateSunscribe();
+      ((IEntityView) Owner).OnGameObjectChangedEvent += OnGameObjectChangedEvent;
+      locationItemComponent.OnHibernationChanged += OnHibernationChanged;
+      UpdateSunscribe();
     }
 
-    private void OnHibernationChanged(ILocationItemComponent sender) => this.UpdateSunscribe();
+    private void OnHibernationChanged(ILocationItemComponent sender) => UpdateSunscribe();
 
-    private void OnGameObjectChangedEvent() => this.UpdateSunscribe();
+    private void OnGameObjectChangedEvent() => UpdateSunscribe();
 
     public override void OnChangeEnabled()
     {
       base.OnChangeEnabled();
-      if (this.locationItemComponent == null)
+      if (locationItemComponent == null)
         return;
-      this.UpdateSunscribe();
+      UpdateSunscribe();
     }
 
     public override void OnRemoved()
     {
-      this.visibleDistanceParameter = (IParameter<float>) null;
-      this.noiseDistanceParameter = (IParameter<float>) null;
-      this.noiseDistanceParameter = (IParameter<float>) null;
-      this.noiseDetectTypeParameter = (IParameter<DetectType>) null;
-      ((IEntityView) this.Owner).OnGameObjectChangedEvent -= new Action(this.OnGameObjectChangedEvent);
-      this.locationItemComponent.OnHibernationChanged -= new Action<ILocationItemComponent>(this.OnHibernationChanged);
+      visibleDistanceParameter = null;
+      noiseDistanceParameter = null;
+      noiseDistanceParameter = null;
+      noiseDetectTypeParameter = null;
+      ((IEntityView) Owner).OnGameObjectChangedEvent -= OnGameObjectChangedEvent;
+      locationItemComponent.OnHibernationChanged -= OnHibernationChanged;
       ServiceLocator.GetService<DetectorService>().RemoveDetectable(this);
       base.OnRemoved();
     }
 
     private void UpdateSunscribe()
     {
-      if (!this.locationItemComponent.IsHibernation && ((IEntityView) this.Owner).IsAttached && this.Owner.IsEnabledInHierarchy && this.IsEnabled)
+      if (!locationItemComponent.IsHibernation && ((IEntityView) Owner).IsAttached && Owner.IsEnabledInHierarchy && IsEnabled)
         ServiceLocator.GetService<DetectorService>().AddDetectable(this);
       else
         ServiceLocator.GetService<DetectorService>().RemoveDetectable(this);

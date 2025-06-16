@@ -1,4 +1,5 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons.Cloneable;
 using Engine.Common.Commons.Converters;
@@ -6,7 +7,6 @@ using Engine.Common.Components.Parameters;
 using Engine.Source.Commons.Abilities;
 using Engine.Source.Commons.Effects;
 using Engine.Source.Effects;
-using System;
 
 namespace Engine.Source.Proxies
 {
@@ -21,54 +21,54 @@ namespace Engine.Source.Proxies
     public object Clone()
     {
       ReduceDamageEffect_Generated instance = Activator.CreateInstance<ReduceDamageEffect_Generated>();
-      this.CopyTo((object) instance);
-      return (object) instance;
+      CopyTo(instance);
+      return instance;
     }
 
     public void CopyTo(object target2)
     {
       ReduceDamageEffect_Generated damageEffectGenerated = (ReduceDamageEffect_Generated) target2;
-      damageEffectGenerated.queue = this.queue;
-      damageEffectGenerated.enable = this.enable;
-      damageEffectGenerated.durationType = this.durationType;
-      damageEffectGenerated.realTime = this.realTime;
-      damageEffectGenerated.duration = this.duration;
-      damageEffectGenerated.interval = this.interval;
-      damageEffectGenerated.damageParameterName = this.damageParameterName;
-      damageEffectGenerated.adsorbtionMaxParameterName = this.adsorbtionMaxParameterName;
-      damageEffectGenerated.maxArmor = this.maxArmor;
-      damageEffectGenerated.durabilityReduceByHit = this.durabilityReduceByHit;
-      damageEffectGenerated.durabilityReduceKoeficient = this.durabilityReduceKoeficient;
+      damageEffectGenerated.queue = queue;
+      damageEffectGenerated.enable = enable;
+      damageEffectGenerated.durationType = durationType;
+      damageEffectGenerated.realTime = realTime;
+      damageEffectGenerated.duration = duration;
+      damageEffectGenerated.interval = interval;
+      damageEffectGenerated.damageParameterName = damageParameterName;
+      damageEffectGenerated.adsorbtionMaxParameterName = adsorbtionMaxParameterName;
+      damageEffectGenerated.maxArmor = maxArmor;
+      damageEffectGenerated.durabilityReduceByHit = durabilityReduceByHit;
+      damageEffectGenerated.durabilityReduceKoeficient = durabilityReduceKoeficient;
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.WriteEnum<ParameterEffectQueueEnum>(writer, "Queue", this.queue);
-      DefaultDataWriteUtility.Write(writer, "Enable", this.enable);
-      DefaultDataWriteUtility.WriteEnum<DurationTypeEnum>(writer, "DurationType", this.durationType);
-      DefaultDataWriteUtility.Write(writer, "RealTime", this.realTime);
-      DefaultDataWriteUtility.Write(writer, "Duration", this.duration);
-      DefaultDataWriteUtility.Write(writer, "Interval", this.interval);
-      DefaultDataWriteUtility.WriteEnum<ParameterNameEnum>(writer, "DamageParameterName", this.damageParameterName);
-      DefaultDataWriteUtility.WriteEnum<ParameterNameEnum>(writer, "AdsorbtionMaxParameterName", this.adsorbtionMaxParameterName);
-      DefaultDataWriteUtility.Write(writer, "MaxArmor", this.maxArmor);
-      DefaultDataWriteUtility.Write(writer, "DurabilityReduceByHit", this.durabilityReduceByHit);
-      DefaultDataWriteUtility.Write(writer, "DurabilityReduceKoeficient", this.durabilityReduceKoeficient);
+      DefaultDataWriteUtility.WriteEnum(writer, "Queue", queue);
+      DefaultDataWriteUtility.Write(writer, "Enable", enable);
+      DefaultDataWriteUtility.WriteEnum(writer, "DurationType", durationType);
+      DefaultDataWriteUtility.Write(writer, "RealTime", realTime);
+      DefaultDataWriteUtility.Write(writer, "Duration", duration);
+      DefaultDataWriteUtility.Write(writer, "Interval", interval);
+      DefaultDataWriteUtility.WriteEnum(writer, "DamageParameterName", damageParameterName);
+      DefaultDataWriteUtility.WriteEnum(writer, "AdsorbtionMaxParameterName", adsorbtionMaxParameterName);
+      DefaultDataWriteUtility.Write(writer, "MaxArmor", maxArmor);
+      DefaultDataWriteUtility.Write(writer, "DurabilityReduceByHit", durabilityReduceByHit);
+      DefaultDataWriteUtility.Write(writer, "DurabilityReduceKoeficient", durabilityReduceKoeficient);
     }
 
     public void DataRead(IDataReader reader, Type type)
     {
-      this.queue = DefaultDataReadUtility.ReadEnum<ParameterEffectQueueEnum>(reader, "Queue");
-      this.enable = DefaultDataReadUtility.Read(reader, "Enable", this.enable);
-      this.durationType = DefaultDataReadUtility.ReadEnum<DurationTypeEnum>(reader, "DurationType");
-      this.realTime = DefaultDataReadUtility.Read(reader, "RealTime", this.realTime);
-      this.duration = DefaultDataReadUtility.Read(reader, "Duration", this.duration);
-      this.interval = DefaultDataReadUtility.Read(reader, "Interval", this.interval);
-      this.damageParameterName = DefaultDataReadUtility.ReadEnum<ParameterNameEnum>(reader, "DamageParameterName");
-      this.adsorbtionMaxParameterName = DefaultDataReadUtility.ReadEnum<ParameterNameEnum>(reader, "AdsorbtionMaxParameterName");
-      this.maxArmor = DefaultDataReadUtility.Read(reader, "MaxArmor", this.maxArmor);
-      this.durabilityReduceByHit = DefaultDataReadUtility.Read(reader, "DurabilityReduceByHit", this.durabilityReduceByHit);
-      this.durabilityReduceKoeficient = DefaultDataReadUtility.Read(reader, "DurabilityReduceKoeficient", this.durabilityReduceKoeficient);
+      queue = DefaultDataReadUtility.ReadEnum<ParameterEffectQueueEnum>(reader, "Queue");
+      enable = DefaultDataReadUtility.Read(reader, "Enable", enable);
+      durationType = DefaultDataReadUtility.ReadEnum<DurationTypeEnum>(reader, "DurationType");
+      realTime = DefaultDataReadUtility.Read(reader, "RealTime", realTime);
+      duration = DefaultDataReadUtility.Read(reader, "Duration", duration);
+      interval = DefaultDataReadUtility.Read(reader, "Interval", interval);
+      damageParameterName = DefaultDataReadUtility.ReadEnum<ParameterNameEnum>(reader, "DamageParameterName");
+      adsorbtionMaxParameterName = DefaultDataReadUtility.ReadEnum<ParameterNameEnum>(reader, "AdsorbtionMaxParameterName");
+      maxArmor = DefaultDataReadUtility.Read(reader, "MaxArmor", maxArmor);
+      durabilityReduceByHit = DefaultDataReadUtility.Read(reader, "DurabilityReduceByHit", durabilityReduceByHit);
+      durabilityReduceKoeficient = DefaultDataReadUtility.Read(reader, "DurabilityReduceKoeficient", durabilityReduceKoeficient);
     }
   }
 }

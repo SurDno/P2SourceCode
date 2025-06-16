@@ -6,9 +6,6 @@ using Engine.Source.Commons;
 using Engine.Source.Components;
 using Engine.Source.Components.Utilities;
 using Inspectors;
-using System;
-using UnityEngine;
-using UnityEngine.AI;
 
 public class NpcStateFightSurrenderLoot : INpcState
 {
@@ -33,30 +30,30 @@ public class NpcStateFightSurrenderLoot : INpcState
 
   private bool TryInit()
   {
-    if (this.inited)
+    if (inited)
       return true;
-    this.enemy = this.pivot.GetNpcEnemy();
-    this.agent = this.pivot.GetAgent();
-    this.animator = this.pivot.GetAnimator();
-    this.weaponService = this.pivot.GetNpcWeaponService();
-    if ((UnityEngine.Object) this.animator == (UnityEngine.Object) null)
+    enemy = pivot.GetNpcEnemy();
+    agent = pivot.GetAgent();
+    animator = pivot.GetAnimator();
+    weaponService = pivot.GetNpcWeaponService();
+    if ((UnityEngine.Object) animator == (UnityEngine.Object) null)
     {
-      Debug.LogError((object) ("Null animator " + this.GameObject.name), (UnityEngine.Object) this.GameObject);
-      Debug.LogError((object) ("Null animator " + this.GameObject.GetFullName()));
-      this.failed = true;
+      Debug.LogError((object) ("Null animator " + GameObject.name), (UnityEngine.Object) GameObject);
+      Debug.LogError((object) ("Null animator " + GameObject.GetFullName()));
+      failed = true;
       return false;
     }
-    this.animatorState = AnimatorState45.GetAnimatorState(this.animator);
-    this.failed = false;
-    this.inited = true;
+    animatorState = AnimatorState45.GetAnimatorState(animator);
+    failed = false;
+    inited = true;
     return true;
   }
 
   private void SetSurrenderValue(bool b)
   {
-    if (this.npcState.Owner == null)
+    if (npcState.Owner == null)
       return;
-    ParametersComponent component = this.npcState.Owner.GetComponent<ParametersComponent>();
+    ParametersComponent component = npcState.Owner.GetComponent<ParametersComponent>();
     if (component == null)
       return;
     IParameter<bool> byName = component.GetByName<bool>(ParameterNameEnum.Surrender);
@@ -67,109 +64,109 @@ public class NpcStateFightSurrenderLoot : INpcState
 
   public NpcStateFightSurrenderLoot(NpcState npcState, Pivot pivot)
   {
-    this.GameObject = npcState.gameObject;
+    GameObject = npcState.gameObject;
     this.pivot = pivot;
     this.npcState = npcState;
   }
 
   public void Activate(float lootTime)
   {
-    if (!this.TryInit())
+    if (!TryInit())
       return;
-    this.prevAreaMask = this.agent.areaMask;
-    this.agentWasEnabled = this.agent.enabled;
+    prevAreaMask = agent.areaMask;
+    agentWasEnabled = agent.enabled;
     this.lootTime = lootTime;
-    this.lootTimeLeft = lootTime;
-    this.weaponService.Weapon = this.npcState.Weapon;
-    this.npcState.WeaponChangeEvent += new Action<WeaponEnum>(this.State_WeaponChangeEvent);
-    this.Status = NpcStateStatusEnum.Running;
-    LocationItemComponent component = (LocationItemComponent) this.npcState.Owner.GetComponent<ILocationItemComponent>();
+    lootTimeLeft = lootTime;
+    weaponService.Weapon = npcState.Weapon;
+    npcState.WeaponChangeEvent += State_WeaponChangeEvent;
+    Status = NpcStateStatusEnum.Running;
+    LocationItemComponent component = (LocationItemComponent) npcState.Owner.GetComponent<ILocationItemComponent>();
     if (component == null)
     {
-      Debug.LogWarning((object) (this.GameObject.name + ": location component not found"));
-      this.Status = NpcStateStatusEnum.Failed;
+      Debug.LogWarning((object) (GameObject.name + ": location component not found"));
+      Status = NpcStateStatusEnum.Failed;
     }
     else
     {
       bool isIndoor = component.IsIndoor;
-      NPCStateHelper.SetAgentAreaMask(this.agent, isIndoor);
-      this.agent.enabled = true;
-      if (!this.agent.isOnNavMesh)
+      NPCStateHelper.SetAgentAreaMask(agent, isIndoor);
+      agent.enabled = true;
+      if (!agent.isOnNavMesh)
       {
-        Vector3 position = this.GameObject.transform.position;
-        if (NavMeshUtility.SampleRaycastPosition(ref position, isIndoor ? 1f : 5f, isIndoor ? 2f : 10f, this.agent.areaMask))
+        Vector3 position = GameObject.transform.position;
+        if (NavMeshUtility.SampleRaycastPosition(ref position, isIndoor ? 1f : 5f, isIndoor ? 2f : 10f, agent.areaMask))
         {
-          this.agent.Warp(position);
+          agent.Warp(position);
         }
         else
         {
-          Debug.Log((object) "Can't sample navmesh", (UnityEngine.Object) this.GameObject);
-          this.Status = NpcStateStatusEnum.Failed;
+          Debug.Log((object) "Can't sample navmesh", (UnityEngine.Object) GameObject);
+          Status = NpcStateStatusEnum.Failed;
           return;
         }
       }
-      this.enemy.DesiredWalkSpeed = 0.0f;
-      this.animatorState.ResetAllTriggers();
-      this.animatorState.SetTrigger("Fight.Triggers/CancelAttack");
-      this.animatorState.SetTrigger("Fight.Triggers/CancelStagger");
-      this.animatorState.SetTrigger("Fight.Triggers/TakeMyMoney");
-      this.SetSurrenderValue(true);
-      if ((UnityEngine.Object) this.enemy.Enemy != (UnityEngine.Object) null)
-        this.enemy.RotationTarget = this.enemy.Enemy.transform;
-      this.enemy.RotateByPath = false;
-      this.enemy.RetreatAngle = new float?();
+      enemy.DesiredWalkSpeed = 0.0f;
+      animatorState.ResetAllTriggers();
+      animatorState.SetTrigger("Fight.Triggers/CancelAttack");
+      animatorState.SetTrigger("Fight.Triggers/CancelStagger");
+      animatorState.SetTrigger("Fight.Triggers/TakeMyMoney");
+      SetSurrenderValue(true);
+      if ((UnityEngine.Object) enemy.Enemy != (UnityEngine.Object) null)
+        enemy.RotationTarget = enemy.Enemy.transform;
+      enemy.RotateByPath = false;
+      enemy.RetreatAngle = new float?();
     }
   }
 
-  private void State_WeaponChangeEvent(WeaponEnum weapon) => this.weaponService.Weapon = weapon;
+  private void State_WeaponChangeEvent(WeaponEnum weapon) => weaponService.Weapon = weapon;
 
   public void Shutdown()
   {
-    if (this.failed)
+    if (failed)
       return;
-    this.animatorState.ResetAllTriggers();
-    this.animatorState.SetTrigger("Fight.Triggers/CancelWalk");
-    this.SetSurrenderValue(false);
-    this.npcState.WeaponChangeEvent -= new Action<WeaponEnum>(this.State_WeaponChangeEvent);
-    this.agent.areaMask = this.prevAreaMask;
-    this.agent.enabled = this.agentWasEnabled;
+    animatorState.ResetAllTriggers();
+    animatorState.SetTrigger("Fight.Triggers/CancelWalk");
+    SetSurrenderValue(false);
+    npcState.WeaponChangeEvent -= State_WeaponChangeEvent;
+    agent.areaMask = prevAreaMask;
+    agent.enabled = agentWasEnabled;
   }
 
   public void OnAnimatorMove()
   {
-    if (this.failed)
+    if (failed)
       return;
-    this.enemy?.OnExternalAnimatorMove();
+    enemy?.OnExternalAnimatorMove();
   }
 
   public void OnAnimatorEventEvent(string obj)
   {
-    if (!this.failed)
+    if (!failed)
       ;
   }
 
   public void Update()
   {
-    if (this.failed || InstanceByRequest<EngineApplication>.Instance.IsPaused || this.Status != 0)
+    if (failed || InstanceByRequest<EngineApplication>.Instance.IsPaused || Status != 0)
       return;
-    if ((UnityEngine.Object) this.enemy == (UnityEngine.Object) null || (UnityEngine.Object) this.enemy.Enemy == (UnityEngine.Object) null)
+    if ((UnityEngine.Object) enemy == (UnityEngine.Object) null || (UnityEngine.Object) enemy.Enemy == (UnityEngine.Object) null)
     {
-      this.Status = NpcStateStatusEnum.Failed;
+      Status = NpcStateStatusEnum.Failed;
     }
     else
     {
-      if ((double) this.lootTime != 0.0)
+      if (lootTime != 0.0)
       {
-        this.lootTimeLeft -= Time.deltaTime;
-        if ((double) this.lootTimeLeft < 0.0)
+        lootTimeLeft -= Time.deltaTime;
+        if (lootTimeLeft < 0.0)
         {
-          this.animator.SetTrigger("Fight.Triggers/CancelWalk");
-          this.Status = NpcStateStatusEnum.Success;
+          animator.SetTrigger("Fight.Triggers/CancelWalk");
+          Status = NpcStateStatusEnum.Success;
           return;
         }
       }
-      this.agent.nextPosition = this.animator.rootPosition;
-      this.Status = NpcStateStatusEnum.Running;
+      agent.nextPosition = animator.rootPosition;
+      Status = NpcStateStatusEnum.Running;
     }
   }
 

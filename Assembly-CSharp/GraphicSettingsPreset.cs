@@ -1,6 +1,5 @@
 ﻿using Engine.Source.Commons;
 using Engine.Source.Settings;
-using UnityEngine;
 
 [CreateAssetMenu(menuName = "Data/Graphic Settings Preset")]
 public class GraphicSettingsPreset : ScriptableObject
@@ -39,60 +38,60 @@ public class GraphicSettingsPreset : ScriptableObject
   [Range(0.0f, 3f)]
   private int volumetricLighting;
 
-  public bool AdditionalReflections => this.additionalReflections;
+  public bool AdditionalReflections => additionalReflections;
 
-  public float AILodDistance => this.aiLodDistance;
+  public float AILodDistance => aiLodDistance;
 
-  public bool AnisotropicFiltering => this.anisotropicFiltering;
+  public bool AnisotropicFiltering => anisotropicFiltering;
 
-  public bool Antialiasing => this.antialiasing;
+  public bool Antialiasing => antialiasing;
 
-  public bool AOFields => this.aoFields;
+  public bool AOFields => aoFields;
 
-  public bool ContactShadows => this.contactShadows;
+  public bool ContactShadows => contactShadows;
 
-  public bool DOF => this.dof;
+  public bool DOF => dof;
 
-  public float LevelOfDetails => this.levelOfDetails;
+  public float LevelOfDetails => levelOfDetails;
 
-  public bool MotionBlur => this.motionBlur;
+  public bool MotionBlur => motionBlur;
 
-  public float ShadowDistance => this.shadowDistance;
+  public float ShadowDistance => shadowDistance;
 
-  public int ShadowQuality => this.shadowQuality;
+  public int ShadowQuality => shadowQuality;
 
-  public bool SoftParticles => this.softParticles;
+  public bool SoftParticles => softParticles;
 
-  public bool SSAO => this.ssao;
+  public bool SSAO => ssao;
 
-  public bool SSR => this.ssr;
+  public bool SSR => ssr;
 
-  public int VolumetricLighting => this.volumetricLighting;
+  public int VolumetricLighting => volumetricLighting;
 
   public void Apply()
   {
     GraphicsGameSettings instance = InstanceByRequest<GraphicsGameSettings>.Instance;
-    instance.AdditionalReflections.Value = this.additionalReflections;
-    instance.AILodDistance.Value = this.aiLodDistance;
-    instance.AnisotropicFiltering.Value = this.anisotropicFiltering;
-    instance.Antialiasing.Value = this.antialiasing;
-    instance.AOFields.Value = this.aoFields;
-    instance.ContactShadows.Value = this.contactShadows;
-    instance.DOF.Value = this.dof;
-    instance.LevelOfDetails.Value = this.levelOfDetails;
-    instance.MotionBlur.Value = this.motionBlur;
-    instance.ShadowDistance.Value = this.shadowDistance;
-    instance.ShadowQuality.Value = this.shadowQuality;
-    instance.SoftParticles.Value = this.softParticles;
-    instance.SSAO.Value = this.ssao;
-    instance.SSR.Value = this.ssr;
-    instance.VolumetricLighting.Value = this.volumetricLighting;
+    instance.AdditionalReflections.Value = additionalReflections;
+    instance.AILodDistance.Value = aiLodDistance;
+    instance.AnisotropicFiltering.Value = anisotropicFiltering;
+    instance.Antialiasing.Value = antialiasing;
+    instance.AOFields.Value = aoFields;
+    instance.ContactShadows.Value = contactShadows;
+    instance.DOF.Value = dof;
+    instance.LevelOfDetails.Value = levelOfDetails;
+    instance.MotionBlur.Value = motionBlur;
+    instance.ShadowDistance.Value = shadowDistance;
+    instance.ShadowQuality.Value = shadowQuality;
+    instance.SoftParticles.Value = softParticles;
+    instance.SSAO.Value = ssao;
+    instance.SSR.Value = ssr;
+    instance.VolumetricLighting.Value = volumetricLighting;
     instance.Apply();
   }
 
   public bool IsCurrent()
   {
     GraphicsGameSettings instance = InstanceByRequest<GraphicsGameSettings>.Instance;
-    return instance.AdditionalReflections.Value == this.additionalReflections && (double) instance.AILodDistance.Value == (double) this.aiLodDistance && instance.AnisotropicFiltering.Value == this.anisotropicFiltering && instance.Antialiasing.Value == this.antialiasing && instance.AOFields.Value == this.aoFields && instance.ContactShadows.Value == this.contactShadows && instance.DOF.Value == this.dof && (double) instance.LevelOfDetails.Value == (double) this.levelOfDetails && instance.MotionBlur.Value == this.motionBlur && (double) instance.ShadowDistance.Value == (double) this.shadowDistance && instance.ShadowQuality.Value == this.shadowQuality && instance.SoftParticles.Value == this.softParticles && instance.SSAO.Value == this.ssao && instance.SSR.Value == this.ssr && instance.VolumetricLighting.Value == this.volumetricLighting;
+    return instance.AdditionalReflections.Value == additionalReflections && instance.AILodDistance.Value == (double) aiLodDistance && instance.AnisotropicFiltering.Value == anisotropicFiltering && instance.Antialiasing.Value == antialiasing && instance.AOFields.Value == aoFields && instance.ContactShadows.Value == contactShadows && instance.DOF.Value == dof && instance.LevelOfDetails.Value == (double) levelOfDetails && instance.MotionBlur.Value == motionBlur && instance.ShadowDistance.Value == (double) shadowDistance && instance.ShadowQuality.Value == shadowQuality && instance.SoftParticles.Value == softParticles && instance.SSAO.Value == ssao && instance.SSR.Value == ssr && instance.VolumetricLighting.Value == volumetricLighting;
   }
 }

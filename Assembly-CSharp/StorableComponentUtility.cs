@@ -1,38 +1,37 @@
-﻿using Engine.Common;
+﻿using System;
+using System.Linq;
+using Engine.Common;
 using Engine.Common.Components;
 using Engine.Common.Components.Storable;
 using Engine.Common.Services;
 using Engine.Source.Commons;
 using Engine.Source.Components;
-using System;
-using System.Linq;
-using UnityEngine;
 
 public static class StorableComponentUtility
 {
   public static bool IsWearable(IStorableComponent storable)
   {
-    return storable.Groups.Contains<StorableGroup>(StorableGroup.Clothes_Ammo) || storable.Groups.Contains<StorableGroup>(StorableGroup.Clothes_Arms) || storable.Groups.Contains<StorableGroup>(StorableGroup.Clothes_Body) || storable.Groups.Contains<StorableGroup>(StorableGroup.Clothes_Feet) || storable.Groups.Contains<StorableGroup>(StorableGroup.Clothes_Head) || storable.Groups.Contains<StorableGroup>(StorableGroup.Weapons_Primary) || storable.Groups.Contains<StorableGroup>(StorableGroup.Weapons_Secondary);
+    return storable.Groups.Contains(StorableGroup.Clothes_Ammo) || storable.Groups.Contains(StorableGroup.Clothes_Arms) || storable.Groups.Contains(StorableGroup.Clothes_Body) || storable.Groups.Contains(StorableGroup.Clothes_Feet) || storable.Groups.Contains(StorableGroup.Clothes_Head) || storable.Groups.Contains(StorableGroup.Weapons_Primary) || storable.Groups.Contains(StorableGroup.Weapons_Secondary);
   }
 
   public static bool IsUsable(IStorableComponent storable)
   {
-    return storable.Groups.Contains<StorableGroup>(StorableGroup.Usable);
+    return storable.Groups.Contains(StorableGroup.Usable);
   }
 
   public static bool IsBottled(IStorableComponent storable)
   {
-    return storable.Groups.Contains<StorableGroup>(StorableGroup.Bottled_Liquid);
+    return storable.Groups.Contains(StorableGroup.Bottled_Liquid);
   }
 
   public static bool IsSplittable(IStorableComponent storable)
   {
-    return storable.Count > 1 && StorableComponentUtility.IsDraggable(storable);
+    return storable.Count > 1 && IsDraggable(storable);
   }
 
   public static bool IsDraggable(IStorableComponent storable)
   {
-    return !storable.Groups.Contains<StorableGroup>(StorableGroup.Money) && !storable.Groups.Contains<StorableGroup>(StorableGroup.Key);
+    return !storable.Groups.Contains(StorableGroup.Money) && !storable.Groups.Contains(StorableGroup.Key);
   }
 
   public static IStorableComponent Split(this IStorableComponent storable, int count)
@@ -40,7 +39,7 @@ public static class StorableComponentUtility
     if (count == 0 || count > storable.Count)
       throw new Exception();
     IEntity template = (IEntity) storable.Owner.Template;
-    IEntity entity = ServiceLocator.GetService<IFactory>().Instantiate<IEntity>(template);
+    IEntity entity = ServiceLocator.GetService<IFactory>().Instantiate(template);
     ServiceLocator.GetService<ISimulation>().Add(entity, ServiceLocator.GetService<ISimulation>().Storables);
     IStorableComponent component = entity.GetComponent<IStorableComponent>();
     storable.Count -= count;

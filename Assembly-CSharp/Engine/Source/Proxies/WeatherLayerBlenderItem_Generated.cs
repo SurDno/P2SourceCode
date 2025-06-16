@@ -1,9 +1,9 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Engine.Common.Commons.Cloneable;
 using Engine.Common.Services;
 using Engine.Source.Commons;
 using Engine.Source.Weather;
-using System;
 
 namespace Engine.Source.Proxies
 {
@@ -12,9 +12,9 @@ namespace Engine.Source.Proxies
   {
     public object Clone()
     {
-      return (object) ServiceCache.Factory.Instantiate<WeatherLayerBlenderItem_Generated>(this);
+      return ServiceCache.Factory.Instantiate(this);
     }
 
-    public void CopyTo(object target2) => ((EngineObject) target2).name = this.name;
+    public void CopyTo(object target2) => ((EngineObject) target2).name = name;
   }
 }

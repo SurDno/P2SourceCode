@@ -1,8 +1,8 @@
-﻿using Cofe.Utility;
+﻿using System;
+using System.Collections.Generic;
+using Cofe.Utility;
 using Engine.Common;
 using Engine.Common.Services;
-using System;
-using System.Collections.Generic;
 
 namespace Engine.Source.Services.Consoles
 {
@@ -12,14 +12,14 @@ namespace Engine.Source.Services.Consoles
 
     public static void AddTarget(string name, Func<string, object> func)
     {
-      ConsoleTargetService.targets.Add(name, func);
+      targets.Add(name, func);
     }
 
     public static bool GetTarget(string name, string value, out object result)
     {
-      result = (object) null;
+      result = null;
       Func<string, object> func;
-      if (name.IsNullOrEmpty() || !ConsoleTargetService.targets.TryGetValue(name, out func))
+      if (name.IsNullOrEmpty() || !targets.TryGetValue(name, out func))
         return false;
       result = func(value);
       return true;
@@ -28,30 +28,30 @@ namespace Engine.Source.Services.Consoles
     public static object GetTarget(Type type, ConsoleParameter parameter)
     {
       object result;
-      if (ConsoleTargetService.GetTarget(type.Name, "", out result) || ConsoleTargetService.GetTarget(parameter.Parameter, parameter.Value, out result))
-        return ConsoleTargetService.GetTarget(type, result);
-      return parameter.Parameter.IsNullOrEmpty() ? ConsoleTargetService.GetTarget(type, (object) ServiceLocator.GetService<ISimulation>().Player) : (object) null;
+      if (GetTarget(type.Name, "", out result) || GetTarget(parameter.Parameter, parameter.Value, out result))
+        return GetTarget(type, result);
+      return parameter.Parameter.IsNullOrEmpty() ? GetTarget(type, ServiceLocator.GetService<ISimulation>().Player) : null;
     }
 
     public static object GetTarget(Type type, object target)
     {
       if (target == null)
-        return (object) null;
+        return null;
       if (TypeUtility.IsAssignableFrom(type, target.GetType()))
         return target;
       if (target is IEntity entity)
       {
         if (typeof (IComponent).IsAssignableFrom(type))
-          return (object) entity.GetComponent(type);
+          return entity.GetComponent(type);
       }
       else if (target is IComponent component)
       {
         if (typeof (IEntity).IsAssignableFrom(type))
-          return (object) component.Owner;
+          return component.Owner;
         if (typeof (IComponent).IsAssignableFrom(type))
-          return (object) entity.GetComponent(type);
+          return entity.GetComponent(type);
       }
-      return (object) null;
+      return null;
     }
   }
 }

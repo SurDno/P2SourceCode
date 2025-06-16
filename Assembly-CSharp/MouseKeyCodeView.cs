@@ -1,7 +1,4 @@
-﻿using UnityEngine;
-using UnityEngine.UI;
-
-public class MouseKeyCodeView : KeyCodeViewBase
+﻿public class MouseKeyCodeView : KeyCodeViewBase
 {
   [SerializeField]
   private Image image;
@@ -10,17 +7,17 @@ public class MouseKeyCodeView : KeyCodeViewBase
 
   protected override void ApplyValue(bool instant)
   {
-    if ((Object) this.image == (Object) null)
+    if ((Object) image == (Object) null)
       return;
-    if (this.buttonIcons != null)
+    if (buttonIcons != null)
     {
-      int index = (int) (this.GetValue() - 323);
-      if (index >= 0 || index < this.buttonIcons.Length)
+      int index = (int) (GetValue() - 323);
+      if (index >= 0 || index < buttonIcons.Length)
       {
-        this.image.sprite = this.buttonIcons[index];
+        image.sprite = buttonIcons[index];
         return;
       }
     }
-    this.image.sprite = (Sprite) null;
+    image.sprite = (Sprite) null;
   }
 }

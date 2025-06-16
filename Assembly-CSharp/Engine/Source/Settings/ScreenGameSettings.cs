@@ -1,5 +1,4 @@
 ﻿using Inspectors;
-using UnityEngine;
 
 namespace Engine.Source.Settings
 {

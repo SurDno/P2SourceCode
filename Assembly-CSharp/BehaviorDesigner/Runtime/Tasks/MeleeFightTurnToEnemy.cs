@@ -1,10 +1,10 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons;
 using Engine.Common.Commons.Converters;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
-using UnityEngine;
 
 namespace BehaviorDesigner.Runtime.Tasks
 {
@@ -16,49 +16,49 @@ namespace BehaviorDesigner.Runtime.Tasks
   [FactoryProxy(typeof (MeleeFightTurnToEnemy))]
   public class MeleeFightTurnToEnemy : Action, IStub, ISerializeDataWrite, ISerializeDataRead
   {
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy()]
     [SerializeField]
     public float AngleDelta = 3f;
     private EnemyBase owner;
 
     public override void OnStart()
     {
-      this.owner = this.gameObject.GetComponentNonAlloc<EnemyBase>();
-      if (!((UnityEngine.Object) this.owner == (UnityEngine.Object) null))
+      owner = gameObject.GetComponentNonAlloc<EnemyBase>();
+      if (!((UnityEngine.Object) owner == (UnityEngine.Object) null))
         return;
-      Debug.LogWarning((object) (this.gameObject.name + ": doesn't contain " + typeof (EnemyBase).Name + " engine component"), (UnityEngine.Object) this.gameObject);
+      Debug.LogWarning((object) (gameObject.name + ": doesn't contain " + typeof (EnemyBase).Name + " engine component"), (UnityEngine.Object) gameObject);
     }
 
     public override TaskStatus OnUpdate()
     {
-      if ((UnityEngine.Object) this.owner == (UnityEngine.Object) null || (UnityEngine.Object) this.owner.Enemy == (UnityEngine.Object) null)
+      if ((UnityEngine.Object) owner == (UnityEngine.Object) null || (UnityEngine.Object) owner.Enemy == (UnityEngine.Object) null)
         return TaskStatus.Failure;
-      Vector3 forward = this.owner.Enemy.transform.position - this.transform.position;
+      Vector3 forward = owner.Enemy.transform.position - transform.position;
       forward = new Vector3(forward.x, 0.0f, forward.z);
       forward.Normalize();
-      return (double) Quaternion.Angle(this.transform.rotation, Quaternion.LookRotation(forward)) < (double) this.AngleDelta ? TaskStatus.Success : TaskStatus.Running;
+      return (double) Quaternion.Angle(transform.rotation, Quaternion.LookRotation(forward)) < AngleDelta ? TaskStatus.Success : TaskStatus.Running;
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.WriteSerialize<NodeData>(writer, "NodeData", this.nodeData);
-      DefaultDataWriteUtility.Write(writer, "Id", this.id);
-      DefaultDataWriteUtility.Write(writer, "FriendlyName", this.friendlyName);
-      DefaultDataWriteUtility.Write(writer, "Instant", this.instant);
-      DefaultDataWriteUtility.Write(writer, "Disabled", this.disabled);
-      DefaultDataWriteUtility.Write(writer, "AngleDelta", this.AngleDelta);
+      DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
+      DefaultDataWriteUtility.Write(writer, "Id", id);
+      DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
+      DefaultDataWriteUtility.Write(writer, "Instant", instant);
+      DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
+      DefaultDataWriteUtility.Write(writer, "AngleDelta", AngleDelta);
     }
 
-    public void DataRead(IDataReader reader, System.Type type)
+    public void DataRead(IDataReader reader, Type type)
     {
-      this.nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
-      this.id = DefaultDataReadUtility.Read(reader, "Id", this.id);
-      this.friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", this.friendlyName);
-      this.instant = DefaultDataReadUtility.Read(reader, "Instant", this.instant);
-      this.disabled = DefaultDataReadUtility.Read(reader, "Disabled", this.disabled);
-      this.AngleDelta = DefaultDataReadUtility.Read(reader, "AngleDelta", this.AngleDelta);
+      nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
+      id = DefaultDataReadUtility.Read(reader, "Id", id);
+      friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
+      instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
+      disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
+      AngleDelta = DefaultDataReadUtility.Read(reader, "AngleDelta", AngleDelta);
     }
   }
 }

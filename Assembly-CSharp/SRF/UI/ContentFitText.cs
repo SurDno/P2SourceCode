@@ -1,9 +1,4 @@
-﻿using System;
-using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.UI;
-
-namespace SRF.UI
+﻿namespace SRF.UI
 {
   [RequireComponent(typeof (RectTransform))]
   [ExecuteInEditMode]
@@ -17,7 +12,7 @@ namespace SRF.UI
     {
       get
       {
-        return (UnityEngine.Object) this.CopySource == (UnityEngine.Object) null ? -1f : LayoutUtility.GetMinWidth(this.CopySource.rectTransform) + this.Padding.x;
+        return (UnityEngine.Object) CopySource == (UnityEngine.Object) null ? -1f : LayoutUtility.GetMinWidth(CopySource.rectTransform) + Padding.x;
       }
     }
 
@@ -25,7 +20,7 @@ namespace SRF.UI
     {
       get
       {
-        return (UnityEngine.Object) this.CopySource == (UnityEngine.Object) null ? -1f : LayoutUtility.GetPreferredWidth(this.CopySource.rectTransform) + this.Padding.x;
+        return (UnityEngine.Object) CopySource == (UnityEngine.Object) null ? -1f : LayoutUtility.GetPreferredWidth(CopySource.rectTransform) + Padding.x;
       }
     }
 
@@ -33,7 +28,7 @@ namespace SRF.UI
     {
       get
       {
-        return (UnityEngine.Object) this.CopySource == (UnityEngine.Object) null ? -1f : LayoutUtility.GetFlexibleWidth(this.CopySource.rectTransform);
+        return (UnityEngine.Object) CopySource == (UnityEngine.Object) null ? -1f : LayoutUtility.GetFlexibleWidth(CopySource.rectTransform);
       }
     }
 
@@ -41,7 +36,7 @@ namespace SRF.UI
     {
       get
       {
-        return (UnityEngine.Object) this.CopySource == (UnityEngine.Object) null ? -1f : LayoutUtility.GetFlexibleHeight(this.CopySource.rectTransform) + this.Padding.y;
+        return (UnityEngine.Object) CopySource == (UnityEngine.Object) null ? -1f : LayoutUtility.GetFlexibleHeight(CopySource.rectTransform) + Padding.y;
       }
     }
 
@@ -49,7 +44,7 @@ namespace SRF.UI
     {
       get
       {
-        return (UnityEngine.Object) this.CopySource == (UnityEngine.Object) null ? -1f : LayoutUtility.GetPreferredHeight(this.CopySource.rectTransform) + this.Padding.y;
+        return (UnityEngine.Object) CopySource == (UnityEngine.Object) null ? -1f : LayoutUtility.GetPreferredHeight(CopySource.rectTransform) + Padding.y;
       }
     }
 
@@ -57,7 +52,7 @@ namespace SRF.UI
     {
       get
       {
-        return (UnityEngine.Object) this.CopySource == (UnityEngine.Object) null ? -1f : LayoutUtility.GetFlexibleHeight(this.CopySource.rectTransform);
+        return (UnityEngine.Object) CopySource == (UnityEngine.Object) null ? -1f : LayoutUtility.GetFlexibleHeight(CopySource.rectTransform);
       }
     }
 
@@ -65,30 +60,30 @@ namespace SRF.UI
 
     public void CalculateLayoutInputHorizontal()
     {
-      this.CopySource.CalculateLayoutInputHorizontal();
+      CopySource.CalculateLayoutInputHorizontal();
     }
 
-    public void CalculateLayoutInputVertical() => this.CopySource.CalculateLayoutInputVertical();
+    public void CalculateLayoutInputVertical() => CopySource.CalculateLayoutInputVertical();
 
     protected override void OnEnable()
     {
-      this.SetDirty();
-      this.CopySource.LayoutDirty += new Action<SRText>(this.CopySourceOnLayoutDirty);
+      SetDirty();
+      CopySource.LayoutDirty += CopySourceOnLayoutDirty;
     }
 
-    private void CopySourceOnLayoutDirty(SRText srText) => this.SetDirty();
+    private void CopySourceOnLayoutDirty(SRText srText) => SetDirty();
 
-    protected override void OnTransformParentChanged() => this.SetDirty();
+    protected override void OnTransformParentChanged() => SetDirty();
 
     protected override void OnDisable()
     {
-      this.CopySource.LayoutDirty -= new Action<SRText>(this.CopySourceOnLayoutDirty);
-      this.SetDirty();
+      CopySource.LayoutDirty -= CopySourceOnLayoutDirty;
+      SetDirty();
     }
 
-    protected override void OnDidApplyAnimationProperties() => this.SetDirty();
+    protected override void OnDidApplyAnimationProperties() => SetDirty();
 
-    protected override void OnBeforeTransformParentChanged() => this.SetDirty();
+    protected override void OnBeforeTransformParentChanged() => SetDirty();
 
     protected void SetDirty()
     {

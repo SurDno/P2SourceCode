@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEngine;
 
 namespace RootMotion.Dynamics
 {
@@ -37,7 +36,7 @@ namespace RootMotion.Dynamics
 
     public static void DivByInertia(ref Vector3 v, Quaternion rotation, Vector3 inertiaTensor)
     {
-      v = rotation * PhysXTools.Div(Quaternion.Inverse(rotation) * v, inertiaTensor);
+      v = rotation * Div(Quaternion.Inverse(rotation) * v, inertiaTensor);
     }
 
     public static void ScaleByInertia(ref Vector3 v, Quaternion rotation, Vector3 inertiaTensor)
@@ -64,17 +63,17 @@ namespace RootMotion.Dynamics
 
     public static void AddFromToTorque(Rigidbody r, Quaternion toR, ForceMode forceMode)
     {
-      Vector3 torque = PhysXTools.GetAngularAcceleration(r.rotation, toR) - r.angularVelocity;
+      Vector3 torque = GetAngularAcceleration(r.rotation, toR) - r.angularVelocity;
       switch (forceMode)
       {
         case ForceMode.Force:
           Vector3 v1 = torque / Time.fixedDeltaTime;
-          PhysXTools.ScaleByInertia(ref v1, r.rotation, r.inertiaTensor);
+          ScaleByInertia(ref v1, r.rotation, r.inertiaTensor);
           r.AddTorque(v1, forceMode);
           break;
         case ForceMode.Impulse:
           Vector3 v2 = torque;
-          PhysXTools.ScaleByInertia(ref v2, r.rotation, r.inertiaTensor);
+          ScaleByInertia(ref v2, r.rotation, r.inertiaTensor);
           r.AddTorque(v2, forceMode);
           break;
         case ForceMode.VelocityChange:
@@ -92,17 +91,17 @@ namespace RootMotion.Dynamics
       Vector3 toV,
       ForceMode forceMode)
     {
-      Vector3 torque = PhysXTools.GetFromToAcceleration(fromV, toV) - r.angularVelocity;
+      Vector3 torque = GetFromToAcceleration(fromV, toV) - r.angularVelocity;
       switch (forceMode)
       {
         case ForceMode.Force:
           Vector3 v1 = torque / Time.fixedDeltaTime;
-          PhysXTools.ScaleByInertia(ref v1, r.rotation, r.inertiaTensor);
+          ScaleByInertia(ref v1, r.rotation, r.inertiaTensor);
           r.AddTorque(v1, forceMode);
           break;
         case ForceMode.Impulse:
           Vector3 v2 = torque;
-          PhysXTools.ScaleByInertia(ref v2, r.rotation, r.inertiaTensor);
+          ScaleByInertia(ref v2, r.rotation, r.inertiaTensor);
           r.AddTorque(v2, forceMode);
           break;
         case ForceMode.VelocityChange:
@@ -120,7 +119,7 @@ namespace RootMotion.Dynamics
       Vector3 toV,
       ForceMode forceMode)
     {
-      Vector3 force1 = PhysXTools.GetLinearAcceleration(fromV, toV) - r.velocity;
+      Vector3 force1 = GetLinearAcceleration(fromV, toV) - r.velocity;
       switch (forceMode)
       {
         case ForceMode.Force:

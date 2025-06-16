@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace RootMotion
+﻿namespace RootMotion
 {
   public class SolverManager : MonoBehaviour
   {
@@ -34,87 +32,87 @@ namespace RootMotion
     {
       if (!Application.isPlaying)
         return;
-      this.Initiate();
+      Initiate();
     }
 
-    private void Start() => this.Initiate();
+    private void Start() => Initiate();
 
     private bool animatePhysics
     {
       get
       {
-        if ((Object) this.animator != (Object) null)
-          return this.animator.updateMode == AnimatorUpdateMode.AnimatePhysics;
-        return (Object) this.legacy != (Object) null && this.legacy.animatePhysics;
+        if ((Object) animator != (Object) null)
+          return animator.updateMode == AnimatorUpdateMode.AnimatePhysics;
+        return (Object) legacy != (Object) null && legacy.animatePhysics;
       }
     }
 
     private void Initiate()
     {
-      if (this.componentInitiated)
+      if (componentInitiated)
         return;
-      this.FindAnimatorRecursive(this.transform, true);
-      this.InitiateSolver();
-      this.componentInitiated = true;
+      FindAnimatorRecursive(this.transform, true);
+      InitiateSolver();
+      componentInitiated = true;
     }
 
     private void Update()
     {
-      if (this.skipSolverUpdate || this.animatePhysics || !this.fixTransforms)
+      if (skipSolverUpdate || animatePhysics || !fixTransforms)
         return;
-      this.FixTransforms();
+      FixTransforms();
     }
 
     private void FindAnimatorRecursive(Transform t, bool findInChildren)
     {
-      if (this.isAnimated)
+      if (isAnimated)
         return;
-      this.animator = t.GetComponent<Animator>();
-      this.legacy = t.GetComponent<Animation>();
-      if (this.isAnimated)
+      animator = t.GetComponent<Animator>();
+      legacy = t.GetComponent<Animation>();
+      if (isAnimated)
         return;
-      if ((Object) this.animator == (Object) null & findInChildren)
-        this.animator = t.GetComponentInChildren<Animator>();
-      if ((Object) this.legacy == (Object) null & findInChildren)
-        this.legacy = t.GetComponentInChildren<Animation>();
-      if (this.isAnimated || !((Object) t.parent != (Object) null))
+      if ((Object) animator == (Object) null & findInChildren)
+        animator = t.GetComponentInChildren<Animator>();
+      if ((Object) legacy == (Object) null & findInChildren)
+        legacy = t.GetComponentInChildren<Animation>();
+      if (isAnimated || !((Object) t.parent != (Object) null))
         return;
-      this.FindAnimatorRecursive(t.parent, false);
+      FindAnimatorRecursive(t.parent, false);
     }
 
     private bool isAnimated
     {
-      get => (Object) this.animator != (Object) null || (Object) this.legacy != (Object) null;
+      get => (Object) animator != (Object) null || (Object) legacy != (Object) null;
     }
 
     private void FixedUpdate()
     {
-      if (this.skipSolverUpdate)
-        this.skipSolverUpdate = false;
-      this.updateFrame = true;
-      if (!this.animatePhysics || !this.fixTransforms)
+      if (skipSolverUpdate)
+        skipSolverUpdate = false;
+      updateFrame = true;
+      if (!animatePhysics || !fixTransforms)
         return;
-      this.FixTransforms();
+      FixTransforms();
     }
 
     private void LateUpdate()
     {
-      if (this.skipSolverUpdate)
+      if (skipSolverUpdate)
         return;
-      if (!this.animatePhysics)
-        this.updateFrame = true;
-      if (!this.updateFrame)
+      if (!animatePhysics)
+        updateFrame = true;
+      if (!updateFrame)
         return;
-      this.updateFrame = false;
-      this.UpdateSolver();
+      updateFrame = false;
+      UpdateSolver();
     }
 
     public void UpdateSolverExternal()
     {
       if (!this.enabled)
         return;
-      this.skipSolverUpdate = true;
-      this.UpdateSolver();
+      skipSolverUpdate = true;
+      UpdateSolver();
     }
   }
 }

@@ -1,12 +1,9 @@
-﻿using Engine.Common.Services;
+﻿using System;
+using System.Collections.Generic;
+using Engine.Common.Services;
 using Engine.Impl.UI.Controls;
 using Engine.Source.Components.BoundCharacters;
 using Engine.Source.Services;
-using System;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.Events;
-using UnityEngine.UI;
 
 public class BoundCharactersStateChangeView : MonoBehaviour
 {
@@ -22,24 +19,24 @@ public class BoundCharactersStateChangeView : MonoBehaviour
 
   public event Action FinishedEvent;
 
-  private void Awake() => this.skipButton.onClick.AddListener(new UnityAction(this.Skip));
+  private void Awake() => skipButton.onClick.AddListener(new UnityAction(Skip));
 
   public void Show()
   {
     foreach (BoundCharacterComponent characterComponent in ServiceLocator.GetService<BoundCharactersService>().Items)
     {
       if (characterComponent.PreRollStateStored)
-        this.characters.Add(characterComponent);
+        characters.Add(characterComponent);
     }
-    this.activeView.Visible = true;
-    this.TryNextCharacter();
+    activeView.Visible = true;
+    TryNextCharacter();
   }
 
   private void Finish()
   {
-    this.characters.Clear();
-    this.activeView.Visible = false;
-    Action finishedEvent = this.FinishedEvent;
+    characters.Clear();
+    activeView.Visible = false;
+    Action finishedEvent = FinishedEvent;
     if (finishedEvent == null)
       return;
     finishedEvent();
@@ -47,37 +44,37 @@ public class BoundCharactersStateChangeView : MonoBehaviour
 
   private void TryNextCharacter()
   {
-    if (this.characters.Count > 0)
+    if (characters.Count > 0)
     {
-      BoundCharacterComponent character = this.characters[0];
-      this.characters.RemoveAt(0);
-      this.characterView = UnityEngine.Object.Instantiate<BoundCharacterStateChangeView>(this.characterViewPrefab, this.transform, false);
-      if (this.onCurrentCharacterEndAction == null)
-        this.onCurrentCharacterEndAction = new Action(this.OnCurrentCharacterEnd);
-      this.characterView.FinishEvent += this.onCurrentCharacterEndAction;
-      this.characterView.Show(character);
+      BoundCharacterComponent character = characters[0];
+      characters.RemoveAt(0);
+      characterView = UnityEngine.Object.Instantiate<BoundCharacterStateChangeView>(characterViewPrefab, this.transform, false);
+      if (onCurrentCharacterEndAction == null)
+        onCurrentCharacterEndAction = OnCurrentCharacterEnd;
+      characterView.FinishEvent += onCurrentCharacterEndAction;
+      characterView.Show(character);
       character.PreRollStateStored = false;
     }
     else
-      this.Finish();
+      Finish();
   }
 
   private void OnCurrentCharacterEnd()
   {
-    UnityEngine.Object.Destroy((UnityEngine.Object) this.characterView.gameObject);
-    this.characterView = (BoundCharacterStateChangeView) null;
-    this.TryNextCharacter();
+    UnityEngine.Object.Destroy((UnityEngine.Object) characterView.gameObject);
+    characterView = null;
+    TryNextCharacter();
   }
 
-  private void Skip() => this.characterView?.Skip();
+  private void Skip() => characterView?.Skip();
 
   public void FinishAll()
   {
-    for (int index = 0; index < this.characters.Count; ++index)
-      this.characters[index].PreRollStateStored = false;
-    this.characters.Clear();
-    if (!((UnityEngine.Object) this.characterView != (UnityEngine.Object) null))
+    for (int index = 0; index < characters.Count; ++index)
+      characters[index].PreRollStateStored = false;
+    characters.Clear();
+    if (!((UnityEngine.Object) characterView != (UnityEngine.Object) null))
       return;
-    this.characterView.Finish();
+    characterView.Finish();
   }
 }

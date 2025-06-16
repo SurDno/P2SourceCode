@@ -4,7 +4,6 @@ using Engine.Common;
 using Engine.Common.Commons;
 using Engine.Impl.Services.Factories;
 using Engine.Source.Settings.External;
-using UnityEngine;
 
 namespace Engine.Source.Commons
 {
@@ -17,9 +16,9 @@ namespace Engine.Source.Commons
     {
       get
       {
-        if ((Object) this.externalBehaviorTree == (Object) null)
-          this.externalBehaviorTree = AssetDatabaseService.Instance.Load<ExternalBehaviorTree>(AssetDatabaseService.Instance.GetPath(this.Id));
-        return this.externalBehaviorTree;
+        if ((Object) externalBehaviorTree == (Object) null)
+          externalBehaviorTree = AssetDatabaseService.Instance.Load<ExternalBehaviorTree>(AssetDatabaseService.Instance.GetPath(Id));
+        return externalBehaviorTree;
       }
     }
 
@@ -27,7 +26,7 @@ namespace Engine.Source.Commons
     {
       if (!ExternalSettingsInstance<ExternalOptimizationSettings>.Instance.PreloadBehaviors)
         return;
-      XmlDeserializationCache.GetOrCreateData(this.ExternalBehaviorTree.BehaviorSource.TaskData.XmlData);
+      XmlDeserializationCache.GetOrCreateData(ExternalBehaviorTree.BehaviorSource.TaskData.XmlData);
     }
   }
 }

@@ -1,5 +1,5 @@
-﻿using ParadoxNotion.Design;
-using System;
+﻿using System;
+using ParadoxNotion.Design;
 
 namespace FlowCanvas.Nodes
 {
@@ -7,6 +7,6 @@ namespace FlowCanvas.Nodes
   [Name(">")]
   public class AnyGreaterThan : PureFunctionNode<bool, IComparable, IComparable>
   {
-    public override bool Invoke(IComparable a, IComparable b) => a.CompareTo((object) b) == 1;
+    public override bool Invoke(IComparable a, IComparable b) => a.CompareTo(b) == 1;
   }
 }

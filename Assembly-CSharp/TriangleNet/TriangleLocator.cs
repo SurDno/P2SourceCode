@@ -12,12 +12,12 @@ namespace TriangleNet
     public TriangleLocator(Mesh mesh)
     {
       this.mesh = mesh;
-      this.sampler = new Sampler();
+      sampler = new Sampler();
     }
 
-    public void Update(ref Otri otri) => otri.Copy(ref this.recenttri);
+    public void Update(ref Otri otri) => otri.Copy(ref recenttri);
 
-    public void Reset() => this.recenttri.triangle = (Triangle) null;
+    public void Reset() => recenttri.triangle = null;
 
     public LocateResult PreciseLocate(Point searchpoint, ref Otri searchtri, bool stopatsubsegment)
     {
@@ -32,8 +32,8 @@ namespace TriangleNet
       {
         if (vertex.x != searchpoint.X || vertex.y != searchpoint.Y)
         {
-          num1 = Primitives.CounterClockwise((Point) pa, (Point) vertex, searchpoint);
-          num2 = Primitives.CounterClockwise((Point) vertex, (Point) pb, searchpoint);
+          num1 = Primitives.CounterClockwise(pa, vertex, searchpoint);
+          num2 = Primitives.CounterClockwise(vertex, pb, searchpoint);
           bool flag;
           if (num1 > 0.0)
             flag = num2 <= 0.0 || (vertex.x - searchpoint.X) * (pb.x - pa.x) + (vertex.y - searchpoint.Y) * (pb.y - pa.y) > 0.0;
@@ -52,7 +52,7 @@ namespace TriangleNet
             pa = vertex;
           }
           o2.Sym(ref searchtri);
-          if (this.mesh.checksegments & stopatsubsegment)
+          if (mesh.checksegments & stopatsubsegment)
           {
             o2.SegPivot(ref os);
             if (os.seg != Mesh.dummysub)
@@ -91,25 +91,25 @@ label_18:
       Otri otri = new Otri();
       Vertex vertex1 = searchtri.Org();
       double num1 = (searchpoint.X - vertex1.x) * (searchpoint.X - vertex1.x) + (searchpoint.Y - vertex1.y) * (searchpoint.Y - vertex1.y);
-      if (this.recenttri.triangle != null && !Otri.IsDead(this.recenttri.triangle))
+      if (recenttri.triangle != null && !Otri.IsDead(recenttri.triangle))
       {
-        Vertex vertex2 = this.recenttri.Org();
+        Vertex vertex2 = recenttri.Org();
         if (vertex2.x == searchpoint.X && vertex2.y == searchpoint.Y)
         {
-          this.recenttri.Copy(ref searchtri);
+          recenttri.Copy(ref searchtri);
           return LocateResult.OnVertex;
         }
         double num2 = (searchpoint.X - vertex2.x) * (searchpoint.X - vertex2.x) + (searchpoint.Y - vertex2.y) * (searchpoint.Y - vertex2.y);
         if (num2 < num1)
         {
-          this.recenttri.Copy(ref searchtri);
+          recenttri.Copy(ref searchtri);
           num1 = num2;
         }
       }
-      this.sampler.Update(this.mesh);
-      foreach (int sample in this.sampler.GetSamples(this.mesh))
+      sampler.Update(mesh);
+      foreach (int sample in sampler.GetSamples(mesh))
       {
-        otri.triangle = this.mesh.triangles[sample];
+        otri.triangle = mesh.triangles[sample];
         if (!Otri.IsDead(otri.triangle))
         {
           Vertex vertex3 = otri.Org();
@@ -130,12 +130,12 @@ label_18:
         searchtri.LnextSelf();
         return LocateResult.OnVertex;
       }
-      double num4 = Primitives.CounterClockwise((Point) pa, (Point) pb, searchpoint);
+      double num4 = Primitives.CounterClockwise(pa, pb, searchpoint);
       if (num4 < 0.0)
         searchtri.SymSelf();
       else if (num4 == 0.0 && pa.x < searchpoint.X == searchpoint.X < pb.x && pa.y < searchpoint.Y == searchpoint.Y < pb.y)
         return LocateResult.OnEdge;
-      return this.PreciseLocate(searchpoint, ref searchtri, false);
+      return PreciseLocate(searchpoint, ref searchtri, false);
     }
   }
 }

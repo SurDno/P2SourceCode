@@ -1,4 +1,6 @@
-﻿using Cofe.Serializations.Data;
+﻿using System.Collections;
+using System.Xml;
+using Cofe.Serializations.Data;
 using Cofe.Serializations.Data.Xml;
 using Cofe.Utility;
 using Engine.Common;
@@ -10,13 +12,10 @@ using Engine.Source.Saves;
 using Engine.Source.Services;
 using Engine.Source.Services.Saves;
 using Inspectors;
-using System.Collections;
-using System.Xml;
-using UnityEngine;
 
 namespace Engine.Impl.Services
 {
-  [GameService(new System.Type[] {typeof (SteppeHerbService), typeof (ISteppeHerbService)})]
+  [GameService(typeof (SteppeHerbService), typeof (ISteppeHerbService))]
   [GenerateProxy(TypeEnum.StateSave | TypeEnum.StateLoad)]
   public class SteppeHerbService : ISteppeHerbService, IUpdatable, ISavesController
   {
@@ -33,72 +32,72 @@ namespace Engine.Impl.Services
     private int blackTwyreAmount;
     private int sweveryAmount;
 
-    [StateSaveProxy(MemberEnum.None)]
-    [StateLoadProxy(MemberEnum.None)]
+    [StateSaveProxy]
+    [StateLoadProxy()]
     [Inspected(Mutable = true)]
     public int BrownTwyreAmount
     {
-      get => this.brownTwyreAmount;
+      get => brownTwyreAmount;
       set
       {
-        this.brownTwyreAmount = value;
-        if (this.containerBrownTwyre == null)
+        brownTwyreAmount = value;
+        if (containerBrownTwyre == null)
           return;
-        this.containerBrownTwyre.Amount = value;
+        containerBrownTwyre.Amount = value;
       }
     }
 
-    [StateSaveProxy(MemberEnum.None)]
-    [StateLoadProxy(MemberEnum.None)]
+    [StateSaveProxy]
+    [StateLoadProxy()]
     [Inspected(Mutable = true)]
     public int BloodTwyreAmount
     {
-      get => this.bloodTwyreAmount;
+      get => bloodTwyreAmount;
       set
       {
-        this.bloodTwyreAmount = value;
-        if (this.containerBloodTwyre == null)
+        bloodTwyreAmount = value;
+        if (containerBloodTwyre == null)
           return;
-        this.containerBloodTwyre.Amount = value;
+        containerBloodTwyre.Amount = value;
       }
     }
 
-    [StateSaveProxy(MemberEnum.None)]
-    [StateLoadProxy(MemberEnum.None)]
+    [StateSaveProxy]
+    [StateLoadProxy()]
     [Inspected(Mutable = true)]
     public int BlackTwyreAmount
     {
-      get => this.blackTwyreAmount;
+      get => blackTwyreAmount;
       set
       {
-        this.blackTwyreAmount = value;
-        if (this.containerBlackTwyre == null)
+        blackTwyreAmount = value;
+        if (containerBlackTwyre == null)
           return;
-        this.containerBlackTwyre.Amount = value;
+        containerBlackTwyre.Amount = value;
       }
     }
 
-    [StateSaveProxy(MemberEnum.None)]
-    [StateLoadProxy(MemberEnum.None)]
+    [StateSaveProxy]
+    [StateLoadProxy()]
     [Inspected(Mutable = true)]
     public int SweveryAmount
     {
-      get => this.sweveryAmount;
+      get => sweveryAmount;
       set
       {
-        this.sweveryAmount = value;
-        if (this.containerSwevery == null)
+        sweveryAmount = value;
+        if (containerSwevery == null)
           return;
-        this.containerSwevery.Amount = value;
+        containerSwevery.Amount = value;
       }
     }
 
     public void Reset()
     {
-      this.containerBrownTwyre.Reset();
-      this.containerBloodTwyre.Reset();
-      this.containerBlackTwyre.Reset();
-      this.containerSwevery.Reset();
+      containerBrownTwyre.Reset();
+      containerBloodTwyre.Reset();
+      containerBlackTwyre.Reset();
+      containerSwevery.Reset();
     }
 
     public void ComputeUpdate()
@@ -106,59 +105,59 @@ namespace Engine.Impl.Services
       if (!InstanceByRequest<EngineApplication>.Instance.ViewEnabled)
         return;
       Vector3 playerPosition = EngineApplication.PlayerPosition;
-      this.containerBrownTwyre.Update(playerPosition);
-      this.containerBloodTwyre.Update(playerPosition);
-      this.containerBlackTwyre.Update(playerPosition);
-      this.containerSwevery.Update(playerPosition);
+      containerBrownTwyre.Update(playerPosition);
+      containerBloodTwyre.Update(playerPosition);
+      containerBlackTwyre.Update(playerPosition);
+      containerSwevery.Update(playerPosition);
     }
 
     public void LoadBase()
     {
-      this.containerBrownTwyre = new SteppeHerbContainer(ScriptableObjectInstance<ResourceFromCodeData>.Instance.HerbBrownTwyre.Entity.Value, ScriptableObjectInstance<ResourceFromCodeData>.Instance.HerbBrownTwyre.PointsPrefab);
-      this.containerBloodTwyre = new SteppeHerbContainer(ScriptableObjectInstance<ResourceFromCodeData>.Instance.HerbBloodTwyre.Entity.Value, ScriptableObjectInstance<ResourceFromCodeData>.Instance.HerbBloodTwyre.PointsPrefab);
-      this.containerBlackTwyre = new SteppeHerbContainer(ScriptableObjectInstance<ResourceFromCodeData>.Instance.HerbBlackTwyre.Entity.Value, ScriptableObjectInstance<ResourceFromCodeData>.Instance.HerbBlackTwyre.PointsPrefab);
-      this.containerSwevery = new SteppeHerbContainer(ScriptableObjectInstance<ResourceFromCodeData>.Instance.HerbSwevery.Entity.Value, ScriptableObjectInstance<ResourceFromCodeData>.Instance.HerbSwevery.PointsPrefab);
-      this.containerBrownTwyre.Amount = this.brownTwyreAmount;
-      this.containerBloodTwyre.Amount = this.bloodTwyreAmount;
-      this.containerBlackTwyre.Amount = this.blackTwyreAmount;
-      this.containerSwevery.Amount = this.sweveryAmount;
-      InstanceByRequest<UpdateService>.Instance.Updater.AddUpdatable((IUpdatable) this);
+      containerBrownTwyre = new SteppeHerbContainer(ScriptableObjectInstance<ResourceFromCodeData>.Instance.HerbBrownTwyre.Entity.Value, ScriptableObjectInstance<ResourceFromCodeData>.Instance.HerbBrownTwyre.PointsPrefab);
+      containerBloodTwyre = new SteppeHerbContainer(ScriptableObjectInstance<ResourceFromCodeData>.Instance.HerbBloodTwyre.Entity.Value, ScriptableObjectInstance<ResourceFromCodeData>.Instance.HerbBloodTwyre.PointsPrefab);
+      containerBlackTwyre = new SteppeHerbContainer(ScriptableObjectInstance<ResourceFromCodeData>.Instance.HerbBlackTwyre.Entity.Value, ScriptableObjectInstance<ResourceFromCodeData>.Instance.HerbBlackTwyre.PointsPrefab);
+      containerSwevery = new SteppeHerbContainer(ScriptableObjectInstance<ResourceFromCodeData>.Instance.HerbSwevery.Entity.Value, ScriptableObjectInstance<ResourceFromCodeData>.Instance.HerbSwevery.PointsPrefab);
+      containerBrownTwyre.Amount = brownTwyreAmount;
+      containerBloodTwyre.Amount = bloodTwyreAmount;
+      containerBlackTwyre.Amount = blackTwyreAmount;
+      containerSwevery.Amount = sweveryAmount;
+      InstanceByRequest<UpdateService>.Instance.Updater.AddUpdatable(this);
     }
 
     public IEnumerator Load(IErrorLoadingHandler errorHandler)
     {
-      this.LoadBase();
+      LoadBase();
       yield break;
     }
 
     public IEnumerator Load(XmlElement element, string context, IErrorLoadingHandler errorHandler)
     {
-      this.LoadBase();
-      XmlElement node = element[TypeUtility.GetTypeName(this.GetType())];
+      LoadBase();
+      XmlElement node = element[TypeUtility.GetTypeName(GetType())];
       if (node == null)
       {
-        errorHandler.LogError(TypeUtility.GetTypeName(this.GetType()) + " node not found , context : " + context);
+        errorHandler.LogError(TypeUtility.GetTypeName(GetType()) + " node not found , context : " + context);
       }
       else
       {
-        XmlNodeDataReader reader = new XmlNodeDataReader((XmlNode) node, context);
-        ((ISerializeStateLoad) this).StateLoad((IDataReader) reader, this.GetType());
+        XmlNodeDataReader reader = new XmlNodeDataReader(node, context);
+        ((ISerializeStateLoad) this).StateLoad(reader, GetType());
         yield break;
       }
     }
 
     public void Unload()
     {
-      InstanceByRequest<UpdateService>.Instance.Updater.RemoveUpdatable((IUpdatable) this);
-      this.containerBrownTwyre.Dispose();
-      this.containerBloodTwyre.Dispose();
-      this.containerBlackTwyre.Dispose();
-      this.containerSwevery.Dispose();
+      InstanceByRequest<UpdateService>.Instance.Updater.RemoveUpdatable(this);
+      containerBrownTwyre.Dispose();
+      containerBloodTwyre.Dispose();
+      containerBlackTwyre.Dispose();
+      containerSwevery.Dispose();
     }
 
     public void Save(IDataWriter writer, string context)
     {
-      DefaultStateSaveUtility.SaveSerialize<SteppeHerbService>(writer, TypeUtility.GetTypeName(this.GetType()), this);
+      DefaultStateSaveUtility.SaveSerialize(writer, TypeUtility.GetTypeName(GetType()), this);
     }
   }
 }

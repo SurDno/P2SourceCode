@@ -1,5 +1,5 @@
-﻿using ParadoxNotion.Design;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using ParadoxNotion.Design;
 
 namespace FlowCanvas.Nodes
 {
@@ -12,11 +12,11 @@ namespace FlowCanvas.Nodes
 
     protected override void RegisterPorts()
     {
-      ValueInput<IEnumerable<T>> list = this.AddValueInput<IEnumerable<T>>("Value");
-      this.AddValueOutput<T>("Current", (ValueHandler<T>) (() => this.current));
-      FlowOutput fCurrent = this.AddFlowOutput("Do");
-      FlowOutput fFinish = this.AddFlowOutput("Done");
-      this.AddFlowInput("In", (FlowHandler) (() =>
+      ValueInput<IEnumerable<T>> list = AddValueInput<IEnumerable<T>>("Value");
+      AddValueOutput("Current", () => current);
+      FlowOutput fCurrent = AddFlowOutput("Do");
+      FlowOutput fFinish = AddFlowOutput("Done");
+      AddFlowInput("In", () =>
       {
         IEnumerable<T> objs = list.value;
         if (objs == null)
@@ -25,12 +25,12 @@ namespace FlowCanvas.Nodes
         }
         else
         {
-          this.broken = false;
+          broken = false;
           foreach (T obj in objs)
           {
-            if (!this.broken)
+            if (!broken)
             {
-              this.current = obj;
+              current = obj;
               fCurrent.Call();
             }
             else
@@ -38,8 +38,8 @@ namespace FlowCanvas.Nodes
           }
           fFinish.Call();
         }
-      }));
-      this.AddFlowInput("Break", (FlowHandler) (() => this.broken = true));
+      });
+      AddFlowInput("Break", () => broken = true);
     }
   }
 }

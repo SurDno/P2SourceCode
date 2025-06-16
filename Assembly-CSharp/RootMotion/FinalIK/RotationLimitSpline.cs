@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace RootMotion.FinalIK
+﻿namespace RootMotion.FinalIK
 {
   [HelpURL("http://www.root-motion.com/finalikdox/html/page12.html")]
   [AddComponentMenu("Scripts/RootMotion.FinalIK/Rotation Limits/Rotation Limit Spline")]
@@ -36,24 +34,24 @@ namespace RootMotion.FinalIK
       Application.OpenURL("http://forum.unity3d.com/threads/final-ik-full-body-ik-aim-look-at-fabrik-ccd-ik-1-0-released.222685/");
     }
 
-    public void SetSpline(Keyframe[] keyframes) => this.spline.keys = keyframes;
+    public void SetSpline(Keyframe[] keyframes) => spline.keys = keyframes;
 
     protected override Quaternion LimitRotation(Quaternion rotation)
     {
-      return RotationLimit.LimitTwist(this.LimitSwing(rotation), this.axis, this.secondaryAxis, this.twistLimit);
+      return LimitTwist(LimitSwing(rotation), axis, secondaryAxis, twistLimit);
     }
 
     public Quaternion LimitSwing(Quaternion rotation)
     {
-      if (this.axis == Vector3.zero || rotation == Quaternion.identity)
+      if (axis == Vector3.zero || rotation == Quaternion.identity)
         return rotation;
-      Vector3 vector3 = rotation * this.axis;
-      float time = RotationLimit.GetOrthogonalAngle(vector3, this.secondaryAxis, this.axis);
-      if ((double) Vector3.Dot(vector3, this.crossAxis) < 0.0)
-        time = (float) (180.0 + (180.0 - (double) time));
-      float maxDegreesDelta = this.spline.Evaluate(time);
-      Quaternion quaternion = Quaternion.RotateTowards(Quaternion.identity, Quaternion.FromToRotation(this.axis, vector3), maxDegreesDelta);
-      return Quaternion.FromToRotation(vector3, quaternion * this.axis) * rotation;
+      Vector3 vector3 = rotation * axis;
+      float time = GetOrthogonalAngle(vector3, secondaryAxis, axis);
+      if ((double) Vector3.Dot(vector3, crossAxis) < 0.0)
+        time = (float) (180.0 + (180.0 - time));
+      float maxDegreesDelta = spline.Evaluate(time);
+      Quaternion quaternion = Quaternion.RotateTowards(Quaternion.identity, Quaternion.FromToRotation(axis, vector3), maxDegreesDelta);
+      return Quaternion.FromToRotation(vector3, quaternion * axis) * rotation;
     }
   }
 }

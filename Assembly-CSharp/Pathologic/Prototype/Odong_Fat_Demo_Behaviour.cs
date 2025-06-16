@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace Pathologic.Prototype
+﻿namespace Pathologic.Prototype
 {
   public class Odong_Fat_Demo_Behaviour : StateMachineBehaviour
   {

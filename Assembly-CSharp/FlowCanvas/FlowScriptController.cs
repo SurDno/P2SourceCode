@@ -1,12 +1,10 @@
-﻿using Engine.Source.Commons;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading;
+using Engine.Source.Commons;
 using Engine.Source.Settings.External;
 using NodeCanvas.Framework;
 using ParadoxNotion;
-using System;
-using System.Collections.Generic;
-using System.Threading;
-using UnityEngine;
-using UnityEngine.Profiling;
 
 namespace FlowCanvas
 {
@@ -20,22 +18,22 @@ namespace FlowCanvas
     [SerializeField]
     private List<UnityEngine.Object> boundGraphObjectReferences = new List<UnityEngine.Object>();
     [HideInInspector]
-    public FlowScriptController.EnableAction enableAction = FlowScriptController.EnableAction.EnableBehaviour;
+    public EnableAction enableAction = EnableAction.EnableBehaviour;
     [HideInInspector]
-    public FlowScriptController.DisableAction disableAction = FlowScriptController.DisableAction.DisableBehaviour;
+    public DisableAction disableAction = DisableAction.DisableBehaviour;
     private Graph _graph = new Graph();
-    private bool startCalled = false;
+    private bool startCalled;
     private static bool isQuiting;
     private Thread deserializeThread;
-    private List<FlowScriptController.Command> commands = new List<FlowScriptController.Command>();
+    private List<Command> commands = new List<Command>();
 
     public event Action<FlowScriptController> DestroyEvent;
 
     private void Awake()
     {
-      if (!((UnityEngine.Object) this._blackboard == (UnityEngine.Object) null))
+      if (!((UnityEngine.Object) _blackboard == (UnityEngine.Object) null))
         return;
-      this._blackboard = this.GetComponent<Blackboard>();
+      _blackboard = this.GetComponent<Blackboard>();
     }
 
     void ISerializationCallbackReceiver.OnBeforeSerialize()
@@ -44,88 +42,87 @@ namespace FlowCanvas
 
     void ISerializationCallbackReceiver.OnAfterDeserialize()
     {
-      Profiler.BeginSample("OnAfterDeserialize " + this._graph.agentName);
+      Profiler.BeginSample("OnAfterDeserialize " + _graph.agentName);
       if (EngineApplication.MainThread == Thread.CurrentThread && ExternalSettingsInstance<ExternalOptimizationSettings>.Instance.BlueprintsInSeparateThread)
       {
-        this.deserializeThread = new Thread((ThreadStart) (() =>
+        deserializeThread = new Thread(() =>
         {
-          this._graph.Deserialize(this.boundGraphSerialization, this.boundGraphObjectReferences);
-          this._graph.agent = this;
-        }));
-        this.deserializeThread.Start();
+          _graph.Deserialize(boundGraphSerialization, boundGraphObjectReferences);
+          _graph.agent = this;
+        });
+        deserializeThread.Start();
       }
       else
       {
-        this._graph.Deserialize(this.boundGraphSerialization, this.boundGraphObjectReferences);
-        this._graph.agent = this;
+        _graph.Deserialize(boundGraphSerialization, boundGraphObjectReferences);
+        _graph.agent = this;
       }
       Profiler.EndSample();
     }
 
     public void WaitForThreadFinish()
     {
-      if (this.deserializeThread == null)
+      if (deserializeThread == null)
         return;
-      this.deserializeThread.Join();
-      this.deserializeThread = (Thread) null;
-      this._blackboard.WaitForThreadFinish();
-      this.ApplyCommands();
+      deserializeThread.Join();
+      deserializeThread = null;
+      _blackboard.WaitForThreadFinish();
+      ApplyCommands();
     }
 
     private void ApplyCommands()
     {
-      foreach (FlowScriptController.Command command in this.commands)
+      foreach (Command command in commands)
       {
-        if (command.Type == FlowScriptController.CommandEnum.StateChange)
+        if (command.Type == CommandEnum.StateChange)
         {
           switch (command.State)
           {
-            case FlowScriptController.StateEnum.Start:
-              this.StartBehaviour();
+            case StateEnum.Start:
+              StartBehaviour();
               break;
-            case FlowScriptController.StateEnum.Stop:
-              this.StopBehaviour();
+            case StateEnum.Stop:
+              StopBehaviour();
               break;
-            case FlowScriptController.StateEnum.Pause:
-              this.PauseBehaviour();
+            case StateEnum.Pause:
+              PauseBehaviour();
               break;
           }
         }
-        else if (command.Type == FlowScriptController.CommandEnum.Event)
-          this.graph.SendEvent(command.EventData);
-        else if (command.Type == FlowScriptController.CommandEnum.SetValue && !((UnityEngine.Object) this._blackboard == (UnityEngine.Object) null))
-          this._blackboard.SetValue(command.ValueName, command.ValueObject);
+        else if (command.Type == CommandEnum.Event)
+          graph.SendEvent(command.EventData);
+        else if (command.Type == CommandEnum.SetValue && !((UnityEngine.Object) _blackboard == (UnityEngine.Object) null))
+          _blackboard.SetValue(command.ValueName, command.ValueObject);
       }
-      this.commands.Clear();
+      commands.Clear();
     }
 
     private void Update()
     {
-      if (this.deserializeThread == null || this.deserializeThread.IsAlive || !this._blackboard.IsReady)
+      if (deserializeThread == null || deserializeThread.IsAlive || !_blackboard.IsReady)
         return;
-      this.deserializeThread = (Thread) null;
-      this.ApplyCommands();
+      deserializeThread = null;
+      ApplyCommands();
     }
 
     public void SetValue(string name, object value)
     {
-      if (!this._blackboard.IsReady)
-        this.commands.Add(new FlowScriptController.Command()
-        {
-          Type = FlowScriptController.CommandEnum.SetValue,
+      if (!_blackboard.IsReady)
+        commands.Add(new Command {
+          Type = CommandEnum.SetValue,
           ValueName = name,
           ValueObject = value
         });
       else
-        this._blackboard.SetValue(name, value);
+        _blackboard.SetValue(name, value);
     }
 
     public Graph graph
     {
       get
       {
-        this.WaitForThreadFinish();
-        return this._graph;
+        WaitForThreadFinish();
+        return _graph;
       }
     }
 
@@ -133,106 +130,102 @@ namespace FlowCanvas
     {
       get
       {
-        this._blackboard.WaitForThreadFinish();
-        return this._blackboard;
+        _blackboard.WaitForThreadFinish();
+        return _blackboard;
       }
     }
 
-    public bool isRunning => this.graph.isRunning;
+    public bool isRunning => graph.isRunning;
 
-    public bool isPaused => this.graph.isPaused;
+    public bool isPaused => graph.isPaused;
 
     public void StartBehaviour()
     {
-      if (this.deserializeThread != null && this.deserializeThread.IsAlive || !this._blackboard.IsReady)
-        this.commands.Add(new FlowScriptController.Command()
-        {
-          Type = FlowScriptController.CommandEnum.StateChange,
-          State = FlowScriptController.StateEnum.Start
+      if (deserializeThread != null && deserializeThread.IsAlive || !_blackboard.IsReady)
+        commands.Add(new Command {
+          Type = CommandEnum.StateChange,
+          State = StateEnum.Start
         });
       else
-        this.graph.StartGraph();
+        graph.StartGraph();
     }
 
     public void PauseBehaviour()
     {
-      if (this.deserializeThread != null && this.deserializeThread.IsAlive || !this._blackboard.IsReady)
-        this.commands.Add(new FlowScriptController.Command()
-        {
-          Type = FlowScriptController.CommandEnum.StateChange,
-          State = FlowScriptController.StateEnum.Pause
+      if (deserializeThread != null && deserializeThread.IsAlive || !_blackboard.IsReady)
+        commands.Add(new Command {
+          Type = CommandEnum.StateChange,
+          State = StateEnum.Pause
         });
       else
-        this.graph.Pause();
+        graph.Pause();
     }
 
     public void StopBehaviour()
     {
-      if (this.deserializeThread != null && this.deserializeThread.IsAlive || !this._blackboard.IsReady)
-        this.commands.Add(new FlowScriptController.Command()
-        {
-          Type = FlowScriptController.CommandEnum.StateChange,
-          State = FlowScriptController.StateEnum.Stop
+      if (deserializeThread != null && deserializeThread.IsAlive || !_blackboard.IsReady)
+        commands.Add(new Command {
+          Type = CommandEnum.StateChange,
+          State = StateEnum.Stop
         });
       else
-        this.graph.Stop();
+        graph.Stop();
     }
 
-    public void SendEvent(string eventName) => this.SendEvent(new EventData(eventName));
+    public void SendEvent(string eventName) => SendEvent(new EventData(eventName));
 
     public void SendEvent(EventData eventData)
     {
-      if (this.deserializeThread != null && this.deserializeThread.IsAlive || !this._blackboard.IsReady)
-        this.commands.Add(new FlowScriptController.Command()
-        {
-          Type = FlowScriptController.CommandEnum.Event,
+      if (deserializeThread != null && deserializeThread.IsAlive || !_blackboard.IsReady)
+        commands.Add(new Command {
+          Type = CommandEnum.Event,
           EventData = eventData
         });
       else
-        this.graph.SendEvent(eventData);
+        graph.SendEvent(eventData);
     }
 
     private void Start()
     {
-      this.startCalled = true;
-      if (this.enableAction != FlowScriptController.EnableAction.EnableBehaviour)
+      startCalled = true;
+      if (enableAction != EnableAction.EnableBehaviour)
         return;
-      this.StartBehaviour();
+      StartBehaviour();
     }
 
     private void OnEnable()
     {
-      if (!this.startCalled || this.enableAction != FlowScriptController.EnableAction.EnableBehaviour)
+      if (!startCalled || enableAction != EnableAction.EnableBehaviour)
         return;
-      this.StartBehaviour();
+      StartBehaviour();
     }
 
     private void OnDisable()
     {
-      if (FlowScriptController.isQuiting)
+      if (isQuiting)
         return;
-      if (this.disableAction == FlowScriptController.DisableAction.DisableBehaviour)
-        this.StopBehaviour();
-      if (this.disableAction != FlowScriptController.DisableAction.PauseBehaviour)
+      if (disableAction == DisableAction.DisableBehaviour)
+        StopBehaviour();
+      if (disableAction != DisableAction.PauseBehaviour)
         return;
-      this.PauseBehaviour();
+      PauseBehaviour();
     }
 
     private void OnDestroy()
     {
-      if (FlowScriptController.isQuiting)
+      if (isQuiting)
         return;
-      this.WaitForThreadFinish();
-      this.ApplyCommands();
-      this.StopBehaviour();
-      this.graph.OnDestroy();
-      Action<FlowScriptController> destroyEvent = this.DestroyEvent;
+      WaitForThreadFinish();
+      ApplyCommands();
+      StopBehaviour();
+      graph.OnDestroy();
+      Action<FlowScriptController> destroyEvent = DestroyEvent;
       if (destroyEvent == null)
         return;
       destroyEvent(this);
     }
 
-    private void OnApplicationQuit() => FlowScriptController.isQuiting = true;
+    private void OnApplicationQuit() => isQuiting = true;
 
     public enum EnableAction
     {
@@ -264,8 +257,8 @@ namespace FlowCanvas
 
     private struct Command
     {
-      public FlowScriptController.CommandEnum Type;
-      public FlowScriptController.StateEnum State;
+      public CommandEnum Type;
+      public StateEnum State;
       public EventData EventData;
       public string ValueName;
       public object ValueObject;

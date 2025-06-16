@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using TriangleNet;
 using TriangleNet.Data;
 using TriangleNet.Geometry;
-using UnityEngine;
 
 public static class TriangleVector2
 {
@@ -14,11 +13,10 @@ public static class TriangleVector2
     out int[] triangles)
   {
     InputGeometry inputGeometry = new InputGeometry();
-    TriangleVector2.AddContour(inputGeometry, polygon, 0);
-    TriangleNet.Mesh mesh = new TriangleNet.Mesh(new Behavior()
-    {
+    AddContour(inputGeometry, polygon, 0);
+    Mesh mesh = new Mesh(new Behavior {
       Quality = true,
-      MaxArea = (double) maxArea,
+      MaxArea = maxArea,
       VarArea = true,
       Jettison = true
     });
@@ -60,14 +58,14 @@ public static class TriangleVector2
   {
     InputGeometry inputGeometry = new InputGeometry();
     for (int index = 0; index < innerContours.Length; ++index)
-      TriangleVector2.AddContour(inputGeometry, innerContours[index], 1);
+      AddContour(inputGeometry, innerContours[index], 1);
     int count = inputGeometry.Count;
     if (outerContours != null)
     {
       for (int index = 0; index < outerContours.Length; ++index)
-        TriangleVector2.AddContour(inputGeometry, outerContours[index], 0);
+        AddContour(inputGeometry, outerContours[index], 0);
     }
-    TriangleNet.Mesh mesh = new TriangleNet.Mesh();
+    Mesh mesh = new Mesh();
     mesh.Triangulate(inputGeometry);
     Dictionary<int, Vertex> vertices1 = mesh.vertices;
     vertices = new Vector2[vertices1.Count];

@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace Pathologic.Prototype
+﻿namespace Pathologic.Prototype
 {
   public class BullDemoBehaviour : StateMachineBehaviour
   {
@@ -10,9 +8,9 @@ namespace Pathologic.Prototype
       int layerIndex)
     {
       float num = Random.value;
-      if ((double) num < 0.60000002384185791)
+      if (num < 0.60000002384185791)
         animator.SetInteger("Next", 0);
-      else if ((double) num < 0.8)
+      else if (num < 0.8)
         animator.SetInteger("Next", 1);
       else
         animator.SetInteger("Next", 2);

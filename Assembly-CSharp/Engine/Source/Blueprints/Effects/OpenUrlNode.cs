@@ -1,7 +1,6 @@
 ﻿using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
-using UnityEngine;
 
 namespace Engine.Source.Blueprints.Effects
 {
@@ -14,7 +13,7 @@ namespace Engine.Source.Blueprints.Effects
     protected override void RegisterPorts()
     {
       base.RegisterPorts();
-      this.AddFlowInput("In", (FlowHandler) (() => Application.OpenURL(this.urlInput.value)));
+      AddFlowInput("In", () => Application.OpenURL(urlInput.value));
     }
   }
 }

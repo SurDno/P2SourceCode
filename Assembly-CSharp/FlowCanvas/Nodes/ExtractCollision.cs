@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace FlowCanvas.Nodes
+﻿namespace FlowCanvas.Nodes
 {
   public class ExtractCollision : 
     ExtractorNode<Collision, ContactPoint[], ContactPoint, GameObject, Vector3>

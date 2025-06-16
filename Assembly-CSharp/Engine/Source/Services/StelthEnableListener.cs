@@ -1,13 +1,13 @@
-﻿using Engine.Common;
+﻿using System;
+using Engine.Common;
 using Engine.Common.Services;
 using Engine.Impl.Services.Simulations;
 using Engine.Source.Components;
 using Inspectors;
-using System;
 
 namespace Engine.Source.Services
 {
-  [GameService(new Type[] {typeof (StelthEnableListener)})]
+  [GameService(typeof (StelthEnableListener))]
   public class StelthEnableListener : IInitialisable
   {
     private bool visible;
@@ -18,13 +18,13 @@ namespace Engine.Source.Services
     [Inspected(Mutable = true)]
     public bool Visible
     {
-      get => this.visible;
+      get => visible;
       private set
       {
-        if (this.visible == value)
+        if (visible == value)
           return;
-        this.visible = value;
-        Action<bool> onVisibleChanged = this.OnVisibleChanged;
+        visible = value;
+        Action<bool> onVisibleChanged = OnVisibleChanged;
         if (onVisibleChanged == null)
           return;
         onVisibleChanged(value);
@@ -33,34 +33,34 @@ namespace Engine.Source.Services
 
     public void Initialise()
     {
-      ServiceLocator.GetService<Simulation>().OnPlayerChanged += new Action<IEntity>(this.OnPlayerChanged);
-      this.OnPlayerChanged(ServiceLocator.GetService<ISimulation>().Player);
+      ServiceLocator.GetService<Simulation>().OnPlayerChanged += OnPlayerChanged;
+      OnPlayerChanged(ServiceLocator.GetService<ISimulation>().Player);
     }
 
     public void Terminate()
     {
-      ServiceLocator.GetService<Simulation>().OnPlayerChanged -= new Action<IEntity>(this.OnPlayerChanged);
+      ServiceLocator.GetService<Simulation>().OnPlayerChanged -= OnPlayerChanged;
     }
 
     private void OnPlayerChanged(IEntity player)
     {
-      if (this.controller != null)
+      if (controller != null)
       {
-        this.controller.IsStelth.ChangeValueEvent -= new Action<bool>(this.OnStelthEnableChanged);
-        this.controller = (ControllerComponent) null;
+        controller.IsStelth.ChangeValueEvent -= OnStelthEnableChanged;
+        controller = null;
       }
       if (player != null)
-        this.controller = player.GetComponent<ControllerComponent>();
-      if (this.controller != null)
-        this.controller.IsStelth.ChangeValueEvent += new Action<bool>(this.OnStelthEnableChanged);
-      this.UpdateValue();
+        controller = player.GetComponent<ControllerComponent>();
+      if (controller != null)
+        controller.IsStelth.ChangeValueEvent += OnStelthEnableChanged;
+      UpdateValue();
     }
 
-    private void OnStelthEnableChanged(bool value) => this.UpdateValue();
+    private void OnStelthEnableChanged(bool value) => UpdateValue();
 
     private void UpdateValue()
     {
-      this.Visible = this.controller != null && this.controller.IsStelth.Value;
+      Visible = controller != null && controller.IsStelth.Value;
     }
   }
 }

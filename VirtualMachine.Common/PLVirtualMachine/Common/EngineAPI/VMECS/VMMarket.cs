@@ -1,13 +1,12 @@
-﻿using Cofe.Loggers;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Cofe.Loggers;
 using Engine.Common;
 using Engine.Common.Components;
 using Engine.Common.Components.Storable;
 using Engine.Common.Services;
 using PLVirtualMachine.Common.EngineAPI.VMECS.VMAttributes;
 using PLVirtualMachine.Common.VMSpecialAttributes;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace PLVirtualMachine.Common.EngineAPI.VMECS
 {
@@ -23,8 +22,8 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
     [Property("Enabled", "", false, true)]
     public bool MarketEnabled
     {
-      get => this.Component.IsEnabled;
-      set => this.Component.IsEnabled = value;
+      get => Component.IsEnabled;
+      set => Component.IsEnabled = value;
     }
 
     [Method("", ",,", "")]
@@ -43,7 +42,7 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
       float priceValue = instance.ReadFloatParamValue(strArray2[0]);
       float buyPriceValue = instance.ReadFloatParamValue(strArray3[0]);
       for (int index = 0; index < strArray1.Length; ++index)
-        this.SetStorablePriceByTemplateName(strArray1[index], priceValue, buyPriceValue);
+        SetStorablePriceByTemplateName(strArray1[index], priceValue, buyPriceValue);
     }
 
     [Method("", ",,", "")]
@@ -61,7 +60,7 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
       float priceFactorValue = instance.ReadFloatParamValue(strArray2[0]);
       float buyPriceFactorValue = instance.ReadFloatParamValue(strArray3[0]);
       for (int index = 0; index < strArray1.Length; ++index)
-        this.SetStorablePriceFactorByTemplateName(strArray1[index], priceFactorValue, buyPriceFactorValue);
+        SetStorablePriceFactorByTemplateName(strArray1[index], priceFactorValue, buyPriceFactorValue);
     }
 
     public void SetStorablePriceByTemplateName(
@@ -71,24 +70,24 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
     {
       if ("Pathologic" == storableTemplateName)
       {
-        if (this.defaultPriceInfo == null)
-          this.defaultPriceInfo = new PriceInfo();
-        this.defaultPriceInfo.Price = priceValue;
-        this.defaultPriceInfo.BuyPrice = buyPriceValue;
+        if (defaultPriceInfo == null)
+          defaultPriceInfo = new PriceInfo();
+        defaultPriceInfo.Price = priceValue;
+        defaultPriceInfo.BuyPrice = buyPriceValue;
       }
-      if (this.marketPricesTable.ContainsKey(storableTemplateName))
+      if (marketPricesTable.ContainsKey(storableTemplateName))
       {
-        PriceInfo priceInfo = this.marketPricesTable[storableTemplateName];
+        PriceInfo priceInfo = marketPricesTable[storableTemplateName];
         priceInfo.Price = priceValue;
         priceInfo.BuyPrice = buyPriceValue;
       }
       else
-        this.marketPricesTable.Add(storableTemplateName, new PriceInfo(storableTemplateName)
+        marketPricesTable.Add(storableTemplateName, new PriceInfo(storableTemplateName)
         {
           Price = priceValue,
           BuyPrice = buyPriceValue
         });
-      this.OnModify();
+      OnModify();
     }
 
     public void SetStorablePriceFactorByTemplateName(
@@ -98,40 +97,40 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
     {
       if ("Pathologic" == storableTemplateName)
       {
-        if (this.defaultPriceInfo == null)
-          this.defaultPriceInfo = new PriceInfo();
-        this.defaultPriceInfo.PriceFactor = priceFactorValue;
-        this.defaultPriceInfo.BuyPriceFactor = buyPriceFactorValue;
+        if (defaultPriceInfo == null)
+          defaultPriceInfo = new PriceInfo();
+        defaultPriceInfo.PriceFactor = priceFactorValue;
+        defaultPriceInfo.BuyPriceFactor = buyPriceFactorValue;
       }
-      if (this.marketPricesTable.ContainsKey(storableTemplateName))
+      if (marketPricesTable.ContainsKey(storableTemplateName))
       {
-        PriceInfo priceInfo = this.marketPricesTable[storableTemplateName];
+        PriceInfo priceInfo = marketPricesTable[storableTemplateName];
         priceInfo.PriceFactor = priceFactorValue;
         priceInfo.BuyPriceFactor = buyPriceFactorValue;
       }
       else
-        this.marketPricesTable.Add(storableTemplateName, new PriceInfo(storableTemplateName)
+        marketPricesTable.Add(storableTemplateName, new PriceInfo(storableTemplateName)
         {
           PriceFactor = priceFactorValue,
           BuyPriceFactor = buyPriceFactorValue
         });
-      this.OnModify();
+      OnModify();
     }
 
     public PriceInfo GetTraderPriceInfoByTemplateName(string templateName)
     {
-      if (this.marketPricesTable.ContainsKey(templateName))
-        return this.marketPricesTable[templateName];
-      return this.defaultPriceInfo != null ? this.defaultPriceInfo : new PriceInfo(templateName);
+      if (marketPricesTable.ContainsKey(templateName))
+        return marketPricesTable[templateName];
+      return defaultPriceInfo != null ? defaultPriceInfo : new PriceInfo(templateName);
     }
 
     [Method("Set fixed price", "Template:Storable,Price", "")]
     public void SetStorablePriceByTemplate([Template] IEntity template, float priceValue)
     {
       if (template == null)
-        Logger.AddError(string.Format("Storable template for market {0} price setting is not defined !", (object) this.Component.Owner.Name));
+        Logger.AddError(string.Format("Storable template for market {0} price setting is not defined !", Component.Owner.Name));
       else
-        this.SetStorablePriceByTemplateName(template.Name, priceValue, priceValue);
+        SetStorablePriceByTemplateName(template.Name, priceValue, priceValue);
     }
 
     [Method("Set fixed prices", "Template:Storable,Price,BuyPrice", "")]
@@ -141,28 +140,27 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
       float buyPriceValue)
     {
       if (template == null)
-        Logger.AddError(string.Format("Storable template for market {0} price setting is not defined !", (object) this.Component.Owner.Name));
+        Logger.AddError(string.Format("Storable template for market {0} price setting is not defined !", Component.Owner.Name));
       else
-        this.SetStorablePriceByTemplateName(template.Name, priceValue, buyPriceValue);
+        SetStorablePriceByTemplateName(template.Name, priceValue, buyPriceValue);
     }
 
     private void FillPrices()
     {
-      VMMarket.FillPrices(this, this.Component.Owner.GetComponent<IStorageComponent>());
-      VMMarket.FillPrices(this, ServiceCache.Simulation.Player.GetComponent<IStorageComponent>());
+      FillPrices(this, Component.Owner.GetComponent<IStorageComponent>());
+      FillPrices(this, ServiceCache.Simulation.Player.GetComponent<IStorageComponent>());
     }
 
     public static void FillPrices(VMMarket market, IStorageComponent storage)
     {
-      for (int index = 0; index < storage.Items.Count<IStorableComponent>(); ++index)
+      for (int index = 0; index < storage.Items.Count(); ++index)
       {
-        IStorableComponent storableComponent = storage.Items.ElementAt<IStorableComponent>(index);
+        IStorableComponent storableComponent = storage.Items.ElementAt(index);
         if (storableComponent != null && !storableComponent.IsDisposed)
         {
           string name = storableComponent.Owner.Name;
-          PriceInfo itemTradePrice = VMMarket.CalculateItemTradePrice(market, name);
-          storableComponent.Invoice = new Invoice()
-          {
+          PriceInfo itemTradePrice = CalculateItemTradePrice(market, name);
+          storableComponent.Invoice = new Invoice {
             BuyPrice = itemTradePrice.BuyPrice,
             SellPrice = itemTradePrice.Price
           };
@@ -175,11 +173,11 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
       PriceInfo infoByTemplateName = market.GetTraderPriceInfoByTemplateName(templateName);
       float num1 = infoByTemplateName.Price;
       float num2 = infoByTemplateName.BuyPrice;
-      if ((double) infoByTemplateName.Price < -9.9999999747524271E-07)
+      if (infoByTemplateName.Price < -9.9999999747524271E-07)
         num1 = VMGlobalMarketManager.Instance.GetCurrentItemTradeGlobalPrice(templateName);
-      if ((double) infoByTemplateName.BuyPrice > -9.9999999747524271E-07 || (double) infoByTemplateName.BuyPriceFactor > 9.9999999747524271E-07)
+      if (infoByTemplateName.BuyPrice > -9.9999999747524271E-07 || infoByTemplateName.BuyPriceFactor > 9.9999999747524271E-07)
       {
-        if ((double) infoByTemplateName.BuyPrice < -9.9999999747524271E-07)
+        if (infoByTemplateName.BuyPrice < -9.9999999747524271E-07)
           num2 = VMGlobalMarketManager.Instance.GetCurrentItemTradeGlobalPrice(templateName, true);
       }
       else
@@ -193,17 +191,17 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
 
     public override void Clear()
     {
-      if (!this.InstanceValid)
+      if (!InstanceValid)
         return;
-      this.Component.OnFillPrices -= new Action(this.FillPrices);
+      Component.OnFillPrices -= FillPrices;
       base.Clear();
     }
 
     protected override void Init()
     {
-      if (this.IsTemplate)
+      if (IsTemplate)
         return;
-      this.Component.OnFillPrices += new Action(this.FillPrices);
+      Component.OnFillPrices += FillPrices;
     }
   }
 }

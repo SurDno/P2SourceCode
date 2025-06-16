@@ -2,8 +2,6 @@
 using Engine.Impl.Services;
 using Engine.Source.Commons;
 using Inspectors;
-using System;
-using UnityEngine;
 
 namespace InputServices
 {
@@ -16,11 +14,11 @@ namespace InputServices
     [Inspected(Mutable = true)]
     public bool Visible
     {
-      get => this.visible;
+      get => visible;
       set
       {
-        this.visible = value;
-        this.UpdateCursor();
+        visible = value;
+        UpdateCursor();
       }
     }
 
@@ -32,34 +30,34 @@ namespace InputServices
 
     public VirtualCursorController()
     {
-      InstanceByRequest<EngineApplication>.Instance.OnInitialized += new Action(this.OnInitialized);
+      InstanceByRequest<EngineApplication>.Instance.OnInitialized += OnInitialized;
     }
 
     private void OnInitialized()
     {
-      this.Position = new Vector2((float) (Screen.width / 2), (float) (Screen.height / 2));
-      this.cursor = ServiceLocator.GetService<UIService>().VirtualCursor;
-      if (!((UnityEngine.Object) this.cursor != (UnityEngine.Object) null))
+      Position = new Vector2((float) (Screen.width / 2), (float) (Screen.height / 2));
+      cursor = ServiceLocator.GetService<UIService>().VirtualCursor;
+      if (!((UnityEngine.Object) cursor != (UnityEngine.Object) null))
         return;
-      this.cursorTransform = this.cursor.GetComponent<RectTransform>();
-      this.UpdateCursor();
+      cursorTransform = cursor.GetComponent<RectTransform>();
+      UpdateCursor();
     }
 
     public void Move(float diffX, float diffY)
     {
-      float num1 = this.Position.x + diffX;
-      float num2 = this.Position.y - diffY;
-      this.Position = new Vector2(Mathf.Clamp(num1, 0.0f, (float) Screen.width), Mathf.Clamp(num2, 0.0f, (float) Screen.height));
-      this.UpdateCursor();
+      float num1 = Position.x + diffX;
+      float num2 = Position.y - diffY;
+      Position = new Vector2(Mathf.Clamp(num1, 0.0f, (float) Screen.width), Mathf.Clamp(num2, 0.0f, (float) Screen.height));
+      UpdateCursor();
     }
 
     private void UpdateCursor()
     {
-      if ((UnityEngine.Object) this.cursor == (UnityEngine.Object) null)
+      if ((UnityEngine.Object) cursor == (UnityEngine.Object) null)
         return;
-      if (this.cursor.activeSelf != this.Visible)
-        this.cursor.SetActive(this.Visible && !InputService.Instance.JoystickUsed);
-      this.cursorTransform.position = new Vector3(this.Position.x, this.Position.y, this.cursorTransform.position.z);
+      if (cursor.activeSelf != Visible)
+        cursor.SetActive(Visible && !InputService.Instance.JoystickUsed);
+      cursorTransform.position = new Vector3(Position.x, Position.y, cursorTransform.position.z);
     }
   }
 }

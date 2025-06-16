@@ -10,7 +10,6 @@ using Engine.Source.Commons.Parameters;
 using Engine.Source.Components.Regions;
 using Engine.Source.Services;
 using Inspectors;
-using System;
 
 namespace Engine.Source.Components
 {
@@ -19,15 +18,15 @@ namespace Engine.Source.Components
   [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
   public class RegionComponent : EngineComponent, IRegionComponent, IComponent
   {
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected RegionEnum region;
-    [DataReadProxy(MemberEnum.None, Name = "RegionBehavior")]
-    [DataWriteProxy(MemberEnum.None, Name = "RegionBehavior")]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy(Name = "RegionBehavior")]
+    [DataWriteProxy(Name = "RegionBehavior")]
+    [CopyableProxy()]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected RegionBehaviourEnum regionBehaviour;
@@ -38,26 +37,26 @@ namespace Engine.Source.Components
     private RegionMesh regionMesh;
 
     [Inspected]
-    public IParameterValue<int> DiseaseLevel { get; } = (IParameterValue<int>) new ParameterValue<int>();
+    public IParameterValue<int> DiseaseLevel { get; } = new ParameterValue<int>();
 
     [Inspected]
-    public IParameterValue<float> Reputation { get; } = (IParameterValue<float>) new ParameterValue<float>();
+    public IParameterValue<float> Reputation { get; } = new ParameterValue<float>();
 
-    public RegionMesh RegionMesh => this.regionMesh;
+    public RegionMesh RegionMesh => regionMesh;
 
-    public RegionEnum Region => this.region;
+    public RegionEnum Region => region;
 
-    public RegionBehaviourEnum RegionBehaviour => this.regionBehaviour;
+    public RegionBehaviourEnum RegionBehaviour => regionBehaviour;
 
     private void UpdateReputationValue(float newValue)
     {
-      switch (this.RegionBehaviour)
+      switch (RegionBehaviour)
       {
         case RegionBehaviourEnum.AlwaysMaxReputation:
-          this.Reputation.Value = 1f;
+          Reputation.Value = 1f;
           break;
         case RegionBehaviourEnum.AlwaysMinReputation:
-          this.Reputation.Value = 0.0f;
+          Reputation.Value = 0.0f;
           break;
       }
     }
@@ -65,34 +64,34 @@ namespace Engine.Source.Components
     public override void OnAdded()
     {
       base.OnAdded();
-      this.spreadingService.AddRegion((IRegionComponent) this);
-      RegionUtility.AddRegion(this.region, this);
-      this.DiseaseLevel.Set<int>(this.parameters.GetByName<int>(ParameterNameEnum.DiseaseLevel));
-      this.Reputation.Set<float>(this.parameters.GetByName<float>(ParameterNameEnum.Reputation));
-      ((IEntityView) this.Owner).OnGameObjectChangedEvent += new Action(this.OnGameObjectChangedEvent);
-      this.OnGameObjectChangedEvent();
-      this.UpdateReputationValue(0.0f);
-      this.Reputation.ChangeValueEvent += new Action<float>(this.UpdateReputationValue);
+      spreadingService.AddRegion(this);
+      RegionUtility.AddRegion(region, this);
+      DiseaseLevel.Set(parameters.GetByName<int>(ParameterNameEnum.DiseaseLevel));
+      Reputation.Set(parameters.GetByName<float>(ParameterNameEnum.Reputation));
+      ((IEntityView) Owner).OnGameObjectChangedEvent += OnGameObjectChangedEvent;
+      OnGameObjectChangedEvent();
+      UpdateReputationValue(0.0f);
+      Reputation.ChangeValueEvent += UpdateReputationValue;
     }
 
     public override void OnRemoved()
     {
-      ((IEntityView) this.Owner).OnGameObjectChangedEvent -= new Action(this.OnGameObjectChangedEvent);
-      this.regionMesh = (RegionMesh) null;
-      this.DiseaseLevel.Set<int>((IParameter<int>) null);
-      this.Reputation.Set<float>((IParameter<float>) null);
-      RegionUtility.RemoveRegion(this.region, this);
-      this.spreadingService.RemoveRegion((IRegionComponent) this);
-      this.Reputation.ChangeValueEvent -= new Action<float>(this.UpdateReputationValue);
+      ((IEntityView) Owner).OnGameObjectChangedEvent -= OnGameObjectChangedEvent;
+      regionMesh = null;
+      DiseaseLevel.Set(null);
+      Reputation.Set(null);
+      RegionUtility.RemoveRegion(region, this);
+      spreadingService.RemoveRegion(this);
+      Reputation.ChangeValueEvent -= UpdateReputationValue;
       base.OnRemoved();
     }
 
     private void OnGameObjectChangedEvent()
     {
-      if (((IEntityView) this.Owner).IsAttached)
-        this.regionMesh = RegionLocator.GetRegionMesh(this.region);
+      if (((IEntityView) Owner).IsAttached)
+        regionMesh = RegionLocator.GetRegionMesh(region);
       else
-        this.regionMesh = (RegionMesh) null;
+        regionMesh = null;
     }
   }
 }

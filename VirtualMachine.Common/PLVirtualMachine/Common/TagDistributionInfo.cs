@@ -1,7 +1,7 @@
-﻿using Cofe.Loggers;
-using PLVirtualMachine.Common.Data;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using Cofe.Loggers;
+using PLVirtualMachine.Common.Data;
 
 namespace PLVirtualMachine.Common
 {
@@ -12,15 +12,15 @@ namespace PLVirtualMachine.Common
     private bool isComplex;
     private int percentageValue = 100;
 
-    public TagDistributionInfo() => this.isDistribInPercentage = true;
+    public TagDistributionInfo() => isDistribInPercentage = true;
 
-    public bool Complex => this.isComplex;
+    public bool Complex => isComplex;
 
-    public List<ITagInfo> TagInfoList => this.tagInfoList;
+    public List<ITagInfo> TagInfoList => tagInfoList;
 
-    public bool DistribInPercentage => this.isDistribInPercentage;
+    public bool DistribInPercentage => isDistribInPercentage;
 
-    public int Percentage => this.percentageValue;
+    public int Percentage => percentageValue;
 
     public string Tag => "TagDistribution";
 
@@ -29,15 +29,15 @@ namespace PLVirtualMachine.Common
       switch (data)
       {
         case null:
-          Logger.AddError(string.Format("Attempt to read null tag info data"));
+          Logger.AddError("Attempt to read null tag info data");
           break;
         case "":
           break;
         default:
           if (data.StartsWith("COMPLEX&DISTRIB"))
           {
-            this.isComplex = true;
-            this.isDistribInPercentage = true;
+            isComplex = true;
+            isDistribInPercentage = true;
             string str = data.Substring("COMPLEX&DISTRIB".Length);
             string[] separator = new string[1]
             {
@@ -47,11 +47,11 @@ namespace PLVirtualMachine.Common
             {
               TagDistributionInfo distributionInfo = new TagDistributionInfo();
               distributionInfo.Read(data1);
-              this.tagInfoList.Add((ITagInfo) distributionInfo);
+              tagInfoList.Add(distributionInfo);
             }
             break;
           }
-          this.isDistribInPercentage = true;
+          isDistribInPercentage = true;
           string[] separator1 = new string[1]{ "END&TAG" };
           string[] strArray = data.Split(separator1, StringSplitOptions.RemoveEmptyEntries);
           for (int index = 0; index < strArray.Length; ++index)
@@ -59,21 +59,21 @@ namespace PLVirtualMachine.Common
             try
             {
               if (strArray[index].StartsWith("SUB&PERCENT"))
-                this.percentageValue = StringUtility.ToInt32(strArray[index].Substring("SUB&PERCENT".Length));
+                percentageValue = StringUtility.ToInt32(strArray[index].Substring("SUB&PERCENT".Length));
               else if (strArray[index] == "IN&ABS")
               {
-                this.isDistribInPercentage = false;
+                isDistribInPercentage = false;
               }
               else
               {
                 TagInfo tagInfo = new TagInfo();
                 tagInfo.Read(strArray[index]);
-                this.tagInfoList.Add((ITagInfo) tagInfo);
+                tagInfoList.Add(tagInfo);
               }
             }
             catch (Exception ex)
             {
-              Logger.AddError(string.Format("{0} isn't valid tag info data, error: {1}", (object) strArray[index], (object) ex));
+              Logger.AddError(string.Format("{0} isn't valid tag info data, error: {1}", strArray[index], ex));
             }
           }
           break;

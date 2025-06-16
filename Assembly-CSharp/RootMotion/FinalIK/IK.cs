@@ -6,25 +6,25 @@
 
     protected override void UpdateSolver()
     {
-      if (!this.GetIKSolver().initiated)
-        this.InitiateSolver();
-      if (!this.GetIKSolver().initiated)
+      if (!GetIKSolver().initiated)
+        InitiateSolver();
+      if (!GetIKSolver().initiated)
         return;
-      this.GetIKSolver().Update();
+      GetIKSolver().Update();
     }
 
     protected override void InitiateSolver()
     {
-      if (this.GetIKSolver().initiated)
+      if (GetIKSolver().initiated)
         return;
-      this.GetIKSolver().Initiate(this.transform);
+      GetIKSolver().Initiate(this.transform);
     }
 
     protected override void FixTransforms()
     {
-      if (!this.GetIKSolver().initiated)
+      if (!GetIKSolver().initiated)
         return;
-      this.GetIKSolver().FixTransforms();
+      GetIKSolver().FixTransforms();
     }
 
     protected abstract void OpenUserManual();

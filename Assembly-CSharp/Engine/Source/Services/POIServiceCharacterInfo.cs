@@ -1,8 +1,6 @@
 ﻿using Engine.Common;
 using Engine.Common.Components;
 using Engine.Source.Components;
-using System;
-using UnityEngine;
 
 namespace Engine.Source.Services
 {
@@ -21,21 +19,21 @@ namespace Engine.Source.Services
     {
       get
       {
-        if (this.entity == null)
-          this.InitEntity();
-        return this.entity;
+        if (entity == null)
+          InitEntity();
+        return entity;
       }
       private set
       {
-        this.entity = value;
-        if (this.entity == null)
+        entity = value;
+        if (entity == null)
           return;
-        this.location = this.entity.GetComponent<LocationItemComponent>();
-        if (this.location != null)
+        location = entity.GetComponent<LocationItemComponent>();
+        if (location != null)
         {
-          this.IsIndoors = this.location.IsIndoor;
-          this.location.OnChangeLocation -= new Action<ILocationItemComponent, ILocationComponent>(this.ChangedLocation);
-          this.location.OnChangeLocation += new Action<ILocationItemComponent, ILocationComponent>(this.ChangedLocation);
+          IsIndoors = location.IsIndoor;
+          location.OnChangeLocation -= ChangedLocation;
+          location.OnChangeLocation += ChangedLocation;
         }
       }
     }
@@ -44,37 +42,37 @@ namespace Engine.Source.Services
     {
       get
       {
-        if (this.Entity == null)
-          this.InitEntity();
-        return this.isIndoors;
+        if (Entity == null)
+          InitEntity();
+        return isIndoors;
       }
-      private set => this.isIndoors = value;
+      private set => isIndoors = value;
     }
 
     public POIServiceCharacterInfo(GameObject go)
     {
-      this.Character = go;
-      this.InitEntity();
+      Character = go;
+      InitEntity();
     }
 
     public void Clear()
     {
-      if (this.location == null)
+      if (location == null)
         return;
-      this.location.OnChangeLocation -= new Action<ILocationItemComponent, ILocationComponent>(this.ChangedLocation);
+      location.OnChangeLocation -= ChangedLocation;
     }
 
     private void InitEntity()
     {
-      EngineGameObject component = this.Character.GetComponent<EngineGameObject>();
+      EngineGameObject component = Character.GetComponent<EngineGameObject>();
       if (!((UnityEngine.Object) component != (UnityEngine.Object) null))
         return;
-      this.Entity = component.Owner;
+      Entity = component.Owner;
     }
 
     private void ChangedLocation(ILocationItemComponent locItem, ILocationComponent loc)
     {
-      this.IsIndoors = locItem.IsIndoor;
+      IsIndoors = locItem.IsIndoor;
     }
   }
 }

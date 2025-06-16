@@ -1,6 +1,6 @@
-﻿using Engine.Common;
+﻿using System;
+using Engine.Common;
 using Engine.Source.Commons;
-using UnityEngine;
 
 [ExecuteInEditMode]
 [RequireComponent(typeof (MeshFilter), typeof (ParticleSystem))]
@@ -42,17 +42,17 @@ public class LightShafts : MonoBehaviour, IUpdatable
 
   public static Vector3 LightDirection
   {
-    get => LightShafts._lightDirection;
-    set => LightShafts._lightDirection = value.normalized;
+    get => _lightDirection;
+    set => _lightDirection = value.normalized;
   }
 
   private MeshFilter meshFilter
   {
     get
     {
-      if ((UnityEngine.Object) this._meshFilter == (UnityEngine.Object) null)
-        this._meshFilter = this.GetComponent<MeshFilter>();
-      return this._meshFilter;
+      if ((UnityEngine.Object) _meshFilter == (UnityEngine.Object) null)
+        _meshFilter = this.GetComponent<MeshFilter>();
+      return _meshFilter;
     }
   }
 
@@ -60,9 +60,9 @@ public class LightShafts : MonoBehaviour, IUpdatable
   {
     get
     {
-      if ((UnityEngine.Object) this._meshRenderer == (UnityEngine.Object) null)
-        this._meshRenderer = this.GetComponent<MeshRenderer>();
-      return this._meshRenderer;
+      if ((UnityEngine.Object) _meshRenderer == (UnityEngine.Object) null)
+        _meshRenderer = this.GetComponent<MeshRenderer>();
+      return _meshRenderer;
     }
   }
 
@@ -70,191 +70,191 @@ public class LightShafts : MonoBehaviour, IUpdatable
   {
     get
     {
-      if ((UnityEngine.Object) this._particleSystem == (UnityEngine.Object) null)
-        this._particleSystem = this.GetComponent<ParticleSystem>();
-      return this._particleSystem;
+      if ((UnityEngine.Object) _particleSystem == (UnityEngine.Object) null)
+        _particleSystem = this.GetComponent<ParticleSystem>();
+      return _particleSystem;
     }
   }
 
   private void CheckChild()
   {
-    if (!((UnityEngine.Object) this._child == (UnityEngine.Object) null))
+    if (!((UnityEngine.Object) _child == (UnityEngine.Object) null))
       return;
-    this._child = new GameObject("Light Shaft Fade", new System.Type[2]
+    _child = new GameObject("Light Shaft Fade", new Type[2]
     {
       typeof (MeshFilter),
       typeof (MeshRenderer)
     });
-    this._child.layer = this.gameObject.layer;
-    this._child.tag = this.gameObject.tag;
-    this._child.transform.SetParent(this.transform, false);
-    this._child.transform.localPosition = Vector3.zero;
-    this._child.transform.localRotation = Quaternion.identity;
-    this._child.transform.localScale = Vector3.one;
-    this._child.hideFlags = HideFlags.DontSave;
-    this._childMeshRenderer = this._child.GetComponent<MeshRenderer>();
-    this._childMeshRenderer.sharedMaterial = this.meshRenderer.sharedMaterial;
-    this._childMeshFilter = this._child.GetComponent<MeshFilter>();
+    _child.layer = this.gameObject.layer;
+    _child.tag = this.gameObject.tag;
+    _child.transform.SetParent(this.transform, false);
+    _child.transform.localPosition = Vector3.zero;
+    _child.transform.localRotation = Quaternion.identity;
+    _child.transform.localScale = Vector3.one;
+    _child.hideFlags = HideFlags.DontSave;
+    _childMeshRenderer = _child.GetComponent<MeshRenderer>();
+    _childMeshRenderer.sharedMaterial = meshRenderer.sharedMaterial;
+    _childMeshFilter = _child.GetComponent<MeshFilter>();
   }
 
   private void NullChild()
   {
-    if (!((UnityEngine.Object) this._child != (UnityEngine.Object) null))
+    if (!((UnityEngine.Object) _child != (UnityEngine.Object) null))
       return;
-    UnityEngine.Object.Destroy((UnityEngine.Object) this._child);
-    this._child = (GameObject) null;
-    this._childMeshFilter = (MeshFilter) null;
-    this._childMeshRenderer = (MeshRenderer) null;
+    UnityEngine.Object.Destroy((UnityEngine.Object) _child);
+    _child = (GameObject) null;
+    _childMeshFilter = (MeshFilter) null;
+    _childMeshRenderer = (MeshRenderer) null;
   }
 
   private void CheckMesh()
   {
-    if ((UnityEngine.Object) this.meshFilter.sharedMesh != (UnityEngine.Object) null)
+    if ((UnityEngine.Object) meshFilter.sharedMesh != (UnityEngine.Object) null)
       return;
     Mesh mesh = new Mesh();
     mesh.MarkDynamic();
     mesh.hideFlags = HideFlags.DontSave;
-    this.meshFilter.sharedMesh = mesh;
-    ParticleSystem.ShapeModule shape = this.particleSystem.shape with
+    meshFilter.sharedMesh = mesh;
+    ParticleSystem.ShapeModule shape = particleSystem.shape with
     {
       shapeType = ParticleSystemShapeType.Mesh,
       mesh = mesh
     };
-    this.particleSystem.Play();
-    this.meshRenderer.enabled = true;
+    particleSystem.Play();
+    meshRenderer.enabled = true;
   }
 
   public void NullMesh()
   {
-    if ((UnityEngine.Object) this.meshFilter.sharedMesh != (UnityEngine.Object) null)
+    if ((UnityEngine.Object) meshFilter.sharedMesh != (UnityEngine.Object) null)
     {
-      UnityEngine.Object.Destroy((UnityEngine.Object) this.meshFilter.sharedMesh);
-      this.meshFilter.sharedMesh = (Mesh) null;
+      UnityEngine.Object.Destroy((UnityEngine.Object) meshFilter.sharedMesh);
+      meshFilter.sharedMesh = (Mesh) null;
     }
-    this.particleSystem.Stop();
-    ParticleSystem.ShapeModule shape = this.particleSystem.shape with
+    particleSystem.Stop();
+    ParticleSystem.ShapeModule shape = particleSystem.shape with
     {
       shapeType = ParticleSystemShapeType.Sphere,
       mesh = (Mesh) null
     };
-    this.meshRenderer.enabled = false;
+    meshRenderer.enabled = false;
   }
 
   private void Reset()
   {
-    this.NullChild();
-    this.NullMesh();
-    this._phase = 1f;
+    NullChild();
+    NullMesh();
+    _phase = 1f;
   }
 
   private void OnEnable()
   {
     LightShaftsBuilder.Occupy();
-    InstanceByRequest<UpdateService>.Instance.LightShaftsUpdater.AddUpdatable((IUpdatable) this);
-    this.Reset();
+    InstanceByRequest<UpdateService>.Instance.LightShaftsUpdater.AddUpdatable(this);
+    Reset();
   }
 
   private void OnDisable()
   {
-    InstanceByRequest<UpdateService>.Instance.LightShaftsUpdater.RemoveUpdatable((IUpdatable) this);
+    InstanceByRequest<UpdateService>.Instance.LightShaftsUpdater.RemoveUpdatable(this);
     LightShaftsBuilder.Vacate();
-    this.Reset();
+    Reset();
   }
 
   public void ComputeUpdate()
   {
-    if (!LightShafts.isLightActive)
+    if (!isLightActive)
     {
-      this.Reset();
+      Reset();
     }
     else
     {
-      if ((double) LightShafts.nearUpdateTime <= 0.0)
+      if (nearUpdateTime <= 0.0)
       {
-        ++this._phase;
+        ++_phase;
       }
       else
       {
-        float num1 = 1f / LightShafts.nearUpdateTime;
-        if (LightShafts.isPlayerSet)
+        float num1 = 1f / nearUpdateTime;
+        if (isPlayerSet)
         {
-          float num2 = Vector3.Distance(this.transform.position, LightShafts.playerPosition);
-          if ((double) num2 >= (double) LightShafts.farDistance)
+          float num2 = Vector3.Distance(this.transform.position, playerPosition);
+          if (num2 >= (double) farDistance)
             num1 = 0.0f;
-          else if ((double) num2 > (double) LightShafts.nearDistance)
-            num1 *= (float) (((double) LightShafts.farDistance - (double) num2) / ((double) LightShafts.farDistance - (double) LightShafts.nearDistance));
+          else if (num2 > (double) nearDistance)
+            num1 *= (float) ((farDistance - (double) num2) / (farDistance - (double) nearDistance));
         }
-        this._phase += num1 * (Time.unscaledTime - this._lastUpdateTime);
+        _phase += num1 * (Time.unscaledTime - _lastUpdateTime);
       }
-      if ((double) this._phase >= 1.0)
+      if (_phase >= 1.0)
       {
-        if (LightShafts.thisFrameIndex != Time.frameCount)
+        if (thisFrameIndex != Time.frameCount)
         {
-          LightShafts.thisFrameIndex = Time.frameCount;
-          LightShafts.thisFrameRebuilds = 0;
+          thisFrameIndex = Time.frameCount;
+          thisFrameRebuilds = 0;
         }
-        if (LightShafts.thisFrameRebuilds < 4 || (double) this._phase >= 2.0)
+        if (thisFrameRebuilds < 4 || _phase >= 2.0)
         {
-          if ((UnityEngine.Object) this.meshFilter.sharedMesh == (UnityEngine.Object) null)
+          if ((UnityEngine.Object) meshFilter.sharedMesh == (UnityEngine.Object) null)
           {
-            this.NullChild();
+            NullChild();
           }
           else
           {
-            this.CheckChild();
-            Mesh sharedMesh = this._childMeshFilter.sharedMesh;
-            this._childMeshFilter.sharedMesh = this.meshFilter.sharedMesh;
-            this.meshFilter.sharedMesh = sharedMesh;
+            CheckChild();
+            Mesh sharedMesh = _childMeshFilter.sharedMesh;
+            _childMeshFilter.sharedMesh = meshFilter.sharedMesh;
+            meshFilter.sharedMesh = sharedMesh;
           }
-          this.UpdateMesh();
-          this._phase = 0.0f;
-          ++LightShafts.thisFrameRebuilds;
+          UpdateMesh();
+          _phase = 0.0f;
+          ++thisFrameRebuilds;
         }
       }
-      if ((UnityEngine.Object) this.meshFilter.sharedMesh != (UnityEngine.Object) null)
-        this.UpdateRenderer(this.meshRenderer, this._phase);
-      if ((UnityEngine.Object) this._childMeshRenderer != (UnityEngine.Object) null)
-        this.UpdateRenderer(this._childMeshRenderer, 1f - this._phase);
+      if ((UnityEngine.Object) meshFilter.sharedMesh != (UnityEngine.Object) null)
+        UpdateRenderer(meshRenderer, _phase);
+      if ((UnityEngine.Object) _childMeshRenderer != (UnityEngine.Object) null)
+        UpdateRenderer(_childMeshRenderer, 1f - _phase);
     }
-    this._lastUpdateTime = Time.unscaledTime;
+    _lastUpdateTime = Time.unscaledTime;
   }
 
   private void UpdateRenderer(MeshRenderer renderer, float phase)
   {
-    if (LightShafts._materialProperties == null)
+    if (_materialProperties == null)
     {
-      LightShafts._materialProperties = new MaterialPropertyBlock();
-      LightShafts._opacityShaderProperty = Shader.PropertyToID("_Opacity");
+      _materialProperties = new MaterialPropertyBlock();
+      _opacityShaderProperty = Shader.PropertyToID("_Opacity");
     }
     phase = Mathf.Clamp01(phase);
-    LightShafts._materialProperties.SetFloat(LightShafts._opacityShaderProperty, phase * this.brightness);
-    renderer.SetPropertyBlock(LightShafts._materialProperties);
+    _materialProperties.SetFloat(_opacityShaderProperty, phase * brightness);
+    renderer.SetPropertyBlock(_materialProperties);
   }
 
   private void UpdateMesh()
   {
-    if (!LightShafts.isLightActive || (double) this.length <= 0.0)
+    if (!isLightActive || this.length <= 0.0)
     {
-      this.NullMesh();
+      NullMesh();
     }
     else
     {
-      float opacity = Mathf.Clamp01(Vector3.Dot(LightShafts.LightDirection, this.transform.forward));
-      if ((double) opacity <= 0.0)
+      float opacity = Mathf.Clamp01(Vector3.Dot(LightDirection, this.transform.forward));
+      if (opacity <= 0.0)
       {
-        this.NullMesh();
+        NullMesh();
       }
       else
       {
         LightShaftsBuilder instance = LightShaftsBuilder.Instance;
-        instance.Prepare(this, opacity, this.points.Length);
+        instance.Prepare(this, opacity, points.Length);
         Matrix4x4 localToWorldMatrix = this.transform.localToWorldMatrix;
         bool flag = false;
         float num = 0.0f;
-        for (int index = 0; index < this.points.Length; ++index)
+        for (int index = 0; index < points.Length; ++index)
         {
-          Vector3 origin = localToWorldMatrix.MultiplyPoint(this.points[index]);
-          if ((double) this.outdoorDistance > (double) this.outdoorBias && Physics.Raycast(origin - LightShafts._lightDirection * this.outdoorBias, -LightShafts._lightDirection, this.outdoorDistance - this.outdoorBias, (int) LightShafts.shadowCastingColliders, QueryTriggerInteraction.Ignore))
+          Vector3 origin = localToWorldMatrix.MultiplyPoint(points[index]);
+          if (outdoorDistance > (double) outdoorBias && Physics.Raycast(origin - _lightDirection * outdoorBias, -_lightDirection, outdoorDistance - outdoorBias, (int) shadowCastingColliders, QueryTriggerInteraction.Ignore))
           {
             float length = 0.0f;
             instance.AddRay(origin, length);
@@ -263,15 +263,15 @@ public class LightShafts : MonoBehaviour, IUpdatable
           {
             RaycastHit hitInfo;
             float length1;
-            if ((double) this.length > (double) this.indoorBias && Physics.Raycast(origin + LightShafts._lightDirection * this.indoorBias, LightShafts._lightDirection, out hitInfo, this.length - this.indoorBias, (int) LightShafts.shadowCastingColliders, QueryTriggerInteraction.Ignore))
+            if (length > (double) indoorBias && Physics.Raycast(origin + _lightDirection * indoorBias, _lightDirection, out hitInfo, length - indoorBias, (int) shadowCastingColliders, QueryTriggerInteraction.Ignore))
             {
-              length1 = hitInfo.distance + this.indoorBias + this.radius;
-              if ((double) length1 > (double) this.length)
-                length1 = this.length;
+              length1 = hitInfo.distance + indoorBias + radius;
+              if (length1 > (double) length)
+                length1 = length;
             }
             else
-              length1 = this.length;
-            if ((double) length1 <= (double) this.radius)
+              length1 = length;
+            if (length1 <= (double) radius)
             {
               float length2 = 0.0f;
               instance.AddRay(origin, length2);
@@ -286,17 +286,17 @@ public class LightShafts : MonoBehaviour, IUpdatable
         }
         if (!flag)
         {
-          this.NullMesh();
+          NullMesh();
         }
         else
         {
-          this.CheckMesh();
-          instance.BuildTo(this.meshFilter.sharedMesh);
-          this.particleSystem.emission.rateOverTime = new ParticleSystem.MinMaxCurve(num * this.particlesPerUnit);
-          ParticleSystem.ShapeModule shape = this.particleSystem.shape with
+          CheckMesh();
+          instance.BuildTo(meshFilter.sharedMesh);
+          particleSystem.emission.rateOverTime = new ParticleSystem.MinMaxCurve(num * particlesPerUnit);
+          ParticleSystem.ShapeModule shape = particleSystem.shape with
           {
             shapeType = ParticleSystemShapeType.Mesh,
-            mesh = this.meshFilter.sharedMesh
+            mesh = meshFilter.sharedMesh
           };
         }
       }

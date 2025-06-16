@@ -6,7 +6,7 @@ namespace Engine.Source.UI.Menu.Main
   {
     protected override void RegisterLayer()
     {
-      this.RegisterLayer<IGameKeySettingsWindow>((IGameKeySettingsWindow) this);
+      RegisterLayer((IGameKeySettingsWindow) this);
     }
   }
 }

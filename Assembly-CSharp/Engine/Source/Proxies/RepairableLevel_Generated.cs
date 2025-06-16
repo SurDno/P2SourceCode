@@ -1,9 +1,9 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons.Cloneable;
 using Engine.Common.Commons.Converters;
 using Engine.Source.Components.Repairing;
-using System;
 
 namespace Engine.Source.Proxies
 {
@@ -18,27 +18,27 @@ namespace Engine.Source.Proxies
     public object Clone()
     {
       RepairableLevel_Generated instance = Activator.CreateInstance<RepairableLevel_Generated>();
-      this.CopyTo((object) instance);
-      return (object) instance;
+      CopyTo(instance);
+      return instance;
     }
 
     public void CopyTo(object target2)
     {
       RepairableLevel_Generated repairableLevelGenerated = (RepairableLevel_Generated) target2;
-      repairableLevelGenerated.maxDurability = this.maxDurability;
-      CloneableObjectUtility.CopyListTo<RepairableCostItem>(repairableLevelGenerated.cost, this.cost);
+      repairableLevelGenerated.maxDurability = maxDurability;
+      CloneableObjectUtility.CopyListTo(repairableLevelGenerated.cost, cost);
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.Write(writer, "MaxDurability", this.maxDurability);
-      DefaultDataWriteUtility.WriteListSerialize<RepairableCostItem>(writer, "Cost", this.cost);
+      DefaultDataWriteUtility.Write(writer, "MaxDurability", maxDurability);
+      DefaultDataWriteUtility.WriteListSerialize(writer, "Cost", cost);
     }
 
     public void DataRead(IDataReader reader, Type type)
     {
-      this.maxDurability = DefaultDataReadUtility.Read(reader, "MaxDurability", this.maxDurability);
-      this.cost = DefaultDataReadUtility.ReadListSerialize<RepairableCostItem>(reader, "Cost", this.cost);
+      maxDurability = DefaultDataReadUtility.Read(reader, "MaxDurability", maxDurability);
+      cost = DefaultDataReadUtility.ReadListSerialize(reader, "Cost", cost);
     }
   }
 }

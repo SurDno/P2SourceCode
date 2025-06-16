@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace Engine.Impl.UI.Controls
+﻿namespace Engine.Impl.UI.Controls
 {
   public class AnchorGameActionView : GameActionViewBase
   {
@@ -10,21 +8,21 @@ namespace Engine.Impl.UI.Controls
 
     private void Awake()
     {
-      if (!((Object) this.prefab != (Object) null) || this.GetValue() == 0)
+      if (!((Object) prefab != (Object) null) || GetValue() == 0)
         return;
-      this.instance = Object.Instantiate<GameActionView>(this.prefab, this.transform, false);
-      this.instance.SetValue(this.GetValue(), true);
+      instance = Object.Instantiate<GameActionView>(prefab, this.transform, false);
+      instance.SetValue(GetValue(), true);
     }
 
     protected override void ApplyValue(bool instant)
     {
-      if (this.GetValue() != 0)
+      if (GetValue() != 0)
       {
-        this.instance?.SetValue(this.GetValue(), instant);
-        this.instance?.gameObject.SetActive(true);
+        instance?.SetValue(GetValue(), instant);
+        instance?.gameObject.SetActive(true);
       }
       else
-        this.instance?.gameObject.SetActive(false);
+        instance?.gameObject.SetActive(false);
     }
   }
 }

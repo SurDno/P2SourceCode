@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEngine;
 
 namespace UnityStandardAssets.CinematicEffects
 {
@@ -8,12 +7,12 @@ namespace UnityStandardAssets.CinematicEffects
   [AddComponentMenu("Image Effects/Cinematic/Lens Aberrations")]
   public class LensAberrations : MonoBehaviour
   {
-    [LensAberrations.SettingsGroup]
-    public LensAberrations.DistortionSettings distortion = LensAberrations.DistortionSettings.defaultSettings;
-    [LensAberrations.SettingsGroup]
-    public LensAberrations.VignetteSettings vignette = LensAberrations.VignetteSettings.defaultSettings;
-    [LensAberrations.SettingsGroup]
-    public LensAberrations.ChromaticAberrationSettings chromaticAberration = LensAberrations.ChromaticAberrationSettings.defaultSettings;
+    [SettingsGroup]
+    public DistortionSettings distortion = DistortionSettings.defaultSettings;
+    [SettingsGroup]
+    public VignetteSettings vignette = VignetteSettings.defaultSettings;
+    [SettingsGroup]
+    public ChromaticAberrationSettings chromaticAberration = ChromaticAberrationSettings.defaultSettings;
     [SerializeField]
     private Shader m_Shader;
     private Material m_Material;
@@ -23,9 +22,9 @@ namespace UnityStandardAssets.CinematicEffects
     {
       get
       {
-        if ((UnityEngine.Object) this.m_Shader == (UnityEngine.Object) null)
-          this.m_Shader = Shader.Find("Hidden/LensAberrations");
-        return this.m_Shader;
+        if ((UnityEngine.Object) m_Shader == (UnityEngine.Object) null)
+          m_Shader = Shader.Find("Hidden/LensAberrations");
+        return m_Shader;
       }
     }
 
@@ -33,122 +32,122 @@ namespace UnityStandardAssets.CinematicEffects
     {
       get
       {
-        if ((UnityEngine.Object) this.m_Material == (UnityEngine.Object) null)
-          this.m_Material = ImageEffectHelper.CheckShaderAndCreateMaterial(this.shader);
-        return this.m_Material;
+        if ((UnityEngine.Object) m_Material == (UnityEngine.Object) null)
+          m_Material = ImageEffectHelper.CheckShaderAndCreateMaterial(shader);
+        return m_Material;
       }
     }
 
     private void OnEnable()
     {
-      if (!ImageEffectHelper.IsSupported(this.shader, false, false, (MonoBehaviour) this))
+      if (!ImageEffectHelper.IsSupported(shader, false, false, (MonoBehaviour) this))
         this.enabled = false;
-      this.m_RTU = new RenderTextureUtility();
+      m_RTU = new RenderTextureUtility();
     }
 
     private void OnDisable()
     {
-      if ((UnityEngine.Object) this.m_Material != (UnityEngine.Object) null)
-        UnityEngine.Object.DestroyImmediate((UnityEngine.Object) this.m_Material);
-      this.m_Material = (Material) null;
-      this.m_RTU.ReleaseAllTemporaryRenderTextures();
+      if ((UnityEngine.Object) m_Material != (UnityEngine.Object) null)
+        UnityEngine.Object.DestroyImmediate((UnityEngine.Object) m_Material);
+      m_Material = (Material) null;
+      m_RTU.ReleaseAllTemporaryRenderTextures();
     }
 
     private void OnRenderImage(RenderTexture source, RenderTexture destination)
     {
-      if (!this.vignette.enabled && !this.chromaticAberration.enabled && !this.distortion.enabled)
+      if (!vignette.enabled && !chromaticAberration.enabled && !distortion.enabled)
       {
         Graphics.Blit((Texture) source, destination);
       }
       else
       {
-        this.material.shaderKeywords = (string[]) null;
-        if (this.distortion.enabled)
+        material.shaderKeywords = (string[]) null;
+        if (distortion.enabled)
         {
-          float num = (float) Math.PI / 180f * Math.Min(160f, 1.6f * Math.Max(Mathf.Abs(this.distortion.amount), 1f));
+          float num = (float) Math.PI / 180f * Math.Min(160f, 1.6f * Math.Max(Mathf.Abs(distortion.amount), 1f));
           float y = 2f * Mathf.Tan(num * 0.5f);
-          Vector4 vector4 = new Vector4(this.distortion.centerX, this.distortion.centerY, Mathf.Max(this.distortion.amountX, 0.0001f), Mathf.Max(this.distortion.amountY, 0.0001f));
-          Vector3 vector3 = new Vector3((double) this.distortion.amount >= 0.0 ? num : 1f / num, y, 1f / this.distortion.scale);
-          this.material.EnableKeyword((double) this.distortion.amount >= 0.0 ? "DISTORT" : "UNDISTORT");
-          this.material.SetVector("_DistCenterScale", vector4);
-          this.material.SetVector("_DistAmount", (Vector4) vector3);
+          Vector4 vector4 = new Vector4(distortion.centerX, distortion.centerY, Mathf.Max(distortion.amountX, 0.0001f), Mathf.Max(distortion.amountY, 0.0001f));
+          Vector3 vector3 = new Vector3(distortion.amount >= 0.0 ? num : 1f / num, y, 1f / distortion.scale);
+          material.EnableKeyword(distortion.amount >= 0.0 ? "DISTORT" : "UNDISTORT");
+          material.SetVector("_DistCenterScale", vector4);
+          material.SetVector("_DistAmount", (Vector4) vector3);
         }
-        if (this.chromaticAberration.enabled)
+        if (chromaticAberration.enabled)
         {
-          this.material.EnableKeyword("CHROMATIC_ABERRATION");
-          this.material.SetVector("_ChromaticAberration", new Vector4(this.chromaticAberration.color.r, this.chromaticAberration.color.g, this.chromaticAberration.color.b, this.chromaticAberration.amount * (1f / 1000f)));
+          material.EnableKeyword("CHROMATIC_ABERRATION");
+          material.SetVector("_ChromaticAberration", new Vector4(chromaticAberration.color.r, chromaticAberration.color.g, chromaticAberration.color.b, chromaticAberration.amount * (1f / 1000f)));
         }
-        if (this.vignette.enabled)
+        if (vignette.enabled)
         {
-          this.material.SetColor("_VignetteColor", this.vignette.color);
-          if ((double) this.vignette.blur > 0.0)
+          material.SetColor("_VignetteColor", vignette.color);
+          if (vignette.blur > 0.0)
           {
             int width = source.width / 2;
             int height = source.height / 2;
-            RenderTexture temporaryRenderTexture1 = this.m_RTU.GetTemporaryRenderTexture(width, height, format: source.format);
-            RenderTexture temporaryRenderTexture2 = this.m_RTU.GetTemporaryRenderTexture(width, height, format: source.format);
-            this.material.SetVector("_BlurPass", (Vector4) new Vector2(1f / (float) width, 0.0f));
-            Graphics.Blit((Texture) source, temporaryRenderTexture1, this.material, 0);
-            if (this.distortion.enabled)
+            RenderTexture temporaryRenderTexture1 = m_RTU.GetTemporaryRenderTexture(width, height, format: source.format);
+            RenderTexture temporaryRenderTexture2 = m_RTU.GetTemporaryRenderTexture(width, height, format: source.format);
+            material.SetVector("_BlurPass", (Vector4) new Vector2(1f / width, 0.0f));
+            Graphics.Blit((Texture) source, temporaryRenderTexture1, material, 0);
+            if (distortion.enabled)
             {
-              this.material.DisableKeyword("DISTORT");
-              this.material.DisableKeyword("UNDISTORT");
+              material.DisableKeyword("DISTORT");
+              material.DisableKeyword("UNDISTORT");
             }
-            this.material.SetVector("_BlurPass", (Vector4) new Vector2(0.0f, 1f / (float) height));
-            Graphics.Blit((Texture) temporaryRenderTexture1, temporaryRenderTexture2, this.material, 0);
-            this.material.SetVector("_BlurPass", (Vector4) new Vector2(1f / (float) width, 0.0f));
-            Graphics.Blit((Texture) temporaryRenderTexture2, temporaryRenderTexture1, this.material, 0);
-            this.material.SetVector("_BlurPass", (Vector4) new Vector2(0.0f, 1f / (float) height));
-            Graphics.Blit((Texture) temporaryRenderTexture1, temporaryRenderTexture2, this.material, 0);
-            this.material.SetTexture("_BlurTex", (Texture) temporaryRenderTexture2);
-            this.material.SetFloat("_VignetteBlur", this.vignette.blur * 3f);
-            this.material.EnableKeyword("VIGNETTE_BLUR");
-            if (this.distortion.enabled)
-              this.material.EnableKeyword((double) this.distortion.amount >= 0.0 ? "DISTORT" : "UNDISTORT");
+            material.SetVector("_BlurPass", (Vector4) new Vector2(0.0f, 1f / height));
+            Graphics.Blit((Texture) temporaryRenderTexture1, temporaryRenderTexture2, material, 0);
+            material.SetVector("_BlurPass", (Vector4) new Vector2(1f / width, 0.0f));
+            Graphics.Blit((Texture) temporaryRenderTexture2, temporaryRenderTexture1, material, 0);
+            material.SetVector("_BlurPass", (Vector4) new Vector2(0.0f, 1f / height));
+            Graphics.Blit((Texture) temporaryRenderTexture1, temporaryRenderTexture2, material, 0);
+            material.SetTexture("_BlurTex", (Texture) temporaryRenderTexture2);
+            material.SetFloat("_VignetteBlur", vignette.blur * 3f);
+            material.EnableKeyword("VIGNETTE_BLUR");
+            if (distortion.enabled)
+              material.EnableKeyword(distortion.amount >= 0.0 ? "DISTORT" : "UNDISTORT");
           }
-          if ((double) this.vignette.desaturate > 0.0)
+          if (vignette.desaturate > 0.0)
           {
-            this.material.EnableKeyword("VIGNETTE_DESAT");
-            this.material.SetFloat("_VignetteDesat", 1f - this.vignette.desaturate);
+            material.EnableKeyword("VIGNETTE_DESAT");
+            material.SetFloat("_VignetteDesat", 1f - vignette.desaturate);
           }
-          this.material.SetVector("_VignetteCenter", (Vector4) this.vignette.center);
-          if (Mathf.Approximately(this.vignette.roundness, 1f))
+          material.SetVector("_VignetteCenter", (Vector4) vignette.center);
+          if (Mathf.Approximately(vignette.roundness, 1f))
           {
-            this.material.EnableKeyword("VIGNETTE_CLASSIC");
-            this.material.SetVector("_VignetteSettings", (Vector4) new Vector2(this.vignette.intensity, this.vignette.smoothness));
+            material.EnableKeyword("VIGNETTE_CLASSIC");
+            material.SetVector("_VignetteSettings", (Vector4) new Vector2(vignette.intensity, vignette.smoothness));
           }
           else
           {
-            this.material.EnableKeyword("VIGNETTE_FILMIC");
-            this.material.SetVector("_VignetteSettings", (Vector4) new Vector3(this.vignette.intensity, this.vignette.smoothness, (float) ((1.0 - (double) this.vignette.roundness) * 6.0) + this.vignette.roundness));
+            material.EnableKeyword("VIGNETTE_FILMIC");
+            material.SetVector("_VignetteSettings", (Vector4) new Vector3(vignette.intensity, vignette.smoothness, (float) ((1.0 - vignette.roundness) * 6.0) + vignette.roundness));
           }
         }
         int pass = 0;
-        if (this.vignette.enabled && this.chromaticAberration.enabled && this.distortion.enabled)
+        if (vignette.enabled && chromaticAberration.enabled && distortion.enabled)
           pass = 7;
-        else if (this.vignette.enabled && this.chromaticAberration.enabled)
+        else if (vignette.enabled && chromaticAberration.enabled)
           pass = 5;
-        else if (this.vignette.enabled && this.distortion.enabled)
+        else if (vignette.enabled && distortion.enabled)
           pass = 6;
-        else if (this.chromaticAberration.enabled && this.distortion.enabled)
+        else if (chromaticAberration.enabled && distortion.enabled)
           pass = 4;
-        else if (this.vignette.enabled)
+        else if (vignette.enabled)
           pass = 3;
-        else if (this.chromaticAberration.enabled)
+        else if (chromaticAberration.enabled)
           pass = 1;
-        else if (this.distortion.enabled)
+        else if (distortion.enabled)
           pass = 2;
-        Graphics.Blit((Texture) source, destination, this.material, pass);
-        this.m_RTU.ReleaseAllTemporaryRenderTextures();
+        Graphics.Blit((Texture) source, destination, material, pass);
+        m_RTU.ReleaseAllTemporaryRenderTextures();
       }
     }
 
-    [AttributeUsage(AttributeTargets.Field, AllowMultiple = false, Inherited = false)]
+    [AttributeUsage(AttributeTargets.Field)]
     public class SettingsGroup : Attribute
     {
     }
 
-    [AttributeUsage(AttributeTargets.Field, AllowMultiple = false, Inherited = false)]
+    [AttributeUsage(AttributeTargets.Field)]
     public class AdvancedSetting : Attribute
     {
     }
@@ -176,12 +175,11 @@ namespace UnityStandardAssets.CinematicEffects
       [Tooltip("Global screen scaling.")]
       public float scale;
 
-      public static LensAberrations.DistortionSettings defaultSettings
+      public static DistortionSettings defaultSettings
       {
         get
         {
-          return new LensAberrations.DistortionSettings()
-          {
+          return new DistortionSettings {
             enabled = false,
             amount = 0.0f,
             centerX = 0.0f,
@@ -209,7 +207,7 @@ namespace UnityStandardAssets.CinematicEffects
       [Range(0.01f, 3f)]
       [Tooltip("Smoothness of the vignette borders.")]
       public float smoothness;
-      [LensAberrations.AdvancedSetting]
+      [AdvancedSetting]
       [Range(0.0f, 1f)]
       [Tooltip("Lower values will make a square-ish vignette.")]
       public float roundness;
@@ -220,12 +218,11 @@ namespace UnityStandardAssets.CinematicEffects
       [Tooltip("Desaturate the corners of the screen. Leave this to 0 to disable it.")]
       public float desaturate;
 
-      public static LensAberrations.VignetteSettings defaultSettings
+      public static VignetteSettings defaultSettings
       {
         get
         {
-          return new LensAberrations.VignetteSettings()
-          {
+          return new VignetteSettings {
             enabled = false,
             color = new Color(0.0f, 0.0f, 0.0f, 1f),
             center = new Vector2(0.5f, 0.5f),
@@ -250,12 +247,11 @@ namespace UnityStandardAssets.CinematicEffects
       [Tooltip("Amount of tangential distortion.")]
       public float amount;
 
-      public static LensAberrations.ChromaticAberrationSettings defaultSettings
+      public static ChromaticAberrationSettings defaultSettings
       {
         get
         {
-          return new LensAberrations.ChromaticAberrationSettings()
-          {
+          return new ChromaticAberrationSettings {
             enabled = false,
             color = Color.green,
             amount = 0.0f

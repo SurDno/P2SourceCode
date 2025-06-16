@@ -19,7 +19,7 @@ namespace SteamNative
 
     public static ControllerMotionData_t FromPointer(IntPtr p)
     {
-      return Platform.PackSmall ? (ControllerMotionData_t) (ControllerMotionData_t.PackSmall) Marshal.PtrToStructure(p, typeof (ControllerMotionData_t.PackSmall)) : (ControllerMotionData_t) Marshal.PtrToStructure(p, typeof (ControllerMotionData_t));
+      return Platform.PackSmall ? (PackSmall) Marshal.PtrToStructure(p, typeof (PackSmall)) : (ControllerMotionData_t) Marshal.PtrToStructure(p, typeof (ControllerMotionData_t));
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
@@ -36,10 +36,9 @@ namespace SteamNative
       public float RotVelY;
       public float RotVelZ;
 
-      public static implicit operator ControllerMotionData_t(ControllerMotionData_t.PackSmall d)
+      public static implicit operator ControllerMotionData_t(PackSmall d)
       {
-        return new ControllerMotionData_t()
-        {
+        return new ControllerMotionData_t {
           RotQuatX = d.RotQuatX,
           RotQuatY = d.RotQuatY,
           RotQuatZ = d.RotQuatZ,

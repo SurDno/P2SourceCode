@@ -1,11 +1,9 @@
-﻿using UnityEngine;
-
-public class FocusEffect : MonoBehaviour
+﻿public class FocusEffect : MonoBehaviour
 {
   private static MaterialPropertyBlock propertyBlock;
   [SerializeField]
   private Renderer[] renderers;
-  private bool initialized = false;
+  private bool initialized;
   private DialogIndicationView externalEffect;
   private Coroutine disablingCoroutine;
 
@@ -13,61 +11,61 @@ public class FocusEffect : MonoBehaviour
 
   private void OnEnable()
   {
-    if (!this.initialized)
+    if (!initialized)
     {
-      if (this.renderers == null || this.renderers.Length == 0)
-        this.renderers = this.GetComponentsInChildren<Renderer>();
-      this.initialized = true;
+      if (renderers == null || renderers.Length == 0)
+        renderers = this.GetComponentsInChildren<Renderer>();
+      initialized = true;
     }
-    if (FocusEffect.propertyBlock == null)
+    if (propertyBlock == null)
     {
-      FocusEffect.propertyBlock = new MaterialPropertyBlock();
-      FocusEffect.propertyBlock.SetInt("_FocusEffect", 1);
+      propertyBlock = new MaterialPropertyBlock();
+      propertyBlock.SetInt("_FocusEffect", 1);
     }
-    for (int index = 0; index < this.renderers.Length; ++index)
-      this.renderers[index].SetPropertyBlock(FocusEffect.propertyBlock);
-    if ((Object) this.externalEffect == (Object) null)
+    for (int index = 0; index < renderers.Length; ++index)
+      renderers[index].SetPropertyBlock(propertyBlock);
+    if ((Object) externalEffect == (Object) null)
     {
-      this.externalEffect = DialogIndicationView.Create(this.transform);
-      if ((Object) this.externalEffect != (Object) null)
+      externalEffect = DialogIndicationView.Create(this.transform);
+      if ((Object) externalEffect != (Object) null)
       {
         Renderer renderer1 = (Renderer) null;
         float num1 = float.MinValue;
-        for (int index = 0; index < this.renderers.Length; ++index)
+        for (int index = 0; index < renderers.Length; ++index)
         {
-          Renderer renderer2 = this.renderers[index];
+          Renderer renderer2 = renderers[index];
           Vector3 extents = renderer2.bounds.extents;
           float num2 = extents.x * extents.y * extents.z;
-          if ((double) num2 > (double) num1)
+          if (num2 > (double) num1)
           {
             renderer1 = renderer2;
             num1 = num2;
           }
         }
         if (renderer1 is MeshRenderer)
-          this.externalEffect.SetShape((MeshRenderer) renderer1);
+          externalEffect.SetShape((MeshRenderer) renderer1);
         else if (renderer1 is SkinnedMeshRenderer)
-          this.externalEffect.SetShape((SkinnedMeshRenderer) renderer1);
+          externalEffect.SetShape((SkinnedMeshRenderer) renderer1);
       }
     }
-    if (!((Object) this.externalEffect != (Object) null))
+    if (!((Object) externalEffect != (Object) null))
       return;
-    this.externalEffect.SetVisibility(true);
+    externalEffect.SetVisibility(true);
   }
 
   private void OnDisable()
   {
-    for (int index = 0; index < this.renderers.Length; ++index)
+    for (int index = 0; index < renderers.Length; ++index)
     {
-      Renderer renderer = this.renderers[index];
+      Renderer renderer = renderers[index];
       if ((Object) renderer != (Object) null)
         renderer.SetPropertyBlock((MaterialPropertyBlock) null);
       else
         Debug.LogError((object) "render == null, разобраться");
     }
-    if (!((Object) this.externalEffect != (Object) null))
+    if (!((Object) externalEffect != (Object) null))
       return;
-    this.externalEffect.SetVisibility(false);
+    externalEffect.SetVisibility(false);
   }
 
   public void SetActive(bool value)

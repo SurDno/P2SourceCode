@@ -1,4 +1,5 @@
-﻿using Engine.Common.Commons;
+﻿using System;
+using Engine.Common.Commons;
 using Engine.Common.MindMap;
 using Engine.Common.Services;
 using Engine.Common.Types;
@@ -6,7 +7,6 @@ using Engine.Impl.Services.Factories;
 using Engine.Source.Commons;
 using Engine.Source.Services;
 using Inspectors;
-using System;
 
 namespace Engine.Source.UI.Menu.Protagonist.MindMap
 {
@@ -32,12 +32,12 @@ namespace Engine.Source.UI.Menu.Protagonist.MindMap
     [Inspected]
     public bool Undiscovered
     {
-      get => this.undiscovered;
+      get => undiscovered;
       set
       {
-        if (this.undiscovered == value)
+        if (undiscovered == value)
           return;
-        this.undiscovered = value;
+        undiscovered = value;
         if (!InstanceByRequest<EngineApplication>.Instance.ViewEnabled)
           return;
         ServiceLocator.GetService<MMService>().FireChangeUndiscoveredEvent();
@@ -47,40 +47,37 @@ namespace Engine.Source.UI.Menu.Protagonist.MindMap
     [Inspected]
     public IMMContent Content
     {
-      get => this.content;
+      get => content;
       set
       {
-        if (this.content == value)
+        if (content == value)
           return;
-        this.content = value;
+        content = value;
         if (!InstanceByRequest<EngineApplication>.Instance.ViewEnabled)
           return;
-        if (this.content != null)
+        if (content != null)
         {
-          if (!this.notificationQueued)
+          if (!notificationQueued)
           {
-            this.notificationQueued = true;
-            CoroutineService.Instance.WaitFrame(new Action(this.Notify));
+            notificationQueued = true;
+            CoroutineService.Instance.WaitFrame(Notify);
           }
-          this.Undiscovered = true;
+          Undiscovered = true;
         }
         else
-          this.Undiscovered = false;
+          Undiscovered = false;
       }
     }
 
     private void Notify()
     {
-      if (this.content != null)
+      if (content != null)
       {
         NotificationService service = ServiceLocator.GetService<NotificationService>();
         service.AddNotify(NotificationEnum.MindMap, Array.Empty<object>());
-        service.AddNotify(NotificationEnum.MindMapNode, new object[1]
-        {
-          (object) this.content
-        });
+        service.AddNotify(NotificationEnum.MindMapNode, content);
       }
-      this.notificationQueued = false;
+      notificationQueued = false;
     }
   }
 }

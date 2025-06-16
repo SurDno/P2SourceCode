@@ -1,10 +1,8 @@
-﻿using Engine.Common.Services;
+﻿using System;
+using System.Collections.Generic;
+using Engine.Common.Services;
 using Engine.Source.Services.Inputs;
 using InputServices;
-using System;
-using System.Collections.Generic;
-using UnityEngine.Events;
-using UnityEngine.UI;
 
 namespace Engine.Impl.UI.Menu.Main
 {
@@ -16,20 +14,20 @@ namespace Engine.Impl.UI.Menu.Main
     public void SubmitAction(Button button, GameActionType type, Action action)
     {
       button.onClick.AddListener((UnityAction) (() => action()));
-      this._buttons.Add(button);
-      if (!this._listeners.ContainsKey(type))
+      _buttons.Add(button);
+      if (!_listeners.ContainsKey(type))
       {
-        this._listeners.Add(type, new List<Action>());
-        ServiceLocator.GetService<GameActionService>().AddListener(type, new GameActionHandle(this.OnAction));
+        _listeners.Add(type, new List<Action>());
+        ServiceLocator.GetService<GameActionService>().AddListener(type, OnAction);
       }
-      this._listeners[type].Add(action);
+      _listeners[type].Add(action);
     }
 
     private bool OnAction(GameActionType type, bool down)
     {
-      if (down && InputService.Instance.JoystickUsed && this._listeners.ContainsKey(type))
+      if (down && InputService.Instance.JoystickUsed && _listeners.ContainsKey(type))
       {
-        foreach (Action action in this._listeners[type])
+        foreach (Action action in _listeners[type])
           action();
       }
       return false;
@@ -37,12 +35,12 @@ namespace Engine.Impl.UI.Menu.Main
 
     public void Dispose()
     {
-      foreach (Button button in this._buttons)
+      foreach (Button button in _buttons)
         button.onClick.RemoveAllListeners();
-      this._buttons.Clear();
-      foreach (KeyValuePair<GameActionType, List<Action>> listener in this._listeners)
-        ServiceLocator.GetService<GameActionService>().RemoveListener(listener.Key, new GameActionHandle(this.OnAction));
-      this._listeners.Clear();
+      _buttons.Clear();
+      foreach (KeyValuePair<GameActionType, List<Action>> listener in _listeners)
+        ServiceLocator.GetService<GameActionService>().RemoveListener(listener.Key, OnAction);
+      _listeners.Clear();
     }
   }
 }

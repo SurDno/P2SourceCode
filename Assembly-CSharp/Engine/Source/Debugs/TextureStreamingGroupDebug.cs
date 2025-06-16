@@ -1,11 +1,10 @@
-﻿using Cofe.Meta;
+﻿using System;
+using System.Text;
+using Cofe.Meta;
 using Engine.Common.Services;
 using Engine.Source.Commons;
 using Engine.Source.Services.Gizmos;
 using Engine.Source.Utility;
-using System;
-using System.Text;
-using UnityEngine;
 
 namespace Engine.Source.Debugs
 {
@@ -20,46 +19,46 @@ namespace Engine.Source.Debugs
     private static StringBuilder sb;
     private static GizmoService service;
 
-    [Cofe.Meta.Initialise]
+    [Initialise]
     private static void Initialise()
     {
-      InstanceByRequest<EngineApplication>.Instance.OnInitialized += (Action) (() => GroupDebugService.RegisterGroup(TextureStreamingGroupDebug.name, TextureStreamingGroupDebug.key, TextureStreamingGroupDebug.modifficators, new Action(TextureStreamingGroupDebug.Update)));
+      InstanceByRequest<EngineApplication>.Instance.OnInitialized += (Action) (() => GroupDebugService.RegisterGroup(name, key, modifficators, Update));
     }
 
     private static void Update()
     {
-      TextureStreamingGroupDebug.service = ServiceLocator.GetService<GizmoService>();
-      if (TextureStreamingGroupDebug.sb == null)
-        TextureStreamingGroupDebug.sb = new StringBuilder();
-      TextureStreamingGroupDebug.sb.Append('\n');
-      TextureStreamingGroupDebug.sb.Append(TextureStreamingGroupDebug.name);
-      TextureStreamingGroupDebug.sb.Append(" (");
-      TextureStreamingGroupDebug.sb.Append(InputUtility.GetHotKeyText(TextureStreamingGroupDebug.key, TextureStreamingGroupDebug.modifficators));
-      TextureStreamingGroupDebug.sb.Append(")");
-      TextureStreamingGroupDebug.service.DrawText(TextureStreamingGroupDebug.sb.ToString(), TextureStreamingGroupDebug.headerColor);
-      TextureStreamingGroupDebug.sb.Clear();
-      TextureStreamingGroupDebug.AppendProperty("Current Texture Memory", Texture.currentTextureMemory);
-      TextureStreamingGroupDebug.AppendProperty("Desired Texture Memory", Texture.desiredTextureMemory);
-      TextureStreamingGroupDebug.AppendProperty("Non-Streaming Texture Count", Texture.nonStreamingTextureCount);
-      TextureStreamingGroupDebug.AppendProperty("Non-Streaming Texture Memory", Texture.nonStreamingTextureMemory);
-      TextureStreamingGroupDebug.AppendProperty("Streaming Mipmap Upload Count", Texture.streamingMipmapUploadCount);
-      TextureStreamingGroupDebug.AppendProperty("Streaming Renderer Count", Texture.streamingRendererCount);
-      TextureStreamingGroupDebug.AppendProperty("Streaming Texture Count", Texture.streamingTextureCount);
-      TextureStreamingGroupDebug.AppendProperty("Streaming Texture Loading Count", Texture.streamingTextureLoadingCount);
-      TextureStreamingGroupDebug.AppendProperty("Streaming Texture Pending Load Count", Texture.streamingTexturePendingLoadCount);
-      TextureStreamingGroupDebug.AppendProperty("Target Texture Memory", Texture.targetTextureMemory);
-      TextureStreamingGroupDebug.AppendProperty("Total Texture Memory", Texture.totalTextureMemory);
-      TextureStreamingGroupDebug.service = (GizmoService) null;
+      service = ServiceLocator.GetService<GizmoService>();
+      if (sb == null)
+        sb = new StringBuilder();
+      sb.Append('\n');
+      sb.Append(name);
+      sb.Append(" (");
+      sb.Append(InputUtility.GetHotKeyText(key, modifficators));
+      sb.Append(")");
+      service.DrawText(sb.ToString(), headerColor);
+      sb.Clear();
+      AppendProperty("Current Texture Memory", Texture.currentTextureMemory);
+      AppendProperty("Desired Texture Memory", Texture.desiredTextureMemory);
+      AppendProperty("Non-Streaming Texture Count", Texture.nonStreamingTextureCount);
+      AppendProperty("Non-Streaming Texture Memory", Texture.nonStreamingTextureMemory);
+      AppendProperty("Streaming Mipmap Upload Count", Texture.streamingMipmapUploadCount);
+      AppendProperty("Streaming Renderer Count", Texture.streamingRendererCount);
+      AppendProperty("Streaming Texture Count", Texture.streamingTextureCount);
+      AppendProperty("Streaming Texture Loading Count", Texture.streamingTextureLoadingCount);
+      AppendProperty("Streaming Texture Pending Load Count", Texture.streamingTexturePendingLoadCount);
+      AppendProperty("Target Texture Memory", Texture.targetTextureMemory);
+      AppendProperty("Total Texture Memory", Texture.totalTextureMemory);
+      service = null;
     }
 
     private static void AppendProperty(string name, ulong value)
     {
-      TextureStreamingGroupDebug.sb.Append("  ");
-      TextureStreamingGroupDebug.sb.Append(name);
-      TextureStreamingGroupDebug.sb.Append(": ");
-      TextureStreamingGroupDebug.sb.Append(value.ToString("N0"));
-      TextureStreamingGroupDebug.service.DrawText(TextureStreamingGroupDebug.sb.ToString(), TextureStreamingGroupDebug.trueColor);
-      TextureStreamingGroupDebug.sb.Clear();
+      sb.Append("  ");
+      sb.Append(name);
+      sb.Append(": ");
+      sb.Append(value.ToString("N0"));
+      service.DrawText(sb.ToString(), trueColor);
+      sb.Clear();
     }
   }
 }

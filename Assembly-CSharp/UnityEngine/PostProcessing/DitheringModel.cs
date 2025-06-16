@@ -7,21 +7,21 @@ namespace UnityEngine.PostProcessing
   public class DitheringModel : PostProcessingModel
   {
     [SerializeField]
-    private DitheringModel.Settings m_Settings = DitheringModel.Settings.defaultSettings;
+    private Settings m_Settings = Settings.defaultSettings;
 
-    public DitheringModel.Settings settings
+    public Settings settings
     {
-      get => this.m_Settings;
-      set => this.m_Settings = value;
+      get => m_Settings;
+      set => m_Settings = value;
     }
 
-    public override void Reset() => this.m_Settings = DitheringModel.Settings.defaultSettings;
+    public override void Reset() => m_Settings = Settings.defaultSettings;
 
     [Serializable]
     [StructLayout(LayoutKind.Sequential, Size = 1)]
     public struct Settings
     {
-      public static DitheringModel.Settings defaultSettings => new DitheringModel.Settings();
+      public static Settings defaultSettings => new Settings();
     }
   }
 }

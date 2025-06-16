@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.Serialization;
 
 public class PlagueCloudParticles : MonoBehaviour
 {
@@ -41,28 +39,28 @@ public class PlagueCloudParticles : MonoBehaviour
 
   private void Start()
   {
-    int height = Mathf.CeilToInt((float) this.MaxPointCount / 256f);
+    int height = Mathf.CeilToInt(MaxPointCount / 256f);
     Mesh mesh = (Mesh) null;
-    if (PlagueCloudParticles.meshes == null)
-      PlagueCloudParticles.meshes = new Dictionary<int, Mesh>();
+    if (meshes == null)
+      meshes = new Dictionary<int, Mesh>();
     else
-      PlagueCloudParticles.meshes.TryGetValue(this.MaxPointCount, out mesh);
+      meshes.TryGetValue(MaxPointCount, out mesh);
     if ((Object) mesh == (Object) null)
     {
       mesh = new Mesh();
-      Vector3[] vector3Array = new Vector3[this.MaxPointCount];
-      int[] indices = new int[this.MaxPointCount];
+      Vector3[] vector3Array = new Vector3[MaxPointCount];
+      int[] indices = new int[MaxPointCount];
       int index = 0;
       int num1 = 0;
       int num2 = 0;
-      while (index < this.MaxPointCount)
+      while (index < MaxPointCount)
       {
         if (num1 == 256)
         {
           num1 = 0;
           ++num2;
         }
-        vector3Array[index] = new Vector3((float) (((double) num1 + 0.5) / 256.0), ((float) num2 + 0.5f) / (float) height, Random.value);
+        vector3Array[index] = new Vector3((float) ((num1 + 0.5) / 256.0), (num2 + 0.5f) / height, Random.value);
         indices[index] = index;
         ++index;
         ++num1;
@@ -71,25 +69,25 @@ public class PlagueCloudParticles : MonoBehaviour
       mesh.SetIndices(indices, MeshTopology.Points, 0);
       float num3 = 100f;
       mesh.bounds = new Bounds(Vector3.zero, new Vector3(num3, num3, num3));
-      mesh.name = "Plague Cloud Particles (" + this.MaxPointCount.ToString() + ")";
-      PlagueCloudParticles.meshes.Add(this.MaxPointCount, mesh);
+      mesh.name = "Plague Cloud Particles (" + MaxPointCount + ")";
+      meshes.Add(MaxPointCount, mesh);
     }
     this.GetComponent<MeshFilter>().sharedMesh = mesh;
-    this.positionBuffer = new RenderTexture(256, height, 0, RenderTextureFormat.ARGBFloat);
-    this.velocityBuffer = new RenderTexture(256, height, 0, RenderTextureFormat.ARGBFloat);
-    this.targetBuffer = new RenderTexture(256, height, 0, RenderTextureFormat.ARGBFloat);
-    if (!this.UpdateKernelMaterial())
+    positionBuffer = new RenderTexture(256, height, 0, RenderTextureFormat.ARGBFloat);
+    velocityBuffer = new RenderTexture(256, height, 0, RenderTextureFormat.ARGBFloat);
+    targetBuffer = new RenderTexture(256, height, 0, RenderTextureFormat.ARGBFloat);
+    if (!UpdateKernelMaterial())
       return;
-    Graphics.Blit((Texture) null, this.positionBuffer, this.kernelMaterial, 0);
-    this.ApplyPositionBuffer();
+    Graphics.Blit((Texture) null, positionBuffer, kernelMaterial, 0);
+    ApplyPositionBuffer();
   }
 
   private void ApplyPositionBuffer()
   {
-    if (PlagueCloudParticles.mpb == null)
-      PlagueCloudParticles.mpb = new MaterialPropertyBlock();
-    PlagueCloudParticles.mpb.SetTexture("_PositionBuffer", (Texture) this.positionBuffer);
-    this.GetComponent<MeshRenderer>().SetPropertyBlock(PlagueCloudParticles.mpb);
+    if (mpb == null)
+      mpb = new MaterialPropertyBlock();
+    mpb.SetTexture("_PositionBuffer", (Texture) positionBuffer);
+    this.GetComponent<MeshRenderer>().SetPropertyBlock(mpb);
   }
 
   private void SwapBuffers(ref RenderTexture rt0, ref RenderTexture rt1)
@@ -101,48 +99,48 @@ public class PlagueCloudParticles : MonoBehaviour
 
   private bool UpdateKernelMaterial()
   {
-    if ((Object) this.kernelMaterial == (Object) null)
+    if ((Object) kernelMaterial == (Object) null)
     {
-      if (!((Object) this.KernelShader != (Object) null))
+      if (!((Object) KernelShader != (Object) null))
         return false;
-      this.kernelMaterial = new Material(this.KernelShader);
+      kernelMaterial = new Material(KernelShader);
     }
     float z = Mathf.Min(Time.deltaTime, 0.1f);
     Vector3 position = this.transform.position;
-    this.delayedPosition = Vector3.SmoothDamp(this.delayedPosition, position, ref this.velocity, 0.1f);
-    Vector3 vector3 = position + this.velocity * this.GravityMovementPrediction;
-    this.kernelMaterial.SetVector("_Acceleration", new Vector4(this.Acceleration.x, this.Acceleration.y, this.Acceleration.z, Mathf.Exp(-this.Drag * z)));
-    this.kernelMaterial.SetVector("_NoiseParams", (Vector4) new Vector2(this.NoiseFrequency, this.NoiseAmplitude));
-    if (this.Acceleration == Vector3.zero)
-      this.noiseOffset += Vector3.up * this.NoiseMotion * z;
+    delayedPosition = Vector3.SmoothDamp(delayedPosition, position, ref velocity, 0.1f);
+    Vector3 vector3 = position + velocity * GravityMovementPrediction;
+    kernelMaterial.SetVector("_Acceleration", new Vector4(Acceleration.x, Acceleration.y, Acceleration.z, Mathf.Exp(-Drag * z)));
+    kernelMaterial.SetVector("_NoiseParams", (Vector4) new Vector2(NoiseFrequency, NoiseAmplitude));
+    if (Acceleration == Vector3.zero)
+      noiseOffset += Vector3.up * NoiseMotion * z;
     else
-      this.noiseOffset += this.Acceleration.normalized * this.NoiseMotion * z;
-    this.kernelMaterial.SetVector("_NoiseOffset", (Vector4) this.noiseOffset);
-    this.kernelMaterial.SetFloat("_LifeTime", 1f / this.LifeTime);
-    this.kernelMaterial.SetVector("_Emitter", new Vector4(position.x, position.y, position.z, this.EmissionRadius));
-    this.kernelMaterial.SetVector("_GravityPosition", new Vector4(vector3.x, vector3.y, vector3.z, 0.0f));
-    this.kernelMaterial.SetVector("_GravityConfig", new Vector4(this.Gravity, this.GravitySphereRadius, this.GravityFadeRadius, 0.0f));
-    this.kernelMaterial.SetVector("_Config", new Vector4(this.Emission, Random.value, z, 0.0f));
-    this.kernelMaterial.SetTexture("_PatternTex", (Texture) this.Pattern);
-    this.kernelMaterial.SetVector("_PatternConfig", new Vector4(this.PatternPlaneForce, this.PatternOrthogonalForce, this.PatternRandomForce, 0.0f));
+      noiseOffset += Acceleration.normalized * NoiseMotion * z;
+    kernelMaterial.SetVector("_NoiseOffset", (Vector4) noiseOffset);
+    kernelMaterial.SetFloat("_LifeTime", 1f / LifeTime);
+    kernelMaterial.SetVector("_Emitter", new Vector4(position.x, position.y, position.z, EmissionRadius));
+    kernelMaterial.SetVector("_GravityPosition", new Vector4(vector3.x, vector3.y, vector3.z, 0.0f));
+    kernelMaterial.SetVector("_GravityConfig", new Vector4(Gravity, GravitySphereRadius, GravityFadeRadius, 0.0f));
+    kernelMaterial.SetVector("_Config", new Vector4(Emission, Random.value, z, 0.0f));
+    kernelMaterial.SetTexture("_PatternTex", (Texture) Pattern);
+    kernelMaterial.SetVector("_PatternConfig", new Vector4(PatternPlaneForce, PatternOrthogonalForce, PatternRandomForce, 0.0f));
     Quaternion rotation = this.transform.rotation;
-    this.kernelMaterial.SetMatrix("_ToPattern", Matrix4x4.TRS(position, rotation, new Vector3(this.PatternSize.x, this.PatternSize.y, 1f)).inverse);
-    this.kernelMaterial.SetMatrix("_FromPatternRotation", Matrix4x4.TRS(Vector3.zero, rotation, Vector3.one));
+    kernelMaterial.SetMatrix("_ToPattern", Matrix4x4.TRS(position, rotation, new Vector3(PatternSize.x, PatternSize.y, 1f)).inverse);
+    kernelMaterial.SetMatrix("_FromPatternRotation", Matrix4x4.TRS(Vector3.zero, rotation, Vector3.one));
     return true;
   }
 
   private void Update()
   {
-    if (!this.UpdateKernelMaterial())
+    if (!UpdateKernelMaterial())
       return;
-    this.kernelMaterial.SetTexture("_PositionBuffer", (Texture) this.positionBuffer);
-    this.kernelMaterial.SetTexture("_VelocityBuffer", (Texture) this.velocityBuffer);
-    Graphics.Blit((Texture) null, this.targetBuffer, this.kernelMaterial, 1);
-    this.SwapBuffers(ref this.velocityBuffer, ref this.targetBuffer);
-    this.kernelMaterial.SetTexture("_PositionBuffer", (Texture) this.positionBuffer);
-    this.kernelMaterial.SetTexture("_VelocityBuffer", (Texture) this.velocityBuffer);
-    Graphics.Blit((Texture) null, this.targetBuffer, this.kernelMaterial, 2);
-    this.SwapBuffers(ref this.positionBuffer, ref this.targetBuffer);
-    this.ApplyPositionBuffer();
+    kernelMaterial.SetTexture("_PositionBuffer", (Texture) positionBuffer);
+    kernelMaterial.SetTexture("_VelocityBuffer", (Texture) velocityBuffer);
+    Graphics.Blit((Texture) null, targetBuffer, kernelMaterial, 1);
+    SwapBuffers(ref velocityBuffer, ref targetBuffer);
+    kernelMaterial.SetTexture("_PositionBuffer", (Texture) positionBuffer);
+    kernelMaterial.SetTexture("_VelocityBuffer", (Texture) velocityBuffer);
+    Graphics.Blit((Texture) null, targetBuffer, kernelMaterial, 2);
+    SwapBuffers(ref positionBuffer, ref targetBuffer);
+    ApplyPositionBuffer();
   }
 }

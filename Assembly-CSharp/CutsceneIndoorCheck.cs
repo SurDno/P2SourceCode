@@ -1,6 +1,5 @@
-﻿using Engine.Impl.UI.Controls;
-using System;
-using UnityEngine;
+﻿using System;
+using Engine.Impl.UI.Controls;
 
 public class CutsceneIndoorCheck : MonoBehaviour
 {
@@ -12,10 +11,10 @@ public class CutsceneIndoorCheck : MonoBehaviour
 
   public static void Set(bool value)
   {
-    if (CutsceneIndoorCheck.overridenInsideIndoor == value)
+    if (overridenInsideIndoor == value)
       return;
-    CutsceneIndoorCheck.overridenInsideIndoor = value;
-    Action overrideChangeEvent = CutsceneIndoorCheck.OverrideChangeEvent;
+    overridenInsideIndoor = value;
+    Action overrideChangeEvent = OverrideChangeEvent;
     if (overrideChangeEvent == null)
       return;
     overrideChangeEvent();
@@ -23,19 +22,19 @@ public class CutsceneIndoorCheck : MonoBehaviour
 
   private void ApplyState()
   {
-    if (!((UnityEngine.Object) this.view != (UnityEngine.Object) null))
+    if (!((UnityEngine.Object) view != (UnityEngine.Object) null))
       return;
-    this.view.Visible = CutsceneIndoorCheck.overridenInsideIndoor;
+    view.Visible = overridenInsideIndoor;
   }
 
   private void OnEnable()
   {
-    this.ApplyState();
-    CutsceneIndoorCheck.OverrideChangeEvent += new Action(this.ApplyState);
+    ApplyState();
+    OverrideChangeEvent += ApplyState;
   }
 
   private void OnDisable()
   {
-    CutsceneIndoorCheck.OverrideChangeEvent -= new Action(this.ApplyState);
+    OverrideChangeEvent -= ApplyState;
   }
 }

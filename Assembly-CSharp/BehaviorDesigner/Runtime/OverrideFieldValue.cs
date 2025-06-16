@@ -5,14 +5,14 @@
     private object value;
     private int depth;
 
-    public object Value => this.value;
+    public object Value => value;
 
-    public int Depth => this.depth;
+    public int Depth => depth;
 
     public void Initialize(object v, int d)
     {
-      this.value = v;
-      this.depth = d;
+      value = v;
+      depth = d;
     }
   }
 }

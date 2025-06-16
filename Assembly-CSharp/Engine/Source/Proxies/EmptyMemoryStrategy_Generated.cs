@@ -1,8 +1,8 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons.Cloneable;
 using Engine.Source.Otimizations;
-using System;
 
 namespace Engine.Source.Proxies
 {
@@ -17,8 +17,8 @@ namespace Engine.Source.Proxies
     public object Clone()
     {
       EmptyMemoryStrategy_Generated instance = Activator.CreateInstance<EmptyMemoryStrategy_Generated>();
-      this.CopyTo((object) instance);
-      return (object) instance;
+      CopyTo(instance);
+      return instance;
     }
 
     public void CopyTo(object target2)

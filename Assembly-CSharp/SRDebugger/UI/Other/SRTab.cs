@@ -1,7 +1,5 @@
 ﻿using SRDebugger.UI.Controls;
 using SRF;
-using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace SRDebugger.UI.Other
 {
@@ -17,8 +15,8 @@ namespace SRDebugger.UI.Other
     [SerializeField]
     private DefaultTabs tab;
 
-    public string Title => this._title;
+    public string Title => _title;
 
-    public DefaultTabs Tab => this.tab;
+    public DefaultTabs Tab => tab;
   }
 }

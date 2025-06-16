@@ -6,7 +6,6 @@ using Engine.Source.Commons.Abilities;
 using Engine.Source.Commons.Abilities.Controllers;
 using Engine.Source.Commons.Effects;
 using Inspectors;
-using UnityEngine;
 
 namespace Engine.Source.Effects
 {
@@ -14,27 +13,27 @@ namespace Engine.Source.Effects
   [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
   public class NpcPunchHitEffect : IEffect
   {
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected ParameterEffectQueueEnum queue = ParameterEffectQueueEnum.None;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy()]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected WeaponEnum weapon = WeaponEnum.Hands;
 
-    public string Name => this.GetType().Name;
+    public string Name => GetType().Name;
 
     [Inspected]
     public AbilityItem AbilityItem { get; set; }
 
     public IEntity Target { get; set; }
 
-    public ParameterEffectQueueEnum Queue => this.queue;
+    public ParameterEffectQueueEnum Queue => queue;
 
     public void Cleanup()
     {
@@ -42,12 +41,12 @@ namespace Engine.Source.Effects
 
     public bool Prepare(float currentRealTime, float currentGameTime)
     {
-      if (!(this.AbilityItem.AbilityController is CloseCombatAbilityController))
+      if (!(AbilityItem.AbilityController is CloseCombatAbilityController))
       {
         Debug.LogError((object) (typeof (NpcPunchEffect).Name + " requires " + typeof (CloseCombatAbilityController).Name));
         return false;
       }
-      ((IEntityView) this.AbilityItem.Self).GameObject.GetComponent<EnemyBase>()?.FirePunchHitEvent(this.weapon);
+      ((IEntityView) AbilityItem.Self).GameObject.GetComponent<EnemyBase>()?.FirePunchHitEvent(weapon);
       return true;
     }
 

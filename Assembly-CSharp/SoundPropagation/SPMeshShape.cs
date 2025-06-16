@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace SoundPropagation
 {
   public class SPMeshShape : Shape
   {
     public Vector3[] Vertices;
-    public SPMeshShape.IndexTuple[] Triangles;
+    public IndexTuple[] Triangles;
     private Matrix4x4[] world2planesMatrices;
     private Matrix4x4[] planes2worldMatrices;
 
@@ -40,9 +39,9 @@ namespace SoundPropagation
       else
       {
         float num1 = point.x + point.y;
-        if ((double) num1 > 1.0)
+        if (num1 > 1.0)
         {
-          float num2 = (float) (((double) num1 - 1.0) * 0.5);
+          float num2 = (float) ((num1 - 1.0) * 0.5);
           point.x -= num2;
           point.y -= num2;
         }
@@ -55,25 +54,25 @@ namespace SoundPropagation
       Vector3 pointB,
       out Vector3 output)
     {
-      if (this.world2planesMatrices.Length == 0)
+      if (world2planesMatrices.Length == 0)
       {
         output = pointA;
         return false;
       }
-      if (this.world2planesMatrices.Length == 1)
+      if (world2planesMatrices.Length == 1)
       {
-        Vector3 triangle = this.ClampToTriangle(this.ClosestToSegmentOnPlane(this.world2planesMatrices[0], pointA, pointB));
-        output = this.planes2worldMatrices[0].MultiplyPoint3x4(triangle);
+        Vector3 triangle = ClampToTriangle(ClosestToSegmentOnPlane(world2planesMatrices[0], pointA, pointB));
+        output = planes2worldMatrices[0].MultiplyPoint3x4(triangle);
         return true;
       }
       float num1 = float.MaxValue;
       Vector3 vector3_1 = pointA;
-      for (int index = 0; index < this.world2planesMatrices.Length; ++index)
+      for (int index = 0; index < world2planesMatrices.Length; ++index)
       {
-        Vector3 triangle = this.ClampToTriangle(this.ClosestToSegmentOnPlane(this.world2planesMatrices[index], pointA, pointB));
-        Vector3 vector3_2 = this.planes2worldMatrices[index].MultiplyPoint3x4(triangle);
+        Vector3 triangle = ClampToTriangle(ClosestToSegmentOnPlane(world2planesMatrices[index], pointA, pointB));
+        Vector3 vector3_2 = planes2worldMatrices[index].MultiplyPoint3x4(triangle);
         float num2 = Vector3.Distance(pointA, vector3_2) + Vector3.Distance(vector3_2, pointB);
-        if (index == 0 || (double) num2 < (double) num1)
+        if (index == 0 || num2 < (double) num1)
         {
           vector3_1 = vector3_2;
           num1 = num2;
@@ -87,16 +86,16 @@ namespace SoundPropagation
     {
       if (index < 0)
         index = 0;
-      else if (index >= this.Vertices.Length)
-        index = this.Vertices.Length - 1;
-      return this.Vertices[index];
+      else if (index >= Vertices.Length)
+        index = Vertices.Length - 1;
+      return Vertices[index];
     }
 
     public void ImportMesh(Mesh mesh, float weldThreshold)
     {
       int[] triangles = mesh.triangles;
       Vector3[] vertices = mesh.vertices;
-      List<SPMeshShape.IndexTuple> indexTupleList = new List<SPMeshShape.IndexTuple>(triangles.Length / 3);
+      List<IndexTuple> indexTupleList = new List<IndexTuple>(triangles.Length / 3);
       List<Vector3> list = new List<Vector3>(vertices.Length);
       int index1;
       for (int index2 = 0; index2 < triangles.Length; index2 = index1 + 1)
@@ -106,36 +105,36 @@ namespace SoundPropagation
         Vector3 vertex2 = vertices[triangles[index3]];
         index1 = index3 + 1;
         Vector3 vertex3 = vertices[triangles[index1]];
-        SPMeshShape.IndexTuple indexTuple = new SPMeshShape.IndexTuple();
-        indexTuple.A = this.AddVertex(list, vertex1, weldThreshold);
-        indexTuple.B = this.AddVertex(list, vertex2, weldThreshold);
-        indexTuple.C = this.AddVertex(list, vertex3, weldThreshold);
+        IndexTuple indexTuple = new IndexTuple();
+        indexTuple.A = AddVertex(list, vertex1, weldThreshold);
+        indexTuple.B = AddVertex(list, vertex2, weldThreshold);
+        indexTuple.C = AddVertex(list, vertex3, weldThreshold);
         if (indexTuple.A != indexTuple.B && indexTuple.B != indexTuple.C && indexTuple.C != indexTuple.A)
           indexTupleList.Add(indexTuple);
       }
-      this.Triangles = indexTupleList.ToArray();
-      this.Vertices = list.ToArray();
+      Triangles = indexTupleList.ToArray();
+      Vertices = list.ToArray();
     }
 
     protected override void Initialize()
     {
-      if (this.Vertices.Length == 0)
+      if (Vertices.Length == 0)
       {
-        this.world2planesMatrices = new Matrix4x4[0];
-        this.planes2worldMatrices = new Matrix4x4[0];
+        world2planesMatrices = new Matrix4x4[0];
+        planes2worldMatrices = new Matrix4x4[0];
       }
       else
       {
         Matrix4x4 localToWorldMatrix = this.transform.localToWorldMatrix;
-        for (int index = 0; index < this.Vertices.Length; ++index)
-          this.Vertices[index] = localToWorldMatrix.MultiplyPoint3x4(this.Vertices[index]);
-        this.planes2worldMatrices = new Matrix4x4[this.Triangles.Length];
-        this.world2planesMatrices = new Matrix4x4[this.Triangles.Length];
-        for (int index = 0; index < this.Triangles.Length; ++index)
+        for (int index = 0; index < Vertices.Length; ++index)
+          Vertices[index] = localToWorldMatrix.MultiplyPoint3x4(Vertices[index]);
+        planes2worldMatrices = new Matrix4x4[Triangles.Length];
+        world2planesMatrices = new Matrix4x4[Triangles.Length];
+        for (int index = 0; index < Triangles.Length; ++index)
         {
-          Vector3 vertex1 = this.GetVertex(this.Triangles[index].A);
-          Vector3 vertex2 = this.GetVertex(this.Triangles[index].B);
-          Vector3 vertex3 = this.GetVertex(this.Triangles[index].C);
+          Vector3 vertex1 = GetVertex(Triangles[index].A);
+          Vector3 vertex2 = GetVertex(Triangles[index].B);
+          Vector3 vertex3 = GetVertex(Triangles[index].C);
           Vector3 vector3_1 = vertex2 - vertex1;
           Vector3 vector3_2 = vertex3 - vertex2;
           Vector3 vector3_3 = vertex1 - vertex3;
@@ -145,9 +144,9 @@ namespace SoundPropagation
           Vector3 vector3_4;
           Vector3 lhs;
           Vector3 rhs;
-          if ((double) sqrMagnitude1 >= (double) sqrMagnitude2)
+          if (sqrMagnitude1 >= (double) sqrMagnitude2)
           {
-            if ((double) sqrMagnitude1 >= (double) sqrMagnitude3)
+            if (sqrMagnitude1 >= (double) sqrMagnitude3)
             {
               vector3_4 = vertex3;
               lhs = vector3_3;
@@ -160,7 +159,7 @@ namespace SoundPropagation
               rhs = -vector3_1;
             }
           }
-          else if ((double) sqrMagnitude2 >= (double) sqrMagnitude3)
+          else if (sqrMagnitude2 >= (double) sqrMagnitude3)
           {
             vector3_4 = vertex1;
             lhs = vector3_1;
@@ -187,22 +186,22 @@ namespace SoundPropagation
           matrix4x4.m13 = vector3_4.y;
           matrix4x4.m23 = vector3_4.z;
           matrix4x4.m33 = 1f;
-          this.planes2worldMatrices[index] = matrix4x4;
-          this.world2planesMatrices[index] = matrix4x4.inverse;
+          planes2worldMatrices[index] = matrix4x4;
+          world2planesMatrices[index] = matrix4x4.inverse;
         }
       }
     }
 
     private void OnDrawGizmosSelected()
     {
-      if (this.Vertices == null || this.Vertices.Length == 0)
+      if (Vertices == null || Vertices.Length == 0)
         return;
-      Gizmos.color = this.gizmoColor;
-      if (this.planes2worldMatrices != null && this.planes2worldMatrices.Length != 0)
+      Gizmos.color = gizmoColor;
+      if (planes2worldMatrices != null && planes2worldMatrices.Length != 0)
       {
-        for (int index = 0; index < this.planes2worldMatrices.Length; ++index)
+        for (int index = 0; index < planes2worldMatrices.Length; ++index)
         {
-          Matrix4x4 planes2worldMatrix = this.planes2worldMatrices[index];
+          Matrix4x4 planes2worldMatrix = planes2worldMatrices[index];
           Vector3 vector3_1 = planes2worldMatrix.MultiplyPoint3x4(new Vector3(0.0f, 0.0f));
           Vector3 vector3_2 = planes2worldMatrix.MultiplyPoint3x4(new Vector3(0.0f, 1f));
           Vector3 vector3_3 = planes2worldMatrix.MultiplyPoint3x4(new Vector3(1f, 0.0f));
@@ -213,14 +212,14 @@ namespace SoundPropagation
       }
       else
       {
-        if (this.Triangles == null || this.Triangles.Length == 0)
+        if (Triangles == null || Triangles.Length == 0)
           return;
         Matrix4x4 localToWorldMatrix = this.transform.localToWorldMatrix;
-        for (int index = 0; index < this.Triangles.Length; ++index)
+        for (int index = 0; index < Triangles.Length; ++index)
         {
-          Vector3 vector3_4 = localToWorldMatrix.MultiplyPoint3x4(this.GetVertex(this.Triangles[index].A));
-          Vector3 vector3_5 = localToWorldMatrix.MultiplyPoint3x4(this.GetVertex(this.Triangles[index].B));
-          Vector3 vector3_6 = localToWorldMatrix.MultiplyPoint3x4(this.GetVertex(this.Triangles[index].C));
+          Vector3 vector3_4 = localToWorldMatrix.MultiplyPoint3x4(GetVertex(Triangles[index].A));
+          Vector3 vector3_5 = localToWorldMatrix.MultiplyPoint3x4(GetVertex(Triangles[index].B));
+          Vector3 vector3_6 = localToWorldMatrix.MultiplyPoint3x4(GetVertex(Triangles[index].C));
           Gizmos.DrawLine(vector3_4, vector3_5);
           Gizmos.DrawLine(vector3_5, vector3_6);
           Gizmos.DrawLine(vector3_6, vector3_4);
@@ -233,7 +232,7 @@ namespace SoundPropagation
       int num = -1;
       for (int index = 0; index < list.Count; ++index)
       {
-        if ((double) Vector3.Distance(list[index], vertex) <= (double) weldThreshold)
+        if ((double) Vector3.Distance(list[index], vertex) <= weldThreshold)
         {
           list[index] = (list[index] + vertex) * 0.5f;
           num = index;

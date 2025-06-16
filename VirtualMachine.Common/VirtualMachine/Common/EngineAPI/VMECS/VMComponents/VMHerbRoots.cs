@@ -1,8 +1,8 @@
-﻿using Engine.Common;
+﻿using System;
+using Engine.Common;
 using Engine.Common.Components;
 using PLVirtualMachine.Common.EngineAPI.VMECS;
 using PLVirtualMachine.Common.EngineAPI.VMECS.VMAttributes;
-using System;
 
 namespace VirtualMachine.Common.EngineAPI.VMECS.VMComponents
 {
@@ -30,36 +30,36 @@ namespace VirtualMachine.Common.EngineAPI.VMECS.VMComponents
     public event Action LastHerbSpawnEvent;
 
     [Method("Reset", "", "")]
-    public void Reset() => this.Component.Reset();
+    public void Reset() => Component.Reset();
 
     public override void Clear()
     {
-      if (!this.InstanceValid)
+      if (!InstanceValid)
         return;
-      this.Component.OnTriggerEnterEvent -= new Action(this.OnTriggerEnterEvent);
-      this.Component.OnTriggerLeaveEvent -= new Action(this.OnTriggerLeaveEvent);
-      this.Component.OnActivateStartEvent -= new Action(this.OnActivateStartEvent);
-      this.Component.OnActivateEndEvent -= new Action(this.OnActivateEndEvent);
-      this.Component.OnHerbSpawnEvent -= this.HerbSpawnEvent;
-      this.Component.OnLastHerbSpawnEvent -= this.LastHerbSpawnEvent;
+      Component.OnTriggerEnterEvent -= OnTriggerEnterEvent;
+      Component.OnTriggerLeaveEvent -= OnTriggerLeaveEvent;
+      Component.OnActivateStartEvent -= OnActivateStartEvent;
+      Component.OnActivateEndEvent -= OnActivateEndEvent;
+      Component.OnHerbSpawnEvent -= HerbSpawnEvent;
+      Component.OnLastHerbSpawnEvent -= LastHerbSpawnEvent;
       base.Clear();
     }
 
     protected override void Init()
     {
-      if (this.IsTemplate)
+      if (IsTemplate)
         return;
-      this.Component.OnTriggerEnterEvent += new Action(this.OnTriggerEnterEvent);
-      this.Component.OnTriggerLeaveEvent += new Action(this.OnTriggerLeaveEvent);
-      this.Component.OnActivateStartEvent += new Action(this.OnActivateStartEvent);
-      this.Component.OnActivateEndEvent += new Action(this.OnActivateEndEvent);
-      this.Component.OnHerbSpawnEvent += this.HerbSpawnEvent;
-      this.Component.OnLastHerbSpawnEvent += this.LastHerbSpawnEvent;
+      Component.OnTriggerEnterEvent += OnTriggerEnterEvent;
+      Component.OnTriggerLeaveEvent += OnTriggerLeaveEvent;
+      Component.OnActivateStartEvent += OnActivateStartEvent;
+      Component.OnActivateEndEvent += OnActivateEndEvent;
+      Component.OnHerbSpawnEvent += HerbSpawnEvent;
+      Component.OnLastHerbSpawnEvent += LastHerbSpawnEvent;
     }
 
     private void OnTriggerEnterEvent()
     {
-      Action triggerEnterEvent = this.TriggerEnterEvent;
+      Action triggerEnterEvent = TriggerEnterEvent;
       if (triggerEnterEvent == null)
         return;
       triggerEnterEvent();
@@ -67,7 +67,7 @@ namespace VirtualMachine.Common.EngineAPI.VMECS.VMComponents
 
     private void OnTriggerLeaveEvent()
     {
-      Action triggerLeaveEvent = this.TriggerLeaveEvent;
+      Action triggerLeaveEvent = TriggerLeaveEvent;
       if (triggerLeaveEvent == null)
         return;
       triggerLeaveEvent();
@@ -75,7 +75,7 @@ namespace VirtualMachine.Common.EngineAPI.VMECS.VMComponents
 
     private void OnActivateStartEvent()
     {
-      Action activateStartEvent = this.ActivateStartEvent;
+      Action activateStartEvent = ActivateStartEvent;
       if (activateStartEvent == null)
         return;
       activateStartEvent();
@@ -83,7 +83,7 @@ namespace VirtualMachine.Common.EngineAPI.VMECS.VMComponents
 
     private void OnActivateEndEvent()
     {
-      Action activateEndEvent = this.ActivateEndEvent;
+      Action activateEndEvent = ActivateEndEvent;
       if (activateEndEvent == null)
         return;
       activateEndEvent();
@@ -91,7 +91,7 @@ namespace VirtualMachine.Common.EngineAPI.VMECS.VMComponents
 
     private void OnHerbSpawnEvent()
     {
-      Action herbSpawnEvent = this.HerbSpawnEvent;
+      Action herbSpawnEvent = HerbSpawnEvent;
       if (herbSpawnEvent == null)
         return;
       herbSpawnEvent();
@@ -99,7 +99,7 @@ namespace VirtualMachine.Common.EngineAPI.VMECS.VMComponents
 
     private void OnLastHerbSpawnEvent()
     {
-      Action lastHerbSpawnEvent = this.LastHerbSpawnEvent;
+      Action lastHerbSpawnEvent = LastHerbSpawnEvent;
       if (lastHerbSpawnEvent == null)
         return;
       lastHerbSpawnEvent();

@@ -1,11 +1,11 @@
-﻿using Cofe.Loggers;
+﻿using System.Xml;
+using Cofe.Loggers;
 using Engine.Common.Commons;
 using PLVirtualMachine.Base;
 using PLVirtualMachine.Common;
 using PLVirtualMachine.Common.Data;
 using PLVirtualMachine.Data;
 using PLVirtualMachine.GameLogic;
-using System.Xml;
 using VirtualMachine.Common;
 using VirtualMachine.Common.Data;
 using VirtualMachine.Data;
@@ -25,53 +25,52 @@ namespace PLVirtualMachine.FSM
   {
     [FieldData("Text", DataFieldType.Reference)]
     private VMGameString text;
-    [FieldData("OnlyOnce", DataFieldType.None)]
+    [FieldData("OnlyOnce")]
     private bool onlyOnce;
-    [FieldData("OnlyOneReply", DataFieldType.None)]
+    [FieldData("OnlyOneReply")]
     private bool onlyOneReply;
-    [FieldData("Default", DataFieldType.None)]
+    [FieldData("Default")]
     private bool isDefault;
     [FieldData("EnableCondition", DataFieldType.Reference)]
     private ICondition enableCondition;
     [FieldData("ActionLine", DataFieldType.Reference)]
     private IActionLine actionLine;
-    [FieldData("OrderIndex", DataFieldType.None)]
+    [FieldData("OrderIndex")]
     private int orderIndex;
 
     public virtual void EditorDataRead(XmlReader xml, IDataCreator creator, string typeContext)
     {
-      while (xml.Read())
-      {
+      while (xml.Read()) {
         if (xml.NodeType == XmlNodeType.Element)
         {
           switch (xml.Name)
           {
             case "ActionLine":
-              this.actionLine = EditorDataReadUtility.ReadReference<IActionLine>(xml, creator);
+              actionLine = EditorDataReadUtility.ReadReference<IActionLine>(xml, creator);
               continue;
             case "Default":
-              this.isDefault = EditorDataReadUtility.ReadValue(xml, this.isDefault);
+              isDefault = EditorDataReadUtility.ReadValue(xml, isDefault);
               continue;
             case "EnableCondition":
-              this.enableCondition = EditorDataReadUtility.ReadReference<ICondition>(xml, creator);
+              enableCondition = EditorDataReadUtility.ReadReference<ICondition>(xml, creator);
               continue;
             case "Name":
-              this.name = EditorDataReadUtility.ReadValue(xml, this.name);
+              name = EditorDataReadUtility.ReadValue(xml, name);
               continue;
             case "OnlyOnce":
-              this.onlyOnce = EditorDataReadUtility.ReadValue(xml, this.onlyOnce);
+              onlyOnce = EditorDataReadUtility.ReadValue(xml, onlyOnce);
               continue;
             case "OnlyOneReply":
-              this.onlyOneReply = EditorDataReadUtility.ReadValue(xml, this.onlyOneReply);
+              onlyOneReply = EditorDataReadUtility.ReadValue(xml, onlyOneReply);
               continue;
             case "OrderIndex":
-              this.orderIndex = EditorDataReadUtility.ReadValue(xml, this.orderIndex);
+              orderIndex = EditorDataReadUtility.ReadValue(xml, orderIndex);
               continue;
             case "Parent":
-              this.parent = EditorDataReadUtility.ReadReference<IContainer>(xml, creator);
+              parent = EditorDataReadUtility.ReadReference<IContainer>(xml, creator);
               continue;
             case "Text":
-              this.text = EditorDataReadUtility.ReadReference<VMGameString>(xml, creator);
+              text = EditorDataReadUtility.ReadReference<VMGameString>(xml, creator);
               continue;
             default:
               if (XMLDataLoader.Logs.Add(typeContext + " : " + xml.Name))
@@ -80,7 +79,8 @@ namespace PLVirtualMachine.FSM
               continue;
           }
         }
-        else if (xml.NodeType == XmlNodeType.EndElement)
+
+        if (xml.NodeType == XmlNodeType.EndElement)
           break;
       }
     }
@@ -92,34 +92,34 @@ namespace PLVirtualMachine.FSM
 
     public override EObjectCategory GetCategory() => EObjectCategory.OBJECT_CATEGORY_GRAPH_ELEMENT;
 
-    public IGameString Text => (IGameString) this.text;
+    public IGameString Text => text;
 
-    public int Order => this.orderIndex;
+    public int Order => orderIndex;
 
-    public bool OnlyOnce => this.onlyOnce;
+    public bool OnlyOnce => onlyOnce;
 
-    public bool OnlyOneReply => this.onlyOneReply;
+    public bool OnlyOneReply => onlyOneReply;
 
-    public bool IsDefault => this.isDefault;
+    public bool IsDefault => isDefault;
 
-    public ICondition EnableCondition => this.enableCondition;
+    public ICondition EnableCondition => enableCondition;
 
-    public IActionLine ActionLine => this.actionLine;
+    public IActionLine ActionLine => actionLine;
 
     public override void Clear()
     {
       base.Clear();
-      if (this.enableCondition != null)
+      if (enableCondition != null)
       {
-        ((VMPartCondition) this.enableCondition).Clear();
-        this.enableCondition = (ICondition) null;
+        ((VMPartCondition) enableCondition).Clear();
+        enableCondition = null;
       }
-      if (this.actionLine != null)
+      if (actionLine != null)
       {
-        ((VMActionLine) this.actionLine).Clear();
-        this.actionLine = (IActionLine) null;
+        ((VMActionLine) actionLine).Clear();
+        actionLine = null;
       }
-      this.text = (VMGameString) null;
+      text = null;
     }
   }
 }

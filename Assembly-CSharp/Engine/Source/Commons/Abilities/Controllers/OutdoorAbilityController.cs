@@ -2,7 +2,6 @@
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Engine.Source.Components;
-using System;
 
 namespace Engine.Source.Commons.Abilities.Controllers
 {
@@ -16,24 +15,24 @@ namespace Engine.Source.Commons.Abilities.Controllers
     public void Initialise(AbilityItem abilityItem)
     {
       this.abilityItem = abilityItem;
-      this.locationItemComponent = this.abilityItem.Ability.Owner.GetComponent<LocationItemComponent>();
-      if (this.locationItemComponent == null)
+      locationItemComponent = this.abilityItem.Ability.Owner.GetComponent<LocationItemComponent>();
+      if (locationItemComponent == null)
         return;
-      this.locationItemComponent.OnChangeLocation += new Action<ILocationItemComponent, ILocationComponent>(this.OnChangeLocation);
-      this.OnChangeLocation((ILocationItemComponent) this.locationItemComponent, this.locationItemComponent.Location);
+      locationItemComponent.OnChangeLocation += OnChangeLocation;
+      OnChangeLocation(locationItemComponent, locationItemComponent.Location);
     }
 
     public void Shutdown()
     {
-      if (this.locationItemComponent == null)
+      if (locationItemComponent == null)
         return;
-      this.locationItemComponent.OnChangeLocation -= new Action<ILocationItemComponent, ILocationComponent>(this.OnChangeLocation);
-      this.locationItemComponent = (LocationItemComponent) null;
+      locationItemComponent.OnChangeLocation -= OnChangeLocation;
+      locationItemComponent = null;
     }
 
     private void OnChangeLocation(ILocationItemComponent sender, ILocationComponent location)
     {
-      this.abilityItem.Active = !this.locationItemComponent.IsIndoor;
+      abilityItem.Active = !locationItemComponent.IsIndoor;
     }
   }
 }

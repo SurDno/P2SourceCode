@@ -15,17 +15,17 @@ namespace Engine.Source.Blueprints
     protected override void RegisterPorts()
     {
       base.RegisterPorts();
-      this.entityInput = this.AddValueInput<IEntity>("Entity");
-      this.AddValueOutput<IEntity>("Location", (ValueHandler<IEntity>) (() =>
+      entityInput = AddValueInput<IEntity>("Entity");
+      AddValueOutput("Location", () =>
       {
-        for (IEntity parent = this.entityInput.value; parent != null; parent = parent.Parent)
+        for (IEntity parent = entityInput.value; parent != null; parent = parent.Parent)
         {
           LocationComponent component = parent.GetComponent<LocationComponent>();
           if (component != null && component.LocationType == LocationType.Region)
             return component.Owner;
         }
-        return (IEntity) null;
-      }));
+        return null;
+      });
     }
   }
 }

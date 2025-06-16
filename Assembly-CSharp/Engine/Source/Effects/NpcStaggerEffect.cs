@@ -13,27 +13,27 @@ namespace Engine.Source.Effects
   [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
   public class NpcStaggerEffect : IEffect
   {
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected(Header = true, Mutable = true, Mode = ExecuteMode.EditAndRuntime)]
     protected string name = "";
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy()]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected ParameterEffectQueueEnum queue = ParameterEffectQueueEnum.None;
     public ShotType punchType;
 
-    public string Name => this.name;
+    public string Name => name;
 
     [Inspected]
     public AbilityItem AbilityItem { get; set; }
 
     public IEntity Target { get; set; }
 
-    public ParameterEffectQueueEnum Queue => this.queue;
+    public ParameterEffectQueueEnum Queue => queue;
 
     public void Cleanup()
     {
@@ -41,8 +41,8 @@ namespace Engine.Source.Effects
 
     public bool Prepare(float currentRealTime, float currentGameTime)
     {
-      EnemyBase component = ((IEntityView) this.AbilityItem.Self).GameObject.GetComponent<EnemyBase>();
-      ((IEntityView) this.Target).GameObject.GetComponent<EnemyBase>()?.Stagger(component);
+      EnemyBase component = ((IEntityView) AbilityItem.Self).GameObject.GetComponent<EnemyBase>();
+      ((IEntityView) Target).GameObject.GetComponent<EnemyBase>()?.Stagger(component);
       return true;
     }
 

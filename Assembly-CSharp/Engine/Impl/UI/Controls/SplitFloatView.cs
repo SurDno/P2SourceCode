@@ -1,19 +1,17 @@
-﻿using UnityEngine;
-
-namespace Engine.Impl.UI.Controls
+﻿namespace Engine.Impl.UI.Controls
 {
   public class SplitFloatView : FloatViewBase
   {
     [SerializeField]
-    private FloatView[] views = (FloatView[]) null;
+    private FloatView[] views = null;
 
     public override void SkipAnimation()
     {
-      if (this.views == null)
+      if (views == null)
         return;
-      for (int index = 0; index < this.views.Length; ++index)
+      for (int index = 0; index < views.Length; ++index)
       {
-        FloatView view = this.views[index];
+        FloatView view = views[index];
         if ((Object) view != (Object) null)
           view.SkipAnimation();
       }
@@ -21,13 +19,13 @@ namespace Engine.Impl.UI.Controls
 
     protected override void ApplyFloatValue()
     {
-      if (this.views == null)
+      if (views == null)
         return;
-      for (int index = 0; index < this.views.Length; ++index)
+      for (int index = 0; index < views.Length; ++index)
       {
-        FloatView view = this.views[index];
+        FloatView view = views[index];
         if ((Object) view != (Object) null)
-          view.FloatValue = this.FloatValue;
+          view.FloatValue = FloatValue;
       }
     }
   }

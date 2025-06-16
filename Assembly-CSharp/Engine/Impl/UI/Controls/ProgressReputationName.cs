@@ -1,6 +1,5 @@
 ﻿using Engine.Common.Components.Regions;
 using RegionReputation;
-using UnityEngine;
 
 namespace Engine.Impl.UI.Controls
 {
@@ -13,13 +12,13 @@ namespace Engine.Impl.UI.Controls
     [SerializeField]
     private RegionEnum regionName;
 
-    public override void SkipAnimation() => this.view?.SkipAnimation();
+    public override void SkipAnimation() => view?.SkipAnimation();
 
     protected override void ApplyProgress()
     {
-      if (!((Object) this.view != (Object) null) || !((Object) this.settings != (Object) null))
+      if (!((Object) view != (Object) null) || !((Object) settings != (Object) null))
         return;
-      this.view.StringValue = this.settings.GetReputationName(this.regionName, this.Progress);
+      view.StringValue = settings.GetReputationName(regionName, Progress);
     }
   }
 }

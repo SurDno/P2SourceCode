@@ -1,7 +1,6 @@
 ﻿using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
-using UnityEngine;
 
 namespace Engine.Source.Blueprints
 {
@@ -14,16 +13,16 @@ namespace Engine.Source.Blueprints
     protected override void RegisterPorts()
     {
       base.RegisterPorts();
-      FlowOutput output = this.AddFlowOutput("Out");
-      this.AddFlowInput("In", (FlowHandler) (() =>
+      FlowOutput output = AddFlowOutput("Out");
+      AddFlowInput("In", () =>
       {
-        GameObject gameObject = this.goInput.value;
+        GameObject gameObject = goInput.value;
         if ((Object) gameObject != (Object) null)
-          gameObject.SetActive(this.enableInput.value);
+          gameObject.SetActive(enableInput.value);
         output.Call();
-      }));
-      this.goInput = this.AddValueInput<GameObject>("GameObject");
-      this.enableInput = this.AddValueInput<bool>("Enable");
+      });
+      goInput = AddValueInput<GameObject>("GameObject");
+      enableInput = AddValueInput<bool>("Enable");
     }
   }
 }

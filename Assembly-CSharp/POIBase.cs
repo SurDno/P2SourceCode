@@ -1,8 +1,6 @@
-﻿using Engine.Common.Components.Locations;
+﻿using System.Collections.Generic;
+using Engine.Common.Components.Locations;
 using Engine.Source.Services;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.Serialization;
 
 public class POIBase : MonoBehaviour
 {
@@ -19,30 +17,30 @@ public class POIBase : MonoBehaviour
 
   public POIAnimationEnum SupportedAnimations
   {
-    get => this._supportedAnimations;
-    set => this._supportedAnimations = value;
+    get => _supportedAnimations;
+    set => _supportedAnimations = value;
   }
 
   public bool SupportsDialog
   {
-    get => this.supportsDialogs;
-    set => this.supportsDialogs = value;
+    get => supportsDialogs;
+    set => supportsDialogs = value;
   }
 
   public LocationType LocationType
   {
     get
     {
-      if (this.locationType == LocationType.None)
-        this.locationType = LocationItemUtility.GetLocationType(this.gameObject);
-      return this.locationType;
+      if (locationType == LocationType.None)
+        locationType = LocationItemUtility.GetLocationType(this.gameObject);
+      return locationType;
     }
   }
 
   public bool IsChildPOI
   {
-    get => this.isChildPOI;
-    set => this.isChildPOI = value;
+    get => isChildPOI;
+    set => isChildPOI = value;
   }
 
   private void Start()
@@ -51,26 +49,26 @@ public class POIBase : MonoBehaviour
 
   private void OnEnable()
   {
-    if (this.isChildPOI)
+    if (isChildPOI)
       return;
-    POIBase.ActivePOIs.Add(this);
+    ActivePOIs.Add(this);
   }
 
-  private void OnDisable() => POIBase.ActivePOIs.Remove(this);
+  private void OnDisable() => ActivePOIs.Remove(this);
 
   public void Lock(GameObject who, POIAnimationEnum animation)
   {
-    this.lockedBy = who;
-    this.lockedByAnimation = animation;
+    lockedBy = who;
+    lockedByAnimation = animation;
   }
 
   public void Unlock(GameObject who)
   {
-    this.lockedBy = (GameObject) null;
-    this.lockedByAnimation = (POIAnimationEnum) 0;
+    lockedBy = (GameObject) null;
+    lockedByAnimation = 0;
   }
 
-  public GameObject LockedBy => this.lockedBy;
+  public GameObject LockedBy => lockedBy;
 
   public float GetAngle(GameObject to)
   {

@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEngine;
 
 namespace Cinemachine
 {
@@ -27,7 +26,7 @@ namespace Cinemachine
 
     public static LensSettings FromCamera(Camera fromCamera)
     {
-      LensSettings lensSettings = LensSettings.Default;
+      LensSettings lensSettings = Default;
       if ((UnityEngine.Object) fromCamera != (UnityEngine.Object) null)
       {
         lensSettings.FieldOfView = fromCamera.fieldOfView;
@@ -50,20 +49,19 @@ namespace Cinemachine
       float aspect)
       : this()
     {
-      this.FieldOfView = fov;
-      this.OrthographicSize = orthographicSize;
-      this.NearClipPlane = nearClip;
-      this.FarClipPlane = farClip;
-      this.Dutch = dutch;
-      this.Orthographic = ortho;
-      this.Aspect = aspect;
+      FieldOfView = fov;
+      OrthographicSize = orthographicSize;
+      NearClipPlane = nearClip;
+      FarClipPlane = farClip;
+      Dutch = dutch;
+      Orthographic = ortho;
+      Aspect = aspect;
     }
 
     public static LensSettings Lerp(LensSettings lensA, LensSettings lensB, float t)
     {
       t = Mathf.Clamp01(t);
-      return new LensSettings()
-      {
+      return new LensSettings {
         FarClipPlane = Mathf.Lerp(lensA.FarClipPlane, lensB.FarClipPlane, t),
         NearClipPlane = Mathf.Lerp(lensA.NearClipPlane, lensB.NearClipPlane, t),
         FieldOfView = Mathf.Lerp(lensA.FieldOfView, lensB.FieldOfView, t),
@@ -76,8 +74,8 @@ namespace Cinemachine
 
     public void Validate()
     {
-      this.NearClipPlane = Mathf.Max(this.NearClipPlane, 0.01f);
-      this.FarClipPlane = Mathf.Max(this.FarClipPlane, this.NearClipPlane + 0.01f);
+      NearClipPlane = Mathf.Max(NearClipPlane, 0.01f);
+      FarClipPlane = Mathf.Max(FarClipPlane, NearClipPlane + 0.01f);
     }
   }
 }

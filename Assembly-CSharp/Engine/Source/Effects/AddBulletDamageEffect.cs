@@ -9,7 +9,6 @@ using Engine.Source.Commons.Effects;
 using Engine.Source.Components;
 using Engine.Source.Difficulties;
 using Inspectors;
-using UnityEngine;
 
 namespace Engine.Source.Effects
 {
@@ -17,55 +16,55 @@ namespace Engine.Source.Effects
   [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
   public class AddBulletDamageEffect : IEffect
   {
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected ParameterEffectQueueEnum queue = ParameterEffectQueueEnum.None;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected DurationTypeEnum durationType = DurationTypeEnum.Once;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected(Mutable = true, Mode = ExecuteMode.EditAndRuntime)]
     protected bool enable = true;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected ParameterNameEnum damageParameterName;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected string difficultyMultiplierParameterName = "";
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected float bodyDamage = 0.0f;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected float armDamage = 0.0f;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected float legDamage = 0.0f;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy()]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected float headDamage = 0.0f;
@@ -77,39 +76,39 @@ namespace Engine.Source.Effects
 
     public IEntity Target { get; set; }
 
-    public string Name => this.GetType().Name;
+    public string Name => GetType().Name;
 
-    public ParameterEffectQueueEnum Queue => this.queue;
+    public ParameterEffectQueueEnum Queue => queue;
 
     public bool Prepare(float currentRealTime, float currentGameTime)
     {
-      if (this.durationType == DurationTypeEnum.Once)
-        this.Target.GetComponent<EffectsComponent>().ForceComputeUpdate();
+      if (durationType == DurationTypeEnum.Once)
+        Target.GetComponent<EffectsComponent>().ForceComputeUpdate();
       return true;
     }
 
     public bool Compute(float currentRealTime, float currentGameTime)
     {
-      ParametersComponent component = this.Target?.GetComponent<ParametersComponent>();
-      float num = InstanceByRequest<DifficultySettings>.Instance.GetValue(this.difficultyMultiplierParameterName);
-      IParameter<float> byName = component?.GetByName<float>(this.damageParameterName);
+      ParametersComponent component = Target?.GetComponent<ParametersComponent>();
+      float num = InstanceByRequest<DifficultySettings>.Instance.GetValue(difficultyMultiplierParameterName);
+      IParameter<float> byName = component?.GetByName<float>(damageParameterName);
       if (byName == null)
         return false;
-      IAbilityProjectile projectile = this.AbilityItem.Projectile;
-      if (this.AbilityItem.Projectile is RaycastAbilityProjectile)
+      IAbilityProjectile projectile = AbilityItem.Projectile;
+      if (AbilityItem.Projectile is RaycastAbilityProjectile)
       {
-        ShotTargetBodyPartEnum nextTargetBodyPart = (this.AbilityItem.Projectile as RaycastAbilityProjectile).GetNextTargetBodyPart();
+        ShotTargetBodyPartEnum nextTargetBodyPart = (AbilityItem.Projectile as RaycastAbilityProjectile).GetNextTargetBodyPart();
         if (nextTargetBodyPart == ShotTargetBodyPartEnum.Body)
-          byName.Value += this.bodyDamage * num;
+          byName.Value += bodyDamage * num;
         if (nextTargetBodyPart == ShotTargetBodyPartEnum.Arm)
-          byName.Value += this.armDamage * num;
+          byName.Value += armDamage * num;
         if (nextTargetBodyPart == ShotTargetBodyPartEnum.Leg)
-          byName.Value += this.legDamage * num;
+          byName.Value += legDamage * num;
         if (nextTargetBodyPart == ShotTargetBodyPartEnum.Head)
-          byName.Value += this.headDamage * num;
+          byName.Value += headDamage * num;
       }
       else
-        Debug.LogError((object) ("projectile for " + (object) typeof (AddBulletDamageEffect) + " must be " + (object) typeof (RaycastAbilityProjectile)));
+        Debug.LogError((object) ("projectile for " + typeof (AddBulletDamageEffect) + " must be " + typeof (RaycastAbilityProjectile)));
       return false;
     }
 

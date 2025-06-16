@@ -12,7 +12,7 @@ namespace TriangleNet.Tools
     public RegionIterator(Mesh mesh)
     {
       this.mesh = mesh;
-      this.viri = new List<Triangle>();
+      viri = new List<Triangle>();
     }
 
     private void ProcessRegion(Action<Triangle> func)
@@ -20,10 +20,10 @@ namespace TriangleNet.Tools
       Otri otri = new Otri();
       Otri o2 = new Otri();
       Osub os = new Osub();
-      Behavior behavior = this.mesh.behavior;
-      for (int index = 0; index < this.viri.Count; ++index)
+      Behavior behavior = mesh.behavior;
+      for (int index = 0; index < viri.Count; ++index)
       {
-        otri.triangle = this.viri[index];
+        otri.triangle = viri[index];
         otri.Uninfect();
         func(otri.triangle);
         for (otri.orient = 0; otri.orient < 3; ++otri.orient)
@@ -33,19 +33,19 @@ namespace TriangleNet.Tools
           if (o2.triangle != Mesh.dummytri && !o2.IsInfected() && os.seg == Mesh.dummysub)
           {
             o2.Infect();
-            this.viri.Add(o2.triangle);
+            viri.Add(o2.triangle);
           }
         }
         otri.Infect();
       }
-      foreach (Triangle triangle in this.viri)
+      foreach (Triangle triangle in viri)
         triangle.infected = false;
-      this.viri.Clear();
+      viri.Clear();
     }
 
     public void Process(Triangle triangle)
     {
-      this.Process(triangle, (Action<Triangle>) (tri => tri.region = triangle.region));
+      Process(triangle, tri => tri.region = triangle.region);
     }
 
     public void Process(Triangle triangle, Action<Triangle> func)
@@ -53,10 +53,10 @@ namespace TriangleNet.Tools
       if (triangle != Mesh.dummytri && !Otri.IsDead(triangle))
       {
         triangle.infected = true;
-        this.viri.Add(triangle);
-        this.ProcessRegion(func);
+        viri.Add(triangle);
+        ProcessRegion(func);
       }
-      this.viri.Clear();
+      viri.Clear();
     }
   }
 }

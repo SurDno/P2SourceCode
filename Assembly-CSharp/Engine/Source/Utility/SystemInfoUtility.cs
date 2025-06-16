@@ -1,7 +1,7 @@
-﻿using Cofe.Serializations.Converters;
-using Engine.Source.Settings;
-using System;
+﻿using System;
 using System.Diagnostics;
+using Cofe.Serializations.Converters;
+using Engine.Source.Settings;
 
 namespace Engine.Source.Utility
 {
@@ -16,9 +16,9 @@ namespace Engine.Source.Utility
     {
       get
       {
-        if (SystemInfoUtility.numberOfCores == -1)
-          SystemInfoUtility.UpdateData();
-        return SystemInfoUtility.numberOfCores;
+        if (numberOfCores == -1)
+          UpdateData();
+        return numberOfCores;
       }
     }
 
@@ -26,17 +26,17 @@ namespace Engine.Source.Utility
     {
       get
       {
-        if (SystemInfoUtility.numberOfLogicalProcessors == -1)
-          SystemInfoUtility.UpdateData();
-        return SystemInfoUtility.numberOfLogicalProcessors;
+        if (numberOfLogicalProcessors == -1)
+          UpdateData();
+        return numberOfLogicalProcessors;
       }
     }
 
     private static void UpdateData()
     {
-      SystemInfoUtility.numberOfCores = PlayerSettings.Instance.GetInt("NumberOfCores", -1);
-      SystemInfoUtility.numberOfLogicalProcessors = PlayerSettings.Instance.GetInt("NumberOfLogicalProcessors", -1);
-      if (SystemInfoUtility.numberOfCores == -1 || SystemInfoUtility.numberOfLogicalProcessors == -1)
+      numberOfCores = PlayerSettings.Instance.GetInt("NumberOfCores", -1);
+      numberOfLogicalProcessors = PlayerSettings.Instance.GetInt("NumberOfLogicalProcessors", -1);
+      if (numberOfCores == -1 || numberOfLogicalProcessors == -1)
       {
         try
         {
@@ -48,7 +48,7 @@ namespace Engine.Source.Utility
           process.StartInfo.UseShellExecute = false;
           process.StartInfo.RedirectStandardOutput = true;
           process.StartInfo.RedirectStandardError = true;
-          process.ErrorDataReceived += (DataReceivedEventHandler) ((a, b) => { });
+          process.ErrorDataReceived += (a, b) => { };
           process.Start();
           process.BeginErrorReadLine();
           string end = process.StandardOutput.ReadToEnd();
@@ -65,10 +65,10 @@ namespace Engine.Source.Utility
               switch (str2.Substring(0, length))
               {
                 case "NumberOfCores":
-                  SystemInfoUtility.numberOfCores = result;
+                  numberOfCores = result;
                   break;
                 case "NumberOfLogicalProcessors":
-                  SystemInfoUtility.numberOfLogicalProcessors = result;
+                  numberOfLogicalProcessors = result;
                   break;
               }
             }
@@ -78,17 +78,17 @@ namespace Engine.Source.Utility
         {
           UnityEngine.Debug.LogException(ex);
         }
-        if (SystemInfoUtility.numberOfCores == -1 || SystemInfoUtility.numberOfLogicalProcessors == -1)
+        if (numberOfCores == -1 || numberOfLogicalProcessors == -1)
         {
-          UnityEngine.Debug.Log((object) ObjectInfoUtility.GetStream().Append("Wrong get system info , cores : ").Append(SystemInfoUtility.numberOfCores).Append(" , logics : ").Append(SystemInfoUtility.numberOfLogicalProcessors));
-          SystemInfoUtility.numberOfCores = Environment.ProcessorCount;
-          SystemInfoUtility.numberOfLogicalProcessors = Environment.ProcessorCount;
+          UnityEngine.Debug.Log((object) ObjectInfoUtility.GetStream().Append("Wrong get system info , cores : ").Append(numberOfCores).Append(" , logics : ").Append(numberOfLogicalProcessors));
+          numberOfCores = Environment.ProcessorCount;
+          numberOfLogicalProcessors = Environment.ProcessorCount;
         }
       }
       else
-        UnityEngine.Debug.Log((object) ObjectInfoUtility.GetStream().Append("Loaded system info , cores : ").Append(SystemInfoUtility.numberOfCores).Append(" , logics : ").Append(SystemInfoUtility.numberOfLogicalProcessors));
-      PlayerSettings.Instance.SetInt("NumberOfCores", SystemInfoUtility.numberOfCores);
-      PlayerSettings.Instance.SetInt("NumberOfLogicalProcessors", SystemInfoUtility.numberOfLogicalProcessors);
+        UnityEngine.Debug.Log((object) ObjectInfoUtility.GetStream().Append("Loaded system info , cores : ").Append(numberOfCores).Append(" , logics : ").Append(numberOfLogicalProcessors));
+      PlayerSettings.Instance.SetInt("NumberOfCores", numberOfCores);
+      PlayerSettings.Instance.SetInt("NumberOfLogicalProcessors", numberOfLogicalProcessors);
     }
   }
 }

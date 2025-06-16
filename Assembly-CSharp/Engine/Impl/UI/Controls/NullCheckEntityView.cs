@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace Engine.Impl.UI.Controls
+﻿namespace Engine.Impl.UI.Controls
 {
   public class NullCheckEntityView : EntityViewBase
   {
@@ -9,16 +7,16 @@ namespace Engine.Impl.UI.Controls
 
     protected override void ApplyValue()
     {
-      if (!((Object) this.view != (Object) null))
+      if (!((Object) view != (Object) null))
         return;
-      this.view.Visible = this.Value == null;
+      view.Visible = Value == null;
     }
 
     public override void SkipAnimation()
     {
-      if (!((Object) this.view != (Object) null))
+      if (!((Object) view != (Object) null))
         return;
-      this.view.SkipAnimation();
+      view.SkipAnimation();
     }
   }
 }

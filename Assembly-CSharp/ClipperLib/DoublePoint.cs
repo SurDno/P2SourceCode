@@ -7,20 +7,20 @@
 
     public DoublePoint(double x = 0.0, double y = 0.0)
     {
-      this.X = x;
-      this.Y = y;
+      X = x;
+      Y = y;
     }
 
     public DoublePoint(DoublePoint dp)
     {
-      this.X = dp.X;
-      this.Y = dp.Y;
+      X = dp.X;
+      Y = dp.Y;
     }
 
     public DoublePoint(IntPoint ip)
     {
-      this.X = (double) ip.X;
-      this.Y = (double) ip.Y;
+      X = ip.X;
+      Y = ip.Y;
     }
   }
 }

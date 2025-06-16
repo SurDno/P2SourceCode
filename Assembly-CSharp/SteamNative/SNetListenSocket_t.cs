@@ -6,7 +6,7 @@
 
     public static implicit operator SNetListenSocket_t(uint value)
     {
-      return new SNetListenSocket_t() { Value = value };
+      return new SNetListenSocket_t { Value = value };
     }
 
     public static implicit operator uint(SNetListenSocket_t value) => value.Value;

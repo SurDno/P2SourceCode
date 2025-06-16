@@ -1,4 +1,7 @@
-﻿using Cofe.Serializations.Converters;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using Cofe.Serializations.Converters;
 using Cofe.Utility;
 using Engine.Common;
 using Engine.Common.Services;
@@ -8,15 +11,11 @@ using Engine.Source.Services;
 using Engine.Source.Settings;
 using Inspectors;
 using Scripts.Data;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using UnityEngine;
 
 namespace Engine.Impl.Services
 {
   [Depend(typeof (IProfilesService))]
-  [RuntimeService(new System.Type[] {typeof (LocalizationService)})]
+  [RuntimeService(typeof (LocalizationService))]
   public class LocalizationService : IInitialisable
   {
     [Inspected]
@@ -35,51 +34,51 @@ namespace Engine.Impl.Services
     [Inspected(Mutable = true)]
     public LanguageEnum CurrentLanguage
     {
-      get => this.currentLanguage;
+      get => currentLanguage;
       set
       {
-        this.currentLanguage = value;
-        if (this.currentLanguage == LanguageEnum.None)
-          this.currentLanguage = this.DefaultLanguage;
-        this.LoadLanguage(this.DefaultLanguage);
-        if (this.currentLanguage != this.DefaultLanguage)
-          this.LoadLanguage(this.currentLanguage);
-        InstanceByRequest<LocalizationSettings>.Instance.Language.Value = this.currentLanguage;
+        currentLanguage = value;
+        if (currentLanguage == LanguageEnum.None)
+          currentLanguage = DefaultLanguage;
+        LoadLanguage(DefaultLanguage);
+        if (currentLanguage != DefaultLanguage)
+          LoadLanguage(currentLanguage);
+        InstanceByRequest<LocalizationSettings>.Instance.Language.Value = currentLanguage;
         InstanceByRequest<LocalizationSettings>.Instance.Apply();
-        this.FireLocalizationChanged();
+        FireLocalizationChanged();
       }
     }
 
     [Inspected(Mutable = true)]
     public LanguageEnum CurrentSubTitlesLanguage
     {
-      get => this.currentSubTitlesLanguage;
+      get => currentSubTitlesLanguage;
       set
       {
-        this.currentSubTitlesLanguage = value;
-        if (this.currentSubTitlesLanguage == LanguageEnum.None)
-          this.currentSubTitlesLanguage = this.DefaultLanguage;
-        this.LoadSubTitlesLanguage(this.DefaultLanguage);
-        if (this.currentSubTitlesLanguage != this.DefaultLanguage)
-          this.LoadSubTitlesLanguage(this.currentSubTitlesLanguage);
-        InstanceByRequest<LocalizationSettings>.Instance.SubTitlesLanguage.Value = this.currentSubTitlesLanguage;
+        currentSubTitlesLanguage = value;
+        if (currentSubTitlesLanguage == LanguageEnum.None)
+          currentSubTitlesLanguage = DefaultLanguage;
+        LoadSubTitlesLanguage(DefaultLanguage);
+        if (currentSubTitlesLanguage != DefaultLanguage)
+          LoadSubTitlesLanguage(currentSubTitlesLanguage);
+        InstanceByRequest<LocalizationSettings>.Instance.SubTitlesLanguage.Value = currentSubTitlesLanguage;
         InstanceByRequest<LocalizationSettings>.Instance.Apply();
-        this.FireLocalizationChanged();
+        FireLocalizationChanged();
       }
     }
 
     [Inspected(Mutable = true)]
     public LanguageEnum CurrentLipSyncLanguage
     {
-      get => this.currentLipSyncLanguage;
+      get => currentLipSyncLanguage;
       set
       {
-        this.currentLipSyncLanguage = value;
-        if (this.currentLipSyncLanguage == LanguageEnum.None)
-          this.currentLipSyncLanguage = this.DefaultLanguage;
-        InstanceByRequest<LocalizationSettings>.Instance.LipSyncLanguage.Value = this.currentLipSyncLanguage;
+        currentLipSyncLanguage = value;
+        if (currentLipSyncLanguage == LanguageEnum.None)
+          currentLipSyncLanguage = DefaultLanguage;
+        InstanceByRequest<LocalizationSettings>.Instance.LipSyncLanguage.Value = currentLipSyncLanguage;
         InstanceByRequest<LocalizationSettings>.Instance.Apply();
-        this.FireLocalizationChanged();
+        FireLocalizationChanged();
       }
     }
 
@@ -87,7 +86,7 @@ namespace Engine.Impl.Services
 
     private void FireLocalizationChanged()
     {
-      Action localizationChanged = this.LocalizationChanged;
+      Action localizationChanged = LocalizationChanged;
       if (localizationChanged == null)
         return;
       localizationChanged();
@@ -95,39 +94,39 @@ namespace Engine.Impl.Services
 
     public string GetText(LocalizedText text)
     {
-      return LocalizationService.GetVmTextImpl(text.Id, this.vmLanguages, this.currentLanguage, this.DefaultLanguage);
+      return GetVmTextImpl(text.Id, vmLanguages, currentLanguage, DefaultLanguage);
     }
 
     public string GetText(string tag)
     {
-      return LocalizationService.GetTextImpl(tag, this.languages, this.currentLanguage, this.DefaultLanguage);
+      return GetTextImpl(tag, languages, currentLanguage, DefaultLanguage);
     }
 
     public string GetSubTitlesText(string tag)
     {
-      return LocalizationService.GetTextImpl(tag, this.subTitlesLanguages, this.currentSubTitlesLanguage, this.DefaultLanguage);
+      return GetTextImpl(tag, subTitlesLanguages, currentSubTitlesLanguage, DefaultLanguage);
     }
 
     public void Initialise()
     {
-      this.TryOverrideSettings();
-      this.CurrentLanguage = InstanceByRequest<LocalizationSettings>.Instance.Language.Value;
-      this.CurrentSubTitlesLanguage = InstanceByRequest<LocalizationSettings>.Instance.SubTitlesLanguage.Value;
-      this.CurrentLipSyncLanguage = InstanceByRequest<LocalizationSettings>.Instance.LipSyncLanguage.Value;
+      TryOverrideSettings();
+      CurrentLanguage = InstanceByRequest<LocalizationSettings>.Instance.Language.Value;
+      CurrentSubTitlesLanguage = InstanceByRequest<LocalizationSettings>.Instance.SubTitlesLanguage.Value;
+      CurrentLipSyncLanguage = InstanceByRequest<LocalizationSettings>.Instance.LipSyncLanguage.Value;
     }
 
     public void Terminate()
     {
-      this.languages.Clear();
-      this.vmLanguages.Clear();
-      this.subTitlesLanguages.Clear();
+      languages.Clear();
+      vmLanguages.Clear();
+      subTitlesLanguages.Clear();
     }
 
     private void TryOverrideSettings()
     {
       string path = PlatformUtility.GetPath("Data/Settings/DefaultLocalization.txt");
       LanguageEnum result;
-      if (!File.Exists(path) || !DefaultConverter.TryParseEnum<LanguageEnum>(File.ReadAllText(path), out result) || InstanceByRequest<LocalizationSettings>.Instance.OverrideLanguage.Value == result)
+      if (!File.Exists(path) || !DefaultConverter.TryParseEnum(File.ReadAllText(path), out result) || InstanceByRequest<LocalizationSettings>.Instance.OverrideLanguage.Value == result)
         return;
       InstanceByRequest<LocalizationSettings>.Instance.OverrideLanguage.Value = result;
       InstanceByRequest<LocalizationSettings>.Instance.Language.Value = result;
@@ -138,14 +137,14 @@ namespace Engine.Impl.Services
     private void LoadLanguage(LanguageEnum language)
     {
       string fileName = language.ToString();
-      LocalizationService.LoadLanguageImpl(this.languages, language, fileName);
-      LocalizationService.LoadVmLanguageImpl(this.vmLanguages, language, fileName);
+      LoadLanguageImpl(languages, language, fileName);
+      LoadVmLanguageImpl(vmLanguages, language, fileName);
     }
 
     private void LoadSubTitlesLanguage(LanguageEnum language)
     {
-      string fileName = "SubTitles_" + language.ToString();
-      LocalizationService.LoadLanguageImpl(this.subTitlesLanguages, language, fileName);
+      string fileName = "SubTitles_" + language;
+      LoadLanguageImpl(subTitlesLanguages, language, fileName);
     }
 
     private static void LoadLanguageImpl(
@@ -163,7 +162,7 @@ namespace Engine.Impl.Services
         result.Clear();
       TextAsset textAsset = Resources.Load<TextAsset>(fileName);
       if ((UnityEngine.Object) textAsset != (UnityEngine.Object) null && textAsset.text != null)
-        LocalizationService.LoadText(textAsset.text, result);
+        LoadText(textAsset.text, result);
       else
         Debug.LogError((object) ("Engine localization file '" + fileName + "' not found"));
     }
@@ -189,7 +188,7 @@ namespace Engine.Impl.Services
           if (!File.Exists(path))
             Debug.LogError((object) ("Vm localization file '" + path + "' not found"));
           else
-            LocalizationService.LoadTextVm(File.ReadAllText(path), result);
+            LoadTextVm(File.ReadAllText(path), result);
         }
       }
     }

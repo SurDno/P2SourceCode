@@ -1,4 +1,5 @@
-﻿using PLVirtualMachine.Common;
+﻿using System;
+using PLVirtualMachine.Common;
 using PLVirtualMachine.Common.Data;
 using PLVirtualMachine.Common.EngineAPI;
 
@@ -8,7 +9,7 @@ namespace PLVirtualMachine.GameLogic
   [VMFactory(typeof (ILogicMapRef))]
   public class VMLogicMapRef : BaseRef, ILogicMapRef, IRef, IVariable, INamed, IVMStringSerializable
   {
-    public void Initialize(ILogicMap logicMap) => this.LoadStaticInstance((IObject) logicMap);
+    public void Initialize(ILogicMap logicMap) => LoadStaticInstance(logicMap);
 
     public override EContextVariableCategory Category
     {
@@ -21,14 +22,14 @@ namespace PLVirtualMachine.GameLogic
     {
       get
       {
-        if (this.StaticInstance == null && this.BaseGuid > 0UL)
-          this.LoadStaticInstance(IStaticDataContainer.StaticDataContainer.GetObjectByGuid(this.BaseGuid));
-        return (ILogicMap) this.StaticInstance;
+        if (StaticInstance == null && BaseGuid > 0UL)
+          LoadStaticInstance(IStaticDataContainer.StaticDataContainer.GetObjectByGuid(BaseGuid));
+        return (ILogicMap) StaticInstance;
       }
     }
 
-    public override bool Empty => this.LogicMap == null && base.Empty;
+    public override bool Empty => LogicMap == null && base.Empty;
 
-    protected override System.Type NeedInstanceType => typeof (ILogicMap);
+    protected override Type NeedInstanceType => typeof (ILogicMap);
   }
 }

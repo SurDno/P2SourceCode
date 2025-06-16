@@ -2,7 +2,6 @@
 using FlowCanvas.Nodes;
 using NodeCanvas.Framework;
 using ParadoxNotion.Design;
-using UnityEngine;
 
 namespace Engine.Source.Blueprints.Effects
 {
@@ -13,25 +12,25 @@ namespace Engine.Source.Blueprints.Effects
     private ValueInput<float> intensityInput;
     [Port("Color")]
     private ValueInput<Color> colorInput;
-    private bool initialized = false;
+    private bool initialized;
     private int propertyId;
 
     public void Update()
     {
-      if (!this.initialized)
+      if (!initialized)
       {
-        this.propertyId = Shader.PropertyToID("_FocusEffectColor");
-        this.initialized = true;
+        propertyId = Shader.PropertyToID("_FocusEffectColor");
+        initialized = true;
       }
-      Shader.SetGlobalColor(this.propertyId, this.colorInput.value * this.intensityInput.value);
+      Shader.SetGlobalColor(propertyId, colorInput.value * intensityInput.value);
     }
 
     public override void OnDestroy()
     {
       base.OnDestroy();
-      if (!this.initialized)
+      if (!initialized)
         return;
-      Shader.SetGlobalColor(this.propertyId, Color.black);
+      Shader.SetGlobalColor(propertyId, Color.black);
     }
   }
 }

@@ -1,7 +1,7 @@
-﻿using Engine.Common.Components;
+﻿using System.Collections.Generic;
+using Engine.Common.Components;
 using Engine.Source.Components;
 using Inspectors;
-using System.Collections.Generic;
 
 namespace Engine.Source.Inventory
 {
@@ -26,14 +26,14 @@ namespace Engine.Source.Inventory
 
     public Intersect(bool isAllowed = false)
     {
-      this.IsIntersected = false;
-      this.IsAllowed = isAllowed;
-      this.Storage = (IStorageComponent) null;
-      this.Container = (IInventoryComponent) null;
-      this.Storable = (StorableComponent) null;
-      this.Cell = new IntCell();
-      this.Cells = new List<CellInfo>();
-      this.Storables = new HashSet<StorableComponent>();
+      IsIntersected = false;
+      IsAllowed = isAllowed;
+      Storage = null;
+      Container = null;
+      Storable = null;
+      Cell = new IntCell();
+      Cells = new List<CellInfo>();
+      Storables = new HashSet<StorableComponent>();
     }
   }
 }

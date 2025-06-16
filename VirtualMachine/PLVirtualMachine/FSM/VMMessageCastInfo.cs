@@ -10,8 +10,8 @@ namespace PLVirtualMachine.FSM
 
     public VMMessageCastInfo()
     {
-      this.message = (ContextVariable) null;
-      this.type = (VMType) null;
+      message = null;
+      type = null;
     }
 
     public VMMessageCastInfo(ContextVariable message, VMType type)
@@ -20,8 +20,8 @@ namespace PLVirtualMachine.FSM
       this.type = type;
     }
 
-    public ContextVariable Message => this.message;
+    public ContextVariable Message => message;
 
-    public VMType CastType => this.type;
+    public VMType CastType => type;
   }
 }

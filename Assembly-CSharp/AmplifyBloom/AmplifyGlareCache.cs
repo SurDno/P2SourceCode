@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEngine;
 
 namespace AmplifyBloom
 {
@@ -23,18 +22,18 @@ namespace AmplifyBloom
 
     public AmplifyGlareCache()
     {
-      this.Starlines = new AmplifyStarlineCache[4];
-      this.CromaticAberrationMat = new Vector4[4, 8];
+      Starlines = new AmplifyStarlineCache[4];
+      CromaticAberrationMat = new Vector4[4, 8];
       for (int index = 0; index < 4; ++index)
-        this.Starlines[index] = new AmplifyStarlineCache();
+        Starlines[index] = new AmplifyStarlineCache();
     }
 
     public void Destroy()
     {
       for (int index = 0; index < 4; ++index)
-        this.Starlines[index].Destroy();
-      this.Starlines = (AmplifyStarlineCache[]) null;
-      this.CromaticAberrationMat = (Vector4[,]) null;
+        Starlines[index].Destroy();
+      Starlines = null;
+      CromaticAberrationMat = (Vector4[,]) null;
     }
   }
 }

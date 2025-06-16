@@ -14,10 +14,10 @@ namespace Engine.Source.Blueprints
     protected override void RegisterPorts()
     {
       base.RegisterPorts();
-      this.entityInput = this.AddValueInput<IEntity>("Entity");
-      this.AddValueOutput<ILocationComponent>("Location", (ValueHandler<ILocationComponent>) (() =>
+      entityInput = AddValueInput<IEntity>("Entity");
+      AddValueOutput("Location", () =>
       {
-        IEntity entity = this.entityInput.value;
+        IEntity entity = entityInput.value;
         if (entity != null)
         {
           ILocationComponent component1 = entity.GetComponent<ILocationComponent>();
@@ -27,8 +27,8 @@ namespace Engine.Source.Blueprints
           if (component2 != null)
             return component2.LogicLocation;
         }
-        return (ILocationComponent) null;
-      }));
+        return null;
+      });
     }
   }
 }

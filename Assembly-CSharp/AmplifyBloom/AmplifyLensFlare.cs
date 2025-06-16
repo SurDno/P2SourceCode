@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEngine;
 
 namespace AmplifyBloom
 {
@@ -35,8 +34,8 @@ namespace AmplifyBloom
 
     public AmplifyLensFlare()
     {
-      this.m_lensGradient = new Gradient();
-      this.m_lensGradient.SetKeys(new GradientColorKey[5]
+      m_lensGradient = new Gradient();
+      m_lensGradient.SetKeys(new GradientColorKey[5]
       {
         new GradientColorKey(Color.white, 0.0f),
         new GradientColorKey(Color.blue, 0.25f),
@@ -55,164 +54,164 @@ namespace AmplifyBloom
 
     public void Destroy()
     {
-      if (!((UnityEngine.Object) this.m_lensFlareGradTexture != (UnityEngine.Object) null))
+      if (!((UnityEngine.Object) m_lensFlareGradTexture != (UnityEngine.Object) null))
         return;
-      UnityEngine.Object.DestroyImmediate((UnityEngine.Object) this.m_lensFlareGradTexture);
-      this.m_lensFlareGradTexture = (Texture2D) null;
+      UnityEngine.Object.DestroyImmediate((UnityEngine.Object) m_lensFlareGradTexture);
+      m_lensFlareGradTexture = (Texture2D) null;
     }
 
     public void CreateLUTexture()
     {
-      this.m_lensFlareGradTexture = new Texture2D(256, 1, TextureFormat.ARGB32, false);
-      this.m_lensFlareGradTexture.filterMode = FilterMode.Bilinear;
-      this.TextureFromGradient();
+      m_lensFlareGradTexture = new Texture2D(256, 1, TextureFormat.ARGB32, false);
+      m_lensFlareGradTexture.filterMode = FilterMode.Bilinear;
+      TextureFromGradient();
     }
 
     public RenderTexture ApplyFlare(Material material, RenderTexture source)
     {
       RenderTexture tempRenderTarget = AmplifyUtils.GetTempRenderTarget(source.width, source.height);
-      material.SetVector(AmplifyUtils.LensFlareGhostsParamsId, this.m_lensFlareGhostsParams);
-      material.SetTexture(AmplifyUtils.LensFlareLUTId, (Texture) this.m_lensFlareGradTexture);
-      material.SetVector(AmplifyUtils.LensFlareHaloParamsId, this.m_lensFlareHaloParams);
-      material.SetFloat(AmplifyUtils.LensFlareGhostChrDistortionId, this.m_lensFlareGhostChrDistortion);
-      material.SetFloat(AmplifyUtils.LensFlareHaloChrDistortionId, this.m_lensFlareHaloChrDistortion);
-      Graphics.Blit((Texture) source, tempRenderTarget, material, 3 + this.m_lensFlareGhostAmount);
+      material.SetVector(AmplifyUtils.LensFlareGhostsParamsId, m_lensFlareGhostsParams);
+      material.SetTexture(AmplifyUtils.LensFlareLUTId, (Texture) m_lensFlareGradTexture);
+      material.SetVector(AmplifyUtils.LensFlareHaloParamsId, m_lensFlareHaloParams);
+      material.SetFloat(AmplifyUtils.LensFlareGhostChrDistortionId, m_lensFlareGhostChrDistortion);
+      material.SetFloat(AmplifyUtils.LensFlareHaloChrDistortionId, m_lensFlareHaloChrDistortion);
+      Graphics.Blit((Texture) source, tempRenderTarget, material, 3 + m_lensFlareGhostAmount);
       return tempRenderTarget;
     }
 
     public void TextureFromGradient()
     {
       for (int index = 0; index < 256; ++index)
-        this.m_lensFlareGradColor[index] = this.m_lensGradient.Evaluate((float) index / (float) byte.MaxValue);
-      this.m_lensFlareGradTexture.SetPixels(this.m_lensFlareGradColor);
-      this.m_lensFlareGradTexture.Apply();
+        m_lensFlareGradColor[index] = m_lensGradient.Evaluate(index / (float) byte.MaxValue);
+      m_lensFlareGradTexture.SetPixels(m_lensFlareGradColor);
+      m_lensFlareGradTexture.Apply();
     }
 
     public bool ApplyLensFlare
     {
-      get => this.m_applyLensFlare;
-      set => this.m_applyLensFlare = value;
+      get => m_applyLensFlare;
+      set => m_applyLensFlare = value;
     }
 
     public float OverallIntensity
     {
-      get => this.m_overallIntensity;
+      get => m_overallIntensity;
       set
       {
-        this.m_overallIntensity = (double) value < 0.0 ? 0.0f : value;
-        this.m_lensFlareGhostsParams.x = value * this.m_normalizedGhostIntensity;
-        this.m_lensFlareHaloParams.x = value * this.m_normalizedHaloIntensity;
+        m_overallIntensity = value < 0.0 ? 0.0f : value;
+        m_lensFlareGhostsParams.x = value * m_normalizedGhostIntensity;
+        m_lensFlareHaloParams.x = value * m_normalizedHaloIntensity;
       }
     }
 
     public int LensFlareGhostAmount
     {
-      get => this.m_lensFlareGhostAmount;
-      set => this.m_lensFlareGhostAmount = value;
+      get => m_lensFlareGhostAmount;
+      set => m_lensFlareGhostAmount = value;
     }
 
     public Vector4 LensFlareGhostsParams
     {
-      get => this.m_lensFlareGhostsParams;
-      set => this.m_lensFlareGhostsParams = value;
+      get => m_lensFlareGhostsParams;
+      set => m_lensFlareGhostsParams = value;
     }
 
     public float LensFlareNormalizedGhostsIntensity
     {
-      get => this.m_normalizedGhostIntensity;
+      get => m_normalizedGhostIntensity;
       set
       {
-        this.m_normalizedGhostIntensity = (double) value < 0.0 ? 0.0f : value;
-        this.m_lensFlareGhostsParams.x = this.m_overallIntensity * this.m_normalizedGhostIntensity;
+        m_normalizedGhostIntensity = value < 0.0 ? 0.0f : value;
+        m_lensFlareGhostsParams.x = m_overallIntensity * m_normalizedGhostIntensity;
       }
     }
 
     public float LensFlareGhostsIntensity
     {
-      get => this.m_lensFlareGhostsParams.x;
-      set => this.m_lensFlareGhostsParams.x = (double) value < 0.0 ? 0.0f : value;
+      get => m_lensFlareGhostsParams.x;
+      set => m_lensFlareGhostsParams.x = value < 0.0 ? 0.0f : value;
     }
 
     public float LensFlareGhostsDispersal
     {
-      get => this.m_lensFlareGhostsParams.y;
-      set => this.m_lensFlareGhostsParams.y = value;
+      get => m_lensFlareGhostsParams.y;
+      set => m_lensFlareGhostsParams.y = value;
     }
 
     public float LensFlareGhostsPowerFactor
     {
-      get => this.m_lensFlareGhostsParams.z;
-      set => this.m_lensFlareGhostsParams.z = value;
+      get => m_lensFlareGhostsParams.z;
+      set => m_lensFlareGhostsParams.z = value;
     }
 
     public float LensFlareGhostsPowerFalloff
     {
-      get => this.m_lensFlareGhostsParams.w;
-      set => this.m_lensFlareGhostsParams.w = value;
+      get => m_lensFlareGhostsParams.w;
+      set => m_lensFlareGhostsParams.w = value;
     }
 
     public Gradient LensFlareGradient
     {
-      get => this.m_lensGradient;
-      set => this.m_lensGradient = value;
+      get => m_lensGradient;
+      set => m_lensGradient = value;
     }
 
     public Vector4 LensFlareHaloParams
     {
-      get => this.m_lensFlareHaloParams;
-      set => this.m_lensFlareHaloParams = value;
+      get => m_lensFlareHaloParams;
+      set => m_lensFlareHaloParams = value;
     }
 
     public float LensFlareNormalizedHaloIntensity
     {
-      get => this.m_normalizedHaloIntensity;
+      get => m_normalizedHaloIntensity;
       set
       {
-        this.m_normalizedHaloIntensity = (double) value < 0.0 ? 0.0f : value;
-        this.m_lensFlareHaloParams.x = this.m_overallIntensity * this.m_normalizedHaloIntensity;
+        m_normalizedHaloIntensity = value < 0.0 ? 0.0f : value;
+        m_lensFlareHaloParams.x = m_overallIntensity * m_normalizedHaloIntensity;
       }
     }
 
     public float LensFlareHaloIntensity
     {
-      get => this.m_lensFlareHaloParams.x;
-      set => this.m_lensFlareHaloParams.x = (double) value < 0.0 ? 0.0f : value;
+      get => m_lensFlareHaloParams.x;
+      set => m_lensFlareHaloParams.x = value < 0.0 ? 0.0f : value;
     }
 
     public float LensFlareHaloWidth
     {
-      get => this.m_lensFlareHaloParams.y;
-      set => this.m_lensFlareHaloParams.y = value;
+      get => m_lensFlareHaloParams.y;
+      set => m_lensFlareHaloParams.y = value;
     }
 
     public float LensFlareHaloPowerFactor
     {
-      get => this.m_lensFlareHaloParams.z;
-      set => this.m_lensFlareHaloParams.z = value;
+      get => m_lensFlareHaloParams.z;
+      set => m_lensFlareHaloParams.z = value;
     }
 
     public float LensFlareHaloPowerFalloff
     {
-      get => this.m_lensFlareHaloParams.w;
-      set => this.m_lensFlareHaloParams.w = value;
+      get => m_lensFlareHaloParams.w;
+      set => m_lensFlareHaloParams.w = value;
     }
 
     public float LensFlareGhostChrDistortion
     {
-      get => this.m_lensFlareGhostChrDistortion;
-      set => this.m_lensFlareGhostChrDistortion = value;
+      get => m_lensFlareGhostChrDistortion;
+      set => m_lensFlareGhostChrDistortion = value;
     }
 
     public float LensFlareHaloChrDistortion
     {
-      get => this.m_lensFlareHaloChrDistortion;
-      set => this.m_lensFlareHaloChrDistortion = value;
+      get => m_lensFlareHaloChrDistortion;
+      set => m_lensFlareHaloChrDistortion = value;
     }
 
     public int LensFlareGaussianBlurAmount
     {
-      get => this.m_lensFlareGaussianBlurAmount;
-      set => this.m_lensFlareGaussianBlurAmount = value;
+      get => m_lensFlareGaussianBlurAmount;
+      set => m_lensFlareGaussianBlurAmount = value;
     }
   }
 }

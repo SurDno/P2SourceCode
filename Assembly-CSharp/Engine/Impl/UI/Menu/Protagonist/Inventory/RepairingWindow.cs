@@ -1,4 +1,6 @@
-﻿using Engine.Common;
+﻿using System;
+using System.Collections.Generic;
+using Engine.Common;
 using Engine.Common.Components;
 using Engine.Common.Components.Parameters;
 using Engine.Common.Components.Storable;
@@ -12,13 +14,6 @@ using Engine.Source.UI;
 using Engine.Source.UI.Controls.BoolViews;
 using InputServices;
 using Inspectors;
-using System;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.Events;
-using UnityEngine.EventSystems;
-using UnityEngine.Serialization;
-using UnityEngine.UI;
 
 namespace Engine.Impl.UI.Menu.Protagonist.Inventory
 {
@@ -47,56 +42,56 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
     private HideableView noNeedForRepairMessage;
     [SerializeField]
     private HideableView notEnoughResourcesMessage;
-    private IEntity target = (IEntity) null;
-    private RepairableComponent targetRepairable = (RepairableComponent) null;
-    private IParameter<float> durabilityParameter = (IParameter<float>) null;
-    private RepairerComponent targetRepairer = (RepairerComponent) null;
+    private IEntity target = null;
+    private RepairableComponent targetRepairable = null;
+    private IParameter<float> durabilityParameter = null;
+    private RepairerComponent targetRepairer = null;
     private bool targetIsHydrant;
-    private bool RepairingVisible = false;
+    private bool RepairingVisible;
     [SerializeField]
     private GameObject _repairingHint;
-    private StorableUI holdableStorable = (StorableUI) null;
+    private StorableUI holdableStorable = null;
 
     [Inspected]
     private IParameter<float> DurabilityParameter
     {
-      get => this.durabilityParameter;
+      get => durabilityParameter;
       set
       {
-        if (this.durabilityParameter == value)
+        if (durabilityParameter == value)
           return;
-        if (this.durabilityParameter != null)
-          this.durabilityParameter.RemoveListener((IChangeParameterListener) this);
-        this.durabilityParameter = value;
-        if (this.durabilityParameter != null)
-          this.durabilityParameter.AddListener((IChangeParameterListener) this);
-        this.OnInvalidate();
+        if (durabilityParameter != null)
+          durabilityParameter.RemoveListener(this);
+        durabilityParameter = value;
+        if (durabilityParameter != null)
+          durabilityParameter.AddListener(this);
+        OnInvalidate();
       }
     }
 
     [Inspected]
     public IEntity Target
     {
-      get => this.target;
+      get => target;
       set
       {
-        if (this.target == value)
+        if (target == value)
           return;
-        this.target = value;
-        if (this.target == null)
+        target = value;
+        if (target == null)
         {
-          this.TargetRepairer = (RepairerComponent) null;
-          this.TargetRepairable = (RepairableComponent) null;
+          TargetRepairer = null;
+          TargetRepairable = null;
         }
         else
         {
-          this.TargetRepairer = this.target.GetComponent<RepairerComponent>();
-          if (this.TargetRepairer == null)
-            this.TargetRepairable = this.target.GetComponent<RepairableComponent>();
-          TagsComponent component = this.target.GetComponent<TagsComponent>();
+          TargetRepairer = target.GetComponent<RepairerComponent>();
+          if (TargetRepairer == null)
+            TargetRepairable = target.GetComponent<RepairableComponent>();
+          TagsComponent component = target.GetComponent<TagsComponent>();
           if (component == null)
             return;
-          this.targetIsHydrant = ((List<EntityTagEnum>) component.Tags).Contains(EntityTagEnum.Water_Supply_Hydrant);
+          targetIsHydrant = ((List<EntityTagEnum>) component.Tags).Contains(EntityTagEnum.Water_Supply_Hydrant);
         }
       }
     }
@@ -104,28 +99,28 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
     [Inspected]
     private RepairableComponent TargetRepairable
     {
-      get => this.targetRepairable;
+      get => targetRepairable;
       set
       {
-        if (this.targetRepairable == value)
+        if (targetRepairable == value)
           return;
-        this.targetRepairable = value;
-        if (this.targetRepairable == null)
+        targetRepairable = value;
+        if (targetRepairable == null)
         {
-          this.nonItemImage.gameObject.SetActive(false);
-          this.nonItemImage.sprite = (Sprite) null;
-          this.selectedEntityView.Value = (IEntity) null;
-          this.DurabilityParameter = (IParameter<float>) null;
+          nonItemImage.gameObject.SetActive(false);
+          nonItemImage.sprite = (Sprite) null;
+          selectedEntityView.Value = null;
+          DurabilityParameter = null;
         }
         else
         {
-          if (this.TargetRepairer == null)
+          if (TargetRepairer == null)
           {
-            this.nonItemImage.sprite = this.targetRepairable.Settings?.NonItemImage;
-            this.nonItemImage.gameObject.SetActive((UnityEngine.Object) this.nonItemImage.sprite != (UnityEngine.Object) null);
+            nonItemImage.sprite = targetRepairable.Settings?.NonItemImage;
+            nonItemImage.gameObject.SetActive((UnityEngine.Object) nonItemImage.sprite != (UnityEngine.Object) null);
           }
-          this.selectedEntityView.Value = this.targetRepairable.Owner;
-          this.DurabilityParameter = this.targetRepairable.GetComponent<ParametersComponent>()?.GetByName<float>(ParameterNameEnum.Durability);
+          selectedEntityView.Value = targetRepairable.Owner;
+          DurabilityParameter = targetRepairable.GetComponent<ParametersComponent>()?.GetByName<float>(ParameterNameEnum.Durability);
         }
       }
     }
@@ -133,38 +128,38 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
     [Inspected]
     private RepairerComponent TargetRepairer
     {
-      get => this.targetRepairer;
+      get => targetRepairer;
       set
       {
-        if (this.targetRepairer == value)
+        if (targetRepairer == value)
           return;
-        this.targetRepairer = value;
-        this.itemSelector.Groups.Clear();
-        if (this.targetRepairer != null)
+        targetRepairer = value;
+        itemSelector.Groups.Clear();
+        if (targetRepairer != null)
         {
-          foreach (StorableGroup repairableGroup in this.targetRepairer.RepairableGroups)
-            this.itemSelector.Groups.Add(repairableGroup);
-          this.itemSelector.Storage = this.Actor;
-          this.itemSelector.gameObject.SetActive(true);
+          foreach (StorableGroup repairableGroup in targetRepairer.RepairableGroups)
+            itemSelector.Groups.Add(repairableGroup);
+          itemSelector.Storage = Actor;
+          itemSelector.gameObject.SetActive(true);
         }
         else
         {
-          this.itemSelector.Storage = (IStorageComponent) null;
-          this.itemSelector.gameObject.SetActive(false);
+          itemSelector.Storage = null;
+          itemSelector.gameObject.SetActive(false);
         }
       }
     }
 
     private bool NeedRepair()
     {
-      return (double) this.targetRepairable.TargetLevel().MaxDurability != (double) this.DurabilityParameter.Value;
+      return targetRepairable.TargetLevel().MaxDurability != (double) DurabilityParameter.Value;
     }
 
     private bool HaveEnoughResources()
     {
-      foreach (RepairableCostItem repairableCostItem in this.targetRepairable.TargetLevel().Сost)
+      foreach (RepairableCostItem repairableCostItem in targetRepairable.TargetLevel().Сost)
       {
-        if (repairableCostItem.Template.Value != null && StorageUtility.GetItemAmount(this.Actor.Items, repairableCostItem.Template.Value) < repairableCostItem.Count)
+        if (repairableCostItem.Template.Value != null && StorageUtility.GetItemAmount(Actor.Items, repairableCostItem.Template.Value) < repairableCostItem.Count)
           return false;
       }
       return true;
@@ -172,50 +167,50 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
 
     public override void Initialize()
     {
-      this.RegisterLayer<IRepairingWindow>((IRepairingWindow) this);
-      this.repairButton.onClick.AddListener(new UnityAction(this.Repair));
-      this.itemSelector.ValidateItemEvent += new Func<ItemSelector, IStorableComponent, bool>(this.SelectorItemValid);
-      this.itemSelector.ChangeItemEvent += new Action<ItemSelector, IStorableComponent, IStorableComponent>(this.OnSelectorItemChange);
+      RegisterLayer((IRepairingWindow) this);
+      repairButton.onClick.AddListener(new UnityAction(Repair));
+      itemSelector.ValidateItemEvent += SelectorItemValid;
+      itemSelector.ChangeItemEvent += OnSelectorItemChange;
       base.Initialize();
     }
 
-    public override System.Type GetWindowType() => typeof (IRepairingWindow);
+    public override Type GetWindowType() => typeof (IRepairingWindow);
 
     protected override bool ItemIsInteresting(IStorableComponent item)
     {
-      return this.targetRepairer != null && item.GetComponent<RepairableComponent>() != null && this.targetRepairer.CanRepairItem(item);
+      return targetRepairer != null && item.GetComponent<RepairableComponent>() != null && targetRepairer.CanRepairItem(item);
     }
 
     protected override bool ItemIsSelected(IStorableComponent storable)
     {
-      return storable == this.itemSelector.Item;
+      return storable == itemSelector.Item;
     }
 
     protected override void OnEnable()
     {
       base.OnEnable();
-      this.CurrentMode = SelectableInventoryWindow.Modes.None;
-      this.CurrentSelector = SelectableInventoryWindow.SelectedSelector.None;
+      CurrentMode = Modes.None;
+      CurrentSelector = SelectedSelector.None;
       ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.LStickLeft, new GameActionHandle(((SelectableInventoryWindow) this).ConsoleController));
       ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.LStickRight, new GameActionHandle(((SelectableInventoryWindow) this).ConsoleController));
-      this.SelectorButtons = new List<Button>((IEnumerable<Button>) this.itemSelector.GetComponentsInChildren<Button>());
-      if (this.itemSelector.Item == null)
+      SelectorButtons = new List<Button>((IEnumerable<Button>) itemSelector.GetComponentsInChildren<Button>());
+      if (itemSelector.Item == null)
         return;
-      this.holdableStorable = this.GetStorableByComponent(this.itemSelector.Item);
+      holdableStorable = GetStorableByComponent(itemSelector.Item);
     }
 
     protected override void OnDisable()
     {
-      this.Target = (IEntity) null;
+      Target = null;
       ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.LStickLeft, new GameActionHandle(((SelectableInventoryWindow) this).ConsoleController));
       ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.LStickRight, new GameActionHandle(((SelectableInventoryWindow) this).ConsoleController));
-      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Submit, new GameActionHandle(this.RepairController));
-      this.UnsubscribeNavigation();
-      this.SelectorButtons.Clear();
-      if ((UnityEngine.Object) this.holdableStorable != (UnityEngine.Object) null)
+      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Submit, RepairController);
+      UnsubscribeNavigation();
+      SelectorButtons.Clear();
+      if ((UnityEngine.Object) holdableStorable != (UnityEngine.Object) null)
       {
-        this.holdableStorable.HoldSelected(false);
-        this.holdableStorable = (StorableUI) null;
+        holdableStorable.HoldSelected(false);
+        holdableStorable = null;
       }
       base.OnDisable();
     }
@@ -224,8 +219,8 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
     {
       if (!InputService.Instance.JoystickUsed || !(type == GameActionType.Submit & down))
         return false;
-      this.repairButton.onClick?.Invoke();
-      this.HideInfoWindow();
+      repairButton.onClick?.Invoke();
+      HideInfoWindow();
       return true;
     }
 
@@ -233,83 +228,83 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
     {
       if (!InputService.Instance.JoystickUsed || !down)
         return false;
-      if ((UnityEngine.Object) this.holdableStorable != (UnityEngine.Object) null)
+      if ((UnityEngine.Object) holdableStorable != (UnityEngine.Object) null)
       {
-        this.holdableStorable.HoldSelected(false);
-        this.holdableStorable = (StorableUI) null;
+        holdableStorable.HoldSelected(false);
+        holdableStorable = null;
       }
       if (type == GameActionType.LStickLeft & down)
       {
-        ExecuteEvents.Execute<ISubmitHandler>(this.SelectorButtons[0].gameObject, (BaseEventData) new PointerEventData(EventSystem.current), ExecuteEvents.submitHandler);
-        this.OnInvalidate();
+        ExecuteEvents.Execute<ISubmitHandler>(SelectorButtons[0].gameObject, (BaseEventData) new PointerEventData(EventSystem.current), ExecuteEvents.submitHandler);
+        OnInvalidate();
         return true;
       }
       if (!(type == GameActionType.LStickRight & down))
         return false;
-      ExecuteEvents.Execute<ISubmitHandler>(this.SelectorButtons[1].gameObject, (BaseEventData) new PointerEventData(EventSystem.current), ExecuteEvents.submitHandler);
-      this.OnInvalidate();
+      ExecuteEvents.Execute<ISubmitHandler>(SelectorButtons[1].gameObject, (BaseEventData) new PointerEventData(EventSystem.current), ExecuteEvents.submitHandler);
+      OnInvalidate();
       return true;
     }
 
     protected override void OnJoystick(bool joystick)
     {
       base.OnJoystick(joystick);
-      if (this.RepairingVisible)
-        this._repairingHint.SetActive(joystick);
-      this.controlPanel.SetActive(this.itemSelector.gameObject.activeInHierarchy & joystick);
-      if (!((UnityEngine.Object) this.holdableStorable != (UnityEngine.Object) null))
+      if (RepairingVisible)
+        _repairingHint.SetActive(joystick);
+      controlPanel.SetActive(itemSelector.gameObject.activeInHierarchy & joystick);
+      if (!((UnityEngine.Object) holdableStorable != (UnityEngine.Object) null))
         return;
-      this.holdableStorable.HoldSelected(joystick);
+      holdableStorable.HoldSelected(joystick);
     }
 
     protected override void OnInvalidate()
     {
       base.OnInvalidate();
-      this.RedrawCost();
-      if (this.targetRepairable == null)
+      RedrawCost();
+      if (targetRepairable == null)
       {
-        this.noNeedForRepairMessage.Visible = false;
-        this.notEnoughResourcesMessage.Visible = false;
-        HideableViewUtility.SetVisible(this.repairButton.gameObject, false);
-        this._repairingHint.SetActive(false);
-        this.RepairingVisible = false;
-        ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Submit, new GameActionHandle(this.RepairController));
+        noNeedForRepairMessage.Visible = false;
+        notEnoughResourcesMessage.Visible = false;
+        HideableViewUtility.SetVisible(repairButton.gameObject, false);
+        _repairingHint.SetActive(false);
+        RepairingVisible = false;
+        ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Submit, RepairController);
       }
       else
       {
-        bool flag1 = !this.NeedRepair();
-        this.noNeedForRepairMessage.Visible = flag1;
+        bool flag1 = !NeedRepair();
+        noNeedForRepairMessage.Visible = flag1;
         if (flag1)
         {
-          this.notEnoughResourcesMessage.Visible = false;
-          HideableViewUtility.SetVisible(this.repairButton.gameObject, false);
-          this._repairingHint.SetActive(false);
-          this.RepairingVisible = false;
-          ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Submit, new GameActionHandle(this.RepairController));
+          notEnoughResourcesMessage.Visible = false;
+          HideableViewUtility.SetVisible(repairButton.gameObject, false);
+          _repairingHint.SetActive(false);
+          RepairingVisible = false;
+          ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Submit, RepairController);
         }
         else
         {
-          bool flag2 = !this.HaveEnoughResources();
-          this.notEnoughResourcesMessage.Visible = flag2;
-          this.RepairingVisible = !flag2;
-          HideableViewUtility.SetVisible(this.repairButton.gameObject, this.RepairingVisible);
-          this._repairingHint.SetActive(this.RepairingVisible);
-          if (this.RepairingVisible)
-            ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Submit, new GameActionHandle(this.RepairController));
+          bool flag2 = !HaveEnoughResources();
+          notEnoughResourcesMessage.Visible = flag2;
+          RepairingVisible = !flag2;
+          HideableViewUtility.SetVisible(repairButton.gameObject, RepairingVisible);
+          _repairingHint.SetActive(RepairingVisible);
+          if (RepairingVisible)
+            ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Submit, RepairController);
           else
-            ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Submit, new GameActionHandle(this.RepairController));
+            ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Submit, RepairController);
         }
       }
       if (!InputService.Instance.JoystickUsed)
         return;
-      this.HideInfoWindow();
+      HideInfoWindow();
     }
 
     protected override void OnItemClick(IStorableComponent storable)
     {
-      if (this.ItemIsSelected(storable))
+      if (ItemIsSelected(storable))
         return;
-      this.itemSelector.Item = storable;
+      itemSelector.Item = storable;
     }
 
     private void OnSelectorItemChange(
@@ -321,42 +316,42 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
         StorableComponentUtility.PlayPutSound(prevIngredient);
       if (newIngredient != null)
         StorableComponentUtility.PlayTakeSound(newIngredient);
-      this.TargetRepairable = newIngredient != null ? newIngredient.GetComponent<RepairableComponent>() : (RepairableComponent) null;
+      TargetRepairable = newIngredient != null ? newIngredient.GetComponent<RepairableComponent>() : null;
     }
 
     private void RedrawCost()
     {
-      if ((UnityEngine.Object) this.costView == (UnityEngine.Object) null)
+      if ((UnityEngine.Object) costView == (UnityEngine.Object) null)
         return;
-      RepairableLevel repairableLevel = this.targetRepairable?.TargetLevel();
+      RepairableLevel repairableLevel = targetRepairable?.TargetLevel();
       if (repairableLevel != null)
       {
-        this.costView.Actor = this.Actor;
-        this.costView.Cost = repairableLevel.Сost;
+        costView.Actor = Actor;
+        costView.Cost = repairableLevel.Сost;
       }
       else
       {
-        this.costView.Actor = (IStorageComponent) null;
-        this.costView.Cost = (List<RepairableCostItem>) null;
+        costView.Actor = null;
+        costView.Cost = null;
       }
     }
 
     private void Repair()
     {
-      if (!this.HaveEnoughResources())
+      if (!HaveEnoughResources())
         return;
-      RepairableLevel repairableLevel = this.targetRepairable.TargetLevel();
+      RepairableLevel repairableLevel = targetRepairable.TargetLevel();
       foreach (RepairableCostItem repairableCostItem in repairableLevel.Сost)
       {
         IEntity removingItem = repairableCostItem.Template.Value;
         if (removingItem != null)
-          this.RemoveItemsAmount(this.Actor, removingItem, repairableCostItem.Count);
+          RemoveItemsAmount(Actor, removingItem, repairableCostItem.Count);
       }
-      this.DurabilityParameter.Value = repairableLevel.MaxDurability;
-      this.PlayAudio(this.targetRepairable.Settings?.RepairSound);
-      if (!this.targetIsHydrant)
+      DurabilityParameter.Value = repairableLevel.MaxDurability;
+      PlayAudio(targetRepairable.Settings?.RepairSound);
+      if (!targetIsHydrant)
         return;
-      this.Actor.GetComponent<PlayerControllerComponent>().ComputeRepairHydrant();
+      Actor.GetComponent<PlayerControllerComponent>().ComputeRepairHydrant();
     }
 
     private bool SelectorItemValid(ItemSelector itemSelector, IStorableComponent item)
@@ -364,6 +359,6 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       return item.GetComponent<RepairableComponent>() != null;
     }
 
-    public void OnParameterChanged(IParameter parameter) => this.OnInvalidate();
+    public void OnParameterChanged(IParameter parameter) => OnInvalidate();
   }
 }

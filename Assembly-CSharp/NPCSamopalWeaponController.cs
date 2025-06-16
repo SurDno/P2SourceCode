@@ -1,7 +1,6 @@
 ﻿using Engine.Behaviours.Components;
 using Engine.Behaviours.Engines.Controllers;
 using Engine.Common.Components.AttackerPlayer;
-using UnityEngine;
 
 public class NPCSamopalWeaponController : NPCWeaponControllerBase
 {
@@ -15,99 +14,99 @@ public class NPCSamopalWeaponController : NPCWeaponControllerBase
     base.Initialise(service);
     if ((Object) service.SamopalParent != (Object) null)
     {
-      if ((Object) this.samopal == (Object) null)
-        this.samopal = Object.Instantiate<GameObject>(service.SamopalPrefab, service.SamopalParent);
-      if ((Object) this.samopal != (Object) null)
+      if ((Object) samopal == (Object) null)
+        samopal = Object.Instantiate<GameObject>(service.SamopalPrefab, service.SamopalParent);
+      if ((Object) samopal != (Object) null)
       {
-        this.samopal.SetActive(false);
-        this.samopalObject = this.samopal.GetComponentInChildren<SamopalObject>();
-        this.IndoorChanged();
-        service.pivot.AimTransform = this.samopalObject.AimPoint;
-        service.pivot.ShootStart = this.samopal;
+        samopal.SetActive(false);
+        samopalObject = samopal.GetComponentInChildren<SamopalObject>();
+        IndoorChanged();
+        service.pivot.AimTransform = samopalObject.AimPoint;
+        service.pivot.ShootStart = samopal;
       }
     }
-    this.owner = service.gameObject.GetComponent<NPCEnemy>();
-    this.ikController = service.gameObject.GetComponent<IKController>();
+    owner = service.gameObject.GetComponent<NPCEnemy>();
+    ikController = service.gameObject.GetComponent<IKController>();
   }
 
   public override void IndoorChanged()
   {
-    if (!((Object) this.samopalObject != (Object) null) || !((Object) this.service != (Object) null))
+    if (!((Object) samopalObject != (Object) null) || !((Object) service != (Object) null))
       return;
-    this.samopalObject.SetIndoor(this.service.IsIndoor);
+    samopalObject.SetIndoor(service.IsIndoor);
   }
 
   public override void Shutdown()
   {
-    if ((Object) this.samopal != (Object) null)
-      this.samopal.SetActive(false);
-    this.Drop();
+    if ((Object) samopal != (Object) null)
+      samopal.SetActive(false);
+    Drop();
     base.Shutdown();
   }
 
   protected override void ShowWeapon(bool show)
   {
     base.ShowWeapon(show);
-    if (show && (Object) this.service.SamopalPrefab == (Object) null)
+    if (show && (Object) service.SamopalPrefab == (Object) null)
     {
-      Debug.LogError((object) (this.owner.gameObject.ToString() + " doesn`t support samopal!"));
+      Debug.LogError((object) (owner.gameObject.ToString() + " doesn`t support samopal!"));
     }
     else
     {
-      if (show && (Object) this.samopal == (Object) null)
-        this.samopal = Object.Instantiate<GameObject>(this.service.SamopalPrefab, this.service.SamopalParent);
-      if (!((Object) this.samopal != (Object) null))
+      if (show && (Object) samopal == (Object) null)
+        samopal = Object.Instantiate<GameObject>(service.SamopalPrefab, service.SamopalParent);
+      if (!((Object) samopal != (Object) null))
         return;
-      this.samopal.SetActive(show);
+      samopal.SetActive(show);
     }
   }
 
   protected override void GetLayersIndices()
   {
-    if (!((Object) this.animator != (Object) null))
+    if (!((Object) animator != (Object) null))
       return;
-    this.walkLayerIndex = this.animator.GetLayerIndex("Fight Gun Walk Layer");
-    this.attackLayerIndex = this.animator.GetLayerIndex("Fight Gun Attack Layer");
-    this.reactionLayerIndex = this.animator.GetLayerIndex("Fight Empty Reaction Layer");
+    walkLayerIndex = animator.GetLayerIndex("Fight Gun Walk Layer");
+    attackLayerIndex = animator.GetLayerIndex("Fight Gun Attack Layer");
+    reactionLayerIndex = animator.GetLayerIndex("Fight Empty Reaction Layer");
   }
 
   public override void OnAnimatorEvent(string data)
   {
     if (data.StartsWith("Samopal.StartAiming"))
     {
-      if ((Object) this.ikController != (Object) null && (Object) this.owner.Enemy != (Object) null)
+      if ((Object) ikController != (Object) null && (Object) owner.Enemy != (Object) null)
       {
-        this.ikController.WeaponTarget = this.owner.Enemy.transform;
-        this.ikController.WeaponAimTo = Pivot.AimWeaponType.Chest;
+        ikController.WeaponTarget = owner.Enemy.transform;
+        ikController.WeaponAimTo = Pivot.AimWeaponType.Chest;
       }
-      this.owner.SetAiming(true);
+      owner.SetAiming(true);
     }
     if (data.StartsWith("Samopal.Fire"))
     {
-      if ((Object) this.samopal != (Object) null)
-        this.samopal.SetActive(true);
-      if ((Object) this.samopalObject != (Object) null)
-        this.samopalObject.Shoot();
+      if ((Object) samopal != (Object) null)
+        samopal.SetActive(true);
+      if ((Object) samopalObject != (Object) null)
+        samopalObject.Shoot();
     }
     if (data.StartsWith("Samopal.Hit"))
     {
-      if ((Object) this.ikController != (Object) null)
-        this.ikController.WeaponTarget = (Transform) null;
-      this.owner.SetAiming(false);
+      if ((Object) ikController != (Object) null)
+        ikController.WeaponTarget = (Transform) null;
+      owner.SetAiming(false);
     }
     if (data.StartsWith("Samopal.Drop"))
-      this.Shutdown();
+      Shutdown();
     if (data.StartsWith("Samopal.WeaponOn"))
-      this.ShowWeapon(true);
+      ShowWeapon(true);
     base.OnAnimatorEvent(data);
   }
 
   public override void PunchReaction(ReactionType reactionType)
   {
-    if ((Object) this.ikController != (Object) null)
-      this.ikController.WeaponTarget = (Transform) null;
-    this.owner.SetAiming(false);
-    this.TriggerAction(WeaponActionEnum.ForcedSamopalDrop);
-    this.Shutdown();
+    if ((Object) ikController != (Object) null)
+      ikController.WeaponTarget = (Transform) null;
+    owner.SetAiming(false);
+    TriggerAction(WeaponActionEnum.ForcedSamopalDrop);
+    Shutdown();
   }
 }

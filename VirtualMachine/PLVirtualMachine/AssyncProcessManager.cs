@@ -1,6 +1,6 @@
-﻿using PLVirtualMachine.Dynamic;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using PLVirtualMachine.Dynamic;
 
 namespace PLVirtualMachine
 {
@@ -10,23 +10,23 @@ namespace PLVirtualMachine
 
     public static void RegistrAssyncUpdateableObject(IAssyncUpdateable updateableObj)
     {
-      AssyncProcessManager.updateableObjectsList.Add(updateableObj);
+      updateableObjectsList.Add(updateableObj);
     }
 
     public static void Update(TimeSpan delta)
     {
-      for (int index = 0; index < AssyncProcessManager.updateableObjectsList.Count; ++index)
+      for (int index = 0; index < updateableObjectsList.Count; ++index)
       {
-        if (AssyncProcessManager.updateableObjectsList[index].Active)
-          AssyncProcessManager.updateableObjectsList[index].Update(delta);
+        if (updateableObjectsList[index].Active)
+          updateableObjectsList[index].Update(delta);
       }
     }
 
     public static void Clear()
     {
-      for (int index = 0; index < AssyncProcessManager.updateableObjectsList.Count; ++index)
-        AssyncProcessManager.updateableObjectsList[index].Clear();
-      AssyncProcessManager.updateableObjectsList.Clear();
+      for (int index = 0; index < updateableObjectsList.Count; ++index)
+        updateableObjectsList[index].Clear();
+      updateableObjectsList.Clear();
     }
   }
 }

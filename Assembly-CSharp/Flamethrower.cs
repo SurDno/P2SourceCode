@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using UnityEngine;
 
 public class Flamethrower : MonoBehaviour
 {
@@ -11,7 +10,7 @@ public class Flamethrower : MonoBehaviour
   public AudioClip EndClip = (AudioClip) null;
   [Header("State")]
   public bool Fire = false;
-  private bool currentFire = false;
+  private bool currentFire;
   private ParticleSystem[] particleSystems;
   private HashSet<IFlamable> movableSet0;
   private HashSet<IFlamable> movableSet1;
@@ -22,32 +21,32 @@ public class Flamethrower : MonoBehaviour
 
   public HashSet<IFlamable> MovablesHit
   {
-    get => this.movableSetSwapped ? this.movableSet1 : this.movableSet0;
+    get => movableSetSwapped ? movableSet1 : movableSet0;
   }
 
   private HashSet<IFlamable> BackMovableSet
   {
-    get => this.movableSetSwapped ? this.movableSet0 : this.movableSet1;
+    get => movableSetSwapped ? movableSet0 : movableSet1;
   }
 
   private void Awake()
   {
-    this.particleSystems = this.GetComponentsInChildren<ParticleSystem>();
-    for (int index = 0; index < this.particleSystems.Length; ++index)
+    particleSystems = this.GetComponentsInChildren<ParticleSystem>();
+    for (int index = 0; index < particleSystems.Length; ++index)
     {
-      ParticleSystem.CollisionModule collision = this.particleSystems[index].collision;
+      ParticleSystem.CollisionModule collision = particleSystems[index].collision;
       if (collision.enabled && collision.sendCollisionMessages)
       {
         ref ParticleSystem.CollisionModule local = ref collision;
         local.collidesWith = (LayerMask) ((int) local.collidesWith | (int) ScriptableObjectInstance<GameSettingsData>.Instance.FlamethrowerLayer);
       }
     }
-    this.movableSet0 = new HashSet<IFlamable>();
-    this.movableSet1 = new HashSet<IFlamable>();
-    this.movableSetSwapped = false;
-    this.movableSetSwapTime = Time.time;
-    this.audioLoopDelay = (Object) this.StartClip != (Object) null ? this.StartClip.length : 0.0f;
-    this.TurnParticles(this.currentFire);
+    movableSet0 = new HashSet<IFlamable>();
+    movableSet1 = new HashSet<IFlamable>();
+    movableSetSwapped = false;
+    movableSetSwapTime = Time.time;
+    audioLoopDelay = (Object) StartClip != (Object) null ? StartClip.length : 0.0f;
+    TurnParticles(currentFire);
   }
 
   private void OnParticleCollision(GameObject go)
@@ -56,54 +55,54 @@ public class Flamethrower : MonoBehaviour
       return;
     IFlamable componentInParent = go.GetComponentInParent<IFlamable>();
     if (componentInParent != null)
-      this.BackMovableSet.Add(componentInParent);
+      BackMovableSet.Add(componentInParent);
   }
 
   private void TurnAudio(bool enabled)
   {
-    if (!((Object) this.AudioSource != (Object) null))
+    if (!((Object) AudioSource != (Object) null))
       return;
     if (enabled)
     {
-      this.AudioSource.PlayOneShot(this.StartClip);
-      this.AudioSource.PlayDelayed(this.audioLoopDelay);
+      AudioSource.PlayOneShot(StartClip);
+      AudioSource.PlayDelayed(audioLoopDelay);
     }
     else
     {
-      this.AudioSource.Stop();
-      this.AudioSource.PlayOneShot(this.EndClip);
+      AudioSource.Stop();
+      AudioSource.PlayOneShot(EndClip);
     }
   }
 
   private void TurnParticles(bool enabled)
   {
-    for (int index = 0; index < this.particleSystems.Length; ++index)
-      this.particleSystems[index].emission.enabled = enabled;
+    for (int index = 0; index < particleSystems.Length; ++index)
+      particleSystems[index].emission.enabled = enabled;
   }
 
   public void SetIndoor(bool indoor)
   {
-    this.AudioSource.outputAudioMixerGroup = indoor ? ScriptableObjectInstance<GameSettingsData>.Instance.NpcWeaponIndoorMixer : ScriptableObjectInstance<GameSettingsData>.Instance.NpcWeaponOutdoorMixer;
+    AudioSource.outputAudioMixerGroup = indoor ? ScriptableObjectInstance<GameSettingsData>.Instance.NpcWeaponIndoorMixer : ScriptableObjectInstance<GameSettingsData>.Instance.NpcWeaponOutdoorMixer;
   }
 
   private void Update()
   {
-    if (this.currentFire != this.Fire)
+    if (currentFire != Fire)
     {
-      this.currentFire = this.Fire;
-      this.TurnParticles(this.currentFire);
-      this.TurnAudio(this.currentFire);
+      currentFire = Fire;
+      TurnParticles(currentFire);
+      TurnAudio(currentFire);
     }
-    this.UpdateMovableSets(Time.time);
+    UpdateMovableSets(Time.time);
   }
 
   private void UpdateMovableSets(float time)
   {
-    if ((double) time < (double) this.movableSetSwapTime)
+    if (time < (double) movableSetSwapTime)
       return;
-    this.movableSetSwapped = !this.movableSetSwapped;
-    this.targetCount = this.MovablesHit.Count;
-    this.BackMovableSet.Clear();
-    this.movableSetSwapTime = time + this.EventBufferingTime;
+    movableSetSwapped = !movableSetSwapped;
+    targetCount = MovablesHit.Count;
+    BackMovableSet.Clear();
+    movableSetSwapTime = time + EventBufferingTime;
   }
 }

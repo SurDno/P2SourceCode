@@ -8,24 +8,24 @@ namespace ParadoxNotion.Serialization.FullSerializer.Internal
     private T _value;
     public static fsOption<T> Empty;
 
-    public bool HasValue => this._hasValue;
+    public bool HasValue => _hasValue;
 
-    public bool IsEmpty => !this._hasValue;
+    public bool IsEmpty => !_hasValue;
 
     public T Value
     {
       get
       {
-        if (this.IsEmpty)
+        if (IsEmpty)
           throw new InvalidOperationException("fsOption is empty");
-        return this._value;
+        return _value;
       }
     }
 
     public fsOption(T value)
     {
-      this._hasValue = true;
-      this._value = value;
+      _hasValue = true;
+      _value = value;
     }
   }
 }

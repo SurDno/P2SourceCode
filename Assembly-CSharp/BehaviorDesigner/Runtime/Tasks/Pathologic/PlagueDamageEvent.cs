@@ -1,11 +1,11 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons;
 using Engine.Common.Commons.Converters;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Scripts.Tools.Serializations.Converters;
-using UnityEngine;
 
 namespace BehaviorDesigner.Runtime.Tasks.Pathologic
 {
@@ -15,65 +15,65 @@ namespace BehaviorDesigner.Runtime.Tasks.Pathologic
   [Factory]
   [GeneratePartial(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
   [FactoryProxy(typeof (PlagueDamageEvent))]
-  public class PlagueDamageEvent : BehaviorDesigner.Runtime.Tasks.Action, IStub, ISerializeDataWrite, ISerializeDataRead
+  public class PlagueDamageEvent : Action, IStub, ISerializeDataWrite, ISerializeDataRead
   {
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [SerializeField]
     public SharedTransform WhoWillBeDamaged;
-    [BehaviorDesigner.Runtime.Tasks.Tooltip("Use null if you are the damage source.")]
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [Tooltip("Use null if you are the damage source.")]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [SerializeField]
     public SharedTransform WhoDamages;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy()]
     [SerializeField]
-    public SharedFloat Amount = (SharedFloat) 1f;
+    public SharedFloat Amount = 1f;
 
     public override TaskStatus OnUpdate()
     {
-      if ((UnityEngine.Object) this.WhoWillBeDamaged.Value == (UnityEngine.Object) null)
+      if ((UnityEngine.Object) WhoWillBeDamaged.Value == (UnityEngine.Object) null)
       {
-        Debug.LogWarningFormat("{0}: WhoWillBeDamaged is null", (object) this.gameObject.name);
+        Debug.LogWarningFormat("{0}: WhoWillBeDamaged is null", (object) gameObject.name);
         return TaskStatus.Failure;
       }
-      if (EntityUtility.GetEntity((UnityEngine.Object) this.WhoDamages.Value == (UnityEngine.Object) null ? this.gameObject : this.WhoDamages.Value.gameObject) == null)
+      if (EntityUtility.GetEntity((UnityEngine.Object) WhoDamages.Value == (UnityEngine.Object) null ? gameObject : WhoDamages.Value.gameObject) == null)
       {
-        Debug.LogWarningFormat("{0}: doesn't match any entity", (object) this.gameObject.name);
+        Debug.LogWarningFormat("{0}: doesn't match any entity", (object) gameObject.name);
         return TaskStatus.Failure;
       }
-      if (EntityUtility.GetEntity(this.WhoWillBeDamaged.Value.gameObject) != null)
+      if (EntityUtility.GetEntity(WhoWillBeDamaged.Value.gameObject) != null)
         return TaskStatus.Success;
-      Debug.LogWarningFormat("{0}: doesn't match any entity", (object) this.gameObject.name);
+      Debug.LogWarningFormat("{0}: doesn't match any entity", (object) gameObject.name);
       return TaskStatus.Failure;
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.WriteSerialize<NodeData>(writer, "NodeData", this.nodeData);
-      DefaultDataWriteUtility.Write(writer, "Id", this.id);
-      DefaultDataWriteUtility.Write(writer, "FriendlyName", this.friendlyName);
-      DefaultDataWriteUtility.Write(writer, "Instant", this.instant);
-      DefaultDataWriteUtility.Write(writer, "Disabled", this.disabled);
-      BehaviorTreeDataWriteUtility.WriteShared<SharedTransform>(writer, "WhoWillBeDamaged", this.WhoWillBeDamaged);
-      BehaviorTreeDataWriteUtility.WriteShared<SharedTransform>(writer, "WhoDamages", this.WhoDamages);
-      BehaviorTreeDataWriteUtility.WriteShared<SharedFloat>(writer, "Amount", this.Amount);
+      DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
+      DefaultDataWriteUtility.Write(writer, "Id", id);
+      DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
+      DefaultDataWriteUtility.Write(writer, "Instant", instant);
+      DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
+      BehaviorTreeDataWriteUtility.WriteShared(writer, "WhoWillBeDamaged", WhoWillBeDamaged);
+      BehaviorTreeDataWriteUtility.WriteShared(writer, "WhoDamages", WhoDamages);
+      BehaviorTreeDataWriteUtility.WriteShared(writer, "Amount", Amount);
     }
 
-    public void DataRead(IDataReader reader, System.Type type)
+    public void DataRead(IDataReader reader, Type type)
     {
-      this.nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
-      this.id = DefaultDataReadUtility.Read(reader, "Id", this.id);
-      this.friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", this.friendlyName);
-      this.instant = DefaultDataReadUtility.Read(reader, "Instant", this.instant);
-      this.disabled = DefaultDataReadUtility.Read(reader, "Disabled", this.disabled);
-      this.WhoWillBeDamaged = BehaviorTreeDataReadUtility.ReadShared<SharedTransform>(reader, "WhoWillBeDamaged", this.WhoWillBeDamaged);
-      this.WhoDamages = BehaviorTreeDataReadUtility.ReadShared<SharedTransform>(reader, "WhoDamages", this.WhoDamages);
-      this.Amount = BehaviorTreeDataReadUtility.ReadShared<SharedFloat>(reader, "Amount", this.Amount);
+      nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
+      id = DefaultDataReadUtility.Read(reader, "Id", id);
+      friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
+      instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
+      disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
+      WhoWillBeDamaged = BehaviorTreeDataReadUtility.ReadShared(reader, "WhoWillBeDamaged", WhoWillBeDamaged);
+      WhoDamages = BehaviorTreeDataReadUtility.ReadShared(reader, "WhoDamages", WhoDamages);
+      Amount = BehaviorTreeDataReadUtility.ReadShared(reader, "Amount", Amount);
     }
   }
 }

@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace Cinemachine
+﻿namespace Cinemachine
 {
   [DocumentationSorting(27f, DocumentationSortingAttribute.Level.UserRef)]
   [AddComponentMenu("")]
@@ -8,15 +6,15 @@ namespace Cinemachine
   [SaveDuringPlay]
   public class CinemachineSameAsFollowObject : CinemachineComponentBase
   {
-    public override bool IsValid => this.enabled && (Object) this.FollowTarget != (Object) null;
+    public override bool IsValid => this.enabled && (Object) FollowTarget != (Object) null;
 
     public override CinemachineCore.Stage Stage => CinemachineCore.Stage.Aim;
 
     public override void MutateCameraState(ref CameraState curState, float deltaTime)
     {
-      if (!this.IsValid)
+      if (!IsValid)
         return;
-      curState.RawOrientation = this.FollowTarget.transform.rotation;
+      curState.RawOrientation = FollowTarget.transform.rotation;
     }
   }
 }

@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace UnityStandardAssets.ImageEffects
+﻿namespace UnityStandardAssets.ImageEffects
 {
   [ExecuteInEditMode]
   [AddComponentMenu("Image Effects/Color Adjustments/Contrast Stretch")]
@@ -13,7 +11,7 @@ namespace UnityStandardAssets.ImageEffects
     [Range(0.0f, 1f)]
     public float limitMaximum = 0.6f;
     private RenderTexture[] adaptRenderTex = new RenderTexture[2];
-    private int curAdaptIndex = 0;
+    private int curAdaptIndex;
     public Shader shaderLum;
     private Material m_materialLum;
     public Shader shaderReduce;
@@ -27,12 +25,12 @@ namespace UnityStandardAssets.ImageEffects
     {
       get
       {
-        if ((Object) this.m_materialLum == (Object) null)
+        if ((Object) m_materialLum == (Object) null)
         {
-          this.m_materialLum = new Material(this.shaderLum);
-          this.m_materialLum.hideFlags = HideFlags.HideAndDontSave;
+          m_materialLum = new Material(shaderLum);
+          m_materialLum.hideFlags = HideFlags.HideAndDontSave;
         }
-        return this.m_materialLum;
+        return m_materialLum;
       }
     }
 
@@ -40,12 +38,12 @@ namespace UnityStandardAssets.ImageEffects
     {
       get
       {
-        if ((Object) this.m_materialReduce == (Object) null)
+        if ((Object) m_materialReduce == (Object) null)
         {
-          this.m_materialReduce = new Material(this.shaderReduce);
-          this.m_materialReduce.hideFlags = HideFlags.HideAndDontSave;
+          m_materialReduce = new Material(shaderReduce);
+          m_materialReduce.hideFlags = HideFlags.HideAndDontSave;
         }
-        return this.m_materialReduce;
+        return m_materialReduce;
       }
     }
 
@@ -53,12 +51,12 @@ namespace UnityStandardAssets.ImageEffects
     {
       get
       {
-        if ((Object) this.m_materialAdapt == (Object) null)
+        if ((Object) m_materialAdapt == (Object) null)
         {
-          this.m_materialAdapt = new Material(this.shaderAdapt);
-          this.m_materialAdapt.hideFlags = HideFlags.HideAndDontSave;
+          m_materialAdapt = new Material(shaderAdapt);
+          m_materialAdapt.hideFlags = HideFlags.HideAndDontSave;
         }
-        return this.m_materialAdapt;
+        return m_materialAdapt;
       }
     }
 
@@ -66,12 +64,12 @@ namespace UnityStandardAssets.ImageEffects
     {
       get
       {
-        if ((Object) this.m_materialApply == (Object) null)
+        if ((Object) m_materialApply == (Object) null)
         {
-          this.m_materialApply = new Material(this.shaderApply);
-          this.m_materialApply.hideFlags = HideFlags.HideAndDontSave;
+          m_materialApply = new Material(shaderApply);
+          m_materialApply.hideFlags = HideFlags.HideAndDontSave;
         }
-        return this.m_materialApply;
+        return m_materialApply;
       }
     }
 
@@ -83,7 +81,7 @@ namespace UnityStandardAssets.ImageEffects
       }
       else
       {
-        if (this.shaderAdapt.isSupported && this.shaderApply.isSupported && this.shaderLum.isSupported && this.shaderReduce.isSupported)
+        if (shaderAdapt.isSupported && shaderApply.isSupported && shaderLum.isSupported && shaderReduce.isSupported)
           return;
         this.enabled = false;
       }
@@ -93,10 +91,10 @@ namespace UnityStandardAssets.ImageEffects
     {
       for (int index = 0; index < 2; ++index)
       {
-        if (!(bool) (Object) this.adaptRenderTex[index])
+        if (!(bool) (Object) adaptRenderTex[index])
         {
-          this.adaptRenderTex[index] = new RenderTexture(1, 1, 0);
-          this.adaptRenderTex[index].hideFlags = HideFlags.HideAndDontSave;
+          adaptRenderTex[index] = new RenderTexture(1, 1, 0);
+          adaptRenderTex[index].hideFlags = HideFlags.HideAndDontSave;
         }
       }
     }
@@ -105,24 +103,24 @@ namespace UnityStandardAssets.ImageEffects
     {
       for (int index = 0; index < 2; ++index)
       {
-        Object.DestroyImmediate((Object) this.adaptRenderTex[index]);
-        this.adaptRenderTex[index] = (RenderTexture) null;
+        Object.DestroyImmediate((Object) adaptRenderTex[index]);
+        adaptRenderTex[index] = (RenderTexture) null;
       }
-      if ((bool) (Object) this.m_materialLum)
-        Object.DestroyImmediate((Object) this.m_materialLum);
-      if ((bool) (Object) this.m_materialReduce)
-        Object.DestroyImmediate((Object) this.m_materialReduce);
-      if ((bool) (Object) this.m_materialAdapt)
-        Object.DestroyImmediate((Object) this.m_materialAdapt);
-      if (!(bool) (Object) this.m_materialApply)
+      if ((bool) (Object) m_materialLum)
+        Object.DestroyImmediate((Object) m_materialLum);
+      if ((bool) (Object) m_materialReduce)
+        Object.DestroyImmediate((Object) m_materialReduce);
+      if ((bool) (Object) m_materialAdapt)
+        Object.DestroyImmediate((Object) m_materialAdapt);
+      if (!(bool) (Object) m_materialApply)
         return;
-      Object.DestroyImmediate((Object) this.m_materialApply);
+      Object.DestroyImmediate((Object) m_materialApply);
     }
 
     private void OnRenderImage(RenderTexture source, RenderTexture destination)
     {
       RenderTexture renderTexture = RenderTexture.GetTemporary(source.width / 1, source.height / 1);
-      Graphics.Blit((Texture) source, renderTexture, this.materialLum);
+      Graphics.Blit((Texture) source, renderTexture, materialLum);
       RenderTexture temporary;
       for (; renderTexture.width > 1 || renderTexture.height > 1; renderTexture = temporary)
       {
@@ -133,12 +131,12 @@ namespace UnityStandardAssets.ImageEffects
         if (height < 1)
           height = 1;
         temporary = RenderTexture.GetTemporary(width, height);
-        Graphics.Blit((Texture) renderTexture, temporary, this.materialReduce);
+        Graphics.Blit((Texture) renderTexture, temporary, materialReduce);
         RenderTexture.ReleaseTemporary(renderTexture);
       }
-      this.CalculateAdaptation((Texture) renderTexture);
-      this.materialApply.SetTexture("_AdaptTex", (Texture) this.adaptRenderTex[this.curAdaptIndex]);
-      Graphics.Blit((Texture) source, destination, this.materialApply);
+      CalculateAdaptation((Texture) renderTexture);
+      materialApply.SetTexture("_AdaptTex", (Texture) adaptRenderTex[curAdaptIndex]);
+      Graphics.Blit((Texture) source, destination, materialApply);
       RenderTexture.ReleaseTemporary(renderTexture);
     }
 
@@ -146,12 +144,12 @@ namespace UnityStandardAssets.ImageEffects
     {
       int curAdaptIndex = this.curAdaptIndex;
       this.curAdaptIndex = (this.curAdaptIndex + 1) % 2;
-      float x = Mathf.Clamp(1f - Mathf.Pow(1f - this.adaptationSpeed, 30f * Time.deltaTime), 0.01f, 1f);
-      this.materialAdapt.SetTexture("_CurTex", curTexture);
-      this.materialAdapt.SetVector("_AdaptParams", new Vector4(x, this.limitMinimum, this.limitMaximum, 0.0f));
-      Graphics.SetRenderTarget(this.adaptRenderTex[this.curAdaptIndex]);
+      float x = Mathf.Clamp(1f - Mathf.Pow(1f - adaptationSpeed, 30f * Time.deltaTime), 0.01f, 1f);
+      materialAdapt.SetTexture("_CurTex", curTexture);
+      materialAdapt.SetVector("_AdaptParams", new Vector4(x, limitMinimum, limitMaximum, 0.0f));
+      Graphics.SetRenderTarget(adaptRenderTex[this.curAdaptIndex]);
       GL.Clear(false, true, Color.black);
-      Graphics.Blit((Texture) this.adaptRenderTex[curAdaptIndex], this.adaptRenderTex[this.curAdaptIndex], this.materialAdapt);
+      Graphics.Blit((Texture) adaptRenderTex[curAdaptIndex], adaptRenderTex[this.curAdaptIndex], materialAdapt);
     }
   }
 }

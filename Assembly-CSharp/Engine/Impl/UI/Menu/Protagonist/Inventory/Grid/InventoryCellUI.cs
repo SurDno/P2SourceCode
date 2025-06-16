@@ -1,10 +1,7 @@
-﻿using Engine.Source.Inventory;
+﻿using System.Collections.Generic;
+using Engine.Source.Inventory;
 using Engine.Source.UI.Menu.Protagonist.Inventory;
 using Engine.Source.UI.Menu.Protagonist.Inventory.Grid;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.Serialization;
-using UnityEngine.UI;
 
 namespace Engine.Impl.UI.Menu.Protagonist.Inventory.Grid
 {
@@ -26,20 +23,20 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory.Grid
 
     public CellState State
     {
-      get => this.state;
+      get => state;
       set
       {
-        this.state = value;
-        if (this.image.IsDestroyed())
+        state = value;
+        if (image.IsDestroyed())
           return;
-        this.image.sprite = this.stateTextures[(int) this.state];
+        image.sprite = stateTextures[(int) state];
       }
     }
 
     public static InventoryCellUI Instantiate(Cell cell, InventoryCellStyle style)
     {
       GameObject gameObject = Object.Instantiate<GameObject>(style.Prefab);
-      gameObject.name = "[Cell] " + (object) cell.Column + " ; " + (object) cell.Row;
+      gameObject.name = "[Cell] " + cell.Column + " ; " + cell.Row;
       InventoryCellUI component = gameObject.GetComponent<InventoryCellUI>();
       Vector2 gridPosition = InventoryUtility.CalculateGridPosition(cell, style);
       component.Transform.localPosition = (Vector3) gridPosition;

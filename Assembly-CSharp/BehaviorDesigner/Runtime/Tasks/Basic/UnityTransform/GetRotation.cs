@@ -1,11 +1,11 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons;
 using Engine.Common.Commons.Converters;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Scripts.Tools.Serializations.Converters;
-using UnityEngine;
 
 namespace BehaviorDesigner.Runtime.Tasks.Basic.UnityTransform
 {
@@ -14,19 +14,19 @@ namespace BehaviorDesigner.Runtime.Tasks.Basic.UnityTransform
   [TaskDescription("Stores the rotation of the Transform. Returns Success.")]
   [Factory]
   [GeneratePartial(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
-  public class GetRotation : BehaviorDesigner.Runtime.Tasks.Action, IStub, ISerializeDataWrite, ISerializeDataRead
+  public class GetRotation : Action, IStub, ISerializeDataWrite, ISerializeDataRead
   {
-    [BehaviorDesigner.Runtime.Tasks.Tooltip("The GameObject that the task operates on. If null the task GameObject is used.")]
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [Tooltip("The GameObject that the task operates on. If null the task GameObject is used.")]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [SerializeField]
     public SharedGameObject targetGameObject;
-    [BehaviorDesigner.Runtime.Tasks.Tooltip("The rotation of the Transform")]
+    [Tooltip("The rotation of the Transform")]
     [RequiredField]
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy()]
     [SerializeField]
     public SharedQuaternion storeValue;
     private Transform targetTransform;
@@ -34,50 +34,50 @@ namespace BehaviorDesigner.Runtime.Tasks.Basic.UnityTransform
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.WriteSerialize<NodeData>(writer, "NodeData", this.nodeData);
-      DefaultDataWriteUtility.Write(writer, "Id", this.id);
-      DefaultDataWriteUtility.Write(writer, "FriendlyName", this.friendlyName);
-      DefaultDataWriteUtility.Write(writer, "Instant", this.instant);
-      DefaultDataWriteUtility.Write(writer, "Disabled", this.disabled);
-      BehaviorTreeDataWriteUtility.WriteShared<SharedGameObject>(writer, "TargetGameObject", this.targetGameObject);
-      BehaviorTreeDataWriteUtility.WriteShared<SharedQuaternion>(writer, "StoreValue", this.storeValue);
+      DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
+      DefaultDataWriteUtility.Write(writer, "Id", id);
+      DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
+      DefaultDataWriteUtility.Write(writer, "Instant", instant);
+      DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
+      BehaviorTreeDataWriteUtility.WriteShared(writer, "TargetGameObject", targetGameObject);
+      BehaviorTreeDataWriteUtility.WriteShared(writer, "StoreValue", storeValue);
     }
 
-    public void DataRead(IDataReader reader, System.Type type)
+    public void DataRead(IDataReader reader, Type type)
     {
-      this.nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
-      this.id = DefaultDataReadUtility.Read(reader, "Id", this.id);
-      this.friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", this.friendlyName);
-      this.instant = DefaultDataReadUtility.Read(reader, "Instant", this.instant);
-      this.disabled = DefaultDataReadUtility.Read(reader, "Disabled", this.disabled);
-      this.targetGameObject = BehaviorTreeDataReadUtility.ReadShared<SharedGameObject>(reader, "TargetGameObject", this.targetGameObject);
-      this.storeValue = BehaviorTreeDataReadUtility.ReadShared<SharedQuaternion>(reader, "StoreValue", this.storeValue);
+      nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
+      id = DefaultDataReadUtility.Read(reader, "Id", id);
+      friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
+      instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
+      disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
+      targetGameObject = BehaviorTreeDataReadUtility.ReadShared(reader, "TargetGameObject", targetGameObject);
+      storeValue = BehaviorTreeDataReadUtility.ReadShared(reader, "StoreValue", storeValue);
     }
 
     public override void OnStart()
     {
-      GameObject defaultGameObject = this.GetDefaultGameObject(this.targetGameObject.Value);
-      if (!((UnityEngine.Object) defaultGameObject != (UnityEngine.Object) this.prevGameObject))
+      GameObject defaultGameObject = GetDefaultGameObject(targetGameObject.Value);
+      if (!((UnityEngine.Object) defaultGameObject != (UnityEngine.Object) prevGameObject))
         return;
-      this.targetTransform = defaultGameObject.GetComponent<Transform>();
-      this.prevGameObject = defaultGameObject;
+      targetTransform = defaultGameObject.GetComponent<Transform>();
+      prevGameObject = defaultGameObject;
     }
 
     public override TaskStatus OnUpdate()
     {
-      if ((UnityEngine.Object) this.targetTransform == (UnityEngine.Object) null)
+      if ((UnityEngine.Object) targetTransform == (UnityEngine.Object) null)
       {
         Debug.LogWarning((object) "Transform is null");
         return TaskStatus.Failure;
       }
-      this.storeValue.Value = this.targetTransform.rotation;
+      storeValue.Value = targetTransform.rotation;
       return TaskStatus.Success;
     }
 
     public override void OnReset()
     {
-      this.targetGameObject = (SharedGameObject) null;
-      this.storeValue = (SharedQuaternion) Quaternion.identity;
+      targetGameObject = null;
+      storeValue = (SharedQuaternion) Quaternion.identity;
     }
   }
 }

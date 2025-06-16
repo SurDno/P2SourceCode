@@ -1,47 +1,47 @@
-﻿using Cofe.Serializations.Converters;
+﻿using System;
+using System.Collections.Generic;
+using Cofe.Serializations.Converters;
 using Engine.Source.Settings;
 using Engine.Source.Settings.External;
-using System;
-using System.Collections.Generic;
 
 namespace Engine.Source.Difficulties
 {
   public class DifficultySettings : SettingsInstanceByRequest<DifficultySettings>
   {
-    public IValue<bool> OriginalExperience = (IValue<bool>) new BoolValue(nameof (OriginalExperience), true);
+    public IValue<bool> OriginalExperience = new BoolValue(nameof (OriginalExperience), true);
     private Dictionary<string, IValue<float>> values = new Dictionary<string, IValue<float>>();
     private static readonly char separator = '|';
     private static readonly char[] separators = new char[1]
     {
-      DifficultySettings.separator
+      separator
     };
     private const string settingsName = "DifficultySettings";
 
-    public DifficultySettings() => this.Load();
+    public DifficultySettings() => Load();
 
     public IValue<float> GetValueItem(string name)
     {
       IValue<float> valueItem;
-      this.values.TryGetValue(name, out valueItem);
+      values.TryGetValue(name, out valueItem);
       return valueItem;
     }
 
     public float GetValue(string name)
     {
       IValue<float> obj;
-      return this.values.TryGetValue(name, out obj) ? obj.Value : 1f;
+      return values.TryGetValue(name, out obj) ? obj.Value : 1f;
     }
 
     protected override void OnInvalidate()
     {
       base.OnInvalidate();
-      this.Save();
+      Save();
     }
 
     private void Load()
     {
       ExternalDifficultySettings instance = ExternalSettingsInstance<ExternalDifficultySettings>.Instance;
-      DifficultyPresetData difficultyPresetData = (DifficultyPresetData) null;
+      DifficultyPresetData difficultyPresetData = null;
       foreach (DifficultyPresetData preset in instance.Presets)
       {
         if (preset.Name == "Default")
@@ -61,19 +61,18 @@ namespace Engine.Source.Difficulties
             break;
           }
         }
-        this.values.Add(difficultyItemData.Name, (IValue<float>) new DifficultyValue()
-        {
+        values.Add(difficultyItemData.Name, new DifficultyValue {
           Value = num,
           DefaultValue = num,
           MinValue = difficultyItemData.Min,
           MaxValue = difficultyItemData.Max
         });
       }
-      string[] strArray = PlayerSettings.Instance.GetString(nameof (DifficultySettings)).Split(DifficultySettings.separators, StringSplitOptions.RemoveEmptyEntries);
+      string[] strArray = PlayerSettings.Instance.GetString(nameof (DifficultySettings)).Split(separators, StringSplitOptions.RemoveEmptyEntries);
       for (int index = 0; index < strArray.Length; index += 2)
       {
         IValue<float> obj;
-        if (this.values.TryGetValue(strArray[index], out obj))
+        if (values.TryGetValue(strArray[index], out obj))
         {
           float num = DefaultConverter.ParseFloat(strArray[index + 1]);
           obj.Value = num;
@@ -84,7 +83,7 @@ namespace Engine.Source.Difficulties
     private void Save()
     {
       string str1 = "";
-      foreach (KeyValuePair<string, IValue<float>> keyValuePair in this.values)
+      foreach (KeyValuePair<string, IValue<float>> keyValuePair in values)
       {
         str1 += keyValuePair.Key;
         string str2 = str1;

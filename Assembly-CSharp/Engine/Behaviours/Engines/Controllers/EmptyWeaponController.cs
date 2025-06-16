@@ -1,4 +1,6 @@
-﻿using Engine.Behaviours.Components;
+﻿using System;
+using System.Collections.Generic;
+using Engine.Behaviours.Components;
 using Engine.Behaviours.Unity.Mecanim;
 using Engine.Common;
 using Engine.Common.Components;
@@ -8,9 +10,6 @@ using Engine.Source.Commons;
 using Engine.Source.Components;
 using Engine.Source.Services.Inputs;
 using Engine.Source.Utility;
-using System;
-using System.Collections.Generic;
-using UnityEngine;
 
 namespace Engine.Behaviours.Engines.Controllers
 {
@@ -30,7 +29,7 @@ namespace Engine.Behaviours.Engines.Controllers
     private bool weaponVisible;
     private static Collider[] tmp = new Collider[64];
     private IEntity item;
-    private float smoothedNormalizedSpeed = 0.0f;
+    private float smoothedNormalizedSpeed;
 
     public event Action WeaponUnholsterEndEvent;
 
@@ -42,16 +41,16 @@ namespace Engine.Behaviours.Engines.Controllers
     {
       set
       {
-        this.geometryVisible = value;
-        this.ApplyVisibility();
+        geometryVisible = value;
+        ApplyVisibility();
       }
-      get => this.geometryVisible;
+      get => geometryVisible;
     }
 
     private void ApplyVisibility()
     {
-      this.pivot.HandsGeometryVisible = this.geometryVisible;
-      this.animatorState.ReactionLayerWeight = this.geometryVisible ? 1f : 0.0f;
+      pivot.HandsGeometryVisible = geometryVisible;
+      animatorState.ReactionLayerWeight = geometryVisible ? 1f : 0.0f;
     }
 
     public void OnEnable()
@@ -65,8 +64,8 @@ namespace Engine.Behaviours.Engines.Controllers
     public void Initialise(IEntity entity, GameObject gameObject, Animator animator)
     {
       this.entity = entity;
-      this.pivot = gameObject.GetComponent<PivotPlayer>();
-      if ((UnityEngine.Object) this.pivot == (UnityEngine.Object) null)
+      pivot = gameObject.GetComponent<PivotPlayer>();
+      if ((UnityEngine.Object) pivot == (UnityEngine.Object) null)
       {
         Debug.LogErrorFormat("{0} has no {1} unity component", (object) gameObject.name, (object) typeof (PivotPlayer).Name);
       }
@@ -74,27 +73,27 @@ namespace Engine.Behaviours.Engines.Controllers
       {
         this.gameObject = gameObject;
         this.animator = animator;
-        this.animatorState = PlayerAnimatorState.GetAnimatorState(animator);
-        this.controllerComponent = entity.GetComponent<ControllerComponent>();
-        this.detectable = (DetectableComponent) entity.GetComponent<IDetectableComponent>();
-        if (this.detectable != null)
+        animatorState = PlayerAnimatorState.GetAnimatorState(animator);
+        controllerComponent = entity.GetComponent<ControllerComponent>();
+        detectable = (DetectableComponent) entity.GetComponent<IDetectableComponent>();
+        if (detectable != null)
           return;
         Debug.LogWarningFormat("{0} doesn't have {1} engine component", (object) gameObject.name, (object) typeof (IDetectableComponent).Name);
       }
     }
 
-    public IEntity GetItem() => this.item;
+    public IEntity GetItem() => item;
 
     public void SetItem(IEntity item) => this.item = item;
 
     public void Activate(bool geometryVisible)
     {
       this.geometryVisible = geometryVisible;
-      Action unholsterEndEvent1 = this.WeaponUnholsterEndEvent;
+      Action unholsterEndEvent1 = WeaponUnholsterEndEvent;
       if (unholsterEndEvent1 != null)
         unholsterEndEvent1();
-      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Fire, new GameActionHandle(this.FireListener));
-      Action unholsterEndEvent2 = this.WeaponUnholsterEndEvent;
+      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Fire, FireListener);
+      Action unholsterEndEvent2 = WeaponUnholsterEndEvent;
       if (unholsterEndEvent2 == null)
         return;
       unholsterEndEvent2();
@@ -102,14 +101,14 @@ namespace Engine.Behaviours.Engines.Controllers
 
     public void Shutdown()
     {
-      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Fire, new GameActionHandle(this.FireListener));
-      Action holsterStartEvent = this.WeaponHolsterStartEvent;
+      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Fire, FireListener);
+      Action holsterStartEvent = WeaponHolsterStartEvent;
       if (holsterStartEvent == null)
         return;
       holsterStartEvent();
     }
 
-    public void Reset() => this.animatorState.ResetAnimator();
+    public void Reset() => animatorState.ResetAnimator();
 
     public bool Validate(GameObject gameObject, IEntity item) => true;
 
@@ -118,11 +117,11 @@ namespace Engine.Behaviours.Engines.Controllers
       if (InstanceByRequest<EngineApplication>.Instance.IsPaused)
         return;
       float target1 = 0.0f;
-      bool flag = this.controllerComponent != null && this.controllerComponent.IsRun.Value;
-      if (this.controllerComponent.IsWalk.Value)
-        target1 = (flag ? 1f : 0.5f) * this.controllerComponent.WalkModifier.Value;
-      this.smoothedNormalizedSpeed = Mathf.MoveTowards(this.smoothedNormalizedSpeed, target1, Time.deltaTime / 1f);
-      this.animatorState.WalkSpeed = this.smoothedNormalizedSpeed;
+      bool flag = controllerComponent != null && controllerComponent.IsRun.Value;
+      if (controllerComponent.IsWalk.Value)
+        target1 = (flag ? 1f : 0.5f) * controllerComponent.WalkModifier.Value;
+      smoothedNormalizedSpeed = Mathf.MoveTowards(smoothedNormalizedSpeed, target1, Time.deltaTime / 1f);
+      animatorState.WalkSpeed = smoothedNormalizedSpeed;
     }
 
     public void UpdateSilent(IEntity target)
@@ -143,13 +142,13 @@ namespace Engine.Behaviours.Engines.Controllers
 
     private bool FireListener(GameActionType type, bool down)
     {
-      return down && this.entity == ServiceLocator.GetService<ISimulation>().Player && PlayerUtility.IsPlayerCanControlling;
+      return down && entity == ServiceLocator.GetService<ISimulation>().Player && PlayerUtility.IsPlayerCanControlling;
     }
 
     public int Compare(Collider a, Collider b)
     {
-      float num = Vector3.Dot(a.transform.forward, this.gameObject.transform.forward);
-      return Vector3.Dot(b.transform.forward, this.gameObject.transform.forward).CompareTo(num);
+      float num = Vector3.Dot(a.transform.forward, gameObject.transform.forward);
+      return Vector3.Dot(b.transform.forward, gameObject.transform.forward).CompareTo(num);
     }
 
     public void Reaction()

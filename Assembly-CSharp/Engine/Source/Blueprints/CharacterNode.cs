@@ -1,6 +1,4 @@
-﻿using Engine.Common;
-using Engine.Common.Services;
-using FlowCanvas;
+﻿using Engine.Common.Services;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
 
@@ -14,7 +12,7 @@ namespace Engine.Source.Blueprints
     protected override void RegisterPorts()
     {
       base.RegisterPorts();
-      this.AddValueOutput<IEntity>("Character", (ValueHandler<IEntity>) (() => ServiceLocator.GetService<ISimulation>().Player));
+      AddValueOutput("Character", () => ServiceLocator.GetService<ISimulation>().Player);
     }
   }
 }

@@ -1,6 +1,7 @@
-﻿using ParadoxNotion.Serialization.FullSerializer;
-using ParadoxNotion.Serialization.FullSerializer.Internal;
+﻿using System;
 using System.Collections.Generic;
+using ParadoxNotion.Serialization.FullSerializer;
+using ParadoxNotion.Serialization.FullSerializer.Internal;
 
 namespace ParadoxNotion.Serialization
 {
@@ -9,30 +10,30 @@ namespace ParadoxNotion.Serialization
     private static Dictionary<string, fsData> cache = new Dictionary<string, fsData>();
     private static object serializerLock = new object();
     private static fsSerializer serializer = new fsSerializer();
-    private static bool init = false;
+    private static bool init;
     public static bool applicationPlaying = true;
 
     public static string Serialize(
-      System.Type type,
+      Type type,
       object value,
       bool pretyJson = false,
       List<UnityEngine.Object> objectReferences = null)
     {
-      lock (JSONSerializer.serializerLock)
+      lock (serializerLock)
       {
-        if (!JSONSerializer.init)
+        if (!init)
         {
-          JSONSerializer.serializer.AddConverter((fsBaseConverter) new fsUnityObjectConverter());
-          JSONSerializer.init = true;
+          serializer.AddConverter(new fsUnityObjectConverter());
+          init = true;
         }
         if (objectReferences != null)
         {
           objectReferences.Clear();
-          JSONSerializer.serializer.Context.Set<List<UnityEngine.Object>>(objectReferences);
+          serializer.Context.Set(objectReferences);
         }
-        System.Type overrideConverterType = typeof (UnityEngine.Object).RTIsAssignableFrom(type) ? typeof (fsReflectedConverter) : (System.Type) null;
+        Type overrideConverterType = typeof (UnityEngine.Object).RTIsAssignableFrom(type) ? typeof (fsReflectedConverter) : null;
         fsData data;
-        JSONSerializer.serializer.TrySerialize(type, overrideConverterType, value, out data).AssertSuccess();
+        serializer.TrySerialize(type, overrideConverterType, value, out data).AssertSuccess();
         return pretyJson ? fsJsonPrinter.PrettyJson(data) : fsJsonPrinter.CompressedJson(data);
       }
     }
@@ -42,33 +43,33 @@ namespace ParadoxNotion.Serialization
       List<UnityEngine.Object> objectReferences = null,
       T deserialized = null)
     {
-      return (T) JSONSerializer.Deserialize(typeof (T), serializedState, objectReferences, (object) deserialized);
+      return (T) Deserialize(typeof (T), serializedState, objectReferences, deserialized);
     }
 
     public static object Deserialize(
-      System.Type type,
+      Type type,
       string serializedState,
       List<UnityEngine.Object> objectReferences = null,
       object deserialized = null)
     {
-      lock (JSONSerializer.serializerLock)
+      lock (serializerLock)
       {
-        if (!JSONSerializer.init)
+        if (!init)
         {
-          JSONSerializer.serializer.AddConverter((fsBaseConverter) new fsUnityObjectConverter());
-          JSONSerializer.init = true;
+          serializer.AddConverter(new fsUnityObjectConverter());
+          init = true;
         }
         if (objectReferences != null)
-          JSONSerializer.serializer.Context.Set<List<UnityEngine.Object>>(objectReferences);
-        fsData data = (fsData) null;
-        JSONSerializer.cache.TryGetValue(serializedState, out data);
-        if (data == (fsData) null)
+          serializer.Context.Set(objectReferences);
+        fsData data = null;
+        cache.TryGetValue(serializedState, out data);
+        if (data == null)
         {
           data = fsJsonParser.Parse(serializedState);
-          JSONSerializer.cache[serializedState] = data;
+          cache[serializedState] = data;
         }
-        System.Type overrideConverterType = typeof (UnityEngine.Object).RTIsAssignableFrom(type) ? typeof (fsReflectedConverter) : (System.Type) null;
-        JSONSerializer.serializer.TryDeserialize(data, type, overrideConverterType, ref deserialized).AssertSuccess();
+        Type overrideConverterType = typeof (UnityEngine.Object).RTIsAssignableFrom(type) ? typeof (fsReflectedConverter) : null;
+        serializer.TryDeserialize(data, type, overrideConverterType, ref deserialized).AssertSuccess();
         return deserialized;
       }
     }

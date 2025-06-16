@@ -1,7 +1,5 @@
 ﻿using Engine.Source.Commons;
 using Engine.Source.Settings;
-using System;
-using UnityEngine;
 
 public class GameCamera : EngineDependent
 {
@@ -21,84 +19,84 @@ public class GameCamera : EngineDependent
 
   public static GameCamera Instance { get; private set; }
 
-  public Camera Camera => this.camera;
+  public Camera Camera => camera;
 
-  public Transform CameraTransform => this.cameraTransfrom;
+  public Transform CameraTransform => cameraTransfrom;
 
   public float AdditionalFov
   {
-    get => this.additionalFov;
+    get => additionalFov;
     set
     {
-      if ((double) this.additionalFov == (double) value)
+      if (additionalFov == (double) value)
         return;
-      this.additionalFov = value;
-      if (!this.Connected)
+      additionalFov = value;
+      if (!Connected)
         return;
-      this.ApplyFov();
+      ApplyFov();
     }
   }
 
-  public PostProcessingStackOverride GamePostProcessingOverride => this.gamePostProcessingOverride;
+  public PostProcessingStackOverride GamePostProcessingOverride => gamePostProcessingOverride;
 
   public PostProcessingStackOverride SettingsPostProcessingOverride
   {
-    get => this.settingsPostProcessingOverride;
+    get => settingsPostProcessingOverride;
   }
 
   private void Awake()
   {
-    GameCamera.Instance = this;
-    this.animator = this.GetComponent<Animator>();
+    Instance = this;
+    animator = this.GetComponent<Animator>();
   }
 
   private void OnPauseEvent()
   {
-    if ((UnityEngine.Object) this.animator == (UnityEngine.Object) null)
+    if ((UnityEngine.Object) animator == (UnityEngine.Object) null)
       return;
     if (InstanceByRequest<EngineApplication>.Instance.IsPaused)
-      this.animator.SetFloat("Mecanim.Speed", 0.0f);
+      animator.SetFloat("Mecanim.Speed", 0.0f);
     else
-      this.animator.SetFloat("Mecanim.Speed", 1f);
+      animator.SetFloat("Mecanim.Speed", 1f);
   }
 
   protected override void OnConnectToEngine()
   {
-    this.ApplyFov();
-    InstanceByRequest<GraphicsGameSettings>.Instance.OnApply += new Action(this.ApplyFov);
-    InstanceByRequest<EngineApplication>.Instance.OnPauseEvent += new Action(this.OnPauseEvent);
-    InstanceByRequest<EngineApplication>.Instance.OnViewEnabledEvent += new Action<bool>(this.OnViewEnabledEvent);
+    ApplyFov();
+    InstanceByRequest<GraphicsGameSettings>.Instance.OnApply += ApplyFov;
+    InstanceByRequest<EngineApplication>.Instance.OnPauseEvent += OnPauseEvent;
+    InstanceByRequest<EngineApplication>.Instance.OnViewEnabledEvent += OnViewEnabledEvent;
   }
 
   protected override void OnDisconnectFromEngine()
   {
-    InstanceByRequest<GraphicsGameSettings>.Instance.OnApply -= new Action(this.ApplyFov);
-    InstanceByRequest<EngineApplication>.Instance.OnViewEnabledEvent -= new Action<bool>(this.OnViewEnabledEvent);
-    InstanceByRequest<EngineApplication>.Instance.OnPauseEvent -= new Action(this.OnPauseEvent);
+    InstanceByRequest<GraphicsGameSettings>.Instance.OnApply -= ApplyFov;
+    InstanceByRequest<EngineApplication>.Instance.OnViewEnabledEvent -= OnViewEnabledEvent;
+    InstanceByRequest<EngineApplication>.Instance.OnPauseEvent -= OnPauseEvent;
   }
 
   private void ApplyFov()
   {
-    float num = (double) this.cutsceneFov != 0.0 ? this.cutsceneFov : InstanceByRequest<GraphicsGameSettings>.Instance.FieldOfView.Value + this.additionalFov;
-    this.Camera.fieldOfView = num;
-    for (int index = 0; index < this.additionalCameras.Length; ++index)
-      this.additionalCameras[index].fieldOfView = num;
+    float num = cutsceneFov != 0.0 ? cutsceneFov : InstanceByRequest<GraphicsGameSettings>.Instance.FieldOfView.Value + additionalFov;
+    Camera.fieldOfView = num;
+    for (int index = 0; index < additionalCameras.Length; ++index)
+      additionalCameras[index].fieldOfView = num;
   }
 
   private void OnViewEnabledEvent(bool enable)
   {
     if (enable)
       return;
-    this.animator.SetTrigger("Stop");
+    animator.SetTrigger("Stop");
   }
 
-  public void ResetCutsceneFov() => this.SetCutsceneFov(0.0f);
+  public void ResetCutsceneFov() => SetCutsceneFov(0.0f);
 
   public void SetCutsceneFov(float fov)
   {
-    if ((double) this.cutsceneFov == (double) fov)
+    if (cutsceneFov == (double) fov)
       return;
-    this.cutsceneFov = fov;
-    this.ApplyFov();
+    cutsceneFov = fov;
+    ApplyFov();
   }
 }

@@ -1,10 +1,9 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons.Cloneable;
 using Engine.Drawing.Gradient;
 using Scripts.Tools.Serializations.Converters;
-using System;
-using UnityEngine;
 
 namespace Engine.Source.Proxies
 {
@@ -19,27 +18,27 @@ namespace Engine.Source.Proxies
     public object Clone()
     {
       ColorGradient_Generated instance = Activator.CreateInstance<ColorGradient_Generated>();
-      this.CopyTo((object) instance);
-      return (object) instance;
+      CopyTo(instance);
+      return instance;
     }
 
     public void CopyTo(object target2)
     {
       ColorGradient_Generated gradientGenerated = (ColorGradient_Generated) target2;
-      CloneableObjectUtility.FillListTo<GradientAlphaKey>(gradientGenerated.alphaKeys, this.alphaKeys);
-      CloneableObjectUtility.FillListTo<GradientColorKey>(gradientGenerated.colorKeys, this.colorKeys);
+      CloneableObjectUtility.FillListTo<GradientAlphaKey>(gradientGenerated.alphaKeys, alphaKeys);
+      CloneableObjectUtility.FillListTo<GradientColorKey>(gradientGenerated.colorKeys, colorKeys);
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      UnityDataWriteUtility.WriteList(writer, "AlphaKeys", this.alphaKeys);
-      UnityDataWriteUtility.WriteList(writer, "ColorKeys", this.colorKeys);
+      UnityDataWriteUtility.WriteList(writer, "AlphaKeys", alphaKeys);
+      UnityDataWriteUtility.WriteList(writer, "ColorKeys", colorKeys);
     }
 
-    public void DataRead(IDataReader reader, System.Type type)
+    public void DataRead(IDataReader reader, Type type)
     {
-      this.alphaKeys = UnityDataReadUtility.ReadList(reader, "AlphaKeys", this.alphaKeys);
-      this.colorKeys = UnityDataReadUtility.ReadList(reader, "ColorKeys", this.colorKeys);
+      alphaKeys = UnityDataReadUtility.ReadList(reader, "AlphaKeys", alphaKeys);
+      colorKeys = UnityDataReadUtility.ReadList(reader, "ColorKeys", colorKeys);
     }
   }
 }

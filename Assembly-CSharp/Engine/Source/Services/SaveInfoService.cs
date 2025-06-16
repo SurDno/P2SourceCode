@@ -1,17 +1,16 @@
-﻿using Cofe.Serializations.Data;
+﻿using System;
+using System.Collections;
+using System.Xml;
+using Cofe.Serializations.Data;
 using Engine.Common.Commons.Converters;
 using Engine.Common.Services;
 using Engine.Source.Commons;
 using Engine.Source.Saves;
 using Engine.Source.Services.Saves;
-using System;
-using System.Collections;
-using System.Xml;
-using UnityEngine;
 
 namespace Engine.Source.Services
 {
-  [GameService(new System.Type[] {})]
+  [GameService]
   public class SaveInfoService : ISavesController
   {
     private const string nodeName = "Info";
@@ -34,13 +33,13 @@ namespace Engine.Source.Services
 
     public void Save(IDataWriter writer, string context)
     {
-      writer.Begin("Info", (System.Type) null, true);
+      writer.Begin("Info", null, true);
       DefaultDataWriteUtility.Write(writer, "SaveTime", DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss"));
-      DefaultDataWriteUtility.Write(writer, "GameTime", this.timeService.GameTime.ToString("d\\.hh\\:mm\\:ss"));
-      DefaultDataWriteUtility.Write(writer, "BuildVersion", SaveInfoService.version);
+      DefaultDataWriteUtility.Write(writer, "GameTime", timeService.GameTime.ToString("d\\.hh\\:mm\\:ss"));
+      DefaultDataWriteUtility.Write(writer, "BuildVersion", version);
       DefaultDataWriteUtility.Write(writer, "BuildTime", ScriptableObjectInstance<BuildData>.Instance.Time);
       DefaultDataWriteUtility.Write(writer, "BuildLabel", InstanceByRequest<LabelService>.Instance.Label);
-      DefaultDataWriteUtility.Write(writer, "UnityVersion", SaveInfoService.unityVersion);
+      DefaultDataWriteUtility.Write(writer, "UnityVersion", unityVersion);
       DefaultDataWriteUtility.Write(writer, "MachineName", Environment.MachineName);
       writer.End("Info", true);
     }

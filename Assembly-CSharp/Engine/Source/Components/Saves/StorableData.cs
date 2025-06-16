@@ -1,6 +1,6 @@
-﻿using Engine.Common.Components;
+﻿using System;
+using Engine.Common.Components;
 using Engine.Common.Generator;
-using System;
 
 namespace Engine.Source.Components.Saves
 {
@@ -10,8 +10,8 @@ namespace Engine.Source.Components.Saves
     [StateSaveProxy(MemberEnum.CustomReference)]
     [StateLoadProxy(MemberEnum.CustomReference)]
     public IStorageComponent Storage;
-    [StateSaveProxy(MemberEnum.None)]
-    [StateLoadProxy(MemberEnum.None)]
+    [StateSaveProxy]
+    [StateLoadProxy()]
     public Guid TemplateId;
   }
 }

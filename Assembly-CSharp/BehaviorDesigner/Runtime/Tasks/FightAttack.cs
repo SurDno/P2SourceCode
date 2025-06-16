@@ -1,4 +1,5 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common;
 using Engine.Common.Commons;
@@ -7,8 +8,6 @@ using Engine.Common.Components.AttackerPlayer;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Scripts.Tools.Serializations.Converters;
-using System;
-using UnityEngine;
 
 namespace BehaviorDesigner.Runtime.Tasks
 {
@@ -20,63 +19,63 @@ namespace BehaviorDesigner.Runtime.Tasks
   [FactoryProxy(typeof (FightAttack))]
   public class FightAttack : FightBase, IStub, ISerializeDataWrite, ISerializeDataRead
   {
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [SerializeField]
-    private SharedFloat attackTime = (SharedFloat) 0.0f;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    private SharedFloat attackTime = 0.0f;
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [SerializeField]
-    private SharedBool commonAttacks = (SharedBool) true;
+    private SharedBool commonAttacks = true;
     [Tooltip("Столько игрок должен простоять в блоке (минимум), чтобы Npc его попытался пробить")]
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [SerializeField]
-    private SharedBool ruinBlocks = (SharedBool) true;
+    private SharedBool ruinBlocks = true;
     [Tooltip("Столько противник должен простоять в блоке (минимум), чтобы Npc его попытался пробить")]
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [SerializeField]
-    private SharedFloat ruinBlockMinTime = (SharedFloat) 3f;
+    private SharedFloat ruinBlockMinTime = 3f;
     [Tooltip("Столько противник должен простоять в блоке (максимум), чтобы Npc его попытался пробить")]
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [SerializeField]
-    private SharedFloat ruinBlockMaxTime = (SharedFloat) 4f;
+    private SharedFloat ruinBlockMaxTime = 4f;
     [Tooltip("Примерно с такой вероятностью при каждом старте ноды будет выставлять нулевое время ruinBlockTime. То есть Npc неожиданно пробьет блок без ожидания.")]
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [SerializeField]
-    private SharedFloat zeroRuinBlockProbability = (SharedFloat) 0.05f;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    private SharedFloat zeroRuinBlockProbability = 0.05f;
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [SerializeField]
-    private SharedBool attackInMovement = (SharedBool) true;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    private SharedBool attackInMovement = true;
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [SerializeField]
-    private SharedFloat counterAttacksProbability = (SharedFloat) 1f;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    private SharedFloat counterAttacksProbability = 1f;
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [SerializeField]
-    private SharedBool knockDowns = (SharedBool) true;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    private SharedBool knockDowns = true;
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy]
     [SerializeField]
-    private SharedFloat attackCooldownTime = (SharedFloat) 2.5f;
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    private SharedFloat attackCooldownTime = 2.5f;
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy()]
     [SerializeField]
     private FollowDescription description;
     private float ruinBlockTime;
@@ -85,51 +84,51 @@ namespace BehaviorDesigner.Runtime.Tasks
 
     private bool IsEnemyRunningAway()
     {
-      return (double) this.owner.Enemy.Velocity.magnitude >= 0.5 && (double) Vector3.Dot(this.transform.forward, (this.owner.Enemy.transform.position - this.owner.transform.position).normalized) > 0.25;
+      return (double) owner.Enemy.Velocity.magnitude >= 0.5 && (double) Vector3.Dot(transform.forward, (owner.Enemy.transform.position - owner.transform.position).normalized) > 0.25;
     }
 
     private void NextRuinBlockTime()
     {
-      if ((double) UnityEngine.Random.value < (double) this.zeroRuinBlockProbability.Value)
-        this.ruinBlockTime = 0.0f;
+      if ((double) UnityEngine.Random.value < zeroRuinBlockProbability.Value)
+        ruinBlockTime = 0.0f;
       else
-        this.ruinBlockTime = UnityEngine.Random.Range(this.ruinBlockMinTime.Value, this.ruinBlockMaxTime.Value);
+        ruinBlockTime = UnityEngine.Random.Range(ruinBlockMinTime.Value, ruinBlockMaxTime.Value);
     }
 
     public override TaskStatus DoUpdate(float deltaTime)
     {
-      if ((UnityEngine.Object) this.owner.Enemy == (UnityEngine.Object) null)
+      if ((UnityEngine.Object) owner.Enemy == (UnityEngine.Object) null)
         return TaskStatus.Failure;
-      if (this.owner.IsReacting || this.owner.IsDodge || this.owner.IsQuickBlock || this.owner.IsStagger || this.knockDowns.Value && this.owner.Enemy is PlayerEnemy && this.UpdatePlayerKnockDdown(this.owner.Enemy as PlayerEnemy, deltaTime))
+      if (owner.IsReacting || owner.IsDodge || owner.IsQuickBlock || owner.IsStagger || knockDowns.Value && owner.Enemy is PlayerEnemy && UpdatePlayerKnockDdown(owner.Enemy as PlayerEnemy, deltaTime))
         return TaskStatus.Running;
-      float magnitude = (this.owner.Enemy.transform.position - this.owner.transform.position).magnitude;
-      if ((double) magnitude > (double) this.description.AttackDistance * 2.0)
-        this.firstAttack = true;
-      if ((double) magnitude < (double) this.description.AttackDistance && PathfindingHelper.IsFreeSpace(this.owner.Enemy.transform.position, this.owner.transform.position))
+      float magnitude = (owner.Enemy.transform.position - owner.transform.position).magnitude;
+      if (magnitude > description.AttackDistance * 2.0)
+        firstAttack = true;
+      if (magnitude < (double) description.AttackDistance && PathfindingHelper.IsFreeSpace(owner.Enemy.transform.position, owner.transform.position))
       {
-        if (this.firstAttack)
+        if (firstAttack)
         {
-          this.firstAttack = false;
-          if ((double) this.owner.AttackCooldownTimeLeft <= 0.0)
-            this.owner.AttackCooldownTimeLeft = UnityEngine.Random.value * 0.5f;
+          firstAttack = false;
+          if (owner.AttackCooldownTimeLeft <= 0.0)
+            owner.AttackCooldownTimeLeft = UnityEngine.Random.value * 0.5f;
         }
-        bool flag = this.EnemyIsAttacking();
-        if (this.ruinBlocks.Value && this.owner.Enemy is PlayerEnemy && (double) this.owner.AttackCooldownTimeLeft <= 0.0 && !flag && (double) this.owner.Enemy.BlockNormalizedTime > (double) this.ruinBlockTime && !this.owner.IsPushing && !this.owner.IsReacting && !this.owner.IsAttacking)
+        bool flag = EnemyIsAttacking();
+        if (ruinBlocks.Value && owner.Enemy is PlayerEnemy && owner.AttackCooldownTimeLeft <= 0.0 && !flag && owner.Enemy.BlockNormalizedTime > (double) ruinBlockTime && !owner.IsPushing && !owner.IsReacting && !owner.IsAttacking)
         {
-          this.owner.TriggerAction(WeaponActionEnum.Uppercut);
-          this.NextRuinBlockTime();
-          this.owner.Enemy.BlockNormalizedTime = 0.0f;
+          owner.TriggerAction(WeaponActionEnum.Uppercut);
+          NextRuinBlockTime();
+          owner.Enemy.BlockNormalizedTime = 0.0f;
           return TaskStatus.Running;
         }
-        if ((double) this.owner.AttackCooldownTimeLeft <= 0.0 && !this.owner.IsAttacking && !this.owner.IsPushing && !this.owner.IsReacting && !this.owner.IsQuickBlock && !flag)
+        if (owner.AttackCooldownTimeLeft <= 0.0 && !owner.IsAttacking && !owner.IsPushing && !owner.IsReacting && !owner.IsQuickBlock && !flag)
         {
-          if (this.attackInMovement.Value && (double) this.owner.DesiredWalkSpeed > 0.5)
+          if (attackInMovement.Value && owner.DesiredWalkSpeed > 0.5)
           {
-            this.owner.TriggerAction(WeaponActionEnum.RunAttack);
-            this.owner.AttackCooldownTimeLeft = this.attackCooldownTime.Value;
+            owner.TriggerAction(WeaponActionEnum.RunAttack);
+            owner.AttackCooldownTimeLeft = attackCooldownTime.Value;
           }
-          else if (this.commonAttacks.Value)
-            this.Attack(magnitude);
+          else if (commonAttacks.Value)
+            Attack(magnitude);
         }
       }
       return TaskStatus.Running;
@@ -137,54 +136,54 @@ namespace BehaviorDesigner.Runtime.Tasks
 
     private void Attack(float distanceToEnemy)
     {
-      if ((double) distanceToEnemy < 1.0)
+      if (distanceToEnemy < 1.0)
       {
-        this.owner.TriggerAction(WeaponActionEnum.JabAttack);
-        this.owner.AttackCooldownTimeLeft = this.description.PunchCooldownTime;
-        this.owner.AttackCooldownTimeLeft = this.attackCooldownTime.Value;
+        owner.TriggerAction(WeaponActionEnum.JabAttack);
+        owner.AttackCooldownTimeLeft = description.PunchCooldownTime;
+        owner.AttackCooldownTimeLeft = attackCooldownTime.Value;
       }
-      else if ((double) distanceToEnemy < 1.3999999761581421)
+      else if (distanceToEnemy < 1.3999999761581421)
       {
-        this.owner.TriggerAction(WeaponActionEnum.StepAttack);
-        this.owner.AttackCooldownTimeLeft = this.description.StepPunchCooldownTime;
-        this.owner.AttackCooldownTimeLeft = this.attackCooldownTime.Value;
+        owner.TriggerAction(WeaponActionEnum.StepAttack);
+        owner.AttackCooldownTimeLeft = description.StepPunchCooldownTime;
+        owner.AttackCooldownTimeLeft = attackCooldownTime.Value;
       }
       else
       {
-        if ((double) distanceToEnemy >= (double) this.description.AttackDistance)
+        if (distanceToEnemy >= (double) description.AttackDistance)
           return;
-        this.owner.TriggerAction(WeaponActionEnum.TelegraphAttack);
-        this.owner.AttackCooldownTimeLeft = this.description.TelegraphPunchCooldownTime;
-        this.owner.AttackCooldownTimeLeft = this.attackCooldownTime.Value;
+        owner.TriggerAction(WeaponActionEnum.TelegraphAttack);
+        owner.AttackCooldownTimeLeft = description.TelegraphPunchCooldownTime;
+        owner.AttackCooldownTimeLeft = attackCooldownTime.Value;
       }
     }
 
     private bool UpdatePlayerKnockDdown(PlayerEnemy player, float deltaTime)
     {
-      this.playerKnockdownCooldownLeft -= deltaTime;
-      if ((double) this.playerKnockdownCooldownLeft > 0.0)
+      playerKnockdownCooldownLeft -= deltaTime;
+      if (playerKnockdownCooldownLeft > 0.0)
         return false;
-      Vector3 vector3 = player.transform.position - this.owner.transform.position;
+      Vector3 vector3 = player.transform.position - owner.transform.position;
       float magnitude = vector3.magnitude;
       Vector3 lhs = vector3 / magnitude;
-      if ((double) magnitude > 5.0 || (double) Vector3.Dot(lhs, player.transform.forward) < 0.0 || (double) magnitude >= 2.5)
+      if (magnitude > 5.0 || (double) Vector3.Dot(lhs, player.transform.forward) < 0.0 || magnitude >= 2.5)
         return false;
-      this.owner.TriggerAction(WeaponActionEnum.KnockDown);
-      this.playerKnockdownCooldownLeft = this.description.KnockDownCooldownTime;
+      owner.TriggerAction(WeaponActionEnum.KnockDown);
+      playerKnockdownCooldownLeft = description.KnockDownCooldownTime;
       return true;
     }
 
     public override void OnStart()
     {
       base.OnStart();
-      this.waitDuration = this.attackTime.Value;
-      this.NextRuinBlockTime();
-      this.firstAttack = true;
-      if (!(bool) (UnityEngine.Object) this.owner)
+      waitDuration = attackTime.Value;
+      NextRuinBlockTime();
+      firstAttack = true;
+      if (!(bool) (UnityEngine.Object) owner)
         return;
-      this.owner.WasPunchedEvent += new Action<EnemyBase>(this.Owner_WasPunchedEvent);
-      this.owner.WasPunchedToStaggerEvent += new Action<EnemyBase>(this.Owner_WasPunchedEvent);
-      this.owner.WasPunchedToDodgeEvent += new Action<EnemyBase>(this.Owner_WasPunchedEvent);
+      owner.WasPunchedEvent += Owner_WasPunchedEvent;
+      owner.WasPunchedToStaggerEvent += Owner_WasPunchedEvent;
+      owner.WasPunchedToDodgeEvent += Owner_WasPunchedEvent;
     }
 
     private void Owner_PunchEvent(
@@ -193,73 +192,73 @@ namespace BehaviorDesigner.Runtime.Tasks
       ReactionType reactionType,
       WeaponEnum weaponEnum)
     {
-      this.owner.AttackCooldownTimeLeft = this.attackCooldownTime.Value;
+      owner.AttackCooldownTimeLeft = attackCooldownTime.Value;
     }
 
     private void Owner_WasPunchedEvent(EnemyBase enemy)
     {
-      if (this.owner.IsAttacking || !((UnityEngine.Object) enemy == (UnityEngine.Object) this.owner.Enemy) || (double) this.counterAttacksProbability.Value <= (double) UnityEngine.Random.value)
+      if (owner.IsAttacking || !((UnityEngine.Object) enemy == (UnityEngine.Object) owner.Enemy) || counterAttacksProbability.Value <= (double) UnityEngine.Random.value)
         return;
-      this.owner.AttackCooldownTimeLeft = 0.0f;
+      owner.AttackCooldownTimeLeft = 0.0f;
     }
 
     public override void OnEnd()
     {
-      if ((bool) (UnityEngine.Object) this.owner.Enemy)
+      if ((bool) (UnityEngine.Object) owner.Enemy)
       {
-        this.owner.Enemy.WasPunchedEvent -= new Action<EnemyBase>(this.Owner_WasPunchedEvent);
-        this.owner.WasPunchedToStaggerEvent -= new Action<EnemyBase>(this.Owner_WasPunchedEvent);
-        this.owner.WasPunchedToDodgeEvent -= new Action<EnemyBase>(this.Owner_WasPunchedEvent);
+        owner.Enemy.WasPunchedEvent -= Owner_WasPunchedEvent;
+        owner.WasPunchedToStaggerEvent -= Owner_WasPunchedEvent;
+        owner.WasPunchedToDodgeEvent -= Owner_WasPunchedEvent;
       }
       base.OnEnd();
     }
 
     private bool EnemyIsAttacking()
     {
-      if (!(this.owner.Enemy is NPCEnemy))
+      if (!(owner.Enemy is NPCEnemy))
         return false;
-      NPCEnemy enemy = this.owner.Enemy as NPCEnemy;
-      return enemy.IsAttacking && (UnityEngine.Object) enemy.Enemy == (UnityEngine.Object) this.owner;
+      NPCEnemy enemy = owner.Enemy as NPCEnemy;
+      return enemy.IsAttacking && (UnityEngine.Object) enemy.Enemy == (UnityEngine.Object) owner;
     }
 
     public new void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.WriteSerialize<NodeData>(writer, "NodeData", this.nodeData);
-      DefaultDataWriteUtility.Write(writer, "Id", this.id);
-      DefaultDataWriteUtility.Write(writer, "FriendlyName", this.friendlyName);
-      DefaultDataWriteUtility.Write(writer, "Instant", this.instant);
-      DefaultDataWriteUtility.Write(writer, "Disabled", this.disabled);
-      BehaviorTreeDataWriteUtility.WriteShared<SharedFloat>(writer, "AttackTime", this.attackTime);
-      BehaviorTreeDataWriteUtility.WriteShared<SharedBool>(writer, "CommonAttacks", this.commonAttacks);
-      BehaviorTreeDataWriteUtility.WriteShared<SharedBool>(writer, "RuinBlocks", this.ruinBlocks);
-      BehaviorTreeDataWriteUtility.WriteShared<SharedFloat>(writer, "RuinBlockMinTime", this.ruinBlockMinTime);
-      BehaviorTreeDataWriteUtility.WriteShared<SharedFloat>(writer, "RuinBlockMaxTime", this.ruinBlockMaxTime);
-      BehaviorTreeDataWriteUtility.WriteShared<SharedFloat>(writer, "ZeroRuinBlockProbability", this.zeroRuinBlockProbability);
-      BehaviorTreeDataWriteUtility.WriteShared<SharedBool>(writer, "AttackInMovement", this.attackInMovement);
-      BehaviorTreeDataWriteUtility.WriteShared<SharedFloat>(writer, "CounterAttacksProbability", this.counterAttacksProbability);
-      BehaviorTreeDataWriteUtility.WriteShared<SharedBool>(writer, "KnockDowns", this.knockDowns);
-      BehaviorTreeDataWriteUtility.WriteShared<SharedFloat>(writer, "AttackCooldownTime", this.attackCooldownTime);
-      BehaviorTreeDataWriteUtility.WriteUnity<FollowDescription>(writer, "Description", this.description);
+      DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
+      DefaultDataWriteUtility.Write(writer, "Id", id);
+      DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
+      DefaultDataWriteUtility.Write(writer, "Instant", instant);
+      DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
+      BehaviorTreeDataWriteUtility.WriteShared(writer, "AttackTime", attackTime);
+      BehaviorTreeDataWriteUtility.WriteShared(writer, "CommonAttacks", commonAttacks);
+      BehaviorTreeDataWriteUtility.WriteShared(writer, "RuinBlocks", ruinBlocks);
+      BehaviorTreeDataWriteUtility.WriteShared(writer, "RuinBlockMinTime", ruinBlockMinTime);
+      BehaviorTreeDataWriteUtility.WriteShared(writer, "RuinBlockMaxTime", ruinBlockMaxTime);
+      BehaviorTreeDataWriteUtility.WriteShared(writer, "ZeroRuinBlockProbability", zeroRuinBlockProbability);
+      BehaviorTreeDataWriteUtility.WriteShared(writer, "AttackInMovement", attackInMovement);
+      BehaviorTreeDataWriteUtility.WriteShared(writer, "CounterAttacksProbability", counterAttacksProbability);
+      BehaviorTreeDataWriteUtility.WriteShared(writer, "KnockDowns", knockDowns);
+      BehaviorTreeDataWriteUtility.WriteShared(writer, "AttackCooldownTime", attackCooldownTime);
+      BehaviorTreeDataWriteUtility.WriteUnity<FollowDescription>(writer, "Description", description);
     }
 
-    public new void DataRead(IDataReader reader, System.Type type)
+    public new void DataRead(IDataReader reader, Type type)
     {
-      this.nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
-      this.id = DefaultDataReadUtility.Read(reader, "Id", this.id);
-      this.friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", this.friendlyName);
-      this.instant = DefaultDataReadUtility.Read(reader, "Instant", this.instant);
-      this.disabled = DefaultDataReadUtility.Read(reader, "Disabled", this.disabled);
-      this.attackTime = BehaviorTreeDataReadUtility.ReadShared<SharedFloat>(reader, "AttackTime", this.attackTime);
-      this.commonAttacks = BehaviorTreeDataReadUtility.ReadShared<SharedBool>(reader, "CommonAttacks", this.commonAttacks);
-      this.ruinBlocks = BehaviorTreeDataReadUtility.ReadShared<SharedBool>(reader, "RuinBlocks", this.ruinBlocks);
-      this.ruinBlockMinTime = BehaviorTreeDataReadUtility.ReadShared<SharedFloat>(reader, "RuinBlockMinTime", this.ruinBlockMinTime);
-      this.ruinBlockMaxTime = BehaviorTreeDataReadUtility.ReadShared<SharedFloat>(reader, "RuinBlockMaxTime", this.ruinBlockMaxTime);
-      this.zeroRuinBlockProbability = BehaviorTreeDataReadUtility.ReadShared<SharedFloat>(reader, "ZeroRuinBlockProbability", this.zeroRuinBlockProbability);
-      this.attackInMovement = BehaviorTreeDataReadUtility.ReadShared<SharedBool>(reader, "AttackInMovement", this.attackInMovement);
-      this.counterAttacksProbability = BehaviorTreeDataReadUtility.ReadShared<SharedFloat>(reader, "CounterAttacksProbability", this.counterAttacksProbability);
-      this.knockDowns = BehaviorTreeDataReadUtility.ReadShared<SharedBool>(reader, "KnockDowns", this.knockDowns);
-      this.attackCooldownTime = BehaviorTreeDataReadUtility.ReadShared<SharedFloat>(reader, "AttackCooldownTime", this.attackCooldownTime);
-      this.description = BehaviorTreeDataReadUtility.ReadUnity<FollowDescription>(reader, "Description", this.description);
+      nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
+      id = DefaultDataReadUtility.Read(reader, "Id", id);
+      friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
+      instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
+      disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
+      attackTime = BehaviorTreeDataReadUtility.ReadShared(reader, "AttackTime", attackTime);
+      commonAttacks = BehaviorTreeDataReadUtility.ReadShared(reader, "CommonAttacks", commonAttacks);
+      ruinBlocks = BehaviorTreeDataReadUtility.ReadShared(reader, "RuinBlocks", ruinBlocks);
+      ruinBlockMinTime = BehaviorTreeDataReadUtility.ReadShared(reader, "RuinBlockMinTime", ruinBlockMinTime);
+      ruinBlockMaxTime = BehaviorTreeDataReadUtility.ReadShared(reader, "RuinBlockMaxTime", ruinBlockMaxTime);
+      zeroRuinBlockProbability = BehaviorTreeDataReadUtility.ReadShared(reader, "ZeroRuinBlockProbability", zeroRuinBlockProbability);
+      attackInMovement = BehaviorTreeDataReadUtility.ReadShared(reader, "AttackInMovement", attackInMovement);
+      counterAttacksProbability = BehaviorTreeDataReadUtility.ReadShared(reader, "CounterAttacksProbability", counterAttacksProbability);
+      knockDowns = BehaviorTreeDataReadUtility.ReadShared(reader, "KnockDowns", knockDowns);
+      attackCooldownTime = BehaviorTreeDataReadUtility.ReadShared(reader, "AttackCooldownTime", attackCooldownTime);
+      description = BehaviorTreeDataReadUtility.ReadUnity<FollowDescription>(reader, "Description", description);
     }
   }
 }

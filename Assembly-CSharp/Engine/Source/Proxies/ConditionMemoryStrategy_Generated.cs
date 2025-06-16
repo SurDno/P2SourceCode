@@ -1,9 +1,9 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons.Cloneable;
 using Engine.Common.Commons.Converters;
 using Engine.Source.Otimizations;
-using System;
 
 namespace Engine.Source.Proxies
 {
@@ -18,27 +18,27 @@ namespace Engine.Source.Proxies
     public object Clone()
     {
       ConditionMemoryStrategy_Generated instance = Activator.CreateInstance<ConditionMemoryStrategy_Generated>();
-      this.CopyTo((object) instance);
-      return (object) instance;
+      CopyTo(instance);
+      return instance;
     }
 
     public void CopyTo(object target2)
     {
       ConditionMemoryStrategy_Generated strategyGenerated = (ConditionMemoryStrategy_Generated) target2;
-      CloneableObjectUtility.FillListTo<MemoryStrategyContextEnum>(strategyGenerated.contexts, this.contexts);
-      strategyGenerated.item = CloneableObjectUtility.Clone<IMemoryStrategy>(this.item);
+      CloneableObjectUtility.FillListTo(strategyGenerated.contexts, contexts);
+      strategyGenerated.item = CloneableObjectUtility.Clone(item);
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.WriteListEnum<MemoryStrategyContextEnum>(writer, "Contexts", this.contexts);
-      DefaultDataWriteUtility.WriteSerialize<IMemoryStrategy>(writer, "Item", this.item);
+      DefaultDataWriteUtility.WriteListEnum(writer, "Contexts", contexts);
+      DefaultDataWriteUtility.WriteSerialize(writer, "Item", item);
     }
 
     public void DataRead(IDataReader reader, Type type)
     {
-      this.contexts = DefaultDataReadUtility.ReadListEnum<MemoryStrategyContextEnum>(reader, "Contexts", this.contexts);
-      this.item = DefaultDataReadUtility.ReadSerialize<IMemoryStrategy>(reader, "Item");
+      contexts = DefaultDataReadUtility.ReadListEnum(reader, "Contexts", contexts);
+      item = DefaultDataReadUtility.ReadSerialize<IMemoryStrategy>(reader, "Item");
     }
   }
 }

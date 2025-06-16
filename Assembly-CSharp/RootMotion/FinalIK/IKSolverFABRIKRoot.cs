@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEngine;
 
 namespace RootMotion.FinalIK
 {
@@ -8,7 +7,7 @@ namespace RootMotion.FinalIK
   {
     public int iterations = 4;
     [Range(0.0f, 1f)]
-    public float rootPin = 0.0f;
+    public float rootPin;
     public FABRIKChain[] chains = new FABRIKChain[0];
     private bool zeroWeightApplied;
     private bool[] isRoot;
@@ -16,66 +15,66 @@ namespace RootMotion.FinalIK
 
     public override bool IsValid(ref string message)
     {
-      if (this.chains.Length == 0)
+      if (chains.Length == 0)
       {
         message = "IKSolverFABRIKRoot contains no chains.";
         return false;
       }
-      foreach (FABRIKChain chain in this.chains)
+      foreach (FABRIKChain chain in chains)
       {
         if (!chain.IsValid(ref message))
           return false;
       }
-      for (int index1 = 0; index1 < this.chains.Length; ++index1)
+      for (int index1 = 0; index1 < chains.Length; ++index1)
       {
-        for (int index2 = 0; index2 < this.chains.Length; ++index2)
+        for (int index2 = 0; index2 < chains.Length; ++index2)
         {
-          if (index1 != index2 && (UnityEngine.Object) this.chains[index1].ik == (UnityEngine.Object) this.chains[index2].ik)
+          if (index1 != index2 && (UnityEngine.Object) chains[index1].ik == (UnityEngine.Object) chains[index2].ik)
           {
-            message = this.chains[index1].ik.name + " is represented more than once in IKSolverFABRIKRoot chain.";
+            message = chains[index1].ik.name + " is represented more than once in IKSolverFABRIKRoot chain.";
             return false;
           }
         }
       }
-      for (int index3 = 0; index3 < this.chains.Length; ++index3)
+      for (int index3 = 0; index3 < chains.Length; ++index3)
       {
-        for (int index4 = 0; index4 < this.chains[index3].children.Length; ++index4)
+        for (int index4 = 0; index4 < chains[index3].children.Length; ++index4)
         {
-          int child = this.chains[index3].children[index4];
+          int child = chains[index3].children[index4];
           if (child < 0)
           {
-            message = this.chains[index3].ik.name + "IKSolverFABRIKRoot chain at index " + (object) index3 + " has invalid children array. Child index is < 0.";
+            message = chains[index3].ik.name + "IKSolverFABRIKRoot chain at index " + index3 + " has invalid children array. Child index is < 0.";
             return false;
           }
           if (child == index3)
           {
-            message = this.chains[index3].ik.name + "IKSolverFABRIKRoot chain at index " + (object) index3 + " has invalid children array. Child index is referencing to itself.";
+            message = chains[index3].ik.name + "IKSolverFABRIKRoot chain at index " + index3 + " has invalid children array. Child index is referencing to itself.";
             return false;
           }
-          if (child >= this.chains.Length)
+          if (child >= chains.Length)
           {
-            message = this.chains[index3].ik.name + "IKSolverFABRIKRoot chain at index " + (object) index3 + " has invalid children array. Child index > number of chains";
+            message = chains[index3].ik.name + "IKSolverFABRIKRoot chain at index " + index3 + " has invalid children array. Child index > number of chains";
             return false;
           }
-          for (int index5 = 0; index5 < this.chains.Length; ++index5)
+          for (int index5 = 0; index5 < chains.Length; ++index5)
           {
             if (child == index5)
             {
-              for (int index6 = 0; index6 < this.chains[index5].children.Length; ++index6)
+              for (int index6 = 0; index6 < chains[index5].children.Length; ++index6)
               {
-                if (this.chains[index5].children[index6] == index3)
+                if (chains[index5].children[index6] == index3)
                 {
-                  message = "Circular parenting. " + this.chains[index5].ik.name + " already has " + this.chains[index3].ik.name + " listed as it's child.";
+                  message = "Circular parenting. " + chains[index5].ik.name + " already has " + chains[index3].ik.name + " listed as it's child.";
                   return false;
                 }
               }
             }
           }
-          for (int index7 = 0; index7 < this.chains[index3].children.Length; ++index7)
+          for (int index7 = 0; index7 < chains[index3].children.Length; ++index7)
           {
-            if (index4 != index7 && this.chains[index3].children[index7] == child)
+            if (index4 != index7 && chains[index3].children[index7] == child)
             {
-              message = "Chain number " + (object) child + " is represented more than once in the children of " + this.chains[index3].ik.name;
+              message = "Chain number " + child + " is represented more than once in the children of " + chains[index3].ik.name;
               return false;
             }
           }
@@ -86,36 +85,36 @@ namespace RootMotion.FinalIK
 
     public override void StoreDefaultLocalState()
     {
-      this.rootDefaultPosition = this.root.localPosition;
-      for (int index = 0; index < this.chains.Length; ++index)
-        this.chains[index].ik.solver.StoreDefaultLocalState();
+      rootDefaultPosition = root.localPosition;
+      for (int index = 0; index < chains.Length; ++index)
+        chains[index].ik.solver.StoreDefaultLocalState();
     }
 
     public override void FixTransforms()
     {
-      if (!this.initiated)
+      if (!initiated)
         return;
-      this.root.localPosition = this.rootDefaultPosition;
-      for (int index = 0; index < this.chains.Length; ++index)
-        this.chains[index].ik.solver.FixTransforms();
+      root.localPosition = rootDefaultPosition;
+      for (int index = 0; index < chains.Length; ++index)
+        chains[index].ik.solver.FixTransforms();
     }
 
     protected override void OnInitiate()
     {
-      for (int index = 0; index < this.chains.Length; ++index)
-        this.chains[index].Initiate();
-      this.isRoot = new bool[this.chains.Length];
-      for (int index = 0; index < this.chains.Length; ++index)
-        this.isRoot[index] = this.IsRoot(index);
+      for (int index = 0; index < chains.Length; ++index)
+        chains[index].Initiate();
+      isRoot = new bool[chains.Length];
+      for (int index = 0; index < chains.Length; ++index)
+        isRoot[index] = IsRoot(index);
     }
 
     private bool IsRoot(int index)
     {
-      for (int index1 = 0; index1 < this.chains.Length; ++index1)
+      for (int index1 = 0; index1 < chains.Length; ++index1)
       {
-        for (int index2 = 0; index2 < this.chains[index1].children.Length; ++index2)
+        for (int index2 = 0; index2 < chains[index1].children.Length; ++index2)
         {
-          if (this.chains[index1].children[index2] == index)
+          if (chains[index1].children[index2] == index)
             return false;
         }
       }
@@ -124,59 +123,59 @@ namespace RootMotion.FinalIK
 
     protected override void OnUpdate()
     {
-      if ((double) this.IKPositionWeight <= 0.0 && this.zeroWeightApplied)
+      if (IKPositionWeight <= 0.0 && zeroWeightApplied)
         return;
-      this.IKPositionWeight = Mathf.Clamp(this.IKPositionWeight, 0.0f, 1f);
-      for (int index = 0; index < this.chains.Length; ++index)
-        this.chains[index].ik.solver.IKPositionWeight = this.IKPositionWeight;
-      if ((double) this.IKPositionWeight <= 0.0)
+      IKPositionWeight = Mathf.Clamp(IKPositionWeight, 0.0f, 1f);
+      for (int index = 0; index < chains.Length; ++index)
+        chains[index].ik.solver.IKPositionWeight = IKPositionWeight;
+      if (IKPositionWeight <= 0.0)
       {
-        this.zeroWeightApplied = true;
+        zeroWeightApplied = true;
       }
       else
       {
-        this.zeroWeightApplied = false;
-        for (int index1 = 0; index1 < this.iterations; ++index1)
+        zeroWeightApplied = false;
+        for (int index1 = 0; index1 < iterations; ++index1)
         {
-          for (int index2 = 0; index2 < this.chains.Length; ++index2)
+          for (int index2 = 0; index2 < chains.Length; ++index2)
           {
-            if (this.isRoot[index2])
-              this.chains[index2].Stage1(this.chains);
+            if (isRoot[index2])
+              chains[index2].Stage1(chains);
           }
-          Vector3 centroid = this.GetCentroid();
-          this.root.position = centroid;
-          for (int index3 = 0; index3 < this.chains.Length; ++index3)
+          Vector3 centroid = GetCentroid();
+          root.position = centroid;
+          for (int index3 = 0; index3 < chains.Length; ++index3)
           {
-            if (this.isRoot[index3])
-              this.chains[index3].Stage2(centroid, this.chains);
+            if (isRoot[index3])
+              chains[index3].Stage2(centroid, chains);
           }
         }
       }
     }
 
-    public override IKSolver.Point[] GetPoints()
+    public override Point[] GetPoints()
     {
-      IKSolver.Point[] array = new IKSolver.Point[0];
-      for (int index = 0; index < this.chains.Length; ++index)
-        this.AddPointsToArray(ref array, this.chains[index]);
+      Point[] array = new Point[0];
+      for (int index = 0; index < chains.Length; ++index)
+        AddPointsToArray(ref array, chains[index]);
       return array;
     }
 
-    public override IKSolver.Point GetPoint(Transform transform)
+    public override Point GetPoint(Transform transform)
     {
-      for (int index = 0; index < this.chains.Length; ++index)
+      for (int index = 0; index < chains.Length; ++index)
       {
-        IKSolver.Point point = this.chains[index].ik.solver.GetPoint(transform);
+        Point point = chains[index].ik.solver.GetPoint(transform);
         if (point != null)
           return point;
       }
-      return (IKSolver.Point) null;
+      return null;
     }
 
-    private void AddPointsToArray(ref IKSolver.Point[] array, FABRIKChain chain)
+    private void AddPointsToArray(ref Point[] array, FABRIKChain chain)
     {
-      IKSolver.Point[] points = chain.ik.solver.GetPoints();
-      Array.Resize<IKSolver.Point>(ref array, array.Length + points.Length);
+      Point[] points = chain.ik.solver.GetPoints();
+      Array.Resize(ref array, array.Length + points.Length);
       int index1 = 0;
       for (int index2 = array.Length - points.Length; index2 < array.Length; ++index2)
       {
@@ -187,21 +186,21 @@ namespace RootMotion.FinalIK
 
     private Vector3 GetCentroid()
     {
-      Vector3 position = this.root.position;
-      if ((double) this.rootPin >= 1.0)
+      Vector3 position = root.position;
+      if (rootPin >= 1.0)
         return position;
       float max = 0.0f;
-      for (int index = 0; index < this.chains.Length; ++index)
+      for (int index = 0; index < chains.Length; ++index)
       {
-        if (this.isRoot[index])
-          max += this.chains[index].pull;
+        if (isRoot[index])
+          max += chains[index].pull;
       }
-      for (int index = 0; index < this.chains.Length; ++index)
+      for (int index = 0; index < chains.Length; ++index)
       {
-        if (this.isRoot[index] && (double) max > 0.0)
-          position += (this.chains[index].ik.solver.bones[0].solverPosition - this.root.position) * (this.chains[index].pull / Mathf.Clamp(max, 1f, max));
+        if (isRoot[index] && max > 0.0)
+          position += (chains[index].ik.solver.bones[0].solverPosition - root.position) * (chains[index].pull / Mathf.Clamp(max, 1f, max));
       }
-      return Vector3.Lerp(position, this.root.position, this.rootPin);
+      return Vector3.Lerp(position, root.position, rootPin);
     }
   }
 }

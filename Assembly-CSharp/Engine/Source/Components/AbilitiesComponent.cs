@@ -1,4 +1,5 @@
-﻿using Engine.Common;
+﻿using System.Collections.Generic;
+using Engine.Common;
 using Engine.Common.Commons;
 using Engine.Common.Commons.Cloneable;
 using Engine.Common.Generator;
@@ -7,8 +8,6 @@ using Engine.Source.Commons;
 using Engine.Source.Commons.Abilities;
 using Engine.Source.Connections;
 using Inspectors;
-using System.Collections.Generic;
-using UnityEngine;
 
 namespace Engine.Source.Components
 {
@@ -16,11 +15,11 @@ namespace Engine.Source.Components
   [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite | TypeEnum.StateSave | TypeEnum.StateLoad)]
   public class AbilitiesComponent : EngineComponent, INeedSave
   {
-    [DataReadProxy(MemberEnum.None, Name = "Abilities")]
-    [DataWriteProxy(MemberEnum.None, Name = "Abilities")]
+    [DataReadProxy(Name = "Abilities")]
+    [DataWriteProxy(Name = "Abilities")]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    [CopyableProxy(MemberEnum.None)]
+    [CopyableProxy()]
     protected List<Typed<IAbility>> resourceAbilities = new List<Typed<IAbility>>();
     [Inspected]
     private List<IAbility> abilities = new List<IAbility>();
@@ -29,14 +28,14 @@ namespace Engine.Source.Components
     {
       get
       {
-        if (!(this.Owner.Template is IEntity template))
+        if (!(Owner.Template is IEntity template))
         {
-          Debug.LogError((object) ("Template not found, owner : " + this.Owner.GetInfo()));
+          Debug.LogError((object) ("Template not found, owner : " + Owner.GetInfo()));
           return true;
         }
         if (template.GetComponent<AbilitiesComponent>() != null)
           return false;
-        Debug.LogError((object) (this.GetType().Name + " not found, owner : " + this.Owner.GetInfo()));
+        Debug.LogError((object) (GetType().Name + " not found, owner : " + Owner.GetInfo()));
         return true;
       }
     }
@@ -44,26 +43,26 @@ namespace Engine.Source.Components
     public override void OnAdded()
     {
       base.OnAdded();
-      foreach (Typed<IAbility> resourceAbility in this.resourceAbilities)
+      foreach (Typed<IAbility> resourceAbility in resourceAbilities)
       {
         IAbility source = resourceAbility.Value;
         if (source != null)
         {
-          IAbility ability = CloneableObjectUtility.Clone<IAbility>(source);
-          this.abilities.Add(ability);
-          ((Ability) ability).Initialise(this.Owner);
+          IAbility ability = CloneableObjectUtility.Clone(source);
+          abilities.Add(ability);
+          ((Ability) ability).Initialise(Owner);
         }
       }
     }
 
     public override void OnRemoved()
     {
-      foreach (IAbility ability in this.abilities)
+      foreach (IAbility ability in abilities)
       {
         ((Ability) ability).Shutdown();
         ((EngineObject) ability).Dispose();
       }
-      this.abilities.Clear();
+      abilities.Clear();
       base.OnRemoved();
     }
   }

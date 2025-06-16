@@ -1,12 +1,11 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons.Cloneable;
 using Engine.Common.Commons.Converters;
 using Engine.Common.Services;
 using Engine.Source.Inventory;
 using Scripts.Tools.Serializations.Converters;
-using System;
-using UnityEngine;
 
 namespace Engine.Source.Proxies
 {
@@ -20,44 +19,44 @@ namespace Engine.Source.Proxies
   {
     public object Clone()
     {
-      return (object) ServiceCache.Factory.Instantiate<InventoryPlaceholder_Generated>(this);
+      return ServiceCache.Factory.Instantiate(this);
     }
 
     public void CopyTo(object target2)
     {
       InventoryPlaceholder_Generated placeholderGenerated = (InventoryPlaceholder_Generated) target2;
-      placeholderGenerated.name = this.name;
-      placeholderGenerated.grid = this.grid;
-      placeholderGenerated.imageInventoryCell = this.imageInventoryCell;
-      placeholderGenerated.imageInventorySlot = this.imageInventorySlot;
-      placeholderGenerated.imageInventorySlotBig = this.imageInventorySlotBig;
-      placeholderGenerated.imageInformation = this.imageInformation;
-      placeholderGenerated.imageInformationSpecial = this.imageInformationSpecial;
-      placeholderGenerated.soundGroup = this.soundGroup;
+      placeholderGenerated.name = name;
+      placeholderGenerated.grid = grid;
+      placeholderGenerated.imageInventoryCell = imageInventoryCell;
+      placeholderGenerated.imageInventorySlot = imageInventorySlot;
+      placeholderGenerated.imageInventorySlotBig = imageInventorySlotBig;
+      placeholderGenerated.imageInformation = imageInformation;
+      placeholderGenerated.imageInformationSpecial = imageInformationSpecial;
+      placeholderGenerated.soundGroup = soundGroup;
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.Write(writer, "Id", this.id);
-      UnityDataWriteUtility.Write<IInventoryGridLimited>(writer, "Grid", this.grid);
-      UnityDataWriteUtility.Write<Sprite>(writer, "ImageInventoryCell", this.imageInventoryCell);
-      UnityDataWriteUtility.Write<Sprite>(writer, "ImageInventorySlot", this.imageInventorySlot);
-      UnityDataWriteUtility.Write<Sprite>(writer, "ImageInventorySlotBig", this.imageInventorySlotBig);
-      UnityDataWriteUtility.Write<Sprite>(writer, "ImageInformation", this.imageInformation);
-      UnityDataWriteUtility.Write<Sprite>(writer, "ImageInformationSpecial", this.imageInformationSpecial);
-      UnityDataWriteUtility.Write<ItemSoundGroup>(writer, "SoundGroup", this.soundGroup);
+      DefaultDataWriteUtility.Write(writer, "Id", id);
+      UnityDataWriteUtility.Write(writer, "Grid", grid);
+      UnityDataWriteUtility.Write(writer, "ImageInventoryCell", imageInventoryCell);
+      UnityDataWriteUtility.Write(writer, "ImageInventorySlot", imageInventorySlot);
+      UnityDataWriteUtility.Write(writer, "ImageInventorySlotBig", imageInventorySlotBig);
+      UnityDataWriteUtility.Write(writer, "ImageInformation", imageInformation);
+      UnityDataWriteUtility.Write(writer, "ImageInformationSpecial", imageInformationSpecial);
+      UnityDataWriteUtility.Write<ItemSoundGroup>(writer, "SoundGroup", soundGroup);
     }
 
-    public void DataRead(IDataReader reader, System.Type type)
+    public void DataRead(IDataReader reader, Type type)
     {
-      this.id = DefaultDataReadUtility.Read(reader, "Id", this.id);
-      this.grid = UnityDataReadUtility.Read<IInventoryGridLimited>(reader, "Grid", this.grid);
-      this.imageInventoryCell = UnityDataReadUtility.Read<Sprite>(reader, "ImageInventoryCell", this.imageInventoryCell);
-      this.imageInventorySlot = UnityDataReadUtility.Read<Sprite>(reader, "ImageInventorySlot", this.imageInventorySlot);
-      this.imageInventorySlotBig = UnityDataReadUtility.Read<Sprite>(reader, "ImageInventorySlotBig", this.imageInventorySlotBig);
-      this.imageInformation = UnityDataReadUtility.Read<Sprite>(reader, "ImageInformation", this.imageInformation);
-      this.imageInformationSpecial = UnityDataReadUtility.Read<Sprite>(reader, "ImageInformationSpecial", this.imageInformationSpecial);
-      this.soundGroup = UnityDataReadUtility.Read<ItemSoundGroup>(reader, "SoundGroup", this.soundGroup);
+      id = DefaultDataReadUtility.Read(reader, "Id", id);
+      grid = UnityDataReadUtility.Read(reader, "Grid", grid);
+      imageInventoryCell = UnityDataReadUtility.Read(reader, "ImageInventoryCell", imageInventoryCell);
+      imageInventorySlot = UnityDataReadUtility.Read(reader, "ImageInventorySlot", imageInventorySlot);
+      imageInventorySlotBig = UnityDataReadUtility.Read(reader, "ImageInventorySlotBig", imageInventorySlotBig);
+      imageInformation = UnityDataReadUtility.Read(reader, "ImageInformation", imageInformation);
+      imageInformationSpecial = UnityDataReadUtility.Read(reader, "ImageInformationSpecial", imageInformationSpecial);
+      soundGroup = UnityDataReadUtility.Read<ItemSoundGroup>(reader, "SoundGroup", soundGroup);
     }
   }
 }

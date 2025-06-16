@@ -1,5 +1,4 @@
 ﻿using Engine.Behaviours.Components;
-using UnityEngine;
 
 public class NpcStateIdlePresetTest : NpcStateIdlePreset
 {
@@ -10,12 +9,12 @@ public class NpcStateIdlePresetTest : NpcStateIdlePreset
 
   public void Activate(IdlePresetObject target)
   {
-    if (!this.TryInit())
+    if (!TryInit())
       return;
-    this.preset = target;
-    this.rigidbody.isKinematic = true;
-    this.rigidbody.useGravity = false;
-    this.animator.updateMode = AnimatorUpdateMode.Normal;
-    this.SetIdle();
+    preset = target;
+    rigidbody.isKinematic = true;
+    rigidbody.useGravity = false;
+    animator.updateMode = AnimatorUpdateMode.Normal;
+    SetIdle();
   }
 }

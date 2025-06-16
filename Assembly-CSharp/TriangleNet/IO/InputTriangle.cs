@@ -11,18 +11,18 @@ namespace TriangleNet.IO
 
     public InputTriangle(int p0, int p1, int p2)
     {
-      this.vertices = new int[3]{ p0, p1, p2 };
+      vertices = new int[3]{ p0, p1, p2 };
     }
 
     public int ID => 0;
 
-    public int P0 => this.vertices[0];
+    public int P0 => vertices[0];
 
-    public int P1 => this.vertices[1];
+    public int P1 => vertices[1];
 
-    public int P2 => this.vertices[2];
+    public int P2 => vertices[2];
 
-    public Vertex GetVertex(int index) => (Vertex) null;
+    public Vertex GetVertex(int index) => null;
 
     public bool SupportsNeighbors => false;
 
@@ -32,20 +32,20 @@ namespace TriangleNet.IO
 
     public int N2 => -1;
 
-    public ITriangle GetNeighbor(int index) => (ITriangle) null;
+    public ITriangle GetNeighbor(int index) => null;
 
-    public ISegment GetSegment(int index) => (ISegment) null;
+    public ISegment GetSegment(int index) => null;
 
     public double Area
     {
-      get => this.area;
-      set => this.area = value;
+      get => area;
+      set => area = value;
     }
 
     public int Region
     {
-      get => this.region;
-      set => this.region = value;
+      get => region;
+      set => region = value;
     }
   }
 }

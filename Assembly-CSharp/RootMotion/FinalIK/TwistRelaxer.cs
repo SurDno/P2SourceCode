@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace RootMotion.FinalIK
+﻿namespace RootMotion.FinalIK
 {
   public class TwistRelaxer : MonoBehaviour
   {
@@ -23,65 +21,65 @@ namespace RootMotion.FinalIK
 
     public void Relax()
     {
-      if ((double) this.weight <= 0.0)
+      if (weight <= 0.0)
         return;
       Quaternion rotation1 = this.transform.rotation;
-      Quaternion quaternion1 = Quaternion.AngleAxis(this.twistAngleOffset, rotation1 * this.twistAxis);
+      Quaternion quaternion1 = Quaternion.AngleAxis(twistAngleOffset, rotation1 * twistAxis);
       Quaternion quaternion2 = quaternion1 * rotation1;
-      Vector3 vector3_1 = Vector3.Slerp(quaternion1 * this.parent.rotation * this.axisRelativeToParentDefault, quaternion1 * this.child.rotation * this.axisRelativeToChildDefault, this.parentChildCrossfade);
-      Vector3 vector3_2 = Quaternion.Inverse(Quaternion.LookRotation(quaternion2 * this.axis, quaternion2 * this.twistAxis)) * vector3_1;
+      Vector3 vector3_1 = Vector3.Slerp(quaternion1 * parent.rotation * axisRelativeToParentDefault, quaternion1 * child.rotation * axisRelativeToChildDefault, parentChildCrossfade);
+      Vector3 vector3_2 = Quaternion.Inverse(Quaternion.LookRotation(quaternion2 * axis, quaternion2 * twistAxis)) * vector3_1;
       float num = Mathf.Atan2(vector3_2.x, vector3_2.z) * 57.29578f;
-      Quaternion rotation2 = this.child.rotation;
-      this.transform.rotation = Quaternion.AngleAxis(num * this.weight, quaternion2 * this.twistAxis) * quaternion2;
-      this.child.rotation = rotation2;
+      Quaternion rotation2 = child.rotation;
+      this.transform.rotation = Quaternion.AngleAxis(num * weight, quaternion2 * twistAxis) * quaternion2;
+      child.rotation = rotation2;
     }
 
     private void Start()
     {
-      this.parent = this.transform.parent;
+      parent = this.transform.parent;
       if (this.transform.childCount == 0)
       {
-        Transform[] componentsInChildren = this.parent.GetComponentsInChildren<Transform>();
+        Transform[] componentsInChildren = parent.GetComponentsInChildren<Transform>();
         for (int index = 1; index < componentsInChildren.Length; ++index)
         {
           if ((Object) componentsInChildren[index] != (Object) this.transform)
           {
-            this.child = componentsInChildren[index];
+            child = componentsInChildren[index];
             break;
           }
         }
       }
       else
-        this.child = this.transform.GetChild(0);
-      this.twistAxis = this.transform.InverseTransformDirection(this.child.position - this.transform.position);
-      this.axis = new Vector3(this.twistAxis.y, this.twistAxis.z, this.twistAxis.x);
-      Vector3 vector3 = this.transform.rotation * this.axis;
-      this.axisRelativeToParentDefault = Quaternion.Inverse(this.parent.rotation) * vector3;
-      this.axisRelativeToChildDefault = Quaternion.Inverse(this.child.rotation) * vector3;
-      if (!((Object) this.ik != (Object) null))
+        child = this.transform.GetChild(0);
+      twistAxis = this.transform.InverseTransformDirection(child.position - this.transform.position);
+      axis = new Vector3(twistAxis.y, twistAxis.z, twistAxis.x);
+      Vector3 vector3 = this.transform.rotation * axis;
+      axisRelativeToParentDefault = Quaternion.Inverse(parent.rotation) * vector3;
+      axisRelativeToChildDefault = Quaternion.Inverse(child.rotation) * vector3;
+      if (!((Object) ik != (Object) null))
         return;
-      this.ik.GetIKSolver().OnPostUpdate += new IKSolver.UpdateDelegate(this.OnPostUpdate);
+      ik.GetIKSolver().OnPostUpdate += OnPostUpdate;
     }
 
     private void OnPostUpdate()
     {
-      if (!((Object) this.ik != (Object) null))
+      if (!((Object) ik != (Object) null))
         return;
-      this.Relax();
+      Relax();
     }
 
     private void LateUpdate()
     {
-      if (!((Object) this.ik == (Object) null))
+      if (!((Object) ik == (Object) null))
         return;
-      this.Relax();
+      Relax();
     }
 
     private void OnDestroy()
     {
-      if (!((Object) this.ik != (Object) null))
+      if (!((Object) ik != (Object) null))
         return;
-      this.ik.GetIKSolver().OnPostUpdate -= new IKSolver.UpdateDelegate(this.OnPostUpdate);
+      ik.GetIKSolver().OnPostUpdate -= OnPostUpdate;
     }
   }
 }

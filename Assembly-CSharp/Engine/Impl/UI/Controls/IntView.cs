@@ -1,32 +1,31 @@
 ﻿using System;
-using UnityEngine;
 
 namespace Engine.Impl.UI.Controls
 {
   public abstract class IntView : FloatView
   {
     [SerializeField]
-    private int intValue = 0;
+    private int intValue;
 
     public int IntValue
     {
-      get => this.intValue;
+      get => intValue;
       set
       {
-        if (this.intValue == value)
+        if (intValue == value)
           return;
-        this.intValue = value;
-        this.ApplyIntValue();
+        intValue = value;
+        ApplyIntValue();
       }
     }
 
     public override float FloatValue
     {
-      get => (float) this.IntValue;
-      set => this.IntValue = Convert.ToInt32(value);
+      get => IntValue;
+      set => IntValue = Convert.ToInt32(value);
     }
 
-    protected virtual void OnValidate() => this.ApplyIntValue();
+    protected virtual void OnValidate() => ApplyIntValue();
 
     protected abstract void ApplyIntValue();
   }

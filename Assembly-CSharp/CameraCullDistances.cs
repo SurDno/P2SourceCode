@@ -1,27 +1,26 @@
-﻿using Inspectors;
-using System;
-using UnityEngine;
+﻿using System;
+using Inspectors;
 
 [RequireComponent(typeof (Camera))]
 public class CameraCullDistances : MonoBehaviour
 {
   [SerializeField]
-  private CameraCullDistances.LayerFarClipping[] layerFarClippings = new CameraCullDistances.LayerFarClipping[0];
+  private LayerFarClipping[] layerFarClippings = new LayerFarClipping[0];
   [SerializeField]
   private float defaultFarClippingPlane = 150f;
 
-  private void Awake() => this.ApplyImpl();
+  private void Awake() => ApplyImpl();
 
   [Inspected]
-  private void Apply() => this.ApplyImpl();
+  private void Apply() => ApplyImpl();
 
   private void ApplyImpl()
   {
     Camera component = this.GetComponent<Camera>();
     float[] numArray = new float[32];
     for (int index = 0; index < 32; ++index)
-      numArray[index] = this.defaultFarClippingPlane;
-    foreach (CameraCullDistances.LayerFarClipping layerFarClipping in this.layerFarClippings)
+      numArray[index] = defaultFarClippingPlane;
+    foreach (LayerFarClipping layerFarClipping in layerFarClippings)
     {
       int index = layerFarClipping.Layer.GetIndex();
       numArray[index] = layerFarClipping.FarClippingPlane;

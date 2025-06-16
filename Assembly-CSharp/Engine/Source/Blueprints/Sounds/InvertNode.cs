@@ -11,6 +11,6 @@ namespace Engine.Source.Blueprints.Sounds
     private ValueInput<bool> valueInput;
 
     [Port("Value")]
-    private bool Value() => !this.valueInput.value;
+    private bool Value() => !valueInput.value;
   }
 }

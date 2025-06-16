@@ -1,6 +1,5 @@
 ﻿using Engine.Behaviours.Components;
 using Inspectors;
-using UnityEngine;
 
 public class PlayerTerrainCollisionController : MonoBehaviour
 {
@@ -18,47 +17,47 @@ public class PlayerTerrainCollisionController : MonoBehaviour
 
   private void Awake()
   {
-    this.playerMoveController = this.GetComponent<PlayerMoveController>();
-    this.playerMoveController.DisableMovement = true;
+    playerMoveController = this.GetComponent<PlayerMoveController>();
+    playerMoveController.DisableMovement = true;
   }
 
   private void OnEnable()
   {
-    this.entry = false;
-    this.inited = false;
+    entry = false;
+    inited = false;
   }
 
   private void OnDisable()
   {
-    Physics.IgnoreLayerCollision(this.player.GetIndex(), this.removeLayer.GetIndex(), false);
-    this.playerMoveController.DisableMovement = true;
-    this.inited = false;
+    Physics.IgnoreLayerCollision(player.GetIndex(), removeLayer.GetIndex(), false);
+    playerMoveController.DisableMovement = true;
+    inited = false;
   }
 
   private void OnDestroy()
   {
-    Physics.IgnoreLayerCollision(this.player.GetIndex(), this.removeLayer.GetIndex(), false);
+    Physics.IgnoreLayerCollision(player.GetIndex(), removeLayer.GetIndex(), false);
   }
 
   private void FixedUpdate()
   {
-    if (this.tmpEntry != this.entry)
+    if (tmpEntry != entry)
     {
-      this.entry = this.tmpEntry;
-      Physics.IgnoreLayerCollision(this.player.GetIndex(), this.removeLayer.GetIndex(), this.entry);
+      entry = tmpEntry;
+      Physics.IgnoreLayerCollision(player.GetIndex(), removeLayer.GetIndex(), entry);
     }
-    if (!this.inited)
+    if (!inited)
     {
-      this.playerMoveController.DisableMovement = false;
-      this.inited = true;
+      playerMoveController.DisableMovement = false;
+      inited = true;
     }
-    this.tmpEntry = false;
+    tmpEntry = false;
   }
 
   private void OnTriggerStay(Collider other)
   {
-    if (!(other.gameObject.tag == this.colliderTag))
+    if (!(other.gameObject.tag == colliderTag))
       return;
-    this.tmpEntry = true;
+    tmpEntry = true;
   }
 }

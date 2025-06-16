@@ -1,5 +1,5 @@
-﻿using Scripts.Utility;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Scripts.Utility;
 
 namespace UnityEngine
 {
@@ -18,14 +18,14 @@ namespace UnityEngine
       int num;
       while (true)
       {
-        num = Physics.RaycastNonAlloc(origin, direction, PhysicsUtility.tmp, maxDistance);
-        if (num == PhysicsUtility.tmp.Length)
-          PhysicsUtility.tmp = new RaycastHit[PhysicsUtility.tmp.Length + 1024];
+        num = Physics.RaycastNonAlloc(origin, direction, tmp, maxDistance);
+        if (num == tmp.Length)
+          tmp = new RaycastHit[tmp.Length + 1024];
         else
           break;
       }
       for (int index = 0; index < num; ++index)
-        result.Add(PhysicsUtility.tmp[index]);
+        result.Add(tmp[index]);
       result.Sort((IComparer<RaycastHit>) RaycastComparer.Instance);
     }
 
@@ -41,14 +41,14 @@ namespace UnityEngine
       int num;
       while (true)
       {
-        num = Physics.RaycastNonAlloc(origin, direction, PhysicsUtility.tmp, maxDistance, layerMask, queryTriggerInteraction);
-        if (num == PhysicsUtility.tmp.Length)
-          PhysicsUtility.tmp = new RaycastHit[PhysicsUtility.tmp.Length + 1024];
+        num = Physics.RaycastNonAlloc(origin, direction, tmp, maxDistance, layerMask, queryTriggerInteraction);
+        if (num == tmp.Length)
+          tmp = new RaycastHit[tmp.Length + 1024];
         else
           break;
       }
       for (int index = 0; index < num; ++index)
-        result.Add(PhysicsUtility.tmp[index]);
+        result.Add(tmp[index]);
       result.Sort((IComparer<RaycastHit>) RaycastComparer.Instance);
     }
 
@@ -63,14 +63,14 @@ namespace UnityEngine
       int num;
       while (true)
       {
-        num = Physics.RaycastNonAlloc(origin, direction, PhysicsUtility.tmp, maxDistance, layerMask);
-        if (num == PhysicsUtility.tmp.Length)
-          PhysicsUtility.tmp = new RaycastHit[PhysicsUtility.tmp.Length + 1024];
+        num = Physics.RaycastNonAlloc(origin, direction, tmp, maxDistance, layerMask);
+        if (num == tmp.Length)
+          tmp = new RaycastHit[tmp.Length + 1024];
         else
           break;
       }
       for (int index = 0; index < num; ++index)
-        result.Add(PhysicsUtility.tmp[index]);
+        result.Add(tmp[index]);
       result.Sort((IComparer<RaycastHit>) RaycastComparer.Instance);
     }
 
@@ -85,14 +85,14 @@ namespace UnityEngine
       int num;
       while (true)
       {
-        num = Physics.RaycastNonAlloc(ray, PhysicsUtility.tmp, maxDistance, layerMask, queryTriggerInteraction);
-        if (num == PhysicsUtility.tmp.Length)
-          PhysicsUtility.tmp = new RaycastHit[PhysicsUtility.tmp.Length + 1024];
+        num = Physics.RaycastNonAlloc(ray, tmp, maxDistance, layerMask, queryTriggerInteraction);
+        if (num == tmp.Length)
+          tmp = new RaycastHit[tmp.Length + 1024];
         else
           break;
       }
       for (int index = 0; index < num; ++index)
-        result.Add(PhysicsUtility.tmp[index]);
+        result.Add(tmp[index]);
       result.Sort((IComparer<RaycastHit>) RaycastComparer.Instance);
     }
 
@@ -108,14 +108,14 @@ namespace UnityEngine
       int num;
       while (true)
       {
-        num = Physics.SphereCastNonAlloc(ray, radius, PhysicsUtility.tmp, maxDistance, layerMask, queryTriggerInteraction);
-        if (num == PhysicsUtility.tmp.Length)
-          PhysicsUtility.tmp = new RaycastHit[PhysicsUtility.tmp.Length + 1024];
+        num = Physics.SphereCastNonAlloc(ray, radius, tmp, maxDistance, layerMask, queryTriggerInteraction);
+        if (num == tmp.Length)
+          tmp = new RaycastHit[tmp.Length + 1024];
         else
           break;
       }
       for (int index = 0; index < num; ++index)
-        result.Add(PhysicsUtility.tmp[index]);
+        result.Add(tmp[index]);
       result.Sort((IComparer<RaycastHit>) RaycastComparer.Instance);
     }
   }

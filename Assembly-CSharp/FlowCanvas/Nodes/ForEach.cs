@@ -1,14 +1,13 @@
-﻿using ParadoxNotion.Design;
+﻿using System.Collections;
+using ParadoxNotion.Design;
 using ParadoxNotion.FlowCanvas.Module;
-using System;
-using System.Collections;
 
 namespace FlowCanvas.Nodes
 {
   [Description("Enumerate a value (usualy a list or array) for each of it's elements")]
   [Category("Flow Controllers/Iterators")]
-  [ContextDefinedInputs(new Type[] {typeof (IEnumerable)})]
-  [ContextDefinedOutputs(new Type[] {typeof (object)})]
+  [ContextDefinedInputs(typeof (IEnumerable))]
+  [ContextDefinedOutputs(typeof (object))]
   public class ForEach : FlowControlNode
   {
     private object current;
@@ -16,11 +15,11 @@ namespace FlowCanvas.Nodes
 
     protected override void RegisterPorts()
     {
-      ValueInput<IEnumerable> list = this.AddValueInput<IEnumerable>("Value");
-      this.AddValueOutput<object>("Current", (ValueHandler<object>) (() => this.current));
-      FlowOutput fCurrent = this.AddFlowOutput("Do");
-      FlowOutput fFinish = this.AddFlowOutput("Done");
-      this.AddFlowInput("In", (FlowHandler) (() =>
+      ValueInput<IEnumerable> list = AddValueInput<IEnumerable>("Value");
+      AddValueOutput("Current", () => current);
+      FlowOutput fCurrent = AddFlowOutput("Do");
+      FlowOutput fFinish = AddFlowOutput("Done");
+      AddFlowInput("In", () =>
       {
         IEnumerable enumerable = list.value;
         if (enumerable == null)
@@ -29,12 +28,12 @@ namespace FlowCanvas.Nodes
         }
         else
         {
-          this.broken = false;
+          broken = false;
           foreach (object obj in enumerable)
           {
-            if (!this.broken)
+            if (!broken)
             {
-              this.current = obj;
+              current = obj;
               fCurrent.Call();
             }
             else
@@ -42,8 +41,8 @@ namespace FlowCanvas.Nodes
           }
           fFinish.Call();
         }
-      }));
-      this.AddFlowInput("Break", (FlowHandler) (() => this.broken = true));
+      });
+      AddFlowInput("Break", () => broken = true);
     }
   }
 }

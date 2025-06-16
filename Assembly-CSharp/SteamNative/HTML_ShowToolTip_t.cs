@@ -1,6 +1,6 @@
-﻿using Facepunch.Steamworks;
-using System;
+﻿using System;
 using System.Runtime.InteropServices;
+using Facepunch.Steamworks;
 
 namespace SteamNative
 {
@@ -13,7 +13,7 @@ namespace SteamNative
 
     public static HTML_ShowToolTip_t FromPointer(IntPtr p)
     {
-      return Platform.PackSmall ? (HTML_ShowToolTip_t) (HTML_ShowToolTip_t.PackSmall) Marshal.PtrToStructure(p, typeof (HTML_ShowToolTip_t.PackSmall)) : (HTML_ShowToolTip_t) Marshal.PtrToStructure(p, typeof (HTML_ShowToolTip_t));
+      return Platform.PackSmall ? (PackSmall) Marshal.PtrToStructure(p, typeof (PackSmall)) : (HTML_ShowToolTip_t) Marshal.PtrToStructure(p, typeof (HTML_ShowToolTip_t));
     }
 
     public static void RegisterCallback(
@@ -24,54 +24,51 @@ namespace SteamNative
       handle.steamworks = steamworks;
       if (Config.UseThisCall)
       {
-        Callback.ThisCall.Result d1 = (Callback.ThisCall.Result) ((_, p) => CallbackFunction(HTML_ShowToolTip_t.FromPointer(p), false));
-        Callback.ThisCall.ResultWithInfo d2 = (Callback.ThisCall.ResultWithInfo) ((_, p, bIOFailure, hSteamAPICall) => CallbackFunction(HTML_ShowToolTip_t.FromPointer(p), bIOFailure));
-        Callback.ThisCall.GetSize d3 = (Callback.ThisCall.GetSize) (_ => Marshal.SizeOf(typeof (HTML_ShowToolTip_t)));
+        Callback.ThisCall.Result d1 = (_, p) => CallbackFunction(FromPointer(p), false);
+        Callback.ThisCall.ResultWithInfo d2 = (_, p, bIOFailure, hSteamAPICall) => CallbackFunction(FromPointer(p), bIOFailure);
+        Callback.ThisCall.GetSize d3 = _ => Marshal.SizeOf(typeof (HTML_ShowToolTip_t));
         if (Platform.PackSmall)
-          d3 = (Callback.ThisCall.GetSize) (_ => Marshal.SizeOf(typeof (HTML_ShowToolTip_t.PackSmall)));
-        handle.FuncA = GCHandle.Alloc((object) d1);
-        handle.FuncB = GCHandle.Alloc((object) d2);
-        handle.FuncC = GCHandle.Alloc((object) d3);
+          d3 = _ => Marshal.SizeOf(typeof (PackSmall));
+        handle.FuncA = GCHandle.Alloc(d1);
+        handle.FuncB = GCHandle.Alloc(d2);
+        handle.FuncC = GCHandle.Alloc(d3);
         handle.vTablePtr = Marshal.AllocHGlobal(Marshal.SizeOf(typeof (Callback.VTable)));
-        Callback.VTable structure = new Callback.VTable()
-        {
-          ResultA = Marshal.GetFunctionPointerForDelegate<Callback.ThisCall.Result>(d1),
-          ResultB = Marshal.GetFunctionPointerForDelegate<Callback.ThisCall.ResultWithInfo>(d2),
-          GetSize = Marshal.GetFunctionPointerForDelegate<Callback.ThisCall.GetSize>(d3)
+        Callback.VTable structure = new Callback.VTable {
+          ResultA = Marshal.GetFunctionPointerForDelegate(d1),
+          ResultB = Marshal.GetFunctionPointerForDelegate(d2),
+          GetSize = Marshal.GetFunctionPointerForDelegate(d3)
         };
         if (Platform.IsWindows)
         {
-          structure.ResultA = Marshal.GetFunctionPointerForDelegate<Callback.ThisCall.ResultWithInfo>(d2);
-          structure.ResultB = Marshal.GetFunctionPointerForDelegate<Callback.ThisCall.Result>(d1);
+          structure.ResultA = Marshal.GetFunctionPointerForDelegate(d2);
+          structure.ResultB = Marshal.GetFunctionPointerForDelegate(d1);
         }
-        Marshal.StructureToPtr<Callback.VTable>(structure, handle.vTablePtr, false);
+        Marshal.StructureToPtr(structure, handle.vTablePtr, false);
       }
       else
       {
-        Callback.StdCall.Result d4 = (Callback.StdCall.Result) (p => CallbackFunction(HTML_ShowToolTip_t.FromPointer(p), false));
-        Callback.StdCall.ResultWithInfo d5 = (Callback.StdCall.ResultWithInfo) ((p, bIOFailure, hSteamAPICall) => CallbackFunction(HTML_ShowToolTip_t.FromPointer(p), bIOFailure));
-        Callback.StdCall.GetSize d6 = (Callback.StdCall.GetSize) (() => Marshal.SizeOf(typeof (HTML_ShowToolTip_t)));
+        Callback.StdCall.Result d4 = p => CallbackFunction(FromPointer(p), false);
+        Callback.StdCall.ResultWithInfo d5 = (p, bIOFailure, hSteamAPICall) => CallbackFunction(FromPointer(p), bIOFailure);
+        Callback.StdCall.GetSize d6 = () => Marshal.SizeOf(typeof (HTML_ShowToolTip_t));
         if (Platform.PackSmall)
-          d6 = (Callback.StdCall.GetSize) (() => Marshal.SizeOf(typeof (HTML_ShowToolTip_t.PackSmall)));
-        handle.FuncA = GCHandle.Alloc((object) d4);
-        handle.FuncB = GCHandle.Alloc((object) d5);
-        handle.FuncC = GCHandle.Alloc((object) d6);
+          d6 = () => Marshal.SizeOf(typeof (PackSmall));
+        handle.FuncA = GCHandle.Alloc(d4);
+        handle.FuncB = GCHandle.Alloc(d5);
+        handle.FuncC = GCHandle.Alloc(d6);
         handle.vTablePtr = Marshal.AllocHGlobal(Marshal.SizeOf(typeof (Callback.VTable)));
-        Callback.VTable structure = new Callback.VTable()
-        {
-          ResultA = Marshal.GetFunctionPointerForDelegate<Callback.StdCall.Result>(d4),
-          ResultB = Marshal.GetFunctionPointerForDelegate<Callback.StdCall.ResultWithInfo>(d5),
-          GetSize = Marshal.GetFunctionPointerForDelegate<Callback.StdCall.GetSize>(d6)
+        Callback.VTable structure = new Callback.VTable {
+          ResultA = Marshal.GetFunctionPointerForDelegate(d4),
+          ResultB = Marshal.GetFunctionPointerForDelegate(d5),
+          GetSize = Marshal.GetFunctionPointerForDelegate(d6)
         };
         if (Platform.IsWindows)
         {
-          structure.ResultA = Marshal.GetFunctionPointerForDelegate<Callback.StdCall.ResultWithInfo>(d5);
-          structure.ResultB = Marshal.GetFunctionPointerForDelegate<Callback.StdCall.Result>(d4);
+          structure.ResultA = Marshal.GetFunctionPointerForDelegate(d5);
+          structure.ResultB = Marshal.GetFunctionPointerForDelegate(d4);
         }
-        Marshal.StructureToPtr<Callback.VTable>(structure, handle.vTablePtr, false);
+        Marshal.StructureToPtr(structure, handle.vTablePtr, false);
       }
-      handle.PinnedCallback = GCHandle.Alloc((object) new Callback()
-      {
+      handle.PinnedCallback = GCHandle.Alloc(new Callback {
         vTablePtr = handle.vTablePtr,
         CallbackFlags = (steamworks.IsGameServer ? (byte) 2 : (byte) 0),
         CallbackId = 4524
@@ -86,10 +83,9 @@ namespace SteamNative
       public uint UnBrowserHandle;
       public string PchMsg;
 
-      public static implicit operator HTML_ShowToolTip_t(HTML_ShowToolTip_t.PackSmall d)
+      public static implicit operator HTML_ShowToolTip_t(PackSmall d)
       {
-        return new HTML_ShowToolTip_t()
-        {
+        return new HTML_ShowToolTip_t {
           UnBrowserHandle = d.UnBrowserHandle,
           PchMsg = d.PchMsg
         };

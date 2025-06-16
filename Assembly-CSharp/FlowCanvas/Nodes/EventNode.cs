@@ -6,6 +6,6 @@ namespace FlowCanvas.Nodes
   [Color("5cdd5c")]
   public abstract class EventNode : FlowNode
   {
-    public override string name => string.Format("{0}", (object) base.name.ToUpper());
+    public override string name => string.Format("{0}", base.name.ToUpper());
   }
 }

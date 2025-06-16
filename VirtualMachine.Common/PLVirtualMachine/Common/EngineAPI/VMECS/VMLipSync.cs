@@ -1,7 +1,7 @@
-﻿using Engine.Common.Commons;
+﻿using System;
+using Engine.Common.Commons;
 using Engine.Common.Components;
 using PLVirtualMachine.Common.EngineAPI.VMECS.VMAttributes;
-using System;
 
 namespace PLVirtualMachine.Common.EngineAPI.VMECS
 {
@@ -12,21 +12,21 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
 
     protected override void Init()
     {
-      if (!this.InstanceValid)
+      if (!InstanceValid)
         return;
-      this.Component.PlayCompleteEvent += new Action(this.OnPlayCompleteEvent);
+      Component.PlayCompleteEvent += OnPlayCompleteEvent;
     }
 
     public override void Clear()
     {
-      if (!this.InstanceValid)
+      if (!InstanceValid)
         return;
-      this.Component.PlayCompleteEvent -= new Action(this.OnPlayCompleteEvent);
+      Component.PlayCompleteEvent -= OnPlayCompleteEvent;
     }
 
     private void OnPlayCompleteEvent()
     {
-      Action playCompleteEvent = this.PlayCompleteEvent;
+      Action playCompleteEvent = PlayCompleteEvent;
       if (playCompleteEvent == null)
         return;
       playCompleteEvent();
@@ -36,15 +36,15 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
     public event Action PlayCompleteEvent;
 
     [Method("Play", "lipsync object", "")]
-    public void Play(ILipSyncObject lipSync) => this.Component.Play(lipSync, true);
+    public void Play(ILipSyncObject lipSync) => Component.Play(lipSync, true);
 
     [Method("Play3D", "lipsync object", "")]
-    public void Play3D(ILipSyncObject lipSync) => this.Component.Play3D(lipSync, true);
+    public void Play3D(ILipSyncObject lipSync) => Component.Play3D(lipSync, true);
 
     [Method("Play3DWithParams", "lipsync object, minDistance, maxDistance", "")]
     public void Play3DWithParams(ILipSyncObject lipSync, float minDistance, float maxDistance)
     {
-      this.Component.Play3D(lipSync, minDistance, maxDistance, true);
+      Component.Play3D(lipSync, minDistance, maxDistance, true);
     }
   }
 }

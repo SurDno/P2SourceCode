@@ -1,16 +1,16 @@
-﻿using Engine.Common;
+﻿using System;
+using Engine.Common;
 using Engine.Common.Components.Parameters;
 using Engine.Common.Services;
 using Engine.Impl.Services.Simulations;
 using Engine.Source.Commons;
 using Engine.Source.Components;
 using Inspectors;
-using System;
 
 namespace Engine.Source.Services
 {
   [Depend(typeof (ISimulation))]
-  [GameService(new Type[] {typeof (IsDeadListener)})]
+  [GameService(typeof (IsDeadListener))]
   public class IsDeadListener : IInitialisable
   {
     private bool isDead;
@@ -21,13 +21,13 @@ namespace Engine.Source.Services
     [Inspected(Mutable = true)]
     public bool IsDead
     {
-      get => this.isDead;
+      get => isDead;
       private set
       {
-        if (this.isDead == value)
+        if (isDead == value)
           return;
-        this.isDead = value;
-        Action<bool> onIsDeadChanged = this.OnIsDeadChanged;
+        isDead = value;
+        Action<bool> onIsDeadChanged = OnIsDeadChanged;
         if (onIsDeadChanged == null)
           return;
         onIsDeadChanged(value);
@@ -36,29 +36,29 @@ namespace Engine.Source.Services
 
     public void Initialise()
     {
-      ServiceLocator.GetService<Simulation>().OnPlayerChanged += new Action<IEntity>(this.OnPlayerChanged);
-      this.OnPlayerChanged(ServiceLocator.GetService<ISimulation>().Player);
+      ServiceLocator.GetService<Simulation>().OnPlayerChanged += OnPlayerChanged;
+      OnPlayerChanged(ServiceLocator.GetService<ISimulation>().Player);
     }
 
     public void Terminate()
     {
-      ServiceLocator.GetService<Simulation>().OnPlayerChanged -= new Action<IEntity>(this.OnPlayerChanged);
+      ServiceLocator.GetService<Simulation>().OnPlayerChanged -= OnPlayerChanged;
     }
 
     private void OnPlayerChanged(IEntity player)
     {
-      this.parameter = (IParameter<bool>) null;
+      parameter = null;
       if (player != null)
       {
         ParametersComponent component = player.GetComponent<ParametersComponent>();
         if (component != null)
-          this.parameter = component.GetByName<bool>(ParameterNameEnum.Dead);
+          parameter = component.GetByName<bool>(ParameterNameEnum.Dead);
       }
-      this.UpdateValue();
+      UpdateValue();
     }
 
-    private void OnDeadStateChanged(bool value) => this.UpdateValue();
+    private void OnDeadStateChanged(bool value) => UpdateValue();
 
-    private void UpdateValue() => this.IsDead = this.parameter != null && this.parameter.Value;
+    private void UpdateValue() => IsDead = parameter != null && parameter.Value;
   }
 }

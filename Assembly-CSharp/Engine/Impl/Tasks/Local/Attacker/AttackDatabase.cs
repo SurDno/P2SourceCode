@@ -1,8 +1,7 @@
-﻿using Engine.Common.Components.Attacker;
+﻿using System;
+using Engine.Common.Components.Attacker;
 using Engine.Common.Components.AttackerDiseased;
 using Engine.Source.Commons;
-using System;
-using UnityEngine;
 
 namespace Engine.Impl.Tasks.Local.Attacker
 {

@@ -1,21 +1,20 @@
-﻿using Engine.Common.Generator;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using System.Collections.Generic;
+using Engine.Common.Generator;
 
 namespace BehaviorDesigner.Runtime.Tasks
 {
   public abstract class ParentTask : Task
   {
-    [DataReadProxy(MemberEnum.None)]
-    [DataWriteProxy(MemberEnum.None)]
-    [CopyableProxy(MemberEnum.None)]
+    [DataReadProxy]
+    [DataWriteProxy]
+    [CopyableProxy()]
     [SerializeField]
     protected List<Task> children;
 
     public List<Task> Children
     {
-      get => this.children;
-      private set => this.children = value;
+      get => children;
+      private set => children = value;
     }
 
     public virtual int MaxChildren() => int.MaxValue;
@@ -63,12 +62,12 @@ namespace BehaviorDesigner.Runtime.Tasks
     public override float GetUtility()
     {
       float utility = 0.0f;
-      if (this.children != null)
+      if (children != null)
       {
-        for (int index = 0; index < this.children.Count; ++index)
+        for (int index = 0; index < children.Count; ++index)
         {
-          if (this.children[index] != null && !this.children[index].Disabled)
-            utility += this.children[index].GetUtility();
+          if (children[index] != null && !children[index].Disabled)
+            utility += children[index].GetUtility();
         }
       }
       return utility;
@@ -76,28 +75,28 @@ namespace BehaviorDesigner.Runtime.Tasks
 
     public override void OnDrawGizmos()
     {
-      if (this.children == null)
+      if (children == null)
         return;
-      for (int index = 0; index < this.children.Count; ++index)
+      for (int index = 0; index < children.Count; ++index)
       {
-        if (this.children[index] != null && !this.children[index].Disabled)
-          this.children[index].OnDrawGizmos();
+        if (children[index] != null && !children[index].Disabled)
+          children[index].OnDrawGizmos();
       }
     }
 
     public void AddChild(Task child, int index)
     {
-      if (this.children == null)
-        this.children = new List<Task>();
-      this.children.Insert(index, child);
+      if (children == null)
+        children = new List<Task>();
+      children.Insert(index, child);
     }
 
     public void ReplaceAddChild(Task child, int index)
     {
-      if (this.children != null && index < this.children.Count)
-        this.children[index] = child;
+      if (children != null && index < children.Count)
+        children[index] = child;
       else
-        this.AddChild(child, index);
+        AddChild(child, index);
     }
   }
 }

@@ -1,4 +1,5 @@
-﻿using Cofe.Meta;
+﻿using System;
+using Cofe.Meta;
 using Cofe.Utility;
 using Engine.Common;
 using Engine.Common.Services;
@@ -8,9 +9,6 @@ using Engine.Source.Components;
 using Engine.Source.Services;
 using Engine.Source.Services.Gizmos;
 using Engine.Source.Utility;
-using System;
-using System.Linq.Expressions;
-using UnityEngine;
 
 namespace Engine.Source.Debugs
 {
@@ -30,26 +28,26 @@ namespace Engine.Source.Debugs
     private static BoolPlayerProperty hearingVisible;
     private static BoolPlayerProperty movableVisible;
 
-    [Cofe.Meta.Initialise]
+    [Initialise]
     private static void Initialise()
     {
       InstanceByRequest<EngineApplication>.Instance.OnInitialized += (Action) (() =>
       {
-        GroupDebugService.RegisterGroup(SelectionGroupDebug.name, SelectionGroupDebug.key, SelectionGroupDebug.modifficators, new Action(SelectionGroupDebug.Update));
-        SelectionGroupDebug.eyeVisible = BoolPlayerProperty.Create<BoolPlayerProperty>((Expression<Func<BoolPlayerProperty>>) (() => SelectionGroupDebug.eyeVisible));
-        SelectionGroupDebug.hearingVisible = BoolPlayerProperty.Create<BoolPlayerProperty>((Expression<Func<BoolPlayerProperty>>) (() => SelectionGroupDebug.hearingVisible));
-        SelectionGroupDebug.movableVisible = BoolPlayerProperty.Create<BoolPlayerProperty>((Expression<Func<BoolPlayerProperty>>) (() => SelectionGroupDebug.movableVisible));
+        GroupDebugService.RegisterGroup(name, key, modifficators, Update);
+        eyeVisible = BoolPlayerProperty.Create(() => eyeVisible);
+        hearingVisible = BoolPlayerProperty.Create(() => hearingVisible);
+        movableVisible = BoolPlayerProperty.Create(() => movableVisible);
       });
     }
 
     private static void Update()
     {
-      if (InputUtility.IsKeyDown(SelectionGroupDebug.eyeKey, KeyModifficator.Control))
-        SelectionGroupDebug.eyeVisible.Value = !(bool) SelectionGroupDebug.eyeVisible;
-      if (InputUtility.IsKeyDown(SelectionGroupDebug.hearingKey, KeyModifficator.Control))
-        SelectionGroupDebug.hearingVisible.Value = !(bool) SelectionGroupDebug.hearingVisible;
-      if (InputUtility.IsKeyDown(SelectionGroupDebug.movableKey, KeyModifficator.Control))
-        SelectionGroupDebug.movableVisible.Value = !(bool) SelectionGroupDebug.movableVisible;
+      if (InputUtility.IsKeyDown(eyeKey, KeyModifficator.Control))
+        eyeVisible.Value = !eyeVisible;
+      if (InputUtility.IsKeyDown(hearingKey, KeyModifficator.Control))
+        hearingVisible.Value = !hearingVisible;
+      if (InputUtility.IsKeyDown(movableKey, KeyModifficator.Control))
+        movableVisible.Value = !movableVisible;
       Vector3 characterPosition = Vector3.zero;
       IEntity player = ServiceLocator.GetService<ISimulation>().Player;
       if (player != null)
@@ -64,7 +62,7 @@ namespace Engine.Source.Debugs
           {
             Vector3 position = gameObject.transform.position + gameObject.transform.rotation * new Vector3(0.0f, 0.0f, 2f);
             service.DrawText3d(position, "", TextCorner.None, Color.clear);
-            SelectionGroupDebugUtility.DrawDetectable(component1, gameObject.transform.position, gameObject.transform.rotation, (bool) SelectionGroupDebug.eyeVisible, (bool) SelectionGroupDebug.hearingVisible);
+            SelectionGroupDebugUtility.DrawDetectable(component1, gameObject.transform.position, gameObject.transform.rotation, eyeVisible, hearingVisible);
           }
           PlayerControllerComponent component2 = player.GetComponent<PlayerControllerComponent>();
           if (component2 != null)
@@ -80,23 +78,23 @@ namespace Engine.Source.Debugs
           }
         }
       }
-      SelectionGroupDebug.ComputeHotkeys();
-      SelectionGroupDebug.DrawInfo();
-      SelectionGroupDebug.DrawSelected(characterPosition);
-      SelectionGroupDebug.DrawHelp();
+      ComputeHotkeys();
+      DrawInfo();
+      DrawSelected(characterPosition);
+      DrawHelp();
     }
 
     private static void DrawInfo()
     {
-      string text1 = "\n" + SelectionGroupDebug.name + " (" + InputUtility.GetHotKeyText(SelectionGroupDebug.key, SelectionGroupDebug.modifficators) + ")";
-      ServiceLocator.GetService<GizmoService>().DrawText(text1, SelectionGroupDebug.headerColor);
+      string text1 = "\n" + name + " (" + InputUtility.GetHotKeyText(key, modifficators) + ")";
+      ServiceLocator.GetService<GizmoService>().DrawText(text1, headerColor);
       PickingService service = ServiceLocator.GetService<PickingService>();
       if (service == null)
         return;
       if ((UnityEngine.Object) service.TargetGameObject == (UnityEngine.Object) null)
       {
         string text2 = "  Object not found";
-        ServiceLocator.GetService<GizmoService>().DrawText(text2, SelectionGroupDebug.falseColor);
+        ServiceLocator.GetService<GizmoService>().DrawText(text2, falseColor);
       }
       else
       {
@@ -105,7 +103,7 @@ namespace Engine.Source.Debugs
         Color color1 = service.TargetEntity != null ? new Color(1f, 0.1f, 0.0f, 1f) : Color.yellow;
         ServiceLocator.GetService<GizmoService>().DrawBox(bounds.min - vector3, bounds.max + vector3, color1);
         Color color2 = service.TargetEntity != null ? ColorPreset.Orange : Color.yellow;
-        string str = "  Distance : " + (object) service.TargetGameObjectDistance;
+        string str = "  Distance : " + service.TargetGameObjectDistance;
         IEntity targetEntity = service.TargetEntity;
         if (targetEntity != null)
           str = str + "\n  Entity : " + targetEntity.GetInfo() + "\n  Context : " + (targetEntity.Context ?? "null");
@@ -142,12 +140,12 @@ namespace Engine.Source.Debugs
         index = 9;
       if (index == -1)
         return;
-      ServiceLocator.GetService<SelectionService>().SetSelection(index, (object) null);
+      ServiceLocator.GetService<SelectionService>().SetSelection(index, null);
       IEntity targetEntity = service.TargetEntity;
       if (targetEntity != null)
       {
-        ServiceLocator.GetService<SelectionService>().SetSelection(index, (object) targetEntity);
-        Debug.Log((object) ObjectInfoUtility.GetStream().Append("Store object : ").GetInfo((object) targetEntity).Append(" , index : ").Append(index).Append(" , type : ").Append(TypeUtility.GetTypeName(targetEntity.GetType())));
+        ServiceLocator.GetService<SelectionService>().SetSelection(index, targetEntity);
+        Debug.Log((object) ObjectInfoUtility.GetStream().Append("Store object : ").GetInfo(targetEntity).Append(" , index : ").Append(index).Append(" , type : ").Append(TypeUtility.GetTypeName(targetEntity.GetType())));
       }
       else
       {
@@ -163,7 +161,7 @@ namespace Engine.Source.Debugs
     private static void DrawSelected(Vector3 characterPosition)
     {
       string text1 = "\n[Slots]";
-      ServiceLocator.GetService<GizmoService>().DrawText(text1, SelectionGroupDebug.headerColor);
+      ServiceLocator.GetService<GizmoService>().DrawText(text1, headerColor);
       SelectionService service = ServiceLocator.GetService<SelectionService>();
       if (service == null)
         return;
@@ -174,7 +172,7 @@ namespace Engine.Source.Debugs
         IObject engineObject = selection as IObject;
         GameObject go = selection as GameObject;
         bool flag = false;
-        string str = "  Slot : " + (object) index + " , ";
+        string str = "  Slot : " + index + " , ";
         string text2;
         if (engineObject != null)
           text2 = str + "Name : " + engineObject.Name + " , Type : " + engineObject.GetType().Name;
@@ -187,21 +185,21 @@ namespace Engine.Source.Debugs
           text2 = str + "Empty";
           flag = true;
         }
-        SelectionGroupDebug.DrawEntityGizmo(engineObject, go, index, characterPosition);
-        ServiceLocator.GetService<GizmoService>().DrawText(text2, flag ? SelectionGroupDebug.falseColor : SelectionGroupDebug.trueColor);
+        DrawEntityGizmo(engineObject, go, index, characterPosition);
+        ServiceLocator.GetService<GizmoService>().DrawText(text2, flag ? falseColor : trueColor);
       }
     }
 
     private static void DrawHelp()
     {
       string text1 = "\n[Gizmos]";
-      ServiceLocator.GetService<GizmoService>().DrawText(text1, SelectionGroupDebug.headerColor);
-      string text2 = "  Eye " + ((bool) SelectionGroupDebug.eyeVisible ? (object) "True" : (object) "False") + " [Control + " + (object) SelectionGroupDebug.eyeKey + "]";
-      ServiceLocator.GetService<GizmoService>().DrawText(text2, (bool) SelectionGroupDebug.eyeVisible ? SelectionGroupDebug.trueColor : SelectionGroupDebug.falseColor);
-      string text3 = "  Hearing " + ((bool) SelectionGroupDebug.hearingVisible ? (object) "True" : (object) "False") + " [Control + " + (object) SelectionGroupDebug.hearingKey + "]";
-      ServiceLocator.GetService<GizmoService>().DrawText(text3, (bool) SelectionGroupDebug.hearingVisible ? SelectionGroupDebug.trueColor : SelectionGroupDebug.falseColor);
-      string text4 = "  Movable " + ((bool) SelectionGroupDebug.movableVisible ? (object) "True" : (object) "False") + " [Control + " + (object) SelectionGroupDebug.movableKey + "]";
-      ServiceLocator.GetService<GizmoService>().DrawText(text4, (bool) SelectionGroupDebug.movableVisible ? SelectionGroupDebug.trueColor : SelectionGroupDebug.falseColor);
+      ServiceLocator.GetService<GizmoService>().DrawText(text1, headerColor);
+      string text2 = "  Eye " + (eyeVisible ? "True" : (object) "False") + " [Control + " + (object) eyeKey + "]";
+      ServiceLocator.GetService<GizmoService>().DrawText(text2, eyeVisible ? trueColor : falseColor);
+      string text3 = "  Hearing " + (hearingVisible ? "True" : (object) "False") + " [Control + " + (object) hearingKey + "]";
+      ServiceLocator.GetService<GizmoService>().DrawText(text3, hearingVisible ? trueColor : falseColor);
+      string text4 = "  Movable " + (movableVisible ? "True" : (object) "False") + " [Control + " + (object) movableKey + "]";
+      ServiceLocator.GetService<GizmoService>().DrawText(text4, movableVisible ? trueColor : falseColor);
     }
 
     private static void DrawEntityGizmo(
@@ -219,38 +217,38 @@ namespace Engine.Source.Debugs
         go = ((IEntityView) entity).GameObject;
         if ((UnityEngine.Object) go == (UnityEngine.Object) null)
           return;
-        name = " , Name : " + entity.Name + "\nId : " + (object) entity.Id + "\nContext : " + (entity.Context ?? "null");
+        name = " , Name : " + entity.Name + "\nId : " + entity.Id + "\nContext : " + (entity.Context ?? "null");
       }
       else
         name = " , Name : " + go.name;
       Bounds bounds = SelectionGroupDebugUtility.GetBounds(go);
-      SelectionGroupDebug.DrawEntity(index, name, bounds, go.transform.position, characterPosition);
+      DrawEntity(index, name, bounds, go.transform.position, characterPosition);
       if (entity == null)
         return;
-      if ((bool) SelectionGroupDebug.movableVisible)
+      if (movableVisible)
         SelectionGroupDebugUtility.DrawPath(go, go.transform.position, go.transform.rotation, bounds);
       Vector3 position = ((bounds.max - bounds.min) / 2f + bounds.min) with
       {
         y = bounds.min.y
       };
       ServiceLocator.GetService<GizmoService>().DrawText3d(position, "", TextCorner.None, Color.clear);
-      if ((bool) SelectionGroupDebug.eyeVisible)
+      if (eyeVisible)
       {
         DetectorComponent component1 = entity.GetComponent<DetectorComponent>();
         if (component1 != null)
-          SelectionGroupDebugUtility.DrawDetector(component1, go.transform.position, go.transform.rotation, (bool) SelectionGroupDebug.eyeVisible, false);
+          SelectionGroupDebugUtility.DrawDetector(component1, go.transform.position, go.transform.rotation, eyeVisible, false);
         DetectableComponent component2 = entity.GetComponent<DetectableComponent>();
         if (component2 != null)
-          SelectionGroupDebugUtility.DrawDetectable(component2, go.transform.position, go.transform.rotation, (bool) SelectionGroupDebug.eyeVisible, false);
+          SelectionGroupDebugUtility.DrawDetectable(component2, go.transform.position, go.transform.rotation, eyeVisible, false);
       }
-      if (!(bool) SelectionGroupDebug.hearingVisible)
+      if (!hearingVisible)
         return;
       DetectorComponent component3 = entity.GetComponent<DetectorComponent>();
       if (component3 != null)
-        SelectionGroupDebugUtility.DrawDetector(component3, go.transform.position, go.transform.rotation, false, (bool) SelectionGroupDebug.hearingVisible);
+        SelectionGroupDebugUtility.DrawDetector(component3, go.transform.position, go.transform.rotation, false, hearingVisible);
       DetectableComponent component4 = entity.GetComponent<DetectableComponent>();
       if (component4 != null)
-        SelectionGroupDebugUtility.DrawDetectable(component4, go.transform.position, go.transform.rotation, false, (bool) SelectionGroupDebug.hearingVisible);
+        SelectionGroupDebugUtility.DrawDetectable(component4, go.transform.position, go.transform.rotation, false, hearingVisible);
     }
 
     private static void DrawEntity(
@@ -261,7 +259,7 @@ namespace Engine.Source.Debugs
       Vector3 characterPosition)
     {
       ServiceLocator.GetService<GizmoService>().DrawBox(bounds.min, bounds.max, Color.green);
-      string text = "Slot : " + (object) index + name + "\nPosition : " + (object) position + " , Distance : " + (characterPosition - position).magnitude.ToString("F2");
+      string text = "Slot : " + index + name + "\nPosition : " + (object) position + " , Distance : " + (characterPosition - position).magnitude.ToString("F2");
       Vector3 position1 = ((bounds.max - bounds.min) / 2f + bounds.min) with
       {
         y = bounds.max.y

@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using UnityEngine;
 
 public static class RendererUtility
 {
@@ -9,26 +8,26 @@ public static class RendererUtility
   {
     if ((Object) gameObject == (Object) null)
       return (Renderer) null;
-    if (RendererUtility.searchBuffer == null)
-      RendererUtility.searchBuffer = new List<Renderer>();
-    gameObject.GetComponentsInChildren<Renderer>(RendererUtility.searchBuffer);
+    if (searchBuffer == null)
+      searchBuffer = new List<Renderer>();
+    gameObject.GetComponentsInChildren<Renderer>(searchBuffer);
     float num1 = 0.0f;
     Renderer biggestRenderer = (Renderer) null;
-    for (int index = 0; index < RendererUtility.searchBuffer.Count; ++index)
+    for (int index = 0; index < searchBuffer.Count; ++index)
     {
-      Renderer renderer = RendererUtility.searchBuffer[index];
+      Renderer renderer = searchBuffer[index];
       if (renderer is MeshRenderer || renderer is SkinnedMeshRenderer)
       {
         Vector3 extents = renderer.bounds.extents;
         float num2 = extents.x * extents.y * extents.z;
-        if ((double) num2 > (double) num1)
+        if (num2 > (double) num1)
         {
           num1 = num2;
           biggestRenderer = renderer;
         }
       }
     }
-    RendererUtility.searchBuffer.Clear();
+    searchBuffer.Clear();
     return biggestRenderer;
   }
 }

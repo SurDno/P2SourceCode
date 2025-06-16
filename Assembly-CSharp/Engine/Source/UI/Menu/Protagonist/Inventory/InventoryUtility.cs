@@ -1,7 +1,6 @@
 ﻿using Engine.Impl.UI;
 using Engine.Source.Inventory;
 using Engine.Source.UI.Menu.Protagonist.Inventory.Grid;
-using UnityEngine;
 
 namespace Engine.Source.UI.Menu.Protagonist.Inventory
 {
@@ -9,8 +8,7 @@ namespace Engine.Source.UI.Menu.Protagonist.Inventory
   {
     public static Vector2 CalculateOuterSize(IInventoryGridBase grid, InventoryCellStyle style)
     {
-      Vector2 outerSize = new Vector2()
-      {
+      Vector2 outerSize = new Vector2 {
         x = (float) grid.Columns * (style.Size.x + style.Offset.x),
         y = (float) grid.Rows * (style.Size.y + style.Offset.y)
       };
@@ -23,8 +21,7 @@ namespace Engine.Source.UI.Menu.Protagonist.Inventory
 
     public static Vector2 CalculateOuterSize(Vector2 grid, InventoryCellStyle style)
     {
-      Vector2 outerSize = new Vector2()
-      {
+      Vector2 outerSize = new Vector2 {
         x = grid.x * (style.Size.x + style.Offset.x),
         y = grid.y * (style.Size.y + style.Offset.y)
       };
@@ -37,8 +34,7 @@ namespace Engine.Source.UI.Menu.Protagonist.Inventory
 
     public static Vector2 CalculateInnerSize(IInventoryGridBase grid, InventoryCellStyle style)
     {
-      return new Vector2()
-      {
+      return new Vector2 {
         x = (float) grid.Columns * (style.Size.x + style.Offset.x) + style.Offset.y,
         y = (float) grid.Rows * (style.Size.y + style.Offset.y) + style.Offset.y
       };
@@ -48,8 +44,7 @@ namespace Engine.Source.UI.Menu.Protagonist.Inventory
     {
       if (cell == null)
         return Vector2.zero;
-      return new Vector2()
-      {
+      return new Vector2 {
         x = (float) cell.Column * (style.Size.x + style.Offset.x) - style.Offset.x,
         y = (float) cell.Row * (style.Size.y + style.Offset.y) - style.Offset.y
       };
@@ -57,8 +52,7 @@ namespace Engine.Source.UI.Menu.Protagonist.Inventory
 
     public static Vector2 CalculateGridPosition(int column, int row, InventoryCellStyle style)
     {
-      return new Vector2()
-      {
+      return new Vector2 {
         x = (float) column * (style.Size.x + style.Offset.x),
         y = (float) row * (style.Size.y + style.Offset.y)
       };
@@ -66,8 +60,7 @@ namespace Engine.Source.UI.Menu.Protagonist.Inventory
 
     public static Vector2 CalculateGridPosition(Vector2 position, InventoryCellStyle style)
     {
-      return new Vector2()
-      {
+      return new Vector2 {
         x = position.x * (style.Size.x + style.Offset.x),
         y = position.y * (style.Size.y + style.Offset.y)
       };
@@ -75,7 +68,7 @@ namespace Engine.Source.UI.Menu.Protagonist.Inventory
 
     public static Vector2 CalculateGridPosition(Cell cell, InventoryCellStyle style)
     {
-      return InventoryUtility.CalculateGridPosition(cell.Column, cell.Row, style);
+      return CalculateGridPosition(cell.Column, cell.Row, style);
     }
 
     public static Vector3 RotatePointAroundPivot(Vector3 point, Vector3 pivot, Vector3 angles)

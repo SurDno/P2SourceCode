@@ -1,7 +1,6 @@
 ﻿using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
-using UnityEngine;
 
 namespace Engine.Source.Blueprints.Sounds
 {
@@ -16,8 +15,8 @@ namespace Engine.Source.Blueprints.Sounds
     [Port("Value")]
     private float Value()
     {
-      AnimationCurve animationCurve = this.curveInput.value;
-      return animationCurve != null ? animationCurve.Evaluate(this.valueInput.value) : this.valueInput.value;
+      AnimationCurve animationCurve = curveInput.value;
+      return animationCurve != null ? animationCurve.Evaluate(valueInput.value) : valueInput.value;
     }
   }
 }

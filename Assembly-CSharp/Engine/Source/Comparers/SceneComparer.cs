@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using UnityEngine.SceneManagement;
 
 namespace Engine.Source.Comparers
 {

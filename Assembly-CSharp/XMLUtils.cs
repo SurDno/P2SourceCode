@@ -13,6 +13,6 @@ public class XMLUtils
 
   public static float ReadXMLInnerTextFloat(XmlTextReader reader, string endTag)
   {
-    return (float) Convert.ToDouble(XMLUtils.ReadXMLInnerText(reader, endTag));
+    return (float) Convert.ToDouble(ReadXMLInnerText(reader, endTag));
   }
 }

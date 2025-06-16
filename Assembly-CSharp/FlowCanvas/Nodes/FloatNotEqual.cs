@@ -6,6 +6,6 @@ namespace FlowCanvas.Nodes
   [Name("!=")]
   public class FloatNotEqual : PureFunctionNode<bool, float, float>
   {
-    public override bool Invoke(float a, float b) => (double) a != (double) b;
+    public override bool Invoke(float a, float b) => a != (double) b;
   }
 }

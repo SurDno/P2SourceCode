@@ -1,10 +1,10 @@
-﻿using Cofe.Loggers;
+﻿using System;
+using Cofe.Loggers;
 using Engine.Common;
 using Engine.Common.BoundCharacters;
 using Engine.Common.Commons;
 using Engine.Common.Components;
 using PLVirtualMachine.Common.EngineAPI.VMECS.VMAttributes;
-using System;
 
 namespace PLVirtualMachine.Common.EngineAPI.VMECS
 {
@@ -17,16 +17,16 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
     [Property("Bound health state ", "")]
     public BoundHealthStateEnum BoundHealthState
     {
-      get => this.Component.BoundHealthState.Value;
+      get => Component.BoundHealthState.Value;
       set
       {
         try
         {
-          this.Component.BoundHealthState.Value = value;
+          Component.BoundHealthState.Value = value;
         }
         catch (Exception ex)
         {
-          Logger.AddError(string.Format("BoundHealthState set error: {0} at {1}", (object) ex.ToString(), (object) this.Parent.Name));
+          Logger.AddError(string.Format("BoundHealthState set error: {0} at {1}", ex, Parent.Name));
         }
       }
     }
@@ -34,16 +34,16 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
     [Property("Group", "")]
     public BoundCharacterGroup Group
     {
-      get => this.Component.Group;
+      get => Component.Group;
       set
       {
         try
         {
-          this.Component.Group = value;
+          Component.Group = value;
         }
         catch (Exception ex)
         {
-          Logger.AddError(string.Format("Group set error: {0} at {1}", (object) ex.ToString(), (object) this.Parent.Name));
+          Logger.AddError(string.Format("Group set error: {0} at {1}", ex, Parent.Name));
         }
       }
     }
@@ -51,16 +51,16 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
     [Property("Is Discovered", "", false, false)]
     public bool Discovered
     {
-      get => this.Component.Discovered;
+      get => Component.Discovered;
       set
       {
         try
         {
-          this.Component.Discovered = value;
+          Component.Discovered = value;
         }
         catch (Exception ex)
         {
-          Logger.AddError(string.Format("Discovered set error: {0} at {1}", (object) ex.ToString(), (object) this.Parent.Name));
+          Logger.AddError(string.Format("Discovered set error: {0} at {1}", ex, Parent.Name));
         }
       }
     }
@@ -68,16 +68,16 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
     [Property("Is enabled", "", false, false)]
     public bool IsEnabled
     {
-      get => this.Component.IsEnabled;
+      get => Component.IsEnabled;
       set
       {
         try
         {
-          this.Component.IsEnabled = value;
+          Component.IsEnabled = value;
         }
         catch (Exception ex)
         {
-          Logger.AddError(string.Format("IsEnabled set error: {0} at {1}", (object) ex.ToString(), (object) this.Parent.Name));
+          Logger.AddError(string.Format("IsEnabled set error: {0} at {1}", ex, Parent.Name));
         }
       }
     }
@@ -85,27 +85,27 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
     [Property("Name", "", false)]
     public ITextRef NameText
     {
-      get => this.boundCharacterName;
+      get => boundCharacterName;
       set
       {
-        this.boundCharacterName = value;
-        this.Component.Name = EngineAPIManager.CreateEngineTextInstance(this.boundCharacterName);
+        boundCharacterName = value;
+        Component.Name = EngineAPIManager.CreateEngineTextInstance(boundCharacterName);
       }
     }
 
     [Property("Random Roll", "")]
     public float RandomRoll
     {
-      get => this.Component.RandomRoll.Value;
+      get => Component.RandomRoll.Value;
       set
       {
         try
         {
-          this.Component.RandomRoll.Value = value;
+          Component.RandomRoll.Value = value;
         }
         catch (Exception ex)
         {
-          Logger.AddError(string.Format("Random Roll set error: {0} at {1}", (object) ex.ToString(), (object) this.Parent.Name));
+          Logger.AddError(string.Format("Random Roll set error: {0} at {1}", ex, Parent.Name));
         }
       }
     }
@@ -113,16 +113,16 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
     [Property("Sort order", "", false)]
     public int SortOrder
     {
-      get => this.Component.SortOrder;
+      get => Component.SortOrder;
       set
       {
         try
         {
-          this.Component.SortOrder = value;
+          Component.SortOrder = value;
         }
         catch (Exception ex)
         {
-          Logger.AddError(string.Format("SortOrder set error: {0} at {1}", (object) ex.ToString(), (object) this.Parent.Name));
+          Logger.AddError(string.Format("SortOrder set error: {0} at {1}", ex, Parent.Name));
         }
       }
     }
@@ -130,16 +130,16 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
     [Property("Resource", "", false)]
     public IBoundCharacterPlaceholder Object
     {
-      get => this.Component.Resource;
+      get => Component.Resource;
       set
       {
         try
         {
-          this.Component.Resource = value;
+          Component.Resource = value;
         }
         catch (Exception ex)
         {
-          Logger.AddError(string.Format("Resource set error: {0} at {1}", (object) ex.ToString(), (object) this.Parent.Name));
+          Logger.AddError(string.Format("Resource set error: {0} at {1}", ex, Parent.Name));
         }
       }
     }
@@ -147,16 +147,16 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
     [Property("Home Region", "", false)]
     public IEntity HomeRegion
     {
-      get => this.Component.HomeRegion;
+      get => Component.HomeRegion;
       set
       {
         try
         {
-          this.Component.HomeRegion = value;
+          Component.HomeRegion = value;
         }
         catch (Exception ex)
         {
-          Logger.AddError(string.Format("Home Region set error: {0} at {1}", (object) ex.ToString(), (object) this.Parent.Name));
+          Logger.AddError(string.Format("Home Region set error: {0} at {1}", ex, Parent.Name));
         }
       }
     }
@@ -164,30 +164,30 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
     [Method("Store Pre Roll State", "", "")]
     public void StorePreRollState()
     {
-      if (this.Component == null)
-        Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", (object) this.Name, (object) this.Parent.Name));
+      if (Component == null)
+        Logger.AddError(string.Format("Component {0} engine instance at {1} not inited!!!", Name, Parent.Name));
       else
-        this.Component.StorePreRollState();
+        Component.StorePreRollState();
     }
 
     public override void Clear()
     {
-      if (!this.InstanceValid)
+      if (!InstanceValid)
         return;
-      this.Component.BoundHealthState.ChangeValueEvent -= new Action<BoundHealthStateEnum>(this.ChangeBoundHealthStateEvent);
+      Component.BoundHealthState.ChangeValueEvent -= ChangeBoundHealthStateEvent;
       base.Clear();
     }
 
     protected override void Init()
     {
-      if (this.IsTemplate)
+      if (IsTemplate)
         return;
-      this.Component.BoundHealthState.ChangeValueEvent += new Action<BoundHealthStateEnum>(this.ChangeBoundHealthStateEvent);
+      Component.BoundHealthState.ChangeValueEvent += ChangeBoundHealthStateEvent;
     }
 
     private void ChangeBoundHealthStateEvent(BoundHealthStateEnum value)
     {
-      Action<BoundHealthStateEnum> boundHealthState = this.OnChangeBoundHealthState;
+      Action<BoundHealthStateEnum> boundHealthState = OnChangeBoundHealthState;
       if (boundHealthState == null)
         return;
       boundHealthState(value);

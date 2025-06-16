@@ -9,8 +9,8 @@ namespace FlowCanvas.Nodes
   {
     protected override void RegisterPorts()
     {
-      FlowOutput fOut = this.AddFlowOutput("Out");
-      this.AddFlowInput("In", (FlowHandler) (() => fOut.Call()));
+      FlowOutput fOut = AddFlowOutput("Out");
+      AddFlowInput("In", () => fOut.Call());
     }
   }
 }

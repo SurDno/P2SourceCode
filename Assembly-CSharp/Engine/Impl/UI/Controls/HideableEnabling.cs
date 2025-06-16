@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace Engine.Impl.UI.Controls
+﻿namespace Engine.Impl.UI.Controls
 {
   public class HideableEnabling : HideableView
   {
@@ -9,9 +7,9 @@ namespace Engine.Impl.UI.Controls
 
     protected override void ApplyVisibility()
     {
-      if (!((Object) this.component != (Object) null))
+      if (!((Object) component != (Object) null))
         return;
-      this.component.enabled = this.Visible;
+      component.enabled = Visible;
     }
   }
 }

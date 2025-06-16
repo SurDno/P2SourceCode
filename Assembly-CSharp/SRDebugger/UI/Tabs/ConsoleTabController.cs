@@ -1,4 +1,8 @@
-﻿using Cofe.Meta;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using Cofe.Meta;
 using Cofe.Utility;
 using Engine.Common.Services;
 using Engine.Source.Services.Consoles;
@@ -8,12 +12,6 @@ using SRDebugger.Internal;
 using SRDebugger.Services;
 using SRDebugger.UI.Controls;
 using SRF;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
-using UnityEngine.UI;
 
 namespace SRDebugger.UI.Tabs
 {
@@ -36,38 +34,38 @@ namespace SRDebugger.UI.Tabs
 
     protected void Start()
     {
-      this._consoleCanvas = this.GetComponent<Canvas>();
-      Service.Panel.VisibilityChanged += new Action<IDebugPanelService, bool>(this.PanelOnVisibilityChanged);
-      ServiceLocator.GetService<ConsoleService>().OnAddedLine += new Action<string>(this.OnAddedLine);
-      ConsoleTabController.instance = this;
+      _consoleCanvas = this.GetComponent<Canvas>();
+      Service.Panel.VisibilityChanged += PanelOnVisibilityChanged;
+      ServiceLocator.GetService<ConsoleService>().OnAddedLine += OnAddedLine;
+      instance = this;
     }
 
     private void OnEnable()
     {
-      this.LoadCommands();
-      this.StartCoroutine(this.SetFocusCoroutine());
-      this.StackTraceInputField.enabled = !Application.isConsolePlatform;
+      LoadCommands();
+      this.StartCoroutine(SetFocusCoroutine());
+      StackTraceInputField.enabled = !Application.isConsolePlatform;
     }
 
-    private void OnDisable() => this.SaveCommands();
+    private void OnDisable() => SaveCommands();
 
     protected void OnDestroy()
     {
-      this.SaveCommands();
-      ServiceLocator.GetService<ConsoleService>().OnAddedLine -= new Action<string>(this.OnAddedLine);
+      SaveCommands();
+      ServiceLocator.GetService<ConsoleService>().OnAddedLine -= OnAddedLine;
     }
 
     private void LoadCommands()
     {
-      this.commands.Clear();
-      this.commands.AddRange(((IEnumerable<string>) PlayerSettings.Instance.GetString("LastCommandsKey").Split('\n')).Where<string>((Func<string, bool>) (o => !o.IsNullOrEmpty())).Distinct<string>());
-      this.ComputeMaxCommands();
+      commands.Clear();
+      commands.AddRange(PlayerSettings.Instance.GetString("LastCommandsKey").Split('\n').Where(o => !o.IsNullOrEmpty()).Distinct());
+      ComputeMaxCommands();
     }
 
     private void SaveCommands()
     {
       string str = "";
-      foreach (string command in this.commands)
+      foreach (string command in commands)
         str = str + command + "\n";
       PlayerSettings.Instance.SetString("LastCommandsKey", str);
       PlayerSettings.Instance.Save();
@@ -75,8 +73,8 @@ namespace SRDebugger.UI.Tabs
 
     private void OnAddedLine(string value)
     {
-      this.CreateItem(value);
-      this.StartCoroutine(this.ScrollToBottom());
+      CreateItem(value);
+      this.StartCoroutine(ScrollToBottom());
     }
 
     private IEnumerator ScrollToBottom()
@@ -84,14 +82,14 @@ namespace SRDebugger.UI.Tabs
       yield return (object) new WaitForEndOfFrame();
       yield return (object) new WaitForEndOfFrame();
       yield return (object) new WaitForEndOfFrame();
-      this.ScrollRect.verticalNormalizedPosition = 0.0f;
+      ScrollRect.verticalNormalizedPosition = 0.0f;
     }
 
     public IEnumerator ClearCoroutine()
     {
       yield return (object) new WaitForEndOfFrame();
       List<GameObject> list = new List<GameObject>();
-      foreach (Transform item in (Transform) this.LayoutContainer)
+      foreach (Transform item in (Transform) LayoutContainer)
         list.Add(item.gameObject);
       foreach (GameObject item in list)
         UnityEngine.Object.Destroy((UnityEngine.Object) item);
@@ -101,62 +99,62 @@ namespace SRDebugger.UI.Tabs
     {
       yield return (object) new WaitForEndOfFrame();
       yield return (object) new WaitForEndOfFrame();
-      this.StackTraceInputField.ActivateInputField();
+      StackTraceInputField.ActivateInputField();
     }
 
     private void ExecuteCommand(string data)
     {
-      this.commands.RemoveAll((Predicate<string>) (o => o == data));
-      this.commands.Add(data);
-      this.ComputeMaxCommands();
-      this.commandIndex = -1;
-      this.StackTraceInputField.text = "";
-      this.StackTraceInputField.ActivateInputField();
+      commands.RemoveAll(o => o == data);
+      commands.Add(data);
+      ComputeMaxCommands();
+      commandIndex = -1;
+      StackTraceInputField.text = "";
+      StackTraceInputField.ActivateInputField();
       ServiceLocator.GetService<ConsoleService>().ExecuteCommand(data);
     }
 
     private void ComputeMaxCommands()
     {
-      while (this.commands.Count > 32)
-        this.commands.RemoveAt(0);
+      while (commands.Count > 32)
+        commands.RemoveAt(0);
     }
 
     private void Update()
     {
-      this.ComputeHackInput();
-      this.ComputeEnter();
-      this.ComputeHistory();
-      this.ComputeScroll();
+      ComputeHackInput();
+      ComputeEnter();
+      ComputeHistory();
+      ComputeScroll();
     }
 
     private void ComputeScroll()
     {
       if (Input.GetKeyDown(KeyCode.PageUp))
       {
-        this.ScrollRect.verticalNormalizedPosition -= 0.1f;
+        ScrollRect.verticalNormalizedPosition -= 0.1f;
       }
       else
       {
         if (!Input.GetKeyDown(KeyCode.PageDown))
           return;
-        this.ScrollRect.verticalNormalizedPosition += 0.1f;
+        ScrollRect.verticalNormalizedPosition += 0.1f;
       }
     }
 
     private void ComputeHackInput()
     {
-      if (this.StackTraceInputField.enabled)
+      if (StackTraceInputField.enabled)
         return;
       if (Input.GetKeyDown(KeyCode.Backspace))
       {
-        if (this.StackTraceInputField.text.Length == 0)
+        if (StackTraceInputField.text.Length == 0)
           return;
-        this.StackTraceInputField.text = this.StackTraceInputField.text.Substring(0, this.StackTraceInputField.text.Length - 1);
+        StackTraceInputField.text = StackTraceInputField.text.Substring(0, StackTraceInputField.text.Length - 1);
       }
       else
       {
         bool flag = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
-        foreach (KeyCode keyCode in ConsoleTabController.keyCodes)
+        foreach (KeyCode keyCode in keyCodes)
         {
           if (Input.GetKeyDown(keyCode))
           {
@@ -239,7 +237,7 @@ namespace SRDebugger.UI.Tabs
                 break;
             }
             if (str.Length == 1)
-              this.StackTraceInputField.text += str;
+              StackTraceInputField.text += str;
           }
         }
       }
@@ -249,66 +247,66 @@ namespace SRDebugger.UI.Tabs
     {
       if (!Input.GetKeyDown(KeyCode.Return))
         return;
-      string text = this.StackTraceInputField.text;
+      string text = StackTraceInputField.text;
       if (!text.IsNullOrEmpty())
-        this.ExecuteCommand(text);
+        ExecuteCommand(text);
     }
 
     private void ComputeHistory()
     {
-      if (this.commands.Count == 0)
+      if (commands.Count == 0)
         return;
-      if (this.commandIndex != -1 && this.commands[this.commandIndex] != this.StackTraceInputField.text)
-        this.commandIndex = -1;
+      if (commandIndex != -1 && commands[commandIndex] != StackTraceInputField.text)
+        commandIndex = -1;
       if (Input.GetKeyDown(KeyCode.UpArrow))
       {
-        if (this.commandIndex == 0)
+        if (commandIndex == 0)
           return;
-        if (this.commandIndex != -1)
-          --this.commandIndex;
+        if (commandIndex != -1)
+          --commandIndex;
         else
-          this.commandIndex = this.commands.Count - 1;
-        this.StackTraceInputField.text = this.commands[this.commandIndex];
+          commandIndex = commands.Count - 1;
+        StackTraceInputField.text = commands[commandIndex];
       }
       else
       {
-        if (!Input.GetKeyDown(KeyCode.DownArrow) || this.commandIndex == -1 || this.commandIndex + 1 >= this.commands.Count)
+        if (!Input.GetKeyDown(KeyCode.DownArrow) || commandIndex == -1 || commandIndex + 1 >= commands.Count)
           return;
-        ++this.commandIndex;
-        this.StackTraceInputField.text = this.commands[this.commandIndex];
+        ++commandIndex;
+        StackTraceInputField.text = commands[commandIndex];
       }
     }
 
     private void PanelOnVisibilityChanged(IDebugPanelService debugPanelService, bool visible)
     {
-      if (!((UnityEngine.Object) this._consoleCanvas != (UnityEngine.Object) null))
+      if (!((UnityEngine.Object) _consoleCanvas != (UnityEngine.Object) null))
         return;
-      this._consoleCanvas.enabled = visible;
+      _consoleCanvas.enabled = visible;
     }
 
     private void CreateItem(string data)
     {
-      ConsoleEntryView consoleEntryView = SRInstantiate.Instantiate<ConsoleEntryView>(this.ItemPrefab);
+      ConsoleEntryView consoleEntryView = SRInstantiate.Instantiate<ConsoleEntryView>(ItemPrefab);
       consoleEntryView.SetData(data);
-      consoleEntryView.CachedTransform.SetParent((Transform) this.LayoutContainer, false);
+      consoleEntryView.CachedTransform.SetParent((Transform) LayoutContainer, false);
     }
 
-    private void Clear() => this.StartCoroutine(this.ClearCoroutine());
+    private void Clear() => this.StartCoroutine(ClearCoroutine());
 
     [ConsoleCommand("history")]
     private static string HistoryCommand(string command, ConsoleParameter[] parameters)
     {
       string str = "\nCommand history :\n";
-      for (int index = 0; index < ConsoleTabController.instance.commands.Count; ++index)
-        str = str + "[" + (object) index + "] " + ConsoleTabController.instance.commands[index] + "\n";
+      for (int index = 0; index < instance.commands.Count; ++index)
+        str = str + "[" + index + "] " + instance.commands[index] + "\n";
       return str;
     }
 
     [ConsoleCommand("clear")]
     private static string ClearCommand(string command, ConsoleParameter[] parameters)
     {
-      if ((UnityEngine.Object) ConsoleTabController.instance != (UnityEngine.Object) null)
-        ConsoleTabController.instance.Clear();
+      if ((UnityEngine.Object) instance != (UnityEngine.Object) null)
+        instance.Clear();
       return "";
     }
   }

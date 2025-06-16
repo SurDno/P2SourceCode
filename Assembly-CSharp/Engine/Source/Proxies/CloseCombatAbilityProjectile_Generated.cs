@@ -1,9 +1,9 @@
-﻿using Cofe.Proxies;
+﻿using System;
+using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons.Cloneable;
 using Engine.Common.Commons.Converters;
 using Engine.Source.Commons.Abilities.Projectiles;
-using System;
 
 namespace Engine.Source.Proxies
 {
@@ -18,33 +18,33 @@ namespace Engine.Source.Proxies
     public object Clone()
     {
       CloseCombatAbilityProjectile_Generated instance = Activator.CreateInstance<CloseCombatAbilityProjectile_Generated>();
-      this.CopyTo((object) instance);
-      return (object) instance;
+      CopyTo(instance);
+      return instance;
     }
 
     public void CopyTo(object target2)
     {
       CloseCombatAbilityProjectile_Generated projectileGenerated = (CloseCombatAbilityProjectile_Generated) target2;
-      projectileGenerated.blocked = this.blocked;
-      projectileGenerated.orientation = this.orientation;
-      projectileGenerated.radius = this.radius;
-      projectileGenerated.angle = this.angle;
+      projectileGenerated.blocked = blocked;
+      projectileGenerated.orientation = orientation;
+      projectileGenerated.radius = radius;
+      projectileGenerated.angle = angle;
     }
 
     public void DataWrite(IDataWriter writer)
     {
-      DefaultDataWriteUtility.WriteEnum<BlockTypeEnum>(writer, "Blocked", this.blocked);
-      DefaultDataWriteUtility.WriteEnum<HitOrientationTypeEnum>(writer, "Orientation", this.orientation);
-      DefaultDataWriteUtility.Write(writer, "Radius", this.radius);
-      DefaultDataWriteUtility.Write(writer, "Angle", this.angle);
+      DefaultDataWriteUtility.WriteEnum(writer, "Blocked", blocked);
+      DefaultDataWriteUtility.WriteEnum(writer, "Orientation", orientation);
+      DefaultDataWriteUtility.Write(writer, "Radius", radius);
+      DefaultDataWriteUtility.Write(writer, "Angle", angle);
     }
 
     public void DataRead(IDataReader reader, Type type)
     {
-      this.blocked = DefaultDataReadUtility.ReadEnum<BlockTypeEnum>(reader, "Blocked");
-      this.orientation = DefaultDataReadUtility.ReadEnum<HitOrientationTypeEnum>(reader, "Orientation");
-      this.radius = DefaultDataReadUtility.Read(reader, "Radius", this.radius);
-      this.angle = DefaultDataReadUtility.Read(reader, "Angle", this.angle);
+      blocked = DefaultDataReadUtility.ReadEnum<BlockTypeEnum>(reader, "Blocked");
+      orientation = DefaultDataReadUtility.ReadEnum<HitOrientationTypeEnum>(reader, "Orientation");
+      radius = DefaultDataReadUtility.Read(reader, "Radius", radius);
+      angle = DefaultDataReadUtility.Read(reader, "Angle", angle);
     }
   }
 }

@@ -1,12 +1,12 @@
-﻿using Cofe.Loggers;
+﻿using System.Collections.Generic;
+using System.Xml;
+using Cofe.Loggers;
 using Engine.Common.Commons;
 using PLVirtualMachine.Base;
 using PLVirtualMachine.Common;
 using PLVirtualMachine.Common.Data;
 using PLVirtualMachine.Data;
 using PLVirtualMachine.Objects;
-using System.Collections.Generic;
-using System.Xml;
 using VirtualMachine.Common;
 using VirtualMachine.Common.Data;
 using VirtualMachine.Data;
@@ -33,7 +33,7 @@ namespace PLVirtualMachine.LogicMap
     private List<IGraphObject> mapNodes = new List<IGraphObject>();
     [FieldData("Links", DataFieldType.Reference)]
     private List<ILink> mapLinks = new List<ILink>();
-    [FieldData("LogicMapType", DataFieldType.None)]
+    [FieldData("LogicMapType")]
     private ELogicMapType logicMapType;
     [FieldData("GameTimeContext", DataFieldType.Reference)]
     private IGameMode gameTimeContext;
@@ -43,32 +43,31 @@ namespace PLVirtualMachine.LogicMap
 
     public virtual void EditorDataRead(XmlReader xml, IDataCreator creator, string typeContext)
     {
-      while (xml.Read())
-      {
+      while (xml.Read()) {
         if (xml.NodeType == XmlNodeType.Element)
         {
           switch (xml.Name)
           {
             case "GameTimeContext":
-              this.gameTimeContext = EditorDataReadUtility.ReadReference<IGameMode>(xml, creator);
+              gameTimeContext = EditorDataReadUtility.ReadReference<IGameMode>(xml, creator);
               continue;
             case "Links":
-              this.mapLinks = EditorDataReadUtility.ReadReferenceList<ILink>(xml, creator, this.mapLinks);
+              mapLinks = EditorDataReadUtility.ReadReferenceList(xml, creator, mapLinks);
               continue;
             case "LogicMapType":
-              this.logicMapType = EditorDataReadUtility.ReadEnum<ELogicMapType>(xml);
+              logicMapType = EditorDataReadUtility.ReadEnum<ELogicMapType>(xml);
               continue;
             case "Name":
-              this.name = EditorDataReadUtility.ReadValue(xml, this.name);
+              name = EditorDataReadUtility.ReadValue(xml, name);
               continue;
             case "Nodes":
-              this.mapNodes = EditorDataReadUtility.ReadReferenceList<IGraphObject>(xml, creator, this.mapNodes);
+              mapNodes = EditorDataReadUtility.ReadReferenceList(xml, creator, mapNodes);
               continue;
             case "Parent":
-              this.parent = EditorDataReadUtility.ReadReference<IContainer>(xml, creator);
+              parent = EditorDataReadUtility.ReadReference<IContainer>(xml, creator);
               continue;
             case "Title":
-              this.titleText = EditorDataReadUtility.ReadReference<VMGameString>(xml, creator);
+              titleText = EditorDataReadUtility.ReadReference<VMGameString>(xml, creator);
               continue;
             default:
               if (XMLDataLoader.Logs.Add(typeContext + " : " + xml.Name))
@@ -77,7 +76,8 @@ namespace PLVirtualMachine.LogicMap
               continue;
           }
         }
-        else if (xml.NodeType == XmlNodeType.EndElement)
+
+        if (xml.NodeType == XmlNodeType.EndElement)
           break;
       }
     }
@@ -87,30 +87,30 @@ namespace PLVirtualMachine.LogicMap
     {
     }
 
-    public ELogicMapType LogicMapType => this.logicMapType;
+    public ELogicMapType LogicMapType => logicMapType;
 
-    public List<ILink> Links => this.mapLinks;
+    public List<ILink> Links => mapLinks;
 
-    public List<IGraphObject> Nodes => this.mapNodes;
+    public List<IGraphObject> Nodes => mapNodes;
 
     public VMLogicMapNode GetNodeByGuid(ulong nodeId)
     {
-      foreach (IGraphObject mapNode in this.mapNodes)
+      foreach (IGraphObject mapNode in mapNodes)
       {
         if ((long) mapNode.BaseGuid == (long) nodeId)
           return (VMLogicMapNode) mapNode;
       }
-      Logger.AddError(string.Format("Logic map node with id {0} not found in mindmap {1}", (object) nodeId, (object) this.Name));
-      return (VMLogicMapNode) null;
+      Logger.AddError(string.Format("Logic map node with id {0} not found in mindmap {1}", nodeId, Name));
+      return null;
     }
 
     public List<ILink> GetLinksByDestState(IGraphObject state)
     {
       List<ILink> linksByDestState = new List<ILink>();
-      for (int index = 0; index < this.mapLinks.Count; ++index)
+      for (int index = 0; index < mapLinks.Count; ++index)
       {
-        if (this.mapLinks[index].Destination != null && (long) this.mapLinks[index].Destination.BaseGuid == (long) state.BaseGuid)
-          linksByDestState.Add(this.mapLinks[index]);
+        if (mapLinks[index].Destination != null && (long) mapLinks[index].Destination.BaseGuid == (long) state.BaseGuid)
+          linksByDestState.Add(mapLinks[index]);
       }
       return linksByDestState;
     }
@@ -118,30 +118,30 @@ namespace PLVirtualMachine.LogicMap
     public List<ILink> GetLinksBySourceState(IGraphObject state)
     {
       List<ILink> linksBySourceState = new List<ILink>();
-      for (int index = 0; index < this.mapLinks.Count; ++index)
+      for (int index = 0; index < mapLinks.Count; ++index)
       {
-        if (this.mapLinks[index].Source != null && (long) this.mapLinks[index].Source.BaseGuid == (long) state.BaseGuid)
-          linksBySourceState.Add(this.mapLinks[index]);
+        if (mapLinks[index].Source != null && (long) mapLinks[index].Source.BaseGuid == (long) state.BaseGuid)
+          linksBySourceState.Add(mapLinks[index]);
       }
       return linksBySourceState;
     }
 
     public virtual void OnAfterLoad()
     {
-      for (int index = 0; index < this.mapNodes.Count; ++index)
-        ((VMLogicMapNode) this.mapNodes[index]).OnAfterLoad();
-      this.UpdateGraph();
-      this.isAfterLoaded = true;
+      for (int index = 0; index < mapNodes.Count; ++index)
+        ((VMLogicMapNode) mapNodes[index]).OnAfterLoad();
+      UpdateGraph();
+      isAfterLoaded = true;
     }
 
-    public bool IsAfterLoaded => this.isAfterLoaded;
+    public bool IsAfterLoaded => isAfterLoaded;
 
     public void UpdateGraph()
     {
-      for (int index = 0; index < this.mapNodes.Count; ++index)
-        this.mapNodes[index].Update();
-      for (int index = 0; index < this.mapLinks.Count; ++index)
-        this.mapLinks[index].Update();
+      for (int index = 0; index < mapNodes.Count; ++index)
+        mapNodes[index].Update();
+      for (int index = 0; index < mapLinks.Count; ++index)
+        mapLinks[index].Update();
     }
 
     public override EObjectCategory GetCategory() => EObjectCategory.OBJECT_CATEGORY_LOGIC_MAP;
@@ -150,31 +150,31 @@ namespace PLVirtualMachine.LogicMap
     {
       get
       {
-        return this.gameTimeContext == null ? ((VMGameRoot) IStaticDataContainer.StaticDataContainer.GameRoot).MainGameMode : this.gameTimeContext;
+        return gameTimeContext == null ? ((VMGameRoot) IStaticDataContainer.StaticDataContainer.GameRoot).MainGameMode : gameTimeContext;
       }
     }
 
-    public IGameString Title => (IGameString) this.titleText;
+    public IGameString Title => titleText;
 
     public override void Clear()
     {
       base.Clear();
-      if (this.mapNodes != null)
+      if (mapNodes != null)
       {
-        foreach (IContainer mapNode in this.mapNodes)
+        foreach (IContainer mapNode in mapNodes)
           mapNode.Clear();
-        this.mapNodes.Clear();
-        this.mapNodes = (List<IGraphObject>) null;
+        mapNodes.Clear();
+        mapNodes = null;
       }
-      if (this.mapLinks != null)
+      if (mapLinks != null)
       {
-        foreach (IContainer mapLink in this.mapLinks)
+        foreach (IContainer mapLink in mapLinks)
           mapLink.Clear();
-        this.mapLinks.Clear();
-        this.mapLinks = (List<ILink>) null;
+        mapLinks.Clear();
+        mapLinks = null;
       }
-      this.gameTimeContext = (IGameMode) null;
-      this.titleText = (VMGameString) null;
+      gameTimeContext = null;
+      titleText = null;
     }
   }
 }

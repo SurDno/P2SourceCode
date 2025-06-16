@@ -1,13 +1,11 @@
-﻿using AssetDatabases;
+﻿using System;
+using AssetDatabases;
 using Cofe.Utility;
 using Engine.Common.Services;
-using Engine.Common.Weather;
 using Engine.Impl.Weather;
 using Engine.Proxy.Weather;
 using Engine.Source.Services.Templates;
 using Engine.Source.Services.Utilities;
-using System;
-using UnityEngine;
 
 namespace Engine.Source.Commons
 {
@@ -26,7 +24,7 @@ namespace Engine.Source.Commons
         string path = AssetDatabaseService.Instance.GetPath(id);
         if (path.IsNullOrEmpty())
         {
-          Debug.LogError((object) ("Menu weather not found, id : " + (object) id));
+          Debug.LogError((object) ("Menu weather not found, id : " + id));
         }
         else
         {
@@ -52,7 +50,7 @@ namespace Engine.Source.Commons
             IWeatherController service2 = ServiceLocator.GetService<IWeatherController>();
             if (service2 == null)
               return;
-            WeatherUtility.SetDefaultWeather(service2, (IWeatherSnapshot) snapshot);
+            WeatherUtility.SetDefaultWeather(service2, snapshot);
           }
         }
       }

@@ -1,6 +1,5 @@
-﻿using Engine.Common.Components.AttackerPlayer;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using System.Collections.Generic;
+using Engine.Common.Components.AttackerPlayer;
 
 namespace Engine.Behaviours.Components
 {
@@ -66,41 +65,41 @@ namespace Engine.Behaviours.Components
     {
       set
       {
-        this.HandsGeometry?.SetActive(value);
-        this.SleevesGeometry?.SetActive(value);
+        HandsGeometry?.SetActive(value);
+        SleevesGeometry?.SetActive(value);
       }
     }
 
     public bool KnifeGeometryVisible
     {
-      set => this.KnifeGeometry?.SetActive(value);
+      set => KnifeGeometry?.SetActive(value);
     }
 
     public bool ScalpelGeometryVisible
     {
-      set => this.ScalpelGeometry?.SetActive(value);
+      set => ScalpelGeometry?.SetActive(value);
     }
 
     public void SetScalpelCustomGeometryVisible(int kind)
     {
-      foreach (GameObject gameObject in this.ScalpelCustomGeometry)
+      foreach (GameObject gameObject in ScalpelCustomGeometry)
         gameObject.SetActive(false);
-      if (kind >= this.ScalpelCustomGeometry.Count)
+      if (kind >= ScalpelCustomGeometry.Count)
         return;
-      this.ScalpelCustomGeometry[kind]?.SetActive(true);
+      ScalpelCustomGeometry[kind]?.SetActive(true);
     }
 
     public bool LockpickGeometryVisible
     {
-      set => this.LockpickGeometry?.SetActive(value);
+      set => LockpickGeometry?.SetActive(value);
     }
 
     public bool FlashlightGeometryVisible
     {
       set
       {
-        this.FlashlightGeometry?.SetActive(value);
-        this.FlashlightPhysics?.SetActive(value);
+        FlashlightGeometry?.SetActive(value);
+        FlashlightPhysics?.SetActive(value);
       }
     }
 
@@ -108,49 +107,49 @@ namespace Engine.Behaviours.Components
     {
       set
       {
-        this.RevolverGeometry?.SetActive(value);
-        this.RevolverBullet.gameObject.SetActive(value);
+        RevolverGeometry?.SetActive(value);
+        RevolverBullet.gameObject.SetActive(value);
       }
     }
 
     public bool RifleGeometryVisible
     {
-      set => this.RifleGeometry?.SetActive(value);
+      set => RifleGeometry?.SetActive(value);
     }
 
     public bool ShotgunGeometryVisible
     {
-      set => this.ShotgunGeometry?.SetActive(value);
+      set => ShotgunGeometry?.SetActive(value);
     }
 
     public bool VisirGeometryVisible
     {
-      set => this.VisirGeometry?.SetActive(value);
+      set => VisirGeometry?.SetActive(value);
     }
 
     private void Awake()
     {
-      this.animator = this.GetComponent<Animator>();
-      if ((Object) this.animator == (Object) null)
+      animator = this.GetComponent<Animator>();
+      if ((Object) animator == (Object) null)
       {
         Debug.LogErrorFormat("{0} doesn't contain {1} unity component.", (object) this.gameObject.name, (object) typeof (Animator).Name);
       }
       else
       {
-        if ((Object) this.VisirBone != (Object) null && (Object) this.VisirAnchor != (Object) null)
+        if ((Object) VisirBone != (Object) null && (Object) VisirAnchor != (Object) null)
         {
-          this.VisirBone.transform.parent = this.VisirAnchor.transform;
-          this.VisirBone.transform.localPosition = Vector3.zero;
-          this.VisirBone.transform.localRotation = Quaternion.identity;
+          VisirBone.transform.parent = VisirAnchor.transform;
+          VisirBone.transform.localPosition = Vector3.zero;
+          VisirBone.transform.localRotation = Quaternion.identity;
         }
-        this.HandsGeometryVisible = false;
-        this.KnifeGeometryVisible = false;
-        this.ScalpelGeometryVisible = false;
-        this.LockpickGeometryVisible = false;
-        this.RevolverGeometryVisible = false;
-        this.VisirGeometryVisible = false;
-        this.FlashlightGeometryVisible = false;
-        this.FlashlightLight.SetActive(false);
+        HandsGeometryVisible = false;
+        KnifeGeometryVisible = false;
+        ScalpelGeometryVisible = false;
+        LockpickGeometryVisible = false;
+        RevolverGeometryVisible = false;
+        VisirGeometryVisible = false;
+        FlashlightGeometryVisible = false;
+        FlashlightLight.SetActive(false);
       }
     }
 
@@ -159,16 +158,16 @@ namespace Engine.Behaviours.Components
       switch (weaponKind)
       {
         case WeaponKind.Revolver:
-          if (!((Object) this.RevolverBone != (Object) null) || !((Object) this.RevolverAnchor != (Object) null))
+          if (!((Object) RevolverBone != (Object) null) || !((Object) RevolverAnchor != (Object) null))
             break;
-          this.RevolverBone.transform.position = this.RevolverAnchor.transform.position;
-          this.RevolverBone.transform.rotation = this.RevolverAnchor.transform.rotation;
+          RevolverBone.transform.position = RevolverAnchor.transform.position;
+          RevolverBone.transform.rotation = RevolverAnchor.transform.rotation;
           break;
         case WeaponKind.Visir:
-          if ((Object) this.VisirBone != (Object) null && (Object) this.VisirAnchor != (Object) null)
+          if ((Object) VisirBone != (Object) null && (Object) VisirAnchor != (Object) null)
           {
-            this.VisirBone.transform.localPosition = Vector3.zero;
-            this.VisirBone.transform.localRotation = Quaternion.identity;
+            VisirBone.transform.localPosition = Vector3.zero;
+            VisirBone.transform.localRotation = Quaternion.identity;
           }
           break;
       }
@@ -176,8 +175,8 @@ namespace Engine.Behaviours.Components
 
     public void MoveFlashlightToJointAnchorPosition()
     {
-      Rigidbody component1 = this.FlashlightGeometry.GetComponent<Rigidbody>();
-      foreach (CharacterJoint component2 in this.FlashlightJoint.gameObject.GetComponents<CharacterJoint>())
+      Rigidbody component1 = FlashlightGeometry.GetComponent<Rigidbody>();
+      foreach (CharacterJoint component2 in FlashlightJoint.gameObject.GetComponents<CharacterJoint>())
       {
         if (!((Object) component2.connectedBody != (Object) component1))
         {

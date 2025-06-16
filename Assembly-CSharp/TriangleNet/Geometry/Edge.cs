@@ -15,9 +15,9 @@
 
     public Edge(int p0, int p1, int boundary)
     {
-      this.P0 = p0;
-      this.P1 = p1;
-      this.Boundary = boundary;
+      P0 = p0;
+      P1 = p1;
+      Boundary = boundary;
     }
   }
 }

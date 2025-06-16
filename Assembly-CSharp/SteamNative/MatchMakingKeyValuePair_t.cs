@@ -13,7 +13,7 @@ namespace SteamNative
 
     public static MatchMakingKeyValuePair_t FromPointer(IntPtr p)
     {
-      return Platform.PackSmall ? (MatchMakingKeyValuePair_t) (MatchMakingKeyValuePair_t.PackSmall) Marshal.PtrToStructure(p, typeof (MatchMakingKeyValuePair_t.PackSmall)) : (MatchMakingKeyValuePair_t) Marshal.PtrToStructure(p, typeof (MatchMakingKeyValuePair_t));
+      return Platform.PackSmall ? (PackSmall) Marshal.PtrToStructure(p, typeof (PackSmall)) : (MatchMakingKeyValuePair_t) Marshal.PtrToStructure(p, typeof (MatchMakingKeyValuePair_t));
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
@@ -25,10 +25,9 @@ namespace SteamNative
       public string Value;
 
       public static implicit operator MatchMakingKeyValuePair_t(
-        MatchMakingKeyValuePair_t.PackSmall d)
+        PackSmall d)
       {
-        return new MatchMakingKeyValuePair_t()
-        {
+        return new MatchMakingKeyValuePair_t {
           Key = d.Key,
           Value = d.Value
         };

@@ -1,12 +1,11 @@
-﻿using Engine.Common;
+﻿using System.Collections;
+using Engine.Common;
 using Engine.Common.Services;
 using Engine.Source.Blueprints.Utility;
 using Engine.Source.Components;
 using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
-using System.Collections;
-using UnityEngine;
 
 namespace Engine.Source.Blueprints
 {
@@ -16,8 +15,8 @@ namespace Engine.Source.Blueprints
     protected override void RegisterPorts()
     {
       base.RegisterPorts();
-      FlowOutput output = this.AddFlowOutput("Out");
-      this.AddFlowInput("In", (FlowHandler) (() => this.StartCoroutine(this.WaitingLoading(output))));
+      FlowOutput output = AddFlowOutput("Out");
+      AddFlowInput("In", (FlowHandler) (() => StartCoroutine(WaitingLoading(output))));
     }
 
     private IEnumerator WaitingLoading(FlowOutput output)
@@ -41,7 +40,7 @@ namespace Engine.Source.Blueprints
         {
           do
           {
-            yield return (object) null;
+            yield return null;
           }
           while (locationItem.IsHibernation);
           output.Call();

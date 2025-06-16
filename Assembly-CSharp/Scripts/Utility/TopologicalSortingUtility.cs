@@ -1,8 +1,8 @@
-﻿using Cofe.Utility;
-using Engine.Source.Commons;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Cofe.Utility;
+using Engine.Source.Commons;
 
 namespace Scripts.Utility
 {
@@ -16,8 +16,8 @@ namespace Scripts.Utility
       List<T> sorted = new List<T>();
       HashSet<T> visited = new HashSet<T>();
       foreach (T obj in source)
-        TopologicalSortingUtility.Visit<T>(obj, visited, sorted, dependencies, throwOnCycle);
-      return (IEnumerable<T>) sorted;
+        Visit(obj, visited, sorted, dependencies, throwOnCycle);
+      return sorted;
     }
 
     private static void Visit<T>(
@@ -31,7 +31,7 @@ namespace Scripts.Utility
       {
         visited.Add(item);
         foreach (T obj in dependencies(item))
-          TopologicalSortingUtility.Visit<T>(obj, visited, sorted, dependencies, throwOnCycle);
+          Visit(obj, visited, sorted, dependencies, throwOnCycle);
         sorted.Add(item);
       }
       else if (throwOnCycle && !sorted.Contains(item))
@@ -48,10 +48,10 @@ namespace Scripts.Utility
       if (!cache.TryGetValue(item, out types))
       {
         T2[] depends = (T2[]) item.GetType().GetCustomAttributes(typeof (T2), true);
-        types = ((IEnumerable<T2>) depends).Select<T2, Type>((Func<T2, Type>) (o => o.Type)).ToList<Type>();
-        types.Sort((Comparison<Type>) ((a, b) => a.Name.CompareTo(b.Name)));
+        types = depends.Select(o => o.Type).ToList();
+        types.Sort((a, b) => a.Name.CompareTo(b.Name));
         cache.Add(item, types);
-        depends = (T2[]) null;
+        depends = null;
       }
       foreach (T service1 in services)
       {
@@ -64,7 +64,7 @@ namespace Scripts.Utility
             yield return service;
             break;
           }
-          type = (Type) null;
+          type = null;
         }
         service = default (T);
       }

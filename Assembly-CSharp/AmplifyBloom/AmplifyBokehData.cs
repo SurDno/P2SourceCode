@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEngine;
 
 namespace AmplifyBloom
 {
@@ -9,16 +8,16 @@ namespace AmplifyBloom
     internal RenderTexture BokehRenderTexture;
     internal Vector4[] Offsets;
 
-    public AmplifyBokehData(Vector4[] offsets) => this.Offsets = offsets;
+    public AmplifyBokehData(Vector4[] offsets) => Offsets = offsets;
 
     public void Destroy()
     {
-      if ((UnityEngine.Object) this.BokehRenderTexture != (UnityEngine.Object) null)
+      if ((UnityEngine.Object) BokehRenderTexture != (UnityEngine.Object) null)
       {
-        AmplifyUtils.ReleaseTempRenderTarget(this.BokehRenderTexture);
-        this.BokehRenderTexture = (RenderTexture) null;
+        AmplifyUtils.ReleaseTempRenderTarget(BokehRenderTexture);
+        BokehRenderTexture = (RenderTexture) null;
       }
-      this.Offsets = (Vector4[]) null;
+      Offsets = (Vector4[]) null;
     }
   }
 }

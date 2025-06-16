@@ -4,49 +4,48 @@ using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Engine.Source.Components;
 using Inspectors;
-using UnityEngine;
 
 [Factory(typeof (IStorableTooltipComponent))]
 [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
 public class StorableTooltipItemDurability : IStorableTooltipComponent
 {
-  [DataReadProxy(MemberEnum.None)]
-  [DataWriteProxy(MemberEnum.None)]
-  [CopyableProxy(MemberEnum.None)]
+  [DataReadProxy]
+  [DataWriteProxy]
+  [CopyableProxy]
   [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
   protected bool isEnabled = true;
-  [DataReadProxy(MemberEnum.None)]
-  [DataWriteProxy(MemberEnum.None)]
-  [CopyableProxy(MemberEnum.None)]
+  [DataReadProxy]
+  [DataWriteProxy]
+  [CopyableProxy]
   [Inspected]
   [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
   protected StorableTooltipNameEnum name;
-  [DataReadProxy(MemberEnum.None)]
-  [DataWriteProxy(MemberEnum.None)]
-  [CopyableProxy(MemberEnum.None)]
+  [DataReadProxy]
+  [DataWriteProxy]
+  [CopyableProxy]
   [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
   protected ParameterNameEnum parameter;
-  [DataReadProxy(MemberEnum.None)]
-  [DataWriteProxy(MemberEnum.None)]
-  [CopyableProxy(MemberEnum.None)]
+  [DataReadProxy]
+  [DataWriteProxy]
+  [CopyableProxy()]
   [Inspected]
   [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
   protected bool isFood;
 
   [Inspected]
-  public bool IsEnabled => this.isEnabled;
+  public bool IsEnabled => isEnabled;
 
   public StorableTooltipInfo GetInfo(IEntity owner)
   {
     StorableTooltipInfo info = new StorableTooltipInfo();
-    info.Name = this.name;
+    info.Name = name;
     if (owner != null)
     {
       ParametersComponent component = owner.GetComponent<ParametersComponent>();
       if (component != null)
       {
-        IParameter<float> byName = component.GetByName<float>(this.parameter);
-        this.CountParams(info, byName.Value);
+        IParameter<float> byName = component.GetByName<float>(parameter);
+        CountParams(info, byName.Value);
       }
     }
     return info;
@@ -54,29 +53,29 @@ public class StorableTooltipItemDurability : IStorableTooltipComponent
 
   private void CountParams(StorableTooltipInfo info, float value)
   {
-    if ((double) value > 0.89999997615814209)
+    if (value > 0.89999997615814209)
     {
-      info.Value = this.isFood ? "{StorableTooltip.FoodExcellent}" : "{StorableTooltip.Excellent}";
+      info.Value = isFood ? "{StorableTooltip.FoodExcellent}" : "{StorableTooltip.Excellent}";
       info.Color = Color.blue;
     }
-    else if ((double) value > 0.699999988079071)
+    else if (value > 0.699999988079071)
     {
-      info.Value = this.isFood ? "{StorableTooltip.FoodGood}" : "{StorableTooltip.Good}";
+      info.Value = isFood ? "{StorableTooltip.FoodGood}" : "{StorableTooltip.Good}";
       info.Color = Color.green;
     }
-    else if ((double) value > 0.30000001192092896)
+    else if (value > 0.30000001192092896)
     {
-      info.Value = this.isFood ? "{StorableTooltip.FoodAverage}" : "{StorableTooltip.Average}";
+      info.Value = isFood ? "{StorableTooltip.FoodAverage}" : "{StorableTooltip.Average}";
       info.Color = Color.yellow;
     }
-    else if ((double) value > 0.0)
+    else if (value > 0.0)
     {
-      info.Value = this.isFood ? "{StorableTooltip.FoodBad}" : "{StorableTooltip.Bad}";
+      info.Value = isFood ? "{StorableTooltip.FoodBad}" : "{StorableTooltip.Bad}";
       info.Color = Color.red;
     }
     else
     {
-      info.Value = this.isFood ? "{StorableTooltip.FoodBroken}" : "{StorableTooltip.Broken}";
+      info.Value = isFood ? "{StorableTooltip.FoodBroken}" : "{StorableTooltip.Broken}";
       info.Color = Color.red;
     }
   }

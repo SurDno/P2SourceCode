@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace Engine.Impl.UI
+﻿namespace Engine.Impl.UI
 {
   [RequireComponent(typeof (RectTransform))]
   public class UIControl : MonoBehaviour
@@ -11,9 +9,9 @@ namespace Engine.Impl.UI
     {
       get
       {
-        if ((Object) this.transform == (Object) null)
-          this.transform = this.gameObject.GetComponent<RectTransform>();
-        return this.transform;
+        if ((Object) transform == (Object) null)
+          transform = this.gameObject.GetComponent<RectTransform>();
+        return transform;
       }
     }
 
@@ -21,11 +19,11 @@ namespace Engine.Impl.UI
     {
       get
       {
-        return (Vector2) this.Transform.position - Vector2.Scale(this.Transform.pivot, Vector2.Scale(this.Transform.sizeDelta, (Vector2) this.Transform.lossyScale));
+        return (Vector2) Transform.position - Vector2.Scale(Transform.pivot, Vector2.Scale(Transform.sizeDelta, (Vector2) Transform.lossyScale));
       }
       set
       {
-        this.Transform.position = (Vector3) (value + Vector2.Scale(this.Transform.pivot, Vector2.Scale(this.Transform.sizeDelta, (Vector2) this.Transform.lossyScale)));
+        Transform.position = (Vector3) (value + Vector2.Scale(Transform.pivot, Vector2.Scale(Transform.sizeDelta, (Vector2) Transform.lossyScale)));
       }
     }
 

@@ -12,16 +12,16 @@ namespace Engine.Source.Blueprints
     protected override void RegisterPorts()
     {
       base.RegisterPorts();
-      FlowOutput trueOut = this.AddFlowOutput("True");
-      FlowOutput falseOut = this.AddFlowOutput("False");
-      this.AddFlowInput("In", (FlowHandler) (() =>
+      FlowOutput trueOut = AddFlowOutput("True");
+      FlowOutput falseOut = AddFlowOutput("False");
+      AddFlowInput("In", () =>
       {
-        if (this.inputValue.value == null)
+        if (inputValue.value == null)
           trueOut.Call();
         else
           falseOut.Call();
-      }));
-      this.inputValue = this.AddValueInput<object>("Target");
+      });
+      inputValue = AddValueInput<object>("Target");
     }
   }
 }
