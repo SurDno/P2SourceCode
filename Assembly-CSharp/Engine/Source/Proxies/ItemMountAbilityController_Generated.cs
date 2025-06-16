@@ -23,7 +23,7 @@ namespace Engine.Source.Proxies
       return instance;
     }
 
-    public void CopyTo(object target2) => ((ItemMountAbilityController) target2).group = group;
+    public void CopyTo(object target2) => ((ItemMountAbilityController_Generated) target2).group = group;
 
     public void DataWrite(IDataWriter writer)
     {

@@ -33,25 +33,25 @@ namespace Engine.Source.Services.Consoles
       return parameter.Parameter.IsNullOrEmpty() ? GetTarget(type, ServiceLocator.GetService<ISimulation>().Player) : null;
     }
 
-    public static object GetTarget(Type type, object target)
-    {
-      if (target == null)
-        return null;
-      if (TypeUtility.IsAssignableFrom(type, target.GetType()))
-        return target;
-      if (target is IEntity entity)
-      {
-        if (typeof (IComponent).IsAssignableFrom(type))
-          return entity.GetComponent(type);
-      }
-      else if (target is IComponent component)
-      {
-        if (typeof (IEntity).IsAssignableFrom(type))
-          return component.Owner;
-        if (typeof (IComponent).IsAssignableFrom(type))
-          return entity.GetComponent(type);
-      }
-      return null;
-    }
+	public static object GetTarget(Type type, object target)
+	{
+	    if (target == null)
+	        return null;
+	    if (TypeUtility.IsAssignableFrom(type, target.GetType()))
+	        return target;
+	    if (target is IEntity entity)
+	    {
+	        if (typeof(IComponent).IsAssignableFrom(type))
+	            return entity.GetComponent(type);
+	    }
+	    else if (target is IComponent component)
+	    {
+	        if (typeof(IEntity).IsAssignableFrom(type))
+	            return component.Owner;
+	        if (typeof(IComponent).IsAssignableFrom(type))
+	            return component.Owner.GetComponent(type);
+	    }
+	    return null;
+	}
   }
 }

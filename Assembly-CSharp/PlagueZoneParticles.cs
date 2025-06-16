@@ -33,7 +33,8 @@ public class PlagueZoneParticles : MonoBehaviour, IUpdatable
     if (prevLevel == (double) num)
       return;
     prevLevel = num;
-    particleSystem2.emission.rateOverTime = new ParticleSystem.MinMaxCurve(maxRate * num);
+    ParticleSystem.EmissionModule emission = particleSystem2.emission;
+    emission.rateOverTime = new ParticleSystem.MinMaxCurve(maxRate * num);
     ServiceCache.OptimizationService.FrameHasSpike = true;
   }
 }

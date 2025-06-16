@@ -77,8 +77,11 @@ public class Flamethrower : MonoBehaviour
 
   private void TurnParticles(bool enabled)
   {
-    for (int index = 0; index < particleSystems.Length; ++index)
-      particleSystems[index].emission.enabled = enabled;
+    for (int index = 0; index < particleSystems.Length; ++index) 
+    {
+      ParticleSystem.EmissionModule emission = particleSystems[index].emission;
+      emission.enabled = enabled;
+    }
   }
 
   public void SetIndoor(bool indoor)

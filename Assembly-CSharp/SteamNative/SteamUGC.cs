@@ -394,10 +394,11 @@ namespace SteamNative
       {
         IntPtr destination = Marshal.AllocHGlobal(Marshal.SizeOf(typeof (IntPtr)) * source.Length);
         Marshal.Copy(source, 0, destination, source.Length);
-        return platform.ISteamUGC_SetItemTags(updateHandle.Value, ref new SteamParamStringArray_t {
+        SteamParamStringArray_t steamParamStringArray = new SteamParamStringArray_t {
           Strings = destination,
           NumStrings = pTags.Length
-        });
+        };
+        return platform.ISteamUGC_SetItemTags(updateHandle.Value, ref steamParamStringArray);
       }
       finally
       {

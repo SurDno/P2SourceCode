@@ -12,7 +12,7 @@ namespace UnityEditor
       int[] values = (int[]) Enum.GetValues(enumValue.GetType());
       string[] names = Enum.GetNames(enumValue.GetType());
       string enumValueName = "";
-      int num = (int) enumValue;
+      int num = Convert.ToInt32(enumValue);
       for (int index = 0; index < values.Length; ++index)
       {
         if ((values[index] & num) != 0)

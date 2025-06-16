@@ -86,7 +86,7 @@ namespace Engine.Source.UI.Menu.Protagonist.Inventory
       Vector2 size = base2.Transform.rect.size;
       position.Scale(lossyScale);
       size.Scale(lossyScale);
-      return base2.Transform.rotation * (Vector3) -(position + size / 2f);
+      return base2.Transform.rotation * -(position + size / 2f);
     }
 
     public static Rect GetScaledCoordinates(RectTransform transform)

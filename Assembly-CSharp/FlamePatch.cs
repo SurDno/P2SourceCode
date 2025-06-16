@@ -48,8 +48,10 @@ public class FlamePatch : MonoBehaviour
     if (Strength == 0.0)
     {
       GetComponent<MeshRenderer>().enabled = false;
-      smokeSystem.emission.enabled = false;
-      sparkSystem.emission.enabled = false;
+      ParticleSystem.EmissionModule smokeEmission = smokeSystem.emission;
+      smokeEmission.enabled = false;
+      ParticleSystem.EmissionModule sparkEmission = sparkSystem.emission;
+      sparkEmission.enabled = false;
     }
     else
     {

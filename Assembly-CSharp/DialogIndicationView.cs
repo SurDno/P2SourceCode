@@ -15,7 +15,9 @@ public class DialogIndicationView : MonoBehaviour
   {
     if (!(particleSystem != null))
       return;
-    particleSystem.emission.enabled = value;
+    var t = particleSystem.emission;
+      
+      t.enabled = value;
   }
 
   public void SetShape(SkinnedMeshRenderer renderer)

@@ -288,7 +288,8 @@ public class LightShafts : MonoBehaviour, IUpdatable
         {
           CheckMesh();
           instance.BuildTo(meshFilter.sharedMesh);
-          particleSystem.emission.rateOverTime = new ParticleSystem.MinMaxCurve(num * particlesPerUnit);
+          ParticleSystem.EmissionModule emission = particleSystem.emission;
+          emission.rateOverTime = new ParticleSystem.MinMaxCurve(num * particlesPerUnit);
           ParticleSystem.ShapeModule shape = particleSystem.shape with
           {
             shapeType = ParticleSystemShapeType.Mesh,

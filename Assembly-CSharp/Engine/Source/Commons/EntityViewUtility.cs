@@ -75,14 +75,8 @@ namespace Engine.Source.Commons
       rotation = num == 0 ? Quaternion.LookRotation(forward, upwards) : Quaternion.Euler(0.0f, 0.0f, 0.0f);
       Vector3 vector3;
       vector3.x = new Vector4(matrix.m00, matrix.m10, matrix.m20, matrix.m30).magnitude;
-      ref Vector3 local1 = ref vector3;
-      Vector4 vector4 = new Vector4(matrix.m01, matrix.m11, matrix.m21, matrix.m31);
-      double magnitude1 = vector4.magnitude;
-      local1.y = (float) magnitude1;
-      ref Vector3 local2 = ref vector3;
-      vector4 = new Vector4(matrix.m02, matrix.m12, matrix.m22, matrix.m32);
-      double magnitude2 = vector4.magnitude;
-      local2.z = (float) magnitude2;
+      vector3.y = new Vector4(matrix.m01, matrix.m11, matrix.m21, matrix.m31).magnitude;
+      vector3.z = new Vector4(matrix.m02, matrix.m12, matrix.m22, matrix.m32).magnitude;
     }
   }
 }

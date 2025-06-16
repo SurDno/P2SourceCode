@@ -35,7 +35,8 @@ public class HerbWind : MonoBehaviour
       active = value;
       if (particles == null)
         return;
-      particles.emission.enabled = active;
+      ParticleSystem.EmissionModule emission = particles.emission;
+      emission.enabled = active;
     }
   }
 
@@ -64,7 +65,9 @@ public class HerbWind : MonoBehaviour
     if (particles == null)
       return;
     float magnitude = currentWind.magnitude;
-    particles.emission.rateOverTime = new ParticleSystem.MinMaxCurve(Mathf.Lerp(emissionRateRange.x, emissionRateRange.y, magnitude));
+    
+    ParticleSystem.EmissionModule emission = particles.emission;
+    emission.rateOverTime = new ParticleSystem.MinMaxCurve(Mathf.Lerp(emissionRateRange.x, emissionRateRange.y, magnitude));
     ParticleSystem.VelocityOverLifetimeModule velocityOverLifetime = particles.velocityOverLifetime with
     {
       x = currentWind.x * speed.x,

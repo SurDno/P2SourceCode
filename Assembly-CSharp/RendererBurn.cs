@@ -148,12 +148,22 @@ public class RendererBurn : MonoBehaviour
     lastSizeMultiplier = SizeMultiplier;
     if (lastStrength == 0.0)
     {
-      if (flameSystem != null)
-        flameSystem.emission.enabled = false;
+      if (flameSystem != null) 
+      {
+        ParticleSystem.EmissionModule emission = flameSystem.emission;
+        emission.enabled = false;
+      }
+
       if (smokeSystem != null)
-        smokeSystem.emission.enabled = false;
+      {
+        ParticleSystem.EmissionModule emission = smokeSystem.emission;
+        emission.enabled = false;
+      }
       if (sparkSystem != null)
-        sparkSystem.emission.enabled = false;
+      {
+        ParticleSystem.EmissionModule emission = sparkSystem.emission;
+        emission.enabled = false;
+      }
     }
     else
     {

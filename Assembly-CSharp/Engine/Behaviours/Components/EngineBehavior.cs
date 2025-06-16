@@ -83,9 +83,6 @@ namespace Engine.Behaviours.Components
       movementController.OnAnimatorMove();
     }
 
-    [SpecialName]
-    GameObject IFlamable.get_gameObject() => gameObject;
-
     public enum GaitType
     {
       Walk = 1,

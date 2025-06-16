@@ -31,7 +31,8 @@ namespace Rain
       }
       else
         constant = 0.0f;
-      system.emission.rateOverTime = new ParticleSystem.MinMaxCurve(constant);
+      ParticleSystem.EmissionModule emission = system.emission;
+      emission.rateOverTime = new ParticleSystem.MinMaxCurve(constant);
     }
   }
 }

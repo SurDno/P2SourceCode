@@ -306,7 +306,7 @@ namespace ParadoxNotion
 
     public static T RTCreateDelegate<T>(this MethodInfo method, object instance)
     {
-      return (T) method.RTCreateDelegate(typeof (T), instance);
+      return (T)(object)method.RTCreateDelegate(typeof(T), instance);
     }
 
     public static Delegate RTCreateDelegate(this MethodInfo method, Type type, object instance)

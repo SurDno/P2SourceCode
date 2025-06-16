@@ -11,7 +11,8 @@ namespace Engine.Impl.UI.Controls
     {
       if (!(particleSystem != null))
         return;
-      particleSystem.emission.enabled = Visible;
+      ParticleSystem.EmissionModule emission = particleSystem.emission;
+      emission.enabled = Visible;
     }
   }
 }

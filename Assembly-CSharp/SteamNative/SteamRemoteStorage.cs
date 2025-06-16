@@ -92,10 +92,11 @@ namespace SteamNative
       {
         IntPtr destination = Marshal.AllocHGlobal(Marshal.SizeOf(typeof (IntPtr)) * source.Length);
         Marshal.Copy(source, 0, destination, source.Length);
-        call = platform.ISteamRemoteStorage_EnumeratePublishedWorkshopFiles(eEnumerationType, unStartIndex, unCount, unDays, ref new SteamParamStringArray_t {
+        SteamParamStringArray_t steamParamStringArrayT = new SteamParamStringArray_t {
           Strings = destination,
           NumStrings = pTags.Length
-        }, ref pUserTags);
+        };
+        call = platform.ISteamRemoteStorage_EnumeratePublishedWorkshopFiles(eEnumerationType, unStartIndex, unCount, unDays, ref steamParamStringArrayT, ref pUserTags);
       }
       finally
       {
@@ -129,10 +130,11 @@ namespace SteamNative
       {
         IntPtr destination = Marshal.AllocHGlobal(Marshal.SizeOf(typeof (IntPtr)) * source.Length);
         Marshal.Copy(source, 0, destination, source.Length);
-        call = platform.ISteamRemoteStorage_EnumerateUserSharedWorkshopFiles(steamId.Value, unStartIndex, ref new SteamParamStringArray_t {
+        SteamParamStringArray_t steamParamStringArrayT = new SteamParamStringArray_t {
           Strings = destination,
           NumStrings = pRequiredTags.Length
-        }, ref pExcludedTags);
+        };
+        call = platform.ISteamRemoteStorage_EnumerateUserSharedWorkshopFiles(steamId.Value, unStartIndex, ref steamParamStringArrayT, ref pExcludedTags);
       }
       finally
       {
@@ -344,10 +346,12 @@ namespace SteamNative
       {
         IntPtr destination = Marshal.AllocHGlobal(Marshal.SizeOf(typeof (IntPtr)) * source.Length);
         Marshal.Copy(source, 0, destination, source.Length);
-        call = platform.ISteamRemoteStorage_PublishVideo(eVideoProvider, pchVideoAccount, pchVideoIdentifier, pchPreviewFile, nConsumerAppId.Value, pchTitle, pchDescription, eVisibility, ref new SteamParamStringArray_t {
+        
+        SteamParamStringArray_t steamParamStringArrayT = new SteamParamStringArray_t {
           Strings = destination,
           NumStrings = pTags.Length
-        });
+        };
+        call = platform.ISteamRemoteStorage_PublishVideo(eVideoProvider, pchVideoAccount, pchVideoIdentifier, pchPreviewFile, nConsumerAppId.Value, pchTitle, pchDescription, eVisibility, ref steamParamStringArrayT);
       }
       finally
       {
@@ -376,10 +380,11 @@ namespace SteamNative
       {
         IntPtr destination = Marshal.AllocHGlobal(Marshal.SizeOf(typeof (IntPtr)) * source.Length);
         Marshal.Copy(source, 0, destination, source.Length);
-        call = platform.ISteamRemoteStorage_PublishWorkshopFile(pchFile, pchPreviewFile, nConsumerAppId.Value, pchTitle, pchDescription, eVisibility, ref new SteamParamStringArray_t {
+        SteamParamStringArray_t steamParamStringArrayT = new SteamParamStringArray_t {
           Strings = destination,
           NumStrings = pTags.Length
-        }, eWorkshopFileType);
+        };
+        call = platform.ISteamRemoteStorage_PublishWorkshopFile(pchFile, pchPreviewFile, nConsumerAppId.Value, pchTitle, pchDescription, eVisibility, ref steamParamStringArrayT, eWorkshopFileType);
       }
       finally
       {
@@ -493,10 +498,11 @@ namespace SteamNative
       {
         IntPtr destination = Marshal.AllocHGlobal(Marshal.SizeOf(typeof (IntPtr)) * source.Length);
         Marshal.Copy(source, 0, destination, source.Length);
-        return platform.ISteamRemoteStorage_UpdatePublishedFileTags(updateHandle.Value, ref new SteamParamStringArray_t {
+        SteamParamStringArray_t steamParamStringArrayT = new SteamParamStringArray_t {
           Strings = destination,
           NumStrings = pTags.Length
-        });
+        };
+        return platform.ISteamRemoteStorage_UpdatePublishedFileTags(updateHandle.Value, ref steamParamStringArrayT);
       }
       finally
       {

@@ -31,7 +31,7 @@ namespace SRDebugger.Scripts
         if (!(prefab.GetComponent(typeof (IEnableTab)) is IEnableTab component) || component.IsEnabled)
           TabController.AddTab(SRInstantiate.Instantiate(prefab));
       }
-      if (OpenTab((DefaultTabs) ((int) _activeTab ?? (int) Settings.Instance.DefaultTab)))
+      if (OpenTab(_activeTab ?? Settings.Instance.DefaultTab))
         return;
       TabController.ActiveTab = TabController.Tabs.FirstOrDefault();
     }

@@ -48,8 +48,8 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory.Container
       }
       if (component1.button != null)
       {
-        component1.button.OpenBeginEvent += new Action(((InventoryContainerUI) component1).FireOpenBegin);
-        component1.button.OpenEndEvent += new Action<bool>(((InventoryContainerUI) component1).FireOpenEnd);
+        component1.button.OpenBeginEvent += component1.FireOpenBegin;
+        component1.button.OpenEndEvent += component1.FireOpenEnd;
       }
       return component1;
     }

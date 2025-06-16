@@ -2656,6 +2656,6 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       ContainerLeft = 7,
     }
 
-    private delegate void NavigationScrollHandle(Navigation navigation) where T : BaseInventoryWindow<T>;
+    private delegate void NavigationScrollHandle(Navigation navigation);
   }
 }
