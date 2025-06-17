@@ -7,7 +7,7 @@ namespace Engine.Impl.UI.Controls
     [SerializeField]
     private ProgressViewBase nestedView;
     [SerializeField]
-    private Vector2 targetRange = new Vector2(0.0f, 1f);
+    private Vector2 targetRange = new(0.0f, 1f);
 
     protected override void ApplyProgress()
     {

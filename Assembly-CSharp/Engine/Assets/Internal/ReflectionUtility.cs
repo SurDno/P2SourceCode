@@ -10,7 +10,7 @@ namespace Engine.Assets.Internal
     {
       PropertyInfo property = FindProperty(type, name);
       if (property != null)
-        property.SetValue(target, value, new object[0]);
+        property.SetValue(target, value, []);
       else
         throw new MissingMemberException(MethodBase.GetCurrentMethod() + " : " + type + " : " + name);
     }
@@ -18,7 +18,7 @@ namespace Engine.Assets.Internal
     public static object GetProperty(Type type, object target, string name)
     {
       PropertyInfo property = FindProperty(type, name);
-      return property != null ? property.GetValue(target, new object[0]) : throw new MissingMemberException(MethodBase.GetCurrentMethod() + " : " + type + " : " + name);
+      return property != null ? property.GetValue(target, []) : throw new MissingMemberException(MethodBase.GetCurrentMethod() + " : " + type + " : " + name);
     }
 
     public static PropertyInfo FindProperty(Type type, string name)
@@ -141,7 +141,7 @@ namespace Engine.Assets.Internal
           MethodInfo setMethod = propertyInfo.GetSetMethod(true);
           if (setMethod != null)
           {
-            setMethod.Invoke(target, new object[1]{ value });
+            setMethod.Invoke(target, [value]);
             return;
           }
         }

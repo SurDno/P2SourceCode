@@ -14,21 +14,21 @@ namespace Engine.Source.Settings.External
     [DataWriteProxy]
     [CopyableProxy]
     [Inspected(Mutable = true, Mode = ExecuteMode.EditAndRuntime)]
-    public List<ActionGroup> Groups_Set_1 = new List<ActionGroup>();
+    public List<ActionGroup> Groups_Set_1 = [];
     [DataReadProxy]
     [DataWriteProxy]
     [CopyableProxy]
     [Inspected(Mutable = true, Mode = ExecuteMode.EditAndRuntime)]
-    public List<ActionGroup> Groups_Set_2 = new List<ActionGroup>();
+    public List<ActionGroup> Groups_Set_2 = [];
     [DataReadProxy]
     [DataWriteProxy]
     [CopyableProxy]
     [Inspected(Mutable = true, Mode = ExecuteMode.EditAndRuntime)]
-    public List<ActionGroup> Groups_Set_3 = new List<ActionGroup>();
+    public List<ActionGroup> Groups_Set_3 = [];
     [DataReadProxy]
     [DataWriteProxy]
     [CopyableProxy()]
     [Inspected(Mutable = true, Mode = ExecuteMode.EditAndRuntime)]
-    public List<JoystickLayout> Layouts = new List<JoystickLayout>();
+    public List<JoystickLayout> Layouts = [];
   }
 }

@@ -8,7 +8,7 @@ namespace Cinemachine
 {
   public struct CameraState
   {
-    public static Vector3 kNoPoint = new Vector3(float.NaN, float.NaN, float.NaN);
+    public static Vector3 kNoPoint = new(float.NaN, float.NaN, float.NaN);
     private CustomBlendable mCustom0;
     private CustomBlendable mCustom1;
     private CustomBlendable mCustom2;
@@ -41,31 +41,20 @@ namespace Cinemachine
 
     public Vector3 FinalPosition => RawPosition + PositionCorrection;
 
-    public Quaternion FinalOrientation
-    {
-      get
-      {
-        return Mathf.Abs(Lens.Dutch) > 9.9999997473787516E-05 ? CorrectedOrientation * Quaternion.AngleAxis(Lens.Dutch, Vector3.forward) : CorrectedOrientation;
-      }
-    }
+    public Quaternion FinalOrientation => Mathf.Abs(Lens.Dutch) > 9.9999997473787516E-05 ? CorrectedOrientation * Quaternion.AngleAxis(Lens.Dutch, Vector3.forward) : CorrectedOrientation;
 
-    public static CameraState Default
-    {
-      get
-      {
-        return new CameraState {
-          Lens = LensSettings.Default,
-          ReferenceUp = Vector3.up,
-          ReferenceLookAt = kNoPoint,
-          RawPosition = Vector3.zero,
-          RawOrientation = Quaternion.identity,
-          ShotQuality = 1f,
-          PositionCorrection = Vector3.zero,
-          OrientationCorrection = Quaternion.identity,
-          PositionDampingBypass = Vector3.zero
-        };
-      }
-    }
+    public static CameraState Default =>
+      new() {
+        Lens = LensSettings.Default,
+        ReferenceUp = Vector3.up,
+        ReferenceLookAt = kNoPoint,
+        RawPosition = Vector3.zero,
+        RawOrientation = Quaternion.identity,
+        ShotQuality = 1f,
+        PositionCorrection = Vector3.zero,
+        OrientationCorrection = Quaternion.identity,
+        PositionDampingBypass = Vector3.zero
+      };
 
     public int NumCustomBlendables { get; private set; }
 
@@ -131,7 +120,7 @@ namespace Cinemachine
           break;
         default:
           if (m_CustomOverflow == null)
-            m_CustomOverflow = new List<CustomBlendable>();
+            m_CustomOverflow = [];
           m_CustomOverflow.Add(b);
           break;
       }
@@ -216,16 +205,9 @@ namespace Cinemachine
       return Mathf.Clamp(num2, Mathf.Min(fovA, fovB), Mathf.Max(fovA, fovB));
     }
 
-    public struct CustomBlendable
-    {
-      public Object m_Custom;
-      public float m_Weight;
-
-      public CustomBlendable(Object custom, float weight)
-      {
-        m_Custom = custom;
-        m_Weight = weight;
-      }
+    public struct CustomBlendable(Object custom, float weight) {
+      public Object m_Custom = custom;
+      public float m_Weight = weight;
     }
   }
 }

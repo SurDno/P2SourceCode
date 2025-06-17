@@ -32,8 +32,8 @@ namespace BehaviorDesigner.Runtime.Tasks.Pathologic
     private const float updateFrequency = 1f;
     private bool inited;
     private float timeLeft;
-    private List<Transform> potentialPOIs = new List<Transform>();
-    private List<Transform> potentialPriorityPOIs = new List<Transform>();
+    private List<Transform> potentialPOIs = [];
+    private List<Transform> potentialPriorityPOIs = [];
 
     public override void OnAwake()
     {

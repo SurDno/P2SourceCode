@@ -4,7 +4,7 @@ namespace Engine.Common.Comparers
 {
   public class IntComparer : IEqualityComparer<int>
   {
-    public static readonly IntComparer Instance = new IntComparer();
+    public static readonly IntComparer Instance = new();
 
     public bool Equals(int x, int y) => x == y;
 

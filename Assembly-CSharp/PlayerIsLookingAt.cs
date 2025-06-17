@@ -76,7 +76,7 @@ public class PlayerIsLookingAt : Conditional, IStub, ISerializeDataWrite, ISeria
       position2 = component2.Head.transform.position;
     LayerMask triggerInteractLayer = ScriptableObjectInstance<GameSettingsData>.Instance.TriggerInteractLayer;
     LayerMask ragdollLayer = ScriptableObjectInstance<GameSettingsData>.Instance.RagdollLayer;
-    List<RaycastHit> result = new List<RaycastHit>();
+    List<RaycastHit> result = [];
     PhysicsUtility.Raycast(result, position2, position1 - position2, visionRange, -1 ^ triggerInteractLayer ^ ragdollLayer, QueryTriggerInteraction.Ignore);
     for (int index = 0; index < result.Count; ++index)
     {

@@ -18,22 +18,10 @@ namespace Engine.Behaviours.Engines.Controllers
     private bool Indoor { get; set; }
 
     [Inspected]
-    protected override AudioMixerGroup FootAudioMixer
-    {
-      get
-      {
-        return Indoor ? ScriptableObjectInstance<GameSettingsData>.Instance.NpcFootIndoorMixer : ScriptableObjectInstance<GameSettingsData>.Instance.NpcFootOutdoorMixer;
-      }
-    }
+    protected override AudioMixerGroup FootAudioMixer => Indoor ? ScriptableObjectInstance<GameSettingsData>.Instance.NpcFootIndoorMixer : ScriptableObjectInstance<GameSettingsData>.Instance.NpcFootOutdoorMixer;
 
     [Inspected]
-    protected override AudioMixerGroup FootEffectsAudioMixer
-    {
-      get
-      {
-        return Indoor ? ScriptableObjectInstance<GameSettingsData>.Instance.NpcFootEffectsIndoorMixer : ScriptableObjectInstance<GameSettingsData>.Instance.NpcFootEffectsOutdoorMixer;
-      }
-    }
+    protected override AudioMixerGroup FootEffectsAudioMixer => Indoor ? ScriptableObjectInstance<GameSettingsData>.Instance.NpcFootEffectsIndoorMixer : ScriptableObjectInstance<GameSettingsData>.Instance.NpcFootEffectsOutdoorMixer;
 
     protected void Start()
     {

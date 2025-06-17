@@ -9,7 +9,7 @@ namespace PLVirtualMachine.Common
   [VMType("ObjectCombinationDataStruct")]
   public class ObjectCombinationDataStruct : IVMStringSerializable
   {
-    private List<ObjectCombinationElement> combinationElements = new List<ObjectCombinationElement>();
+    private List<ObjectCombinationElement> combinationElements = [];
 
     public int GetElementsCount() => combinationElements.Count;
 
@@ -43,7 +43,7 @@ namespace PLVirtualMachine.Common
             Logger.AddError(string.Format("Cannot convert {0} to object combination data struct at {1}", data, EngineAPIManager.Instance.CurrentFSMStateInfo));
             break;
           }
-          string[] separator = new string[1]{ "END&ELEM" };
+          string[] separator = ["END&ELEM"];
           string[] strArray = data.Split(separator, StringSplitOptions.RemoveEmptyEntries);
           combinationElements.Clear();
           for (int index = 0; index < strArray.Length; ++index)

@@ -217,8 +217,7 @@ public class HerbBrideFall : MonoBehaviour
     }
     else
     {
-      RaycastHit hitInfo;
-      if (Physics.Raycast(origin, direction, out hitInfo, magnitude))
+      if (Physics.Raycast(origin, direction, out RaycastHit hitInfo, magnitude))
       {
         Debug.Log(hitInfo.collider.gameObject);
         lookTime = 0.0f;

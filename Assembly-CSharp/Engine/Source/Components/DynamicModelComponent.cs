@@ -49,7 +49,7 @@ namespace Engine.Source.Components
     [DataWriteProxy]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     [CopyableProxy()]
-    protected List<Typed<IModel>> models = new List<Typed<IModel>>();
+    protected List<Typed<IModel>> models = [];
     private PrefabAsset prefabAsset;
     private string group;
     [FromThis]

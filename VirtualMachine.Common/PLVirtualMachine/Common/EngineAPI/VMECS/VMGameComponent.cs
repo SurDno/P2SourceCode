@@ -160,11 +160,11 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
 
     [Method("Get current game time", "", "")]
     [SpecialFunction(ESpecialFunctionName.SFN_GET_GAME_TIME)]
-    public virtual GameTime GetCurrGameTime() => new GameTime();
+    public virtual GameTime GetCurrGameTime() => new();
 
     [Method("Get current day time", "", "")]
     [SpecialFunction(ESpecialFunctionName.SFN_GET_DAY_TIME)]
-    public virtual GameTime GetCurrDayTime() => new GameTime();
+    public virtual GameTime GetCurrDayTime() => new();
 
     [Method("Set current game time", "New current time,Send all events", "")]
     public virtual void SetCurrGameTime(GameTime currTime, bool sendTimerEvents)
@@ -354,7 +354,7 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
           Logger.AddError("Add notification function call error: notification service not defined");
         else if (textList != null)
         {
-          List<LocalizedText> localizedTextList = new List<LocalizedText>();
+          List<LocalizedText> localizedTextList = [];
           for (int objIndex = 0; objIndex < textList.ObjectsCount; ++objIndex)
           {
             object obj = textList.GetObject(objIndex);
@@ -512,30 +512,21 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
     public bool SpokeMarkUM
     {
       get => ServiceLocator.GetService<IProfilesService>().GetBoolValue(nameof (SpokeMarkUM));
-      set
-      {
-        ServiceLocator.GetService<IProfilesService>().SetBoolValue(nameof (SpokeMarkUM), value);
-      }
+      set => ServiceLocator.GetService<IProfilesService>().SetBoolValue(nameof (SpokeMarkUM), value);
     }
 
     [Property("MadeTheDeal", "", false, false, false)]
     public bool MadeTheDeal
     {
       get => ServiceLocator.GetService<IProfilesService>().GetBoolValue(nameof (MadeTheDeal));
-      set
-      {
-        ServiceLocator.GetService<IProfilesService>().SetBoolValue(nameof (MadeTheDeal), value);
-      }
+      set => ServiceLocator.GetService<IProfilesService>().SetBoolValue(nameof (MadeTheDeal), value);
     }
 
     [Property("RefusedDeal", "", false, false, false)]
     public bool RefusedDeal
     {
       get => ServiceLocator.GetService<IProfilesService>().GetBoolValue(nameof (RefusedDeal));
-      set
-      {
-        ServiceLocator.GetService<IProfilesService>().SetBoolValue(nameof (RefusedDeal), value);
-      }
+      set => ServiceLocator.GetService<IProfilesService>().SetBoolValue(nameof (RefusedDeal), value);
     }
 
     [Method("Get Profile Value", "Name", "")]

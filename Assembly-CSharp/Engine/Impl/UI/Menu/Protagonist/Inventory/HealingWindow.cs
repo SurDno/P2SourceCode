@@ -81,7 +81,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
     [SerializeField]
     private EventView clearMessages;
     private IEntitySerializable[] symptomTemplates;
-    private List<IEntity> targetSymptoms = new List<IEntity>();
+    private List<IEntity> targetSymptoms = [];
     private float oldPain;
     private float oldInfection;
     private StorableComponent selectedItem;
@@ -200,8 +200,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Cancel, CancelListener);
       buttonUse.OpenEndEvent += OnUseButtonEnd;
       if (symptomTemplates == null)
-        symptomTemplates = new IEntitySerializable[7]
-        {
+        symptomTemplates = [
           symptom1,
           symptom2,
           symptom3,
@@ -209,7 +208,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
           symptom5,
           symptom6,
           symptom7
-        };
+        ];
       selectedItem = null;
       CountSymptoms();
       actors.Clear();
@@ -622,8 +621,8 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       else
       {
         List<StorableComponent> list = Actor.Items.Cast<StorableComponent>().ToList();
-        List<List<StorableComponent>> itemsList = new List<List<StorableComponent>>();
-        List<string> groupSignatures = new List<string>();
+        List<List<StorableComponent>> itemsList = [];
+        List<string> groupSignatures = [];
         switch (byName1.Value)
         {
           case BoundHealthStateEnum.Danger:

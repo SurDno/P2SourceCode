@@ -13,14 +13,11 @@ namespace PLVirtualMachine.Dynamic.Components
 
     public void InitiliseComponentFromHierarchy(VMEntity entity, VMLogicObject templateObject)
     {
-      IParam obj1;
-      if (((IBlueprint) templateObject).TryGetProperty("Mail.Header", out obj1))
+      if (((IBlueprint) templateObject).TryGetProperty("Mail.Header", out IParam obj1))
         Header = (ITextRef) obj1.Value;
-      IParam obj2;
-      if (((IBlueprint) templateObject).TryGetProperty("Mail.Text", out obj2))
+      if (((IBlueprint) templateObject).TryGetProperty("Mail.Text", out IParam obj2))
         Text = (ITextRef) obj2.Value;
-      IParam obj3;
-      if (!((IBlueprint) templateObject).TryGetProperty("Mail.State", out obj3))
+      if (!((IBlueprint) templateObject).TryGetProperty("Mail.State", out IParam obj3))
         return;
       State = (MailStateEnum) obj3.Value;
     }

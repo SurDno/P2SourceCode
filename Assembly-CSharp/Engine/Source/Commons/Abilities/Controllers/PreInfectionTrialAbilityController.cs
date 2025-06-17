@@ -48,7 +48,7 @@ namespace Engine.Source.Commons.Abilities.Controllers
     private float nextCheckTime;
     private float lastPreinfectionValue;
     private bool gotPreinfectionHit;
-    private Dictionary<AbilityValueNameEnum, IAbilityValue> values = new Dictionary<AbilityValueNameEnum, IAbilityValue>();
+    private Dictionary<AbilityValueNameEnum, IAbilityValue> values = new();
 
     public void Initialise(AbilityItem abilityItem)
     {
@@ -107,8 +107,7 @@ namespace Engine.Source.Commons.Abilities.Controllers
 
     public IAbilityValue<T> GetAbilityValue<T>(AbilityValueNameEnum parameter) where T : struct
     {
-      IAbilityValue abilityValue;
-      values.TryGetValue(parameter, out abilityValue);
+      values.TryGetValue(parameter, out IAbilityValue abilityValue);
       return abilityValue as IAbilityValue<T>;
     }
 

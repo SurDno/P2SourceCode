@@ -14,14 +14,13 @@ namespace PLVirtualMachine.FSM
 {
   [TypeData(EDataType.TEntryPoint)]
   [DataFactory("EntryPoint")]
-  public class VMEntryPoint : 
-    VMBaseObject,
+  public class VMEntryPoint(ulong guid) :
+    VMBaseObject(guid),
     IStub,
     IEditorDataReader,
     IEntryPoint,
     IObject,
-    IEditorBaseTemplate
-  {
+    IEditorBaseTemplate {
     [FieldData("AssociatedEntryPoint", DataFieldType.Reference)]
     private VMEntryPoint assocEntryPoint;
     [FieldData("ActionLine", DataFieldType.Reference)]
@@ -59,20 +58,9 @@ namespace PLVirtualMachine.FSM
       }
     }
 
-    public VMEntryPoint(ulong guid)
-      : base(guid)
-    {
-    }
-
     public override EObjectCategory GetCategory() => EObjectCategory.OBJECT_CATEGORY_NONE;
 
-    public IActionLine ActionLine
-    {
-      get
-      {
-        return assocEntryPoint != null && assocEntryPoint.ActionLine != null ? assocEntryPoint.ActionLine : actionLine;
-      }
-    }
+    public IActionLine ActionLine => assocEntryPoint != null && assocEntryPoint.ActionLine != null ? assocEntryPoint.ActionLine : actionLine;
 
     public override void Clear()
     {

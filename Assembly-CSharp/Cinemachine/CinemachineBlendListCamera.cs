@@ -170,7 +170,7 @@ namespace Cinemachine
     {
       if (m_ChildCameras != null)
         return;
-      List<CinemachineVirtualCameraBase> virtualCameraBaseList = new List<CinemachineVirtualCameraBase>();
+      List<CinemachineVirtualCameraBase> virtualCameraBaseList = [];
       foreach (CinemachineVirtualCameraBase componentsInChild in GetComponentsInChildren<CinemachineVirtualCameraBase>(true))
       {
         if (componentsInChild.transform.parent == transform)
@@ -183,7 +183,7 @@ namespace Cinemachine
     public void ValidateInstructions()
     {
       if (m_Instructions == null)
-        m_Instructions = new Instruction[0];
+        m_Instructions = [];
       for (int index = 0; index < m_Instructions.Length; ++index)
       {
         if (m_Instructions[index].m_VirtualCamera != null && m_Instructions[index].m_VirtualCamera.transform.parent != transform)

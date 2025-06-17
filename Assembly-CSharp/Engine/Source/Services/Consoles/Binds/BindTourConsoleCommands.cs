@@ -59,7 +59,7 @@ namespace Engine.Source.Services.Consoles.Binds
       }
       else
       {
-        List<RegionComponent> regions = new List<RegionComponent>();
+        List<RegionComponent> regions = [];
         Array regionValues = Enum.GetValues(typeof (RegionEnum));
         foreach (RegionEnum regionValue in regionValues)
         {
@@ -107,7 +107,7 @@ namespace Engine.Source.Services.Consoles.Binds
       }
       else
       {
-        List<LocationComponent> indoors = new List<LocationComponent>();
+        List<LocationComponent> indoors = [];
         LocationComponent location = simulation.Hierarchy.GetComponent<LocationComponent>();
         ComputeLocation(location, indoors);
         for (int index = 0; index < indoors.Count; ++index)

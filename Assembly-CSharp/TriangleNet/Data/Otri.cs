@@ -4,18 +4,16 @@
   {
     public Triangle triangle;
     public int orient;
-    private static readonly int[] plus1Mod3 = new int[3]
-    {
+    private static readonly int[] plus1Mod3 = [
       1,
       2,
       0
-    };
-    private static readonly int[] minus1Mod3 = new int[3]
-    {
+    ];
+    private static readonly int[] minus1Mod3 = [
       2,
       0,
       1
-    };
+    ];
 
     public override string ToString()
     {

@@ -44,8 +44,7 @@ namespace Scripts.Tools.Serializations.Converters
         }
         else
         {
-          ParameterNameEnum parameterName;
-          DefaultConverter.TryParseEnum(child2.Read(), out parameterName);
+          DefaultConverter.TryParseEnum(child2.Read(), out ParameterNameEnum parameterName);
           IParameter parameter = value.FirstOrDefault(o => o.Name == parameterName);
           if (parameter != null)
           {

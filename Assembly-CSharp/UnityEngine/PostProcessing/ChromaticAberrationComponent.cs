@@ -5,13 +5,7 @@
   {
     private Texture2D m_SpectrumLut;
 
-    public override bool active
-    {
-      get
-      {
-        return model.enabled && model.settings.intensity > 0.0 && !context.interrupted;
-      }
-    }
+    public override bool active => model.enabled && model.settings.intensity > 0.0 && !context.interrupted;
 
     public override void OnDisable()
     {
@@ -34,12 +28,11 @@
           texture2D2.anisoLevel = 0;
           texture2D2.hideFlags = HideFlags.DontSave;
           m_SpectrumLut = texture2D2;
-          m_SpectrumLut.SetPixels(new Color[3]
-          {
-            new Color(1f, 0.0f, 0.0f),
-            new Color(0.0f, 1f, 0.0f),
-            new Color(0.0f, 0.0f, 1f)
-          });
+          m_SpectrumLut.SetPixels([
+            new(1f, 0.0f, 0.0f),
+            new(0.0f, 1f, 0.0f),
+            new(0.0f, 0.0f, 1f)
+          ]);
           m_SpectrumLut.Apply();
         }
         texture2D1 = m_SpectrumLut;

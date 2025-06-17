@@ -3,19 +3,14 @@
 namespace Cinemachine
 {
   [DocumentationSorting(0.0f, Level.Undoc)]
-  public sealed class DocumentationSortingAttribute : Attribute
+  public sealed class DocumentationSortingAttribute(
+    float sortOrder,
+    DocumentationSortingAttribute.Level category)
+    : Attribute 
   {
-    public float SortOrder { get; private set; }
+    public float SortOrder { get; private set; } = sortOrder;
 
-    public Level Category { get; private set; }
-
-    public DocumentationSortingAttribute(
-      float sortOrder,
-      Level category)
-    {
-      SortOrder = sortOrder;
-      Category = category;
-    }
+    public Level Category { get; private set; } = category;
 
     public enum Level
     {

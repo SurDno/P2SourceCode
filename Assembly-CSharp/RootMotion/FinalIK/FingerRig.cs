@@ -8,7 +8,7 @@ namespace RootMotion.FinalIK
     [Tooltip("The master weight for all fingers.")]
     [Range(0.0f, 1f)]
     public float weight = 1f;
-    public Finger[] fingers = new Finger[0];
+    public Finger[] fingers = [];
 
     public bool initiated { get; private set; }
 
@@ -25,10 +25,10 @@ namespace RootMotion.FinalIK
     [ContextMenu("Auto-detect")]
     public void AutoDetect()
     {
-      fingers = new Finger[0];
+      fingers = [];
       for (int index = 0; index < transform.childCount; ++index)
       {
-        Transform[] array = new Transform[0];
+        Transform[] array = [];
         AddChildrenRecursive(transform.GetChild(index), ref array);
         if (array.Length == 3 || array.Length == 4)
         {
@@ -79,7 +79,7 @@ namespace RootMotion.FinalIK
         Warning.Log("RemoveFinger index out of bounds.", transform);
       else if (fingers.Length == 1)
       {
-        fingers = new Finger[0];
+        fingers = [];
       }
       else
       {

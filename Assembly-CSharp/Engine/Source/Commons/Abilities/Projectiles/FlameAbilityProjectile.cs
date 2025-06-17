@@ -66,7 +66,7 @@ namespace Engine.Source.Commons.Abilities.Projectiles
 
     private List<EffectsComponent> FilterIgnoredTargets(List<EffectsComponent> list)
     {
-      List<EffectsComponent> effectsComponentList = new List<EffectsComponent>();
+      List<EffectsComponent> effectsComponentList = [];
       foreach (EffectsComponent effectsComponent in list)
       {
         IParameter<bool> byName = effectsComponent.Owner.GetComponent<ParametersComponent>()?.GetByName<bool>(ParameterNameEnum.IsCombatIgnored);

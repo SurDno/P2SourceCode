@@ -137,7 +137,7 @@ namespace Engine.Source.Components
           MoveToPosition();
         if (Owner.Childs != null)
         {
-          List<IEntity> childs = new List<IEntity>();
+          List<IEntity> childs = [];
           CollectChilds(Owner.Childs, sceneContainer, container, childs);
           foreach (IEntity entity in childs)
           {
@@ -200,9 +200,7 @@ namespace Engine.Source.Components
       foreach (GameObject rootGameObject in sceneAsset.Scene.GetRootGameObjects())
       {
         Matrix4x4 matrix4x4 = Matrix4x4.TRS(rootGameObject.transform.localPosition, rootGameObject.transform.localRotation, rootGameObject.transform.localScale);
-        Vector3 position;
-        Quaternion rotation;
-        EntityViewUtility.ConvertMatrix(Matrix4x4.TRS(((IEntityView) Owner).Position, ((IEntityView) Owner).Rotation, Vector3.one) * matrix4x4, out position, out rotation);
+        EntityViewUtility.ConvertMatrix(Matrix4x4.TRS(((IEntityView) Owner).Position, ((IEntityView) Owner).Rotation, Vector3.one) * matrix4x4, out Vector3 position, out Quaternion rotation);
         Transform transform = rootGameObject.transform.transform;
         transform.position = position;
         transform.rotation = rotation;

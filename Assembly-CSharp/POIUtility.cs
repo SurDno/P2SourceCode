@@ -5,11 +5,10 @@ public class POIUtility
 {
   public static List<POIAnimationEnum> GetAnimationListFromAnimationEnum(POIAnimationEnum animations)
   {
-    BitArray bitArray = new BitArray(new int[1]
-    {
+    BitArray bitArray = new BitArray([
       (int) animations
-    });
-    List<POIAnimationEnum> fromAnimationEnum = new List<POIAnimationEnum>();
+    ]);
+    List<POIAnimationEnum> fromAnimationEnum = [];
     for (int index = 0; index < bitArray.Length; ++index)
     {
       if (bitArray[index])

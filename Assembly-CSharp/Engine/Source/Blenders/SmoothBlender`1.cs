@@ -13,9 +13,9 @@ namespace Engine.Source.Blenders
   public abstract class SmoothBlender<T> : EngineObject, ISmoothBlender<T>, IUpdatable where T : class, IObject, IBlendable<T>
   {
     [Inspected]
-    private T fromBlendable;
+    private T fromBlendable = ServiceLocator.GetService<IFactory>().Create<T>();
     [Inspected]
-    private T currentBlendable;
+    private T currentBlendable = ServiceLocator.GetService<IFactory>().Create<T>();
     [Inspected]
     private T targetBlendable;
     [Inspected]
@@ -26,7 +26,7 @@ namespace Engine.Source.Blenders
     private bool compute;
     [Inspected]
     private float progress;
-    private LerpBlendOperation lerpBlendOperation = new LerpBlendOperation();
+    private LerpBlendOperation lerpBlendOperation = new();
 
     [Inspected]
     public Guid SnapshotTemplateId { get; private set; }
@@ -38,12 +38,6 @@ namespace Engine.Source.Blenders
     public float Progress => progress;
 
     public event Action<ISmoothBlender<T>> OnChanged;
-
-    public SmoothBlender()
-    {
-      fromBlendable = ServiceLocator.GetService<IFactory>().Create<T>();
-      currentBlendable = ServiceLocator.GetService<IFactory>().Create<T>();
-    }
 
     public void BlendTo(T value, TimeSpan interval)
     {

@@ -8,19 +8,13 @@ using Engine.Common.Reflection;
 namespace PLVirtualMachine.Common.EngineAPI.VMECS.VMAttributes
 {
   [AttributeUsage(AttributeTargets.Class, Inherited = false)]
-  public class InfoAttribute : TypeAttribute
+  public class InfoAttribute(string apiName, Type engineComponentType = null) : TypeAttribute 
   {
-    public string ApiName;
-    private static Dictionary<string, ComponentReplectionInfo> components = new Dictionary<string, ComponentReplectionInfo>();
-    private static Dictionary<Type, string> names = new Dictionary<Type, string>();
+    public string ApiName = apiName;
+    private static Dictionary<string, ComponentReplectionInfo> components = new();
+    private static Dictionary<Type, string> names = new();
 
-    public Type EngineComponentType { get; set; }
-
-    public InfoAttribute(string apiName, Type engineComponentType = null)
-    {
-      ApiName = apiName;
-      EngineComponentType = engineComponentType;
-    }
+    public Type EngineComponentType { get; set; } = engineComponentType;
 
     public override void ComputeType(Type type)
     {
@@ -36,14 +30,13 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS.VMAttributes
 
     public static MethodInfo GetComponentMethodInfo(string componentName, string methodName)
     {
-      ComponentReplectionInfo componentReplectionInfo;
-      if (!components.TryGetValue(componentName, out componentReplectionInfo))
+      if (!components.TryGetValue(componentName, out ComponentReplectionInfo componentReplectionInfo))
       {
         Logger.AddError("Component with name " + componentName + " not found");
         return null;
       }
-      MethodInfo componentMethodInfo;
-      if (componentReplectionInfo.Methods.TryGetValue(methodName, out componentMethodInfo))
+
+      if (componentReplectionInfo.Methods.TryGetValue(methodName, out MethodInfo componentMethodInfo))
         return componentMethodInfo;
       Logger.AddError("Component with name " + componentName + " hasn't method with name " + methodName);
       return null;
@@ -51,14 +44,13 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS.VMAttributes
 
     public static PropertyInfo GetComponentPropertyInfo(string componentName, string propertyName)
     {
-      ComponentReplectionInfo componentReplectionInfo;
-      if (!components.TryGetValue(componentName, out componentReplectionInfo))
+      if (!components.TryGetValue(componentName, out ComponentReplectionInfo componentReplectionInfo))
       {
         Logger.AddError("Component with name " + componentName + " not found");
         return null;
       }
-      PropertyInfo componentPropertyInfo;
-      if (componentReplectionInfo.Properties.TryGetValue(propertyName, out componentPropertyInfo))
+
+      if (componentReplectionInfo.Properties.TryGetValue(propertyName, out PropertyInfo componentPropertyInfo))
         return componentPropertyInfo;
       Logger.AddError("Component with name " + componentName + " hasn't property with name " + propertyName);
       return null;
@@ -66,15 +58,11 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS.VMAttributes
 
     public static ComponentReplectionInfo GetComponentInfo(string name)
     {
-      ComponentReplectionInfo componentInfo;
-      components.TryGetValue(name, out componentInfo);
+      components.TryGetValue(name, out ComponentReplectionInfo componentInfo);
       return componentInfo;
     }
 
-    public static IEnumerable<ComponentReplectionInfo> Components
-    {
-      get => components.Values;
-    }
+    public static IEnumerable<ComponentReplectionInfo> Components => components.Values;
 
     public static bool TryGetValue(string name, out ComponentReplectionInfo result)
     {
@@ -83,8 +71,7 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS.VMAttributes
 
     public static string GetComponentName(Type type)
     {
-      string componentName;
-      names.TryGetValue(type, out componentName);
+      names.TryGetValue(type, out string componentName);
       return componentName;
     }
   }

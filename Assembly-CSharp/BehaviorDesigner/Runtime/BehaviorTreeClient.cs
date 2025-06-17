@@ -5,18 +5,18 @@ namespace BehaviorDesigner.Runtime
 {
   public class BehaviorTreeClient
   {
-    public List<Task> taskList = new List<Task>();
-    public List<int> parentIndex = new List<int>();
-    public List<List<int>> childrenIndex = new List<List<int>>();
-    public List<int> relativeChildIndex = new List<int>();
-    public List<Stack<int>> activeStack = new List<Stack<int>>();
-    public List<TaskStatus> nonInstantTaskStatus = new List<TaskStatus>();
-    public List<int> interruptionIndex = new List<int>();
-    public List<ConditionalReevaluate> conditionalReevaluate = new List<ConditionalReevaluate>();
-    public Dictionary<int, ConditionalReevaluate> conditionalReevaluateMap = new Dictionary<int, ConditionalReevaluate>();
-    public List<int> parentReevaluate = new List<int>();
-    public List<int> parentCompositeIndex = new List<int>();
-    public List<List<int>> childConditionalIndex = new List<List<int>>();
+    public List<Task> taskList = [];
+    public List<int> parentIndex = [];
+    public List<List<int>> childrenIndex = [];
+    public List<int> relativeChildIndex = [];
+    public List<Stack<int>> activeStack = [];
+    public List<TaskStatus> nonInstantTaskStatus = [];
+    public List<int> interruptionIndex = [];
+    public List<ConditionalReevaluate> conditionalReevaluate = [];
+    public Dictionary<int, ConditionalReevaluate> conditionalReevaluateMap = new();
+    public List<int> parentReevaluate = [];
+    public List<int> parentCompositeIndex = [];
+    public List<List<int>> childConditionalIndex = [];
     public int executionCount;
     public string behaviorName;
     public BehaviorTree behavior;

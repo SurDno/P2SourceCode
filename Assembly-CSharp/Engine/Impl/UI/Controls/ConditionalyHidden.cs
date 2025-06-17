@@ -10,7 +10,7 @@ namespace Engine.Impl.UI.Controls
     [SerializeField]
     private bool defaultVisibility;
     [SerializeField]
-    private Item[] items = new Item[0];
+    private Item[] items = [];
 
     private void Start()
     {

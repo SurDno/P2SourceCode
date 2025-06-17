@@ -4,14 +4,11 @@ using PLVirtualMachine.Common.EngineAPI;
 
 namespace PLVirtualMachine.Common
 {
-  public class AbstractActionInfo
-  {
-    private IAbstractAction instance;
+  public class AbstractActionInfo(IAbstractAction actionInstance) {
+    private IAbstractAction instance = actionInstance;
     private BaseFunction targetFunction;
     private IEventRef targetEvent;
     private bool isValid;
-
-    public AbstractActionInfo(IAbstractAction actionInstance) => instance = actionInstance;
 
     public BaseFunction TargetFunctionInstance => targetFunction;
 
@@ -48,7 +45,7 @@ namespace PLVirtualMachine.Common
               return;
             }
           }
-          List<VMType> vmTypeList = new List<VMType>();
+          List<VMType> vmTypeList = [];
           if (instance.ActionType == EActionType.ACTION_TYPE_DO_FUNCTION)
           {
             targetFunction = null;

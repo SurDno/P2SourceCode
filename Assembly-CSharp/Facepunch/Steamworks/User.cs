@@ -6,7 +6,7 @@ namespace Facepunch.Steamworks
   public class User : IDisposable
   {
     internal Client client;
-    internal Dictionary<string, string> richPresence = new Dictionary<string, string>();
+    internal Dictionary<string, string> richPresence = new();
 
     internal User(Client c) => client = c;
 
@@ -14,8 +14,7 @@ namespace Facepunch.Steamworks
 
     public string GetRichPresence(string key)
     {
-      string str = null;
-      return richPresence.TryGetValue(key, out str) ? str : null;
+      return richPresence.TryGetValue(key, out string str) ? str : null;
     }
 
     public void SetRichPresence(string key, string value)

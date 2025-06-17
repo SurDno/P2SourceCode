@@ -9,7 +9,7 @@ namespace RootMotion.FinalIK
     public Transform bone;
     [Range(0.0f, 1f)]
     public float maintainRotationWeight = 1f;
-    private BoneMap boneMap = new BoneMap();
+    private BoneMap boneMap = new();
 
     public override bool IsValid(IKSolver solver, ref string message)
     {

@@ -88,7 +88,7 @@ public class MouthRigger : MonoBehaviour
     bool bKeepLocalRotations = true;
     if (!(BoneConfigFile != null))
       return;
-    List<VisemeBoneDefine> visemeBoneDefineList = new List<VisemeBoneDefine>();
+    List<VisemeBoneDefine> visemeBoneDefineList = [];
     Hashtable cache = new Hashtable();
     XmlTextReader reader = new XmlTextReader(new StringReader(BoneConfigFile.text));
     while (reader.Read())
@@ -207,7 +207,7 @@ public class MouthRigger : MonoBehaviour
   public VisemeBoneDefine GetViseme(string which)
   {
     if (VisemeBones == null)
-      VisemeBones = new VisemeBoneDefine[0];
+      VisemeBones = [];
     foreach (VisemeBoneDefine visemeBone in VisemeBones)
     {
       if (visemeBone != null && visemeBone.m_visemeLabel == which)

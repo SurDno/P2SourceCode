@@ -6,8 +6,8 @@ namespace RootMotion.FinalIK
   [AddComponentMenu("Scripts/RootMotion.FinalIK/IK/Full Body Biped IK")]
   public class FullBodyBipedIK : IK
   {
-    public BipedReferences references = new BipedReferences();
-    public IKSolverFullBodyBiped solver = new IKSolverFullBodyBiped();
+    public BipedReferences references = new();
+    public IKSolverFullBodyBiped solver = new();
 
     [ContextMenu("User Manual")]
     protected override void OpenUserManual()

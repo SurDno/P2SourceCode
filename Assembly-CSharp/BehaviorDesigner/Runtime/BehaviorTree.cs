@@ -287,7 +287,7 @@ namespace BehaviorDesigner.Runtime
       }
       if (activeTaskCoroutines == null)
         activeTaskCoroutines = new Dictionary<string, List<TaskCoroutine>>();
-      TaskCoroutine taskCoroutine = new TaskCoroutine(this, (IEnumerator) method.Invoke(task, new object[0]), methodName);
+      TaskCoroutine taskCoroutine = new TaskCoroutine(this, (IEnumerator) method.Invoke(task, []), methodName);
       if (activeTaskCoroutines.ContainsKey(methodName))
       {
         List<TaskCoroutine> activeTaskCoroutine = activeTaskCoroutines[methodName];
@@ -295,9 +295,7 @@ namespace BehaviorDesigner.Runtime
         activeTaskCoroutines[methodName] = activeTaskCoroutine;
       }
       else
-        activeTaskCoroutines.Add(methodName, new List<TaskCoroutine> {
-          taskCoroutine
-        });
+        activeTaskCoroutines.Add(methodName, [taskCoroutine]);
       return taskCoroutine.Coroutine;
     }
 
@@ -311,10 +309,9 @@ namespace BehaviorDesigner.Runtime
       }
       if (activeTaskCoroutines == null)
         activeTaskCoroutines = new Dictionary<string, List<TaskCoroutine>>();
-      TaskCoroutine taskCoroutine = new TaskCoroutine(this, (IEnumerator) method.Invoke(task, new object[1]
-      {
+      TaskCoroutine taskCoroutine = new TaskCoroutine(this, (IEnumerator) method.Invoke(task, [
         value
-      }), methodName);
+      ]), methodName);
       if (activeTaskCoroutines.ContainsKey(methodName))
       {
         List<TaskCoroutine> activeTaskCoroutine = activeTaskCoroutines[methodName];
@@ -322,9 +319,7 @@ namespace BehaviorDesigner.Runtime
         activeTaskCoroutines[methodName] = activeTaskCoroutine;
       }
       else
-        activeTaskCoroutines.Add(methodName, new List<TaskCoroutine> {
-          taskCoroutine
-        });
+        activeTaskCoroutines.Add(methodName, [taskCoroutine]);
       return taskCoroutine.Coroutine;
     }
 
@@ -392,14 +387,13 @@ namespace BehaviorDesigner.Runtime
     {
       if (eventTable == null)
         eventTable = new Dictionary<Type, Dictionary<string, Delegate>>();
-      Dictionary<string, Delegate> dictionary;
-      if (!eventTable.TryGetValue(handler.GetType(), out dictionary))
+      if (!eventTable.TryGetValue(handler.GetType(), out Dictionary<string, Delegate> dictionary))
       {
         dictionary = new Dictionary<string, Delegate>();
         eventTable.Add(handler.GetType(), dictionary);
       }
-      Delegate a;
-      if (dictionary.TryGetValue(name, out a))
+
+      if (dictionary.TryGetValue(name, out Delegate a))
         dictionary[name] = Delegate.Combine(a, handler);
       else
         dictionary.Add(name, handler);
@@ -427,9 +421,7 @@ namespace BehaviorDesigner.Runtime
 
     private Delegate GetDelegate(string name, Type type)
     {
-      Dictionary<string, Delegate> dictionary;
-      Delegate @delegate;
-      return eventTable != null && eventTable.TryGetValue(type, out dictionary) && dictionary.TryGetValue(name, out @delegate) ? @delegate : null;
+      return eventTable != null && eventTable.TryGetValue(type, out Dictionary<string, Delegate> dictionary) && dictionary.TryGetValue(name, out Delegate @delegate) ? @delegate : null;
     }
 
     public void SendEvent(string name)
@@ -462,9 +454,7 @@ namespace BehaviorDesigner.Runtime
 
     private void UnregisterEvent(string name, Delegate handler)
     {
-      Dictionary<string, Delegate> dictionary;
-      Delegate source;
-      if (eventTable == null || !eventTable.TryGetValue(handler.GetType(), out dictionary) || !dictionary.TryGetValue(name, out source))
+      if (eventTable == null || !eventTable.TryGetValue(handler.GetType(), out Dictionary<string, Delegate> dictionary) || !dictionary.TryGetValue(name, out Delegate source))
         return;
       dictionary[name] = Delegate.Remove(source, handler);
     }
@@ -545,8 +535,7 @@ namespace BehaviorDesigner.Runtime
 
     private void ResetValue(Task task)
     {
-      Dictionary<string, object> dictionary;
-      if (task == null || !defaultValues.TryGetValue(task, out dictionary))
+      if (task == null || !defaultValues.TryGetValue(task, out Dictionary<string, object> dictionary))
         return;
       foreach (KeyValuePair<string, object> keyValuePair in dictionary)
       {

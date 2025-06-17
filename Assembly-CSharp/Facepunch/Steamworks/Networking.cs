@@ -11,7 +11,7 @@ namespace Facepunch.Steamworks
     public OnRecievedP2PData OnP2PData;
     public Func<ulong, bool> OnIncomingConnection;
     public Action<ulong, SessionError> OnConnectionFailed;
-    private List<int> ListenChannels = new List<int>();
+    private List<int> ListenChannels = [];
     private Stopwatch UpdateTimer = Stopwatch.StartNew();
     internal SteamNetworking networking;
 
@@ -90,15 +90,13 @@ label_6:
 
     private unsafe bool ReadP2PPacket(int channel)
     {
-      uint pcubMsgSize = 0;
-      if (!networking.IsP2PPacketAvailable(out pcubMsgSize, channel))
+      if (!networking.IsP2PPacketAvailable(out uint pcubMsgSize, channel))
         return false;
       if (ReceiveBuffer.Length < pcubMsgSize)
         ReceiveBuffer = new byte[(int) pcubMsgSize + 1024];
       fixed (byte* pubDest = ReceiveBuffer)
       {
-        CSteamID psteamIDRemote = 1UL;
-        if (!networking.ReadP2PPacket((IntPtr) pubDest, pcubMsgSize, out pcubMsgSize, out psteamIDRemote, channel) || pcubMsgSize == 0U)
+        if (!networking.ReadP2PPacket((IntPtr) pubDest, pcubMsgSize, out pcubMsgSize, out CSteamID psteamIDRemote, channel) || pcubMsgSize == 0U)
           return false;
         OnRecievedP2PData onP2Pdata = OnP2PData;
         if (onP2Pdata != null)

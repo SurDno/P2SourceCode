@@ -76,7 +76,7 @@ namespace Cinemachine
     {
       get
       {
-        List<List<Vector3>> debugPaths = new List<List<Vector3>>();
+        List<List<Vector3>> debugPaths = [];
         foreach (VcamExtraState allExtraState in GetAllExtraStates<VcamExtraState>())
         {
           if (allExtraState.debugResolutionPath != null)
@@ -162,8 +162,7 @@ namespace Cinemachine
             b = Mathf.Min(m_DistanceLimit, b);
           Ray ray = new Ray(vector3_2 - b * vector3_3, vector3_3);
           float rayLength = b + 1f / 1000f;
-          RaycastHit hitInfo;
-          if (rayLength > 9.9999997473787516E-05 && RaycastIgnoreTag(ray, out hitInfo, rayLength))
+          if (rayLength > 9.9999997473787516E-05 && RaycastIgnoreTag(ray, out RaycastHit hitInfo, rayLength))
           {
             float distance = Mathf.Max(0.0f, hitInfo.distance - 1f / 1000f);
             vector3_2 = ray.GetPoint(distance);
@@ -222,8 +221,7 @@ namespace Cinemachine
         return vector3_1;
       float bounds = ClampRayToBounds(ray, pushBackDistance1, obstacle.collider.bounds);
       float num = Mathf.Min(pushBackDistance1, bounds + 1f / 1000f);
-      RaycastHit hitInfo;
-      if (RaycastIgnoreTag(ray, out hitInfo, num))
+      if (RaycastIgnoreTag(ray, out RaycastHit hitInfo, num))
       {
         float distance = hitInfo.distance - 1f / 1000f;
         Vector3 vector3_2 = ray.GetPoint(distance);
@@ -320,8 +318,7 @@ namespace Cinemachine
         return 0.0f;
       if (m_Strategy == ResolutionStrategy.PreserveCameraDistance)
         return a;
-      float enter;
-      if (!startPlane.Raycast(ray, out enter))
+      if (!startPlane.Raycast(ray, out float enter))
         enter = 0.0f;
       float b = Mathf.Min(a, enter);
       if (b < 9.9999997473787516E-05)
@@ -377,9 +374,7 @@ namespace Cinemachine
         for (int index = 0; index < num; ++index)
         {
           Collider colliderB = mColliderBuffer[index];
-          Vector3 direction;
-          float distance;
-          if ((m_IgnoreTag.Length <= 0 || !colliderB.CompareTag(m_IgnoreTag)) && Physics.ComputePenetration(mCameraCollider, cameraPos, Quaternion.identity, colliderB, colliderB.transform.position, colliderB.transform.rotation, out direction, out distance))
+          if ((m_IgnoreTag.Length <= 0 || !colliderB.CompareTag(m_IgnoreTag)) && Physics.ComputePenetration(mCameraCollider, cameraPos, Quaternion.identity, colliderB, colliderB.transform.position, colliderB.transform.rotation, out Vector3 direction, out float distance))
             zero += direction * distance;
         }
       }

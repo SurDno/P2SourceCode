@@ -10,7 +10,7 @@ namespace Engine.Source.Commons
   public class UpdateService : InstanceByRequest<UpdateService>
   {
     private IProfilerService service;
-    private Stopwatch measure = new Stopwatch();
+    private Stopwatch measure = new();
 
     [Inspected]
     public IUpdater Updater { get; private set; } = new Updater();

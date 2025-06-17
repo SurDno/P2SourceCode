@@ -9,7 +9,7 @@ namespace ParadoxNotion.Serialization.FullSerializer
   {
     private int _start;
     private string _input;
-    private readonly StringBuilder _cachedStringBuilder = new StringBuilder(256);
+    private readonly StringBuilder _cachedStringBuilder = new(256);
 
     private fsResult MakeFailure(string message)
     {
@@ -225,8 +225,7 @@ namespace ParadoxNotion.Serialization.FullSerializer
       string s = _input.Substring(start, _start - start);
       if (s.Contains(".") || s == "Infinity" || s == "-Infinity" || s == "NaN")
       {
-        double result;
-        if (!double.TryParse(s, NumberStyles.Any, CultureInfo.InvariantCulture, out result))
+        if (!double.TryParse(s, NumberStyles.Any, CultureInfo.InvariantCulture, out double result))
         {
           data = null;
           return MakeFailure("Bad double format with " + s);
@@ -234,8 +233,8 @@ namespace ParadoxNotion.Serialization.FullSerializer
         data = new fsData(result);
         return fsResult.Success;
       }
-      long result1;
-      if (!long.TryParse(s, NumberStyles.Any, CultureInfo.InvariantCulture, out result1))
+
+      if (!long.TryParse(s, NumberStyles.Any, CultureInfo.InvariantCulture, out long result1))
       {
         data = null;
         return MakeFailure("Bad Int64 format with " + s);
@@ -257,8 +256,7 @@ namespace ParadoxNotion.Serialization.FullSerializer
         char ch = Character();
         if (ch == '\\')
         {
-          char escaped;
-          fsResult fsResult = TryUnescapeChar(out escaped);
+          fsResult fsResult = TryUnescapeChar(out char escaped);
           if (fsResult.Failed)
           {
             str = string.Empty;
@@ -298,11 +296,10 @@ namespace ParadoxNotion.Serialization.FullSerializer
         return MakeFailure("Unexpected end of input when parsing an array");
       }
       SkipSpace();
-      List<fsData> list = new List<fsData>();
+      List<fsData> list = [];
       while (HasValue() && Character() != ']')
       {
-        fsData data;
-        fsResult array = RunParse(out data);
+        fsResult array = RunParse(out fsData data);
         if (array.Failed)
         {
           arr = null;
@@ -344,8 +341,7 @@ namespace ParadoxNotion.Serialization.FullSerializer
       while (HasValue() && Character() != '}')
       {
         SkipSpace();
-        string str;
-        fsResult fsResult = TryParseString(out str);
+        fsResult fsResult = TryParseString(out string str);
         if (fsResult.Failed)
         {
           obj = null;
@@ -358,8 +354,7 @@ namespace ParadoxNotion.Serialization.FullSerializer
           return MakeFailure("Expected : after key \"" + str + "\"");
         }
         SkipSpace();
-        fsData data;
-        fsResult = RunParse(out data);
+        fsResult = RunParse(out fsData data);
         if (fsResult.Failed)
         {
           obj = null;
@@ -395,8 +390,7 @@ namespace ParadoxNotion.Serialization.FullSerializer
       switch (Character())
       {
         case '"':
-          string str;
-          fsResult fsResult = TryParseString(out str);
+          fsResult fsResult = TryParseString(out string str);
           if (fsResult.Failed)
           {
             data = null;
@@ -446,8 +440,7 @@ namespace ParadoxNotion.Serialization.FullSerializer
 
     public static fsData Parse(string input)
     {
-      fsData data;
-      Parse(input, out data).AssertSuccess();
+      Parse(input, out fsData data).AssertSuccess();
       return data;
     }
 

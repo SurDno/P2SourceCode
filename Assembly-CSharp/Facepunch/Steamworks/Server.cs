@@ -17,7 +17,7 @@ namespace Facepunch.Steamworks
     private string _serverName = "";
     private bool _passworded;
     private string _gametags = "";
-    private Dictionary<string, string> KeyValue = new Dictionary<string, string>();
+    private Dictionary<string, string> KeyValue = new();
 
     public static Server Instance { get; private set; }
 

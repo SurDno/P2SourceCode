@@ -15,7 +15,7 @@ namespace AmplifyBloom
     [SerializeField]
     private float m_bokehSampleRadius = 0.5f;
     [SerializeField]
-    private Vector4 m_bokehCameraProperties = new Vector4(0.05f, 0.018f, 1.34f, 0.18f);
+    private Vector4 m_bokehCameraProperties = new(0.05f, 0.018f, 1.34f, 0.18f);
     [SerializeField]
     private float m_offsetRotation;
     [SerializeField]
@@ -24,7 +24,7 @@ namespace AmplifyBloom
 
     public AmplifyBokeh()
     {
-      m_bokehOffsets = new List<AmplifyBokehData>();
+      m_bokehOffsets = [];
       CreateBokehOffsets(ApertureShape.Hexagon);
     }
 

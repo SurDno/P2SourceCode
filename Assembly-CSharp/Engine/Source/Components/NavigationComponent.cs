@@ -249,8 +249,7 @@ namespace Engine.Source.Components
 
     private void CalculateArea()
     {
-      NavMeshHit hit;
-      if (NavMesh.SamplePosition(((IEntityView) Owner).Position, out hit, 2f, -1))
+      if (NavMesh.SamplePosition(((IEntityView) Owner).Position, out NavMeshHit hit, 2f, -1))
         Area = AreaEnumUtility.ToArea(hit.mask);
       else
         Area = AreaEnum.Unknown;

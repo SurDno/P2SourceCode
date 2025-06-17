@@ -31,16 +31,11 @@ namespace Engine.Source.Blueprints.Effects
     private bool destroed;
     private float accamulator;
 
-    IntensityParameter<Color> IParameter<IntensityParameter<Color>>.Value
-    {
-      get
-      {
-        return new IntensityParameter<Color> {
-          Intensity = intensityValueInput.value,
-          Value = colorValueInput.value
-        };
-      }
-    }
+    IntensityParameter<Color> IParameter<IntensityParameter<Color>>.Value =>
+      new() {
+        Intensity = intensityValueInput.value,
+        Value = colorValueInput.value
+      };
 
     public override void OnGraphStarted()
     {

@@ -11,7 +11,7 @@ namespace Engine.Source.Commons
   public class Updater : IUpdater
   {
     [Inspected]
-    private List<IUpdatable> updatable = new List<IUpdatable>();
+    private List<IUpdatable> updatable = [];
 
     public void AddUpdatable(IUpdatable up) => updatable.Add(up);
 

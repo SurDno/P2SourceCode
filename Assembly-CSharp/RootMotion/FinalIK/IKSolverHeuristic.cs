@@ -11,7 +11,7 @@ namespace RootMotion.FinalIK
     public int maxIterations = 4;
     public bool useRotationLimits = true;
     public bool XY;
-    public Bone[] bones = new Bone[0];
+    public Bone[] bones = [];
     protected Vector3 lastLocalDirection;
     protected float chainLength;
 
@@ -146,18 +146,9 @@ namespace RootMotion.FinalIK
       }
     }
 
-    protected virtual Vector3 localDirection
-    {
-      get
-      {
-        return bones[0].transform.InverseTransformDirection(bones[bones.Length - 1].transform.position - bones[0].transform.position);
-      }
-    }
+    protected virtual Vector3 localDirection => bones[0].transform.InverseTransformDirection(bones[bones.Length - 1].transform.position - bones[0].transform.position);
 
-    protected float positionOffset
-    {
-      get => Vector3.SqrMagnitude(localDirection - lastLocalDirection);
-    }
+    protected float positionOffset => Vector3.SqrMagnitude(localDirection - lastLocalDirection);
 
     protected Vector3 GetSingularityOffset()
     {

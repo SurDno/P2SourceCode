@@ -9,8 +9,8 @@ namespace Engine.Source.UI.Menu.Protagonist.MindMap
   [Factory(typeof (IMMPage))]
   public class MMPage : IMMPage
   {
-    private List<MMLink> links = new List<MMLink>();
-    private List<MMNode> nodes = new List<MMNode>();
+    private List<MMLink> links = [];
+    private List<MMNode> nodes = [];
 
     [Inspected]
     public bool Global { get; set; }

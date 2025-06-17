@@ -9,14 +9,8 @@ using PLVirtualMachine.Objects;
 
 namespace PLVirtualMachine.Dynamic
 {
-  public class QuestFSM : DynamicFSM
-  {
-    private Dictionary<Guid, LockedFSMInfo> lockedObjects = new Dictionary<Guid, LockedFSMInfo>(GuidComparer.Instance);
-
-    public QuestFSM(VMEntity entity, VMLogicObject templateObj)
-      : base(entity, templateObj)
-    {
-    }
+  public class QuestFSM(VMEntity entity, VMLogicObject templateObj) : DynamicFSM(entity, templateObj) {
+    private Dictionary<Guid, LockedFSMInfo> lockedObjects = new(GuidComparer.Instance);
 
     public override void Think()
     {

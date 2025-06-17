@@ -123,7 +123,7 @@ public class MapWindow : UIWindow, IMapWindow, IWindow, IPauseMenu
   [SerializeField]
   private Image vignette;
   [SerializeField]
-  private Vector2 vignetteOpacityRange = new Vector2(0.0f, 1f);
+  private Vector2 vignetteOpacityRange = new(0.0f, 1f);
   [Space]
   [SerializeField]
   [Range(0.0f, 1f)]
@@ -150,11 +150,11 @@ public class MapWindow : UIWindow, IMapWindow, IWindow, IPauseMenu
   [Inspected]
   private float scroll;
   [Inspected]
-  private List<MapItemView> regionObjects = new List<MapItemView>();
+  private List<MapItemView> regionObjects = [];
   [Inspected]
-  private List<GameObject> baseObjects = new List<GameObject>();
+  private List<GameObject> baseObjects = [];
   [Inspected]
-  private List<RectTransform> overlayObjects = new List<RectTransform>();
+  private List<RectTransform> overlayObjects = [];
   private Vector2 startingPosition = Vector2.zero;
   private float startingScroll;
   private CameraKindEnum lastCameraKind;
@@ -166,7 +166,7 @@ public class MapWindow : UIWindow, IMapWindow, IWindow, IPauseMenu
   private GameObject controlPanel;
   private GameObject playerMarker;
   private GameObject customMarker;
-  private List<GameObject> nodes = new List<GameObject>();
+  private List<GameObject> nodes = [];
   private Vector3 cursorCenter;
   private Vector2 cursorMapPosition;
   private IMMNode bufferedNode;
@@ -329,11 +329,7 @@ public class MapWindow : UIWindow, IMapWindow, IWindow, IPauseMenu
     bool alphaRaycast,
     IMapItem item)
   {
-    GameObject instance;
-    RectTransform rectTransform;
-    Image image;
-    Vector2 normalizedPoint;
-    CreateImage(rectangle, worldPos, rotation, sprite.rect.size * resolution, kind, sprite, out instance, out rectTransform, out image, out normalizedPoint);
+    CreateImage(rectangle, worldPos, rotation, sprite.rect.size * resolution, kind, sprite, out GameObject instance, out RectTransform rectTransform, out Image image, out Vector2 normalizedPoint);
     if (mapService.FastTravelOrigin == null && mapService.FocusedItem == null && mapService.FocusedNode == null && kind == ImageKind.Player)
     {
       startingPosition = contentRect.InverseTransformPoint(baseAnchorRect.TransformPoint(normalizedPoint));
@@ -387,19 +383,14 @@ public class MapWindow : UIWindow, IMapWindow, IWindow, IPauseMenu
     else
     {
       Vector2 size1 = new Vector2(size, size);
-      GameObject instance;
-      RectTransform rectTransform;
-      RawImage image;
-      Vector2 normalizedPoint;
-      CreateMindMapImage(rectangle, worldPos, -referenceRect.localEulerAngles.z, size1, kind, sprite, out instance, out rectTransform, out image, out normalizedPoint);
+      CreateMindMapImage(rectangle, worldPos, -referenceRect.localEulerAngles.z, size1, kind, sprite, out GameObject instance, out RectTransform rectTransform, out RawImage image, out Vector2 normalizedPoint);
       if (mapService.FocusedNode != null && mapService.FocusedNode == tooltip.node)
       {
         startingPosition = contentRect.InverseTransformPoint(baseAnchorRect.TransformPoint(normalizedPoint));
         startingScroll = onNodeScalePower;
       }
       image.material = mindMapNodeMaterial;
-      Color baseColor;
-      ColorByKind(kind, out baseColor, out Color _);
+      ColorByKind(kind, out Color baseColor, out Color _);
       image.color = baseColor;
       if (tooltip.node != null || tooltip.tooltipText != LocalizedText.Empty)
       {
@@ -418,13 +409,9 @@ public class MapWindow : UIWindow, IMapWindow, IWindow, IPauseMenu
   {
     ImageKind kind = ImageKind.Overlay;
     Vector2 size1 = new Vector2(size, size);
-    GameObject instance;
-    RectTransform rectTransform;
-    RawImage image;
-    CreateMindMapImage(rectangle, worldPos, -referenceRect.localEulerAngles.z, size1, kind, fastTravelIcon, out instance, out rectTransform, out image, out Vector2 _);
+    CreateMindMapImage(rectangle, worldPos, -referenceRect.localEulerAngles.z, size1, kind, fastTravelIcon, out GameObject instance, out RectTransform rectTransform, out RawImage image, out Vector2 _);
     image.material = mindMapNodeMaterial;
-    Color baseColor;
-    ColorByKind(kind, out baseColor, out Color _);
+    ColorByKind(kind, out Color baseColor, out Color _);
     image.color = baseColor;
     MapFastTravelPointView fastTravelPointView = instance.AddComponent<MapFastTravelPointView>();
     fastTravelPointView.MapView = this;
@@ -588,7 +575,7 @@ public class MapWindow : UIWindow, IMapWindow, IWindow, IPauseMenu
     startingScroll = 0.0f;
     float num1 = baseAnchorRect.sizeDelta.x / rect2.width;
     float num2 = Vector2.Angle(rect2.min - rect2.center, rectangle.min - rectangle.center);
-    List<MMTooltip> source = new List<MMTooltip>();
+    List<MMTooltip> source = [];
     mapService = ServiceLocator.GetService<MapService>();
     float size = mapService.FastTravelOrigin != null ? nodeSize * 0.5f : nodeSize;
     foreach (IMapItem mapItem1 in mapService.Items)
@@ -764,7 +751,7 @@ public class MapWindow : UIWindow, IMapWindow, IWindow, IPauseMenu
     {
       position = consoleCursor.transform.position
     };
-    List<MapNodeView> mapNodeViewList = new List<MapNodeView>(contentRect.GetComponentsInChildren<MapNodeView>());
+    List<MapNodeView> mapNodeViewList = [..contentRect.GetComponentsInChildren<MapNodeView>()];
     cursorCenter = consoleCursor.transform.position;
     SelectNode();
   }
@@ -809,9 +796,12 @@ public class MapWindow : UIWindow, IMapWindow, IWindow, IPauseMenu
 
   private void NavigateNode(Vector3 dir)
   {
-    nodes = new List<GameObject>(contentRect.GetComponentsInChildren<MapNodeView>().Select(n => n.gameObject));
-    nodes.Add(playerMarker);
-    List<GameObject> collection = new List<GameObject>(contentRect.GetComponentsInChildren<MapFastTravelPointView>().Select(node => node.gameObject));
+    nodes = [
+      ..contentRect.GetComponentsInChildren<MapNodeView>().Select(n => n.gameObject),
+      playerMarker
+    ];
+    List<GameObject> collection =
+      [..contentRect.GetComponentsInChildren<MapFastTravelPointView>().Select(node => node.gameObject)];
     if (collection.Count > 0)
       nodes.AddRange(collection);
     if (customMarkerEnabledView.Visible)
@@ -839,7 +829,7 @@ public class MapWindow : UIWindow, IMapWindow, IWindow, IPauseMenu
     }
     else
     {
-      List<RaycastResult> raycastResultList = new List<RaycastResult>();
+      List<RaycastResult> raycastResultList = [];
       rayCaster.Raycast(pointerData, raycastResultList);
       newHovered = null;
       newHoveredRegion = null;
@@ -1170,10 +1160,7 @@ public class MapWindow : UIWindow, IMapWindow, IWindow, IPauseMenu
     return base.OnOpened();
   }
 
-  public override bool IsWindowAvailable
-  {
-    get => !ServiceLocator.GetService<InterfaceBlockingService>().BlockMapInterface;
-  }
+  public override bool IsWindowAvailable => !ServiceLocator.GetService<InterfaceBlockingService>().BlockMapInterface;
 
   private enum NodeMoveDirection
   {

@@ -11,7 +11,7 @@ public class KnifePostProcessEffect : MonoBehaviour
   [SerializeField]
   private Color bloodColor;
   private AudioSource audioSource;
-  private List<Scar> scars = new List<Scar>();
+  private List<Scar> scars = [];
   private Material material;
   private Scar zero;
 

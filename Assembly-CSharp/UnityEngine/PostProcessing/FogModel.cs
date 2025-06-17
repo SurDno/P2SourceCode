@@ -22,15 +22,10 @@ namespace UnityEngine.PostProcessing
       [Tooltip("Should the fog affect the skybox?")]
       public bool excludeSkybox;
 
-      public static Settings defaultSettings
-      {
-        get
-        {
-          return new Settings {
-            excludeSkybox = true
-          };
-        }
-      }
+      public static Settings defaultSettings =>
+        new() {
+          excludeSkybox = true
+        };
     }
   }
 }

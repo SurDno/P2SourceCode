@@ -19,18 +19,9 @@ namespace UnityStandardAssets.CinematicEffects
     [SerializeField]
     private Mesh _quadMesh;
 
-    public bool isAmbientOnlySupported
-    {
-      get
-      {
-        return targetCamera.allowHDR && occlusionSource == OcclusionSource.GBuffer;
-      }
-    }
+    public bool isAmbientOnlySupported => targetCamera.allowHDR && occlusionSource == OcclusionSource.GBuffer;
 
-    public bool isGBufferAvailable
-    {
-      get => targetCamera.actualRenderingPath == RenderingPath.DeferredShading;
-    }
+    public bool isGBufferAvailable => targetCamera.actualRenderingPath == RenderingPath.DeferredShading;
 
     private float intensity => settings.intensity;
 
@@ -58,28 +49,13 @@ namespace UnityStandardAssets.CinematicEffects
       }
     }
 
-    private OcclusionSource occlusionSource
-    {
-      get
-      {
-        return settings.occlusionSource == OcclusionSource.GBuffer && !isGBufferAvailable ? OcclusionSource.DepthNormalsTexture : settings.occlusionSource;
-      }
-    }
+    private OcclusionSource occlusionSource => settings.occlusionSource == OcclusionSource.GBuffer && !isGBufferAvailable ? OcclusionSource.DepthNormalsTexture : settings.occlusionSource;
 
     private bool downsampling => settings.downsampling;
 
-    private bool ambientOnly
-    {
-      get => settings.ambientOnly && !settings.debug && isAmbientOnlySupported;
-    }
+    private bool ambientOnly => settings.ambientOnly && !settings.debug && isAmbientOnlySupported;
 
-    private RenderTextureFormat aoTextureFormat
-    {
-      get
-      {
-        return SystemInfo.SupportsRenderTextureFormat(RenderTextureFormat.R8) ? RenderTextureFormat.R8 : RenderTextureFormat.Default;
-      }
-    }
+    private RenderTextureFormat aoTextureFormat => SystemInfo.SupportsRenderTextureFormat(RenderTextureFormat.R8) ? RenderTextureFormat.R8 : RenderTextureFormat.Default;
 
     private Shader aoShader
     {
@@ -150,11 +126,10 @@ namespace UnityStandardAssets.CinematicEffects
       aoCommands.SetGlobalVector("_BlurVector", Vector2.up * num);
       aoCommands.Blit(id2, id1, aoMaterial, 6);
       aoCommands.ReleaseTemporaryRT(id2);
-      RenderTargetIdentifier[] colors = new RenderTargetIdentifier[2]
-      {
+      RenderTargetIdentifier[] colors = [
         BuiltinRenderTextureType.GBuffer0,
         BuiltinRenderTextureType.CameraTarget
-      };
+      ];
       aoCommands.SetRenderTarget(colors, BuiltinRenderTextureType.CameraTarget);
       aoCommands.SetGlobalTexture("_OcclusionTexture", id1);
       aoCommands.DrawMesh(quadMesh, Matrix4x4.identity, aoMaterial, 0, 8);
@@ -335,21 +310,16 @@ namespace UnityStandardAssets.CinematicEffects
       [Tooltip("Displays occlusion for debug purpose.")]
       public bool debug;
 
-      public static Settings defaultSettings
-      {
-        get
-        {
-          return new Settings {
-            intensity = 1f,
-            radius = 0.3f,
-            sampleCount = SampleCount.Medium,
-            sampleCountValue = 24,
-            downsampling = false,
-            ambientOnly = false,
-            occlusionSource = OcclusionSource.DepthNormalsTexture
-          };
-        }
-      }
+      public static Settings defaultSettings =>
+        new() {
+          intensity = 1f,
+          radius = 0.3f,
+          sampleCount = SampleCount.Medium,
+          sampleCountValue = 24,
+          downsampling = false,
+          ambientOnly = false,
+          occlusionSource = OcclusionSource.DepthNormalsTexture
+        };
     }
   }
 }

@@ -11,17 +11,11 @@ namespace FlowCanvas.Nodes
     private FlowOutput outFlow;
     private FlowOutput doing;
     private FlowOutput done;
-    private Queue<IEnumerator> queue = new Queue<IEnumerator>();
+    private Queue<IEnumerator> queue = new();
     private Coroutine currentCoroutine;
     private bool graphPaused;
 
-    public override string name
-    {
-      get
-      {
-        return queue.Count > 0 ? string.Format("{0} [{1}]", base.name, queue.Count.ToString()) : base.name;
-      }
-    }
+    public override string name => queue.Count > 0 ? string.Format("{0} [{1}]", base.name, queue.Count.ToString()) : base.name;
 
     public override sealed void OnGraphStarted()
     {

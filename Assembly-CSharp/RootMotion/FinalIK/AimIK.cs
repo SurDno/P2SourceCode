@@ -6,7 +6,7 @@ namespace RootMotion.FinalIK
   [AddComponentMenu("Scripts/RootMotion.FinalIK/IK/Aim IK")]
   public class AimIK : IK
   {
-    public IKSolverAim solver = new IKSolverAim();
+    public IKSolverAim solver = new();
 
     [ContextMenu("User Manual")]
     protected override void OpenUserManual()

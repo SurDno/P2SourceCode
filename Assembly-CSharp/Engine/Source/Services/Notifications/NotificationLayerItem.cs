@@ -8,6 +8,6 @@ namespace Engine.Source.Services.Notifications
     [Inspected]
     public INotification Notifaction;
     [Inspected]
-    public List<NotificationItem> Queue = new List<NotificationItem>();
+    public List<NotificationItem> Queue = [];
   }
 }

@@ -10,13 +10,12 @@ namespace TriangleNet.Tools
     private const int NW = 2;
     private const int NE = 3;
     private const double EPS = 1E-06;
-    private static readonly byte[] BITVECTOR = new byte[4]
-    {
+    private static readonly byte[] BITVECTOR = [
       1,
       2,
       4,
       8
-    };
+    ];
     private byte bitRegions;
     private BoundingBox bounds;
     private Point pivot;
@@ -36,7 +35,7 @@ namespace TriangleNet.Tools
       pivot = new Point((box.Xmin + box.Xmax) / 2.0, (box.Ymin + box.Ymax) / 2.0);
       bitRegions = 0;
       regions = new QuadNode[4];
-      triangles = new List<int>();
+      triangles = [];
       if (!init)
         return;
       triangles.Capacity = tree.triangles.Length;

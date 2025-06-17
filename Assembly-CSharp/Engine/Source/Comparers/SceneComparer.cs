@@ -5,7 +5,7 @@ namespace Engine.Source.Comparers
 {
   public class SceneComparer : IEqualityComparer<Scene>
   {
-    public static readonly SceneComparer Instance = new SceneComparer();
+    public static readonly SceneComparer Instance = new();
 
     public bool Equals(Scene x, Scene y) => x == y;
 

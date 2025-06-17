@@ -4,13 +4,7 @@
   {
     private RenderTexture m_GrainLookupRT;
 
-    public override bool active
-    {
-      get
-      {
-        return model.enabled && model.settings.intensity > 0.0 && SystemInfo.SupportsRenderTextureFormat(RenderTextureFormat.ARGBHalf) && !context.interrupted;
-      }
-    }
+    public override bool active => model.enabled && model.settings.intensity > 0.0 && SystemInfo.SupportsRenderTextureFormat(RenderTextureFormat.ARGBHalf) && !context.interrupted;
 
     public override void OnDisable()
     {

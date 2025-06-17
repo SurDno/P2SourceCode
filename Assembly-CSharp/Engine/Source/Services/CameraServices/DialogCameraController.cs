@@ -8,15 +8,14 @@ using UnityStandardAssets.ImageEffects;
 
 namespace Engine.Source.Services.CameraServices
 {
-  public class DialogCameraController : ICameraController
+  public class DialogCameraController(GameObject rigPrefab) : ICameraController 
   {
-    private readonly GameObject rigPrefab;
     private GameObject unityRigInstance;
     private GameObject secondaryCameraObject;
     private DepthOfField dof;
     private PostProcessingStackOverride postProcessing;
     private int storedCullingMask;
-    private Dictionary<GameObject, int> storedLayers = new Dictionary<GameObject, int>();
+    private Dictionary<GameObject, int> storedLayers = new();
     private bool initialised;
     private Transform cameraPivotTransform;
     private Transform keyLightPivot;
@@ -28,8 +27,6 @@ namespace Engine.Source.Services.CameraServices
     private float baseKeyLightRange;
     private float baseBackLightRange;
     private float baseFillLightRange;
-
-    public DialogCameraController(GameObject rigPrefab) => this.rigPrefab = rigPrefab;
 
     public void Initialise()
     {

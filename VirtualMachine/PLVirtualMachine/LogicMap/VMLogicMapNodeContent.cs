@@ -14,8 +14,7 @@ namespace PLVirtualMachine.LogicMap
 {
   [TypeData(EDataType.TLogicMapNodeContent)]
   [DataFactory("MindMapNodeContent")]
-  public class VMLogicMapNodeContent : VMBaseObject, IStub, IEditorDataReader, IOrderedChild
-  {
+  public class VMLogicMapNodeContent(ulong guid) : VMBaseObject(guid), IStub, IEditorDataReader, IOrderedChild {
     [FieldData("ContentType")]
     private EMMNodeContentType contentType;
     [FieldData("Number")]
@@ -66,11 +65,6 @@ namespace PLVirtualMachine.LogicMap
         if (xml.NodeType == XmlNodeType.EndElement)
           break;
       }
-    }
-
-    public VMLogicMapNodeContent(ulong guid)
-      : base(guid)
-    {
     }
 
     public EMMNodeContentType ContentType => contentType;

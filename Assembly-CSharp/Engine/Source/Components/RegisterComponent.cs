@@ -18,20 +18,18 @@ namespace Engine.Source.Components
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected string tag = "";
-    private static Dictionary<string, IEntity> entities = new Dictionary<string, IEntity>();
+    private static Dictionary<string, IEntity> entities = new();
 
     public static IEntity GetByTag(string tag)
     {
-      IEntity byTag;
-      entities.TryGetValue(tag, out byTag);
+      entities.TryGetValue(tag, out IEntity byTag);
       return byTag;
     }
 
     public override void OnAdded()
     {
       base.OnAdded();
-      IEntity entity = null;
-      if (entities.TryGetValue(tag, out entity))
+      if (entities.TryGetValue(tag, out IEntity entity))
         throw new Exception("Already add with tag : " + tag + " , exist : " + entity.GetInfo() + " , new : " + Owner.GetInfo());
       entities.Add(tag, Owner);
     }

@@ -15,8 +15,7 @@ namespace ParadoxNotion.Serialization
       if (!data.IsDictionary)
         return;
       Dictionary<string, fsData> json = data.AsDictionary;
-      fsData fsData;
-      if (!json.TryGetValue("$type", out fsData))
+      if (!json.TryGetValue("$type", out fsData fsData))
         return;
       Type type1 = fsTypeCache.GetType(fsData.AsString, storageType);
       if (type1 == null)

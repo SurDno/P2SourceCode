@@ -11,9 +11,9 @@ namespace SRF.UI
   {
     private float _dragDelta;
     [SerializeField]
-    private SpinEvent _onSpinDecrement = new SpinEvent();
+    private SpinEvent _onSpinDecrement = new();
     [SerializeField]
-    private SpinEvent _onSpinIncrement = new SpinEvent();
+    private SpinEvent _onSpinIncrement = new();
     public float DragThreshold = 20f;
 
     public SpinEvent OnSpinIncrement

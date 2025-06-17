@@ -14,15 +14,14 @@ namespace PLVirtualMachine.FSM
 {
   [TypeData(EDataType.TReply)]
   [DataFactory("Reply")]
-  public class VMSpeechReply : 
-    VMBaseObject,
+  public class VMSpeechReply(ulong guid) :
+    VMBaseObject(guid),
     IStub,
     IEditorDataReader,
     ISpeechReply,
     IObject,
     IEditorBaseTemplate,
-    IOrderedChild
-  {
+    IOrderedChild {
     [FieldData("Text", DataFieldType.Reference)]
     private VMGameString text;
     [FieldData("OnlyOnce")]
@@ -83,11 +82,6 @@ namespace PLVirtualMachine.FSM
         if (xml.NodeType == XmlNodeType.EndElement)
           break;
       }
-    }
-
-    public VMSpeechReply(ulong guid)
-      : base(guid)
-    {
     }
 
     public override EObjectCategory GetCategory() => EObjectCategory.OBJECT_CATEGORY_GRAPH_ELEMENT;

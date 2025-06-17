@@ -37,7 +37,7 @@ namespace Engine.Source.Effects
     [CopyableProxy()]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    protected List<Typed<IEntity>> targetSymptoms = new List<Typed<IEntity>>();
+    protected List<Typed<IEntity>> targetSymptoms = [];
     private List<IStorableComponent> symptomsToOpen;
 
     public string Name => GetType().Name;
@@ -51,9 +51,9 @@ namespace Engine.Source.Effects
 
     public bool Prepare(float currentRealTime, float currentGameTime)
     {
-      symptomsToOpen = new List<IStorableComponent>();
+      symptomsToOpen = [];
       List<IStorableComponent> all = new List<IStorableComponent>(Target?.GetComponent<StorageComponent>().Items)?.FindAll(x => x.Container.GetGroup() == InventoryGroup.Symptom);
-      List<IStorableComponent> storableComponentList = new List<IStorableComponent>();
+      List<IStorableComponent> storableComponentList = [];
       foreach (IStorableComponent component in all)
       {
         bool flag = targetSymptoms == null || targetSymptoms.Count == 0;

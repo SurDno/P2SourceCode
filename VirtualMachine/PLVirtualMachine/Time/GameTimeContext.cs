@@ -20,14 +20,14 @@ namespace PLVirtualMachine.Time
     private string contextName = "common";
     private float solarTimeSpeedFactor = 1f;
     private float gameTimeSpeedFactor = 1f;
-    private GameTime gameTime = new GameTime();
-    private GameTime gameDayTime = new GameTime();
-    private GameTime solarTime = new GameTime();
+    private GameTime gameTime = new();
+    private GameTime gameDayTime = new();
+    private GameTime solarTime = new();
     private int currProcTimerIndex = -1;
-    private List<GameTimer> gameTimerList = new List<GameTimer>();
-    private Stack<int> freeTimersIndexesStack = new Stack<int>();
-    private Dictionary<ulong, int> loadingTimersIdIndexesDict = new Dictionary<ulong, int>(UlongComparer.Instance);
-    private SortedList<ulong, int> timerPriorityList = new SortedList<ulong, int>();
+    private List<GameTimer> gameTimerList = [];
+    private Stack<int> freeTimersIndexesStack = new();
+    private Dictionary<ulong, int> loadingTimersIdIndexesDict = new(UlongComparer.Instance);
+    private SortedList<ulong, int> timerPriorityList = new();
     private IGameMode gameMode;
     private static bool isUpdateMode;
     public static bool TIMERS_LIST_PROCESSIN_ON;
@@ -223,7 +223,7 @@ namespace PLVirtualMachine.Time
 
     private void SaveTimers(IDataWriter writer)
     {
-      List<GameTimer> gameTimerList = new List<GameTimer>();
+      List<GameTimer> gameTimerList = [];
       for (int index = 0; index < this.gameTimerList.Count; ++index)
       {
         if (this.gameTimerList[index].GTType != EGameTimerType.GAME_TIMER_TYPE_ABSOLUTE && this.gameTimerList[index].Active)

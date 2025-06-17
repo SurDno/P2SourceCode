@@ -28,7 +28,7 @@ namespace JerboaAnimationInstancing
     private float[] rayDistances;
     private int lastRayIndex = -1;
     private JerboaManager jerboaManager;
-    private List<JerboaInstanceDescription> instances = new List<JerboaInstanceDescription>(100);
+    private List<JerboaInstanceDescription> instances = new(100);
     private bool initialized;
 
     public bool Aloud { get; set; }
@@ -217,8 +217,7 @@ namespace JerboaAnimationInstancing
     private void TryCreateRandomPath(NavMeshAgent agent)
     {
       Vector2 insideUnitCircle = Random.insideUnitCircle;
-      NavMeshHit hit;
-      if (!NavMesh.SamplePosition(agent.gameObject.transform.position + new Vector3(insideUnitCircle.x, 0.0f, insideUnitCircle.y) * pathSampleRadius, out hit, 2f, groupWalkNavigationMask))
+      if (!NavMesh.SamplePosition(agent.gameObject.transform.position + new Vector3(insideUnitCircle.x, 0.0f, insideUnitCircle.y) * pathSampleRadius, out NavMeshHit hit, 2f, groupWalkNavigationMask))
         return;
       agent.destination = hit.position;
     }
@@ -226,8 +225,7 @@ namespace JerboaAnimationInstancing
     public bool TryGroupTeleport(Vector3 center, float radius)
     {
       float f = Random.Range(0.0f, 6.28318548f);
-      NavMeshHit hit;
-      if (!NavMesh.SamplePosition(center + new Vector3(Mathf.Sin(f), 0.0f, Mathf.Cos(f)) * radius, out hit, 3f, groupWalkNavigationMask))
+      if (!NavMesh.SamplePosition(center + new Vector3(Mathf.Sin(f), 0.0f, Mathf.Cos(f)) * radius, out NavMeshHit hit, 3f, groupWalkNavigationMask))
         return false;
       agent.Warp(hit.position);
       UpdateRays();
@@ -238,16 +236,14 @@ namespace JerboaAnimationInstancing
     {
       for (int index = 0; index < groupRayCount; ++index)
       {
-        NavMeshHit hit;
-        rayDistances[index] = !NavMesh.Raycast(transform.position, transform.position + raysInWorldSpace[index] * groupRayDistance, out hit, groupWalkNavigationMask) ? groupRayDistance : hit.distance;
+        rayDistances[index] = !NavMesh.Raycast(transform.position, transform.position + raysInWorldSpace[index] * groupRayDistance, out NavMeshHit hit, groupWalkNavigationMask) ? groupRayDistance : hit.distance;
       }
     }
 
     private void UpdateRaysLazy()
     {
       lastRayIndex = (lastRayIndex + 1) % groupRayCount;
-      NavMeshHit hit;
-      if (NavMesh.Raycast(transform.position, transform.position + raysInWorldSpace[lastRayIndex] * groupRayDistance, out hit, groupWalkNavigationMask))
+      if (NavMesh.Raycast(transform.position, transform.position + raysInWorldSpace[lastRayIndex] * groupRayDistance, out NavMeshHit hit, groupWalkNavigationMask))
         rayDistances[lastRayIndex] = hit.distance;
       else
         rayDistances[lastRayIndex] = groupRayDistance;

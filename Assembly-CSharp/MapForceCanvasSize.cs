@@ -3,7 +3,7 @@
 public class MapForceCanvasSize : MonoBehaviour
 {
   [SerializeField]
-  private Vector2 size = new Vector2(1920f, 1080f);
+  private Vector2 size = new(1920f, 1080f);
 
   private void OnEnable()
   {

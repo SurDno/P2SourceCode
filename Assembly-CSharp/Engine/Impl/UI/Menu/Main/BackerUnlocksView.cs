@@ -15,7 +15,7 @@ namespace Engine.Impl.UI.Menu.Main
     private MenuInputField inputFieldPrefab;
     private BackerUnlocksService backerUnlocksService;
     private MenuInputField inputField;
-    private List<SelectableSettingsItemView> items = new List<SelectableSettingsItemView>();
+    private List<SelectableSettingsItemView> items = [];
     [SerializeField]
     private GameObject xboxKeyboard;
     private bool isBoxKeyboardEnabled;

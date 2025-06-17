@@ -6,7 +6,7 @@ using UnityEngine.Serialization;
 
 public class POIBase : MonoBehaviour
 {
-  public static HashSet<POIBase> ActivePOIs = new HashSet<POIBase>();
+  public static HashSet<POIBase> ActivePOIs = [];
   [SerializeField]
   [FormerlySerializedAs("SupportedAnimations")]
   private POIAnimationEnum _supportedAnimations;

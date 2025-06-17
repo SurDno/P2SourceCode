@@ -15,12 +15,11 @@ namespace FlowCanvas.Nodes
 
     protected override string[] GetTargetMessageEvents()
     {
-      return new string[3]
-      {
+      return [
         "OnCollisionEnter",
         "OnCollisionStay",
         "OnCollisionExit"
-      };
+      ];
     }
 
     protected override void RegisterPorts()

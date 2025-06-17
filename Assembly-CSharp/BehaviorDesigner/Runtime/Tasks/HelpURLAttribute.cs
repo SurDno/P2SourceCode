@@ -3,12 +3,8 @@
 namespace BehaviorDesigner.Runtime.Tasks
 {
   [AttributeUsage(AttributeTargets.Class, Inherited = false)]
-  public class HelpURLAttribute : Attribute
+  public class HelpURLAttribute(string url) : Attribute 
   {
-    private readonly string mURL;
-
-    public string URL => mURL;
-
-    public HelpURLAttribute(string url) => mURL = url;
+    public string URL => url;
   }
 }

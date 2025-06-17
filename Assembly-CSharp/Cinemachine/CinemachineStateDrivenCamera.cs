@@ -33,7 +33,7 @@ namespace Cinemachine
     public Instruction[] m_Instructions;
     [CinemachineBlendDefinitionProperty]
     [Tooltip("The blend which is used if you don't explicitly define a blend between two Virtual Camera children")]
-    public CinemachineBlendDefinition m_DefaultBlend = new CinemachineBlendDefinition(CinemachineBlendDefinition.Style.EaseInOut, 0.5f);
+    public CinemachineBlendDefinition m_DefaultBlend = new(CinemachineBlendDefinition.Style.EaseInOut, 0.5f);
     [Tooltip("This is the asset which contains custom settings for specific child blends")]
     public CinemachineBlenderSettings m_CustomBlends;
     [HideInInspector]
@@ -47,7 +47,7 @@ namespace Cinemachine
     private CinemachineBlend mActiveBlend;
     private Dictionary<int, int> mInstructionDictionary;
     private Dictionary<int, int> mStateParentLookup;
-    private List<AnimatorClipInfo> m_clipInfoList = new List<AnimatorClipInfo>();
+    private List<AnimatorClipInfo> m_clipInfoList = [];
 
     public override string Description
     {
@@ -117,8 +117,7 @@ namespace Cinemachine
       LiveChild = virtualCameraBase;
       if (liveChild != null && LiveChild != null && liveChild != LiveChild)
       {
-        float duration = 0.0f;
-        AnimationCurve blendCurve = LookupBlendCurve(liveChild, LiveChild, out duration);
+        AnimationCurve blendCurve = LookupBlendCurve(liveChild, LiveChild, out float duration);
         mActiveBlend = CreateBlend(liveChild, LiveChild, blendCurve, duration, mActiveBlend, deltaTime);
         LiveChild.OnTransitionFromCamera(liveChild, worldUp, deltaTime);
         CinemachineCore.Instance.GenerateCameraActivationEvent(LiveChild);
@@ -176,7 +175,7 @@ namespace Cinemachine
     {
       if (m_ChildCameras != null && mInstructionDictionary != null && mStateParentLookup != null)
         return;
-      List<CinemachineVirtualCameraBase> virtualCameraBaseList = new List<CinemachineVirtualCameraBase>();
+      List<CinemachineVirtualCameraBase> virtualCameraBaseList = [];
       foreach (CinemachineVirtualCameraBase componentsInChild in GetComponentsInChildren<CinemachineVirtualCameraBase>(true))
       {
         if (componentsInChild.transform.parent == transform)
@@ -189,7 +188,7 @@ namespace Cinemachine
     public void ValidateInstructions()
     {
       if (m_Instructions == null)
-        m_Instructions = new Instruction[0];
+        m_Instructions = [];
       mInstructionDictionary = new Dictionary<int, int>();
       for (int index = 0; index < m_Instructions.Length; ++index)
       {
@@ -363,16 +362,9 @@ namespace Cinemachine
 
     [DocumentationSorting(13.2f, DocumentationSortingAttribute.Level.Undoc)]
     [Serializable]
-    public struct ParentHash
-    {
-      public int m_Hash;
-      public int m_ParentHash;
-
-      public ParentHash(int h, int p)
-      {
-        m_Hash = h;
-        m_ParentHash = p;
-      }
+    public struct ParentHash(int h, int p) {
+      public int m_Hash = h;
+      public int m_ParentHash = p;
     }
   }
 }

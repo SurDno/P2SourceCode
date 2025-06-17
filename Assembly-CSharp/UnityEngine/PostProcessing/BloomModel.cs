@@ -40,19 +40,14 @@ namespace UnityEngine.PostProcessing
         get => Mathf.GammaToLinearSpace(threshold);
       }
 
-      public static BloomSettings defaultSettings
-      {
-        get
-        {
-          return new BloomSettings {
-            intensity = 0.5f,
-            threshold = 1.1f,
-            softKnee = 0.5f,
-            radius = 4f,
-            antiFlicker = false
-          };
-        }
-      }
+      public static BloomSettings defaultSettings =>
+        new() {
+          intensity = 0.5f,
+          threshold = 1.1f,
+          softKnee = 0.5f,
+          radius = 4f,
+          antiFlicker = false
+        };
     }
 
     [Serializable]
@@ -64,16 +59,11 @@ namespace UnityEngine.PostProcessing
       [Tooltip("Amount of lens dirtiness.")]
       public float intensity;
 
-      public static LensDirtSettings defaultSettings
-      {
-        get
-        {
-          return new LensDirtSettings {
-            texture = null,
-            intensity = 3f
-          };
-        }
-      }
+      public static LensDirtSettings defaultSettings =>
+        new() {
+          texture = null,
+          intensity = 3f
+        };
     }
 
     [Serializable]
@@ -82,16 +72,11 @@ namespace UnityEngine.PostProcessing
       public BloomSettings bloom;
       public LensDirtSettings lensDirt;
 
-      public static Settings defaultSettings
-      {
-        get
-        {
-          return new Settings {
-            bloom = BloomSettings.defaultSettings,
-            lensDirt = LensDirtSettings.defaultSettings
-          };
-        }
-      }
+      public static Settings defaultSettings =>
+        new() {
+          bloom = BloomSettings.defaultSettings,
+          lensDirt = LensDirtSettings.defaultSettings
+        };
     }
   }
 }

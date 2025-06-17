@@ -12,7 +12,7 @@ namespace CircularBuffer
     private int _start;
 
     public CircularBuffer(int capacity)
-      : this(capacity, new T[0])
+      : this(capacity, [])
     {
     }
 
@@ -59,17 +59,16 @@ namespace CircularBuffer
 
     public IEnumerator<T> GetEnumerator()
     {
-      ArraySegment<T>[] arraySegmentArray = new ArraySegment<T>[2]
-      {
+      ArraySegment<T>[] arraySegmentArray = [
         ArrayOne(),
         ArrayTwo()
-      };
+      ];
       for (int index = 0; index < arraySegmentArray.Length; ++index)
       {
         ArraySegment<T> segment = arraySegmentArray[index];
         for (int i = 0; i < segment.Count; ++i)
           yield return segment.Array[segment.Offset + i];
-        segment = new ArraySegment<T>();
+        segment = [];
       }
       arraySegmentArray = null;
     }
@@ -140,11 +139,10 @@ namespace CircularBuffer
     {
       T[] destinationArray = new T[Size];
       int destinationIndex = 0;
-      ArraySegment<T>[] arraySegmentArray = new ArraySegment<T>[2]
-      {
+      ArraySegment<T>[] arraySegmentArray = [
         ArrayOne(),
         ArrayTwo()
-      };
+      ];
       foreach (ArraySegment<T> arraySegment in arraySegmentArray)
       {
         Array.Copy(arraySegment.Array, arraySegment.Offset, destinationArray, destinationIndex, arraySegment.Count);

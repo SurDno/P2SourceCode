@@ -274,45 +274,25 @@ namespace RootMotion.Dynamics
       Z,
     }
 
-    public struct CreateJointParams
-    {
-      public Rigidbody rigidbody;
-      public Rigidbody connectedBody;
-      public Transform child;
-      public Vector3 worldSwingAxis;
-      public Limits limits;
-      public JointType type;
+    public struct CreateJointParams(
+      Rigidbody rigidbody,
+      Rigidbody connectedBody,
+      Transform child,
+      Vector3 worldSwingAxis,
+      CreateJointParams.Limits limits,
+      JointType type) {
+      public Rigidbody rigidbody = rigidbody;
+      public Rigidbody connectedBody = connectedBody;
+      public Transform child = child;
+      public Vector3 worldSwingAxis = worldSwingAxis;
+      public Limits limits = limits;
+      public JointType type = type;
 
-      public CreateJointParams(
-        Rigidbody rigidbody,
-        Rigidbody connectedBody,
-        Transform child,
-        Vector3 worldSwingAxis,
-        Limits limits,
-        JointType type)
-      {
-        this.rigidbody = rigidbody;
-        this.connectedBody = connectedBody;
-        this.child = child;
-        this.worldSwingAxis = worldSwingAxis;
-        this.limits = limits;
-        this.type = type;
-      }
-
-      public struct Limits
-      {
-        public float minSwing;
-        public float maxSwing;
-        public float swing2;
-        public float twist;
-
-        public Limits(float minSwing, float maxSwing, float swing2, float twist)
-        {
-          this.minSwing = minSwing;
-          this.maxSwing = maxSwing;
-          this.swing2 = swing2;
-          this.twist = twist;
-        }
+      public struct Limits(float minSwing, float maxSwing, float swing2, float twist) {
+        public float minSwing = minSwing;
+        public float maxSwing = maxSwing;
+        public float swing2 = swing2;
+        public float twist = twist;
       }
     }
   }

@@ -6,17 +6,17 @@ namespace ParadoxNotion.Serialization.FullSerializer
 {
   public struct fsResult
   {
-    private static readonly string[] EmptyStringArray = new string[0];
+    private static readonly string[] EmptyStringArray = [];
     private bool _success;
     private List<string> _messages;
-    public static fsResult Success = new fsResult {
+    public static fsResult Success = new() {
       _success = true
     };
 
     public void AddMessage(string message)
     {
       if (_messages == null)
-        _messages = new List<string>();
+        _messages = [];
       _messages.Add(message);
     }
 
@@ -25,7 +25,7 @@ namespace ParadoxNotion.Serialization.FullSerializer
       if (result._messages == null)
         return;
       if (_messages == null)
-        _messages = new List<string>();
+        _messages = [];
       _messages.AddRange(result._messages);
     }
 
@@ -35,7 +35,7 @@ namespace ParadoxNotion.Serialization.FullSerializer
       if (other._messages != null)
       {
         if (_messages == null)
-          _messages = new List<string>(other._messages);
+          _messages = [..other._messages];
         else
           _messages.AddRange(other._messages);
       }
@@ -46,7 +46,7 @@ namespace ParadoxNotion.Serialization.FullSerializer
     {
       return new fsResult {
         _success = true,
-        _messages = new List<string> { warning }
+        _messages = [warning]
       };
     }
 
@@ -54,7 +54,7 @@ namespace ParadoxNotion.Serialization.FullSerializer
     {
       return new fsResult {
         _success = false,
-        _messages = new List<string> { warning }
+        _messages = [warning]
       };
     }
 
@@ -90,13 +90,7 @@ namespace ParadoxNotion.Serialization.FullSerializer
       }
     }
 
-    public IEnumerable<string> RawMessages
-    {
-      get
-      {
-        return _messages != null ? _messages : EmptyStringArray;
-      }
-    }
+    public IEnumerable<string> RawMessages => _messages != null ? _messages : EmptyStringArray;
 
     public string FormattedMessages => string.Join(",\n", RawMessages.ToArray());
   }

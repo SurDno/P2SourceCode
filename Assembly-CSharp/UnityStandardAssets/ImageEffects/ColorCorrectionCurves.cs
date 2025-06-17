@@ -6,14 +6,14 @@ namespace UnityStandardAssets.ImageEffects
   [AddComponentMenu("Image Effects/Color Adjustments/Color Correction (Curves, Saturation)")]
   public class ColorCorrectionCurves : PostEffectsBase
   {
-    public AnimationCurve redChannel = new AnimationCurve(new Keyframe(0.0f, 0.0f), new Keyframe(1f, 1f));
-    public AnimationCurve greenChannel = new AnimationCurve(new Keyframe(0.0f, 0.0f), new Keyframe(1f, 1f));
-    public AnimationCurve blueChannel = new AnimationCurve(new Keyframe(0.0f, 0.0f), new Keyframe(1f, 1f));
+    public AnimationCurve redChannel = new(new Keyframe(0.0f, 0.0f), new Keyframe(1f, 1f));
+    public AnimationCurve greenChannel = new(new Keyframe(0.0f, 0.0f), new Keyframe(1f, 1f));
+    public AnimationCurve blueChannel = new(new Keyframe(0.0f, 0.0f), new Keyframe(1f, 1f));
     public bool useDepthCorrection;
-    public AnimationCurve zCurve = new AnimationCurve(new Keyframe(0.0f, 0.0f), new Keyframe(1f, 1f));
-    public AnimationCurve depthRedChannel = new AnimationCurve(new Keyframe(0.0f, 0.0f), new Keyframe(1f, 1f));
-    public AnimationCurve depthGreenChannel = new AnimationCurve(new Keyframe(0.0f, 0.0f), new Keyframe(1f, 1f));
-    public AnimationCurve depthBlueChannel = new AnimationCurve(new Keyframe(0.0f, 0.0f), new Keyframe(1f, 1f));
+    public AnimationCurve zCurve = new(new Keyframe(0.0f, 0.0f), new Keyframe(1f, 1f));
+    public AnimationCurve depthRedChannel = new(new Keyframe(0.0f, 0.0f), new Keyframe(1f, 1f));
+    public AnimationCurve depthGreenChannel = new(new Keyframe(0.0f, 0.0f), new Keyframe(1f, 1f));
+    public AnimationCurve depthBlueChannel = new(new Keyframe(0.0f, 0.0f), new Keyframe(1f, 1f));
     private Material ccMaterial;
     private Material ccDepthMaterial;
     private Material selectiveCcMaterial;

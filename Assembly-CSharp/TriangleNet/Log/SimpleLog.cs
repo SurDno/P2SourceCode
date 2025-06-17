@@ -4,9 +4,9 @@ namespace TriangleNet.Log
 {
   public sealed class SimpleLog : ILog<SimpleLogItem>
   {
-    private static readonly SimpleLog instance = new SimpleLog();
+    private static readonly SimpleLog instance = new();
     private LogLevel level = LogLevel.Info;
-    private List<SimpleLogItem> log = new List<SimpleLogItem>();
+    private List<SimpleLogItem> log = [];
 
     public static ILog<SimpleLogItem> Instance => instance;
 

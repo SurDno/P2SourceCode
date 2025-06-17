@@ -352,7 +352,7 @@ public class TerrainDetailLayer : MonoBehaviour
   public static void PrepareClearList<T>(ref List<T> list)
   {
     if (list == null)
-      list = new List<T>();
+      list = [];
     else
       list.Clear();
   }

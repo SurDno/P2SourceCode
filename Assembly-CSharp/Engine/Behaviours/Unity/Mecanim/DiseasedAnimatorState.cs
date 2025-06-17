@@ -5,13 +5,12 @@ namespace Engine.Behaviours.Unity.Mecanim
 {
   public class DiseasedAnimatorState
   {
-    private static Dictionary<Animator, DiseasedAnimatorState> diseasedAnimatorStates = new Dictionary<Animator, DiseasedAnimatorState>();
+    private static Dictionary<Animator, DiseasedAnimatorState> diseasedAnimatorStates = new();
     public Animator Animator;
 
     public static DiseasedAnimatorState GetAnimatorState(Animator animator)
     {
-      DiseasedAnimatorState animatorState;
-      if (!diseasedAnimatorStates.TryGetValue(animator, out animatorState))
+      if (!diseasedAnimatorStates.TryGetValue(animator, out DiseasedAnimatorState animatorState))
       {
         animatorState = new DiseasedAnimatorState();
         animatorState.Animator = animator;

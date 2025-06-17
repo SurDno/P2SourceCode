@@ -14,13 +14,7 @@ namespace UnityEngine.PostProcessing
       set => m_Settings = value;
     }
 
-    public bool willInterrupt
-    {
-      get
-      {
-        return !IsModeActive(Mode.None) && !IsModeActive(Mode.EyeAdaptation) && !IsModeActive(Mode.PreGradingLog) && !IsModeActive(Mode.LogLut) && !IsModeActive(Mode.UserLut);
-      }
-    }
+    public bool willInterrupt => !IsModeActive(Mode.None) && !IsModeActive(Mode.EyeAdaptation) && !IsModeActive(Mode.PreGradingLog) && !IsModeActive(Mode.LogLut) && !IsModeActive(Mode.UserLut);
 
     public override void Reset() => settings = Settings.defaultSettings;
 
@@ -33,15 +27,10 @@ namespace UnityEngine.PostProcessing
       [Tooltip("Scales the camera far plane before displaying the depth map.")]
       public float scale;
 
-      public static DepthSettings defaultSettings
-      {
-        get
-        {
-          return new DepthSettings {
-            scale = 1f
-          };
-        }
-      }
+      public static DepthSettings defaultSettings =>
+        new() {
+          scale = 1f
+        };
     }
 
     [Serializable]
@@ -66,20 +55,15 @@ namespace UnityEngine.PostProcessing
       [Tooltip("Tweaks the arrows length.")]
       public float motionVectorsAmplitude;
 
-      public static MotionVectorsSettings defaultSettings
-      {
-        get
-        {
-          return new MotionVectorsSettings {
-            sourceOpacity = 1f,
-            motionImageOpacity = 0.0f,
-            motionImageAmplitude = 16f,
-            motionVectorsOpacity = 1f,
-            motionVectorsResolution = 24,
-            motionVectorsAmplitude = 64f
-          };
-        }
-      }
+      public static MotionVectorsSettings defaultSettings =>
+        new() {
+          sourceOpacity = 1f,
+          motionImageOpacity = 0.0f,
+          motionImageAmplitude = 16f,
+          motionVectorsOpacity = 1f,
+          motionVectorsResolution = 24,
+          motionVectorsAmplitude = 64f
+        };
     }
 
     public enum Mode
@@ -103,17 +87,12 @@ namespace UnityEngine.PostProcessing
       public DepthSettings depth;
       public MotionVectorsSettings motionVectors;
 
-      public static Settings defaultSettings
-      {
-        get
-        {
-          return new Settings {
-            mode = Mode.None,
-            depth = DepthSettings.defaultSettings,
-            motionVectors = MotionVectorsSettings.defaultSettings
-          };
-        }
-      }
+      public static Settings defaultSettings =>
+        new() {
+          mode = Mode.None,
+          depth = DepthSettings.defaultSettings,
+          motionVectors = MotionVectorsSettings.defaultSettings
+        };
     }
   }
 }

@@ -2,20 +2,12 @@
 
 namespace Engine.Source.Settings
 {
-  public class BoolValue : IValue<bool>
-  {
+  public class BoolValue(string name, bool defaultValue = false) : IValue<bool> {
     [Inspected]
-    private string name;
+    private string name = name;
     [Inspected]
-    private bool defaultValue;
-    private bool value;
-
-    public BoolValue(string name, bool defaultValue = false)
-    {
-      this.name = name;
-      value = PlayerSettings.Instance.GetBool(name, defaultValue);
-      this.defaultValue = defaultValue;
-    }
+    private bool defaultValue = defaultValue;
+    private bool value = PlayerSettings.Instance.GetBool(name, defaultValue);
 
     [Inspected(Mutable = true)]
     public bool Value

@@ -15,12 +15,12 @@ namespace Engine.Drawing.Gradient
     [DataWriteProxy]
     [CopyableProxy]
     [Inspected]
-    protected List<GradientAlphaKey> alphaKeys = new List<GradientAlphaKey>(512);
+    protected List<GradientAlphaKey> alphaKeys = new(512);
     [DataReadProxy]
     [DataWriteProxy]
     [CopyableProxy()]
     [Inspected]
-    protected List<GradientColorKey> colorKeys = new List<GradientColorKey>(512);
+    protected List<GradientColorKey> colorKeys = new(512);
 
     public List<GradientColorKey> ColorKeys
     {

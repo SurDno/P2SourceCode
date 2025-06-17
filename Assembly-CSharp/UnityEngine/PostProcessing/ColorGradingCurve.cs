@@ -3,24 +3,15 @@
 namespace UnityEngine.PostProcessing
 {
   [Serializable]
-  public sealed class ColorGradingCurve
-  {
-    public AnimationCurve curve;
+  public sealed class ColorGradingCurve(AnimationCurve curve, float zeroValue, bool loop, Vector2 bounds) {
+    public AnimationCurve curve = curve;
     [SerializeField]
-    private bool m_Loop;
+    private bool m_Loop = loop;
     [SerializeField]
-    private float m_ZeroValue;
+    private float m_ZeroValue = zeroValue;
     [SerializeField]
-    private float m_Range;
+    private float m_Range = bounds.magnitude;
     private AnimationCurve m_InternalLoopingCurve;
-
-    public ColorGradingCurve(AnimationCurve curve, float zeroValue, bool loop, Vector2 bounds)
-    {
-      this.curve = curve;
-      m_ZeroValue = zeroValue;
-      m_Loop = loop;
-      m_Range = bounds.magnitude;
-    }
 
     public void Cache()
     {

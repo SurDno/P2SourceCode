@@ -4,7 +4,7 @@ namespace PLVirtualMachine.Common.EngineAPI
 {
   public class TypeEnumKeyEqualityComparer : IEqualityComparer<TypeEnumKey>
   {
-    public static readonly TypeEnumKeyEqualityComparer Instance = new TypeEnumKeyEqualityComparer();
+    public static readonly TypeEnumKeyEqualityComparer Instance = new();
 
     public bool Equals(TypeEnumKey x, TypeEnumKey y) => x.Type == y.Type && x.Int == y.Int;
 

@@ -12,8 +12,7 @@ namespace PLVirtualMachine.Objects
 {
   [TypeData(EDataType.TWorldGroup)]
   [DataFactory("Scene")]
-  public class VMWorldGroup : VMWorldObject, IStub, IEditorDataReader
-  {
+  public class VMWorldGroup(ulong guid) : VMWorldObject(guid), IStub, IEditorDataReader {
     public override void EditorDataRead(XmlReader xml, IDataCreator creator, string typeContext)
     {
       while (xml.Read()) {
@@ -77,11 +76,6 @@ namespace PLVirtualMachine.Objects
         if (xml.NodeType == XmlNodeType.EndElement)
           break;
       }
-    }
-
-    public VMWorldGroup(ulong guid)
-      : base(guid)
-    {
     }
 
     public override EObjectCategory GetCategory() => EObjectCategory.OBJECT_CATEGORY_WORLD_GROUP;

@@ -88,8 +88,8 @@ namespace TriangleNet
       triangles = new Dictionary<int, Triangle>();
       subsegs = new Dictionary<int, Segment>();
       flipstack = new Stack<Otri>();
-      holes = new List<Point>();
-      regions = new List<RegionPointer>();
+      holes = [];
+      regions = [];
       quality = new Quality(this);
       locator = new TriangleLocator(this);
       Primitives.ExactInit();
@@ -100,9 +100,7 @@ namespace TriangleNet
 
     public void Load(string filename)
     {
-      InputGeometry geometry;
-      List<ITriangle> triangles;
-      FileReader.Read(filename, out geometry, out triangles);
+      FileReader.Read(filename, out InputGeometry geometry, out List<ITriangle> triangles);
       if (geometry == null || triangles == null)
         return;
       Load(geometry, triangles);

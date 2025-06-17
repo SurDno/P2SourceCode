@@ -67,7 +67,7 @@ public class FlockController : MonoBehaviour, IUpdatable
   public bool _birdAvoidUp;
   public int _birdAvoidVerticalForce = 300;
   [NonSerialized]
-  public List<FlockChild> childs = new List<FlockChild>();
+  public List<FlockChild> childs = [];
   [NonSerialized]
   public Vector3 targetPosition;
   private Vector3 playerOffset;

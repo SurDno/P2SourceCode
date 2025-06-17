@@ -7,7 +7,7 @@ namespace Engine.Source.Components.Interactable
 {
   public static class InteractValidationService
   {
-    private static Dictionary<InteractType, Func<IInteractableComponent, InteractItem, ValidateResult>> validators = new Dictionary<InteractType, Func<IInteractableComponent, InteractItem, ValidateResult>>();
+    private static Dictionary<InteractType, Func<IInteractableComponent, InteractItem, ValidateResult>> validators = new();
 
     public static void AddValidator(
       InteractType type,
@@ -22,8 +22,7 @@ namespace Engine.Source.Components.Interactable
         return new ValidateResult(false, "Entity disabled");
       if (!interactable.IsEnabled)
         return new ValidateResult(false, "Interactable disabled");
-      Func<IInteractableComponent, InteractItem, ValidateResult> func;
-      return validators.TryGetValue(item.Type, out func) ? func(interactable, item) : new ValidateResult(true, "Validator not found");
+      return validators.TryGetValue(item.Type, out Func<IInteractableComponent, InteractItem, ValidateResult> func) ? func(interactable, item) : new ValidateResult(true, "Validator not found");
     }
   }
 }

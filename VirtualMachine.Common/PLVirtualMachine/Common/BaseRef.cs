@@ -8,7 +8,7 @@ namespace PLVirtualMachine.Common
 {
   public abstract class BaseRef : IRef, IVariable, INamed, IVMStringSerializable
   {
-    private static HashSet<ulong> dublicate = new HashSet<ulong>(UlongComparer.Instance);
+    private static HashSet<ulong> dublicate = new(UlongComparer.Instance);
     private ulong baseGuid;
     private IObject staticInstance;
 
@@ -24,7 +24,7 @@ namespace PLVirtualMachine.Common
       }
     }
 
-    public virtual VMType Type => new VMType(typeof (Nullable));
+    public virtual VMType Type => new(typeof (Nullable));
 
     public ulong BaseGuid
     {
@@ -36,10 +36,7 @@ namespace PLVirtualMachine.Common
 
     public virtual bool Exist => !Empty;
 
-    public virtual EContextVariableCategory Category
-    {
-      get => EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_OBJECT;
-    }
+    public virtual EContextVariableCategory Category => EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_OBJECT;
 
     public virtual string Write() => Name;
 

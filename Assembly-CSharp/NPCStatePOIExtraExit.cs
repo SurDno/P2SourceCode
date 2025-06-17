@@ -2,11 +2,10 @@
 using Engine.Behaviours.Unity.Mecanim;
 using UnityEngine;
 
-public class NPCStatePOIExtraExit : INpcState
-{
+public class NPCStatePOIExtraExit(NpcState npcState, Pivot pivot) : INpcState 
+  {
   private Animator animator;
-  private NpcState npcState;
-  private Pivot pivot;
+  private NpcState npcState = npcState;
   private Rigidbody rigidbody;
   private AnimatorState45 animatorState;
   private bool initiallyKinematic;
@@ -15,14 +14,7 @@ public class NPCStatePOIExtraExit : INpcState
   private bool complete;
   private float exitTime;
 
-  public GameObject GameObject { get; private set; }
-
-  public NPCStatePOIExtraExit(NpcState npcState, Pivot pivot)
-  {
-    GameObject = npcState.gameObject;
-    this.pivot = pivot;
-    this.npcState = npcState;
-  }
+  public GameObject GameObject { get; private set; } = npcState.gameObject;
 
   private bool TryInit()
   {
@@ -65,10 +57,7 @@ public class NPCStatePOIExtraExit : INpcState
     }
   }
 
-  public NpcStateStatusEnum Status
-  {
-    get => complete ? NpcStateStatusEnum.Success : NpcStateStatusEnum.Running;
-  }
+  public NpcStateStatusEnum Status => complete ? NpcStateStatusEnum.Success : NpcStateStatusEnum.Running;
 
   public void Shutdown()
   {

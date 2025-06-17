@@ -9,7 +9,7 @@ namespace Engine.Source.Settings
   public class SettingsViewService
   {
     [Inspected]
-    private static List<object> settings = new List<object>();
+    private static List<object> settings = [];
 
     public static void AddSettings(object setting)
     {

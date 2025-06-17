@@ -148,19 +148,17 @@ public class DeferredProjector : MonoBehaviour
       {
         boxMesh = new Mesh();
         boxMesh.hideFlags = HideFlags.HideAndDontSave;
-        boxMesh.vertices = new Vector3[8]
-        {
-          new Vector3(-0.5f, -0.5f, -0.5f),
-          new Vector3(-0.5f, 0.5f, -0.5f),
-          new Vector3(0.5f, 0.5f, -0.5f),
-          new Vector3(0.5f, -0.5f, -0.5f),
-          new Vector3(0.5f, -0.5f, 0.5f),
-          new Vector3(0.5f, 0.5f, 0.5f),
-          new Vector3(-0.5f, 0.5f, 0.5f),
-          new Vector3(-0.5f, -0.5f, 0.5f)
-        };
-        boxMesh.triangles = new int[36]
-        {
+        boxMesh.vertices = [
+          new(-0.5f, -0.5f, -0.5f),
+          new(-0.5f, 0.5f, -0.5f),
+          new(0.5f, 0.5f, -0.5f),
+          new(0.5f, -0.5f, -0.5f),
+          new(0.5f, -0.5f, 0.5f),
+          new(0.5f, 0.5f, 0.5f),
+          new(-0.5f, 0.5f, 0.5f),
+          new(-0.5f, -0.5f, 0.5f)
+        ];
+        boxMesh.triangles = [
           0,
           1,
           2,
@@ -197,7 +195,7 @@ public class DeferredProjector : MonoBehaviour
           3,
           4,
           7
-        };
+        ];
       }
       return boxMesh;
     }
@@ -263,13 +261,12 @@ public class DeferredProjector : MonoBehaviour
       commandBuffer.GetTemporaryRT(specularID, -1, -1);
       commandBuffer.Blit(BuiltinRenderTextureType.GBuffer1, specularID);
       if (mrt == null)
-        mrt = new RenderTargetIdentifier[4]
-        {
+        mrt = [
           BuiltinRenderTextureType.GBuffer0,
           BuiltinRenderTextureType.GBuffer1,
           BuiltinRenderTextureType.GBuffer2,
           BuiltinRenderTextureType.CameraTarget
-        };
+        ];
       commandBuffer.SetRenderTarget(mrt, BuiltinRenderTextureType.CameraTarget);
       if (cullId == 0)
         cullId = Shader.PropertyToID("_Cull");

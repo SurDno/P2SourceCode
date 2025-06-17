@@ -17,15 +17,15 @@ namespace PLVirtualMachine.Common.EngineAPI
 {
   public class EngineAPIManager
   {
-    protected static Dictionary<string, Dictionary<EContextVariableCategory, List<IVariable>>> componentsAbstractVarsDict = new Dictionary<string, Dictionary<EContextVariableCategory, List<IVariable>>>();
-    protected static Dictionary<EObjectCategory, List<ComponentInfo>> objectDefaultComponentsDict = new Dictionary<EObjectCategory, List<ComponentInfo>>();
-    protected static Dictionary<string, ComponentInfo> componentsInfoDict = new Dictionary<string, ComponentInfo>();
-    protected static Dictionary<string, Type> componentTypesDict = new Dictionary<string, Type>();
-    protected static Dictionary<Type, string> componentNamesByTypeDict = new Dictionary<Type, string>();
-    protected static Dictionary<string, string> functionalDependencyDict = new Dictionary<string, string>();
-    protected static Dictionary<TypeEnumKey, string> specMethodInfoDict = new Dictionary<TypeEnumKey, string>(TypeEnumKeyEqualityComparer.Instance);
-    protected static Dictionary<TypeEnumKey, string> specPropertyInfoDict = new Dictionary<TypeEnumKey, string>(TypeEnumKeyEqualityComparer.Instance);
-    protected static Dictionary<TypeEnumKey, string> specEventInfoDict = new Dictionary<TypeEnumKey, string>(TypeEnumKeyEqualityComparer.Instance);
+    protected static Dictionary<string, Dictionary<EContextVariableCategory, List<IVariable>>> componentsAbstractVarsDict = new();
+    protected static Dictionary<EObjectCategory, List<ComponentInfo>> objectDefaultComponentsDict = new();
+    protected static Dictionary<string, ComponentInfo> componentsInfoDict = new();
+    protected static Dictionary<string, Type> componentTypesDict = new();
+    protected static Dictionary<Type, string> componentNamesByTypeDict = new();
+    protected static Dictionary<string, string> functionalDependencyDict = new();
+    protected static Dictionary<TypeEnumKey, string> specMethodInfoDict = new(TypeEnumKeyEqualityComparer.Instance);
+    protected static Dictionary<TypeEnumKey, string> specPropertyInfoDict = new(TypeEnumKeyEqualityComparer.Instance);
+    protected static Dictionary<TypeEnumKey, string> specEventInfoDict = new(TypeEnumKeyEqualityComparer.Instance);
     private static bool isObjectCreationExtraDebugInfoMode;
 
     public static void Init()
@@ -95,8 +95,7 @@ namespace PLVirtualMachine.Common.EngineAPI
 
     public static ComponentInfo GetFunctionalComponentByName(string componentName)
     {
-      ComponentInfo functionalComponentByName;
-      if (componentsInfoDict.TryGetValue(componentName, out functionalComponentByName))
+      if (componentsInfoDict.TryGetValue(componentName, out ComponentInfo functionalComponentByName))
         return functionalComponentByName;
       Logger.AddError(string.Format("Functional component with name {0} not found at {1}", componentName, Instance.CurrentFSMStateInfo));
       return null;
@@ -104,8 +103,7 @@ namespace PLVirtualMachine.Common.EngineAPI
 
     public static APIEventInfo GetAPIEventInfoByName(string componentName, string sEventName)
     {
-      ComponentInfo componentInfo;
-      if (componentsInfoDict.TryGetValue(componentName, out componentInfo))
+      if (componentsInfoDict.TryGetValue(componentName, out ComponentInfo componentInfo))
       {
         for (int index = 0; index < componentInfo.Events.Count; ++index)
         {
@@ -126,8 +124,7 @@ namespace PLVirtualMachine.Common.EngineAPI
         return new VMType(typeof (ISampleRef), specTypeName, true);
       if (typeof (Engine.Common.IObject).IsAssignableFrom(engType) && !typeof (IEntity).IsAssignableFrom(engType))
       {
-        string result;
-        SampleAttribute.TryGetValue(engType, out result);
+        SampleAttribute.TryGetValue(engType, out string result);
         return new VMType(typeof (ISampleRef), result, true);
       }
       if (typeof (IStateRef) == engType)
@@ -174,8 +171,7 @@ namespace PLVirtualMachine.Common.EngineAPI
         Type = ownerClassType,
         Int = (int) specFuncName
       };
-      string specialFunctionInfo;
-      if (specMethodInfoDict.TryGetValue(key, out specialFunctionInfo))
+      if (specMethodInfoDict.TryGetValue(key, out string specialFunctionInfo))
         return specialFunctionInfo;
       MethodInfo[] methods = ownerClassType.GetMethods();
       for (int index = 0; index < methods.Length; ++index)
@@ -202,8 +198,7 @@ namespace PLVirtualMachine.Common.EngineAPI
         Type = ownerClassType,
         Int = (int) specPropertyName
       };
-      string specialPropertyInfo;
-      if (specPropertyInfoDict.TryGetValue(key, out specialPropertyInfo))
+      if (specPropertyInfoDict.TryGetValue(key, out string specialPropertyInfo))
         return specialPropertyInfo;
       PropertyInfo[] properties = ownerClassType.GetProperties();
       for (int index = 0; index < properties.Length; ++index)
@@ -228,8 +223,7 @@ namespace PLVirtualMachine.Common.EngineAPI
         Type = ownerClassType,
         Int = (int) specEventName
       };
-      string specialEventInfo;
-      if (specEventInfoDict.TryGetValue(key, out specialEventInfo))
+      if (specEventInfoDict.TryGetValue(key, out string specialEventInfo))
         return specialEventInfo;
       System.Reflection.EventInfo[] events = ownerClassType.GetEvents();
       for (int index = 0; index < events.Length; ++index)
@@ -268,21 +262,18 @@ namespace PLVirtualMachine.Common.EngineAPI
 
     public static Type GetComponentTypeByName(string componentName)
     {
-      Type componentTypeByName;
-      componentTypesDict.TryGetValue(componentName, out componentTypeByName);
+      componentTypesDict.TryGetValue(componentName, out Type componentTypeByName);
       return componentTypeByName;
     }
 
     public static string GetComponentNameByType(Type type)
     {
-      string str;
-      return componentNamesByTypeDict.TryGetValue(type, out str) ? str : "";
+      return componentNamesByTypeDict.TryGetValue(type, out string str) ? str : "";
     }
 
     public static Type GetObjectTypeByName(string typeName)
     {
-      Type result;
-      if (VMTypeAttribute.TryGetValue(typeName, out result) || SampleAttribute.TryGetValue(typeName, out result) || EnumTypeAttribute.TryGetValue(typeName, out result))
+      if (VMTypeAttribute.TryGetValue(typeName, out Type result) || SampleAttribute.TryGetValue(typeName, out result) || EnumTypeAttribute.TryGetValue(typeName, out result))
         return result;
       Logger.AddError("Cannot get object Type for typename " + typeName + " from ECS at " + Instance.CurrentFSMStateInfo);
       return null;
@@ -290,8 +281,7 @@ namespace PLVirtualMachine.Common.EngineAPI
 
     public static string GetObjectTypeNameByType(Type type)
     {
-      string result;
-      if (VMTypeAttribute.TryGetValue(type, out result))
+      if (VMTypeAttribute.TryGetValue(type, out string result))
         return result;
       if (!type.IsEnum)
         return "";
@@ -454,7 +444,7 @@ namespace PLVirtualMachine.Common.EngineAPI
 
     private static List<APIPropertyInfo> ComputeProperties(ComponentReplectionInfo component)
     {
-      List<APIPropertyInfo> properties = new List<APIPropertyInfo>();
+      List<APIPropertyInfo> properties = [];
       foreach (KeyValuePair<string, PropertyInfo> property in component.Properties)
       {
         PropertyInfo propertyInfo = property.Value;
@@ -474,7 +464,7 @@ namespace PLVirtualMachine.Common.EngineAPI
 
     private static List<APIEventInfo> ComputeEvents(ComponentReplectionInfo component)
     {
-      List<APIEventInfo> events = new List<APIEventInfo>();
+      List<APIEventInfo> events = [];
       foreach (KeyValuePair<string, System.Reflection.EventInfo> keyValuePair in component.Events)
       {
         System.Reflection.EventInfo reflEventInfo = keyValuePair.Value;
@@ -524,7 +514,7 @@ namespace PLVirtualMachine.Common.EngineAPI
           }
           else
           {
-            List<ParameterInfo> parameterInfoList = new List<ParameterInfo>();
+            List<ParameterInfo> parameterInfoList = [];
             foreach (MethodInfo method in reflEventInfo.EventHandlerType.GetMethods())
             {
               if (method.Name == "Invoke")
@@ -572,7 +562,7 @@ namespace PLVirtualMachine.Common.EngineAPI
 
     private static List<APIMethodInfo> ComputeMethods(ComponentReplectionInfo component)
     {
-      List<APIMethodInfo> methods = new List<APIMethodInfo>();
+      List<APIMethodInfo> methods = [];
       foreach (KeyValuePair<string, MethodInfo> method in component.Methods)
       {
         string key = method.Key;
@@ -620,8 +610,7 @@ namespace PLVirtualMachine.Common.EngineAPI
 
     public static string GetDependedFunctional(string functionalName)
     {
-      string str;
-      return functionalDependencyDict.TryGetValue(functionalName, out str) ? str : "";
+      return functionalDependencyDict.TryGetValue(functionalName, out string str) ? str : "";
     }
 
     public static bool ObjectCreationExtraDebugInfoMode
@@ -634,7 +623,7 @@ namespace PLVirtualMachine.Common.EngineAPI
       ComponentReplectionInfo componentInfo,
       List<APIMethodInfo> methodList)
     {
-      List<IVariable> abstractFunctionsList = new List<IVariable>();
+      List<IVariable> abstractFunctionsList = [];
       for (int index = 0; index < methodList.Count; ++index)
       {
         BaseFunction baseFunction = new BaseFunction(methodList[index].MethodName, componentInfo.Name);
@@ -648,7 +637,7 @@ namespace PLVirtualMachine.Common.EngineAPI
       ComponentReplectionInfo componentInfo,
       List<APIPropertyInfo> propertiesList)
     {
-      List<IVariable> abstractParamsList = new List<IVariable>();
+      List<IVariable> abstractParamsList = [];
       for (int index = 0; index < propertiesList.Count; ++index)
       {
         string propertyName = propertiesList[index].PropertyName;
@@ -668,7 +657,7 @@ namespace PLVirtualMachine.Common.EngineAPI
       string engineComponentName)
     {
       if (!objectDefaultComponentsDict.ContainsKey(objCategory))
-        objectDefaultComponentsDict.Add(objCategory, new List<ComponentInfo>());
+        objectDefaultComponentsDict.Add(objCategory, []);
       ComponentInfo functionalComponentByName = GetFunctionalComponentByName(engineComponentName);
       if (functionalComponentByName == null)
         Logger.AddError(string.Format("Functional component with name {0} not found", engineComponentName));

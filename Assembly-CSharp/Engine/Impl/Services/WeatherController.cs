@@ -37,7 +37,7 @@ namespace Engine.Impl.Services
   {
     private bool isEnabled = true;
     private bool invalidate;
-    private Dictionary<WeatherLayer, IWeatherLayerBlenderItem> layers = new Dictionary<WeatherLayer, IWeatherLayerBlenderItem>();
+    private Dictionary<WeatherLayer, IWeatherLayerBlenderItem> layers = new();
     [Inspected]
     private IWeatherLayerBlender blender;
     private IUpdater updater;
@@ -57,8 +57,7 @@ namespace Engine.Impl.Services
 
     public IWeatherLayerBlenderItem GetItem(WeatherLayer layer)
     {
-      IWeatherLayerBlenderItem layerBlenderItem;
-      layers.TryGetValue(layer, out layerBlenderItem);
+      layers.TryGetValue(layer, out IWeatherLayerBlenderItem layerBlenderItem);
       return layerBlenderItem;
     }
 

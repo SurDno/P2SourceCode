@@ -33,10 +33,7 @@ namespace PLVirtualMachine.Common
       this.parentComponent = parentComponent;
     }
 
-    public EContextVariableCategory Category
-    {
-      get => EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_APIFUNCTION;
-    }
+    public EContextVariableCategory Category => EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_APIFUNCTION;
 
     public string Name
     {
@@ -52,22 +49,13 @@ namespace PLVirtualMachine.Common
 
     public IFunctionalComponent ParentComponent => parentComponent;
 
-    public VMType Type
-    {
-      get => outputParam != null ? outputParam.Type : new VMType(typeof (Nullable));
-    }
+    public VMType Type => outputParam != null ? outputParam.Type : new VMType(typeof (Nullable));
 
     public virtual List<APIParamInfo> InputParams => inputParams;
 
     public virtual APIParamInfo OutputParam => outputParam;
 
-    public bool HasOutput
-    {
-      get
-      {
-        return OutputParam != null && OutputParam.Type != null && null != OutputParam.Type.BaseType && OutputParam.Type.BaseType != typeof (void);
-      }
-    }
+    public bool HasOutput => OutputParam != null && OutputParam.Type != null && null != OutputParam.Type.BaseType && OutputParam.Type.BaseType != typeof (void);
 
     public virtual bool IsEqual(IVariable other)
     {

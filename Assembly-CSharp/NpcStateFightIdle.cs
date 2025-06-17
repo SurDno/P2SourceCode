@@ -8,11 +8,9 @@ using Inspectors;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class NpcStateFightIdle : INpcState
-{
-  private Pivot pivot;
+public class NpcStateFightIdle(NpcState npcState, Pivot pivot) : INpcState 
+  {
   private Animator animator;
-  private NpcState npcState;
   private NPCEnemy enemy;
   private NavMeshAgent agent;
   private NPCWeaponService weaponService;
@@ -22,7 +20,7 @@ public class NpcStateFightIdle : INpcState
   private bool inited;
   private bool failed;
 
-  public GameObject GameObject { get; protected set; }
+  public GameObject GameObject { get; protected set; } = npcState.gameObject;
 
   [Inspected]
   public NpcStateStatusEnum Status { get; protected set; }
@@ -39,13 +37,6 @@ public class NpcStateFightIdle : INpcState
     failed = false;
     inited = true;
     return true;
-  }
-
-  public NpcStateFightIdle(NpcState npcState, Pivot pivot)
-  {
-    GameObject = npcState.gameObject;
-    this.pivot = pivot;
-    this.npcState = npcState;
   }
 
   public void Activate(bool aim)

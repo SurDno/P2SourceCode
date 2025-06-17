@@ -48,8 +48,8 @@ public class PhysicsSimulation : MonoBehaviour
 
   private void AutoGenerateComponents()
   {
-    generatedRigidbodies = new List<Rigidbody>();
-    generatedColliders = new List<Collider>();
+    generatedRigidbodies = [];
+    generatedColliders = [];
     foreach (Transform transform in this.transform)
     {
       if (!(bool) (Object) transform.GetComponent<Rigidbody>())
@@ -76,22 +76,12 @@ public class PhysicsSimulation : MonoBehaviour
       simulatedBody.Reset();
   }
 
-  private struct SimulatedBody
-  {
-    public readonly Rigidbody rigidbody;
-    public readonly bool isChild;
-    private readonly Vector3 originalPosition;
-    private readonly Quaternion originalRotation;
-    private readonly Transform transform;
-
-    public SimulatedBody(Rigidbody rigidbody, bool isChild)
-    {
-      this.rigidbody = rigidbody;
-      this.isChild = isChild;
-      transform = rigidbody.transform;
-      originalPosition = rigidbody.position;
-      originalRotation = rigidbody.rotation;
-    }
+  private struct SimulatedBody(Rigidbody rigidbody, bool isChild) {
+    public readonly Rigidbody rigidbody = rigidbody;
+    public readonly bool isChild = isChild;
+    private readonly Vector3 originalPosition = rigidbody.position;
+    private readonly Quaternion originalRotation = rigidbody.rotation;
+    private readonly Transform transform = rigidbody.transform;
 
     public void Reset()
     {

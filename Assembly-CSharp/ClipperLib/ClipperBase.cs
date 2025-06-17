@@ -12,7 +12,7 @@ namespace ClipperLib
     public const long hiRange = 4611686018427387903;
     internal LocalMinima m_MinimaList;
     internal LocalMinima m_CurrentLM;
-    internal List<List<TEdge>> m_edges = new List<List<TEdge>>();
+    internal List<List<TEdge>> m_edges = [];
     internal bool m_UseFullRange;
     internal bool m_HasOpenPaths;
 

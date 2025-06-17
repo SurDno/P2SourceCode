@@ -3,10 +3,8 @@
 namespace ParadoxNotion.FlowCanvas.Module
 {
   [AttributeUsage(AttributeTargets.Class, Inherited = false)]
-  public class ContextDefinedOutputsAttribute : Attribute
+  public class ContextDefinedOutputsAttribute(params Type[] types) : Attribute 
   {
-    public Type[] types;
-
-    public ContextDefinedOutputsAttribute(params Type[] types) => this.types = types;
+    public Type[] types = types;
   }
 }

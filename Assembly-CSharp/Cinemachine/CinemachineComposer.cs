@@ -58,7 +58,7 @@ namespace Cinemachine
     private Vector3 m_LookAtPrevFrame = Vector3.zero;
     private Vector2 m_ScreenOffsetPrevFrame = Vector2.zero;
     private Quaternion m_CameraOrientationPrevFrame = Quaternion.identity;
-    private PositionPredictor m_Predictor = new PositionPredictor();
+    private PositionPredictor m_Predictor = new();
 
     public override bool IsValid => enabled && LookAtTarget != null;
 
@@ -148,10 +148,7 @@ namespace Cinemachine
 
     public Rect SoftGuideRect
     {
-      get
-      {
-        return new Rect(m_ScreenX - m_DeadZoneWidth / 2f, m_ScreenY - m_DeadZoneHeight / 2f, m_DeadZoneWidth, m_DeadZoneHeight);
-      }
+      get => new(m_ScreenX - m_DeadZoneWidth / 2f, m_ScreenY - m_DeadZoneHeight / 2f, m_DeadZoneWidth, m_DeadZoneHeight);
       set
       {
         m_DeadZoneWidth = Mathf.Clamp01(value.width);

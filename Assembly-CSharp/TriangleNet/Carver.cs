@@ -5,16 +5,8 @@ using TriangleNet.Tools;
 
 namespace TriangleNet
 {
-  internal class Carver
-  {
-    private Mesh mesh;
-    private List<Triangle> viri;
-
-    public Carver(Mesh mesh)
-    {
-      this.mesh = mesh;
-      viri = new List<Triangle>();
-    }
+  internal class Carver(Mesh mesh) {
+    private List<Triangle> viri = [];
 
     private void InfectHull()
     {

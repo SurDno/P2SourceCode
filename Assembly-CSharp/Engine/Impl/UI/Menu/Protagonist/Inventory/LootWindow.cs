@@ -85,13 +85,13 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
 
     private void FindTargetItems()
     {
-      targetItems = new List<IStorableComponent>();
+      targetItems = [];
       targetItems.AddRange(Target.Items);
     }
 
     private void ResizeTargetContainerView()
     {
-      List<InventoryContainerUI> containers = new List<InventoryContainerUI>();
+      List<InventoryContainerUI> containers = [];
       foreach (KeyValuePair<InventoryContainerUI, IStorageComponent> container in this.containers)
       {
         if (container.Value == Target)
@@ -124,7 +124,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.BumperSelectionLeft, OnChangeInventory);
       ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.BumperSelectionRight, OnChangeInventory);
       ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Cancel, CancelListener);
-      inventories = new List<ContainerResizableWindow>(GetComponentsInChildren<ContainerResizableWindow>());
+      inventories = [..GetComponentsInChildren<ContainerResizableWindow>()];
       actors.Clear();
       actors.Add(Actor);
       actors.Add(Target);

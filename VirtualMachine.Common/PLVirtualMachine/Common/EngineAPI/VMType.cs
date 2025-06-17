@@ -12,7 +12,7 @@ namespace PLVirtualMachine.Common.EngineAPI
   [VMType("VMType")]
   public class VMType : IVMStringSerializable
   {
-    public static readonly VMType Empty = new VMType(typeof (Nullable));
+    public static readonly VMType Empty = new(typeof (Nullable));
     private Type baseType;
     private string specialType = "";
     private bool isEngineStorageMode;
@@ -139,21 +139,9 @@ namespace PLVirtualMachine.Common.EngineAPI
       return listElementType == null ? new VMType(typeof (object)) : listElementType;
     }
 
-    public bool IsFunctional
-    {
-      get
-      {
-        return IsList ? listElementType != null && listElementType.IsFunctional : typeof (IObjRef) == BaseType || typeof (IBlueprintRef) == BaseType;
-      }
-    }
+    public bool IsFunctional => IsList ? listElementType != null && listElementType.IsFunctional : typeof (IObjRef) == BaseType || typeof (IBlueprintRef) == BaseType;
 
-    public bool IsFunctionalSpecial
-    {
-      get
-      {
-        return IsList ? listElementType != null && listElementType.IsFunctionalSpecial : functionalPartsList != null && functionalPartsList.Count > 0;
-      }
-    }
+    public bool IsFunctionalSpecial => IsList ? listElementType != null && listElementType.IsFunctionalSpecial : functionalPartsList != null && functionalPartsList.Count > 0;
 
     public bool IsComplexSpecial => IsSpecial && specialTypeBlueprintId > 0UL;
 
@@ -236,29 +224,11 @@ namespace PLVirtualMachine.Common.EngineAPI
       }
     }
 
-    public bool IsSimple
-    {
-      get
-      {
-        return IsNumber || baseType == typeof (bool) || baseType == typeof (string) || baseType.IsEnum;
-      }
-    }
+    public bool IsSimple => IsNumber || baseType == typeof (bool) || baseType == typeof (string) || baseType.IsEnum;
 
-    public bool IsNumber
-    {
-      get
-      {
-        return IsIntegerNumber || baseType == typeof (float) || baseType == typeof (double);
-      }
-    }
+    public bool IsNumber => IsIntegerNumber || baseType == typeof (float) || baseType == typeof (double);
 
-    public bool IsIntegerNumber
-    {
-      get
-      {
-        return baseType == typeof (byte) || baseType == typeof (ushort) || baseType == typeof (short) || baseType == typeof (int) || baseType == typeof (uint) || baseType == typeof (long) || baseType == typeof (ulong);
-      }
-    }
+    public bool IsIntegerNumber => baseType == typeof (byte) || baseType == typeof (ushort) || baseType == typeof (short) || baseType == typeof (int) || baseType == typeof (uint) || baseType == typeof (long) || baseType == typeof (ulong);
 
     public bool EqualsTo(VMType otherType)
     {
@@ -422,7 +392,7 @@ namespace PLVirtualMachine.Common.EngineAPI
         else
         {
           if (functionalPartsList == null)
-            functionalPartsList = new List<string>();
+            functionalPartsList = [];
           functionalPartsList.Add(strArray[index]);
         }
       }

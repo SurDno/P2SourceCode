@@ -4,120 +4,120 @@ using UnityEngine.Serialization;
 
 public class POISetup : MonoBehaviour
 {
-  private static HashSet<string> clipNames = new HashSet<string>();
+  private static HashSet<string> clipNames = [];
   [EnumFlag(typeof (POIAnimationEnum))]
   [SerializeField]
   [FormerlySerializedAs("SupportedAnimations")]
   private POIAnimationEnum _supportedAnimations;
   [SerializeField]
   [FormerlySerializedAs("S_SitAtDesk_Setup")]
-  private POIAnimationSetupSlow _s_SitAtDesk_Setup = new POIAnimationSetupSlow();
+  private POIAnimationSetupSlow _s_SitAtDesk_Setup = new();
   [SerializeField]
-  private POIAnimationSetupSlow s_SitAtDesk_Setup = new POIAnimationSetupSlow();
+  private POIAnimationSetupSlow s_SitAtDesk_Setup = new();
   [SerializeField]
   [FormerlySerializedAs("S_SitOnBench_Setup")]
-  private POIAnimationSetupSlow _s_SitOnBench_Setup = new POIAnimationSetupSlow();
+  private POIAnimationSetupSlow _s_SitOnBench_Setup = new();
   [SerializeField]
-  private POIAnimationSetupSlow s_SitOnBench_Setup = new POIAnimationSetupSlow();
+  private POIAnimationSetupSlow s_SitOnBench_Setup = new();
   [SerializeField]
   [FormerlySerializedAs("S_LeanOnWall_Setup")]
-  private POIAnimationSetupSlow _s_LeanOnWall_Setup = new POIAnimationSetupSlow();
+  private POIAnimationSetupSlow _s_LeanOnWall_Setup = new();
   [SerializeField]
-  private POIAnimationSetupSlow s_LeanOnWall_Setup = new POIAnimationSetupSlow();
+  private POIAnimationSetupSlow s_LeanOnWall_Setup = new();
   [SerializeField]
   [FormerlySerializedAs("S_LeanOnTable_Setup")]
-  private POIAnimationSetupSlow _s_LeanOnTable_Setup = new POIAnimationSetupSlow();
+  private POIAnimationSetupSlow _s_LeanOnTable_Setup = new();
   [SerializeField]
-  private POIAnimationSetupSlow s_LeanOnTable_Setup = new POIAnimationSetupSlow();
+  private POIAnimationSetupSlow s_LeanOnTable_Setup = new();
   [SerializeField]
   [FormerlySerializedAs("S_SitNearWall_Setup")]
-  private POIAnimationSetupSlow _s_SitNearWall_Setup = new POIAnimationSetupSlow();
+  private POIAnimationSetupSlow _s_SitNearWall_Setup = new();
   [SerializeField]
-  private POIAnimationSetupSlow s_SitNearWall_Setup = new POIAnimationSetupSlow();
+  private POIAnimationSetupSlow s_SitNearWall_Setup = new();
   [SerializeField]
   [FormerlySerializedAs("S_LieOnBed_Setup")]
-  private POIAnimationSetupSlow _s_LieOnBed_Setup = new POIAnimationSetupSlow();
+  private POIAnimationSetupSlow _s_LieOnBed_Setup = new();
   [SerializeField]
-  private POIAnimationSetupSlow s_LieOnBed_Setup = new POIAnimationSetupSlow();
+  private POIAnimationSetupSlow s_LieOnBed_Setup = new();
   [SerializeField]
   [FormerlySerializedAs("S_NearFire_Setup")]
-  private POIAnimationSetupSlow _s_NearFire_Setup = new POIAnimationSetupSlow();
+  private POIAnimationSetupSlow _s_NearFire_Setup = new();
   [SerializeField]
-  private POIAnimationSetupSlow s_NearFire_Setup = new POIAnimationSetupSlow();
+  private POIAnimationSetupSlow s_NearFire_Setup = new();
   [SerializeField]
   [FormerlySerializedAs("Q_ViewPoster_Setup")]
-  private POIAnimationSetupBase _q_ViewPoster_Setup = new POIAnimationSetupBase();
+  private POIAnimationSetupBase _q_ViewPoster_Setup = new();
   [SerializeField]
-  private POIAnimationSetupQuick q_ViewPoster_Setup = new POIAnimationSetupQuick();
+  private POIAnimationSetupQuick q_ViewPoster_Setup = new();
   [SerializeField]
   [FormerlySerializedAs("Q_LookOutOfTheWindow_Setup")]
-  private POIAnimationSetupBase _q_LookOutOfTheWindow_Setup = new POIAnimationSetupBase();
+  private POIAnimationSetupBase _q_LookOutOfTheWindow_Setup = new();
   [SerializeField]
-  private POIAnimationSetupQuick q_LookOutOfTheWindow_Setup = new POIAnimationSetupQuick();
+  private POIAnimationSetupQuick q_LookOutOfTheWindow_Setup = new();
   [SerializeField]
   [FormerlySerializedAs("Q_LookUnder_Setup")]
-  private POIAnimationSetupBase _q_LookUnder_Setup = new POIAnimationSetupBase();
+  private POIAnimationSetupBase _q_LookUnder_Setup = new();
   [SerializeField]
-  private POIAnimationSetupQuick q_LookUnder_Setup = new POIAnimationSetupQuick();
+  private POIAnimationSetupQuick q_LookUnder_Setup = new();
   [SerializeField]
   [FormerlySerializedAs("Q_LookIntoTheWindow_Setup")]
-  private POIAnimationSetupBase _q_LookIntoTheWindow_Setup = new POIAnimationSetupBase();
+  private POIAnimationSetupBase _q_LookIntoTheWindow_Setup = new();
   [SerializeField]
-  private POIAnimationSetupQuick q_LookIntoTheWindow_Setup = new POIAnimationSetupQuick();
+  private POIAnimationSetupQuick q_LookIntoTheWindow_Setup = new();
   [SerializeField]
   [FormerlySerializedAs("Q_ActionWithWall_Setup")]
-  private POIAnimationSetupBase _q_ActionWithWall_Setup = new POIAnimationSetupBase();
+  private POIAnimationSetupBase _q_ActionWithWall_Setup = new();
   [SerializeField]
-  private POIAnimationSetupQuick q_ActionWithWall_Setup = new POIAnimationSetupQuick();
+  private POIAnimationSetupQuick q_ActionWithWall_Setup = new();
   [SerializeField]
   [FormerlySerializedAs("Q_ActionWithTable_Setup")]
-  private POIAnimationSetupBase _q_ActionWithTable_Setup = new POIAnimationSetupBase();
+  private POIAnimationSetupBase _q_ActionWithTable_Setup = new();
   [SerializeField]
-  private POIAnimationSetupQuick q_ActionWithTable_Setup = new POIAnimationSetupQuick();
+  private POIAnimationSetupQuick q_ActionWithTable_Setup = new();
   [SerializeField]
   [FormerlySerializedAs("Q_ActionWithWardrobe_Setup")]
-  private POIAnimationSetupBase _q_ActionWithWardrobe_Setup = new POIAnimationSetupBase();
+  private POIAnimationSetupBase _q_ActionWithWardrobe_Setup = new();
   [SerializeField]
-  private POIAnimationSetupQuick q_ActionWithWardrobe_Setup = new POIAnimationSetupQuick();
+  private POIAnimationSetupQuick q_ActionWithWardrobe_Setup = new();
   [SerializeField]
   [FormerlySerializedAs("Q_ActionWithShelves_Setup")]
-  private POIAnimationSetupBase _q_ActionWithShelves_Setup = new POIAnimationSetupBase();
+  private POIAnimationSetupBase _q_ActionWithShelves_Setup = new();
   [SerializeField]
-  private POIAnimationSetupQuick q_ActionWithShelves_Setup = new POIAnimationSetupQuick();
+  private POIAnimationSetupQuick q_ActionWithShelves_Setup = new();
   [SerializeField]
   [FormerlySerializedAs("Q_ActionWithNightstand_Setup")]
-  private POIAnimationSetupBase _q_ActionWithNightstand_Setup = new POIAnimationSetupBase();
+  private POIAnimationSetupBase _q_ActionWithNightstand_Setup = new();
   [SerializeField]
-  private POIAnimationSetupQuick q_ActionWithNightstand_Setup = new POIAnimationSetupQuick();
+  private POIAnimationSetupQuick q_ActionWithNightstand_Setup = new();
   [SerializeField]
   [FormerlySerializedAs("Q_ActionOnFloor_Setup")]
-  private POIAnimationSetupBase _q_ActionOnFloor_Setup = new POIAnimationSetupBase();
+  private POIAnimationSetupBase _q_ActionOnFloor_Setup = new();
   [SerializeField]
-  private POIAnimationSetupQuick q_ActionOnFloor_Setup = new POIAnimationSetupQuick();
+  private POIAnimationSetupQuick q_ActionOnFloor_Setup = new();
   [SerializeField]
-  private POIAnimationSetupSlow _s_ActionOnFloor_Setup = new POIAnimationSetupSlow();
+  private POIAnimationSetupSlow _s_ActionOnFloor_Setup = new();
   [SerializeField]
-  private POIAnimationSetupSlow s_ActionOnFloor_Setup = new POIAnimationSetupSlow();
+  private POIAnimationSetupSlow s_ActionOnFloor_Setup = new();
   [SerializeField]
-  private POIAnimationSetupBase _q_Idle_Setup = new POIAnimationSetupBase();
+  private POIAnimationSetupBase _q_Idle_Setup = new();
   [SerializeField]
-  private POIAnimationSetupQuick q_Idle_Setup = new POIAnimationSetupQuick();
+  private POIAnimationSetupQuick q_Idle_Setup = new();
   [SerializeField]
-  private POIAnimationSetupQuick q_NearFire_Setup = new POIAnimationSetupQuick();
+  private POIAnimationSetupQuick q_NearFire_Setup = new();
   [SerializeField]
-  private POIAnimationSetupSlow s_Dialog_Setup = new POIAnimationSetupSlow();
+  private POIAnimationSetupSlow s_Dialog_Setup = new();
   [SerializeField]
-  private POIAnimationSetupSlow s_Loot_Setup = new POIAnimationSetupSlow();
+  private POIAnimationSetupSlow s_Loot_Setup = new();
   [SerializeField]
-  private POIAnimationSetupQuick q_PlaygroundPlay_Setup = new POIAnimationSetupQuick();
+  private POIAnimationSetupQuick q_PlaygroundPlay_Setup = new();
   [SerializeField]
-  private POIAnimationSetupSlow s_PlaygroundSandbox_Setup = new POIAnimationSetupSlow();
+  private POIAnimationSetupSlow s_PlaygroundSandbox_Setup = new();
   [SerializeField]
-  private POIAnimationSetupSlow s_PlaygroundCooperative_Setup = new POIAnimationSetupSlow();
+  private POIAnimationSetupSlow s_PlaygroundCooperative_Setup = new();
   [SerializeField]
-  private POIAnimationSetupQuick q_PlaygroundCooperative_Setup = new POIAnimationSetupQuick();
+  private POIAnimationSetupQuick q_PlaygroundCooperative_Setup = new();
   [SerializeField]
-  private POIAnimationSetupSlow s_SitAtDeskRight_Setup = new POIAnimationSetupSlow();
+  private POIAnimationSetupSlow s_SitAtDeskRight_Setup = new();
 
   public POIAnimationEnum SupportedAnimations
   {

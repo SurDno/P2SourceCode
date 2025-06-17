@@ -7,12 +7,12 @@ namespace BehaviorDesigner.Runtime
 {
   public static class TaskUtility
   {
-    private static Dictionary<string, Type> typeLookup = new Dictionary<string, Type>();
+    private static Dictionary<string, Type> typeLookup = new();
     private static List<string> loadedAssemblies;
-    private static Dictionary<Type, FieldInfo[]> allFieldsLookup = new Dictionary<Type, FieldInfo[]>();
-    private static Dictionary<Type, FieldInfo[]> publicFieldsLookup = new Dictionary<Type, FieldInfo[]>();
-    private static Dictionary<FieldInfo, Dictionary<Type, bool>> hasFieldLookup = new Dictionary<FieldInfo, Dictionary<Type, bool>>();
-    private static List<FieldInfo> tmp = new List<FieldInfo>();
+    private static Dictionary<Type, FieldInfo[]> allFieldsLookup = new();
+    private static Dictionary<Type, FieldInfo[]> publicFieldsLookup = new();
+    private static Dictionary<FieldInfo, Dictionary<Type, bool>> hasFieldLookup = new();
+    private static List<FieldInfo> tmp = [];
 
     public static object CreateInstance(Type t)
     {
@@ -23,8 +23,7 @@ namespace BehaviorDesigner.Runtime
 
     public static FieldInfo[] GetAllFields(Type t)
     {
-      FieldInfo[] allFields = null;
-      if (!allFieldsLookup.TryGetValue(t, out allFields))
+      if (!allFieldsLookup.TryGetValue(t, out FieldInfo[] allFields))
       {
         tmp.Clear();
         BindingFlags flags = BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
@@ -37,8 +36,7 @@ namespace BehaviorDesigner.Runtime
 
     public static FieldInfo[] GetPublicFields(Type t)
     {
-      FieldInfo[] publicFields = null;
-      if (!publicFieldsLookup.TryGetValue(t, out publicFields))
+      if (!publicFieldsLookup.TryGetValue(t, out FieldInfo[] publicFields))
       {
         tmp.Clear();
         BindingFlags flags = BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public;
@@ -60,15 +58,14 @@ namespace BehaviorDesigner.Runtime
 
     public static Type GetTypeWithinAssembly(string typeName)
     {
-      Type typeWithinAssembly;
-      if (typeLookup.TryGetValue(typeName, out typeWithinAssembly))
+      if (typeLookup.TryGetValue(typeName, out Type typeWithinAssembly))
         return typeWithinAssembly;
       Type type = Type.GetType(typeName);
       if (type == null)
       {
         if (loadedAssemblies == null)
         {
-          loadedAssemblies = new List<string>();
+          loadedAssemblies = [];
           foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
             loadedAssemblies.Add(assembly.FullName);
         }
@@ -96,14 +93,13 @@ namespace BehaviorDesigner.Runtime
     {
       if (field == null)
         return false;
-      Dictionary<Type, bool> dictionary;
-      if (!hasFieldLookup.TryGetValue(field, out dictionary))
+      if (!hasFieldLookup.TryGetValue(field, out Dictionary<Type, bool> dictionary))
       {
         dictionary = new Dictionary<Type, bool>();
         hasFieldLookup.Add(field, dictionary);
       }
-      bool flag;
-      if (!dictionary.TryGetValue(attribute, out flag))
+
+      if (!dictionary.TryGetValue(attribute, out bool flag))
       {
         flag = field.GetCustomAttributes(attribute, false).Length != 0;
         dictionary.Add(attribute, flag);

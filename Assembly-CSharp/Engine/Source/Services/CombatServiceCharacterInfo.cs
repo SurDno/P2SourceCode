@@ -15,17 +15,17 @@ namespace Engine.Source.Services
     public EnemyBase Character;
     public bool WasLooted;
     public bool WasBeaten;
-    public List<CombatServiceCharacterOrder> Orders = new List<CombatServiceCharacterOrder>();
+    public List<CombatServiceCharacterOrder> Orders = [];
     public Vector3 FightStartPosition;
     public Vector3 LastGotHitPosition;
-    public List<CombatCry> HearedCries = new List<CombatCry>();
+    public List<CombatCry> HearedCries = [];
     private CombatServiceCharacterStateEnum state;
     private IEntity entity;
     private CombatServiceCharacterInfo currentEnemy;
-    private List<CombatServiceCharacterInfo> personalAttackEnemies = new List<CombatServiceCharacterInfo>();
-    private List<CombatServiceCharacterInfo> personalFearEnemies = new List<CombatServiceCharacterInfo>();
-    private List<CombatServiceCharacterInfo> attackCharactersNearby = new List<CombatServiceCharacterInfo>();
-    private List<CombatServiceCharacterInfo> fearCharactersNearby = new List<CombatServiceCharacterInfo>();
+    private List<CombatServiceCharacterInfo> personalAttackEnemies = [];
+    private List<CombatServiceCharacterInfo> personalFearEnemies = [];
+    private List<CombatServiceCharacterInfo> attackCharactersNearby = [];
+    private List<CombatServiceCharacterInfo> fearCharactersNearby = [];
     private LocationItemComponent location;
     private NpcControllerComponent npcController;
     private PlayerControllerComponent playerController;
@@ -226,10 +226,7 @@ namespace Engine.Source.Services
 
     public bool IsPlayer => isPlayer;
 
-    public bool CanLoot
-    {
-      get => CombatSettings != null && CombatSettings.LootAI != null;
-    }
+    public bool CanLoot => CombatSettings != null && CombatSettings.LootAI != null;
 
     public NpcControllerComponent NpcController
     {
@@ -278,8 +275,8 @@ namespace Engine.Source.Services
       visibleCharacters = new Dictionary<IEntity, CombatServiceCharacterInfo>();
       hearableCharacters = new Dictionary<IEntity, CombatServiceCharacterInfo>();
       Entity = character.Owner;
-      personalAttackEnemies = new List<CombatServiceCharacterInfo>();
-      personalFearEnemies = new List<CombatServiceCharacterInfo>();
+      personalAttackEnemies = [];
+      personalFearEnemies = [];
       WasLooted = false;
       WasBeaten = false;
       stateSetTime = Time.time;
@@ -428,7 +425,7 @@ namespace Engine.Source.Services
     public void RecountEnemies()
     {
       RenewDetector();
-      List<CombatServiceCharacterInfo> serviceCharacterInfoList = new List<CombatServiceCharacterInfo>();
+      List<CombatServiceCharacterInfo> serviceCharacterInfoList = [];
       serviceCharacterInfoList.AddRange(hearableCharacters.Values);
       foreach (CombatServiceCharacterInfo serviceCharacterInfo in visibleCharacters.Values)
       {
@@ -438,8 +435,8 @@ namespace Engine.Source.Services
       List<FractionEnum> fraction1 = RelatedFractionUtility.GetFraction(entity, FractionRelationEnum.FearOnSee);
       List<FractionEnum> fraction2 = RelatedFractionUtility.GetFraction(entity, FractionRelationEnum.AttackOnSee);
       List<FractionEnum> fraction3 = RelatedFractionUtility.GetFraction(entity, FractionRelationEnum.AttackOnSeeInfected);
-      fearCharactersNearby = new List<CombatServiceCharacterInfo>();
-      attackCharactersNearby = new List<CombatServiceCharacterInfo>();
+      fearCharactersNearby = [];
+      attackCharactersNearby = [];
       if (IsCombatIgnored)
         return;
       foreach (CombatServiceCharacterInfo serviceCharacterInfo in serviceCharacterInfoList)

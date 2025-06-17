@@ -14,7 +14,7 @@ namespace Engine.Source.Achievements
   public class AchievementService : IInitialisable, IUpdatable, IAchievementService
   {
     [Inspected]
-    private Dictionary<string, IAchievementController> controllers = new Dictionary<string, IAchievementController>();
+    private Dictionary<string, IAchievementController> controllers = new();
     [Inspected]
     private IAchievementServiceImpl service;
 
@@ -46,8 +46,7 @@ namespace Engine.Source.Achievements
       if (service.IsUnlocked(id))
         return;
       service.Unlock(id);
-      IAchievementController achievementController;
-      if (!controllers.TryGetValue(id, out achievementController))
+      if (!controllers.TryGetValue(id, out IAchievementController achievementController))
         return;
       achievementController.Terminate();
       controllers.Remove(id);
@@ -58,8 +57,7 @@ namespace Engine.Source.Achievements
       if (!service.IsUnlocked(id))
         return;
       service.Reset(id);
-      Type type;
-      if (!AchievementControllerAttribute.Factory.TryGetValue(id, out type))
+      if (!AchievementControllerAttribute.Factory.TryGetValue(id, out Type type))
         return;
       CreateAddInitialise(id, type);
     }

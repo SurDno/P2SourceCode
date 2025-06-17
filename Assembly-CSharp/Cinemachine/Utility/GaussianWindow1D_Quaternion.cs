@@ -2,13 +2,8 @@
 
 namespace Cinemachine.Utility
 {
-  internal class GaussianWindow1D_Quaternion : GaussianWindow1d<Quaternion>
-  {
-    public GaussianWindow1D_Quaternion(float sigma, int maxKernelRadius = 10)
-      : base(sigma, maxKernelRadius)
-    {
-    }
-
+  internal class GaussianWindow1D_Quaternion(float sigma, int maxKernelRadius = 10)
+    : GaussianWindow1d<Quaternion>(sigma, maxKernelRadius) {
     protected override Quaternion Compute(int windowPos)
     {
       Quaternion quaternion1 = new Quaternion(0.0f, 0.0f, 0.0f, 0.0f);

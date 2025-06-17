@@ -6,7 +6,7 @@ namespace Engine.Impl.UI.Controls
   public class SwitchIntView : IntView
   {
     [SerializeField]
-    private ValueViewPair[] views = new ValueViewPair[0];
+    private ValueViewPair[] views = [];
 
     protected override void ApplyIntValue()
     {

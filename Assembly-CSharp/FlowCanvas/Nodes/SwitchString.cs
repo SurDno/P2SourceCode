@@ -8,12 +8,12 @@ namespace FlowCanvas.Nodes
   [ContextDefinedInputs(typeof (string))]
   public class SwitchString : FlowControlNode
   {
-    public List<string> comparisonOutputs = new List<string>();
+    public List<string> comparisonOutputs = [];
 
     protected override void RegisterPorts()
     {
       ValueInput<string> name = AddValueInput<string>("Value");
-      List<FlowOutput> outs = new List<FlowOutput>();
+      List<FlowOutput> outs = [];
       for (int index = 0; index < comparisonOutputs.Count; ++index)
         outs.Add(AddFlowOutput(string.Format("\"{0}\"", comparisonOutputs[index]), index.ToString()));
       FlowOutput def = AddFlowOutput("Default");

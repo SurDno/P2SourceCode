@@ -9,7 +9,7 @@ namespace RootMotion.FinalIK
     public int iterations = 4;
     [Range(0.0f, 1f)]
     public float rootPin;
-    public FABRIKChain[] chains = new FABRIKChain[0];
+    public FABRIKChain[] chains = [];
     private bool zeroWeightApplied;
     private bool[] isRoot;
     private Vector3 rootDefaultPosition;
@@ -156,7 +156,7 @@ namespace RootMotion.FinalIK
 
     public override Point[] GetPoints()
     {
-      Point[] array = new Point[0];
+      Point[] array = [];
       for (int index = 0; index < chains.Length; ++index)
         AddPointsToArray(ref array, chains[index]);
       return array;

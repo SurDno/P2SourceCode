@@ -77,9 +77,9 @@ public class SubtitlesView : EngineDependent
       service = ServiceLocator.GetService<SubtitlesService>();
       service.AddSubtitlesEvent += AddSubtitles;
       service.RemoveSubtitlesEvent += RemoveSubtitles;
-      items = new List<SubtitlesItem>();
-      itemPool = new List<SubtitlesItem>();
-      lineViewPool = new List<GameObject>();
+      items = [];
+      itemPool = [];
+      lineViewPool = [];
       initialized = true;
     }
     UpdateItems();

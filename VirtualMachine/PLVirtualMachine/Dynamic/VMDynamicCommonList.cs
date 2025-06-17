@@ -14,7 +14,7 @@ namespace PLVirtualMachine.Dynamic
   [VMFactory(typeof (ICommonList))]
   public class VMDynamicCommonList : VMCommonList, ISerializeStateSave, IDynamicLoadSerializable
   {
-    private List<object> realObjectsList = new List<object>();
+    private List<object> realObjectsList = [];
 
     public VMDynamicCommonList()
     {

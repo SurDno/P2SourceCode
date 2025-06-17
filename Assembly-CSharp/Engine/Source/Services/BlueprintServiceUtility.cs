@@ -14,7 +14,7 @@ namespace Engine.Source.Services
 {
   public static class BlueprintServiceUtility
   {
-    private static Dictionary<ResourceRequest, Description> asyncRequests = new Dictionary<ResourceRequest, Description>();
+    private static Dictionary<ResourceRequest, Description> asyncRequests = new();
 
     public static FlowScriptController Start(
       GameObject blueprintPrefab,

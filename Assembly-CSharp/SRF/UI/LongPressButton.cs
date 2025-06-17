@@ -9,7 +9,7 @@ namespace SRF.UI
   {
     private bool _handled;
     [SerializeField]
-    private ButtonClickedEvent _onLongPress = new ButtonClickedEvent();
+    private ButtonClickedEvent _onLongPress = new();
     private bool _pressed;
     private float _pressedTime;
     public float LongPressDuration = 0.9f;

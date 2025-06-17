@@ -3,10 +3,8 @@
 namespace ParadoxNotion.Design
 {
   [AttributeUsage(AttributeTargets.Field)]
-  public class TextAreaFieldAttribute : Attribute
+  public class TextAreaFieldAttribute(float height) : Attribute 
   {
-    public float height;
-
-    public TextAreaFieldAttribute(float height) => this.height = height;
+    public float height = height;
   }
 }

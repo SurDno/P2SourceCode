@@ -14,7 +14,7 @@ namespace Engine.Behaviours
     private string id;
     [SerializeField]
     [HideInInspector]
-    private List<Element> elements = new List<Element>();
+    private List<Element> elements = [];
 
     public GameObject GetGameObject(Guid id)
     {

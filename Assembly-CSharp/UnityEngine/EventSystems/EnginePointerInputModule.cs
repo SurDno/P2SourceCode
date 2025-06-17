@@ -8,8 +8,8 @@ namespace UnityEngine.EventSystems
     public const int kMouseLeftId = -1;
     public const int kMouseRightId = -2;
     public const int kMouseMiddleId = -3;
-    protected Dictionary<int, PointerEventData> m_PointerData = new Dictionary<int, PointerEventData>();
-    private readonly MouseState m_MouseState = new MouseState();
+    protected Dictionary<int, PointerEventData> m_PointerData = new();
+    private readonly MouseState m_MouseState = new();
 
     protected bool GetPointerData(int id, out PointerEventData data, bool create)
     {
@@ -45,8 +45,7 @@ namespace UnityEngine.EventSystems
 
     protected virtual MouseState GetMousePointerEventData()
     {
-      PointerEventData data1;
-      bool pointerData = GetPointerData(-1, out data1, true);
+      bool pointerData = GetPointerData(-1, out PointerEventData data1, true);
       data1.Reset();
       if (pointerData)
         data1.position = CursorService.Instance.Position;
@@ -59,12 +58,10 @@ namespace UnityEngine.EventSystems
       RaycastResult firstRaycast = FindFirstRaycast(m_RaycastResultCache);
       data1.pointerCurrentRaycast = firstRaycast;
       m_RaycastResultCache.Clear();
-      PointerEventData data2;
-      GetPointerData(-2, out data2, true);
+      GetPointerData(-2, out PointerEventData data2, true);
       CopyFromTo(data1, data2);
       data2.button = PointerEventData.InputButton.Right;
-      PointerEventData data3;
-      GetPointerData(-3, out data3, true);
+      GetPointerData(-3, out PointerEventData data3, true);
       CopyFromTo(data1, data3);
       data3.button = PointerEventData.InputButton.Middle;
       m_MouseState.SetButtonState(PointerEventData.InputButton.Left, StateForMouseButton(0), data1);
@@ -75,8 +72,7 @@ namespace UnityEngine.EventSystems
 
     protected PointerEventData GetLastPointerEventData(int id)
     {
-      PointerEventData data;
-      GetPointerData(id, out data, false);
+      GetPointerData(id, out PointerEventData data, false);
       return data;
     }
 

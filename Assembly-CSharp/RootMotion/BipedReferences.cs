@@ -22,8 +22,8 @@ namespace RootMotion
     public Transform rightForearm;
     public Transform rightHand;
     public Transform head;
-    public Transform[] spine = new Transform[0];
-    public Transform[] eyes = new Transform[0];
+    public Transform[] spine = [];
+    public Transform[] eyes = [];
 
     public virtual bool isFilled
     {
@@ -134,12 +134,11 @@ namespace RootMotion
         Transform firstCommonAncestor = Hierarchy.GetFirstCommonAncestor(references.leftUpperArm, references.rightUpperArm);
         if (firstCommonAncestor != null)
         {
-          Transform[] array = new Transform[1]
-          {
+          Transform[] array = [
             firstCommonAncestor
-          };
+          ];
           Hierarchy.AddAncestors(array[0], references.pelvis, ref array);
-          references.spine = new Transform[0];
+          references.spine = [];
           for (int index = array.Length - 1; index > -1; --index)
           {
             if (AddBoneToSpine(array[index], ref references, autoDetectParams))
@@ -163,7 +162,7 @@ namespace RootMotion
         }
       }
       Transform[] bonesOfType = BipedNaming.GetBonesOfType(BipedNaming.BoneType.Eye, componentsInChildren);
-      references.eyes = new Transform[0];
+      references.eyes = [];
       if (!autoDetectParams.includeEyes)
         return;
       for (int index = 0; index < bonesOfType.Length; ++index)
@@ -185,8 +184,8 @@ namespace RootMotion
         references = new BipedReferences();
       if (animator == null || !animator.isHuman)
         return;
-      references.spine = new Transform[0];
-      references.eyes = new Transform[0];
+      references.spine = [];
+      references.eyes = [];
       references.head = animator.GetBoneTransform(HumanBodyBones.Head);
       references.leftThigh = animator.GetBoneTransform(HumanBodyBones.LeftUpperLeg);
       references.leftCalf = animator.GetBoneTransform(HumanBodyBones.LeftLowerLeg);
@@ -321,12 +320,11 @@ namespace RootMotion
         errorMessage = "Third bone's position equals second bone's position in the biped's limb.";
         return true;
       }
-      if (Hierarchy.HierarchyIsValid(new Transform[3]
-      {
-        bone1,
+      if (Hierarchy.HierarchyIsValid([
+            bone1,
         bone2,
         bone3
-      }))
+          ]))
         return false;
       errorMessage = "BipedReferences limb hierarchy is invalid. Bone transforms in a limb do not belong to the same ancestry. Please make sure the bones are parented to each other. Bones: " + bone1.name + ", " + bone2.name + ", " + bone3.name;
       return true;
@@ -437,21 +435,11 @@ namespace RootMotion
       return (Quaternion.Inverse(rotation) * (p1 - p2)).y;
     }
 
-    public struct AutoDetectParams
-    {
-      public bool legsParentInSpine;
-      public bool includeEyes;
+    public struct AutoDetectParams(bool legsParentInSpine, bool includeEyes) {
+      public bool legsParentInSpine = legsParentInSpine;
+      public bool includeEyes = includeEyes;
 
-      public AutoDetectParams(bool legsParentInSpine, bool includeEyes)
-      {
-        this.legsParentInSpine = legsParentInSpine;
-        this.includeEyes = includeEyes;
-      }
-
-      public static AutoDetectParams Default
-      {
-        get => new AutoDetectParams(true, true);
-      }
+      public static AutoDetectParams Default => new(true, true);
     }
   }
 }

@@ -21,8 +21,8 @@ namespace Engine.Source.Components
   public class CrowdPointsComponent : EngineComponent, ICrowdPointsComponent, IComponent
   {
     [Inspected]
-    private HashSet<CrowdPointInfo> points = new HashSet<CrowdPointInfo>();
-    private static List<CrowdPoint> crowdPointsTempList = new List<CrowdPoint>();
+    private HashSet<CrowdPointInfo> points = [];
+    private static List<CrowdPoint> crowdPointsTempList = [];
     [FromThis]
     private RegionComponent region;
     private ILocationComponent location;

@@ -6,8 +6,8 @@ namespace RootMotion.FinalIK
   [AddComponentMenu("Scripts/RootMotion.FinalIK/IK/Biped IK")]
   public class BipedIK : SolverManager
   {
-    public BipedReferences references = new BipedReferences();
-    public BipedIKSolvers solvers = new BipedIKSolvers();
+    public BipedReferences references = new();
+    public BipedIKSolvers solvers = new();
 
     [ContextMenu("User Manual")]
     private void OpenUserManual()

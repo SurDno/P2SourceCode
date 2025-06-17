@@ -6,12 +6,10 @@ using Inspectors;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class NpcStateMoveByPath : INpcState
-{
+public class NpcStateMoveByPath(NpcState npcState, Pivot pivot) : INpcState 
+  {
   private StateEnum state;
   private bool failed;
-  private NpcState npcState;
-  private Pivot pivot;
   private EngineBehavior behavior;
   private NavMeshAgent agent;
   private NPCWeaponService weaponService;
@@ -27,7 +25,7 @@ public class NpcStateMoveByPath : INpcState
   private bool movementStarted;
   private bool inited;
 
-  public GameObject GameObject { get; private set; }
+  public GameObject GameObject { get; private set; } = npcState.gameObject;
 
   public NpcStateStatusEnum Status { get; private set; }
 
@@ -40,13 +38,6 @@ public class NpcStateMoveByPath : INpcState
     weaponService = pivot.GetNpcWeaponService();
     inited = true;
     return true;
-  }
-
-  public NpcStateMoveByPath(NpcState npcState, Pivot pivot)
-  {
-    GameObject = npcState.gameObject;
-    this.pivot = pivot;
-    this.npcState = npcState;
   }
 
   public void Activate(List<Vector3> path)

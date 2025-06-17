@@ -34,12 +34,11 @@ public class PriceItem : MonoBehaviour
   {
     int lengthOfMessage = 0;
     Font font = textfield.font;
-    CharacterInfo info = new CharacterInfo();
     char[] charArray = message.ToCharArray();
     font.RequestCharactersInTexture(message, textfield.fontSize, textfield.fontStyle);
     foreach (char ch in charArray)
     {
-      font.GetCharacterInfo(ch, out info, textfield.fontSize);
+      font.GetCharacterInfo(ch, out CharacterInfo info, textfield.fontSize);
       lengthOfMessage += info.advance;
     }
     return lengthOfMessage;

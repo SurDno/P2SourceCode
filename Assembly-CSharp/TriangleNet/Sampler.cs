@@ -6,7 +6,7 @@ namespace TriangleNet
 {
   internal class Sampler
   {
-    private static Random rand = new Random(DateTime.Now.Millisecond);
+    private static Random rand = new(DateTime.Now.Millisecond);
     private static int samplefactor = 11;
     private int[] keys;
     private int samples = 1;

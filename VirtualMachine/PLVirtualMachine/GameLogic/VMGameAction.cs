@@ -50,7 +50,7 @@ namespace PLVirtualMachine.GameLogic
     [FieldData("TargetParam")]
     private CommonVariable targetParam;
     [FieldData("SourceParams")]
-    private List<CommonVariable> sourceParams = new List<CommonVariable>();
+    private List<CommonVariable> sourceParams = [];
     private AbstractActionInfo actionInfo;
     private bool isUpdated;
 
@@ -121,7 +121,7 @@ namespace PLVirtualMachine.GameLogic
 
     public int Order => orderIndex;
 
-    public virtual List<IVariable> LocalContextVariables => new List<IVariable>();
+    public virtual List<IVariable> LocalContextVariables => [];
 
     public virtual IVariable GetLocalContextVariable(string varUniName) => null;
 
@@ -131,15 +131,9 @@ namespace PLVirtualMachine.GameLogic
 
     public EMathOperationType MathOperationType => mathOperationType;
 
-    public string TargetFunction
-    {
-      get => targetFunctionName == null ? string.Empty : targetFunctionName;
-    }
+    public string TargetFunction => targetFunctionName == null ? string.Empty : targetFunctionName;
 
-    public string TargetEvent
-    {
-      get => targetFunctionName == null ? string.Empty : targetFunctionName;
-    }
+    public string TargetEvent => targetFunctionName == null ? string.Empty : targetFunctionName;
 
     public IParam SourceConstant => sourceConst;
 

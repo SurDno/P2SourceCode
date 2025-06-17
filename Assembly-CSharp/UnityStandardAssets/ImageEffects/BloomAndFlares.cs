@@ -22,10 +22,10 @@ namespace UnityStandardAssets.ImageEffects
     public float hollyStretchWidth = 3.5f;
     public float lensflareIntensity = 1f;
     public float lensflareThreshold = 0.3f;
-    public Color flareColorA = new Color(0.4f, 0.4f, 0.8f, 0.75f);
-    public Color flareColorB = new Color(0.4f, 0.8f, 0.8f, 0.75f);
-    public Color flareColorC = new Color(0.8f, 0.4f, 0.8f, 0.75f);
-    public Color flareColorD = new Color(0.8f, 0.4f, 0.0f, 0.75f);
+    public Color flareColorA = new(0.4f, 0.4f, 0.8f, 0.75f);
+    public Color flareColorB = new(0.4f, 0.8f, 0.8f, 0.75f);
+    public Color flareColorC = new(0.8f, 0.4f, 0.8f, 0.75f);
+    public Color flareColorD = new(0.8f, 0.4f, 0.0f, 0.75f);
     public Texture2D lensFlareVignetteMask;
     public Shader lensFlareShader;
     private Material lensFlareMaterial;

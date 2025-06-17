@@ -35,14 +35,14 @@ namespace Engine.Source.Components
     [DataWriteProxy]
     [CopyableProxy]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    protected List<TemplateInfo> inventoryTemplates = new List<TemplateInfo>();
+    protected List<TemplateInfo> inventoryTemplates = [];
     [StateSaveProxy(MemberEnum.CustomListReference)]
     [StateLoadProxy(MemberEnum.CustomListReference)]
     [CopyableProxy()]
     [Inspected]
-    protected List<IStorableComponent> items = new List<IStorableComponent>();
+    protected List<IStorableComponent> items = [];
     [Inspected]
-    private HashSet<IInventoryComponent> containers = new HashSet<IInventoryComponent>();
+    private HashSet<IInventoryComponent> containers = [];
     [FromThis]
     private ParametersComponent parameters;
 
@@ -53,10 +53,7 @@ namespace Engine.Source.Components
 
     public IEnumerable<IStorableComponent> Items => items;
 
-    public IEnumerable<IInventoryComponent> Containers
-    {
-      get => containers;
-    }
+    public IEnumerable<IInventoryComponent> Containers => containers;
 
     public IEnumerable<IEntity> InventoryTemplates
     {
@@ -73,10 +70,7 @@ namespace Engine.Source.Components
       }
     }
 
-    public IEnumerable<TemplateInfo> InventoryTemplateInfos
-    {
-      get => inventoryTemplates;
-    }
+    public IEnumerable<TemplateInfo> InventoryTemplateInfos => inventoryTemplates;
 
     public bool NeedSave => items.Count != 0;
 

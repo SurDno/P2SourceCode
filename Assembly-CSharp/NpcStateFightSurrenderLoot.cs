@@ -9,10 +9,8 @@ using Inspectors;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class NpcStateFightSurrenderLoot : INpcState
-{
-  private NpcState npcState;
-  private Pivot pivot;
+public class NpcStateFightSurrenderLoot(NpcState npcState, Pivot pivot) : INpcState 
+  {
   private NPCEnemy enemy;
   private NavMeshAgent agent;
   private Animator animator;
@@ -25,7 +23,7 @@ public class NpcStateFightSurrenderLoot : INpcState
   private bool inited;
   private bool failed;
 
-  public GameObject GameObject { get; private set; }
+  public GameObject GameObject { get; private set; } = npcState.gameObject;
 
   [Inspected]
   public NpcStateStatusEnum Status { get; protected set; }
@@ -62,13 +60,6 @@ public class NpcStateFightSurrenderLoot : INpcState
     if (byName == null)
       return;
     byName.Value = b;
-  }
-
-  public NpcStateFightSurrenderLoot(NpcState npcState, Pivot pivot)
-  {
-    GameObject = npcState.gameObject;
-    this.pivot = pivot;
-    this.npcState = npcState;
   }
 
   public void Activate(float lootTime)

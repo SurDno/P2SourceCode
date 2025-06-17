@@ -27,8 +27,8 @@ namespace RootMotion.FinalIK
     public LayerMask camRaycastLayers;
     [Tooltip("Max distance of raycasting from the camera.")]
     public float camRaycastDistance = 1f;
-    private List<InteractionTrigger> inContact = new List<InteractionTrigger>();
-    private List<int> bestRangeIndexes = new List<int>();
+    private List<InteractionTrigger> inContact = [];
+    private List<int> bestRangeIndexes = [];
     public InteractionDelegate OnInteractionStart;
     public InteractionDelegate OnInteractionPause;
     public InteractionDelegate OnInteractionPickUp;
@@ -41,19 +41,18 @@ namespace RootMotion.FinalIK
     [SerializeField]
     private FullBodyBipedIK fullBody;
     [Tooltip("Handles looking at the interactions.")]
-    public InteractionLookAt lookAt = new InteractionLookAt();
-    private InteractionEffector[] interactionEffectors = new InteractionEffector[9]
-    {
-      new InteractionEffector(FullBodyBipedEffector.Body),
-      new InteractionEffector(FullBodyBipedEffector.LeftFoot),
-      new InteractionEffector(FullBodyBipedEffector.LeftHand),
-      new InteractionEffector(FullBodyBipedEffector.LeftShoulder),
-      new InteractionEffector(FullBodyBipedEffector.LeftThigh),
-      new InteractionEffector(FullBodyBipedEffector.RightFoot),
-      new InteractionEffector(FullBodyBipedEffector.RightHand),
-      new InteractionEffector(FullBodyBipedEffector.RightShoulder),
-      new InteractionEffector(FullBodyBipedEffector.RightThigh)
-    };
+    public InteractionLookAt lookAt = new();
+    private InteractionEffector[] interactionEffectors = [
+      new(FullBodyBipedEffector.Body),
+      new(FullBodyBipedEffector.LeftFoot),
+      new(FullBodyBipedEffector.LeftHand),
+      new(FullBodyBipedEffector.LeftShoulder),
+      new(FullBodyBipedEffector.LeftThigh),
+      new(FullBodyBipedEffector.RightFoot),
+      new(FullBodyBipedEffector.RightHand),
+      new(FullBodyBipedEffector.RightShoulder),
+      new(FullBodyBipedEffector.RightThigh)
+    ];
     private bool initiated;
     private Collider lastCollider;
     private Collider c;
@@ -364,7 +363,7 @@ namespace RootMotion.FinalIK
     {
       InteractionTrigger.Range interactionRange = GetClosestInteractionRange();
       if (interactionRange == null)
-        return new InteractionObject[0];
+        return [];
       InteractionObject[] interactionObjectsInRange = new InteractionObject[interactionRange.interactions.Length];
       for (int index = 0; index < interactionRange.interactions.Length; ++index)
         interactionObjectsInRange[index] = interactionRange.interactions[index].interactionObject;
@@ -375,8 +374,8 @@ namespace RootMotion.FinalIK
     {
       InteractionTrigger.Range interactionRange = GetClosestInteractionRange();
       if (interactionRange == null)
-        return new InteractionTarget[0];
-      List<InteractionTarget> interactionTargetList = new List<InteractionTarget>();
+        return [];
+      List<InteractionTarget> interactionTargetList = [];
       foreach (InteractionTrigger.Range.Interaction interaction in interactionRange.interactions)
       {
         foreach (FullBodyBipedEffector effector in interaction.effectors)
@@ -481,7 +480,7 @@ namespace RootMotion.FinalIK
         OnInteractionStop += InteractionStop;
         foreach (InteractionEffector interactionEffector in interactionEffectors)
           interactionEffector.Initiate(this);
-        triggersInRange = new List<InteractionTrigger>();
+        triggersInRange = [];
         c = GetComponent<Collider>();
         UpdateTriggerEventBroadcasting();
         initiated = true;
@@ -576,8 +575,7 @@ namespace RootMotion.FinalIK
       bestRangeIndexes.Clear();
       for (int index = 0; index < inContact.Count; ++index)
       {
-        int bestRangeIndex = -1;
-        if (inContact[index] != null && inContact[index].gameObject.activeInHierarchy && inContact[index].enabled && ContactIsInRange(index, out bestRangeIndex))
+        if (inContact[index] != null && inContact[index].gameObject.activeInHierarchy && inContact[index].enabled && ContactIsInRange(index, out int bestRangeIndex))
         {
           triggersInRange.Add(inContact[index]);
           bestRangeIndexes.Add(bestRangeIndex);

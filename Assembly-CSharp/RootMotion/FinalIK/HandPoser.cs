@@ -12,7 +12,7 @@ namespace RootMotion.FinalIK
 
     public override void AutoMapping()
     {
-      poseChildren = !(poseRoot == null) ? poseRoot.GetComponentsInChildren<Transform>() : new Transform[0];
+      poseChildren = !(poseRoot == null) ? poseRoot.GetComponentsInChildren<Transform>() : [];
       _poseRoot = poseRoot;
     }
 

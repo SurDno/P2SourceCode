@@ -12,14 +12,13 @@ namespace UnityStandardAssets.CinematicEffects
     [SerializeField]
     [HideInInspector]
     public Preset preset = Preset.defaultPreset;
-    public static Preset[] availablePresets = new Preset[5]
-    {
+    public static Preset[] availablePresets = [
       Preset.extremePerformancePreset,
       Preset.performancePreset,
       Preset.defaultPreset,
       Preset.qualityPreset,
       Preset.extremeQualityPreset
-    };
+    ];
 
     private Shader shader
     {
@@ -110,7 +109,7 @@ namespace UnityStandardAssets.CinematicEffects
       public QualitySettings qualitySettings;
       [Layout]
       public ConsoleSettings consoleSettings;
-      private static readonly Preset s_ExtremePerformance = new Preset {
+      private static readonly Preset s_ExtremePerformance = new() {
         qualitySettings = new QualitySettings {
           subpixelAliasingRemovalAmount = 0.0f,
           edgeDetectionThreshold = 0.333f,
@@ -123,7 +122,7 @@ namespace UnityStandardAssets.CinematicEffects
           minimumRequiredLuminance = 0.06f
         }
       };
-      private static readonly Preset s_Performance = new Preset {
+      private static readonly Preset s_Performance = new() {
         qualitySettings = new QualitySettings {
           subpixelAliasingRemovalAmount = 0.25f,
           edgeDetectionThreshold = 0.25f,
@@ -136,7 +135,7 @@ namespace UnityStandardAssets.CinematicEffects
           minimumRequiredLuminance = 0.06f
         }
       };
-      private static readonly Preset s_Default = new Preset {
+      private static readonly Preset s_Default = new() {
         qualitySettings = new QualitySettings {
           subpixelAliasingRemovalAmount = 0.75f,
           edgeDetectionThreshold = 0.166f,
@@ -149,7 +148,7 @@ namespace UnityStandardAssets.CinematicEffects
           minimumRequiredLuminance = 0.05f
         }
       };
-      private static readonly Preset s_Quality = new Preset {
+      private static readonly Preset s_Quality = new() {
         qualitySettings = new QualitySettings {
           subpixelAliasingRemovalAmount = 1f,
           edgeDetectionThreshold = 0.125f,
@@ -162,7 +161,7 @@ namespace UnityStandardAssets.CinematicEffects
           minimumRequiredLuminance = 0.04f
         }
       };
-      private static readonly Preset s_ExtremeQuality = new Preset {
+      private static readonly Preset s_ExtremeQuality = new() {
         qualitySettings = new QualitySettings {
           subpixelAliasingRemovalAmount = 1f,
           edgeDetectionThreshold = 0.063f,

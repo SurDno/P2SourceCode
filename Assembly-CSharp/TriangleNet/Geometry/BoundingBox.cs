@@ -2,12 +2,11 @@
 
 namespace TriangleNet.Geometry
 {
-  public class BoundingBox
-  {
-    private double xmin;
-    private double ymin;
-    private double xmax;
-    private double ymax;
+  public class BoundingBox(double xmin, double ymin, double xmax, double ymax) {
+    private double xmin = xmin;
+    private double ymin = ymin;
+    private double xmax = xmax;
+    private double ymax = ymax;
 
     public double Xmin => xmin;
 
@@ -21,21 +20,7 @@ namespace TriangleNet.Geometry
 
     public double Height => ymax - ymin;
 
-    public BoundingBox()
-    {
-      xmin = double.MaxValue;
-      ymin = double.MaxValue;
-      xmax = double.MinValue;
-      ymax = double.MinValue;
-    }
-
-    public BoundingBox(double xmin, double ymin, double xmax, double ymax)
-    {
-      this.xmin = xmin;
-      this.ymin = ymin;
-      this.xmax = xmax;
-      this.ymax = ymax;
-    }
+    public BoundingBox() : this(double.MaxValue, double.MaxValue, double.MinValue, double.MinValue) { }
 
     public void Update(double x, double y)
     {

@@ -87,8 +87,7 @@ namespace VirtualMachine.Data
         {
           if (xml.NodeType == XmlNodeType.Element)
           {
-            T result;
-            DefaultConverter.TryParseEnum(XmlReaderUtility.ReadContent(xml), out result);
+            DefaultConverter.TryParseEnum(XmlReaderUtility.ReadContent(xml), out T result);
             source.Add(result);
           }
           else if (xml.NodeType == XmlNodeType.EndElement)
@@ -392,8 +391,7 @@ namespace VirtualMachine.Data
 
     public static T ReadEnum<T>(XmlReader xml) where T : struct, IComparable, IConvertible, IFormattable
     {
-      T result;
-      DefaultConverter.TryParseEnum(XmlReaderUtility.ReadContent(xml), out result);
+      DefaultConverter.TryParseEnum(XmlReaderUtility.ReadContent(xml), out T result);
       return result;
     }
 

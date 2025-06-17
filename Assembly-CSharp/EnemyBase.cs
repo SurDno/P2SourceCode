@@ -41,7 +41,7 @@ public class EnemyBase : MonoBehaviour, IEntityAttachable
   private Transform rotationTarget;
   private EnemyBase enemy;
   [Inspected]
-  private HashSet<EnemyBase> attackers = new HashSet<EnemyBase>();
+  private HashSet<EnemyBase> attackers = [];
 
   public event Action<EnemyBase> WasPrepunchEvent;
 

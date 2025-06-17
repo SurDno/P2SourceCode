@@ -43,7 +43,7 @@ namespace AmplifyBloom
       m_release = release;
     }
 
-    public static VersionInfo Current() => new VersionInfo(1, 1, 1);
+    public static VersionInfo Current() => new(1, 1, 1);
 
     public static bool Matches(VersionInfo version)
     {

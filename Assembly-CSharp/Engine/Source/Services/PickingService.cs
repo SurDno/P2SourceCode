@@ -17,7 +17,7 @@ namespace Engine.Source.Services
     private float targetEntityDistance;
     private GameObject targetGameObject;
     private float targetGameObjectDistance;
-    private static List<RaycastHit> hits = new List<RaycastHit>();
+    private static List<RaycastHit> hits = [];
 
     [Inspected]
     public Ray Ray => ray;

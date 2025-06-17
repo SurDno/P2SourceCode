@@ -145,8 +145,7 @@ namespace PLVirtualMachine
                 if (!(engineTemplateGuid != Guid.Empty))
                   return null;
                 IObject engineType4 = null;
-                Type result;
-                if (SampleAttribute.TryGetValue(valueVMType.SpecialType, out result))
+                if (SampleAttribute.TryGetValue(valueVMType.SpecialType, out Type result))
                   engineType4 = ServiceCache.TemplateService.GetTemplate(result, engineTemplateGuid);
                 if (engineType4 == null)
                   engineType4 = ServiceCache.TemplateService.GetTemplate<IEntity>(engineTemplateGuid);

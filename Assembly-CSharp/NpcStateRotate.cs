@@ -8,11 +8,9 @@ using UnityEngine;
 using UnityEngine.AI;
 using Object = UnityEngine.Object;
 
-public class NpcStateRotate : INpcState
-{
+public class NpcStateRotate(NpcState npcState, Pivot pivot) : INpcState 
+  {
   private ModeEnum mode;
-  private NpcState npcState;
-  private Pivot pivot;
   private EngineBehavior behavior;
   private NavMeshAgent agent;
   private NPCWeaponService weaponService;
@@ -27,13 +25,10 @@ public class NpcStateRotate : INpcState
   [Inspected]
   private bool failed;
 
-  public GameObject GameObject { get; private set; }
+  public GameObject GameObject { get; private set; } = npcState.gameObject;
 
   [Inspected]
-  public NpcStateStatusEnum Status
-  {
-    get => done ? NpcStateStatusEnum.Success : NpcStateStatusEnum.Running;
-  }
+  public NpcStateStatusEnum Status => done ? NpcStateStatusEnum.Success : NpcStateStatusEnum.Running;
 
   private bool TryInit()
   {
@@ -52,13 +47,6 @@ public class NpcStateRotate : INpcState
     failed = false;
     inited = true;
     return true;
-  }
-
-  public NpcStateRotate(NpcState npcState, Pivot pivot)
-  {
-    GameObject = npcState.gameObject;
-    this.pivot = pivot;
-    this.npcState = npcState;
   }
 
   public void Activate(Transform target)

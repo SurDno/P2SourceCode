@@ -14,7 +14,7 @@ namespace Engine.Source.Components.Crowds
     [CopyableProxy]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    public List<Typed<IEntity>> Templates = new List<Typed<IEntity>>();
+    public List<Typed<IEntity>> Templates = [];
     [DataReadProxy]
     [DataWriteProxy]
     [CopyableProxy]

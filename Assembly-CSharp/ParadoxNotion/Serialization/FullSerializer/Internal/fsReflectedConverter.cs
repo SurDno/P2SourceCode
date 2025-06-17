@@ -25,8 +25,7 @@ namespace ParadoxNotion.Serialization.FullSerializer.Internal
         fsMetaProperty property = fsMetaType.Properties[index];
         if (property.CanRead && (fsGlobalConfig.SerializeDefaultValues || context == null || !Equals(property.Read(instance), property.Read(context))))
         {
-          fsData data;
-          fsResult result = Serializer.TrySerialize(property.StorageType, property.OverrideConverterType, property.Read(instance), out data);
+          fsResult result = Serializer.TrySerialize(property.StorageType, property.OverrideConverterType, property.Read(instance), out fsData data);
           success.AddMessages(result);
           if (!result.Failed)
             serialized.AsDictionary[property.JsonName] = data;
@@ -47,8 +46,7 @@ namespace ParadoxNotion.Serialization.FullSerializer.Internal
       for (int index = 0; index < fsMetaType.Properties.Length; ++index)
       {
         fsMetaProperty property = fsMetaType.Properties[index];
-        fsData data1;
-        if (property.CanWrite && data.AsDictionary.TryGetValue(property.JsonName, out data1))
+        if (property.CanWrite && data.AsDictionary.TryGetValue(property.JsonName, out fsData data1))
         {
           object result1 = null;
           fsResult result2 = Serializer.TryDeserialize(data1, property.StorageType, property.OverrideConverterType, ref result1);

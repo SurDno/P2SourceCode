@@ -46,7 +46,7 @@ namespace SoundPropagation
       return segmentOnPlane;
     }
 
-    protected Color gizmoColor => new Color(0.0f, 0.5f, 1f, 0.75f);
+    protected Color gizmoColor => new(0.0f, 0.5f, 1f, 0.75f);
 
     protected abstract void Initialize();
   }

@@ -15,8 +15,7 @@ namespace PLVirtualMachine.Common.Data
     public static Type ReadTypeByString(string typeName)
     {
       Type type = Type.GetType(typeName);
-      Type result;
-      if (null == type && EnumTypeAttribute.TryGetValue(typeName, out result))
+      if (null == type && EnumTypeAttribute.TryGetValue(typeName, out Type result))
         type = result;
       return type;
     }

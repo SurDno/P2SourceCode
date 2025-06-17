@@ -3,10 +3,8 @@
 namespace PLVirtualMachine.Common.VMSpecialAttributes
 {
   [AttributeUsage(AttributeTargets.Method, Inherited = false)]
-  public class SpecialFunctionAttribute : Attribute
+  public class SpecialFunctionAttribute(ESpecialFunctionName specialName) : Attribute 
   {
-    public readonly ESpecialFunctionName Name;
-
-    public SpecialFunctionAttribute(ESpecialFunctionName specialName) => Name = specialName;
+    public readonly ESpecialFunctionName Name = specialName;
   }
 }

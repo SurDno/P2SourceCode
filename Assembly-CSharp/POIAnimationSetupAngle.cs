@@ -6,11 +6,11 @@ using UnityEngine;
 public class POIAnimationSetupAngle : POIAnimationSetupBase
 {
   [SerializeField]
-  public POIAnimationSetupElementSlow SetupLeft = new POIAnimationSetupElementSlow();
+  public POIAnimationSetupElementSlow SetupLeft = new();
   [SerializeField]
-  public POIAnimationSetupElementSlow SetupMiddle = new POIAnimationSetupElementSlow();
+  public POIAnimationSetupElementSlow SetupMiddle = new();
   [SerializeField]
-  public POIAnimationSetupElementSlow SetupRight = new POIAnimationSetupElementSlow();
+  public POIAnimationSetupElementSlow SetupRight = new();
   [SerializeField]
   private List<POIAnimationSetupElementBase> elements;
 
@@ -20,10 +20,11 @@ public class POIAnimationSetupAngle : POIAnimationSetupBase
     {
       if (!CheckElements())
       {
-        elements = new List<POIAnimationSetupElementBase>();
-        elements.Add(SetupLeft);
-        elements.Add(SetupMiddle);
-        elements.Add(SetupRight);
+        elements = [
+          SetupLeft,
+          SetupMiddle,
+          SetupRight
+        ];
       }
       return elements;
     }

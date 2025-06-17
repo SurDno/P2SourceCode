@@ -5,25 +5,31 @@ namespace Cinemachine
 {
   [DocumentationSorting(2f, DocumentationSortingAttribute.Level.UserRef)]
   [Serializable]
-  public struct LensSettings
-  {
-    public static LensSettings Default = new LensSettings(40f, 10f, 0.1f, 5000f, 0.0f, false, 1f);
+  public struct LensSettings(
+    float fov,
+    float orthographicSize,
+    float nearClip,
+    float farClip,
+    float dutch,
+    bool ortho,
+    float aspect) {
+    public static LensSettings Default = new(40f, 10f, 0.1f, 5000f, 0.0f, false, 1f);
     [Range(1f, 179f)]
     [Tooltip("This is the camera view in vertical degrees. For cinematic people, a 50mm lens on a super-35mm sensor would equal a 19.6 degree FOV")]
-    public float FieldOfView;
+    public float FieldOfView = fov;
     [Tooltip("When using an orthographic camera, this defines the half-height, in world coordinates, of the camera view.")]
-    public float OrthographicSize;
+    public float OrthographicSize = orthographicSize;
     [Tooltip("This defines the near region in the renderable range of the camera frustum. Raising this value will stop the game from drawing things near the camera, which can sometimes come in handy.  Larger values will also increase your shadow resolution.")]
-    public float NearClipPlane;
+    public float NearClipPlane = nearClip;
     [Tooltip("This defines the far region of the renderable range of the camera frustum. Typically you want to set this value as low as possible without cutting off desired distant objects")]
-    public float FarClipPlane;
+    public float FarClipPlane = farClip;
     [Range(-180f, 180f)]
     [Tooltip("Camera Z roll, or tilt, in degrees.")]
-    public float Dutch;
+    public float Dutch = dutch;
 
-    internal bool Orthographic { get; set; }
+    internal bool Orthographic { get; set; } = ortho;
 
-    internal float Aspect { get; set; }
+    internal float Aspect { get; set; } = aspect;
 
     public static LensSettings FromCamera(Camera fromCamera)
     {
@@ -38,25 +44,6 @@ namespace Cinemachine
         lensSettings.Aspect = fromCamera.aspect;
       }
       return lensSettings;
-    }
-
-    public LensSettings(
-      float fov,
-      float orthographicSize,
-      float nearClip,
-      float farClip,
-      float dutch,
-      bool ortho,
-      float aspect)
-      : this()
-    {
-      FieldOfView = fov;
-      OrthographicSize = orthographicSize;
-      NearClipPlane = nearClip;
-      FarClipPlane = farClip;
-      Dutch = dutch;
-      Orthographic = ortho;
-      Aspect = aspect;
     }
 
     public static LensSettings Lerp(LensSettings lensA, LensSettings lensB, float t)

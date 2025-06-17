@@ -7,7 +7,7 @@ namespace Engine.Impl.UI.Controls
     [SerializeField]
     private FloatView view;
     [SerializeField]
-    private AnimationCurve curve = new AnimationCurve();
+    private AnimationCurve curve = new();
 
     public override void SkipAnimation()
     {

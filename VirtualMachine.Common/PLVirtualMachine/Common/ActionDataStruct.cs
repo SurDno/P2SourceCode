@@ -20,7 +20,7 @@ namespace PLVirtualMachine.Common
     private string targetParamName = "";
     private CommonVariable targetObject;
     private CommonVariable targetParam;
-    private List<CommonVariable> sourceParams = new List<CommonVariable>();
+    private List<CommonVariable> sourceParams = [];
     private AbstractActionInfo actionInfo;
     private ILocalContext localContext;
 
@@ -75,10 +75,9 @@ namespace PLVirtualMachine.Common
         case "":
           break;
         default:
-          string[] separator = new string[1]
-          {
+          string[] separator = [
             "&ACTION&PART&"
-          };
+          ];
           string[] strArray = data.Split(separator, StringSplitOptions.None);
           if (strArray.Length < 4)
           {
@@ -103,7 +102,7 @@ namespace PLVirtualMachine.Common
             targetParamName = str3;
           sourceParams.Clear();
           string str5 = str4;
-          char[] chArray = new char[1]{ ',' };
+          char[] chArray = [','];
           foreach (string sourceParam in str5.Split(chArray))
           {
             string data1 = DeserializeSrcParam(sourceParam);

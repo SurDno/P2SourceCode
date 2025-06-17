@@ -9,8 +9,8 @@ namespace Engine.Impl.Services.HierarchyServices
 {
   public class HierarchyContainer
   {
-    private List<HierarchyItem> items = new List<HierarchyItem>();
-    private Dictionary<Guid, HierarchyItem> hierarchyItems = new Dictionary<Guid, HierarchyItem>(GuidComparer.Instance);
+    private List<HierarchyItem> items = [];
+    private Dictionary<Guid, HierarchyItem> hierarchyItems = new(GuidComparer.Instance);
 
     [Inspected]
     public Guid Id { get; private set; }
@@ -20,8 +20,7 @@ namespace Engine.Impl.Services.HierarchyServices
 
     public HierarchyItem GetItemByTemplateId(Guid templateId)
     {
-      HierarchyItem itemByTemplateId;
-      hierarchyItems.TryGetValue(templateId, out itemByTemplateId);
+      hierarchyItems.TryGetValue(templateId, out HierarchyItem itemByTemplateId);
       return itemByTemplateId;
     }
 

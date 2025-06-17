@@ -25,21 +25,21 @@ namespace UnityHeapCrawler
     public readonly CrawlSettings UnityObjectsSettings;
     public bool DifferentialMode = true;
     [NotNull]
-    private readonly List<CrawlSettings> crawlOrder = new List<CrawlSettings>();
+    private readonly List<CrawlSettings> crawlOrder = [];
     [NotNull]
-    private readonly List<Type> rootTypes = new List<Type>();
+    private readonly List<Type> rootTypes = [];
     [NotNull]
-    private readonly List<Type> forbiddenTypes = new List<Type>();
+    private readonly List<Type> forbiddenTypes = [];
     [NotNull]
-    private readonly List<Type> staticTypes = new List<Type>();
+    private readonly List<Type> staticTypes = [];
     [NotNull]
-    private readonly HashSet<object> unityObjects = new HashSet<object>(ReferenceEqualityComparer.Instance);
+    private readonly HashSet<object> unityObjects = new(ReferenceEqualityComparer.Instance);
     [NotNull]
-    private readonly HashSet<object> visitedObjects = new HashSet<object>(ReferenceEqualityComparer.Instance);
+    private readonly HashSet<object> visitedObjects = new(ReferenceEqualityComparer.Instance);
     [NotNull]
-    private readonly Queue<CrawlItem> rootsQueue = new Queue<CrawlItem>();
+    private readonly Queue<CrawlItem> rootsQueue = new();
     [NotNull]
-    private readonly Queue<CrawlItem> localRootsQueue = new Queue<CrawlItem>();
+    private readonly Queue<CrawlItem> localRootsQueue = new();
     private int minTypeSize = 1024;
     private SizeFormat sizeFormat = SizeFormat.Short;
     private string output = "";
@@ -140,7 +140,7 @@ namespace UnityHeapCrawler
     private void CollectStaticFields()
     {
       IEnumerable<Type> types = staticTypes.Concat(AppDomain.CurrentDomain.GetAssemblies().Where(IsValidAssembly).SelectMany(a => a.GetTypes()));
-      HashSet<string> stringSet = new HashSet<string>();
+      HashSet<string> stringSet = [];
       foreach (Type type in types)
         AddStaticFields(type, stringSet);
       if (stringSet.Count <= 0)
@@ -230,7 +230,7 @@ namespace UnityHeapCrawler
         return 0;
       int num1 = 0;
       int num2 = 0;
-      List<CrawlItem> crawlItemList = new List<CrawlItem>();
+      List<CrawlItem> crawlItemList = [];
       while (rootsQueue.Count > 0)
       {
         localRootsQueue.Enqueue(rootsQueue.Dequeue());

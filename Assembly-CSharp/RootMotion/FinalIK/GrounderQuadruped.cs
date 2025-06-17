@@ -7,7 +7,7 @@ namespace RootMotion.FinalIK
   public class GrounderQuadruped : Grounder
   {
     [Tooltip("The Grounding solver for the forelegs.")]
-    public Grounding forelegSolver = new Grounding();
+    public Grounding forelegSolver = new();
     [Tooltip("The weight of rotating the character root to the ground angle (range: 0 - 1).")]
     [Range(0.0f, 1f)]
     public float rootRotationWeight = 0.5f;
@@ -38,7 +38,7 @@ namespace RootMotion.FinalIK
     public IK[] forelegs;
     [HideInInspector]
     public Vector3 gravity = Vector3.down;
-    private Foot[] feet = new Foot[0];
+    private Foot[] feet = [];
     private Vector3 animatedPelvisLocalPosition;
     private Quaternion animatedPelvisLocalRotation;
     private Quaternion animatedHeadLocalRotation;
@@ -294,20 +294,11 @@ namespace RootMotion.FinalIK
       }
     }
 
-    public struct Foot
-    {
-      public IKSolver solver;
-      public Transform transform;
-      public Quaternion rotation;
-      public Grounding.Leg leg;
-
-      public Foot(IKSolver solver, Transform transform)
-      {
-        this.solver = solver;
-        this.transform = transform;
-        leg = null;
-        rotation = transform.rotation;
-      }
+    public struct Foot(IKSolver solver, Transform transform) {
+      public IKSolver solver = solver;
+      public Transform transform = transform;
+      public Quaternion rotation = transform.rotation;
+      public Grounding.Leg leg = null;
     }
   }
 }

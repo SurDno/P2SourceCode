@@ -11,14 +11,12 @@ using Inspectors;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class NpcStateMoveRetreat : INpcState
-{
+public class NpcStateMoveRetreat(NpcState npcState, Pivot pivot) : INpcState 
+  {
   private const float sectorAngleInDegrees = 180f;
   private const int rayCount = 15;
   private const float searchDistance = 15f;
   private const float testFrequency = 2f;
-  private NpcState npcState;
-  private Pivot pivot;
   private EngineBehavior behavior;
   private NavMeshAgent agent;
   private NPCWeaponService weaponService;
@@ -31,7 +29,7 @@ public class NpcStateMoveRetreat : INpcState
   private bool inited;
   private bool failed;
 
-  public GameObject GameObject { get; private set; }
+  public GameObject GameObject { get; private set; } = npcState.gameObject;
 
   [Inspected]
   public NpcStateStatusEnum Status { get; private set; }
@@ -46,13 +44,6 @@ public class NpcStateMoveRetreat : INpcState
     failed = false;
     inited = true;
     return true;
-  }
-
-  public NpcStateMoveRetreat(NpcState npcState, Pivot pivot)
-  {
-    this.npcState = npcState;
-    this.pivot = pivot;
-    GameObject = npcState.gameObject;
   }
 
   public void Activate(Transform target, float retreatDistance)
@@ -190,8 +181,7 @@ public class NpcStateMoveRetreat : INpcState
     {
       float angle2 = (float) (index * 180.0 / 14.0 - 90.0);
       Vector3 vector3 = -(Quaternion.AngleAxis(angle2, Vector3.up) * normalized);
-      NavMeshHit hit;
-      float num4 = !NavMesh.Raycast(myPosition, myPosition + vector3 * 15f, out hit, -1) ? 15f : hit.distance;
+      float num4 = !NavMesh.Raycast(myPosition, myPosition + vector3 * 15f, out NavMeshHit hit, -1) ? 15f : hit.distance;
       float num5 = hit.distance * Mathf.Cos((float) (0.5 * angle2 * (Math.PI / 180.0)));
       if (InstanceByRequest<EngineApplication>.Instance.IsDebug)
       {

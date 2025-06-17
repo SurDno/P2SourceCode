@@ -2,6 +2,6 @@
 {
   public static class fsOption
   {
-    public static fsOption<T> Just<T>(T value) => new fsOption<T>(value);
+    public static fsOption<T> Just<T>(T value) => new(value);
   }
 }

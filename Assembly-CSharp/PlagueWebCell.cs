@@ -3,7 +3,7 @@
 public class PlagueWebCell
 {
   public PlagueWebCellId Id;
-  public List<PlagueWebPoint> Points = new List<PlagueWebPoint>();
+  public List<PlagueWebPoint> Points = [];
   public PlagueWeb1 PlagueWeb;
 
   public void AddPoint(PlagueWebPoint point) => Points.Add(point);

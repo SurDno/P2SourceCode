@@ -10,7 +10,7 @@ namespace BehaviorDesigner.Runtime
   public class VariableSynchronizer : MonoBehaviour
   {
     [SerializeField]
-    private List<SynchronizedVariable> synchronizedVariables = new List<SynchronizedVariable>();
+    private List<SynchronizedVariable> synchronizedVariables = [];
 
     public List<SynchronizedVariable> SynchronizedVariables
     {
@@ -97,10 +97,9 @@ namespace BehaviorDesigner.Runtime
                 MethodInfo method1 = typeWithinAssembly1.GetMethod("Start");
                 if (method1 != null)
                 {
-                  switch ((int) method1.Invoke(null, new object[1]
-                  {
-                    synchronizedVariable
-                  }))
+                  switch ((int) method1.Invoke(null, [
+                            synchronizedVariable
+                          ]))
                   {
                     case 1:
                       str = "the PlayMaker NamedVariable cannot be found";
@@ -126,10 +125,9 @@ namespace BehaviorDesigner.Runtime
                 MethodInfo method3 = typeWithinAssembly2.GetMethod("Start");
                 if (method3 != null)
                 {
-                  switch ((int) method3.Invoke(null, new object[1]
-                  {
-                    synchronizedVariable
-                  }))
+                  switch ((int) method3.Invoke(null, [
+                            synchronizedVariable
+                          ]))
                   {
                     case 1:
                       str = "the uFrame property cannot be found";
@@ -230,7 +228,7 @@ namespace BehaviorDesigner.Runtime
     {
       ConstantExpression constantExpression = Expression.Constant(instance);
       MethodCallExpression methodCallExpression = Expression.Call(constantExpression, method);
-      return Expression.Lambda<Func<object>>(Expression.TypeAs(methodCallExpression, typeof(object)), Array.Empty<ParameterExpression>()).Compile();
+      return Expression.Lambda<Func<object>>(Expression.TypeAs(methodCallExpression, typeof(object)), []).Compile();
     }
 
     private static Action<object> CreateSetDelegate(object instance, MethodInfo method)

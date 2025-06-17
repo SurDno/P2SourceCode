@@ -14,8 +14,7 @@ namespace Engine.Source.Connections
 
     public void OnAfterDeserialize()
     {
-      TimeSpan result;
-      if (data != null && DefaultConverter.TryParseTimeSpan(data, out result))
+      if (data != null && DefaultConverter.TryParseTimeSpan(data, out TimeSpan result))
         Value = result;
       else
         Value = TimeSpan.Zero;

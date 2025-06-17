@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 public static class TypeAliasUtility
 {
-  private static readonly Dictionary<Type, string> aliases = new Dictionary<Type, string> {
+  private static readonly Dictionary<Type, string> aliases = new() {
     {
       typeof (byte),
       "byte"
@@ -72,7 +72,6 @@ public static class TypeAliasUtility
 
   public static string GetName(this Type type)
   {
-    string str;
-    return aliases.TryGetValue(type, out str) ? str : type.Name;
+    return aliases.TryGetValue(type, out string str) ? str : type.Name;
   }
 }

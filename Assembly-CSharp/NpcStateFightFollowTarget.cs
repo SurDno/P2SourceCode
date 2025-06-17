@@ -8,10 +8,8 @@ using Inspectors;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class NpcStateFightFollowTarget : INpcState
-{
-  private NpcState npcState;
-  private Pivot pivot;
+public class NpcStateFightFollowTarget(NpcState npcState, Pivot pivot) : INpcState 
+  {
   private NPCEnemy enemy;
   private NavMeshAgent agent;
   private Animator animator;
@@ -27,7 +25,7 @@ public class NpcStateFightFollowTarget : INpcState
   private bool inited;
   private bool failed;
 
-  public GameObject GameObject { get; private set; }
+  public GameObject GameObject { get; private set; } = npcState.gameObject;
 
   [Inspected]
   public NpcStateStatusEnum Status { get; protected set; }
@@ -44,13 +42,6 @@ public class NpcStateFightFollowTarget : INpcState
     failed = false;
     inited = true;
     return true;
-  }
-
-  public NpcStateFightFollowTarget(NpcState npcState, Pivot pivot)
-  {
-    GameObject = npcState.gameObject;
-    this.pivot = pivot;
-    this.npcState = npcState;
   }
 
   public void Activate(

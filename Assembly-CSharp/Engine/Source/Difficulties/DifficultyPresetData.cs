@@ -20,6 +20,6 @@ namespace Engine.Source.Difficulties
     [CopyableProxy()]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    public List<DifficultyPresetItemData> Items = new List<DifficultyPresetItemData>();
+    public List<DifficultyPresetItemData> Items = [];
   }
 }

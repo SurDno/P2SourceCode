@@ -4,7 +4,7 @@ namespace Externals.LipSync
 {
   public class CustomAnnoReader
   {
-    private List<PhonemeMixtureArticulationData> markers = new List<PhonemeMixtureArticulationData>();
+    private List<PhonemeMixtureArticulationData> markers = [];
 
     public CustomAnnoReader(byte[] data) => LipsyncUtility.LoadAnnoFormatted(data, markers);
 

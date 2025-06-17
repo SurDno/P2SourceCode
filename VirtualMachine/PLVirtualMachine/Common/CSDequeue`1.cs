@@ -6,7 +6,7 @@ namespace PLVirtualMachine.Common
 {
   public class CSDequeue<T>
   {
-    private LinkedList<T> linkedListData = new LinkedList<T>();
+    private LinkedList<T> linkedListData = [];
 
     public CSDequeue()
     {

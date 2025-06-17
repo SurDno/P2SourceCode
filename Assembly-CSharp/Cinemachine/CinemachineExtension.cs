@@ -48,15 +48,14 @@ namespace Cinemachine
     {
       if (mExtraState == null)
         mExtraState = new Dictionary<ICinemachineCamera, object>();
-      object extraState = null;
-      if (!mExtraState.TryGetValue(vcam, out extraState))
+      if (!mExtraState.TryGetValue(vcam, out object extraState))
         extraState = mExtraState[vcam] = new T();
       return extraState as T;
     }
 
     protected List<T> GetAllExtraStates<T>() where T : class, new()
     {
-      List<T> allExtraStates = new List<T>();
+      List<T> allExtraStates = [];
       if (mExtraState != null)
       {
         foreach (KeyValuePair<ICinemachineCamera, object> keyValuePair in mExtraState)

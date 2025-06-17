@@ -32,8 +32,7 @@ public class ExtrudeRandomEdges : MonoBehaviour
     pb_Edge pbEdge = list[index];
     Vector3 vector3 = (pb.vertices[pbEdge.x] + pb.vertices[pbEdge.y]) * 0.5f - sourceFace.distinctIndices.Average(x => pb.vertices[x]);
     vector3.Normalize();
-    pb_Edge[] extrudedEdges;
-    pb.Extrude(new pb_Edge[1]{ pbEdge }, 0.0f, false, true, out extrudedEdges);
+    pb.Extrude([pbEdge], 0.0f, false, true, out pb_Edge[] extrudedEdges);
     lastExtrudedFace = pb.faces.Last();
     pb.SetSelectedEdges(extrudedEdges);
     pb.TranslateVertices(pb.SelectedTriangles, vector3 * distance);

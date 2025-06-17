@@ -22,17 +22,17 @@ namespace Engine.Source.Services.Inputs
   {
     public ActionGroupContext context = ActionGroupContext.None;
     [Inspected]
-    private Dictionary<GameActionType, List<GameActionHandle>> actions = new Dictionary<GameActionType, List<GameActionHandle>>();
+    private Dictionary<GameActionType, List<GameActionHandle>> actions = new();
     [Inspected]
-    private HashSet<ActionGroup> computedBinds = new HashSet<ActionGroup>();
+    private HashSet<ActionGroup> computedBinds = [];
     private IDebugService debug;
     [Inspected]
-    private List<ActionGroup> binds = new List<ActionGroup>();
+    private List<ActionGroup> binds = [];
     private bool initialise;
-    private HashSet<KeyCode> tmp = new HashSet<KeyCode>();
-    private HashSet<string> tmp2 = new HashSet<string>();
-    private List<ActionGroup> tmpBinds = new List<ActionGroup>();
-    private List<GameActionHandle> tmpListeners = new List<GameActionHandle>();
+    private HashSet<KeyCode> tmp = [];
+    private HashSet<string> tmp2 = [];
+    private List<ActionGroup> tmpBinds = [];
+    private List<GameActionHandle> tmpListeners = [];
 
     public event Action<KeyCode> OnKeyPressed;
 
@@ -44,10 +44,9 @@ namespace Engine.Source.Services.Inputs
     {
       if (!initialise)
         throw new Exception(GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
-      List<GameActionHandle> gameActionHandleList;
-      if (!actions.TryGetValue(type, out gameActionHandleList))
+      if (!actions.TryGetValue(type, out List<GameActionHandle> gameActionHandleList))
       {
-        gameActionHandleList = new List<GameActionHandle>();
+        gameActionHandleList = [];
         actions.Add(type, gameActionHandleList);
       }
       if (HasListener(type, action))
@@ -62,16 +61,14 @@ namespace Engine.Source.Services.Inputs
     {
       if (!initialise)
         throw new Exception(GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
-      List<GameActionHandle> gameActionHandleList;
-      return actions.TryGetValue(type, out gameActionHandleList) && gameActionHandleList.Contains(action);
+      return actions.TryGetValue(type, out List<GameActionHandle> gameActionHandleList) && gameActionHandleList.Contains(action);
     }
 
     public void RemoveListener(GameActionType type, GameActionHandle action)
     {
-      List<GameActionHandle> gameActionHandleList;
-      if (!actions.TryGetValue(type, out gameActionHandleList))
+      if (!actions.TryGetValue(type, out List<GameActionHandle> gameActionHandleList))
       {
-        gameActionHandleList = new List<GameActionHandle>();
+        gameActionHandleList = [];
         actions.Add(type, gameActionHandleList);
       }
       if (!gameActionHandleList.Contains(action))
@@ -119,7 +116,7 @@ namespace Engine.Source.Services.Inputs
     {
       if (!initialise)
         throw new Exception(GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
-      List<KeyValuePair<string, KeyCode>> source = new List<KeyValuePair<string, KeyCode>>();
+      List<KeyValuePair<string, KeyCode>> source = [];
       foreach (ActionGroup bind1 in binds)
       {
         ActionGroup bind = bind1;
@@ -332,8 +329,7 @@ label_1:
     private bool TryGetListeners(GameActionType type, List<GameActionHandle> listeners)
     {
       listeners.Clear();
-      List<GameActionHandle> collection;
-      if (!actions.TryGetValue(type, out collection))
+      if (!actions.TryGetValue(type, out List<GameActionHandle> collection))
         return false;
       listeners.AddRange(collection);
       return true;

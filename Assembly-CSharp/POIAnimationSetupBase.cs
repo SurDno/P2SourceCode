@@ -12,7 +12,7 @@ public class POIAnimationSetupBase
   public AnimationClip ExitAnimationClip;
   [SerializeField]
   [FormerlySerializedAs("Elements")]
-  public List<POIAnimationSetupElementBase> ElementsOld = new List<POIAnimationSetupElementBase>();
+  public List<POIAnimationSetupElementBase> ElementsOld = [];
 
   public virtual List<POIAnimationSetupElementBase> Elements { get; }
 }

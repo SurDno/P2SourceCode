@@ -8,13 +8,10 @@ using Engine.Common.Types;
 namespace Engine.Source.Services
 {
   [AttributeUsage(AttributeTargets.Class, Inherited = false)]
-  public class GameServiceAttribute : TypeAttribute
+  public class GameServiceAttribute(params Type[] types) : TypeAttribute 
   {
-    private Type[] types;
-    private static List<Pair<Type[], Type>> services = new List<Pair<Type[], Type>>();
-    private static List<object> instances = new List<object>();
-
-    public GameServiceAttribute(params Type[] types) => this.types = types;
+    private static List<Pair<Type[], Type>> services = [];
+    private static List<object> instances = [];
 
     public override void ComputeType(Type type)
     {

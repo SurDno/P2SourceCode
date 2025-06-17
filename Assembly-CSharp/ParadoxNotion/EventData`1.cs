@@ -1,15 +1,8 @@
 ﻿namespace ParadoxNotion
 {
-  public class EventData<T> : EventData
-  {
-    public T value { get; private set; }
+  public class EventData<T>(string name, T value) : EventData(name) {
+    public T value { get; private set; } = value;
 
     protected override object GetValue() => value;
-
-    public EventData(string name, T value)
-      : base(name)
-    {
-      this.value = value;
-    }
   }
 }

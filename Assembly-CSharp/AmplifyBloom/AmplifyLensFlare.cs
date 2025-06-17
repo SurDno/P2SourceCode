@@ -19,7 +19,7 @@ namespace AmplifyBloom
     [SerializeField]
     private int m_lensFlareGhostAmount = 3;
     [SerializeField]
-    private Vector4 m_lensFlareGhostsParams = new Vector4(0.8f, 0.228f, 1f, 4f);
+    private Vector4 m_lensFlareGhostsParams = new(0.8f, 0.228f, 1f, 4f);
     [SerializeField]
     private float m_lensFlareGhostChrDistortion = 2f;
     [SerializeField]
@@ -28,7 +28,7 @@ namespace AmplifyBloom
     private Texture2D m_lensFlareGradTexture;
     private Color[] m_lensFlareGradColor = new Color[256];
     [SerializeField]
-    private Vector4 m_lensFlareHaloParams = new Vector4(0.1f, 0.573f, 1f, 128f);
+    private Vector4 m_lensFlareHaloParams = new(0.1f, 0.573f, 1f, 128f);
     [SerializeField]
     private float m_lensFlareHaloChrDistortion = 1.51f;
     [SerializeField]
@@ -37,21 +37,19 @@ namespace AmplifyBloom
     public AmplifyLensFlare()
     {
       m_lensGradient = new Gradient();
-      m_lensGradient.SetKeys(new GradientColorKey[5]
-      {
-        new GradientColorKey(Color.white, 0.0f),
-        new GradientColorKey(Color.blue, 0.25f),
-        new GradientColorKey(Color.green, 0.5f),
-        new GradientColorKey(Color.yellow, 0.75f),
-        new GradientColorKey(Color.red, 1f)
-      }, new GradientAlphaKey[5]
-      {
-        new GradientAlphaKey(1f, 0.0f),
-        new GradientAlphaKey(1f, 0.25f),
-        new GradientAlphaKey(1f, 0.5f),
-        new GradientAlphaKey(1f, 0.75f),
-        new GradientAlphaKey(1f, 1f)
-      });
+      m_lensGradient.SetKeys([
+        new(Color.white, 0.0f),
+        new(Color.blue, 0.25f),
+        new(Color.green, 0.5f),
+        new(Color.yellow, 0.75f),
+        new(Color.red, 1f)
+      ], [
+        new(1f, 0.0f),
+        new(1f, 0.25f),
+        new(1f, 0.5f),
+        new(1f, 0.75f),
+        new(1f, 1f)
+      ]);
     }
 
     public void Destroy()

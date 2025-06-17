@@ -4,12 +4,12 @@ using UnityEngine;
 
 namespace Engine.Services.Engine.Assets
 {
-  public class PrefabAsset : IAsset
+  public class PrefabAsset(string path) : IAsset 
   {
-    private IAsyncLoad async;
+    private IAsyncLoad async = AssetDatabaseService.Instance.LoadAsync<GameObject>(path);
     private bool isDone;
     [Inspected]
-    private string path;
+    private string path = path;
 
     [Inspected]
     public bool IsError { get; private set; }
@@ -24,12 +24,6 @@ namespace Engine.Services.Engine.Assets
     public bool IsReadyToDispose { get; set; }
 
     public GameObject Prefab { get; private set; }
-
-    public PrefabAsset(string path)
-    {
-      this.path = path;
-      async = AssetDatabaseService.Instance.LoadAsync<GameObject>(path);
-    }
 
     public void Update()
     {

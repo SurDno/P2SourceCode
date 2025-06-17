@@ -45,7 +45,7 @@ namespace Cinemachine.Utility
       if (expr.Body.NodeType != ExpressionType.MemberAccess)
         throw new InvalidOperationException();
       MemberExpression memberExpression = expr.Body as MemberExpression;
-      List<string> stringList = new List<string>();
+      List<string> stringList = [];
       for (; memberExpression != null; memberExpression = memberExpression.Expression as MemberExpression)
         stringList.Add(memberExpression.Member.Name);
       StringBuilder stringBuilder = new StringBuilder();

@@ -9,8 +9,8 @@ namespace Engine.Impl.UI.Menu.Main
 {
   public class ControlSwitcher : IDisposable
   {
-    private List<Button> _buttons = new List<Button>();
-    private Dictionary<GameActionType, List<Action>> _listeners = new Dictionary<GameActionType, List<Action>>();
+    private List<Button> _buttons = [];
+    private Dictionary<GameActionType, List<Action>> _listeners = new();
 
     public void SubmitAction(Button button, GameActionType type, Action action)
     {
@@ -18,7 +18,7 @@ namespace Engine.Impl.UI.Menu.Main
       _buttons.Add(button);
       if (!_listeners.ContainsKey(type))
       {
-        _listeners.Add(type, new List<Action>());
+        _listeners.Add(type, []);
         ServiceLocator.GetService<GameActionService>().AddListener(type, OnAction);
       }
       _listeners[type].Add(action);

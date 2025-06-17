@@ -2,7 +2,7 @@
 {
   public struct ConsoleParameter
   {
-    public static readonly ConsoleParameter Empty = new ConsoleParameter();
+    public static readonly ConsoleParameter Empty = new();
     public string Parameter;
     public string Value;
   }

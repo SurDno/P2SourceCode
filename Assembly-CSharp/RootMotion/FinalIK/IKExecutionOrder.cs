@@ -10,13 +10,7 @@ namespace RootMotion.FinalIK
     public Animator animator;
     private bool fixedFrame;
 
-    private bool animatePhysics
-    {
-      get
-      {
-        return !(animator == null) && animator.updateMode == AnimatorUpdateMode.AnimatePhysics;
-      }
-    }
+    private bool animatePhysics => !(animator == null) && animator.updateMode == AnimatorUpdateMode.AnimatePhysics;
 
     private void Start()
     {

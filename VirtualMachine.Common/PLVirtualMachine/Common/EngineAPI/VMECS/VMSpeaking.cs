@@ -18,7 +18,7 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
     public const string ComponentName = "Speaking";
     protected bool contextTalkingAvailable;
     protected IStateRef currentTalking;
-    protected List<IFiniteStateMachine> passedOnlyOnceTalkigs = new List<IFiniteStateMachine>();
+    protected List<IFiniteStateMachine> passedOnlyOnceTalkigs = [];
     private static IFiniteStateMachine activeTalkingGlobal;
     private static VMBaseEntity activeTalkingOwner;
 
@@ -154,7 +154,7 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
       VMBaseEntity author = null)
     {
       LocalizedText engineTextInstance1 = EngineAPIManager.CreateEngineTextInstance(speechTextGuid);
-      List<DialogString> replies = new List<DialogString>();
+      List<DialogString> replies = [];
       for (int index = 0; index < replyTextGuids.Count; ++index)
       {
         KeyValuePair<ulong, bool> replyTextGuid = replyTextGuids[index];

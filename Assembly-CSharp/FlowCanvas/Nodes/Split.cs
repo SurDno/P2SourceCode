@@ -18,7 +18,7 @@ namespace FlowCanvas.Nodes
 
     protected override void RegisterPorts()
     {
-      List<FlowOutput> outs = new List<FlowOutput>();
+      List<FlowOutput> outs = [];
       for (int index = 0; index < portCount; ++index)
         outs.Add(AddFlowOutput(index.ToString()));
       AddFlowInput("In", () =>

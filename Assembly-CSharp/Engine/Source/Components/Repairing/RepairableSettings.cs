@@ -17,7 +17,7 @@ namespace Engine.Source.Components.Repairing
     [CopyableProxy]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    protected List<RepairableLevel> levels = new List<RepairableLevel>();
+    protected List<RepairableLevel> levels = [];
     [DataReadProxy]
     [DataWriteProxy]
     [CopyableProxy]

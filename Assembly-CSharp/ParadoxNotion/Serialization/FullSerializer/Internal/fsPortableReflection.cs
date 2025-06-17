@@ -7,7 +7,7 @@ namespace ParadoxNotion.Serialization.FullSerializer.Internal
 {
   public static class fsPortableReflection
   {
-    public static Type[] EmptyTypes = new Type[0];
+    public static Type[] EmptyTypes = [];
     private static IDictionary<AttributeQuery, Attribute> _cachedAttributeQueries = new Dictionary<AttributeQuery, Attribute>(new AttributeQueryComparator());
     private static BindingFlags DeclaredFlags = BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
 
@@ -27,8 +27,7 @@ namespace ParadoxNotion.Serialization.FullSerializer.Internal
         MemberInfo = element,
         AttributeType = attributeType
       };
-      Attribute attribute;
-      if (!_cachedAttributeQueries.TryGetValue(key, out attribute))
+      if (!_cachedAttributeQueries.TryGetValue(key, out Attribute attribute))
       {
         attribute = (Attribute) element.GetCustomAttributes(attributeType, true).FirstOrDefault();
         if (shouldCache)
@@ -94,7 +93,7 @@ namespace ParadoxNotion.Serialization.FullSerializer.Internal
 
     public static MemberInfo[] GetFlattenedMember(this Type type, string memberName)
     {
-      List<MemberInfo> memberInfoList = new List<MemberInfo>();
+      List<MemberInfo> memberInfoList = [];
       for (; type != null; type = type.Resolve().BaseType)
       {
         MemberInfo[] declaredMembers = type.GetDeclaredMembers();

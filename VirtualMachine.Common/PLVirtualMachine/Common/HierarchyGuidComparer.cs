@@ -4,7 +4,7 @@ namespace PLVirtualMachine.Common
 {
   public class HierarchyGuidComparer : IEqualityComparer<HierarchyGuid>
   {
-    public static readonly HierarchyGuidComparer Instance = new HierarchyGuidComparer();
+    public static readonly HierarchyGuidComparer Instance = new();
 
     public bool Equals(HierarchyGuid x, HierarchyGuid y) => x == y;
 

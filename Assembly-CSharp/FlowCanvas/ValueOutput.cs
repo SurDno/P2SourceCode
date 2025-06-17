@@ -23,10 +23,9 @@ namespace FlowCanvas
     {
       if (getter == null)
         getter = () => null;
-      return (ValueOutput) Activator.CreateInstance(typeof (ValueOutput<>).RTMakeGenericType(new Type[1]
-      {
+      return (ValueOutput) Activator.CreateInstance(typeof (ValueOutput<>).RTMakeGenericType([
         type
-      }), parent, name, id, getter);
+      ]), parent, name, id, getter);
     }
 
     public abstract object GetValue();

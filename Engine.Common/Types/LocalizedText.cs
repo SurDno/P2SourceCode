@@ -1,11 +1,7 @@
 ﻿namespace Engine.Common.Types
 {
-  public struct LocalizedText
-  {
+  public struct LocalizedText(ulong id) {
     public static readonly LocalizedText Empty;
-    private readonly ulong id;
-
-    public LocalizedText(ulong id) => this.id = id;
 
     public ulong Id => id;
 

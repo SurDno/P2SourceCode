@@ -18,7 +18,7 @@ namespace Engine.Source.Components.Repairing
     [DataWriteProxy]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     [CopyableProxy()]
-    protected List<RepairableCostItem> cost = new List<RepairableCostItem>();
+    protected List<RepairableCostItem> cost = [];
 
     [Inspected]
     public float MaxDurability => maxDurability;

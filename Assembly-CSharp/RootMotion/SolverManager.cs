@@ -82,10 +82,7 @@ namespace RootMotion
       FindAnimatorRecursive(t.parent, false);
     }
 
-    private bool isAnimated
-    {
-      get => animator != null || legacy != null;
-    }
+    private bool isAnimated => animator != null || legacy != null;
 
     private void FixedUpdate()
     {

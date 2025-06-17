@@ -22,7 +22,7 @@ namespace Engine.Source.Services.Templates
   [RuntimeService(typeof (ITemplateService))]
   public class RuntimeTemplateService : ITemplateService, IAsyncInitializable, IInitialisable
   {
-    private Dictionary<Guid, IObject> items = new Dictionary<Guid, IObject>(GuidComparer.Instance);
+    private Dictionary<Guid, IObject> items = new(GuidComparer.Instance);
 
     [Inspected]
     private int Count => items.Count;
@@ -119,8 +119,7 @@ namespace Engine.Source.Services.Templates
 
     public IObject GetTemplate(Type type, Guid id)
     {
-      IObject template;
-      items.TryGetValue(id, out template);
+      items.TryGetValue(id, out IObject template);
       return template;
     }
 

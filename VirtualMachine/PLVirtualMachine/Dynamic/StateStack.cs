@@ -10,7 +10,7 @@ namespace PLVirtualMachine.Dynamic
 {
   public class StateStack : ISerializeStateSave, IDynamicLoadSerializable
   {
-    private Stack<StatePoint> stateStack = new Stack<StatePoint>();
+    private Stack<StatePoint> stateStack = new();
     private EStateStackType stackType;
 
     public StateStack(EStateStackType stackType = EStateStackType.STATESTACK_TYPE_MAIN)
@@ -37,7 +37,7 @@ namespace PLVirtualMachine.Dynamic
         if (objNode.ChildNodes[i].Name == "StatePoints")
         {
           XmlElement childNode = (XmlElement) objNode.ChildNodes[i];
-          List<StatePoint> statePointList = new List<StatePoint>();
+          List<StatePoint> statePointList = [];
           List<StatePoint> list = statePointList;
           VMSaveLoadManager.LoadDynamiSerializableList(childNode, list);
           stateStack.Clear();

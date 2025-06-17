@@ -1,13 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-public class AnimationClipOverrides : List<KeyValuePair<AnimationClip, AnimationClip>>
-{
-  public AnimationClipOverrides(int capacity)
-    : base(capacity)
-  {
-  }
-
+public class AnimationClipOverrides(int capacity) : List<KeyValuePair<AnimationClip, AnimationClip>>(capacity) {
   public AnimationClip this[string name]
   {
     get

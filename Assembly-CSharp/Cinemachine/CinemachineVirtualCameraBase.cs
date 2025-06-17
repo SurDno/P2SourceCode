@@ -12,10 +12,9 @@ namespace Cinemachine
     [HideInInspector]
     [SerializeField]
     [NoSaveDuringPlay]
-    public string[] m_ExcludedPropertiesInInspector = new string[1]
-    {
+    public string[] m_ExcludedPropertiesInInspector = [
       "m_Script"
-    };
+    ];
     [HideInInspector]
     [SerializeField]
     [NoSaveDuringPlay]
@@ -39,10 +38,7 @@ namespace Cinemachine
 
     public int ValidatingStreamVersion
     {
-      get
-      {
-        return m_OnValidateCalled ? m_ValidatingStreamVersion : CinemachineCore.kStreamingVersion;
-      }
+      get => m_OnValidateCalled ? m_ValidatingStreamVersion : CinemachineCore.kStreamingVersion;
       private set => m_ValidatingStreamVersion = value;
     }
 
@@ -83,10 +79,7 @@ namespace Cinemachine
       set => m_Priority = value;
     }
 
-    public GameObject VirtualCameraGameObject
-    {
-      get => this == null ? null : gameObject;
-    }
+    public GameObject VirtualCameraGameObject => this == null ? null : gameObject;
 
     public abstract CameraState State { get; }
 

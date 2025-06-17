@@ -6,7 +6,7 @@ namespace Inspectors
 {
   public class UnityHierarchy
   {
-    private static UnityHierarchy instance = new UnityHierarchy();
+    private static UnityHierarchy instance = new();
 
     public static UnityHierarchy Instance => instance;
 
@@ -21,11 +21,8 @@ namespace Inspectors
       }
     }
 
-    public class SceneInfo
-    {
-      private Scene scene;
-
-      public SceneInfo(Scene scene) => this.scene = scene;
+    public class SceneInfo(Scene scene) {
+      private Scene scene = scene;
 
       [Inspected(Header = true)]
       private string Name => scene.IsValid() ? scene.name : "null";
@@ -46,43 +43,18 @@ namespace Inspectors
       }
     }
 
-    public class TransformInfo
-    {
-      private Transform transform;
-
-      public TransformInfo(Transform transform) => this.transform = transform;
+    public class TransformInfo(Transform transform) {
+      [Inspected]
+      private Vector3 Position => transform != null ? transform.localPosition : Vector3.zero;
 
       [Inspected]
-      private Vector3 Position
-      {
-        get
-        {
-          return transform != null ? transform.localPosition : Vector3.zero;
-        }
-      }
+      private Quaternion Rotation => transform != null ? transform.localRotation : Quaternion.identity;
 
       [Inspected]
-      private Quaternion Rotation
-      {
-        get
-        {
-          return transform != null ? transform.localRotation : Quaternion.identity;
-        }
-      }
-
-      [Inspected]
-      private Vector3 Scale
-      {
-        get => transform != null ? transform.localScale : Vector3.one;
-      }
+      private Vector3 Scale => transform != null ? transform.localScale : Vector3.one;
     }
 
-    public class GameObjectInfo
-    {
-      private GameObject gameObject;
-
-      public GameObjectInfo(GameObject gameObject) => this.gameObject = gameObject;
-
+    public class GameObjectInfo(GameObject gameObject) {
       [Inspected(Header = true)]
       private string Name => gameObject != null ? gameObject.name : "";
 
@@ -102,13 +74,7 @@ namespace Inspectors
       public string Tag => gameObject != null ? gameObject.tag : "";
 
       [Inspected]
-      public string Layer
-      {
-        get
-        {
-          return gameObject != null ? LayerMask.LayerToName(gameObject.layer) : "";
-        }
-      }
+      public string Layer => gameObject != null ? LayerMask.LayerToName(gameObject.layer) : "";
 
       [Inspected]
       private IEnumerable<object> Components

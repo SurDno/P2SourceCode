@@ -5,13 +5,12 @@ namespace BehaviorDesigner.Runtime
 {
   public static class XmlDeserializationCache
   {
-    private static Dictionary<int, XmlDocument> serializationCache = new Dictionary<int, XmlDocument>();
+    private static Dictionary<int, XmlDocument> serializationCache = new();
 
     public static XmlDocument GetOrCreateData(string xml)
     {
       int hashCode = xml.GetHashCode();
-      XmlDocument data;
-      if (!serializationCache.TryGetValue(hashCode, out data))
+      if (!serializationCache.TryGetValue(hashCode, out XmlDocument data))
       {
         data = new XmlDocument();
         data.LoadXml(xml);

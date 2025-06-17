@@ -132,8 +132,7 @@ public class PlanarReflectionCapture : MonoBehaviour
     {
       bool flag1 = UpdateCondition == Condition.Always;
       float num = DefaultPlaneHeight;
-      RaycastHit hitInfo;
-      if (Physics.Raycast(transform.position, Vector3.down, out hitInfo, 100f, HeightCollidersLayer, QueryTriggerInteraction.Collide))
+      if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hitInfo, 100f, HeightCollidersLayer, QueryTriggerInteraction.Collide))
       {
         if (UpdateCondition == Condition.OnHit)
           flag1 = true;

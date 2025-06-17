@@ -13,6 +13,6 @@ namespace Engine.Source.Components.Selectors
     [CopyableProxy()]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    public List<SceneGameObject> Objects = new List<SceneGameObject>();
+    public List<SceneGameObject> Objects = [];
   }
 }

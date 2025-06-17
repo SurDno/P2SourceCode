@@ -8,7 +8,7 @@ namespace Engine.Impl.UI.Controls
     [SerializeField]
     private IntView intView;
     [SerializeField]
-    private Step[] steps = new Step[0];
+    private Step[] steps = [];
     [SerializeField]
     private int defaultValue;
 

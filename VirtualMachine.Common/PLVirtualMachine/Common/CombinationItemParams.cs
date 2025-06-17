@@ -40,10 +40,9 @@ namespace PLVirtualMachine.Common
         case "":
           break;
         default:
-          string[] separator = new string[1]
-          {
+          string[] separator = [
             "&CI&PARAMS&"
-          };
+          ];
           string[] strArray = data.Split(separator, StringSplitOptions.RemoveEmptyEntries);
           if (strArray.Length != 0)
           {

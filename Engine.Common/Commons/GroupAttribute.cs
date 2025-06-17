@@ -3,10 +3,8 @@
 namespace Engine.Common.Commons
 {
   [AttributeUsage(AttributeTargets.Field)]
-  public class GroupAttribute : Attribute
+  public class GroupAttribute(string value) : Attribute 
   {
-    public string Value { get; private set; }
-
-    public GroupAttribute(string value) => Value = value;
+    public string Value { get; private set; } = value;
   }
 }

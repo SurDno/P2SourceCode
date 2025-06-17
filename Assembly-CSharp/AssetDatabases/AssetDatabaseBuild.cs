@@ -12,8 +12,8 @@ namespace AssetDatabases
 {
   public class AssetDatabaseBuild : IAssetDatabase
   {
-    private Dictionary<Guid, string> paths = new Dictionary<Guid, string>(GuidComparer.Instance);
-    private Dictionary<string, Guid> ids = new Dictionary<string, Guid>();
+    private Dictionary<Guid, string> paths = new(GuidComparer.Instance);
+    private Dictionary<string, Guid> ids = new();
 
     public void RegisterAssets()
     {
@@ -35,15 +35,13 @@ namespace AssetDatabases
 
     public Guid GetId(string path)
     {
-      Guid id;
-      ids.TryGetValue(path, out id);
+      ids.TryGetValue(path, out Guid id);
       return id;
     }
 
     public string GetPath(Guid id)
     {
-      string str;
-      return paths.TryGetValue(id, out str) ? str : "";
+      return paths.TryGetValue(id, out string str) ? str : "";
     }
 
     public T Load<T>(string path) where T : Object

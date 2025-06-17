@@ -84,7 +84,7 @@ public class AmplifyOcclusionBase : MonoBehaviour
   private RenderTargetIdentifier[] m_applyDeferredTargets;
   private Mesh m_blitMesh;
   private TargetDesc m_target;
-  private Dictionary<CameraEvent, CommandBuffer> m_registeredCommandBuffers = new Dictionary<CameraEvent, CommandBuffer>();
+  private Dictionary<CameraEvent, CommandBuffer> m_registeredCommandBuffers = new();
 
   private bool CheckParamsChanged()
   {
@@ -152,29 +152,26 @@ public class AmplifyOcclusionBase : MonoBehaviour
     if (m_blitMesh != null)
       DestroyImmediate(m_blitMesh);
     m_blitMesh = new Mesh();
-    m_blitMesh.vertices = new Vector3[4]
-    {
-      new Vector3(0.0f, 0.0f, 0.0f),
-      new Vector3(0.0f, 1f, 0.0f),
-      new Vector3(1f, 1f, 0.0f),
-      new Vector3(1f, 0.0f, 0.0f)
-    };
-    m_blitMesh.uv = new Vector2[4]
-    {
-      new Vector2(0.0f, 0.0f),
-      new Vector2(0.0f, 1f),
-      new Vector2(1f, 1f),
-      new Vector2(1f, 0.0f)
-    };
-    m_blitMesh.triangles = new int[6]
-    {
+    m_blitMesh.vertices = [
+      new(0.0f, 0.0f, 0.0f),
+      new(0.0f, 1f, 0.0f),
+      new(1f, 1f, 0.0f),
+      new(1f, 0.0f, 0.0f)
+    ];
+    m_blitMesh.uv = [
+      new(0.0f, 0.0f),
+      new(0.0f, 1f),
+      new(1f, 1f),
+      new(1f, 0.0f)
+    ];
+    m_blitMesh.triangles = [
       0,
       1,
       2,
       0,
       2,
       3
-    };
+    ];
   }
 
   private void Shutdown()

@@ -9,17 +9,17 @@ namespace FirstPersonController
     private CharacterController m_CharacterController;
     private CollisionFlags m_CollisionFlags;
     [SerializeField]
-    private FOVKick m_FovKick = new FOVKick();
+    private FOVKick m_FovKick = new();
     [SerializeField]
     private float m_GravityMultiplier;
     [SerializeField]
-    private CurveControlledBob m_HeadBob = new CurveControlledBob();
+    private CurveControlledBob m_HeadBob = new();
     private Vector2 m_Input;
     [SerializeField]
     private bool m_IsWalking;
     private bool m_Jump;
     [SerializeField]
-    private LerpControlledBob m_JumpBob = new LerpControlledBob();
+    private LerpControlledBob m_JumpBob = new();
     private bool m_Jumping;
     [SerializeField]
     private float m_JumpSpeed;
@@ -78,11 +78,9 @@ namespace FirstPersonController
 
     private void FixedUpdate()
     {
-      float speed;
-      GetInput(out speed);
+      GetInput(out float speed);
       Vector3 vector = transform.forward * m_Input.y + transform.right * m_Input.x;
-      RaycastHit hitInfo;
-      Physics.SphereCast(transform.position, m_CharacterController.radius, Vector3.down, out hitInfo, m_CharacterController.height / 2f, -1, QueryTriggerInteraction.Ignore);
+      Physics.SphereCast(transform.position, m_CharacterController.radius, Vector3.down, out RaycastHit hitInfo, m_CharacterController.height / 2f, -1, QueryTriggerInteraction.Ignore);
       Vector3 normalized = Vector3.ProjectOnPlane(vector, hitInfo.normal).normalized;
       m_MoveDir.x = normalized.x * speed;
       m_MoveDir.z = normalized.z * speed;

@@ -25,7 +25,7 @@ namespace PLVirtualMachine.Common
         case "0":
           break;
         default:
-          string[] separator = new string[1]{ "&=&" };
+          string[] separator = ["&=&"];
           string[] strArray = data.Split(separator, StringSplitOptions.RemoveEmptyEntries);
           if (strArray.Length < 2)
           {

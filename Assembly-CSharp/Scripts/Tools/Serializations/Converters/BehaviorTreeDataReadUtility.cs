@@ -36,7 +36,7 @@ namespace Scripts.Tools.Serializations.Converters
     public static List<T> ReadCommonSharedList<T>(IDataReader reader, string name, List<T> value) where T : SharedVariable
     {
       if (value == null)
-        value = new List<T>();
+        value = [];
       else
         value.Clear();
       IDataReader child1 = reader.GetChild(name);
@@ -62,8 +62,7 @@ namespace Scripts.Tools.Serializations.Converters
     public static T GetOrCreateVariable<T>(IDataReader reader) where T : SharedVariable
     {
       string key = reader.GetChild("Name").Read();
-      SharedVariable variable;
-      if (!BehaviorTreeDataContext.Variables.TryGetValue(key, out variable))
+      if (!BehaviorTreeDataContext.Variables.TryGetValue(key, out SharedVariable variable))
       {
         variable = (SharedVariable) ProxyFactory.Create(MappingUtility.GetRealType(reader, typeof (T)));
         BehaviorTreeDataContext.Variables.Add(key, variable);
@@ -74,7 +73,7 @@ namespace Scripts.Tools.Serializations.Converters
     public static List<T> ReadSharedList<T>(IDataReader reader, string name, List<T> value) where T : SharedVariable
     {
       if (value == null)
-        value = new List<T>();
+        value = [];
       else
         value.Clear();
       IDataReader child1 = reader.GetChild(name);
@@ -92,8 +91,8 @@ namespace Scripts.Tools.Serializations.Converters
     {
       IDataReader child1 = reader.GetChild(name);
       if (child1 == null)
-        return Array.Empty<T>();
-      List<T> objList = new List<T>();
+        return [];
+      List<T> objList = [];
       foreach (IDataReader child2 in child1.GetChilds())
       {
         T obj = ReadShared<T>(child2);
@@ -120,7 +119,7 @@ namespace Scripts.Tools.Serializations.Converters
     public static List<T> ReadTaskList<T>(IDataReader reader, string name, List<T> value) where T : Task
     {
       if (value == null)
-        value = new List<T>();
+        value = [];
       else
         value.Clear();
       IDataReader child1 = reader.GetChild(name);
@@ -156,8 +155,7 @@ namespace Scripts.Tools.Serializations.Converters
 
     private static T GetOrCreateNode<T>(Type realType, int id) where T : Task
     {
-      Task task;
-      if (!BehaviorTreeDataContext.Tasks.TryGetValue(id, out task))
+      if (!BehaviorTreeDataContext.Tasks.TryGetValue(id, out Task task))
       {
         object obj = ProxyFactory.Create(realType);
         if (obj == null)
@@ -233,7 +231,7 @@ namespace Scripts.Tools.Serializations.Converters
     public static List<T> ReadUnityList<T>(IDataReader reader, string name, List<T> value) where T : Object
     {
       if (value == null)
-        value = new List<T>();
+        value = [];
       else
         value.Clear();
       IDataReader child1 = reader.GetChild(name);
@@ -251,8 +249,8 @@ namespace Scripts.Tools.Serializations.Converters
     {
       IDataReader child1 = reader.GetChild(name);
       if (child1 == null)
-        return Array.Empty<T>();
-      List<T> objList = new List<T>();
+        return [];
+      List<T> objList = [];
       foreach (IDataReader child2 in child1.GetChilds())
       {
         T obj = ReadUnity<T>(child2);

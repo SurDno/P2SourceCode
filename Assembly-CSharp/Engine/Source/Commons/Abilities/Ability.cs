@@ -16,7 +16,7 @@ namespace Engine.Source.Commons.Abilities
     [DataWriteProxy(Name = "AbilityItems")]
     [CopyableProxy()]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    protected List<AbilityItem> items = new List<AbilityItem>();
+    protected List<AbilityItem> items = [];
     private AbilityCache abilityCache;
     private IEntity owner;
 

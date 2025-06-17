@@ -141,20 +141,15 @@ namespace UnityStandardAssets.CinematicEffects
         get => Mathf.GammaToLinearSpace(thresholdGamma);
       }
 
-      public static Settings defaultSettings
-      {
-        get
-        {
-          return new Settings {
-            threshold = 0.9f,
-            softKnee = 0.5f,
-            radius = 2f,
-            intensity = 0.7f,
-            highQuality = true,
-            antiFlicker = false
-          };
-        }
-      }
+      public static Settings defaultSettings =>
+        new() {
+          threshold = 0.9f,
+          softKnee = 0.5f,
+          radius = 2f,
+          intensity = 0.7f,
+          highQuality = true,
+          antiFlicker = false
+        };
     }
   }
 }

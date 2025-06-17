@@ -8,9 +8,9 @@ namespace RootMotion.FinalIK
   {
     [ContextMenuItem("Auto-detect References", "AutoDetectReferences")]
     [Tooltip("Bone mapping. Right-click on the component header and select 'Auto-detect References' of fill in manually if not a Humanoid character.")]
-    public References references = new References();
+    public References references = new();
     [Tooltip("The VRIK solver.")]
-    public IKSolverVR solver = new IKSolverVR();
+    public IKSolverVR solver = new();
 
     [ContextMenu("User Manual")]
     protected override void OpenUserManual()
@@ -81,8 +81,7 @@ namespace RootMotion.FinalIK
 
       public Transform[] GetTransforms()
       {
-        return new Transform[22]
-        {
+        return [
           root,
           pelvis,
           spine,
@@ -105,24 +104,12 @@ namespace RootMotion.FinalIK
           rightCalf,
           rightFoot,
           rightToes
-        };
+        ];
       }
 
-      public bool isFilled
-      {
-        get
-        {
-          return !(root == null) && !(pelvis == null) && !(spine == null) && !(head == null) && !(leftUpperArm == null) && !(leftForearm == null) && !(leftHand == null) && !(rightUpperArm == null) && !(rightForearm == null) && !(rightHand == null) && !(leftThigh == null) && !(leftCalf == null) && !(leftFoot == null) && !(rightThigh == null) && !(rightCalf == null) && !(rightFoot == null);
-        }
-      }
+      public bool isFilled => !(root == null) && !(pelvis == null) && !(spine == null) && !(head == null) && !(leftUpperArm == null) && !(leftForearm == null) && !(leftHand == null) && !(rightUpperArm == null) && !(rightForearm == null) && !(rightHand == null) && !(leftThigh == null) && !(leftCalf == null) && !(leftFoot == null) && !(rightThigh == null) && !(rightCalf == null) && !(rightFoot == null);
 
-      public bool isEmpty
-      {
-        get
-        {
-          return !(root != null) && !(pelvis != null) && !(spine != null) && !(chest != null) && !(neck != null) && !(head != null) && !(leftShoulder != null) && !(leftUpperArm != null) && !(leftForearm != null) && !(leftHand != null) && !(rightShoulder != null) && !(rightUpperArm != null) && !(rightForearm != null) && !(rightHand != null) && !(leftThigh != null) && !(leftCalf != null) && !(leftFoot != null) && !(leftToes != null) && !(rightThigh != null) && !(rightCalf != null) && !(rightFoot != null) && !(rightToes != null);
-        }
-      }
+      public bool isEmpty => !(root != null) && !(pelvis != null) && !(spine != null) && !(chest != null) && !(neck != null) && !(head != null) && !(leftShoulder != null) && !(leftUpperArm != null) && !(leftForearm != null) && !(leftHand != null) && !(rightShoulder != null) && !(rightUpperArm != null) && !(rightForearm != null) && !(rightHand != null) && !(leftThigh != null) && !(leftCalf != null) && !(leftFoot != null) && !(leftToes != null) && !(rightThigh != null) && !(rightCalf != null) && !(rightFoot != null) && !(rightToes != null);
 
       public static bool AutoDetectReferences(Transform root, out References references)
       {

@@ -16,8 +16,8 @@ public class RegionMesh : MonoBehaviour
   private RegionEnum region;
   [SerializeField]
   private RegionMesh[] nearRegions;
-  private Vector3[] trianglesCache = new Vector3[0];
-  private float[] areaCache = new float[0];
+  private Vector3[] trianglesCache = [];
+  private float[] areaCache = [];
 
   public RegionEnum Region => region;
 

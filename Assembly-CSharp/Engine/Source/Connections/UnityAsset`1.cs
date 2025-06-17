@@ -4,14 +4,13 @@ using Object = UnityEngine.Object;
 
 namespace Engine.Source.Connections
 {
-  public struct UnityAsset<T> : IUnityAsset where T : Object
+  public struct UnityAsset<T>(Guid id) : IUnityAsset
+    where T : Object 
   {
-    private Guid id;
+    private Guid id = id;
 
     [Inspected]
     public Guid Id => id;
-
-    public UnityAsset(Guid id) => this.id = id;
 
     public T Value => UnityAssetUtility.GetValue<T>(id);
 

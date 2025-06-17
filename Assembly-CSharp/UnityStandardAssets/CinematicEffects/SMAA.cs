@@ -248,17 +248,12 @@ namespace UnityStandardAssets.CinematicEffects
       [Tooltip("You've three edge detection methods to choose from: luma, color or depth.\nThey represent different quality/performance and anti-aliasing/sharpness tradeoffs, so our recommendation is for you to choose the one that best suits your particular scenario:\n\n- Depth edge detection is usually the fastest but it may miss some edges.\n- Luma edge detection is usually more expensive than depth edge detection, but catches visible edges that depth edge detection can miss.\n- Color edge detection is usually the most expensive one but catches chroma-only edges.")]
       public EdgeDetectionMethod edgeDetectionMethod;
 
-      public static GlobalSettings defaultSettings
-      {
-        get
-        {
-          return new GlobalSettings {
-            debugPass = DebugPass.Off,
-            quality = QualityPreset.High,
-            edgeDetectionMethod = EdgeDetectionMethod.Color
-          };
-        }
-      }
+      public static GlobalSettings defaultSettings =>
+        new() {
+          debugPass = DebugPass.Off,
+          quality = QualityPreset.High,
+          edgeDetectionMethod = EdgeDetectionMethod.Color
+        };
     }
 
     [Serializable]
@@ -286,9 +281,8 @@ namespace UnityStandardAssets.CinematicEffects
       [Min(0.0f)]
       [Tooltip("If there is an neighbor edge that has a local contrast factor times bigger contrast than current edge, current edge will be discarded.\nThis allows to eliminate spurious crossing edges, and is based on the fact that, if there is too much contrast in a direction, that will hide perceptually contrast in the other neighbors.")]
       public float localContrastAdaptationFactor;
-      public static QualitySettings[] presetQualitySettings = new QualitySettings[4]
-      {
-        new QualitySettings {
+      public static QualitySettings[] presetQualitySettings = [
+        new() {
           diagonalDetection = false,
           cornerDetection = false,
           threshold = 0.15f,
@@ -298,7 +292,7 @@ namespace UnityStandardAssets.CinematicEffects
           cornerRounding = 25,
           localContrastAdaptationFactor = 2f
         },
-        new QualitySettings {
+        new() {
           diagonalDetection = false,
           cornerDetection = false,
           threshold = 0.1f,
@@ -308,7 +302,7 @@ namespace UnityStandardAssets.CinematicEffects
           cornerRounding = 25,
           localContrastAdaptationFactor = 2f
         },
-        new QualitySettings {
+        new() {
           diagonalDetection = true,
           cornerDetection = true,
           threshold = 0.1f,
@@ -318,7 +312,7 @@ namespace UnityStandardAssets.CinematicEffects
           cornerRounding = 25,
           localContrastAdaptationFactor = 2f
         },
-        new QualitySettings {
+        new() {
           diagonalDetection = true,
           cornerDetection = true,
           threshold = 0.05f,
@@ -328,7 +322,7 @@ namespace UnityStandardAssets.CinematicEffects
           cornerRounding = 25,
           localContrastAdaptationFactor = 2f
         }
-      };
+      ];
     }
 
     [Serializable]
@@ -342,16 +336,11 @@ namespace UnityStandardAssets.CinematicEffects
 
       public bool UseTemporal() => enabled;
 
-      public static TemporalSettings defaultSettings
-      {
-        get
-        {
-          return new TemporalSettings {
-            enabled = false,
-            fuzzSize = 2f
-          };
-        }
-      }
+      public static TemporalSettings defaultSettings =>
+        new() {
+          enabled = false,
+          fuzzSize = 2f
+        };
     }
 
     [Serializable]
@@ -369,18 +358,13 @@ namespace UnityStandardAssets.CinematicEffects
       [Tooltip("How much to locally decrease the threshold.")]
       public float strength;
 
-      public static PredicationSettings defaultSettings
-      {
-        get
-        {
-          return new PredicationSettings {
-            enabled = false,
-            threshold = 0.01f,
-            scale = 2f,
-            strength = 0.4f
-          };
-        }
-      }
+      public static PredicationSettings defaultSettings =>
+        new() {
+          enabled = false,
+          threshold = 0.01f,
+          scale = 2f,
+          strength = 0.4f
+        };
     }
   }
 }

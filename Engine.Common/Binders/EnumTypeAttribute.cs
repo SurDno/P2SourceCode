@@ -5,13 +5,11 @@ using Cofe.Meta;
 namespace Engine.Common.Binders
 {
   [AttributeUsage(AttributeTargets.Enum)]
-  public class EnumTypeAttribute : TypeAttribute
+  public class EnumTypeAttribute(string name) : TypeAttribute 
   {
-    public readonly string Name;
-    private static Dictionary<string, Type> types = new Dictionary<string, Type>();
-    private static Dictionary<Type, string> names = new Dictionary<Type, string>();
-
-    public EnumTypeAttribute(string name) => Name = name;
+    public readonly string Name = name;
+    private static Dictionary<string, Type> types = new();
+    private static Dictionary<Type, string> names = new();
 
     public override void ComputeType(Type type)
     {

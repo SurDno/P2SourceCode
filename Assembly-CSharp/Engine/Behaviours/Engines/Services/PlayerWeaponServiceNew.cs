@@ -17,11 +17,11 @@ namespace Engine.Behaviours.Engines.Services
     private PlayerAnimatorState animatorState;
     private bool isAttached;
     private bool isPaused;
-    private List<PlayerWeaponSwitchCommand> switchCommandsList = new List<PlayerWeaponSwitchCommand>();
+    private List<PlayerWeaponSwitchCommand> switchCommandsList = [];
     private bool enabled;
     private WeaponKind kind = WeaponKind.Unknown;
     private IWeaponController currentWeaponController;
-    private Dictionary<WeaponKind, IWeaponController> controllers = new Dictionary<WeaponKind, IWeaponController> {
+    private Dictionary<WeaponKind, IWeaponController> controllers = new() {
       {
         WeaponKind.Unknown,
         new EmptyWeaponController()
@@ -273,7 +273,7 @@ namespace Engine.Behaviours.Engines.Services
       currentWeaponController = controllers[WeaponKind.Unknown];
       currentWeaponController.GeometryVisible = true;
       GeometryVisible = geometryVisible;
-      switchCommandsList = new List<PlayerWeaponSwitchCommand>();
+      switchCommandsList = [];
     }
 
     public void ResetWeapon()

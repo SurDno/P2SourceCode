@@ -11,10 +11,7 @@ namespace PLVirtualMachine.GameLogic
   {
     public void Initialize(IEvent evnt) => LoadStaticInstance(evnt);
 
-    public override EContextVariableCategory Category
-    {
-      get => EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_EVENT;
-    }
+    public override EContextVariableCategory Category => EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_EVENT;
 
     public IEvent Event
     {
@@ -26,7 +23,7 @@ namespace PLVirtualMachine.GameLogic
       }
     }
 
-    public override VMType Type => new VMType(typeof (IEventRef));
+    public override VMType Type => new(typeof (IEventRef));
 
     public override bool Empty => Event == null && base.Empty;
 

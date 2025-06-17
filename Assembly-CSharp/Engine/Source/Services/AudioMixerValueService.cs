@@ -16,7 +16,7 @@ namespace Engine.Source.Services
     IUpdatable
   {
     [Inspected]
-    private List<ItemInfo> items = new List<ItemInfo>();
+    private List<ItemInfo> items = [];
     [Inspected]
     private ReduceUpdateProxy<ItemInfo> updater;
 
@@ -130,7 +130,7 @@ namespace Engine.Source.Services
       [Inspected]
       public float DefaultValue;
       [Inspected]
-      public List<AudioMixerValueNode> Nodes = new List<AudioMixerValueNode>();
+      public List<AudioMixerValueNode> Nodes = [];
 
       [Inspected(Header = true)]
       public int Count => Nodes.Count;

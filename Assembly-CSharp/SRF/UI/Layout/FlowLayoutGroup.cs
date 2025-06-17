@@ -13,37 +13,13 @@ namespace SRF.UI.Layout
     public bool ChildForceExpandWidth;
     public float Spacing;
 
-    protected bool IsCenterAlign
-    {
-      get
-      {
-        return childAlignment == TextAnchor.LowerCenter || childAlignment == TextAnchor.MiddleCenter || childAlignment == TextAnchor.UpperCenter;
-      }
-    }
+    protected bool IsCenterAlign => childAlignment == TextAnchor.LowerCenter || childAlignment == TextAnchor.MiddleCenter || childAlignment == TextAnchor.UpperCenter;
 
-    protected bool IsRightAlign
-    {
-      get
-      {
-        return childAlignment == TextAnchor.LowerRight || childAlignment == TextAnchor.MiddleRight || childAlignment == TextAnchor.UpperRight;
-      }
-    }
+    protected bool IsRightAlign => childAlignment == TextAnchor.LowerRight || childAlignment == TextAnchor.MiddleRight || childAlignment == TextAnchor.UpperRight;
 
-    protected bool IsMiddleAlign
-    {
-      get
-      {
-        return childAlignment == TextAnchor.MiddleLeft || childAlignment == TextAnchor.MiddleRight || childAlignment == TextAnchor.MiddleCenter;
-      }
-    }
+    protected bool IsMiddleAlign => childAlignment == TextAnchor.MiddleLeft || childAlignment == TextAnchor.MiddleRight || childAlignment == TextAnchor.MiddleCenter;
 
-    protected bool IsLowerAlign
-    {
-      get
-      {
-        return childAlignment == TextAnchor.LowerLeft || childAlignment == TextAnchor.LowerRight || childAlignment == TextAnchor.LowerCenter;
-      }
-    }
+    protected bool IsLowerAlign => childAlignment == TextAnchor.LowerLeft || childAlignment == TextAnchor.LowerRight || childAlignment == TextAnchor.LowerCenter;
 
     public override void CalculateLayoutInputHorizontal()
     {

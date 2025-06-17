@@ -3,12 +3,10 @@
 namespace Engine.Common.Generator
 {
   [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
-  public class DataWriteProxyAttribute : Attribute
+  public class DataWriteProxyAttribute(MemberEnum detail = MemberEnum.None) : Attribute 
   {
-    public MemberEnum Detail;
+    public MemberEnum Detail = detail;
 
     public string Name { get; set; }
-
-    public DataWriteProxyAttribute(MemberEnum detail = MemberEnum.None) => Detail = detail;
   }
 }

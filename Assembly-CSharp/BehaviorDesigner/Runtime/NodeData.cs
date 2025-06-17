@@ -149,7 +149,7 @@ namespace BehaviorDesigner.Runtime
     {
       if (watchedFieldNames == null || watchedFieldNames.Count <= 0)
         return;
-      watchedFields = new List<FieldInfo>();
+      watchedFields = [];
       for (int index = 0; index < watchedFieldNames.Count; ++index)
       {
         FieldInfo field = task.GetType().GetField(watchedFieldNames[index], BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
@@ -167,8 +167,8 @@ namespace BehaviorDesigner.Runtime
       collapsed = nodeData.Collapsed;
       if (nodeData.WatchedFields == null || nodeData.WatchedFields.Count <= 0)
         return;
-      watchedFields = new List<FieldInfo>();
-      watchedFieldNames = new List<string>();
+      watchedFields = [];
+      watchedFieldNames = [];
       for (int index = 0; index < nodeData.watchedFields.Count; ++index)
       {
         FieldInfo field = task.GetType().GetField(nodeData.WatchedFields[index].Name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
@@ -189,8 +189,8 @@ namespace BehaviorDesigner.Runtime
     {
       if (watchedFields == null)
       {
-        watchedFields = new List<FieldInfo>();
-        watchedFieldNames = new List<string>();
+        watchedFields = [];
+        watchedFieldNames = [];
       }
       watchedFields.Add(field);
       watchedFieldNames.Add(field.Name);

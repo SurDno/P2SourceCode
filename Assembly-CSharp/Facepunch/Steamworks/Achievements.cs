@@ -8,7 +8,7 @@ namespace Facepunch.Steamworks
   public class Achievements : IDisposable
   {
     internal Client client;
-    private List<Achievement> unlockedRecently = new List<Achievement>();
+    private List<Achievement> unlockedRecently = [];
 
     public Achievement[] All { get; private set; }
 
@@ -19,7 +19,7 @@ namespace Facepunch.Steamworks
     internal Achievements(Client c)
     {
       client = c;
-      All = new Achievement[0];
+      All = [];
       UserStatsReceived_t.RegisterCallback(c, UserStatsReceived);
       UserStatsStored_t.RegisterCallback(c, UserStatsStored);
       Refresh();

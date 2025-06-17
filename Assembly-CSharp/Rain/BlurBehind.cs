@@ -9,7 +9,7 @@ namespace Rain
   {
     private static RenderTexture storedTexture;
     private static int count;
-    private static Rect storedRect = new Rect(0.0f, 0.0f, 1f, 1f);
+    private static Rect storedRect = new(0.0f, 0.0f, 1f, 1f);
     public static Shader blurShader;
     private Material blurMaterial;
     public Mode mode = Mode.Relative;
@@ -17,8 +17,8 @@ namespace Rain
     public Settings settings = Settings.Manual;
     public float downsample = 64f;
     public int iterations = 2;
-    public Rect cropRect = new Rect(0.0f, 0.0f, 1f, 1f);
-    public Rect pixelOffset = new Rect(0.0f, 0.0f, 0.0f, 0.0f);
+    public Rect cropRect = new(0.0f, 0.0f, 1f, 1f);
+    public Rect pixelOffset = new(0.0f, 0.0f, 0.0f, 0.0f);
 
     public static void SetViewport()
     {
@@ -256,9 +256,7 @@ namespace Rain
         RenderTexture renderTexture = CropSource(source);
         int sourceSize = renderTexture.width > renderTexture.height ? renderTexture.width : renderTexture.height;
         CheckSettings(sourceSize);
-        int width;
-        int height;
-        SetOutputSize(source, renderTexture, out width, out height);
+        SetOutputSize(source, renderTexture, out int width, out int height);
         CheckOutput(width, height, renderTexture.format);
         Downsample(renderTexture, storedTexture);
         if (renderTexture != source)

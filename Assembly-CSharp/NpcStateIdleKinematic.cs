@@ -8,14 +8,12 @@ using Inspectors;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class NpcStateIdleKinematic : INpcState
-{
+public class NpcStateIdleKinematic(NpcState npcState, Pivot pivot) : INpcState 
+  {
   private EngineBehavior behavior;
   private NavMeshAgent agent;
   private Rigidbody rigidbody;
-  private Pivot pivot;
   private Animator animator;
-  private NpcState npcState;
   private NPCWeaponService weaponService;
   private bool agentWasEnabled;
   private bool rigidbodyWasKinematic;
@@ -27,7 +25,7 @@ public class NpcStateIdleKinematic : INpcState
   private bool sayReplics;
   private float timeToNextReplic;
 
-  public GameObject GameObject { get; private set; }
+  public GameObject GameObject { get; private set; } = npcState.gameObject;
 
   [Inspected]
   public NpcStateStatusEnum Status => NpcStateStatusEnum.Running;
@@ -52,13 +50,6 @@ public class NpcStateIdleKinematic : INpcState
     failed = false;
     inited = true;
     return true;
-  }
-
-  public NpcStateIdleKinematic(NpcState npcState, Pivot pivot)
-  {
-    this.npcState = npcState;
-    this.pivot = pivot;
-    GameObject = npcState.gameObject;
   }
 
   public void Activate(float primaryIdleProbability, bool makeObstacle = false)

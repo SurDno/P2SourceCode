@@ -59,7 +59,7 @@ namespace TriangleNet.Tools
     {
       VoronoiRegion voronoiRegion = new VoronoiRegion(vertex);
       regions.Add(voronoiRegion);
-      List<Point> points = new List<Point>();
+      List<Point> points = [];
       Otri o2_1 = new Otri();
       Otri o2_2 = new Otri();
       Otri o2_3 = new Otri();

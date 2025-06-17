@@ -8,7 +8,7 @@ namespace RootMotion.FinalIK
     [Range(0.0f, 1f)]
     public float weight = 1f;
     [Tooltip("The Grounding solver. Not to confuse with IK solvers.")]
-    public Grounding solver = new Grounding();
+    public Grounding solver = new();
     public GrounderDelegate OnPreGrounder;
     public GrounderDelegate OnPostGrounder;
     protected bool initiated;

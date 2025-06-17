@@ -8,17 +8,18 @@ namespace UnityEngine.AI
   public class NavMeshModifierVolume : MonoBehaviour
   {
     [SerializeField]
-    private Vector3 m_Size = new Vector3(4f, 3f, 4f);
+    private Vector3 m_Size = new(4f, 3f, 4f);
     [SerializeField]
-    private Vector3 m_Center = new Vector3(0.0f, 1f, 0.0f);
+    private Vector3 m_Center = new(0.0f, 1f, 0.0f);
     [SerializeField]
     private int m_Area;
     [SerializeField]
-    private List<int> m_AffectedAgents = new List<int>(new int[1]
-    {
-      -1
-    });
-    private static readonly List<NavMeshModifierVolume> s_NavMeshModifiers = new List<NavMeshModifierVolume>();
+    private List<int> m_AffectedAgents = [
+      ..new int[1] {
+        -1
+      }
+    ];
+    private static readonly List<NavMeshModifierVolume> s_NavMeshModifiers = [];
 
     public Vector3 size
     {
@@ -38,10 +39,7 @@ namespace UnityEngine.AI
       set => m_Area = value;
     }
 
-    public static List<NavMeshModifierVolume> activeModifiers
-    {
-      get => s_NavMeshModifiers;
-    }
+    public static List<NavMeshModifierVolume> activeModifiers => s_NavMeshModifiers;
 
     private void OnEnable()
     {

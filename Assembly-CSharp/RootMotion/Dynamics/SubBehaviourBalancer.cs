@@ -7,8 +7,8 @@ namespace RootMotion.Dynamics
   public class SubBehaviourBalancer : SubBehaviourBase
   {
     private Settings settings;
-    private Rigidbody[] rigidbodies = new Rigidbody[0];
-    private Transform[] copPoints = new Transform[0];
+    private Rigidbody[] rigidbodies = [];
+    private Transform[] copPoints = [];
     private PressureSensor pressureSensor;
     private Rigidbody Ibody;
     private Vector3 I;

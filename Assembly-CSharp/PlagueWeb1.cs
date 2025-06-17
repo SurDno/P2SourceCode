@@ -10,11 +10,11 @@ public class PlagueWeb1 : PlagueWeb
   public LayerMask CollisionMask;
   [SerializeField]
   private PlagueWebLink linkPrototype;
-  private List<PlagueWebCell> cellPool = new List<PlagueWebCell>();
-  private List<PlagueWebPoint> pointPool = new List<PlagueWebPoint>();
-  private Dictionary<PlagueWebCellId, PlagueWebCell> cells = new Dictionary<PlagueWebCellId, PlagueWebCell>();
-  private List<PlagueWebPoint> searchBuffer = new List<PlagueWebPoint>();
-  private List<PlagueWebLink> stringBuffer = new List<PlagueWebLink>();
+  private List<PlagueWebCell> cellPool = [];
+  private List<PlagueWebPoint> pointPool = [];
+  private Dictionary<PlagueWebCellId, PlagueWebCell> cells = new();
+  private List<PlagueWebPoint> searchBuffer = [];
+  private List<PlagueWebLink> stringBuffer = [];
   private int activePointsCount;
   private int activeStringsCount;
   private int visiblePointsCount = 1;
@@ -146,8 +146,7 @@ public class PlagueWeb1 : PlagueWeb
     {
       for (int z = num2; z <= num4; ++z)
       {
-        PlagueWebCell plagueWebCell;
-        if (cells.TryGetValue(new PlagueWebCellId(x, z), out plagueWebCell))
+        if (cells.TryGetValue(new PlagueWebCellId(x, z), out PlagueWebCell plagueWebCell))
         {
           for (int index = 0; index < plagueWebCell.Points.Count; ++index)
           {

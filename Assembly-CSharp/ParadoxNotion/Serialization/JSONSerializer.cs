@@ -8,9 +8,9 @@ namespace ParadoxNotion.Serialization
 {
   public static class JSONSerializer
   {
-    private static Dictionary<string, fsData> cache = new Dictionary<string, fsData>();
-    private static object serializerLock = new object();
-    private static fsSerializer serializer = new fsSerializer();
+    private static Dictionary<string, fsData> cache = new();
+    private static object serializerLock = new();
+    private static fsSerializer serializer = new();
     private static bool init;
     public static bool applicationPlaying = true;
 
@@ -33,8 +33,7 @@ namespace ParadoxNotion.Serialization
           serializer.Context.Set(objectReferences);
         }
         Type overrideConverterType = typeof (Object).RTIsAssignableFrom(type) ? typeof (fsReflectedConverter) : null;
-        fsData data;
-        serializer.TrySerialize(type, overrideConverterType, value, out data).AssertSuccess();
+        serializer.TrySerialize(type, overrideConverterType, value, out fsData data).AssertSuccess();
         return pretyJson ? fsJsonPrinter.PrettyJson(data) : fsJsonPrinter.CompressedJson(data);
       }
     }
@@ -62,8 +61,7 @@ namespace ParadoxNotion.Serialization
         }
         if (objectReferences != null)
           serializer.Context.Set(objectReferences);
-        fsData data = null;
-        cache.TryGetValue(serializedState, out data);
+        cache.TryGetValue(serializedState, out fsData data);
         if (data == null)
         {
           data = fsJsonParser.Parse(serializedState);

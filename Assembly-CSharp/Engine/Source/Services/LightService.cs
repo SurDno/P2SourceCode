@@ -10,7 +10,7 @@ namespace Engine.Source.Services
   [GameService(typeof (LightService))]
   public class LightService : IInitialisable, IUpdatable
   {
-    private List<LightServiceObject> lights = new List<LightServiceObject>();
+    private List<LightServiceObject> lights = [];
     private float checkLightsInterval = 0.5f;
     private float timeToNextCheck;
     private bool playerIsLighted;

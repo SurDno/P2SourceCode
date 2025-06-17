@@ -11,12 +11,11 @@ namespace Engine.Source.Settings
     [Inspected]
     private string name;
     [Inspected]
-    private List<KeyValuePair<string, KeyCode>> value = new List<KeyValuePair<string, KeyCode>>();
+    private List<KeyValuePair<string, KeyCode>> value = [];
     private static readonly char separator = '|';
-    private static readonly char[] separators = new char[1]
-    {
+    private static readonly char[] separators = [
       separator
-    };
+    ];
 
     public ListKeyItems(string name)
     {
@@ -24,8 +23,7 @@ namespace Engine.Source.Settings
       string[] strArray = PlayerSettings.Instance.GetString(name).Split(separators, StringSplitOptions.RemoveEmptyEntries);
       for (int index = 0; index < strArray.Length; index += 2)
       {
-        KeyCode result;
-        DefaultConverter.TryParseEnum(strArray[index + 1], out result);
+        DefaultConverter.TryParseEnum(strArray[index + 1], out KeyCode result);
         value.Add(new KeyValuePair<string, KeyCode>(strArray[index], result));
       }
     }

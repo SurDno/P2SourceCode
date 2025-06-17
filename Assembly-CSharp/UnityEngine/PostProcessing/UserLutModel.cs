@@ -25,16 +25,11 @@ namespace UnityEngine.PostProcessing
       [Tooltip("Blending factor.")]
       public float contribution;
 
-      public static Settings defaultSettings
-      {
-        get
-        {
-          return new Settings {
-            lut = null,
-            contribution = 1f
-          };
-        }
-      }
+      public static Settings defaultSettings =>
+        new() {
+          lut = null,
+          contribution = 1f
+        };
     }
   }
 }

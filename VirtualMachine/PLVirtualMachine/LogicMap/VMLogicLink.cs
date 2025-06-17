@@ -13,8 +13,8 @@ namespace PLVirtualMachine.LogicMap
 {
   [TypeData(EDataType.TLogicMapLink)]
   [DataFactory("MindMapLink")]
-  public class VMLogicLink : 
-    VMBaseObject,
+  public class VMLogicLink(ulong guid) :
+    VMBaseObject(guid),
     IStub,
     IEditorDataReader,
     ILink,
@@ -23,8 +23,7 @@ namespace PLVirtualMachine.LogicMap
     IEditorBaseTemplate,
     INamedElement,
     INamed,
-    IStaticUpdateable
-  {
+    IStaticUpdateable {
     [FieldData("Source", DataFieldType.Reference)]
     private VMLogicMapNode source;
     [FieldData("Destination", DataFieldType.Reference)]
@@ -60,11 +59,6 @@ namespace PLVirtualMachine.LogicMap
         if (xml.NodeType == XmlNodeType.EndElement)
           break;
       }
-    }
-
-    public VMLogicLink(ulong guid)
-      : base(guid)
-    {
     }
 
     public override EObjectCategory GetCategory() => EObjectCategory.OBJECT_CATEGORY_GRAPH_ELEMENT;

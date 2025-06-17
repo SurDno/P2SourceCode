@@ -16,7 +16,7 @@ namespace SRDebugger.Services.Implementation
     {
       base.Awake();
       CachedTransform.SetParent(Hierarchy.Get("SRDebugger"));
-      shortcuts = new List<Settings.KeyboardShortcut>(Settings.Instance.KeyboardShortcuts);
+      shortcuts = [..Settings.Instance.KeyboardShortcuts];
     }
 
     private void ToggleTab(DefaultTabs t)

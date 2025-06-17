@@ -197,7 +197,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       CurrentSelector = SelectedSelector.None;
       ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.LStickLeft, ConsoleController);
       ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.LStickRight, ConsoleController);
-      SelectorButtons = new List<Button>(itemSelector.GetComponentsInChildren<Button>());
+      SelectorButtons = [..itemSelector.GetComponentsInChildren<Button>()];
       if (itemSelector.Item == null)
         return;
       holdableStorable = GetStorableByComponent(itemSelector.Item);

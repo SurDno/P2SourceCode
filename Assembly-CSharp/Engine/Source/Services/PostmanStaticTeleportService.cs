@@ -19,11 +19,11 @@ namespace Engine.Source.Services
     private const float playerSeesMeUpdatedTrialTime = 10f;
     private const float trialRepeatTime = 30f;
     [Inspected]
-    private HashSet<Spawnpoint> spawnpoints = new HashSet<Spawnpoint>();
+    private HashSet<Spawnpoint> spawnpoints = [];
     [Inspected]
-    private List<Slot> postmans = new List<Slot>();
+    private List<Slot> postmans = [];
     [Inspected]
-    private List<Slot> teleports = new List<Slot>();
+    private List<Slot> teleports = [];
 
     public IEnumerable<Spawnpoint> Spawnpoints => spawnpoints;
 
@@ -130,8 +130,7 @@ namespace Engine.Source.Services
       }
       foreach (Slot teleport in teleports)
       {
-        Spawnpoint spawnpoint;
-        if (GetRandomPoint(false, playerGameObject, out spawnpoint, teleport.SpawnpointKind))
+        if (GetRandomPoint(false, playerGameObject, out Spawnpoint spawnpoint, teleport.SpawnpointKind))
         {
           teleport.Owner.GetComponent<NavigationComponent>().TeleportTo(playerLocation.Location, spawnpoint.transform.position, spawnpoint.transform.rotation);
           teleport.TimeLeft = 30f;

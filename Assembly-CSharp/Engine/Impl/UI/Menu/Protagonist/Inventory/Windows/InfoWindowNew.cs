@@ -120,7 +120,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory.Windows
       if (parent == null)
       {
         if (keyCodeLines == null)
-          keyCodeLines = new List<Transform>();
+          keyCodeLines = [];
         parent = Instantiate(keyCodeLinePrefab, keyCodeSeparator.transform, false).transform;
         keyCodeLines.Add(parent);
         keyCodeSeparator.SetActive(true);

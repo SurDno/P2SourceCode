@@ -136,13 +136,12 @@ namespace TriangleNet.IO
         foreach (RegionPointer region in mesh.regions)
         {
           StreamWriter streamWriter = writer;
-          object[] objArray = new object[4]
-          {
+          object[] objArray = [
             num4,
             null,
             null,
             null
-          };
+          ];
           double num5 = region.point.X;
           objArray[1] = num5.ToString(nfi);
           num5 = region.point.Y;
@@ -259,13 +258,12 @@ namespace TriangleNet.IO
                 Vertex vertex1 = otri.Org();
                 Vertex vertex2 = otri.Dest();
                 StreamWriter streamWriter2 = streamWriter1;
-                object[] objArray = new object[4]
-                {
+                object[] objArray = [
                   num2,
                   id1,
                   null,
                   null
-                };
+                ];
                 double num3 = vertex2[1] - vertex1[1];
                 objArray[2] = num3.ToString(nfi);
                 num3 = vertex1[0] - vertex2[0];

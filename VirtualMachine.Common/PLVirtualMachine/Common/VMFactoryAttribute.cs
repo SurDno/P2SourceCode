@@ -5,18 +5,15 @@ using Cofe.Meta;
 namespace PLVirtualMachine.Common
 {
   [AttributeUsage(AttributeTargets.Class, Inherited = false)]
-  public class VMFactoryAttribute : TypeAttribute
+  public class VMFactoryAttribute(Type type) : TypeAttribute 
   {
-    private Type type;
-    private static Dictionary<Type, Type> types = new Dictionary<Type, Type>();
+    private static Dictionary<Type, Type> types = new();
 
     public static bool TryGetValue(Type type, out Type result)
     {
       return types.TryGetValue(type, out result);
     }
 
-    public VMFactoryAttribute(Type type) => this.type = type;
-
-    public override void ComputeType(Type type) => types.Add(this.type, type);
+    public override void ComputeType(Type type1) => types.Add(type, type1);
   }
 }

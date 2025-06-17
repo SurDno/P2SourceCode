@@ -28,13 +28,7 @@ namespace Cinemachine
 
     private void OnValidate() => m_Damping = Mathf.Max(0.0f, m_Damping);
 
-    public bool IsValid
-    {
-      get
-      {
-        return m_ConfineMode == Mode.Confine3D && m_BoundingVolume != null;
-      }
-    }
+    public bool IsValid => m_ConfineMode == Mode.Confine3D && m_BoundingVolume != null;
 
     protected override void PostPipelineStageCallback(
       CinemachineVirtualCameraBase vcam,

@@ -11,10 +11,7 @@ namespace SRF.Components
 
     public static T Instance
     {
-      [DebuggerStepThrough] get
-      {
-        return !(_instance == null) ? _instance : throw new InvalidOperationException("No instance of {0} present in scene".Fmt(typeof (T).Name));
-      }
+      [DebuggerStepThrough] get => !(_instance == null) ? _instance : throw new InvalidOperationException("No instance of {0} present in scene".Fmt(typeof (T).Name));
     }
 
     public static bool HasInstance

@@ -4,7 +4,7 @@ using UnityEngine;
 public class DynamicResolution
 {
   private static DynamicResolution instance;
-  private List<Camera> cameras = new List<Camera>();
+  private List<Camera> cameras = [];
   private int lastFrame;
   private float scale = 1f;
   private RenderTexture targetTexture;

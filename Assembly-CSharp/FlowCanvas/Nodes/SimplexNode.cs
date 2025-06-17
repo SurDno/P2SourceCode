@@ -39,13 +39,7 @@ namespace FlowCanvas.Nodes
       }
     }
 
-    protected ParameterInfo[] parameters
-    {
-      get
-      {
-        return GetType().GetMethod("Invoke", BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public).GetParameters();
-      }
-    }
+    protected ParameterInfo[] parameters => GetType().GetMethod("Invoke", BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public).GetParameters();
 
     public void RegisterPorts(FlowNode node)
     {

@@ -363,13 +363,7 @@ public class TOD_Sky : MonoBehaviour
 
   public static IList<TOD_Sky> Instances => instances;
 
-  public static TOD_Sky Instance
-  {
-    get
-    {
-      return instances.Count == 0 ? null : instances[instances.Count - 1];
-    }
-  }
+  public static TOD_Sky Instance => instances.Count == 0 ? null : instances[instances.Count - 1];
 
   public bool Initialized { get; private set; }
 

@@ -2,17 +2,10 @@
 
 namespace Engine.Common.Types
 {
-  public struct Position
-  {
+  public struct Position(float x, float y) {
     public static readonly Position Zero;
-    public float X;
-    public float Y;
-
-    public Position(float x, float y)
-    {
-      X = x;
-      Y = y;
-    }
+    public float X = x;
+    public float Y = y;
 
     public override string ToString()
     {

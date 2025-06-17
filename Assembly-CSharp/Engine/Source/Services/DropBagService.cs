@@ -33,9 +33,9 @@ namespace Engine.Source.Services
     [StateSaveProxy(MemberEnum.CustomListReference)]
     [StateLoadProxy(MemberEnum.CustomListReference)]
     [Inspected]
-    protected List<IEntity> bags = new List<IEntity>();
+    protected List<IEntity> bags = [];
     [Inspected]
-    private List<IStorableComponent> waitings = new List<IStorableComponent>();
+    private List<IStorableComponent> waitings = [];
 
     public event Action<IEntity> OnCreateEntity;
 

@@ -8,13 +8,13 @@ namespace RootMotion.Dynamics
   public class PuppetMasterSettings : Singleton<PuppetMasterSettings>
   {
     [Header("Optimizations")]
-    public PuppetUpdateLimit kinematicCollidersUpdateLimit = new PuppetUpdateLimit();
-    public PuppetUpdateLimit freeUpdateLimit = new PuppetUpdateLimit();
-    public PuppetUpdateLimit fixedUpdateLimit = new PuppetUpdateLimit();
+    public PuppetUpdateLimit kinematicCollidersUpdateLimit = new();
+    public PuppetUpdateLimit freeUpdateLimit = new();
+    public PuppetUpdateLimit fixedUpdateLimit = new();
     public bool collisionStayMessages = true;
     public bool collisionExitMessages = true;
     public float activePuppetCollisionThresholdMlp;
-    private List<PuppetMaster> _puppets = new List<PuppetMaster>();
+    private List<PuppetMaster> _puppets = [];
 
     public int currentlyActivePuppets { get; private set; }
 
@@ -72,10 +72,8 @@ namespace RootMotion.Dynamics
     public class PuppetUpdateLimit
     {
       [Range(1f, 100f)]
-      public int puppetsPerFrame;
+      public int puppetsPerFrame = 100;
       private int index;
-
-      public PuppetUpdateLimit() => puppetsPerFrame = 100;
 
       public void Step(int puppetCount)
       {

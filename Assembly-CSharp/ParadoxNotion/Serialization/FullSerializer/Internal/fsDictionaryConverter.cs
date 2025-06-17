@@ -17,9 +17,7 @@ namespace ParadoxNotion.Serialization.FullSerializer.Internal
     {
       IDictionary dictionary = (IDictionary) instance_;
       fsResult fsResult1 = fsResult.Success;
-      Type keyStorageType;
-      Type valueStorageType;
-      GetKeyValueTypes(dictionary.GetType(), out keyStorageType, out valueStorageType);
+      GetKeyValueTypes(dictionary.GetType(), out Type keyStorageType, out Type valueStorageType);
       if (data.IsList)
       {
         List<fsData> asList = data.AsList;
@@ -30,14 +28,12 @@ namespace ParadoxNotion.Serialization.FullSerializer.Internal
           fsResult fsResult3 = fsResult2 = fsResult1 + CheckType(data1, fsDataType.Object);
           if (fsResult3.Failed)
             return fsResult2;
-          fsData subitem1;
           fsResult fsResult4;
-          fsResult3 = fsResult4 = fsResult2 + CheckKey(data1, "Key", out subitem1);
+          fsResult3 = fsResult4 = fsResult2 + CheckKey(data1, "Key", out fsData subitem1);
           if (fsResult3.Failed)
             return fsResult4;
-          fsData subitem2;
           fsResult fsResult5;
-          fsResult3 = fsResult5 = fsResult4 + CheckKey(data1, "Value", out subitem2);
+          fsResult3 = fsResult5 = fsResult4 + CheckKey(data1, "Value", out fsData subitem2);
           if (fsResult3.Failed)
             return fsResult5;
           object result1 = null;
@@ -85,22 +81,18 @@ namespace ParadoxNotion.Serialization.FullSerializer.Internal
       serialized = fsData.Null;
       fsResult fsResult1 = fsResult.Success;
       IDictionary dictionary = (IDictionary) instance_;
-      Type keyStorageType;
-      Type valueStorageType;
-      GetKeyValueTypes(dictionary.GetType(), out keyStorageType, out valueStorageType);
+      GetKeyValueTypes(dictionary.GetType(), out Type keyStorageType, out Type valueStorageType);
       IDictionaryEnumerator enumerator = dictionary.GetEnumerator();
       bool flag = true;
       List<fsData> fsDataList1 = new List<fsData>(dictionary.Count);
       List<fsData> fsDataList2 = new List<fsData>(dictionary.Count);
       while (enumerator.MoveNext())
       {
-        fsData data1;
         fsResult fsResult2;
-        fsResult fsResult3 = fsResult2 = fsResult1 + Serializer.TrySerialize(keyStorageType, enumerator.Key, out data1);
+        fsResult fsResult3 = fsResult2 = fsResult1 + Serializer.TrySerialize(keyStorageType, enumerator.Key, out fsData data1);
         if (fsResult3.Failed)
           return fsResult2;
-        fsData data2;
-        fsResult3 = fsResult1 = fsResult2 + Serializer.TrySerialize(valueStorageType, enumerator.Value, out data2);
+        fsResult3 = fsResult1 = fsResult2 + Serializer.TrySerialize(valueStorageType, enumerator.Value, out fsData data2);
         if (fsResult3.Failed)
           return fsResult1;
         fsDataList1.Add(data1);
@@ -143,10 +135,9 @@ namespace ParadoxNotion.Serialization.FullSerializer.Internal
         if (type == null)
           return fsResult.Warn(dictionary.GetType() + " does not extend ICollection");
         object instance = Activator.CreateInstance(type.GetGenericArguments()[0], key, value);
-        type.GetFlattenedMethod("Add").Invoke(dictionary, new object[1]
-        {
+        type.GetFlattenedMethod("Add").Invoke(dictionary, [
           instance
-        });
+        ]);
         return fsResult.Success;
       }
       dictionary[key] = value;

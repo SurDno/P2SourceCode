@@ -11,14 +11,11 @@ namespace FlowCanvas.Nodes
     public string eventName;
     private FlowOutput received;
 
-    public override string name
-    {
-      get => base.name + string.Format(" [ <color=#DDDDDD>{0}</color> ]", eventName);
-    }
+    public override string name => base.name + string.Format(" [ <color=#DDDDDD>{0}</color> ]", eventName);
 
     protected override string[] GetTargetMessageEvents()
     {
-      return new string[1]{ "OnCustomEvent" };
+      return ["OnCustomEvent"];
     }
 
     protected override void RegisterPorts() => received = AddFlowOutput("Received");

@@ -17,7 +17,7 @@ namespace RootMotion.FinalIK
     public WeightCurve[] weightCurves;
     public Multiplier[] multipliers;
     public InteractionEvent[] events;
-    private InteractionTarget[] targets = new InteractionTarget[0];
+    private InteractionTarget[] targets = [];
 
     [ContextMenu("TUTORIAL VIDEO (PART 1: BASICS)")]
     private void OpenTutorial1()
@@ -71,13 +71,7 @@ namespace RootMotion.FinalIK
       targets = targetsRoot.GetComponentsInChildren<InteractionTarget>();
     }
 
-    public Transform lookAtTarget
-    {
-      get
-      {
-        return otherLookAtTarget != null ? otherLookAtTarget : transform;
-      }
-    }
+    public Transform lookAtTarget => otherLookAtTarget != null ? otherLookAtTarget : transform;
 
     public InteractionTarget GetTarget(
       FullBodyBipedEffector effectorType,
@@ -187,13 +181,7 @@ namespace RootMotion.FinalIK
       return 0.0f;
     }
 
-    public Transform targetsRoot
-    {
-      get
-      {
-        return otherTargetsRoot != null ? otherTargetsRoot : transform;
-      }
-    }
+    public Transform targetsRoot => otherTargetsRoot != null ? otherTargetsRoot : transform;
 
     private void Awake() => Initiate();
 

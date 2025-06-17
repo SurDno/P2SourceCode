@@ -26,9 +26,9 @@ namespace PLVirtualMachine
 {
   public class VirtualMachine : IVirtualMachine
   {
-    private Queue<DynamicFSM> dynamicFSMObjectsQueue = new Queue<DynamicFSM>();
-    private CSDequeue<RaisedEventInfo> processingEventsFSMDeQueue = new CSDequeue<RaisedEventInfo>();
-    private CSDequeue<RaisedEventInfo> processingEventsHotFSMDeQueue = new CSDequeue<RaisedEventInfo>();
+    private Queue<DynamicFSM> dynamicFSMObjectsQueue = new();
+    private CSDequeue<RaisedEventInfo> processingEventsFSMDeQueue = new();
+    private CSDequeue<RaisedEventInfo> processingEventsHotFSMDeQueue = new();
     private bool isStaticHierarchyBuilded;
     private bool isWorldLoaded;
     private bool isStartGame;
@@ -480,7 +480,7 @@ namespace PLVirtualMachine
       VMSaveLoadManagerUtility.LoadEntities(notHierarchyObjectsNode);
       yield return null;
       XmlElement freeEntityesNode = (XmlElement) notHierarchyObjectsNode.NextSibling;
-      List<FreeEntityInfo> freeEntityInfoList = new List<FreeEntityInfo>();
+      List<FreeEntityInfo> freeEntityInfoList = [];
       VMSaveLoadManager.LoadDynamiSerializableList(freeEntityesNode, freeEntityInfoList);
       VMEntity.LoadFreeEntities(freeEntityInfoList);
       yield return null;

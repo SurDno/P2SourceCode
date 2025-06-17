@@ -14,10 +14,10 @@ namespace RootMotion.FinalIK
     public float maintainRotationWeight;
     [Range(0.0f, 1f)]
     public float weight = 1f;
-    private BoneMap boneMapParent = new BoneMap();
-    private BoneMap boneMap1 = new BoneMap();
-    private BoneMap boneMap2 = new BoneMap();
-    private BoneMap boneMap3 = new BoneMap();
+    private BoneMap boneMapParent = new();
+    private BoneMap boneMap1 = new();
+    private BoneMap boneMap2 = new();
+    private BoneMap boneMap3 = new();
 
     public override bool IsValid(IKSolver solver, ref string message)
     {

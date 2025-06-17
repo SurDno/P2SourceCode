@@ -149,7 +149,7 @@ namespace PLVirtualMachine.Dynamic
       }
       if (listNode == null || listNode.ChildNodes.Count <= 0)
         return;
-      List<VMEntity> list = new List<VMEntity>();
+      List<VMEntity> list = [];
       VMSaveLoadManager.LoadDynamiSerializableList(listNode, list);
       VMStorage componentByName = (VMStorage) GetComponentByName("Storage");
       for (int index = 0; index < list.Count; ++index)
@@ -240,13 +240,7 @@ namespace PLVirtualMachine.Dynamic
 
     protected DynamicFSM FSM { get; set; }
 
-    public bool NeedCreateFSM
-    {
-      get
-      {
-        return VirtualMachine.Instance.ForceCreateFSM || editorTemplate.Blueprint.StateGraph != null || typeof (IWorldObject).IsAssignableFrom(editorTemplate.GetType()) && !((IWorldObject) editorTemplate).DirectEngineCreated;
-      }
-    }
+    public bool NeedCreateFSM => VirtualMachine.Instance.ForceCreateFSM || editorTemplate.Blueprint.StateGraph != null || typeof (IWorldObject).IsAssignableFrom(editorTemplate.GetType()) && !((IWorldObject) editorTemplate).DirectEngineCreated;
 
     public void RegistrAsEngineRoot()
     {

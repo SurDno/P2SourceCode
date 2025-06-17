@@ -7,14 +7,13 @@ using UnityEngine.SceneManagement;
 
 namespace Engine.Services.Engine.Assets
 {
-  public class SceneAsset : IAsset
+  public class SceneAsset(IScene reference, string context) : IAsset 
   {
     private IAsyncLoad async;
     private bool initialized;
-    private string context;
     private string reason;
     [Inspected]
-    private IScene reference;
+    private IScene reference = reference;
 
     [Inspected]
     public bool IsError { get; private set; }
@@ -30,12 +29,6 @@ namespace Engine.Services.Engine.Assets
 
     [Inspected]
     public Scene Scene { get; private set; }
-
-    public SceneAsset(IScene reference, string context)
-    {
-      this.reference = reference;
-      this.context = context;
-    }
 
     public void Update()
     {

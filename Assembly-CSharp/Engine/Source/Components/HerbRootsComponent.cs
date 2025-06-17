@@ -47,7 +47,7 @@ namespace Engine.Source.Components
     [Inspected]
     [StateSaveProxy]
     [StateLoadProxy]
-    protected List<double> herbGrowTimesLeftSorted = new List<double>();
+    protected List<double> herbGrowTimesLeftSorted = [];
     [Inspected]
     [StateSaveProxy]
     [StateLoadProxy]
@@ -57,14 +57,14 @@ namespace Engine.Source.Components
     [StateLoadProxy]
     protected int currentHerbsCount;
     [Inspected]
-    private List<HerbRootsPointInfo> spawnPoints = new List<HerbRootsPointInfo>();
+    private List<HerbRootsPointInfo> spawnPoints = [];
     [Inspected]
     private HerbRootsPointInfo waitingPoint;
     [DataReadProxy]
     [DataWriteProxy]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     [CopyableProxy]
-    protected List<HerbRootsTemplate> templates = new List<HerbRootsTemplate>();
+    protected List<HerbRootsTemplate> templates = [];
     [DataReadProxy]
     [DataWriteProxy]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
@@ -98,13 +98,7 @@ namespace Engine.Source.Components
       set => state = value;
     }
 
-    public bool NeedSave
-    {
-      get
-      {
-        return currentHerbsCount != 0 || state != HerbRootsComponentStateEnum.Sleeping || herbGrowTimesLeftSorted.Count != 0 || grownHerbsCount != 0;
-      }
-    }
+    public bool NeedSave => currentHerbsCount != 0 || state != HerbRootsComponentStateEnum.Sleeping || herbGrowTimesLeftSorted.Count != 0 || grownHerbsCount != 0;
 
     [Inspected]
     private IEnumerable<IEntity> Entities
@@ -116,13 +110,7 @@ namespace Engine.Source.Components
     }
 
     [Inspected]
-    private bool IsOperating
-    {
-      get
-      {
-        return locationItem != null && !locationItem.IsHibernation && Owner != null && Owner.IsEnabledInHierarchy && spawnPointsAttached;
-      }
-    }
+    private bool IsOperating => locationItem != null && !locationItem.IsHibernation && Owner != null && Owner.IsEnabledInHierarchy && spawnPointsAttached;
 
     [Inspected]
     public bool IsHerbsbudgetReached => grownHerbsCount >= herbsBudget;

@@ -23,10 +23,10 @@ namespace PLVirtualMachine.Dynamic
     private Guid dynamicGuid;
     private IMMPage pageInstance;
     private bool archive;
-    private List<DynamicMindMapNode> nodes = new List<DynamicMindMapNode>();
-    private static Dictionary<ulong, DynamicMindMap> mindMaps = new Dictionary<ulong, DynamicMindMap>(UlongComparer.Instance);
-    private static List<ulong> mindMapOrderList = new List<ulong>();
-    private static Dictionary<ulong, IDynamicMindMapObject> mmObjectsDict = new Dictionary<ulong, IDynamicMindMapObject>(UlongComparer.Instance);
+    private List<DynamicMindMapNode> nodes = [];
+    private static Dictionary<ulong, DynamicMindMap> mindMaps = new(UlongComparer.Instance);
+    private static List<ulong> mindMapOrderList = [];
+    private static Dictionary<ulong, IDynamicMindMapObject> mmObjectsDict = new(UlongComparer.Instance);
 
     public DynamicMindMap(VMLogicMap staticMindMap, IMMPage page)
     {
@@ -302,8 +302,7 @@ namespace PLVirtualMachine.Dynamic
 
     public static IDynamicMindMapObject GetDynamicMMObjectByStaticguid(ulong stGuid)
     {
-      IDynamicMindMapObject objectByStaticguid;
-      if (mmObjectsDict.TryGetValue(stGuid, out objectByStaticguid))
+      if (mmObjectsDict.TryGetValue(stGuid, out IDynamicMindMapObject objectByStaticguid))
         return objectByStaticguid;
       Logger.AddError(string.Format("Cannot find mind map object {0} with static guid {1}", "", stGuid));
       return null;

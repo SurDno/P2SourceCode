@@ -2,7 +2,7 @@
 {
   public class SRDebugStrings
   {
-    public static readonly SRDebugStrings Current = new SRDebugStrings();
+    public static readonly SRDebugStrings Current = new();
     public readonly string Console_MessageTruncated = "-- Message Truncated --";
     public readonly string Console_NoStackTrace = "-- No Stack Trace Available --";
     public readonly string Profiler_DisableProfilerInfo = "Unity profiler is currently <b>enabled</b>. Disable to improve performance.";

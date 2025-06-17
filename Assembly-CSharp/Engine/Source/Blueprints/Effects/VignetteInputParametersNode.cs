@@ -16,7 +16,7 @@ namespace Engine.Source.Blueprints.Effects
     private ValueInput<string> nameInput;
     [FromLocator]
     private EffectsService effects;
-    private List<IParameter<IntensityParameter<Color>>> result = new List<IParameter<IntensityParameter<Color>>>();
+    private List<IParameter<IntensityParameter<Color>>> result = [];
 
     [Port("Value")]
     private IList<IParameter<IntensityParameter<Color>>> Value()

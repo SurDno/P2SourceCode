@@ -14,10 +14,7 @@ namespace FlowCanvas.Nodes
     private float current;
     private Coroutine coroutine;
 
-    public override string name
-    {
-      get => base.name + string.Format(" [{0}]", current.ToString("0.0"));
-    }
+    public override string name => base.name + string.Format(" [{0}]", current.ToString("0.0"));
 
     public override void OnGraphStarted()
     {

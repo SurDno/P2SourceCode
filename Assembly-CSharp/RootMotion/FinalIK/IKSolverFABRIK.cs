@@ -7,8 +7,8 @@ namespace RootMotion.FinalIK
   public class IKSolverFABRIK : IKSolverHeuristic
   {
     public IterationDelegate OnPreIteration;
-    private bool[] limitedBones = new bool[0];
-    private Vector3[] solverLocalPositions = new Vector3[0];
+    private bool[] limitedBones = [];
+    private Vector3[] solverLocalPositions = [];
 
     public void SolveForward(Vector3 position)
     {
@@ -204,8 +204,8 @@ namespace RootMotion.FinalIK
         Quaternion rotation = Quaternion.FromToRotation(bones[index].solverRotation * bones[index].axis, bones[index + 1].solverPosition - bones[index].solverPosition);
         SolverRotate(index, rotation, false);
       }
-      bool changed = false;
-      Quaternion limitedRotation = GetLimitedRotation(limitBone, bones[limitBone].solverRotation, out changed);
+
+      Quaternion limitedRotation = GetLimitedRotation(limitBone, bones[limitBone].solverRotation, out bool changed);
       if (changed)
       {
         if (limitBone < bones.Length - 1)

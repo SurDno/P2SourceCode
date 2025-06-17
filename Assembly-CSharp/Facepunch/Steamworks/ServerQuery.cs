@@ -14,9 +14,7 @@ namespace Facepunch.Steamworks
       packet = new Packet();
       fixed (byte* pOut = buffer)
       {
-        uint pNetAdr = 0;
-        ushort pPort = 0;
-        int nextOutgoingPacket = server.native.gameServer.GetNextOutgoingPacket((IntPtr) pOut, buffer.Length, out pNetAdr, out pPort);
+        int nextOutgoingPacket = server.native.gameServer.GetNextOutgoingPacket((IntPtr) pOut, buffer.Length, out uint pNetAdr, out ushort pPort);
         if (nextOutgoingPacket == 0)
           return false;
         packet.Size = nextOutgoingPacket;

@@ -57,7 +57,7 @@ namespace JerboaAnimationInstancing
     [Header("Animations")]
     [SerializeField]
     private TextAsset jerboaAnimationsTexture;
-    private List<JerboaGroupBarycentric> groups = new List<JerboaGroupBarycentric>();
+    private List<JerboaGroupBarycentric> groups = [];
     private JerboaInstancingManager jerboaInstancingManager;
     private JerboaAnimationManager jerboaAnimationManager;
     private int currentGroupIndex;
@@ -179,8 +179,7 @@ namespace JerboaAnimationInstancing
       else
       {
         Vector3 position = transform.position;
-        NavMeshHit hit;
-        if (NavMesh.SamplePosition(position, out hit, 100f, groupWalkNavigationMask))
+        if (NavMesh.SamplePosition(position, out NavMeshHit hit, 100f, groupWalkNavigationMask))
           position = hit.position;
         for (int index = 0; index < groupsCount; ++index)
         {

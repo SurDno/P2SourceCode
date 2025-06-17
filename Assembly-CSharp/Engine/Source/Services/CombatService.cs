@@ -15,19 +15,19 @@ namespace Engine.Source.Services
   [RuntimeService(typeof (CombatService), typeof (ICombatService))]
   public class CombatService : IInitialisable, IUpdatable, ICombatService
   {
-    private List<CombatServiceCharacterInfo> characters = new List<CombatServiceCharacterInfo>();
-    private List<CombatServiceCharacterInfo> activeCharacters = new List<CombatServiceCharacterInfo>();
-    private List<CombatServiceCombatInfo> currentCombats = new List<CombatServiceCombatInfo>();
-    private List<CombatServiceCombatInfo> combatsToUpdate = new List<CombatServiceCombatInfo>();
-    private List<CombatCry> currentCries = new List<CombatCry>();
-    private List<CombatServiceCommonOrder> waitingAttackOrders = new List<CombatServiceCommonOrder>();
+    private List<CombatServiceCharacterInfo> characters = [];
+    private List<CombatServiceCharacterInfo> activeCharacters = [];
+    private List<CombatServiceCombatInfo> currentCombats = [];
+    private List<CombatServiceCombatInfo> combatsToUpdate = [];
+    private List<CombatCry> currentCries = [];
+    private List<CombatServiceCommonOrder> waitingAttackOrders = [];
     private CombatServiceCharacterInfo playerCharacter;
-    private Dictionary<IEntity, CombatServiceCharacterInfo> charactersDictionary = new Dictionary<IEntity, CombatServiceCharacterInfo>();
+    private Dictionary<IEntity, CombatServiceCharacterInfo> charactersDictionary = new();
     private float enemiesSearchRadius = 30f;
     private float minimumSurrenderTime = 2f;
     private float escapedIgnoreTimeout = 12f;
-    private static List<CombatCry> tmp = new List<CombatCry>();
-    private static List<CombatServiceCommonOrder> tmp2 = new List<CombatServiceCommonOrder>();
+    private static List<CombatCry> tmp = [];
+    private static List<CombatServiceCommonOrder> tmp2 = [];
     private bool playerIsFighting;
 
     public bool PlayerIsFighting
@@ -501,9 +501,9 @@ namespace Engine.Source.Services
     private CombatServiceCombatInfo CreateCombat()
     {
       CombatServiceCombatInfo combat = new CombatServiceCombatInfo();
-      combat.Characters = new List<CombatServiceCharacterInfo>();
-      combat.Fractions = new List<CombatServiceCombatFractionInfo>();
-      combat.EscapedCharacters = new List<CombatServiceEscapedCharacterInfo>();
+      combat.Characters = [];
+      combat.Fractions = [];
+      combat.EscapedCharacters = [];
       currentCombats.Add(combat);
       return combat;
     }
@@ -518,7 +518,7 @@ namespace Engine.Source.Services
       if (combatFractionInfo == null)
       {
         combatFractionInfo = new CombatServiceCombatFractionInfo(character.Fraction);
-        combatFractionInfo.Characters = new List<CombatServiceCharacterInfo>();
+        combatFractionInfo.Characters = [];
         combat.Fractions.Add(combatFractionInfo);
       }
       combatFractionInfo.Characters.Add(character);
@@ -576,7 +576,7 @@ namespace Engine.Source.Services
 
     private void ClearCombatFromFreeCharacters(CombatServiceCombatInfo combat)
     {
-      List<CombatServiceCharacterInfo> serviceCharacterInfoList = new List<CombatServiceCharacterInfo>();
+      List<CombatServiceCharacterInfo> serviceCharacterInfoList = [];
       foreach (CombatServiceCharacterInfo character in combat.Characters)
       {
         if (character.Character == null)
@@ -649,7 +649,7 @@ namespace Engine.Source.Services
       List<FractionEnum> fearFractions = combatFractionInfo.FearFractions;
       List<FractionEnum> attackFractions = combatFractionInfo.AttackFractions;
       bool flag1 = false;
-      List<CombatServiceCharacterInfo> fearList = new List<CombatServiceCharacterInfo>();
+      List<CombatServiceCharacterInfo> fearList = [];
       if (fearFractions.Count > 0 || character.PersonalFearEnemies.Count > 0 || character.WasBeaten || !character.CanFight)
       {
         fearList.AddRange(combat.Characters.FindAll(x => fearFractions.Contains(x.Fraction) && CharacterCanFight(x)));
@@ -745,7 +745,7 @@ namespace Engine.Source.Services
       CombatServiceCombatInfo combat,
       CombatServiceCharacterInfo character)
     {
-      List<CombatServiceCharacterInfo> serviceCharacterInfoList = new List<CombatServiceCharacterInfo>();
+      List<CombatServiceCharacterInfo> serviceCharacterInfoList = [];
       foreach (CombatServiceCharacterInfo character1 in combat.Characters)
       {
         if (character1.State == CombatServiceCharacterStateEnum.Fight && character1.CurrentEnemy == character)
@@ -760,7 +760,7 @@ namespace Engine.Source.Services
       CombatServiceCombatInfo combat,
       CombatServiceCharacterInfo character)
     {
-      List<CombatServiceCharacterInfo> serviceCharacterInfoList = new List<CombatServiceCharacterInfo>();
+      List<CombatServiceCharacterInfo> serviceCharacterInfoList = [];
       foreach (CombatServiceCharacterInfo character1 in combat.Characters)
       {
         if (character1.State == CombatServiceCharacterStateEnum.Loot && character1.CurrentEnemy == character)
@@ -985,8 +985,7 @@ namespace Engine.Source.Services
 
     public CombatServiceCharacterInfo GetCharacterInfo(IEntity entity)
     {
-      CombatServiceCharacterInfo characterInfo;
-      if (charactersDictionary.TryGetValue(entity, out characterInfo))
+      if (charactersDictionary.TryGetValue(entity, out CombatServiceCharacterInfo characterInfo))
         return characterInfo;
       foreach (CombatServiceCharacterInfo character in characters)
       {
@@ -1070,7 +1069,7 @@ namespace Engine.Source.Services
       if (character.Character == null || character.Character.gameObject == null)
         return null;
       Vector3 position = character.Character.gameObject.transform.position;
-      List<CombatServiceCharacterInfo> charactersInRadius = new List<CombatServiceCharacterInfo>();
+      List<CombatServiceCharacterInfo> charactersInRadius = [];
       foreach (CombatServiceCharacterInfo character1 in characters)
       {
         if (character1 != character && character1.IsIndoors == character.IsIndoors && !(character1.Character == null) && !(character1.Character.gameObject == null) && (character1.Character.gameObject.transform.position - position).magnitude <= (double) radius)
@@ -1085,7 +1084,7 @@ namespace Engine.Source.Services
       if (character.Character == null || character.Character.gameObject == null)
         return null;
       Vector3 position = character.Character.gameObject.transform.position;
-      List<CombatServiceCharacterInfo> hearingCharacters = new List<CombatServiceCharacterInfo>();
+      List<CombatServiceCharacterInfo> hearingCharacters = [];
       foreach (CombatServiceCharacterInfo character1 in characters)
       {
         if (character1 != character && character1.IsIndoors == character.IsIndoors && character1.CanHear(character))
@@ -1102,7 +1101,7 @@ namespace Engine.Source.Services
       if (character.Character == null || character.Character.gameObject == null)
         return;
       Vector3 position = character.Character.gameObject.transform.position;
-      List<CombatServiceCharacterInfo> serviceCharacterInfoList = new List<CombatServiceCharacterInfo>();
+      List<CombatServiceCharacterInfo> serviceCharacterInfoList = [];
       foreach (CombatServiceCharacterInfo aims in aimsList)
       {
         if (!(aims.Character == null) && !(aims.Character.gameObject == null) && (aims.Character.gameObject.transform.position - position).magnitude <= (double) radius)

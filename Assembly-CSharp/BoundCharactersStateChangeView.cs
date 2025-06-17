@@ -15,7 +15,7 @@ public class BoundCharactersStateChangeView : MonoBehaviour
   private HideableView activeView;
   [SerializeField]
   private Button skipButton;
-  private List<BoundCharacterComponent> characters = new List<BoundCharacterComponent>();
+  private List<BoundCharacterComponent> characters = [];
   private BoundCharacterStateChangeView characterView;
   private Action onCurrentCharacterEndAction;
 

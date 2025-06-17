@@ -30,7 +30,7 @@ public class CraftHelper
     CraftRecipe recipe,
     List<IStorableComponent> ingredients)
   {
-    List<IStorableComponent> recipeIngredients = new List<IStorableComponent>();
+    List<IStorableComponent> recipeIngredients = [];
     IStorableComponent componentFromEntity1 = GetStorableComponentFromEntity(recipe.Component1);
     if (componentFromEntity1 != null)
       recipeIngredients.Add(componentFromEntity1);

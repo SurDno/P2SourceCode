@@ -9,12 +9,12 @@ namespace RootMotion.FinalIK
     [Range(0.0f, 1f)]
     public float IKRotationWeight = 1f;
     public Quaternion IKRotation = Quaternion.identity;
-    public Point pelvis = new Point();
-    public Point thigh = new Point();
-    public Point calf = new Point();
-    public Point foot = new Point();
-    public Point toe = new Point();
-    public IKSolverVR.Leg leg = new IKSolverVR.Leg();
+    public Point pelvis = new();
+    public Point thigh = new();
+    public Point calf = new();
+    public Point foot = new();
+    public Point toe = new();
+    public IKSolverVR.Leg leg = new();
     public Vector3 heelOffset;
     private Vector3[] positions = new Vector3[6];
     private Quaternion[] rotations = new Quaternion[6];
@@ -59,14 +59,13 @@ namespace RootMotion.FinalIK
 
     public override Point[] GetPoints()
     {
-      return new Point[5]
-      {
+      return [
         pelvis,
         thigh,
         calf,
         foot,
         toe
-      };
+      ];
     }
 
     public override Point GetPoint(Transform transform)

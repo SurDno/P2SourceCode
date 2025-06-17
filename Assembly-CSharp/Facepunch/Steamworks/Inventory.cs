@@ -76,7 +76,7 @@ namespace Facepunch.Steamworks
       if (IsServer || !r.IsSuccess || r.Items == null)
         return;
       if (Items == null)
-        Items = new Item[0];
+        Items = [];
       Items = Items.Union(r.Items).Distinct().Where(x => !r.Removed.Contains(x)).Where(x => !r.Consumed.Contains(x)).ToArray();
       Action onUpdate = OnUpdate;
       if (onUpdate != null)
@@ -165,11 +165,10 @@ namespace Facepunch.Steamworks
     public Result CraftItem(Item[] list, Definition target)
     {
       SteamInventoryResult_t pResultHandle = -1;
-      SteamItemDef_t[] pArrayGenerate = new SteamItemDef_t[1]
-      {
-        new SteamItemDef_t { Value = target.Id }
-      };
-      uint[] punArrayGenerateQuantity = new uint[1]{ 1U };
+      SteamItemDef_t[] pArrayGenerate = [
+        new() { Value = target.Id }
+      ];
+      uint[] punArrayGenerateQuantity = [1U];
       SteamItemInstanceID_t[] array1 = list.Select<Item, SteamItemInstanceID_t>(x => x.Id).ToArray();
       uint[] array2 = list.Select(x => 1U).ToArray();
       return !inventory.ExchangeItems(ref pResultHandle, pArrayGenerate, punArrayGenerateQuantity, 1U, array1, array2, (uint) array1.Length) ? null : new Result(this, pResultHandle, true);
@@ -178,11 +177,10 @@ namespace Facepunch.Steamworks
     public Result CraftItem(Item.Amount[] list, Definition target)
     {
       SteamInventoryResult_t pResultHandle = -1;
-      SteamItemDef_t[] pArrayGenerate = new SteamItemDef_t[1]
-      {
-        new SteamItemDef_t { Value = target.Id }
-      };
-      uint[] punArrayGenerateQuantity = new uint[1]{ 1U };
+      SteamItemDef_t[] pArrayGenerate = [
+        new() { Value = target.Id }
+      ];
+      uint[] punArrayGenerateQuantity = [1U];
       SteamItemInstanceID_t[] array1 = list.Select<Item.Amount, SteamItemInstanceID_t>(x => x.Item.Id).ToArray();
       uint[] array2 = list.Select(x => (uint) x.Quantity).ToArray();
       return !inventory.ExchangeItems(ref pResultHandle, pArrayGenerate, punArrayGenerateQuantity, 1U, array1, array2, (uint) array1.Length) ? null : new Result(this, pResultHandle, true);
@@ -203,11 +201,10 @@ namespace Facepunch.Steamworks
     public Result GenerateItem(Definition target, int amount)
     {
       SteamInventoryResult_t pResultHandle = -1;
-      SteamItemDef_t[] pArrayItemDefs = new SteamItemDef_t[1]
-      {
-        new SteamItemDef_t { Value = target.Id }
-      };
-      uint[] punArrayQuantity = new uint[1]{ (uint) amount };
+      SteamItemDef_t[] pArrayItemDefs = [
+        new() { Value = target.Id }
+      ];
+      uint[] punArrayQuantity = [(uint) amount];
       return !inventory.GenerateItems(ref pResultHandle, pArrayItemDefs, punArrayQuantity, 1U) ? null : new Result(this, pResultHandle, true);
     }
 
@@ -280,10 +277,9 @@ namespace Facepunch.Steamworks
 
       public string GetStringProperty(string name)
       {
-        string pchValueBuffer = string.Empty;
         if (customProperties != null && customProperties.ContainsKey(name))
           return customProperties[name];
-        return !inventory.GetItemDefinitionProperty(Id, name, out pchValueBuffer) ? string.Empty : pchValueBuffer;
+        return !inventory.GetItemDefinitionProperty(Id, name, out string pchValueBuffer) ? string.Empty : pchValueBuffer;
       }
 
       public bool GetBoolProperty(string name)
@@ -322,16 +318,15 @@ namespace Facepunch.Steamworks
       {
         if (string.IsNullOrEmpty(ExchangeSchema))
           return;
-        Recipes = ExchangeSchema.Split(new char[1]
-        {
+        Recipes = ExchangeSchema.Split([
           ';'
-        }, StringSplitOptions.RemoveEmptyEntries).Select(x => Recipe.FromString(x, definitions, this)).ToArray();
+        ], StringSplitOptions.RemoveEmptyEntries).Select(x => Recipe.FromString(x, definitions, this)).ToArray();
       }
 
       internal void InRecipe(Recipe r)
       {
         if (IngredientFor == null)
-          IngredientFor = new Recipe[0];
+          IngredientFor = [];
         IngredientFor = new List<Recipe>(IngredientFor)
         {
           r
@@ -351,7 +346,7 @@ namespace Facepunch.Steamworks
       {
         Recipe r = new Recipe();
         r.Result = Result;
-        string[] source = part.Split(new char[1]{ ',' }, StringSplitOptions.RemoveEmptyEntries);
+        string[] source = part.Split([','], StringSplitOptions.RemoveEmptyEntries);
         r.Ingredients = source.Select(x => Ingredient.FromString(x, definitions)).Where(x => x.DefinitionId != 0).ToArray();
         foreach (Ingredient ingredient in r.Ingredients)
         {
@@ -378,8 +373,7 @@ namespace Facepunch.Steamworks
             if (part.Contains('x'))
             {
               int length = part.IndexOf('x');
-              int result = 0;
-              if (int.TryParse(part.Substring(length + 1), out result))
+              if (int.TryParse(part.Substring(length + 1), out int result))
                 i.Count = result;
               part = part.Substring(0, length);
             }
@@ -520,8 +514,7 @@ namespace Facepunch.Steamworks
 
       internal unsafe byte[] Serialize()
       {
-        uint punOutBufferSize = 0;
-        if (!inventory.inventory.SerializeResult(Handle, IntPtr.Zero, out punOutBufferSize))
+        if (!inventory.inventory.SerializeResult(Handle, IntPtr.Zero, out uint punOutBufferSize))
           return null;
         byte[] numArray = new byte[(int) punOutBufferSize];
         fixed (byte* pOutBuffer = numArray)

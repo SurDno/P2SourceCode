@@ -11,9 +11,9 @@ namespace RootMotion.FinalIK
     public float IKRotationWeight = 1f;
     public Quaternion IKRotation = Quaternion.identity;
     public Vector3 bendNormal = Vector3.right;
-    public TrigonometricBone bone1 = new TrigonometricBone();
-    public TrigonometricBone bone2 = new TrigonometricBone();
-    public TrigonometricBone bone3 = new TrigonometricBone();
+    public TrigonometricBone bone1 = new();
+    public TrigonometricBone bone2 = new();
+    public TrigonometricBone bone3 = new();
     protected Vector3 weightIKPosition;
     protected bool directHierarchy = true;
 
@@ -53,12 +53,11 @@ namespace RootMotion.FinalIK
 
     public override Point[] GetPoints()
     {
-      return new Point[3]
-      {
+      return [
         bone1,
         bone2,
         bone3
-      };
+      ];
     }
 
     public override Point GetPoint(Transform transform)

@@ -16,7 +16,7 @@ namespace Engine.Source.Commons
     [CopyableProxy()]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    protected List<LipSyncLanguage> languages = new List<LipSyncLanguage>();
+    protected List<LipSyncLanguage> languages = [];
 
     public List<LipSyncLanguage> Languages => languages;
   }

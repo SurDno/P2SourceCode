@@ -8,9 +8,7 @@ namespace AmplifyColor
   [Serializable]
   public class VolumeEffectFlags
   {
-    public List<VolumeEffectComponentFlags> components;
-
-    public VolumeEffectFlags() => components = new List<VolumeEffectComponentFlags>();
+    public List<VolumeEffectComponentFlags> components = [];
 
     public void AddComponent(Component c)
     {

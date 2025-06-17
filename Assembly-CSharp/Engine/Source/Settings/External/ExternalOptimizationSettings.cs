@@ -291,7 +291,7 @@ namespace Engine.Source.Settings.External
     [DataWriteProxy]
     [CopyableProxy]
     [Inspected(Mutable = true, Mode = ExecuteMode.EditAndRuntime)]
-    public List<AreaEnum> LimitOutdoorAreaCrowdEntity = new List<AreaEnum>();
+    public List<AreaEnum> LimitOutdoorAreaCrowdEntity = [];
     [DataReadProxy]
     [DataWriteProxy]
     [CopyableProxy]
@@ -336,7 +336,7 @@ namespace Engine.Source.Settings.External
     [DataWriteProxy]
     [CopyableProxy]
     [Inspected(Mutable = true, Mode = ExecuteMode.EditAndRuntime)]
-    public List<IMemoryStrategy> MemoryStrategies = new List<IMemoryStrategy>();
+    public List<IMemoryStrategy> MemoryStrategies = [];
     [DataReadProxy]
     [DataWriteProxy]
     [CopyableProxy]

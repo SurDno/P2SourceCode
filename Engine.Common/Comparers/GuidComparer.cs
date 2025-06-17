@@ -5,7 +5,7 @@ namespace Engine.Common.Comparers
 {
   public class GuidComparer : IEqualityComparer<Guid>
   {
-    public static readonly GuidComparer Instance = new GuidComparer();
+    public static readonly GuidComparer Instance = new();
 
     public bool Equals(Guid x, Guid y) => x == y;
 

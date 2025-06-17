@@ -176,21 +176,16 @@ namespace UnityStandardAssets.CinematicEffects
       [Tooltip("Global screen scaling.")]
       public float scale;
 
-      public static DistortionSettings defaultSettings
-      {
-        get
-        {
-          return new DistortionSettings {
-            enabled = false,
-            amount = 0.0f,
-            centerX = 0.0f,
-            centerY = 0.0f,
-            amountX = 1f,
-            amountY = 1f,
-            scale = 1f
-          };
-        }
-      }
+      public static DistortionSettings defaultSettings =>
+        new() {
+          enabled = false,
+          amount = 0.0f,
+          centerX = 0.0f,
+          centerY = 0.0f,
+          amountX = 1f,
+          amountY = 1f,
+          scale = 1f
+        };
     }
 
     [Serializable]
@@ -219,22 +214,17 @@ namespace UnityStandardAssets.CinematicEffects
       [Tooltip("Desaturate the corners of the screen. Leave this to 0 to disable it.")]
       public float desaturate;
 
-      public static VignetteSettings defaultSettings
-      {
-        get
-        {
-          return new VignetteSettings {
-            enabled = false,
-            color = new Color(0.0f, 0.0f, 0.0f, 1f),
-            center = new Vector2(0.5f, 0.5f),
-            intensity = 1.4f,
-            smoothness = 0.8f,
-            roundness = 1f,
-            blur = 0.0f,
-            desaturate = 0.0f
-          };
-        }
-      }
+      public static VignetteSettings defaultSettings =>
+        new() {
+          enabled = false,
+          color = new Color(0.0f, 0.0f, 0.0f, 1f),
+          center = new Vector2(0.5f, 0.5f),
+          intensity = 1.4f,
+          smoothness = 0.8f,
+          roundness = 1f,
+          blur = 0.0f,
+          desaturate = 0.0f
+        };
     }
 
     [Serializable]
@@ -248,17 +238,12 @@ namespace UnityStandardAssets.CinematicEffects
       [Tooltip("Amount of tangential distortion.")]
       public float amount;
 
-      public static ChromaticAberrationSettings defaultSettings
-      {
-        get
-        {
-          return new ChromaticAberrationSettings {
-            enabled = false,
-            color = Color.green,
-            amount = 0.0f
-          };
-        }
-      }
+      public static ChromaticAberrationSettings defaultSettings =>
+        new() {
+          enabled = false,
+          color = Color.green,
+          amount = 0.0f
+        };
     }
 
     private enum Pass

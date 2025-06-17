@@ -4,7 +4,7 @@ namespace ClipperLib
 {
   public class PolyTree : PolyNode
   {
-    internal List<PolyNode> m_AllPolys = new List<PolyNode>();
+    internal List<PolyNode> m_AllPolys = [];
 
     public int Total
     {

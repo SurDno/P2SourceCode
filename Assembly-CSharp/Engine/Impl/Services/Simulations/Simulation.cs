@@ -36,7 +36,7 @@ namespace Engine.Impl.Services.Simulations
     private const string idName = "Id";
     private const string pathName = "HierarchyPath";
     [Inspected]
-    private Dictionary<Guid, IEntity> entities = new Dictionary<Guid, IEntity>(GuidComparer.Instance);
+    private Dictionary<Guid, IEntity> entities = new(GuidComparer.Instance);
     private IEntity hierarchy;
     private IEntity objects;
     private IEntity storables;
@@ -44,14 +44,13 @@ namespace Engine.Impl.Services.Simulations
     private bool initialise;
     private IEntity player;
     [Inspected]
-    private List<IEntity> players = new List<IEntity>();
+    private List<IEntity> players = [];
 
     public IEntity Get(Guid id)
     {
       if (!initialise)
         throw new Exception(GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
-      IEntity entity;
-      entities.TryGetValue(id, out entity);
+      entities.TryGetValue(id, out IEntity entity);
       return entity;
     }
 
@@ -231,8 +230,7 @@ namespace Engine.Impl.Services.Simulations
             else
             {
               Guid id = DefaultConverter.ParseGuid(idNode.InnerText);
-              IEntity entity;
-              if (!entities.TryGetValue(id, out entity))
+              if (!entities.TryGetValue(id, out IEntity entity))
               {
                 XmlElement pathNode = item["HierarchyPath"];
                 Debug.LogError("Entity " + id + " not found , path : " + (pathNode != null ? pathNode.InnerText : (object) "null") + " , count : " + entities.Count + " , context : " + context);

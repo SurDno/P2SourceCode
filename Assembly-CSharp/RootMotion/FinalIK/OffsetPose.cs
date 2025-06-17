@@ -5,7 +5,7 @@ namespace RootMotion.FinalIK
 {
   public class OffsetPose : MonoBehaviour
   {
-    public EffectorLink[] effectorLinks = new EffectorLink[0];
+    public EffectorLink[] effectorLinks = [];
 
     public void Apply(IKSolverFullBodyBiped solver, float weight)
     {

@@ -12,8 +12,7 @@ namespace PLVirtualMachine.Dynamic.Components
 
     public void InitiliseComponentFromHierarchy(VMEntity entity, VMLogicObject templateObject)
     {
-      IParam obj;
-      if (!((IBlueprint) templateObject).TryGetProperty("Interactive.ObjectName", out obj))
+      if (!((IBlueprint) templateObject).TryGetProperty("Interactive.ObjectName", out IParam obj))
         return;
       ObjectName = (ITextRef) obj.Value;
     }

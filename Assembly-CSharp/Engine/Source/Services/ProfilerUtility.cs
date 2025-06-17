@@ -5,12 +5,11 @@ namespace Engine.Source.Services
 {
   public static class ProfilerUtility
   {
-    private static Dictionary<Type, string> types = new Dictionary<Type, string>();
+    private static Dictionary<Type, string> types = new();
 
     public static string GetTypeName(Type type)
     {
-      string name;
-      if (!types.TryGetValue(type, out name))
+      if (!types.TryGetValue(type, out string name))
       {
         name = type.Name;
         types.Add(type, name);

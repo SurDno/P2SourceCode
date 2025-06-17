@@ -20,15 +20,9 @@ public class Flamethrower : MonoBehaviour
   private int targetCount;
   private float audioLoopDelay;
 
-  public HashSet<IFlamable> MovablesHit
-  {
-    get => movableSetSwapped ? movableSet1 : movableSet0;
-  }
+  public HashSet<IFlamable> MovablesHit => movableSetSwapped ? movableSet1 : movableSet0;
 
-  private HashSet<IFlamable> BackMovableSet
-  {
-    get => movableSetSwapped ? movableSet0 : movableSet1;
-  }
+  private HashSet<IFlamable> BackMovableSet => movableSetSwapped ? movableSet0 : movableSet1;
 
   private void Awake()
   {
@@ -42,8 +36,8 @@ public class Flamethrower : MonoBehaviour
         local.collidesWith = local.collidesWith | ScriptableObjectInstance<GameSettingsData>.Instance.FlamethrowerLayer;
       }
     }
-    movableSet0 = new HashSet<IFlamable>();
-    movableSet1 = new HashSet<IFlamable>();
+    movableSet0 = [];
+    movableSet1 = [];
     movableSetSwapped = false;
     movableSetSwapTime = Time.time;
     audioLoopDelay = StartClip != null ? StartClip.length : 0.0f;

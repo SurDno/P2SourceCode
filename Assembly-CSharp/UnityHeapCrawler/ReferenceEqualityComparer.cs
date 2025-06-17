@@ -7,7 +7,7 @@ namespace UnityHeapCrawler
   public class ReferenceEqualityComparer : IEqualityComparer<object>
   {
     [NotNull]
-    public static ReferenceEqualityComparer Instance = new ReferenceEqualityComparer();
+    public static ReferenceEqualityComparer Instance = new();
 
     public bool Equals(object x, object y) => x == y;
 

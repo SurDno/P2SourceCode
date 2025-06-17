@@ -7,12 +7,10 @@ namespace PLVirtualMachine.Common
 {
   public class TagDistributionInfo : ITagInfo, IVMStringSerializable
   {
-    private List<ITagInfo> tagInfoList = new List<ITagInfo>();
-    private bool isDistribInPercentage;
+    private List<ITagInfo> tagInfoList = [];
+    private bool isDistribInPercentage = true;
     private bool isComplex;
     private int percentageValue = 100;
-
-    public TagDistributionInfo() => isDistribInPercentage = true;
 
     public bool Complex => isComplex;
 
@@ -39,10 +37,9 @@ namespace PLVirtualMachine.Common
             isComplex = true;
             isDistribInPercentage = true;
             string str = data.Substring("COMPLEX&DISTRIB".Length);
-            string[] separator = new string[1]
-            {
+            string[] separator = [
               "END&DISTRIB"
-            };
+            ];
             foreach (string data1 in str.Split(separator, StringSplitOptions.RemoveEmptyEntries))
             {
               TagDistributionInfo distributionInfo = new TagDistributionInfo();
@@ -52,7 +49,7 @@ namespace PLVirtualMachine.Common
             break;
           }
           isDistribInPercentage = true;
-          string[] separator1 = new string[1]{ "END&TAG" };
+          string[] separator1 = ["END&TAG"];
           string[] strArray = data.Split(separator1, StringSplitOptions.RemoveEmptyEntries);
           for (int index = 0; index < strArray.Length; ++index)
           {

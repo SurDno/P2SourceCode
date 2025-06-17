@@ -48,9 +48,7 @@ namespace RootMotion.Dynamics
     public static Vector3 GetFromToAcceleration(Vector3 fromV, Vector3 toV)
     {
       Quaternion rotation = Quaternion.FromToRotation(fromV, toV);
-      float angle = 0.0f;
-      Vector3 axis = Vector3.zero;
-      rotation.ToAngleAxis(out angle, out axis);
+      rotation.ToAngleAxis(out float angle, out Vector3 axis);
       return angle * axis * ((float) Math.PI / 180f) / Time.fixedDeltaTime;
     }
 

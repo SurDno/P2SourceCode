@@ -12,10 +12,7 @@ namespace FlowCanvas.Nodes
     public BBParameter<object> targetVariable;
     private FlowOutput outFlow;
 
-    public override string name
-    {
-      get => string.Format("{0} [{1}]", base.name, targetVariable);
-    }
+    public override string name => string.Format("{0} [{1}]", base.name, targetVariable);
 
     public override void OnGraphStarted()
     {

@@ -12,7 +12,7 @@ namespace Engine.Source.Blueprints.Sounds
   {
     [SerializeField]
     private int _portCount = 2;
-    private List<ValueInput<bool>> inputs = new List<ValueInput<bool>>();
+    private List<ValueInput<bool>> inputs = [];
 
     public int portCount
     {

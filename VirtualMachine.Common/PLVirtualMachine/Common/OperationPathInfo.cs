@@ -8,7 +8,7 @@ namespace PLVirtualMachine.Common
 {
   public class OperationPathInfo : IVMStringSerializable
   {
-    private List<CommonVariable> operationRootsList = new List<CommonVariable>();
+    private List<CommonVariable> operationRootsList = [];
     public const string OperationPathRootName = "Pathologic";
 
     public OperationPathInfo(string data) => Read(data);
@@ -29,10 +29,9 @@ namespace PLVirtualMachine.Common
         default:
           if (data.Contains("&ROOT&PATH&VAR"))
           {
-            string[] separator = new string[1]
-            {
+            string[] separator = [
               "&ROOT&PATH&VAR"
-            };
+            ];
             ReadPathList(data.Split(separator, StringSplitOptions.RemoveEmptyEntries)[1]);
             break;
           }
@@ -50,7 +49,7 @@ namespace PLVirtualMachine.Common
     private void ReadPathList(string data)
     {
       operationRootsList.Clear();
-      string[] separator = new string[1]{ "END&PATH" };
+      string[] separator = ["END&PATH"];
       foreach (string operationRootsListInfo in data.Split(separator, StringSplitOptions.RemoveEmptyEntries))
       {
         if ("" != operationRootsListInfo)
@@ -64,10 +63,9 @@ namespace PLVirtualMachine.Common
       string variableData = "";
       if (operationRootsListInfo.Contains("CONTEXT&PARAM"))
       {
-        string[] separator = new string[1]
-        {
+        string[] separator = [
           "CONTEXT&PARAM"
-        };
+        ];
         string[] strArray = operationRootsListInfo.Split(separator, StringSplitOptions.RemoveEmptyEntries);
         if (strArray.Length > 1)
         {

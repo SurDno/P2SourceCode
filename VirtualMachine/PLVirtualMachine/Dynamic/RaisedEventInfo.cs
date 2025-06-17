@@ -9,10 +9,10 @@ namespace PLVirtualMachine.Dynamic
 {
   public class RaisedEventInfo : ISerializeStateSave, IDynamicLoadSerializable
   {
-    private HashSet<OwnHashInfo> hashHistory = new HashSet<OwnHashInfo>(OwnHashInfoEqualityComparer.Instance);
+    private HashSet<OwnHashInfo> hashHistory = new(OwnHashInfoEqualityComparer.Instance);
     private int historyIteration;
     private DynamicEvent eventInstance;
-    private List<EventMessage> messagesList = new List<EventMessage>();
+    private List<EventMessage> messagesList = [];
     private Guid sendingFSMGuid;
     public static int EVENTS_CIRCULATION_ITERATIONS_COUNT_MAX = 50;
 
@@ -38,10 +38,7 @@ namespace PLVirtualMachine.Dynamic
       sendingFSMGuid = Guid.Empty;
     }
 
-    public DynamicFSM OwnerFSM
-    {
-      get => eventInstance != null ? eventInstance.OwnerFSM : null;
-    }
+    public DynamicFSM OwnerFSM => eventInstance != null ? eventInstance.OwnerFSM : null;
 
     public DynamicEvent Instance => eventInstance;
 

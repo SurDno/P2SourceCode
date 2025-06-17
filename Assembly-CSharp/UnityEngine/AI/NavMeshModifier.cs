@@ -14,11 +14,12 @@ namespace UnityEngine.AI
     [SerializeField]
     private bool m_IgnoreFromBuild;
     [SerializeField]
-    private List<int> m_AffectedAgents = new List<int>(new int[1]
-    {
-      -1
-    });
-    private static readonly List<NavMeshModifier> s_NavMeshModifiers = new List<NavMeshModifier>();
+    private List<int> m_AffectedAgents = [
+      ..new int[1] {
+        -1
+      }
+    ];
+    private static readonly List<NavMeshModifier> s_NavMeshModifiers = [];
 
     public bool overrideArea
     {

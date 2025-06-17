@@ -60,7 +60,7 @@ namespace RootMotion.Dynamics
     public bool internalCollisions;
     [LargeHeader("Individual Muscle Settings")]
     [Tooltip("The Muscles managed by this PuppetMaster.")]
-    public Muscle[] muscles = new Muscle[0];
+    public Muscle[] muscles = [];
     public UpdateDelegate OnPostInitiate;
     public UpdateDelegate OnRead;
     public UpdateDelegate OnWrite;
@@ -70,7 +70,7 @@ namespace RootMotion.Dynamics
     public MuscleDelegate OnMuscleRemoved;
     private Animator _targetAnimator;
     [HideInInspector]
-    public List<SolverManager> solvers = new List<SolverManager>();
+    public List<SolverManager> solvers = [];
     private bool internalCollisionsEnabled = true;
     private bool angularLimitsEnabled = true;
     private bool fixedFrame;
@@ -100,7 +100,7 @@ namespace RootMotion.Dynamics
     private bool animationDisabledbyStates;
     [HideInInspector]
     public bool storeTargetMappedState = true;
-    private Transform[] targetChildren = new Transform[0];
+    private Transform[] targetChildren = [];
     private Vector3[] targetMappedPositions;
     private Quaternion[] targetMappedRotations;
     private Vector3[] targetSampledPositions;
@@ -165,31 +165,13 @@ namespace RootMotion.Dynamics
 
     public BehaviourBase[] behaviours { get; private set; }
 
-    public bool isActive
-    {
-      get
-      {
-        return isActiveAndEnabled && initiated && (activeMode == Mode.Active || isBlending);
-      }
-    }
+    public bool isActive => isActiveAndEnabled && initiated && (activeMode == Mode.Active || isBlending);
 
     public bool initiated { get; private set; }
 
-    public UpdateMode updateMode
-    {
-      get
-      {
-        return targetUpdateMode == AnimatorUpdateMode.AnimatePhysics ? (isLegacy ? UpdateMode.AnimatePhysics : UpdateMode.FixedUpdate) : UpdateMode.Normal;
-      }
-    }
+    public UpdateMode updateMode => targetUpdateMode == AnimatorUpdateMode.AnimatePhysics ? (isLegacy ? UpdateMode.AnimatePhysics : UpdateMode.FixedUpdate) : UpdateMode.Normal;
 
-    public bool controlsAnimator
-    {
-      get
-      {
-        return isActiveAndEnabled && isActive && initiated && updateMode == UpdateMode.FixedUpdate;
-      }
-    }
+    public bool controlsAnimator => isActiveAndEnabled && isActive && initiated && updateMode == UpdateMode.FixedUpdate;
 
     public bool isBlending => isSwitchingMode || isSwitchingState;
 
@@ -2099,10 +2081,10 @@ namespace RootMotion.Dynamics
     {
       for (int index1 = 0; index1 < muscles.Length; ++index1)
       {
-        muscles[index1].parentIndexes = new int[0];
+        muscles[index1].parentIndexes = [];
         if (muscles[index1].joint.connectedBody != null)
           AddToParentsRecursive(muscles[index1].joint.connectedBody.GetComponent<ConfigurableJoint>(), ref muscles[index1].parentIndexes);
-        muscles[index1].childIndexes = new int[0];
+        muscles[index1].childIndexes = [];
         muscles[index1].childFlags = new bool[muscles.Length];
         for (int index2 = 0; index2 < muscles.Length; ++index2)
         {
@@ -2333,42 +2315,30 @@ namespace RootMotion.Dynamics
     }
 
     [Serializable]
-    public struct StateSettings
-    {
+    public struct StateSettings(
+      float killDuration,
+      float deadMuscleWeight = 0.01f,
+      float deadMuscleDamper = 2f,
+      float maxFreezeSqrVelocity = 0.02f,
+      bool freezePermanently = false,
+      bool enableAngularLimitsOnKill = true,
+      bool enableInternalCollisionsOnKill = true) {
       [Tooltip("How much does it take to weigh out muscle weight to deadMuscleWeight?")]
-      public float killDuration;
+      public float killDuration = killDuration;
       [Tooltip("The muscle weight mlp while the puppet is Dead.")]
-      public float deadMuscleWeight;
+      public float deadMuscleWeight = deadMuscleWeight;
       [Tooltip("The muscle damper add while the puppet is Dead.")]
-      public float deadMuscleDamper;
+      public float deadMuscleDamper = deadMuscleDamper;
       [Tooltip("The max square velocity of the ragdoll bones for freezing the puppet.")]
-      public float maxFreezeSqrVelocity;
+      public float maxFreezeSqrVelocity = maxFreezeSqrVelocity;
       [Tooltip("If true, PuppetMaster, all it's behaviours and the ragdoll will be destroyed when the puppet is frozen.")]
-      public bool freezePermanently;
+      public bool freezePermanently = freezePermanently;
       [Tooltip("If true, will enable angular limits when killing the puppet.")]
-      public bool enableAngularLimitsOnKill;
+      public bool enableAngularLimitsOnKill = enableAngularLimitsOnKill;
       [Tooltip("If true, will enable internal collisions when killing the puppet.")]
-      public bool enableInternalCollisionsOnKill;
+      public bool enableInternalCollisionsOnKill = enableInternalCollisionsOnKill;
 
-      public StateSettings(
-        float killDuration,
-        float deadMuscleWeight = 0.01f,
-        float deadMuscleDamper = 2f,
-        float maxFreezeSqrVelocity = 0.02f,
-        bool freezePermanently = false,
-        bool enableAngularLimitsOnKill = true,
-        bool enableInternalCollisionsOnKill = true)
-      {
-        this.killDuration = killDuration;
-        this.deadMuscleWeight = deadMuscleWeight;
-        this.deadMuscleDamper = deadMuscleDamper;
-        this.maxFreezeSqrVelocity = maxFreezeSqrVelocity;
-        this.freezePermanently = freezePermanently;
-        this.enableAngularLimitsOnKill = enableAngularLimitsOnKill;
-        this.enableInternalCollisionsOnKill = enableInternalCollisionsOnKill;
-      }
-
-      public static StateSettings Default => new StateSettings(1f);
+      public static StateSettings Default => new(1f);
     }
   }
 }

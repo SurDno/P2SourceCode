@@ -326,8 +326,7 @@ namespace RootMotion.Dynamics
 
     protected virtual void GroundTarget(LayerMask layers)
     {
-      RaycastHit hitInfo;
-      if (!Physics.Raycast(new Ray(puppetMaster.targetRoot.position + puppetMaster.targetRoot.up, -puppetMaster.targetRoot.up), out hitInfo, 4f, layers))
+      if (!Physics.Raycast(new Ray(puppetMaster.targetRoot.position + puppetMaster.targetRoot.up, -puppetMaster.targetRoot.up), out RaycastHit hitInfo, 4f, layers))
         return;
       puppetMaster.targetRoot.position = hitInfo.point;
     }
@@ -359,10 +358,7 @@ namespace RootMotion.Dynamics
       public UnityEvent unityEvent;
       private const string empty = "";
 
-      public bool switchBehaviour
-      {
-        get => switchToBehaviour != string.Empty && switchToBehaviour != "";
-      }
+      public bool switchBehaviour => switchToBehaviour != string.Empty && switchToBehaviour != "";
 
       public void Trigger(PuppetMaster puppetMaster, bool switchBehaviourEnabled = true)
       {

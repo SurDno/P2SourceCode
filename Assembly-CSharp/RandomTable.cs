@@ -2,8 +2,7 @@
 
 public class RandomTable
 {
-  public static float[] Values = new float[1024]
-  {
+  public static float[] Values = [
     0.4639f,
     0.34f,
     0.223f,
@@ -1028,5 +1027,5 @@ public class RandomTable
     0.6139f,
     0.6004f,
     0.4854f
-  };
+  ];
 }

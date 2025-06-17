@@ -8,7 +8,7 @@ public class PatrolPath : MonoBehaviour
 {
   public PatrolTypeEnum PatrolType;
   public bool RestartFromClosestPoint = true;
-  private List<Transform> pointsList = new List<Transform>();
+  private List<Transform> pointsList = [];
 
   public List<Transform> PointsList => pointsList;
 
@@ -23,7 +23,7 @@ public class PatrolPath : MonoBehaviour
       PathPart component = PointsList[pointIndex - 1].GetComponent<PathPart>();
       if (component == null)
         return null;
-      List<Transform> presetPath = new List<Transform>();
+      List<Transform> presetPath = [];
       presetPath.AddRange(component.PointsList);
       if (pointIndex < PointsList.Count - 1)
         presetPath.Add(PointsList[pointIndex]);
@@ -32,7 +32,7 @@ public class PatrolPath : MonoBehaviour
     PathPart component1 = PointsList[pointIndex].GetComponent<PathPart>();
     if (component1 == null)
       return null;
-    List<Transform> presetPath1 = new List<Transform>();
+    List<Transform> presetPath1 = [];
     presetPath1.AddRange(component1.PointsList);
     presetPath1.Reverse();
     presetPath1.Add(PointsList[pointIndex]);

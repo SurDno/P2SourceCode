@@ -42,9 +42,6 @@ namespace Engine.Source.UI.Menu.Protagonist.BoundCharacters
       return base.OnOpened();
     }
 
-    public override bool IsWindowAvailable
-    {
-      get => !ServiceLocator.GetService<InterfaceBlockingService>().BlockBoundsInterface;
-    }
+    public override bool IsWindowAvailable => !ServiceLocator.GetService<InterfaceBlockingService>().BlockBoundsInterface;
   }
 }

@@ -43,34 +43,33 @@ namespace UnityEngine.PostProcessing
       [Tooltip("Local contrast adaptation value to disallow the algorithm from executing on the darker regions.")]
       [Range(0.0f, 0.0833f)]
       public float minimumRequiredLuminance;
-      public static FxaaQualitySettings[] presets = new FxaaQualitySettings[5]
-      {
-        new FxaaQualitySettings {
+      public static FxaaQualitySettings[] presets = [
+        new() {
           subpixelAliasingRemovalAmount = 0.0f,
           edgeDetectionThreshold = 0.333f,
           minimumRequiredLuminance = 0.0833f
         },
-        new FxaaQualitySettings {
+        new() {
           subpixelAliasingRemovalAmount = 0.25f,
           edgeDetectionThreshold = 0.25f,
           minimumRequiredLuminance = 0.0833f
         },
-        new FxaaQualitySettings {
+        new() {
           subpixelAliasingRemovalAmount = 0.75f,
           edgeDetectionThreshold = 0.166f,
           minimumRequiredLuminance = 0.0833f
         },
-        new FxaaQualitySettings {
+        new() {
           subpixelAliasingRemovalAmount = 1f,
           edgeDetectionThreshold = 0.125f,
           minimumRequiredLuminance = 1f / 16f
         },
-        new FxaaQualitySettings {
+        new() {
           subpixelAliasingRemovalAmount = 1f,
           edgeDetectionThreshold = 0.063f,
           minimumRequiredLuminance = 0.0312f
         }
-      };
+      ];
     }
 
     [Serializable]
@@ -88,39 +87,38 @@ namespace UnityEngine.PostProcessing
       [Tooltip("Local contrast adaptation value to disallow the algorithm from executing on the darker regions.")]
       [Range(0.04f, 0.06f)]
       public float minimumRequiredLuminance;
-      public static FxaaConsoleSettings[] presets = new FxaaConsoleSettings[5]
-      {
-        new FxaaConsoleSettings {
+      public static FxaaConsoleSettings[] presets = [
+        new() {
           subpixelSpreadAmount = 0.33f,
           edgeSharpnessAmount = 8f,
           edgeDetectionThreshold = 0.25f,
           minimumRequiredLuminance = 0.06f
         },
-        new FxaaConsoleSettings {
+        new() {
           subpixelSpreadAmount = 0.33f,
           edgeSharpnessAmount = 8f,
           edgeDetectionThreshold = 0.125f,
           minimumRequiredLuminance = 0.06f
         },
-        new FxaaConsoleSettings {
+        new() {
           subpixelSpreadAmount = 0.5f,
           edgeSharpnessAmount = 8f,
           edgeDetectionThreshold = 0.125f,
           minimumRequiredLuminance = 0.05f
         },
-        new FxaaConsoleSettings {
+        new() {
           subpixelSpreadAmount = 0.5f,
           edgeSharpnessAmount = 4f,
           edgeDetectionThreshold = 0.125f,
           minimumRequiredLuminance = 0.04f
         },
-        new FxaaConsoleSettings {
+        new() {
           subpixelSpreadAmount = 0.5f,
           edgeSharpnessAmount = 2f,
           edgeDetectionThreshold = 0.125f,
           minimumRequiredLuminance = 0.04f
         }
-      };
+      ];
     }
 
     [Serializable]
@@ -128,15 +126,10 @@ namespace UnityEngine.PostProcessing
     {
       public FxaaPreset preset;
 
-      public static FxaaSettings defaultSettings
-      {
-        get
-        {
-          return new FxaaSettings {
-            preset = FxaaPreset.Default
-          };
-        }
-      }
+      public static FxaaSettings defaultSettings =>
+        new() {
+          preset = FxaaPreset.Default
+        };
     }
 
     [Serializable]
@@ -155,18 +148,13 @@ namespace UnityEngine.PostProcessing
       [Range(0.0f, 0.99f)]
       public float motionBlending;
 
-      public static TaaSettings defaultSettings
-      {
-        get
-        {
-          return new TaaSettings {
-            jitterSpread = 0.75f,
-            sharpen = 0.3f,
-            stationaryBlending = 0.95f,
-            motionBlending = 0.85f
-          };
-        }
-      }
+      public static TaaSettings defaultSettings =>
+        new() {
+          jitterSpread = 0.75f,
+          sharpen = 0.3f,
+          stationaryBlending = 0.95f,
+          motionBlending = 0.85f
+        };
     }
 
     [Serializable]
@@ -176,17 +164,12 @@ namespace UnityEngine.PostProcessing
       public FxaaSettings fxaaSettings;
       public TaaSettings taaSettings;
 
-      public static Settings defaultSettings
-      {
-        get
-        {
-          return new Settings {
-            method = Method.Fxaa,
-            fxaaSettings = FxaaSettings.defaultSettings,
-            taaSettings = TaaSettings.defaultSettings
-          };
-        }
-      }
+      public static Settings defaultSettings =>
+        new() {
+          method = Method.Fxaa,
+          fxaaSettings = FxaaSettings.defaultSettings,
+          taaSettings = TaaSettings.defaultSettings
+        };
     }
   }
 }

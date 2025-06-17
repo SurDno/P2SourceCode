@@ -20,11 +20,11 @@ namespace Engine.Impl.Services
   public class LocalizationService : IInitialisable
   {
     [Inspected]
-    private Dictionary<LanguageEnum, Dictionary<ulong, string>> vmLanguages = new Dictionary<LanguageEnum, Dictionary<ulong, string>>();
+    private Dictionary<LanguageEnum, Dictionary<ulong, string>> vmLanguages = new();
     [Inspected]
-    private Dictionary<LanguageEnum, Dictionary<string, string>> languages = new Dictionary<LanguageEnum, Dictionary<string, string>>();
+    private Dictionary<LanguageEnum, Dictionary<string, string>> languages = new();
     [Inspected]
-    private Dictionary<LanguageEnum, Dictionary<string, string>> subTitlesLanguages = new Dictionary<LanguageEnum, Dictionary<string, string>>();
+    private Dictionary<LanguageEnum, Dictionary<string, string>> subTitlesLanguages = new();
     private LanguageEnum currentLanguage;
     private LanguageEnum currentSubTitlesLanguage;
     private LanguageEnum currentLipSyncLanguage;
@@ -126,8 +126,7 @@ namespace Engine.Impl.Services
     private void TryOverrideSettings()
     {
       string path = PlatformUtility.GetPath("Data/Settings/DefaultLocalization.txt");
-      LanguageEnum result;
-      if (!File.Exists(path) || !DefaultConverter.TryParseEnum(File.ReadAllText(path), out result) || InstanceByRequest<LocalizationSettings>.Instance.OverrideLanguage.Value == result)
+      if (!File.Exists(path) || !DefaultConverter.TryParseEnum(File.ReadAllText(path), out LanguageEnum result) || InstanceByRequest<LocalizationSettings>.Instance.OverrideLanguage.Value == result)
         return;
       InstanceByRequest<LocalizationSettings>.Instance.OverrideLanguage.Value = result;
       InstanceByRequest<LocalizationSettings>.Instance.Language.Value = result;
@@ -153,8 +152,7 @@ namespace Engine.Impl.Services
       LanguageEnum language,
       string fileName)
     {
-      Dictionary<string, string> result;
-      if (!languages.TryGetValue(language, out result))
+      if (!languages.TryGetValue(language, out Dictionary<string, string> result))
       {
         result = new Dictionary<string, string>();
         languages.Add(language, result);
@@ -173,8 +171,7 @@ namespace Engine.Impl.Services
       LanguageEnum language,
       string fileName)
     {
-      Dictionary<ulong, string> result;
-      if (!languages.TryGetValue(language, out result))
+      if (!languages.TryGetValue(language, out Dictionary<ulong, string> result))
       {
         result = new Dictionary<ulong, string>();
         languages.Add(language, result);
@@ -202,12 +199,9 @@ namespace Engine.Impl.Services
     {
       if (tag == null)
         return "";
-      Dictionary<string, string> dictionary;
-      string textImpl;
-      if (languages.TryGetValue(language, out dictionary) && dictionary.TryGetValue(tag, out textImpl) && !textImpl.IsNullOrEmpty())
+      if (languages.TryGetValue(language, out Dictionary<string, string> dictionary) && dictionary.TryGetValue(tag, out string textImpl) && !textImpl.IsNullOrEmpty())
         return textImpl;
-      string str;
-      return language != defaultLanguage && languages.TryGetValue(defaultLanguage, out dictionary) && dictionary.TryGetValue(tag, out str) && !str.IsNullOrEmpty() ? str : tag;
+      return language != defaultLanguage && languages.TryGetValue(defaultLanguage, out dictionary) && dictionary.TryGetValue(tag, out string str) && !str.IsNullOrEmpty() ? str : tag;
     }
 
     private static string GetVmTextImpl(
@@ -218,18 +212,15 @@ namespace Engine.Impl.Services
     {
       if (id == 0UL)
         return "";
-      Dictionary<ulong, string> dictionary;
-      string vmTextImpl;
-      if (languages.TryGetValue(language, out dictionary) && dictionary.TryGetValue(id, out vmTextImpl) && !vmTextImpl.IsNullOrEmpty())
+      if (languages.TryGetValue(language, out Dictionary<ulong, string> dictionary) && dictionary.TryGetValue(id, out string vmTextImpl) && !vmTextImpl.IsNullOrEmpty())
         return vmTextImpl;
-      string str;
-      return language != defaultLanguage && languages.TryGetValue(defaultLanguage, out dictionary) && dictionary.TryGetValue(id, out str) && !str.IsNullOrEmpty() ? str : id.ToString();
+      return language != defaultLanguage && languages.TryGetValue(defaultLanguage, out dictionary) && dictionary.TryGetValue(id, out string str) && !str.IsNullOrEmpty() ? str : id.ToString();
     }
 
     private static void LoadText(string data, Dictionary<string, string> result)
     {
       string str1 = data;
-      char[] separator = new char[2]{ '\n', '\r' };
+      char[] separator = ['\n', '\r'];
       foreach (string str2 in str1.Split(separator, StringSplitOptions.RemoveEmptyEntries))
       {
         int length = str2.IndexOf(' ');
@@ -247,7 +238,7 @@ namespace Engine.Impl.Services
     private static void LoadTextVm(string data, Dictionary<ulong, string> result)
     {
       string str1 = data;
-      char[] separator = new char[2]{ '\n', '\r' };
+      char[] separator = ['\n', '\r'];
       foreach (string str2 in str1.Split(separator, StringSplitOptions.RemoveEmptyEntries))
       {
         int length = str2.IndexOf(' ');
@@ -258,8 +249,8 @@ namespace Engine.Impl.Services
           str3 = str2.Substring(0, length);
           str4 = str2.Substring(length + 1).Replace("\\n", "\n");
         }
-        ulong result1;
-        if (DefaultConverter.TryParseUlong(str3, out result1))
+
+        if (DefaultConverter.TryParseUlong(str3, out ulong result1))
           result[result1] = str4;
       }
     }

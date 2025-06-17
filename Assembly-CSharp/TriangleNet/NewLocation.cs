@@ -5,17 +5,9 @@ using TriangleNet.Tools;
 
 namespace TriangleNet
 {
-  internal class NewLocation
-  {
+  internal class NewLocation(Mesh mesh) {
     private const double EPS = 1E-50;
-    private Behavior behavior;
-    private Mesh mesh;
-
-    public NewLocation(Mesh mesh)
-    {
-      this.mesh = mesh;
-      behavior = mesh.behavior;
-    }
+    private Behavior behavior = mesh.behavior;
 
     public Point FindLocation(
       Vertex torg,

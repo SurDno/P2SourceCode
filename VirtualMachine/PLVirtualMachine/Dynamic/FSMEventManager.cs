@@ -66,14 +66,12 @@ namespace PLVirtualMachine.Dynamic
 
     public DynamicEvent GetContextEvent(string eventName)
     {
-      DynamicEvent dynamicEvent;
-      return fsmEventsByName != null && fsmEventsByName.TryGetValue(eventName, out dynamicEvent) ? dynamicEvent : null;
+      return fsmEventsByName != null && fsmEventsByName.TryGetValue(eventName, out DynamicEvent dynamicEvent) ? dynamicEvent : null;
     }
 
     public DynamicEvent GetContextEvent(ulong eventId)
     {
-      DynamicEvent dynamicEvent;
-      return fsmEvents.TryGetValue(eventId, out dynamicEvent) ? dynamicEvent : null;
+      return fsmEvents.TryGetValue(eventId, out DynamicEvent dynamicEvent) ? dynamicEvent : null;
     }
 
     public DynamicEvent FindEventByStaticGuid(ulong stEventGuid)
@@ -186,7 +184,7 @@ namespace PLVirtualMachine.Dynamic
     private void LoadExecutedEventsInfo(XmlElement rootNode)
     {
       if (savedExecutedEventsInfo == null && rootNode.ChildNodes.Count > 0)
-        savedExecutedEventsInfo = new HashSet<ulong>();
+        savedExecutedEventsInfo = [];
       if (savedExecutedEventsInfo != null)
         savedExecutedEventsInfo.Clear();
       for (int i = 0; i < rootNode.ChildNodes.Count; ++i)

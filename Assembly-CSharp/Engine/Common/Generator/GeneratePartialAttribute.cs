@@ -3,12 +3,10 @@
 namespace Engine.Common.Generator
 {
   [AttributeUsage(AttributeTargets.Class, Inherited = false)]
-  public class GeneratePartialAttribute : Attribute
+  public class GeneratePartialAttribute(TypeEnum detail) : Attribute 
   {
     public Type Type { get; set; }
 
-    public TypeEnum Detail { get; set; }
-
-    public GeneratePartialAttribute(TypeEnum detail) => Detail = detail;
+    public TypeEnum Detail { get; set; } = detail;
   }
 }

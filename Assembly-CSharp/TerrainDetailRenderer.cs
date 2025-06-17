@@ -51,8 +51,7 @@ public class TerrainDetailRenderer : MonoBehaviour
     else
       gameObject.hideFlags = HideFlags.HideAndDontSave;
     terrainDetailRenderer.visible = gameObject.activeSelf;
-    int capacity;
-    Mesh mesh = chunk.Layer.GetMesh(count, out capacity);
+    Mesh mesh = chunk.Layer.GetMesh(count, out int capacity);
     Texture2D placementMap = CreatePlacementMap(chunk, start, count, capacity, chunkPosX, chunkPosY, out min, out max);
     Vector3 prototypeExtents = chunk.Layer.PrototypeExtents;
     min.x -= prototypeExtents.x;

@@ -40,7 +40,7 @@ namespace Cinemachine
     [Tooltip("How aggressively the camera tries to track the target rotation's Z angle.  Small numbers are more responsive.  Larger numbers give a more heavy slowly responding camera.")]
     public float m_RollDamping;
     [Tooltip("Controls how automatic dollying occurs.  A Follow target is necessary to use this feature.")]
-    public AutoDolly m_AutoDolly = new AutoDolly(false, 0.0f, 2, 5);
+    public AutoDolly m_AutoDolly = new(false, 0.0f, 2, 5);
     private float m_PreviousPathPosition;
     private Quaternion m_PreviousOrientation = Quaternion.identity;
     private Vector3 m_PreviousCameraPosition = Vector3.zero;
@@ -183,25 +183,16 @@ namespace Cinemachine
 
     [DocumentationSorting(7.2f, DocumentationSortingAttribute.Level.UserRef)]
     [Serializable]
-    public struct AutoDolly
-    {
+    public struct AutoDolly(bool enabled, float positionOffset, int searchRadius, int stepsPerSegment) {
       [Tooltip("If checked, will enable automatic dolly, which chooses a path position that is as close as possible to the Follow target.  Note: this can have significant performance impact")]
-      public bool m_Enabled;
+      public bool m_Enabled = enabled;
       [Tooltip("Offset, in current position units, from the closest point on the path to the follow target")]
-      public float m_PositionOffset;
+      public float m_PositionOffset = positionOffset;
       [Tooltip("Search up to how many waypoints on either side of the current position.  Use 0 for Entire path.")]
-      public int m_SearchRadius;
+      public int m_SearchRadius = searchRadius;
       [FormerlySerializedAs("m_StepsPerSegment")]
       [Tooltip("We search between waypoints by dividing the segment into this many straight pieces.  The higher the number, the more accurate the result, but performance is proportionally slower for higher numbers")]
-      public int m_SearchResolution;
-
-      public AutoDolly(bool enabled, float positionOffset, int searchRadius, int stepsPerSegment)
-      {
-        m_Enabled = enabled;
-        m_PositionOffset = positionOffset;
-        m_SearchRadius = searchRadius;
-        m_SearchResolution = stepsPerSegment;
-      }
+      public int m_SearchResolution = stepsPerSegment;
     }
   }
 }

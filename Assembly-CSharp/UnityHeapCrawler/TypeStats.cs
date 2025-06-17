@@ -9,7 +9,7 @@ namespace UnityHeapCrawler
   public class TypeStats : IComparable<TypeStats>
   {
     [NotNull]
-    public static readonly Dictionary<Type, TypeStats> Data = new Dictionary<Type, TypeStats>();
+    public static readonly Dictionary<Type, TypeStats> Data = new();
     [NotNull]
     public readonly Type Type;
     public long SelfSize;
@@ -48,8 +48,7 @@ namespace UnityHeapCrawler
     [NotNull]
     private static TypeStats DemandTypeStats([NotNull] Type type)
     {
-      TypeStats typeStats;
-      if (!Data.TryGetValue(type, out typeStats))
+      if (!Data.TryGetValue(type, out TypeStats typeStats))
       {
         typeStats = new TypeStats(type);
         Data[type] = typeStats;

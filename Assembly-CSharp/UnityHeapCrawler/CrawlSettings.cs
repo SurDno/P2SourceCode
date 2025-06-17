@@ -5,44 +5,38 @@ using UnityEngine;
 
 namespace UnityHeapCrawler
 {
-  public class CrawlSettings
-  {
+  public class CrawlSettings(
+    [NotNull] string filename,
+    [NotNull] string caption,
+    [NotNull] Action rootsCollector,
+    CrawlOrder order) {
     [NotNull]
-    private static readonly Type[] hierarchyTypes = new Type[6]
-    {
+    private static readonly Type[] hierarchyTypes = [
       typeof (GameObject),
       typeof (Component),
       typeof (Material),
       typeof (Texture),
       typeof (Sprite),
       typeof (Mesh)
-    };
+    ];
     public bool Enabled = true;
-    internal readonly CrawlOrder Order;
+    internal readonly CrawlOrder Order = order;
     [NotNull]
-    internal readonly Action RootsCollector;
-    internal readonly string Caption;
+    internal readonly Action RootsCollector = rootsCollector;
+    internal readonly string Caption = caption;
     [NotNull]
-    public string Filename;
+    public string Filename = filename;
     public bool PrintChildren = true;
     public bool PrintOnlyGameObjects;
     public bool IncludeAllUnityTypes;
     [NotNull]
-    public List<Type> IncludedUnityTypes = new List<Type>();
+    public List<Type> IncludedUnityTypes = [];
     public int MaxDepth;
     public int MaxChildren = 10;
     public int MinItemSize = 1024;
 
     [NotNull]
     public static IComparer<CrawlSettings> PriorityComparer { get; } = new PriorityRelationalComparer();
-
-    public CrawlSettings([NotNull] string filename, [NotNull] string caption, [NotNull] Action rootsCollector, CrawlOrder order)
-    {
-      Filename = filename;
-      Caption = caption;
-      RootsCollector = rootsCollector;
-      Order = order;
-    }
 
     internal bool IsUnityTypeAllowed(Type type)
     {
@@ -81,7 +75,7 @@ namespace UnityHeapCrawler
       {
         PrintOnlyGameObjects = true,
         MaxChildren = 0,
-        IncludedUnityTypes = new List<Type>(hierarchyTypes)
+        IncludedUnityTypes = [..hierarchyTypes]
       };
     }
 
@@ -101,7 +95,7 @@ namespace UnityHeapCrawler
       {
         PrintOnlyGameObjects = true,
         MaxChildren = 0,
-        IncludedUnityTypes = new List<Type>(hierarchyTypes)
+        IncludedUnityTypes = [..hierarchyTypes]
       };
     }
 

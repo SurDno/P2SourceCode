@@ -21,10 +21,10 @@ namespace BehaviorDesigner.Runtime
     private bool reduceUpdateFarObjects;
     private float reduceUpdateFarObjectsDistance;
     private bool updateSkipped;
-    private List<BehaviorTreeClient> behaviorTrees = new List<BehaviorTreeClient>();
-    private Dictionary<BehaviorTree, BehaviorTreeClient> pausedBehaviorTrees = new Dictionary<BehaviorTree, BehaviorTreeClient>();
-    private Dictionary<BehaviorTree, BehaviorTreeClient> behaviorTreeMap = new Dictionary<BehaviorTree, BehaviorTreeClient>();
-    private List<int> conditionalParentIndexes = new List<int>();
+    private List<BehaviorTreeClient> behaviorTrees = [];
+    private Dictionary<BehaviorTree, BehaviorTreeClient> pausedBehaviorTrees = new();
+    private Dictionary<BehaviorTree, BehaviorTreeClient> behaviorTreeMap = new();
+    private List<int> conditionalParentIndexes = [];
     [Inspected]
     private ReduceUpdateProxy<BehaviorTreeClient> updater;
 
@@ -54,8 +54,7 @@ namespace BehaviorDesigner.Runtime
     {
       if (IsBehaviorEnabled(behavior))
         return;
-      BehaviorTreeClient behaviorTreeClient;
-      if (pausedBehaviorTrees.TryGetValue(behavior, out behaviorTreeClient))
+      if (pausedBehaviorTrees.TryGetValue(behavior, out BehaviorTreeClient behaviorTreeClient))
       {
         behaviorTrees.Add(behaviorTreeClient);
         pausedBehaviorTrees.Remove(behavior);
@@ -201,8 +200,8 @@ namespace BehaviorDesigner.Runtime
                         Debug.LogWarning("Warning: Named variable on reference task " + behaviorReference.FriendlyName + " (id " + behaviorReference.Id + ") is null");
                         continue;
                       }
-                      OverrideFieldValue overrideFieldValue2;
-                      if (data.overrideFields.TryGetValue(genericVariable.value.Name, out overrideFieldValue2))
+
+                      if (data.overrideFields.TryGetValue(genericVariable.value.Name, out OverrideFieldValue overrideFieldValue2))
                         overrideFieldValue1 = overrideFieldValue2;
                     }
                   }
@@ -214,8 +213,8 @@ namespace BehaviorDesigner.Runtime
                       Debug.LogWarning("Warning: Named variable on reference task " + behaviorReference.FriendlyName + " (id " + behaviorReference.Id + ") is null");
                       continue;
                     }
-                    OverrideFieldValue overrideFieldValue3;
-                    if (namedVariable.value != null && data.overrideFields.TryGetValue(namedVariable.value.Name, out overrideFieldValue3))
+
+                    if (namedVariable.value != null && data.overrideFields.TryGetValue(namedVariable.value.Name, out OverrideFieldValue overrideFieldValue3))
                       overrideFieldValue1 = overrideFieldValue3;
                   }
                   data.overrideFields.Add(behaviorReference.variables[index2].Value.name, overrideFieldValue1);
@@ -407,8 +406,7 @@ namespace BehaviorDesigner.Runtime
         sharedVariable = ((sharedVariable as SharedGenericVariable).GetValue() as GenericVariable).value;
       else if (sharedVariable is SharedNamedVariable)
         sharedVariable = ((sharedVariable as SharedNamedVariable).GetValue() as NamedVariable).value;
-      OverrideFieldValue overrideFieldValue;
-      if (sharedVariable == null || string.IsNullOrEmpty(sharedVariable.Name) || !data.overrideFields.TryGetValue(sharedVariable.Name, out overrideFieldValue))
+      if (sharedVariable == null || string.IsNullOrEmpty(sharedVariable.Name) || !data.overrideFields.TryGetValue(sharedVariable.Name, out OverrideFieldValue overrideFieldValue))
         return null;
       SharedVariable sharedVariable2 = null;
       if (overrideFieldValue.Value is SharedVariable)
@@ -463,8 +461,7 @@ namespace BehaviorDesigner.Runtime
       }
       if (paused)
       {
-        BehaviorTreeClient behaviorTreeClient;
-        if (!behaviorTreeMap.TryGetValue(behavior, out behaviorTreeClient) || pausedBehaviorTrees.ContainsKey(behavior))
+        if (!behaviorTreeMap.TryGetValue(behavior, out BehaviorTreeClient behaviorTreeClient) || pausedBehaviorTrees.ContainsKey(behavior))
           return;
         pausedBehaviorTrees.Add(behavior, behaviorTreeClient);
         behavior.ExecutionStatus = TaskStatus.Inactive;
@@ -483,8 +480,7 @@ namespace BehaviorDesigner.Runtime
 
     public void DestroyBehavior(BehaviorTree behavior, TaskStatus executionStatus)
     {
-      BehaviorTreeClient behaviorTree;
-      if (!behaviorTreeMap.TryGetValue(behavior, out behaviorTree) || behaviorTree.destroyBehavior)
+      if (!behaviorTreeMap.TryGetValue(behavior, out BehaviorTreeClient behaviorTree) || behaviorTree.destroyBehavior)
         return;
       behaviorTree.destroyBehavior = true;
       if (pausedBehaviorTrees.ContainsKey(behavior))
@@ -844,8 +840,7 @@ namespace BehaviorDesigner.Runtime
             Composite task2 = behaviorTree.taskList[index2] as Composite;
             if (task2.AbortType != 0)
             {
-              ConditionalReevaluate conditionalReevaluate1;
-              if (behaviorTree.conditionalReevaluateMap.TryGetValue(taskIndex, out conditionalReevaluate1))
+              if (behaviorTree.conditionalReevaluateMap.TryGetValue(taskIndex, out ConditionalReevaluate conditionalReevaluate1))
               {
                 conditionalReevaluate1.compositeIndex = task2.AbortType != AbortType.LowerPriority ? index2 : -1;
                 conditionalReevaluate1.taskStatus = status;
@@ -898,8 +893,7 @@ namespace BehaviorDesigner.Runtime
                 for (int index4 = 0; index4 < behaviorTree.childConditionalIndex[taskIndex].Count; ++index4)
                 {
                   int key = behaviorTree.childConditionalIndex[taskIndex][index4];
-                  ConditionalReevaluate conditionalReevaluate3;
-                  if (behaviorTree.conditionalReevaluateMap.TryGetValue(key, out conditionalReevaluate3))
+                  if (behaviorTree.conditionalReevaluateMap.TryGetValue(key, out ConditionalReevaluate conditionalReevaluate3))
                   {
                     if (!(behaviorTree.taskList[num] as ParentTask).CanRunParallelChildren())
                     {
@@ -1076,7 +1070,7 @@ namespace BehaviorDesigner.Runtime
     {
       if (!IsBehaviorEnabled(behavior))
         return null;
-      List<Task> activeTasks = new List<Task>();
+      List<Task> activeTasks = [];
       BehaviorTreeClient behaviorTree = behaviorTreeMap[behavior];
       for (int index = 0; index < behaviorTree.activeStack.Count; ++index)
       {

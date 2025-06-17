@@ -138,7 +138,7 @@ namespace FlowCanvas
           if ((targetType.IsArray ? targetType.GetElementType() : targetType.GetGenericArguments()[0]).RTIsAssignableFrom(second))
             return () =>
             {
-              List<object> source = new List<object>();
+              List<object> source = [];
               IList list = sourceFunc() as IList;
               for (int index = 0; index < list.Count; ++index)
                 source.Add(list[index]);

@@ -8,7 +8,7 @@ namespace PLVirtualMachine.Common
 {
   public class ObjectCombinationElement
   {
-    private List<ObjectCombinationVariant> combinationVariants = new List<ObjectCombinationVariant>();
+    private List<ObjectCombinationVariant> combinationVariants = [];
     private int spawnProbability = 100;
     private float variantsSumWeight;
 
@@ -75,7 +75,7 @@ namespace PLVirtualMachine.Common
       }
       else
       {
-        string[] separator = new string[1]{ "END&VAR" };
+        string[] separator = ["END&VAR"];
         string[] strArray = dataStr.Split(separator, StringSplitOptions.RemoveEmptyEntries);
         combinationVariants.Clear();
         for (int index = 0; index < strArray.Length; ++index)

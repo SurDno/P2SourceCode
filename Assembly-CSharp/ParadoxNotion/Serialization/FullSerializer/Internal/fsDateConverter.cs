@@ -39,8 +39,7 @@ namespace ParadoxNotion.Serialization.FullSerializer.Internal
         return fsResult.Fail("Date deserialization requires a string, not " + data.Type);
       if (storageType == typeof (DateTime))
       {
-        DateTime result;
-        if (DateTime.TryParse(data.AsString, null, DateTimeStyles.RoundtripKind, out result))
+        if (DateTime.TryParse(data.AsString, null, DateTimeStyles.RoundtripKind, out DateTime result))
         {
           instance = result;
           return fsResult.Success;
@@ -60,16 +59,14 @@ namespace ParadoxNotion.Serialization.FullSerializer.Internal
 
       if (storageType == typeof (DateTimeOffset))
       {
-        DateTimeOffset result;
-        if (!DateTimeOffset.TryParse(data.AsString, null, DateTimeStyles.RoundtripKind, out result))
+        if (!DateTimeOffset.TryParse(data.AsString, null, DateTimeStyles.RoundtripKind, out DateTimeOffset result))
           return fsResult.Fail("Unable to parse " + data.AsString + " into a DateTimeOffset");
         instance = result;
         return fsResult.Success;
       }
       if (!(storageType == typeof (TimeSpan)))
         throw new InvalidOperationException("FullSerializer Internal Error -- Unexpected deserialization type");
-      TimeSpan result1;
-      if (!TimeSpan.TryParse(data.AsString, out result1))
+      if (!TimeSpan.TryParse(data.AsString, out TimeSpan result1))
         return fsResult.Fail("Unable to parse " + data.AsString + " into a TimeSpan");
       instance = result1;
       return fsResult.Success;

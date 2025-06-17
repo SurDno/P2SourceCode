@@ -37,13 +37,7 @@ namespace PLVirtualMachine.Common
       binded = true;
     }
 
-    public override EContextVariableCategory Category
-    {
-      get
-      {
-        return commonVariableType == ECommonVariableType.CV_TYPE_CONTEXT_VARIABLE ? ((IVariable) value).Category : EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_ALL;
-      }
-    }
+    public override EContextVariableCategory Category => commonVariableType == ECommonVariableType.CV_TYPE_CONTEXT_VARIABLE ? ((IVariable) value).Category : EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_ALL;
 
     public IContext Context => contextObj;
 

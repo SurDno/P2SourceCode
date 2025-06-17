@@ -8,7 +8,7 @@ public class BasePoseSaver : MonoBehaviour
   public void CommitBones()
   {
     Transform[] componentsInChildren = gameObject.GetComponentsInChildren<Transform>();
-    List<BonePose> bonePoseList = new List<BonePose>();
+    List<BonePose> bonePoseList = [];
     foreach (Transform bx in componentsInChildren)
     {
       if (bx != transform)

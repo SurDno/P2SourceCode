@@ -7,16 +7,9 @@ using UnityEngine;
 namespace AmplifyColor
 {
   [Serializable]
-  public class VolumeEffect
-  {
-    public AmplifyColorBase gameObject;
-    public List<VolumeEffectComponent> components;
-
-    public VolumeEffect(AmplifyColorBase effect)
-    {
-      gameObject = effect;
-      components = new List<VolumeEffectComponent>();
-    }
+  public class VolumeEffect(AmplifyColorBase effect) {
+    public AmplifyColorBase gameObject = effect;
+    public List<VolumeEffectComponent> components = [];
 
     public static VolumeEffect BlendValuesToVolumeEffect(
       VolumeEffectFlags flags,
@@ -225,7 +218,7 @@ namespace AmplifyColor
 
     public static Component[] ListAcceptableComponents(AmplifyColorBase go)
     {
-      return go == null ? new Component[0] : go.GetComponents(typeof (Component)).Where(comp => comp != null && !string.Concat(comp.GetType()).StartsWith("UnityEngine.") && !(comp.GetType() == typeof (AmplifyColorBase))).ToArray();
+      return go == null ? [] : go.GetComponents(typeof (Component)).Where(comp => comp != null && !string.Concat(comp.GetType()).StartsWith("UnityEngine.") && !(comp.GetType() == typeof (AmplifyColorBase))).ToArray();
     }
 
     public string[] GetComponentNames()

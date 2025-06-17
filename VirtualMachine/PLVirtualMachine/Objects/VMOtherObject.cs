@@ -13,8 +13,7 @@ namespace PLVirtualMachine.Objects
 {
   [TypeData(EDataType.TOther)]
   [DataFactory("Other")]
-  public class VMOtherObject : VMWorldObject, IStub, IEditorDataReader
-  {
+  public class VMOtherObject(ulong guid) : VMWorldObject(guid), IStub, IEditorDataReader {
     public override void EditorDataRead(XmlReader xml, IDataCreator creator, string typeContext)
     {
       while (xml.Read()) {
@@ -80,16 +79,8 @@ namespace PLVirtualMachine.Objects
       }
     }
 
-    public VMOtherObject(ulong guid)
-      : base(guid)
-    {
-    }
-
     public override EObjectCategory GetCategory() => EObjectCategory.OBJECT_CATEGORY_OTHERS;
 
-    public override bool IsPhysic
-    {
-      get => EngineTemplateGuid != Guid.Empty || EngineBaseTemplateGuid != Guid.Empty;
-    }
+    public override bool IsPhysic => EngineTemplateGuid != Guid.Empty || EngineBaseTemplateGuid != Guid.Empty;
   }
 }

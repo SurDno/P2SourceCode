@@ -33,13 +33,7 @@ namespace FlowCanvas.Nodes
       set => _sourceInput = value;
     }
 
-    public override string name
-    {
-      get
-      {
-        return string.Format("{0}", sourceInput != null ? sourceInput.ToString() : (object) "@ NONE");
-      }
-    }
+    public override string name => string.Format("{0}", sourceInput != null ? sourceInput.ToString() : (object) "@ NONE");
 
     protected override void RegisterPorts()
     {

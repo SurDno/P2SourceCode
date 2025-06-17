@@ -25,7 +25,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
     private SelectedSelector LastSelector = SelectedSelector.None;
     private Modes _currentMode = Modes.None;
     private Modes prevMode = Modes.None;
-    protected List<StorableUI> selectedStorables = new List<StorableUI>();
+    protected List<StorableUI> selectedStorables = [];
 
     protected SelectedSelector CurrentSelector
     {
@@ -44,7 +44,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
               if (ingredientSelectors.Length > 1)
                 ingredientSelectors[1]?.SetSelection(false);
             }
-            SelectorButtons = new List<Button>(ingredientSelectors[0]?.GetComponentsInChildren<Button>());
+            SelectorButtons = [..ingredientSelectors[0]?.GetComponentsInChildren<Button>()];
             break;
           case SelectedSelector.Bottom:
             if (InputService.Instance.JoystickUsed)
@@ -53,7 +53,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
               if (ingredientSelectors.Length > 1)
                 ingredientSelectors[1]?.SetSelection(true);
             }
-            SelectorButtons = new List<Button>(ingredientSelectors[1]?.GetComponentsInChildren<Button>());
+            SelectorButtons = [..ingredientSelectors[1]?.GetComponentsInChildren<Button>()];
             break;
           default:
             ingredientSelectors[0]?.SetSelection(false);

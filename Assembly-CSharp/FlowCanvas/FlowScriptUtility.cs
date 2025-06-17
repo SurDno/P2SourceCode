@@ -11,7 +11,7 @@ namespace FlowCanvas
     {
       if (targetGraph == null)
         return null;
-      List<Node> graph = new List<Node>();
+      List<Node> graph = [];
       Dictionary<Connection, KeyValuePair<int, int>> dictionary = new Dictionary<Connection, KeyValuePair<int, int>>();
       foreach (Node node1 in nodes)
       {

@@ -19,7 +19,7 @@ namespace UnityStandardAssets.CinematicEffects
     private Shader m_MedianFilterShader;
     [SerializeField]
     private Shader m_TextureBokehShader;
-    private RenderTextureUtility m_RTU = new RenderTextureUtility();
+    private RenderTextureUtility m_RTU = new();
     private Material m_FilmicDepthOfFieldMaterial;
     private Material m_MedianFilterMaterial;
     private Material m_TextureBokehMaterial;
@@ -164,9 +164,7 @@ namespace UnityStandardAssets.CinematicEffects
       {
         if (settings.visualizeFocus)
         {
-          Vector4 blurParams;
-          Vector4 blurCoe;
-          ComputeCocParameters(out blurParams, out blurCoe);
+          ComputeCocParameters(out Vector4 blurParams, out Vector4 blurCoe);
           filmicDepthOfFieldMaterial.SetVector("_BlurParams", blurParams);
           filmicDepthOfFieldMaterial.SetVector("_BlurCoe", blurCoe);
           Graphics.Blit(null, destination, filmicDepthOfFieldMaterial, 5);
@@ -206,9 +204,7 @@ namespace UnityStandardAssets.CinematicEffects
         Vector4 vector4 = new Vector4(a * 0.5f, b * 0.5f, 0.0f, 0.0f);
         RenderTexture temporaryRenderTexture1 = m_RTU.GetTemporaryRenderTexture(width, height);
         RenderTexture temporaryRenderTexture2 = m_RTU.GetTemporaryRenderTexture(width, height);
-        Vector4 blurParams;
-        Vector4 blurCoe;
-        ComputeCocParameters(out blurParams, out blurCoe);
+        ComputeCocParameters(out Vector4 blurParams, out Vector4 blurCoe);
         filmicDepthOfFieldMaterial.SetVector("_BlurParams", blurParams);
         filmicDepthOfFieldMaterial.SetVector("_BlurCoe", blurCoe);
         Graphics.Blit(source, temporaryRenderTexture2, filmicDepthOfFieldMaterial, 4);
@@ -306,9 +302,7 @@ namespace UnityStandardAssets.CinematicEffects
       float maxRadius)
     {
       ComputeBlurDirections(false);
-      int blurPass;
-      int blurAndMergePass;
-      GetDirectionalBlurPassesFromRadius(blurredFgCoc, maxRadius, out blurPass, out blurAndMergePass);
+      GetDirectionalBlurPassesFromRadius(blurredFgCoc, maxRadius, out int blurPass, out int blurAndMergePass);
       filmicDepthOfFieldMaterial.SetTexture("_SecondTex", blurredFgCoc);
       RenderTexture temporaryRenderTexture = m_RTU.GetTemporaryRenderTexture(src.width, src.height, format: src.format);
       filmicDepthOfFieldMaterial.SetVector("_Offsets", m_HexagonalBokehDirection1);
@@ -329,9 +323,7 @@ namespace UnityStandardAssets.CinematicEffects
       float maxRadius)
     {
       ComputeBlurDirections(false);
-      int blurPass;
-      int blurAndMergePass;
-      GetDirectionalBlurPassesFromRadius(blurredFgCoc, maxRadius, out blurPass, out blurAndMergePass);
+      GetDirectionalBlurPassesFromRadius(blurredFgCoc, maxRadius, out int blurPass, out int blurAndMergePass);
       filmicDepthOfFieldMaterial.SetTexture("_SecondTex", blurredFgCoc);
       RenderTexture temporaryRenderTexture = m_RTU.GetTemporaryRenderTexture(src.width, src.height, format: src.format);
       filmicDepthOfFieldMaterial.SetVector("_Offsets", m_OctogonalBokehDirection1);
@@ -445,13 +437,7 @@ namespace UnityStandardAssets.CinematicEffects
       Rotate2D(ref m_HexagonalBokehDirection3, cosinus, sinus);
     }
 
-    private bool shouldPerformBokeh
-    {
-      get
-      {
-        return ImageEffectHelper.supportsDX11 && bokehTexture.texture != null && (bool) (Object) textureBokehMaterial;
-      }
-    }
+    private bool shouldPerformBokeh => ImageEffectHelper.supportsDX11 && bokehTexture.texture != null && (bool) (Object) textureBokehMaterial;
 
     private static void Rotate2D(ref Vector4 direction, float cosinus, float sinus)
     {
@@ -590,19 +576,14 @@ namespace UnityStandardAssets.CinematicEffects
       [Tooltip("Rotates the aperture when working with \"Hexagonal\" and \"Ortogonal\".")]
       public float apertureOrientation;
 
-      public static GlobalSettings defaultSettings
-      {
-        get
-        {
-          return new GlobalSettings {
-            visualizeFocus = false,
-            tweakMode = TweakMode.Range,
-            filteringQuality = QualityPreset.High,
-            apertureShape = ApertureShape.Circular,
-            apertureOrientation = 0.0f
-          };
-        }
-      }
+      public static GlobalSettings defaultSettings =>
+        new() {
+          visualizeFocus = false,
+          tweakMode = TweakMode.Range,
+          filteringQuality = QualityPreset.High,
+          apertureShape = ApertureShape.Circular,
+          apertureOrientation = 0.0f
+        };
     }
 
     [Serializable]
@@ -614,24 +595,23 @@ namespace UnityStandardAssets.CinematicEffects
       public FilterQuality medianFilter;
       [Tooltip("Dilates near blur over in focus area.")]
       public bool dilateNearBlur;
-      public static QualitySettings[] presetQualitySettings = new QualitySettings[3]
-      {
-        new QualitySettings {
+      public static QualitySettings[] presetQualitySettings = [
+        new() {
           prefilterBlur = false,
           medianFilter = FilterQuality.None,
           dilateNearBlur = false
         },
-        new QualitySettings {
+        new() {
           prefilterBlur = true,
           medianFilter = FilterQuality.Normal,
           dilateNearBlur = false
         },
-        new QualitySettings {
+        new() {
           prefilterBlur = true,
           medianFilter = FilterQuality.High,
           dilateNearBlur = true
         }
-      };
+      ];
     }
 
     [Serializable]
@@ -664,23 +644,18 @@ namespace UnityStandardAssets.CinematicEffects
       [Tooltip("Maximum blur radius for the far plane.")]
       public float farBlurRadius;
 
-      public static FocusSettings defaultSettings
-      {
-        get
-        {
-          return new FocusSettings {
-            transform = null,
-            focusPlane = 20f,
-            range = 35f,
-            nearPlane = 2.5f,
-            nearFalloff = 15f,
-            farPlane = 37.5f,
-            farFalloff = 50f,
-            nearBlurRadius = 15f,
-            farBlurRadius = 20f
-          };
-        }
-      }
+      public static FocusSettings defaultSettings =>
+        new() {
+          transform = null,
+          focusPlane = 20f,
+          range = 35f,
+          nearPlane = 2.5f,
+          nearFalloff = 15f,
+          farPlane = 37.5f,
+          farFalloff = 50f,
+          nearBlurRadius = 15f,
+          farBlurRadius = 20f
+        };
     }
 
     [Serializable]
@@ -701,19 +676,14 @@ namespace UnityStandardAssets.CinematicEffects
       [Tooltip("Controls the spawn conditions. Lower values mean more visible bokeh.")]
       public float spawnHeuristic;
 
-      public static BokehTextureSettings defaultSettings
-      {
-        get
-        {
-          return new BokehTextureSettings {
-            texture = null,
-            scale = 1f,
-            intensity = 50f,
-            threshold = 2f,
-            spawnHeuristic = 0.15f
-          };
-        }
-      }
+      public static BokehTextureSettings defaultSettings =>
+        new() {
+          texture = null,
+          scale = 1f,
+          intensity = 50f,
+          threshold = 2f,
+          spawnHeuristic = 0.15f
+        };
     }
   }
 }

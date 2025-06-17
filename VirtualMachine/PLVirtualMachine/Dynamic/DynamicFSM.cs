@@ -91,13 +91,13 @@ namespace PLVirtualMachine.Dynamic
       DebugUtility.OnAddObject(this);
     }
 
-    public virtual FSMGraphManager CreateGraphManager() => new FSMGraphManager(this);
+    public virtual FSMGraphManager CreateGraphManager() => new(this);
 
-    public FSMEventManager CreateEventManager() => new FSMEventManager(this);
+    public FSMEventManager CreateEventManager() => new(this);
 
-    public FSMFunctionManager CreateFunctionManager() => new FSMFunctionManager(this);
+    public FSMFunctionManager CreateFunctionManager() => new(this);
 
-    public FSMParamsManager CreateParamsManager() => new FSMParamsManager(this);
+    public FSMParamsManager CreateParamsManager() => new(this);
 
     public virtual void StateSave(IDataWriter writer)
     {
@@ -135,7 +135,7 @@ namespace PLVirtualMachine.Dynamic
     private void LoadSubgraphRefParamsData(XmlElement rootNode)
     {
       if (refParamsData == null && rootNode.ChildNodes.Count > 0)
-        refParamsData = new List<KeyValuePair<ulong, Guid>>();
+        refParamsData = [];
       if (refParamsData != null)
         refParamsData.Clear();
       for (int i = 0; i < rootNode.ChildNodes.Count; ++i)
@@ -281,7 +281,7 @@ namespace PLVirtualMachine.Dynamic
               if (typeof (DynamicParameter) == contextParam.GetType())
               {
                 if (refParams == null)
-                  refParams = new List<DynamicParameter>();
+                  refParams = [];
                 refParams.Add((DynamicParameter) contextParam);
               }
               else
@@ -352,7 +352,7 @@ namespace PLVirtualMachine.Dynamic
     public void AddRefParam(DynamicParameter param)
     {
       if (refParams == null)
-        refParams = new List<DynamicParameter>();
+        refParams = [];
       refParams.Add(param);
     }
 
@@ -565,10 +565,7 @@ namespace PLVirtualMachine.Dynamic
         refParams[index].OnUpdateParam();
     }
 
-    public IState DebugCurrState
-    {
-      get => graphManager != null ? graphManager.DebugCurrState : null;
-    }
+    public IState DebugCurrState => graphManager != null ? graphManager.DebugCurrState : null;
 
     private void SubscribeToEvents(VMState currState)
     {
@@ -649,7 +646,7 @@ namespace PLVirtualMachine.Dynamic
       DynamicEvent contextEvent = eventManager.GetContextEvent(eventName);
       if (contextEvent != null)
       {
-        List<EventMessage> raisingEventMessageList = new List<EventMessage>();
+        List<EventMessage> raisingEventMessageList = [];
         List<BaseMessage> returnMessages = contextEvent.StaticEvent.ReturnMessages;
         if (returnMessages.Count > 0)
         {
@@ -674,10 +671,7 @@ namespace PLVirtualMachine.Dynamic
       return graphManager != null && graphManager.UnLock(lockingFSM);
     }
 
-    public DynamicFSM LockingFSM
-    {
-      get => graphManager != null ? graphManager.LockingFSM : null;
-    }
+    public DynamicFSM LockingFSM => graphManager != null ? graphManager.LockingFSM : null;
 
     public bool NeedSave => !Entity.IsHierarchy || Modified;
 
@@ -745,10 +739,7 @@ namespace PLVirtualMachine.Dynamic
       debugThinkingFSM = null;
     }
 
-    public IState CurrentState
-    {
-      get => graphManager != null ? graphManager.CurrentState : null;
-    }
+    public IState CurrentState => graphManager != null ? graphManager.CurrentState : null;
 
     private void ExecuteEvent(RaisedEventInfo evntInfo) => evntInfo.Instance.Execute(evntInfo);
 

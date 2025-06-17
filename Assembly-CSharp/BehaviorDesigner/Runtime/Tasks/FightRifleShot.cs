@@ -106,7 +106,7 @@ namespace BehaviorDesigner.Runtime.Tasks
       }
       LayerMask triggerInteractLayer = ScriptableObjectInstance<GameSettingsData>.Instance.TriggerInteractLayer;
       LayerMask ragdollLayer = ScriptableObjectInstance<GameSettingsData>.Instance.RagdollLayer;
-      List<RaycastHit> result = new List<RaycastHit>();
+      List<RaycastHit> result = [];
       PhysicsUtility.Raycast(result, position, direction, 50f, -1 ^ triggerInteractLayer ^ ragdollLayer, QueryTriggerInteraction.Ignore);
       for (int index = 0; index < result.Count; ++index)
       {

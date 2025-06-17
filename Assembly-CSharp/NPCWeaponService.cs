@@ -32,10 +32,10 @@ public class NPCWeaponService : WeaponServiceBase, IEntityAttachable
   private bool inited;
   private Vector3 weaponStartPosition;
   private Vector3 weaponAimDirection;
-  private Dictionary<int, float> neededLayerWeights = new Dictionary<int, float>();
-  private Dictionary<int, float> currentLayerWeights = new Dictionary<int, float>();
+  private Dictionary<int, float> neededLayerWeights = new();
+  private Dictionary<int, float> currentLayerWeights = new();
   private float unknownRelaxTimeLeft;
-  private Dictionary<WeaponEnum, INPCWeaponController> weaponControllers = new Dictionary<WeaponEnum, INPCWeaponController>(WeaponEnumComparer.Instance)
+  private Dictionary<WeaponEnum, INPCWeaponController> weaponControllers = new(WeaponEnumComparer.Instance)
   {
     {
       WeaponEnum.Unknown,
@@ -188,13 +188,7 @@ public class NPCWeaponService : WeaponServiceBase, IEntityAttachable
 
   public override Vector3 KnifeSpeed => knifeSpeed;
 
-  public override Vector3 KnifePosition
-  {
-    get
-    {
-      return KnifeParent != null ? KnifeParent.position : transform.position;
-    }
-  }
+  public override Vector3 KnifePosition => KnifeParent != null ? KnifeParent.position : transform.position;
 
   private void Update()
   {

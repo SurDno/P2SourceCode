@@ -4,7 +4,7 @@ namespace SoundPropagation
 {
   public class SPEllipseShape : Shape
   {
-    public Vector2 Size = new Vector2(1f, 1f);
+    public Vector2 Size = new(1f, 1f);
     private Matrix4x4 plane2world;
     private Matrix4x4 world2plane;
 

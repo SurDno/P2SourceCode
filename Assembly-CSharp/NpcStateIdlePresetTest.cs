@@ -1,13 +1,7 @@
 ﻿using Engine.Behaviours.Components;
 using UnityEngine;
 
-public class NpcStateIdlePresetTest : NpcStateIdlePreset
-{
-  public NpcStateIdlePresetTest(NpcState npcState, Pivot pivot)
-    : base(npcState, pivot)
-  {
-  }
-
+public class NpcStateIdlePresetTest(NpcState npcState, Pivot pivot) : NpcStateIdlePreset(npcState, pivot) {
   public void Activate(IdlePresetObject target)
   {
     if (!TryInit())

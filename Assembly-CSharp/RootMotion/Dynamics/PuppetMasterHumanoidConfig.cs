@@ -33,7 +33,7 @@ namespace RootMotion.Dynamics
     public bool angularLimits;
     public bool internalCollisions;
     [LargeHeader("Individual Muscle Settings")]
-    public HumanoidMuscle[] muscles = new HumanoidMuscle[0];
+    public HumanoidMuscle[] muscles = [];
 
     public void ApplyTo(PuppetMaster p)
     {

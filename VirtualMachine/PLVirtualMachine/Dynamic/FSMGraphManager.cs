@@ -26,8 +26,8 @@ namespace PLVirtualMachine.Dynamic
     private IState debugCurrState;
     private ulong debugCurrStepStateGuid;
     private bool circularingAlarm;
-    private StateStack mainStateStack = new StateStack();
-    private StateStack localStateStack = new StateStack(EStateStackType.STATESTACK_TYPE_LOCAL);
+    private StateStack mainStateStack = new();
+    private StateStack localStateStack = new(EStateStackType.STATESTACK_TYPE_LOCAL);
     private StateStack currentStateStack;
     private StateStack lastSubGraphStateStack;
     private int currHistoryLevel;
@@ -375,27 +375,18 @@ namespace PLVirtualMachine.Dynamic
       }
     }
 
-    public EGraphType CurrentFSMGraphType
-    {
-      get
-      {
-        return CurrentState != null && CurrentState.Parent != null && typeof (IFiniteStateMachine).IsAssignableFrom(CurrentState.Parent.GetType()) ? ((IFiniteStateMachine) CurrentState.Parent).GraphType : EGraphType.GRAPH_TYPE_EVENTGRAPH;
-      }
-    }
+    public EGraphType CurrentFSMGraphType => CurrentState != null && CurrentState.Parent != null && typeof (IFiniteStateMachine).IsAssignableFrom(CurrentState.Parent.GetType()) ? ((IFiniteStateMachine) CurrentState.Parent).GraphType : EGraphType.GRAPH_TYPE_EVENTGRAPH;
 
     public EventMessage GetContextMessage(string paramName)
     {
-      EventMessage eventMessage;
-      return contextMessages != null && contextMessages.TryGetValue(paramName, out eventMessage) ? eventMessage : null;
+      return contextMessages != null && contextMessages.TryGetValue(paramName, out EventMessage eventMessage) ? eventMessage : null;
     }
 
     public object GetLocalVariableValue(string varName)
     {
-      object localVariableValue1;
-      if (loopLocalVariableValuesDict != null && loopLocalVariableValuesDict.TryGetValue(varName, out localVariableValue1))
+      if (loopLocalVariableValuesDict != null && loopLocalVariableValuesDict.TryGetValue(varName, out object localVariableValue1))
         return localVariableValue1;
-      object localVariableValue2;
-      if (subgraphLocalVariableValuesDict != null && subgraphLocalVariableValuesDict.TryGetValue(varName, out localVariableValue2))
+      if (subgraphLocalVariableValuesDict != null && subgraphLocalVariableValuesDict.TryGetValue(varName, out object localVariableValue2))
         return localVariableValue2;
       Logger.AddError(string.Format("Local variable with name {0} not found in {1} FSM at {2}", varName, fsm.FSMStaticObject.Name, DynamicFSM.CurrentStateInfo));
       return null;
@@ -1404,13 +1395,7 @@ label_15:
       return statePoint2.currentState.GetCategory() == EObjectCategory.OBJECT_CATEGORY_GRAPH && ((FiniteStateMachine) statePoint2.currentState).SubstituteGraph != null && (long) ((FiniteStateMachine) statePoint2.currentState).SubstituteGraph.BaseGuid == (long) statePoint1.currentState.Parent.BaseGuid ? ((VMState) ((FiniteStateMachine) statePoint2.currentState).SubstituteGraph).GetAfterExitLink() : afterExitLink;
     }
 
-    private bool IsCurrentProcedure
-    {
-      get
-      {
-        return CurrentState != null && CurrentState.Parent != null && ((VMState) CurrentState.Parent).IsProcedure;
-      }
-    }
+    private bool IsCurrentProcedure => CurrentState != null && CurrentState.Parent != null && ((VMState) CurrentState.Parent).IsProcedure;
 
     private void PushLoopToStack(IContextElement ownerContextElement, ICommonList loopList)
     {

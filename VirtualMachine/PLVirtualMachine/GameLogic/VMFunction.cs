@@ -14,7 +14,7 @@ namespace PLVirtualMachine.GameLogic
     private VMLogicObject staticObject;
     private Type parentComponentAPIType;
     private FunctionInfo functionInfo;
-    private static Dictionary<string, FunctionInfo> functionsInfoDict = new Dictionary<string, FunctionInfo>();
+    private static Dictionary<string, FunctionInfo> functionsInfoDict = new();
 
     public VMFunction(BaseFunction func, DynamicFSM dynFSM)
       : base(func)
@@ -36,33 +36,15 @@ namespace PLVirtualMachine.GameLogic
       functionInfo = CreateFunctionInfo(componentName, methodInfo);
     }
 
-    public Type ParentComponentAPIType
-    {
-      get
-      {
-        return ParentComponent != null ? ((VMFunctionalComponent) ParentComponent).ComponentType : parentComponentAPIType;
-      }
-    }
+    public Type ParentComponentAPIType => ParentComponent != null ? ((VMFunctionalComponent) ParentComponent).ComponentType : parentComponentAPIType;
 
-    public string ParentComponentAPIName
-    {
-      get
-      {
-        return ParentComponent != null ? ((VMBaseObject) ParentComponent).Name : parentComponentName;
-      }
-    }
+    public string ParentComponentAPIName => ParentComponent != null ? ((VMBaseObject) ParentComponent).Name : parentComponentName;
 
     public VMEntity Entity => entity;
 
-    public override List<APIParamInfo> InputParams
-    {
-      get => functionInfo != null ? functionInfo.Params : base.InputParams;
-    }
+    public override List<APIParamInfo> InputParams => functionInfo != null ? functionInfo.Params : base.InputParams;
 
-    public override APIParamInfo OutputParam
-    {
-      get => functionInfo != null ? functionInfo.OutputParam : base.OutputParam;
-    }
+    public override APIParamInfo OutputParam => functionInfo != null ? functionInfo.OutputParam : base.OutputParam;
 
     public override void Clear()
     {

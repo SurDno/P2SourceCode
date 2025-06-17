@@ -22,7 +22,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory.Grid
     private CellState state = CellState.Default;
     [SerializeField]
     [FormerlySerializedAs("_StateTextures")]
-    private List<Sprite> stateTextures = new List<Sprite>();
+    private List<Sprite> stateTextures = [];
 
     public CellState State
     {

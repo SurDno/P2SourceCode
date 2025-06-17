@@ -33,7 +33,7 @@ namespace Engine.Source.Commons
     private HierarchyItem hierarchyItem;
     [Inspected]
     private EntityView view;
-    private static List<MonoBehaviour> tmp = new List<MonoBehaviour>();
+    private static List<MonoBehaviour> tmp = [];
 
     public Entity() => isEnabled = true;
 
@@ -63,13 +63,7 @@ namespace Engine.Source.Commons
       set => SetParameter(Parameters.IsPlayer, value);
     }
 
-    public bool NeedSave
-    {
-      get
-      {
-        return !DontSave && (NeedSaveComponents || !(Template is Entity template) || template.Name != Name || template.IsEnabled != IsEnabled);
-      }
-    }
+    public bool NeedSave => !DontSave && (NeedSaveComponents || !(Template is Entity template) || template.Name != Name || template.IsEnabled != IsEnabled);
 
     [Inspected]
     [StateSaveProxy]
@@ -187,10 +181,9 @@ namespace Engine.Source.Commons
     {
       if (listeners == null)
       {
-        listeners = new IEntityEventsListener[1]
-        {
+        listeners = [
           listener
-        };
+        ];
       }
       else
       {
@@ -239,7 +232,7 @@ namespace Engine.Source.Commons
         throw new Exception(this.GetInfo());
       ((Entity) child).parent = this;
       if (childs == null)
-        childs = new List<IEntity>();
+        childs = [];
       childs.Add(child);
     }
 

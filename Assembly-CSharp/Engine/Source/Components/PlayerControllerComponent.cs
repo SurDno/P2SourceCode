@@ -36,7 +36,7 @@ namespace Engine.Source.Components
     [CopyableProxy]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    protected List<ReputationInfo> reputations = new List<ReputationInfo>();
+    protected List<ReputationInfo> reputations = [];
     [DataReadProxy]
     [DataWriteProxy]
     [CopyableProxy]
@@ -78,11 +78,11 @@ namespace Engine.Source.Components
     [CopyableProxy()]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    protected List<FractionEnum> dangerousFractions = new List<FractionEnum>();
+    protected List<FractionEnum> dangerousFractions = [];
     [Inspected]
-    private HashSet<IEntity> visibles = new HashSet<IEntity>();
+    private HashSet<IEntity> visibles = [];
     [Inspected]
-    private HashSet<IEntity> hearers = new HashSet<IEntity>();
+    private HashSet<IEntity> hearers = [];
     [Inspected]
     private NpcControllerComponent target;
     [FromThis]
@@ -96,11 +96,11 @@ namespace Engine.Source.Components
     [FromLocator]
     private NotificationService notificationService;
     [Inspected]
-    private HashSet<NpcControllerComponent> nears = new HashSet<NpcControllerComponent>();
+    private HashSet<NpcControllerComponent> nears = [];
     private IUpdater updater;
     private float lastSeenReputation;
     [Inspected]
-    private HashSet<NpcControllerComponent> candidates = new HashSet<NpcControllerComponent>();
+    private HashSet<NpcControllerComponent> candidates = [];
 
     public event Action<IInventoryComponent> OpenContainerEvent;
 
@@ -160,10 +160,7 @@ namespace Engine.Source.Components
     [Inspected]
     public bool Danger { get; private set; }
 
-    public IEnumerable<NpcControllerComponent> Nears
-    {
-      get => nears;
-    }
+    public IEnumerable<NpcControllerComponent> Nears => nears;
 
     public override void OnAdded()
     {
@@ -410,7 +407,7 @@ namespace Engine.Source.Components
 
     private void ComputeEvents(ActionEnum action, bool hear, IEntity target)
     {
-      List<NpcControllerComponent> controllerComponentList = new List<NpcControllerComponent>();
+      List<NpcControllerComponent> controllerComponentList = [];
       foreach (IEntity visible in visibles)
       {
         NpcControllerComponent component = visible.GetComponent<NpcControllerComponent>();

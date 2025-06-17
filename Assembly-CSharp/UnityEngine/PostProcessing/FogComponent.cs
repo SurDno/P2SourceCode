@@ -6,13 +6,7 @@ namespace UnityEngine.PostProcessing
   {
     private const string k_ShaderString = "Hidden/Post FX/Fog";
 
-    public override bool active
-    {
-      get
-      {
-        return model.enabled && context.isGBufferAvailable && RenderSettings.fog && !context.interrupted;
-      }
-    }
+    public override bool active => model.enabled && context.isGBufferAvailable && RenderSettings.fog && !context.interrupted;
 
     public override string GetName() => "Fog";
 

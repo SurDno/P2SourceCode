@@ -28,7 +28,7 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
     protected List<VMBaseEntity> dynamicChilds;
     private List<VMBaseEntity> allChilds;
     private VMBaseEntity parentEntity;
-    private List<VMComponent> components = new List<VMComponent>();
+    private List<VMComponent> components = [];
 
     public virtual void Initialize(
       ILogicObject templateObj,
@@ -136,29 +136,17 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
 
     public bool IsSimple => isSimple;
 
-    public ulong BaseGuid
-    {
-      get => editorTemplate != null ? editorTemplate.Blueprint.BaseGuid : 0UL;
-    }
+    public ulong BaseGuid => editorTemplate != null ? editorTemplate.Blueprint.BaseGuid : 0UL;
 
     public Guid EngineGuid => engineEntity != null ? engineEntity.Id : Guid.Empty;
 
-    public Guid EngineTemplateGuid
-    {
-      get => engineEntityTemplate == null ? Guid.Empty : engineEntityTemplate.Id;
-    }
+    public Guid EngineTemplateGuid => engineEntityTemplate == null ? Guid.Empty : engineEntityTemplate.Id;
 
     public IEntity Instance => engineEntity;
 
     public IBlueprint EditorTemplate => editorTemplate.Blueprint;
 
-    public bool IsWorldEntity
-    {
-      get
-      {
-        return engineEntity != null && typeof (IEntity).IsAssignableFrom(engineEntity.GetType());
-      }
-    }
+    public bool IsWorldEntity => engineEntity != null && typeof (IEntity).IsAssignableFrom(engineEntity.GetType());
 
     public bool IsHierarchy
     {
@@ -170,13 +158,7 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
       }
     }
 
-    public HierarchyGuid HierarchyGuid
-    {
-      get
-      {
-        return editorTemplate != null && typeof (IHierarchyObject).IsAssignableFrom(editorTemplate.GetType()) ? ((IHierarchyObject) editorTemplate).HierarchyGuid : HierarchyGuid.Empty;
-      }
-    }
+    public HierarchyGuid HierarchyGuid => editorTemplate != null && typeof (IHierarchyObject).IsAssignableFrom(editorTemplate.GetType()) ? ((IHierarchyObject) editorTemplate).HierarchyGuid : HierarchyGuid.Empty;
 
     public string Name => engineEntity == null ? "" : engineEntity.Name;
 
@@ -347,7 +329,7 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
     public void LoadComponentsFromVMTemplate(IBlueprint template)
     {
       Dictionary<string, IFunctionalComponent> functionalComponents = template.FunctionalComponents;
-      List<string> stringList = new List<string>();
+      List<string> stringList = [];
       foreach (KeyValuePair<string, IFunctionalComponent> keyValuePair in functionalComponents)
       {
         if (keyValuePair.Value.DependedComponentName == "")
@@ -388,7 +370,7 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
     public void AddChildEntity(VMBaseEntity childEntity)
     {
       if (childs == null)
-        childs = new List<VMBaseEntity>();
+        childs = [];
       childs.Add(childEntity);
       childEntity.ParentEntity = this;
       if (!childEntity.IsDynamicChild)
@@ -400,7 +382,7 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
       else
       {
         if (dynamicChilds == null)
-          dynamicChilds = new List<VMBaseEntity>();
+          dynamicChilds = [];
         dynamicChilds.Add(childEntity);
       }
     }
@@ -514,7 +496,7 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
     protected virtual void AddAggregateChild(VMBaseEntity childEntity)
     {
       if (allChilds == null)
-        allChilds = new List<VMBaseEntity>();
+        allChilds = [];
       allChilds.Add(childEntity);
       if (ParentEntity == null)
         return;

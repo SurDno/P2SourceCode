@@ -3,15 +3,9 @@
 namespace ParadoxNotion.Design
 {
   [AttributeUsage(AttributeTargets.Field)]
-  public class ShowIfAttribute : Attribute
+  public class ShowIfAttribute(string fieldName, bool show = true) : Attribute 
   {
-    public string fieldName;
-    public bool show;
-
-    public ShowIfAttribute(string fieldName, bool show = true)
-    {
-      this.fieldName = fieldName;
-      this.show = show;
-    }
+    public string fieldName = fieldName;
+    public bool show = show;
   }
 }

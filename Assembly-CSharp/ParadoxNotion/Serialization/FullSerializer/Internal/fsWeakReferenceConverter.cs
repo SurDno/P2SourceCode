@@ -15,8 +15,7 @@ namespace ParadoxNotion.Serialization.FullSerializer.Internal
       WeakReference weakReference = (WeakReference) instance;
       fsResult success = fsResult.Success;
       serialized = fsData.CreateDictionary();
-      fsData data;
-      if (weakReference.IsAlive && !(success += Serializer.TrySerialize(weakReference.Target, out data)).Failed)
+      if (weakReference.IsAlive && !(success += Serializer.TrySerialize(weakReference.Target, out fsData data)).Failed)
       {
         serialized.AsDictionary["Target"] = data;
         serialized.AsDictionary["TrackResurrection"] = new fsData(weakReference.TrackResurrection);

@@ -59,8 +59,8 @@ namespace Engine.Source.Commons.Abilities.Projectiles
     public void ComputeTargets(IEntity self, IEntity item, OutsideAbilityTargets targets)
     {
       this.self = self;
-      List<EffectsComponent> candidatsEffects = new List<EffectsComponent>();
-      targets.Targets = new List<EffectsComponent>();
+      List<EffectsComponent> candidatsEffects = [];
+      targets.Targets = [];
       GameObject gameObject = ((IEntityView) self).GameObject;
       DetectorUtility.GetCandidats(ServiceLocator.GetService<DetectorService>().Detectablies, self.GetComponent<DetectorComponent>(), self.GetComponent<ILocationItemComponent>(), radius, target =>
       {

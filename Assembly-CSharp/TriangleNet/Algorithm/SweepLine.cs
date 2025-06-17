@@ -397,10 +397,9 @@ namespace TriangleNet.Algorithm
       Otri otri5 = new Otri();
       Otri o2 = new Otri();
       bool farright = false;
-      splaynodes = new List<SplayNode>();
+      splaynodes = [];
       SplayNode splayroot = null;
-      SweepEvent[] eventheap;
-      CreateHeap(out eventheap);
+      CreateHeap(out SweepEvent[] eventheap);
       int invertices = mesh.invertices;
       mesh.MakeTriangle(ref newkey);
       mesh.MakeTriangle(ref otri3);
@@ -560,11 +559,9 @@ namespace TriangleNet.Algorithm
       public double ykey;
     }
 
-    private class SweepEventVertex : Vertex
-    {
-      public SweepEvent evt;
-
-      public SweepEventVertex(SweepEvent e) => evt = e;
+    private class SweepEventVertex(SweepEvent e) : Vertex 
+  {
+      public SweepEvent evt = e;
     }
 
     private class SplayNode

@@ -28,7 +28,7 @@ namespace PLVirtualMachine.Dynamic.Components
     IInitialiseEvents
   {
     private static int combinationDepth;
-    private static List<VMStorage> LinearItemsAddingStorageList = new List<VMStorage>(1000);
+    private static List<VMStorage> LinearItemsAddingStorageList = new(1000);
     private const int MAX_COMBINATION_DEPTH = 10;
     private const int MAX_ATONCE_LINEAR_ADDING_STORAGES_COUNT = 1000;
     public static double SetContainerTagsDistributionTimeMaxRT = 0.0;
@@ -153,7 +153,7 @@ namespace PLVirtualMachine.Dynamic.Components
         List<VMEntity> entityListByRootInfo = GameComponent.GetStorageEntityListByRootInfo(storagesRootInfo);
         OperationTagsInfo operationTagsInfo = new OperationTagsInfo();
         operationTagsInfo.Read(storageTypes);
-        List<VMEntity> dObjects = new List<VMEntity>();
+        List<VMEntity> dObjects = [];
         for (int index = 0; index < entityListByRootInfo.Count; ++index)
         {
           VMEntity vmEntity = entityListByRootInfo[index];
@@ -254,7 +254,7 @@ namespace PLVirtualMachine.Dynamic.Components
           }
           num1 = 1f / num2;
         }
-        List<int> intList = new List<int>();
+        List<int> intList = [];
         for (int index = 0; index < distributionInfo.TagInfoList.Count; ++index)
           intList.Add(0);
         for (int index1 = 0; index1 < list.Count; ++index1)
@@ -353,7 +353,7 @@ namespace PLVirtualMachine.Dynamic.Components
           List<int> list = dictionary.Keys.ToList();
           list.Sort();
           float num1 = 0.01f;
-          List<int> intList = new List<int>();
+          List<int> intList = [];
           for (int index = 0; index < distributionInfo.TagInfoList.Count; ++index)
             intList.Add(0);
           for (int index1 = 0; index1 < list.Count; ++index1)
@@ -412,7 +412,7 @@ namespace PLVirtualMachine.Dynamic.Components
           OperationMultiTagsInfo operationMultiTagsInfo2 = new OperationMultiTagsInfo();
           operationMultiTagsInfo2.Read(containerTags);
           List<VMEntity> entityListByRootInfo = GameComponent.GetStorageEntityListByRootInfo(storagesRootInfo);
-          List<KeyValuePair<VMStorage, int>> keyValuePairList = new List<KeyValuePair<VMStorage, int>>();
+          List<KeyValuePair<VMStorage, int>> keyValuePairList = [];
           for (int index = 0; index < entityListByRootInfo.Count; ++index)
           {
             VMEntity vmEntity = entityListByRootInfo[index];
@@ -445,13 +445,14 @@ namespace PLVirtualMachine.Dynamic.Components
               }
             }
           }
-          IEnumerable<IVariable> byFunctionalName = EngineAPIManager.GetAbstractParametricFunctionsByFunctionalName("Storage", new List<VMType> {
-            new VMType(typeof (IBlueprintRef), "Inventory"),
-            new VMType(typeof (object))
-          });
+          IEnumerable<IVariable> byFunctionalName = EngineAPIManager.GetAbstractParametricFunctionsByFunctionalName("Storage",
+          [
+            new(typeof(IBlueprintRef), "Inventory"),
+            new(typeof(object))
+          ]);
           Dictionary<string, object> dictionary = ParamsArray.Read(containerParamsData);
-          List<string> stringList = new List<string>();
-          List<object> objectList = new List<object>();
+          List<string> stringList = [];
+          List<object> objectList = [];
           foreach (INamed named in byFunctionalName)
           {
             string name = named.Name;
@@ -507,7 +508,7 @@ namespace PLVirtualMachine.Dynamic.Components
         OperationMultiTagsInfo operationMultiTagsInfo = new OperationMultiTagsInfo();
         operationMultiTagsInfo.Read(storageTags);
         List<VMEntity> entityListByRootInfo = GameComponent.GetStorageEntityListByRootInfo(storagesRootInfo);
-        List<ItemsStorageAddingInfo> storageAddingInfoList = new List<ItemsStorageAddingInfo>();
+        List<ItemsStorageAddingInfo> storageAddingInfoList = [];
         float minRand = 0.0f;
         for (int index = 0; index < entityListByRootInfo.Count; ++index)
         {
@@ -744,7 +745,7 @@ namespace PLVirtualMachine.Dynamic.Components
       try
       {
         LocalizedText engineTextInstance = EngineAPIManager.CreateEngineTextInstance(text);
-        List<VMBaseEntity> vmBaseEntityList = new List<VMBaseEntity>();
+        List<VMBaseEntity> vmBaseEntityList = [];
         List<VMBaseEntity> allChildEntities1 = VirtualMachine.Instance.WorldHierarchyRootEntity.GetAllChildEntities();
         List<VMBaseEntity> allChildEntities2 = VirtualMachine.Instance.GameRootEntity.GetAllChildEntities();
         if (allChildEntities1 != null)
@@ -953,13 +954,7 @@ namespace PLVirtualMachine.Dynamic.Components
       }
     }
 
-    public bool IsStorageOperationsProcessing
-    {
-      get
-      {
-        return StorageGroupCommandProcessor != null && StorageGroupCommandProcessor.IsStorageOperationsProcessing;
-      }
-    }
+    public bool IsStorageOperationsProcessing => StorageGroupCommandProcessor != null && StorageGroupCommandProcessor.IsStorageOperationsProcessing;
 
     private void SetInnerContainersTagsDistribution(
       VMStorage storage,
@@ -1000,7 +995,7 @@ namespace PLVirtualMachine.Dynamic.Components
         }
         num1 = 1f / num2;
       }
-      List<int> intList = new List<int>();
+      List<int> intList = [];
       for (int index = 0; index < innerContainersTagDistribution.TagInfoList.Count; ++index)
         intList.Add(0);
       float num3 = (float) (1.0 / list.Count * VMMath.GetRandomDouble());

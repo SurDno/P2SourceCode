@@ -125,8 +125,7 @@ namespace BehaviorDesigner.Runtime
       {
         if (sharedVariableIndex == null || sharedVariableIndex.Count != variables.Count)
           UpdateVariablesIndex();
-        int index;
-        if (sharedVariableIndex.TryGetValue(name, out index))
+        if (sharedVariableIndex.TryGetValue(name, out int index))
           return variables[index];
       }
       return null;
@@ -141,12 +140,11 @@ namespace BehaviorDesigner.Runtime
     public void SetVariable(string name, SharedVariable sharedVariable)
     {
       if (variables == null)
-        variables = new List<SharedVariable>();
+        variables = [];
       else if (sharedVariableIndex == null)
         UpdateVariablesIndex();
       sharedVariable.Name = name;
-      int index;
-      if (sharedVariableIndex != null && sharedVariableIndex.TryGetValue(name, out index))
+      if (sharedVariableIndex != null && sharedVariableIndex.TryGetValue(name, out int index))
       {
         SharedVariable variable = variables[index];
         if (!variable.GetType().Equals(typeof (SharedVariable)) && !variable.GetType().Equals(sharedVariable.GetType()))

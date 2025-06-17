@@ -21,7 +21,7 @@ namespace PLVirtualMachine.Dynamic
     private DynamicMindMap parentMindMap;
     private VMLogicMapNode staticNode;
     private Guid dynamicGuid;
-    private List<DynamicMindMapNodeContent> nodeContentList = new List<DynamicMindMapNodeContent>();
+    private List<DynamicMindMapNodeContent> nodeContentList = [];
     private DynamicMindMapNodeContent activeContent;
     private bool undiscovered;
 
@@ -108,13 +108,7 @@ namespace PLVirtualMachine.Dynamic
       EngineNode.Undiscovered = undiscovered;
     }
 
-    public string Name
-    {
-      get
-      {
-        return string.Format("{0}.{1}", parentMindMap.Name, staticNode.Name);
-      }
-    }
+    public string Name => string.Format("{0}.{1}", parentMindMap.Name, staticNode.Name);
 
     public bool Modified => true;
 

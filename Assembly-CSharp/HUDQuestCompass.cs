@@ -12,7 +12,7 @@ public class HUDQuestCompass : MonoBehaviour
   private RectTransform anchor;
   [SerializeField]
   private HideableView visible;
-  private List<HUDQuestMarker> markers = new List<HUDQuestMarker>();
+  private List<HUDQuestMarker> markers = [];
 
   private void AddMarker(IMapItem mapItem)
   {

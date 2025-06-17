@@ -6,9 +6,9 @@ namespace ParadoxNotion.Serialization.FullSerializer.Internal
 {
   public class fsCyclicReferenceManager
   {
-    private Dictionary<object, int> _objectIds = new Dictionary<object, int>(ObjectReferenceEqualityComparator.Instance);
+    private Dictionary<object, int> _objectIds = new(ObjectReferenceEqualityComparator.Instance);
     private int _nextId;
-    private Dictionary<int, object> _marked = new Dictionary<int, object>();
+    private Dictionary<int, object> _marked = new();
     private int _depth;
 
     public void Enter() => ++_depth;
@@ -39,8 +39,7 @@ namespace ParadoxNotion.Serialization.FullSerializer.Internal
 
     public int GetReferenceId(object item)
     {
-      int referenceId;
-      if (!_objectIds.TryGetValue(item, out referenceId))
+      if (!_objectIds.TryGetValue(item, out int referenceId))
       {
         referenceId = _nextId++;
         _objectIds[item] = referenceId;

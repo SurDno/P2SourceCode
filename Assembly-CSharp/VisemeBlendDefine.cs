@@ -15,7 +15,7 @@ public class VisemeBlendDefine
   {
     thePhones = new string[1];
     thePhones[0] = poseName;
-    theBlends = new WeightedBlendShape[0];
+    theBlends = [];
   }
 
   public string Label => thePhones[0];
@@ -54,7 +54,7 @@ public class VisemeBlendDefine
   public VisemeBlendDefine(string[] phns)
   {
     thePhones = phns;
-    theBlends = new WeightedBlendShape[0];
+    theBlends = [];
   }
 
   public VisemeBlendDefine(string[] phns, string blendShape1, float pct1)

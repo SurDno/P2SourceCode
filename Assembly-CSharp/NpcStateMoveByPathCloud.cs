@@ -4,12 +4,11 @@ using Engine.Source.Commons;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class NpcStateMoveByPathCloud : INpcState
-{
+public class NpcStateMoveByPathCloud(NpcState npcState, Pivot pivot) : INpcState 
+  {
   private StateEnum state;
   private bool failed;
-  private NpcState npcState;
-  private Pivot pivot;
+  private NpcState npcState = npcState;
   private NavMeshAgent agent;
   private bool agentWasEnabled;
   private List<Vector3> path;
@@ -19,7 +18,7 @@ public class NpcStateMoveByPathCloud : INpcState
   private float speed = 2f;
   private bool inited;
 
-  public GameObject GameObject { get; private set; }
+  public GameObject GameObject { get; private set; } = npcState.gameObject;
 
   public NpcStateStatusEnum Status { get; private set; }
 
@@ -32,13 +31,6 @@ public class NpcStateMoveByPathCloud : INpcState
       speed = agent.speed;
     inited = true;
     return true;
-  }
-
-  public NpcStateMoveByPathCloud(NpcState npcState, Pivot pivot)
-  {
-    GameObject = npcState.gameObject;
-    this.pivot = pivot;
-    this.npcState = npcState;
   }
 
   public void Activate(List<Vector3> path)

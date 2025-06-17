@@ -41,15 +41,13 @@ namespace VirtualMachine.Data.Customs
 
     public ulong GetBaseGuidByEngineTemplateGuid(Guid guid)
     {
-      ulong engineTemplateGuid = 0;
-      guidToId.TryGetValue(guid, out engineTemplateGuid);
+      guidToId.TryGetValue(guid, out ulong engineTemplateGuid);
       return engineTemplateGuid;
     }
 
     public Guid GetEngineTemplateGuidByBaseGuid(ulong id)
     {
-      Guid templateGuidByBaseGuid;
-      idToGuid.TryGetValue(id, out templateGuidByBaseGuid);
+      idToGuid.TryGetValue(id, out Guid templateGuidByBaseGuid);
       return templateGuidByBaseGuid;
     }
   }

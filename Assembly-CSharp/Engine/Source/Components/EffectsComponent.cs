@@ -19,8 +19,8 @@ namespace Engine.Source.Components
   public class EffectsComponent : EngineComponent, IUpdatable
   {
     [Inspected]
-    private List<IEffect> effects = new List<IEffect>();
-    private static List<IEffect> tmp = new List<IEffect>();
+    private List<IEffect> effects = [];
+    private static List<IEffect> tmp = [];
     [FromThis]
     private ParametersComponent parameters;
     [FromThis]

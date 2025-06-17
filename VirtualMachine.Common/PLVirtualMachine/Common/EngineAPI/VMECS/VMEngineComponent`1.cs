@@ -69,10 +69,7 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
 
     public bool IsTemplate => TemplateComponent.Owner.IsTemplate;
 
-    protected override bool InstanceValid
-    {
-      get => component != null && component.Owner != null;
-    }
+    protected override bool InstanceValid => component != null && component.Owner != null;
 
     protected virtual void Init()
     {

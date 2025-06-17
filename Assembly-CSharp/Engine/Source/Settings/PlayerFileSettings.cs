@@ -76,8 +76,7 @@ namespace Engine.Source.Settings
     public T GetEnum<T>(string name, T defaultValue) where T : struct, IComparable, IFormattable, IConvertible
     {
       string str = GetValue(name);
-      T result;
-      return str == null || !DefaultConverter.TryParseEnum(str, out result) ? defaultValue : result;
+      return str == null || !DefaultConverter.TryParseEnum(str, out T result) ? defaultValue : result;
     }
 
     public void SetEnum<T>(string name, T value) where T : struct, IComparable, IFormattable, IConvertible

@@ -9,7 +9,7 @@ namespace PLVirtualMachine.Common
   [VMType("CommonList")]
   public class VMCommonList : ICommonList, IVMStringSerializable
   {
-    protected List<ListObjectInfo> objectsList = new List<ListObjectInfo>();
+    protected List<ListObjectInfo> objectsList = [];
 
     public VMCommonList()
     {
@@ -131,7 +131,7 @@ namespace PLVirtualMachine.Common
       objectsList.Clear();
       if (text.Length <= 1)
         return;
-      string[] separator = new string[1]{ "LIST&ELEM" };
+      string[] separator = ["LIST&ELEM"];
       foreach (string data in text.Split(separator, StringSplitOptions.RemoveEmptyEntries))
       {
         ListObjectInfo listObjectInfo = new ListObjectInfo();

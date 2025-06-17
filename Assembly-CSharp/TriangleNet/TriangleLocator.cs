@@ -3,17 +3,9 @@ using TriangleNet.Geometry;
 
 namespace TriangleNet
 {
-  internal class TriangleLocator
-  {
-    private Mesh mesh;
+  internal class TriangleLocator(Mesh mesh) {
     internal Otri recenttri;
-    private Sampler sampler;
-
-    public TriangleLocator(Mesh mesh)
-    {
-      this.mesh = mesh;
-      sampler = new Sampler();
-    }
+    private Sampler sampler = new();
 
     public void Update(ref Otri otri) => otri.Copy(ref recenttri);
 

@@ -14,7 +14,7 @@ namespace Engine.Source.Commons.Abilities.Controllers
   {
     private AbilityItem abilityItem;
     private IEntity itemOwner;
-    private Dictionary<AbilityValueNameEnum, IAbilityValue> values = new Dictionary<AbilityValueNameEnum, IAbilityValue>();
+    private Dictionary<AbilityValueNameEnum, IAbilityValue> values = new();
     private IParameter<bool> burningParameter;
     private IParameter<float> healthParameter;
 

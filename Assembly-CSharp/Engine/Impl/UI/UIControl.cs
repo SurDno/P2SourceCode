@@ -19,14 +19,8 @@ namespace Engine.Impl.UI
 
     public Vector2 PivotedPosition
     {
-      get
-      {
-        return (Vector2) Transform.position - Vector2.Scale(Transform.pivot, Vector2.Scale(Transform.sizeDelta, Transform.lossyScale));
-      }
-      set
-      {
-        Transform.position = value + Vector2.Scale(Transform.pivot, Vector2.Scale(Transform.sizeDelta, Transform.lossyScale));
-      }
+      get => (Vector2) Transform.position - Vector2.Scale(Transform.pivot, Vector2.Scale(Transform.sizeDelta, Transform.lossyScale));
+      set => Transform.position = value + Vector2.Scale(Transform.pivot, Vector2.Scale(Transform.sizeDelta, Transform.lossyScale));
     }
 
     public bool IsEnabled

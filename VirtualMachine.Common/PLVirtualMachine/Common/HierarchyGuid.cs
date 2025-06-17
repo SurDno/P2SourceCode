@@ -15,8 +15,7 @@ namespace PLVirtualMachine.Common
     public HierarchyGuid(string data)
     {
       guids = null;
-      HierarchyGuid result;
-      if (!TryParse(data, out result))
+      if (!TryParse(data, out HierarchyGuid result))
         Logger.AddError("Invalid hierarchy guid format: no hierarchy splitter or incorrect symbols count in string, data : '" + data + "' , state : " + EngineAPIManager.Instance.CurrentFSMStateInfo);
       else
         guids = result.guids;
@@ -25,15 +24,14 @@ namespace PLVirtualMachine.Common
     public static bool TryParse(string data, out HierarchyGuid result)
     {
       result = Empty;
-      List<ulong> ulongList = new List<ulong>();
+      List<ulong> ulongList = [];
       if (data != "")
       {
         int index = 0;
         string result1 = "";
         while (StringUtility.NextSubstring(data, "H", ref index, ref result1))
         {
-          ulong result2;
-          if (!DefaultConverter.TryParseUlong(result1, out result2) || result2 == 0UL)
+          if (!DefaultConverter.TryParseUlong(result1, out ulong result2) || result2 == 0UL)
             return false;
           ulongList.Add(result2);
         }
@@ -48,7 +46,7 @@ namespace PLVirtualMachine.Common
 
     public HierarchyGuid(ulong templateGuid)
     {
-      guids = new ulong[1]{ templateGuid };
+      guids = [templateGuid];
     }
 
     public HierarchyGuid(HierarchyGuid parentGuid, ulong templateGuid)
@@ -60,10 +58,7 @@ namespace PLVirtualMachine.Common
 
     public ulong[] Guids => guids;
 
-    public ulong TemplateGuid
-    {
-      get => guids != null && guids.Length != 0 ? guids[guids.Length - 1] : 0UL;
-    }
+    public ulong TemplateGuid => guids != null && guids.Length != 0 ? guids[guids.Length - 1] : 0UL;
 
     public bool IsEmpty => guids == null || guids.Length == 0;
 

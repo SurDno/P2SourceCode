@@ -6,7 +6,7 @@ namespace RootMotion.FinalIK
   public class AimPoser : MonoBehaviour
   {
     public float angleBuffer = 5f;
-    public Pose[] poses = new Pose[0];
+    public Pose[] poses = [];
 
     public Pose GetPose(Vector3 localDirection)
     {

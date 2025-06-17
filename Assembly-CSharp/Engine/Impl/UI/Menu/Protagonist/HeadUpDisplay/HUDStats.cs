@@ -65,7 +65,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.HeadUpDisplay
     [SerializeField]
     [FormerlySerializedAs("FadedLayerOpacity")]
     private float fadedLayerOpacity = 0.25f;
-    private Dictionary<ParameterNameEnum, int> statMap = new Dictionary<ParameterNameEnum, int>();
+    private Dictionary<ParameterNameEnum, int> statMap = new();
     private CanvasGroup[] nameCanvasGroup;
     private CanvasGroup[] barCanvasGroup;
     private StatBar[] bars;
@@ -106,16 +106,14 @@ namespace Engine.Impl.UI.Menu.Protagonist.HeadUpDisplay
 
     public void TrySetValue(ParameterNameEnum name, float value)
     {
-      int index;
-      if (!statMap.TryGetValue(name, out index))
+      if (!statMap.TryGetValue(name, out int index))
         return;
       stats[index].Value = Mathf.Clamp01(value);
     }
 
     public void TrySetThreshold(ParameterNameEnum name, float value)
     {
-      int index;
-      if (!statMap.TryGetValue(name, out index))
+      if (!statMap.TryGetValue(name, out int index))
         return;
       stats[index].VisibilityThreshold = Mathf.Clamp01(value);
     }

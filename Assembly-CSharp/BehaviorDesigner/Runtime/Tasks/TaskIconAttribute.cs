@@ -3,12 +3,8 @@
 namespace BehaviorDesigner.Runtime.Tasks
 {
   [AttributeUsage(AttributeTargets.Class, Inherited = false)]
-  public class TaskIconAttribute : Attribute
+  public class TaskIconAttribute(string iconPath) : Attribute 
   {
-    private readonly string mIconPath;
-
-    public string IconPath => mIconPath;
-
-    public TaskIconAttribute(string iconPath) => mIconPath = iconPath;
+    public string IconPath => iconPath;
   }
 }

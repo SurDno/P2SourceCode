@@ -261,11 +261,10 @@ public class SplineBend : MonoBehaviour
     gameObject.layer = 4;
     for (int index = 0; index < vertices1.Length; ++index)
     {
-      RaycastHit hitInfo;
       if (Physics.Raycast(transform.TransformPoint(vertices1[index]) with
-      {
-        y = transform.position.y
-      } + new Vector3(0.0f, seekDist * 0.5f, 0.0f), -Vector3.up, out hitInfo, seekDist, 1 << layer, QueryTriggerInteraction.Ignore))
+          {
+            y = transform.position.y
+          } + new Vector3(0.0f, seekDist * 0.5f, 0.0f), -Vector3.up, out RaycastHit hitInfo, seekDist, 1 << layer, QueryTriggerInteraction.Ignore))
         vertices1[index].y = numArray[index] + transform.InverseTransformPoint(hitInfo.point).y + offset;
     }
     gameObject.layer = layer1;

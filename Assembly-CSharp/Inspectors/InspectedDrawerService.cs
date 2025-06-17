@@ -7,9 +7,9 @@ namespace Inspectors
 {
   public static class InspectedDrawerService
   {
-    private static Dictionary<Type, DrawerHandle> drawers = new Dictionary<Type, DrawerHandle>();
-    private static List<KeyValuePair<Func<Type, bool>, DrawerHandle>> conditionalDrawer = new List<KeyValuePair<Func<Type, bool>, DrawerHandle>>();
-    private static Dictionary<Type, Type> elementTypes = new Dictionary<Type, Type>();
+    private static Dictionary<Type, DrawerHandle> drawers = new();
+    private static List<KeyValuePair<Func<Type, bool>, DrawerHandle>> conditionalDrawer = [];
+    private static Dictionary<Type, Type> elementTypes = new();
 
     public static object CopyPasteObject { get; set; }
 
@@ -35,8 +35,7 @@ namespace Inspectors
 
     public static Type GetElementType(Type type)
     {
-      Type elementType;
-      if (elementTypes.TryGetValue(type, out elementType))
+      if (elementTypes.TryGetValue(type, out Type elementType))
         return elementType;
       if (type.HasElementType)
         return type.GetElementType();
@@ -48,8 +47,7 @@ namespace Inspectors
 
     public static DrawerHandle GetDrawer(Type type)
     {
-      DrawerHandle drawer;
-      drawers.TryGetValue(type, out drawer);
+      drawers.TryGetValue(type, out DrawerHandle drawer);
       if (drawer != null)
         return drawer;
       foreach (KeyValuePair<Func<Type, bool>, DrawerHandle> keyValuePair in conditionalDrawer)

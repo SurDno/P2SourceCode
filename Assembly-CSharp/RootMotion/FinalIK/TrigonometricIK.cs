@@ -6,7 +6,7 @@ namespace RootMotion.FinalIK
   [AddComponentMenu("Scripts/RootMotion.FinalIK/IK/Trigonometric IK")]
   public class TrigonometricIK : IK
   {
-    public IKSolverTrigonometric solver = new IKSolverTrigonometric();
+    public IKSolverTrigonometric solver = new();
 
     [ContextMenu("User Manual")]
     protected override void OpenUserManual()

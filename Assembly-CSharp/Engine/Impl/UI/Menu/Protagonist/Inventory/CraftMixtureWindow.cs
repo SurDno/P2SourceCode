@@ -189,7 +189,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
     private void Craft()
     {
       DisableCraftButtons();
-      List<IStorableComponent> ingredients = new List<IStorableComponent>();
+      List<IStorableComponent> ingredients = [];
       for (int index = 0; index < ingredientSelectors.Length; ++index)
       {
         IStorableComponent storableComponent = ingredientSelectors[index].Item;
@@ -223,7 +223,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
     {
       DisableCraftButtons();
       craftButtonConsole.SetActive(false);
-      List<IStorableComponent> ingredients = new List<IStorableComponent>();
+      List<IStorableComponent> ingredients = [];
       for (int index = 0; index < ingredientSelectors.Length; ++index)
       {
         IStorableComponent storableComponent = ingredientSelectors[index].Item;

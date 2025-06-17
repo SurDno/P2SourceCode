@@ -29,10 +29,9 @@ namespace Engine.Source.Commons.Parameters
     {
       if (listeners == null)
       {
-        listeners = new IChangeParameterListener[1]
-        {
+        listeners = [
           listener
-        };
+        ];
       }
       else
       {

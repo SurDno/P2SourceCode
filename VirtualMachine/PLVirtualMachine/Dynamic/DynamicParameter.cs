@@ -38,10 +38,10 @@ namespace PLVirtualMachine.Dynamic
     private VMComponent objComponent;
     public static double ParamGetValueTimeMaxRT = 0.0;
     public static double ParamSetValueTimeMaxRT = 0.0;
-    private static Dictionary<string, double> setParamValueTimingDict = new Dictionary<string, double>();
-    private static Dictionary<string, int> setParamValueCountDict = new Dictionary<string, int>();
-    private static Dictionary<ulong, double> execConditionTimingDict = new Dictionary<ulong, double>();
-    private static Dictionary<ulong, int> execConditionCountDict = new Dictionary<ulong, int>();
+    private static Dictionary<string, double> setParamValueTimingDict = new();
+    private static Dictionary<string, int> setParamValueCountDict = new();
+    private static Dictionary<ulong, double> execConditionTimingDict = new();
+    private static Dictionary<ulong, int> execConditionCountDict = new();
 
     public DynamicParameter(VMEntity entity, DynamicFSM parentFSM, VMParameter stParam)
       : base(entity)
@@ -127,18 +127,9 @@ namespace PLVirtualMachine.Dynamic
       }
     }
 
-    public bool Self
-    {
-      get
-      {
-        return StaticObject != null && ((VMParameter) StaticObject).Implicit && ((VMParameter) StaticObject).Name.EndsWith(nameof (Self));
-      }
-    }
+    public bool Self => StaticObject != null && ((VMParameter) StaticObject).Implicit && ((VMParameter) StaticObject).Name.EndsWith(nameof (Self));
 
-    public EContextVariableCategory Category
-    {
-      get => EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_PARAM;
-    }
+    public EContextVariableCategory Category => EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_PARAM;
 
     public bool IsCustom => StaticObject != null && ((VMParameter) StaticObject).IsCustom;
 
@@ -255,21 +246,9 @@ namespace PLVirtualMachine.Dynamic
       return valueImpl;
     }
 
-    public bool Implicit
-    {
-      get
-      {
-        return StaticObject == null ? isImplicit : ((VMParameter) StaticObject).Implicit;
-      }
-    }
+    public bool Implicit => StaticObject == null ? isImplicit : ((VMParameter) StaticObject).Implicit;
 
-    public IGameObjectContext OwnerContext
-    {
-      get
-      {
-        return StaticObject == null ? null : ((VMParameter) StaticObject).OwnerContext;
-      }
-    }
+    public IGameObjectContext OwnerContext => StaticObject == null ? null : ((VMParameter) StaticObject).OwnerContext;
 
     private void DoSetValue(object newValue)
     {

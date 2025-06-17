@@ -14,7 +14,7 @@ using Object = UnityEngine.Object;
 
 public static class ObjectInfoUtility
 {
-  private static StringBuilder tmp = new StringBuilder(2048);
+  private static StringBuilder tmp = new(2048);
   private static Thread thread = Thread.CurrentThread;
 
   public static StringBuilder GetStream()

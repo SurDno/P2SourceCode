@@ -7,10 +7,8 @@ using Inspectors;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class NpcStateMove : INpcState
-{
-  private NpcState npcState;
-  private Pivot pivot;
+public class NpcStateMove(NpcState npcState, Pivot pivot) : INpcState 
+  {
   private Animator animator;
   private NPCWeaponService weaponService;
   private Rigidbody rigidbody;
@@ -35,10 +33,10 @@ public class NpcStateMove : INpcState
   private int prevAreaMask;
   private bool inited;
 
-  public GameObject GameObject { get; private set; }
+  public GameObject GameObject { get; private set; } = npcState.gameObject;
 
   [Inspected]
-  private NavMeshAgentWrapper agentWrapper => new NavMeshAgentWrapper(agent);
+  private NavMeshAgentWrapper agentWrapper => new(agent);
 
   [Inspected]
   public NpcStateStatusEnum Status { get; private set; }
@@ -54,13 +52,6 @@ public class NpcStateMove : INpcState
     rigidbody = pivot.GetRigidbody();
     inited = true;
     return true;
-  }
-
-  public NpcStateMove(NpcState npcState, Pivot pivot)
-  {
-    GameObject = npcState.gameObject;
-    this.pivot = pivot;
-    this.npcState = npcState;
   }
 
   public void Activate(Vector3 destination, bool failOnPartialPath = false)

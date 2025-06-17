@@ -14,8 +14,7 @@ namespace SRDebugger.UI.Controls
   public class ProfilerGraphControl : Graphic
   {
     public VerticalAlignments VerticalAlignment = VerticalAlignments.Bottom;
-    private static readonly float[] ScaleSteps = new float[9]
-    {
+    private static readonly float[] ScaleSteps = [
       0.005f,
       1f / 160f,
       0.008333334f,
@@ -25,7 +24,7 @@ namespace SRDebugger.UI.Controls
       0.05f,
       0.0833333358f,
       0.166666672f
-    };
+    ];
     public bool FloatingScale;
     public bool TargetFpsUseApplication;
     public bool DrawAxes = true;
@@ -36,13 +35,13 @@ namespace SRDebugger.UI.Controls
     public const float DataPointWidth = 4f;
     public int VerticalPadding = 10;
     public const int LineCount = 4;
-    public Color[] LineColours = new Color[0];
+    public Color[] LineColours = [];
     private IProfilerService _profilerService;
     private ProfilerGraphAxisLabel[] _axisLabels;
     private Rect _clipBounds;
-    private readonly List<Vector3> _meshVertices = new List<Vector3>();
-    private readonly List<Color32> _meshVertexColors = new List<Color32>();
-    private readonly List<int> _meshTriangles = new List<int>();
+    private readonly List<Vector3> _meshVertices = [];
+    private readonly List<Color32> _meshVertexColors = [];
+    private readonly List<int> _meshTriangles = [];
 
     protected override void Awake()
     {

@@ -11,12 +11,9 @@ namespace PLVirtualMachine.GameLogic
   {
     public void Initialize(ILogicMap logicMap) => LoadStaticInstance(logicMap);
 
-    public override EContextVariableCategory Category
-    {
-      get => EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_LOGIC_MAP;
-    }
+    public override EContextVariableCategory Category => EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_LOGIC_MAP;
 
-    public override VMType Type => new VMType(typeof (ILogicMapRef));
+    public override VMType Type => new(typeof (ILogicMapRef));
 
     public ILogicMap LogicMap
     {

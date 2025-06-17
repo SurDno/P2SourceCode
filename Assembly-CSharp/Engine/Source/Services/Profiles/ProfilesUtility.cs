@@ -77,7 +77,7 @@ namespace Engine.Source.Services.Profiles
 
     public static List<string> GetSaveNames(string profile)
     {
-      List<string> saveNames = new List<string>();
+      List<string> saveNames = [];
       string path = ProfilePath(profile);
       if (!Directory.Exists(path))
         return saveNames;

@@ -7,8 +7,8 @@ namespace Cinemachine.Utility
     private Vector3 m_Position;
     private const float kSmoothingDefault = 10f;
     private float mSmoothing = 10f;
-    private GaussianWindow1D_Vector3 m_Velocity = new GaussianWindow1D_Vector3(10f);
-    private GaussianWindow1D_Vector3 m_Accel = new GaussianWindow1D_Vector3(10f);
+    private GaussianWindow1D_Vector3 m_Velocity = new(10f);
+    private GaussianWindow1D_Vector3 m_Accel = new(10f);
 
     public float Smoothing
     {

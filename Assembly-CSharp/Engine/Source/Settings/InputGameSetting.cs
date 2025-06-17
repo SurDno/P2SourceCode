@@ -13,7 +13,7 @@ namespace Engine.Source.Settings
     [Inspected]
     public IValue<bool> JoystickInvert = new BoolValue(nameof (JoystickInvert));
     [Inspected]
-    public ListKeyItems KeySettings = new ListKeyItems(nameof (KeySettings));
+    public ListKeyItems KeySettings = new(nameof (KeySettings));
     [Inspected]
     public IValue<int> JoystickLayout = new IntValue(nameof (JoystickLayout), minValue: 0, maxValue: 2);
 

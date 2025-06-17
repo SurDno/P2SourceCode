@@ -11,7 +11,7 @@ public class SoundPlayerWindowDrops : MonoBehaviour
   [SerializeField]
   private bool playInstantly;
   [SerializeField]
-  private AudioClip[] clips = new AudioClip[0];
+  private AudioClip[] clips = [];
   public AudioSource audioSource;
   public float rainMinimum;
   private float wait;

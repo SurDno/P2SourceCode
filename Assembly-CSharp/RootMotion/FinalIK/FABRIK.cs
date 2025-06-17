@@ -6,7 +6,7 @@ namespace RootMotion.FinalIK
   [AddComponentMenu("Scripts/RootMotion.FinalIK/IK/FABRIK")]
   public class FABRIK : IK
   {
-    public IKSolverFABRIK solver = new IKSolverFABRIK();
+    public IKSolverFABRIK solver = new();
 
     [ContextMenu("User Manual")]
     protected override void OpenUserManual()

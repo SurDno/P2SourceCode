@@ -54,10 +54,7 @@ namespace Engine.Source.Components
 
     public IEntity CurrentWeaponItem => avaliableWeaponItems[currentWeapon];
 
-    public IEnumerable<IEntity> AvailableWeaponItems
-    {
-      get => avaliableWeaponItems;
-    }
+    public IEnumerable<IEntity> AvailableWeaponItems => avaliableWeaponItems;
 
     public bool IsUnholstered { get; private set; }
 
@@ -231,13 +228,7 @@ namespace Engine.Source.Components
       }
     }
 
-    public WeaponKind CurrentWeapon
-    {
-      get
-      {
-        return playerWeaponService != null ? playerWeaponService.KindBase : WeaponKind.Unknown;
-      }
-    }
+    public WeaponKind CurrentWeapon => playerWeaponService != null ? playerWeaponService.KindBase : WeaponKind.Unknown;
 
     public void SetWeapon(WeaponKind weaponKind)
     {

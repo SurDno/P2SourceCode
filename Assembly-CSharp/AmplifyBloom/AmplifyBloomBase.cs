@@ -27,11 +27,11 @@ namespace AmplifyBloom
     [SerializeField]
     private bool m_highPrecision;
     [SerializeField]
-    private Vector4 m_bloomRange = new Vector4(500f, 1f, 0.0f, 0.0f);
+    private Vector4 m_bloomRange = new(500f, 1f, 0.0f, 0.0f);
     [SerializeField]
     private float m_overallThreshold = 0.53f;
     [SerializeField]
-    private Vector4 m_bloomParams = new Vector4(0.8f, 1f, 1f, 1f);
+    private Vector4 m_bloomParams = new(0.8f, 1f, 1f, 1f);
     [SerializeField]
     private bool m_temporalFilteringActive;
     [SerializeField]
@@ -45,7 +45,7 @@ namespace AmplifyBloom
     [SerializeField]
     private float m_featuresThreshold = 0.05f;
     [SerializeField]
-    private AmplifyLensFlare m_lensFlare = new AmplifyLensFlare();
+    private AmplifyLensFlare m_lensFlare = new();
     [SerializeField]
     private bool m_applyLensDirt = true;
     [SerializeField]
@@ -59,59 +59,54 @@ namespace AmplifyBloom
     [SerializeField]
     private float m_lensStarburstStrength = 2f;
     [SerializeField]
-    private AmplifyGlare m_anamorphicGlare = new AmplifyGlare();
+    private AmplifyGlare m_anamorphicGlare = new();
     [SerializeField]
-    private AmplifyBokeh m_bokehFilter = new AmplifyBokeh();
+    private AmplifyBokeh m_bokehFilter = new();
     [SerializeField]
-    private float[] m_upscaleWeights = new float[6]
-    {
+    private float[] m_upscaleWeights = [
       0.0842f,
       0.1282f,
       0.1648f,
       0.2197f,
       0.2197f,
       0.1831f
-    };
+    ];
     [SerializeField]
-    private float[] m_gaussianRadius = new float[6]
-    {
+    private float[] m_gaussianRadius = [
       1f,
       1f,
       1f,
       1f,
       1f,
       1f
-    };
+    ];
     [SerializeField]
-    private int[] m_gaussianSteps = new int[6]
-    {
+    private int[] m_gaussianSteps = [
       1,
       1,
       1,
       1,
       1,
       1
-    };
+    ];
     [SerializeField]
-    private float[] m_lensDirtWeights = new float[6]
-    {
+    private float[] m_lensDirtWeights = [
       0.067f,
       0.102f,
       0.1311f,
       0.1749f,
       0.2332f,
       0.3f
-    };
+    ];
     [SerializeField]
-    private float[] m_lensStarburstWeights = new float[6]
-    {
+    private float[] m_lensStarburstWeights = [
       0.067f,
       0.102f,
       0.1311f,
       0.1749f,
       0.2332f,
       0.3f
-    };
+    ];
     [SerializeField]
     private bool[] m_downscaleSettingsFoldout = new bool[6];
     [SerializeField]

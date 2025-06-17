@@ -7,17 +7,11 @@ using Engine.Source.Services;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class NpcStateMoveFollowTeleport : NpcStateMoveBase
-{
+public class NpcStateMoveFollowTeleport(NpcState npcState, Pivot pivot) : NpcStateMoveBase(npcState, pivot, true) {
   private float followDistance;
   private bool waitForTargetSeesMe;
   private Vector3 lastDestination;
   private bool wasRestartBehaviourAfterTeleport;
-
-  public NpcStateMoveFollowTeleport(NpcState npcState, Pivot pivot)
-    : base(npcState, pivot, true)
-  {
-  }
 
   public void Activate(float followDistance, float trialTime, bool waitForTargetSeesMe)
   {

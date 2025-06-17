@@ -7,7 +7,7 @@ namespace Engine.Source.Services.Consoles.Binds
   [Initialisable]
   public static class EnumConsoleCommand
   {
-    private static Dictionary<string, Func<string>> binds = new Dictionary<string, Func<string>>();
+    private static Dictionary<string, Func<string>> binds = new();
 
     public static void AddBind(string name, Func<string> func)
     {
@@ -26,8 +26,7 @@ namespace Engine.Source.Services.Consoles.Binds
       }
       if (parameters.Length != 1)
         return "Error parameter count";
-      Func<string> func;
-      binds.TryGetValue(parameters[0].Parameter, out func);
+      binds.TryGetValue(parameters[0].Parameter, out Func<string> func);
       return func == null ? "Target not found" : func();
     }
   }

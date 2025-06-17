@@ -5,13 +5,11 @@ using Cofe.Meta;
 namespace PLVirtualMachine.Common
 {
   [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface, Inherited = false)]
-  public class VMTypeAttribute : TypeAttribute
+  public class VMTypeAttribute(string typeName) : TypeAttribute 
   {
-    public readonly string TypeName;
-    private static Dictionary<string, Type> types = new Dictionary<string, Type>();
-    private static Dictionary<Type, string> names = new Dictionary<Type, string>();
-
-    public VMTypeAttribute(string typeName) => TypeName = typeName;
+    public readonly string TypeName = typeName;
+    private static Dictionary<string, Type> types = new();
+    private static Dictionary<Type, string> names = new();
 
     public override void ComputeType(Type type)
     {

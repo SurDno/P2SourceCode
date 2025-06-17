@@ -4,7 +4,7 @@ namespace UnityEngine.EventSystems
 {
   public class MouseState
   {
-    private List<ButtonState> m_TrackedButtons = new List<ButtonState>();
+    private List<ButtonState> m_TrackedButtons = [];
 
     public bool AnyPressesThisFrame()
     {

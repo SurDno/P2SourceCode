@@ -18,8 +18,8 @@ namespace PLVirtualMachine.FSM
 {
   [TypeData(EDataType.TBranch)]
   [DataFactory("Branch")]
-  public class VMBranch : 
-    VMState,
+  public class VMBranch(ulong guid) :
+    VMState(guid),
     IStub,
     IEditorDataReader,
     IBranch,
@@ -31,10 +31,9 @@ namespace PLVirtualMachine.FSM
     INamedElement,
     INamed,
     IStaticUpdateable,
-    ILocalContext
-  {
+    ILocalContext {
     [FieldData("BranchConditions", DataFieldType.Reference)]
-    private List<ICondition> branchesConditions = new List<ICondition>();
+    private List<ICondition> branchesConditions = [];
     [FieldData("BranchType")]
     private EStateType branchType;
     [FieldData("BranchVariantInfo")]
@@ -92,11 +91,6 @@ namespace PLVirtualMachine.FSM
         if (xml.NodeType == XmlNodeType.EndElement)
           break;
       }
-    }
-
-    public VMBranch(ulong guid)
-      : base(guid)
-    {
     }
 
     public override EStateType StateType => branchType;
@@ -186,7 +180,7 @@ namespace PLVirtualMachine.FSM
 
     private void LoadMessageCastInfo()
     {
-      messageCastInfo = new List<VMMessageCastInfo>();
+      messageCastInfo = [];
       if (branchVariantInfos == null)
         return;
       foreach (NameTypeData branchVariantInfo in branchVariantInfos)

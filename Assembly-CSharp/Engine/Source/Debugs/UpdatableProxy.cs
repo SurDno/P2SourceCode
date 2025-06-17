@@ -3,18 +3,14 @@ using Engine.Common;
 
 namespace Engine.Source.Debugs
 {
-  public class UpdatableProxy : IUpdatable
+  public class UpdatableProxy(Action action) : IUpdatable 
   {
-    private Action action;
-
-    public UpdatableProxy(Action action) => this.action = action;
-
     public void ComputeUpdate()
     {
-      Action action = this.action;
-      if (action == null)
+      Action action1 = action;
+      if (action1 == null)
         return;
-      action();
+      action1();
     }
   }
 }

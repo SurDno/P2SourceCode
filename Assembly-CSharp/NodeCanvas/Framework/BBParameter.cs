@@ -25,10 +25,9 @@ namespace NodeCanvas.Framework
     {
       if (t == null)
         return null;
-      BBParameter instance = (BBParameter) Activator.CreateInstance(typeof (BBParameter<>).RTMakeGenericType(new Type[1]
-      {
+      BBParameter instance = (BBParameter) Activator.CreateInstance(typeof (BBParameter<>).RTMakeGenericType([
         t
-      }));
+      ]));
       instance.bb = bb;
       return instance;
     }
@@ -42,7 +41,7 @@ namespace NodeCanvas.Framework
 
     public static List<BBParameter> GetObjectBBParameters(object o)
     {
-      List<BBParameter> objectBbParameters = new List<BBParameter>();
+      List<BBParameter> objectBbParameters = [];
       if (o == null)
         return objectBbParameters;
       foreach (FieldInfo field in o.GetType().RTGetFields())

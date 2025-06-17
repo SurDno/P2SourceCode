@@ -116,8 +116,7 @@ namespace Engine.Behaviours.Components
           Vector3 fightVelocity = GetFightVelocity();
           Vector3 vector = transform.forward * fightVelocity.z + transform.right * fightVelocity.x;
           LayerMask puddlesLayer = ScriptableObjectInstance<GameSettingsData>.Instance.PuddlesLayer;
-          RaycastHit hitInfo;
-          bool flag = Physics.Raycast(transform.position + new Vector3(0.0f, 0.5f, 0.0f), Vector3.down, out hitInfo, 1f, -1 ^ puddlesLayer, QueryTriggerInteraction.Ignore);
+          bool flag = Physics.Raycast(transform.position + new Vector3(0.0f, 0.5f, 0.0f), Vector3.down, out RaycastHit hitInfo, 1f, -1 ^ puddlesLayer, QueryTriggerInteraction.Ignore);
           Vector3 vector3 = Vector3.ProjectOnPlane(vector, flag ? hitInfo.normal : Vector3.up).normalized * fightVelocity.magnitude;
           moveDir.x = vector3.x;
           moveDir.z = vector3.z;
@@ -130,8 +129,7 @@ namespace Engine.Behaviours.Components
           float num3 = controllerComponent.IsRun.Value ? num1 * controllerComponent.RunModifier.Value : (controllerComponent.IsStelth.Value ? ScriptableObjectInstance<InputSettingsData>.Instance.SneakSpeed : num2);
           Vector3 vector = transform.forward * velocity.z + transform.right * velocity.x;
           LayerMask puddlesLayer = ScriptableObjectInstance<GameSettingsData>.Instance.PuddlesLayer;
-          RaycastHit hitInfo;
-          bool flag = Physics.Raycast(transform.position + new Vector3(0.0f, 0.5f, 0.0f), Vector3.down, out hitInfo, 1f, -1 ^ puddlesLayer, QueryTriggerInteraction.Ignore);
+          bool flag = Physics.Raycast(transform.position + new Vector3(0.0f, 0.5f, 0.0f), Vector3.down, out RaycastHit hitInfo, 1f, -1 ^ puddlesLayer, QueryTriggerInteraction.Ignore);
           Vector3 vector3 = Vector3.ProjectOnPlane(vector, flag ? hitInfo.normal : Vector3.up).normalized * velocity.magnitude;
           moveDir.x = vector3.x * num3;
           moveDir.z = vector3.z * num3;

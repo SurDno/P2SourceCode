@@ -20,7 +20,7 @@ namespace Engine.Source.Effects.Engine
     [Inspected]
     [Inspected(Name = "b", Mutable = true, Mode = ExecuteMode.Edit)]
     protected IValue<T> b;
-    private ExpressionViewWrapper view = new ExpressionViewWrapper();
+    private ExpressionViewWrapper view = new();
 
     [Inspected(Mode = ExecuteMode.EditAndRuntime)]
     private ExpressionViewWrapper ValueViewWrapper

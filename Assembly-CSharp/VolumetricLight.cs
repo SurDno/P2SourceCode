@@ -25,7 +25,7 @@ public class VolumetricLight : MonoBehaviour
   public float NoiseScale = 0.015f;
   public float NoiseIntensity = 1f;
   public float NoiseIntensityOffset = 0.3f;
-  public Vector2 NoiseVelocity = new Vector2(3f, 3f);
+  public Vector2 NoiseVelocity = new(3f, 3f);
   [Tooltip("")]
   public float MaxRayLength = 400f;
   private Vector4[] _frustumCorners = new Vector4[4];

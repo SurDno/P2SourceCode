@@ -18,8 +18,8 @@ namespace PLVirtualMachine.FSM
 {
   [TypeData(EDataType.TGraph)]
   [DataFactory("Graph")]
-  public class FiniteStateMachine : 
-    VMState,
+  public class FiniteStateMachine(ulong guid) :
+    VMState(guid),
     IStub,
     IEditorDataReader,
     IFiniteStateMachine,
@@ -32,12 +32,11 @@ namespace PLVirtualMachine.FSM
     INamed,
     IStaticUpdateable,
     ILocalContext,
-    IGraph
-  {
+    IGraph {
     [FieldData("States", DataFieldType.Reference)]
-    protected List<IState> states = new List<IState>();
+    protected List<IState> states = [];
     [FieldData("EventLinks", DataFieldType.Reference)]
-    protected List<ILink> eventLinks = new List<ILink>();
+    protected List<ILink> eventLinks = [];
     [FieldData("SubstituteGraph", DataFieldType.Reference)]
     protected IFiniteStateMachine substituteGraph;
     [FieldData("GraphType")]
@@ -45,14 +44,14 @@ namespace PLVirtualMachine.FSM
     [FieldData("InputParamsInfo")]
     protected List<NameTypeData> inputParamsInfo;
     private EObjectCategory graphOwnerCategory;
-    private List<IEventLink> enterLinks = new List<IEventLink>();
-    private Dictionary<ulong, List<IEventLink>> enterLinksByEventGuid = new Dictionary<ulong, List<IEventLink>>(UlongComparer.Instance);
-    private Dictionary<string, List<IEventLink>> enterLinksByEventName = new Dictionary<string, List<IEventLink>>();
-    protected List<InputParam> inputParams = new List<InputParam>();
+    private List<IEventLink> enterLinks = [];
+    private Dictionary<ulong, List<IEventLink>> enterLinksByEventGuid = new(UlongComparer.Instance);
+    private Dictionary<string, List<IEventLink>> enterLinksByEventName = new();
+    protected List<InputParam> inputParams = [];
     private bool inputParamsLoaded;
-    private List<IFiniteStateMachine> subGraphes = new List<IFiniteStateMachine>();
-    private Dictionary<ulong, IState> statesDict = new Dictionary<ulong, IState>(UlongComparer.Instance);
-    private List<IStateRef> allStatesList = new List<IStateRef>();
+    private List<IFiniteStateMachine> subGraphes = [];
+    private Dictionary<ulong, IState> statesDict = new(UlongComparer.Instance);
+    private List<IStateRef> allStatesList = [];
 
     public override void EditorDataRead(XmlReader xml, IDataCreator creator, string typeContext)
     {
@@ -113,28 +112,16 @@ namespace PLVirtualMachine.FSM
       }
     }
 
-    public FiniteStateMachine(ulong guid)
-      : base(guid)
-    {
-    }
-
     public List<IEventLink> GetEnterLinksByEvent(DynamicEvent dynEvent)
     {
-      List<IEventLink> eventLinkList;
-      return enterLinksByEventGuid.TryGetValue(dynEvent.BaseGuid, out eventLinkList) || enterLinksByEventName.TryGetValue(dynEvent.StaticEvent.FunctionalName, out eventLinkList) ? eventLinkList : null;
+      return enterLinksByEventGuid.TryGetValue(dynEvent.BaseGuid, out List<IEventLink> eventLinkList) || enterLinksByEventName.TryGetValue(dynEvent.StaticEvent.FunctionalName, out eventLinkList) ? eventLinkList : null;
     }
 
     public override EStateType StateType => EStateType.STATE_TYPE_GRAPH;
 
     public override bool IgnoreBlock => InitState.IgnoreBlock;
 
-    public List<IEventLink> EnterLinks
-    {
-      get
-      {
-        return substituteGraph != null ? ((FiniteStateMachine) substituteGraph).EnterLinks : enterLinks;
-      }
-    }
+    public List<IEventLink> EnterLinks => substituteGraph != null ? ((FiniteStateMachine) substituteGraph).EnterLinks : enterLinks;
 
     public bool Abstract => substituteGraph == null && states.Count == 0;
 
@@ -159,10 +146,7 @@ namespace PLVirtualMachine.FSM
       return substituteGraph != null ? substituteGraph.GetCategory() : EObjectCategory.OBJECT_CATEGORY_GRAPH;
     }
 
-    public virtual EGraphType GraphType
-    {
-      get => substituteGraph != null ? substituteGraph.GraphType : graphType;
-    }
+    public virtual EGraphType GraphType => substituteGraph != null ? substituteGraph.GraphType : graphType;
 
     public List<InputParam> InputParams
     {
@@ -188,19 +172,13 @@ namespace PLVirtualMachine.FSM
       return substituteGraph != null && substituteGraph.IsEqual(other) || base.IsEqual(other);
     }
 
-    public List<IState> States
-    {
-      get => substituteGraph != null ? substituteGraph.States : states;
-    }
+    public List<IState> States => substituteGraph != null ? substituteGraph.States : states;
 
-    public List<ILink> Links
-    {
-      get => substituteGraph != null ? substituteGraph.Links : eventLinks;
-    }
+    public List<ILink> Links => substituteGraph != null ? substituteGraph.Links : eventLinks;
 
     public List<ILink> GetLinksByDestState(IGraphObject state)
     {
-      List<ILink> linksByDestState = new List<ILink>();
+      List<ILink> linksByDestState = [];
       for (int index = 0; index < eventLinks.Count; ++index)
       {
         IEventLink eventLink = (IEventLink) eventLinks[index];
@@ -212,7 +190,7 @@ namespace PLVirtualMachine.FSM
 
     public List<ILink> GetLinksBySourceState(IGraphObject state)
     {
-      List<ILink> linksBySourceState = new List<ILink>();
+      List<ILink> linksBySourceState = [];
       for (int index = 0; index < eventLinks.Count; ++index)
       {
         IEventLink eventLink = (IEventLink) eventLinks[index];
@@ -222,18 +200,9 @@ namespace PLVirtualMachine.FSM
       return linksBySourceState;
     }
 
-    public EObjectCategory GraphOwnerCategory
-    {
-      get
-      {
-        return substituteGraph != null ? ((FiniteStateMachine) substituteGraph).GraphOwnerCategory : graphOwnerCategory;
-      }
-    }
+    public EObjectCategory GraphOwnerCategory => substituteGraph != null ? ((FiniteStateMachine) substituteGraph).GraphOwnerCategory : graphOwnerCategory;
 
-    public override List<IEntryPoint> EntryPoints
-    {
-      get => substituteGraph != null ? substituteGraph.EntryPoints : base.EntryPoints;
-    }
+    public override List<IEntryPoint> EntryPoints => substituteGraph != null ? substituteGraph.EntryPoints : base.EntryPoints;
 
     public bool IsSubGraph => Parent.GetCategory() == EObjectCategory.OBJECT_CATEGORY_GRAPH;
 
@@ -258,7 +227,7 @@ namespace PLVirtualMachine.FSM
       EGraphType graphType = EGraphType.GRAPH_TYPE_ALL,
       bool bWithBaseClasses = true)
     {
-      List<IFiniteStateMachine> subGraphStructure1 = new List<IFiniteStateMachine>();
+      List<IFiniteStateMachine> subGraphStructure1 = [];
       if ((GraphType == graphType || graphType == EGraphType.GRAPH_TYPE_ALL) && SubstituteGraph == null)
         subGraphStructure1.Add(this);
       for (int index = 0; index < states.Count; ++index)
@@ -455,17 +424,16 @@ namespace PLVirtualMachine.FSM
           if (eventLink.Event != null && eventLink.Event.EventInstance != null && eventLink.Enabled)
           {
             ulong baseGuid = eventLink.Event.EventInstance.BaseGuid;
-            List<IEventLink> eventLinkList;
-            if (!enterLinksByEventGuid.TryGetValue(baseGuid, out eventLinkList))
+            if (!enterLinksByEventGuid.TryGetValue(baseGuid, out List<IEventLink> eventLinkList))
             {
-              eventLinkList = new List<IEventLink>();
+              eventLinkList = [];
               enterLinksByEventGuid.Add(baseGuid, eventLinkList);
             }
             eventLinkList.Add(eventLink);
             string functionalName = eventLink.Event.EventInstance.FunctionalName;
             if (!enterLinksByEventName.TryGetValue(functionalName, out eventLinkList))
             {
-              eventLinkList = new List<IEventLink>();
+              eventLinkList = [];
               enterLinksByEventName.Add(functionalName, eventLinkList);
             }
             eventLinkList.Add(eventLink);

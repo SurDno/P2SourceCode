@@ -9,8 +9,8 @@ namespace Engine.Source.Commons.Parameters
   public class ParametersUpdater : IInitialisable, IUpdatable
   {
     [Inspected]
-    private List<IComputeParameter> parameters = new List<IComputeParameter>();
-    private List<IComputeParameter> swap = new List<IComputeParameter>();
+    private List<IComputeParameter> parameters = [];
+    private List<IComputeParameter> swap = [];
 
     public void AddParameter(IComputeParameter parameter) => parameters.Add(parameter);
 

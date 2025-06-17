@@ -4,15 +4,15 @@ using UnityEngine;
 public class LightShaftsBuilder
 {
   private LightShafts lightShafts;
-  private List<Vector3> normals = new List<Vector3>();
+  private List<Vector3> normals = [];
   private int occupants;
   private float opacity;
-  private List<float> rayLengths = new List<float>();
-  private List<Vector3> rayOrigins = new List<Vector3>();
-  private List<int> triangles = new List<int>();
+  private List<float> rayLengths = [];
+  private List<Vector3> rayOrigins = [];
+  private List<int> triangles = [];
   private Vector3 up;
-  private List<Vector2> uvs = new List<Vector2>();
-  private List<Vector3> vertices = new List<Vector3>();
+  private List<Vector2> uvs = [];
+  private List<Vector3> vertices = [];
   private Matrix4x4 w2l;
 
   public static LightShaftsBuilder Instance { get; private set; }

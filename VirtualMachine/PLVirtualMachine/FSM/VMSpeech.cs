@@ -15,8 +15,8 @@ namespace PLVirtualMachine.FSM
 {
   [TypeData(EDataType.TSpeech)]
   [DataFactory("Speech")]
-  public class VMSpeech : 
-    VMState,
+  public class VMSpeech(ulong guid) :
+    VMState(guid),
     IStub,
     IEditorDataReader,
     ISpeech,
@@ -28,10 +28,9 @@ namespace PLVirtualMachine.FSM
     INamedElement,
     INamed,
     IStaticUpdateable,
-    ILocalContext
-  {
+    ILocalContext {
     [FieldData("Replyes", DataFieldType.Reference)]
-    private List<ISpeechReply> exitPoints = new List<ISpeechReply>();
+    private List<ISpeechReply> exitPoints = [];
     [FieldData("Text", DataFieldType.Reference)]
     private VMGameString text;
     [FieldData("AuthorGuid")]
@@ -106,11 +105,6 @@ namespace PLVirtualMachine.FSM
       }
     }
 
-    public VMSpeech(ulong guid)
-      : base(guid)
-    {
-    }
-
     public override EObjectCategory GetCategory() => EObjectCategory.OBJECT_CATEGORY_GRAPH_ELEMENT;
 
     public override EStateType StateType => EStateType.STATE_TYPE_SPEECH;
@@ -148,10 +142,7 @@ namespace PLVirtualMachine.FSM
 
     public List<ISpeechReply> Replies => exitPoints;
 
-    public IActionLine ActionLine
-    {
-      get => entryPoints.Count > 0 ? entryPoints[0].ActionLine : null;
-    }
+    public IActionLine ActionLine => entryPoints.Count > 0 ? entryPoints[0].ActionLine : null;
 
     public override bool IgnoreBlock => !IsTrade || base.IgnoreBlock;
 

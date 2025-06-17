@@ -6,14 +6,14 @@ namespace RootMotion.FinalIK
   [Serializable]
   public class BipedIKSolvers
   {
-    public IKSolverLimb leftFoot = new IKSolverLimb(AvatarIKGoal.LeftFoot);
-    public IKSolverLimb rightFoot = new IKSolverLimb(AvatarIKGoal.RightFoot);
-    public IKSolverLimb leftHand = new IKSolverLimb(AvatarIKGoal.LeftHand);
-    public IKSolverLimb rightHand = new IKSolverLimb(AvatarIKGoal.RightHand);
-    public IKSolverFABRIK spine = new IKSolverFABRIK();
-    public IKSolverLookAt lookAt = new IKSolverLookAt();
-    public IKSolverAim aim = new IKSolverAim();
-    public Constraints pelvis = new Constraints();
+    public IKSolverLimb leftFoot = new(AvatarIKGoal.LeftFoot);
+    public IKSolverLimb rightFoot = new(AvatarIKGoal.RightFoot);
+    public IKSolverLimb leftHand = new(AvatarIKGoal.LeftHand);
+    public IKSolverLimb rightHand = new(AvatarIKGoal.RightHand);
+    public IKSolverFABRIK spine = new();
+    public IKSolverLookAt lookAt = new();
+    public IKSolverAim aim = new();
+    public Constraints pelvis = new();
     private IKSolverLimb[] _limbs;
     private IKSolver[] _ikSolvers;
 
@@ -22,13 +22,12 @@ namespace RootMotion.FinalIK
       get
       {
         if (_limbs == null || _limbs != null && _limbs.Length != 4)
-          _limbs = new IKSolverLimb[4]
-          {
+          _limbs = [
             leftFoot,
             rightFoot,
             leftHand,
             rightHand
-          };
+          ];
         return _limbs;
       }
     }
@@ -38,8 +37,7 @@ namespace RootMotion.FinalIK
       get
       {
         if (_ikSolvers == null || _ikSolvers != null && _ikSolvers.Length != 7)
-          _ikSolvers = new IKSolver[7]
-          {
+          _ikSolvers = [
             leftFoot,
             rightFoot,
             leftHand,
@@ -47,7 +45,7 @@ namespace RootMotion.FinalIK
             spine,
             lookAt,
             aim
-          };
+          ];
         return _ikSolvers;
       }
     }

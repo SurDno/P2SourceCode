@@ -22,17 +22,11 @@ public class SimplePlayerWindowSwapper
 
   public static Type LastOpenedPlayerWindowType
   {
-    get
-    {
-      return lastOpenedPlayerWindowType == null ? typeof (IInventoryWindow) : lastOpenedPlayerWindowType;
-    }
+    get => lastOpenedPlayerWindowType == null ? typeof (IInventoryWindow) : lastOpenedPlayerWindowType;
     private set => lastOpenedPlayerWindowType = value;
   }
 
-  public static bool CanPushLastWindow
-  {
-    get => ((UIWindow) LastOpenedPlayerWindow).IsWindowAvailable;
-  }
+  public static bool CanPushLastWindow => ((UIWindow) LastOpenedPlayerWindow).IsWindowAvailable;
 
   public static void SetLastOpenedPlayerWindow<T>(IWindow window) where T : class, IWindow
   {

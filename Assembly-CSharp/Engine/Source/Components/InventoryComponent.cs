@@ -44,31 +44,16 @@ namespace Engine.Source.Components
     }
 
     [Inspected]
-    public IParameter<bool> Enabled
-    {
-      get => ParametersComponent.GetOrCreateByName<bool>(ParameterNameEnum.Enabled);
-    }
+    public IParameter<bool> Enabled => ParametersComponent.GetOrCreateByName<bool>(ParameterNameEnum.Enabled);
 
     [Inspected]
-    public IParameter<bool> Available
-    {
-      get => ParametersComponent.GetOrCreateByName<bool>(ParameterNameEnum.Available);
-    }
+    public IParameter<bool> Available => ParametersComponent.GetOrCreateByName<bool>(ParameterNameEnum.Available);
 
     [Inspected]
-    public IParameter<float> Disease
-    {
-      get => ParametersComponent.GetOrCreateByName<float>(ParameterNameEnum.Disease);
-    }
+    public IParameter<float> Disease => ParametersComponent.GetOrCreateByName<float>(ParameterNameEnum.Disease);
 
     [Inspected]
-    public IParameter<ContainerOpenStateEnum> OpenState
-    {
-      get
-      {
-        return ParametersComponent.GetOrCreateByName<ContainerOpenStateEnum>(ParameterNameEnum.OpenState);
-      }
-    }
+    public IParameter<ContainerOpenStateEnum> OpenState => ParametersComponent.GetOrCreateByName<ContainerOpenStateEnum>(ParameterNameEnum.OpenState);
 
     public IStorageComponent Storage { get; private set; }
 
@@ -96,10 +81,7 @@ namespace Engine.Source.Components
 
     public SlotKind SlotKind => container.slotKind;
 
-    public IEnumerable<StorableGroup> Limitations
-    {
-      get => container.limitations;
-    }
+    public IEnumerable<StorableGroup> Limitations => container.limitations;
 
     public IEnumerable<StorableGroup> Except => container.except;
 

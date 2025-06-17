@@ -10,20 +10,14 @@ using Random = UnityEngine.Random;
 
 namespace Engine.Source.Commons
 {
-  public class DelayUpdater : IUpdater
+  public class DelayUpdater(float delay) : IUpdater 
   {
     [Inspected]
-    private List<IUpdatable> updatable = new List<IUpdatable>();
+    private List<IUpdatable> updatable = [];
     [Inspected(Mutable = true)]
-    private float delay;
+    private float delay = delay;
     [Inspected]
-    private float accumulator;
-
-    public DelayUpdater(float delay)
-    {
-      this.delay = delay;
-      accumulator = delay * Random.value;
-    }
+    private float accumulator = delay * Random.value;
 
     public void AddUpdatable(IUpdatable up) => updatable.Add(up);
 

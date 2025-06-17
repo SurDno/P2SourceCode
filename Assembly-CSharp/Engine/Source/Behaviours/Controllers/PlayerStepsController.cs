@@ -13,15 +13,9 @@ namespace Engine.Source.Behaviours.Controllers
     private bool footLeft;
     private float footDistance;
 
-    protected override AudioMixerGroup FootAudioMixer
-    {
-      get => ScriptableObjectInstance<GameSettingsData>.Instance.ProtagonistFootMixer;
-    }
+    protected override AudioMixerGroup FootAudioMixer => ScriptableObjectInstance<GameSettingsData>.Instance.ProtagonistFootMixer;
 
-    protected override AudioMixerGroup FootEffectsAudioMixer
-    {
-      get => ScriptableObjectInstance<GameSettingsData>.Instance.ProtagonistFootEffectsMixer;
-    }
+    protected override AudioMixerGroup FootEffectsAudioMixer => ScriptableObjectInstance<GameSettingsData>.Instance.ProtagonistFootEffectsMixer;
 
     protected override void Awake()
     {

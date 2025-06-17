@@ -61,8 +61,7 @@ namespace BehaviorDesigner.Runtime.Tasks.Pathologic
           int num2 = 0;
           for (int index = 0; index < patrolPoints.Count; ++index)
           {
-            NavMeshHit hit;
-            if (NavMesh.SamplePosition(patrolPoints[index].position, out hit, 1f, -1))
+            if (NavMesh.SamplePosition(patrolPoints[index].position, out NavMeshHit hit, 1f, -1))
             {
               NavMeshPath path = new NavMeshPath();
               if (NavMesh.CalculatePath(hit.position, Owner.transform.position, -1, path))

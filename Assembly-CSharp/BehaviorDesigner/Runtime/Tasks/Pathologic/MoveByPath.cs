@@ -62,7 +62,7 @@ namespace BehaviorDesigner.Runtime.Tasks.Pathologic
         }
         inited = true;
       }
-      List<Vector3> path = new List<Vector3>();
+      List<Vector3> path = [];
       foreach (Transform transform in Path.Value)
         path.Add(transform.position);
       npcState.MoveByPath(path);

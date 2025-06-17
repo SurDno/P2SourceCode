@@ -23,7 +23,7 @@ namespace ParadoxNotion.Services
     IMoveHandler,
     ISubmitHandler
   {
-    private Dictionary<string, List<object>> listeners = new Dictionary<string, List<object>>(StringComparer.OrdinalIgnoreCase);
+    private Dictionary<string, List<object>> listeners = new(StringComparer.OrdinalIgnoreCase);
 
     public void OnPointerEnter(PointerEventData eventData)
     {
@@ -168,10 +168,9 @@ namespace ParadoxNotion.Services
         }
         else
         {
-          List<object> objectList = null;
-          if (!listeners.TryGetValue(messages[index], out objectList))
+          if (!listeners.TryGetValue(messages[index], out List<object> objectList))
           {
-            objectList = new List<object>();
+            objectList = [];
             listeners[messages[index]] = objectList;
           }
           if (!objectList.Contains(target))
@@ -192,10 +191,9 @@ namespace ParadoxNotion.Services
 
     private void Internal_RegisterCallback(string message, Delegate callback)
     {
-      List<object> objectList = null;
-      if (!listeners.TryGetValue(message, out objectList))
+      if (!listeners.TryGetValue(message, out List<object> objectList))
       {
-        objectList = new List<object>();
+        objectList = [];
         listeners[message] = objectList;
       }
       if (objectList.Contains(callback))
@@ -241,8 +239,7 @@ namespace ParadoxNotion.Services
 
     public void Dispatch(string message, object arg)
     {
-      List<object> objectList;
-      if (!listeners.TryGetValue(message, out objectList))
+      if (!listeners.TryGetValue(message, out List<object> objectList))
         return;
       for (int index = 0; index < objectList.Count; ++index)
       {
@@ -256,7 +253,7 @@ namespace ParadoxNotion.Services
             if (methodInfo.GetParameters().Length != 1)
               objArray = null;
             else
-              objArray = new object[1]{ arg };
+              objArray = [arg];
             object[] parameters = objArray;
             if (del is Delegate)
               (del as Delegate).DynamicInvoke(parameters);

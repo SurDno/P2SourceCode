@@ -3,24 +3,25 @@ using UnityEngine;
 
 namespace Cinemachine
 {
-  public class CinemachineBlend
-  {
-    public ICinemachineCamera CamA { get; set; }
+  public class CinemachineBlend(
+    ICinemachineCamera a,
+    ICinemachineCamera b,
+    AnimationCurve curve,
+    float duration,
+    float t) {
+    public ICinemachineCamera CamA { get; set; } = a != null && b != null ? a : throw new ArgumentException("Blend cameras cannot be null");
 
-    public ICinemachineCamera CamB { get; set; }
+    public ICinemachineCamera CamB { get; set; } = b;
 
-    public AnimationCurve BlendCurve { get; set; }
+    public AnimationCurve BlendCurve { get; set; } = curve;
 
-    public float TimeInBlend { get; set; }
+    public float TimeInBlend { get; set; } = t;
 
-    public float BlendWeight
-    {
-      get => BlendCurve != null ? BlendCurve.Evaluate(TimeInBlend) : 0.0f;
-    }
+    public float BlendWeight => BlendCurve != null ? BlendCurve.Evaluate(TimeInBlend) : 0.0f;
 
     public bool IsValid => CamA != null || CamB != null;
 
-    public float Duration { get; set; }
+    public float Duration { get; set; } = duration;
 
     public bool IsComplete => TimeInBlend >= (double) Duration;
 
@@ -38,29 +39,12 @@ namespace Cinemachine
       return cam == CamA || cam == CamB || CamA is BlendSourceVirtualCamera camA && camA.Blend.Uses(cam) || CamB is BlendSourceVirtualCamera camB && camB.Blend.Uses(cam);
     }
 
-    public CinemachineBlend(
-      ICinemachineCamera a,
-      ICinemachineCamera b,
-      AnimationCurve curve,
-      float duration,
-      float t)
-    {
-      CamA = a != null && b != null ? a : throw new ArgumentException("Blend cameras cannot be null");
-      CamB = b;
-      BlendCurve = curve;
-      TimeInBlend = t;
-      Duration = duration;
-    }
-
     public void UpdateCameraState(Vector3 worldUp, float deltaTime)
     {
       CinemachineCore.Instance.UpdateVirtualCamera(CamA, worldUp, deltaTime);
       CinemachineCore.Instance.UpdateVirtualCamera(CamB, worldUp, deltaTime);
     }
 
-    public CameraState State
-    {
-      get => CameraState.Lerp(CamA.State, CamB.State, BlendWeight);
-    }
+    public CameraState State => CameraState.Lerp(CamA.State, CamB.State, BlendWeight);
   }
 }

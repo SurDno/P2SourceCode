@@ -11,9 +11,9 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
   public class DragInventoryCell
   {
     [Inspected]
-    public HashSet<InventoryCellUI> ActionCells = new HashSet<InventoryCellUI>();
+    public HashSet<InventoryCellUI> ActionCells = [];
     [Inspected]
-    public HashSet<InventoryCellUI> BaseCells = new HashSet<InventoryCellUI>();
+    public HashSet<InventoryCellUI> BaseCells = [];
     [Inspected]
     public bool IsEnabled;
     [Inspected]

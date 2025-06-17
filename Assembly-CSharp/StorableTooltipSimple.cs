@@ -16,7 +16,7 @@ public class StorableTooltipSimple : IStorableTooltipComponent
   [DataWriteProxy]
   [CopyableProxy()]
   [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-  protected StorableTooltipInfo info = new StorableTooltipInfo();
+  protected StorableTooltipInfo info = new();
 
   [Inspected]
   public bool IsEnabled => isEnabled;

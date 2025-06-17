@@ -25,7 +25,7 @@ namespace SRDebugger.UI.Tabs
     private const int maxCommandCount = 32;
     private const string commandsKey = "LastCommandsKey";
     [Inspected]
-    private List<string> commands = new List<string>();
+    private List<string> commands = [];
     [Inspected]
     private int commandIndex = -1;
     public InputField StackTraceInputField;
@@ -90,7 +90,7 @@ namespace SRDebugger.UI.Tabs
     public IEnumerator ClearCoroutine()
     {
       yield return new WaitForEndOfFrame();
-      List<GameObject> list = new List<GameObject>();
+      List<GameObject> list = [];
       foreach (Transform item in LayoutContainer)
         list.Add(item.gameObject);
       foreach (GameObject item in list)

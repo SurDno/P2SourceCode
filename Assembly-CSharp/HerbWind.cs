@@ -18,7 +18,7 @@ public class HerbWind : MonoBehaviour
   [SerializeField]
   private Vector2 speed = Vector2.one;
   [SerializeField]
-  private Vector2 emissionRateRange = new Vector2(1f, 2f);
+  private Vector2 emissionRateRange = new(1f, 2f);
   private float timeToChange;
   private Vector2 targetWind = Vector2.zero;
   private Vector2 currentWind = Vector2.zero;

@@ -62,9 +62,7 @@ namespace Cinemachine
       if (!IsValid)
         return;
       Vector3 effectiveOffset = EffectiveOffset;
-      Vector3 outTargetPosition;
-      Quaternion outTargetOrient;
-      TrackTarget(deltaTime, curState.ReferenceUp, effectiveOffset, out outTargetPosition, out outTargetOrient);
+      TrackTarget(deltaTime, curState.ReferenceUp, effectiveOffset, out Vector3 outTargetPosition, out Quaternion outTargetOrient);
       curState.RawPosition = outTargetPosition + outTargetOrient * effectiveOffset;
       curState.ReferenceUp = outTargetOrient * Vector3.up;
     }
@@ -122,13 +120,7 @@ namespace Cinemachine
       outTargetOrient = quaternion;
     }
 
-    protected Vector3 Damping
-    {
-      get
-      {
-        return m_BindingMode == BindingMode.SimpleFollowWithWorldUp ? new Vector3(0.0f, m_YDamping, m_ZDamping) : new Vector3(m_XDamping, m_YDamping, m_ZDamping);
-      }
-    }
+    protected Vector3 Damping => m_BindingMode == BindingMode.SimpleFollowWithWorldUp ? new Vector3(0.0f, m_YDamping, m_ZDamping) : new Vector3(m_XDamping, m_YDamping, m_ZDamping);
 
     protected Vector3 AngularDamping
     {

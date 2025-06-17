@@ -4,10 +4,7 @@ using Inspectors;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class NpcStateUnknown : INpcState, INpcStateRagdoll
-{
-  private NpcState npcState;
-  private Pivot pivot;
+public class NpcStateUnknown(NpcState npcState, Pivot pivot) : INpcState, INpcStateRagdoll {
   private NavMeshAgent agent;
   private bool agentWasEnabled;
   private bool animatorWasEnabled;
@@ -15,7 +12,7 @@ public class NpcStateUnknown : INpcState, INpcStateRagdoll
   private float actualRagdollWeight;
   private bool inited;
 
-  public GameObject GameObject { get; private set; }
+  public GameObject GameObject { get; private set; } = npcState.gameObject;
 
   [Inspected]
   public NpcStateStatusEnum Status => NpcStateStatusEnum.Running;
@@ -27,13 +24,6 @@ public class NpcStateUnknown : INpcState, INpcStateRagdoll
     agent = pivot.GetAgent();
     inited = true;
     return true;
-  }
-
-  public NpcStateUnknown(NpcState npcState, Pivot pivot)
-  {
-    GameObject = npcState.gameObject;
-    this.pivot = pivot;
-    this.npcState = npcState;
   }
 
   public void Activate(INpcState previousState)

@@ -16,9 +16,6 @@ namespace Engine.Source.Services.Templates
       }
     }
 
-    private static bool Compress
-    {
-      get => ExternalSettingsInstance<ExternalOptimizationSettings>.Instance.UseCompressedTemplates;
-    }
+    private static bool Compress => ExternalSettingsInstance<ExternalOptimizationSettings>.Instance.UseCompressedTemplates;
   }
 }

@@ -23,109 +23,95 @@ public class TOD_DayParameters
   [TOD_Range(0.0f, 1f)]
   public float Fogginess;
   [Tooltip("Color of the sun spot.\nLeft value: Sun at zenith.\nRight value: Sun at horizon.")]
-  public Gradient SunColor = new Gradient {
-    alphaKeys = new GradientAlphaKey[3]
-    {
-      new GradientAlphaKey(1f, 0.0f),
-      new GradientAlphaKey(1f, 0.5f),
-      new GradientAlphaKey(1f, 1f)
-    },
-    colorKeys = new GradientColorKey[3]
-    {
-      new GradientColorKey(new Color32(253, 171, 50, byte.MaxValue), 0.0f),
-      new GradientColorKey(new Color32(253, 171, 50, byte.MaxValue), 0.5f),
-      new GradientColorKey(new Color32(253, 171, 50, byte.MaxValue), 1f)
-    }
+  public Gradient SunColor = new() {
+    alphaKeys = [
+      new(1f, 0.0f),
+      new(1f, 0.5f),
+      new(1f, 1f)
+    ],
+    colorKeys = [
+      new(new Color32(253, 171, 50, byte.MaxValue), 0.0f),
+      new(new Color32(253, 171, 50, byte.MaxValue), 0.5f),
+      new(new Color32(253, 171, 50, byte.MaxValue), 1f)
+    ]
   };
   [Tooltip("Color of the light that hits the ground.\nLeft value: Sun at zenith.\nRight value: Sun at horizon.")]
-  public Gradient LightColor = new Gradient {
-    alphaKeys = new GradientAlphaKey[3]
-    {
-      new GradientAlphaKey(1f, 0.0f),
-      new GradientAlphaKey(1f, 0.5f),
-      new GradientAlphaKey(1f, 1f)
-    },
-    colorKeys = new GradientColorKey[3]
-    {
-      new GradientColorKey(new Color32(byte.MaxValue, 243, 234, byte.MaxValue), 0.0f),
-      new GradientColorKey(new Color32(byte.MaxValue, 243, 234, byte.MaxValue), 0.5f),
-      new GradientColorKey(new Color32(byte.MaxValue, 154, 0, byte.MaxValue), 1f)
-    }
+  public Gradient LightColor = new() {
+    alphaKeys = [
+      new(1f, 0.0f),
+      new(1f, 0.5f),
+      new(1f, 1f)
+    ],
+    colorKeys = [
+      new(new Color32(byte.MaxValue, 243, 234, byte.MaxValue), 0.0f),
+      new(new Color32(byte.MaxValue, 243, 234, byte.MaxValue), 0.5f),
+      new(new Color32(byte.MaxValue, 154, 0, byte.MaxValue), 1f)
+    ]
   };
   [Tooltip("Color of the god rays.\nLeft value: Sun at zenith.\nRight value: Sun at horizon.")]
-  public Gradient RayColor = new Gradient {
-    alphaKeys = new GradientAlphaKey[3]
-    {
-      new GradientAlphaKey(1f, 0.0f),
-      new GradientAlphaKey(1f, 0.5f),
-      new GradientAlphaKey(1f, 1f)
-    },
-    colorKeys = new GradientColorKey[3]
-    {
-      new GradientColorKey(new Color32(byte.MaxValue, 243, 234, byte.MaxValue), 0.0f),
-      new GradientColorKey(new Color32(byte.MaxValue, 243, 234, byte.MaxValue), 0.5f),
-      new GradientColorKey(new Color32(byte.MaxValue, 154, 0, byte.MaxValue), 1f)
-    }
+  public Gradient RayColor = new() {
+    alphaKeys = [
+      new(1f, 0.0f),
+      new(1f, 0.5f),
+      new(1f, 1f)
+    ],
+    colorKeys = [
+      new(new Color32(byte.MaxValue, 243, 234, byte.MaxValue), 0.0f),
+      new(new Color32(byte.MaxValue, 243, 234, byte.MaxValue), 0.5f),
+      new(new Color32(byte.MaxValue, 154, 0, byte.MaxValue), 1f)
+    ]
   };
   [Tooltip("Color of the light that hits the atmosphere.\nLeft value: Sun at zenith.\nRight value: Sun at horizon.")]
-  public Gradient SkyColor = new Gradient {
-    alphaKeys = new GradientAlphaKey[3]
-    {
-      new GradientAlphaKey(1f, 0.0f),
-      new GradientAlphaKey(1f, 0.5f),
-      new GradientAlphaKey(1f, 1f)
-    },
-    colorKeys = new GradientColorKey[3]
-    {
-      new GradientColorKey(new Color32(byte.MaxValue, 243, 234, byte.MaxValue), 0.0f),
-      new GradientColorKey(new Color32(byte.MaxValue, 243, 234, byte.MaxValue), 0.5f),
-      new GradientColorKey(new Color32(byte.MaxValue, 243, 234, byte.MaxValue), 1f)
-    }
+  public Gradient SkyColor = new() {
+    alphaKeys = [
+      new(1f, 0.0f),
+      new(1f, 0.5f),
+      new(1f, 1f)
+    ],
+    colorKeys = [
+      new(new Color32(byte.MaxValue, 243, 234, byte.MaxValue), 0.0f),
+      new(new Color32(byte.MaxValue, 243, 234, byte.MaxValue), 0.5f),
+      new(new Color32(byte.MaxValue, 243, 234, byte.MaxValue), 1f)
+    ]
   };
   [Tooltip("Color of the clouds.\nLeft value: Sun at zenith.\nRight value: Sun at horizon.")]
-  public Gradient CloudColor = new Gradient {
-    alphaKeys = new GradientAlphaKey[3]
-    {
-      new GradientAlphaKey(1f, 0.0f),
-      new GradientAlphaKey(1f, 0.5f),
-      new GradientAlphaKey(1f, 1f)
-    },
-    colorKeys = new GradientColorKey[3]
-    {
-      new GradientColorKey(new Color32(224, 235, byte.MaxValue, byte.MaxValue), 0.0f),
-      new GradientColorKey(new Color32(224, 235, byte.MaxValue, byte.MaxValue), 0.5f),
-      new GradientColorKey(new Color32(byte.MaxValue, 195, 145, byte.MaxValue), 1f)
-    }
+  public Gradient CloudColor = new() {
+    alphaKeys = [
+      new(1f, 0.0f),
+      new(1f, 0.5f),
+      new(1f, 1f)
+    ],
+    colorKeys = [
+      new(new Color32(224, 235, byte.MaxValue, byte.MaxValue), 0.0f),
+      new(new Color32(224, 235, byte.MaxValue, byte.MaxValue), 0.5f),
+      new(new Color32(byte.MaxValue, 195, 145, byte.MaxValue), 1f)
+    ]
   };
   [Tooltip("Color of the atmosphere fog.\nLeft value: Sun at horizon.\nRight value: Sun opposite to zenith.")]
-  public Gradient FogColor = new Gradient {
-    alphaKeys = new GradientAlphaKey[3]
-    {
-      new GradientAlphaKey(1f, 0.0f),
-      new GradientAlphaKey(1f, 0.5f),
-      new GradientAlphaKey(1f, 1f)
-    },
-    colorKeys = new GradientColorKey[3]
-    {
-      new GradientColorKey(new Color32(191, 191, 191, byte.MaxValue), 0.0f),
-      new GradientColorKey(new Color32(191, 191, 191, byte.MaxValue), 0.5f),
-      new GradientColorKey(new Color32(127, 127, 127, byte.MaxValue), 1f)
-    }
+  public Gradient FogColor = new() {
+    alphaKeys = [
+      new(1f, 0.0f),
+      new(1f, 0.5f),
+      new(1f, 1f)
+    ],
+    colorKeys = [
+      new(new Color32(191, 191, 191, byte.MaxValue), 0.0f),
+      new(new Color32(191, 191, 191, byte.MaxValue), 0.5f),
+      new(new Color32(127, 127, 127, byte.MaxValue), 1f)
+    ]
   };
   [Tooltip("Color of the ambient light.\nLeft value: Sun at zenith.\nRight value: Sun at horizon.")]
-  public Gradient AmbientColor = new Gradient {
-    alphaKeys = new GradientAlphaKey[3]
-    {
-      new GradientAlphaKey(1f, 0.0f),
-      new GradientAlphaKey(1f, 0.5f),
-      new GradientAlphaKey(1f, 1f)
-    },
-    colorKeys = new GradientColorKey[3]
-    {
-      new GradientColorKey(new Color32(94, 89, 87, byte.MaxValue), 0.0f),
-      new GradientColorKey(new Color32(94, 89, 87, byte.MaxValue), 0.5f),
-      new GradientColorKey(new Color32(94, 89, 87, byte.MaxValue), 1f)
-    }
+  public Gradient AmbientColor = new() {
+    alphaKeys = [
+      new(1f, 0.0f),
+      new(1f, 0.5f),
+      new(1f, 1f)
+    ],
+    colorKeys = [
+      new(new Color32(94, 89, 87, byte.MaxValue), 0.0f),
+      new(new Color32(94, 89, 87, byte.MaxValue), 0.5f),
+      new(new Color32(94, 89, 87, byte.MaxValue), 1f)
+    ]
   };
   [Tooltip("Intensity of the light source.")]
   [Range(0.0f, 8f)]

@@ -8,7 +8,7 @@ namespace Engine.Source.Services.Consoles.Binds
   [Initialisable]
   public static class SetConsoleCommand
   {
-    private static Dictionary<string, Holder> binds = new Dictionary<string, Holder>();
+    private static Dictionary<string, Holder> binds = new();
 
     public static void AddBind(
       Type type,
@@ -24,8 +24,7 @@ namespace Engine.Source.Services.Consoles.Binds
           object result1;
           if (valueType.IsEnum)
           {
-            Enum result2;
-            if (!DefaultConverter.TryParseEnum(value, valueType, out result2))
+            if (!DefaultConverter.TryParseEnum(value, valueType, out Enum result2))
               return "Error parse value : \"" + value + "\" , name : " + name;
             result1 = result2;
           }

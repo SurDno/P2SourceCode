@@ -88,7 +88,7 @@ namespace BehaviorDesigner.Runtime.Tasks
     public void AddChild(Task child, int index)
     {
       if (children == null)
-        children = new List<Task>();
+        children = [];
       children.Insert(index, child);
     }
 

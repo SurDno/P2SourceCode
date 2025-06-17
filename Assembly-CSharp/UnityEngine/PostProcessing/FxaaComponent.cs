@@ -2,13 +2,7 @@
 {
   public sealed class FxaaComponent : PostProcessingComponentRenderTexture<AntialiasingModel>
   {
-    public override bool active
-    {
-      get
-      {
-        return model.enabled && model.settings.method == AntialiasingModel.Method.Fxaa && !context.interrupted;
-      }
-    }
+    public override bool active => model.enabled && model.settings.method == AntialiasingModel.Method.Fxaa && !context.interrupted;
 
     public void Render(RenderTexture source, RenderTexture destination)
     {

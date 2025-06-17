@@ -29,8 +29,7 @@ namespace PLVirtualMachine.Common.Data
 
     public static Type GetRealRefType(Type type)
     {
-      Type result;
-      VMFactoryAttribute.TryGetValue(type, out result);
+      VMFactoryAttribute.TryGetValue(type, out Type result);
       return result;
     }
   }

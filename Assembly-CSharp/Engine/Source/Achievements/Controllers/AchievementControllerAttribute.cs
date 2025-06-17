@@ -5,18 +5,13 @@ using Cofe.Meta;
 namespace Engine.Source.Achievements.Controllers
 {
   [AttributeUsage(AttributeTargets.Class)]
-  public class AchievementControllerAttribute : TypeAttribute
+  public class AchievementControllerAttribute(string id) : TypeAttribute 
   {
-    private static Dictionary<string, Type> factory = new Dictionary<string, Type>();
+    private static Dictionary<string, Type> factory = new();
 
-    public static IDictionary<string, Type> Factory
-    {
-      get => factory;
-    }
+    public static IDictionary<string, Type> Factory => factory;
 
-    public string Id { get; private set; }
-
-    public AchievementControllerAttribute(string id) => Id = id;
+    public string Id { get; private set; } = id;
 
     public override void ComputeType(Type type)
     {

@@ -79,9 +79,7 @@ namespace SoundPropagation
         spFieldSource.name = prefab.name;
         spFieldSource.audioSource = spFieldSource.GetComponent<AudioSource>();
         spFieldSource.audioSource.dopplerLevel = 0.0f;
-        spFieldSource.points = new List<SPFieldPoint> {
-          point
-        };
+        spFieldSource.points = [point];
         spFieldSource.UpdatePosition();
         sources.Add(prefab, spFieldSource);
       }

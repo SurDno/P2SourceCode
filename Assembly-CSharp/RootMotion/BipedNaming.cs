@@ -5,8 +5,7 @@ namespace RootMotion
 {
   public static class BipedNaming
   {
-    public static string[] typeLeft = new string[9]
-    {
+    public static string[] typeLeft = [
       " L ",
       "_L_",
       "-L-",
@@ -16,9 +15,8 @@ namespace RootMotion
       "Left",
       "left",
       "CATRigL"
-    };
-    public static string[] typeRight = new string[9]
-    {
+    ];
+    public static string[] typeRight = [
       " R ",
       "_R_",
       "-R-",
@@ -28,9 +26,8 @@ namespace RootMotion
       "Right",
       "right",
       "CATRigR"
-    };
-    public static string[] typeSpine = new string[16]
-    {
+    ];
+    public static string[] typeSpine = [
       "Spine",
       "spine",
       "Pelvis",
@@ -47,14 +44,12 @@ namespace RootMotion
       "neck",
       "Chest",
       "chest"
-    };
-    public static string[] typeHead = new string[2]
-    {
+    ];
+    public static string[] typeHead = [
       "Head",
       "head"
-    };
-    public static string[] typeArm = new string[10]
-    {
+    ];
+    public static string[] typeArm = [
       "Arm",
       "arm",
       "Hand",
@@ -65,9 +60,8 @@ namespace RootMotion
       "elbow",
       "Palm",
       "palm"
-    };
-    public static string[] typeLeg = new string[16]
-    {
+    ];
+    public static string[] typeLeg = [
       "Leg",
       "leg",
       "Thigh",
@@ -84,38 +78,32 @@ namespace RootMotion
       "ankle",
       "Hip",
       "hip"
-    };
-    public static string[] typeTail = new string[2]
-    {
+    ];
+    public static string[] typeTail = [
       "Tail",
       "tail"
-    };
-    public static string[] typeEye = new string[2]
-    {
+    ];
+    public static string[] typeEye = [
       "Eye",
       "eye"
-    };
-    public static string[] typeExclude = new string[6]
-    {
+    ];
+    public static string[] typeExclude = [
       "Nub",
       "Dummy",
       "dummy",
       "Tip",
       "IK",
       "Mesh"
-    };
-    public static string[] typeExcludeSpine = new string[2]
-    {
+    ];
+    public static string[] typeExcludeSpine = [
       "Head",
       "head"
-    };
-    public static string[] typeExcludeHead = new string[2]
-    {
+    ];
+    public static string[] typeExcludeHead = [
       "Top",
       "End"
-    };
-    public static string[] typeExcludeArm = new string[19]
-    {
+    ];
+    public static string[] typeExcludeArm = [
       "Collar",
       "collar",
       "Clavicle",
@@ -135,9 +123,8 @@ namespace RootMotion
       "adjust",
       "Twist",
       "twist"
-    };
-    public static string[] typeExcludeLeg = new string[7]
-    {
+    ];
+    public static string[] typeExcludeLeg = [
       "Toe",
       "toe",
       "Platform",
@@ -145,44 +132,40 @@ namespace RootMotion
       "adjust",
       "Twist",
       "twist"
-    };
-    public static string[] typeExcludeTail = new string[0];
-    public static string[] typeExcludeEye = new string[6]
-    {
+    ];
+    public static string[] typeExcludeTail = [];
+    public static string[] typeExcludeEye = [
       "Lid",
       "lid",
       "Brow",
       "brow",
       "Lash",
       "lash"
-    };
-    public static string[] pelvis = new string[4]
-    {
+    ];
+    public static string[] pelvis = [
       "Pelvis",
       nameof (pelvis),
       "Hip",
       "hip"
-    };
-    public static string[] hand = new string[6]
-    {
+    ];
+    public static string[] hand = [
       "Hand",
       nameof (hand),
       "Wrist",
       "wrist",
       "Palm",
       "palm"
-    };
-    public static string[] foot = new string[4]
-    {
+    ];
+    public static string[] foot = [
       "Foot",
       nameof (foot),
       "Ankle",
       "ankle"
-    };
+    ];
 
     public static Transform[] GetBonesOfType(BoneType boneType, Transform[] bones)
     {
-      Transform[] array = new Transform[0];
+      Transform[] array = [];
       foreach (Transform bone in bones)
       {
         if (bone != null && GetBoneType(bone.name) == boneType)
@@ -196,7 +179,7 @@ namespace RootMotion
 
     public static Transform[] GetBonesOfSide(BoneSide boneSide, Transform[] bones)
     {
-      Transform[] array = new Transform[0];
+      Transform[] array = [];
       foreach (Transform bone in bones)
       {
         if (bone != null && GetBoneSide(bone.name) == boneSide)

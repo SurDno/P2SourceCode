@@ -13,10 +13,7 @@ namespace UnityEngine.PostProcessing
 
     public override DepthTextureMode GetCameraFlags() => DepthTextureMode.Depth;
 
-    public override bool active
-    {
-      get => model.enabled && context.isGBufferAvailable && !context.interrupted;
-    }
+    public override bool active => model.enabled && context.isGBufferAvailable && !context.interrupted;
 
     public override void OnEnable()
     {

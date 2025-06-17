@@ -8,11 +8,9 @@ using Inspectors;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class NpcStateFightFollow : INpcState
-{
-  private Pivot pivot;
+public class NpcStateFightFollow(NpcState npcState, Pivot pivot) : INpcState 
+  {
   private Animator animator;
-  private NpcState npcState;
   private NPCEnemy enemy;
   private NavMeshAgent agent;
   private NPCWeaponService weaponService;
@@ -26,7 +24,7 @@ public class NpcStateFightFollow : INpcState
   private bool inited;
   private bool failed;
 
-  public GameObject GameObject { get; protected set; }
+  public GameObject GameObject { get; protected set; } = npcState.gameObject;
 
   [Inspected]
   public NpcStateStatusEnum Status { get; protected set; }
@@ -48,13 +46,6 @@ public class NpcStateFightFollow : INpcState
   private bool IsEnemyRunningAway()
   {
     return enemy.Enemy.Velocity.magnitude >= 0.5 && Vector3.Dot(enemy.transform.forward, (enemy.Enemy.transform.position - enemy.transform.position).normalized) > 0.25;
-  }
-
-  public NpcStateFightFollow(NpcState npcState, Pivot pivot)
-  {
-    GameObject = npcState.gameObject;
-    this.pivot = pivot;
-    this.npcState = npcState;
   }
 
   public void Activate(float stopDistance, float runDistance, bool aim, float timeAfterHitToRun = 7f)

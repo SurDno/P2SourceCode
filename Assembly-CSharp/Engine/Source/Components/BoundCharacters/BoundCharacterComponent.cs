@@ -176,7 +176,7 @@ namespace Engine.Source.Components.BoundCharacters
         if (SeenBoundHealthState == boundHealthStateEnum || boundHealthStateEnum == BoundHealthStateEnum.Normal)
           return;
       }
-      ServiceLocator.GetService<NotificationService>().AddNotify(NotificationEnum.BoundCharacters, Array.Empty<object>());
+      ServiceLocator.GetService<NotificationService>().AddNotify(NotificationEnum.BoundCharacters, []);
     }
 
     public override void OnAdded()

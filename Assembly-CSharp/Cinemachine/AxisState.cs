@@ -6,52 +6,36 @@ namespace Cinemachine
 {
   [DocumentationSorting(6.4f, DocumentationSortingAttribute.Level.UserRef)]
   [Serializable]
-  public struct AxisState
-  {
+  public struct AxisState(
+    float maxSpeed,
+    float accelTime,
+    float decelTime,
+    float val,
+    string name,
+    bool invert) {
     [NoSaveDuringPlay]
     [Tooltip("The current value of the axis.")]
-    public float Value;
+    public float Value = val;
     [Tooltip("The maximum speed of this axis in units/second")]
-    public float m_MaxSpeed;
+    public float m_MaxSpeed = maxSpeed;
     [Tooltip("The amount of time in seconds it takes to accelerate to MaxSpeed with the supplied Axis at its maximum value")]
-    public float m_AccelTime;
+    public float m_AccelTime = accelTime;
     [Tooltip("The amount of time in seconds it takes to decelerate the axis to zero if the supplied axis is in a neutral position")]
-    public float m_DecelTime;
+    public float m_DecelTime = decelTime;
     [FormerlySerializedAs("m_AxisName")]
     [Tooltip("The name of this axis as specified in Unity Input manager. Setting to an empty string will disable the automatic updating of this axis")]
-    public string m_InputAxisName;
+    public string m_InputAxisName = name;
     [NoSaveDuringPlay]
     [Tooltip("The value of the input axis.  A value of 0 means no input.  You can drive this directly from a custom input system, or you can set the Axis Name and have the value driven by the internal Input Manager")]
-    public float m_InputAxisValue;
+    public float m_InputAxisValue = 0.0f;
     [NoSaveDuringPlay]
     [Tooltip("If checked, then the raw value of the input axis will be inverted before it is used")]
-    public bool m_InvertAxis;
-    private float mCurrentSpeed;
-    private float mMinValue;
-    private float mMaxValue;
-    private bool mWrapAround;
+    public bool m_InvertAxis = invert;
+    private float mCurrentSpeed = 0.0f;
+    private float mMinValue = 0.0f;
+    private float mMaxValue = 0.0f;
+    private bool mWrapAround = false;
     private const float Epsilon = 0.0001f;
-
-    public AxisState(
-      float maxSpeed,
-      float accelTime,
-      float decelTime,
-      float val,
-      string name,
-      bool invert)
-    {
-      m_MaxSpeed = maxSpeed;
-      m_AccelTime = accelTime;
-      m_DecelTime = decelTime;
-      Value = val;
-      m_InputAxisName = name;
-      m_InputAxisValue = 0.0f;
-      m_InvertAxis = invert;
-      mCurrentSpeed = 0.0f;
-      mMinValue = 0.0f;
-      mMaxValue = 0.0f;
-      mWrapAround = false;
-    }
 
     public void Validate()
     {

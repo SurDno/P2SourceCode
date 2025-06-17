@@ -14,8 +14,8 @@ namespace PLVirtualMachine.LogicMap
 {
   [TypeData(EDataType.TLogicMapNode)]
   [DataFactory("MindMapNode")]
-  public class VMLogicMapNode : 
-    VMBaseObject,
+  public class VMLogicMapNode(ulong guid) :
+    VMBaseObject(guid),
     IStub,
     IEditorDataReader,
     IGraphObject,
@@ -25,16 +25,15 @@ namespace PLVirtualMachine.LogicMap
     INamedElement,
     INamed,
     IStaticUpdateable,
-    ILocalContext
-  {
+    ILocalContext {
     [FieldData("InputLinks", DataFieldType.Reference)]
-    private List<ILink> inputLinks = new List<ILink>();
+    private List<ILink> inputLinks = [];
     [FieldData("OutputLinks", DataFieldType.Reference)]
-    private List<ILink> outputLinks = new List<ILink>();
+    private List<ILink> outputLinks = [];
     [FieldData("LogicMapNodeType")]
     private ELogicMapNodeType logicMapNodeType = ELogicMapNodeType.LM_NODE_TYPE_COMMON;
     [FieldData("NodeContent", DataFieldType.Reference)]
-    private List<VMLogicMapNodeContent> nodeContentList = new List<VMLogicMapNodeContent>();
+    private List<VMLogicMapNodeContent> nodeContentList = [];
     [FieldData("GameScreenPosX")]
     private float gameScreenPosX;
     [FieldData("GameScreenPosY")]
@@ -84,11 +83,6 @@ namespace PLVirtualMachine.LogicMap
       }
     }
 
-    public VMLogicMapNode(ulong guid)
-      : base(guid)
-    {
-    }
-
     public ELogicMapNodeType NodeType => logicMapNodeType;
 
     public override EObjectCategory GetCategory() => EObjectCategory.OBJECT_CATEGORY_NONE;
@@ -119,7 +113,7 @@ namespace PLVirtualMachine.LogicMap
       IContextElement currentElement,
       int iCounter = 0)
     {
-      return new List<IVariable>();
+      return [];
     }
 
     public virtual IVariable GetLocalContextVariable(

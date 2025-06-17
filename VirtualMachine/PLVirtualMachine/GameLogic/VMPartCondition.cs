@@ -16,16 +16,15 @@ namespace PLVirtualMachine.GameLogic
 {
   [TypeData(EDataType.TPartCondition)]
   [DataFactory("PartCondition")]
-  public class VMPartCondition : 
+  public class VMPartCondition(ulong guid) :
     IStub,
     IEditorDataReader,
     ICondition,
     IObject,
     IEditorBaseTemplate,
     IOrderedChild,
-    IStaticUpdateable
-  {
-    protected ulong guid;
+    IStaticUpdateable {
+    protected ulong guid = guid;
     [FieldData("Name")]
     protected string name = "";
     [FieldData("ConditionType")]
@@ -72,8 +71,6 @@ namespace PLVirtualMachine.GameLogic
       }
     }
 
-    public VMPartCondition(ulong guid) => this.guid = guid;
-
     public ulong BaseGuid => guid;
 
     public string Name => name;
@@ -97,17 +94,11 @@ namespace PLVirtualMachine.GameLogic
       secondExpression.Update();
     }
 
-    public virtual bool IsUpdated
-    {
-      get
-      {
-        return (firstExpression == null || firstExpression.IsUpdated) && (secondExpression == null || secondExpression.IsUpdated);
-      }
-    }
+    public virtual bool IsUpdated => (firstExpression == null || firstExpression.IsUpdated) && (secondExpression == null || secondExpression.IsUpdated);
 
     public virtual List<GameTime> GetCheckRaisingTimePoints()
     {
-      List<GameTime> raisingTimePoints = new List<GameTime>();
+      List<GameTime> raisingTimePoints = [];
       if ((ConditionType == EConditionType.CONDITION_TYPE_VALUE_EQUAL || ConditionType == EConditionType.CONDITION_TYPE_VALUE_LARGER_EQUAL || ConditionType == EConditionType.CONDITION_TYPE_VALUE_LARGER) && firstExpression != null && firstExpression.Type == ExpressionType.EXPRESSION_SRC_FUNCTION && firstExpression.TargetFunction != null && firstExpression.TargetFunction.EndsWith(EngineAPIManager.GetSpecialFunctionName(ESpecialFunctionName.SFN_GET_GAME_TIME, typeof (VMGameComponent))) && secondExpression != null && secondExpression.Type == ExpressionType.EXPRESSION_SRC_CONST && secondExpression.ResultType.BaseType == typeof (GameTime) && secondExpression.TargetConstant != null && secondExpression.TargetConstant.Value != null && secondExpression.TargetConstant.Value.GetType() == typeof (GameTime))
         raisingTimePoints.Add((GameTime) secondExpression.TargetConstant.Value);
       return raisingTimePoints;
@@ -115,7 +106,7 @@ namespace PLVirtualMachine.GameLogic
 
     public virtual List<VMParameter> GetCheckRaisingParams()
     {
-      List<VMParameter> checkRaisingParams = new List<VMParameter>();
+      List<VMParameter> checkRaisingParams = [];
       if (conditionType != EConditionType.CONDITION_TYPE_CONST_FALSE && conditionType != EConditionType.CONDITION_TYPE_CONST_TRUE)
       {
         if (firstExpression != null && firstExpression.Type == ExpressionType.EXPRESSION_SRC_PARAM && ((VMExpression) firstExpression).TargetParam != null)
@@ -144,7 +135,7 @@ namespace PLVirtualMachine.GameLogic
 
     public virtual List<BaseFunction> GetCheckRaisingFunctions()
     {
-      List<BaseFunction> raisingFunctions = new List<BaseFunction>();
+      List<BaseFunction> raisingFunctions = [];
       if (conditionType != EConditionType.CONDITION_TYPE_CONST_FALSE && conditionType != EConditionType.CONDITION_TYPE_CONST_TRUE)
       {
         if (firstExpression != null && firstExpression.Type == ExpressionType.EXPRESSION_SRC_FUNCTION)

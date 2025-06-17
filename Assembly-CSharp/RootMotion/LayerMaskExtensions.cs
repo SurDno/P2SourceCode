@@ -50,7 +50,7 @@ namespace RootMotion
 
     public static string[] MaskToNames(this LayerMask original)
     {
-      List<string> stringList = new List<string>();
+      List<string> stringList = [];
       for (int layer = 0; layer < 32; ++layer)
       {
         int num = 1 << layer;
@@ -66,7 +66,7 @@ namespace RootMotion
 
     public static int[] MaskToNumbers(this LayerMask original)
     {
-      List<int> intList = new List<int>();
+      List<int> intList = [];
       for (int index = 0; index < 32; ++index)
       {
         int num = 1 << index;

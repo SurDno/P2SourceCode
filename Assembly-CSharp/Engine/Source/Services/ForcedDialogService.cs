@@ -34,7 +34,7 @@ namespace Engine.Source.Services
     [StateSaveProxy]
     [StateLoadProxy()]
     [Inspected]
-    protected List<ForcedDialogCharacterInfo> characters = new List<ForcedDialogCharacterInfo>();
+    protected List<ForcedDialogCharacterInfo> characters = [];
 
     public void Initialise()
     {

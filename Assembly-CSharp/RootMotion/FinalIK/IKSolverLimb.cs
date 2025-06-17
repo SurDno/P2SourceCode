@@ -87,13 +87,7 @@ namespace RootMotion.FinalIK
 
     public IKSolverLimb(AvatarIKGoal goal) => this.goal = goal;
 
-    private AxisDirection[] axisDirections
-    {
-      get
-      {
-        return goal == AvatarIKGoal.LeftHand ? axisDirectionsLeft : axisDirectionsRight;
-      }
-    }
+    private AxisDirection[] axisDirections => goal == AvatarIKGoal.LeftHand ? axisDirectionsLeft : axisDirectionsRight;
 
     private void StoreAxisDirections(ref AxisDirection[] axisDirections)
     {
@@ -174,18 +168,10 @@ namespace RootMotion.FinalIK
     }
 
     [Serializable]
-    public struct AxisDirection
-    {
-      public Vector3 direction;
-      public Vector3 axis;
-      public float dot;
-
-      public AxisDirection(Vector3 direction, Vector3 axis)
-      {
-        this.direction = direction.normalized;
-        this.axis = axis.normalized;
-        dot = 0.0f;
-      }
+    public struct AxisDirection(Vector3 direction, Vector3 axis) {
+      public Vector3 direction = direction.normalized;
+      public Vector3 axis = axis.normalized;
+      public float dot = 0.0f;
     }
   }
 }

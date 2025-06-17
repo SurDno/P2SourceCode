@@ -40,15 +40,9 @@ public class PostProcessingStackOverride : MonoBehaviour
 
   public AntialiasingOverride Antialiasing => antialiasing;
 
-  public AmbientOcclusionOverride AmbientOcclusion
-  {
-    get => ambientOcclusion;
-  }
+  public AmbientOcclusionOverride AmbientOcclusion => ambientOcclusion;
 
-  public ScreenSpaceReflectionOverride ScreenSpaceReflection
-  {
-    get => screenSpaceReflection;
-  }
+  public ScreenSpaceReflectionOverride ScreenSpaceReflection => screenSpaceReflection;
 
   public DepthOfFieldOverride DepthOfField => depthOfField;
 
@@ -56,10 +50,7 @@ public class PostProcessingStackOverride : MonoBehaviour
 
   public ColorGradingOverride ColorGrading => colorGrading;
 
-  public ChromaticAberrationOverride ChromaticAberration
-  {
-    get => chromaticAberration;
-  }
+  public ChromaticAberrationOverride ChromaticAberration => chromaticAberration;
 
   public VignetteOverride Vignette => vignette;
 

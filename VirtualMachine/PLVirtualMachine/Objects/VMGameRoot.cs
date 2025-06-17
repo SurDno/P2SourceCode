@@ -22,8 +22,8 @@ namespace PLVirtualMachine.Objects
 {
   [TypeData(EDataType.TGame)]
   [DataFactory("GameRoot")]
-  public class VMGameRoot : 
-    VMLogicObject,
+  public class VMGameRoot(ulong guid) :
+    VMLogicObject(guid),
     IStub,
     IEditorDataReader,
     IBlueprint,
@@ -36,14 +36,13 @@ namespace PLVirtualMachine.Objects
     IStaticUpdateable,
     IContext,
     ILogicObject,
-    IGameRoot
-  {
+    IGameRoot {
     [FieldData("Samples", DataFieldType.Reference)]
-    private List<ISample> samplesList = new List<ISample>();
+    private List<ISample> samplesList = [];
     [FieldData("GameModes", DataFieldType.Reference)]
-    private List<IGameMode> gameModesList = new List<IGameMode>();
+    private List<IGameMode> gameModesList = [];
     [FieldData("LogicMaps", DataFieldType.Reference)]
-    private List<ILogicMap> logicMapsList = new List<ILogicMap>();
+    private List<ILogicMap> logicMapsList = [];
     [FieldData("BaseToEngineGuidsTable")]
     private BaseToEngineGuidsTableData baseToEngineGuidsTable;
     [FieldData("HierarchyScenesStructure")]
@@ -59,13 +58,13 @@ namespace PLVirtualMachine.Objects
     private List<IVariable> logicMapRefs;
     private List<IVariable> gameModeRefs;
     private Dictionary<ulong, ILogicMap> logicMapsByGuidsDict;
-    private Dictionary<Guid, VMWorldObject> engineTemplateObjectGuidsDict = new Dictionary<Guid, VMWorldObject>(GuidComparer.Instance);
-    private Dictionary<ulong, VMWorldObject> engineTemplateObjectBaseGuidsDict = new Dictionary<ulong, VMWorldObject>(UlongComparer.Instance);
-    private Dictionary<ulong, VMLogicObject> staticObjectsBaseGuidsDict = new Dictionary<ulong, VMLogicObject>(UlongComparer.Instance);
+    private Dictionary<Guid, VMWorldObject> engineTemplateObjectGuidsDict = new(GuidComparer.Instance);
+    private Dictionary<ulong, VMWorldObject> engineTemplateObjectBaseGuidsDict = new(UlongComparer.Instance);
+    private Dictionary<ulong, VMLogicObject> staticObjectsBaseGuidsDict = new(UlongComparer.Instance);
     private Dictionary<Guid, ISampleRef> samplesByEngineGuid;
     private Dictionary<ulong, ISampleRef> samplesByBaseGuid;
-    private Dictionary<ulong, IBlueprint> allClasses = new Dictionary<ulong, IBlueprint>(UlongComparer.Instance);
-    private Dictionary<ulong, IBlueprint> allBlueprints = new Dictionary<ulong, IBlueprint>(UlongComparer.Instance);
+    private Dictionary<ulong, IBlueprint> allClasses = new(UlongComparer.Instance);
+    private Dictionary<ulong, IBlueprint> allBlueprints = new(UlongComparer.Instance);
     private List<VMTalkingGraph> allTalkings;
     private Guid gameRootEngineGuid = Guid.Empty;
     private string startGameEventFuncName = "";
@@ -138,11 +137,6 @@ namespace PLVirtualMachine.Objects
       }
     }
 
-    public VMGameRoot(ulong guid)
-      : base(guid)
-    {
-    }
-
     public override EObjectCategory GetCategory() => EObjectCategory.OBJECT_CATEGORY_GAME;
 
     public List<IBlueprint> BaseBlueprints => null;
@@ -169,15 +163,9 @@ namespace PLVirtualMachine.Objects
       }
     }
 
-    public override Dictionary<string, IFunctionalComponent> FunctionalComponents
-    {
-      get => allFunctionalComponents;
-    }
+    public override Dictionary<string, IFunctionalComponent> FunctionalComponents => allFunctionalComponents;
 
-    public IEnumerable<IBlueprint> Blueprints
-    {
-      get => allBlueprints.Values;
-    }
+    public IEnumerable<IBlueprint> Blueprints => allBlueprints.Values;
 
     public List<ISample> Samples => samplesList;
 
@@ -262,7 +250,7 @@ namespace PLVirtualMachine.Objects
       foreach (IVariable blueprint in ((VMLogicObject) IStaticDataContainer.StaticDataContainer.GameRoot).GetBlueprints())
         LoadContextVaraiblesTotalCache(blueprint);
       List<VMTalkingGraph> templatesTalkings = GetAllTemplatesTalkings();
-      List<IVariable> variableList1 = new List<IVariable>();
+      List<IVariable> variableList1 = [];
       foreach (VMTalkingGraph vmTalkingGraph in templatesTalkings)
       {
         VMStateRef vmStateRef = new VMStateRef();
@@ -270,7 +258,7 @@ namespace PLVirtualMachine.Objects
         variableList1.Add(vmStateRef);
       }
       IEnumerable<VMLogicMapNode> allLogicMapNodes = GetAllLogicMapNodes();
-      List<IVariable> variableList2 = new List<IVariable>();
+      List<IVariable> variableList2 = [];
       foreach (VMLogicMapNode lmNode in allLogicMapNodes)
       {
         VMLogicMapNodeRef vmLogicMapNodeRef = new VMLogicMapNodeRef();
@@ -310,15 +298,13 @@ namespace PLVirtualMachine.Objects
 
     public IWorldBlueprint GetEngineTemplateByGuid(Guid engineTemplateGuid)
     {
-      VMWorldObject engineTemplateByGuid;
-      engineTemplateObjectGuidsDict.TryGetValue(engineTemplateGuid, out engineTemplateByGuid);
+      engineTemplateObjectGuidsDict.TryGetValue(engineTemplateGuid, out VMWorldObject engineTemplateByGuid);
       return engineTemplateByGuid;
     }
 
     public IWorldBlueprint GetEngineTemplateByGuid(ulong editorTemplateGuid)
     {
-      VMWorldObject engineTemplateByGuid;
-      engineTemplateObjectBaseGuidsDict.TryGetValue(editorTemplateGuid, out engineTemplateByGuid);
+      engineTemplateObjectBaseGuidsDict.TryGetValue(editorTemplateGuid, out VMWorldObject engineTemplateByGuid);
       return engineTemplateByGuid;
     }
 
@@ -329,8 +315,7 @@ namespace PLVirtualMachine.Objects
 
     public IBlueprint GetBlueprintByGuid(ulong bpGuid)
     {
-      IBlueprint blueprint;
-      return allBlueprints.TryGetValue(bpGuid, out blueprint) || allClasses.TryGetValue(bpGuid, out blueprint) ? blueprint : null;
+      return allBlueprints.TryGetValue(bpGuid, out IBlueprint blueprint) || allClasses.TryGetValue(bpGuid, out blueprint) ? blueprint : null;
     }
 
     public HierarchyGuid GetHierarchyGuidByHierarchyPath(string sPath) => HierarchyGuid.Empty;
@@ -369,10 +354,7 @@ namespace PLVirtualMachine.Objects
       }
     }
 
-    public Dictionary<ulong, HierarchySceneInfoData> HierarchyScenesStructure
-    {
-      get => hierarchyScenesStructure;
-    }
+    public Dictionary<ulong, HierarchySceneInfoData> HierarchyScenesStructure => hierarchyScenesStructure;
 
     public override void OnAfterLoad()
     {
@@ -485,7 +467,7 @@ namespace PLVirtualMachine.Objects
 
     private void ComputeVariables()
     {
-      globalVariablesRefs = new List<IVariable>();
+      globalVariablesRefs = [];
       foreach (KeyValuePair<ulong, IBlueprint> allBlueprint in allBlueprints)
       {
         IBlueprint blueprint = allBlueprint.Value;
@@ -606,7 +588,7 @@ namespace PLVirtualMachine.Objects
 
     private void PreloadTalkings()
     {
-      allTalkings = new List<VMTalkingGraph>();
+      allTalkings = [];
       for (int index = 0; index < blueprints.Count; ++index)
       {
         if (blueprints[index].Blueprint is VMBlueprint blueprint && blueprint.IsFunctionalSupport("Speaking") && blueprint.StateGraph != null)

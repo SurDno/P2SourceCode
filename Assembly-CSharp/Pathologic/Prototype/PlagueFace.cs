@@ -359,7 +359,7 @@ namespace Pathologic.Prototype
 
       private PlagueFacePoint[] CollectPointFrom(PlagueFacePoint startingPoint)
       {
-        List<PlagueFacePoint> plagueFacePointList = new List<PlagueFacePoint>();
+        List<PlagueFacePoint> plagueFacePointList = [];
         Queue<PlagueFacePoint> plagueFacePointQueue = new Queue<PlagueFacePoint>();
         plagueFacePointQueue.Enqueue(startingPoint);
         while (plagueFacePointQueue.Count > 0)
@@ -409,7 +409,7 @@ namespace Pathologic.Prototype
         else
         {
           _points = CollectPointFrom(startingPoint);
-          _route = new List<PlagueFacePoint>();
+          _route = [];
           _cullingSpheres = new BoundingSphere[boundingSpheres.Length * 2];
           _pathfinder = new PathfinderAStar<PlagueFacePoint, float>(GetNeighbors, TimeToJump, TimeToJump, (x, y) => x + y, (x, y) => x < (double) y, 0.0f);
           _isInitialized = true;

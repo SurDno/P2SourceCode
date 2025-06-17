@@ -38,8 +38,7 @@ namespace Engine.Source.UI.Menu.Protagonist.MindMap
 
     public void SetActive(bool active)
     {
-      Color color;
-      if (!UnityEngine.ColorUtility.TryParseHtmlString(active ? highlightedColor : baseColor, out color) || !(nodeImage != null))
+      if (!UnityEngine.ColorUtility.TryParseHtmlString(active ? highlightedColor : baseColor, out Color color) || !(nodeImage != null))
         return;
       nodeImage.color = color;
     }

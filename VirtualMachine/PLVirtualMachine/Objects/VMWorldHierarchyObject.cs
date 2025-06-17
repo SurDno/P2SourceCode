@@ -87,13 +87,7 @@ namespace PLVirtualMachine.Objects
       return Blueprint.IsFunctionalSupport(functionalsList);
     }
 
-    public HierarchyGuid WorldPositionGuid
-    {
-      get
-      {
-        return template.WorldPositionGuid.IsEmpty ? HierarchyGuid : template.WorldPositionGuid;
-      }
-    }
+    public HierarchyGuid WorldPositionGuid => template.WorldPositionGuid.IsEmpty ? HierarchyGuid : template.WorldPositionGuid;
 
     public HierarchyGuid HierarchyGuid => hierarchyGuid;
 
@@ -112,14 +106,14 @@ namespace PLVirtualMachine.Objects
     public void AddHierarchyChild(IHierarchyObject child)
     {
       if (hierarchyChilds == null)
-        hierarchyChilds = new List<IWorldHierarchyObject>();
+        hierarchyChilds = [];
       hierarchyChilds.Add((IWorldHierarchyObject) child);
     }
 
     public void AddHierarchySimpleChild(IHierarchyObject child)
     {
       if (hierarchySimpleChildsList == null)
-        hierarchySimpleChildsList = new List<IHierarchyObject>();
+        hierarchySimpleChildsList = [];
       hierarchySimpleChildsList.Add(child);
     }
 

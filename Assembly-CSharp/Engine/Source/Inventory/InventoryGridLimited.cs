@@ -21,7 +21,7 @@ namespace Engine.Source.Inventory
     [DataWriteProxy]
     [CopyableProxy()]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    protected List<Cell> cells = new List<Cell>();
+    protected List<Cell> cells = [];
     private Cell[,] table = new Cell[0, 0];
 
     public IList<Cell> Cells => cells;
@@ -38,13 +38,7 @@ namespace Engine.Source.Inventory
       set => throw new Exception();
     }
 
-    public Cell this[int column, int row]
-    {
-      get
-      {
-        return column < 0 || row < 0 || column >= Columns || row >= Rows ? null : table[column, row];
-      }
-    }
+    public Cell this[int column, int row] => column < 0 || row < 0 || column >= Columns || row >= Rows ? null : table[column, row];
 
     public Cell this[int index]
     {

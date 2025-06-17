@@ -8,11 +8,11 @@ namespace RootMotion.FinalIK
   {
     [Range(0.0f, 10f)]
     public int iterations = 4;
-    public FBIKChain[] chain = new FBIKChain[0];
-    public IKEffector[] effectors = new IKEffector[0];
-    public IKMappingSpine spineMapping = new IKMappingSpine();
-    public IKMappingBone[] boneMappings = new IKMappingBone[0];
-    public IKMappingLimb[] limbMappings = new IKMappingLimb[0];
+    public FBIKChain[] chain = [];
+    public IKEffector[] effectors = [];
+    public IKMappingSpine spineMapping = new();
+    public IKMappingBone[] boneMappings = [];
+    public IKMappingLimb[] limbMappings = [];
     public bool FABRIKPass = true;
     public UpdateDelegate OnPreRead;
     public UpdateDelegate OnPreSolve;

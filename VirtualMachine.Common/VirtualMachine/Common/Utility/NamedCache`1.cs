@@ -10,7 +10,7 @@ namespace VirtualMachine.Common.Utility
     public void Add(T value)
     {
       if (items == null)
-        items = new List<T>();
+        items = [];
       foreach (T obj in items)
       {
         if (obj.Name == value.Name)

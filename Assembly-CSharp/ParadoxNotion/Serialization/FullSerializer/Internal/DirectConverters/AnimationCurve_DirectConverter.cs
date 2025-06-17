@@ -18,14 +18,11 @@ namespace ParadoxNotion.Serialization.FullSerializer.Internal.DirectConverters
       ref AnimationCurve model)
     {
       fsResult success = fsResult.Success;
-      Keyframe[] keys = model.keys;
-      fsResult fsResult1 = success + DeserializeMember(data, null, "keys", out keys);
+      fsResult fsResult1 = success + DeserializeMember(data, null, "keys", out Keyframe[] keys);
       model.keys = keys;
-      WrapMode preWrapMode = model.preWrapMode;
-      fsResult fsResult2 = fsResult1 + DeserializeMember(data, null, "preWrapMode", out preWrapMode);
+      fsResult fsResult2 = fsResult1 + DeserializeMember(data, null, "preWrapMode", out WrapMode preWrapMode);
       model.preWrapMode = preWrapMode;
-      WrapMode postWrapMode = model.postWrapMode;
-      fsResult fsResult3 = fsResult2 + DeserializeMember(data, null, "postWrapMode", out postWrapMode);
+      fsResult fsResult3 = fsResult2 + DeserializeMember(data, null, "postWrapMode", out WrapMode postWrapMode);
       model.postWrapMode = postWrapMode;
       return fsResult3;
     }

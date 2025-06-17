@@ -13,7 +13,7 @@ namespace FlowCanvas.Nodes
 
     protected override string[] GetTargetMessageEvents()
     {
-      return new string[1]{ "OnControllerColliderHit" };
+      return ["OnControllerColliderHit"];
     }
 
     protected override void RegisterPorts()

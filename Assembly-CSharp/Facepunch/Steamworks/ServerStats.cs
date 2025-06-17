@@ -37,14 +37,12 @@ namespace Facepunch.Steamworks
 
     public int GetInt(ulong steamid, string name, int defaultValue = 0)
     {
-      int pData = defaultValue;
-      return !server.native.gameServerStats.GetUserStat(steamid, name, out pData) ? defaultValue : pData;
+      return !server.native.gameServerStats.GetUserStat(steamid, name, out int pData) ? defaultValue : pData;
     }
 
     public float GetFloat(ulong steamid, string name, float defaultValue = 0.0f)
     {
-      float pData = defaultValue;
-      return !server.native.gameServerStats.GetUserStat0(steamid, name, out pData) ? defaultValue : pData;
+      return !server.native.gameServerStats.GetUserStat0(steamid, name, out float pData) ? defaultValue : pData;
     }
 
     public struct StatsReceived

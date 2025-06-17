@@ -6,14 +6,14 @@ namespace ParadoxNotion.Serialization.FullSerializer.Internal
 {
   public static class fsVersionManager
   {
-    private static readonly Dictionary<Type, fsOption<fsVersionedType>> _cache = new Dictionary<Type, fsOption<fsVersionedType>>();
+    private static readonly Dictionary<Type, fsOption<fsVersionedType>> _cache = new();
 
     public static fsResult GetVersionImportPath(
       string currentVersion,
       fsVersionedType targetVersion,
       out List<fsVersionedType> path)
     {
-      path = new List<fsVersionedType>();
+      path = [];
       if (!GetVersionImportPathRecursive(path, currentVersion, targetVersion))
         return fsResult.Fail("There is no migration path from \"" + currentVersion + "\" to \"" + targetVersion.VersionString + "\"");
       path.Add(targetVersion);
@@ -39,8 +39,7 @@ namespace ParadoxNotion.Serialization.FullSerializer.Internal
 
     public static fsOption<fsVersionedType> GetVersionedType(Type type)
     {
-      fsOption<fsVersionedType> versionedType1;
-      if (!_cache.TryGetValue(type, out versionedType1))
+      if (!_cache.TryGetValue(type, out fsOption<fsVersionedType> versionedType1))
       {
         fsObjectAttribute attribute = fsPortableReflection.GetAttribute<fsObjectAttribute>(type);
         if (attribute != null && (!string.IsNullOrEmpty(attribute.VersionString) || attribute.PreviousModels != null))

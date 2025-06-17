@@ -8,10 +8,10 @@ namespace Cinemachine
   {
     [SerializeField]
     [Tooltip("These are the noise channels for the virtual camera's position. Convincing noise setups typically mix low, medium and high frequencies together, so start with a size of 3")]
-    private TransformNoiseParams[] m_Position = new TransformNoiseParams[0];
+    private TransformNoiseParams[] m_Position = [];
     [SerializeField]
     [Tooltip("These are the noise channels for the virtual camera's orientation. Convincing noise setups typically mix low, medium and high frequencies together, so start with a size of 3")]
-    private TransformNoiseParams[] m_Orientation = new TransformNoiseParams[0];
+    private TransformNoiseParams[] m_Orientation = [];
 
     public TransformNoiseParams[] PositionNoise => m_Position;
 

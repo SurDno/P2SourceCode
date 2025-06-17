@@ -20,7 +20,7 @@ namespace PLVirtualMachine.Dynamic.Components
     ISerializeStateSave,
     IDynamicLoadSerializable
   {
-    private List<StorageCommand> loadedCommandList = new List<StorageCommand>();
+    private List<StorageCommand> loadedCommandList = [];
 
     public override void Clear()
     {

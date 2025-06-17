@@ -6,20 +6,11 @@ using PLVirtualMachine.Dynamic;
 
 namespace PLVirtualMachine.Debug
 {
-  public class DebugFSMInfo
-  {
-    public DynamicFSM FSM;
-    public Dictionary<ulong, IState> Breakpoints = new Dictionary<ulong, IState>(UlongComparer.Instance);
-    public EDebugFSMStatus CurrentStatus;
-    public IState CurrentPosition;
-    public EDebugFSMPositionType CurrentPositionType;
-
-    public DebugFSMInfo(DynamicFSM fsm)
-    {
-      FSM = fsm;
-      CurrentPosition = null;
-      CurrentPositionType = EDebugFSMPositionType.DEBUG_FSM_POSITION_NONE;
-      CurrentStatus = EDebugFSMStatus.DEBUG_FSM_STATUS_PLAY;
-    }
+  public class DebugFSMInfo(DynamicFSM fsm) {
+    public DynamicFSM FSM = fsm;
+    public Dictionary<ulong, IState> Breakpoints = new(UlongComparer.Instance);
+    public EDebugFSMStatus CurrentStatus = EDebugFSMStatus.DEBUG_FSM_STATUS_PLAY;
+    public IState CurrentPosition = null;
+    public EDebugFSMPositionType CurrentPositionType = EDebugFSMPositionType.DEBUG_FSM_POSITION_NONE;
   }
 }

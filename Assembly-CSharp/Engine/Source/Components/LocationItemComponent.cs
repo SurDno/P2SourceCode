@@ -55,13 +55,7 @@ namespace Engine.Source.Components
     }
 
     [Inspected]
-    public ILocationComponent LogicLocation
-    {
-      get
-      {
-        return currentLocation != null ? currentLocation.LogicLocation : null;
-      }
-    }
+    public ILocationComponent LogicLocation => currentLocation != null ? currentLocation.LogicLocation : null;
 
     [Inspected]
     public bool IsIndoor

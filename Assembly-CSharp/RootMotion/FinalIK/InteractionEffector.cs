@@ -5,8 +5,7 @@ using UnityEngine;
 namespace RootMotion.FinalIK
 {
   [Serializable]
-  public class InteractionEffector
-  {
+  public class InteractionEffector(FullBodyBipedEffector effectorType) {
     private Poser poser;
     private IKEffector effector;
     private float timer;
@@ -35,22 +34,17 @@ namespace RootMotion.FinalIK
     private Quaternion pauseRotationRelative;
     private InteractionTarget interactionTarget;
     private Transform target;
-    private List<bool> triggered = new List<bool>();
+    private List<bool> triggered = [];
     private InteractionSystem interactionSystem;
     private bool started;
 
-    public FullBodyBipedEffector effectorType { get; private set; }
+    public FullBodyBipedEffector effectorType { get; private set; } = effectorType;
 
     public bool isPaused { get; private set; }
 
     public InteractionObject interactionObject { get; private set; }
 
     public bool inInteraction => interactionObject != null;
-
-    public InteractionEffector(FullBodyBipedEffector effectorType)
-    {
-      this.effectorType = effectorType;
-    }
 
     public void Initiate(InteractionSystem interactionSystem)
     {
@@ -211,9 +205,7 @@ namespace RootMotion.FinalIK
         {
           timer += (float) (Time.deltaTime * (double) speed * (interactionTarget != null ? interactionTarget.interactionSpeedMlp : 1.0));
           weight = Mathf.Clamp(weight + Time.deltaTime * fadeInSpeed * speed, 0.0f, 1f);
-          bool pickUp = false;
-          bool pause = false;
-          TriggerUntriggeredEvents(true, out pickUp, out pause);
+          TriggerUntriggeredEvents(true, out bool pickUp, out bool pause);
           Vector3 b1 = pickedUp ? pickUpPosition : target.position;
           Quaternion b2 = pickedUp ? pickUpRotation : target.rotation;
           effector.position = Vector3.Lerp(effector.bone.position, b1, weight);
@@ -235,10 +227,7 @@ namespace RootMotion.FinalIK
       }
     }
 
-    public float progress
-    {
-      get => !inInteraction || length == 0.0 ? 0.0f : timer / length;
-    }
+    public float progress => !inInteraction || length == 0.0 ? 0.0f : timer / length;
 
     private void TriggerUntriggeredEvents(bool checkTime, out bool pickUp, out bool pause)
     {

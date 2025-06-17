@@ -67,15 +67,9 @@ namespace Engine.Source.Components.Maps
 
     public Sprite HoverSprite => GetSprite(ref hoverSprite, ref cachedHoverSprite);
 
-    public Sprite NormalSprite
-    {
-      get => GetSprite(ref normalSprite, ref cachedNormalSprite);
-    }
+    public Sprite NormalSprite => GetSprite(ref normalSprite, ref cachedNormalSprite);
 
-    public Sprite ShadowSprite
-    {
-      get => GetSprite(ref shadowSprite, ref cachedShadowSprite);
-    }
+    public Sprite ShadowSprite => GetSprite(ref shadowSprite, ref cachedShadowSprite);
 
     public bool AlphaRaycast => alphaRaycast;
 

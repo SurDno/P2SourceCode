@@ -3,15 +3,8 @@ using BehaviorDesigner.Runtime.Tasks;
 
 namespace BehaviorDesigner.Runtime
 {
-  public struct TaskField
-  {
-    public Task task;
-    public FieldInfo fieldInfo;
-
-    public TaskField(Task t, FieldInfo f)
-    {
-      task = t;
-      fieldInfo = f;
-    }
+  public struct TaskField(Task t, FieldInfo f) {
+    public Task task = t;
+    public FieldInfo fieldInfo = f;
   }
 }

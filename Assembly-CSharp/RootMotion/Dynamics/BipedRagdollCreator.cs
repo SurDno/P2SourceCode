@@ -328,24 +328,19 @@ namespace RootMotion.Dynamics
       public ColliderType legColliders;
       public ColliderType footColliders;
 
-      public static Options Default
-      {
-        get
-        {
-          return new Options {
-            weight = 75f,
-            colliderLengthOverlap = 0.1f,
-            jointRange = 1f,
-            chest = true,
-            headCollider = ColliderType.Capsule,
-            armColliders = ColliderType.Capsule,
-            hands = true,
-            handColliders = ColliderType.Capsule,
-            legColliders = ColliderType.Capsule,
-            feet = true
-          };
-        }
-      }
+      public static Options Default =>
+        new() {
+          weight = 75f,
+          colliderLengthOverlap = 0.1f,
+          jointRange = 1f,
+          chest = true,
+          headCollider = ColliderType.Capsule,
+          armColliders = ColliderType.Capsule,
+          hands = true,
+          handColliders = ColliderType.Capsule,
+          legColliders = ColliderType.Capsule,
+          feet = true
+        };
     }
   }
 }

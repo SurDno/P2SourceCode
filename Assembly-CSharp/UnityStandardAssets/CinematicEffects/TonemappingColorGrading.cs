@@ -433,10 +433,7 @@ namespace UnityStandardAssets.CinematicEffects
       {
         if (m_Dirty || !m_InternalLut.IsCreated())
         {
-          Color lift;
-          Color gamma;
-          Color gain;
-          GenerateLiftGammaGain(out lift, out gamma, out gain);
+          GenerateLiftGammaGain(out Color lift, out Color gamma, out Color gain);
           GenCurveTexture();
           material.SetVector("_WhiteBalance", GetWhiteBalance());
           material.SetVector("_Lift", lift);
@@ -543,20 +540,15 @@ namespace UnityStandardAssets.CinematicEffects
       [Tooltip("Displays a luminosity helper in the GameView.")]
       public bool showDebug;
 
-      public static EyeAdaptationSettings defaultSettings
-      {
-        get
-        {
-          return new EyeAdaptationSettings {
-            enabled = false,
-            showDebug = false,
-            middleGrey = 0.5f,
-            min = -3f,
-            max = 3f,
-            speed = 1.5f
-          };
-        }
-      }
+      public static EyeAdaptationSettings defaultSettings =>
+        new() {
+          enabled = false,
+          showDebug = false,
+          middleGrey = 0.5f,
+          min = -3f,
+          max = 3f,
+          speed = 1.5f
+        };
     }
 
     public enum Tonemapper
@@ -594,24 +586,19 @@ namespace UnityStandardAssets.CinematicEffects
       [Range(1f, 10f)]
       public float neutralWhiteClip;
 
-      public static TonemappingSettings defaultSettings
-      {
-        get
-        {
-          return new TonemappingSettings {
-            enabled = false,
-            tonemapper = Tonemapper.Neutral,
-            exposure = 1f,
-            curve = CurvesSettings.defaultCurve,
-            neutralBlackIn = 0.02f,
-            neutralWhiteIn = 10f,
-            neutralBlackOut = 0.0f,
-            neutralWhiteOut = 10f,
-            neutralWhiteLevel = 5.3f,
-            neutralWhiteClip = 10f
-          };
-        }
-      }
+      public static TonemappingSettings defaultSettings =>
+        new() {
+          enabled = false,
+          tonemapper = Tonemapper.Neutral,
+          exposure = 1f,
+          curve = CurvesSettings.defaultCurve,
+          neutralBlackIn = 0.02f,
+          neutralWhiteIn = 10f,
+          neutralBlackOut = 0.0f,
+          neutralWhiteOut = 10f,
+          neutralWhiteLevel = 5.3f,
+          neutralWhiteClip = 10f
+        };
     }
 
     [Serializable]
@@ -624,17 +611,12 @@ namespace UnityStandardAssets.CinematicEffects
       [Tooltip("Blending factor.")]
       public float contribution;
 
-      public static LUTSettings defaultSettings
-      {
-        get
-        {
-          return new LUTSettings {
-            enabled = false,
-            texture = null,
-            contribution = 1f
-          };
-        }
-      }
+      public static LUTSettings defaultSettings =>
+        new() {
+          enabled = false,
+          texture = null,
+          contribution = 1f
+        };
     }
 
     [Serializable]
@@ -647,17 +629,12 @@ namespace UnityStandardAssets.CinematicEffects
       [ColorUsage(false)]
       public Color highlights;
 
-      public static ColorWheelsSettings defaultSettings
-      {
-        get
-        {
-          return new ColorWheelsSettings {
-            shadows = Color.white,
-            midtones = Color.white,
-            highlights = Color.white
-          };
-        }
-      }
+      public static ColorWheelsSettings defaultSettings =>
+        new() {
+          shadows = Color.white,
+          midtones = Color.white,
+          highlights = Color.white
+        };
     }
 
     [Serializable]
@@ -693,23 +670,18 @@ namespace UnityStandardAssets.CinematicEffects
       [Tooltip("Applies a pow function to the source.")]
       public float gamma;
 
-      public static BasicsSettings defaultSettings
-      {
-        get
-        {
-          return new BasicsSettings {
-            temperatureShift = 0.0f,
-            tint = 0.0f,
-            contrast = 1f,
-            hue = 0.0f,
-            saturation = 1f,
-            value = 1f,
-            vibrance = 0.0f,
-            gain = 1f,
-            gamma = 1f
-          };
-        }
-      }
+      public static BasicsSettings defaultSettings =>
+        new() {
+          temperatureShift = 0.0f,
+          tint = 0.0f,
+          contrast = 1f,
+          hue = 0.0f,
+          saturation = 1f,
+          value = 1f,
+          vibrance = 0.0f,
+          gain = 1f,
+          gamma = 1f
+        };
     }
 
     [Serializable]
@@ -724,12 +696,11 @@ namespace UnityStandardAssets.CinematicEffects
         {
           return new ChannelMixerSettings {
             currentChannel = 0,
-            channels = new Vector3[3]
-            {
-              new Vector3(1f, 0.0f, 0.0f),
-              new Vector3(0.0f, 1f, 0.0f),
-              new Vector3(0.0f, 0.0f, 1f)
-            }
+            channels = [
+              new(1f, 0.0f, 0.0f),
+              new(0.0f, 1f, 0.0f),
+              new(0.0f, 0.0f, 1f)
+            ]
           };
         }
       }
@@ -747,26 +718,15 @@ namespace UnityStandardAssets.CinematicEffects
       [Curve(0.0f, 1f, 1f, 1f)]
       public AnimationCurve blue;
 
-      public static CurvesSettings defaultSettings
-      {
-        get
-        {
-          return new CurvesSettings {
-            master = defaultCurve,
-            red = defaultCurve,
-            green = defaultCurve,
-            blue = defaultCurve
-          };
-        }
-      }
+      public static CurvesSettings defaultSettings =>
+        new() {
+          master = defaultCurve,
+          red = defaultCurve,
+          green = defaultCurve,
+          blue = defaultCurve
+        };
 
-      public static AnimationCurve defaultCurve
-      {
-        get
-        {
-          return new AnimationCurve(new Keyframe(0.0f, 0.0f, 1f, 1f), new Keyframe(1f, 1f, 1f, 1f));
-        }
-      }
+      public static AnimationCurve defaultCurve => new(new Keyframe(0.0f, 0.0f, 1f, 1f), new Keyframe(1f, 1f, 1f, 1f));
     }
 
     public enum ColorGradingPrecision
@@ -799,22 +759,17 @@ namespace UnityStandardAssets.CinematicEffects
       [Tooltip("Displays the generated LUT in the top left corner of the GameView.")]
       public bool showDebug;
 
-      public static ColorGradingSettings defaultSettings
-      {
-        get
-        {
-          return new ColorGradingSettings {
-            enabled = false,
-            useDithering = false,
-            showDebug = false,
-            precision = ColorGradingPrecision.Normal,
-            colorWheels = ColorWheelsSettings.defaultSettings,
-            basics = BasicsSettings.defaultSettings,
-            channelMixer = ChannelMixerSettings.defaultSettings,
-            curves = CurvesSettings.defaultSettings
-          };
-        }
-      }
+      public static ColorGradingSettings defaultSettings =>
+        new() {
+          enabled = false,
+          useDithering = false,
+          showDebug = false,
+          precision = ColorGradingPrecision.Normal,
+          colorWheels = ColorWheelsSettings.defaultSettings,
+          basics = BasicsSettings.defaultSettings,
+          channelMixer = ChannelMixerSettings.defaultSettings,
+          curves = CurvesSettings.defaultSettings
+        };
 
       internal void Reset() => curves = CurvesSettings.defaultSettings;
     }

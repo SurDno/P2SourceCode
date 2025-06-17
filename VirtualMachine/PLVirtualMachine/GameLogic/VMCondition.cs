@@ -14,10 +14,9 @@ namespace PLVirtualMachine.GameLogic
 {
   [TypeData(EDataType.TCondition)]
   [DataFactory("Condition")]
-  public class VMCondition : VMPartCondition, IStub, IEditorDataReader
-  {
+  public class VMCondition(ulong guid) : VMPartCondition(guid), IStub, IEditorDataReader {
     [FieldData("Predicates", DataFieldType.Reference)]
-    private List<ICondition> predicatesList = new List<ICondition>();
+    private List<ICondition> predicatesList = [];
     [FieldData("Operation")]
     private EConditionOperation operation = EConditionOperation.COP_NONE;
     private bool isUpdated;
@@ -54,11 +53,6 @@ namespace PLVirtualMachine.GameLogic
       }
     }
 
-    public VMCondition(ulong guid)
-      : base(guid)
-    {
-    }
-
     public override bool IsPart() => false;
 
     public EConditionOperation Operation => operation;
@@ -67,7 +61,7 @@ namespace PLVirtualMachine.GameLogic
 
     public override List<GameTime> GetCheckRaisingTimePoints()
     {
-      List<GameTime> raisingTimePoints1 = new List<GameTime>();
+      List<GameTime> raisingTimePoints1 = [];
       int num = predicatesList.Count;
       if (Operation == EConditionOperation.COP_ROOT)
         num = 1;
@@ -97,7 +91,7 @@ namespace PLVirtualMachine.GameLogic
 
     public override List<VMParameter> GetCheckRaisingParams()
     {
-      List<VMParameter> checkRaisingParams1 = new List<VMParameter>();
+      List<VMParameter> checkRaisingParams1 = [];
       int num = predicatesList.Count;
       if (Operation == EConditionOperation.COP_ROOT)
         num = 1;
@@ -111,7 +105,7 @@ namespace PLVirtualMachine.GameLogic
 
     public override List<BaseFunction> GetCheckRaisingFunctions()
     {
-      List<BaseFunction> raisingFunctions1 = new List<BaseFunction>();
+      List<BaseFunction> raisingFunctions1 = [];
       int num = predicatesList.Count;
       if (Operation == EConditionOperation.COP_ROOT)
         num = 1;

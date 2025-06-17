@@ -7,7 +7,7 @@ namespace SRF.Helpers
   {
     public static void SetPropertyValue(object obj, PropertyInfo p, object value)
     {
-      p.GetSetMethod().Invoke(obj, new object[1]{ value });
+      p.GetSetMethod().Invoke(obj, [value]);
     }
 
     public static object GetPropertyValue(object obj, PropertyInfo p)

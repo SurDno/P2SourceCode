@@ -26,11 +26,11 @@ namespace Engine.Source.OutdoorCrowds
     [DataWriteProxy]
     [CopyableProxy]
     [Inspected(Mode = ExecuteMode.EditAndRuntime)]
-    public List<OutdoorCrowdLayout> Layouts = new List<OutdoorCrowdLayout>();
+    public List<OutdoorCrowdLayout> Layouts = [];
     [DataReadProxy]
     [DataWriteProxy]
     [CopyableProxy()]
     [Inspected(Mode = ExecuteMode.EditAndRuntime)]
-    public List<OutdoorCrowdTemplates> Templates = new List<OutdoorCrowdTemplates>();
+    public List<OutdoorCrowdTemplates> Templates = [];
   }
 }

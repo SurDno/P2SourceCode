@@ -15,7 +15,7 @@ public class DialogIndicationView : MonoBehaviour
   {
     if (!(particleSystem != null))
       return;
-    var t = particleSystem.emission;
+    ParticleSystem.EmissionModule t = particleSystem.emission;
       
       t.enabled = value;
   }

@@ -9,7 +9,7 @@ public class GroupCheckItemView : ItemView
   [SerializeField]
   private HideableView hideableView;
   [SerializeField]
-  private StorableGroup[] groups = new StorableGroup[0];
+  private StorableGroup[] groups = [];
   private StorableComponent storable;
 
   public override StorableComponent Storable

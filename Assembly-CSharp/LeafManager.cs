@@ -99,9 +99,8 @@ label_4:
     Vector3 direction = new Vector3(vector2_2.x, -1f, vector2_2.y);
     float radius = leafAnimator.firstRadius + leafAnimator.secondRadius;
     Vector3 origin1 = vector3_2 - direction * raycastOriginElevation;
-    RaycastHit hitInfo;
     Vector3 vector3_3;
-    if (Physics.SphereCast(origin1, radius, direction, out hitInfo, (float) (raycastOriginElevation * (double) direction.magnitude * 2.0), collideLayers, QueryTriggerInteraction.Ignore))
+    if (Physics.SphereCast(origin1, radius, direction, out RaycastHit hitInfo, (float) (raycastOriginElevation * (double) direction.magnitude * 2.0), collideLayers, QueryTriggerInteraction.Ignore))
     {
       Vector3 origin2 = origin1 + direction.normalized * hitInfo.distance;
       if (Physics.Raycast(origin2, direction, out hitInfo, (float) (radius * (double) direction.magnitude * 1.5), collideLayers, QueryTriggerInteraction.Ignore))

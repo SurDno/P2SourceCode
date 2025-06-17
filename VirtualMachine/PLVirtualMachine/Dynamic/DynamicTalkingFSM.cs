@@ -16,8 +16,8 @@ namespace PLVirtualMachine.Dynamic
   {
     private VMSpeaking speakingComponent;
     private DynamicEvent beginTalkingEvent;
-    private List<VMEntity> speechAuthorsList = new List<VMEntity>();
-    private List<ILink> curentTalkingEventLinks = new List<ILink>();
+    private List<VMEntity> speechAuthorsList = [];
+    private List<ILink> curentTalkingEventLinks = [];
 
     public DynamicTalkingFSM(VMEntity entity, VMLogicObject templateObj)
       : base(entity, templateObj)
@@ -54,13 +54,7 @@ namespace PLVirtualMachine.Dynamic
 
     public VMSpeaking Speaking => speakingComponent;
 
-    public VMTalkingGraph CurrentTalkingGraph
-    {
-      get
-      {
-        return CurrentState != null && CurrentState.Parent != null && typeof (VMTalkingGraph) == CurrentState.Parent.GetType() ? (VMTalkingGraph) CurrentState.Parent : null;
-      }
-    }
+    public VMTalkingGraph CurrentTalkingGraph => CurrentState != null && CurrentState.Parent != null && typeof (VMTalkingGraph) == CurrentState.Parent.GetType() ? (VMTalkingGraph) CurrentState.Parent : null;
 
     public override void Think()
     {

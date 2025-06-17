@@ -11,9 +11,9 @@ namespace UnityEngine.AI
     [SerializeField]
     private int m_AgentTypeID;
     [SerializeField]
-    private Vector3 m_StartPoint = new Vector3(0.0f, 0.0f, -2.5f);
+    private Vector3 m_StartPoint = new(0.0f, 0.0f, -2.5f);
     [SerializeField]
-    private Vector3 m_EndPoint = new Vector3(0.0f, 0.0f, 2.5f);
+    private Vector3 m_EndPoint = new(0.0f, 0.0f, 2.5f);
     [SerializeField]
     private float m_Width;
     [SerializeField]
@@ -27,7 +27,7 @@ namespace UnityEngine.AI
     private NavMeshLinkInstance m_LinkInstance;
     private Vector3 m_LastPosition = Vector3.zero;
     private Quaternion m_LastRotation = Quaternion.identity;
-    private static readonly List<NavMeshLink> s_Tracked = new List<NavMeshLink>();
+    private static readonly List<NavMeshLink> s_Tracked = [];
 
     public int agentTypeID
     {

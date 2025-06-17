@@ -18,11 +18,9 @@ namespace ParadoxNotion.Serialization.FullSerializer.Internal.DirectConverters
       ref GUIStyleState model)
     {
       fsResult success = fsResult.Success;
-      Texture2D background = model.background;
-      fsResult fsResult1 = success + DeserializeMember(data, null, "background", out background);
+      fsResult fsResult1 = success + DeserializeMember(data, null, "background", out Texture2D background);
       model.background = background;
-      Color textColor = model.textColor;
-      fsResult fsResult2 = fsResult1 + DeserializeMember(data, null, "textColor", out textColor);
+      fsResult fsResult2 = fsResult1 + DeserializeMember(data, null, "textColor", out Color textColor);
       model.textColor = textColor;
       return fsResult2;
     }

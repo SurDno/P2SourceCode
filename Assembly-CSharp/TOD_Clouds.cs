@@ -6,16 +6,16 @@ public class TOD_Clouds
   private const float HexX = 0.6666667f;
   private const float HexHalfX = 0.333333343f;
   private const float HexY = 0.471404523f;
-  private readonly int cloudAttenuationId;
-  private readonly int cloudCoverageId;
-  private readonly int cloudDensityId;
-  private readonly int cloudOffsetId;
-  private readonly int cloudOpacityId;
-  private readonly int cloudSizeId;
-  private readonly int cloudWindId;
-  private readonly Vector4 stepsize;
-  private readonly Vector4 sumy;
-  private readonly Vector4 sumz;
+  private readonly int cloudAttenuationId = Shader.PropertyToID("TOD_CloudAttenuation");
+  private readonly int cloudCoverageId = Shader.PropertyToID("TOD_CloudCoverage");
+  private readonly int cloudDensityId = Shader.PropertyToID("TOD_CloudDensity");
+  private readonly int cloudOffsetId = Shader.PropertyToID("TOD_CloudOffset");
+  private readonly int cloudOpacityId = Shader.PropertyToID("TOD_CloudOpacity");
+  private readonly int cloudSizeId = Shader.PropertyToID("TOD_CloudSize");
+  private readonly int cloudWindId = Shader.PropertyToID("TOD_CloudWind");
+  private readonly Vector4 stepsize = new Vector4(0.0f, 1f, 2f, 3f) * 0.1f;
+  private readonly Vector4 sumy = new(0.5f, 0.125f, 0.0416666679f, 1f / 64f);
+  private readonly Vector4 sumz = new(0.5f, 0.25f, 0.125f, 1f / 16f);
 
   public static TOD_Clouds Instance
   {
@@ -107,19 +107,5 @@ public class TOD_Clouds
     zero.z = vector2_3.x + globalVector1.x + globalVector2.x;
     zero.w = vector2_3.y + globalVector1.z + globalVector2.z;
     return zero;
-  }
-
-  public TOD_Clouds()
-  {
-    cloudAttenuationId = Shader.PropertyToID("TOD_CloudAttenuation");
-    cloudCoverageId = Shader.PropertyToID("TOD_CloudCoverage");
-    cloudDensityId = Shader.PropertyToID("TOD_CloudDensity");
-    cloudOffsetId = Shader.PropertyToID("TOD_CloudOffset");
-    cloudOpacityId = Shader.PropertyToID("TOD_CloudOpacity");
-    cloudSizeId = Shader.PropertyToID("TOD_CloudSize");
-    cloudWindId = Shader.PropertyToID("TOD_CloudWind");
-    stepsize = new Vector4(0.0f, 1f, 2f, 3f) * 0.1f;
-    sumy = new Vector4(0.5f, 0.125f, 0.0416666679f, 1f / 64f);
-    sumz = new Vector4(0.5f, 0.25f, 0.125f, 1f / 16f);
   }
 }

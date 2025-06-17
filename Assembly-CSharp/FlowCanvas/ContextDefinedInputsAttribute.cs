@@ -3,10 +3,8 @@
 namespace FlowCanvas
 {
   [AttributeUsage(AttributeTargets.Class, Inherited = false)]
-  public class ContextDefinedInputsAttribute : Attribute
+  public class ContextDefinedInputsAttribute(params Type[] types) : Attribute 
   {
-    public Type[] types;
-
-    public ContextDefinedInputsAttribute(params Type[] types) => this.types = types;
+    public Type[] types = types;
   }
 }

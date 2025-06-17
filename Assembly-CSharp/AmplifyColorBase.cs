@@ -23,7 +23,7 @@ public class AmplifyColorBase : MonoBehaviour
   public Texture LutBlendTexture;
   public Texture MaskTexture;
   public bool UseDepthMask;
-  public AnimationCurve DepthMaskCurve = new AnimationCurve(new Keyframe(0.0f, 1f), new Keyframe(1f, 1f));
+  public AnimationCurve DepthMaskCurve = new(new Keyframe(0.0f, 1f), new Keyframe(1f, 1f));
   public bool UseVolumes;
   public float ExitVolumeBlendTime = 1f;
   public Transform TriggerVolumeProxy;
@@ -55,7 +55,7 @@ public class AmplifyColorBase : MonoBehaviour
   private float blendingTime;
   private float blendingTimeCountdown;
   private Action onFinishBlend;
-  private AnimationCurve prevDepthMaskCurve = new AnimationCurve();
+  private AnimationCurve prevDepthMaskCurve = new();
   private bool volumesBlending;
   private float volumesBlendingTime;
   private float volumesBlendingTimeCountdown;
@@ -72,39 +72,24 @@ public class AmplifyColorBase : MonoBehaviour
   private float currentExposure = 1f;
   private float blendExposure = 1f;
   private float effectVolumesBlendAdjust;
-  private List<AmplifyColorVolumeBase> enteredVolumes = new List<AmplifyColorVolumeBase>();
+  private List<AmplifyColorVolumeBase> enteredVolumes = [];
   private AmplifyColorTriggerProxyBase actualTriggerProxy;
   [HideInInspector]
-  public VolumeEffectFlags EffectFlags = new VolumeEffectFlags();
+  public VolumeEffectFlags EffectFlags = new();
   [SerializeField]
   [HideInInspector]
   private string sharedInstanceID = "";
   private bool silentError;
 
-  public Texture2D DefaultLut
-  {
-    get => defaultLut == null ? CreateDefaultLut() : defaultLut;
-  }
+  public Texture2D DefaultLut => defaultLut == null ? CreateDefaultLut() : defaultLut;
 
   public bool IsBlending => blending;
 
-  private float effectVolumesBlendAdjusted
-  {
-    get
-    {
-      return Mathf.Clamp01(effectVolumesBlendAdjust < 0.99000000953674316 ? (float) ((volumesBlendAmount - (double) effectVolumesBlendAdjust) / (1.0 - effectVolumesBlendAdjust)) : 1f);
-    }
-  }
+  private float effectVolumesBlendAdjusted => Mathf.Clamp01(effectVolumesBlendAdjust < 0.99000000953674316 ? (float) ((volumesBlendAmount - (double) effectVolumesBlendAdjust) / (1.0 - effectVolumesBlendAdjust)) : 1f);
 
   public string SharedInstanceID => sharedInstanceID;
 
-  public bool WillItBlend
-  {
-    get
-    {
-      return LutTexture != null && LutBlendTexture != null && !blending;
-    }
-  }
+  public bool WillItBlend => LutTexture != null && LutBlendTexture != null && !blending;
 
   public void NewSharedInstanceID() => sharedInstanceID = Guid.NewGuid().ToString();
 

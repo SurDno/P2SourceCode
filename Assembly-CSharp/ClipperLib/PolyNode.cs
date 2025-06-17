@@ -4,12 +4,12 @@ namespace ClipperLib
 {
   public class PolyNode
   {
-    internal List<PolyNode> m_Childs = new List<PolyNode>();
+    internal List<PolyNode> m_Childs = [];
     internal EndType m_endtype;
     internal int m_Index;
     internal JoinType m_jointype;
     internal PolyNode m_Parent;
-    internal List<IntPoint> m_polygon = new List<IntPoint>();
+    internal List<IntPoint> m_polygon = [];
 
     public int ChildCount => m_Childs.Count;
 

@@ -10,7 +10,7 @@ public class AmplifyColorVolumeBase : MonoBehaviour
   public int Priority;
   public bool ShowInSceneView = true;
   [HideInInspector]
-  public VolumeEffectContainer EffectContainer = new VolumeEffectContainer();
+  public VolumeEffectContainer EffectContainer = new();
 
   private void OnDrawGizmos()
   {

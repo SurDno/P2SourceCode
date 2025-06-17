@@ -5,7 +5,7 @@ namespace UnityStandardAssets.CinematicEffects
 {
   public class RenderTextureUtility
   {
-    private List<RenderTexture> m_TemporaryRTs = new List<RenderTexture>();
+    private List<RenderTexture> m_TemporaryRTs = [];
 
     public RenderTexture GetTemporaryRenderTexture(
       int width,

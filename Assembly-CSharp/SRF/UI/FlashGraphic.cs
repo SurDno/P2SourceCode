@@ -13,7 +13,7 @@ namespace SRF.UI
     IPointerUpHandler
   {
     public float DecayTime = 0.15f;
-    public Color DefaultColor = new Color(1f, 1f, 1f, 0.0f);
+    public Color DefaultColor = new(1f, 1f, 1f, 0.0f);
     public Color FlashColor = Color.white;
     public Graphic Target;
 

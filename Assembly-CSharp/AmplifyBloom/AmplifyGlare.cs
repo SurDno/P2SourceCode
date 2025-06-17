@@ -53,47 +53,43 @@ namespace AmplifyBloom
     {
       m_currentGlareIdx = (int) m_currentGlareType;
       m_cromaticAberrationGrad = new Gradient();
-      m_cromaticAberrationGrad.SetKeys(new GradientColorKey[5]
-      {
-        new GradientColorKey(Color.white, 0.0f),
-        new GradientColorKey(Color.blue, 0.25f),
-        new GradientColorKey(Color.green, 0.5f),
-        new GradientColorKey(Color.yellow, 0.75f),
-        new GradientColorKey(Color.red, 1f)
-      }, new GradientAlphaKey[5]
-      {
-        new GradientAlphaKey(1f, 0.0f),
-        new GradientAlphaKey(1f, 0.25f),
-        new GradientAlphaKey(1f, 0.5f),
-        new GradientAlphaKey(1f, 0.75f),
-        new GradientAlphaKey(1f, 1f)
-      });
+      m_cromaticAberrationGrad.SetKeys([
+        new(Color.white, 0.0f),
+        new(Color.blue, 0.25f),
+        new(Color.green, 0.5f),
+        new(Color.yellow, 0.75f),
+        new(Color.red, 1f)
+      ], [
+        new(1f, 0.0f),
+        new(1f, 0.25f),
+        new(1f, 0.5f),
+        new(1f, 0.75f),
+        new(1f, 1f)
+      ]);
       _rtBuffer = new RenderTexture[16];
       m_weigthsMat = new Matrix4x4[4];
       m_offsetsMat = new Matrix4x4[4];
       m_amplifyGlareCache = new AmplifyGlareCache();
       m_whiteReference = new Color(0.63f, 0.63f, 0.63f, 0.0f);
       m_aTanFoV = Mathf.Atan(0.3926991f);
-      m_starDefArr = new StarDefData[5]
-      {
-        new StarDefData(StarLibType.Cross, "Cross", 2, 4, 1f, 0.85f, 0.0f, 0.5f, -1f, 90f),
-        new StarDefData(StarLibType.Cross_Filter, "CrossFilter", 2, 4, 1f, 0.95f, 0.0f, 0.5f, -1f, 90f),
-        new StarDefData(StarLibType.Snow_Cross, "snowCross", 3, 4, 1f, 0.96f, 0.349f, 0.5f, -1f),
-        new StarDefData(StarLibType.Vertical, "Vertical", 1, 4, 1f, 0.96f, 0.0f, 0.0f, -1f),
-        new StarDefData(StarLibType.Sunny_Cross, "SunnyCross", 4, 4, 1f, 0.88f, 0.0f, 0.0f, 0.95f, 45f)
-      };
-      m_glareDefArr = new GlareDefData[9]
-      {
-        new GlareDefData(StarLibType.Cross, 0.0f, 0.5f),
-        new GlareDefData(StarLibType.Cross_Filter, 0.44f, 0.5f),
-        new GlareDefData(StarLibType.Cross_Filter, 1.22f, 1.5f),
-        new GlareDefData(StarLibType.Snow_Cross, 0.17f, 0.5f),
-        new GlareDefData(StarLibType.Snow_Cross, 0.7f, 1.5f),
-        new GlareDefData(StarLibType.Sunny_Cross, 0.0f, 0.5f),
-        new GlareDefData(StarLibType.Sunny_Cross, 0.79f, 1.5f),
-        new GlareDefData(StarLibType.Vertical, 1.57f, 0.5f),
-        new GlareDefData(StarLibType.Vertical, 0.0f, 0.5f)
-      };
+      m_starDefArr = [
+        new(StarLibType.Cross, "Cross", 2, 4, 1f, 0.85f, 0.0f, 0.5f, -1f, 90f),
+        new(StarLibType.Cross_Filter, "CrossFilter", 2, 4, 1f, 0.95f, 0.0f, 0.5f, -1f, 90f),
+        new(StarLibType.Snow_Cross, "snowCross", 3, 4, 1f, 0.96f, 0.349f, 0.5f, -1f),
+        new(StarLibType.Vertical, "Vertical", 1, 4, 1f, 0.96f, 0.0f, 0.0f, -1f),
+        new(StarLibType.Sunny_Cross, "SunnyCross", 4, 4, 1f, 0.88f, 0.0f, 0.0f, 0.95f, 45f)
+      ];
+      m_glareDefArr = [
+        new(StarLibType.Cross, 0.0f, 0.5f),
+        new(StarLibType.Cross_Filter, 0.44f, 0.5f),
+        new(StarLibType.Cross_Filter, 1.22f, 1.5f),
+        new(StarLibType.Snow_Cross, 0.17f, 0.5f),
+        new(StarLibType.Snow_Cross, 0.7f, 1.5f),
+        new(StarLibType.Sunny_Cross, 0.0f, 0.5f),
+        new(StarLibType.Sunny_Cross, 0.79f, 1.5f),
+        new(StarLibType.Vertical, 1.57f, 0.5f),
+        new(StarLibType.Vertical, 0.0f, 0.5f)
+      ];
     }
 
     public void Destroy()

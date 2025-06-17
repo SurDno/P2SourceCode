@@ -48,13 +48,7 @@ namespace FlowCanvas
       }
     }
 
-    public Type bindingType
-    {
-      get
-      {
-        return GetType().RTIsGenericType() ? GetType().RTGetGenericArguments()[0] : typeof (void);
-      }
-    }
+    public Type bindingType => GetType().RTIsGenericType() ? GetType().RTGetGenericArguments()[0] : typeof (void);
 
     public void GatherAndValidateSourcePort()
     {
@@ -150,10 +144,10 @@ namespace FlowCanvas
       }
       if (!(source is ValueOutput) || !(target is ValueInput))
         return null;
-      BinderConnection instance = (BinderConnection) Activator.CreateInstance(typeof (BinderConnection<>).RTMakeGenericType(new Type[1]
-      {
+      BinderConnection instance = (BinderConnection) Activator.CreateInstance(typeof (BinderConnection<>).RTMakeGenericType(
+      [
         target.type
-      }));
+      ]));
       instance.OnCreate(source, target);
       return instance;
     }

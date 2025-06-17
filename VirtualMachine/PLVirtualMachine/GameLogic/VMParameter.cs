@@ -16,7 +16,7 @@ namespace PLVirtualMachine.GameLogic
 {
   [TypeData(EDataType.TParameter)]
   [DataFactory("Parameter")]
-  public class VMParameter : 
+  public class VMParameter(ulong guid) :
     IStub,
     IEditorDataReader,
     IObject,
@@ -24,9 +24,7 @@ namespace PLVirtualMachine.GameLogic
     IParam,
     IVariable,
     INamed,
-    IContext
-  {
-    private ulong guid;
+    IContext {
     [FieldData("Name")]
     private string name = "";
     [FieldData("OwnerComponent", DataFieldType.Reference)]
@@ -85,8 +83,6 @@ namespace PLVirtualMachine.GameLogic
       }
     }
 
-    public VMParameter(ulong guid) => this.guid = guid;
-
     public ulong BaseGuid => guid;
 
     public virtual bool IsEqual(IVariable other)
@@ -99,10 +95,7 @@ namespace PLVirtualMachine.GameLogic
       return other != null && typeof (VMParameter) == other.GetType() && (long) BaseGuid == (long) ((VMParameter) other).BaseGuid;
     }
 
-    public EContextVariableCategory Category
-    {
-      get => EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_PARAM;
-    }
+    public EContextVariableCategory Category => EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_PARAM;
 
     public bool IsCustom => isCustom;
 
@@ -196,10 +189,7 @@ namespace PLVirtualMachine.GameLogic
       return true;
     }
 
-    public IBlueprint TypedBlueprint
-    {
-      get => Type.IsComplexSpecial ? Type.SpecialTypeBlueprint : null;
-    }
+    public IBlueprint TypedBlueprint => Type.IsComplexSpecial ? Type.SpecialTypeBlueprint : null;
 
     public IGameObjectContext OwnerContext
     {
@@ -228,7 +218,7 @@ namespace PLVirtualMachine.GameLogic
 
     private void LoadTypeFunctionals()
     {
-      typeFunctionalList = new List<string>();
+      typeFunctionalList = [];
       if (defValue != null && typeof (IObjRef).IsAssignableFrom(defValue.GetType()) && ((IObjRef) defValue).Object != null)
       {
         typeFunctionalList.AddRange(((IObjRef) defValue).Object.GetComponentNames());

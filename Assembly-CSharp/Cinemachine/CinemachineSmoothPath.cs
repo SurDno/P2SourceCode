@@ -12,7 +12,7 @@ namespace Cinemachine
     [Tooltip("If checked, then the path ends are joined to form a continuous loop.")]
     public bool m_Looped;
     [Tooltip("The waypoints that define the path.  They will be interpolated using a bezier curve.")]
-    public Waypoint[] m_Waypoints = new Waypoint[0];
+    public Waypoint[] m_Waypoints = [];
     private Waypoint[] m_ControlPoints1;
     private Waypoint[] m_ControlPoints2;
     private bool m_IsLoopedCache;
@@ -104,9 +104,7 @@ namespace Cinemachine
       if (m_Waypoints.Length != 0)
       {
         UpdateControlPoints();
-        int indexA;
-        int indexB;
-        pos = GetBoundingIndices(pos, out indexA, out indexB);
+        pos = GetBoundingIndices(pos, out int indexA, out int indexB);
         position = indexA != indexB ? SplineHelpers.Bezier3(pos - indexA, m_Waypoints[indexA].position, m_ControlPoints1[indexA].position, m_ControlPoints2[indexA].position, m_Waypoints[indexB].position) : m_Waypoints[indexA].position;
       }
       return transform.TransformPoint(position);
@@ -118,9 +116,7 @@ namespace Cinemachine
       if (m_Waypoints.Length > 1)
       {
         UpdateControlPoints();
-        int indexA;
-        int indexB;
-        pos = GetBoundingIndices(pos, out indexA, out indexB);
+        pos = GetBoundingIndices(pos, out int indexA, out int indexB);
         if (!Looped && indexA == m_Waypoints.Length - 1)
           --indexA;
         direction = SplineHelpers.BezierTangent3(pos - indexA, m_Waypoints[indexA].position, m_ControlPoints1[indexA].position, m_ControlPoints2[indexA].position, m_Waypoints[indexB].position);
@@ -133,9 +129,7 @@ namespace Cinemachine
       Quaternion orientation = transform.rotation;
       if (m_Waypoints.Length != 0)
       {
-        int indexA;
-        int indexB;
-        pos = GetBoundingIndices(pos, out indexA, out indexB);
+        pos = GetBoundingIndices(pos, out int indexA, out int indexB);
         float angle;
         if (indexA == indexB)
         {
@@ -165,10 +159,7 @@ namespace Cinemachine
       [Tooltip("Defines the roll of the path at this waypoint.  The other orientation axes are inferred from the tangent and world up.")]
       public float roll;
 
-      internal Vector4 AsVector4
-      {
-        get => new Vector4(position.x, position.y, position.z, roll);
-      }
+      internal Vector4 AsVector4 => new(position.x, position.y, position.z, roll);
 
       internal static Waypoint FromVector4(Vector4 v)
       {

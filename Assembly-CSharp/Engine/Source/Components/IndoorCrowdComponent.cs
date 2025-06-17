@@ -41,7 +41,7 @@ namespace Engine.Source.Components
     [CopyableProxy()]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    protected List<CrowdAreaInfo> areas = new List<CrowdAreaInfo>();
+    protected List<CrowdAreaInfo> areas = [];
     [FromThis]
     private LocationItemComponent locationItem;
     [FromLocator]
@@ -49,7 +49,7 @@ namespace Engine.Source.Components
     [FromLocator]
     private OutdoorCrowdService сrowdService;
     [Inspected]
-    private List<IndoorPointInfo> points = new List<IndoorPointInfo>();
+    private List<IndoorPointInfo> points = [];
     [Inspected]
     private IndoorPointInfo waitingPoint;
     private bool initialise;

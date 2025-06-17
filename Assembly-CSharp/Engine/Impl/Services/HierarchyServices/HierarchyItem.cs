@@ -11,7 +11,7 @@ namespace Engine.Impl.Services.HierarchyServices
 {
   public class HierarchyItem
   {
-    private List<HierarchyItem> items = new List<HierarchyItem>();
+    private List<HierarchyItem> items = [];
 
     [Inspected]
     public SceneObjectItem Reference { get; private set; }
@@ -60,8 +60,7 @@ namespace Engine.Impl.Services.HierarchyServices
         Guid id = component.Connection.Id;
         if (id != Guid.Empty)
         {
-          HierarchyContainer hierarchyContainer;
-          if (containers.TryGetValue(id, out hierarchyContainer))
+          if (containers.TryGetValue(id, out HierarchyContainer hierarchyContainer))
           {
             Container = hierarchyContainer;
           }

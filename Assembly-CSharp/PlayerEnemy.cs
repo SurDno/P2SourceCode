@@ -83,9 +83,7 @@ public class PlayerEnemy : EnemyBase
 
   private void Reaction(PunchTypeEnum punchType, EnemyBase enemy, ReactionType reactionType)
   {
-    float fightReactionX;
-    float fightReactionY;
-    CaclulateRection(enemy, reactionType, out fightReactionX, out fightReactionY);
+    CaclulateRection(enemy, reactionType, out float fightReactionX, out float fightReactionY);
     if (fightReactionY < 0.0)
       fightReactionY = 0.0f;
     animator.SetFloat("Fight.ReactionY", fightReactionY);

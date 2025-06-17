@@ -12,14 +12,11 @@ namespace PLVirtualMachine.Dynamic.Components
 
     public void InitiliseComponentFromHierarchy(VMEntity entity, VMLogicObject templateObject)
     {
-      IParam obj1;
-      if (((IBlueprint) templateObject).TryGetProperty("MapItemComponent.Title", out obj1))
+      if (((IBlueprint) templateObject).TryGetProperty("MapItemComponent.Title", out IParam obj1))
         Title = (ITextRef) obj1.Value;
-      IParam obj2;
-      if (((IBlueprint) templateObject).TryGetProperty("MapItemComponent.Text", out obj2))
+      if (((IBlueprint) templateObject).TryGetProperty("MapItemComponent.Text", out IParam obj2))
         Text = (ITextRef) obj2.Value;
-      IParam obj3;
-      if (!((IBlueprint) templateObject).TryGetProperty("MapItemComponent.TooltipText", out obj3))
+      if (!((IBlueprint) templateObject).TryGetProperty("MapItemComponent.TooltipText", out IParam obj3))
         return;
       TooltipText = (ITextRef) obj3.Value;
     }

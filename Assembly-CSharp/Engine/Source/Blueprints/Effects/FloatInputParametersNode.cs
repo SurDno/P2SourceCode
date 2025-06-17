@@ -15,7 +15,7 @@ namespace Engine.Source.Blueprints.Effects
     private ValueInput<string> nameInput;
     [FromLocator]
     private EffectsService effects;
-    private List<IParameter<float>> result = new List<IParameter<float>>();
+    private List<IParameter<float>> result = [];
 
     [Port("Value")]
     private IList<IParameter<float>> Value()

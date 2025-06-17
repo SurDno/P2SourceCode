@@ -30,7 +30,7 @@ namespace Engine.Source.Components
     private bool async = true;
     private bool asyncStarted;
     private IEntity asyncTarget;
-    private List<string> asyncEvents = new List<string>();
+    private List<string> asyncEvents = [];
     [StateSaveProxy]
     [StateLoadProxy]
     [DataReadProxy]
@@ -71,10 +71,7 @@ namespace Engine.Source.Components
 
     public IBlueprintObject Blueprint
     {
-      get
-      {
-        return ServiceLocator.GetService<ITemplateService>().GetTemplate<IBlueprintObject>(blueprintResource.Id);
-      }
+      get => ServiceLocator.GetService<ITemplateService>().GetTemplate<IBlueprintObject>(blueprintResource.Id);
       set
       {
         if (controller != null)
@@ -84,10 +81,7 @@ namespace Engine.Source.Components
       }
     }
 
-    public bool IsStarted
-    {
-      get => async ? asyncStarted : controller != null;
-    }
+    public bool IsStarted => async ? asyncStarted : controller != null;
 
     public bool NeedSave => true;
 

@@ -12,26 +12,19 @@ namespace PLVirtualMachine.Dynamic.Components
 
     public void InitiliseComponentFromHierarchy(VMEntity entity, VMLogicObject templateObject)
     {
-      IParam obj1;
-      if (((IBlueprint) templateObject).TryGetProperty("Storable.StorableClass", out obj1))
+      if (((IBlueprint) templateObject).TryGetProperty("Storable.StorableClass", out IParam obj1))
         StorableClass = (string) obj1.Value;
-      IParam obj2;
-      if (((IBlueprint) templateObject).TryGetProperty("Storable.StoreTag", out obj2))
+      if (((IBlueprint) templateObject).TryGetProperty("Storable.StoreTag", out IParam obj2))
         StoreTag = (string) obj2.Value;
-      IParam obj3;
-      if (((IBlueprint) templateObject).TryGetProperty("Storable.DefaultStackCount", out obj3))
+      if (((IBlueprint) templateObject).TryGetProperty("Storable.DefaultStackCount", out IParam obj3))
         DefaultStackCount = (int) obj3.Value;
-      IParam obj4;
-      if (((IBlueprint) templateObject).TryGetProperty("Storable.Title", out obj4))
+      if (((IBlueprint) templateObject).TryGetProperty("Storable.Title", out IParam obj4))
         Title = (ITextRef) obj4.Value;
-      IParam obj5;
-      if (((IBlueprint) templateObject).TryGetProperty("Storable.Tooltip", out obj5))
+      if (((IBlueprint) templateObject).TryGetProperty("Storable.Tooltip", out IParam obj5))
         Tooltip = (ITextRef) obj5.Value;
-      IParam obj6;
-      if (((IBlueprint) templateObject).TryGetProperty("Storable.Description", out obj6))
+      if (((IBlueprint) templateObject).TryGetProperty("Storable.Description", out IParam obj6))
         Description = (ITextRef) obj6.Value;
-      IParam obj7;
-      if (!((IBlueprint) templateObject).TryGetProperty("Storable.SpecialDescription", out obj7))
+      if (!((IBlueprint) templateObject).TryGetProperty("Storable.SpecialDescription", out IParam obj7))
         return;
       SpecialDescription = (ITextRef) obj7.Value;
     }

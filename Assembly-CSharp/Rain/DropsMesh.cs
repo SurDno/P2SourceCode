@@ -62,10 +62,7 @@ namespace Rain
     private void AddRaindrop(int index, VertexBuffer buffer)
     {
       int num = index * 9;
-      Vector3 impactPosition;
-      Vector3 originDirection;
-      Vector3 splashNormal;
-      CalculateRaindrop(out impactPosition, out originDirection, out splashNormal);
+      CalculateRaindrop(out Vector3 impactPosition, out Vector3 originDirection, out Vector3 splashNormal);
       buffer.vertices.Add(impactPosition);
       buffer.vertices.Add(impactPosition);
       buffer.vertices.Add(impactPosition);
@@ -147,8 +144,7 @@ namespace Rain
       originDirection = new Vector3(vector2_2.x, 1f, vector2_2.y).normalized;
       Vector2 vector2_3 = Random.insideUnitCircle * radius;
       Vector3 point = playerPosition + new Vector3(vector2_3.x, 0.0f, vector2_3.y) + originDirection * raycastLength * 0.5f;
-      RaycastHit hitInfo;
-      if (Physics.Raycast(toWorldMatrix.MultiplyPoint(point), -originDirection, out hitInfo, raycastLength, collisionMask, QueryTriggerInteraction.Ignore))
+      if (Physics.Raycast(toWorldMatrix.MultiplyPoint(point), -originDirection, out RaycastHit hitInfo, raycastLength, collisionMask, QueryTriggerInteraction.Ignore))
       {
         impactPosition = toLocalMatrix.MultiplyPoint(hitInfo.point);
         splashNormal = hitInfo.normal;
@@ -186,10 +182,7 @@ namespace Rain
         UpdateSettings();
         for (int index = 0; index < count; ++index)
         {
-          Vector3 impactPosition;
-          Vector3 originDirection;
-          Vector3 splashNormal;
-          CalculateRaindrop(out impactPosition, out originDirection, out splashNormal);
+          CalculateRaindrop(out Vector3 impactPosition, out Vector3 originDirection, out Vector3 splashNormal);
           buffer.vertices.Add(impactPosition);
           buffer.vertices.Add(impactPosition);
           buffer.vertices.Add(impactPosition);

@@ -29,8 +29,7 @@ namespace RootMotion.FinalIK
 
     public bool Apply()
     {
-      bool changed = false;
-      transform.localRotation = GetLimitedLocalRotation(transform.localRotation, out changed);
+      transform.localRotation = GetLimitedLocalRotation(transform.localRotation, out bool changed);
       return changed;
     }
 
@@ -47,7 +46,7 @@ namespace RootMotion.FinalIK
       }
     }
 
-    public Vector3 secondaryAxis => new Vector3(axis.y, axis.z, axis.x);
+    public Vector3 secondaryAxis => new(axis.y, axis.z, axis.x);
 
     public Vector3 crossAxis => Vector3.Cross(axis, secondaryAxis);
 

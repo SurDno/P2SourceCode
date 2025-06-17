@@ -53,34 +53,29 @@ namespace PLVirtualMachine.Common.Data
 
     public static ulong ToUInt64(string text)
     {
-      ulong result;
-      return text == "" || !ulong.TryParse(text, out result) ? 0UL : result;
+      return text == "" || !ulong.TryParse(text, out ulong result) ? 0UL : result;
     }
 
     public static long ToInt64(string text)
     {
-      long result;
-      return text == "" || !long.TryParse(text, out result) ? 0L : result;
+      return text == "" || !long.TryParse(text, out long result) ? 0L : result;
     }
 
     public static uint ToUInt32(string text)
     {
-      uint result;
-      return text == "" || !uint.TryParse(text, out result) ? 0U : result;
+      return text == "" || !uint.TryParse(text, out uint result) ? 0U : result;
     }
 
     public static int ToInt32(string text)
     {
-      int result;
-      return text == "" || !int.TryParse(text, out result) ? 0 : result;
+      return text == "" || !int.TryParse(text, out int result) ? 0 : result;
     }
 
     public static ushort ToUInt16(string text)
     {
       if (text == "")
         return 0;
-      ushort result;
-      if (!ushort.TryParse(text, out result))
+      if (!ushort.TryParse(text, out ushort result))
         throw new Exception("Cannot convert " + text + " " + MethodBase.GetCurrentMethod().Name);
       return result;
     }
@@ -89,8 +84,7 @@ namespace PLVirtualMachine.Common.Data
     {
       if (text == "")
         return 0;
-      short result;
-      if (!short.TryParse(text, out result))
+      if (!short.TryParse(text, out short result))
         throw new Exception("Cannot convert " + text + " " + MethodBase.GetCurrentMethod().Name);
       return result;
     }
@@ -99,8 +93,7 @@ namespace PLVirtualMachine.Common.Data
     {
       if (text == "")
         return 0;
-      byte result;
-      if (!byte.TryParse(text, out result))
+      if (!byte.TryParse(text, out byte result))
         throw new Exception("Cannot convert " + text + " " + MethodBase.GetCurrentMethod().Name);
       return result;
     }
@@ -109,8 +102,7 @@ namespace PLVirtualMachine.Common.Data
     {
       if (text == "")
         return 0;
-      sbyte result;
-      if (!sbyte.TryParse(text, out result))
+      if (!sbyte.TryParse(text, out sbyte result))
         throw new Exception("Cannot convert " + text + " " + MethodBase.GetCurrentMethod().Name);
       return result;
     }
@@ -119,8 +111,7 @@ namespace PLVirtualMachine.Common.Data
     {
       if (text == "")
         return 0.0;
-      double result;
-      if (!DefaultConverter.TryParseDouble(text, out result))
+      if (!DefaultConverter.TryParseDouble(text, out double result))
         throw new Exception("Cannot convert " + text + " " + MethodBase.GetCurrentMethod().Name);
       return result;
     }
@@ -129,8 +120,7 @@ namespace PLVirtualMachine.Common.Data
     {
       if (text == "")
         return 0.0f;
-      float result;
-      if (!DefaultConverter.TryParseFloat(text, out result))
+      if (!DefaultConverter.TryParseFloat(text, out float result))
         throw new Exception("Cannot convert " + text + " " + MethodBase.GetCurrentMethod().Name);
       return result;
     }
@@ -165,8 +155,7 @@ namespace PLVirtualMachine.Common.Data
 
     public static DateTime ToDateTime(string text)
     {
-      DateTime result = DateTime.MinValue;
-      if (!DateTime.TryParse(text, CultureInfo.InvariantCulture, DateTimeStyles.None, out result))
+      if (!DateTime.TryParse(text, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime result))
         throw new Exception("Cannot convert " + text + " to DateTime");
       return result;
     }

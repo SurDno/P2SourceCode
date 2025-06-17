@@ -66,10 +66,7 @@ namespace PLVirtualMachine.Dynamic
       }
     }
 
-    public ulong StaticGuid
-    {
-      get => staticNodeContent == null ? 0UL : staticNodeContent.BaseGuid;
-    }
+    public ulong StaticGuid => staticNodeContent == null ? 0UL : staticNodeContent.BaseGuid;
 
     public Guid DynamicGuid => dynamicGuid;
 

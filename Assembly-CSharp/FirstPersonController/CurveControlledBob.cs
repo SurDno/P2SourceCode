@@ -6,7 +6,7 @@ namespace FirstPersonController
   [Serializable]
   public class CurveControlledBob
   {
-    public AnimationCurve Bobcurve = new AnimationCurve(new Keyframe(0.0f, 0.0f), new Keyframe(0.5f, 1f), new Keyframe(1f, 0.0f), new Keyframe(1.5f, -1f), new Keyframe(2f, 0.0f));
+    public AnimationCurve Bobcurve = new(new Keyframe(0.0f, 0.0f), new Keyframe(0.5f, 1f), new Keyframe(1f, 0.0f), new Keyframe(1.5f, -1f), new Keyframe(2f, 0.0f));
     public float HorizontalBobRange = 0.33f;
     private float m_BobBaseInterval;
     private float m_CyclePositionX;

@@ -10,7 +10,7 @@ namespace NodeCanvas.Framework.Internal
   public sealed class BlackboardData
   {
     [SerializeField]
-    private Dictionary<string, Variable> _variables = new Dictionary<string, Variable>();
+    private Dictionary<string, Variable> _variables = new();
 
     public Dictionary<string, Variable> variables
     {
@@ -42,10 +42,9 @@ namespace NodeCanvas.Framework.Internal
           Debug.LogWarning(string.Format("<b>Blackboard:</b> Variable with name '{0}' already exists in blackboard '{1}'. Returning existing instead of new.", varName, ""));
         return variable;
       }
-      Variable instance = (Variable) Activator.CreateInstance(typeof (Variable<>).RTMakeGenericType(new Type[1]
-      {
+      Variable instance = (Variable) Activator.CreateInstance(typeof (Variable<>).RTMakeGenericType([
         type
-      }));
+      ]));
       instance.name = varName;
       variables[varName] = instance;
       return instance;
@@ -53,8 +52,7 @@ namespace NodeCanvas.Framework.Internal
 
     public Variable RemoveVariable(string varName)
     {
-      Variable variable = null;
-      if (variables.TryGetValue(varName, out variable))
+      if (variables.TryGetValue(varName, out Variable variable))
         variables.Remove(varName);
       return variable;
     }
@@ -114,8 +112,7 @@ namespace NodeCanvas.Framework.Internal
 
     public Variable GetVariable(string varName, Type ofType = null)
     {
-      Variable variable;
-      return variables != null && varName != null && variables.TryGetValue(varName, out variable) && (ofType == null || variable.CanConvertTo(ofType)) ? variable : null;
+      return variables != null && varName != null && variables.TryGetValue(varName, out Variable variable) && (ofType == null || variable.CanConvertTo(ofType)) ? variable : null;
     }
 
     public Variable GetVariableByID(string ID)

@@ -12,7 +12,7 @@ namespace Expressions
     [CopyableProxy()]
     [Inspected]
     [Inspected(Name = "values", Mutable = true, Mode = ExecuteMode.Edit)]
-    protected List<IValue<T>> values = new List<IValue<T>>();
+    protected List<IValue<T>> values = [];
 
     protected abstract T Compute(T a, T b);
 

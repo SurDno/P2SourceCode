@@ -43,7 +43,7 @@ public class FastTravelGraph : ScriptableObject
   private void CalculateFlow(FastTravelPointEnum origin)
   {
     if (flow == null)
-      flow = new List<Link>();
+      flow = [];
     if (origin == lastOrigin)
       return;
     flow.Clear();

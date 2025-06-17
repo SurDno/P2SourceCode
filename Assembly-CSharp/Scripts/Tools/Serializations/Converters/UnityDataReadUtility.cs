@@ -103,7 +103,7 @@ namespace Scripts.Tools.Serializations.Converters
     public static List<Typed<T>> ReadList<T>(IDataReader reader, string name, List<Typed<T>> value) where T : class, IObject
     {
       if (value == null)
-        value = new List<Typed<T>>();
+        value = [];
       else
         value.Clear();
       foreach (IDataReader child in reader.GetChild(name).GetChilds())

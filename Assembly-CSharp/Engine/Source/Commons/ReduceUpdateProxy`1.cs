@@ -5,30 +5,19 @@ using UnityEngine;
 
 namespace Engine.Source.Commons
 {
-  public struct ReduceUpdateProxy<T>
-  {
+  public struct ReduceUpdateProxy<T>(List<T> list, IUpdateItem<T> updater, float delay) {
     [Inspected]
-    private List<T> list;
+    private List<T> list = list;
     [Inspected]
-    private float delay;
+    private float delay = delay;
     [Inspected]
-    private float accumulator;
+    private float accumulator = 0.0f;
     [Inspected]
-    private int lastIndex;
+    private int lastIndex = 0;
     [Inspected]
-    private int count;
+    private int count = 0;
     [Inspected]
-    private IUpdateItem<T> updater;
-
-    public ReduceUpdateProxy(List<T> list, IUpdateItem<T> updater, float delay)
-    {
-      this.list = list;
-      this.delay = delay;
-      this.updater = updater;
-      accumulator = 0.0f;
-      lastIndex = 0;
-      count = 0;
-    }
+    private IUpdateItem<T> updater = updater;
 
     public void Update()
     {

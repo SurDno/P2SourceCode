@@ -18,16 +18,16 @@ namespace RootMotion.FinalIK
     [Tooltip("How much angular velocity to transfer from animation to ragdoll?")]
     public float applyAngularVelocity = 1f;
     private Animator animator;
-    private Rigidbone[] rigidbones = new Rigidbone[0];
-    private Child[] children = new Child[0];
+    private Rigidbone[] rigidbones = [];
+    private Child[] children = [];
     private bool enableRagdollFlag;
     private AnimatorUpdateMode animatorUpdateMode;
-    private IK[] allIKComponents = new IK[0];
-    private bool[] fixTransforms = new bool[0];
+    private IK[] allIKComponents = [];
+    private bool[] fixTransforms = [];
     private float ragdollWeight;
     private float ragdollWeightV;
     private bool fixedFrame;
-    private bool[] disabledIKComponents = new bool[0];
+    private bool[] disabledIKComponents = [];
 
     public void EnableRagdoll()
     {
@@ -303,9 +303,7 @@ namespace RootMotion.FinalIK
           r.velocity = deltaPosition / deltaTime * velocityWeight;
         if (angularVelocityWeight != 0.0)
         {
-          float angle = 0.0f;
-          Vector3 axis = Vector3.zero;
-          deltaRotation.ToAngleAxis(out angle, out axis);
+          deltaRotation.ToAngleAxis(out float angle, out Vector3 axis);
           angle *= (float) Math.PI / 180f;
           float num = angle / deltaTime;
           r.angularVelocity = Vector3.ClampMagnitude(axis * (num * angularVelocityWeight), r.maxAngularVelocity);

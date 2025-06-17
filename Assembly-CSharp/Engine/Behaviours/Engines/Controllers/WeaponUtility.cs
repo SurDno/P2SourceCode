@@ -9,7 +9,7 @@ namespace Engine.Behaviours.Engines.Controllers
 {
   public static class WeaponUtility
   {
-    private static List<RaycastHit> hits = new List<RaycastHit>();
+    private static List<RaycastHit> hits = [];
 
     public static bool ComputeGunJam(GameObject gameObject, IParameter<float> durability)
     {

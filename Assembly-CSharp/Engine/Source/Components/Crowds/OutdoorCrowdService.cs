@@ -15,13 +15,7 @@ namespace Engine.Source.Components.Crowds
     private int limitEntityCount;
 
     [Inspected]
-    private int MaxLimitEntityCount
-    {
-      get
-      {
-        return ExternalSettingsInstance<ExternalOptimizationSettings>.Instance.MaxOutdoorCrowdEntityCount;
-      }
-    }
+    private int MaxLimitEntityCount => ExternalSettingsInstance<ExternalOptimizationSettings>.Instance.MaxOutdoorCrowdEntityCount;
 
     private bool IsLimit(AreaEnum area)
     {

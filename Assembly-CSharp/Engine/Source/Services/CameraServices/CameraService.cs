@@ -18,7 +18,7 @@ namespace Engine.Source.Services.CameraServices
     private bool initialise;
     [Inspected]
     private ICameraController currentCameraController;
-    private Dictionary<CameraKindEnum, ICameraController> controllers = new Dictionary<CameraKindEnum, ICameraController> {
+    private Dictionary<CameraKindEnum, ICameraController> controllers = new() {
       {
         CameraKindEnum.Fly,
         new FlyCameraController()

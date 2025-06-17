@@ -15,8 +15,8 @@ namespace UnityStandardAssets.ImageEffects
     public bool dx11Grain;
     public float softness;
     public bool monochrome;
-    public Vector3 intensities = new Vector3(1f, 1f, 1f);
-    public Vector3 tiling = new Vector3(64f, 64f, 64f);
+    public Vector3 intensities = new(1f, 1f, 1f);
+    public Vector3 tiling = new(64f, 64f, 64f);
     public float monochromeTiling = 64f;
     public FilterMode filterMode = FilterMode.Bilinear;
     public Texture2D noiseTexture;

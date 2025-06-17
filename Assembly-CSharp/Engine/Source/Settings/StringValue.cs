@@ -2,20 +2,12 @@
 
 namespace Engine.Source.Settings
 {
-  public class StringValue : IValue<string>
-  {
+  public class StringValue(string name, string defaultValue = "") : IValue<string> {
     [Inspected]
-    private string name;
+    private string name = name;
     [Inspected]
-    private string defaultValue;
-    private string value;
-
-    public StringValue(string name, string defaultValue = "")
-    {
-      this.name = name;
-      this.defaultValue = defaultValue;
-      value = PlayerSettings.Instance.GetString(name, defaultValue);
-    }
+    private string defaultValue = defaultValue;
+    private string value = PlayerSettings.Instance.GetString(name, defaultValue);
 
     [Inspected(Mutable = true)]
     public string Value

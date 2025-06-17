@@ -15,8 +15,8 @@ namespace Engine.Impl.Services.HierarchyServices
   [RuntimeService(typeof (HierarchyService))]
   public class HierarchyService : IInitialisable
   {
-    private Dictionary<IEntity, HierarchyItem> templates = new Dictionary<IEntity, HierarchyItem>();
-    private Dictionary<Guid, HierarchyContainer> containers = new Dictionary<Guid, HierarchyContainer>(GuidComparer.Instance);
+    private Dictionary<IEntity, HierarchyItem> templates = new();
+    private Dictionary<Guid, HierarchyContainer> containers = new(GuidComparer.Instance);
     private HierarchyContainer mainContainer;
     private bool initialise;
 
@@ -70,8 +70,7 @@ namespace Engine.Impl.Services.HierarchyServices
         throw new Exception("!!! " + GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
       if (!initialise)
         throw new Exception(GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
-      HierarchyItem hierarchyItem;
-      templates.TryGetValue(template, out hierarchyItem);
+      templates.TryGetValue(template, out HierarchyItem hierarchyItem);
       return hierarchyItem;
     }
 
@@ -81,8 +80,7 @@ namespace Engine.Impl.Services.HierarchyServices
         throw new Exception("!!! " + GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
       if (!initialise)
         throw new Exception(GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
-      HierarchyContainer container;
-      containers.TryGetValue(id, out container);
+      containers.TryGetValue(id, out HierarchyContainer container);
       return container;
     }
   }

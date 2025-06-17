@@ -5,7 +5,7 @@ namespace PLVirtualMachine.Dynamic
 {
   public class OwnHashInfoEqualityComparer : IEqualityComparer<OwnHashInfo>
   {
-    public static readonly OwnHashInfoEqualityComparer Instance = new OwnHashInfoEqualityComparer();
+    public static readonly OwnHashInfoEqualityComparer Instance = new();
 
     public bool Equals(OwnHashInfo x, OwnHashInfo y)
     {

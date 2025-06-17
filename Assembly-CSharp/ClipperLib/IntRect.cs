@@ -1,26 +1,11 @@
 ﻿namespace ClipperLib
 {
-  public struct IntRect
-  {
-    public long left;
-    public long top;
-    public long right;
-    public long bottom;
+  public struct IntRect(long l, long t, long r, long b) {
+    public long left = l;
+    public long top = t;
+    public long right = r;
+    public long bottom = b;
 
-    public IntRect(long l, long t, long r, long b)
-    {
-      left = l;
-      top = t;
-      right = r;
-      bottom = b;
-    }
-
-    public IntRect(IntRect ir)
-    {
-      left = ir.left;
-      top = ir.top;
-      right = ir.right;
-      bottom = ir.bottom;
-    }
+    public IntRect(IntRect ir) : this(ir.left, ir.top, ir.right, ir.bottom) { }
   }
 }

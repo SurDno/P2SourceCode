@@ -26,9 +26,7 @@ namespace TriangleNet.IO
       string extension = Path.GetExtension(filename);
       if (extension == ".node" || extension == ".poly" || extension == ".ele")
       {
-        InputGeometry geometry;
-        List<ITriangle> triangles;
-        FileReader.Read(filename, out geometry, out triangles);
+        FileReader.Read(filename, out InputGeometry geometry, out List<ITriangle> triangles);
         if (geometry != null && triangles != null)
         {
           Mesh mesh = new Mesh();

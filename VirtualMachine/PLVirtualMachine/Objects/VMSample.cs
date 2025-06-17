@@ -13,15 +13,13 @@ namespace PLVirtualMachine.Objects
 {
   [TypeData(EDataType.TSample)]
   [DataFactory("Sample")]
-  public class VMSample : 
+  public class VMSample(ulong guid) :
     IStub,
     IEditorDataReader,
     IObject,
     IEditorBaseTemplate,
     ISample,
-    IEngineTemplated
-  {
-    private ulong guid;
+    IEngineTemplated {
     [FieldData("SampleType")]
     private string sampleTypeStr = "";
     [FieldData("EngineID")]
@@ -52,8 +50,6 @@ namespace PLVirtualMachine.Objects
           break;
       }
     }
-
-    public VMSample(ulong guid) => this.guid = guid;
 
     public ulong BaseGuid => guid;
 

@@ -22,9 +22,9 @@ namespace Engine.Source.Services.Consoles
     public const string FirstHelpText = "Print \"?\" for help";
     public const string PrefixExecuteCommandText = "Execute command : ";
     private Action<string> onAddedLine;
-    private object sync = new object();
+    private object sync = new();
     [Inspected]
-    private static Dictionary<string, Func<string, ConsoleParameter[], string>> commands = new Dictionary<string, Func<string, ConsoleParameter[], string>>();
+    private static Dictionary<string, Func<string, ConsoleParameter[], string>> commands = new();
 
     public event Action<string> OnAddedLine
     {
@@ -61,7 +61,7 @@ namespace Engine.Source.Services.Consoles
       else
       {
         string str = "Execute command : \"" + value + "\"\n" + ComputeCommand(value);
-        char[] chArray = new char[1]{ '\n' };
+        char[] chArray = ['\n'];
         foreach (string line in str.Split(chArray))
           AddLine(line);
       }
@@ -98,8 +98,8 @@ namespace Engine.Source.Services.Consoles
         key = value.Substring(0, num);
         value = value.Substring(num);
       }
-      Func<string, ConsoleParameter[], string> func = null;
-      if (!commands.TryGetValue(key, out func))
+
+      if (!commands.TryGetValue(key, out Func<string, ConsoleParameter[], string> func))
         return "Command not found : " + key;
       List<ConsoleParameter> parameters = GetParameters(value);
       return func(key, parameters.ToArray());
@@ -108,8 +108,8 @@ namespace Engine.Source.Services.Consoles
     private List<ConsoleParameter> GetParameters(string text)
     {
       text = text.Trim();
-      List<ConsoleParameter> parameters = new List<ConsoleParameter>();
-      List<string> stringList = new List<string>();
+      List<ConsoleParameter> parameters = [];
+      List<string> stringList = [];
       int startIndex = 0;
       bool flag = false;
       for (int index = 0; index < text.Length; ++index)

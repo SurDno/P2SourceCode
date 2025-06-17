@@ -14,17 +14,13 @@ namespace ParadoxNotion.Serialization.FullSerializer.Internal.DirectConverters
     protected override fsResult DoDeserialize(Dictionary<string, fsData> data, ref Rect model)
     {
       fsResult success = fsResult.Success;
-      float xMin = model.xMin;
-      fsResult fsResult1 = success + DeserializeMember(data, null, "xMin", out xMin);
+      fsResult fsResult1 = success + DeserializeMember(data, null, "xMin", out float xMin);
       model.xMin = xMin;
-      float yMin = model.yMin;
-      fsResult fsResult2 = fsResult1 + DeserializeMember(data, null, "yMin", out yMin);
+      fsResult fsResult2 = fsResult1 + DeserializeMember(data, null, "yMin", out float yMin);
       model.yMin = yMin;
-      float xMax = model.xMax;
-      fsResult fsResult3 = fsResult2 + DeserializeMember(data, null, "xMax", out xMax);
+      fsResult fsResult3 = fsResult2 + DeserializeMember(data, null, "xMax", out float xMax);
       model.xMax = xMax;
-      float yMax = model.yMax;
-      fsResult fsResult4 = fsResult3 + DeserializeMember(data, null, "yMax", out yMax);
+      fsResult fsResult4 = fsResult3 + DeserializeMember(data, null, "yMax", out float yMax);
       model.yMax = yMax;
       return fsResult4;
     }

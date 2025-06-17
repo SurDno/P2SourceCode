@@ -7,9 +7,9 @@ namespace ParadoxNotion.Serialization.FullSerializer
   public sealed class fsData
   {
     private object _value;
-    public static readonly fsData True = new fsData(true);
-    public static readonly fsData False = new fsData(false);
-    public static readonly fsData Null = new fsData();
+    public static readonly fsData True = new(true);
+    public static readonly fsData False = new(false);
+    public static readonly fsData Null = new();
 
     public fsData() => _value = null;
 
@@ -30,9 +30,9 @@ namespace ParadoxNotion.Serialization.FullSerializer
       return new fsData(new Dictionary<string, fsData>(fsGlobalConfig.IsCaseSensitive ? StringComparer.Ordinal : (IEqualityComparer<string>) StringComparer.OrdinalIgnoreCase));
     }
 
-    public static fsData CreateList() => new fsData(new List<fsData>());
+    public static fsData CreateList() => new([]);
 
-    public static fsData CreateList(int capacity) => new fsData(new List<fsData>(capacity));
+    public static fsData CreateList(int capacity) => new(new List<fsData>(capacity));
 
     internal void BecomeDictionary()
     {

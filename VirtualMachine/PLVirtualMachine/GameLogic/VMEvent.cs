@@ -19,8 +19,8 @@ namespace PLVirtualMachine.GameLogic
 {
   [TypeData(EDataType.TEvent)]
   [DataFactory("Event")]
-  public class VMEvent : 
-    VMBaseObject,
+  public class VMEvent(ulong guid) :
+    VMBaseObject(guid),
     IStub,
     IEditorDataReader,
     IEvent,
@@ -30,8 +30,7 @@ namespace PLVirtualMachine.GameLogic
     INamedElement,
     INamed,
     IStaticUpdateable,
-    ILocalContext
-  {
+    ILocalContext {
     [FieldData("Manual")]
     private bool isManual = true;
     [FieldData("Condition", DataFieldType.Reference)]
@@ -108,21 +107,13 @@ namespace PLVirtualMachine.GameLogic
       }
     }
 
-    public VMEvent(ulong guid)
-      : base(guid)
-    {
-    }
-
     public override EObjectCategory GetCategory() => EObjectCategory.OBJECT_CATEGORY_EVENT;
 
     public bool IsManual => isManual;
 
     public EEventRaisingType EventRaisingType => eventRaisingType;
 
-    public string FunctionalName
-    {
-      get => Parent == null ? Name : Parent.Name + "." + Name;
-    }
+    public string FunctionalName => Parent == null ? Name : Parent.Name + "." + Name;
 
     public override IContainer Owner => owner;
 
@@ -170,7 +161,7 @@ namespace PLVirtualMachine.GameLogic
       IContextElement currentElement,
       int iCounter = 0)
     {
-      return new List<IVariable>();
+      return [];
     }
 
     public IVariable GetLocalContextVariable(string variableUniName, IContextElement currentElement = null)
@@ -221,7 +212,7 @@ namespace PLVirtualMachine.GameLogic
 
     private void LoadEventMessages()
     {
-      messages = new List<BaseMessage>();
+      messages = [];
       if (!IsManual)
       {
         if (Parent == null)

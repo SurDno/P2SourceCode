@@ -12,7 +12,7 @@ using UnityEngine.UI;
 
 public class ItemSelector : MonoBehaviour, IChangeParameterListener
 {
-  private static List<IStorableComponent> searchBuffer = new List<IStorableComponent>();
+  private static List<IStorableComponent> searchBuffer = [];
   [SerializeField]
   private SwitchingItemView2 view;
   [SerializeField]
@@ -22,7 +22,7 @@ public class ItemSelector : MonoBehaviour, IChangeParameterListener
   [SerializeField]
   public Button nextButton;
   [SerializeField]
-  private List<StorableGroup> groups = new List<StorableGroup>();
+  private List<StorableGroup> groups = [];
   [SerializeField]
   private bool avoidNull;
   [SerializeField]

@@ -11,7 +11,7 @@ namespace Rain
     public MeshFilter SourceMeshFilter;
     public UVSet SourceUVSet = UVSet.UV0;
     [Header("Settings")]
-    public Vector3 Size = new Vector3(5f, 1f, 5f);
+    public Vector3 Size = new(5f, 1f, 5f);
     public Color ColorMask = Color.white;
     public float Elevation = 0.01f;
     [Range(0.0f, 1f)]
@@ -93,11 +93,11 @@ namespace Rain
         }
         if (SourceUVSet != UVSet.None && vector2Array == null)
           Debug.LogWarning("Puddle Cutter : UV set of mesh \"" + sharedMesh.name + "\" is empty. None will be used.");
-        List<Vector3> outputVertices = new List<Vector3>();
-        List<Vector2> outputPrimaryUV = new List<Vector2>();
-        List<Vector2> outputSecondaryUV = vector2Array == null ? null : new List<Vector2>();
-        List<Vector3> outputNormals = normals == null ? null : new List<Vector3>();
-        List<int> outputIndices = new List<int>();
+        List<Vector3> outputVertices = [];
+        List<Vector2> outputPrimaryUV = [];
+        List<Vector2> outputSecondaryUV = vector2Array == null ? null : [];
+        List<Vector3> outputNormals = normals == null ? null : [];
+        List<int> outputIndices = [];
         List<Vector3> polygonVertices = new List<Vector3>(3);
         List<Vector2> polygonUV = vector2Array == null ? null : new List<Vector2>(3);
         List<Vector3> polygonNormals = normals == null ? null : new List<Vector3>(3);

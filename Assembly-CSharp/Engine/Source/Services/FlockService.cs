@@ -7,8 +7,8 @@ namespace Engine.Source.Services
   [RuntimeService(typeof (FlockService))]
   public class FlockService : IInitialisable, IUpdatable
   {
-    private HashSet<FlockObject> flocks = new HashSet<FlockObject>();
-    private HashSet<LandingSpotObject> zones = new HashSet<LandingSpotObject>();
+    private HashSet<FlockObject> flocks = [];
+    private HashSet<LandingSpotObject> zones = [];
     private bool needUpdate;
 
     public void Initialise()

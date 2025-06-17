@@ -10,14 +10,12 @@ using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Profiling;
 
-public class NpcStateIdle : INpcState
-{
+public class NpcStateIdle(NpcState npcState, Pivot pivot) : INpcState 
+  {
   private EngineBehavior behavior;
   private NavMeshAgent agent;
   private Rigidbody rigidbody;
-  private Pivot pivot;
   private Animator animator;
-  private NpcState npcState;
   private NPCWeaponService weaponService;
   private bool agentWasEnabled;
   private bool rigidbodyWasKinematic;
@@ -32,7 +30,7 @@ public class NpcStateIdle : INpcState
   private bool sayReplics;
   private float timeToNextReplic;
 
-  public GameObject GameObject { get; private set; }
+  public GameObject GameObject { get; private set; } = npcState.gameObject;
 
   [Inspected]
   public NpcStateStatusEnum Status => NpcStateStatusEnum.Running;
@@ -61,13 +59,6 @@ public class NpcStateIdle : INpcState
     failed = false;
     inited = true;
     return true;
-  }
-
-  public NpcStateIdle(NpcState npcState, Pivot pivot)
-  {
-    this.npcState = npcState;
-    this.pivot = pivot;
-    GameObject = npcState.gameObject;
   }
 
   public void Activate(float primaryIdleProbability, bool makeObstacle = false)
@@ -169,8 +160,7 @@ public class NpcStateIdle : INpcState
       else
       {
         long monoHeapSizeLong2 = Profiler.GetMonoHeapSizeLong();
-        NavMeshHit hit;
-        if (NavMesh.FindClosestEdge(GameObject.transform.position, out hit, agent.areaMask))
+        if (NavMesh.FindClosestEdge(GameObject.transform.position, out NavMeshHit hit, agent.areaMask))
         {
           agent.Warp(hit.position);
           GameObject.transform.position = agent.nextPosition;

@@ -29,17 +29,12 @@ namespace UnityEngine.PostProcessing
       [Tooltip("The strength of multiple frame blending. The opacity of preceding frames are determined from this coefficient and time differences.")]
       public float frameBlending;
 
-      public static Settings defaultSettings
-      {
-        get
-        {
-          return new Settings {
-            shutterAngle = 270f,
-            sampleCount = 10,
-            frameBlending = 0.0f
-          };
-        }
-      }
+      public static Settings defaultSettings =>
+        new() {
+          shutterAngle = 270f,
+          sampleCount = 10,
+          frameBlending = 0.0f
+        };
     }
   }
 }

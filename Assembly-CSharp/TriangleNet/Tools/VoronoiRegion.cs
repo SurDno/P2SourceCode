@@ -4,12 +4,11 @@ using TriangleNet.Geometry;
 
 namespace TriangleNet.Tools
 {
-  public class VoronoiRegion
-  {
-    private bool bounded;
-    private Point generator;
-    private int id;
-    private List<Point> vertices;
+  public class VoronoiRegion(Vertex generator) {
+    private bool bounded = true;
+    private Point generator = generator;
+    private int id = generator.id;
+    private List<Point> vertices = [];
 
     public int ID => id;
 
@@ -21,14 +20,6 @@ namespace TriangleNet.Tools
     {
       get => bounded;
       set => bounded = value;
-    }
-
-    public VoronoiRegion(Vertex generator)
-    {
-      id = generator.id;
-      this.generator = generator;
-      vertices = new List<Point>();
-      bounded = true;
     }
 
     public void Add(Point point) => vertices.Add(point);

@@ -17,8 +17,7 @@ public class POIWall : POIBase
     out Quaternion closestTargetRotation)
   {
     Vector3 animationOffset = character.GetAnimationOffset(animation, animationIndex);
-    Vector3 closestSurfacePosition;
-    GetClosestSurfacePoint(transform.TransformPoint(transform.InverseTransformPoint(currentPosition) + animationOffset), out closestSurfacePosition, out Quaternion _);
+    GetClosestSurfacePoint(transform.TransformPoint(transform.InverseTransformPoint(currentPosition) + animationOffset), out Vector3 closestSurfacePosition, out Quaternion _);
     closestTargetRotation = transform.rotation;
     closestTargetPosition = transform.TransformPoint(transform.InverseTransformPoint(closestSurfacePosition) - animationOffset);
     lastSurfacePosition = closestSurfacePosition;
@@ -51,9 +50,7 @@ public class POIWall : POIBase
     out Vector3 targetPosition,
     out Quaternion targetRotation)
   {
-    Vector3 position;
-    Quaternion rotation;
-    GetRandomPointOnSurface(out position, out rotation);
+    GetRandomPointOnSurface(out Vector3 position, out Quaternion rotation);
     targetRotation = rotation;
     Vector3 animationOffset = character.GetAnimationOffset(animation, animationIndex);
     targetPosition = transform.TransformPoint(transform.InverseTransformPoint(position) - animationOffset);

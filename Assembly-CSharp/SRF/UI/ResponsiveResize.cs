@@ -9,7 +9,7 @@ namespace SRF.UI
   [AddComponentMenu("SRF/UI/Responsive (Enable)")]
   public class ResponsiveResize : ResponsiveBase
   {
-    public Element[] Elements = new Element[0];
+    public Element[] Elements = [];
 
     protected override void Refresh()
     {

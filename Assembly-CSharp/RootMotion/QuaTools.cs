@@ -38,9 +38,7 @@ namespace RootMotion
       Vector3 axis)
     {
       Quaternion rotation = Quaternion.FromToRotation(fromDirection, toDirection);
-      float angle = 0.0f;
-      Vector3 axis1 = Vector3.zero;
-      rotation.ToAngleAxis(out angle, out axis1);
+      rotation.ToAngleAxis(out float angle, out Vector3 axis1);
       if (Vector3.Dot(axis1, axis) < 0.0)
         angle = -angle;
       return Quaternion.AngleAxis(angle, axis);

@@ -48,10 +48,9 @@ namespace ParadoxNotion.Serialization.FullSerializer.Internal
     {
       if (data.IsString)
       {
-        string[] strArray = data.AsString.Split(new char[1]
-        {
+        string[] strArray = data.AsString.Split([
           ','
-        }, StringSplitOptions.RemoveEmptyEntries);
+        ], StringSplitOptions.RemoveEmptyEntries);
         long num1 = 0;
         for (int index = 0; index < strArray.Length; ++index)
         {

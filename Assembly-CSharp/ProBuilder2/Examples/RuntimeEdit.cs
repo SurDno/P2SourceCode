@@ -76,19 +76,17 @@ namespace ProBuilder2.Examples
     public bool FaceCheck(Vector3 pos)
     {
       Ray ray = Camera.main.ScreenPointToRay(pos);
-      RaycastHit hitInfo;
-      if (!Physics.Raycast(ray.origin, ray.direction, out hitInfo))
+      if (!Physics.Raycast(ray.origin, ray.direction, out RaycastHit hitInfo))
         return false;
       pb_Object component = hitInfo.transform.gameObject.GetComponent<pb_Object>();
       if (component == null)
         return false;
       Mesh msh = component.msh;
-      int[] tri = new int[3]
-      {
+      int[] tri = [
         msh.triangles[hitInfo.triangleIndex * 3],
         msh.triangles[hitInfo.triangleIndex * 3 + 1],
         msh.triangles[hitInfo.triangleIndex * 3 + 2]
-      };
+      ];
       currentSelection.pb = component;
       return component.FaceWithTriangle(tri, out currentSelection.face);
     }
@@ -104,25 +102,17 @@ namespace ProBuilder2.Examples
         v[index] += vector3.normalized * 0.01f;
       if ((bool) (Object) preview)
         Destroy(preview.gameObject);
-      preview = pb_Object.CreateInstanceWithVerticesFaces(v, new pb_Face[1]
-      {
-        new pb_Face(i)
-      });
+      preview = pb_Object.CreateInstanceWithVerticesFaces(v, [
+        new(i)
+      ]);
       preview.SetFaceMaterial(preview.faces, previewMaterial);
       preview.ToMesh();
       preview.Refresh();
     }
 
-    private class pb_Selection
-    {
-      public pb_Object pb;
-      public pb_Face face;
-
-      public pb_Selection(pb_Object _pb, pb_Face _face)
-      {
-        pb = _pb;
-        face = _face;
-      }
+    private class pb_Selection(pb_Object pb, pb_Face face) {
+      public pb_Object pb = pb;
+      public pb_Face face = face;
 
       public bool HasObject() => pb != null;
 

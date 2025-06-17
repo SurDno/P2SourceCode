@@ -36,7 +36,7 @@ namespace Engine.Source.Commons.Abilities.Projectiles
 
     public void ComputeTargets(IEntity self, IEntity item, OutsideAbilityTargets targets)
     {
-      targets.Targets = new List<EffectsComponent>();
+      targets.Targets = [];
       GameObject gameObject = ((IEntityView) self).GameObject;
       if (gameObject == null)
         return;

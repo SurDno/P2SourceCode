@@ -3,22 +3,11 @@ using PLVirtualMachine.Common.EngineAPI;
 
 namespace PLVirtualMachine.FSM
 {
-  public class VMMessageCastInfo
-  {
-    public ContextVariable message;
-    public VMType type;
+  public class VMMessageCastInfo(ContextVariable message, VMType type) {
+    public ContextVariable message = message;
+    public VMType type = type;
 
-    public VMMessageCastInfo()
-    {
-      message = null;
-      type = null;
-    }
-
-    public VMMessageCastInfo(ContextVariable message, VMType type)
-    {
-      this.message = message;
-      this.type = type;
-    }
+    public VMMessageCastInfo() : this(null, null) { }
 
     public ContextVariable Message => message;
 

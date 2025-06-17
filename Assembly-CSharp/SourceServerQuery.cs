@@ -5,27 +5,21 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 
-internal class SourceServerQuery : IDisposable
-{
-  private IPEndPoint endPoint;
+internal class SourceServerQuery(string ip, int port) : IDisposable 
+  {
+  private IPEndPoint endPoint = new(IPAddress.Parse(ip), port);
   private Socket socket;
   private UdpClient client;
   private int send_timeout = 2500;
   private int receive_timeout = 2500;
   private byte[] raw_data;
   private int offset;
-  private readonly byte[] FFFFFFFF = new byte[4]
-  {
+  private readonly byte[] FFFFFFFF = [
     byte.MaxValue,
     byte.MaxValue,
     byte.MaxValue,
     byte.MaxValue
-  };
-
-  public SourceServerQuery(string ip, int port)
-  {
-    endPoint = new IPEndPoint(IPAddress.Parse(ip), port);
-  }
+  ];
 
   public PlayersResponse GetPlayerList()
   {
@@ -87,7 +81,7 @@ internal class SourceServerQuery : IDisposable
         int packetChecksum = 0;
         int num2 = 0;
         int uncompressedSize = 0;
-        List<byte[]> splitPackets = new List<byte[]>();
+        List<byte[]> splitPackets = [];
         bool flag;
         int num3;
         int num4;
@@ -100,7 +94,7 @@ internal class SourceServerQuery : IDisposable
           if (num1 == 1)
           {
             for (int index = 0; index < num3; ++index)
-              splitPackets.Add(new byte[0]);
+              splitPackets.Add([]);
           }
           if (flag)
           {
@@ -184,7 +178,7 @@ internal class SourceServerQuery : IDisposable
     int uncompressedSize,
     int packetChecksum)
   {
-    byte[] buffer1 = new byte[0];
+    byte[] buffer1 = [];
     foreach (byte[] splitPacket in splitPackets)
     {
       if (splitPacket == null)
@@ -246,7 +240,7 @@ internal class SourceServerQuery : IDisposable
   {
     int length = raw_data.Length - offset - 4;
     if (length < 1)
-      return new byte[0];
+      return [];
     byte[] destinationArray = new byte[length];
     Array.Copy(raw_data, offset, destinationArray, 0, raw_data.Length - offset - 4);
     offset += raw_data.Length - offset - 4;
@@ -279,7 +273,7 @@ internal class SourceServerQuery : IDisposable
 
   private string ReadString()
   {
-    byte[] numArray = new byte[1] { 1 };
+    byte[] numArray = [1];
     string str = "";
     while (numArray[0] > 0 && offset != raw_data.Length)
     {
@@ -294,7 +288,7 @@ internal class SourceServerQuery : IDisposable
   public class PlayersResponse
   {
     public short player_count;
-    public List<Player> players = new List<Player>();
+    public List<Player> players = [];
 
     public class Player
     {

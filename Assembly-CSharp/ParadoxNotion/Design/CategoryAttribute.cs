@@ -3,10 +3,8 @@
 namespace ParadoxNotion.Design
 {
   [AttributeUsage(AttributeTargets.Class, Inherited = false)]
-  public class CategoryAttribute : Attribute
+  public class CategoryAttribute(string category) : Attribute 
   {
-    public string category;
-
-    public CategoryAttribute(string category) => this.category = category;
+    public string category = category;
   }
 }

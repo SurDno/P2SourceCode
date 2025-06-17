@@ -9,9 +9,9 @@ namespace UnityStandardAssets.CinematicEffects
   public class AntiAliasing : MonoBehaviour
   {
     [SerializeField]
-    private SMAA m_SMAA = new SMAA();
+    private SMAA m_SMAA = new();
     [SerializeField]
-    private FXAA m_FXAA = new FXAA();
+    private FXAA m_FXAA = new();
     [SerializeField]
     [HideInInspector]
     private int m_Method;
@@ -28,10 +28,7 @@ namespace UnityStandardAssets.CinematicEffects
       }
     }
 
-    public IAntiAliasing current
-    {
-      get => method == 0 ? m_SMAA : m_FXAA;
-    }
+    public IAntiAliasing current => method == 0 ? m_SMAA : m_FXAA;
 
     public Camera cameraComponent
     {

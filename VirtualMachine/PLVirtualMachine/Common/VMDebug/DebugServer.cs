@@ -6,20 +6,14 @@ using Cofe.Loggers;
 
 namespace PLVirtualMachine.Common.VMDebug
 {
-  public class DebugServer : DebugIpcController
-  {
-    private Queue<ReciveIpcMessage> fromClientMessagesQueue = new Queue<ReciveIpcMessage>();
-    private Queue<SendIpcMessage> toClientMessagesQueue = new Queue<SendIpcMessage>();
+  public class DebugServer() : DebugIpcController(EDebugIPCControllerType.IPC_DEBUG_SERVER) {
+    private Queue<ReciveIpcMessage> fromClientMessagesQueue = new();
+    private Queue<SendIpcMessage> toClientMessagesQueue = new();
     private Socket currentClient;
     private bool isNeedStop;
-    private object fromClientMessagesLocker = new object();
-    private object serverMessagesLocker = new object();
+    private object fromClientMessagesLocker = new();
+    private object serverMessagesLocker = new();
     private static readonly int MAX_CLIENTS_COUNT = 10;
-
-    public DebugServer()
-      : base(EDebugIPCControllerType.IPC_DEBUG_SERVER)
-    {
-    }
 
     protected override void Start()
     {
@@ -236,18 +230,10 @@ namespace PLVirtualMachine.Common.VMDebug
       return currentClient;
     }
 
-    public class AsyncDataReceiver
-    {
-      public Socket WorkSocket;
-      public int BufferSize;
-      public byte[] DataBuffer;
-
-      public AsyncDataReceiver(Socket workSocket, byte[] buffer, int bufferSize)
-      {
-        WorkSocket = workSocket;
-        DataBuffer = buffer;
-        BufferSize = bufferSize;
-      }
+    public class AsyncDataReceiver(Socket workSocket, byte[] buffer, int bufferSize) {
+      public Socket WorkSocket = workSocket;
+      public int BufferSize = bufferSize;
+      public byte[] DataBuffer = buffer;
     }
   }
 }

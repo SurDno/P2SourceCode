@@ -7,7 +7,7 @@ namespace AmplifyBloom
   {
     private bool m_isSelected;
     private Text m_text;
-    private Color m_selectedColor = new Color(1f, 1f, 1f);
+    private Color m_selectedColor = new(1f, 1f, 1f);
     private Color m_unselectedColor;
 
     public void Init()

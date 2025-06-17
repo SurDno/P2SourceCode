@@ -14,7 +14,7 @@ namespace Engine.Source.Otimizations
     [DataWriteProxy]
     [CopyableProxy()]
     [Inspected(Mutable = true, Mode = ExecuteMode.EditAndRuntime)]
-    protected List<IMemoryStrategy> items = new List<IMemoryStrategy>();
+    protected List<IMemoryStrategy> items = [];
 
     public IEnumerator Compute(MemoryStrategyContextEnum context)
     {

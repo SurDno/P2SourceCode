@@ -9,7 +9,7 @@ namespace SRDebugger.Services.Implementation
   [Service(typeof (ISystemInformationService))]
   public class StandardSystemInformationService : ISystemInformationService
   {
-    private readonly Dictionary<string, List<ISystemInfo>> _info = new Dictionary<string, List<ISystemInfo>>();
+    private readonly Dictionary<string, List<ISystemInfo>> _info = new();
 
     public StandardSystemInformationService() => CreateDefaultSet();
 
@@ -17,8 +17,7 @@ namespace SRDebugger.Services.Implementation
 
     public IList<ISystemInfo> GetInfo(string category)
     {
-      List<ISystemInfo> info;
-      if (_info.TryGetValue(category, out info))
+      if (_info.TryGetValue(category, out List<ISystemInfo> info))
         return info;
       Debug.LogError("[SystemInformationService] Category not found: {0}".Fmt(category));
       return new ISystemInfo[0];
@@ -26,10 +25,9 @@ namespace SRDebugger.Services.Implementation
 
     public void AddInfo(string category, ISystemInfo info)
     {
-      List<ISystemInfo> systemInfoList;
-      if (!_info.TryGetValue(category, out systemInfoList))
+      if (!_info.TryGetValue(category, out List<ISystemInfo> systemInfoList))
       {
-        systemInfoList = new List<ISystemInfo>();
+        systemInfoList = [];
         _info.Add(category, systemInfoList);
       }
       systemInfoList.Add(info);
@@ -53,7 +51,7 @@ namespace SRDebugger.Services.Implementation
 
     private void CreateDefaultSet()
     {
-      _info.Add("System", new List<ISystemInfo> {
+      _info.Add("System", [
         Info.Create("Operating System", SystemInfo.operatingSystem),
         Info.Create("Device Name", SystemInfo.deviceName, true),
         Info.Create("Device Type", SystemInfo.deviceType),
@@ -61,47 +59,53 @@ namespace SRDebugger.Services.Implementation
         Info.Create("CPU Type", SystemInfo.processorType),
         Info.Create("CPU Count", SystemInfo.processorCount),
         Info.Create("System Memory", SRFileUtil.GetBytesReadable(SystemInfo.systemMemorySize * 1024L * 1024L))
-      });
-      _info.Add("Unity", new List<ISystemInfo> {
+      ]);
+      _info.Add("Unity", [
         Info.Create("Version", Application.unityVersion),
         Info.Create("Debug", Debug.isDebugBuild),
         Info.Create("Logging", Debug.unityLogger.filterLogType),
         Info.Create("Unity Pro", Application.HasProLicense()),
-        Info.Create("Genuine", "{0} ({1})".Fmt(Application.genuine ? "Yes" : (object) "No", Application.genuineCheckAvailable ? "Trusted" : (object) "Untrusted")),
+        Info.Create("Genuine",
+          "{0} ({1})".Fmt(Application.genuine ? "Yes" : (object)"No",
+            Application.genuineCheckAvailable ? "Trusted" : (object)"Untrusted")),
         Info.Create("System Language", Application.systemLanguage),
         Info.Create("Platform", Application.platform),
         Info.Create("IL2CPP", "No"),
         Info.Create("Persistent Data Path", Application.persistentDataPath)
-      });
-      _info.Add("Display", new List<ISystemInfo> {
+      ]);
+      _info.Add("Display", [
         Info.Create("Resolution", () => Screen.width + "x" + Screen.height),
         Info.Create("DPI", () => Screen.dpi),
         Info.Create("Fullscreen", () => Screen.fullScreen),
         Info.Create("Orientation", () => Screen.orientation)
-      });
-      _info.Add("Runtime", new List<ISystemInfo> {
+      ]);
+      _info.Add("Runtime", [
         Info.Create("Play Time", () => Time.unscaledTime),
         Info.Create("Level Play Time", () => Time.timeSinceLevelLoad),
-        Info.Create("Current Level", () =>
-        {
+        Info.Create("Current Level", () => {
           Scene activeScene = SceneManager.GetActiveScene();
           return "{0} (Index: {1})".Fmt(activeScene.name, activeScene.buildIndex);
         }),
-        Info.Create("Quality Level", () => QualitySettings.names[QualitySettings.GetQualityLevel()] + " (" + QualitySettings.GetQualityLevel() + ")")
-      });
-      _info.Add("Features", new List<ISystemInfo> {
+
+        Info.Create("Quality Level",
+          () => QualitySettings.names[QualitySettings.GetQualityLevel()] + " (" + QualitySettings.GetQualityLevel() +
+                ")")
+      ]);
+      _info.Add("Features", [
         Info.Create("Location", SystemInfo.supportsLocationService),
         Info.Create("Accelerometer", SystemInfo.supportsAccelerometer),
         Info.Create("Gyroscope", SystemInfo.supportsGyroscope),
         Info.Create("Vibration", SystemInfo.supportsVibration)
-      });
-      _info.Add("Graphics", new List<ISystemInfo> {
+      ]);
+      _info.Add("Graphics", [
         Info.Create("Device Name", SystemInfo.graphicsDeviceName),
         Info.Create("Device Vendor", SystemInfo.graphicsDeviceVendor),
         Info.Create("Device Version", SystemInfo.graphicsDeviceVersion),
         Info.Create("Max Tex Size", SystemInfo.maxTextureSize),
         Info.Create("NPOT Support", SystemInfo.npotSupport),
-        Info.Create("Render Textures", "{0} ({1})".Fmt(SystemInfo.supportsRenderTextures ? "Yes" : (object) "No", SystemInfo.supportedRenderTargetCount)),
+        Info.Create("Render Textures",
+          "{0} ({1})".Fmt(SystemInfo.supportsRenderTextures ? "Yes" : (object)"No",
+            SystemInfo.supportedRenderTargetCount)),
         Info.Create("3D Textures", SystemInfo.supports3DTextures),
         Info.Create("Compute Shaders", SystemInfo.supportsComputeShaders),
         Info.Create("Image Effects", SystemInfo.supportsImageEffects),
@@ -109,7 +113,7 @@ namespace SRDebugger.Services.Implementation
         Info.Create("Shadows", SystemInfo.supportsShadows),
         Info.Create("Stencil", SystemInfo.supportsStencil),
         Info.Create("Sparse Textures", SystemInfo.supportsSparseTextures)
-      });
+      ]);
     }
 
     private static string GetCloudManifestPrettyName(string name)

@@ -53,9 +53,7 @@ namespace BehaviorDesigner.Runtime.Tasks
             if (animationSetup.Elements.Count > OutAnimationIndex && animationSetup.Elements[OutAnimationIndex] is POIAnimationSetupElementSlow)
               OutMiddleAnimationsCount = (animationSetup.Elements[OutAnimationIndex] as POIAnimationSetupElementSlow).MiddleAnimationClips.Count;
             OutAngle = component2.GetAngle(Owner.gameObject);
-            Vector3 targetPosition;
-            Quaternion targetRotation;
-            component2.GetRandomTargetPoint(animation, OutAnimationIndex, component1, out targetPosition, out targetRotation);
+            component2.GetRandomTargetPoint(animation, OutAnimationIndex, component1, out Vector3 targetPosition, out Quaternion targetRotation);
             OutPOI = component2;
             OutDestination.Value = targetPosition;
             OutRotation.Value = targetRotation;

@@ -21,6 +21,6 @@ namespace Engine.Source.Commons
     [CopyableProxy()]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    public List<LipSyncInfo> LipSyncs = new List<LipSyncInfo>();
+    public List<LipSyncInfo> LipSyncs = [];
   }
 }

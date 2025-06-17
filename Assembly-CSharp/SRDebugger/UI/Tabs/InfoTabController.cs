@@ -11,7 +11,7 @@ namespace SRDebugger.UI.Tabs
   public class InfoTabController : SRMonoBehaviour
   {
     public const string NameColor = "#BCBCBC";
-    private Dictionary<string, InfoBlock> _infoBlocks = new Dictionary<string, InfoBlock>();
+    private Dictionary<string, InfoBlock> _infoBlocks = new();
     public InfoBlock InfoBlockPrefab;
     public RectTransform LayoutContainer;
 

@@ -17,8 +17,8 @@ namespace FlowCanvas
   {
     [SerializeField]
     private Dictionary<string, object> _inputPortValues;
-    private Dictionary<string, Port> inputPorts = new Dictionary<string, Port>(StringComparer.Ordinal);
-    protected Dictionary<string, Port> outputPorts = new Dictionary<string, Port>(StringComparer.Ordinal);
+    private Dictionary<string, Port> inputPorts = new(StringComparer.Ordinal);
+    protected Dictionary<string, Port> outputPorts = new(StringComparer.Ordinal);
 
     public override sealed int maxInConnections => -1;
 
@@ -80,15 +80,13 @@ namespace FlowCanvas
 
     public Port GetInputPort(string id)
     {
-      Port inputPort = null;
-      inputPorts.TryGetValue(id, out inputPort);
+      inputPorts.TryGetValue(id, out Port inputPort);
       return inputPort;
     }
 
     public Port GetOutputPort(string id)
     {
-      Port outputPort = null;
-      outputPorts.TryGetValue(id, out outputPort);
+      outputPorts.TryGetValue(id, out Port outputPort);
       return outputPort;
     }
 
@@ -162,8 +160,7 @@ namespace FlowCanvas
         return;
       foreach (KeyValuePair<string, object> inputPortValue in _inputPortValues)
       {
-        Port port = null;
-        if (inputPorts.TryGetValue(inputPortValue.Key, out port) && port is ValueInput && inputPortValue.Value != null && port.type.RTIsAssignableFrom(inputPortValue.Value.GetType()))
+        if (inputPorts.TryGetValue(inputPortValue.Key, out Port port) && port is ValueInput && inputPortValue.Value != null && port.type.RTIsAssignableFrom(inputPortValue.Value.GetType()))
           (port as ValueInput).serializedValue = inputPortValue.Value;
       }
     }
@@ -207,10 +204,9 @@ namespace FlowCanvas
     {
       if (string.IsNullOrEmpty(id))
         id = name;
-      ValueOutput instance = (ValueOutput) Activator.CreateInstance(typeof (ValueOutput<>).RTMakeGenericType(new Type[1]
-      {
+      ValueOutput instance = (ValueOutput) Activator.CreateInstance(typeof (ValueOutput<>).RTMakeGenericType([
         type
-      }), this, name, id, getter);
+      ]), this, name, id, getter);
       outputPorts[id] = instance;
       return instance;
     }
@@ -235,15 +231,13 @@ namespace FlowCanvas
       }
       NameAttribute attribute = prop.RTGetAttribute<NameAttribute>(false);
       string key = attribute != null ? attribute.name : prop.Name.SplitCamelCase();
-      Type type = typeof (ValueHandler<>).RTMakeGenericType(new Type[1]
-      {
+      Type type = typeof (ValueHandler<>).RTMakeGenericType([
         prop.PropertyType
-      });
+      ]);
       Delegate @delegate = prop.RTGetGetMethod().RTCreateDelegate(type, instance);
-      ValueOutput instance1 = (ValueOutput) Activator.CreateInstance(typeof (ValueOutput<>).RTMakeGenericType(new Type[1]
-      {
+      ValueOutput instance1 = (ValueOutput) Activator.CreateInstance(typeof (ValueOutput<>).RTMakeGenericType([
         prop.PropertyType
-      }), this, key, key, @delegate);
+      ]), this, key, key, @delegate);
       return (ValueOutput) (outputPorts[key] = instance1);
     }
 

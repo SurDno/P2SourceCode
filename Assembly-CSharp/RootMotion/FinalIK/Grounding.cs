@@ -333,10 +333,7 @@ namespace RootMotion.FinalIK
         rotationOffset = footRotationWeight >= 1.0 ? r : Quaternion.Slerp(Quaternion.identity, r, footRotationWeight);
       }
 
-      public float stepHeightFromGround
-      {
-        get => Mathf.Clamp(heightFromGround, -grounding.maxStep, grounding.maxStep);
-      }
+      public float stepHeightFromGround => Mathf.Clamp(heightFromGround, -grounding.maxStep, grounding.maxStep);
 
       private RaycastHit GetCapsuleHit(Vector3 offsetFromHeel)
       {
@@ -405,13 +402,7 @@ namespace RootMotion.FinalIK
         return grounding.maxFootRotationAngle >= 180.0 ? toHitNormal : Quaternion.RotateTowards(Quaternion.identity, toHitNormal, grounding.maxFootRotationAngle);
       }
 
-      private float rootYOffset
-      {
-        get
-        {
-          return grounding.GetVerticalOffset(transform.position, grounding.root.position - up * grounding.heightOffset);
-        }
-      }
+      private float rootYOffset => grounding.GetVerticalOffset(transform.position, grounding.root.position - up * grounding.heightOffset);
     }
 
     public class Pelvis

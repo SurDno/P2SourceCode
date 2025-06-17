@@ -215,17 +215,10 @@ namespace UnityEngine.PostProcessing
 
     public class FrameBlendingFilter
     {
-      private bool m_UseCompression;
-      private RenderTextureFormat m_RawTextureFormat;
-      private Frame[] m_FrameList;
+      private bool m_UseCompression = CheckSupportCompression();
+      private RenderTextureFormat m_RawTextureFormat = GetPreferredRenderTextureFormat();
+      private Frame[] m_FrameList = new Frame[4];
       private int m_LastFrameCount;
-
-      public FrameBlendingFilter()
-      {
-        m_UseCompression = CheckSupportCompression();
-        m_RawTextureFormat = GetPreferredRenderTextureFormat();
-        m_FrameList = new Frame[4];
-      }
 
       public void Dispose()
       {
@@ -286,12 +279,11 @@ namespace UnityEngine.PostProcessing
 
       private static RenderTextureFormat GetPreferredRenderTextureFormat()
       {
-        RenderTextureFormat[] renderTextureFormatArray = new RenderTextureFormat[3]
-        {
+        RenderTextureFormat[] renderTextureFormatArray = [
           RenderTextureFormat.RGB565,
           RenderTextureFormat.ARGB1555,
           RenderTextureFormat.ARGB4444
-        };
+        ];
         foreach (RenderTextureFormat format in renderTextureFormatArray)
         {
           if (SystemInfo.SupportsRenderTextureFormat(format))

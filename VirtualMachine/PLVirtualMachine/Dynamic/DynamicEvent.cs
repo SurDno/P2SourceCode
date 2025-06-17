@@ -39,7 +39,7 @@ namespace PLVirtualMachine.Dynamic
     private DynamicEventBody dynamicEventBody;
     private bool isLazyEvent;
     private long prevUpdateTicks;
-    private static List<EventMessage> raisingMessages = new List<EventMessage>(MAX_EVENT_MESSAGES_COUNT);
+    private static List<EventMessage> raisingMessages = new(MAX_EVENT_MESSAGES_COUNT);
     public static int MAX_EVENT_MESSAGES_COUNT = 10;
     private static float COMPLEX_CONDITION_EVENTS_UPDATE_INTERVAL = 1f;
     private static int SUBSCRIBING_FSM_LIST_DEFALT_SIZE = 20;
@@ -130,13 +130,7 @@ namespace PLVirtualMachine.Dynamic
       }
     }
 
-    public IGameMode GameTimeContext
-    {
-      get
-      {
-        return StaticEvent.GameTimeContext != null ? StaticEvent.GameTimeContext : parentFSM.GameTimeContext;
-      }
-    }
+    public IGameMode GameTimeContext => StaticEvent.GameTimeContext != null ? StaticEvent.GameTimeContext : parentFSM.GameTimeContext;
 
     public IEvent StaticEvent => (IEvent) StaticObject;
 
@@ -161,14 +155,14 @@ namespace PLVirtualMachine.Dynamic
         flag = true;
       if (!flag)
         return;
-      Raise(new List<EventMessage>(), raisingMode, Guid.Empty);
+      Raise([], raisingMode, Guid.Empty);
     }
 
     public void RaiseFromEngineImpl(params object[] parameters)
     {
       if (DynamicTalkingFSM.IsTalking && StaticEvent == null || isLazyEvent && !HasSubscribtions)
         return;
-      List<EventMessage> raisingEventMessageList = new List<EventMessage>();
+      List<EventMessage> raisingEventMessageList = [];
       for (int index = 0; index < parameters.Length; ++index)
       {
         VMType type = ReturnMessages[index].Type;
@@ -217,10 +211,7 @@ namespace PLVirtualMachine.Dynamic
       parentFSM.RaiseEvent(new RaisedEventInfo(this, raisingMessages, fsmGuid), raisingMode);
     }
 
-    public bool HasSubscribtions
-    {
-      get => eventSubscriptions != null && eventSubscriptions.Count > 0;
-    }
+    public bool HasSubscribtions => eventSubscriptions != null && eventSubscriptions.Count > 0;
 
     public void Execute(RaisedEventInfo evntInfo)
     {
@@ -281,15 +272,9 @@ namespace PLVirtualMachine.Dynamic
 
     public string Name => ownName.Length > 0 ? ownName : StaticEvent.Name;
 
-    public string FunctionalName
-    {
-      get => ownName.Length > 0 ? ownName : StaticEvent.FunctionalName;
-    }
+    public string FunctionalName => ownName.Length > 0 ? ownName : StaticEvent.FunctionalName;
 
-    public IContainer Parent
-    {
-      get => StaticEvent == null ? null : StaticEvent.Parent;
-    }
+    public IContainer Parent => StaticEvent == null ? null : StaticEvent.Parent;
 
     public DynamicFSM OwnerFSM => parentFSM;
 
@@ -300,34 +285,19 @@ namespace PLVirtualMachine.Dynamic
       return !(typeof (DynamicEvent) != other.GetType()) && (long) ((DynamicObject) other).StaticGuid == (long) StaticGuid && !(((DynamicEvent) other).OwnerFSM.EngineGuid == OwnerFSM.EngineGuid);
     }
 
-    public ICondition Condition
-    {
-      get => StaticEvent == null ? null : StaticEvent.Condition;
-    }
+    public ICondition Condition => StaticEvent == null ? null : StaticEvent.Condition;
 
-    public IParam EventParameter
-    {
-      get => StaticEvent == null ? null : StaticEvent.EventParameter;
-    }
+    public IParam EventParameter => StaticEvent == null ? null : StaticEvent.EventParameter;
 
-    public GameTime EventTime
-    {
-      get => StaticEvent == null ? new GameTime() : StaticEvent.EventTime;
-    }
+    public GameTime EventTime => StaticEvent == null ? new GameTime() : StaticEvent.EventTime;
 
     public bool ChangeTo => StaticEvent != null && StaticEvent.ChangeTo;
 
     public bool Repeated => StaticEvent != null && StaticEvent.Repeated;
 
-    public bool AtOnce
-    {
-      get => StaticEvent != null ? ((VMEvent) StaticEvent).AtOnce : apiAtOnce;
-    }
+    public bool AtOnce => StaticEvent != null ? ((VMEvent) StaticEvent).AtOnce : apiAtOnce;
 
-    public IContainer Owner
-    {
-      get => StaticEvent != null ? StaticEvent.Owner : null;
-    }
+    public IContainer Owner => StaticEvent != null ? StaticEvent.Owner : null;
 
     public bool IsInitial(IObject obj)
     {
@@ -338,13 +308,7 @@ namespace PLVirtualMachine.Dynamic
 
     public EEventRaisingType EventRaisingType => StaticEvent.EventRaisingType;
 
-    public List<BaseMessage> ReturnMessages
-    {
-      get
-      {
-        return StaticObject != null ? ((IEvent) StaticObject).ReturnMessages : apiEventMessages;
-      }
-    }
+    public List<BaseMessage> ReturnMessages => StaticObject != null ? ((IEvent) StaticObject).ReturnMessages : apiEventMessages;
 
     public void Update()
     {
@@ -420,7 +384,7 @@ namespace PLVirtualMachine.Dynamic
         if (apiEventInfo.MessageParams.Count <= 0)
           return;
         if (apiEventMessages == null)
-          apiEventMessages = new List<BaseMessage>();
+          apiEventMessages = [];
         for (int index = 0; index < apiEventInfo.MessageParams.Count; ++index)
         {
           VMType type = apiEventInfo.MessageParams[index].Type;

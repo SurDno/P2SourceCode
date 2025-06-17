@@ -4,12 +4,12 @@ namespace PLVirtualMachine.Dynamic
 {
   public static class DynamicParameterUtility
   {
-    private static Dictionary<ulong, List<IDependedEventRef>> staticParameterDependedEventsDict = new Dictionary<ulong, List<IDependedEventRef>>();
+    private static Dictionary<ulong, List<IDependedEventRef>> staticParameterDependedEventsDict = new();
 
     public static void AddDependedEvent(ulong paramId, IDependedEventRef dependedEvent)
     {
       if (!staticParameterDependedEventsDict.ContainsKey(paramId))
-        staticParameterDependedEventsDict.Add(paramId, new List<IDependedEventRef>());
+        staticParameterDependedEventsDict.Add(paramId, []);
       staticParameterDependedEventsDict[paramId].Add(dependedEvent);
     }
 
@@ -22,8 +22,7 @@ namespace PLVirtualMachine.Dynamic
 
     public static List<IDependedEventRef> GetParameterDependedEventsByStaticGuid(ulong paramId)
     {
-      List<IDependedEventRef> dependedEventRefList;
-      return staticParameterDependedEventsDict.TryGetValue(paramId, out dependedEventRefList) ? dependedEventRefList : null;
+      return staticParameterDependedEventsDict.TryGetValue(paramId, out List<IDependedEventRef> dependedEventRefList) ? dependedEventRefList : null;
     }
 
     public static void Clear() => staticParameterDependedEventsDict.Clear();

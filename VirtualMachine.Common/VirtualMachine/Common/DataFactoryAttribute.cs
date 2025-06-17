@@ -5,13 +5,11 @@ using Cofe.Meta;
 namespace VirtualMachine.Common
 {
   [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = false)]
-  public class DataFactoryAttribute : TypeAttribute
+  public class DataFactoryAttribute(string typeName) : TypeAttribute 
   {
-    private static Dictionary<string, Type> types = new Dictionary<string, Type>();
+    private static Dictionary<string, Type> types = new();
 
-    public string TypeName { get; set; }
-
-    public DataFactoryAttribute(string typeName) => TypeName = typeName;
+    public string TypeName { get; set; } = typeName;
 
     public override void ComputeType(Type type)
     {
@@ -20,14 +18,10 @@ namespace VirtualMachine.Common
 
     public static Type GetTypeByName(string typeName)
     {
-      Type typeByName;
-      types.TryGetValue(typeName, out typeByName);
+      types.TryGetValue(typeName, out Type typeByName);
       return typeByName;
     }
 
-    public static IEnumerable<KeyValuePair<string, Type>> Items
-    {
-      get => types;
-    }
+    public static IEnumerable<KeyValuePair<string, Type>> Items => types;
   }
 }

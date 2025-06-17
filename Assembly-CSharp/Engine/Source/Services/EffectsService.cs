@@ -8,13 +8,12 @@ namespace Engine.Source.Services
   public class EffectsService
   {
     [Inspected]
-    private Dictionary<string, List<IParameter>> parameters = new Dictionary<string, List<IParameter>>();
+    private Dictionary<string, List<IParameter>> parameters = new();
 
     public void GetParameters<T>(string name, List<IParameter<T>> result) where T : struct
     {
       result.Clear();
-      List<IParameter> parameterList;
-      if (!parameters.TryGetValue(name, out parameterList))
+      if (!parameters.TryGetValue(name, out List<IParameter> parameterList))
         return;
       foreach (IParameter parameter1 in parameterList)
       {
@@ -25,8 +24,7 @@ namespace Engine.Source.Services
 
     public IEnumerable<IParameter<T>> GetParameters<T>(string name) where T : struct
     {
-      List<IParameter> result;
-      if (parameters.TryGetValue(name, out result))
+      if (parameters.TryGetValue(name, out List<IParameter> result))
       {
         foreach (IParameter parameter in result)
         {
@@ -39,10 +37,9 @@ namespace Engine.Source.Services
 
     public void AddParameter(string name, IParameter parameter)
     {
-      List<IParameter> parameterList;
-      if (!parameters.TryGetValue(name, out parameterList))
+      if (!parameters.TryGetValue(name, out List<IParameter> parameterList))
       {
-        parameterList = new List<IParameter>();
+        parameterList = [];
         parameters.Add(name, parameterList);
       }
       parameterList.Add(parameter);
@@ -50,10 +47,9 @@ namespace Engine.Source.Services
 
     public void RemoveParameter(string name, IParameter parameter)
     {
-      List<IParameter> parameterList;
-      if (!parameters.TryGetValue(name, out parameterList))
+      if (!parameters.TryGetValue(name, out List<IParameter> parameterList))
       {
-        parameterList = new List<IParameter>();
+        parameterList = [];
         parameters.Add(name, parameterList);
       }
       parameterList.Remove(parameter);

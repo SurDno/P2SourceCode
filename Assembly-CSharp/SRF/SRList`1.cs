@@ -210,7 +210,7 @@ namespace SRF
         Buffer = objArray;
       }
       else
-        Buffer = new T[0];
+        Buffer = [];
     }
 
     public void Sort(Comparison<T> comparer)

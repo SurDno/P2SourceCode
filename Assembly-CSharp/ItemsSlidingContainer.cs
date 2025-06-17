@@ -26,9 +26,9 @@ public class ItemsSlidingContainer : UIControl
   private GameObject inventoryStorablePrefab;
   [SerializeField]
   private ScrollRect scrollRect;
-  private List<StorableUI> items = new List<StorableUI>();
-  private List<GameObject> itemGroupTitles = new List<GameObject>();
-  private List<InventoryContainerUI> containerViews = new List<InventoryContainerUI>();
+  private List<StorableUI> items = [];
+  private List<GameObject> itemGroupTitles = [];
+  private List<InventoryContainerUI> containerViews = [];
 
   public void Clear(
     Dictionary<InventoryContainerUI, IStorageComponent> containers,
@@ -82,7 +82,7 @@ public class ItemsSlidingContainer : UIControl
     ComplexInventoryContainerUI key = ComplexInventoryContainerUI.Instantiate(cellStyle, inventoryContainerPrefab, itemsList, Mask);
     key.transform.SetParent(ContentArea, false);
     containerViews.Add(key);
-    List<StorableUI> collection = new List<StorableUI>();
+    List<StorableUI> collection = [];
     foreach (StorableComponent items in itemsList)
     {
       StorableUI storableUi = StorableUI.Instantiate(items, inventoryStorablePrefab, cellStyle.imageStyle);

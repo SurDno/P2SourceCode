@@ -9,7 +9,7 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
   public class VMTags : VMEngineComponent<ITagsComponent>
   {
     public const string ComponentName = "TagsComponent";
-    private List<string> tagList = new List<string>();
+    private List<string> tagList = [];
 
     [Method("Get tag count", "", "")]
     public int GetTagCount() => Component.Tags.Count();

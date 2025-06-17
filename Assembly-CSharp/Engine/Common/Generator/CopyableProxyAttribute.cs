@@ -3,10 +3,8 @@
 namespace Engine.Common.Generator
 {
   [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
-  public class CopyableProxyAttribute : Attribute
+  public class CopyableProxyAttribute(MemberEnum detail = MemberEnum.None) : Attribute 
   {
-    public MemberEnum Detail { get; set; }
-
-    public CopyableProxyAttribute(MemberEnum detail = MemberEnum.None) => Detail = detail;
+    public MemberEnum Detail { get; set; } = detail;
   }
 }

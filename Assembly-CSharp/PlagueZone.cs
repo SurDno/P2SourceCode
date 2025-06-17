@@ -5,8 +5,8 @@ using UnityEngine;
 [ExecuteInEditMode]
 public class PlagueZone : MonoBehaviour
 {
-  private static List<ZoneHit> tmp = new List<ZoneHit>();
-  private static List<RaycastHit> hits = new List<RaycastHit>();
+  private static List<ZoneHit> tmp = [];
+  private static List<RaycastHit> hits = [];
   [SerializeField]
   private float _level;
   [SerializeField]

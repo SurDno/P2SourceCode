@@ -20,7 +20,7 @@ namespace Engine.Source.Components
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected LocationType locationType;
     [Inspected]
-    private HashSet<ILocationComponent> childs = new HashSet<ILocationComponent>();
+    private HashSet<ILocationComponent> childs = [];
     [Inspected]
     private LocationComponent currentLocation;
     [Inspected]

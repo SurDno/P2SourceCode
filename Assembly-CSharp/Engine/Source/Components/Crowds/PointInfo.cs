@@ -21,18 +21,12 @@ namespace Engine.Source.Components.Crowds
     [Inspected]
     public IEntity Entity;
     [Inspected]
-    public List<IParameter> States = new List<IParameter>();
+    public List<IParameter> States = [];
     [Inspected]
     public bool OnNavMesh;
     [Inspected]
     public IEntity EntityPoint;
 
-    public GameObject GameObject
-    {
-      get
-      {
-        return EntityPoint != null ? ((IEntityView) EntityPoint).GameObject : null;
-      }
-    }
+    public GameObject GameObject => EntityPoint != null ? ((IEntityView) EntityPoint).GameObject : null;
   }
 }

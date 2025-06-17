@@ -70,13 +70,13 @@ namespace ParadoxNotion.Serialization.FullSerializer.Internal
           return;
         MethodInfo setMethod = memberInfo2.GetSetMethod(true);
         if (setMethod != null)
-          setMethod.Invoke(context, new object[1]{ value });
+          setMethod.Invoke(context, [value]);
       }
     }
 
     public object Read(object context)
     {
-      return _memberInfo is PropertyInfo ? ((PropertyInfo) _memberInfo).GetValue(context, new object[0]) : ((FieldInfo) _memberInfo).GetValue(context);
+      return _memberInfo is PropertyInfo ? ((PropertyInfo) _memberInfo).GetValue(context, []) : ((FieldInfo) _memberInfo).GetValue(context);
     }
   }
 }

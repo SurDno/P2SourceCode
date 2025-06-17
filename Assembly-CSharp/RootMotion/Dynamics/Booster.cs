@@ -9,9 +9,9 @@ namespace RootMotion.Dynamics
     [Tooltip("If true, all the muscles will be boosted and the 'Muscles' and 'Groups' properties below will be ignored.")]
     public bool fullBody;
     [Tooltip("Muscles to boost. Used only when 'Full Body' is false.")]
-    public ConfigurableJoint[] muscles = new ConfigurableJoint[0];
+    public ConfigurableJoint[] muscles = [];
     [Tooltip("Muscle groups to boost. Used only when 'Full Body' is false.")]
-    public Muscle.Group[] groups = new Muscle.Group[0];
+    public Muscle.Group[] groups = [];
     [Tooltip("Immunity to apply to the muscles. If muscle immunity is 1, it can not be damaged.")]
     [Range(0.0f, 1f)]
     public float immunity;

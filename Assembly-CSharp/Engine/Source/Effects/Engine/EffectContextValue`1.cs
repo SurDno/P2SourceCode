@@ -78,13 +78,7 @@ namespace Engine.Source.Effects.Engine
       }
     }
 
-    public string ValueView
-    {
-      get
-      {
-        return effectContext + "." + parameterName + "." + parameterData;
-      }
-    }
+    public string ValueView => effectContext + "." + parameterName + "." + parameterData;
 
     public string TypeView => TypeUtility.GetTypeName(GetType());
   }

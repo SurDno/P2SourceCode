@@ -13,8 +13,8 @@ namespace Scripts.Utility
       Func<T, IEnumerable<T>> dependencies,
       bool throwOnCycle)
     {
-      List<T> sorted = new List<T>();
-      HashSet<T> visited = new HashSet<T>();
+      List<T> sorted = [];
+      HashSet<T> visited = [];
       foreach (T obj in source)
         Visit(obj, visited, sorted, dependencies, throwOnCycle);
       return sorted;
@@ -44,8 +44,7 @@ namespace Scripts.Utility
       Dictionary<T, List<Type>> cache)
       where T2 : BaseDependAttribute
     {
-      List<Type> types;
-      if (!cache.TryGetValue(item, out types))
+      if (!cache.TryGetValue(item, out List<Type> types))
       {
         T2[] depends = (T2[]) item.GetType().GetCustomAttributes(typeof (T2), true);
         types = depends.Select(o => o.Type).ToList();

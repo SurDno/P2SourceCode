@@ -2,41 +2,22 @@
 
 namespace Pathologic.Prototype
 {
-  public class PathfinderAStar<T, K>
-  {
-    private Relation _cost;
-    private List<Node> _estimates;
-    private GetNeighbors _getNeighbors;
-    private Relation _heuristic;
-    private Condition _isLess;
-    private Dictionary<T, Node> _sourcesAndCosts;
-    private Operation _sum;
-    private K _zero;
-
-    public PathfinderAStar(
-      GetNeighbors getNeighbors,
-      Relation cost,
-      Relation heuristic,
-      Operation sum,
-      Condition isLess,
-      K zero)
-    {
-      _getNeighbors = getNeighbors;
-      _cost = cost;
-      _heuristic = heuristic;
-      _sum = sum;
-      _isLess = isLess;
-      _zero = zero;
-      _sourcesAndCosts = new Dictionary<T, Node>();
-      _estimates = new List<Node>();
-    }
+  public class PathfinderAStar<T, K>(
+    PathfinderAStar<T, K>.GetNeighbors getNeighbors,
+    PathfinderAStar<T, K>.Relation cost,
+    PathfinderAStar<T, K>.Relation heuristic,
+    PathfinderAStar<T, K>.Operation sum,
+    PathfinderAStar<T, K>.Condition isLess,
+    K zero) {
+    private List<Node> _estimates = [];
+    private Dictionary<T, Node> _sourcesAndCosts = new();
 
     private T Dequeue()
     {
       int index1 = _estimates.Count - 1;
       for (int index2 = index1 - 1; index2 >= 0; --index2)
       {
-        if (_isLess(_estimates[index2].value, _estimates[index1].value))
+        if (isLess(_estimates[index2].value, _estimates[index1].value))
           index1 = index2;
       }
       T obj = _estimates[index1].item;
@@ -48,8 +29,8 @@ namespace Pathologic.Prototype
     {
       if (!goal.Equals(start))
       {
-        _estimates.Add(new Node(start, _zero));
-        _sourcesAndCosts.Add(start, new Node(start, _zero));
+        _estimates.Add(new Node(start, zero));
+        _sourcesAndCosts.Add(start, new Node(start, zero));
       }
       while (_estimates.Count > 0)
       {
@@ -60,15 +41,15 @@ namespace Pathologic.Prototype
             output.Add(obj1);
           break;
         }
-        IList<T> objList = _getNeighbors(obj1);
+        IList<T> objList = getNeighbors(obj1);
         for (int index = 0; index < objList.Count; ++index)
         {
           T obj2 = objList[index];
-          K k = _sum(_sourcesAndCosts[obj1].value, _cost(obj1, obj2));
-          if (!_sourcesAndCosts.ContainsKey(obj2) || _isLess(k, _sourcesAndCosts[obj2].value))
+          K k = sum(_sourcesAndCosts[obj1].value, cost(obj1, obj2));
+          if (!_sourcesAndCosts.ContainsKey(obj2) || isLess(k, _sourcesAndCosts[obj2].value))
           {
             _sourcesAndCosts[obj2] = new Node(obj1, k);
-            _estimates.Add(new Node(obj2, _sum(k, _heuristic(obj2, goal))));
+            _estimates.Add(new Node(obj2, sum(k, heuristic(obj2, goal))));
           }
         }
       }
@@ -76,16 +57,9 @@ namespace Pathologic.Prototype
       _sourcesAndCosts.Clear();
     }
 
-    private struct Node
-    {
-      public T item;
-      public K value;
-
-      public Node(T item, K value)
-      {
-        this.item = item;
-        this.value = value;
-      }
+    private struct Node(T item, K value) {
+      public T item = item;
+      public K value = value;
     }
 
     public delegate bool Condition(K value0, K value1);

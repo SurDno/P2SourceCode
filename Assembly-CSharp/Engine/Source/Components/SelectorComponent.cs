@@ -21,7 +21,7 @@ namespace Engine.Source.Components
     [CopyableProxy()]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    protected List<SelectorPreset> presets = new List<SelectorPreset>();
+    protected List<SelectorPreset> presets = [];
     private bool initialise;
     [FromThis]
     private LocationItemComponent locationItemComponent;

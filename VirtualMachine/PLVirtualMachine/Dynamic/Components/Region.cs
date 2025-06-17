@@ -12,8 +12,7 @@ namespace PLVirtualMachine.Dynamic.Components
 
     public void InitiliseComponentFromHierarchy(VMEntity entity, VMLogicObject templateObject)
     {
-      IParam obj;
-      if (!((IBlueprint) templateObject).TryGetProperty("Region.RegionIndex", out obj))
+      if (!((IBlueprint) templateObject).TryGetProperty("Region.RegionIndex", out IParam obj))
         return;
       RegionIndex = (int) obj.Value;
     }

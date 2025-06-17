@@ -3,10 +3,8 @@
 namespace SRF.Service
 {
   [AttributeUsage(AttributeTargets.Method, Inherited = false)]
-  public sealed class ServiceConstructorAttribute : Attribute
+  public sealed class ServiceConstructorAttribute(Type serviceType) : Attribute 
   {
-    public ServiceConstructorAttribute(Type serviceType) => ServiceType = serviceType;
-
-    public Type ServiceType { get; private set; }
+    public Type ServiceType { get; private set; } = serviceType;
   }
 }

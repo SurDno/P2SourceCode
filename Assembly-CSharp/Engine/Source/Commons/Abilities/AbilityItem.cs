@@ -38,9 +38,9 @@ namespace Engine.Source.Commons.Abilities
     [DataWriteProxy]
     [CopyableProxy()]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    protected List<IEffect> effects = new List<IEffect>();
+    protected List<IEffect> effects = [];
     [Inspected]
-    private HashSet<IEffect> dependEffects = new HashSet<IEffect>();
+    private HashSet<IEffect> dependEffects = [];
     private bool active;
     private IEntity item;
     private IEntity self;

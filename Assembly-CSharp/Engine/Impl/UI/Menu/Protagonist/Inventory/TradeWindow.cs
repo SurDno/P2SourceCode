@@ -43,7 +43,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
     private StorageComponent storage;
     private IStorageComponent protagonistTable;
     private IStorageComponent marketTable;
-    private Dictionary<IStorageComponent, HashSet<IStorageComponent>> disallowedTransactions = new Dictionary<IStorageComponent, HashSet<IStorageComponent>>();
+    private Dictionary<IStorageComponent, HashSet<IStorageComponent>> disallowedTransactions = new();
     private int protagonistPrice;
     private int marketPrice;
     private bool useMoney;
@@ -52,8 +52,8 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
     private int marketCoins;
     private int moneyDiff;
     private int currentmarketItemsIndex = -1;
-    public Dictionary<StorableComponent, int> SelectedItems = new Dictionary<StorableComponent, int>();
-    private DialogModeController dialogModeController = new DialogModeController {
+    public Dictionary<StorableComponent, int> SelectedItems = new();
+    private DialogModeController dialogModeController = new() {
       TargetCameraKind = CameraKindEnum.Trade
     };
     private Modes _currentMode = Modes.None;

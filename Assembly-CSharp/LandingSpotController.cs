@@ -4,8 +4,8 @@ using UnityEngine;
 public class LandingSpotController : MonoBehaviour
 {
   public bool _randomRotate = true;
-  public Vector2 _autoCatchDelay = new Vector2(10f, 20f);
-  public Vector2 _autoDismountDelay = new Vector2(10f, 20f);
+  public Vector2 _autoCatchDelay = new(10f, 20f);
+  public Vector2 _autoDismountDelay = new(10f, 20f);
   public float _maxBirdDistance = 20f;
   public float _minBirdDistance = 5f;
   public bool _takeClosest;

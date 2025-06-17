@@ -2,25 +2,17 @@
 
 namespace PLVirtualMachine.Dynamic
 {
-  public class LockedFSMInfo
-  {
-    public LockedFSMInfo(DynamicFSM lockFSM)
-    {
-      LockedFSM = lockFSM;
-      LastEntityMethodExecuteData = null;
-      NeedRestoreAction = false;
-    }
-
+  public class LockedFSMInfo(DynamicFSM lockFsm) {
     public void SetLastActionMethodExecData(EntityMethodExecuteData lastActionMethodExecData)
     {
       LastEntityMethodExecuteData = lastActionMethodExecData;
       NeedRestoreAction = false;
     }
 
-    public bool NeedRestoreAction { get; set; }
+    public bool NeedRestoreAction { get; set; } = false;
 
-    public DynamicFSM LockedFSM { get; private set; }
+    public DynamicFSM LockedFSM { get; private set; } = lockFsm;
 
-    public EntityMethodExecuteData LastEntityMethodExecuteData { get; private set; }
+    public EntityMethodExecuteData LastEntityMethodExecuteData { get; private set; } = null;
   }
 }

@@ -23,12 +23,12 @@ namespace PLVirtualMachine
     private static string GetObjectClassFunctionName;
     private static string SetMultiStorablesFixedPricesFunctionName;
     private static EntityMethodExecuteData lastActionMethodExecuteData;
-    private static List<object> inputParamsList = new List<object>();
-    private static List<VMType> inputTypesList = new List<VMType>();
-    private static Dictionary<string, double> execFunctionsTimingDict = new Dictionary<string, double>();
-    private static Dictionary<string, int> execFunctionsCountDict = new Dictionary<string, int>();
-    private static Dictionary<ulong, double> execConditionTimingDict = new Dictionary<ulong, double>();
-    private static Dictionary<ulong, int> execConditionCountDict = new Dictionary<ulong, int>();
+    private static List<object> inputParamsList = [];
+    private static List<VMType> inputTypesList = [];
+    private static Dictionary<string, double> execFunctionsTimingDict = new();
+    private static Dictionary<string, int> execFunctionsCountDict = new();
+    private static Dictionary<ulong, double> execConditionTimingDict = new();
+    private static Dictionary<ulong, int> execConditionCountDict = new();
     public static double CalculateConditionResultTimeMaxRT = 0.0;
     public static double ConditionUpdateingMaxRT = 0.0;
 
@@ -279,8 +279,9 @@ namespace PLVirtualMachine
         for (int childIndex = 0; childIndex < expressionsCount; ++childIndex)
         {
           VMExpression childExpression = (VMExpression) expression.GetChildExpression(childIndex);
-          List<FormulaOperation> dOperations = new List<FormulaOperation>();
-          dOperations.Add(expression.GetChildOperations(childIndex));
+          List<FormulaOperation> dOperations = [
+            expression.GetChildOperations(childIndex)
+          ];
           if (dOperations[0] == FormulaOperation.FORMULA_OP_NONE)
           {
             if (childIndex == 0)
@@ -625,7 +626,7 @@ namespace PLVirtualMachine
                 if (action.SourceParams.Count < contextEvent.StaticEvent.ReturnMessages.Count)
                   count = action.SourceParams.Count;
               }
-              List<EventMessage> raisingEventMessageList = new List<EventMessage>();
+              List<EventMessage> raisingEventMessageList = [];
               for (int index = 0; index < count; ++index)
               {
                 CommonVariable sourceParam = action.SourceParams[index];

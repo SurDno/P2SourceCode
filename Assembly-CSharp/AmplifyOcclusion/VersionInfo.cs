@@ -43,7 +43,7 @@ namespace AmplifyOcclusion
       m_release = release;
     }
 
-    public static VersionInfo Current() => new VersionInfo(1, 2, 2);
+    public static VersionInfo Current() => new(1, 2, 2);
 
     public static bool Matches(VersionInfo version)
     {

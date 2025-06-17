@@ -49,7 +49,7 @@ namespace Engine.Source.Inventory
     [CopyableProxy]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    public List<InventoryContainerOpenResource> openResources = new List<InventoryContainerOpenResource>();
+    public List<InventoryContainerOpenResource> openResources = [];
     [DataReadProxy]
     [DataWriteProxy]
     [CopyableProxy]
@@ -85,37 +85,37 @@ namespace Engine.Source.Inventory
     [CopyableProxy]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    public UnitySubAsset<Sprite> imageBackground = new UnitySubAsset<Sprite>();
+    public UnitySubAsset<Sprite> imageBackground = new();
     [DataReadProxy]
     [DataWriteProxy]
     [CopyableProxy]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    public UnitySubAsset<Sprite> imageInstrument = new UnitySubAsset<Sprite>();
+    public UnitySubAsset<Sprite> imageInstrument = new();
     [DataReadProxy]
     [DataWriteProxy]
     [CopyableProxy]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    public UnitySubAsset<Sprite> imageLock = new UnitySubAsset<Sprite>();
+    public UnitySubAsset<Sprite> imageLock = new();
     [DataReadProxy]
     [DataWriteProxy]
     [CopyableProxy]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    public UnitySubAsset<Sprite> imageNotAvailable = new UnitySubAsset<Sprite>();
+    public UnitySubAsset<Sprite> imageNotAvailable = new();
     [DataReadProxy]
     [DataWriteProxy]
     [CopyableProxy]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    public List<StorableGroup> limitations = new List<StorableGroup>();
+    public List<StorableGroup> limitations = [];
     [DataReadProxy]
     [DataWriteProxy]
     [CopyableProxy]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    public List<StorableGroup> except = new List<StorableGroup>();
+    public List<StorableGroup> except = [];
     [DataReadProxy]
     [DataWriteProxy]
     [CopyableProxy]
@@ -127,30 +127,30 @@ namespace Engine.Source.Inventory
     [CopyableProxy]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    public UnitySubAsset<Sprite> imageForeground = new UnitySubAsset<Sprite>();
+    public UnitySubAsset<Sprite> imageForeground = new();
     [DataReadProxy]
     [DataWriteProxy]
     [CopyableProxy]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    public UnityAsset<AudioClip> openStartAudio = new UnityAsset<AudioClip>();
+    public UnityAsset<AudioClip> openStartAudio = new();
     [DataReadProxy]
     [DataWriteProxy]
     [CopyableProxy]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    public UnityAsset<AudioClip> openProgressAudio = new UnityAsset<AudioClip>();
+    public UnityAsset<AudioClip> openProgressAudio = new();
     [DataReadProxy]
     [DataWriteProxy]
     [CopyableProxy]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    public UnityAsset<AudioClip> openCompleteAudio = new UnityAsset<AudioClip>();
+    public UnityAsset<AudioClip> openCompleteAudio = new();
     [DataReadProxy]
     [DataWriteProxy]
     [CopyableProxy()]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    public UnityAsset<AudioClip> openCancelAudio = new UnityAsset<AudioClip>();
+    public UnityAsset<AudioClip> openCancelAudio = new();
   }
 }

@@ -22,15 +22,9 @@ namespace FlowCanvas.Nodes
       }
     }
 
-    public override string name
-    {
-      get => simplexNode != null ? simplexNode.name : "NULL";
-    }
+    public override string name => simplexNode != null ? simplexNode.name : "NULL";
 
-    public override string description
-    {
-      get => simplexNode != null ? simplexNode.description : "NULL";
-    }
+    public override string description => simplexNode != null ? simplexNode.description : "NULL";
 
     public override void OnGraphStarted()
     {

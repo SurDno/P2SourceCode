@@ -7,15 +7,9 @@ namespace AmplifyBloom
   public class AmplifyPassCache
   {
     [SerializeField]
-    internal Vector4[] Offsets;
+    internal Vector4[] Offsets = new Vector4[16];
     [SerializeField]
-    internal Vector4[] Weights;
-
-    public AmplifyPassCache()
-    {
-      Offsets = new Vector4[16];
-      Weights = new Vector4[16];
-    }
+    internal Vector4[] Weights = new Vector4[16];
 
     public void Destroy()
     {

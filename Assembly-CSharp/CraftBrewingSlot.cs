@@ -166,7 +166,7 @@ public class CraftBrewingSlot : MonoBehaviour
   {
     if (!InputService.Instance.JoystickUsed || IsItemCrafted && !CanTakeCraft || !down)
       return false;
-    List<RaycastResult> source = new List<RaycastResult>();
+    List<RaycastResult> source = [];
     if (pointerData == null || raycaster == null)
     {
       raycaster = GetComponentInParent<GraphicRaycaster>();

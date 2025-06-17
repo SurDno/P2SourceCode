@@ -35,7 +35,7 @@ public class AOField : MonoBehaviour
   private static void Register(AOField instance)
   {
     if (all == null)
-      all = new List<AOField>();
+      all = [];
     all.Add(instance);
   }
 

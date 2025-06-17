@@ -2,13 +2,12 @@
 
 namespace TriangleNet.Geometry
 {
-  public class Point : IComparable<Point>, IEquatable<Point>
-  {
+  public class Point(double x, double y, int mark) : IComparable<Point>, IEquatable<Point> {
     internal double[] attributes;
     internal int id;
-    internal int mark;
-    internal double x;
-    internal double y;
+    internal int mark = mark;
+    internal double x = x;
+    internal double y = y;
 
     public int ID => id;
 
@@ -28,13 +27,6 @@ namespace TriangleNet.Geometry
     public Point(double x, double y)
       : this(x, y, 0)
     {
-    }
-
-    public Point(double x, double y, int mark)
-    {
-      this.x = x;
-      this.y = y;
-      this.mark = mark;
     }
 
     public int CompareTo(Point other)

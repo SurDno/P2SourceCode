@@ -21,9 +21,9 @@ namespace Engine.Source.Components
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     [CopyableProxy()]
-    protected List<Typed<IAbility>> resourceAbilities = new List<Typed<IAbility>>();
+    protected List<Typed<IAbility>> resourceAbilities = [];
     [Inspected]
-    private List<IAbility> abilities = new List<IAbility>();
+    private List<IAbility> abilities = [];
 
     public bool NeedSave
     {

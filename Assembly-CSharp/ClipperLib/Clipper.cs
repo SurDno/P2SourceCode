@@ -27,13 +27,13 @@ namespace ClipperLib
       m_Scanbeam = null;
       m_ActiveEdges = null;
       m_SortedEdges = null;
-      m_IntersectList = new List<IntersectNode>();
+      m_IntersectList = [];
       m_IntersectNodeComparer = new MyIntersectNodeSort();
       m_ExecuteLocked = false;
       m_UsingPolyTree = false;
-      m_PolyOuts = new List<OutRec>();
-      m_Joins = new List<Join>();
-      m_GhostJoins = new List<Join>();
+      m_PolyOuts = [];
+      m_Joins = [];
+      m_GhostJoins = [];
       ReverseSolution = (1 & InitOptions) != 0;
       StrictlySimple = (2 & InitOptions) != 0;
       PreserveCollinear = (4 & InitOptions) != 0;
@@ -1278,10 +1278,7 @@ namespace ClipperLib
 
     private void ProcessHorizontal(TEdge horzEdge, bool isTopOfScanbeam)
     {
-      Direction Dir;
-      long Left;
-      long Right;
-      GetHorzDirection(horzEdge, out Dir, out Left, out Right);
+      GetHorzDirection(horzEdge, out Direction Dir, out long Left, out long Right);
       TEdge e1 = horzEdge;
       TEdge tedge1 = null;
       while (e1.NextInLML != null && IsHorizontal(e1.NextInLML))
@@ -1444,8 +1441,7 @@ namespace ClipperLib
           TEdge nextInSel = edge1.NextInSEL;
           if (edge1.Curr.X > nextInSel.Curr.X)
           {
-            IntPoint ip;
-            IntersectPoint(edge1, nextInSel, out ip);
+            IntersectPoint(edge1, nextInSel, out IntPoint ip);
             m_IntersectList.Add(new IntersectNode {
               Edge1 = edge1,
               Edge2 = nextInSel,
@@ -1985,9 +1981,7 @@ namespace ClipperLib
           outPt2 = outPt2.Prev;
         while (op2b.Next.Pt.Y == op2b.Pt.Y && op2b.Next != outPt2 && op2b.Next != outPt1)
           op2b = op2b.Next;
-        long Left;
-        long Right;
-        if (op2b.Next == outPt2 || op2b.Next == outPt1 || !GetOverlap(outPt1.Pt.X, op1b.Pt.X, outPt2.Pt.X, op2b.Pt.X, out Left, out Right))
+        if (op2b.Next == outPt2 || op2b.Next == outPt1 || !GetOverlap(outPt1.Pt.X, op1b.Pt.X, outPt2.Pt.X, op2b.Pt.X, out long Left, out long Right))
           return false;
         IntPoint pt;
         bool DiscardLeft;
@@ -2370,7 +2364,7 @@ namespace ClipperLib
 
     public static List<List<IntPoint>> SimplifyPolygon(List<IntPoint> poly, PolyFillType fillType = PolyFillType.pftEvenOdd)
     {
-      List<List<IntPoint>> solution = new List<List<IntPoint>>();
+      List<List<IntPoint>> solution = [];
       Clipper clipper = new Clipper();
       clipper.StrictlySimple = true;
       clipper.AddPath(poly, PolyType.ptSubject, true);
@@ -2382,7 +2376,7 @@ namespace ClipperLib
       List<List<IntPoint>> polys,
       PolyFillType fillType = PolyFillType.pftEvenOdd)
     {
-      List<List<IntPoint>> solution = new List<List<IntPoint>>();
+      List<List<IntPoint>> solution = [];
       Clipper clipper = new Clipper();
       clipper.StrictlySimple = true;
       clipper.AddPaths(polys, PolyType.ptSubject, true);
@@ -2443,7 +2437,7 @@ namespace ClipperLib
     {
       int capacity = path.Count;
       if (capacity == 0)
-        return new List<IntPoint>();
+        return [];
       OutPt[] outPtArray = new OutPt[capacity];
       for (int index = 0; index < capacity; ++index)
         outPtArray[index] = new OutPt();
@@ -2534,11 +2528,12 @@ namespace ClipperLib
       {
         for (int index2 = 0; index2 < count1; ++index2)
         {
-          List<IntPoint> poly = new List<IntPoint>(4);
-          poly.Add(intPointListList1[index1 % count2][index2 % count1]);
-          poly.Add(intPointListList1[(index1 + 1) % count2][index2 % count1]);
-          poly.Add(intPointListList1[(index1 + 1) % count2][(index2 + 1) % count1]);
-          poly.Add(intPointListList1[index1 % count2][(index2 + 1) % count1]);
+          List<IntPoint> poly = [
+            intPointListList1[index1 % count2][index2 % count1],
+            intPointListList1[(index1 + 1) % count2][index2 % count1],
+            intPointListList1[(index1 + 1) % count2][(index2 + 1) % count1],
+            intPointListList1[index1 % count2][(index2 + 1) % count1]
+          ];
           if (!Orientation(poly))
             poly.Reverse();
           intPointListList2.Add(poly);
@@ -2572,7 +2567,7 @@ namespace ClipperLib
       List<List<IntPoint>> paths,
       bool pathIsClosed)
     {
-      List<List<IntPoint>> solution = new List<List<IntPoint>>();
+      List<List<IntPoint>> solution = [];
       Clipper clipper = new Clipper();
       for (int index = 0; index < paths.Count; ++index)
       {

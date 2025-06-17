@@ -14,14 +14,13 @@ namespace PLVirtualMachine.Objects
 {
   [TypeData(EDataType.TGameMode)]
   [DataFactory("GameMode")]
-  public class VMGameMode : 
-    VMBaseObject,
+  public class VMGameMode(ulong guid) :
+    VMBaseObject(guid),
     IStub,
     IEditorDataReader,
     IGameMode,
     IObject,
-    IEditorBaseTemplate
-  {
+    IEditorBaseTemplate {
     [FieldData("IsMain")]
     private bool isMain;
     [FieldData("StartGameTime")]
@@ -77,11 +76,6 @@ namespace PLVirtualMachine.Objects
         if (xml.NodeType == XmlNodeType.EndElement)
           break;
       }
-    }
-
-    public VMGameMode(ulong guid)
-      : base(guid)
-    {
     }
 
     public override EObjectCategory GetCategory() => EObjectCategory.OBJECT_CATEGORY_GAME_MODE;

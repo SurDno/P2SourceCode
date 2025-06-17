@@ -10,8 +10,8 @@ namespace Pathologic.Prototype
     private float _unlockTime;
     public Vector3 AttackPosition;
     public Quaternion AttackRotation;
-    public ListWithScalableValues HitTimesA = new ListWithScalableValues();
-    public ListWithScalableValues HitTimesB = new ListWithScalableValues();
+    public ListWithScalableValues HitTimesA = new();
+    public ListWithScalableValues HitTimesB = new();
 
     public float SpeedScale
     {
@@ -38,7 +38,7 @@ namespace Pathologic.Prototype
 
     public class ListWithScalableValues
     {
-      private List<float> _values = new List<float>();
+      private List<float> _values = [];
       public float Scale;
 
       public int Count => _values.Count;

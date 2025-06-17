@@ -8,12 +8,8 @@ using Engine.Source.Services.Consoles.Binds;
 namespace Engine.Source.Services.Consoles
 {
   [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
-  public class GetSetConsoleCommandAttribute : InitialiseAttribute
+  public class GetSetConsoleCommandAttribute(string name) : InitialiseAttribute 
   {
-    private string name;
-
-    public GetSetConsoleCommandAttribute(string name) => this.name = name;
-
     public override void ComputeMember(Container container, MemberInfo member)
     {
       if (name.IsNullOrEmpty())

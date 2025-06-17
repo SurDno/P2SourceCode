@@ -23,7 +23,7 @@ namespace Facepunch.Steamworks
 
     internal static class Epoch
     {
-      private static readonly DateTime epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+      private static readonly DateTime epoch = new(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
       public static int Current => (int) DateTime.UtcNow.Subtract(epoch).TotalSeconds;
 

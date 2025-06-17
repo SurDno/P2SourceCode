@@ -20,7 +20,7 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
     private ITextRef objectTitle;
     private ITextRef objectSpecialDescription;
     private string storeTag;
-    private static Dictionary<string, IEntity> StorableTemplateNamesDict = new Dictionary<string, IEntity>();
+    private static Dictionary<string, IEntity> StorableTemplateNamesDict = new();
 
     [Property("Storable class", "", true, "Pathologic")]
     public string StorableClass { get; set; }

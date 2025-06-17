@@ -11,7 +11,7 @@ public class SoundPlayerPolyhedron : MonoBehaviour
   [SerializeField]
   private bool playInstantly;
   [SerializeField]
-  private AudioClip[] clips = new AudioClip[0];
+  private AudioClip[] clips = [];
   [SerializeField]
   private float minRadius;
   [SerializeField]

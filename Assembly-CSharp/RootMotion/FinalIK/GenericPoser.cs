@@ -12,11 +12,11 @@ namespace RootMotion.FinalIK
     {
       if (poseRoot == null)
       {
-        maps = new Map[0];
+        maps = [];
       }
       else
       {
-        maps = new Map[0];
+        maps = [];
         Transform[] componentsInChildren1 = transform.GetComponentsInChildren<Transform>();
         Transform[] componentsInChildren2 = poseRoot.GetComponentsInChildren<Transform>();
         for (int index = 1; index < componentsInChildren1.Length; ++index)

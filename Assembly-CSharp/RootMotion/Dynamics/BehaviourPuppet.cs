@@ -8,14 +8,14 @@ namespace RootMotion.Dynamics
   public class BehaviourPuppet : BehaviourBase
   {
     [LargeHeader("Collision And Recovery")]
-    public MasterProps masterProps = new MasterProps();
+    public MasterProps masterProps = new();
     [Tooltip("Will ground the target to those layers when getting up.")]
     public LayerMask groundLayers;
     [Tooltip("Will unpin the muscles that collide with those layers.")]
     public LayerMask collisionLayers;
     [Tooltip("The collision impulse sqrMagnitude threshold under which collisions will be ignored.")]
     public float collisionThreshold;
-    public Weight collisionResistance = new Weight(3f, "Smaller value means more unpinning from collisions so the characters get knocked out more easily. If using a curve, the value will be evaluated by each muscle's target velocity magnitude. This can be used to make collision resistance higher while the character moves or animates faster.");
+    public Weight collisionResistance = new(3f, "Smaller value means more unpinning from collisions so the characters get knocked out more easily. If using a curve, the value will be evaluated by each muscle's target velocity magnitude. This can be used to make collision resistance higher while the character moves or animates faster.");
     [Tooltip("Multiplies collision resistance for the specified layers.")]
     public CollisionResistanceMultiplier[] collisionResistanceMultipliers;
     [Tooltip("An optimisation. Will only process up to this number of collisions per physics step.")]

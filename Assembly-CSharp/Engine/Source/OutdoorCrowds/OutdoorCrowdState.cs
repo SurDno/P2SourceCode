@@ -17,6 +17,6 @@ namespace Engine.Source.OutdoorCrowds
     [DataWriteProxy]
     [CopyableProxy()]
     [Inspected(Mode = ExecuteMode.EditAndRuntime)]
-    public List<OutdoorCrowdTemplateLink> TemplateLinks = new List<OutdoorCrowdTemplateLink>();
+    public List<OutdoorCrowdTemplateLink> TemplateLinks = [];
   }
 }

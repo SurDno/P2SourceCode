@@ -46,9 +46,7 @@ namespace Facepunch.Steamworks
         return;
       UpdateTimer.Reset();
       UpdateTimer.Start();
-      uint num1 = 0;
-      uint num2 = 0;
-      VoiceResult availableVoice = client.native.user.GetAvailableVoice(out num2, out num1, DesiredSampleRate == 0U ? OptimalSampleRate : DesiredSampleRate);
+      VoiceResult availableVoice = client.native.user.GetAvailableVoice(out uint num2, out uint num1, DesiredSampleRate == 0U ? OptimalSampleRate : DesiredSampleRate);
       if (availableVoice == VoiceResult.NotRecording || availableVoice == VoiceResult.NotInitialized)
       {
         IsRecording = false;

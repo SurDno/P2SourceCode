@@ -4,16 +4,8 @@ using TriangleNet.Data;
 
 namespace TriangleNet.Tools
 {
-  public class RegionIterator
-  {
-    private Mesh mesh;
-    private List<Triangle> viri;
-
-    public RegionIterator(Mesh mesh)
-    {
-      this.mesh = mesh;
-      viri = new List<Triangle>();
-    }
+  public class RegionIterator(Mesh mesh) {
+    private List<Triangle> viri = [];
 
     private void ProcessRegion(Action<Triangle> func)
     {

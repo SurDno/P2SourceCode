@@ -8,7 +8,7 @@ public class HUDFPS : MonoBehaviour
   private int frames;
   public int frequency = 30;
   private string sFPS = "";
-  private Rect startRect = new Rect(10f, 10f, 100f, 50f);
+  private Rect startRect = new(10f, 10f, 100f, 50f);
   private GUIStyle style;
 
   private void Update()

@@ -6,7 +6,7 @@ using UnityEngine;
 public class CameraCullDistances : MonoBehaviour
 {
   [SerializeField]
-  private LayerFarClipping[] layerFarClippings = new LayerFarClipping[0];
+  private LayerFarClipping[] layerFarClippings = [];
   [SerializeField]
   private float defaultFarClippingPlane = 150f;
 

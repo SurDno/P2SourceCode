@@ -14,7 +14,7 @@ public class StorageAnimator : MonoBehaviour, IEntityAttachable
 {
   [SerializeField]
   [FormerlySerializedAs("infos")]
-  private List<ContainerInfo> containers = new List<ContainerInfo>();
+  private List<ContainerInfo> containers = [];
   private StorageComponent storage;
 
   public void Attach(IEntity owner)
@@ -65,6 +65,6 @@ public class StorageAnimator : MonoBehaviour, IEntityAttachable
   public class ContainerInfo
   {
     public IEntitySerializable EntityContainer;
-    public ContainerAnimator[] Animators = new ContainerAnimator[0];
+    public ContainerAnimator[] Animators = [];
   }
 }

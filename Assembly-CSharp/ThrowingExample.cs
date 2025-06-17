@@ -20,8 +20,7 @@ public class ThrowingExample : MonoBehaviour
   {
     Vector3 position = transform.position;
     Vector3 forward = transform.forward;
-    RaycastHit hitInfo;
-    if (!Physics.Raycast(position + forward, forward, out hitInfo, 50f, layerMask, QueryTriggerInteraction.Ignore))
+    if (!Physics.Raycast(position + forward, forward, out RaycastHit hitInfo, 50f, layerMask, QueryTriggerInteraction.Ignore))
       return;
     GameObject gameObject = Instantiate(prefab);
     gameObject.transform.position = hitInfo.point;

@@ -8,7 +8,7 @@ namespace PLVirtualMachine.Common
 {
   public class OperationTagsInfo : IVMStringSerializable
   {
-    protected List<string> tagsList = new List<string>();
+    protected List<string> tagsList = [];
 
     public void AddTag(string sTag) => tagsList.Add(sTag);
 
@@ -36,7 +36,7 @@ namespace PLVirtualMachine.Common
           break;
         default:
           tagsList.Clear();
-          string[] separator = new string[1]{ ";" };
+          string[] separator = [";"];
           foreach (string tagDataStr in data.Split(separator, StringSplitOptions.RemoveEmptyEntries))
             ReadTag(tagDataStr);
           break;

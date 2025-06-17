@@ -3,16 +3,14 @@
 namespace ParadoxNotion.Serialization.FullSerializer
 {
   [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
-  public sealed class fsPropertyAttribute : Attribute
+  public sealed class fsPropertyAttribute(string name) : Attribute 
   {
-    public string Name;
+    public string Name = name;
     public Type Converter;
 
     public fsPropertyAttribute()
       : this(string.Empty)
     {
     }
-
-    public fsPropertyAttribute(string name) => Name = name;
   }
 }

@@ -4,7 +4,7 @@ public class LockPickingPinSpot : MonoBehaviour
 {
   [Header("Settings")]
   [SerializeField]
-  private Vector2 rotationRange = new Vector2(0.0f, 45f);
+  private Vector2 rotationRange = new(0.0f, 45f);
   [SerializeField]
   private float sizeMapping = 10f;
   [SerializeField]

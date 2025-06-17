@@ -2,17 +2,11 @@
 
 namespace Cinemachine
 {
-  internal class StaticPointVirtualCamera : ICinemachineCamera
+  internal class StaticPointVirtualCamera(CameraState state, string name) : ICinemachineCamera 
   {
-    public StaticPointVirtualCamera(CameraState state, string name)
-    {
-      State = state;
-      Name = name;
-    }
-
     public void SetState(CameraState state) => State = state;
 
-    public string Name { get; private set; }
+    public string Name { get; private set; } = name;
 
     public string Description => "";
 
@@ -22,7 +16,7 @@ namespace Cinemachine
 
     public Transform Follow { get; set; }
 
-    public CameraState State { get; private set; }
+    public CameraState State { get; private set; } = state;
 
     public GameObject VirtualCameraGameObject => null;
 

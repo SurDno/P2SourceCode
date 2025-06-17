@@ -13,7 +13,7 @@ namespace SRF.Service
   {
     public const bool EnableLogging = false;
     public static int LoadingCount = 0;
-    private readonly SRList<Service> _services = new SRList<Service>();
+    private readonly SRList<Service> _services = [];
     private List<ServiceStub> _serviceStubs;
     private static bool _hasQuit;
 
@@ -127,8 +127,8 @@ namespace SRF.Service
     {
       if (_serviceStubs != null)
         return;
-      _serviceStubs = new List<ServiceStub>();
-      List<Type> typeList = new List<Type>();
+      _serviceStubs = [];
+      List<Type> typeList = [];
       foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
       {
         if (!assembly.IsDynamic)

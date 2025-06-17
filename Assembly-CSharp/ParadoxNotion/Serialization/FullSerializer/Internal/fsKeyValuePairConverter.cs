@@ -17,13 +17,11 @@ namespace ParadoxNotion.Serialization.FullSerializer.Internal
 
     public override fsResult TryDeserialize(fsData data, ref object instance, Type storageType)
     {
-      fsData subitem1;
       fsResult fsResult1;
-      if ((fsResult1 = fsResult.Success + CheckKey(data, "Key", out subitem1)).Failed)
+      if ((fsResult1 = fsResult.Success + CheckKey(data, "Key", out fsData subitem1)).Failed)
         return fsResult1;
-      fsData subitem2;
       fsResult fsResult2;
-      if ((fsResult2 = fsResult1 + CheckKey(data, "Value", out subitem2)).Failed)
+      if ((fsResult2 = fsResult1 + CheckKey(data, "Value", out fsData subitem2)).Failed)
         return fsResult2;
       Type[] genericArguments = storageType.GetGenericArguments();
       Type storageType1 = genericArguments[0];
@@ -46,10 +44,8 @@ namespace ParadoxNotion.Serialization.FullSerializer.Internal
       Type storageType1 = genericArguments[0];
       Type storageType2 = genericArguments[1];
       fsResult success = fsResult.Success;
-      fsData data1;
-      success.AddMessages(Serializer.TrySerialize(storageType1, instance1, out data1));
-      fsData data2;
-      success.AddMessages(Serializer.TrySerialize(storageType2, instance2, out data2));
+      success.AddMessages(Serializer.TrySerialize(storageType1, instance1, out fsData data1));
+      success.AddMessages(Serializer.TrySerialize(storageType2, instance2, out fsData data2));
       serialized = fsData.CreateDictionary();
       if (data1 != null)
         serialized.AsDictionary["Key"] = data1;

@@ -10,8 +10,7 @@ namespace Engine.Behaviours.Unity.Mecanim
       int layerIndex)
     {
       AnimatorState45 animatorState = AnimatorState45.GetAnimatorState(animator);
-      float scale;
-      animatorState.MovableStop = AnimatorBehaviorBase45Utility.NeedToStopEnterLeftLeg(animator.gameObject.GetComponent<Rootmotion45>(), animatorState.MovableSpeed, animatorState.RemainingDistance, out scale);
+      animatorState.MovableStop = AnimatorBehaviorBase45Utility.NeedToStopEnterLeftLeg(animator.gameObject.GetComponent<Rootmotion45>(), animatorState.MovableSpeed, animatorState.RemainingDistance, out float scale);
       animatorState.VelocityScale = scale;
     }
   }

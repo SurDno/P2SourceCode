@@ -6,7 +6,7 @@ namespace Pathologic.Prototype
 {
   public static class FightAnimationDatabase
   {
-    private static Dictionary<int, FightAnimation> _animations = new Dictionary<int, FightAnimation>();
+    private static Dictionary<int, FightAnimation> _animations = new();
 
     public static int FightAnimationCount => _animations.Count;
 
@@ -62,7 +62,7 @@ namespace Pathologic.Prototype
       return new Vector3((float) magnitude1, (float) magnitude2, (float) magnitude3);
     }
 
-    public static Vector3 GetPosition(Matrix4x4 m) => new Vector3(m[0, 3], m[1, 3], m[2, 3]);
+    public static Vector3 GetPosition(Matrix4x4 m) => new(m[0, 3], m[1, 3], m[2, 3]);
 
     public static Quaternion GetRotation(Matrix4x4 m)
     {

@@ -17,6 +17,6 @@ namespace Engine.Source.OutdoorCrowds
     [DataWriteProxy]
     [Inspected(Mode = ExecuteMode.EditAndRuntime)]
     [CopyableProxy()]
-    public List<AreaEnum> Areas = new List<AreaEnum>();
+    public List<AreaEnum> Areas = [];
   }
 }

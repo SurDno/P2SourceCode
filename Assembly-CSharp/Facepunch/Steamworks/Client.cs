@@ -83,10 +83,9 @@ namespace Facepunch.Steamworks
           InstallFolder = new DirectoryInfo(appInstallDir);
         BuildId = native.apps.GetAppBuildId();
         CurrentLanguage = native.apps.GetCurrentGameLanguage();
-        AvailableLanguages = native.apps.GetAvailableGameLanguages().Split(new char[1]
-        {
+        AvailableLanguages = native.apps.GetAvailableGameLanguages().Split([
           ';'
-        }, StringSplitOptions.RemoveEmptyEntries);
+        ], StringSplitOptions.RemoveEmptyEntries);
         Update();
       }
     }

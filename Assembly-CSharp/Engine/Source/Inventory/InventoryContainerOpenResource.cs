@@ -14,7 +14,7 @@ namespace Engine.Source.Inventory
     [DataWriteProxy]
     [CopyableProxy]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    protected Typed<IEntity> resource = new Typed<IEntity>();
+    protected Typed<IEntity> resource = new();
     [DataReadProxy]
     [DataWriteProxy]
     [CopyableProxy()]

@@ -7,12 +7,12 @@ namespace Engine.Source.Services
   {
     private FractionEnum fraction;
     public List<CombatServiceCharacterInfo> Characters;
-    private List<CombatServiceCharacterInfo> personalFractionEnemies = new List<CombatServiceCharacterInfo>();
-    public List<FractionEnum> AttackFractions = new List<FractionEnum>();
-    public List<FractionEnum> FearFractions = new List<FractionEnum>();
-    private List<FractionEnum> FearOnAttackFractions = new List<FractionEnum>();
-    public List<FractionEnum> HelpInCombatFractions = new List<FractionEnum>();
-    public List<FractionEnum> AskForHelpFractions = new List<FractionEnum>();
+    private List<CombatServiceCharacterInfo> personalFractionEnemies = [];
+    public List<FractionEnum> AttackFractions = [];
+    public List<FractionEnum> FearFractions = [];
+    private List<FractionEnum> FearOnAttackFractions = [];
+    public List<FractionEnum> HelpInCombatFractions = [];
+    public List<FractionEnum> AskForHelpFractions = [];
 
     public FractionEnum Fraction => fraction;
 

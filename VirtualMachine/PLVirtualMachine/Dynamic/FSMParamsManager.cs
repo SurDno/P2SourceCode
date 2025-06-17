@@ -72,14 +72,12 @@ namespace PLVirtualMachine.Dynamic
 
     public IParam GetContextParam(ulong stGuid)
     {
-      IParam obj;
-      return contextParamsByStaticGuid.TryGetValue(stGuid, out obj) ? obj : null;
+      return contextParamsByStaticGuid.TryGetValue(stGuid, out IParam obj) ? obj : null;
     }
 
     public IParam GetContextParam(string paramName)
     {
-      IParam contextParam;
-      if (GuidUtility.GetGuidFormat(paramName) == EGuidFormat.GT_BASE && contextParamsByStaticGuid.TryGetValue(StringUtility.ToUInt64(paramName), out contextParam))
+      if (GuidUtility.GetGuidFormat(paramName) == EGuidFormat.GT_BASE && contextParamsByStaticGuid.TryGetValue(StringUtility.ToUInt64(paramName), out IParam contextParam))
         return contextParam;
       string[] strArray = paramName.Split('.');
       if (strArray.Length > 1)
@@ -89,8 +87,7 @@ namespace PLVirtualMachine.Dynamic
 
     public DynamicParameter GetDynamicObjectParameter(ulong paramId)
     {
-      DynamicParameter dynamicParameter;
-      return dynObjContextParams.TryGetValue(paramId, out dynamicParameter) ? dynamicParameter : null;
+      return dynObjContextParams.TryGetValue(paramId, out DynamicParameter dynamicParameter) ? dynamicParameter : null;
     }
 
     public void AfterSaveLoading()
@@ -167,7 +164,7 @@ namespace PLVirtualMachine.Dynamic
     private void LoadParamsFromEngineDirect()
     {
       if (fsmDynamicParams == null)
-        fsmDynamicParams = new List<DynamicParameter>();
+        fsmDynamicParams = [];
       else
         fsmDynamicParams.Clear();
       if (contextParamsByName == null)

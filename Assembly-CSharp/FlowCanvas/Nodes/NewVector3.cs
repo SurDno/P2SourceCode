@@ -6,6 +6,6 @@ namespace FlowCanvas.Nodes
   [Category("Utilities/Constructors")]
   public class NewVector3 : PureFunctionNode<Vector3, float, float, float>
   {
-    public override Vector3 Invoke(float x, float y, float z) => new Vector3(x, y, z);
+    public override Vector3 Invoke(float x, float y, float z) => new(x, y, z);
   }
 }

@@ -44,7 +44,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Polylogue
     private GameObject unitySpeechPrefab;
     [Inspected]
     private IEntity entityEffect;
-    private DialogModeController dialogModeController = new DialogModeController {
+    private DialogModeController dialogModeController = new() {
       TargetCameraKind = CameraKindEnum.Dialog
     };
     [SerializeField]

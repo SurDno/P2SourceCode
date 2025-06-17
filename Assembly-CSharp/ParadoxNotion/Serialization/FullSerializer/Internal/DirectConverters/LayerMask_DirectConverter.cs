@@ -14,8 +14,7 @@ namespace ParadoxNotion.Serialization.FullSerializer.Internal.DirectConverters
     protected override fsResult DoDeserialize(Dictionary<string, fsData> data, ref LayerMask model)
     {
       fsResult fsResult = fsResult.Success;
-      int num = model.value;
-      fsResult += DeserializeMember(data, null, "value", out num);
+      fsResult += DeserializeMember(data, null, "value", out int num);
       model.value = num;
       return fsResult;
     }

@@ -1,12 +1,7 @@
 ﻿using Inspectors;
 using UnityEngine.AI;
 
-public class NavMeshPathWrapper
-{
-  private NavMeshPath path;
-
-  public NavMeshPathWrapper(NavMeshPath path) => this.path = path;
-
+public class NavMeshPathWrapper(NavMeshPath path) {
   [Inspected]
   private int CornersCount => path.corners.Length;
 

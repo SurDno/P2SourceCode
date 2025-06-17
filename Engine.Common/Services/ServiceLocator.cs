@@ -8,9 +8,9 @@ namespace Engine.Common.Services
 {
   public static class ServiceLocator
   {
-    private static Dictionary<Type, object> serviceMap = new Dictionary<Type, object>();
-    private static List<object> services = new List<object>();
-    private static object lockObject = new object();
+    private static Dictionary<Type, object> serviceMap = new();
+    private static List<object> services = [];
+    private static object lockObject = new();
 
     public static object GetService(Type type)
     {
@@ -37,8 +37,7 @@ namespace Engine.Common.Services
         Type type1 = service.GetType();
         foreach (Type type2 in types)
         {
-          object obj;
-          if (serviceMap.TryGetValue(type2, out obj))
+          if (serviceMap.TryGetValue(type2, out object obj))
             Logger.AddWarning("Exist service , face : " + type2 + " , type : " + obj.GetType());
           if (!TypeUtility.IsAssignableFrom(type2, type1))
             Logger.AddError("Wrong service type, original : " + type1 + " , target : " + type2);

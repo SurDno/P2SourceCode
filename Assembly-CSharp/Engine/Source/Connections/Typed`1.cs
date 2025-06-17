@@ -4,14 +4,12 @@ using Inspectors;
 
 namespace Engine.Source.Connections
 {
-  public struct Typed<T> where T : class, IObject
-  {
-    private Guid id;
+  public struct Typed<T>(Guid id)
+    where T : class, IObject {
+    private Guid id = id;
 
     [Inspected]
     public Guid Id => id;
-
-    public Typed(Guid id) => this.id = id;
 
     public T Value
     {

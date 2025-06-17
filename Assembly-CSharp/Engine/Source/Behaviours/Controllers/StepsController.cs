@@ -15,8 +15,8 @@ namespace Engine.Source.Behaviours.Controllers
     private GameObject footEffectAudioModel;
     [SerializeField]
     private GameObject footAudioModel;
-    private Dictionary<string, float> actions = new Dictionary<string, float>();
-    private Dictionary<string, float> reactions = new Dictionary<string, float>();
+    private Dictionary<string, float> actions = new();
+    private Dictionary<string, float> reactions = new();
     [SerializeField]
     private PhysicMaterial puddlePhysicMaterial;
     [SerializeField]
@@ -25,15 +25,15 @@ namespace Engine.Source.Behaviours.Controllers
     protected const string footRightEventName = "Skeleton.Humanoid.Foot_Right";
     [SerializeField]
     private StepsData stepsData;
-    private Dictionary<StepsEvent, Info> footActions = new Dictionary<StepsEvent, Info>();
-    private Dictionary<StepsReaction, float> footReactions = new Dictionary<StepsReaction, float>();
+    private Dictionary<StepsEvent, Info> footActions = new();
+    private Dictionary<StepsReaction, float> footReactions = new();
     [Inspected]
-    private List<AudioSource> footLeftAudioSources = new List<AudioSource>();
+    private List<AudioSource> footLeftAudioSources = [];
     [Inspected]
-    private List<AudioSource> footRightAudioSources = new List<AudioSource>();
+    private List<AudioSource> footRightAudioSources = [];
     [Inspected]
-    private List<AudioSource> footEffectAudioSources = new List<AudioSource>();
-    private static List<KeyValuePair<StepsEvent, Info>> tmp = new List<KeyValuePair<StepsEvent, Info>>();
+    private List<AudioSource> footEffectAudioSources = [];
+    private static List<KeyValuePair<StepsEvent, Info>> tmp = [];
 
     protected abstract AudioMixerGroup FootAudioMixer { get; }
 
@@ -249,15 +249,13 @@ namespace Engine.Source.Behaviours.Controllers
       reactions.Clear();
       float maxDistance = 1f;
       LayerMask puddlesLayer = ScriptableObjectInstance<GameSettingsData>.Instance.PuddlesLayer;
-      RaycastHit hitInfo1;
-      if (Physics.Raycast(position + new Vector3(0.0f, maxDistance / 2f, 0.0f), new Vector3(0.0f, -maxDistance, 0.0f), out hitInfo1, maxDistance, puddlesLayer, QueryTriggerInteraction.Ignore) && hitInfo1.collider != null)
+      if (Physics.Raycast(position + new Vector3(0.0f, maxDistance / 2f, 0.0f), new Vector3(0.0f, -maxDistance, 0.0f), out RaycastHit hitInfo1, maxDistance, puddlesLayer, QueryTriggerInteraction.Ignore) && hitInfo1.collider != null)
       {
         GameObject gameObject = hitInfo1.collider.gameObject;
         if (gameObject != null)
         {
           Puddle component = gameObject.GetComponent<Puddle>();
-          float Wetness;
-          if (component != null && component.GetWetness(hitInfo1, out Wetness))
+          if (component != null && component.GetWetness(hitInfo1, out float Wetness))
           {
             actions.Add(puddlePhysicMaterial.name, Wetness);
             component.AddRipple(hitInfo1.point, 0.1f, 1f);
@@ -268,8 +266,7 @@ namespace Engine.Source.Behaviours.Controllers
       if (!(instance != null))
         return;
       LayerMask stepsLayer = ScriptableObjectInstance<GameSettingsData>.Instance.StepsLayer;
-      RaycastHit hitInfo2;
-      if (Physics.Raycast(position + new Vector3(0.0f, maxDistance / 2f, 0.0f), new Vector3(0.0f, -maxDistance, 0.0f), out hitInfo2, maxDistance, stepsLayer, QueryTriggerInteraction.Ignore))
+      if (Physics.Raycast(position + new Vector3(0.0f, maxDistance / 2f, 0.0f), new Vector3(0.0f, -maxDistance, 0.0f), out RaycastHit hitInfo2, maxDistance, stepsLayer, QueryTriggerInteraction.Ignore))
       {
         Collider collider = hitInfo2.collider;
         if (collider != null)

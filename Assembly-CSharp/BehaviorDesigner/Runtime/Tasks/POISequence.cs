@@ -98,7 +98,7 @@ namespace BehaviorDesigner.Runtime.Tasks
     [SerializeField]
     public bool LongAnimationsOnly;
     private POIBase lastUsedPOI;
-    private List<POIBase> lastUsedPOIs = new List<POIBase>();
+    private List<POIBase> lastUsedPOIs = [];
     [HideInInspector]
     public POIBase OutPOI;
     [HideInInspector]
@@ -125,7 +125,7 @@ namespace BehaviorDesigner.Runtime.Tasks
     [CopyableProxy()]
     [SerializeField]
     public float OutAngle;
-    protected List<POIBase> poiCache = new List<POIBase>();
+    protected List<POIBase> poiCache = [];
     private int currentChildIndex;
     protected TaskStatus executionStatus = TaskStatus.Inactive;
     private IRegionComponent region;
@@ -303,9 +303,7 @@ namespace BehaviorDesigner.Runtime.Tasks
                     if (animationSetup.Elements.Count > OutAnimationIndex && animationSetup.Elements[OutAnimationIndex] is POIAnimationSetupElementSlow)
                       OutMiddleAnimationsCount = (animationSetup.Elements[OutAnimationIndex] as POIAnimationSetupElementSlow).MiddleAnimationClips.Count;
                     OutAngle = poiBase.GetAngle(Owner.gameObject);
-                    Vector3 targetPosition;
-                    Quaternion targetRotation;
-                    poiBase.GetRandomTargetPoint(animation, OutAnimationIndex, character, out targetPosition, out targetRotation);
+                    poiBase.GetRandomTargetPoint(animation, OutAnimationIndex, character, out Vector3 targetPosition, out Quaternion targetRotation);
                     OutPOI = poiBase;
                     lastUsedPOI = poiBase;
                     lastUsedPOIs.Add(poiBase);

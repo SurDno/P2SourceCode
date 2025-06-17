@@ -46,7 +46,7 @@ namespace Engine.Behaviours.Engines.Controllers
     private float weigthLookAt;
     private Coroutine coroutine;
     private bool lookEyeContactOnly;
-    private WaitForFixedUpdate waitForFixedUpdate = new WaitForFixedUpdate();
+    private WaitForFixedUpdate waitForFixedUpdate = new();
 
     [Inspected(Mutable = true)]
     public bool TestMode { get; set; }
@@ -243,9 +243,8 @@ namespace Engine.Behaviours.Engines.Controllers
       }
       else
       {
-        bool clamped = false;
         Vector3 targetDirection = transform.InverseTransformDirection(lookAtTarget.position - aimTransform.position);
-        Vector3 vector3_1 = transform.TransformDirection(!LookEyeContactOnly ? ClampLookAtDirectionInForwardSpace(targetDirection, MaxAngleVertical * ((float) Math.PI / 180f), MaxAngleHorizontal * ((float) Math.PI / 180f), out clamped) : ClampLookAtDirectionInForwardSpace(targetDirection, 0.157079637f, 0.34906584f, out clamped));
+        Vector3 vector3_1 = transform.TransformDirection(!LookEyeContactOnly ? ClampLookAtDirectionInForwardSpace(targetDirection, MaxAngleVertical * ((float) Math.PI / 180f), MaxAngleHorizontal * ((float) Math.PI / 180f), out bool clamped) : ClampLookAtDirectionInForwardSpace(targetDirection, 0.157079637f, 0.34906584f, out clamped));
         bool flag2 = !StopIfOutOfLimits || !clamped;
         if (LookEyeContactOnly)
         {

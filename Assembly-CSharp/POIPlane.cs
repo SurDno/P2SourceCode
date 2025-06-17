@@ -15,8 +15,7 @@ public class POIPlane : POIBase
     out Vector3 closestTargetPosition,
     out Quaternion closestTargetRotation)
   {
-    Vector3 closestSurfacePosition;
-    GetClosestSurfacePoint(currentPosition, out closestSurfacePosition, out Quaternion _);
+    GetClosestSurfacePoint(currentPosition, out Vector3 closestSurfacePosition, out Quaternion _);
     closestTargetRotation = character.transform.rotation;
     closestTargetPosition = transform.TransformPoint(transform.InverseTransformPoint(closestSurfacePosition));
     lastSurfacePosition = closestSurfacePosition;
@@ -47,9 +46,7 @@ public class POIPlane : POIBase
     out Vector3 targetPosition,
     out Quaternion targetRotation)
   {
-    Vector3 position;
-    Quaternion rotation;
-    GetRandomPointOnSurface(out position, out rotation);
+    GetRandomPointOnSurface(out Vector3 position, out Quaternion rotation);
     targetRotation = rotation;
     targetPosition = position;
   }

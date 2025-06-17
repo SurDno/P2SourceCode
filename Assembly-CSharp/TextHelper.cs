@@ -135,8 +135,7 @@ public class TextHelper
           string str3 = text.Substring(0, length);
           string str4 = text.Substring(num + str2.Length);
           string str5 = text.Substring(length + str1.Length, num - length - str1.Length);
-          GameActionType result;
-          if (DefaultConverter.TryParseEnum(str5, out result))
+          if (DefaultConverter.TryParseEnum(str5, out GameActionType result))
             str5 = InputUtility.GetHotKeyNameByAction(result, InputService.Instance.JoystickUsed);
           text = str3 + hotkeyPrefix + str5 + hotkeySuffix + str4;
         }

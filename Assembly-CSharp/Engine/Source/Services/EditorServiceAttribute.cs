@@ -8,12 +8,9 @@ using Engine.Common.Types;
 namespace Engine.Source.Services
 {
   [AttributeUsage(AttributeTargets.Class, Inherited = false)]
-  public class EditorServiceAttribute : TypeAttribute
+  public class EditorServiceAttribute(params Type[] types) : TypeAttribute 
   {
-    private Type[] types;
-    private static List<Pair<Type[], Type>> services = new List<Pair<Type[], Type>>();
-
-    public EditorServiceAttribute(params Type[] types) => this.types = types;
+    private static List<Pair<Type[], Type>> services = [];
 
     public override void ComputeType(Type type)
     {

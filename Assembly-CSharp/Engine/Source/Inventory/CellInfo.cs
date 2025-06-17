@@ -2,17 +2,10 @@
 
 namespace Engine.Source.Inventory
 {
-  public struct CellInfo
-  {
+  public struct CellInfo(IntCell cell, CellState state) {
     [Inspected]
-    public IntCell Cell;
+    public IntCell Cell = cell;
     [Inspected]
-    public CellState State;
-
-    public CellInfo(IntCell cell, CellState state)
-    {
-      Cell = cell;
-      State = state;
-    }
+    public CellState State = state;
   }
 }

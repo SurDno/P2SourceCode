@@ -13,7 +13,7 @@ namespace Engine.Source.Services.Profiles
     [DataWriteProxy]
     [CopyableProxy]
     [Inspected]
-    public List<ProfileData> Profiles = new List<ProfileData>();
+    public List<ProfileData> Profiles = [];
     [DataReadProxy]
     [DataWriteProxy]
     [CopyableProxy()]

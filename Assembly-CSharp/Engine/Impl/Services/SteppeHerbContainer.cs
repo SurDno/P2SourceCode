@@ -20,10 +20,10 @@ namespace Engine.Impl.Services
     private const float spawnRadius = 30f;
     private const float pointsPartToProcessPerUpdate = 0.1f;
     private IEntity template;
-    private List<SteppeHerbEntry> SteppeHerbEntries = new List<SteppeHerbEntry>();
-    private List<int> SteppeHerbIndices = new List<int>();
-    private List<int> SteppeHerbIndicesLeft = new List<int>();
-    private List<int> NearPlayerIndices = new List<int>();
+    private List<SteppeHerbEntry> SteppeHerbEntries = [];
+    private List<int> SteppeHerbIndices = [];
+    private List<int> SteppeHerbIndicesLeft = [];
+    private List<int> NearPlayerIndices = [];
     private int processingIndex;
     private int amount;
 

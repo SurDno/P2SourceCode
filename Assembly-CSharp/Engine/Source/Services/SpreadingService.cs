@@ -28,11 +28,11 @@ namespace Engine.Source.Services
     [StateSaveProxy(MemberEnum.CustomListReference)]
     [StateLoadProxy(MemberEnum.CustomListReference)]
     [Inspected]
-    protected List<SpreadingComponent> spreadingComponents = new List<SpreadingComponent>();
+    protected List<SpreadingComponent> spreadingComponents = [];
     [StateSaveProxy(MemberEnum.CustomListReference)]
     [StateLoadProxy(MemberEnum.CustomListReference)]
     [Inspected]
-    protected List<IRegionComponent> regionComponents = new List<IRegionComponent>();
+    protected List<IRegionComponent> regionComponents = [];
 
     public event Action<IEntity, IEntity, BuildingEnum, DiseasedStateEnum> OnFurnitureLoadedOnce;
 

@@ -6,7 +6,7 @@ using Object = UnityEngine.Object;
 
 public static class GameObjectUtility2
 {
-  private static List<Component> tmp = new List<Component>();
+  private static List<Component> tmp = [];
 
   public static T FindObjectOfType<T>() where T : Object
   {
@@ -44,7 +44,7 @@ public static class GameObjectUtility2
 
   public static GameObject GetByPath(string path)
   {
-    string[] paths = path.Split(new char[1]{ '/' }, StringSplitOptions.RemoveEmptyEntries);
+    string[] paths = path.Split(['/'], StringSplitOptions.RemoveEmptyEntries);
     if (paths.Length < 2)
       return null;
     Scene sceneByName = SceneManager.GetSceneByName(paths[0]);

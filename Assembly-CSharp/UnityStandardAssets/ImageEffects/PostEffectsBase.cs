@@ -11,7 +11,7 @@ namespace UnityStandardAssets.ImageEffects
     protected bool supportDepthTextures = true;
     protected bool supportDX11;
     protected bool isSupported = true;
-    private List<Material> createdMaterials = new List<Material>();
+    private List<Material> createdMaterials = [];
 
     protected Material CheckShaderAndCreateMaterial(Shader shader, Material m2Create)
     {

@@ -10,7 +10,7 @@ namespace PLVirtualMachine.Data.SaveLoad
 {
   public static class VMSaveLoadManagerUtility
   {
-    private static Dictionary<string, XmlElement> preloadedNodes = new Dictionary<string, XmlElement>();
+    private static Dictionary<string, XmlElement> preloadedNodes = new();
     private static XmlElement preloadedNode;
 
     public static void LoadEntities(XmlElement rootNode)
@@ -66,8 +66,7 @@ namespace PLVirtualMachine.Data.SaveLoad
 
     public static XmlElement GetPreloadedObjectNodeByKey(string sEntityKeyGuid)
     {
-      XmlElement preloadedObjectNodeByKey;
-      preloadedNodes.TryGetValue(sEntityKeyGuid, out preloadedObjectNodeByKey);
+      preloadedNodes.TryGetValue(sEntityKeyGuid, out XmlElement preloadedObjectNodeByKey);
       return preloadedObjectNodeByKey;
     }
 

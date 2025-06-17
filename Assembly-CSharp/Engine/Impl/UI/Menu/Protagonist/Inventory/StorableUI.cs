@@ -19,7 +19,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
   public class StorableUI : UIControl
   {
     protected static IInventoryGridLimited gridSlot;
-    private static List<StorableUI> s_List = new List<StorableUI>();
+    private static List<StorableUI> s_List = [];
     [SerializeField]
     [FormerlySerializedAs("_Image")]
     private Image image;
@@ -80,13 +80,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       }
     }
 
-    private Vector2 Size
-    {
-      get
-      {
-        return !cellStyle.IsSlot ? InventoryUtility.CalculateInnerSize(((StorableComponent) internalStorable).Placeholder.Grid, cellStyle) : InventoryUtility.CalculateInnerSize(gridSlot, cellStyle);
-      }
-    }
+    private Vector2 Size => !cellStyle.IsSlot ? InventoryUtility.CalculateInnerSize(((StorableComponent) internalStorable).Placeholder.Grid, cellStyle) : InventoryUtility.CalculateInnerSize(gridSlot, cellStyle);
 
     protected virtual void CalculatePosition()
     {

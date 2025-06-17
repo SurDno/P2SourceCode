@@ -20,13 +20,7 @@ namespace FlowCanvas.Nodes
     [HideInInspector]
     public bool perSecond = false;
 
-    public override string name
-    {
-      get
-      {
-        return string.Format("{0}{1}{2}", targetVariable, OperationTools.GetOperationString(operation), "Value");
-      }
-    }
+    public override string name => string.Format("{0}{1}{2}", targetVariable, OperationTools.GetOperationString(operation), "Value");
 
     protected override void RegisterPorts()
     {

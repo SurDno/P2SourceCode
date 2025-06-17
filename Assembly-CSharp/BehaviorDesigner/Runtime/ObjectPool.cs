@@ -5,14 +5,13 @@ namespace BehaviorDesigner.Runtime
 {
   public static class ObjectPool
   {
-    private static Dictionary<Type, object> poolDictionary = new Dictionary<Type, object>();
+    private static Dictionary<Type, object> poolDictionary = new();
 
     public static void Clear() => poolDictionary.Clear();
 
     public static T Get<T>()
     {
-      object obj;
-      if (poolDictionary.TryGetValue(typeof (T), out obj))
+      if (poolDictionary.TryGetValue(typeof (T), out object obj))
       {
         Stack<T> objStack = obj as Stack<T>;
         if (objStack.Count > 0)
@@ -25,8 +24,7 @@ namespace BehaviorDesigner.Runtime
     {
       if (obj == null)
         return;
-      object obj1;
-      if (poolDictionary.TryGetValue(typeof (T), out obj1))
+      if (poolDictionary.TryGetValue(typeof (T), out object obj1))
       {
         (obj1 as Stack<T>).Push(obj);
       }

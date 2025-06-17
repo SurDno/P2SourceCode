@@ -20,9 +20,9 @@ namespace PLVirtualMachine.Base
 {
   public class VMEngineAPIManager : EngineAPIManager
   {
-    private static EntityMethodExecuteData lastEntityMethodExecData = new EntityMethodExecuteData();
+    private static EntityMethodExecuteData lastEntityMethodExecData = new();
     private static IDynamicGameObjectContext lastMethodExecInitiator;
-    private static Dictionary<string, MethodExecuteContext> methodExecuteContextsDict = new Dictionary<string, MethodExecuteContext>();
+    private static Dictionary<string, MethodExecuteContext> methodExecuteContextsDict = new();
 
     static VMEngineAPIManager()
     {
@@ -294,18 +294,9 @@ namespace PLVirtualMachine.Base
       return typeof (Message) == engValue.GetType() ? ((Message) engValue).Content : engValue;
     }
 
-    public static EntityMethodExecuteData EntityMethodExecuteData
-    {
-      get
-      {
-        return lastEntityMethodExecData.TargetEntity != null ? lastEntityMethodExecData : null;
-      }
-    }
+    public static EntityMethodExecuteData EntityMethodExecuteData => lastEntityMethodExecData.TargetEntity != null ? lastEntityMethodExecData : null;
 
-    public static IDynamicGameObjectContext LastMethodExecInitiator
-    {
-      get => lastMethodExecInitiator;
-    }
+    public static IDynamicGameObjectContext LastMethodExecInitiator => lastMethodExecInitiator;
 
     public static void OnRestart() => lastEntityMethodExecData.Clear();
 
@@ -335,8 +326,7 @@ namespace PLVirtualMachine.Base
       int paramsCount)
     {
       string str = funcComponent.Name + methodName + paramsCount;
-      MethodExecuteContext methodExecuteContext1 = null;
-      if (methodExecuteContextsDict.TryGetValue(str, out methodExecuteContext1))
+      if (methodExecuteContextsDict.TryGetValue(str, out MethodExecuteContext methodExecuteContext1))
         return methodExecuteContext1;
       MethodInfo componentMethodInfo = InfoAttribute.GetComponentMethodInfo(funcComponent.Name, methodName);
       MethodExecuteContext methodExecuteContext2 = new MethodExecuteContext();

@@ -34,13 +34,7 @@ namespace Rain
 
     public static RainManager Instance { get; private set; }
 
-    public Vector3 PlayerPosition
-    {
-      get
-      {
-        return playerCamera != null ? playerCamera.transform.position : playerPosition;
-      }
-    }
+    public Vector3 PlayerPosition => playerCamera != null ? playerCamera.transform.position : playerPosition;
 
     private void Awake() => Instance = this;
 

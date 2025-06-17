@@ -5,13 +5,10 @@ using Inspectors;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class NpcStateRagdoll : INpcState, INpcStateRagdoll
-{
-  private NpcState npcState;
+public class NpcStateRagdoll(NpcState npcState, Pivot pivot) : INpcState, INpcStateRagdoll {
   private NPCEnemy enemy;
   private Behaviour behavior;
   private NavMeshAgent agent;
-  private Pivot pivot;
   private Rigidbody rigidbody;
   private Animator animator;
   private AnimatorState45 animatorState;
@@ -29,7 +26,7 @@ public class NpcStateRagdoll : INpcState, INpcStateRagdoll
   private AnimatorUpdateMode initialAnimatorUpdateMode;
   private AnimatorCullingMode initialAnimatorCullingMode;
 
-  public GameObject GameObject { get; private set; }
+  public GameObject GameObject { get; private set; } = npcState.gameObject;
 
   [Inspected]
   public NpcStateStatusEnum Status { get; private set; }
@@ -63,13 +60,6 @@ public class NpcStateRagdoll : INpcState, INpcStateRagdoll
     failed = false;
     inited = true;
     return true;
-  }
-
-  public NpcStateRagdoll(NpcState npcState, Pivot pivot)
-  {
-    GameObject = npcState.gameObject;
-    this.pivot = pivot;
-    this.npcState = npcState;
   }
 
   public void Activate(bool internalCollisions, INpcState previousState)

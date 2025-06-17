@@ -13,7 +13,7 @@ namespace RootMotion.FinalIK
     public float spineBend = 2f;
     [Tooltip("The interpolation speed of spine bending.")]
     public float spineSpeed = 3f;
-    public SpineEffector[] spine = new SpineEffector[0];
+    public SpineEffector[] spine = [];
     private Transform[] feet = new Transform[2];
     private Vector3 spineOffset;
     private bool firstSolve;

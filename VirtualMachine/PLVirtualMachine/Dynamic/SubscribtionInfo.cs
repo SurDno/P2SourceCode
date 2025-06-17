@@ -1,19 +1,12 @@
 ﻿namespace PLVirtualMachine.Dynamic
 {
-  public class SubscribtionInfo
-  {
-    public SubscribtionInfo(DynamicFSM fsm)
-    {
-      SubscribingFSM = fsm;
-      Count = 1;
-    }
-
+  public class SubscribtionInfo(DynamicFSM fsm) {
     public void Add() => ++Count;
 
     public void Remove() => --Count;
 
-    public DynamicFSM SubscribingFSM { get; private set; }
+    public DynamicFSM SubscribingFSM { get; private set; } = fsm;
 
-    public int Count { get; private set; }
+    public int Count { get; private set; } = 1;
   }
 }

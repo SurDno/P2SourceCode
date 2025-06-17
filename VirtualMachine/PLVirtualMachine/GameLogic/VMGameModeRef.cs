@@ -11,10 +11,7 @@ namespace PLVirtualMachine.GameLogic
   {
     public void Initialize(IGameMode gameMode) => LoadStaticInstance(gameMode);
 
-    public override EContextVariableCategory Category
-    {
-      get => EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_STATE;
-    }
+    public override EContextVariableCategory Category => EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_STATE;
 
     public IGameMode GameMode
     {
@@ -26,7 +23,7 @@ namespace PLVirtualMachine.GameLogic
       }
     }
 
-    public override VMType Type => new VMType(typeof (IGameModeRef));
+    public override VMType Type => new(typeof (IGameModeRef));
 
     public override bool Empty => GameMode == null && base.Empty;
 

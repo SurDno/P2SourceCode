@@ -7,9 +7,7 @@ namespace AmplifyColor
   [Serializable]
   public class VolumeEffectContainer
   {
-    public List<VolumeEffect> volumes;
-
-    public VolumeEffectContainer() => volumes = new List<VolumeEffect>();
+    public List<VolumeEffect> volumes = [];
 
     public void AddColorEffect(AmplifyColorBase colorEffect)
     {

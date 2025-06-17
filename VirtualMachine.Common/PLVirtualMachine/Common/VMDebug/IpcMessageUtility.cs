@@ -95,7 +95,7 @@ namespace PLVirtualMachine.Common.VMDebug
 
     public static List<ulong> DeSerializeUInt64List(byte[] data, ref int offset)
     {
-      List<ulong> ulongList = new List<ulong>();
+      List<ulong> ulongList = [];
       int int32 = BitConverter.ToInt32(data, offset);
       offset += 4;
       for (int index = 0; index < int32; ++index)

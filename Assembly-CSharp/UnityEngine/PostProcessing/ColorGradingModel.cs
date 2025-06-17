@@ -55,21 +55,16 @@ namespace UnityEngine.PostProcessing
       [Range(1f, 10f)]
       public float neutralWhiteClip;
 
-      public static TonemappingSettings defaultSettings
-      {
-        get
-        {
-          return new TonemappingSettings {
-            tonemapper = Tonemapper.Neutral,
-            neutralBlackIn = 0.02f,
-            neutralWhiteIn = 10f,
-            neutralBlackOut = 0.0f,
-            neutralWhiteOut = 10f,
-            neutralWhiteLevel = 5.3f,
-            neutralWhiteClip = 10f
-          };
-        }
-      }
+      public static TonemappingSettings defaultSettings =>
+        new() {
+          tonemapper = Tonemapper.Neutral,
+          neutralBlackIn = 0.02f,
+          neutralWhiteIn = 10f,
+          neutralBlackOut = 0.0f,
+          neutralWhiteOut = 10f,
+          neutralWhiteLevel = 5.3f,
+          neutralWhiteClip = 10f
+        };
     }
 
     [Serializable]
@@ -93,20 +88,15 @@ namespace UnityEngine.PostProcessing
       [Tooltip("Expands or shrinks the overall range of tonal values.")]
       public float contrast;
 
-      public static BasicSettings defaultSettings
-      {
-        get
-        {
-          return new BasicSettings {
-            postExposure = 0.0f,
-            temperature = 0.0f,
-            tint = 0.0f,
-            hueShift = 0.0f,
-            saturation = 1f,
-            contrast = 1f
-          };
-        }
-      }
+      public static BasicSettings defaultSettings =>
+        new() {
+          postExposure = 0.0f,
+          temperature = 0.0f,
+          tint = 0.0f,
+          hueShift = 0.0f,
+          saturation = 1f,
+          contrast = 1f
+        };
     }
 
     [Serializable]
@@ -118,18 +108,13 @@ namespace UnityEngine.PostProcessing
       [HideInInspector]
       public int currentEditingChannel;
 
-      public static ChannelMixerSettings defaultSettings
-      {
-        get
-        {
-          return new ChannelMixerSettings {
-            red = new Vector3(1f, 0.0f, 0.0f),
-            green = new Vector3(0.0f, 1f, 0.0f),
-            blue = new Vector3(0.0f, 0.0f, 1f),
-            currentEditingChannel = 0
-          };
-        }
-      }
+      public static ChannelMixerSettings defaultSettings =>
+        new() {
+          red = new Vector3(1f, 0.0f, 0.0f),
+          green = new Vector3(0.0f, 1f, 0.0f),
+          blue = new Vector3(0.0f, 0.0f, 1f),
+          currentEditingChannel = 0
+        };
     }
 
     [Serializable]
@@ -142,17 +127,12 @@ namespace UnityEngine.PostProcessing
       [Trackball("GetOffsetValue")]
       public Color offset;
 
-      public static LogWheelsSettings defaultSettings
-      {
-        get
-        {
-          return new LogWheelsSettings {
-            slope = Color.clear,
-            power = Color.clear,
-            offset = Color.clear
-          };
-        }
-      }
+      public static LogWheelsSettings defaultSettings =>
+        new() {
+          slope = Color.clear,
+          power = Color.clear,
+          offset = Color.clear
+        };
     }
 
     [Serializable]
@@ -165,17 +145,12 @@ namespace UnityEngine.PostProcessing
       [Trackball("GetGainValue")]
       public Color gain;
 
-      public static LinearWheelsSettings defaultSettings
-      {
-        get
-        {
-          return new LinearWheelsSettings {
-            lift = Color.clear,
-            gamma = Color.clear,
-            gain = Color.clear
-          };
-        }
-      }
+      public static LinearWheelsSettings defaultSettings =>
+        new() {
+          lift = Color.clear,
+          gamma = Color.clear,
+          gain = Color.clear
+        };
     }
 
     public enum ColorWheelMode
@@ -193,17 +168,12 @@ namespace UnityEngine.PostProcessing
       [TrackballGroup]
       public LinearWheelsSettings linear;
 
-      public static ColorWheelsSettings defaultSettings
-      {
-        get
-        {
-          return new ColorWheelsSettings {
-            mode = ColorWheelMode.Log,
-            log = LogWheelsSettings.defaultSettings,
-            linear = LinearWheelsSettings.defaultSettings
-          };
-        }
-      }
+      public static ColorWheelsSettings defaultSettings =>
+        new() {
+          mode = ColorWheelMode.Log,
+          log = LogWheelsSettings.defaultSettings,
+          linear = LinearWheelsSettings.defaultSettings
+        };
     }
 
     [Serializable]
@@ -228,27 +198,22 @@ namespace UnityEngine.PostProcessing
       [HideInInspector]
       public bool e_CurveB;
 
-      public static CurvesSettings defaultSettings
-      {
-        get
-        {
-          return new CurvesSettings {
-            master = new ColorGradingCurve(new AnimationCurve(new Keyframe(0.0f, 0.0f, 1f, 1f), new Keyframe(1f, 1f, 1f, 1f)), 0.0f, false, new Vector2(0.0f, 1f)),
-            red = new ColorGradingCurve(new AnimationCurve(new Keyframe(0.0f, 0.0f, 1f, 1f), new Keyframe(1f, 1f, 1f, 1f)), 0.0f, false, new Vector2(0.0f, 1f)),
-            green = new ColorGradingCurve(new AnimationCurve(new Keyframe(0.0f, 0.0f, 1f, 1f), new Keyframe(1f, 1f, 1f, 1f)), 0.0f, false, new Vector2(0.0f, 1f)),
-            blue = new ColorGradingCurve(new AnimationCurve(new Keyframe(0.0f, 0.0f, 1f, 1f), new Keyframe(1f, 1f, 1f, 1f)), 0.0f, false, new Vector2(0.0f, 1f)),
-            hueVShue = new ColorGradingCurve(new AnimationCurve(), 0.5f, true, new Vector2(0.0f, 1f)),
-            hueVSsat = new ColorGradingCurve(new AnimationCurve(), 0.5f, true, new Vector2(0.0f, 1f)),
-            satVSsat = new ColorGradingCurve(new AnimationCurve(), 0.5f, false, new Vector2(0.0f, 1f)),
-            lumVSsat = new ColorGradingCurve(new AnimationCurve(), 0.5f, false, new Vector2(0.0f, 1f)),
-            e_CurrentEditingCurve = 0,
-            e_CurveY = true,
-            e_CurveR = false,
-            e_CurveG = false,
-            e_CurveB = false
-          };
-        }
-      }
+      public static CurvesSettings defaultSettings =>
+        new() {
+          master = new ColorGradingCurve(new AnimationCurve(new Keyframe(0.0f, 0.0f, 1f, 1f), new Keyframe(1f, 1f, 1f, 1f)), 0.0f, false, new Vector2(0.0f, 1f)),
+          red = new ColorGradingCurve(new AnimationCurve(new Keyframe(0.0f, 0.0f, 1f, 1f), new Keyframe(1f, 1f, 1f, 1f)), 0.0f, false, new Vector2(0.0f, 1f)),
+          green = new ColorGradingCurve(new AnimationCurve(new Keyframe(0.0f, 0.0f, 1f, 1f), new Keyframe(1f, 1f, 1f, 1f)), 0.0f, false, new Vector2(0.0f, 1f)),
+          blue = new ColorGradingCurve(new AnimationCurve(new Keyframe(0.0f, 0.0f, 1f, 1f), new Keyframe(1f, 1f, 1f, 1f)), 0.0f, false, new Vector2(0.0f, 1f)),
+          hueVShue = new ColorGradingCurve(new AnimationCurve(), 0.5f, true, new Vector2(0.0f, 1f)),
+          hueVSsat = new ColorGradingCurve(new AnimationCurve(), 0.5f, true, new Vector2(0.0f, 1f)),
+          satVSsat = new ColorGradingCurve(new AnimationCurve(), 0.5f, false, new Vector2(0.0f, 1f)),
+          lumVSsat = new ColorGradingCurve(new AnimationCurve(), 0.5f, false, new Vector2(0.0f, 1f)),
+          e_CurrentEditingCurve = 0,
+          e_CurveY = true,
+          e_CurveR = false,
+          e_CurveG = false,
+          e_CurveB = false
+        };
     }
 
     [Serializable]
@@ -260,19 +225,14 @@ namespace UnityEngine.PostProcessing
       public ColorWheelsSettings colorWheels;
       public CurvesSettings curves;
 
-      public static Settings defaultSettings
-      {
-        get
-        {
-          return new Settings {
-            tonemapping = TonemappingSettings.defaultSettings,
-            basic = BasicSettings.defaultSettings,
-            channelMixer = ChannelMixerSettings.defaultSettings,
-            colorWheels = ColorWheelsSettings.defaultSettings,
-            curves = CurvesSettings.defaultSettings
-          };
-        }
-      }
+      public static Settings defaultSettings =>
+        new() {
+          tonemapping = TonemappingSettings.defaultSettings,
+          basic = BasicSettings.defaultSettings,
+          channelMixer = ChannelMixerSettings.defaultSettings,
+          colorWheels = ColorWheelsSettings.defaultSettings,
+          curves = CurvesSettings.defaultSettings
+        };
     }
   }
 }

@@ -14,9 +14,9 @@ namespace UnityEngine.AI
     [SerializeField]
     private CollectObjects m_CollectObjects = CollectObjects.All;
     [SerializeField]
-    private Vector3 m_Size = new Vector3(10f, 10f, 10f);
+    private Vector3 m_Size = new(10f, 10f, 10f);
     [SerializeField]
-    private Vector3 m_Center = new Vector3(0.0f, 2f, 0.0f);
+    private Vector3 m_Center = new(0.0f, 2f, 0.0f);
     [SerializeField]
     private LayerMask m_LayerMask = -1;
     [SerializeField]
@@ -43,7 +43,7 @@ namespace UnityEngine.AI
     private NavMeshDataInstance m_NavMeshDataInstance;
     private Vector3 m_LastPosition = Vector3.zero;
     private Quaternion m_LastRotation = Quaternion.identity;
-    private static readonly List<NavMeshSurface> s_NavMeshSurfaces = new List<NavMeshSurface>();
+    private static readonly List<NavMeshSurface> s_NavMeshSurfaces = [];
 
     public int agentTypeID
     {
@@ -242,7 +242,7 @@ namespace UnityEngine.AI
       List<NavMeshModifierVolume> meshModifierVolumeList;
       if (m_CollectObjects == CollectObjects.Children)
       {
-        meshModifierVolumeList = new List<NavMeshModifierVolume>(GetComponentsInChildren<NavMeshModifierVolume>());
+        meshModifierVolumeList = [..GetComponentsInChildren<NavMeshModifierVolume>()];
         meshModifierVolumeList.RemoveAll(x => !x.isActiveAndEnabled);
       }
       else
@@ -266,12 +266,12 @@ namespace UnityEngine.AI
 
     private List<NavMeshBuildSource> CollectSources()
     {
-      List<NavMeshBuildSource> sources = new List<NavMeshBuildSource>();
-      List<NavMeshBuildMarkup> navMeshBuildMarkupList = new List<NavMeshBuildMarkup>();
+      List<NavMeshBuildSource> sources = [];
+      List<NavMeshBuildMarkup> navMeshBuildMarkupList = [];
       List<NavMeshModifier> navMeshModifierList;
       if (m_CollectObjects == CollectObjects.Children)
       {
-        navMeshModifierList = new List<NavMeshModifier>(GetComponentsInChildren<NavMeshModifier>());
+        navMeshModifierList = [..GetComponentsInChildren<NavMeshModifier>()];
         navMeshModifierList.RemoveAll(x => !x.isActiveAndEnabled);
       }
       else

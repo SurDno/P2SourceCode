@@ -42,23 +42,21 @@ namespace AmplifyBloom
     public static TextureWrapMode CurrentWrapMode = TextureWrapMode.Clamp;
     public static RenderTextureReadWrite CurrentReadWriteMode = RenderTextureReadWrite.sRGB;
     public static bool IsInitialized;
-    private static List<RenderTexture> _allocatedRT = new List<RenderTexture>();
+    private static List<RenderTexture> _allocatedRT = [];
 
     public static void InitializeIds()
     {
       IsInitialized = true;
       MaskTextureId = Shader.PropertyToID("_MaskTex");
-      MipResultsRTS = new int[6]
-      {
+      MipResultsRTS = [
         Shader.PropertyToID("_MipResultsRTS0"),
         Shader.PropertyToID("_MipResultsRTS1"),
         Shader.PropertyToID("_MipResultsRTS2"),
         Shader.PropertyToID("_MipResultsRTS3"),
         Shader.PropertyToID("_MipResultsRTS4"),
         Shader.PropertyToID("_MipResultsRTS5")
-      };
-      AnamorphicRTS = new int[8]
-      {
+      ];
+      AnamorphicRTS = [
         Shader.PropertyToID("_AnamorphicRTS0"),
         Shader.PropertyToID("_AnamorphicRTS1"),
         Shader.PropertyToID("_AnamorphicRTS2"),
@@ -67,23 +65,20 @@ namespace AmplifyBloom
         Shader.PropertyToID("_AnamorphicRTS5"),
         Shader.PropertyToID("_AnamorphicRTS6"),
         Shader.PropertyToID("_AnamorphicRTS7")
-      };
-      AnamorphicGlareWeightsMatStr = new int[4]
-      {
+      ];
+      AnamorphicGlareWeightsMatStr = [
         Shader.PropertyToID("_AnamorphicGlareWeightsMat0"),
         Shader.PropertyToID("_AnamorphicGlareWeightsMat1"),
         Shader.PropertyToID("_AnamorphicGlareWeightsMat2"),
         Shader.PropertyToID("_AnamorphicGlareWeightsMat3")
-      };
-      AnamorphicGlareOffsetsMatStr = new int[4]
-      {
+      ];
+      AnamorphicGlareOffsetsMatStr = [
         Shader.PropertyToID("_AnamorphicGlareOffsetsMat0"),
         Shader.PropertyToID("_AnamorphicGlareOffsetsMat1"),
         Shader.PropertyToID("_AnamorphicGlareOffsetsMat2"),
         Shader.PropertyToID("_AnamorphicGlareOffsetsMat3")
-      };
-      AnamorphicGlareWeightsStr = new int[16]
-      {
+      ];
+      AnamorphicGlareWeightsStr = [
         Shader.PropertyToID("_AnamorphicGlareWeights0"),
         Shader.PropertyToID("_AnamorphicGlareWeights1"),
         Shader.PropertyToID("_AnamorphicGlareWeights2"),
@@ -100,9 +95,8 @@ namespace AmplifyBloom
         Shader.PropertyToID("_AnamorphicGlareWeights13"),
         Shader.PropertyToID("_AnamorphicGlareWeights14"),
         Shader.PropertyToID("_AnamorphicGlareWeights15")
-      };
-      UpscaleWeightsStr = new int[8]
-      {
+      ];
+      UpscaleWeightsStr = [
         Shader.PropertyToID("_UpscaleWeights0"),
         Shader.PropertyToID("_UpscaleWeights1"),
         Shader.PropertyToID("_UpscaleWeights2"),
@@ -111,9 +105,8 @@ namespace AmplifyBloom
         Shader.PropertyToID("_UpscaleWeights5"),
         Shader.PropertyToID("_UpscaleWeights6"),
         Shader.PropertyToID("_UpscaleWeights7")
-      };
-      LensDirtWeightsStr = new int[8]
-      {
+      ];
+      LensDirtWeightsStr = [
         Shader.PropertyToID("_LensDirtWeights0"),
         Shader.PropertyToID("_LensDirtWeights1"),
         Shader.PropertyToID("_LensDirtWeights2"),
@@ -122,9 +115,8 @@ namespace AmplifyBloom
         Shader.PropertyToID("_LensDirtWeights5"),
         Shader.PropertyToID("_LensDirtWeights6"),
         Shader.PropertyToID("_LensDirtWeights7")
-      };
-      LensStarburstWeightsStr = new int[8]
-      {
+      ];
+      LensStarburstWeightsStr = [
         Shader.PropertyToID("_LensStarburstWeights0"),
         Shader.PropertyToID("_LensStarburstWeights1"),
         Shader.PropertyToID("_LensStarburstWeights2"),
@@ -133,7 +125,7 @@ namespace AmplifyBloom
         Shader.PropertyToID("_LensStarburstWeights5"),
         Shader.PropertyToID("_LensStarburstWeights6"),
         Shader.PropertyToID("_LensStarburstWeights7")
-      };
+      ];
       BloomRangeId = Shader.PropertyToID("_BloomRange");
       LensDirtStrengthId = Shader.PropertyToID("_LensDirtStrength");
       BloomParamsId = Shader.PropertyToID("_BloomParams");

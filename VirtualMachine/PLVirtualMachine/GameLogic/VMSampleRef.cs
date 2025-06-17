@@ -26,10 +26,7 @@ namespace PLVirtualMachine.GameLogic
 
     public void Initialize(ISample obj) => LoadStaticInstance(obj);
 
-    public override EContextVariableCategory Category
-    {
-      get => EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_SAMPLE;
-    }
+    public override EContextVariableCategory Category => EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_SAMPLE;
 
     public Guid EngineTemplateGuid
     {
@@ -60,13 +57,7 @@ namespace PLVirtualMachine.GameLogic
       return BaseGuid != 0UL ? base.IsEqual(other) : engineSampleGuid == ((VMSampleRef) other).engineSampleGuid;
     }
 
-    public override VMType Type
-    {
-      get
-      {
-        return Sample != null ? new VMType(typeof (ISampleRef), Sample.SampleType) : new VMType(typeof (ISampleRef));
-      }
-    }
+    public override VMType Type => Sample != null ? new VMType(typeof (ISampleRef), Sample.SampleType) : new VMType(typeof (ISampleRef));
 
     public override bool Empty => StaticInstance == null && base.Empty;
 

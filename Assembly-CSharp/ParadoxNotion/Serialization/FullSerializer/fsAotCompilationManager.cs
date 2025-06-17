@@ -7,8 +7,8 @@ namespace ParadoxNotion.Serialization.FullSerializer
 {
   public class fsAotCompilationManager
   {
-    private static Dictionary<Type, string> _computedAotCompilations = new Dictionary<Type, string>();
-    private static List<AotCompilation> _uncomputedAotCompilations = new List<AotCompilation>();
+    private static Dictionary<Type, string> _computedAotCompilations = new();
+    private static List<AotCompilation> _uncomputedAotCompilations = [];
 
     public static Dictionary<Type, string> AvailableAotCompilations
     {

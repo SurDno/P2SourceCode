@@ -17,9 +17,9 @@ namespace Engine.Impl.UI.Menu.Main
     private float confirmationTime = 10f;
     [SerializeField]
     private GameObject applyButtonTipObject;
-    private List<string> names = new List<string>();
-    private List<int> resolutionHeights = new List<int>();
-    private List<int> resolutionWidths = new List<int>();
+    private List<string> names = [];
+    private List<int> resolutionHeights = [];
+    private List<int> resolutionWidths = [];
     private NamedIntSettingsValueView fullScreenModeView;
     private NamedIntSettingsValueView resolutionView;
     private FloatSettingsValueView renderScaleView;
@@ -39,12 +39,11 @@ namespace Engine.Impl.UI.Menu.Main
       layout = Instantiate(listLayoutPrefab, transform, false);
       this.fullScreenModeView = Instantiate(namedIntValueViewPrefab, layout.Content, false);
       this.fullScreenModeView.SetName("{UI.Menu.Main.Settings.Graphics.FullScreenMode}");
-      this.fullScreenModeView.SetValueNames(new string[3]
-      {
+      this.fullScreenModeView.SetValueNames([
         "{UI.Menu.Main.Settings.Graphics.FullScreenMode.Window}",
         "{UI.Menu.Main.Settings.Graphics.FullScreenMode.Borderless}",
         "{UI.Menu.Main.Settings.Graphics.FullScreenMode.FullScreen}"
-      });
+      ]);
       NamedIntSettingsValueView fullScreenModeView = this.fullScreenModeView;
       fullScreenModeView.VisibleValueChangeEvent = fullScreenModeView.VisibleValueChangeEvent + OnSliderChange;
       this.resolutionView = Instantiate(namedIntValueViewPrefab, layout.Content, false);

@@ -2,15 +2,9 @@
 
 namespace FlowCanvas
 {
-  public class FlowInput : Port
-  {
-    public FlowInput(FlowNode parent, string name, string ID, FlowHandler pointer)
-      : base(parent, name, ID)
-    {
-      this.pointer = pointer;
-    }
-
-    public FlowHandler pointer { get; private set; }
+  public class FlowInput(FlowNode parent, string name, string id, FlowHandler pointer)
+    : Port(parent, name, id) {
+    public FlowHandler pointer { get; private set; } = pointer;
 
     public override Type type => typeof (void);
   }

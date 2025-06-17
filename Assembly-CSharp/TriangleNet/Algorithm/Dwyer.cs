@@ -6,7 +6,7 @@ namespace TriangleNet.Algorithm
 {
   internal class Dwyer
   {
-    private static Random rand = new Random(DateTime.Now.Millisecond);
+    private static Random rand = new(DateTime.Now.Millisecond);
     private Mesh mesh;
     private Vertex[] sortarray;
     private bool useDwyer = true;

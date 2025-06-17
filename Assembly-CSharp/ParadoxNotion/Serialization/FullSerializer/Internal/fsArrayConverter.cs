@@ -22,8 +22,7 @@ namespace ParadoxNotion.Serialization.FullSerializer.Internal
       for (int index = 0; index < list.Count; ++index)
       {
         object instance1 = list[index];
-        fsData data;
-        fsResult result = Serializer.TrySerialize(elementType, instance1, out data);
+        fsResult result = Serializer.TrySerialize(elementType, instance1, out fsData data);
         success.AddMessages(result);
         if (!result.Failed)
           asList.Add(data);

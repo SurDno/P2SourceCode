@@ -15,8 +15,8 @@ namespace PLVirtualMachine.LogicMap
 {
   [TypeData(EDataType.TLogicMap)]
   [DataFactory("MindMap")]
-  public class VMLogicMap : 
-    VMBaseObject,
+  public class VMLogicMap(ulong guid) :
+    VMBaseObject(guid),
     IStub,
     IEditorDataReader,
     ILogicMap,
@@ -27,12 +27,11 @@ namespace PLVirtualMachine.LogicMap
     INamedElement,
     INamed,
     IStaticUpdateable,
-    IOnAfterLoaded
-  {
+    IOnAfterLoaded {
     [FieldData("Nodes", DataFieldType.Reference)]
-    private List<IGraphObject> mapNodes = new List<IGraphObject>();
+    private List<IGraphObject> mapNodes = [];
     [FieldData("Links", DataFieldType.Reference)]
-    private List<ILink> mapLinks = new List<ILink>();
+    private List<ILink> mapLinks = [];
     [FieldData("LogicMapType")]
     private ELogicMapType logicMapType;
     [FieldData("GameTimeContext", DataFieldType.Reference)]
@@ -82,11 +81,6 @@ namespace PLVirtualMachine.LogicMap
       }
     }
 
-    public VMLogicMap(ulong guid)
-      : base(guid)
-    {
-    }
-
     public ELogicMapType LogicMapType => logicMapType;
 
     public List<ILink> Links => mapLinks;
@@ -106,7 +100,7 @@ namespace PLVirtualMachine.LogicMap
 
     public List<ILink> GetLinksByDestState(IGraphObject state)
     {
-      List<ILink> linksByDestState = new List<ILink>();
+      List<ILink> linksByDestState = [];
       for (int index = 0; index < mapLinks.Count; ++index)
       {
         if (mapLinks[index].Destination != null && (long) mapLinks[index].Destination.BaseGuid == (long) state.BaseGuid)
@@ -117,7 +111,7 @@ namespace PLVirtualMachine.LogicMap
 
     public List<ILink> GetLinksBySourceState(IGraphObject state)
     {
-      List<ILink> linksBySourceState = new List<ILink>();
+      List<ILink> linksBySourceState = [];
       for (int index = 0; index < mapLinks.Count; ++index)
       {
         if (mapLinks[index].Source != null && (long) mapLinks[index].Source.BaseGuid == (long) state.BaseGuid)
@@ -146,13 +140,7 @@ namespace PLVirtualMachine.LogicMap
 
     public override EObjectCategory GetCategory() => EObjectCategory.OBJECT_CATEGORY_LOGIC_MAP;
 
-    public IGameMode GameTimeContext
-    {
-      get
-      {
-        return gameTimeContext == null ? ((VMGameRoot) IStaticDataContainer.StaticDataContainer.GameRoot).MainGameMode : gameTimeContext;
-      }
-    }
+    public IGameMode GameTimeContext => gameTimeContext == null ? ((VMGameRoot) IStaticDataContainer.StaticDataContainer.GameRoot).MainGameMode : gameTimeContext;
 
     public IGameString Title => titleText;
 

@@ -4,10 +4,7 @@ using Inspectors;
 
 namespace Engine.Impl.Services.HierarchyServices
 {
-  public struct HierarchyContainerInfo
-  {
-    private HierarchyContainer container;
-
+  public struct HierarchyContainerInfo(HierarchyContainer container) {
     [Inspected(Header = true)]
     public string Name => AssetDatabaseUtility.GetFileName(Path);
 
@@ -19,16 +16,14 @@ namespace Engine.Impl.Services.HierarchyServices
     {
       get
       {
-        foreach (HierarchyContainerInfo container in GetContainers(this.container.Items))
+        foreach (HierarchyContainerInfo container1 in GetContainers(container.Items))
         {
-          HierarchyContainerInfo child = container;
+          HierarchyContainerInfo child = container1;
           yield return child;
           child = new HierarchyContainerInfo();
         }
       }
     }
-
-    public HierarchyContainerInfo(HierarchyContainer container) => this.container = container;
 
     private static IEnumerable<HierarchyContainerInfo> GetContainers(
       IEnumerable<HierarchyItem> items)

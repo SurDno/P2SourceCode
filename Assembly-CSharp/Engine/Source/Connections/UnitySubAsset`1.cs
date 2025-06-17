@@ -5,22 +5,17 @@ using Object = UnityEngine.Object;
 
 namespace Engine.Source.Connections
 {
-  public struct UnitySubAsset<T> : IUnityAsset where T : Object
+  public struct UnitySubAsset<T>(Guid id, string name) : IUnityAsset
+    where T : Object 
   {
-    private Guid id;
-    private string name;
+    private Guid id = id;
+    private string name = name;
 
     [Inspected]
     public Guid Id => id;
 
     [Inspected]
     public string Name => name;
-
-    public UnitySubAsset(Guid id, string name)
-    {
-      this.id = id;
-      this.name = name;
-    }
 
     public T Value => UnityAssetUtility.GetValue<T>(id, name);
 

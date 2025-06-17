@@ -5,7 +5,7 @@ namespace PLVirtualMachine.Common
 {
   public static class VMMath
   {
-    private static Random random = new Random(Guid.NewGuid().GetHashCode());
+    private static Random random = new(Guid.NewGuid().GetHashCode());
 
     public static int GetRandomInt(int maxIntVal = 2147483647) => random.Next(maxIntVal);
 

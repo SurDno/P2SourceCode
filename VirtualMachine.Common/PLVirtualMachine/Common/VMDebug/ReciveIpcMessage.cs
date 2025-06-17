@@ -10,9 +10,9 @@ namespace PLVirtualMachine.Common.VMDebug
     private Guid debugObjectEngineGuid;
     private string debugObjectUniName;
     private ulong stateGuid;
-    private List<ulong> staticGuidsList = new List<ulong>();
-    private List<ulong> paramsChanged = new List<ulong>();
-    private List<object> paramsValues = new List<object>();
+    private List<ulong> staticGuidsList = [];
+    private List<ulong> paramsChanged = [];
+    private List<object> paramsValues = [];
     private string lastError = "";
 
     public EDebugIPCMessageType MessageType => messageType;

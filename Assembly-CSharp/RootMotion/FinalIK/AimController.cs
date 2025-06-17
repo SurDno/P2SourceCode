@@ -104,10 +104,7 @@ namespace RootMotion.FinalIK
       ik.solver.axis = ik.solver.transform.InverseTransformVector(ik.transform.rotation * animatedAimDirection);
     }
 
-    private Vector3 pivot
-    {
-      get => ik.transform.position + ik.transform.rotation * pivotOffsetFromRoot;
-    }
+    private Vector3 pivot => ik.transform.position + ik.transform.rotation * pivotOffsetFromRoot;
 
     private void ApplyMinDistance()
     {

@@ -18,7 +18,7 @@ using Object = UnityEngine.Object;
 public class NpcState : MonoBehaviour, IEntityAttachable
 {
   private const int skipFramesBeforeDisablingAnimator = 1;
-  private Dictionary<NpcStateEnum, INpcState> states = new Dictionary<NpcStateEnum, INpcState>(NpcStateEnumComparer.Instance);
+  private Dictionary<NpcStateEnum, INpcState> states = new(NpcStateEnumComparer.Instance);
   private Pivot pivot;
   private Animator animator;
   private WeaponEnum weapon;
@@ -48,8 +48,7 @@ public class NpcState : MonoBehaviour, IEntityAttachable
   {
     get
     {
-      INpcState npcState;
-      return states.TryGetValue(CurrentNpcState, out npcState) ? npcState : null;
+      return states.TryGetValue(CurrentNpcState, out INpcState npcState) ? npcState : null;
     }
   }
 

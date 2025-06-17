@@ -7,7 +7,7 @@ public class UiEffectsController : MonoBehaviourInstance<UiEffectsController>
 {
   [Inspected]
   [SerializeField]
-  private Info[] effects = new Info[0];
+  private Info[] effects = [];
 
   protected override void Awake()
   {

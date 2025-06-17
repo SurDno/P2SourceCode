@@ -122,10 +122,9 @@ namespace Engine.Source.Components
 
     public void AddPicklock(PriorityParameterEnum priority, IEntity item)
     {
-      List<Typed<IEntity>> result;
-      if (!picklocks.TryGetValue(priority, out result))
+      if (!picklocks.TryGetValue(priority, out List<Typed<IEntity>> result))
       {
-        result = new List<Typed<IEntity>>();
+        result = [];
         picklocks.SetValue(priority, result);
       }
       result.Add(new Typed<IEntity>(item.Id));
@@ -134,10 +133,9 @@ namespace Engine.Source.Components
 
     public void RemovePicklock(PriorityParameterEnum priority, IEntity item)
     {
-      List<Typed<IEntity>> result;
-      if (!picklocks.TryGetValue(priority, out result))
+      if (!picklocks.TryGetValue(priority, out List<Typed<IEntity>> result))
       {
-        result = new List<Typed<IEntity>>();
+        result = [];
         picklocks.SetValue(priority, result);
       }
       result.Remove(new Typed<IEntity>(item.Id));
@@ -179,10 +177,9 @@ namespace Engine.Source.Components
 
     public void AddKey(PriorityParameterEnum priority, IEntity item)
     {
-      List<Typed<IEntity>> result;
-      if (!keys.TryGetValue(priority, out result))
+      if (!keys.TryGetValue(priority, out List<Typed<IEntity>> result))
       {
-        result = new List<Typed<IEntity>>();
+        result = [];
         keys.SetValue(priority, result);
       }
       result.Add(new Typed<IEntity>(item.Id));
@@ -191,10 +188,9 @@ namespace Engine.Source.Components
 
     public void RemoveKey(PriorityParameterEnum priority, IEntity item)
     {
-      List<Typed<IEntity>> result;
-      if (!keys.TryGetValue(priority, out result))
+      if (!keys.TryGetValue(priority, out List<Typed<IEntity>> result))
       {
-        result = new List<Typed<IEntity>>();
+        result = [];
         keys.SetValue(priority, result);
       }
       result.Remove(new Typed<IEntity>(item.Id));

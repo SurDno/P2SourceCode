@@ -30,7 +30,7 @@ namespace Engine.Impl.Services
     private TimeSpan absoluteGameTime;
     private TimeSpan realTime;
     [Inspected]
-    private TimeSpan demoTime = new TimeSpan(2, 1, 0, 0);
+    private TimeSpan demoTime = new(2, 1, 0, 0);
 
     [Inspected]
     public TimeSpan SolarTime

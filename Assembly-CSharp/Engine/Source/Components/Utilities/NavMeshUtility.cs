@@ -117,8 +117,7 @@ namespace Engine.Source.Components.Utilities
       int mask)
     {
       int layerMask = 9519617;
-      RaycastHit hitInfo;
-      if (Physics.Raycast(point + new Vector3(0.0f, distanceUp, 0.0f), Vector3.down, out hitInfo, distanceDown, layerMask, QueryTriggerInteraction.Ignore))
+      if (Physics.Raycast(point + new Vector3(0.0f, distanceUp, 0.0f), Vector3.down, out RaycastHit hitInfo, distanceDown, layerMask, QueryTriggerInteraction.Ignore))
         point = hitInfo.point;
       return SamplePosition(ref point, mask);
     }
@@ -137,8 +136,7 @@ namespace Engine.Source.Components.Utilities
       resultRadius = 0;
       for (int maxDistance = 2; maxDistance <= maxRadius; maxDistance *= 2)
       {
-        NavMeshHit hit;
-        if (NavMesh.SamplePosition(point, out hit, maxDistance, mask))
+        if (NavMesh.SamplePosition(point, out NavMeshHit hit, maxDistance, mask))
         {
           point = hit.position;
           resultRadius = maxDistance;

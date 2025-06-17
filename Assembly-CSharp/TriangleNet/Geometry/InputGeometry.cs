@@ -35,9 +35,9 @@ namespace TriangleNet.Geometry
     public InputGeometry(int capacity)
     {
       points = new List<Vertex>(capacity);
-      segments = new List<Edge>();
-      holes = new List<Point>();
-      regions = new List<RegionPointer>();
+      segments = [];
+      holes = [];
+      regions = [];
       bounds = new BoundingBox();
       pointAttributes = -1;
     }
@@ -61,7 +61,7 @@ namespace TriangleNet.Geometry
 
     public void AddPoint(double x, double y, int boundary, double attribute)
     {
-      AddPoint(x, y, 0, new double[1]{ attribute });
+      AddPoint(x, y, 0, [attribute]);
     }
 
     public void AddPoint(double x, double y, int boundary, double[] attribs)

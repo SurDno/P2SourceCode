@@ -3,20 +3,13 @@ using Inspectors;
 
 namespace Engine.Source.Settings
 {
-  public class EnumValue<T> : IValue<T> where T : struct, IComparable, IFormattable, IConvertible
-  {
+  public class EnumValue<T>(string name, T defaultValue = default(T)) : IValue<T>
+    where T : struct, IComparable, IFormattable, IConvertible {
     [Inspected]
-    private string name;
+    private string name = name;
     [Inspected]
-    private T defaultValue;
-    private T value;
-
-    public EnumValue(string name, T defaultValue = default (T))
-    {
-      this.name = name;
-      value = PlayerSettings.Instance.GetEnum(name, defaultValue);
-      this.defaultValue = defaultValue;
-    }
+    private T defaultValue = defaultValue;
+    private T value = PlayerSettings.Instance.GetEnum(name, defaultValue);
 
     [Inspected(Mutable = true)]
     public T Value

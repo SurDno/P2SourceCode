@@ -10,12 +10,6 @@ namespace Expressions
   {
     protected override DetectType Compute(DetectType a, DetectType b) => a < b ? a : b;
 
-    public override string ValueView
-    {
-      get
-      {
-        return "min(" + (a != null ? a.ValueView : "null") + ", " + (b != null ? b.ValueView : "null") + ")";
-      }
-    }
+    public override string ValueView => "min(" + (a != null ? a.ValueView : "null") + ", " + (b != null ? b.ValueView : "null") + ")";
   }
 }

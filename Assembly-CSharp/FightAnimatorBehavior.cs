@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class FightAnimatorBehavior : StateMachineBehaviour
 {
-  private static Dictionary<Animator, AnimatorState> animatorStates = new Dictionary<Animator, AnimatorState>();
+  private static Dictionary<Animator, AnimatorState> animatorStates = new();
   private static int walkBlendTreeHash = Animator.StringToHash("Walk Blend Tree");
   private static int defeatedHash = Animator.StringToHash("Defeated");
   private static int deadHash = Animator.StringToHash("Dead");
@@ -12,8 +12,7 @@ public class FightAnimatorBehavior : StateMachineBehaviour
   {
     if (animator == null)
       return new AnimatorState();
-    AnimatorState animatorState;
-    if (!animatorStates.TryGetValue(animator, out animatorState))
+    if (!animatorStates.TryGetValue(animator, out AnimatorState animatorState))
     {
       animatorState = new AnimatorState();
       animatorState.Animator = animator;
@@ -115,23 +114,11 @@ public class FightAnimatorBehavior : StateMachineBehaviour
 
     public bool IsStagger => StaggerCount > 0;
 
-    public bool IsAttacking
-    {
-      get
-      {
-        return IsRunPunching || IsPunching || IsStepPunching || IsTelegraphPunching || IsSuperPunching || IsCheating || IsThrowing || IsAiming || IsShoting;
-      }
-    }
+    public bool IsAttacking => IsRunPunching || IsPunching || IsStepPunching || IsTelegraphPunching || IsSuperPunching || IsCheating || IsThrowing || IsAiming || IsShoting;
 
     public bool IsPushing { get; set; }
 
-    public bool IsReaction
-    {
-      get
-      {
-        return ReactionEmptyCount > 0 || ReactionHandsCount > 0 || ReactionKnifeCount > 0 || ReactionBombCount > 0 || ReactionPushCount > 0;
-      }
-    }
+    public bool IsReaction => ReactionEmptyCount > 0 || ReactionHandsCount > 0 || ReactionKnifeCount > 0 || ReactionBombCount > 0 || ReactionPushCount > 0;
 
     public enum NPCCondition
     {

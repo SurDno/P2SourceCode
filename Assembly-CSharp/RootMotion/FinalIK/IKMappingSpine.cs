@@ -17,11 +17,11 @@ namespace RootMotion.FinalIK
     [Range(0.0f, 1f)]
     public float twistWeight = 1f;
     private int rootNodeIndex;
-    private BoneMap[] spine = new BoneMap[0];
-    private BoneMap leftUpperArm = new BoneMap();
-    private BoneMap rightUpperArm = new BoneMap();
-    private BoneMap leftThigh = new BoneMap();
-    private BoneMap rightThigh = new BoneMap();
+    private BoneMap[] spine = [];
+    private BoneMap leftUpperArm = new();
+    private BoneMap rightUpperArm = new();
+    private BoneMap leftThigh = new();
+    private BoneMap rightThigh = new();
     private bool useFABRIK;
 
     public override bool IsValid(IKSolver solver, ref string message)

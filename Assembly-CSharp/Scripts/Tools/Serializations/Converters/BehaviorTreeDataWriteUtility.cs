@@ -96,7 +96,7 @@ namespace Scripts.Tools.Serializations.Converters
     public static void WriteTaskList<T>(IDataWriter writer, string name, List<T> value) where T : Task
     {
       if (value == null)
-        value = new List<T>();
+        value = [];
       Type type = typeof (T);
       writer.Begin(name, null, true);
       foreach (T obj in value)

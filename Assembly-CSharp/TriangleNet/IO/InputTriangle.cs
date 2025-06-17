@@ -3,16 +3,11 @@ using TriangleNet.Geometry;
 
 namespace TriangleNet.IO
 {
-  public class InputTriangle : ITriangle
+  public class InputTriangle(int p0, int p1, int p2) : ITriangle 
   {
     internal double area;
     internal int region;
-    internal int[] vertices;
-
-    public InputTriangle(int p0, int p1, int p2)
-    {
-      vertices = new int[3]{ p0, p1, p2 };
-    }
+    internal int[] vertices = [p0, p1, p2];
 
     public int ID => 0;
 

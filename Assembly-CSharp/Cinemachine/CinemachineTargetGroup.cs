@@ -18,15 +18,14 @@ namespace Cinemachine
     public UpdateMethod m_UpdateMethod = UpdateMethod.LateUpdate;
     [NoSaveDuringPlay]
     [Tooltip("The target objects, together with their weights and radii, that will contribute to the group's average position, orientation, and size.")]
-    public Target[] m_Targets = new Target[0];
+    public Target[] m_Targets = [];
     private float m_lastRadius;
 
     public Bounds BoundingBox
     {
       get
       {
-        float averageWeight;
-        Vector3 averagePosition = CalculateAveragePosition(out averageWeight);
+        Vector3 averagePosition = CalculateAveragePosition(out float averageWeight);
         bool flag = false;
         Bounds boundingBox = new Bounds(averagePosition, new Vector3(m_lastRadius * 2f, m_lastRadius * 2f, m_lastRadius * 2f));
         if (averageWeight > 9.9999997473787516E-05)
@@ -69,8 +68,7 @@ namespace Cinemachine
     public Bounds GetViewSpaceBoundingBox(Matrix4x4 mView)
     {
       Matrix4x4 inverse = mView.inverse;
-      float averageWeight;
-      Vector3 vector3 = inverse.MultiplyPoint3x4(CalculateAveragePosition(out averageWeight));
+      Vector3 vector3 = inverse.MultiplyPoint3x4(CalculateAveragePosition(out float averageWeight));
       bool flag = false;
       Bounds spaceBoundingBox = new Bounds(vector3, new Vector3(m_lastRadius * 2f, m_lastRadius * 2f, m_lastRadius * 2f));
       if (averageWeight > 9.9999997473787516E-05)

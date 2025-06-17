@@ -21,15 +21,9 @@ namespace PLVirtualMachine.Common
       paramType = type;
     }
 
-    public EContextVariableCategory Category
-    {
-      get => EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_PARAM;
-    }
+    public EContextVariableCategory Category => EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_PARAM;
 
-    public string Name
-    {
-      get => componentName != "" ? componentName + "." + name : name;
-    }
+    public string Name => componentName != "" ? componentName + "." + name : name;
 
     public object Value
     {

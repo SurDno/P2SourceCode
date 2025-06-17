@@ -15,8 +15,8 @@ namespace NodeCanvas.Framework
     [SerializeField]
     private string _serializedBlackboard;
     [SerializeField]
-    private List<Object> _objectReferences = new List<Object>();
-    private BlackboardData _blackboard = new BlackboardData();
+    private List<Object> _objectReferences = [];
+    private BlackboardData _blackboard = new();
     private Thread deserializeThread;
 
     public event Action<Variable> onVariableAdded;

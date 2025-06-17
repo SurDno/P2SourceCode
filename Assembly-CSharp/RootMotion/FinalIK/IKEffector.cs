@@ -19,14 +19,14 @@ namespace RootMotion.FinalIK
     public bool effectChildNodes = true;
     [Range(0.0f, 1f)]
     public float maintainRelativePositionWeight;
-    public Transform[] childBones = new Transform[0];
+    public Transform[] childBones = [];
     public Transform planeBone1;
     public Transform planeBone2;
     public Transform planeBone3;
     public Quaternion planeRotationOffset = Quaternion.identity;
     private float posW;
     private float rotW;
-    private Vector3[] localPositions = new Vector3[0];
+    private Vector3[] localPositions = [];
     private bool usePlaneNodes;
     private Quaternion animatedPlaneRotation = Quaternion.identity;
     private Vector3 animatedPosition;
@@ -39,8 +39,8 @@ namespace RootMotion.FinalIK
     private int plane2NodeIndex = -1;
     private int plane3ChainIndex = -1;
     private int plane3NodeIndex = -1;
-    private int[] childChainIndexes = new int[0];
-    private int[] childNodeIndexes = new int[0];
+    private int[] childChainIndexes = [];
+    private int[] childNodeIndexes = [];
 
     public IKSolver.Node GetNode(IKSolverFullBody solver)
     {

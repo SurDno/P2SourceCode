@@ -18,8 +18,8 @@ namespace PLVirtualMachine.GameLogic
 {
   [TypeData(EDataType.TFunctionalComponent)]
   [DataFactory("FunctionalComponent")]
-  public class VMFunctionalComponent : 
-    VMBaseObject,
+  public class VMFunctionalComponent(ulong guid) :
+    VMBaseObject(guid),
     IStub,
     IEditorDataReader,
     IFunctionalComponent,
@@ -28,16 +28,15 @@ namespace PLVirtualMachine.GameLogic
     IEditorBaseTemplate,
     INamedElement,
     INamed,
-    IStaticUpdateable
-  {
+    IStaticUpdateable {
     [FieldData("Events", DataFieldType.Reference)]
-    private List<IEvent> eventsList = new List<IEvent>();
+    private List<IEvent> eventsList = [];
     [FieldData("Main")]
     private bool isMain;
     [FieldData("LoadPriority")]
     private long loadPriority = long.MaxValue;
     private string dependedComponentName;
-    private List<BaseFunction> functions = new List<BaseFunction>();
+    private List<BaseFunction> functions = [];
     private Type componentType;
     private bool afterLoaded;
 
@@ -74,11 +73,6 @@ namespace PLVirtualMachine.GameLogic
         if (xml.NodeType == XmlNodeType.EndElement)
           break;
       }
-    }
-
-    public VMFunctionalComponent(ulong guid)
-      : base(guid)
-    {
     }
 
     public override EObjectCategory GetCategory() => EObjectCategory.OBJECT_CATEGORY_FUNC_COMPONENT;

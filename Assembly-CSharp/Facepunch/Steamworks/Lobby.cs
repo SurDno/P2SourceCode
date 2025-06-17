@@ -119,9 +119,7 @@ namespace Facepunch.Steamworks
       CurrentLobbyData = new LobbyData(client, CurrentLobby);
       for (int iLobbyData = 0; iLobbyData < lobbyDataCount; ++iLobbyData)
       {
-        string pchKey;
-        string pchValue;
-        if (client.native.matchmaking.GetLobbyDataByIndex(CurrentLobby, iLobbyData, out pchKey, out pchValue))
+        if (client.native.matchmaking.GetLobbyDataByIndex(CurrentLobby, iLobbyData, out string pchKey, out string pchValue))
           CurrentLobbyData.SetData(pchKey, pchValue);
       }
       if (OnLobbyDataUpdated == null)
@@ -207,10 +205,7 @@ namespace Facepunch.Steamworks
 
     public ulong Owner
     {
-      get
-      {
-        return IsValid ? client.native.matchmaking.GetLobbyOwner(CurrentLobby) : 0UL;
-      }
+      get => IsValid ? client.native.matchmaking.GetLobbyOwner(CurrentLobby) : 0UL;
       set
       {
         if ((long) Owner == (long) value)
@@ -245,10 +240,7 @@ namespace Facepunch.Steamworks
 
     public int MaxMembers
     {
-      get
-      {
-        return !IsValid ? 0 : client.native.matchmaking.GetLobbyMemberLimit(CurrentLobby);
-      }
+      get => !IsValid ? 0 : client.native.matchmaking.GetLobbyMemberLimit(CurrentLobby);
       set
       {
         if (!IsValid)
@@ -257,10 +249,7 @@ namespace Facepunch.Steamworks
       }
     }
 
-    public int NumMembers
-    {
-      get => client.native.matchmaking.GetNumLobbyMembers(CurrentLobby);
-    }
+    public int NumMembers => client.native.matchmaking.GetNumLobbyMembers(CurrentLobby);
 
     public void Leave()
     {
@@ -327,18 +316,10 @@ namespace Facepunch.Steamworks
       Error,
     }
 
-    public class LobbyData
-    {
-      internal Client client;
-      internal ulong lobby;
-      internal Dictionary<string, string> data;
-
-      public LobbyData(Client c, ulong l)
-      {
-        client = c;
-        lobby = l;
-        data = new Dictionary<string, string>();
-      }
+    public class LobbyData(Client c, ulong l) {
+      internal Client client = c;
+      internal ulong lobby = l;
+      internal Dictionary<string, string> data = new();
 
       public string GetData(string k)
       {

@@ -12,8 +12,8 @@ namespace Facepunch.Steamworks
   public class ServerList : IDisposable
   {
     internal Client client;
-    private HashSet<ulong> FavouriteHash = new HashSet<ulong>();
-    private HashSet<ulong> HistoryHash = new HashSet<ulong>();
+    private HashSet<ulong> FavouriteHash = [];
+    private HashSet<ulong> HistoryHash = [];
 
     internal ServerList(Client client)
     {
@@ -28,10 +28,7 @@ namespace Facepunch.Steamworks
       for (int iGame = 0; iGame < client.native.matchmaking.GetFavoriteGameCount(); ++iGame)
       {
         AppId_t pnAppID = 0U;
-        uint pnIP;
-        ushort pnConnPort;
-        uint punFlags;
-        client.native.matchmaking.GetFavoriteGame(iGame, ref pnAppID, out pnIP, out pnConnPort, out ushort _, out punFlags, out uint _);
+        client.native.matchmaking.GetFavoriteGame(iGame, ref pnAppID, out uint pnIP, out ushort pnConnPort, out ushort _, out uint punFlags, out uint _);
         ulong num = (ulong) pnIP << 32 | pnConnPort;
         if (((int) punFlags & 1) == 1)
           FavouriteHash.Add(num);
@@ -46,7 +43,7 @@ namespace Facepunch.Steamworks
     {
       if (filter == null)
       {
-        filter = new Filter();
+        filter = [];
         filter.Add("appid", client.AppId.ToString());
       }
       filter.Start();
@@ -69,7 +66,7 @@ namespace Facepunch.Steamworks
     {
       if (filter == null)
       {
-        filter = new Filter();
+        filter = [];
         filter.Add("appid", client.AppId.ToString());
       }
       filter.Start();
@@ -84,7 +81,7 @@ namespace Facepunch.Steamworks
     {
       if (filter == null)
       {
-        filter = new Filter();
+        filter = [];
         filter.Add("appid", client.AppId.ToString());
       }
       filter.Start();
@@ -99,7 +96,7 @@ namespace Facepunch.Steamworks
     {
       if (filter == null)
       {
-        filter = new Filter();
+        filter = [];
         filter.Add("appid", client.AppId.ToString());
       }
       filter.Start();
@@ -114,7 +111,7 @@ namespace Facepunch.Steamworks
     {
       if (filter == null)
       {
-        filter = new Filter();
+        filter = [];
         filter.Add("appid", client.AppId.ToString());
       }
       filter.Start();
@@ -188,12 +185,12 @@ namespace Facepunch.Steamworks
     public class Request : IDisposable
     {
       internal Client client;
-      internal List<SubRequest> Requests = new List<SubRequest>();
+      internal List<SubRequest> Requests = [];
       public Action OnUpdate;
       public Action<Server> OnServerResponded;
       public Action OnFinished;
-      public List<Server> Responded = new List<Server>();
-      public List<Server> Unresponsive = new List<Server>();
+      public List<Server> Responded = [];
+      public List<Server> Unresponsive = [];
       public bool Finished;
 
       internal Request(Client c)
@@ -220,7 +217,7 @@ namespace Facepunch.Steamworks
           if (source.Count() != 0)
           {
             count2 += source.Count();
-            Filter filter = new Filter();
+            Filter filter = [];
             filter.Add("or", source.Count().ToString());
             foreach (string v in source)
               filter.Add("gameaddr", v);
@@ -296,7 +293,7 @@ namespace Facepunch.Steamworks
       {
         internal IntPtr Request;
         internal int Pointer;
-        internal List<int> WatchList = new List<int>();
+        internal List<int> WatchList = [];
         internal Stopwatch Timer = Stopwatch.StartNew();
 
         internal bool Update(

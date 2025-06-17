@@ -13,11 +13,11 @@ namespace VirtualMachine.Data.Customs
   public class HierarchySceneInfoData : IStub, IEditorDataReader
   {
     [FieldData("Scenes")]
-    protected List<ulong> scenes = new List<ulong>();
+    protected List<ulong> scenes = [];
     [FieldData("Childs")]
-    protected List<ulong> childs = new List<ulong>();
+    protected List<ulong> childs = [];
     [FieldData("SimpleChilds")]
-    protected List<ulong> simpleChilds = new List<ulong>();
+    protected List<ulong> simpleChilds = [];
 
     public List<ulong> Scenes => scenes;
 

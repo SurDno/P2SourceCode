@@ -15,18 +15,15 @@ namespace Engine.Behaviours.Unity.Mecanim
     private static int moveStopTagHash = Animator.StringToHash("MoveStop");
     private static int poiTagHash = Animator.StringToHash("POI");
     private static int poiExitTagHash = Animator.StringToHash("POIExit");
-    private static Dictionary<Animator, AnimatorState45> animatorStates = new Dictionary<Animator, AnimatorState45>(64);
-    private HashSet<string> triggers = new HashSet<string>();
+    private static Dictionary<Animator, AnimatorState45> animatorStates = new(64);
+    private HashSet<string> triggers = [];
     public Animator Animator;
     public float PrimaryIdleProbability = 0.5f;
 
     public event Action StopDoneEvent;
 
     [Inspected]
-    public bool IsRotate
-    {
-      get => Animator.GetCurrentAnimatorStateInfo(0).tagHash == rotateTagHash;
-    }
+    public bool IsRotate => Animator.GetCurrentAnimatorStateInfo(0).tagHash == rotateTagHash;
 
     [Inspected]
     public bool IsMove
@@ -41,22 +38,10 @@ namespace Engine.Behaviours.Unity.Mecanim
     }
 
     [Inspected]
-    public bool IsMovementStart
-    {
-      get
-      {
-        return Animator.GetCurrentAnimatorStateInfo(0).tagHash == moveStartTagHash;
-      }
-    }
+    public bool IsMovementStart => Animator.GetCurrentAnimatorStateInfo(0).tagHash == moveStartTagHash;
 
     [Inspected]
-    public bool IsMovementStop
-    {
-      get
-      {
-        return Animator.GetCurrentAnimatorStateInfo(0).tagHash == moveStopTagHash;
-      }
-    }
+    public bool IsMovementStop => Animator.GetCurrentAnimatorStateInfo(0).tagHash == moveStopTagHash;
 
     [Inspected]
     public bool IsPOI
@@ -69,10 +54,7 @@ namespace Engine.Behaviours.Unity.Mecanim
     }
 
     [Inspected]
-    public bool IsPOIExit
-    {
-      get => Animator.GetCurrentAnimatorStateInfo(0).tagHash == poiExitTagHash;
-    }
+    public bool IsPOIExit => Animator.GetCurrentAnimatorStateInfo(0).tagHash == poiExitTagHash;
 
     public bool MovableStop
     {
@@ -197,8 +179,7 @@ namespace Engine.Behaviours.Unity.Mecanim
     {
       if (animator == null)
         return new AnimatorState45();
-      AnimatorState45 animatorState;
-      if (!animatorStates.TryGetValue(animator, out animatorState))
+      if (!animatorStates.TryGetValue(animator, out AnimatorState45 animatorState))
       {
         animatorState = new AnimatorState45();
         animatorState.Animator = animator;

@@ -17,7 +17,7 @@ namespace Engine.Source.Components
     [CopyableProxy()]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    protected List<EntityTagEnum> tags = new List<EntityTagEnum>();
+    protected List<EntityTagEnum> tags = [];
 
     public IEnumerable<EntityTagEnum> Tags => tags;
   }

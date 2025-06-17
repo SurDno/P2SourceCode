@@ -15,10 +15,7 @@ namespace PLVirtualMachine.Common
       this.type = type;
     }
 
-    public virtual EContextVariableCategory Category
-    {
-      get => EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_LOCAL_VAR;
-    }
+    public virtual EContextVariableCategory Category => EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_LOCAL_VAR;
 
     public string Name => name;
 
@@ -54,10 +51,7 @@ namespace PLVirtualMachine.Common
       return TypedBlueprint != null ? TypedBlueprint.GetContextVariable(variableName) : null;
     }
 
-    public IBlueprint TypedBlueprint
-    {
-      get => Type.IsComplexSpecial ? Type.SpecialTypeBlueprint : null;
-    }
+    public IBlueprint TypedBlueprint => Type.IsComplexSpecial ? Type.SpecialTypeBlueprint : null;
 
     public bool IsFunctionalSupport(string componentName)
     {

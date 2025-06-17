@@ -7,9 +7,8 @@ using UnityEngine;
 using Object = UnityEngine.Object;
 
 [Serializable]
-public class SubtitlesItem
-{
-  private readonly SubtitlesView subtitlesView;
+public class SubtitlesItem(SubtitlesView subtitlesView) {
+  private readonly SubtitlesView subtitlesView = subtitlesView;
   private string text;
   private float startTime;
   private float endTime;
@@ -55,8 +54,7 @@ public class SubtitlesItem
       if (num4 != -1)
       {
         string s = text.Substring(startIndex, num4 - startIndex);
-        float result = float.MaxValue;
-        if (float.TryParse(s, NumberStyles.Float, NumberFormatInfo.InvariantInfo, out result))
+        if (float.TryParse(s, NumberStyles.Float, NumberFormatInfo.InvariantInfo, out float result))
         {
           num1 = num4 + 1;
           num2 = startTime + result;
@@ -96,8 +94,6 @@ public class SubtitlesItem
     partEndTime = startTime;
     Ended = false;
   }
-
-  public SubtitlesItem(SubtitlesView subtitlesView) => this.subtitlesView = subtitlesView;
 
   public void Update()
   {

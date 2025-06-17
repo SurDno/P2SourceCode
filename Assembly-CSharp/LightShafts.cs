@@ -28,7 +28,7 @@ public class LightShafts : MonoBehaviour, IUpdatable
   [Space]
   public float particlesPerUnit = 1f;
   [Space]
-  public Vector3[] points = new Vector3[0];
+  public Vector3[] points = [];
   [Header("Rays")]
   public float radius = 0.1f;
   private GameObject _child;
@@ -257,9 +257,8 @@ public class LightShafts : MonoBehaviour, IUpdatable
           }
           else
           {
-            RaycastHit hitInfo;
             float length1;
-            if (length > (double) indoorBias && Physics.Raycast(origin + _lightDirection * indoorBias, _lightDirection, out hitInfo, length - indoorBias, shadowCastingColliders, QueryTriggerInteraction.Ignore))
+            if (length > (double) indoorBias && Physics.Raycast(origin + _lightDirection * indoorBias, _lightDirection, out RaycastHit hitInfo, length - indoorBias, shadowCastingColliders, QueryTriggerInteraction.Ignore))
             {
               length1 = hitInfo.distance + indoorBias + radius;
               if (length1 > (double) length)

@@ -15,10 +15,7 @@
     private const int k_HistogramThreadX = 16;
     private const int k_HistogramThreadY = 16;
 
-    public override bool active
-    {
-      get => model.enabled && SystemInfo.supportsComputeShaders && !context.interrupted;
-    }
+    public override bool active => model.enabled && SystemInfo.supportsComputeShaders && !context.interrupted;
 
     public void ResetHistory() => m_FirstFrame = true;
 

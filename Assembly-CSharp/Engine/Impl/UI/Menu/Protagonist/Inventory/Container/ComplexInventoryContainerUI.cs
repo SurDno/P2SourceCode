@@ -12,14 +12,11 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory.Container
   [DisallowMultipleComponent]
   public class ComplexInventoryContainerUI : InventoryContainerUI
   {
-    protected Dictionary<Cell, StorableComponent> items = new Dictionary<Cell, StorableComponent>();
+    protected Dictionary<Cell, StorableComponent> items = new();
 
     public RectTransform Mask { get; private set; }
 
-    public IEnumerable<IStorableComponent> Items
-    {
-      get => items.Values;
-    }
+    public IEnumerable<IStorableComponent> Items => items.Values;
 
     public static ComplexInventoryContainerUI Instantiate(
       InventoryCellStyle style,

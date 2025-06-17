@@ -11,6 +11,6 @@ namespace BehaviorDesigner.Runtime
     [SerializeField]
     public string XmlData;
     [SerializeField]
-    public List<Object> unityObjects = new List<Object>();
+    public List<Object> unityObjects = [];
   }
 }

@@ -10,7 +10,7 @@ namespace Cinemachine
     [Range(1f, 100f)]
     public int m_Resolution = 20;
     [Tooltip("The settings that control how the path will appear in the editor scene view.")]
-    public Appearance m_Appearance = new Appearance();
+    public Appearance m_Appearance = new();
     private float[] m_DistanceToPos;
     private float[] m_PosToDistance;
     private int m_CachedSampleSteps;

@@ -15,18 +15,18 @@ namespace Engine.Source.Difficulties
     [CopyableProxy]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    public List<DifficultyItemData> Items = new List<DifficultyItemData>();
+    public List<DifficultyItemData> Items = [];
     [DataReadProxy]
     [DataWriteProxy]
     [CopyableProxy]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    public List<DifficultyGroupData> Groups = new List<DifficultyGroupData>();
+    public List<DifficultyGroupData> Groups = [];
     [DataReadProxy]
     [DataWriteProxy]
     [CopyableProxy()]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    public List<DifficultyPresetData> Presets = new List<DifficultyPresetData>();
+    public List<DifficultyPresetData> Presets = [];
   }
 }

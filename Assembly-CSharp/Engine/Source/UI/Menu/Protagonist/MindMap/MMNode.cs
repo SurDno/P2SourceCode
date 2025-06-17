@@ -74,7 +74,7 @@ namespace Engine.Source.UI.Menu.Protagonist.MindMap
       if (content != null)
       {
         NotificationService service = ServiceLocator.GetService<NotificationService>();
-        service.AddNotify(NotificationEnum.MindMap, Array.Empty<object>());
+        service.AddNotify(NotificationEnum.MindMap, []);
         service.AddNotify(NotificationEnum.MindMapNode, content);
       }
       notificationQueued = false;

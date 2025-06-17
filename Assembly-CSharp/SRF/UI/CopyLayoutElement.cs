@@ -19,37 +19,13 @@ namespace SRF.UI
     public float PaddingPreferredHeight;
     public float PaddingPreferredWidth;
 
-    public float preferredWidth
-    {
-      get
-      {
-        return !CopyPreferredWidth || CopySource == null || !IsActive() ? -1f : LayoutUtility.GetPreferredWidth(CopySource) + PaddingPreferredWidth;
-      }
-    }
+    public float preferredWidth => !CopyPreferredWidth || CopySource == null || !IsActive() ? -1f : LayoutUtility.GetPreferredWidth(CopySource) + PaddingPreferredWidth;
 
-    public float preferredHeight
-    {
-      get
-      {
-        return !CopyPreferredHeight || CopySource == null || !IsActive() ? -1f : LayoutUtility.GetPreferredHeight(CopySource) + PaddingPreferredHeight;
-      }
-    }
+    public float preferredHeight => !CopyPreferredHeight || CopySource == null || !IsActive() ? -1f : LayoutUtility.GetPreferredHeight(CopySource) + PaddingPreferredHeight;
 
-    public float minWidth
-    {
-      get
-      {
-        return !CopyMinWidth || CopySource == null || !IsActive() ? -1f : LayoutUtility.GetMinWidth(CopySource) + PaddingMinWidth;
-      }
-    }
+    public float minWidth => !CopyMinWidth || CopySource == null || !IsActive() ? -1f : LayoutUtility.GetMinWidth(CopySource) + PaddingMinWidth;
 
-    public float minHeight
-    {
-      get
-      {
-        return !CopyMinHeight || CopySource == null || !IsActive() ? -1f : LayoutUtility.GetMinHeight(CopySource) + PaddingMinHeight;
-      }
-    }
+    public float minHeight => !CopyMinHeight || CopySource == null || !IsActive() ? -1f : LayoutUtility.GetMinHeight(CopySource) + PaddingMinHeight;
 
     public int layoutPriority => 2;
 

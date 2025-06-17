@@ -18,9 +18,9 @@ namespace Engine.Source.Services
     private const int groupActivitiesMinimum = 3;
     private const float groupCreateInterval = 2f;
     private float timeFromLastGroupCreate = 2f;
-    private Dictionary<GameObject, POIServiceCharacterInfo> characters = new Dictionary<GameObject, POIServiceCharacterInfo>();
-    private Dictionary<POIServiceCharacterInfo, NpcStatePointOfInterest> freeDialogTargetCharacters = new Dictionary<POIServiceCharacterInfo, NpcStatePointOfInterest>();
-    private List<POIDialogActivity> currentDialogs = new List<POIDialogActivity>();
+    private Dictionary<GameObject, POIServiceCharacterInfo> characters = new();
+    private Dictionary<POIServiceCharacterInfo, NpcStatePointOfInterest> freeDialogTargetCharacters = new();
+    private List<POIDialogActivity> currentDialogs = [];
 
     public void Initialise()
     {
@@ -162,8 +162,7 @@ namespace Engine.Source.Services
 
     public void ActorGoToDialog(POIDialogActivity dialog)
     {
-      Vector3 closestTargetPosition;
-      dialog.poi.GetClosestTargetPoint(POIAnimationEnum.S_Dialog, 0, dialog.DialogActor.Character.GetComponent<POISetup>(), dialog.EnterPoint, out closestTargetPosition, out Quaternion _);
+      dialog.poi.GetClosestTargetPoint(POIAnimationEnum.S_Dialog, 0, dialog.DialogActor.Character.GetComponent<POISetup>(), dialog.EnterPoint, out Vector3 closestTargetPosition, out Quaternion _);
       BehaviorTree characterSubtree = BehaviorSubtreeUtility.GetCharacterSubtree(dialog.DialogActor.Character);
       BehaviorSubtreeUtility.SetCharacterSubtree(characterSubtree, ScriptableObjectInstance<ResourceFromCodeData>.Instance.POIDialogGoToTarget);
       characterSubtree.SetVariableValue("TargetPosition", closestTargetPosition);

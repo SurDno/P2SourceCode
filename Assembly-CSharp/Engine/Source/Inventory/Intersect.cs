@@ -5,35 +5,22 @@ using Inspectors;
 
 namespace Engine.Source.Inventory
 {
-  public struct Intersect
-  {
+  public struct Intersect(bool isAllowed = false) {
     [Inspected]
-    public bool IsIntersected;
+    public bool IsIntersected = false;
     [Inspected]
-    public bool IsAllowed;
+    public bool IsAllowed = isAllowed;
     [Inspected]
-    public IStorageComponent Storage;
+    public IStorageComponent Storage = null;
     [Inspected]
-    public IInventoryComponent Container;
+    public IInventoryComponent Container = null;
     [Inspected]
-    public StorableComponent Storable;
+    public StorableComponent Storable = null;
     [Inspected]
-    public IntCell Cell;
+    public IntCell Cell = new();
     [Inspected]
-    public List<CellInfo> Cells;
+    public List<CellInfo> Cells = [];
     [Inspected]
-    public HashSet<StorableComponent> Storables;
-
-    public Intersect(bool isAllowed = false)
-    {
-      IsIntersected = false;
-      IsAllowed = isAllowed;
-      Storage = null;
-      Container = null;
-      Storable = null;
-      Cell = new IntCell();
-      Cells = new List<CellInfo>();
-      Storables = new HashSet<StorableComponent>();
-    }
+    public HashSet<StorableComponent> Storables = [];
   }
 }

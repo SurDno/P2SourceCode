@@ -7,7 +7,7 @@ namespace Scripts.Tools.Serializations.Converters
 {
   public static class UnityConverter
   {
-    private static char[] separator = new char[1]{ ' ' };
+    private static char[] separator = [' '];
     private static float[] floatBuffer = new float[4];
 
     public static bool TryParseComplex(string value, int count)
@@ -38,8 +38,7 @@ namespace Scripts.Tools.Serializations.Converters
 
     public static Vector2 ParseVector2(string value)
     {
-      Vector2 result;
-      if (!TryParseVector2(value, out result))
+      if (!TryParseVector2(value, out Vector2 result))
         Debug.LogWarning("Error parse value : " + (value != null ? value : "null") + "\n" + ObjectInfoUtility.GetStackTrace());
       return result;
     }
@@ -62,8 +61,7 @@ namespace Scripts.Tools.Serializations.Converters
 
     public static Vector3 ParseVector3(string value)
     {
-      Vector3 result;
-      if (!TryParseVector3(value, out result))
+      if (!TryParseVector3(value, out Vector3 result))
         Debug.LogWarning("Error parse value : " + (value != null ? value : "null") + "\n" + ObjectInfoUtility.GetStackTrace());
       return result;
     }
@@ -86,8 +84,7 @@ namespace Scripts.Tools.Serializations.Converters
 
     public static Vector4 ParseVector4(string value)
     {
-      Vector4 result;
-      if (!TryParseVector4(value, out result))
+      if (!TryParseVector4(value, out Vector4 result))
         Debug.LogWarning("Error parse value : " + (value != null ? value : "null") + "\n" + ObjectInfoUtility.GetStackTrace());
       return result;
     }
@@ -110,8 +107,7 @@ namespace Scripts.Tools.Serializations.Converters
 
     public static Quaternion ParseQuaternion(string value)
     {
-      Quaternion result;
-      if (!TryParseQuaternion(value, out result))
+      if (!TryParseQuaternion(value, out Quaternion result))
         Debug.LogWarning("Error parse value : " + (value != null ? value : "null") + "\n" + ObjectInfoUtility.GetStackTrace());
       return result;
     }
@@ -139,8 +135,7 @@ namespace Scripts.Tools.Serializations.Converters
 
     public static Color ParseColor(string value)
     {
-      Color result;
-      if (!TryParseColor(value, out result))
+      if (!TryParseColor(value, out Color result))
         Debug.LogWarning("Error parse value : " + (value != null ? value : "null") + "\n" + ObjectInfoUtility.GetStackTrace());
       return result;
     }

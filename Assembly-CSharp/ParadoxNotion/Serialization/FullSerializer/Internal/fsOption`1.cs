@@ -2,10 +2,8 @@
 
 namespace ParadoxNotion.Serialization.FullSerializer.Internal
 {
-  public struct fsOption<T>
-  {
-    private bool _hasValue;
-    private T _value;
+  public struct fsOption<T>(T value) {
+    private bool _hasValue = true;
     public static fsOption<T> Empty;
 
     public bool HasValue => _hasValue;
@@ -18,14 +16,8 @@ namespace ParadoxNotion.Serialization.FullSerializer.Internal
       {
         if (IsEmpty)
           throw new InvalidOperationException("fsOption is empty");
-        return _value;
+        return value;
       }
-    }
-
-    public fsOption(T value)
-    {
-      _hasValue = true;
-      _value = value;
     }
   }
 }

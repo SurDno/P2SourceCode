@@ -15,7 +15,7 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
   public class VMMarket : VMEngineComponent<IMarketComponent>
   {
     public const string ComponentName = "Market";
-    protected Dictionary<string, PriceInfo> marketPricesTable = new Dictionary<string, PriceInfo>();
+    protected Dictionary<string, PriceInfo> marketPricesTable = new();
     protected PriceInfo defaultPriceInfo;
     public static float DEFAULT_ITEM_PRICE;
 

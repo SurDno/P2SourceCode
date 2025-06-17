@@ -18,9 +18,7 @@ public class POICilinder : POIBase
     out Quaternion closestTargetRotation)
   {
     Vector3 animationOffset = character.GetAnimationOffset(animation, animationIndex);
-    Vector3 closestSurfacePosition;
-    Quaternion closestSurfaceRotation;
-    GetClosestSurfacePoint(transform.TransformPoint(transform.InverseTransformPoint(currentPosition)), out closestSurfacePosition, out closestSurfaceRotation);
+    GetClosestSurfacePoint(transform.TransformPoint(transform.InverseTransformPoint(currentPosition)), out Vector3 closestSurfacePosition, out Quaternion closestSurfaceRotation);
     closestTargetRotation = closestSurfaceRotation;
     Vector3 vector3 = Quaternion.LookRotation(closestSurfacePosition - transform.position) * animationOffset;
     closestTargetPosition = closestSurfacePosition + vector3;
@@ -76,9 +74,7 @@ public class POICilinder : POIBase
     out Vector3 targetPosition,
     out Quaternion targetRotation)
   {
-    Vector3 position;
-    Quaternion rotation;
-    GetRandomPointOnSurface(out position, out rotation);
+    GetRandomPointOnSurface(out Vector3 position, out Quaternion rotation);
     targetRotation = rotation;
     Vector3 animationOffset = character.GetAnimationOffset(animation, animationIndex);
     targetPosition = transform.TransformPoint(transform.InverseTransformPoint(position));

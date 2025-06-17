@@ -12,7 +12,7 @@ namespace Facepunch.Steamworks
     internal Client client;
     internal SteamRemoteStorage native;
     private bool _filesInvalid = true;
-    private readonly List<RemoteFile> _files = new List<RemoteFile>();
+    private readonly List<RemoteFile> _files = [];
 
     private static string NormalizePath(string path)
     {
@@ -101,8 +101,7 @@ namespace Facepunch.Steamworks
       int fileCount = FileCount;
       for (int iFile = 0; iFile < fileCount; ++iFile)
       {
-        int pnFileSizeInBytes;
-        string name = NormalizePath(native.GetFileNameAndSize(iFile, out pnFileSizeInBytes));
+        string name = NormalizePath(native.GetFileNameAndSize(iFile, out int pnFileSizeInBytes));
         RemoteFile remoteFile = _files.FirstOrDefault(x => x.FileName == name);
         if (remoteFile == null)
         {
@@ -132,9 +131,7 @@ namespace Facepunch.Steamworks
     {
       get
       {
-        ulong pnTotalBytes = 0;
-        ulong puAvailableBytes = 0;
-        return !native.GetQuota(out pnTotalBytes, out puAvailableBytes) ? 0UL : pnTotalBytes - puAvailableBytes;
+        return !native.GetQuota(out ulong pnTotalBytes, out ulong puAvailableBytes) ? 0UL : pnTotalBytes - puAvailableBytes;
       }
     }
 
@@ -142,9 +139,8 @@ namespace Facepunch.Steamworks
     {
       get
       {
-        ulong pnTotalBytes = 0;
         ulong puAvailableBytes = 0;
-        return !native.GetQuota(out pnTotalBytes, out puAvailableBytes) ? 0UL : pnTotalBytes;
+        return !native.GetQuota(out ulong pnTotalBytes, out puAvailableBytes) ? 0UL : pnTotalBytes;
       }
     }
 
@@ -153,8 +149,7 @@ namespace Facepunch.Steamworks
       get
       {
         ulong pnTotalBytes = 0;
-        ulong puAvailableBytes = 0;
-        return !native.GetQuota(out pnTotalBytes, out puAvailableBytes) ? 0UL : puAvailableBytes;
+        return !native.GetQuota(out pnTotalBytes, out ulong puAvailableBytes) ? 0UL : puAvailableBytes;
       }
     }
   }

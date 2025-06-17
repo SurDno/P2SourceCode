@@ -24,8 +24,7 @@ namespace UnityHeapCrawler
 
     public static TypeData Get(Type type)
     {
-      TypeData typeData;
-      if (!seenTypeData.TryGetValue(type, out typeData))
+      if (!seenTypeData.TryGetValue(type, out TypeData typeData))
       {
         typeData = new TypeData(type);
         seenTypeData[type] = typeData;
@@ -35,8 +34,7 @@ namespace UnityHeapCrawler
 
     public static TypeData GetNested(Type type)
     {
-      TypeData nested;
-      if (!seenTypeDataNested.TryGetValue(type, out nested))
+      if (!seenTypeDataNested.TryGetValue(type, out TypeData nested))
       {
         nested = new TypeData(type, true);
         seenTypeDataNested[type] = nested;
@@ -52,7 +50,7 @@ namespace UnityHeapCrawler
         TypeData nested1 = GetNested(baseType);
         Size += nested1.Size;
         if (nested1.DynamicSizedFields != null)
-          DynamicSizedFields = new List<FieldInfo>(nested1.DynamicSizedFields);
+          DynamicSizedFields = [..nested1.DynamicSizedFields];
       }
       if (type.IsPointer)
         Size = IntPtr.Size;
@@ -96,7 +94,7 @@ namespace UnityHeapCrawler
         if (fieldType.IsPointer)
           return;
         if (DynamicSizedFields == null)
-          DynamicSizedFields = new List<FieldInfo>();
+          DynamicSizedFields = [];
         DynamicSizedFields.Add(field);
       }
     }

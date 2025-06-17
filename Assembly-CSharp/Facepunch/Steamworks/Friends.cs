@@ -8,7 +8,7 @@ namespace Facepunch.Steamworks
   {
     internal Client client;
     private List<SteamFriend> _allFriends;
-    private List<PersonaCallback> PersonaCallbacks = new List<PersonaCallback>();
+    private List<PersonaCallback> PersonaCallbacks = [];
 
     internal Friends(Client c)
     {
@@ -33,7 +33,7 @@ namespace Facepunch.Steamworks
       {
         if (_allFriends == null)
         {
-          _allFriends = new List<SteamFriend>();
+          _allFriends = [];
           Refresh();
         }
         return _allFriends;
@@ -75,7 +75,7 @@ namespace Facepunch.Steamworks
     public void Refresh()
     {
       if (_allFriends == null)
-        _allFriends = new List<SteamFriend>();
+        _allFriends = [];
       _allFriends.Clear();
       int maxValue = ushort.MaxValue;
       int friendCount = client.native.friends.GetFriendCount(maxValue);

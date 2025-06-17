@@ -5,22 +5,15 @@ using UnityEngine;
 namespace AmplifyColor
 {
   [Serializable]
-  public class VolumeEffectField
-  {
-    public string fieldName;
-    public string fieldType;
+  public class VolumeEffectField(string fieldName, string fieldType) {
+    public string fieldName = fieldName;
+    public string fieldType = fieldType;
     public float valueSingle;
     public Color valueColor;
     public bool valueBoolean;
     public Vector2 valueVector2;
     public Vector3 valueVector3;
     public Vector4 valueVector4;
-
-    public VolumeEffectField(string fieldName, string fieldType)
-    {
-      this.fieldName = fieldName;
-      this.fieldType = fieldType;
-    }
 
     public VolumeEffectField(FieldInfo pi, Component c)
       : this(pi.Name, pi.FieldType.FullName)

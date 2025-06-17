@@ -3,10 +3,8 @@
 namespace PLVirtualMachine.Common.VMSpecialAttributes
 {
   [AttributeUsage(AttributeTargets.Property)]
-  public class SpecialPropertyAttribute : Attribute
+  public class SpecialPropertyAttribute(ESpecialPropertyName specialName) : Attribute 
   {
-    public readonly ESpecialPropertyName Name;
-
-    public SpecialPropertyAttribute(ESpecialPropertyName specialName) => Name = specialName;
+    public readonly ESpecialPropertyName Name = specialName;
   }
 }

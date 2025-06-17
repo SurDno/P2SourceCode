@@ -5,19 +5,19 @@ namespace Pathologic.Prototype
 {
   public class FightEventManager : MonoBehaviour
   {
-    private List<SimpleEvent> eventHandlersOnAttackOrReactionEnds = new List<SimpleEvent>();
-    private List<SimpleEvent> eventHandlersOnAttackOrReactionStarts = new List<SimpleEvent>();
-    private List<SimpleEvent> eventHandlersOnKlubokFalldownEnd = new List<SimpleEvent>();
-    private List<SimpleEvent> eventHandlersOnKlubokFalldownStart = new List<SimpleEvent>();
-    private List<SimpleEvent> eventHandlersOnKlubokHitEnd = new List<SimpleEvent>();
-    private List<SimpleEvent> eventHandlersOnKlubokIdleEnter = new List<SimpleEvent>();
-    private List<SimpleEvent> eventHandlersOnKlubokIdleExit = new List<SimpleEvent>();
-    private List<SimpleEvent> eventHandlersOnKlubokJumpBackTransitionEnd = new List<SimpleEvent>();
-    private List<SimpleEvent> eventHandlersOnKlubokJumpTransitionEnd = new List<SimpleEvent>();
-    private List<SimpleEvent> eventHandlersOnLocomotionStepLastCycleEnter = new List<SimpleEvent>();
-    private List<SimpleEvent> eventHandlersOnLocomotionStepLastCycleExit = new List<SimpleEvent>();
-    private List<SimpleEvent> eventHandlersOnLocomotionStepsCycleEnter = new List<SimpleEvent>();
-    private List<SimpleEvent> eventHandlersOnLocomotionStepsCycleExit = new List<SimpleEvent>();
+    private List<SimpleEvent> eventHandlersOnAttackOrReactionEnds = [];
+    private List<SimpleEvent> eventHandlersOnAttackOrReactionStarts = [];
+    private List<SimpleEvent> eventHandlersOnKlubokFalldownEnd = [];
+    private List<SimpleEvent> eventHandlersOnKlubokFalldownStart = [];
+    private List<SimpleEvent> eventHandlersOnKlubokHitEnd = [];
+    private List<SimpleEvent> eventHandlersOnKlubokIdleEnter = [];
+    private List<SimpleEvent> eventHandlersOnKlubokIdleExit = [];
+    private List<SimpleEvent> eventHandlersOnKlubokJumpBackTransitionEnd = [];
+    private List<SimpleEvent> eventHandlersOnKlubokJumpTransitionEnd = [];
+    private List<SimpleEvent> eventHandlersOnLocomotionStepLastCycleEnter = [];
+    private List<SimpleEvent> eventHandlersOnLocomotionStepLastCycleExit = [];
+    private List<SimpleEvent> eventHandlersOnLocomotionStepsCycleEnter = [];
+    private List<SimpleEvent> eventHandlersOnLocomotionStepsCycleExit = [];
 
     public event SimpleEvent OnLocomotionStepsCycleEnterEvent
     {

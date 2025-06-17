@@ -33,7 +33,7 @@ namespace RootMotion.FinalIK
     [Range(0.0f, 1f)]
     public float bendWeight = 1f;
     [Tooltip("The bones to use for bending.")]
-    public BendBone[] bendBones = new BendBone[0];
+    public BendBone[] bendBones = [];
     [LargeHeader("CCD")]
     [Tooltip("Optional. The master weight of the CCD (Cyclic Coordinate Descent) IK effect that bends the spine towards the head effector before FBBIK solves.")]
     [Range(0.0f, 1f)]
@@ -45,7 +45,7 @@ namespace RootMotion.FinalIK
     [Range(0.0f, 1000f)]
     public float damper = 500f;
     [Tooltip("Bones to use for the CCD pass. Assign spine and/or neck bones.")]
-    public Transform[] CCDBones = new Transform[0];
+    public Transform[] CCDBones = [];
     [LargeHeader("Stretching")]
     [Tooltip("Stretching the spine/neck to help reach the target. This is useful for making sure the head stays locked relative to the VR headset. NB! Stretching is done after FBBIK has solved so if you have the hand effectors pinned and spine bones included in the 'Stretch Bones', the hands might become offset from their target positions.")]
     [Range(0.0f, 1f)]
@@ -57,12 +57,12 @@ namespace RootMotion.FinalIK
     [Tooltip("If true, will fix head position to this Transform no matter what. Good for making sure the head will not budge away from the VR headset")]
     public bool fixHead;
     [Tooltip("Bones to use for stretching. The more bones you add, the less noticable the effect.")]
-    public Transform[] stretchBones = new Transform[0];
+    public Transform[] stretchBones = [];
     [LargeHeader("Chest Direction")]
     public Vector3 chestDirection = Vector3.forward;
     [Range(0.0f, 1f)]
     public float chestDirectionWeight = 1f;
-    public Transform[] chestBones = new Transform[0];
+    public Transform[] chestBones = [];
     public IKSolver.UpdateDelegate OnPostHeadEffectorFK;
     private Vector3 offset;
     private Vector3 headToBody;
@@ -76,13 +76,13 @@ namespace RootMotion.FinalIK
     private float rightShoulderDist;
     private Quaternion chestRotation;
     private Quaternion headRotationRelativeToRoot;
-    private Quaternion[] ccdDefaultLocalRotations = new Quaternion[0];
+    private Quaternion[] ccdDefaultLocalRotations = [];
     private Vector3 headLocalPosition;
     private Quaternion headLocalRotation;
-    private Vector3[] stretchLocalPositions = new Vector3[0];
-    private Quaternion[] stretchLocalRotations = new Quaternion[0];
-    private Vector3[] chestLocalPositions = new Vector3[0];
-    private Quaternion[] chestLocalRotations = new Quaternion[0];
+    private Vector3[] stretchLocalPositions = [];
+    private Quaternion[] stretchLocalRotations = [];
+    private Vector3[] chestLocalPositions = [];
+    private Quaternion[] chestLocalRotations = [];
     private int bendBonesCount;
     private int ccdBonesCount;
     private int stretchBonesCount;

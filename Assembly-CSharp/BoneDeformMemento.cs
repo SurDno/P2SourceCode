@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class BoneDeformMemento
 {
-  private List<DeformData> BoneDeformation = new List<DeformData>();
+  private List<DeformData> BoneDeformation = [];
 
   public void AccumulateDeform(
     Transform theBone,

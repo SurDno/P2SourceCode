@@ -8,7 +8,7 @@ namespace Engine.Source.Services.Consoles.Binds
   [Initialisable]
   public static class GetConsoleCommand
   {
-    private static Dictionary<string, Holder> binds = new Dictionary<string, Holder>();
+    private static Dictionary<string, Holder> binds = new();
 
     public static void AddBind(
       Type type,
@@ -31,8 +31,7 @@ namespace Engine.Source.Services.Consoles.Binds
             return DefaultConverter.ToString((Enum) target);
           if (!ConvertService.ContainsConverter(valueType))
             return "Error, parser type not found : " + valueType + " : " + name;
-          string result;
-          if (ConvertService.ToString(valueType, action(target), out result))
+          if (ConvertService.ToString(valueType, action(target), out string result))
             return result;
           return "Error to string value : " + valueType + " : " + name;
         }

@@ -7,12 +7,8 @@ using UnityEngine;
 namespace Engine.Source.Services.Consoles
 {
   [AttributeUsage(AttributeTargets.Method, AllowMultiple = true, Inherited = false)]
-  public class ConsoleCommandAttribute : InitialiseAttribute
+  public class ConsoleCommandAttribute(string name) : InitialiseAttribute 
   {
-    private string name;
-
-    public ConsoleCommandAttribute(string name) => this.name = name;
-
     public override void ComputeMember(Container container, MemberInfo member)
     {
       if (name.IsNullOrEmpty())
@@ -28,11 +24,10 @@ namespace Engine.Source.Services.Consoles
         {
           try
           {
-            return (string) method.Invoke(target, new object[2]
-            {
+            return (string) method.Invoke(target, [
               command,
               parameters2
-            });
+            ]);
           }
           catch (Exception ex)
           {

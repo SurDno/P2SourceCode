@@ -13,8 +13,7 @@ namespace PLVirtualMachine.GameLogic
 {
   [TypeData(EDataType.TCustomType)]
   [DataFactory("CustomType")]
-  public class VMCustomType : VMBaseObject, IStub, IEditorDataReader
-  {
+  public class VMCustomType(ulong guid) : VMBaseObject(guid), IStub, IEditorDataReader {
     public virtual void EditorDataRead(XmlReader xml, IDataCreator creator, string typeContext)
     {
       while (xml.Read()) {
@@ -39,11 +38,6 @@ namespace PLVirtualMachine.GameLogic
         if (xml.NodeType == XmlNodeType.EndElement)
           break;
       }
-    }
-
-    public VMCustomType(ulong guid)
-      : base(guid)
-    {
     }
 
     public override EObjectCategory GetCategory() => EObjectCategory.OBJECT_CATEGORY_TYPES;

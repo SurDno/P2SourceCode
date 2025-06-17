@@ -12,5 +12,5 @@ public struct LoadWindowGameDataItem
 
   public bool IsNull => GameDataName == null;
 
-  public static LoadWindowGameDataItem Null => new LoadWindowGameDataItem();
+  public static LoadWindowGameDataItem Null => new();
 }

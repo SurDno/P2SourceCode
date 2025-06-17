@@ -38,8 +38,7 @@ public class AnnoBlendDeformer : IAnnoDeformer
 
   public void Blend(string sLabel, float weight)
   {
-    VisemeBlendDefine visemeBlendDefine;
-    if (!_P2V.TryGetValue(sLabel, out visemeBlendDefine))
+    if (!_P2V.TryGetValue(sLabel, out VisemeBlendDefine visemeBlendDefine))
       return;
     foreach (WeightedBlendShape theBlend in visemeBlendDefine.theBlends)
       BlendIdxToWeight[theBlend.blendIdx] += weight * theBlend.weight;

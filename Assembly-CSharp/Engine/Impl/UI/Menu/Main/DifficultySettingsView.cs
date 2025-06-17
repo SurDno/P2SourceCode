@@ -30,8 +30,8 @@ namespace Engine.Impl.UI.Menu.Main
 
     protected override void Awake()
     {
-      headerViews = new List<GameObject>();
-      floatViews = new List<FloatSettingsValueView>();
+      headerViews = [];
+      floatViews = [];
       difficultySettings = InstanceByRequest<DifficultySettings>.Instance;
       externalDifficultySettings = ExternalSettingsInstance<ExternalDifficultySettings>.Instance;
       layout = Instantiate(listLayoutPrefab, transform, false);

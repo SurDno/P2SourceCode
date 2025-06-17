@@ -28,18 +28,9 @@ namespace SoundPropagation
       }
     }
 
-    public Filtering FilteringPerMeter
-    {
-      get
-      {
-        return Profile != null ? Profile.FilteringPerMeter : new Filtering();
-      }
-    }
+    public Filtering FilteringPerMeter => Profile != null ? Profile.FilteringPerMeter : new Filtering();
 
-    public float LossPerMeter
-    {
-      get => Profile != null ? Profile.FilteringPerMeter.Loss : 0.0f;
-    }
+    public float LossPerMeter => Profile != null ? Profile.FilteringPerMeter.Loss : 0.0f;
 
     public static SPCell Find(Vector3 position, LayerMask layerMask)
     {

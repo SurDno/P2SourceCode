@@ -32,9 +32,9 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
   public class AutopsyWindow : BaseInventoryWindow<AutopsyWindow>, IAutopsyWindow, IWindow
   {
     [SerializeField]
-    private List<UIControl> items = new List<UIControl>();
+    private List<UIControl> items = [];
     [SerializeField]
-    private ContainerTarget[] containerTargets = new ContainerTarget[0];
+    private ContainerTarget[] containerTargets = [];
     [SerializeField]
     private IEntitySerializable bloodEntityContainerTemplate;
     [SerializeField]
@@ -527,7 +527,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       if (!success)
         return;
       StartOpenAudio(bloodOpenCompleteAudio);
-      List<IStorableComponent> ingredients = new List<IStorableComponent>();
+      List<IStorableComponent> ingredients = [];
       IStorableComponent itemInContainer = GetItemInContainer(StorageUtility.GetContainerByTemplate(itemStorage, bloodEntityContainerTemplate.Value), itemStorage);
       if (itemInContainer != null)
         ingredients.Add(itemInContainer);

@@ -126,7 +126,7 @@ namespace TriangleNet.Tools
       Osub osub = new Osub();
       Osub o2_4 = new Osub();
       int count = mesh.triangles.Count;
-      List<Point> points = new List<Point>();
+      List<Point> points = [];
       vertex.tri.Copy(ref o2_2);
       if (o2_2.Org() != vertex)
         throw new Exception("ConstructBvdCell: inconsistent topology.");
@@ -205,7 +205,7 @@ namespace TriangleNet.Tools
       Osub osub = new Osub();
       Osub o2_5 = new Osub();
       int count = mesh.triangles.Count;
-      List<Point> points = new List<Point>();
+      List<Point> points = [];
       vertex.tri.Copy(ref o2_2);
       if (o2_2.Org() != vertex)
         throw new Exception("ConstructBoundaryBvdCell: inconsistent topology.");

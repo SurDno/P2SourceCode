@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class OpenByDynamic : MonoBehaviour
 {
-  private HashSet<IEntity> targets = new HashSet<IEntity>();
+  private HashSet<IEntity> targets = [];
   [SerializeField]
   private InteriorDoor interior;
 

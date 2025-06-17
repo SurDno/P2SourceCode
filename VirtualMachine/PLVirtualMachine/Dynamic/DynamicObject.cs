@@ -4,18 +4,12 @@ using PLVirtualMachine.Common;
 
 namespace PLVirtualMachine.Dynamic
 {
-  public abstract class DynamicObject : IRealTimeModifiable
+  public abstract class DynamicObject(VMEntity entity, bool bActive = true) : IRealTimeModifiable 
   {
-    protected VMEntity entity;
+    protected VMEntity entity = entity;
     private IObject staticObject;
-    protected bool active;
+    protected bool active = bActive;
     protected bool modified;
-
-    public DynamicObject(VMEntity entity, bool bActive = true)
-    {
-      this.entity = entity;
-      active = bActive;
-    }
 
     public abstract void Think();
 

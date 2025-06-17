@@ -12,8 +12,7 @@ namespace PLVirtualMachine.Dynamic.Components
 
     public void InitiliseComponentFromHierarchy(VMEntity entity, VMLogicObject templateObject)
     {
-      IParam obj;
-      if (!((IBlueprint) templateObject).TryGetProperty("Combination.CombinationData", out obj))
+      if (!((IBlueprint) templateObject).TryGetProperty("Combination.CombinationData", out IParam obj))
         return;
       CombinationData = (ObjectCombinationDataStruct) obj.Value;
     }

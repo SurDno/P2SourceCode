@@ -13,11 +13,11 @@ namespace Cinemachine
   {
     [Space]
     [Tooltip("The definition of Forward.  Camera will follow behind.")]
-    public Heading m_Heading = new Heading(Heading.HeadingDefinition.TargetForward, 4, 0.0f);
+    public Heading m_Heading = new(Heading.HeadingDefinition.TargetForward, 4, 0.0f);
     [Tooltip("Automatic heading recentering.  The settings here defines how the camera will reposition itself in the absence of player input.")]
-    public Recentering m_RecenterToTargetHeading = new Recentering(true, 1f, 2f);
+    public Recentering m_RecenterToTargetHeading = new(true, 1f, 2f);
     [Tooltip("Heading Control.  The settings here control the behaviour of the camera in response to the player's input.")]
-    public AxisState m_XAxis = new AxisState(300f, 2f, 1f, 0.0f, "Mouse X", true);
+    public AxisState m_XAxis = new(300f, 2f, 1f, 0.0f, "Mouse X", true);
     [SerializeField]
     [HideInInspector]
     [FormerlySerializedAs("m_Radius")]
@@ -135,9 +135,7 @@ namespace Cinemachine
         angle += m_Heading.m_HeadingBias;
       Quaternion quaternion1 = Quaternion.AngleAxis(angle, curState.ReferenceUp);
       Vector3 effectiveOffset = EffectiveOffset;
-      Vector3 outTargetPosition;
-      Quaternion outTargetOrient;
-      TrackTarget(deltaTime, curState.ReferenceUp, quaternion1 * effectiveOffset, out outTargetPosition, out outTargetOrient);
+      TrackTarget(deltaTime, curState.ReferenceUp, quaternion1 * effectiveOffset, out Vector3 outTargetPosition, out Quaternion outTargetOrient);
       curState.ReferenceUp = outTargetOrient * Vector3.up;
       if (deltaTime >= 0.0)
       {
@@ -211,26 +209,18 @@ namespace Cinemachine
 
     [DocumentationSorting(6.2f, DocumentationSortingAttribute.Level.UserRef)]
     [Serializable]
-    public struct Heading
-    {
+    public struct Heading(
+      Heading.HeadingDefinition def,
+      int filterStrength,
+      float bias) {
       [Tooltip("How 'forward' is defined.  The camera will be placed by default behind the target.  PositionDelta will consider 'forward' to be the direction in which the target is moving.")]
-      public HeadingDefinition m_HeadingDefinition;
+      public HeadingDefinition m_HeadingDefinition = def;
       [Range(0.0f, 10f)]
       [Tooltip("Size of the velocity sampling window for target heading filter.  This filters out irregularities in the target's movement.  Used only if deriving heading from target's movement (PositionDelta or Velocity)")]
-      public int m_VelocityFilterStrength;
+      public int m_VelocityFilterStrength = filterStrength;
       [Range(-180f, 180f)]
       [Tooltip("Where the camera is placed when the X-axis value is zero.  This is a rotation in degrees around the Y axis.  When this value is 0, the camera will be placed behind the target.  Nonzero offsets will rotate the zero position around the target.")]
-      public float m_HeadingBias;
-
-      public Heading(
-        HeadingDefinition def,
-        int filterStrength,
-        float bias)
-      {
-        m_HeadingDefinition = def;
-        m_VelocityFilterStrength = filterStrength;
-        m_HeadingBias = bias;
-      }
+      public float m_HeadingBias = bias;
 
       [DocumentationSorting(6.21f, DocumentationSortingAttribute.Level.UserRef)]
       public enum HeadingDefinition

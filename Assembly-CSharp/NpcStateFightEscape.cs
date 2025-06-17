@@ -8,10 +8,8 @@ using Inspectors;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class NpcStateFightEscape : INpcState
-{
-  private NpcState npcState;
-  private Pivot pivot;
+public class NpcStateFightEscape(NpcState npcState, Pivot pivot) : INpcState 
+  {
   private NPCEnemy enemy;
   private NavMeshAgent agent;
   private Animator animator;
@@ -24,7 +22,7 @@ public class NpcStateFightEscape : INpcState
   private bool inited;
   private bool failed;
 
-  public GameObject GameObject { get; private set; }
+  public GameObject GameObject { get; private set; } = npcState.gameObject;
 
   [Inspected]
   public NpcStateStatusEnum Status { get; protected set; }
@@ -49,13 +47,6 @@ public class NpcStateFightEscape : INpcState
     failed = false;
     inited = true;
     return true;
-  }
-
-  public NpcStateFightEscape(NpcState npcState, Pivot pivot)
-  {
-    GameObject = npcState.gameObject;
-    this.pivot = pivot;
-    this.npcState = npcState;
   }
 
   public void Activate(float escapeDistance)
@@ -111,8 +102,7 @@ public class NpcStateFightEscape : INpcState
           animatorState.SetTrigger("Fight.Triggers/Escape");
         else
           animatorState.SetTrigger("Fight.Triggers/EscapeImmediate");
-        NavMeshHit hit;
-        if (agent.isOnNavMesh || !NavMesh.SamplePosition(enemy.gameObject.transform.position, out hit, 1f, -1))
+        if (agent.isOnNavMesh || !NavMesh.SamplePosition(enemy.gameObject.transform.position, out NavMeshHit hit, 1f, -1))
           return;
         agent.Warp(hit.position);
       }

@@ -8,10 +8,10 @@ namespace Inspectors
 {
   public class RuntimeInspectedDrawer : IInspectedDrawer, IContextMenu
   {
-    public static readonly RuntimeInspectedDrawer Instance = new RuntimeInspectedDrawer();
+    public static readonly RuntimeInspectedDrawer Instance = new();
     private const int indentSize = 16;
     private const int labelWidth = 300;
-    private List<ContextMenuItem> menuItems = new List<ContextMenuItem>();
+    private List<ContextMenuItem> menuItems = [];
     private GUISkin skin;
     private GUIStyle foldout;
     private GUIStyle popup;

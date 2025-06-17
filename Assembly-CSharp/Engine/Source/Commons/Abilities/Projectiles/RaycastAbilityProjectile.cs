@@ -34,7 +34,7 @@ namespace Engine.Source.Commons.Abilities.Projectiles
     [CopyableProxy()]
     [Inspected(Mutable = true, Mode = ExecuteMode.EditAndRuntime)]
     protected float maximumAimingDeltaAngle = 3f;
-    private static List<RaycastHit> hits = new List<RaycastHit>();
+    private static List<RaycastHit> hits = [];
     private string headTag = "Head";
     private string bodyTag = "Body";
     private string armTag = "Arm";
@@ -45,7 +45,7 @@ namespace Engine.Source.Commons.Abilities.Projectiles
 
     public void ComputeTargets(IEntity self, IEntity item, OutsideAbilityTargets targets)
     {
-      hitsList = new List<ShotTargetBodyPartEnum>();
+      hitsList = [];
       GameObject gameObject1 = ((IEntityView) self).GameObject;
       if (gameObject1 == null)
         return;

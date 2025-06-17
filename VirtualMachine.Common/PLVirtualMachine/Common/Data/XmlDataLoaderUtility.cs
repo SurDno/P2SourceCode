@@ -7,15 +7,14 @@ namespace PLVirtualMachine.Common.Data
 {
   public static class XmlDataLoaderUtility
   {
-    private static Dictionary<EDataType, Type> objectIdToType = new Dictionary<EDataType, Type>();
+    private static Dictionary<EDataType, Type> objectIdToType = new();
 
     static XmlDataLoaderUtility() => Init();
 
     public static Type GetObjTypeById(ulong id)
     {
       ushort typeId = GuidUtility.GetTypeId(id);
-      Type objTypeById;
-      objectIdToType.TryGetValue((EDataType) typeId, out objTypeById);
+      objectIdToType.TryGetValue((EDataType) typeId, out Type objTypeById);
       return objTypeById;
     }
 

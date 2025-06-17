@@ -30,20 +30,8 @@ namespace Expressions
       return a != null && b != null ? Compute(a.GetValue(context), b.GetValue(context)) : default (TResult);
     }
 
-    public virtual string ValueView
-    {
-      get
-      {
-        return "(" + (a != null ? a.ValueView : "null") + " " + OperatorView() + " " + (b != null ? b.ValueView : "null") + ")";
-      }
-    }
+    public virtual string ValueView => "(" + (a != null ? a.ValueView : "null") + " " + OperatorView() + " " + (b != null ? b.ValueView : "null") + ")";
 
-    public virtual string TypeView
-    {
-      get
-      {
-        return "(" + (a != null ? a.TypeView : "null") + " " + OperatorView() + " " + (b != null ? b.TypeView : "null") + ")";
-      }
-    }
+    public virtual string TypeView => "(" + (a != null ? a.TypeView : "null") + " " + OperatorView() + " " + (b != null ? b.TypeView : "null") + ")";
   }
 }

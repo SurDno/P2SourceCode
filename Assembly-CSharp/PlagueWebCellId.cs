@@ -1,22 +1,11 @@
 ﻿using System;
 using UnityEngine;
 
-public struct PlagueWebCellId : IEquatable<PlagueWebCellId>
-{
-  public int X;
-  public int Z;
+public struct PlagueWebCellId(int x, int z) : IEquatable<PlagueWebCellId> {
+  public int X = x;
+  public int Z = z;
 
-  public PlagueWebCellId(int x, int z)
-  {
-    X = x;
-    Z = z;
-  }
-
-  public PlagueWebCellId(Vector3 worldPosition, float cellSize)
-  {
-    X = Mathf.FloorToInt(worldPosition.x / cellSize);
-    Z = Mathf.FloorToInt(worldPosition.z / cellSize);
-  }
+  public PlagueWebCellId(Vector3 worldPosition, float cellSize) : this(Mathf.FloorToInt(worldPosition.x / cellSize), Mathf.FloorToInt(worldPosition.z / cellSize)) { }
 
   public bool Equals(PlagueWebCellId other) => X == other.X && Z == other.Z;
 

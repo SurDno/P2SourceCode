@@ -4,15 +4,13 @@ using Engine.Common.Components.MessangerStationary;
 using Inspectors;
 using UnityEngine;
 
-public class NpcStateMoveFollowTeleportStationary : INpcState
-{
+public class NpcStateMoveFollowTeleportStationary(NpcState npcState, Pivot pivot) : INpcState 
+  {
   private bool inited;
   private bool failed;
-  private Pivot pivot;
-  private NpcState npcState;
   private bool wasRestartBehaviourAfterTeleport;
 
-  public GameObject GameObject { get; private set; }
+  public GameObject GameObject { get; private set; } = npcState.gameObject;
 
   [Inspected]
   public NpcStateStatusEnum Status => NpcStateStatusEnum.Running;
@@ -24,13 +22,6 @@ public class NpcStateMoveFollowTeleportStationary : INpcState
     failed = false;
     inited = true;
     return true;
-  }
-
-  public NpcStateMoveFollowTeleportStationary(NpcState npcState, Pivot pivot)
-  {
-    GameObject = npcState.gameObject;
-    this.npcState = npcState;
-    this.pivot = pivot;
   }
 
   public void Activate(float trialTime, SpawnpointKindEnum spawnpointKind)

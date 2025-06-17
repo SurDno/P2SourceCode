@@ -12,7 +12,7 @@ namespace PLVirtualMachine.Common.EngineAPI
   public class GameTime : ISerializeStateSave, IDynamicLoadSerializable, IVMStringSerializable
   {
     protected double totalValue;
-    public static GameTime Zero = new GameTime();
+    public static GameTime Zero = new();
     private static readonly int DaySeconds = 86400;
     private static readonly int HourSeconds = 3600;
     private static readonly int MinuteSeconds = 60;
@@ -65,10 +65,7 @@ namespace PLVirtualMachine.Common.EngineAPI
 
     public byte Hours
     {
-      get
-      {
-        return (byte) ((int) Math.Floor(totalValue) % DaySeconds / HourSeconds);
-      }
+      get => (byte) ((int) Math.Floor(totalValue) % DaySeconds / HourSeconds);
       set
       {
         ushort days = Days;
@@ -81,10 +78,7 @@ namespace PLVirtualMachine.Common.EngineAPI
 
     public byte Minutes
     {
-      get
-      {
-        return (byte) ((int) Math.Floor(totalValue) % HourSeconds / MinuteSeconds);
-      }
+      get => (byte) ((int) Math.Floor(totalValue) % HourSeconds / MinuteSeconds);
       set
       {
         ushort days = Days;
@@ -144,23 +138,19 @@ namespace PLVirtualMachine.Common.EngineAPI
             Logger.AddError(string.Format("Cannot convert {0} to GameTime at {1}", data, EngineAPIManager.Instance.CurrentFSMStateInfo));
             break;
           }
-          ushort result1 = 0;
-          byte result2 = 0;
-          byte result3 = 0;
-          byte result4 = 0;
+
           double lastPart = 0.0;
-          if (!ushort.TryParse(strArray[0], NumberStyles.Number, CultureInfo.InvariantCulture, out result1))
+          if (!ushort.TryParse(strArray[0], NumberStyles.Number, CultureInfo.InvariantCulture, out ushort result1))
             Logger.AddError(string.Format("Cannot convert {0} to GameTime at {1}", data, EngineAPIManager.Instance.CurrentFSMStateInfo));
-          if (!byte.TryParse(strArray[1], NumberStyles.Number, CultureInfo.InvariantCulture, out result2))
+          if (!byte.TryParse(strArray[1], NumberStyles.Number, CultureInfo.InvariantCulture, out byte result2))
             Logger.AddError(string.Format("Cannot convert {0} to GameTime at {1}", data, EngineAPIManager.Instance.CurrentFSMStateInfo));
-          if (!byte.TryParse(strArray[2], NumberStyles.Number, CultureInfo.InvariantCulture, out result3))
+          if (!byte.TryParse(strArray[2], NumberStyles.Number, CultureInfo.InvariantCulture, out byte result3))
             Logger.AddError(string.Format("Cannot convert {0} to GameTime at {1}", data, EngineAPIManager.Instance.CurrentFSMStateInfo));
-          if (!byte.TryParse(strArray[3], NumberStyles.Number, CultureInfo.InvariantCulture, out result4))
+          if (!byte.TryParse(strArray[3], NumberStyles.Number, CultureInfo.InvariantCulture, out byte result4))
             Logger.AddError(string.Format("Cannot convert {0} to GameTime at {1}", data, EngineAPIManager.Instance.CurrentFSMStateInfo));
           if (strArray.Length > 4)
           {
-            uint result5 = 0;
-            if (!uint.TryParse(strArray[4], NumberStyles.Number, CultureInfo.InvariantCulture, out result5))
+            if (!uint.TryParse(strArray[4], NumberStyles.Number, CultureInfo.InvariantCulture, out uint result5))
               Logger.AddError(string.Format("Cannot convert {0} to GameTime at {1}", data, EngineAPIManager.Instance.CurrentFSMStateInfo));
             lastPart = 9.9999999747524271E-07 * result5;
           }

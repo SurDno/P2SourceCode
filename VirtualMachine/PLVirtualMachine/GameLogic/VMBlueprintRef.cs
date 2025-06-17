@@ -28,10 +28,7 @@ namespace PLVirtualMachine.GameLogic
 
     public void Initialize(IBlueprint obj) => LoadStaticInstance(obj);
 
-    public override EContextVariableCategory Category
-    {
-      get => EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_BLUEPRINT;
-    }
+    public override EContextVariableCategory Category => EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_BLUEPRINT;
 
     public Guid EngineTemplateGuid => engineTemplateGuid;
 
@@ -54,7 +51,7 @@ namespace PLVirtualMachine.GameLogic
       return BaseGuid != 0UL ? base.IsEqual(other) : engineTemplateGuid == ((VMBlueprintRef) other).engineTemplateGuid;
     }
 
-    public override VMType Type => new VMType(typeof (IBlueprintRef));
+    public override VMType Type => new(typeof (IBlueprintRef));
 
     public override bool Empty => Blueprint == null && base.Empty;
 

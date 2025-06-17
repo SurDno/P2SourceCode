@@ -26,8 +26,7 @@ namespace Facepunch.Steamworks
       {
         if (State)
           return 1f;
-        float pflPercent = 0.0f;
-        return !client.native.userstats.GetAchievementAchievedPercent(Id, out pflPercent) ? -1f : pflPercent;
+        return !client.native.userstats.GetAchievementAchievedPercent(Id, out float pflPercent) ? -1f : pflPercent;
       }
     }
 
@@ -81,8 +80,7 @@ namespace Facepunch.Steamworks
       bool state = State;
       bool pbAchieved = false;
       State = false;
-      uint punUnlockTime;
-      if (client.native.userstats.GetAchievementAndUnlockTime(Id, ref pbAchieved, out punUnlockTime))
+      if (client.native.userstats.GetAchievementAndUnlockTime(Id, ref pbAchieved, out uint punUnlockTime))
       {
         State = pbAchieved;
         UnlockTime = Utility.Epoch.ToDateTime(punUnlockTime);

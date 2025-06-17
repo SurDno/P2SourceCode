@@ -31,8 +31,7 @@ namespace RootMotion.Dynamics
         msg = "Invalid References, one or more Transforms missing.";
         return false;
       }
-      Transform[] transformArray = new Transform[15]
-      {
+      Transform[] transformArray = [
         root,
         hips,
         head,
@@ -48,7 +47,7 @@ namespace RootMotion.Dynamics
         rightUpperLeg,
         rightLowerLeg,
         rightFoot
-      };
+      ];
       for (int index = 1; index < transformArray.Length; ++index)
       {
         if (!IsChildRecursive(transformArray[index], root))
@@ -90,8 +89,7 @@ namespace RootMotion.Dynamics
 
     public Transform[] GetRagdollTransforms()
     {
-      return new Transform[16]
-      {
+      return [
         hips,
         spine,
         chest,
@@ -108,7 +106,7 @@ namespace RootMotion.Dynamics
         rightUpperLeg,
         rightLowerLeg,
         rightFoot
-      };
+      ];
     }
 
     public static BipedRagdollReferences FromAvatar(Animator animator)

@@ -21,15 +21,15 @@ namespace PLVirtualMachine.Dynamic
     private VMParameter eventParameter;
     private GameTime eventTime;
     private bool repeated;
-    private List<GameTimer> checkRaisingTimePointEvents = new List<GameTimer>();
-    private List<VMParameter> checkRaisingParams = new List<VMParameter>();
+    private List<GameTimer> checkRaisingTimePointEvents = [];
+    private List<VMParameter> checkRaisingParams = [];
     private int memConditionResult = -1;
     private IGameMode gameTimeContext;
     private VMEntity parentEntity;
     private bool forceCheck;
     private OnEventBodyRise fnOnBodyRise;
     private INamed parent;
-    private List<ulong> saveLoadingCheckRaisingObjectsID = new List<ulong>();
+    private List<ulong> saveLoadingCheckRaisingObjectsID = [];
 
     public DynamicEventBody(
       VMPartCondition condition,

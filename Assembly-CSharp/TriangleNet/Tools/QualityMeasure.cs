@@ -6,10 +6,10 @@ namespace TriangleNet.Tools
 {
   public class QualityMeasure
   {
-    private AlphaMeasure alphaMeasure;
-    private AreaMeasure areaMeasure;
+    private AlphaMeasure alphaMeasure = new();
+    private AreaMeasure areaMeasure = new();
     private Mesh mesh;
-    private Q_Measure qMeasure;
+    private Q_Measure qMeasure = new();
 
     public double AreaMinimum => areaMeasure.area_min;
 
@@ -32,13 +32,6 @@ namespace TriangleNet.Tools
     public double Q_Average => qMeasure.q_ave;
 
     public double Q_Area => qMeasure.q_area;
-
-    public QualityMeasure()
-    {
-      areaMeasure = new AreaMeasure();
-      alphaMeasure = new AlphaMeasure();
-      qMeasure = new Q_Measure();
-    }
 
     public void Update(Mesh mesh)
     {

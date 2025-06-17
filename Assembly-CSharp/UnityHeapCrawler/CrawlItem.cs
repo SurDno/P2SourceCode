@@ -9,15 +9,15 @@ using Object = UnityEngine.Object;
 
 namespace UnityHeapCrawler
 {
-  public class CrawlItem : IComparable<CrawlItem>
-  {
+  public class CrawlItem([CanBeNull] CrawlItem parent, [NotNull] object o, [NotNull] string name)
+    : IComparable<CrawlItem> {
     private static int depth;
     [CanBeNull]
-    public readonly CrawlItem Parent;
+    public readonly CrawlItem Parent = parent;
     [NotNull]
-    public readonly object Object;
+    public readonly object Object = o;
     [NotNull]
-    public string Name;
+    public string Name = name;
     public int SelfSize;
     public int TotalSize;
     [CanBeNull]
@@ -26,17 +26,10 @@ namespace UnityHeapCrawler
 
     public bool SubtreeUpdated { get; private set; }
 
-    public CrawlItem([CanBeNull] CrawlItem parent, [NotNull] object o, [NotNull] string name)
-    {
-      Parent = parent;
-      Object = o;
-      Name = name;
-    }
-
     public void AddChild([NotNull] CrawlItem child)
     {
       if (Children == null)
-        Children = new List<CrawlItem>();
+        Children = [];
       Children.Add(child);
     }
 
@@ -150,7 +143,7 @@ namespace UnityHeapCrawler
 
     public string GetRootPath()
     {
-      List<CrawlItem> source = new List<CrawlItem>();
+      List<CrawlItem> source = [];
       CrawlItem crawlItem = this;
       do
       {

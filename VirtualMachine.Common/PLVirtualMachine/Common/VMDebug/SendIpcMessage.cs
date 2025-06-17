@@ -3,18 +3,14 @@ using System.Collections.Generic;
 
 namespace PLVirtualMachine.Common.VMDebug
 {
-  public class SendIpcMessage
-  {
-    private EDebugIPCMessageType messageType;
+  public class SendIpcMessage(EDebugIPCMessageType messageType) {
     private Guid debugObjectEngineGuid;
     private string debugObjectUniName;
     private ulong stateGuid;
-    private List<ulong> staticGuidsList = new List<ulong>();
-    private List<ulong> paramsChanged = new List<ulong>();
-    private List<object> paramsValues = new List<object>();
+    private List<ulong> staticGuidsList = [];
+    private List<ulong> paramsChanged = [];
+    private List<object> paramsValues = [];
     private string lastError = "";
-
-    public SendIpcMessage(EDebugIPCMessageType messageType) => this.messageType = messageType;
 
     public void CopyData(ReciveIpcMessage message)
     {
@@ -50,7 +46,7 @@ namespace PLVirtualMachine.Common.VMDebug
     {
       try
       {
-        List<byte> dDestBytesList = new List<byte>();
+        List<byte> dDestBytesList = [];
         IpcMessageUtility.SerializeInt((int) messageType, dDestBytesList);
         if (messageType == EDebugIPCMessageType.IPC_MESSAGE_SERVER_EVENT_ADD_DEBUG_OBJECT || messageType == EDebugIPCMessageType.IPC_MESSAGE_SERVER_EVENT_REMOVE_DEBUG_OBJECT || messageType == EDebugIPCMessageType.IPC_MESSAGE_REQUEST_SET_DEBUG_OBJECT || messageType == EDebugIPCMessageType.IPC_MESSAGE_RESPONSE_SET_DEBUG_OBJECT || messageType == EDebugIPCMessageType.IPC_MESSAGE_REQUEST_SET_BREAKPOINT || messageType == EDebugIPCMessageType.IPC_MESSAGE_RESPONSE_SET_BREAKPOINT || messageType == EDebugIPCMessageType.IPC_MESSAGE_REQUEST_REMOVE_BREAKPOINT || messageType == EDebugIPCMessageType.IPC_MESSAGE_RESPONSE_REMOVE_BREAKPOINT || messageType == EDebugIPCMessageType.IPC_MESSAGE_REQUEST_STEP_INTO || messageType == EDebugIPCMessageType.IPC_MESSAGE_REQUEST_STEP_OVER || messageType == EDebugIPCMessageType.IPC_MESSAGE_SERVER_EVENT_INPUT_STATE || messageType == EDebugIPCMessageType.IPC_MESSAGE_SERVER_EVENT_OUTPUT_STATE || messageType == EDebugIPCMessageType.IPC_MESSAGE_SERVER_EVENT_PARAM_VALUE_CHANGE || messageType == EDebugIPCMessageType.IPC_MESSAGE_REQUEST_SET_DEBUG_CAMERA)
           IpcMessageUtility.SerializeGuid(debugObjectEngineGuid, dDestBytesList);

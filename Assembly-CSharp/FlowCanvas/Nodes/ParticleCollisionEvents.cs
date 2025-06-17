@@ -15,7 +15,7 @@ namespace FlowCanvas.Nodes
 
     protected override string[] GetTargetMessageEvents()
     {
-      return new string[1]{ "OnParticleCollision" };
+      return ["OnParticleCollision"];
     }
 
     protected override void RegisterPorts()
@@ -30,7 +30,7 @@ namespace FlowCanvas.Nodes
     private void OnParticleCollision(GameObject other)
     {
       particle = other.GetComponent<ParticleSystem>();
-      collisionEvents = new List<ParticleCollisionEvent>();
+      collisionEvents = [];
       if (particle != null)
         particle.GetCollisionEvents(target.value.gameObject, collisionEvents);
       collisionOut.Call();

@@ -41,12 +41,12 @@ namespace Engine.Source.Components
     [DataWriteProxy]
     [CopyableProxy]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    protected List<StorableGroup> groups = new List<StorableGroup>();
+    protected List<StorableGroup> groups = [];
     [DataReadProxy]
     [DataWriteProxy]
     [CopyableProxy]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    protected List<IStorableTooltipComponent> tooltips = new List<IStorableTooltipComponent>();
+    protected List<IStorableTooltipComponent> tooltips = [];
     [StateSaveProxy]
     [StateLoadProxy]
     protected int count = 1;

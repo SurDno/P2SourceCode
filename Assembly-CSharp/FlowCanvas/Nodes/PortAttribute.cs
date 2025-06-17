@@ -7,23 +7,11 @@ using UnityEngine;
 namespace FlowCanvas.Nodes
 {
   [AttributeUsage(AttributeTargets.Method | AttributeTargets.Field, Inherited = false)]
-  public class PortAttribute : MemberAttribute
+  public class PortAttribute(string name, params object[] value) : MemberAttribute 
   {
     public static readonly Guid Id = Guid.NewGuid();
-    private string name;
-    private object[] value;
 
-    public PortAttribute(string name)
-    {
-      this.name = name;
-      value = null;
-    }
-
-    public PortAttribute(string name, params object[] value)
-    {
-      this.name = name;
-      this.value = value;
-    }
+    public PortAttribute(string name) : this(name, null) { }
 
     public override void ComputeMember(Container container, MemberInfo member)
     {
@@ -50,10 +38,9 @@ namespace FlowCanvas.Nodes
         {
           FlowNode instance = (FlowNode) target;
           Type type = typeof (ValueHandler<>);
-          Type[] typeArray = new Type[1]
-          {
+          Type[] typeArray = [
             method.ReturnType
-          };
+          ];
           Delegate getter = method.RTCreateDelegate(type.MakeGenericType(typeArray), instance);
           instance.AddValueOutputCommon(name, method.ReturnType, getter);
         });

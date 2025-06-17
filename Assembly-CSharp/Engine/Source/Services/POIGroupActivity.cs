@@ -8,7 +8,7 @@ namespace Engine.Source.Services
     private bool isDialog;
     private GroupActivityObject activityObject;
     private Dictionary<GameObject, bool> CharactersReady;
-    private List<GameObject> characters = new List<GameObject>();
+    private List<GameObject> characters = [];
 
     public bool IsDialog => isDialog;
 

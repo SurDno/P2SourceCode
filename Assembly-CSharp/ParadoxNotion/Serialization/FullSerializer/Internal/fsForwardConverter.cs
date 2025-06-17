@@ -2,14 +2,9 @@
 
 namespace ParadoxNotion.Serialization.FullSerializer.Internal
 {
-  public class fsForwardConverter : fsConverter
+  public class fsForwardConverter(fsForwardAttribute attribute) : fsConverter 
   {
-    private string _memberName;
-
-    public fsForwardConverter(fsForwardAttribute attribute)
-    {
-      _memberName = attribute.MemberName;
-    }
+    private string _memberName = attribute.MemberName;
 
     public override bool CanProcess(Type type)
     {
@@ -34,9 +29,8 @@ namespace ParadoxNotion.Serialization.FullSerializer.Internal
     public override fsResult TrySerialize(object instance, out fsData serialized, Type storageType)
     {
       serialized = fsData.Null;
-      fsMetaProperty property;
       fsResult fsResult;
-      if ((fsResult = fsResult.Success + GetProperty(instance, out property)).Failed)
+      if ((fsResult = fsResult.Success + GetProperty(instance, out fsMetaProperty property)).Failed)
         return fsResult;
       object instance1 = property.Read(instance);
       return Serializer.TrySerialize(property.StorageType, instance1, out serialized);
@@ -44,9 +38,8 @@ namespace ParadoxNotion.Serialization.FullSerializer.Internal
 
     public override fsResult TryDeserialize(fsData data, ref object instance, Type storageType)
     {
-      fsMetaProperty property;
       fsResult fsResult1;
-      if ((fsResult1 = fsResult.Success + GetProperty(instance, out property)).Failed)
+      if ((fsResult1 = fsResult.Success + GetProperty(instance, out fsMetaProperty property)).Failed)
         return fsResult1;
       object result = null;
       fsResult fsResult2;

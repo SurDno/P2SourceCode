@@ -34,7 +34,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.MindMap
     private MapRouteView routeView;
     private MapFastTravelPointView targetView;
     private FastTravelComponent origin;
-    private List<FastTravelPointEnum> path = new List<FastTravelPointEnum>();
+    private List<FastTravelPointEnum> path = [];
     private int time;
     private bool enoughResource;
 

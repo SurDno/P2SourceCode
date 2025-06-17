@@ -20,10 +20,7 @@ namespace RootMotion.FinalIK
 
     public IKEffector leftShoulderEffector => GetEffector(FullBodyBipedEffector.LeftShoulder);
 
-    public IKEffector rightShoulderEffector
-    {
-      get => GetEffector(FullBodyBipedEffector.RightShoulder);
-    }
+    public IKEffector rightShoulderEffector => GetEffector(FullBodyBipedEffector.RightShoulder);
 
     public IKEffector leftThighEffector => GetEffector(FullBodyBipedEffector.LeftThigh);
 
@@ -251,30 +248,28 @@ namespace RootMotion.FinalIK
       }
       chain[0].pin = 0.0f;
       chain[0].SetNodes(rootNode);
-      chain[0].children = new int[4]{ 1, 2, 3, 4 };
+      chain[0].children = [1, 2, 3, 4];
       chain[1].SetNodes(references.leftUpperArm, references.leftForearm, references.leftHand);
       chain[2].SetNodes(references.rightUpperArm, references.rightForearm, references.rightHand);
       chain[3].SetNodes(references.leftThigh, references.leftCalf, references.leftFoot);
       chain[4].SetNodes(references.rightThigh, references.rightCalf, references.rightFoot);
       if (effectors.Length != 9)
-        effectors = new IKEffector[9]
-        {
-          new IKEffector(),
-          new IKEffector(),
-          new IKEffector(),
-          new IKEffector(),
-          new IKEffector(),
-          new IKEffector(),
-          new IKEffector(),
-          new IKEffector(),
-          new IKEffector()
-        };
+        effectors = [
+          new(),
+          new(),
+          new(),
+          new(),
+          new(),
+          new(),
+          new(),
+          new(),
+          new()
+        ];
       effectors[0].bone = rootNode;
-      effectors[0].childBones = new Transform[2]
-      {
+      effectors[0].childBones = [
         references.leftThigh,
         references.rightThigh
-      };
+      ];
       effectors[1].bone = references.leftUpperArm;
       effectors[2].bone = references.rightUpperArm;
       effectors[3].bone = references.leftThigh;
@@ -295,13 +290,12 @@ namespace RootMotion.FinalIK
       effectors[8].planeBone1 = references.rightThigh;
       effectors[8].planeBone2 = references.leftThigh;
       effectors[8].planeBone3 = rootNode;
-      chain[0].childConstraints = new FBIKChain.ChildConstraint[4]
-      {
-        new FBIKChain.ChildConstraint(references.leftUpperArm, references.rightThigh, pullElasticity: 1f),
-        new FBIKChain.ChildConstraint(references.rightUpperArm, references.leftThigh, pullElasticity: 1f),
-        new FBIKChain.ChildConstraint(references.leftUpperArm, references.rightUpperArm),
-        new FBIKChain.ChildConstraint(references.leftThigh, references.rightThigh)
-      };
+      chain[0].childConstraints = [
+        new(references.leftUpperArm, references.rightThigh, pullElasticity: 1f),
+        new(references.rightUpperArm, references.leftThigh, pullElasticity: 1f),
+        new(references.leftUpperArm, references.rightUpperArm),
+        new(references.leftThigh, references.rightThigh)
+      ];
       Transform[] spineBones = new Transform[references.spine.Length + 1];
       spineBones[0] = references.pelvis;
       for (int index = 0; index < references.spine.Length; ++index)
@@ -325,13 +319,12 @@ namespace RootMotion.FinalIK
         boneMappings[0].bone = references.head;
       if (limbMappings.Length != 4)
       {
-        limbMappings = new IKMappingLimb[4]
-        {
-          new IKMappingLimb(),
-          new IKMappingLimb(),
-          new IKMappingLimb(),
-          new IKMappingLimb()
-        };
+        limbMappings = [
+          new(),
+          new(),
+          new(),
+          new()
+        ];
         limbMappings[2].maintainRotationWeight = 1f;
         limbMappings[3].maintainRotationWeight = 1f;
       }

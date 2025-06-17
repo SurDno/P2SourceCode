@@ -3,24 +3,12 @@
 namespace PLVirtualMachine.Common.EngineAPI.VMECS.VMAttributes
 {
   [AttributeUsage(AttributeTargets.Event)]
-  public class EventAttribute : Attribute
+  public class EventAttribute(string name, string inputTypesDescription, bool bAtOnce) : Attribute 
   {
-    public readonly string Name;
-    public readonly string InputTypesDesc;
-    public readonly bool AtOnce;
+    public readonly string Name = name;
+    public readonly string InputTypesDesc = inputTypesDescription;
+    public readonly bool AtOnce = bAtOnce;
 
-    public EventAttribute(string name, string inputTypesDescription)
-    {
-      Name = name;
-      InputTypesDesc = inputTypesDescription;
-      AtOnce = false;
-    }
-
-    public EventAttribute(string name, string inputTypesDescription, bool bAtOnce)
-    {
-      Name = name;
-      InputTypesDesc = inputTypesDescription;
-      AtOnce = bAtOnce;
-    }
+    public EventAttribute(string name, string inputTypesDescription) : this(name, inputTypesDescription, false) { }
   }
 }

@@ -12,14 +12,14 @@ namespace SRDebugger.Profiler
   public class ProfilerServiceImpl : SRServiceBase<IProfilerService>, IProfilerService
   {
     private const int FrameBufferSize = 400;
-    private readonly SRList<ProfilerCameraListener> _cameraListeners = new SRList<ProfilerCameraListener>();
-    private readonly CircularBuffer<ProfilerFrame> _frameBuffer = new CircularBuffer<ProfilerFrame>(400);
+    private readonly SRList<ProfilerCameraListener> _cameraListeners = [];
+    private readonly CircularBuffer<ProfilerFrame> _frameBuffer = new(400);
     private Camera[] _cameraCache = new Camera[6];
     private int _expectedCameraCount;
     private ProfilerLateUpdateListener _lateUpdateListener;
     private double _renderDuration;
     private int _reportedCameras;
-    private Stopwatch _stopwatch = new Stopwatch();
+    private Stopwatch _stopwatch = new();
     private double _updateDuration;
     private double _updateToRenderDuration;
     private double _customDuration;

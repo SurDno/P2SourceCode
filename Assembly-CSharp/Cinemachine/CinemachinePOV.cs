@@ -9,9 +9,9 @@ namespace Cinemachine
   public class CinemachinePOV : CinemachineComponentBase
   {
     [Tooltip("The Vertical axis.  Value is -90..90. Controls the vertical orientation")]
-    public AxisState m_VerticalAxis = new AxisState(300f, 0.1f, 0.1f, 0.0f, "Mouse Y", true);
+    public AxisState m_VerticalAxis = new(300f, 0.1f, 0.1f, 0.0f, "Mouse Y", true);
     [Tooltip("The Horizontal axis.  Value is -180..180.  Controls the horizontal orientation")]
-    public AxisState m_HorizontalAxis = new AxisState(300f, 0.1f, 0.1f, 0.0f, "Mouse X", false);
+    public AxisState m_HorizontalAxis = new(300f, 0.1f, 0.1f, 0.0f, "Mouse X", false);
 
     public override bool IsValid => enabled;
 

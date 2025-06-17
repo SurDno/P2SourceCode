@@ -124,21 +124,9 @@ namespace RootMotion.FinalIK
       aimIK.solver.axis = aimIKAxis;
     }
 
-    private IKEffector primaryHandEffector
-    {
-      get
-      {
-        return handedness == Handedness.Right ? ik.solver.rightHandEffector : ik.solver.leftHandEffector;
-      }
-    }
+    private IKEffector primaryHandEffector => handedness == Handedness.Right ? ik.solver.rightHandEffector : ik.solver.leftHandEffector;
 
-    private IKEffector secondaryHandEffector
-    {
-      get
-      {
-        return handedness == Handedness.Right ? ik.solver.leftHandEffector : ik.solver.rightHandEffector;
-      }
-    }
+    private IKEffector secondaryHandEffector => handedness == Handedness.Right ? ik.solver.leftHandEffector : ik.solver.rightHandEffector;
 
     private Transform primaryHand => primaryHandEffector.bone;
 

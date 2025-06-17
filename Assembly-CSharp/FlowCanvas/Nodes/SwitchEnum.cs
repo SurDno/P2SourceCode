@@ -18,7 +18,7 @@ namespace FlowCanvas.Nodes
       if (_type == null)
         return;
       ValueInput e = AddValueInput(_type.Name, _type);
-      List<FlowOutput> outs = new List<FlowOutput>();
+      List<FlowOutput> outs = [];
       foreach (string name in Enum.GetNames(_type))
         outs.Add(AddFlowOutput(name));
       AddFlowInput("In", () => outs[(int) Enum.Parse(e.value.GetType(), e.value.ToString())].Call());

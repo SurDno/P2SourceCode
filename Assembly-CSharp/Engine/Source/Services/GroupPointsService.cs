@@ -9,7 +9,7 @@ namespace Engine.Source.Services
   {
     private List<GroupPoint> freePoints;
 
-    public void Initialise() => freePoints = new List<GroupPoint>();
+    public void Initialise() => freePoints = [];
 
     public void Terminate() => freePoints.Clear();
 

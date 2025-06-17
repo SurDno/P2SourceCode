@@ -7,13 +7,7 @@ namespace FlowCanvas.Nodes
   {
     public BBParameter<T> target;
 
-    public override string name
-    {
-      get
-      {
-        return string.Format("{0} ({1})", base.name.ToUpper(), !target.isNull || target.useBlackboard ? target.ToString() : (object) "Self");
-      }
-    }
+    public override string name => string.Format("{0} ({1})", base.name.ToUpper(), !target.isNull || target.useBlackboard ? target.ToString() : (object) "Self");
 
     protected virtual string[] GetTargetMessageEvents() => null;
 

@@ -19,7 +19,7 @@ namespace Engine.Impl.UI.Menu.Main
     private Button buttonBack;
     private GameActionService gameActionService;
     private NamedIntSettingsValueView joystickLayout;
-    private List<KeySettingsItemView> items = new List<KeySettingsItemView>();
+    private List<KeySettingsItemView> items = [];
     private SelectableSettingsItemView listeningItem;
 
     protected override void Awake()
@@ -28,12 +28,11 @@ namespace Engine.Impl.UI.Menu.Main
       layout = Instantiate(listLayoutPrefab, transform, false);
       joystickLayout = Instantiate(namedIntValueViewPrefab, layout.Content, false);
       joystickLayout.SetName("{UI.Pingle.KeyMaps.ChangeKeyMap}");
-      joystickLayout.SetValueNames(new string[3]
-      {
+      joystickLayout.SetValueNames([
         "{UI.Pingle.PresetA}",
         "{UI.Pingle.PresetB}",
         "{UI.Pingle.PresetC}"
-      });
+      ]);
       joystickLayout.SetSetting(InstanceByRequest<InputGameSetting>.Instance.JoystickLayout);
       buttonCancel.onClick.AddListener(CancelSelection);
       base.Awake();

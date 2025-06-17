@@ -1,26 +1,11 @@
 ﻿namespace ClipperLib
 {
-  public struct DoublePoint
-  {
-    public double X;
-    public double Y;
+  public struct DoublePoint(double x = 0.0, double y = 0.0) {
+    public double X = x;
+    public double Y = y;
 
-    public DoublePoint(double x = 0.0, double y = 0.0)
-    {
-      X = x;
-      Y = y;
-    }
+    public DoublePoint(DoublePoint dp) : this(dp.X, dp.Y) { }
 
-    public DoublePoint(DoublePoint dp)
-    {
-      X = dp.X;
-      Y = dp.Y;
-    }
-
-    public DoublePoint(IntPoint ip)
-    {
-      X = ip.X;
-      Y = ip.Y;
-    }
+    public DoublePoint(IntPoint ip) : this(ip.X, ip.Y) { }
   }
 }

@@ -58,8 +58,7 @@ namespace ParadoxNotion.Serialization.FullSerializer
       string name,
       T value)
     {
-      fsData data1;
-      fsResult fsResult = Serializer.TrySerialize(typeof (T), overrideConverterType, value, out data1);
+      fsResult fsResult = Serializer.TrySerialize(typeof (T), overrideConverterType, value, out fsData data1);
       if (fsResult.Succeeded)
         data[name] = data1;
       return fsResult;
@@ -71,8 +70,7 @@ namespace ParadoxNotion.Serialization.FullSerializer
       string name,
       out T value)
     {
-      fsData data1;
-      if (!data.TryGetValue(name, out data1))
+      if (!data.TryGetValue(name, out fsData data1))
       {
         value = default (T);
         return fsResult.Fail("Unable to find member \"" + name + "\"");

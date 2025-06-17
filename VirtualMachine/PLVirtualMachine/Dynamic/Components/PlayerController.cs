@@ -15,17 +15,13 @@ namespace PLVirtualMachine.Dynamic.Components
 
     public void InitiliseComponentFromHierarchy(VMEntity entity, VMLogicObject templateObject)
     {
-      IParam obj1;
-      if (((IBlueprint) templateObject).TryGetProperty("PlayerControllerComponent.FundEnabled", out obj1))
+      if (((IBlueprint) templateObject).TryGetProperty("PlayerControllerComponent.FundEnabled", out IParam obj1))
         FundEnabled = (bool) obj1.Value;
-      IParam obj2;
-      if (((IBlueprint) templateObject).TryGetProperty("PlayerControllerComponent.FundFinished", out obj2))
+      if (((IBlueprint) templateObject).TryGetProperty("PlayerControllerComponent.FundFinished", out IParam obj2))
         FundFinished = (bool) obj2.Value;
-      IParam obj3;
-      if (((IBlueprint) templateObject).TryGetProperty("PlayerControllerComponent.FundPoints", out obj3))
+      if (((IBlueprint) templateObject).TryGetProperty("PlayerControllerComponent.FundPoints", out IParam obj3))
         FundPoints = (float) obj3.Value;
-      IParam obj4;
-      if (!((IBlueprint) templateObject).TryGetProperty("PlayerControllerComponent.CanReceiveMail", out obj4))
+      if (!((IBlueprint) templateObject).TryGetProperty("PlayerControllerComponent.CanReceiveMail", out IParam obj4))
         return;
       CanReceiveMail = (bool) obj4.Value;
     }

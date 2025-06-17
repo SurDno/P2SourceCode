@@ -30,11 +30,11 @@ namespace Engine.Source.Services
     ISavesController
   {
     [Inspected]
-    private Dictionary<NotificationEnum, NotificationLayerItem> layers = new Dictionary<NotificationEnum, NotificationLayerItem>();
+    private Dictionary<NotificationEnum, NotificationLayerItem> layers = new();
     [StateSaveProxy]
     [StateLoadProxy()]
     [Inspected]
-    protected List<NotificationEnum> blockedTypes = new List<NotificationEnum>();
+    protected List<NotificationEnum> blockedTypes = [];
 
     public void AddNotify(NotificationEnum type, params object[] values)
     {
@@ -107,8 +107,7 @@ namespace Engine.Source.Services
     private NotificationLayerItem GetLayer(NotificationEnum type)
     {
       NotificationEnum layerEnum = GetLayerEnum(type);
-      NotificationLayerItem layer;
-      if (!layers.TryGetValue(layerEnum, out layer))
+      if (!layers.TryGetValue(layerEnum, out NotificationLayerItem layer))
       {
         layer = new NotificationLayerItem();
         layers.Add(layerEnum, layer);

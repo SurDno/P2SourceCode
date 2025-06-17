@@ -7,16 +7,15 @@ using Inspectors;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class NpcStateMoveBase : INpcState
-{
-  protected NpcState npcState;
-  protected Pivot pivot;
+public class NpcStateMoveBase(NpcState npcState, Pivot pivot, bool infinite) : INpcState 
+  {
+  protected NpcState npcState = npcState;
+  protected Pivot pivot = pivot;
   protected EngineBehavior behavior;
   protected Animator animator;
   protected NavMeshAgent agent;
   protected Rigidbody rigidbody;
   private NPCWeaponService weaponService;
-  private bool infinite;
   private int prevAreaMask;
   private bool agentWasEnabled;
   private bool rigidbodyWasKinematic;
@@ -26,10 +25,10 @@ public class NpcStateMoveBase : INpcState
   private bool inited;
   private bool failed;
 
-  public GameObject GameObject { get; private set; }
+  public GameObject GameObject { get; private set; } = npcState.gameObject;
 
   [Inspected]
-  private NavMeshAgentWrapper agentWrapper => new NavMeshAgentWrapper(agent);
+  private NavMeshAgentWrapper agentWrapper => new(agent);
 
   public virtual bool MovementPaused => false;
 
@@ -76,14 +75,6 @@ public class NpcStateMoveBase : INpcState
     failed = false;
     inited = true;
     return true;
-  }
-
-  public NpcStateMoveBase(NpcState npcState, Pivot pivot, bool infinite)
-  {
-    GameObject = npcState.gameObject;
-    this.infinite = infinite;
-    this.pivot = pivot;
-    this.npcState = npcState;
   }
 
   public bool Activate()

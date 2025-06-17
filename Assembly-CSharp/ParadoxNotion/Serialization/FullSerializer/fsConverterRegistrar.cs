@@ -17,7 +17,7 @@ namespace ParadoxNotion.Serialization.FullSerializer
     public static LayerMask_DirectConverter Register_LayerMask_DirectConverter;
     public static Rect_DirectConverter Register_Rect_DirectConverter;
     public static RectOffset_DirectConverter Register_RectOffset_DirectConverter;
-    public static List<Type> Converters = new List<Type>();
+    public static List<Type> Converters = [];
 
     static fsConverterRegistrar()
     {

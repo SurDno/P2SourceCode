@@ -45,13 +45,7 @@ namespace PLVirtualMachine.GameLogic
       LoadStaticInstance(instance.EditorTemplate);
     }
 
-    public override EContextVariableCategory Category
-    {
-      get
-      {
-        return Object == null || Object.GetCategory() != EObjectCategory.OBJECT_CATEGORY_GAME ? EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_OBJECT : EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_GAME;
-      }
-    }
+    public override EContextVariableCategory Category => Object == null || Object.GetCategory() != EObjectCategory.OBJECT_CATEGORY_GAME ? EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_OBJECT : EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_GAME;
 
     public Guid EngineTemplateGuid
     {
@@ -63,10 +57,7 @@ namespace PLVirtualMachine.GameLogic
       }
     }
 
-    public Guid EngineGuid
-    {
-      get => EngineInstance != null ? EngineInstance.EngineGuid : engineGuid;
-    }
+    public Guid EngineGuid => EngineInstance != null ? EngineInstance.EngineGuid : engineGuid;
 
     public HierarchyGuid HierarchyGuid => hierarchyGuid;
 
@@ -94,13 +85,7 @@ namespace PLVirtualMachine.GameLogic
 
     public IBlueprint EditorTemplate => Object;
 
-    public override VMType Type
-    {
-      get
-      {
-        return StaticInstance == null ? new VMType(typeof (IObjRef)) : new VMType(typeof (IObjRef), StaticInstance.BaseGuid.ToString());
-      }
-    }
+    public override VMType Type => StaticInstance == null ? new VMType(typeof (IObjRef)) : new VMType(typeof (IObjRef), StaticInstance.BaseGuid.ToString());
 
     public override bool IsEqual(IVariable other)
     {
@@ -118,15 +103,9 @@ namespace PLVirtualMachine.GameLogic
       return base.IsEqual(other);
     }
 
-    public override bool Empty
-    {
-      get => !Static && EngineInstance == null && Guid.Empty == engineGuid;
-    }
+    public override bool Empty => !Static && EngineInstance == null && Guid.Empty == engineGuid;
 
-    public override bool Exist
-    {
-      get => EngineInstance != null && ((VMBaseEntity) EngineInstance).Instantiated;
-    }
+    public override bool Exist => EngineInstance != null && ((VMBaseEntity) EngineInstance).Instantiated;
 
     public bool Static
     {

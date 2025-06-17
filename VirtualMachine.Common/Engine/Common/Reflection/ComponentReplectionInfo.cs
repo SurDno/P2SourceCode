@@ -10,9 +10,9 @@ namespace Engine.Common.Reflection
     private string dependedComponentName;
     private string name;
     private Type type;
-    private Dictionary<string, EventInfo> events = new Dictionary<string, EventInfo>();
-    private Dictionary<string, MethodInfo> methods = new Dictionary<string, MethodInfo>();
-    private Dictionary<string, PropertyInfo> properties = new Dictionary<string, PropertyInfo>();
+    private Dictionary<string, EventInfo> events = new();
+    private Dictionary<string, MethodInfo> methods = new();
+    private Dictionary<string, PropertyInfo> properties = new();
 
     public Type Type => type;
 
@@ -20,17 +20,11 @@ namespace Engine.Common.Reflection
 
     public string DependedComponentName => dependedComponentName;
 
-    public IDictionary<string, MethodInfo> Methods
-    {
-      get => methods;
-    }
+    public IDictionary<string, MethodInfo> Methods => methods;
 
     public IDictionary<string, EventInfo> Events => events;
 
-    public IDictionary<string, PropertyInfo> Properties
-    {
-      get => properties;
-    }
+    public IDictionary<string, PropertyInfo> Properties => properties;
 
     public ComponentReplectionInfo(Type type, string name, string dependedComponent = "")
     {

@@ -19,16 +19,16 @@ namespace FlowCanvas
     [SerializeField]
     private string boundGraphSerialization = "";
     [SerializeField]
-    private List<Object> boundGraphObjectReferences = new List<Object>();
+    private List<Object> boundGraphObjectReferences = [];
     [HideInInspector]
     public EnableAction enableAction = EnableAction.EnableBehaviour;
     [HideInInspector]
     public DisableAction disableAction = DisableAction.DisableBehaviour;
-    private Graph _graph = new Graph();
+    private Graph _graph = new();
     private bool startCalled;
     private static bool isQuiting;
     private Thread deserializeThread;
-    private List<Command> commands = new List<Command>();
+    private List<Command> commands = [];
 
     public event Action<FlowScriptController> DestroyEvent;
 

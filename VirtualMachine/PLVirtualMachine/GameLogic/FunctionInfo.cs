@@ -5,7 +5,7 @@ namespace PLVirtualMachine.GameLogic
 {
   public class FunctionInfo
   {
-    public List<APIParamInfo> Params { get; } = new List<APIParamInfo>();
+    public List<APIParamInfo> Params { get; } = [];
 
     public APIParamInfo OutputParam { get; set; }
   }

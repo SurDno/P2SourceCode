@@ -15,13 +15,13 @@ namespace PLVirtualMachine.Debug
   public class VMDebugger : DebugServer
   {
     private bool needUpdateHierarchy;
-    private Dictionary<Guid, DebugFSMInfo> fsmObjects = new Dictionary<Guid, DebugFSMInfo>(GuidComparer.Instance);
-    private List<Guid> objectsSendedToClient = new List<Guid>();
-    private object fsmDebugObjectsLocker = new object();
-    private object raisingEventsLocker = new object();
-    private Dictionary<ulong, Guid> debuggingObjectsByStaticFSM = new Dictionary<ulong, Guid>(UlongComparer.Instance);
-    private HashSet<Guid> currentDebuggingObjects = new HashSet<Guid>(GuidComparer.Instance);
-    private Queue<DebugRaisingEventInfo> debugRaisingEventQueue = new Queue<DebugRaisingEventInfo>();
+    private Dictionary<Guid, DebugFSMInfo> fsmObjects = new(GuidComparer.Instance);
+    private List<Guid> objectsSendedToClient = [];
+    private object fsmDebugObjectsLocker = new();
+    private object raisingEventsLocker = new();
+    private Dictionary<ulong, Guid> debuggingObjectsByStaticFSM = new(UlongComparer.Instance);
+    private HashSet<Guid> currentDebuggingObjects = new(GuidComparer.Instance);
+    private Queue<DebugRaisingEventInfo> debugRaisingEventQueue = new();
 
     public void OnTick()
     {
@@ -265,7 +265,7 @@ label_17:;
             OnError(string.Format("Cannot raise debug event on object {0}: event with id={1} not found", objectEntityByUniName.EditorTemplate.Name, raisingEventInfo.EventGuid));
             break;
           }
-          List<EventMessage> raisingEventMessageList = new List<EventMessage>();
+          List<EventMessage> raisingEventMessageList = [];
           eventByStaticGuid.Raise(raisingEventMessageList, EEventRaisingMode.ERM_ADD_TO_QUEUE, Guid.Empty);
           if (debugRaisingEventQueue.Count <= 0)
             break;

@@ -6,7 +6,7 @@ public class GroupActivityObject : MonoBehaviour
   public List<POIBase> childPOIs;
   public bool IsDialogActivity;
   private bool isBusy;
-  public static List<GroupActivityObject> ActiveGroupObjects = new List<GroupActivityObject>();
+  public static List<GroupActivityObject> ActiveGroupObjects = [];
 
   public bool IsBusy
   {

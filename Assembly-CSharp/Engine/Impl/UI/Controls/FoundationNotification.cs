@@ -34,7 +34,7 @@ namespace Engine.Impl.UI.Controls
     [SerializeField]
     private float fade;
     [SerializeField]
-    private float[] deltas = new float[0];
+    private float[] deltas = [];
     private float progress;
     private UIService ui;
     private bool play;

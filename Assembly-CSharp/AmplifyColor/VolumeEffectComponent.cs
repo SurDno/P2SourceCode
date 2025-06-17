@@ -7,16 +7,9 @@ using UnityEngine;
 namespace AmplifyColor
 {
   [Serializable]
-  public class VolumeEffectComponent
-  {
-    public string componentName;
-    public List<VolumeEffectField> fields;
-
-    public VolumeEffectComponent(string name)
-    {
-      componentName = name;
-      fields = new List<VolumeEffectField>();
-    }
+  public class VolumeEffectComponent(string name) {
+    public string componentName = name;
+    public List<VolumeEffectField> fields = [];
 
     public VolumeEffectField AddField(FieldInfo pi, Component c) => AddField(pi, c, -1);
 
@@ -77,7 +70,7 @@ namespace AmplifyColor
 
     public static FieldInfo[] ListAcceptableFields(Component c)
     {
-      return c == null ? new FieldInfo[0] : c.GetType().GetFields().Where(f => VolumeEffectField.IsValidType(f.FieldType.FullName)).ToArray();
+      return c == null ? [] : c.GetType().GetFields().Where(f => VolumeEffectField.IsValidType(f.FieldType.FullName)).ToArray();
     }
 
     public string[] GetFieldNames()

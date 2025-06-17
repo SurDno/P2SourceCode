@@ -24,6 +24,6 @@ namespace Engine.Source.Services.Profiles
     [DataWriteProxy]
     [CopyableProxy()]
     [Inspected]
-    public List<CustomProfileData> Data = new List<CustomProfileData>();
+    public List<CustomProfileData> Data = [];
   }
 }

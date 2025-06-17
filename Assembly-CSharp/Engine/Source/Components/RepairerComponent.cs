@@ -17,12 +17,9 @@ namespace Engine.Source.Components
     [DataWriteProxy]
     [CopyableProxy()]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    protected List<StorableGroup> repairableGroups = new List<StorableGroup>();
+    protected List<StorableGroup> repairableGroups = [];
 
-    public IEnumerable<StorableGroup> RepairableGroups
-    {
-      get => repairableGroups;
-    }
+    public IEnumerable<StorableGroup> RepairableGroups => repairableGroups;
 
     public bool CanRepairItem(IStorableComponent item)
     {

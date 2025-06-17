@@ -5,11 +5,11 @@ namespace Rain
 {
   public class VertexBuffer
   {
-    public List<Vector3> vertices = new List<Vector3>();
-    public List<Color32> colors = new List<Color32>();
-    public List<Vector2> uvs = new List<Vector2>();
-    public List<Vector3> normals = new List<Vector3>();
-    public List<int> triangles = new List<int>();
+    public List<Vector3> vertices = [];
+    public List<Color32> colors = [];
+    public List<Vector2> uvs = [];
+    public List<Vector3> normals = [];
+    public List<int> triangles = [];
 
     public void SetCapacity(int vertexCount, int indexCount)
     {

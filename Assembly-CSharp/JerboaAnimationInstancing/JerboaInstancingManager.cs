@@ -15,7 +15,7 @@ namespace JerboaAnimationInstancing
     private Dictionary<int, InstanceData> instanceDataPool;
     private const int InstancingSizePerPackage = 1001;
     private int instancingPackageSize = 1001;
-    private List<AnimationTexture> animationTextureList = new List<AnimationTexture>();
+    private List<AnimationTexture> animationTextureList = [];
     private BoundingSphere[] boundingSphere;
     private int usedBoundingSphereCount;
     private CullingGroup cullingGroup;
@@ -225,8 +225,7 @@ namespace JerboaAnimationInstancing
         AnimationInfo animationInfoUnsafe = aniInstancing.GetCurrentAnimationInfoUnsafe();
         int curFrame = (int) aniInstancing.curFrame;
         aniInstancing.Position += aniInstancing.Rotation * animationInfoUnsafe.velocity[curFrame] * deltaTime;
-        RaycastHit hitInfo;
-        if (aniInstancing.UpdateAnimationUnsafeNoEventsNoTransitions(deltaTime) && Physics.Raycast(aniInstancing.Position + new Vector3(0.0f, 5f, 0.0f), new Vector3(0.0f, -1f, 0.0f), out hitInfo, 10f, layerMask, QueryTriggerInteraction.Ignore))
+        if (aniInstancing.UpdateAnimationUnsafeNoEventsNoTransitions(deltaTime) && Physics.Raycast(aniInstancing.Position + new Vector3(0.0f, 5f, 0.0f), new Vector3(0.0f, -1f, 0.0f), out RaycastHit hitInfo, 10f, layerMask, QueryTriggerInteraction.Ignore))
           aniInstancing.Position.y = hitInfo.point.y;
       }
     }
@@ -267,8 +266,7 @@ namespace JerboaAnimationInstancing
 
     public VertexCache FindVertexCache(int renderName)
     {
-      VertexCache vertexCache = null;
-      vertexCachePool.TryGetValue(renderName, out vertexCache);
+      vertexCachePool.TryGetValue(renderName, out VertexCache vertexCache);
       return vertexCache;
     }
 
@@ -363,10 +361,10 @@ namespace JerboaAnimationInstancing
       instanceData.transitionProgress = new List<float[]>[packageCount];
       for (int index = 0; index != packageCount; ++index)
       {
-        instanceData.worldMatrix[index] = new List<Matrix4x4[]>();
-        instanceData.frameIndex[index] = new List<float[]>();
-        instanceData.preFrameIndex[index] = new List<float[]>();
-        instanceData.transitionProgress[index] = new List<float[]>();
+        instanceData.worldMatrix[index] = [];
+        instanceData.frameIndex[index] = [];
+        instanceData.preFrameIndex[index] = [];
+        instanceData.transitionProgress[index] = [];
       }
       return instanceData;
     }
@@ -391,11 +389,9 @@ namespace JerboaAnimationInstancing
           {
             int hashCode = lodInfo1.skinnedMeshRenderer[index2].name.GetHashCode();
             int identify = GetIdentify(lodInfo1.skinnedMeshRenderer[index2].sharedMaterials);
-            VertexCache cache = null;
-            if (vertexCachePool.TryGetValue(hashCode, out cache))
+            if (vertexCachePool.TryGetValue(hashCode, out VertexCache cache))
             {
-              MaterialBlock materialBlock = null;
-              if (!cache.instanceBlockList.TryGetValue(identify, out materialBlock))
+              if (!cache.instanceBlockList.TryGetValue(identify, out MaterialBlock materialBlock))
               {
                 materialBlock = CreateBlock(cache, lodInfo1.skinnedMeshRenderer[index2].sharedMaterials);
                 cache.instanceBlockList.Add(identify, materialBlock);
@@ -425,11 +421,9 @@ namespace JerboaAnimationInstancing
             int hashCode1 = lodInfo1.meshRenderer[index3].name.GetHashCode();
             int hashCode2 = alias != null ? alias.GetHashCode() : 0;
             int identify = GetIdentify(lodInfo1.meshRenderer[index3].sharedMaterials);
-            VertexCache cache = null;
-            if (vertexCachePool.TryGetValue(hashCode1 + hashCode2, out cache))
+            if (vertexCachePool.TryGetValue(hashCode1 + hashCode2, out VertexCache cache))
             {
-              MaterialBlock materialBlock = null;
-              if (!cache.instanceBlockList.TryGetValue(identify, out materialBlock))
+              if (!cache.instanceBlockList.TryGetValue(identify, out MaterialBlock materialBlock))
               {
                 materialBlock = CreateBlock(cache, lodInfo1.meshRenderer[index3].sharedMaterials);
                 cache.instanceBlockList.Add(identify, materialBlock);
@@ -476,7 +470,7 @@ namespace JerboaAnimationInstancing
       block.packageList = new List<InstancingPackage>[packageCount];
       for (int index = 0; index != block.packageList.Length; ++index)
       {
-        block.packageList[index] = new List<InstancingPackage>();
+        block.packageList[index] = [];
         InstancingPackage package = CreatePackage(block.instanceData, cache.mesh, materials, index);
         block.packageList[index].Add(package);
         PreparePackageMaterial(package, cache, index);

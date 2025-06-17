@@ -4,10 +4,8 @@ using Engine.Source.Commons;
 using Inspectors;
 using UnityEngine;
 
-public class NpcStateRagdollRessurect : INpcState
-{
-  private NpcState npcState;
-  private Pivot pivot;
+public class NpcStateRagdollRessurect(NpcState npcState, Pivot pivot) : INpcState 
+  {
   private Behaviour behavior;
   private Rigidbody rigidbody;
   private Animator animator;
@@ -24,7 +22,7 @@ public class NpcStateRagdollRessurect : INpcState
   private float initialRagdollWeight;
   private bool ressurectStarted;
 
-  public GameObject GameObject { get; private set; }
+  public GameObject GameObject { get; private set; } = npcState.gameObject;
 
   [Inspected]
   public NpcStateStatusEnum Status { get; set; }
@@ -50,13 +48,6 @@ public class NpcStateRagdollRessurect : INpcState
     failed = false;
     inited = true;
     return true;
-  }
-
-  public NpcStateRagdollRessurect(NpcState npcState, Pivot pivot)
-  {
-    GameObject = npcState.gameObject;
-    this.pivot = pivot;
-    this.npcState = npcState;
   }
 
   public void Activate()

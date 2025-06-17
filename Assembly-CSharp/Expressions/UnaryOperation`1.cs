@@ -22,14 +22,8 @@ namespace Expressions
 
     protected abstract string OperatorView();
 
-    public string ValueView
-    {
-      get => OperatorView() + (value != null ? value.ValueView : "null");
-    }
+    public string ValueView => OperatorView() + (value != null ? value.ValueView : "null");
 
-    public string TypeView
-    {
-      get => OperatorView() + (value != null ? value.TypeView : "null");
-    }
+    public string TypeView => OperatorView() + (value != null ? value.TypeView : "null");
   }
 }

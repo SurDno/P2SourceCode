@@ -8,13 +8,7 @@ namespace UnityEngine.PostProcessing
     private RenderTexture m_CoCHistory;
     private const float k_FilmHeight = 0.024f;
 
-    public override bool active
-    {
-      get
-      {
-        return model.enabled && SystemInfo.SupportsRenderTextureFormat(RenderTextureFormat.ARGBHalf) && !context.interrupted;
-      }
-    }
+    public override bool active => model.enabled && SystemInfo.SupportsRenderTextureFormat(RenderTextureFormat.ARGBHalf) && !context.interrupted;
 
     public override DepthTextureMode GetCameraFlags() => DepthTextureMode.Depth;
 

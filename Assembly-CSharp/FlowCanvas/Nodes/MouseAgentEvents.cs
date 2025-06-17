@@ -18,15 +18,14 @@ namespace FlowCanvas.Nodes
 
     protected override string[] GetTargetMessageEvents()
     {
-      return new string[6]
-      {
+      return [
         "OnMouseEnter",
         "OnMouseOver",
         "OnMouseExit",
         "OnMouseDown",
         "OnMouseUp",
         "OnMouseDrag"
-      };
+      ];
     }
 
     protected override void RegisterPorts()

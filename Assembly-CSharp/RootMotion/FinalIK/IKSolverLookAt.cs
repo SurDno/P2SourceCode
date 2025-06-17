@@ -7,9 +7,9 @@ namespace RootMotion.FinalIK
   public class IKSolverLookAt : IKSolver
   {
     public Transform target;
-    public LookAtBone[] spine = new LookAtBone[0];
-    public LookAtBone head = new LookAtBone();
-    public LookAtBone[] eyes = new LookAtBone[0];
+    public LookAtBone[] spine = [];
+    public LookAtBone head = new();
+    public LookAtBone[] eyes = [];
     [Range(0.0f, 1f)]
     public float bodyWeight = 0.5f;
     [Range(0.0f, 1f)]
@@ -24,9 +24,9 @@ namespace RootMotion.FinalIK
     public float clampWeightEyes = 0.5f;
     [Range(0.0f, 2f)]
     public int clampSmoothing = 2;
-    public AnimationCurve spineWeightCurve = new AnimationCurve(new Keyframe(0.0f, 0.3f), new Keyframe(1f, 1f));
+    public AnimationCurve spineWeightCurve = new(new Keyframe(0.0f, 0.3f), new Keyframe(1f, 1f));
     public Vector3 spineTargetOffset;
-    private Vector3[] spineForwards = new Vector3[0];
+    private Vector3[] spineForwards = [];
     private Vector3[] headForwards = new Vector3[1];
     private Vector3[] eyeForward = new Vector3[1];
 
@@ -343,7 +343,7 @@ namespace RootMotion.FinalIK
     {
       if (array == null)
       {
-        bones = new LookAtBone[0];
+        bones = [];
       }
       else
       {

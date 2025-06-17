@@ -9,13 +9,13 @@ namespace RootMotion.FinalIK
   [Serializable]
   public class IKSolverVR : IKSolver
   {
-    private Transform[] solverTransforms = new Transform[0];
+    private Transform[] solverTransforms = [];
     private bool hasChest;
     private bool hasNeck;
     private bool hasShoulders;
     private bool hasToes;
-    private Vector3[] readPositions = new Vector3[0];
-    private Quaternion[] readRotations = new Quaternion[0];
+    private Vector3[] readPositions = [];
+    private Quaternion[] readRotations = [];
     private Vector3[] solvedPositions = new Vector3[22];
     private Quaternion[] solvedRotations = new Quaternion[22];
     private Quaternion[] defaultLocalRotations = new Quaternion[21];
@@ -27,17 +27,17 @@ namespace RootMotion.FinalIK
     [Tooltip("If true, will keep the toes planted even if head target is out of reach.")]
     public bool plantFeet = true;
     [Tooltip("The spine solver.")]
-    public Spine spine = new Spine();
+    public Spine spine = new();
     [Tooltip("The left arm solver.")]
-    public Arm leftArm = new Arm();
+    public Arm leftArm = new();
     [Tooltip("The right arm solver.")]
-    public Arm rightArm = new Arm();
+    public Arm rightArm = new();
     [Tooltip("The left leg solver.")]
-    public Leg leftLeg = new Leg();
+    public Leg leftLeg = new();
     [Tooltip("The right leg solver.")]
-    public Leg rightLeg = new Leg();
+    public Leg rightLeg = new();
     [Tooltip("The procedural locomotion solver.")]
-    public Locomotion locomotion = new Locomotion();
+    public Locomotion locomotion = new();
     private Leg[] legs = new Leg[2];
     private Arm[] arms = new Arm[2];
     private Vector3 headPosition;
@@ -370,16 +370,14 @@ namespace RootMotion.FinalIK
       }
       if (initiated)
         return;
-      legs = new Leg[2]
-      {
+      legs = [
         leftLeg,
         rightLeg
-      };
-      arms = new Arm[2]
-      {
+      ];
+      arms = [
         leftArm,
         rightArm
-      };
+      ];
       locomotion.Initiate(positions, rotations, hasToes);
       raycastOriginPelvis = spine.pelvis.readPosition;
       spine.faceDirection = readRotations[0] * Vector3.forward;
@@ -400,15 +398,7 @@ namespace RootMotion.FinalIK
         Warning.Log("If VRIK 'Pelvis Position Weight' is > 0, 'Plant Feet' should be disabled to improve performance and stability.", root);
       if (locomotion.weight > 0.0)
       {
-        Vector3 leftFootPosition = Vector3.zero;
-        Vector3 rightFootPosition = Vector3.zero;
-        Quaternion leftFootRotation = Quaternion.identity;
-        Quaternion rightFootRotation = Quaternion.identity;
-        float leftFootOffset = 0.0f;
-        float rightFootOffset = 0.0f;
-        float leftHeelOffset = 0.0f;
-        float rightHeelOffset = 0.0f;
-        locomotion.Solve(rootBone, spine, leftLeg, rightLeg, leftArm, rightArm, supportLegIndex, out leftFootPosition, out rightFootPosition, out leftFootRotation, out rightFootRotation, out leftFootOffset, out rightFootOffset, out leftHeelOffset, out rightHeelOffset);
+        locomotion.Solve(rootBone, spine, leftLeg, rightLeg, leftArm, rightArm, supportLegIndex, out Vector3 leftFootPosition, out Vector3 rightFootPosition, out Quaternion leftFootRotation, out Quaternion rightFootRotation, out float leftFootOffset, out float rightFootOffset, out float leftHeelOffset, out float rightHeelOffset);
         leftFootPosition += root.up * leftFootOffset;
         rightFootPosition += root.up * rightFootOffset;
         leftLeg.footPositionOffset += (leftFootPosition - leftLeg.lastBone.solverPosition) * IKPositionWeight * (1f - leftLeg.positionWeight) * locomotion.weight;
@@ -827,7 +817,7 @@ namespace RootMotion.FinalIK
     public abstract class BodyPart
     {
       [HideInInspector]
-      public VirtualBone[] bones = new VirtualBone[0];
+      public VirtualBone[] bones = [];
       protected bool initiated;
       protected Vector3 rootPosition;
       protected Quaternion rootRotation = Quaternion.identity;
@@ -1270,10 +1260,10 @@ namespace RootMotion.FinalIK
       [HideInInspector]
       public float raycastHeight = 0.2f;
       [Tooltip("Called when the left foot has finished a step.")]
-      public UnityEvent onLeftFootstep = new UnityEvent();
+      public UnityEvent onLeftFootstep = new();
       [Tooltip("Called when the right foot has finished a step")]
-      public UnityEvent onRightFootstep = new UnityEvent();
-      private Footstep[] footsteps = new Footstep[0];
+      public UnityEvent onRightFootstep = new();
+      private Footstep[] footsteps = [];
       private Vector3 lastComPosition;
       private Vector3 comVelocity;
       private int leftFootIndex;
@@ -1285,11 +1275,10 @@ namespace RootMotion.FinalIK
       {
         leftFootIndex = hasToes ? 17 : 16;
         rightFootIndex = hasToes ? 21 : 20;
-        footsteps = new Footstep[2]
-        {
-          new Footstep(rotations[0], positions[leftFootIndex], rotations[leftFootIndex], footDistance * Vector3.left),
-          new Footstep(rotations[0], positions[rightFootIndex], rotations[rightFootIndex], footDistance * Vector3.right)
-        };
+        footsteps = [
+          new(rotations[0], positions[leftFootIndex], rotations[leftFootIndex], footDistance * Vector3.left),
+          new(rotations[0], positions[rightFootIndex], rotations[rightFootIndex], footDistance * Vector3.right)
+        ];
       }
 
       public void Reset(Vector3[] positions, Quaternion[] rotations)
@@ -1640,10 +1629,7 @@ namespace RootMotion.FinalIK
 
       public VirtualBone firstSpineBone => bones[spineIndex];
 
-      public VirtualBone chest
-      {
-        get => hasChest ? bones[chestIndex] : bones[spineIndex];
-      }
+      public VirtualBone chest => hasChest ? bones[chestIndex] : bones[spineIndex];
 
       private VirtualBone neck => bones[neckIndex];
 

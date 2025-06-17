@@ -50,7 +50,7 @@ namespace Engine.Source.Components.Maps
     [StateSaveProxy(MemberEnum.CustomListReference)]
     [StateLoadProxy(MemberEnum.CustomListReference)]
     [Inspected]
-    protected List<IMMNode> nodes = new List<IMMNode>();
+    protected List<IMMNode> nodes = [];
     [StateSaveProxy(MemberEnum.CustomReference)]
     [StateLoadProxy(MemberEnum.CustomReference)]
     [Inspected]
@@ -73,7 +73,7 @@ namespace Engine.Source.Components.Maps
     [Inspected]
     protected LocalizedText title = LocalizedText.Empty;
 
-    public static HashSet<MapItemComponent> Items { get; private set; } = new HashSet<MapItemComponent>();
+    public static HashSet<MapItemComponent> Items { get; private set; } = [];
 
     [Inspected(Mutable = true)]
     public bool IsEnabled
@@ -161,7 +161,7 @@ namespace Engine.Source.Components.Maps
         if (value == null)
           return;
         if (InstanceByRequest<EngineApplication>.Instance.ViewEnabled)
-          notificationService.AddNotify(NotificationEnum.Map, Array.Empty<object>());
+          notificationService.AddNotify(NotificationEnum.Map, []);
         Discovered = true;
       }
     }
@@ -175,7 +175,7 @@ namespace Engine.Source.Components.Maps
         if (value != null)
         {
           if (InstanceByRequest<EngineApplication>.Instance.ViewEnabled)
-            notificationService.AddNotify(NotificationEnum.Map, Array.Empty<object>());
+            notificationService.AddNotify(NotificationEnum.Map, []);
           Discovered = true;
         }
         UpdateHUDMarker();

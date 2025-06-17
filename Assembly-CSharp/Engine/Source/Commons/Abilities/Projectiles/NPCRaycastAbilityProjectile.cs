@@ -43,7 +43,7 @@ namespace Engine.Source.Commons.Abilities.Projectiles
     [CopyableProxy()]
     [Inspected(Mutable = true, Mode = ExecuteMode.EditAndRuntime)]
     protected float bulletScatter = 10f;
-    private static List<RaycastHit> hits = new List<RaycastHit>();
+    private static List<RaycastHit> hits = [];
 
     public void ComputeTargets(IEntity self, IEntity item, OutsideAbilityTargets targets)
     {

@@ -6,13 +6,7 @@ using UnityEngine;
 public class POIAnimationSetupSlow : POIAnimationSetupBase
 {
   [SerializeField]
-  public List<POIAnimationSetupElementSlow> ElementsNew = new List<POIAnimationSetupElementSlow>();
+  public List<POIAnimationSetupElementSlow> ElementsNew = [];
 
-  public override List<POIAnimationSetupElementBase> Elements
-  {
-    get
-    {
-      return new List<POIAnimationSetupElementBase>(ElementsNew);
-    }
-  }
+  public override List<POIAnimationSetupElementBase> Elements => [..ElementsNew];
 }

@@ -11,7 +11,7 @@ using UnityEngine.UI;
 public class RepairingCostView : MonoBehaviour
 {
   [SerializeField]
-  private List<ItemView> itemViews = new List<ItemView>();
+  private List<ItemView> itemViews = [];
   private IStorageComponent actor;
   private List<RepairableCostItem> cost;
 

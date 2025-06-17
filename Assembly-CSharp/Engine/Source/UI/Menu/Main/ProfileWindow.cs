@@ -31,7 +31,7 @@ namespace Engine.Source.UI.Menu.Main
     [SerializeField]
     private Button deleteButton;
     private ProfileItem selection;
-    private List<ProfileItem> items = new List<ProfileItem>();
+    private List<ProfileItem> items = [];
 
     protected abstract void RegisterLayer();
 

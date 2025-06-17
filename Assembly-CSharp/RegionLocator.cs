@@ -5,7 +5,7 @@ using UnityEngine;
 public class RegionLocator : MonoBehaviour
 {
   private static RegionLocator instance;
-  private Dictionary<RegionEnum, RegionMesh> regionsCache = new Dictionary<RegionEnum, RegionMesh>();
+  private Dictionary<RegionEnum, RegionMesh> regionsCache = new();
 
   public static RegionEnum GetRegionName(Vector3 position)
   {
@@ -28,8 +28,7 @@ public class RegionLocator : MonoBehaviour
 
   public static RegionMesh GetRegionMesh(RegionEnum regionName)
   {
-    RegionMesh regionMesh;
-    instance.regionsCache.TryGetValue(regionName, out regionMesh);
+    instance.regionsCache.TryGetValue(regionName, out RegionMesh regionMesh);
     return regionMesh;
   }
 
@@ -42,8 +41,7 @@ public class RegionLocator : MonoBehaviour
   private RegionEnum GetRegionNameInternal(Vector3 position)
   {
     int layerMask = 1 << gameObject.layer;
-    RaycastHit hitInfo;
-    if (!Physics.Raycast(new Ray(new Vector3(position.x, 2f, position.z), Vector3.down), out hitInfo, 3f, layerMask, QueryTriggerInteraction.Collide))
+    if (!Physics.Raycast(new Ray(new Vector3(position.x, 2f, position.z), Vector3.down), out RaycastHit hitInfo, 3f, layerMask, QueryTriggerInteraction.Collide))
       return RegionEnum.None;
     RegionMesh component = hitInfo.collider.GetComponent<RegionMesh>();
     return component == null ? RegionEnum.None : component.Region;

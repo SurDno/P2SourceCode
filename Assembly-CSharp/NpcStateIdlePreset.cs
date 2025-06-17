@@ -10,10 +10,7 @@ using Inspectors;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class NpcStateIdlePreset : INpcState, INpcStateNeedSyncBack
-{
-  private NpcState npcState;
-  private Pivot pivot;
+public class NpcStateIdlePreset(NpcState npcState, Pivot pivot) : INpcState, INpcStateNeedSyncBack {
   private NPCEnemy enemy;
   private EngineBehavior behavior;
   private POISetup poiSetup;
@@ -44,7 +41,7 @@ public class NpcStateIdlePreset : INpcState, INpcStateNeedSyncBack
   [Inspected]
   public NpcStateStatusEnum Status => NpcStateStatusEnum.Running;
 
-  public GameObject GameObject { get; private set; }
+  public GameObject GameObject { get; private set; } = npcState.gameObject;
 
   protected bool TryInit()
   {
@@ -74,13 +71,6 @@ public class NpcStateIdlePreset : INpcState, INpcStateNeedSyncBack
     failed = false;
     inited = true;
     return true;
-  }
-
-  public NpcStateIdlePreset(NpcState npcState, Pivot pivot)
-  {
-    GameObject = npcState.gameObject;
-    this.pivot = pivot;
-    this.npcState = npcState;
   }
 
   public void Activate()

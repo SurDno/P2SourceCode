@@ -35,8 +35,7 @@ namespace PLVirtualMachine.Common.Data
         string s = obj as string;
         if (!string.IsNullOrEmpty(s))
         {
-          float result;
-          if (float.TryParse(s, NumberStyles.Any, CultureInfo.InvariantCulture, out result))
+          if (float.TryParse(s, NumberStyles.Any, CultureInfo.InvariantCulture, out float result))
             return result;
           Logger.AddWarning("Error parse , method : " + MethodBase.GetCurrentMethod().Name + " , value : " + s);
         }

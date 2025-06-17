@@ -6,7 +6,7 @@ namespace RootMotion.FinalIK
   [AddComponentMenu("Scripts/RootMotion.FinalIK/IK/CCD IK")]
   public class CCDIK : IK
   {
-    public IKSolverCCD solver = new IKSolverCCD();
+    public IKSolverCCD solver = new();
 
     [ContextMenu("User Manual")]
     protected override void OpenUserManual()

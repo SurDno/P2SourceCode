@@ -4,7 +4,7 @@ namespace Inspectors
 {
   public abstract class BaseMethodDrawer<T> : IMethodDrawer where T : class, IMethodDrawer, new()
   {
-    public static readonly T Instance = new T();
+    public static readonly T Instance = new();
 
     public abstract void DrawInspected(
       string name,

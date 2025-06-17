@@ -68,13 +68,7 @@ namespace PLVirtualMachine.Dynamic.Components
       DropIfBusyMode = false;
     }
 
-    public bool NeedSave
-    {
-      get
-      {
-        return TargetStorage != null && TargetStorage.Parent != null && !TargetStorage.Parent.IsDisposed;
-      }
-    }
+    public bool NeedSave => TargetStorage != null && TargetStorage.Parent != null && !TargetStorage.Parent.IsDisposed;
 
     public void StateSave(IDataWriter writer)
     {

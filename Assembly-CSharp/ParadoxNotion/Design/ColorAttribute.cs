@@ -3,10 +3,8 @@
 namespace ParadoxNotion.Design
 {
   [AttributeUsage(AttributeTargets.Class, Inherited = false)]
-  public class ColorAttribute : Attribute
+  public class ColorAttribute(string hexColor) : Attribute 
   {
-    public string hexColor;
-
-    public ColorAttribute(string hexColor) => this.hexColor = hexColor;
+    public string hexColor = hexColor;
   }
 }

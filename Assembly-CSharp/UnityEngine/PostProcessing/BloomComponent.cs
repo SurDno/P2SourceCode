@@ -6,13 +6,7 @@
     private readonly RenderTexture[] m_BlurBuffer1 = new RenderTexture[16];
     private readonly RenderTexture[] m_BlurBuffer2 = new RenderTexture[16];
 
-    public override bool active
-    {
-      get
-      {
-        return model.enabled && model.settings.bloom.intensity > 0.0 && !context.interrupted;
-      }
-    }
+    public override bool active => model.enabled && model.settings.bloom.intensity > 0.0 && !context.interrupted;
 
     public void Prepare(RenderTexture source, Material uberMaterial, Texture autoExposure)
     {

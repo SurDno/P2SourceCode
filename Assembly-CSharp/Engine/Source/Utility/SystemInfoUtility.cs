@@ -56,12 +56,11 @@ namespace Engine.Source.Utility
           process.WaitForExit();
           Debug.Log(ObjectInfoUtility.GetStream().Append("Compute result : ").Append(end));
           string str1 = end;
-          char[] separator = new char[2]{ '\n', '\r' };
+          char[] separator = ['\n', '\r'];
           foreach (string str2 in str1.Split(separator, StringSplitOptions.RemoveEmptyEntries))
           {
             int length = str2.IndexOf('=');
-            int result;
-            if (length != -1 && DefaultConverter.TryParseInt(str2.Substring(length + 1), out result))
+            if (length != -1 && DefaultConverter.TryParseInt(str2.Substring(length + 1), out int result))
             {
               switch (str2.Substring(0, length))
               {

@@ -16,7 +16,7 @@ namespace PLVirtualMachine.GameLogic
 {
   [TypeData(EDataType.TActionLine)]
   [DataFactory("ActionLine")]
-  public class VMActionLine : 
+  public class VMActionLine(ulong guid) :
     IStub,
     IEditorDataReader,
     IActionLine,
@@ -28,13 +28,11 @@ namespace PLVirtualMachine.GameLogic
     INamed,
     IBaseAction,
     IStaticUpdateable,
-    IActionLoop
-  {
-    private ulong guid;
+    IActionLoop {
     [FieldData("Name")]
     private string name = "";
     [FieldData("Actions", DataFieldType.Reference)]
-    private List<IGameAction> actionsList = new List<IGameAction>();
+    private List<IGameAction> actionsList = [];
     [FieldData("LocalContext", DataFieldType.Reference)]
     private ILocalContext localContext;
     [FieldData("ActionLineType")]
@@ -47,7 +45,7 @@ namespace PLVirtualMachine.GameLogic
     private object startLoopIndexParam = 0;
     private object endLoopIndexParam = 1;
     private IVariable loopListParamInstance;
-    private List<IVariable> loopLocalVariables = new List<IVariable>();
+    private List<IVariable> loopLocalVariables = [];
     private bool loopRandomIndexing;
     private bool updated;
 
@@ -88,8 +86,6 @@ namespace PLVirtualMachine.GameLogic
           break;
       }
     }
-
-    public VMActionLine(ulong guid) => this.guid = guid;
 
     public ulong BaseGuid => guid;
 

@@ -17,7 +17,7 @@ using UnityEngine;
 public class LodService : IInitialisable, IUpdatable, ISavesController
 {
   [Inspected]
-  private List<Slot> registeredLods = new List<Slot>();
+  private List<Slot> registeredLods = [];
   [Inspected]
   private bool unloaded;
 

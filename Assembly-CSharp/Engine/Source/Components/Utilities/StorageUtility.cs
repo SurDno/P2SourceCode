@@ -13,8 +13,8 @@ namespace Engine.Source.Components.Utilities
 {
   public static class StorageUtility
   {
-    private static List<IInventoryComponent> tmpContainers = new List<IInventoryComponent>();
-    private static List<IntCell> tmpCells = new List<IntCell>();
+    private static List<IInventoryComponent> tmpContainers = [];
+    private static List<IntCell> tmpCells = [];
 
     public static Intersect GetIntersect(
       IStorageComponent storage,

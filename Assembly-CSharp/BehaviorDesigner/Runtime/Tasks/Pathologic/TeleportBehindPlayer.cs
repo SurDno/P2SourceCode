@@ -108,8 +108,7 @@ namespace BehaviorDesigner.Runtime.Tasks.Pathologic
 
     private bool TryPoint(Vector3 point, Vector3 playerPosition)
     {
-      NavMeshHit hit;
-      if (!NavMesh.SamplePosition(point, out hit, 1f, -1))
+      if (!NavMesh.SamplePosition(point, out NavMeshHit hit, 1f, -1))
         return false;
       point = hit.position;
       NavMeshPath path = new NavMeshPath();

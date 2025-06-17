@@ -84,7 +84,7 @@ namespace Facepunch.Steamworks
       };
     }
 
-    public Item GetItem(ulong itemid) => new Item(itemid, this);
+    public Item GetItem(ulong itemid) => new(itemid, this);
 
     public enum Order
     {
@@ -172,7 +172,7 @@ namespace Facepunch.Steamworks
 
       public string PreviewImage { get; set; } = null;
 
-      public List<string> Tags { get; set; } = new List<string>();
+      public List<string> Tags { get; set; } = [];
 
       public bool Publishing { get; internal set; }
 
@@ -203,9 +203,8 @@ namespace Facepunch.Steamworks
         {
           if (!Publishing || UpdateHandle == 0UL)
             return bytesUploaded;
-          ulong punBytesProcessed = 0;
           ulong punBytesTotal = 0;
-          int itemUpdateProgress = (int) workshop.steamworks.native.ugc.GetItemUpdateProgress(UpdateHandle, out punBytesProcessed, out punBytesTotal);
+          int itemUpdateProgress = (int) workshop.steamworks.native.ugc.GetItemUpdateProgress(UpdateHandle, out ulong punBytesProcessed, out punBytesTotal);
           bytesUploaded = Math.Max(bytesUploaded, (int) punBytesProcessed);
           return bytesUploaded;
         }
@@ -218,8 +217,7 @@ namespace Facepunch.Steamworks
           if (!Publishing || UpdateHandle == 0UL)
             return bytesTotal;
           ulong punBytesProcessed = 0;
-          ulong punBytesTotal = 0;
-          int itemUpdateProgress = (int) workshop.steamworks.native.ugc.GetItemUpdateProgress(UpdateHandle, out punBytesProcessed, out punBytesTotal);
+          int itemUpdateProgress = (int) workshop.steamworks.native.ugc.GetItemUpdateProgress(UpdateHandle, out punBytesProcessed, out ulong punBytesTotal);
           bytesTotal = Math.Max(bytesTotal, (int) punBytesTotal);
           return bytesTotal;
         }
@@ -324,9 +322,8 @@ namespace Facepunch.Steamworks
       }
     }
 
-    public class Item
-    {
-      internal Workshop workshop;
+    public class Item(ulong id, Workshop workshop) {
+      internal Workshop workshop = workshop;
       private DirectoryInfo _directory;
       private ulong _BytesDownloaded;
       private ulong _BytesTotal;
@@ -335,7 +332,7 @@ namespace Facepunch.Steamworks
 
       public string Description { get; private set; }
 
-      public ulong Id { get; private set; }
+      public ulong Id { get; private set; } = id;
 
       public ulong OwnerId { get; private set; }
 
@@ -352,12 +349,6 @@ namespace Facepunch.Steamworks
       public DateTime Modified { get; private set; }
 
       public DateTime Created { get; private set; }
-
-      public Item(ulong Id, Workshop workshop)
-      {
-        this.Id = Id;
-        this.workshop = workshop;
-      }
 
       internal static Item From(SteamUGCDetails_t details, Workshop workshop)
       {
@@ -453,10 +444,7 @@ namespace Facepunch.Steamworks
 
       public bool NeedsUpdate => (State & ItemState.NeedsUpdate) != 0;
 
-      private ItemState State
-      {
-        get => (ItemState) workshop.ugc.GetItemState(Id);
-      }
+      private ItemState State => (ItemState) workshop.ugc.GetItemState(Id);
 
       public DirectoryInfo Directory
       {
@@ -466,9 +454,7 @@ namespace Facepunch.Steamworks
             return _directory;
           if (!Installed)
             return null;
-          ulong punSizeOnDisk;
-          string pchFolder;
-          if (workshop.ugc.GetItemInstallInfo(Id, out punSizeOnDisk, out pchFolder, out uint _))
+          if (workshop.ugc.GetItemInstallInfo(Id, out ulong punSizeOnDisk, out string pchFolder, out uint _))
           {
             _directory = new DirectoryInfo(pchFolder);
             Size = punSizeOnDisk;
@@ -510,45 +496,15 @@ namespace Facepunch.Steamworks
 
       public Editor Edit() => workshop.EditItem(Id);
 
-      public string Url
-      {
-        get
-        {
-          return string.Format("http://steamcommunity.com/sharedfiles/filedetails/?source=Facepunch.Steamworks&id={0}", Id);
-        }
-      }
+      public string Url => string.Format("http://steamcommunity.com/sharedfiles/filedetails/?source=Facepunch.Steamworks&id={0}", Id);
 
-      public string ChangelogUrl
-      {
-        get
-        {
-          return string.Format("http://steamcommunity.com/sharedfiles/filedetails/changelog/{0}", Id);
-        }
-      }
+      public string ChangelogUrl => string.Format("http://steamcommunity.com/sharedfiles/filedetails/changelog/{0}", Id);
 
-      public string CommentsUrl
-      {
-        get
-        {
-          return string.Format("http://steamcommunity.com/sharedfiles/filedetails/comments/{0}", Id);
-        }
-      }
+      public string CommentsUrl => string.Format("http://steamcommunity.com/sharedfiles/filedetails/comments/{0}", Id);
 
-      public string DiscussUrl
-      {
-        get
-        {
-          return string.Format("http://steamcommunity.com/sharedfiles/filedetails/discussions/{0}", Id);
-        }
-      }
+      public string DiscussUrl => string.Format("http://steamcommunity.com/sharedfiles/filedetails/discussions/{0}", Id);
 
-      public string StartsUrl
-      {
-        get
-        {
-          return string.Format("http://steamcommunity.com/sharedfiles/filedetails/stats/{0}", Id);
-        }
-      }
+      public string StartsUrl => string.Format("http://steamcommunity.com/sharedfiles/filedetails/stats/{0}", Id);
 
       public int SubscriptionCount { get; internal set; }
 
@@ -628,7 +584,7 @@ namespace Facepunch.Steamworks
         _resultSkip = num % 50;
         _resultsRemain = PerPage;
         _resultPage = (int) Math.Floor(num / 50.0);
-        _results = new List<Item>();
+        _results = [];
         RunInternal();
       }
 
@@ -677,8 +633,7 @@ namespace Facepunch.Steamworks
               obj.FollowerCount = GetStat(data.Handle, index, ItemStatistic.NumFollowers);
               obj.WebsiteViews = GetStat(data.Handle, index, ItemStatistic.NumUniqueWebsiteViews);
               obj.ReportScore = GetStat(data.Handle, index, ItemStatistic.ReportScore);
-              string pchURL = null;
-              if (workshop.ugc.GetQueryUGCPreviewURL(data.Handle, (uint) index, out pchURL))
+              if (workshop.ugc.GetQueryUGCPreviewURL(data.Handle, (uint) index, out string pchURL))
                 obj.PreviewImageUrl = pchURL;
               _results.Add(obj);
               --_resultsRemain;
@@ -706,19 +661,18 @@ namespace Facepunch.Steamworks
 
       private int GetStat(ulong handle, int index, ItemStatistic stat)
       {
-        ulong pStatValue = 0;
-        return !workshop.ugc.GetQueryUGCStatistic(handle, (uint) index, (SteamNative.ItemStatistic) stat, out pStatValue) ? 0 : (int) pStatValue;
+        return !workshop.ugc.GetQueryUGCStatistic(handle, (uint) index, (SteamNative.ItemStatistic) stat, out ulong pStatValue) ? 0 : (int) pStatValue;
       }
 
       public bool IsRunning => Callback != null;
 
-      public List<string> RequireTags { get; set; } = new List<string>();
+      public List<string> RequireTags { get; set; } = [];
 
       public bool RequireAllTags { get; set; } = false;
 
-      public List<string> ExcludeTags { get; set; } = new List<string>();
+      public List<string> ExcludeTags { get; set; } = [];
 
-      public List<ulong> FileId { get; set; } = new List<ulong>();
+      public List<ulong> FileId { get; set; } = [];
 
       public void Block()
       {

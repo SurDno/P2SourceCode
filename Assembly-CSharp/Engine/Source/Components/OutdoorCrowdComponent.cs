@@ -52,7 +52,7 @@ namespace Engine.Source.Components
     [FromLocator]
     private OutdoorCrowdService сrowdService;
     [Inspected]
-    private List<OutdoorPointInfo> points = new List<OutdoorPointInfo>();
+    private List<OutdoorPointInfo> points = [];
     [Inspected]
     private OutdoorPointInfo waitingPoint;
     [Inspected]

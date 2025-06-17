@@ -12,7 +12,7 @@ namespace PLVirtualMachine
 {
   public static class GlobalVariableUtility
   {
-    private static Dictionary<string, Dictionary<ulong, object>> globalVariablesDict = new Dictionary<string, Dictionary<ulong, object>>();
+    private static Dictionary<string, Dictionary<ulong, object>> globalVariablesDict = new();
 
     public static void RegistrInGlobalVariables(VMEntity entity)
     {
@@ -104,13 +104,11 @@ namespace PLVirtualMachine
 
     private static object GetGlobalVariable(string globalVarCategory, ulong globalVarStaticID)
     {
-      Dictionary<ulong, object> dictionary;
-      if (globalVariablesDict.TryGetValue(globalVarCategory, out dictionary))
+      if (globalVariablesDict.TryGetValue(globalVarCategory, out Dictionary<ulong, object> dictionary))
       {
         if (!dictionary.ContainsKey(globalVarStaticID))
           dictionary.Add(globalVarStaticID, new VMDynamicCommonList());
-        object globalVariable;
-        if (dictionary.TryGetValue(globalVarStaticID, out globalVariable))
+        if (dictionary.TryGetValue(globalVarStaticID, out object globalVariable))
           return globalVariable;
         Logger.AddError(string.Format("Global variable with category {0} and static id {1} not found at {2}", globalVarCategory, globalVarStaticID, DynamicFSM.CurrentStateInfo));
       }
@@ -121,11 +119,9 @@ namespace PLVirtualMachine
 
     private static object GetGlobalVariableValue(string globalVarCategory, ulong globalVarStaticID)
     {
-      Dictionary<ulong, object> dictionary;
-      if (globalVariablesDict.TryGetValue(globalVarCategory, out dictionary))
+      if (globalVariablesDict.TryGetValue(globalVarCategory, out Dictionary<ulong, object> dictionary))
       {
-        object globalVariableValue;
-        if (dictionary.TryGetValue(globalVarStaticID, out globalVariableValue))
+        if (dictionary.TryGetValue(globalVarStaticID, out object globalVariableValue))
           return globalVariableValue;
         Logger.AddError(string.Format("Global variable with static id {0} not found in global variables dictionary with category {1}", globalVarStaticID, globalVarCategory));
       }

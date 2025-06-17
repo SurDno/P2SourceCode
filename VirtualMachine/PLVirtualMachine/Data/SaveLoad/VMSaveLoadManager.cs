@@ -18,7 +18,7 @@ namespace PLVirtualMachine.Data.SaveLoad
     public static void LoadList(XmlElement listNode, List<string> list)
     {
       if (list == null)
-        list = new List<string>();
+        list = [];
       else
         list.Clear();
       foreach (XmlNode childNode in listNode.ChildNodes)
@@ -28,7 +28,7 @@ namespace PLVirtualMachine.Data.SaveLoad
     public static void LoadList(XmlElement listNode, List<int> list)
     {
       if (list == null)
-        list = new List<int>();
+        list = [];
       else
         list.Clear();
       foreach (XmlNode childNode in listNode.ChildNodes)
@@ -38,7 +38,7 @@ namespace PLVirtualMachine.Data.SaveLoad
     public static void LoadList(XmlElement listNode, List<ulong> list)
     {
       if (list == null)
-        list = new List<ulong>();
+        list = [];
       else
         list.Clear();
       foreach (XmlNode childNode in listNode.ChildNodes)
@@ -50,7 +50,7 @@ namespace PLVirtualMachine.Data.SaveLoad
       if (listNode == null)
         return;
       if (list == null)
-        list = new List<T>();
+        list = [];
       else
         list.Clear();
       foreach (XmlNode childNode in listNode.ChildNodes)
@@ -85,8 +85,7 @@ namespace PLVirtualMachine.Data.SaveLoad
 
     public static T ReadEnum<T>(XmlNode valueNode) where T : struct, IComparable, IFormattable, IConvertible
     {
-      T result;
-      DefaultConverter.TryParseEnum(valueNode.InnerText, out result);
+      DefaultConverter.TryParseEnum(valueNode.InnerText, out T result);
       return result;
     }
 

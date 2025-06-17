@@ -30,7 +30,7 @@ namespace Cinemachine
     public bool m_RandomizeChoice;
     [CinemachineBlendDefinitionProperty]
     [Tooltip("The blend which is used if you don't explicitly define a blend between two Virtual Cameras")]
-    public CinemachineBlendDefinition m_DefaultBlend = new CinemachineBlendDefinition(CinemachineBlendDefinition.Style.Cut, 0.0f);
+    public CinemachineBlendDefinition m_DefaultBlend = new(CinemachineBlendDefinition.Style.Cut, 0.0f);
     [HideInInspector]
     public CinemachineBlenderSettings m_CustomBlends;
     private CameraState m_State = CameraState.Default;
@@ -91,8 +91,7 @@ namespace Cinemachine
       LiveChild = ChooseCurrentCamera(worldUp, deltaTime);
       if (liveChild != null && LiveChild != null && liveChild != LiveChild)
       {
-        float duration = 0.0f;
-        AnimationCurve blendCurve = LookupBlendCurve(liveChild, LiveChild, out duration);
+        AnimationCurve blendCurve = LookupBlendCurve(liveChild, LiveChild, out float duration);
         mActiveBlend = CreateBlend(liveChild, LiveChild, blendCurve, duration, mActiveBlend, deltaTime);
         LiveChild.OnTransitionFromCamera(liveChild, worldUp, deltaTime);
         CinemachineCore.Instance.GenerateCameraActivationEvent(LiveChild);
@@ -152,7 +151,7 @@ namespace Cinemachine
     {
       if (m_ChildCameras != null)
         return;
-      List<CinemachineVirtualCameraBase> virtualCameraBaseList = new List<CinemachineVirtualCameraBase>();
+      List<CinemachineVirtualCameraBase> virtualCameraBaseList = [];
       foreach (CinemachineVirtualCameraBase componentsInChild in GetComponentsInChildren<CinemachineVirtualCameraBase>(true))
       {
         if (componentsInChild.transform.parent == transform)
@@ -263,7 +262,7 @@ label_20:
 
     private CinemachineVirtualCameraBase[] Randomize(CinemachineVirtualCameraBase[] src)
     {
-      List<Pair> pairList = new List<Pair>();
+      List<Pair> pairList = [];
       for (int index = 0; index < src.Length; ++index)
         pairList.Add(new Pair {
           a = index,

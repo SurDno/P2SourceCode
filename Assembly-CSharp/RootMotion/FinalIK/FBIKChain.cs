@@ -18,10 +18,10 @@ namespace RootMotion.FinalIK
     public float reach = 0.1f;
     public Smoothing reachSmoothing = Smoothing.Exponential;
     public Smoothing pushSmoothing = Smoothing.Exponential;
-    public IKSolver.Node[] nodes = new IKSolver.Node[0];
-    public int[] children = new int[0];
-    public ChildConstraint[] childConstraints = new ChildConstraint[0];
-    public IKConstraintBend bendConstraint = new IKConstraintBend();
+    public IKSolver.Node[] nodes = [];
+    public int[] children = [];
+    public ChildConstraint[] childConstraints = [];
+    public IKConstraintBend bendConstraint = new();
     private float rootLength;
     private bool initiated;
     private float length;
@@ -44,7 +44,7 @@ namespace RootMotion.FinalIK
       this.pin = pin;
       this.pull = pull;
       SetNodes(nodeTransforms);
-      children = new int[0];
+      children = [];
     }
 
     public void SetNodes(params Transform[] boneTransforms)
@@ -330,14 +330,17 @@ namespace RootMotion.FinalIK
     }
 
     [Serializable]
-    public class ChildConstraint
-    {
-      public float pushElasticity;
-      public float pullElasticity;
+    public class ChildConstraint(
+      Transform bone1,
+      Transform bone2,
+      float pushElasticity = 0.0f,
+      float pullElasticity = 0.0f) {
+      public float pushElasticity = pushElasticity;
+      public float pullElasticity = pullElasticity;
       [SerializeField]
-      private Transform bone1;
+      private Transform bone1 = bone1;
       [SerializeField]
-      private Transform bone2;
+      private Transform bone2 = bone2;
       private float crossFade;
       private float inverseCrossFade;
       private int chain1Index;
@@ -346,18 +349,6 @@ namespace RootMotion.FinalIK
       public float nominalDistance { get; private set; }
 
       public bool isRigid { get; private set; }
-
-      public ChildConstraint(
-        Transform bone1,
-        Transform bone2,
-        float pushElasticity = 0.0f,
-        float pullElasticity = 0.0f)
-      {
-        this.bone1 = bone1;
-        this.bone2 = bone2;
-        this.pushElasticity = pushElasticity;
-        this.pullElasticity = pullElasticity;
-      }
 
       public void Initiate(IKSolverFullBody solver)
       {

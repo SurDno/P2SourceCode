@@ -15,7 +15,7 @@ namespace Engine.Impl
     [DataReadProxy]
     [DataWriteProxy()]
     [Inspected]
-    public List<SceneObjectItem> Items = new List<SceneObjectItem>();
+    public List<SceneObjectItem> Items = [];
 
     public void Sort() => Sort(Items);
 

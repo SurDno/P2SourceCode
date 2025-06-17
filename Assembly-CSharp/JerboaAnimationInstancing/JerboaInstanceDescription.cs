@@ -8,7 +8,7 @@ namespace JerboaAnimationInstancing
   {
     public Vector3 Position;
     public Quaternion Rotation = Quaternion.identity;
-    public BoundingSphere BoundingSphere = new BoundingSphere(new Vector3(0.0f, 0.0f, 0.0f), 0.5f);
+    public BoundingSphere BoundingSphere = new(new Vector3(0.0f, 0.0f, 0.0f), 0.5f);
     public bool visible = true;
     public JerboaInstance Source;
     public JerboaGroupBarycentric Group;

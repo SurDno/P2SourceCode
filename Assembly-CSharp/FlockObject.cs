@@ -11,7 +11,7 @@ public class FlockObject : MonoBehaviour
   private FlockChildTypeEnum flockType;
   [SerializeField]
   private FlockController flockController;
-  private HashSet<LandingSpotObject> landingZones = new HashSet<LandingSpotObject>();
+  private HashSet<LandingSpotObject> landingZones = [];
   private float positionRecountTimeout = 1f;
   private float timeFromLastPositionRecount;
   private Vector3 audioPosition = Vector3.zero;

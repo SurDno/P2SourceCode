@@ -13,7 +13,7 @@ public static class ClipperVector2
     for (int index = 0; index < path.Length; ++index)
       path1.Add(Vector2ToIntPoint(path[index]));
     clipperOffset.AddPath(path1, JoinType.jtRound, EndType.etClosedPolygon);
-    List<List<IntPoint>> solution = new List<List<IntPoint>>();
+    List<List<IntPoint>> solution = [];
     clipperOffset.Execute(ref solution, offset * 1000.0);
     Vector2[][] vector2Array = new Vector2[solution.Count][];
     for (int index1 = 0; index1 < vector2Array.Length; ++index1)

@@ -9,11 +9,11 @@ namespace SoundPropagation
     private static Pathfinder main;
     public float MaxTurnPerDistance = 2f;
     public float LossPerTurn = 0.5f;
-    private List<Node> pool;
-    private int poolUsage;
-    private Dictionary<SPPortal, int> dictionary;
-    private int destinationIndex;
-    private List<int> frontier;
+    private List<Node> pool = [];
+    private int poolUsage = 0;
+    private Dictionary<SPPortal, int> dictionary = new();
+    private int destinationIndex = -1;
+    private List<int> frontier = [];
     private StringBuilder logBuilder;
     private Vector3 destPosition;
     private Vector3 destDirectionality;
@@ -155,8 +155,7 @@ namespace SoundPropagation
         if (output.Count > 0)
         {
           Vector3 pointB = node1 != null ? node1.Position : originPosition;
-          Vector3 output1;
-          if (node.Portal.ClosestPointToSegment(output[output.Count - 1].Position, pointB, out output1))
+          if (node.Portal.ClosestPointToSegment(output[output.Count - 1].Position, pointB, out Vector3 output1))
             node.Position = output1;
         }
         List<PathPoint> pathPointList = output;
@@ -228,8 +227,7 @@ namespace SoundPropagation
       }
       while (frontier.Count > 0)
       {
-        int indexInPool;
-        Node node = Dequeue(out indexInPool);
+        Node node = Dequeue(out int indexInPool);
         if (node.Portal == null)
         {
           FillPath(originCell, originPosition, originDirectionality, node, output);
@@ -301,15 +299,6 @@ namespace SoundPropagation
         SwapInFrontier(frontierIndex, frontierIndex - 1);
       for (; frontierIndex < frontier.Count - 1 && pool[frontier[frontierIndex]].Estimation < (double) pool[frontier[frontierIndex + 1]].Estimation; ++frontierIndex)
         SwapInFrontier(frontierIndex, frontierIndex + 1);
-    }
-
-    public Pathfinder()
-    {
-      pool = new List<Node>();
-      dictionary = new Dictionary<SPPortal, int>();
-      frontier = new List<int>();
-      poolUsage = 0;
-      destinationIndex = -1;
     }
 
     private void SwapInFrontier(int indexA, int indexB)

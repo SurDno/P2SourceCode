@@ -18,7 +18,7 @@ namespace Engine.Source.Commons.Abilities
     [DataWriteProxy]
     [Inspected(Mutable = true, Mode = ExecuteMode.EditAndRuntime)]
     [CopyableProxy]
-    protected List<AbilityValueInfo> values = new List<AbilityValueInfo>();
+    protected List<AbilityValueInfo> values = [];
     [DataReadProxy]
     [DataWriteProxy]
     [Inspected(Mutable = true, Mode = ExecuteMode.EditAndRuntime)]

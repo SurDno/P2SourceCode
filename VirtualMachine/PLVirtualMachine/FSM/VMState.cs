@@ -17,8 +17,8 @@ namespace PLVirtualMachine.FSM
 {
   [TypeData(EDataType.TState)]
   [DataFactory("State")]
-  public class VMState : 
-    VMBaseObject,
+  public class VMState(ulong guid) :
+    VMBaseObject(guid),
     IStub,
     IEditorDataReader,
     IState,
@@ -29,16 +29,15 @@ namespace PLVirtualMachine.FSM
     INamedElement,
     INamed,
     IStaticUpdateable,
-    ILocalContext
-  {
+    ILocalContext {
     [FieldData("EntryPoints", DataFieldType.Reference)]
-    protected List<IEntryPoint> entryPoints = new List<IEntryPoint>();
+    protected List<IEntryPoint> entryPoints = [];
     [FieldData("Owner", DataFieldType.Reference)]
     protected IContainer owner;
     [FieldData("InputLinks", DataFieldType.Reference)]
-    protected List<VMEventLink> inputLinks = new List<VMEventLink>();
+    protected List<VMEventLink> inputLinks = [];
     [FieldData("OutputLinks", DataFieldType.Reference)]
-    protected List<ILink> outputLinks = new List<ILink>();
+    protected List<ILink> outputLinks = [];
     [FieldData("Initial")]
     protected bool initial;
     [FieldData("IgnoreBlock")]
@@ -97,11 +96,6 @@ namespace PLVirtualMachine.FSM
       }
     }
 
-    public VMState(ulong guid)
-      : base(guid)
-    {
-    }
-
     public override EObjectCategory GetCategory() => EObjectCategory.OBJECT_CATEGORY_GRAPH_ELEMENT;
 
     public virtual EStateType StateType => EStateType.STATE_TYPE_STATE;
@@ -115,7 +109,7 @@ namespace PLVirtualMachine.FSM
       IContextElement currentElement,
       int counter = 0)
     {
-      List<IVariable> contextVariables1 = new List<IVariable>();
+      List<IVariable> contextVariables1 = [];
       ++counter;
       int num = MAX_CIRCLE_STATE_ITERATIONS_COUNT;
       if (Parent != null && typeof (IFiniteStateMachine).IsAssignableFrom(Parent.GetType()))
@@ -211,8 +205,8 @@ namespace PLVirtualMachine.FSM
           localMessagesCache.Add(contextVariables2[index]);
         localVarsCacheLoaded = true;
       }
-      IVariable result;
-      if (localVarsCache.TryGetValue(variableUniName, out result) || localMessagesCache.TryGetValue(variableUniName, out result))
+
+      if (localVarsCache.TryGetValue(variableUniName, out IVariable result) || localMessagesCache.TryGetValue(variableUniName, out result))
         return result;
       if (currentElement != null && !typeof (IBranch).IsAssignableFrom(GetType()) && localContextDependencyDict != null && localContextDependencyDict.ContainsKey(currentElement.BaseGuid))
       {
@@ -250,8 +244,7 @@ namespace PLVirtualMachine.FSM
     {
       if (outputLinksByEventGuid == null)
         return null;
-      List<IEventLink> linksByEventGuid;
-      outputLinksByEventGuid.TryGetValue(eventId, out linksByEventGuid);
+      outputLinksByEventGuid.TryGetValue(eventId, out List<IEventLink> linksByEventGuid);
       return linksByEventGuid;
     }
 
@@ -259,8 +252,7 @@ namespace PLVirtualMachine.FSM
     {
       if (outputLinksByEventName == null)
         return null;
-      List<IEventLink> outputLinksByEvent;
-      outputLinksByEventName.TryGetValue(evnt.FunctionalName, out outputLinksByEvent);
+      outputLinksByEventName.TryGetValue(evnt.FunctionalName, out List<IEventLink> outputLinksByEvent);
       return outputLinksByEvent;
     }
 
@@ -340,10 +332,9 @@ namespace PLVirtualMachine.FSM
         localContextDependencyDict = new Dictionary<ulong, List<IContextElement>>(UlongComparer.Instance);
       foreach (IGameAction action in ((IActionLine) contextElement).Actions)
       {
-        List<IContextElement> contextElementList;
-        if (!localContextDependencyDict.TryGetValue(action.BaseGuid, out contextElementList))
+        if (!localContextDependencyDict.TryGetValue(action.BaseGuid, out List<IContextElement> contextElementList))
         {
-          contextElementList = new List<IContextElement>();
+          contextElementList = [];
           localContextDependencyDict.Add(action.BaseGuid, contextElementList);
         }
         if (prevParents != null)
@@ -429,12 +420,12 @@ namespace PLVirtualMachine.FSM
           if (outputLinksByEventGuid == null)
             outputLinksByEventGuid = new Dictionary<ulong, List<IEventLink>>(UlongComparer.Instance);
           if (!outputLinksByEventGuid.ContainsKey(outputLink.Event.EventInstance.BaseGuid))
-            outputLinksByEventGuid.Add(outputLink.Event.EventInstance.BaseGuid, new List<IEventLink>());
+            outputLinksByEventGuid.Add(outputLink.Event.EventInstance.BaseGuid, []);
           outputLinksByEventGuid[outputLink.Event.EventInstance.BaseGuid].Add(outputLink);
           if (outputLinksByEventName == null)
             outputLinksByEventName = new Dictionary<string, List<IEventLink>>();
           if (!outputLinksByEventName.ContainsKey(outputLink.Event.EventInstance.FunctionalName))
-            outputLinksByEventName.Add(outputLink.Event.EventInstance.FunctionalName, new List<IEventLink>());
+            outputLinksByEventName.Add(outputLink.Event.EventInstance.FunctionalName, []);
           outputLinksByEventName[outputLink.Event.EventInstance.FunctionalName].Add(outputLink);
         }
       }

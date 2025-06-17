@@ -14,8 +14,8 @@ namespace PLVirtualMachine.Objects
 {
   [TypeData(EDataType.TBlueprint)]
   [DataFactory("Blueprint")]
-  public class VMBlueprint : 
-    VMLogicObject,
+  public class VMBlueprint(ulong guid) :
+    VMLogicObject(guid),
     IStub,
     IEditorDataReader,
     IBlueprint,
@@ -27,8 +27,7 @@ namespace PLVirtualMachine.Objects
     INamed,
     IStaticUpdateable,
     IContext,
-    ILogicObject
-  {
+    ILogicObject {
     [FieldData("Static")]
     protected bool isStatic;
     [FieldData("InheritanceInfo", DataFieldType.Reference)]
@@ -91,11 +90,6 @@ namespace PLVirtualMachine.Objects
       }
     }
 
-    public VMBlueprint(ulong guid)
-      : base(guid)
-    {
-    }
-
     public List<IBlueprint> BaseBlueprints => baseBlueprints;
 
     public override EObjectCategory GetCategory() => EObjectCategory.OBJECT_CATEGORY_CLASS;
@@ -118,7 +112,7 @@ namespace PLVirtualMachine.Objects
     {
       get
       {
-        List<IEvent> mergedEventsTo = new List<IEvent>();
+        List<IEvent> mergedEventsTo = [];
         if (baseBlueprints != null)
         {
           for (int index = 0; index < baseBlueprints.Count; ++index)
@@ -135,7 +129,7 @@ namespace PLVirtualMachine.Objects
       switch (contextVarCategory)
       {
         case EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_PARAM:
-          List<IVariable> mergedParamsTo = new List<IVariable>();
+          List<IVariable> mergedParamsTo = [];
           if (baseBlueprints != null)
           {
             for (int index = 0; index < baseBlueprints.Count; ++index)

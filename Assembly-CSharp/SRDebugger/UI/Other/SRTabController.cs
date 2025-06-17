@@ -9,7 +9,7 @@ namespace SRDebugger.UI.Other
 {
   public class SRTabController : SRMonoBehaviour
   {
-    private readonly SRList<SRTab> _tabs = new SRList<SRTab>();
+    private readonly SRList<SRTab> _tabs = [];
     private SRTab _activeTab;
     public RectTransform TabButtonContainer;
     public SRTabButton TabButtonPrefab;

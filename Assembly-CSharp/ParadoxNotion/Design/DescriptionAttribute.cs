@@ -3,10 +3,8 @@
 namespace ParadoxNotion.Design
 {
   [AttributeUsage(AttributeTargets.Class, Inherited = false)]
-  public class DescriptionAttribute : Attribute
+  public class DescriptionAttribute(string description) : Attribute 
   {
-    public string description;
-
-    public DescriptionAttribute(string description) => this.description = description;
+    public string description = description;
   }
 }

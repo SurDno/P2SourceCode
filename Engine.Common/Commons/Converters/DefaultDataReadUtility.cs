@@ -97,8 +97,7 @@ namespace Engine.Common.Commons.Converters
 
     public static T ReadEnum<T>(IDataReader reader, string name) where T : struct, IComparable, IConvertible, IFormattable
     {
-      T result;
-      DefaultConverter.TryParseEnum(reader.ReadSimple(name), out result);
+      DefaultConverter.TryParseEnum(reader.ReadSimple(name), out T result);
       return result;
     }
 
@@ -124,7 +123,7 @@ namespace Engine.Common.Commons.Converters
     public static List<double> ReadList(IDataReader reader, string name, List<double> value)
     {
       if (value == null)
-        value = new List<double>();
+        value = [];
       else
         value.Clear();
       IDataReader child1 = reader.GetChild(name);
@@ -141,7 +140,7 @@ namespace Engine.Common.Commons.Converters
     public static List<string> ReadList(IDataReader reader, string name, List<string> value)
     {
       if (value == null)
-        value = new List<string>();
+        value = [];
       else
         value.Clear();
       IDataReader child1 = reader.GetChild(name);
@@ -155,7 +154,7 @@ namespace Engine.Common.Commons.Converters
     public static List<T> ReadListSerialize<T>(IDataReader reader, string name, List<T> value)
     {
       if (value == null)
-        value = new List<T>();
+        value = [];
       else
         value.Clear();
       IDataReader child1 = reader.GetChild(name);
@@ -181,7 +180,7 @@ namespace Engine.Common.Commons.Converters
     public static List<T> ReadListEnum<T>(IDataReader reader, string name, List<T> value) where T : struct, IComparable, IConvertible, IFormattable
     {
       if (value == null)
-        value = new List<T>();
+        value = [];
       else
         value.Clear();
       IDataReader child1 = reader.GetChild(name);
@@ -189,8 +188,7 @@ namespace Engine.Common.Commons.Converters
         return value;
       foreach (IDataReader child2 in child1.GetChilds())
       {
-        T result;
-        DefaultConverter.TryParseEnum(child2.Read(), out result);
+        DefaultConverter.TryParseEnum(child2.Read(), out T result);
         value.Add(result);
       }
       return value;

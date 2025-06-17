@@ -43,8 +43,7 @@ namespace Rain
     public static Hit Raycast(Ray ray, float maxDistance)
     {
       RainManager instance = RainManager.Instance;
-      RaycastHit hitInfo;
-      if (instance == null || instance.puddleWetness <= 0.0 || !Physics.Raycast(ray, out hitInfo, maxDistance, instance.puddleLayers))
+      if (instance == null || instance.puddleWetness <= 0.0 || !Physics.Raycast(ray, out RaycastHit hitInfo, maxDistance, instance.puddleLayers))
         return null;
       Puddle component1 = hitInfo.collider.GetComponent<Puddle>();
       if (component1 == null)
@@ -105,7 +104,7 @@ namespace Rain
         {
           _hdrBuffer = CreateBuffer(true);
           if (_hdrBuffer != null)
-            _hdrCameras = new List<Camera>();
+            _hdrCameras = [];
         }
         return _hdrBuffer != null;
       }
@@ -113,7 +112,7 @@ namespace Rain
       {
         _ldrBuffer = CreateBuffer(false);
         if (_ldrBuffer != null)
-          _ldrCameras = new List<Camera>();
+          _ldrCameras = [];
       }
       return _ldrBuffer != null;
     }
@@ -124,13 +123,12 @@ namespace Rain
         return null;
       CommandBuffer buffer = new CommandBuffer();
       buffer.name = "Decal " + name;
-      RenderTargetIdentifier[] colors = new RenderTargetIdentifier[4]
-      {
+      RenderTargetIdentifier[] colors = [
         BuiltinRenderTextureType.GBuffer0,
         BuiltinRenderTextureType.GBuffer1,
         BuiltinRenderTextureType.GBuffer2,
         BuiltinRenderTextureType.GBuffer3
-      };
+      ];
       if (hdr)
         colors[3] = BuiltinRenderTextureType.CameraTarget;
       buffer.SetRenderTarget(colors, BuiltinRenderTextureType.CameraTarget);
@@ -207,18 +205,10 @@ namespace Rain
         DestroyBuffers();
     }
 
-    public class Hit
-    {
-      public Puddle puddle;
-      public Vector3 point;
-      public float wetness;
-
-      public Hit(Puddle puddle, Vector3 point, float wetness)
-      {
-        this.puddle = puddle;
-        this.point = point;
-        this.wetness = wetness;
-      }
+    public class Hit(Puddle puddle, Vector3 point, float wetness) {
+      public Puddle puddle = puddle;
+      public Vector3 point = point;
+      public float wetness = wetness;
     }
   }
 }

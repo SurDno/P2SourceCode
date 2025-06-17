@@ -4,17 +4,16 @@ using Inspectors;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class NpcStateIdlePlagueCloud : INpcState
-{
+public class NpcStateIdlePlagueCloud(NpcState npcState, Pivot pivot) : INpcState 
+  {
   private EngineBehavior behavior;
   private NavMeshAgent agent;
-  private Pivot pivot;
-  private NpcState npcState;
+  private NpcState npcState = npcState;
   private bool agentWasEnabled;
   private bool inited;
   private bool failed;
 
-  public GameObject GameObject { get; private set; }
+  public GameObject GameObject { get; private set; } = npcState.gameObject;
 
   [Inspected]
   public NpcStateStatusEnum Status => NpcStateStatusEnum.Running;
@@ -28,13 +27,6 @@ public class NpcStateIdlePlagueCloud : INpcState
     failed = false;
     inited = true;
     return true;
-  }
-
-  public NpcStateIdlePlagueCloud(NpcState npcState, Pivot pivot)
-  {
-    this.npcState = npcState;
-    this.pivot = pivot;
-    GameObject = npcState.gameObject;
   }
 
   public void Activate()

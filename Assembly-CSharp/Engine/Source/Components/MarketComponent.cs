@@ -21,7 +21,7 @@ namespace Engine.Source.Components
     [CopyableProxy()]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected bool isEnabled = true;
-    private Dictionary<string, Dictionary<string, float>> storablesFactor = new Dictionary<string, Dictionary<string, float>>();
+    private Dictionary<string, Dictionary<string, float>> storablesFactor = new();
 
     [Inspected(Mutable = true)]
     public bool IsEnabled

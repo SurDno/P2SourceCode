@@ -19,8 +19,8 @@ namespace Engine.Source.Debugs
     private static Color trueColor = Color.white;
     private static Color falseColor = ColorPreset.LightGray;
     private static bool visible;
-    private static List<GroupInfo> groups = new List<GroupInfo>();
-    private static List<Action> handlers = new List<Action>();
+    private static List<GroupInfo> groups = [];
+    private static List<Action> handlers = [];
 
     public static bool IsGroupVisible(string name)
     {

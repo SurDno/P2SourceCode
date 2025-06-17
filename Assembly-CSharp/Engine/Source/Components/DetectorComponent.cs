@@ -36,18 +36,18 @@ namespace Engine.Source.Components
     [CopyableProxy()]
     protected bool isEnabled = true;
     [Inspected]
-    private List<DetectableCandidatInfo> eyeCandidates = new List<DetectableCandidatInfo>();
+    private List<DetectableCandidatInfo> eyeCandidates = [];
     [Inspected]
-    private List<DetectableCandidatInfo> hearingCandidates = new List<DetectableCandidatInfo>();
-    private HashSet<IDetectableComponent> visible = new HashSet<IDetectableComponent>();
-    private HashSet<IDetectableComponent> hearing = new HashSet<IDetectableComponent>();
+    private List<DetectableCandidatInfo> hearingCandidates = [];
+    private HashSet<IDetectableComponent> visible = [];
+    private HashSet<IDetectableComponent> hearing = [];
     [FromThis]
     private ILocationItemComponent locationItem;
     [FromThis]
     private ParametersComponent parametersComponent;
-    private static HashSet<IDetectableComponent> tmps = new HashSet<IDetectableComponent>();
-    private static HashSet<IDetectableComponent> tmps2 = new HashSet<IDetectableComponent>();
-    private static List<RaycastHit> raycastBuffer = new List<RaycastHit>();
+    private static HashSet<IDetectableComponent> tmps = [];
+    private static HashSet<IDetectableComponent> tmps2 = [];
+    private static List<RaycastHit> raycastBuffer = [];
     private IParameter<float> eyeDistanceParameter;
     private IParameter<float> eyeAngleParameter;
     private IParameter<float> hearingDistanceParameter;
@@ -74,31 +74,19 @@ namespace Engine.Source.Components
     public HashSet<IDetectableComponent> Hearing => hearing;
 
     [Inspected]
-    public float EyeDistance
-    {
-      get => eyeDistanceParameter != null ? eyeDistanceParameter.Value : 0.0f;
-    }
+    public float EyeDistance => eyeDistanceParameter != null ? eyeDistanceParameter.Value : 0.0f;
 
     [Inspected]
-    public float BaseEyeDistance
-    {
-      get => eyeDistanceParameter != null ? eyeDistanceParameter.BaseValue : 0.0f;
-    }
+    public float BaseEyeDistance => eyeDistanceParameter != null ? eyeDistanceParameter.BaseValue : 0.0f;
 
     [Inspected]
     public float EyeAngle => eyeAngleParameter != null ? eyeAngleParameter.Value : 0.0f;
 
     [Inspected]
-    public float HearingDistance
-    {
-      get => hearingDistanceParameter != null ? hearingDistanceParameter.Value : 0.0f;
-    }
+    public float HearingDistance => hearingDistanceParameter != null ? hearingDistanceParameter.Value : 0.0f;
 
     [Inspected]
-    public float BaseHearingDistance
-    {
-      get => hearingDistanceParameter != null ? hearingDistanceParameter.BaseValue : 0.0f;
-    }
+    public float BaseHearingDistance => hearingDistanceParameter != null ? hearingDistanceParameter.BaseValue : 0.0f;
 
     public bool NeedSave
     {

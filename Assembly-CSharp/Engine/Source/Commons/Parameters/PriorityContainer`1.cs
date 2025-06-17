@@ -16,8 +16,8 @@ namespace Engine.Source.Commons.Parameters
     [CopyableProxy()]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    protected List<PriorityItem<T>> items = new List<PriorityItem<T>>();
-    private static PriorityItemComprer<T> comparer = new PriorityItemComprer<T>();
+    protected List<PriorityItem<T>> items = [];
+    private static PriorityItemComprer<T> comparer = new();
 
     [Inspected]
     private PriorityParameterEnum Priority

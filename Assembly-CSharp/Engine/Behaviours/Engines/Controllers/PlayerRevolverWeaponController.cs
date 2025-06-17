@@ -33,7 +33,7 @@ namespace Engine.Behaviours.Engines.Controllers
     private float timeToLastPunch;
     private bool isShoting;
     private StorageComponent storage;
-    private List<StorableComponent> storageAmmo = new List<StorableComponent>();
+    private List<StorableComponent> storageAmmo = [];
     private IEntity item;
     private IParameter<int> bullets;
     private IParameter<float> durability;

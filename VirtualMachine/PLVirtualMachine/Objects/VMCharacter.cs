@@ -12,8 +12,7 @@ namespace PLVirtualMachine.Objects
 {
   [TypeData(EDataType.TCharacter)]
   [DataFactory("Character")]
-  public class VMCharacter : VMWorldObject, IStub, IEditorDataReader
-  {
+  public class VMCharacter(ulong guid) : VMWorldObject(guid), IStub, IEditorDataReader {
     public override void EditorDataRead(XmlReader xml, IDataCreator creator, string typeContext)
     {
       while (xml.Read()) {
@@ -77,11 +76,6 @@ namespace PLVirtualMachine.Objects
         if (xml.NodeType == XmlNodeType.EndElement)
           break;
       }
-    }
-
-    public VMCharacter(ulong guid)
-      : base(guid)
-    {
     }
 
     public override EObjectCategory GetCategory() => EObjectCategory.OBJECT_CATEGORY_CHARACTER;

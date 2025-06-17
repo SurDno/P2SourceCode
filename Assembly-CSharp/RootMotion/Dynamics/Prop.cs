@@ -10,7 +10,7 @@ namespace RootMotion.Dynamics
     [Tooltip("The Muscle of this prop.")]
     public ConfigurableJoint muscle;
     [Tooltip("The muscle properties that will be applied to the Muscle on pickup.")]
-    public Muscle.Props muscleProps = new Muscle.Props();
+    public Muscle.Props muscleProps = new();
     [Tooltip("If true, this prop's layer will be forced to PuppetMaster layer and target's layer forced to PuppetMaster's Target Root's layer when the prop is picked up.")]
     public bool forceLayers = true;
     [LargeHeader("Additional Pin")]
@@ -27,7 +27,7 @@ namespace RootMotion.Dynamics
     private ConfigurableJointMotion angularXMotion;
     private ConfigurableJointMotion angularYMotion;
     private ConfigurableJointMotion angularZMotion;
-    private Collider[] colliders = new Collider[0];
+    private Collider[] colliders = [];
 
     public bool isPickedUp => propRoot != null;
 

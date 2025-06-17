@@ -12,53 +12,17 @@ namespace SRF.UI
     public SRText CopySource;
     public Vector2 Padding;
 
-    public float minWidth
-    {
-      get
-      {
-        return CopySource == null ? -1f : LayoutUtility.GetMinWidth(CopySource.rectTransform) + Padding.x;
-      }
-    }
+    public float minWidth => CopySource == null ? -1f : LayoutUtility.GetMinWidth(CopySource.rectTransform) + Padding.x;
 
-    public float preferredWidth
-    {
-      get
-      {
-        return CopySource == null ? -1f : LayoutUtility.GetPreferredWidth(CopySource.rectTransform) + Padding.x;
-      }
-    }
+    public float preferredWidth => CopySource == null ? -1f : LayoutUtility.GetPreferredWidth(CopySource.rectTransform) + Padding.x;
 
-    public float flexibleWidth
-    {
-      get
-      {
-        return CopySource == null ? -1f : LayoutUtility.GetFlexibleWidth(CopySource.rectTransform);
-      }
-    }
+    public float flexibleWidth => CopySource == null ? -1f : LayoutUtility.GetFlexibleWidth(CopySource.rectTransform);
 
-    public float minHeight
-    {
-      get
-      {
-        return CopySource == null ? -1f : LayoutUtility.GetFlexibleHeight(CopySource.rectTransform) + Padding.y;
-      }
-    }
+    public float minHeight => CopySource == null ? -1f : LayoutUtility.GetFlexibleHeight(CopySource.rectTransform) + Padding.y;
 
-    public float preferredHeight
-    {
-      get
-      {
-        return CopySource == null ? -1f : LayoutUtility.GetPreferredHeight(CopySource.rectTransform) + Padding.y;
-      }
-    }
+    public float preferredHeight => CopySource == null ? -1f : LayoutUtility.GetPreferredHeight(CopySource.rectTransform) + Padding.y;
 
-    public float flexibleHeight
-    {
-      get
-      {
-        return CopySource == null ? -1f : LayoutUtility.GetFlexibleHeight(CopySource.rectTransform);
-      }
-    }
+    public float flexibleHeight => CopySource == null ? -1f : LayoutUtility.GetFlexibleHeight(CopySource.rectTransform);
 
     public int layoutPriority => 0;
 

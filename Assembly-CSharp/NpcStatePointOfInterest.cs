@@ -9,11 +9,8 @@ using Inspectors;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class NpcStatePointOfInterest : INpcState, INpcStateNeedSyncBack
-{
+public class NpcStatePointOfInterest(NpcState npcState, Pivot pivot) : INpcState, INpcStateNeedSyncBack {
   private NPCEnemy enemy;
-  private NpcState npcState;
-  private Pivot pivot;
   private EngineBehavior behavior;
   private POISetup poiSetup;
   private Animator animator;
@@ -61,7 +58,7 @@ public class NpcStatePointOfInterest : INpcState, INpcStateNeedSyncBack
   private bool neededExtraExitPOI;
   private Vector3 poiBackPosition;
 
-  public GameObject GameObject { get; private set; }
+  public GameObject GameObject { get; private set; } = npcState.gameObject;
 
   private bool TryInit()
   {
@@ -94,20 +91,7 @@ public class NpcStatePointOfInterest : INpcState, INpcStateNeedSyncBack
     return true;
   }
 
-  public NpcStatePointOfInterest(NpcState npcState, Pivot pivot)
-  {
-    GameObject = npcState.gameObject;
-    this.pivot = pivot;
-    this.npcState = npcState;
-  }
-
-  public NpcStateStatusEnum Status
-  {
-    get
-    {
-      return state == StateEnum.End ? NpcStateStatusEnum.Success : NpcStateStatusEnum.Running;
-    }
-  }
+  public NpcStateStatusEnum Status => state == StateEnum.End ? NpcStateStatusEnum.Success : NpcStateStatusEnum.Running;
 
   public void Activate(
     float poiTime,

@@ -11,7 +11,7 @@ namespace BehaviorDesigner.Runtime
     public int depth;
     public int compositeParentIndex = -1;
     public Dictionary<string, OverrideFieldValue> overrideFields;
-    public HashSet<object> overiddenFields = new HashSet<object>();
+    public HashSet<object> overiddenFields = [];
     public int errorTask = -1;
     public string errorTaskName = "";
 

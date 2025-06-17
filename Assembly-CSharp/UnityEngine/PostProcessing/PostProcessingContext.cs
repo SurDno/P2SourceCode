@@ -21,10 +21,7 @@
       return this;
     }
 
-    public bool isGBufferAvailable
-    {
-      get => camera.actualRenderingPath == RenderingPath.DeferredShading;
-    }
+    public bool isGBufferAvailable => camera.actualRenderingPath == RenderingPath.DeferredShading;
 
     public bool isHdr => camera.allowHDR;
 

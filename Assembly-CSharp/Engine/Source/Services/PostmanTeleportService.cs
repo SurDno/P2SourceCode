@@ -20,9 +20,9 @@ namespace Engine.Source.Services
     private const float maxSearchDistance = 20f;
     private const float trialRepeatTime = 30f;
     [Inspected]
-    private List<Slot> postmans = new List<Slot>();
+    private List<Slot> postmans = [];
     [Inspected]
-    private List<Slot> teleports = new List<Slot>();
+    private List<Slot> teleports = [];
 
     public void Initialise()
     {
@@ -111,8 +111,7 @@ namespace Engine.Source.Services
       }
       foreach (Slot teleport in teleports)
       {
-        Vector3 realPoint;
-        if (TryPoint(RandomPoint(playerGameObject), playerGameObject.transform.position, teleport.AreaMask, out realPoint))
+        if (TryPoint(RandomPoint(playerGameObject), playerGameObject.transform.position, teleport.AreaMask, out Vector3 realPoint))
         {
           teleport.Owner.GetComponent<NavigationComponent>().TeleportTo(playerLocation.Location, realPoint, Quaternion.LookRotation(playerGameObject.transform.position - realPoint));
           teleport.TimeLeft = 30f;
@@ -145,8 +144,7 @@ namespace Engine.Source.Services
       int areaMask,
       out Vector3 realPoint)
     {
-      NavMeshHit hit;
-      if (!NavMesh.SamplePosition(point, out hit, 5f, -1))
+      if (!NavMesh.SamplePosition(point, out NavMeshHit hit, 5f, -1))
       {
         realPoint = point;
         return false;

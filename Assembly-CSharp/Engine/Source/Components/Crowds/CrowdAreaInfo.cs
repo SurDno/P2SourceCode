@@ -19,6 +19,6 @@ namespace Engine.Source.Components.Crowds
     [CopyableProxy()]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    public List<CrowdTemplateInfo> TemplateInfos = new List<CrowdTemplateInfo>();
+    public List<CrowdTemplateInfo> TemplateInfos = [];
   }
 }

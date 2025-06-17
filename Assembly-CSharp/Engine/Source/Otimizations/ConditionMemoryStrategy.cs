@@ -14,7 +14,7 @@ namespace Engine.Source.Otimizations
     [DataWriteProxy]
     [CopyableProxy]
     [Inspected(Mutable = true, Mode = ExecuteMode.EditAndRuntime)]
-    protected List<MemoryStrategyContextEnum> contexts = new List<MemoryStrategyContextEnum>();
+    protected List<MemoryStrategyContextEnum> contexts = [];
     [DataReadProxy]
     [DataWriteProxy]
     [CopyableProxy()]

@@ -57,7 +57,7 @@ public class FightTargetIsUnvailiable : Conditional, IStub, ISerializeDataWrite,
       return TaskStatus.Success;
     if (gameObject.GetComponent<EnemyBase>().IsFaint)
       return TaskStatus.Failure;
-    List<IEntity> entityList = new List<IEntity>();
+    List<IEntity> entityList = [];
     foreach (IDetectableComponent detectable in detector.Visible)
     {
       if (DetectableIsTarget(detectable))

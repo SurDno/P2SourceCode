@@ -4,12 +4,9 @@ using UnityEngine;
 namespace AmplifyBloom
 {
   [Serializable]
-  public class AmplifyBokehData
-  {
+  public class AmplifyBokehData(Vector4[] offsets) {
     internal RenderTexture BokehRenderTexture;
-    internal Vector4[] Offsets;
-
-    public AmplifyBokehData(Vector4[] offsets) => Offsets = offsets;
+    internal Vector4[] Offsets = offsets;
 
     public void Destroy()
     {

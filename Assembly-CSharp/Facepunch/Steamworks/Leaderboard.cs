@@ -12,7 +12,7 @@ namespace Facepunch.Steamworks
     private static readonly int[] subEntriesBuffer = new int[512];
     internal ulong BoardId;
     internal Client client;
-    private readonly Queue<Action> _onCreated = new Queue<Action>();
+    private readonly Queue<Action> _onCreated = new();
     public Entry[] Results;
     public Action OnBoardInformation;
     [ThreadStatic]
@@ -105,7 +105,7 @@ namespace Facepunch.Steamworks
       if (!IsValid)
         return DeferOnCreated(() => AddScore(onlyIfBeatsOldScore, score, subscores, onSuccess, onFailure), onFailure);
       if (subscores == null)
-        subscores = new int[0];
+        subscores = [];
       LeaderboardUploadScoreMethod eLeaderboardUploadScoreMethod = LeaderboardUploadScoreMethod.ForceUpdate;
       if (onlyIfBeatsOldScore)
         eLeaderboardUploadScoreMethod = LeaderboardUploadScoreMethod.KeepBest;
@@ -229,7 +229,7 @@ namespace Facepunch.Steamworks
         else
         {
           if (_sEntryBuffer == null)
-            _sEntryBuffer = new List<Entry>();
+            _sEntryBuffer = [];
           else
             _sEntryBuffer.Clear();
           ReadScores(result, _sEntryBuffer);
@@ -244,7 +244,7 @@ namespace Facepunch.Steamworks
       IsQuerying = false;
       if (client == null || error)
         return;
-      List<Entry> dest = new List<Entry>();
+      List<Entry> dest = [];
       ReadScores(result, dest);
       Results = dest.ToArray();
     }

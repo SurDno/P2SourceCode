@@ -14,8 +14,8 @@ namespace PLVirtualMachine.FSM
 {
   [TypeData(EDataType.TGraphLink)]
   [DataFactory("GraphLink")]
-  public class VMEventLink : 
-    VMBaseObject,
+  public class VMEventLink(ulong guid) :
+    VMBaseObject(guid),
     IStub,
     IEditorDataReader,
     IEventLink,
@@ -27,8 +27,7 @@ namespace PLVirtualMachine.FSM
     INamed,
     IStaticUpdateable,
     ILocalContext,
-    IParamListSource
-  {
+    IParamListSource {
     [FieldData("Event", DataFieldType.Reference)]
     private IEvent linkEvent;
     [FieldData("EventObject")]
@@ -46,7 +45,7 @@ namespace PLVirtualMachine.FSM
     [FieldData("Enabled")]
     private bool enabled = true;
     [FieldData("SourceParams")]
-    private List<CommonVariable> sourceParams = new List<CommonVariable>();
+    private List<CommonVariable> sourceParams = [];
 
     public virtual void EditorDataRead(XmlReader xml, IDataCreator creator, string typeContext)
     {
@@ -101,11 +100,6 @@ namespace PLVirtualMachine.FSM
       }
     }
 
-    public VMEventLink(ulong guid)
-      : base(guid)
-    {
-    }
-
     public override EObjectCategory GetCategory() => EObjectCategory.OBJECT_CATEGORY_GRAPH_ELEMENT;
 
     public IGraphObject Source => sourceState;
@@ -120,13 +114,7 @@ namespace PLVirtualMachine.FSM
 
     public int DestEntryPoint => destEntryPointIndex;
 
-    public EventInfo Event
-    {
-      get
-      {
-        return parentGraphAssociatedLink != null ? parentGraphAssociatedLink.Event : new EventInfo(linkEvent, linkEventObject);
-      }
-    }
+    public EventInfo Event => parentGraphAssociatedLink != null ? parentGraphAssociatedLink.Event : new EventInfo(linkEvent, linkEventObject);
 
     public override IContainer Owner
     {
@@ -162,20 +150,14 @@ namespace PLVirtualMachine.FSM
       }
     }
 
-    public ELinkExitType LinkExitType
-    {
-      get
-      {
-        return destState == null ? (ELinkExitType) destEntryPointIndex : ELinkExitType.LINK_EXIT_TYPE_NONE;
-      }
-    }
+    public ELinkExitType LinkExitType => destState == null ? (ELinkExitType) destEntryPointIndex : ELinkExitType.LINK_EXIT_TYPE_NONE;
 
     public List<IVariable> GetLocalContextVariables(
       EContextVariableCategory eContextVarCategory,
       IContextElement currentElement,
       int iCounter = 0)
     {
-      List<IVariable> contextVariables = new List<IVariable>();
+      List<IVariable> contextVariables = [];
       if (linkEvent != null)
       {
         List<BaseMessage> returnMessages = linkEvent.ReturnMessages;

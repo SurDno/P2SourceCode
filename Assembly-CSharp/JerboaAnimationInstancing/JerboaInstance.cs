@@ -51,8 +51,8 @@ namespace JerboaAnimationInstancing
               vertexCacheList = new JerboaInstancingManager.VertexCache[loDs[index1].renderers.Length]
             };
             lodInfo.materialBlockList = new JerboaInstancingManager.MaterialBlock[lodInfo.vertexCacheList.Length];
-            List<SkinnedMeshRenderer> skinnedMeshRendererList = new List<SkinnedMeshRenderer>();
-            List<MeshRenderer> meshRendererList = new List<MeshRenderer>();
+            List<SkinnedMeshRenderer> skinnedMeshRendererList = [];
+            List<MeshRenderer> meshRendererList = [];
             foreach (Renderer renderer in loDs[index1].renderers)
             {
               if (renderer is SkinnedMeshRenderer)
@@ -127,7 +127,7 @@ namespace JerboaAnimationInstancing
       allTransforms = collection;
       if (extraBoneInfo != null)
       {
-        List<Transform> transformList = new List<Transform>();
+        List<Transform> transformList = [];
         transformList.AddRange(collection);
         Transform[] componentsInChildren = gameObject.GetComponentsInChildren<Transform>();
         for (int index1 = 0; index1 != extraBoneInfo.extraBone.Length; ++index1)

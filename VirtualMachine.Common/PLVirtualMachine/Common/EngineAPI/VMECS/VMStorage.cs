@@ -17,9 +17,9 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
   public class VMStorage : VMEngineComponent<IStorageComponent>
   {
     public const string ComponentName = "Storage";
-    protected List<string> innerContainerTags = new List<string>();
-    protected List<IInventoryComponent> innerContainersList = new List<IInventoryComponent>();
-    private static StringBuilder DataStringBuilder = new StringBuilder();
+    protected List<string> innerContainerTags = [];
+    protected List<IInventoryComponent> innerContainersList = [];
+    private static StringBuilder DataStringBuilder = new();
     public static bool CREATE_VIRTUAL_CONTAINERS_MODE = false;
     public static bool TestSimplePickUpMode = false;
 
@@ -164,7 +164,7 @@ label_8:
       }
       else
       {
-        List<IEntity> entityList = new List<IEntity>();
+        List<IEntity> entityList = [];
         foreach (IStorableComponent storableComponent in Component.Items)
         {
           if (storableComponent != null && !storableComponent.IsDisposed && storableComponent.Owner.Name == template.Name)
@@ -252,7 +252,7 @@ label_8:
           }
           else
           {
-            List<IStorableComponent> storableComponentList = new List<IStorableComponent>();
+            List<IStorableComponent> storableComponentList = [];
             if (itemsCount > Component.Items.Count())
               itemsCount = Component.Items.Count();
             int num = (int) Math.Floor(Component.Items.Count() * VMMath.GetRandomDouble());
@@ -296,7 +296,7 @@ label_8:
           }
           else
           {
-            List<IStorableComponent> storableComponentList = new List<IStorableComponent>();
+            List<IStorableComponent> storableComponentList = [];
             foreach (IStorableComponent storableComponent in Component.Items)
             {
               if (storableComponent != null && !storableComponent.IsDisposed)
@@ -594,7 +594,7 @@ label_8:
     {
       if (tagsList == null)
         return innerContainersList;
-      List<IInventoryComponent> containersByTagsList = new List<IInventoryComponent>();
+      List<IInventoryComponent> containersByTagsList = [];
       for (int index = 0; index < innerContainersList.Count; ++index)
       {
         if (index < innerContainerTags.Count && tagsList.CheckTag(innerContainerTags[index]))

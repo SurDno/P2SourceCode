@@ -8,19 +8,17 @@ namespace SRF
 {
   public class Hierarchy
   {
-    private static readonly char[] Seperator = new char[1]
-    {
+    private static readonly char[] Seperator = [
       '/'
-    };
-    private static readonly Dictionary<string, Transform> Cache = new Dictionary<string, Transform>();
+    ];
+    private static readonly Dictionary<string, Transform> Cache = new();
 
     [Obsolete("Use static Get() instead")]
     public Transform this[string key] => Get(key);
 
     public static Transform Get(string key)
     {
-      Transform transform1;
-      if (Cache.TryGetValue(key, out transform1))
+      if (Cache.TryGetValue(key, out Transform transform1))
         return transform1;
       GameObject gameObject = GameObject.Find(key);
       if ((bool) (Object) gameObject)

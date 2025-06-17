@@ -17,7 +17,7 @@ namespace PLVirtualMachine.Time
 {
   public static class GameTimeManager
   {
-    private static Dictionary<string, GameTimeContext> gameTimeContexts = new Dictionary<string, GameTimeContext>();
+    private static Dictionary<string, GameTimeContext> gameTimeContexts = new();
     private static GameTimeContext currentContext;
     private static bool isGameEventsInited;
     private static VMCharacter mainContextPlayingCharacter;
@@ -80,15 +80,9 @@ namespace PLVirtualMachine.Time
       GameTimer.CurrTimerSerialNumber = 0;
     }
 
-    public static VMCharacter MainContextPlayingCharacter
-    {
-      get => mainContextPlayingCharacter;
-    }
+    public static VMCharacter MainContextPlayingCharacter => mainContextPlayingCharacter;
 
-    public static Dictionary<string, GameTimeContext> GameTimeContexts
-    {
-      get => gameTimeContexts;
-    }
+    public static Dictionary<string, GameTimeContext> GameTimeContexts => gameTimeContexts;
 
     public static GameTimeContext CurrentGameTimeContext => currentContext;
 

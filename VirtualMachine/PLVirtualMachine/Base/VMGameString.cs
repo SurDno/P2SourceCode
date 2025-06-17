@@ -12,14 +12,13 @@ namespace PLVirtualMachine.Base
 {
   [TypeData(EDataType.TGameString)]
   [DataFactory("GameString")]
-  public class VMGameString : 
-    VMBaseObject,
+  public class VMGameString(ulong guid) :
+    VMBaseObject(guid),
     IStub,
     IEditorDataReader,
     IGameString,
     IObject,
-    IEditorBaseTemplate
-  {
+    IEditorBaseTemplate {
     public virtual void EditorDataRead(XmlReader xml, IDataCreator creator, string typeContext)
     {
       while (xml.Read()) {
@@ -44,11 +43,6 @@ namespace PLVirtualMachine.Base
         if (xml.NodeType == XmlNodeType.EndElement)
           break;
       }
-    }
-
-    public VMGameString(ulong guid)
-      : base(guid)
-    {
     }
 
     public override EObjectCategory GetCategory() => EObjectCategory.OBJECT_CATEGORY_NONE;

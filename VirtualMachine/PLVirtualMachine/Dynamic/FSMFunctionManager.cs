@@ -34,8 +34,7 @@ namespace PLVirtualMachine.Dynamic
 
     public BaseFunction GetContextFunction(string functionName)
     {
-      VMFunction contextFunction = null;
-      contextFunctions.TryGetValue(functionName.GetHashCode(), out contextFunction);
+      contextFunctions.TryGetValue(functionName.GetHashCode(), out VMFunction contextFunction);
       return contextFunction;
     }
 

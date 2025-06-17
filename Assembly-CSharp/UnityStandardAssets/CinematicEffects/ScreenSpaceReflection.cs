@@ -203,7 +203,7 @@ namespace UnityStandardAssets.CinematicEffects
       public IntensitySettings intensitySettings;
       [Layout]
       public ScreenEdgeMask screenEdgeMask;
-      private static readonly SSRSettings s_Default = new SSRSettings {
+      private static readonly SSRSettings s_Default = new() {
         reflectionSettings = new ReflectionSettings {
           blendType = SSRReflectionBlendType.PhysicallyBased,
           reflectionQuality = SSRResolution.High,
@@ -225,10 +225,7 @@ namespace UnityStandardAssets.CinematicEffects
         }
       };
 
-      public static SSRSettings defaultSettings
-      {
-        get => s_Default;
-      }
+      public static SSRSettings defaultSettings => s_Default;
 
       [AttributeUsage(AttributeTargets.Field)]
       public class LayoutAttribute : PropertyAttribute

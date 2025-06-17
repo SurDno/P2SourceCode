@@ -12,8 +12,7 @@ namespace PLVirtualMachine.Objects
 {
   [TypeData(EDataType.TGeom)]
   [DataFactory("Geom")]
-  public class VMGeomLogicObject : VMWorldObject, IStub, IEditorDataReader
-  {
+  public class VMGeomLogicObject(ulong guid) : VMWorldObject(guid), IStub, IEditorDataReader {
     public override void EditorDataRead(XmlReader xml, IDataCreator creator, string typeContext)
     {
       while (xml.Read()) {
@@ -77,11 +76,6 @@ namespace PLVirtualMachine.Objects
         if (xml.NodeType == XmlNodeType.EndElement)
           break;
       }
-    }
-
-    public VMGeomLogicObject(ulong guid)
-      : base(guid)
-    {
     }
 
     public override EObjectCategory GetCategory() => EObjectCategory.OBJECT_CATEGORY_GEOM;

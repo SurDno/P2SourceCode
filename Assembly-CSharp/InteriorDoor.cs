@@ -29,15 +29,9 @@ public class InteriorDoor : MonoBehaviour, IEntityAttachable
   private bool update;
   [Inspected]
   private bool openned;
-  private HashSet<IEntity> targets = new HashSet<IEntity>();
+  private HashSet<IEntity> targets = [];
 
-  private bool IsOppening
-  {
-    get
-    {
-      return gate.Opened.Value || targets.Count != 0 && gate.LockState.Value == LockState.Unlocked;
-    }
-  }
+  private bool IsOppening => gate.Opened.Value || targets.Count != 0 && gate.LockState.Value == LockState.Unlocked;
 
   public void Attach(IEntity owner)
   {

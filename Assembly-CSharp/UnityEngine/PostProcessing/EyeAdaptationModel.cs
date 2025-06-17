@@ -55,25 +55,20 @@ namespace UnityEngine.PostProcessing
       [Tooltip("Upper bound for the brightness range of the generated histogram (in EV). The bigger the spread between min & max, the lower the precision will be.")]
       public int logMax;
 
-      public static Settings defaultSettings
-      {
-        get
-        {
-          return new Settings {
-            lowPercent = 45f,
-            highPercent = 95f,
-            minLuminance = -5f,
-            maxLuminance = 1f,
-            keyValue = 0.25f,
-            dynamicKeyValue = true,
-            adaptationType = EyeAdaptationType.Progressive,
-            speedUp = 2f,
-            speedDown = 1f,
-            logMin = -8,
-            logMax = 4
-          };
-        }
-      }
+      public static Settings defaultSettings =>
+        new() {
+          lowPercent = 45f,
+          highPercent = 95f,
+          minLuminance = -5f,
+          maxLuminance = 1f,
+          keyValue = 0.25f,
+          dynamicKeyValue = true,
+          adaptationType = EyeAdaptationType.Progressive,
+          speedUp = 2f,
+          speedDown = 1f,
+          logMin = -8,
+          logMax = 4
+        };
     }
   }
 }

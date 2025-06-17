@@ -7,17 +7,10 @@ using UnityEngine;
 namespace AmplifyColor
 {
   [Serializable]
-  public class VolumeEffectComponentFlags
-  {
-    public string componentName;
-    public List<VolumeEffectFieldFlags> componentFields;
+  public class VolumeEffectComponentFlags(string name) {
+    public string componentName = name;
+    public List<VolumeEffectFieldFlags> componentFields = [];
     public bool blendFlag;
-
-    public VolumeEffectComponentFlags(string name)
-    {
-      componentName = name;
-      componentFields = new List<VolumeEffectFieldFlags>();
-    }
 
     public VolumeEffectComponentFlags(VolumeEffectComponent comp)
       : this(comp.componentName)

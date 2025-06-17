@@ -12,8 +12,8 @@ namespace ParadoxNotion
   {
     private const BindingFlags flagsEverything = BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy;
     public static object ContextObject;
-    private static Dictionary<string, Type> typeMap = new Dictionary<string, Type>();
-    private static Dictionary<Type, FieldInfo[]> _typeFields = new Dictionary<Type, FieldInfo[]>();
+    private static Dictionary<string, Type> typeMap = new();
+    private static Dictionary<Type, FieldInfo[]> _typeFields = new();
 
     public static Type GetType(
       string typeFullName,
@@ -22,8 +22,7 @@ namespace ParadoxNotion
     {
       if (string.IsNullOrEmpty(typeFullName))
         return null;
-      Type type1 = null;
-      if (typeMap.TryGetValue(typeFullName, out type1))
+      if (typeMap.TryGetValue(typeFullName, out Type type1))
         return type1;
       Type typeDirect = GetTypeDirect(typeFullName);
       if (typeDirect != null)
@@ -103,19 +102,17 @@ namespace ParadoxNotion
         {
           int startIndex = typeFullName.IndexOf("[[") + 2;
           int num2 = typeFullName.LastIndexOf("]]");
-          array = typeFullName.Substring(startIndex, num2 - startIndex).Split(new string[1]
-          {
+          array = typeFullName.Substring(startIndex, num2 - startIndex).Split([
             "],["
-          }, int32, StringSplitOptions.RemoveEmptyEntries).ToArray();
+          ], int32, StringSplitOptions.RemoveEmptyEntries).ToArray();
         }
         else
         {
           int startIndex = typeFullName.IndexOf('[') + 1;
           int num3 = typeFullName.LastIndexOf(']');
-          array = typeFullName.Substring(startIndex, num3 - startIndex).Split(new char[1]
-          {
+          array = typeFullName.Substring(startIndex, num3 - startIndex).Split([
             ','
-          }, int32, StringSplitOptions.RemoveEmptyEntries).ToArray();
+          ], int32, StringSplitOptions.RemoveEmptyEntries).ToArray();
         }
         Type[] typeArgs = new Type[int32];
         for (int index = 0; index < array.Length; ++index)
@@ -263,8 +260,7 @@ namespace ParadoxNotion
 
     public static FieldInfo[] RTGetFields(this Type type)
     {
-      FieldInfo[] fields;
-      if (!_typeFields.TryGetValue(type, out fields))
+      if (!_typeFields.TryGetValue(type, out FieldInfo[] fields))
       {
         fields = type.GetFields(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
         _typeFields[type] = fields;

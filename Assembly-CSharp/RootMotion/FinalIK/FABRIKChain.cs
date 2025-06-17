@@ -11,7 +11,7 @@ namespace RootMotion.FinalIK
     public float pull = 1f;
     [Range(0.0f, 1f)]
     public float pin = 1f;
-    public int[] children = new int[0];
+    public int[] children = [];
 
     public bool IsValid(ref string message)
     {

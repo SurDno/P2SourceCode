@@ -4,7 +4,7 @@ using UnityEngine;
 
 public static class UnityFactory
 {
-  private static Dictionary<string, GameObject> groups = new Dictionary<string, GameObject>();
+  private static Dictionary<string, GameObject> groups = new();
 
   private static GameObject CreateGroup(string group)
   {
@@ -15,8 +15,7 @@ public static class UnityFactory
 
   public static GameObject GetOrCreateGroup(string group)
   {
-    GameObject group1;
-    if (!groups.TryGetValue(group, out group1))
+    if (!groups.TryGetValue(group, out GameObject group1))
     {
       group1 = CreateGroup(group);
       groups.Add(group, group1);

@@ -21,8 +21,8 @@ namespace NodeCanvas.Framework
     private string _UID;
     private bool _isBreakpoint;
     private Graph _graph;
-    private List<Connection> _inConnections = new List<Connection>();
-    private List<Connection> _outConnections = new List<Connection>();
+    private List<Connection> _inConnections = [];
+    private List<Connection> _outConnections = [];
     private int _id;
     private Status _status = Status.Resting;
     private string _nodeName;
@@ -58,10 +58,7 @@ namespace NodeCanvas.Framework
       set => _position = value;
     }
 
-    public string UID
-    {
-      get => string.IsNullOrEmpty(_UID) ? (_UID = Guid.NewGuid().ToString()) : _UID;
-    }
+    public string UID => string.IsNullOrEmpty(_UID) ? (_UID = Guid.NewGuid().ToString()) : _UID;
 
     public bool isBreakpoint
     {
@@ -284,12 +281,12 @@ namespace NodeCanvas.Framework
 
     public List<Node> GetParentNodes()
     {
-      return inConnections.Count != 0 ? inConnections.Select(c => c.sourceNode).ToList() : new List<Node>();
+      return inConnections.Count != 0 ? inConnections.Select(c => c.sourceNode).ToList() : [];
     }
 
     public List<Node> GetChildNodes()
     {
-      return outConnections.Count != 0 ? outConnections.Select(c => c.targetNode).ToList() : new List<Node>();
+      return outConnections.Count != 0 ? outConnections.Select(c => c.targetNode).ToList() : [];
     }
 
     protected virtual Status OnExecute(Component agent, Blackboard blackboard)

@@ -29,8 +29,7 @@ namespace ParadoxNotion.Serialization.FullSerializer.Internal
       List<fsData> asList = serialized.AsList;
       foreach (object instance in collection)
       {
-        fsData data;
-        fsResult result = Serializer.TrySerialize(elementType, instance, out data);
+        fsResult result = Serializer.TrySerialize(elementType, instance, out fsData data);
         success.AddMessages(result);
         if (!result.Failed)
           asList.Add(data);
@@ -82,25 +81,22 @@ namespace ParadoxNotion.Serialization.FullSerializer.Internal
         fsData data1 = asList[index];
         object result1 = null;
         if (flattenedMethod1 != null && index < existingSize)
-          result1 = flattenedMethod1.Invoke(instance, new object[1]
-          {
+          result1 = flattenedMethod1.Invoke(instance, [
             index
-          });
+          ]);
         fsResult result2 = Serializer.TryDeserialize(data1, elementType, ref result1);
         fsResult.AddMessages(result2);
         if (!result2.Failed)
         {
           if (flattenedMethod2 != null && index < existingSize)
-            flattenedMethod2.Invoke(instance, new object[2]
-            {
+            flattenedMethod2.Invoke(instance, [
               index,
               result1
-            });
+            ]);
           else
-            addMethod.Invoke(instance, new object[1]
-            {
+            addMethod.Invoke(instance, [
               result1
-            });
+            ]);
         }
       }
       return fsResult;

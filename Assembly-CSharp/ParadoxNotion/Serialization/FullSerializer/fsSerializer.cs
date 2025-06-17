@@ -8,13 +8,13 @@ namespace ParadoxNotion.Serialization.FullSerializer
 {
   public class fsSerializer
   {
-    private static HashSet<string> _reservedKeywords = new HashSet<string> {
+    private static HashSet<string> _reservedKeywords = [
       "$ref",
       "$id",
       "$type",
       "$version",
       "$content"
-    };
+    ];
     private const string Key_ObjectReference = "$ref";
     private const string Key_ObjectDefinition = "$id";
     private const string Key_InstanceType = "$type";
@@ -143,7 +143,7 @@ namespace ParadoxNotion.Serialization.FullSerializer
       _cachedProcessors = new Dictionary<Type, List<fsObjectProcessor>>();
       _references = new fsCyclicReferenceManager();
       _lazyReferenceWriter = new fsLazyCycleDefinitionWriter();
-      List<fsConverter> fsConverterList = new List<fsConverter>();
+      List<fsConverter> fsConverterList = [];
       fsNullableConverter nullableConverter = new fsNullableConverter();
       nullableConverter.Serializer = this;
       fsConverterList.Add(nullableConverter);
@@ -182,7 +182,7 @@ namespace ParadoxNotion.Serialization.FullSerializer
       fsConverterList.Add(reflectedConverter);
       _availableConverters = fsConverterList;
       _availableDirectConverters = new Dictionary<Type, fsDirectConverter>();
-      _processors = new List<fsObjectProcessor>();
+      _processors = [];
       Context = new fsContext();
       Config = new fsConfig();
       foreach (Type converter in fsConverterRegistrar.Converters)
@@ -210,20 +210,20 @@ namespace ParadoxNotion.Serialization.FullSerializer
 
     private List<fsObjectProcessor> GetProcessors(Type type)
     {
-      List<fsObjectProcessor> processors;
-      if (_cachedProcessors.TryGetValue(type, out processors))
+      if (_cachedProcessors.TryGetValue(type, out List<fsObjectProcessor> processors))
         return processors;
       fsObjectAttribute attribute = fsPortableReflection.GetAttribute<fsObjectAttribute>(type);
       if (attribute != null && attribute.Processor != null)
       {
         fsObjectProcessor instance = (fsObjectProcessor) Activator.CreateInstance(attribute.Processor);
-        processors = new List<fsObjectProcessor>();
-        processors.Add(instance);
+        processors = [
+          instance
+        ];
         _cachedProcessors[type] = processors;
       }
       else if (!_cachedProcessors.TryGetValue(type, out processors))
       {
-        processors = new List<fsObjectProcessor>();
+        processors = [];
         for (int index = 0; index < _processors.Count; ++index)
         {
           fsObjectProcessor processor = _processors[index];
@@ -259,8 +259,7 @@ namespace ParadoxNotion.Serialization.FullSerializer
     {
       if (overrideConverterType != null)
       {
-        fsBaseConverter instance;
-        if (!_cachedConverterTypeInstances.TryGetValue(overrideConverterType, out instance))
+        if (!_cachedConverterTypeInstances.TryGetValue(overrideConverterType, out fsBaseConverter instance))
         {
           instance = (fsBaseConverter) Activator.CreateInstance(overrideConverterType);
           instance.Serializer = this;
@@ -268,8 +267,8 @@ namespace ParadoxNotion.Serialization.FullSerializer
         }
         return instance;
       }
-      fsBaseConverter converter;
-      if (_cachedConverters.TryGetValue(type, out converter))
+
+      if (_cachedConverters.TryGetValue(type, out fsBaseConverter converter))
         return converter;
       fsObjectAttribute attribute1 = fsPortableReflection.GetAttribute<fsObjectAttribute>(type);
       if (attribute1 != null && attribute1.Converter != null)
@@ -419,8 +418,7 @@ namespace ParadoxNotion.Serialization.FullSerializer
       try
       {
         _references.Enter();
-        List<fsObjectProcessor> processors;
-        fsResult fsResult = InternalDeserialize_1_CycleReference(overrideConverterType, data, storageType, ref result, out processors);
+        fsResult fsResult = InternalDeserialize_1_CycleReference(overrideConverterType, data, storageType, ref result, out List<fsObjectProcessor> processors);
         if (fsResult.Succeeded)
           Invoke_OnAfterDeserialize(processors, storageType, result);
         return fsResult;
@@ -524,8 +522,8 @@ namespace ParadoxNotion.Serialization.FullSerializer
 
     internal class fsLazyCycleDefinitionWriter
     {
-      private Dictionary<int, fsData> _pendingDefinitions = new Dictionary<int, fsData>();
-      private HashSet<int> _references = new HashSet<int>();
+      private Dictionary<int, fsData> _pendingDefinitions = new();
+      private HashSet<int> _references = [];
 
       public void WriteDefinition(int id, fsData data)
       {

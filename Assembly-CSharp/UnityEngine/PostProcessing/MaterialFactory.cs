@@ -5,14 +5,11 @@ namespace UnityEngine.PostProcessing
 {
   public sealed class MaterialFactory : IDisposable
   {
-    private Dictionary<string, Material> m_Materials;
-
-    public MaterialFactory() => m_Materials = new Dictionary<string, Material>();
+    private Dictionary<string, Material> m_Materials = new();
 
     public Material Get(string shaderName)
     {
-      Material material1;
-      if (!m_Materials.TryGetValue(shaderName, out material1))
+      if (!m_Materials.TryGetValue(shaderName, out Material material1))
       {
         Shader shader = Shader.Find(shaderName);
         Material material2 = !(shader == null) ? new Material(shader) : throw new ArgumentException(string.Format("Shader not found ({0})", shaderName));

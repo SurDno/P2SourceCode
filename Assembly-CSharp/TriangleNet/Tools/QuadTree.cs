@@ -26,7 +26,7 @@ namespace TriangleNet.Tools
     {
       Point point = new Point(x, y);
       List<int> triangles = root.FindTriangles(point);
-      List<ITriangle> source = new List<ITriangle>();
+      List<ITriangle> source = [];
       foreach (int index in triangles)
       {
         ITriangle triangle = this.triangles[index];

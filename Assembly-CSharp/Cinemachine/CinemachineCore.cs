@@ -9,9 +9,9 @@ namespace Cinemachine
     public static readonly string kVersionString = "2.1";
     private static CinemachineCore sInstance;
     public static bool sShowHiddenObjects = false;
-    private List<CinemachineBrain> mActiveBrains = new List<CinemachineBrain>();
-    private List<ICinemachineCamera> mActiveCameras = new List<ICinemachineCamera>();
-    private List<List<ICinemachineCamera>> mChildCameras = new List<List<ICinemachineCamera>>();
+    private List<CinemachineBrain> mActiveBrains = [];
+    private List<ICinemachineCamera> mActiveCameras = [];
+    private List<List<ICinemachineCamera>> mChildCameras = [];
     private Dictionary<ICinemachineCamera, UpdateStatus> mUpdateStatus;
 
     public static CinemachineCore Instance
@@ -58,7 +58,7 @@ namespace Cinemachine
       for (ICinemachineCamera cinemachineCamera = vcam; cinemachineCamera != null; cinemachineCamera = cinemachineCamera.ParentCamera)
         ++num;
       while (mChildCameras.Count < num)
-        mChildCameras.Add(new List<ICinemachineCamera>());
+        mChildCameras.Add([]);
       mChildCameras[num - 1].Add(vcam);
     }
 
@@ -102,8 +102,8 @@ namespace Cinemachine
           mUpdateStatus.Remove(vcam);
         return false;
       }
-      UpdateStatus updateStatus;
-      if (!mUpdateStatus.TryGetValue(vcam, out updateStatus))
+
+      if (!mUpdateStatus.TryGetValue(vcam, out UpdateStatus updateStatus))
       {
         updateStatus = new UpdateStatus(frameCount);
         mUpdateStatus.Add(vcam, updateStatus);
@@ -114,8 +114,7 @@ namespace Cinemachine
       bool flag3 = !flag1;
       if (flag1)
       {
-        Matrix4x4 targetPos;
-        flag3 = GetTargetPosition(vcam, out targetPos) ? updateStatus.ChoosePreferredUpdate(frameCount, targetPos, updateFilter) == updateFilter : flag2;
+        flag3 = GetTargetPosition(vcam, out Matrix4x4 targetPos) ? updateStatus.ChoosePreferredUpdate(frameCount, targetPos, updateFilter) == updateFilter : flag2;
       }
       if (flag3)
       {
@@ -155,8 +154,7 @@ namespace Cinemachine
 
     public UpdateFilter GetVcamUpdateStatus(ICinemachineCamera vcam)
     {
-      UpdateStatus updateStatus;
-      return mUpdateStatus == null || !mUpdateStatus.TryGetValue(vcam, out updateStatus) ? UpdateFilter.Late : updateStatus.preferredUpdate;
+      return mUpdateStatus == null || !mUpdateStatus.TryGetValue(vcam, out UpdateStatus updateStatus) ? UpdateFilter.Late : updateStatus.preferredUpdate;
     }
 
     public bool IsLive(ICinemachineCamera vcam)
@@ -227,29 +225,16 @@ namespace Cinemachine
 
     public delegate float AxisInputDelegate(string axisName);
 
-    private struct UpdateStatus
-    {
+    private struct UpdateStatus(int currentFrame) {
       private const int kWindowSize = 30;
-      public int lastUpdateFrame;
-      public int lastUpdateSubframe;
-      public int windowStart;
-      public int numWindowLateUpdateMoves;
-      public int numWindowFixedUpdateMoves;
-      public int numWindows;
-      public UpdateFilter preferredUpdate;
-      public Matrix4x4 targetPos;
-
-      public UpdateStatus(int currentFrame)
-      {
-        lastUpdateFrame = -1;
-        lastUpdateSubframe = 0;
-        windowStart = currentFrame;
-        numWindowLateUpdateMoves = 0;
-        numWindowFixedUpdateMoves = 0;
-        numWindows = 0;
-        preferredUpdate = UpdateFilter.Late;
-        targetPos = Matrix4x4.zero;
-      }
+      public int lastUpdateFrame = -1;
+      public int lastUpdateSubframe = 0;
+      public int windowStart = currentFrame;
+      public int numWindowLateUpdateMoves = 0;
+      public int numWindowFixedUpdateMoves = 0;
+      public int numWindows = 0;
+      public UpdateFilter preferredUpdate = UpdateFilter.Late;
+      public Matrix4x4 targetPos = Matrix4x4.zero;
 
       public UpdateFilter ChoosePreferredUpdate(
         int currentFrame,

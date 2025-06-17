@@ -2,20 +2,20 @@
 {
   public class PostProcessingProfile : ScriptableObject
   {
-    public BuiltinDebugViewsModel debugViews = new BuiltinDebugViewsModel();
-    public FogModel fog = new FogModel();
-    public AntialiasingModel antialiasing = new AntialiasingModel();
-    public AmbientOcclusionModel ambientOcclusion = new AmbientOcclusionModel();
-    public ScreenSpaceReflectionModel screenSpaceReflection = new ScreenSpaceReflectionModel();
-    public DepthOfFieldModel depthOfField = new DepthOfFieldModel();
-    public MotionBlurModel motionBlur = new MotionBlurModel();
-    public EyeAdaptationModel eyeAdaptation = new EyeAdaptationModel();
-    public BloomModel bloom = new BloomModel();
-    public ColorGradingModel colorGrading = new ColorGradingModel();
-    public UserLutModel userLut = new UserLutModel();
-    public ChromaticAberrationModel chromaticAberration = new ChromaticAberrationModel();
-    public GrainModel grain = new GrainModel();
-    public VignetteModel vignette = new VignetteModel();
-    public DitheringModel dithering = new DitheringModel();
+    public BuiltinDebugViewsModel debugViews = new();
+    public FogModel fog = new();
+    public AntialiasingModel antialiasing = new();
+    public AmbientOcclusionModel ambientOcclusion = new();
+    public ScreenSpaceReflectionModel screenSpaceReflection = new();
+    public DepthOfFieldModel depthOfField = new();
+    public MotionBlurModel motionBlur = new();
+    public EyeAdaptationModel eyeAdaptation = new();
+    public BloomModel bloom = new();
+    public ColorGradingModel colorGrading = new();
+    public UserLutModel userLut = new();
+    public ChromaticAberrationModel chromaticAberration = new();
+    public GrainModel grain = new();
+    public VignetteModel vignette = new();
+    public DitheringModel dithering = new();
   }
 }

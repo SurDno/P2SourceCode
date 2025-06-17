@@ -6,10 +6,9 @@ namespace Externals.LipSync
 {
   public static class LipsyncUtility
   {
-    private static readonly char[] splitSpace = new char[1]
-    {
+    private static readonly char[] splitSpace = [
       ' '
-    };
+    ];
     public static readonly PhonemeMixtureArticulationData DefaultPhoneme;
     public static readonly HashSet<int> Vowels;
 
@@ -44,12 +43,11 @@ namespace Externals.LipSync
     static LipsyncUtility()
     {
       PhonemeMixtureArticulationData articulationData = new PhonemeMixtureArticulationData();
-      articulationData.Constituents = new PhonemeData[1]
-      {
-        new PhonemeData { Phoneme = 0, Weight = 1f }
-      };
+      articulationData.Constituents = [
+        new() { Phoneme = 0, Weight = 1f }
+      ];
       DefaultPhoneme = articulationData;
-      Vowels = new HashSet<int> {
+      Vowels = [
         0,
         1,
         2,
@@ -63,7 +61,7 @@ namespace Externals.LipSync
         10,
         11,
         14
-      };
+      ];
     }
   }
 }

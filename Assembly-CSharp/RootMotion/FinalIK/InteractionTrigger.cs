@@ -8,7 +8,7 @@ namespace RootMotion.FinalIK
   public class InteractionTrigger : MonoBehaviour
   {
     [Tooltip("The valid ranges of the character's and/or it's camera's position for triggering interaction when the character is in contact with the collider of this trigger.")]
-    public Range[] ranges = new Range[0];
+    public Range[] ranges = [];
 
     [ContextMenu("TUTORIAL VIDEO")]
     private void OpenTutorial4()
@@ -41,10 +41,9 @@ namespace RootMotion.FinalIK
       }
       int bestRangeIndex = -1;
       float num = 180f;
-      float maxError = 0.0f;
       for (int index = 0; index < ranges.Length; ++index)
       {
-        if (ranges[index].IsInRange(character, raycastFrom, raycastHit, transform, out maxError) && maxError <= (double) num)
+        if (ranges[index].IsInRange(character, raycastFrom, raycastHit, transform, out float maxError) && maxError <= (double) num)
         {
           num = maxError;
           bestRangeIndex = index;
@@ -73,12 +72,9 @@ namespace RootMotion.FinalIK
       [Tooltip("Fixes the Y axis of the trigger to Vector3.up. This makes the trigger symmetrical relative to the object. For example a gun will be able to be picked up from the same direction relative to the barrel no matter which side the gun is resting on.")]
       public bool fixYAxis;
 
-      public Vector3 offset3D => new Vector3(offset.x, 0.0f, offset.y);
+      public Vector3 offset3D => new(offset.x, 0.0f, offset.y);
 
-      public Vector3 direction3D
-      {
-        get => Quaternion.AngleAxis(angleOffset, Vector3.up) * Vector3.forward;
-      }
+      public Vector3 direction3D => Quaternion.AngleAxis(angleOffset, Vector3.up) * Vector3.forward;
 
       public bool IsInRange(Transform character, Transform trigger, out float error)
       {
@@ -198,9 +194,7 @@ namespace RootMotion.FinalIK
         out float maxError)
       {
         maxError = 0.0f;
-        float error1 = 0.0f;
-        float error2 = 0.0f;
-        if (!characterPosition.IsInRange(character, trigger, out error1) || !cameraPosition.IsInRange(raycastFrom, raycastHit, trigger, out error2))
+        if (!characterPosition.IsInRange(character, trigger, out float error1) || !cameraPosition.IsInRange(raycastFrom, raycastHit, trigger, out float error2))
           return false;
         maxError = Mathf.Max(error1, error2);
         return true;

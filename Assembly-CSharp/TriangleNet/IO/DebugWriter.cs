@@ -11,7 +11,7 @@ namespace TriangleNet.IO
   internal class DebugWriter
   {
     private static NumberFormatInfo nfi = CultureInfo.InvariantCulture.NumberFormat;
-    private static readonly DebugWriter instance = new DebugWriter();
+    private static readonly DebugWriter instance = new();
     private int iteration;
     private string session;
     private StreamWriter stream;

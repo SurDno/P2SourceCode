@@ -21,7 +21,7 @@ namespace Engine.Services.Engine.Assets
   public class AssetLoader : IUpdatable, IInitialisable
   {
     [Inspected]
-    private List<AssetState> assets = new List<AssetState>();
+    private List<AssetState> assets = [];
     private bool initialise;
 
     public bool IsEmpty => assets.Count == 0;

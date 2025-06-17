@@ -61,7 +61,7 @@ public class PhonemeVisemeMapping
   public void ReadMapping(XmlTextReader reader, string endTag)
   {
     bool flag = false;
-    List<List<string>> stringListList = new List<List<string>>();
+    List<List<string>> stringListList = [];
     while (!flag && reader.Read())
     {
       if (reader.Name == endTag && reader.NodeType == XmlNodeType.EndElement)
@@ -91,7 +91,7 @@ public class PhonemeVisemeMapping
   private List<string> Read_Phns(XmlTextReader reader, string endTag)
   {
     bool flag = false;
-    List<string> stringList = new List<string>();
+    List<string> stringList = [];
     while (!flag && reader.Read())
     {
       if (reader.Name == endTag && reader.NodeType == XmlNodeType.EndElement)

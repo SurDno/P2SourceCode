@@ -16,12 +16,12 @@ namespace PLVirtualMachine
 {
   public static class WorldEntityUtility
   {
-    private static Dictionary<Guid, ILogicObject> dynamicGuidsToStaticWorldTemplatesDict = new Dictionary<Guid, ILogicObject>(GuidComparer.Instance);
-    private static List<VMWorldObject> staticWorldTemplatesList = new List<VMWorldObject>();
-    private static Dictionary<Guid, VMEntity> dynamicEntityByEngineGuidDict = new Dictionary<Guid, VMEntity>(GuidComparer.Instance);
-    private static Dictionary<HierarchyGuid, VMEntity> hierarchyGuidsToDynamicEntityDict = new Dictionary<HierarchyGuid, VMEntity>(HierarchyGuidComparer.Instance);
-    private static Dictionary<ulong, VMEntity> staticObjGuidsToDynamicEntityDict = new Dictionary<ulong, VMEntity>(UlongComparer.Instance);
-    private static Dictionary<string, VMEntity> dynamicEntityByUniNameCache = new Dictionary<string, VMEntity>();
+    private static Dictionary<Guid, ILogicObject> dynamicGuidsToStaticWorldTemplatesDict = new(GuidComparer.Instance);
+    private static List<VMWorldObject> staticWorldTemplatesList = [];
+    private static Dictionary<Guid, VMEntity> dynamicEntityByEngineGuidDict = new(GuidComparer.Instance);
+    private static Dictionary<HierarchyGuid, VMEntity> hierarchyGuidsToDynamicEntityDict = new(HierarchyGuidComparer.Instance);
+    private static Dictionary<ulong, VMEntity> staticObjGuidsToDynamicEntityDict = new(UlongComparer.Instance);
+    private static Dictionary<string, VMEntity> dynamicEntityByUniNameCache = new();
 
     public static bool IsDynamicGuidExist(Guid dynGuid)
     {
@@ -38,21 +38,18 @@ namespace PLVirtualMachine
 
     public static VMEntity GetDynamicObjectEntityByEngineGuid(Guid engGuid)
     {
-      VMEntity vmEntity;
-      return dynamicEntityByEngineGuidDict.TryGetValue(engGuid, out vmEntity) ? vmEntity : null;
+      return dynamicEntityByEngineGuidDict.TryGetValue(engGuid, out VMEntity vmEntity) ? vmEntity : null;
     }
 
     public static VMEntity GetDynamicObjectEntityByHierarchyGuid(HierarchyGuid hGuid)
     {
-      VMEntity entityByHierarchyGuid;
-      hierarchyGuidsToDynamicEntityDict.TryGetValue(hGuid, out entityByHierarchyGuid);
+      hierarchyGuidsToDynamicEntityDict.TryGetValue(hGuid, out VMEntity entityByHierarchyGuid);
       return entityByHierarchyGuid;
     }
 
     public static VMEntity GetDynamicObjectEntityByUniName(string uniName)
     {
-      VMEntity objectEntityByUniName = null;
-      if (dynamicEntityByUniNameCache.TryGetValue(uniName, out objectEntityByUniName))
+      if (dynamicEntityByUniNameCache.TryGetValue(uniName, out VMEntity objectEntityByUniName))
         return objectEntityByUniName;
       switch (GuidUtility.GetGuidFormat(uniName))
       {
@@ -82,8 +79,7 @@ namespace PLVirtualMachine
 
     public static VMEntity GetDynamicObjectEntityByStaticGuid(ulong stguid)
     {
-      VMEntity vmEntity;
-      return staticObjGuidsToDynamicEntityDict.TryGetValue(stguid, out vmEntity) ? vmEntity : null;
+      return staticObjGuidsToDynamicEntityDict.TryGetValue(stguid, out VMEntity vmEntity) ? vmEntity : null;
     }
 
     public static void AddDynamicObjectEntityByHierarchyGuid(
@@ -158,8 +154,7 @@ namespace PLVirtualMachine
 
     public static IBlueprint GetEditorTemplateByEngineGuid(Guid engGuid)
     {
-      ILogicObject logicObject;
-      dynamicGuidsToStaticWorldTemplatesDict.TryGetValue(engGuid, out logicObject);
+      dynamicGuidsToStaticWorldTemplatesDict.TryGetValue(engGuid, out ILogicObject logicObject);
       return logicObject?.Blueprint;
     }
 

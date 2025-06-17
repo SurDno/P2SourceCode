@@ -14,10 +14,10 @@ namespace InputServices
   public class InputService : IUpdatable
   {
     private static InputService instance;
-    private Dictionary<string, AxisBind> axes = new Dictionary<string, AxisBind>();
-    private Dictionary<string, DateTime> buttons = new Dictionary<string, DateTime>();
-    private HashSet<string> buttonsPressed = new HashSet<string>();
-    private HashSet<string> holdButtonsPressed = new HashSet<string>();
+    private Dictionary<string, AxisBind> axes = new();
+    private Dictionary<string, DateTime> buttons = new();
+    private HashSet<string> buttonsPressed = [];
+    private HashSet<string> holdButtonsPressed = [];
     private JoystickLayout layout;
     private TimeSpan holdDelay;
     private string currentJoystick;
@@ -91,8 +91,7 @@ namespace InputServices
 
     public float GetAxis(string name)
     {
-      AxisBind axisBind;
-      if (axes.TryGetValue(name, out axisBind))
+      if (axes.TryGetValue(name, out AxisBind axisBind))
       {
         float num = Input.GetAxisRaw(axisBind.Axis);
         if (axisBind.Normalize)
@@ -107,8 +106,7 @@ namespace InputServices
 
     public bool GetButton(string name, bool hold)
     {
-      DateTime dateTime;
-      if (!buttons.TryGetValue(name, out dateTime))
+      if (!buttons.TryGetValue(name, out DateTime dateTime))
         return false;
       return !hold || dateTime == DateTime.MinValue;
     }
@@ -120,8 +118,7 @@ namespace InputServices
 
     public float GetHoldProgress(string name)
     {
-      DateTime dateTime;
-      return buttons.TryGetValue(name, out dateTime) && dateTime > DateTime.MinValue ? (float) (DateTime.UtcNow - dateTime).TotalSeconds / (float) holdDelay.TotalSeconds : 0.0f;
+      return buttons.TryGetValue(name, out DateTime dateTime) && dateTime > DateTime.MinValue ? (float) (DateTime.UtcNow - dateTime).TotalSeconds / (float) holdDelay.TotalSeconds : 0.0f;
     }
 
     private void Initialise()

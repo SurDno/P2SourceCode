@@ -12,8 +12,7 @@ using PLVirtualMachine.GameLogic;
 
 namespace PLVirtualMachine.Objects
 {
-  public abstract class VMLogicObject : VMBaseObject, IOnAfterLoaded, ILogicObject, IContext, INamed
-  {
+  public abstract class VMLogicObject(ulong guid) : VMBaseObject(guid), IOnAfterLoaded, ILogicObject, IContext, INamed {
     [FieldData("ChildObjects", DataFieldType.Reference)]
     protected List<IContainer> gameObjects;
     [FieldData("Events", DataFieldType.Reference)]
@@ -25,7 +24,7 @@ namespace PLVirtualMachine.Objects
     [FieldData("EventGraph", DataFieldType.Reference)]
     protected IFiniteStateMachine stateGraph;
     [FieldData("FunctionalComponents", DataFieldType.Reference)]
-    protected List<IFunctionalComponent> functionalComponents = new List<IFunctionalComponent>();
+    protected List<IFunctionalComponent> functionalComponents = [];
     [FieldData("GameTimeContext", DataFieldType.Reference)]
     protected IGameMode gameTimeContext;
     protected List<IBlueprintRef> blueprints;
@@ -41,12 +40,7 @@ namespace PLVirtualMachine.Objects
     private bool functionalsLoaded;
     private bool customEventsLoaded;
     private bool afterLoaded;
-    private static HashSet<string> funcHashSet = new HashSet<string>();
-
-    public VMLogicObject(ulong guid)
-      : base(guid)
-    {
-    }
+    private static HashSet<string> funcHashSet = [];
 
     public override EObjectCategory GetCategory()
     {
@@ -80,13 +74,7 @@ namespace PLVirtualMachine.Objects
 
     public virtual bool Static => false;
 
-    public IGameMode GameTimeContext
-    {
-      get
-      {
-        return gameTimeContext == null ? ((VMGameRoot) IStaticDataContainer.StaticDataContainer.GameRoot).MainGameMode : gameTimeContext;
-      }
-    }
+    public IGameMode GameTimeContext => gameTimeContext == null ? ((VMGameRoot) IStaticDataContainer.StaticDataContainer.GameRoot).MainGameMode : gameTimeContext;
 
     public List<IObjRef> GetStaticObjects() => staticObjects;
 
@@ -123,10 +111,7 @@ namespace PLVirtualMachine.Objects
 
     public abstract Dictionary<string, IFunctionalComponent> FunctionalComponents { get; }
 
-    public int StandartParamsCount
-    {
-      get => standartParamsDict != null ? standartParamsDict.Count : 0;
-    }
+    public int StandartParamsCount => standartParamsDict != null ? standartParamsDict.Count : 0;
 
     public int CustomParamsCount => customParamsDict != null ? customParamsDict.Count : 0;
 
@@ -219,8 +204,7 @@ namespace PLVirtualMachine.Objects
         UpdateStatesVaribalesTotalCache();
       if (statesVariablesTotalCache != null)
       {
-        IVariable stateVariable = null;
-        if (statesVariablesTotalCache.TryGetValue(variableName, out stateVariable))
+        if (statesVariablesTotalCache.TryGetValue(variableName, out IVariable stateVariable))
           return stateVariable;
       }
       return null;
@@ -228,8 +212,7 @@ namespace PLVirtualMachine.Objects
 
     private bool IsVariableState(string variableName)
     {
-      ulong result;
-      if (GuidUtility.GetGuidFormat(variableName) != EGuidFormat.GT_BASE || !ulong.TryParse(variableName, out result))
+      if (GuidUtility.GetGuidFormat(variableName) != EGuidFormat.GT_BASE || !ulong.TryParse(variableName, out ulong result))
         return false;
       EDataType typeId = (EDataType) GuidUtility.GetTypeId(result);
       switch (typeId)
@@ -502,7 +485,7 @@ namespace PLVirtualMachine.Objects
         for (int index = 0; index < customEvents.Count; ++index)
         {
           if (events == null)
-            events = new List<IEvent>();
+            events = [];
           events.Add(customEvents[index]);
         }
       }
@@ -603,14 +586,14 @@ namespace PLVirtualMachine.Objects
             VMObjRef vmObjRef = new VMObjRef();
             vmObjRef.Initialize(vmBlueprint);
             if (this.staticObjects == null)
-              this.staticObjects = new List<IObjRef>();
+              this.staticObjects = [];
             this.staticObjects.Add(vmObjRef);
           }
           List<IObjRef> staticObjects = vmBlueprint.GetStaticObjects();
           if (staticObjects != null)
           {
             if (this.staticObjects == null)
-              this.staticObjects = new List<IObjRef>();
+              this.staticObjects = [];
             this.staticObjects.AddRange(staticObjects);
           }
         }
@@ -622,7 +605,7 @@ namespace PLVirtualMachine.Objects
       if (gameObjects == null || gameObjects.Count == 0)
         return;
       if (this.blueprints == null)
-        this.blueprints = new List<IBlueprintRef>();
+        this.blueprints = [];
       this.blueprints.Clear();
       this.blueprints.Capacity = gameObjects.Count * 2;
       for (int index1 = 0; index1 < gameObjects.Count; ++index1)
@@ -669,7 +652,7 @@ namespace PLVirtualMachine.Objects
         {
           IEvent @event = engineEvents[index];
           if (events == null)
-            events = new List<IEvent>();
+            events = [];
           events.Add(@event);
         }
         List<BaseFunction> engineFunctions = functionalComponent.EngineFunctions;
@@ -677,7 +660,7 @@ namespace PLVirtualMachine.Objects
         {
           BaseFunction baseFunction = engineFunctions[index];
           if (functions == null)
-            functions = new List<BaseFunction>();
+            functions = [];
           if (funcHashSet.Contains(baseFunction.Name))
             Logger.AddError(string.Format("Function name {0} dublicated at {1}", baseFunction.Name, Name));
           else

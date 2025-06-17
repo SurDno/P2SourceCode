@@ -24,9 +24,7 @@ namespace RootMotion.FinalIK
     protected override void OnModifyOffset()
     {
       Quaternion rotation = Quaternion.FromToRotation(lastForward, transform.forward);
-      float angle = 0.0f;
-      Vector3 axis = Vector3.zero;
-      rotation.ToAngleAxis(out angle, out axis);
+      rotation.ToAngleAxis(out float angle, out Vector3 axis);
       if (axis.y > 0.0)
         angle = -angle;
       tiltAngle = Mathf.Lerp(tiltAngle, Mathf.Clamp(angle * (tiltSensitivity * 0.01f) / deltaTime, -1f, 1f), deltaTime * tiltSpeed);

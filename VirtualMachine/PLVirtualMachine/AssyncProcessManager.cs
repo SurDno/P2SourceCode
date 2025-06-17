@@ -6,7 +6,7 @@ namespace PLVirtualMachine
 {
   public static class AssyncProcessManager
   {
-    private static List<IAssyncUpdateable> updateableObjectsList = new List<IAssyncUpdateable>();
+    private static List<IAssyncUpdateable> updateableObjectsList = [];
 
     public static void RegistrAssyncUpdateableObject(IAssyncUpdateable updateableObj)
     {

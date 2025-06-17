@@ -21,10 +21,7 @@ namespace FlowCanvas.Nodes
       set => _portCount = value;
     }
 
-    public override string name
-    {
-      get => base.name + " " + string.Format("[{0}]", current.ToString());
-    }
+    public override string name => base.name + " " + string.Format("[{0}]", current.ToString());
 
     public override void OnGraphStarted() => current = 0;
 
@@ -32,7 +29,7 @@ namespace FlowCanvas.Nodes
 
     protected override void RegisterPorts()
     {
-      List<FlowOutput> outs = new List<FlowOutput>();
+      List<FlowOutput> outs = [];
       for (int index = 0; index < portCount; ++index)
         outs.Add(AddFlowOutput(index.ToString()));
       AddFlowInput("In", () => outs[current].Call());

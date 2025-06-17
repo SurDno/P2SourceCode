@@ -36,9 +36,6 @@ namespace UnityStandardAssets.CinematicEffects
       return material;
     }
 
-    public static bool supportsDX11
-    {
-      get => SystemInfo.graphicsShaderLevel >= 50 && SystemInfo.supportsComputeShaders;
-    }
+    public static bool supportsDX11 => SystemInfo.graphicsShaderLevel >= 50 && SystemInfo.supportsComputeShaders;
   }
 }

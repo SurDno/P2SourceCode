@@ -16,7 +16,7 @@ namespace Engine.Source.Components.Utilities
 
     private static void ConcatSameItems(IStorageComponent storage)
     {
-      List<IStorableComponent> storableComponentList = new List<IStorableComponent>(storage.Items);
+      List<IStorableComponent> storableComponentList = [..storage.Items];
       for (int index1 = storableComponentList.Count - 1; index1 > 0; --index1)
       {
         IStorableComponent storableComponent1 = storableComponentList[index1];
@@ -56,7 +56,7 @@ namespace Engine.Source.Components.Utilities
       List<StorableComponent> itemsLeft)
     {
       IEnumerable<StorableComponent> storableComponents = itemsLeft.Where(item => item.Placeholder.Grid.Rows <= backpack.GetGrid().Rows && item.Placeholder.Grid.Columns <= backpack.GetGrid().Columns).OrderBy(item => item.Placeholder.Grid.Columns * item.Placeholder.Grid.Rows).Reverse();
-      List<StorableComponent> itemsToFillContainer = new List<StorableComponent>();
+      List<StorableComponent> itemsToFillContainer = [];
       foreach (StorableComponent storableComponent in storableComponents)
       {
         Cell cellToPlace = FindCellToPlace(backpackMatrix, storableComponent);

@@ -10,10 +10,8 @@ using Inspectors;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class NpcStateDialogNpc : INpcState
-{
-  private NpcState npcState;
-  private Pivot pivot;
+public class NpcStateDialogNpc(NpcState npcState, Pivot pivot) : INpcState 
+  {
   private EngineBehavior behavior;
   private POISetup poiSetup;
   private Animator animator;
@@ -36,15 +34,9 @@ public class NpcStateDialogNpc : INpcState
   private float timeToNextRandomAnimationSetMax = 2f;
 
   [Inspected]
-  public NpcStateStatusEnum Status
-  {
-    get
-    {
-      return !infinite && timeLeft <= 0.0 ? NpcStateStatusEnum.Success : NpcStateStatusEnum.Running;
-    }
-  }
+  public NpcStateStatusEnum Status => !infinite && timeLeft <= 0.0 ? NpcStateStatusEnum.Success : NpcStateStatusEnum.Running;
 
-  public GameObject GameObject { get; private set; }
+  public GameObject GameObject { get; private set; } = npcState.gameObject;
 
   private bool TryInit()
   {
@@ -66,13 +58,6 @@ public class NpcStateDialogNpc : INpcState
     failed = false;
     inited = true;
     return true;
-  }
-
-  public NpcStateDialogNpc(NpcState npcState, Pivot pivot)
-  {
-    GameObject = npcState.gameObject;
-    this.pivot = pivot;
-    this.npcState = npcState;
   }
 
   public void Activate(GameObject targetCharacter, float time, bool speaking)

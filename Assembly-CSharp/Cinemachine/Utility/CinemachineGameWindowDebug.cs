@@ -17,7 +17,7 @@ namespace Cinemachine.Utility
     public static Rect GetScreenPos(Object client, string text, GUIStyle style)
     {
       if (mClients == null)
-        mClients = new HashSet<Object>();
+        mClients = [];
       if (!mClients.Contains(client))
         mClients.Add(client);
       Vector2 position = new Vector2(0.0f, 0.0f);

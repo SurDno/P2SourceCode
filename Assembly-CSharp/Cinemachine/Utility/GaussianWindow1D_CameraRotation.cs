@@ -2,13 +2,8 @@
 
 namespace Cinemachine.Utility
 {
-  internal class GaussianWindow1D_CameraRotation : GaussianWindow1d<Vector2>
-  {
-    public GaussianWindow1D_CameraRotation(float sigma, int maxKernelRadius = 10)
-      : base(sigma, maxKernelRadius)
-    {
-    }
-
+  internal class GaussianWindow1D_CameraRotation(float sigma, int maxKernelRadius = 10)
+    : GaussianWindow1d<Vector2>(sigma, maxKernelRadius) {
     protected override Vector2 Compute(int windowPos)
     {
       Vector2 zero = Vector2.zero;

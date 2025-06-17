@@ -3,26 +3,17 @@ using System.Collections.Generic;
 
 namespace PLVirtualMachine.Common
 {
-  public class HierarchySimpleChildInfo : 
+  public class HierarchySimpleChildInfo(IWorldBlueprint simpleChiTemplate) :
     IHierarchyObject,
     IEngineInstanced,
     IEngineTemplated,
-    INamed
-  {
-    private IWorldBlueprint simpeChildTemplate;
+    INamed {
+    private IWorldBlueprint simpeChildTemplate = simpleChiTemplate;
     private HierarchyGuid hierarchyGuid = HierarchyGuid.Empty;
     private IWorldHierarchyObject hierarchyParent;
     private Guid engineGuid = Guid.Empty;
 
-    public HierarchySimpleChildInfo(IWorldBlueprint simpleChiTemplate)
-    {
-      simpeChildTemplate = simpleChiTemplate;
-    }
-
-    public ulong BaseGuid
-    {
-      get => simpeChildTemplate != null ? simpeChildTemplate.BaseGuid : 0UL;
-    }
+    public ulong BaseGuid => simpeChildTemplate != null ? simpeChildTemplate.BaseGuid : 0UL;
 
     public string Name => simpeChildTemplate.Name;
 

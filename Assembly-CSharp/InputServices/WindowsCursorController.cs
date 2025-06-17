@@ -51,8 +51,7 @@ namespace InputServices
 
     public void Move(float diffX, float diffY)
     {
-      POINT lpPoint;
-      GetCursorPos(out lpPoint);
+      GetCursorPos(out POINT lpPoint);
       lpPoint.X += (int) diffX;
       lpPoint.Y -= (int) diffY;
       SetCursorPos(lpPoint.X, lpPoint.Y);
@@ -81,16 +80,9 @@ namespace InputServices
       UpdateCursor();
     }
 
-    public struct POINT
-    {
-      public int X;
-      public int Y;
-
-      public POINT(int x, int y)
-      {
-        X = x;
-        Y = y;
-      }
+    public struct POINT(int x, int y) {
+      public int X = x;
+      public int Y = y;
     }
   }
 }

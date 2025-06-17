@@ -6,7 +6,7 @@ namespace NodeCanvas.Framework.Internal
   [Serializable]
   public class GraphData
   {
-    public List<Node> nodes = new List<Node>();
-    public List<Connection> connections = new List<Connection>();
+    public List<Node> nodes = [];
+    public List<Connection> connections = [];
   }
 }

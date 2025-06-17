@@ -14,8 +14,7 @@ namespace Engine.Source.Connections
 
     public void OnAfterDeserialize()
     {
-      DateTime result;
-      if (data != null && DefaultConverter.TryParseDateTime(data, out result))
+      if (data != null && DefaultConverter.TryParseDateTime(data, out DateTime result))
         Value = result;
       else
         Value = DateTime.MinValue;

@@ -4,7 +4,7 @@
 public class SoundCollection : ScriptableObject
 {
   [SerializeField]
-  private AudioClip[] clips = new AudioClip[0];
+  private AudioClip[] clips = [];
   private int prevRandomClip = -1;
 
   public AudioClip GetClip()

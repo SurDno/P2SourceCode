@@ -13,6 +13,6 @@ namespace Scripts.AssetDatabaseService
     [DataWriteProxy]
     [CopyableProxy()]
     [Inspected]
-    public List<AssetDatabaseMapItemData> Items = new List<AssetDatabaseMapItemData>();
+    public List<AssetDatabaseMapItemData> Items = [];
   }
 }

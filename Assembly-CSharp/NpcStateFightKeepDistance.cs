@@ -9,10 +9,8 @@ using Inspectors;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class NpcStateFightKeepDistance : INpcState
-{
-  private NpcState npcState;
-  private Pivot pivot;
+public class NpcStateFightKeepDistance(NpcState npcState, Pivot pivot) : INpcState 
+  {
   private NPCEnemy enemy;
   private NavMeshAgent agent;
   private Animator animator;
@@ -26,7 +24,7 @@ public class NpcStateFightKeepDistance : INpcState
   private bool inited;
   private bool failed;
 
-  public GameObject GameObject { get; private set; }
+  public GameObject GameObject { get; private set; } = npcState.gameObject;
 
   [Inspected]
   public NpcStateStatusEnum Status { get; protected set; }
@@ -56,13 +54,6 @@ public class NpcStateFightKeepDistance : INpcState
   private bool IsEnemyRunningAway()
   {
     return enemy.Enemy.Velocity.magnitude >= 0.5 && Vector3.Dot(enemy.transform.forward, (enemy.Enemy.transform.position - enemy.transform.position).normalized) > 0.25;
-  }
-
-  public NpcStateFightKeepDistance(NpcState npcState, Pivot pivot)
-  {
-    GameObject = npcState.gameObject;
-    this.pivot = pivot;
-    this.npcState = npcState;
   }
 
   public void Activate(float keepDistance, bool strafe, bool aim)

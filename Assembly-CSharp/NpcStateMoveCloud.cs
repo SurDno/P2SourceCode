@@ -4,10 +4,9 @@ using Inspectors;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class NpcStateMoveCloud : INpcState
-{
-  private Pivot pivot;
-  private NpcState npcState;
+public class NpcStateMoveCloud(NpcState npcState, Pivot pivot) : INpcState 
+  {
+  private NpcState npcState = npcState;
   [Inspected]
   private StateEnum state = StateEnum.Moving;
   [Inspected]
@@ -18,17 +17,10 @@ public class NpcStateMoveCloud : INpcState
   private bool agentWasEnabled;
   private float speed = 2f;
 
-  public GameObject GameObject { get; private set; }
+  public GameObject GameObject { get; private set; } = npcState.gameObject;
 
   [Inspected]
   public NpcStateStatusEnum Status { get; private set; }
-
-  public NpcStateMoveCloud(NpcState npcState, Pivot pivot)
-  {
-    this.npcState = npcState;
-    this.pivot = pivot;
-    GameObject = npcState.gameObject;
-  }
 
   public void Activate(Vector3 destination)
   {

@@ -8,12 +8,9 @@ namespace Engine.Source.Services
   public class BoundCharactersService
   {
     [Inspected]
-    private List<BoundCharacterComponent> items = new List<BoundCharacterComponent>();
+    private List<BoundCharacterComponent> items = [];
 
-    public IEnumerable<BoundCharacterComponent> Items
-    {
-      get => items;
-    }
+    public IEnumerable<BoundCharacterComponent> Items => items;
 
     public void AddKeyCharacter(BoundCharacterComponent item)
     {

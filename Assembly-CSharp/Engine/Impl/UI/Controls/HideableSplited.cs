@@ -5,7 +5,7 @@ namespace Engine.Impl.UI.Controls
   public class HideableSplited : HideableView
   {
     [SerializeField]
-    private HideableView[] views = new HideableView[0];
+    private HideableView[] views = [];
 
     public override void SkipAnimation()
     {

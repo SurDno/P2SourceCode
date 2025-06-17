@@ -12,7 +12,7 @@ namespace Cinemachine
     [Tooltip("If checked, then the path ends are joined to form a continuous loop.")]
     public bool m_Looped;
     [Tooltip("The waypoints that define the path.  They will be interpolated using a bezier curve.")]
-    public Waypoint[] m_Waypoints = new Waypoint[0];
+    public Waypoint[] m_Waypoints = [];
 
     public override float MinPos => 0.0f;
 
@@ -62,9 +62,7 @@ namespace Cinemachine
       }
       else
       {
-        int indexA;
-        int indexB;
-        pos = GetBoundingIndices(pos, out indexA, out indexB);
+        pos = GetBoundingIndices(pos, out int indexA, out int indexB);
         if (indexA == indexB)
         {
           position = m_Waypoints[indexA].position;
@@ -89,9 +87,7 @@ namespace Cinemachine
       }
       else
       {
-        int indexA;
-        int indexB;
-        pos = GetBoundingIndices(pos, out indexA, out indexB);
+        pos = GetBoundingIndices(pos, out int indexA, out int indexB);
         if (indexA == indexB)
         {
           direction = m_Waypoints[indexA].tangent;
@@ -111,9 +107,7 @@ namespace Cinemachine
       Quaternion orientation = transform.rotation;
       if (m_Waypoints.Length != 0)
       {
-        int indexA;
-        int indexB;
-        pos = GetBoundingIndices(pos, out indexA, out indexB);
+        pos = GetBoundingIndices(pos, out int indexA, out int indexB);
         float angle;
         if (indexA == indexB)
         {

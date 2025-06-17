@@ -40,10 +40,7 @@ public class GameCamera : EngineDependent
 
   public PostProcessingStackOverride GamePostProcessingOverride => gamePostProcessingOverride;
 
-  public PostProcessingStackOverride SettingsPostProcessingOverride
-  {
-    get => settingsPostProcessingOverride;
-  }
+  public PostProcessingStackOverride SettingsPostProcessingOverride => settingsPostProcessingOverride;
 
   private void Awake()
   {

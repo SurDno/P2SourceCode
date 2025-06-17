@@ -16,10 +16,9 @@ namespace FlowCanvas
 
     public static ValueInput CreateInstance(Type t, FlowNode parent, string name, string ID)
     {
-      return (ValueInput) Activator.CreateInstance(typeof (ValueInput<>).RTMakeGenericType(new Type[1]
-      {
+      return (ValueInput) Activator.CreateInstance(typeof (ValueInput<>).RTMakeGenericType([
         t
-      }), parent, name, ID);
+      ]), parent, name, ID);
     }
 
     public object value => GetValue();

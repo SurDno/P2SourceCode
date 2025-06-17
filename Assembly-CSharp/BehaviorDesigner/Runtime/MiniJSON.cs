@@ -76,7 +76,7 @@ label_6:
 
       private List<object> ParseArray()
       {
-        List<object> array = new List<object>();
+        List<object> array = [];
         json.Read();
         bool flag = true;
         while (flag)
@@ -190,12 +190,11 @@ label_6:
         string nextWord = NextWord;
         if (nextWord.IndexOf('.') == -1)
         {
-          long result;
-          long.TryParse(nextWord, NumberStyles.Any, CultureInfo.InvariantCulture, out result);
+          long.TryParse(nextWord, NumberStyles.Any, CultureInfo.InvariantCulture, out long result);
           return result;
         }
-        double result1;
-        double.TryParse(nextWord, NumberStyles.Any, CultureInfo.InvariantCulture, out result1);
+
+        double.TryParse(nextWord, NumberStyles.Any, CultureInfo.InvariantCulture, out double result1);
         return result1;
       }
 

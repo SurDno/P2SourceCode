@@ -121,8 +121,8 @@ namespace SoundPropagation
     {
       if (Vertices.Length == 0)
       {
-        world2planesMatrices = new Matrix4x4[0];
-        planes2worldMatrices = new Matrix4x4[0];
+        world2planesMatrices = [];
+        planes2worldMatrices = [];
       }
       else
       {

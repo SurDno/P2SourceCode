@@ -6,7 +6,7 @@ namespace Inspectors
 {
   public static class TypeNameService
   {
-    private static Dictionary<Type, Info> names = new Dictionary<Type, Info>();
+    private static Dictionary<Type, Info> names = new();
 
     static TypeNameService()
     {
@@ -38,8 +38,7 @@ namespace Inspectors
     public static string GetTypeName(Type type, bool menuItemName = false)
     {
       type = ProxyFactory.GetType(type);
-      Info info;
-      if (names.TryGetValue(type, out info))
+      if (names.TryGetValue(type, out Info info))
         return menuItemName ? info.Item : info.Name;
       string name = GetName(type, menuItemName);
       names.Add(type, new Info {

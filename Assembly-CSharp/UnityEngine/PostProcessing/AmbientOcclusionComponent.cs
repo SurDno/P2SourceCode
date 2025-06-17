@@ -7,11 +7,10 @@ namespace UnityEngine.PostProcessing
   {
     private const string k_BlitShaderString = "Hidden/Post FX/Blit";
     private const string k_ShaderString = "Hidden/Post FX/Ambient Occlusion";
-    private readonly RenderTargetIdentifier[] m_MRT = new RenderTargetIdentifier[2]
-    {
+    private readonly RenderTargetIdentifier[] m_MRT = [
       BuiltinRenderTextureType.GBuffer0,
       BuiltinRenderTextureType.CameraTarget
-    };
+    ];
 
     private OcclusionSource occlusionSource
     {
@@ -23,21 +22,9 @@ namespace UnityEngine.PostProcessing
       }
     }
 
-    private bool ambientOnlySupported
-    {
-      get
-      {
-        return context.isHdr && model.settings.ambientOnly && context.isGBufferAvailable && !model.settings.forceForwardCompatibility;
-      }
-    }
+    private bool ambientOnlySupported => context.isHdr && model.settings.ambientOnly && context.isGBufferAvailable && !model.settings.forceForwardCompatibility;
 
-    public override bool active
-    {
-      get
-      {
-        return model.enabled && model.settings.intensity > 0.0 && !context.interrupted;
-      }
-    }
+    public override bool active => model.enabled && model.settings.intensity > 0.0 && !context.interrupted;
 
     public override DepthTextureMode GetCameraFlags()
     {

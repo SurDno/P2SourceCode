@@ -24,9 +24,9 @@ namespace Engine.Impl.Services
   public class UIService : IInitialisable, ISavesController
   {
     [Inspected]
-    private Dictionary<Type, UIWindow> layers = new Dictionary<Type, UIWindow>();
+    private Dictionary<Type, UIWindow> layers = new();
     [Inspected]
-    private List<UIWindow> windows = new List<UIWindow>();
+    private List<UIWindow> windows = [];
     [Inspected]
     private UIControl uiBehaviour;
     private UIRoot uiRoot;
@@ -87,8 +87,7 @@ namespace Engine.Impl.Services
 
     public UIWindow Get(Type type)
     {
-      UIWindow uiWindow;
-      layers.TryGetValue(type, out uiWindow);
+      layers.TryGetValue(type, out UIWindow uiWindow);
       return uiWindow;
     }
 
@@ -104,8 +103,8 @@ namespace Engine.Impl.Services
         Debug.LogError("Windows not found , info : " + GetType().Name + ":" + MethodBase.GetCurrentMethod().Name);
         return null;
       }
-      UIWindow openWindow;
-      if (!layers.TryGetValue(type, out openWindow))
+
+      if (!layers.TryGetValue(type, out UIWindow openWindow))
         throw new Exception(TypeUtility.GetTypeName(GetType()) + "." + MethodBase.GetCurrentMethod().Name);
       if (windows.Contains(openWindow))
       {
@@ -131,8 +130,7 @@ namespace Engine.Impl.Services
       Debug.Log(ObjectInfoUtility.GetStream().Append("Try push window : ").Append(TypeUtility.GetTypeName(type)).Append(" , info : ").Append(TypeUtility.GetTypeName(GetType())).Append(":").Append(MethodBase.GetCurrentMethod().Name).Append("\n").GetStackTrace());
       if (!IsInitialize)
         throw new Exception(TypeUtility.GetTypeName(GetType()) + "." + MethodBase.GetCurrentMethod().Name);
-      UIWindow openWindow;
-      if (!layers.TryGetValue(type, out openWindow))
+      if (!layers.TryGetValue(type, out UIWindow openWindow))
         throw new Exception(TypeUtility.GetTypeName(GetType()) + "." + MethodBase.GetCurrentMethod().Name);
       if (windows.Contains(openWindow))
       {

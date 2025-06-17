@@ -125,18 +125,10 @@ namespace ProBuilder2.Examples
       return Mathf.Sqrt(num / length);
     }
 
-    private struct FaceRef
-    {
-      public pb_Face face;
-      public Vector3 nrm;
-      public int[] indices;
-
-      public FaceRef(pb_Face f, Vector3 n, int[] i)
-      {
-        face = f;
-        nrm = n;
-        indices = i;
-      }
+    private struct FaceRef(pb_Face f, Vector3 n, int[] i) {
+      public pb_Face face = f;
+      public Vector3 nrm = n;
+      public int[] indices = i;
     }
   }
 }

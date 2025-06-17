@@ -72,16 +72,16 @@ namespace Engine.Source.UI.Menu.Protagonist.MindMap
     [SerializeField]
     private GameObject newNodeIndicatorPrefab;
     [Inspected]
-    private Dictionary<Guid, MMContent> contents = new Dictionary<Guid, MMContent>(GuidComparer.Instance);
+    private Dictionary<Guid, MMContent> contents = new(GuidComparer.Instance);
     [Inspected]
-    private List<MMPage> pages = new List<MMPage>();
+    private List<MMPage> pages = [];
     private MMPage globalPage;
     private CameraKindEnum lastCameraKind;
     private float baseScalePower;
     private float desiredScaleValue;
     private float scaleValue;
     private MMPageView openedPageView;
-    private HashSet<IMMNode> mapNodes = new HashSet<IMMNode>();
+    private HashSet<IMMNode> mapNodes = [];
     private int currentNodeIndex = 0;
     [SerializeField]
     private GameObject helpPanel;
@@ -92,7 +92,7 @@ namespace Engine.Source.UI.Menu.Protagonist.MindMap
     private float xPrev;
     private float yPrev;
     private IMMNode currentNode;
-    private List<MMNodeView> nodes = new List<MMNodeView>();
+    private List<MMNodeView> nodes = [];
     private const float CLOSEST_NODE_DETECTION_THRESHOLD = 2f;
     private NodeMoveDirection bufferedDirection = NodeMoveDirection.None;
     private MMNodeView previousNode;
@@ -265,7 +265,7 @@ namespace Engine.Source.UI.Menu.Protagonist.MindMap
         openedPageView = null;
       }
       OpenedPage = null;
-      nodes = new List<MMNodeView>();
+      nodes = [];
       isNodesListComplete = false;
     }
 
@@ -485,7 +485,7 @@ namespace Engine.Source.UI.Menu.Protagonist.MindMap
 
     private void SelectNode()
     {
-      List<RaycastResult> source = new List<RaycastResult>();
+      List<RaycastResult> source = [];
       if (pointerData == null)
         return;
       rayCaster.Raycast(pointerData, source);
@@ -515,7 +515,7 @@ namespace Engine.Source.UI.Menu.Protagonist.MindMap
 
     private void SetNodes(MMPageView pageView)
     {
-      nodes = new List<MMNodeView>(pageView.GetComponentsInChildren<MMNodeView>());
+      nodes = [..pageView.GetComponentsInChildren<MMNodeView>()];
       if (nodes.Count == 0)
         return;
       UpdateBoundVectors();
@@ -571,7 +571,7 @@ namespace Engine.Source.UI.Menu.Protagonist.MindMap
       newHovered = null;
       maxNavigationValues = Vector2.zero;
       minNavigationValues = Vector2.zero;
-      nodes = new List<MMNodeView>(openedPageView.GetComponentsInChildren<MMNodeView>());
+      nodes = [..openedPageView.GetComponentsInChildren<MMNodeView>()];
       cursorMapPosition = Vector2.zero;
       UpdateBoundVectors();
     }
@@ -648,15 +648,13 @@ namespace Engine.Source.UI.Menu.Protagonist.MindMap
 
     public IMMPlaceholder GetPlaceholderByNode(Guid id)
     {
-      MMContent mmContent;
-      contents.TryGetValue(id, out mmContent);
+      contents.TryGetValue(id, out MMContent mmContent);
       return mmContent?.Placeholder;
     }
 
     public LocalizedText GetTextByNode(Guid id)
     {
-      MMContent mmContent;
-      contents.TryGetValue(id, out mmContent);
+      contents.TryGetValue(id, out MMContent mmContent);
       return mmContent != null ? mmContent.Description : LocalizedText.Empty;
     }
 
@@ -696,10 +694,7 @@ namespace Engine.Source.UI.Menu.Protagonist.MindMap
       return base.OnOpened();
     }
 
-    public override bool IsWindowAvailable
-    {
-      get => !ServiceLocator.GetService<InterfaceBlockingService>().BlockMindMapInterface;
-    }
+    public override bool IsWindowAvailable => !ServiceLocator.GetService<InterfaceBlockingService>().BlockMindMapInterface;
 
     private enum NodeMoveDirection
     {

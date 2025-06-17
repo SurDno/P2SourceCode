@@ -6,25 +6,13 @@ using TriangleNet.Log;
 
 namespace TriangleNet
 {
-  internal class Quality
-  {
-    private Queue<BadSubseg> badsubsegs;
-    private Behavior behavior;
-    private ILog<SimpleLogItem> logger;
-    private Mesh mesh;
-    private NewLocation newLocation;
-    private BadTriQueue queue;
+  internal class Quality(Mesh mesh) {
+    private Queue<BadSubseg> badsubsegs = new();
+    private Behavior behavior = mesh.behavior;
+    private ILog<SimpleLogItem> logger = SimpleLog.Instance;
+    private NewLocation newLocation = new(mesh);
+    private BadTriQueue queue = new();
     private Func<Point, Point, Point, double, bool> userTest;
-
-    public Quality(Mesh mesh)
-    {
-      logger = SimpleLog.Instance;
-      badsubsegs = new Queue<BadSubseg>();
-      queue = new BadTriQueue();
-      this.mesh = mesh;
-      behavior = mesh.behavior;
-      newLocation = new NewLocation(mesh);
-    }
 
     public void AddBadSubseg(BadSubseg badseg) => badsubsegs.Enqueue(badseg);
 

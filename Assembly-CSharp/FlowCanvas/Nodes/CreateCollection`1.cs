@@ -23,7 +23,7 @@ namespace FlowCanvas.Nodes
 
     protected override void RegisterPorts()
     {
-      List<ValueInput<T>> ins = new List<ValueInput<T>>();
+      List<ValueInput<T>> ins = [];
       for (int index = 0; index < portCount; ++index)
         ins.Add(AddValueInput<T>("Element" + index));
       AddValueOutput("Collection", () => ins.Select(p => p.value).ToArray());

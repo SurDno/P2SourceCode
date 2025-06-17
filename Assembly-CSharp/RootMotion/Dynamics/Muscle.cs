@@ -10,16 +10,16 @@ namespace RootMotion.Dynamics
     public string name;
     public ConfigurableJoint joint;
     public Transform target;
-    public Props props = new Props();
+    public Props props = new();
     public State state = State.Default;
     [HideInInspector]
-    public int[] parentIndexes = new int[0];
+    public int[] parentIndexes = [];
     [HideInInspector]
-    public int[] childIndexes = new int[0];
+    public int[] childIndexes = [];
     [HideInInspector]
-    public bool[] childFlags = new bool[0];
+    public bool[] childFlags = [];
     [HideInInspector]
-    public int[] kinshipDegrees = new int[0];
+    public int[] kinshipDegrees = [];
     [HideInInspector]
     public MuscleCollisionBroadcaster broadcaster;
     [HideInInspector]
@@ -50,10 +50,10 @@ namespace RootMotion.Dynamics
     private ConfigurableJointMotion angularZMotionDefault;
     private bool directTargetParent;
     private bool initiated;
-    private Collider[] _colliders = new Collider[0];
+    private Collider[] _colliders = [];
     private float lastReadTime;
     private float lastWriteTime;
-    private bool[] disabledColliders = new bool[0];
+    private bool[] disabledColliders = [];
 
     public Transform transform { get; private set; }
 
@@ -192,7 +192,7 @@ namespace RootMotion.Dynamics
 
     public void UpdateColliders()
     {
-      _colliders = new Collider[0];
+      _colliders = [];
       AddColliders(joint.transform, ref _colliders, true);
       int childCount = joint.transform.childCount;
       for (int index = 0; index < childCount; ++index)
@@ -430,10 +430,7 @@ namespace RootMotion.Dynamics
       joint.slerpDrive = slerpDrive;
     }
 
-    private Quaternion localRotation
-    {
-      get => Quaternion.Inverse(parentRotation) * transform.rotation;
-    }
+    private Quaternion localRotation => Quaternion.Inverse(parentRotation) * transform.rotation;
 
     private Quaternion parentRotation
     {
@@ -445,21 +442,9 @@ namespace RootMotion.Dynamics
       }
     }
 
-    private Quaternion targetParentRotation
-    {
-      get
-      {
-        return targetParent == null ? Quaternion.identity : targetParent.rotation;
-      }
-    }
+    private Quaternion targetParentRotation => targetParent == null ? Quaternion.identity : targetParent.rotation;
 
-    private Quaternion targetLocalRotation
-    {
-      get
-      {
-        return Quaternion.Inverse(targetParentRotation * toParentSpace) * target.rotation;
-      }
-    }
+    private Quaternion targetLocalRotation => Quaternion.Inverse(targetParentRotation * toParentSpace) * target.rotation;
 
     private Quaternion LocalToJointSpace(Quaternion localRotation)
     {
@@ -563,22 +548,17 @@ namespace RootMotion.Dynamics
       public Vector3 velocity;
       public Vector3 angularVelocity;
 
-      public static State Default
-      {
-        get
-        {
-          return new State {
-            mappingWeightMlp = 1f,
-            pinWeightMlp = 1f,
-            muscleWeightMlp = 1f,
-            muscleDamperMlp = 1f,
-            muscleDamperAdd = 0.0f,
-            maxForceMlp = 1f,
-            immunity = 0.0f,
-            impulseMlp = 1f
-          };
-        }
-      }
+      public static State Default =>
+        new() {
+          mappingWeightMlp = 1f,
+          pinWeightMlp = 1f,
+          muscleWeightMlp = 1f,
+          muscleDamperMlp = 1f,
+          muscleDamperAdd = 0.0f,
+          maxForceMlp = 1f,
+          immunity = 0.0f,
+          impulseMlp = 1f
+        };
 
       public void Clamp()
       {

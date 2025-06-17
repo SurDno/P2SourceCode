@@ -27,8 +27,7 @@ public static class PathfindingHelper
     {
       float angle = (float) (index * (double) retreatSectorAngleInDegrees / (retreatRayCount - 1) - retreatSectorAngleInDegrees / 2.0);
       Vector3 vector3_2 = -(Quaternion.AngleAxis(angle, Vector3.up) * vector3_1);
-      NavMeshHit hit;
-      float num5 = !NavMesh.Raycast(myPosition, myPosition + vector3_2 * retreatSearchDistance, out hit, -1) ? retreatSearchDistance : hit.distance;
+      float num5 = !NavMesh.Raycast(myPosition, myPosition + vector3_2 * retreatSearchDistance, out NavMeshHit hit, -1) ? retreatSearchDistance : hit.distance;
       float num6 = hit.distance * Mathf.Cos((float) (0.5 * angle * (Math.PI / 180.0)));
       if (num6 > (double) num2)
       {
@@ -56,8 +55,7 @@ public static class PathfindingHelper
     {
       float angle = index * num5 / retreatRayCount;
       Vector3 to = -(Quaternion.AngleAxis(angle, Vector3.up) * from);
-      NavMeshHit hit;
-      float num6 = !NavMesh.Raycast(myTansform.position, myTansform.position + to * retreatSearchDistance, out hit, -1) ? retreatSearchDistance : hit.distance;
+      float num6 = !NavMesh.Raycast(myTansform.position, myTansform.position + to * retreatSearchDistance, out NavMeshHit hit, -1) ? retreatSearchDistance : hit.distance;
       float num7 = Mathf.Sin((float) (0.5 * Vector3.Angle(from, to) * (Math.PI / 180.0)));
       float num8 = Mathf.Cos((float) (0.5 * Vector3.Angle(myTansform.forward, to) * (Math.PI / 180.0)));
       float num9 = hit.distance * num7 * num8 * num8;
@@ -92,8 +90,7 @@ public static class PathfindingHelper
 
   public static float FindDistance(Vector3 from, Vector3 direction, float maxTraceLength)
   {
-    NavMeshHit hit;
-    return !NavMesh.Raycast(from, from + direction.normalized * maxTraceLength, out hit, -1) ? maxTraceLength : hit.distance;
+    return !NavMesh.Raycast(from, from + direction.normalized * maxTraceLength, out NavMeshHit hit, -1) ? maxTraceLength : hit.distance;
   }
 
   public static bool IsFreeSpace(Vector3 startPos, Vector3 endPos)
@@ -104,7 +101,6 @@ public static class PathfindingHelper
   public static float GetSurrenderRange(Vector3 pos, Vector3 back)
   {
     float num = 3f;
-    NavMeshHit hit;
-    return NavMesh.Raycast(pos, pos + back * num, out hit, -1) ? hit.distance : num;
+    return NavMesh.Raycast(pos, pos + back * num, out NavMeshHit hit, -1) ? hit.distance : num;
   }
 }

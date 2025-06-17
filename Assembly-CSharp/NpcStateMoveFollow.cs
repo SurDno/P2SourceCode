@@ -1,17 +1,11 @@
 ﻿using Engine.Behaviours.Components;
 using UnityEngine;
 
-public class NpcStateMoveFollow : NpcStateMoveBase
-{
+public class NpcStateMoveFollow(NpcState npcState, Pivot pivot) : NpcStateMoveBase(npcState, pivot, false) {
   private Transform target;
   private float followDistance;
   private Vector3 lastDestination;
   private bool completed;
-
-  public NpcStateMoveFollow(NpcState npcState, Pivot pivot)
-    : base(npcState, pivot, false)
-  {
-  }
 
   public void Activate(Transform target, float followDistance)
   {

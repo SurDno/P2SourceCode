@@ -100,8 +100,7 @@ namespace RootMotion.FinalIK
         return;
       Vector3 vector3_1 = bone1.rotation * -defaultLocalDirection;
       Vector3 vector3_2 = bone3.position - bone2.position;
-      bool changed = false;
-      Vector3 toDirection = V3Tools.ClampDirection(vector3_2, vector3_1, clampF * solverWeight, 0, out changed);
+      Vector3 toDirection = V3Tools.ClampDirection(vector3_2, vector3_1, clampF * solverWeight, 0, out bool changed);
       Quaternion rotation = bone3.rotation;
       if (changed)
         bone2.rotation = Quaternion.FromToRotation(vector3_2, toDirection) * bone2.rotation;

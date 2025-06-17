@@ -35,7 +35,7 @@ public class NPCEnemy : EnemyBase
   private bool canPlayReactionAnimation = true;
   private bool wasDodge;
   private EnemyBase prePunchEnemy;
-  private List<float> punches = new List<float>();
+  private List<float> punches = [];
 
   public float TimeFromLastHit { get; private set; }
 
@@ -102,10 +102,7 @@ public class NPCEnemy : EnemyBase
   [Inspected]
   public float ContrReaction
   {
-    get
-    {
-      return animator != null ? animator.GetInteger("Fight.ContrReaction1") : 0.0f;
-    }
+    get => animator != null ? animator.GetInteger("Fight.ContrReaction1") : 0.0f;
     set
     {
       if (!(animator != null))
@@ -123,15 +120,9 @@ public class NPCEnemy : EnemyBase
 
   public bool IsPushing => fightAnimatorState != null && fightAnimatorState.IsPushing;
 
-  public bool IsQuickBlock
-  {
-    get => fightAnimatorState != null && fightAnimatorState.IsQuickBlock;
-  }
+  public bool IsQuickBlock => fightAnimatorState != null && fightAnimatorState.IsQuickBlock;
 
-  public override bool IsStagger
-  {
-    get => fightAnimatorState != null && fightAnimatorState.IsStagger;
-  }
+  public override bool IsStagger => fightAnimatorState != null && fightAnimatorState.IsStagger;
 
   public bool IsDodge => fightAnimatorState != null && fightAnimatorState.IsDodge;
 
@@ -416,9 +407,7 @@ public class NPCEnemy : EnemyBase
     ApplyCurrentBlockStance();
     if (weaponService != null)
       weaponService.ReactionLayerWeight = reactionLayerWeight;
-    float fightReactionX;
-    float fightReactionY;
-    CaclulateRection(enemy, reactionType, out fightReactionX, out fightReactionY);
+    CaclulateRection(enemy, reactionType, out float fightReactionX, out float fightReactionY);
     if (animator != null)
     {
       animator.SetFloat("Fight.ReactionY", fightReactionY);

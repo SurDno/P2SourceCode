@@ -5,13 +5,7 @@ public static class PlatformUtility
 {
   public static string GetPath(string fileName) => fileName;
 
-  public static int StrategyIndex
-  {
-    get
-    {
-      return !ScriptableObjectInstance<BuildData>.Instance.Release ? ExternalSettingsInstance<ExternalOptimizationSettings>.Instance.DevelopmentStrategyIndex : ExternalSettingsInstance<ExternalOptimizationSettings>.Instance.ReleaseStrategyIndex;
-    }
-  }
+  public static int StrategyIndex => !ScriptableObjectInstance<BuildData>.Instance.Release ? ExternalSettingsInstance<ExternalOptimizationSettings>.Instance.DevelopmentStrategyIndex : ExternalSettingsInstance<ExternalOptimizationSettings>.Instance.ReleaseStrategyIndex;
 
   public static bool IsChangeLocationLoadingWindow(IRegionComponent region)
   {

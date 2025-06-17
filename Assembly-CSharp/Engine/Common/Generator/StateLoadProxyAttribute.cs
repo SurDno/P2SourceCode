@@ -3,12 +3,10 @@
 namespace Engine.Common.Generator
 {
   [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
-  public class StateLoadProxyAttribute : Attribute
+  public class StateLoadProxyAttribute(MemberEnum detail = MemberEnum.None) : Attribute 
   {
     public string Name { get; set; }
 
-    public MemberEnum Detail { get; set; }
-
-    public StateLoadProxyAttribute(MemberEnum detail = MemberEnum.None) => Detail = detail;
+    public MemberEnum Detail { get; set; } = detail;
   }
 }

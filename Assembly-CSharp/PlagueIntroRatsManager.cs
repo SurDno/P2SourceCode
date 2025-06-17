@@ -17,15 +17,15 @@ public class PlagueIntroRatsManager : MonoBehaviour
   [SerializeField]
   private GameObject ratPrefab;
   [Inspected]
-  private List<PlagueIntroRat> ratPool = new List<PlagueIntroRat>();
+  private List<PlagueIntroRat> ratPool = [];
   [Inspected]
   private int ratCount;
   [Inspected]
-  private List<int> spawnPointsIndices = new List<int>();
+  private List<int> spawnPointsIndices = [];
   [Inspected]
-  private List<Vector3> allSpawnPoints = new List<Vector3>();
+  private List<Vector3> allSpawnPoints = [];
   [Inspected]
-  private HashSet<int> lockedPoints = new HashSet<int>();
+  private HashSet<int> lockedPoints = [];
   [Inspected]
   private GameObject spawnRootGO;
 
@@ -41,8 +41,7 @@ public class PlagueIntroRatsManager : MonoBehaviour
     }
     for (int index = 0; index < transform.childCount; ++index)
     {
-      NavMeshHit hit;
-      if (NavMesh.SamplePosition(transform.GetChild(index).transform.position, out hit, 0.5f, -1))
+      if (NavMesh.SamplePosition(transform.GetChild(index).transform.position, out NavMeshHit hit, 0.5f, -1))
         allSpawnPoints.Add(hit.position);
     }
   }

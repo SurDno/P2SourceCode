@@ -23,9 +23,9 @@ namespace Engine.Source.Services
   public class MapService : ISavesController
   {
     [Inspected]
-    private HashSet<IMapItem> items = new HashSet<IMapItem>();
+    private HashSet<IMapItem> items = [];
     [Inspected]
-    private HashSet<IMapItem> hudItems = new HashSet<IMapItem>();
+    private HashSet<IMapItem> hudItems = [];
 
     [Inspected]
     public IEnumerable<IMapItem> VisibleItems

@@ -2,7 +2,7 @@
 
 public class NpcStateEnumComparer : IEqualityComparer<NpcStateEnum>
 {
-  public static NpcStateEnumComparer Instance = new NpcStateEnumComparer();
+  public static NpcStateEnumComparer Instance = new();
 
   public bool Equals(NpcStateEnum x, NpcStateEnum y) => x == y;
 

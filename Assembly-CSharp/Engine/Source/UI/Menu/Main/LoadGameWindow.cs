@@ -26,7 +26,7 @@ namespace Engine.Source.UI.Menu.Main
     private SaveFileItem itemPrefab;
     [SerializeField]
     private RectTransform keyView;
-    private List<SaveFileItem> items = new List<SaveFileItem>();
+    private List<SaveFileItem> items = [];
 
     protected abstract void RegisterLayer();
 

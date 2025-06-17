@@ -5,7 +5,7 @@ namespace Engine.Impl.UI.Controls
   public class ProgressSplited : ProgressView
   {
     [SerializeField]
-    private FloatView[] nestedViews = new FloatView[0];
+    private FloatView[] nestedViews = [];
 
     protected override void ApplyProgress()
     {

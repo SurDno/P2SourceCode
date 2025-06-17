@@ -38,9 +38,7 @@ namespace Engine.BehaviourNodes.Conditionals
       float v = 15f;
       float h = 1.5f;
       Vector3 vector3 = Target.Value.position - npcEnemy.transform.position;
-      float angle1;
-      float angle2;
-      if (BomberHelper.CalcThrowAngles(v, vector3.magnitude, h, out angle1, out angle2))
+      if (BomberHelper.CalcThrowAngles(v, vector3.magnitude, h, out float angle1, out float angle2))
       {
         Vector3 startPosition = npcEnemy.transform.position + Vector3.up * h;
         Vector3 normalized = vector3.normalized;

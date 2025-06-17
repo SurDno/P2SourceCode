@@ -33,8 +33,7 @@ namespace SoundPropagation
       bool segment = false;
       for (int index = 0; index < shapes.Length; ++index)
       {
-        Vector3 output1;
-        if (shapes[0].ClosestPointToSegment(pointA, pointB, out output1))
+        if (shapes[0].ClosestPointToSegment(pointA, pointB, out Vector3 output1))
         {
           float num2 = Vector3.Distance(pointA, output1) + Vector3.Distance(output1, pointB);
           if (num2 < (double) num1)

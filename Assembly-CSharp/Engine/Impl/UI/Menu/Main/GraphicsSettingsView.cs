@@ -40,14 +40,13 @@ namespace Engine.Impl.UI.Menu.Main
       layout = Instantiate(listLayoutPrefab, transform, false);
       this.vSyncView = Instantiate(namedIntValueViewPrefab, layout.Content, false);
       this.vSyncView.SetName("{UI.Menu.Main.Settings.Graphics.VSync}");
-      this.vSyncView.SetValueNames(new string[5]
-      {
+      this.vSyncView.SetValueNames([
         "{UI.Menu.Main.Settings.Graphics.VSync.0}",
         "{UI.Menu.Main.Settings.Graphics.VSync.1}",
         "{UI.Menu.Main.Settings.Graphics.VSync.2}",
         "{UI.Menu.Main.Settings.Graphics.VSync.3}",
         "{UI.Menu.Main.Settings.Graphics.VSync.4}"
-      });
+      ]);
       this.vSyncView.SetSetting(graphicsGameSettings.VSync);
       NamedIntSettingsValueView vSyncView = this.vSyncView;
       vSyncView.VisibleValueChangeEvent = vSyncView.VisibleValueChangeEvent + GraphicSettingsHelper.OnAutoValueChange;
@@ -186,13 +185,12 @@ namespace Engine.Impl.UI.Menu.Main
       softParticlesView.VisibleValueChangeEvent = softParticlesView.VisibleValueChangeEvent + GraphicSettingsHelper.OnAutoValueChange;
       this.volumetricLightingView = Instantiate(namedIntValueViewPrefab, layout.Content, false);
       this.volumetricLightingView.SetName("{UI.Menu.Main.Settings.Graphics.VolumetricLighting}");
-      this.volumetricLightingView.SetValueNames(new string[4]
-      {
+      this.volumetricLightingView.SetValueNames([
         "{UI.Menu.Main.Settings.Graphics.VolumetricLighting.Off}",
         "{UI.Menu.Main.Settings.Graphics.VolumetricLighting.Quarter}",
         "{UI.Menu.Main.Settings.Graphics.VolumetricLighting.Half}",
         "{UI.Menu.Main.Settings.Graphics.VolumetricLighting.Full}"
-      });
+      ]);
       this.volumetricLightingView.SetSetting(graphicsGameSettings.VolumetricLighting);
       NamedIntSettingsValueView volumetricLightingView = this.volumetricLightingView;
       volumetricLightingView.VisibleValueChangeEvent = volumetricLightingView.VisibleValueChangeEvent + GraphicSettingsHelper.OnAutoValueChange;

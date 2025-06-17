@@ -6,13 +6,7 @@ using UnityEngine;
 public class POIAnimationSetupQuick : POIAnimationSetupBase
 {
   [SerializeField]
-  public List<POIAnimationSetupElementQuick> ElementsNew = new List<POIAnimationSetupElementQuick>();
+  public List<POIAnimationSetupElementQuick> ElementsNew = [];
 
-  public override List<POIAnimationSetupElementBase> Elements
-  {
-    get
-    {
-      return new List<POIAnimationSetupElementBase>(ElementsNew);
-    }
-  }
+  public override List<POIAnimationSetupElementBase> Elements => [..ElementsNew];
 }

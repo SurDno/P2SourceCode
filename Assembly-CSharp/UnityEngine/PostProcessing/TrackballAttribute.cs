@@ -3,10 +3,8 @@
 namespace UnityEngine.PostProcessing
 {
   [AttributeUsage(AttributeTargets.Field)]
-  public sealed class TrackballAttribute : PropertyAttribute
+  public sealed class TrackballAttribute(string method) : PropertyAttribute 
   {
-    public readonly string method;
-
-    public TrackballAttribute(string method) => this.method = method;
+    public readonly string method = method;
   }
 }

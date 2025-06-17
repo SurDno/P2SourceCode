@@ -34,9 +34,9 @@ namespace Engine.Source.Services
     private const float yourDamageIsLowTime = 7.5f;
     private const float ruinBlockTime = 5f;
     [Inspected]
-    private List<GameObject> suokCombatants = new List<GameObject>();
+    private List<GameObject> suokCombatants = [];
     [Inspected]
-    private List<GameObject> suokSpectators = new List<GameObject>();
+    private List<GameObject> suokSpectators = [];
     [Inspected]
     private SuokCircleTutorialStateEnum state;
     private FlowScriptController currentTooltipBlueprint;

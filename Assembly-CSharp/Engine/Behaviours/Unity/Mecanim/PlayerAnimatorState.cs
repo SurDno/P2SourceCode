@@ -5,15 +5,14 @@ namespace Engine.Behaviours.Unity.Mecanim
 {
   public class PlayerAnimatorState
   {
-    private static Dictionary<Animator, PlayerAnimatorState> playerAnimatorStates = new Dictionary<Animator, PlayerAnimatorState>();
+    private static Dictionary<Animator, PlayerAnimatorState> playerAnimatorStates = new();
     public Animator Animator;
 
     public static void Clear() => playerAnimatorStates.Clear();
 
     public static PlayerAnimatorState GetAnimatorState(Animator animator)
     {
-      PlayerAnimatorState animatorState;
-      if (!playerAnimatorStates.TryGetValue(animator, out animatorState))
+      if (!playerAnimatorStates.TryGetValue(animator, out PlayerAnimatorState animatorState))
       {
         animatorState = new PlayerAnimatorState();
         animatorState.Animator = animator;
@@ -24,130 +23,82 @@ namespace Engine.Behaviours.Unity.Mecanim
 
     public float HandsLayerWeight
     {
-      set
-      {
-        Animator.SetLayerWeight(Animator.GetLayerIndex("Hands Layer"), Mathf.Clamp01(value));
-      }
+      set => Animator.SetLayerWeight(Animator.GetLayerIndex("Hands Layer"), Mathf.Clamp01(value));
     }
 
     public float KnifeLayerWeight
     {
-      set
-      {
-        Animator.SetLayerWeight(Animator.GetLayerIndex("Knife Layer"), Mathf.Clamp01(value));
-      }
+      set => Animator.SetLayerWeight(Animator.GetLayerIndex("Knife Layer"), Mathf.Clamp01(value));
     }
 
     public float LockpickLayerWeight
     {
-      set
-      {
-        Animator.SetLayerWeight(Animator.GetLayerIndex("Lockpick Layer"), Mathf.Clamp01(value));
-      }
+      set => Animator.SetLayerWeight(Animator.GetLayerIndex("Lockpick Layer"), Mathf.Clamp01(value));
     }
 
     public float ScalpelLayerWeight
     {
-      set
-      {
-        Animator.SetLayerWeight(Animator.GetLayerIndex("Scalpel Layer"), Mathf.Clamp01(value));
-      }
+      set => Animator.SetLayerWeight(Animator.GetLayerIndex("Scalpel Layer"), Mathf.Clamp01(value));
     }
 
     public float RevolverLayerWeight
     {
-      set
-      {
-        Animator.SetLayerWeight(Animator.GetLayerIndex("Revolver Layer"), Mathf.Clamp01(value));
-      }
+      set => Animator.SetLayerWeight(Animator.GetLayerIndex("Revolver Layer"), Mathf.Clamp01(value));
     }
 
     public float RifleLayerWeight
     {
-      set
-      {
-        Animator.SetLayerWeight(Animator.GetLayerIndex("Rifle Layer"), Mathf.Clamp01(value));
-      }
+      set => Animator.SetLayerWeight(Animator.GetLayerIndex("Rifle Layer"), Mathf.Clamp01(value));
     }
 
     public float ShotgunLayerWeight
     {
-      set
-      {
-        Animator.SetLayerWeight(Animator.GetLayerIndex("Shotgun Layer"), Mathf.Clamp01(value));
-      }
+      set => Animator.SetLayerWeight(Animator.GetLayerIndex("Shotgun Layer"), Mathf.Clamp01(value));
     }
 
     public float FlashlightLayerWeight
     {
-      set
-      {
-        Animator.SetLayerWeight(Animator.GetLayerIndex("Flashlight Layer"), Mathf.Clamp01(value));
-      }
+      set => Animator.SetLayerWeight(Animator.GetLayerIndex("Flashlight Layer"), Mathf.Clamp01(value));
     }
 
     public float VisirLightLayerWeight
     {
-      set
-      {
-        Animator.SetLayerWeight(Animator.GetLayerIndex("Visir Layer"), Mathf.Clamp01(value));
-      }
+      set => Animator.SetLayerWeight(Animator.GetLayerIndex("Visir Layer"), Mathf.Clamp01(value));
     }
 
     public float ReactionLayerWeight
     {
-      set
-      {
-        Animator.SetLayerWeight(Animator.GetLayerIndex("Reaction Layer"), Mathf.Clamp01(value));
-      }
+      set => Animator.SetLayerWeight(Animator.GetLayerIndex("Reaction Layer"), Mathf.Clamp01(value));
     }
 
     public float FlashlightReactionLayerWeight
     {
-      set
-      {
-        Animator.SetLayerWeight(Animator.GetLayerIndex("Flashlight Reaction Layer"), Mathf.Clamp01(value));
-      }
+      set => Animator.SetLayerWeight(Animator.GetLayerIndex("Flashlight Reaction Layer"), Mathf.Clamp01(value));
     }
 
     public float ScalpelReactionLayerWeight
     {
-      set
-      {
-        Animator.SetLayerWeight(Animator.GetLayerIndex("Scalpel Reaction Layer"), Mathf.Clamp01(value));
-      }
+      set => Animator.SetLayerWeight(Animator.GetLayerIndex("Scalpel Reaction Layer"), Mathf.Clamp01(value));
     }
 
     public float KnifeReactionLayerWeight
     {
-      set
-      {
-        Animator.SetLayerWeight(Animator.GetLayerIndex("Knife Reaction Layer"), Mathf.Clamp01(value));
-      }
+      set => Animator.SetLayerWeight(Animator.GetLayerIndex("Knife Reaction Layer"), Mathf.Clamp01(value));
     }
 
     public float RifleReactionLayerWeight
     {
-      set
-      {
-        Animator.SetLayerWeight(Animator.GetLayerIndex("Rifle Reaction Layer"), Mathf.Clamp01(value));
-      }
+      set => Animator.SetLayerWeight(Animator.GetLayerIndex("Rifle Reaction Layer"), Mathf.Clamp01(value));
     }
 
     public float ShotgunReactionLayerWeight
     {
-      set
-      {
-        Animator.SetLayerWeight(Animator.GetLayerIndex("Shotgun Reaction Layer"), Mathf.Clamp01(value));
-      }
+      set => Animator.SetLayerWeight(Animator.GetLayerIndex("Shotgun Reaction Layer"), Mathf.Clamp01(value));
     }
 
     public float RevolverReactionLayerWeight
     {
-      set
-      {
-        Animator.SetLayerWeight(Animator.GetLayerIndex("Revolver Reaction Layer"), Mathf.Clamp01(value));
-      }
+      set => Animator.SetLayerWeight(Animator.GetLayerIndex("Revolver Reaction Layer"), Mathf.Clamp01(value));
     }
 
     public float WalkSpeed

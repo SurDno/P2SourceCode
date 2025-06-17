@@ -15,7 +15,7 @@ public class PlagueIntroGrowingSpots : MonoBehaviour
   private float growTime = 3f;
   [SerializeField]
   private float startDistance = 7f;
-  private List<Material> plagueSpotMaterials = new List<Material>();
+  private List<Material> plagueSpotMaterials = [];
   [Inspected]
   private float level;
   [Inspected]

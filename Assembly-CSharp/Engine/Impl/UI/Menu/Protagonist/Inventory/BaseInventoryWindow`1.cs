@@ -49,7 +49,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
   {
     [SerializeField]
     [FormerlySerializedAs("_ActorAnchors")]
-    private List<UIControl> actorAnchors = new List<UIControl>();
+    private List<UIControl> actorAnchors = [];
     [SerializeField]
     [FormerlySerializedAs("_Button_Cancel")]
     private Button buttonCancel;
@@ -65,7 +65,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
     private InventoryCellStyle styleMultipleCellOneStorable;
     [SerializeField]
     [FormerlySerializedAs("_SlotAnchor")]
-    private List<SlotAnchor> slotAnchor = new List<SlotAnchor>();
+    private List<SlotAnchor> slotAnchor = [];
     [SerializeField]
     private Sprite nonAvailableIcon;
     [SerializeField]
@@ -103,18 +103,18 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
     private IEntitySerializable splitContainerTemplate;
     protected IStorageComponent splitContainer;
     [Inspected]
-    protected List<IStorageComponent> actors = new List<IStorageComponent>();
-    protected Dictionary<InventoryContainerUI, IStorageComponent> containers = new Dictionary<InventoryContainerUI, IStorageComponent>();
-    protected Dictionary<IInventoryComponent, InventoryContainerUI> containerViews = new Dictionary<IInventoryComponent, InventoryContainerUI>();
+    protected List<IStorageComponent> actors = [];
+    protected Dictionary<InventoryContainerUI, IStorageComponent> containers = new();
+    protected Dictionary<IInventoryComponent, InventoryContainerUI> containerViews = new();
     private CameraKindEnum lastCameraKind;
     [Inspected]
-    protected Dictionary<IStorableComponent, StorableUI> storables = new Dictionary<IStorableComponent, StorableUI>();
+    protected Dictionary<IStorableComponent, StorableUI> storables = new();
     protected InfoWindowNew windowInfoNew;
     protected SplitGraphic windowSplit;
     protected ContextMenuWindowNew windowContextMenu;
     private AudioState currentOpenedAudioState;
     [Inspected]
-    protected DragInventoryCell drag = new DragInventoryCell();
+    protected DragInventoryCell drag = new();
     [Inspected]
     protected Intersect intersect;
     protected bool splitEnabled;
@@ -141,7 +141,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
     private Vector2 lastMoveDirecton;
     private Coroutine scrollCoroutine;
     private Navigation coroutineNavigation = Navigation.None;
-    protected List<GameObject> selectableList = new List<GameObject>();
+    protected List<GameObject> selectableList = [];
     private const float CellDistanceThreshold = 500f;
     private bool shouldDeselectStorable;
     public ContainerResizableWindow currentInventory;
@@ -284,8 +284,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       windowContextMenu = ContextMenuWindowNew.Instantiate(InputService.Instance.JoystickUsed ? joystickContextMenuPrefab : contextMenuPrefab);
       windowContextMenu.Transform.SetParent(transform, false);
       windowContextMenu.Target = storable;
-      StorableUI storableUi;
-      if (storables.TryGetValue(storable, out storableUi))
+      if (storables.TryGetValue(storable, out StorableUI storableUi))
       {
         if (selectedStorable == null)
           selectedStorable = storableUi;
@@ -369,8 +368,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
     {
       if (storable == null)
         return;
-      StorableUI storableUi;
-      if (storables.TryGetValue(storable, out storableUi))
+      if (storables.TryGetValue(storable, out StorableUI storableUi))
       {
         storables.Remove(storable);
         Destroy(storableUi.gameObject);
@@ -398,7 +396,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
     {
       Guid itemId = StorageUtility.GetItemId(removingItem);
       int num = amount;
-      List<KeyValuePair<IStorableComponent, int>> keyValuePairList = new List<KeyValuePair<IStorableComponent, int>>();
+      List<KeyValuePair<IStorableComponent, int>> keyValuePairList = [];
       foreach (IStorableComponent key in storage.Items)
       {
         if (StorageUtility.GetItemId(key.Owner) == itemId)
@@ -409,7 +407,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
         if (num <= 0)
           break;
       }
-      List<IStorableComponent> storableComponentList = new List<IStorableComponent>();
+      List<IStorableComponent> storableComponentList = [];
       foreach (KeyValuePair<IStorableComponent, int> keyValuePair in keyValuePairList)
       {
         KeyValuePair<IStorableComponent, int> k = keyValuePair;
@@ -1037,8 +1035,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
 
     protected virtual void DragEnd(Intersect intersect)
     {
-      bool isSuccess;
-      DragEnd(intersect, out isSuccess);
+      DragEnd(intersect, out bool isSuccess);
       if (!isSuccess)
         return;
       Subscribe();
@@ -1187,8 +1184,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       OnDragEnd();
       if (drag.Storage == splitContainer)
       {
-        StorableUI storableUi;
-        if (storables.TryGetValue(drag.Storable, out storableUi))
+        if (storables.TryGetValue(drag.Storable, out StorableUI storableUi))
         {
           storableUi.Dragging = false;
           storables.Remove(drag.Storable);
@@ -1217,8 +1213,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
           PlaceTo(drag.Storage, drag.Container, drag.Storable, drag.Cell);
       }
       StorableComponentUtility.PlayPutSound(drag.Storable);
-      StorableUI storableUi1;
-      if (drag.Storable != null && storables.TryGetValue(drag.Storable, out storableUi1))
+      if (drag.Storable != null && storables.TryGetValue(drag.Storable, out StorableUI storableUi1))
       {
         storableUi1.Dragging = false;
         storableUi1.SetSelected(false);
@@ -1507,18 +1502,11 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       PositionWindow(windowInfoNew, storable);
     }
 
-    protected virtual float HintsBottomBorder
-    {
-      get
-      {
-        return actorContainerWindow == null ? 40f * transform.lossyScale.y : GetComponent<RectTransform>().position.y - 450f * actorContainerWindow.transform.lossyScale.y;
-      }
-    }
+    protected virtual float HintsBottomBorder => actorContainerWindow == null ? 40f * transform.lossyScale.y : GetComponent<RectTransform>().position.y - 450f * actorContainerWindow.transform.lossyScale.y;
 
     protected virtual void PositionWindow(UIControl window, IStorableComponent storable)
     {
-      StorableUI storableUi;
-      if (!storables.TryGetValue(storable, out storableUi))
+      if (!storables.TryGetValue(storable, out StorableUI storableUi))
         return;
       RectTransform component = window.GetComponent<RectTransform>();
       float x1 = component.lossyScale.x;
@@ -1986,7 +1974,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
 
     private void ResizeActorContainersWindow()
     {
-      List<InventoryContainerUI> containers = new List<InventoryContainerUI>();
+      List<InventoryContainerUI> containers = [];
       foreach (KeyValuePair<InventoryContainerUI, IStorageComponent> container in this.containers)
       {
         if (container.Value == Actor && container.Key.InventoryContainer.Enabled.Value && container.Key.InventoryContainer.GetGroup() == InventoryGroup.Backpack)
@@ -2321,8 +2309,8 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
         HideInfoWindow();
         return true;
       }
-      bool isSuccess;
-      DragEnd(intersect, out isSuccess);
+
+      DragEnd(intersect, out bool isSuccess);
       if (isSuccess)
       {
         Subscribe();
@@ -2461,7 +2449,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       StorableComponent storableComponent = selectedStorable.Internal as StorableComponent;
       int rows = storableComponent.Placeholder.Grid.Rows;
       int columns = storableComponent.Placeholder.Grid.Columns;
-      List<GameObject> objects = new List<GameObject>();
+      List<GameObject> objects = [];
       foreach (InventoryContainerUI key1 in containers.Keys)
       {
         InventoryContainerUI inventory = key1;
@@ -2564,7 +2552,8 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       currentContainer = _selectedStorable?.GetComponentInParent<LimitedInventoryContainerUI>();
       if (currentInventory == null)
         currentInventory = new List<ContainerResizableWindow>(GetComponentsInChildren<ContainerResizableWindow>())[0];
-      List<LimitedInventoryContainerUI> source = new List<LimitedInventoryContainerUI>(currentInventory.GetComponentsInChildren<LimitedInventoryContainerUI>());
+      List<LimitedInventoryContainerUI> source =
+        [..currentInventory.GetComponentsInChildren<LimitedInventoryContainerUI>()];
       for (int index = 0; index < source.Count; ++index)
       {
         if (source[index].GetComponentsInChildren<StorableUI>().Length < 1)
@@ -2596,7 +2585,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       if (list.Count <= 0)
         return;
       currentContainer = list.OrderBy(container => Vector3.Distance(currentContainer.transform.position, container.gameObject.transform.position)).First();
-      SelectFirstStorableInContainer(new List<StorableUI>(currentContainer.GetComponentsInChildren<StorableUI>()));
+      SelectFirstStorableInContainer([..currentContainer.GetComponentsInChildren<StorableUI>()]);
       SetSelectedFrame();
     }
 
@@ -2638,8 +2627,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
 
     protected StorableUI GetStorableByComponent(IStorableComponent component)
     {
-      StorableUI storableUi;
-      return component == null || !storables.TryGetValue(component, out storableUi) ? null : storableUi;
+      return component == null || !storables.TryGetValue(component, out StorableUI storableUi) ? null : storableUi;
     }
 
     protected enum Navigation

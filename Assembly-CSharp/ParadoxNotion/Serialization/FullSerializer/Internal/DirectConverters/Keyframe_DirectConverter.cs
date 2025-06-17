@@ -14,20 +14,15 @@ namespace ParadoxNotion.Serialization.FullSerializer.Internal.DirectConverters
     protected override fsResult DoDeserialize(Dictionary<string, fsData> data, ref Keyframe model)
     {
       fsResult success = fsResult.Success;
-      float time = model.time;
-      fsResult fsResult1 = success + DeserializeMember(data, null, "time", out time);
+      fsResult fsResult1 = success + DeserializeMember(data, null, "time", out float time);
       model.time = time;
-      float num = model.value;
-      fsResult fsResult2 = fsResult1 + DeserializeMember(data, null, "value", out num);
+      fsResult fsResult2 = fsResult1 + DeserializeMember(data, null, "value", out float num);
       model.value = num;
-      int tangentMode = model.tangentMode;
-      fsResult fsResult3 = fsResult2 + DeserializeMember(data, null, "tangentMode", out tangentMode);
+      fsResult fsResult3 = fsResult2 + DeserializeMember(data, null, "tangentMode", out int tangentMode);
       model.tangentMode = tangentMode;
-      float inTangent = model.inTangent;
-      fsResult fsResult4 = fsResult3 + DeserializeMember(data, null, "inTangent", out inTangent);
+      fsResult fsResult4 = fsResult3 + DeserializeMember(data, null, "inTangent", out float inTangent);
       model.inTangent = inTangent;
-      float outTangent = model.outTangent;
-      fsResult fsResult5 = fsResult4 + DeserializeMember(data, null, "outTangent", out outTangent);
+      fsResult fsResult5 = fsResult4 + DeserializeMember(data, null, "outTangent", out float outTangent);
       model.outTangent = outTangent;
       return fsResult5;
     }

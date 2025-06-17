@@ -10,7 +10,7 @@ namespace Engine.Source.Commons
   public class SmoothUpdater : IUpdater, IUpdateItem<IUpdatable>
   {
     [Inspected]
-    private List<IUpdatable> updatable = new List<IUpdatable>();
+    private List<IUpdatable> updatable = [];
     [Inspected]
     private ReduceUpdateProxy<IUpdatable> updater;
 

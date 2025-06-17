@@ -56,6 +56,6 @@ namespace Engine.Source.Services.Inputs
     [DataWriteProxy]
     [CopyableProxy()]
     [Inspected(Mutable = true, Mode = ExecuteMode.EditAndRuntime)]
-    public List<GameActionType> Actions = new List<GameActionType>();
+    public List<GameActionType> Actions = [];
   }
 }

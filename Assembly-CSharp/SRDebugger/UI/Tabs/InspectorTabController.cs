@@ -11,7 +11,7 @@ namespace SRDebugger.UI.Tabs
     [SerializeField]
     private RectTransform layoutContainer;
     private Rect rect;
-    private InspectedProvider inspector = new InspectedProvider(RuntimeInspectedDrawer.Instance);
+    private InspectedProvider inspector = new(RuntimeInspectedDrawer.Instance);
     private Vector2 scrollInspector = Vector2.zero;
     private Vector2 scrollMenu = Vector2.zero;
 

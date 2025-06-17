@@ -109,8 +109,7 @@ namespace SteamNative
 
     public unsafe SteamItemDef_t[] GetEligiblePromoItemDefinitionIDs(CSteamID steamID)
     {
-      uint punItemDefIDsArraySize = 0;
-      if (!platform.ISteamInventory_GetEligiblePromoItemDefinitionIDs(steamID.Value, IntPtr.Zero, out punItemDefIDsArraySize) || punItemDefIDsArraySize == 0U)
+      if (!platform.ISteamInventory_GetEligiblePromoItemDefinitionIDs(steamID.Value, IntPtr.Zero, out uint punItemDefIDsArraySize) || punItemDefIDsArraySize == 0U)
         return null;
       SteamItemDef_t[] steamItemDefTArray = new SteamItemDef_t[(int) punItemDefIDsArraySize];
       fixed (SteamItemDef_t* pItemDefIDs = steamItemDefTArray)
@@ -119,8 +118,7 @@ namespace SteamNative
 
     public unsafe SteamItemDef_t[] GetItemDefinitionIDs()
     {
-      uint punItemDefIDsArraySize = 0;
-      if (!platform.ISteamInventory_GetItemDefinitionIDs(IntPtr.Zero, out punItemDefIDsArraySize) || punItemDefIDsArraySize == 0U)
+      if (!platform.ISteamInventory_GetItemDefinitionIDs(IntPtr.Zero, out uint punItemDefIDsArraySize) || punItemDefIDsArraySize == 0U)
         return null;
       SteamItemDef_t[] steamItemDefTArray = new SteamItemDef_t[(int) punItemDefIDsArraySize];
       fixed (SteamItemDef_t* pItemDefIDs = steamItemDefTArray)
@@ -168,8 +166,7 @@ namespace SteamNative
 
     public unsafe SteamItemDetails_t[] GetResultItems(SteamInventoryResult_t resultHandle)
     {
-      uint punOutItemsArraySize = 0;
-      if (!platform.ISteamInventory_GetResultItems(resultHandle.Value, IntPtr.Zero, out punOutItemsArraySize) || punOutItemsArraySize == 0U)
+      if (!platform.ISteamInventory_GetResultItems(resultHandle.Value, IntPtr.Zero, out uint punOutItemsArraySize) || punOutItemsArraySize == 0U)
         return null;
       SteamItemDetails_t[] steamItemDetailsTArray = new SteamItemDetails_t[(int) punOutItemsArraySize];
       fixed (SteamItemDetails_t* pOutItemsArray = steamItemDetailsTArray)

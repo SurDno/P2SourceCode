@@ -157,7 +157,7 @@ namespace Engine.Common.Commons.Converters
     public static void WriteList(IDataWriter writer, string name, List<string> value)
     {
       if (value == null)
-        value = new List<string>();
+        value = [];
       writer.Begin(name, null, true);
       foreach (string str in value)
         Write(writer, "Item", str);
@@ -167,7 +167,7 @@ namespace Engine.Common.Commons.Converters
     public static void WriteList(IDataWriter writer, string name, List<double> value)
     {
       if (value == null)
-        value = new List<double>();
+        value = [];
       writer.Begin(name, null, true);
       foreach (double num in value)
         Write(writer, "Item", num);
@@ -177,7 +177,7 @@ namespace Engine.Common.Commons.Converters
     public static void WriteListEnum<T>(IDataWriter writer, string name, List<T> value) where T : struct, IComparable, IConvertible, IFormattable
     {
       if (value == null)
-        value = new List<T>();
+        value = [];
       writer.Begin(name, null, true);
       foreach (T obj in value)
         WriteEnum(writer, "Item", obj);
@@ -187,7 +187,7 @@ namespace Engine.Common.Commons.Converters
     public static void WriteListSerialize<T>(IDataWriter writer, string name, List<T> value) where T : class
     {
       if (value == null)
-        value = new List<T>();
+        value = [];
       writer.Begin(name, null, true);
       foreach (T obj in value)
         WriteSerialize(writer, "Item", obj);

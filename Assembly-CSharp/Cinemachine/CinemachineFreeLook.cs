@@ -26,13 +26,13 @@ namespace Cinemachine
     public LensSettings m_Lens = LensSettings.Default;
     [Header("Axis Control")]
     [Tooltip("The Vertical axis.  Value is 0..1.  Chooses how to blend the child rigs")]
-    public AxisState m_YAxis = new AxisState(2f, 0.2f, 0.1f, 0.5f, "Mouse Y", false);
+    public AxisState m_YAxis = new(2f, 0.2f, 0.1f, 0.5f, "Mouse Y", false);
     [Tooltip("The Horizontal axis.  Value is 0..359.  This is passed on to the rigs' OrbitalTransposer component")]
-    public AxisState m_XAxis = new AxisState(300f, 0.1f, 0.1f, 0.0f, "Mouse X", true);
+    public AxisState m_XAxis = new(300f, 0.1f, 0.1f, 0.0f, "Mouse X", true);
     [Tooltip("The definition of Forward.  Camera will follow behind.")]
-    public CinemachineOrbitalTransposer.Heading m_Heading = new CinemachineOrbitalTransposer.Heading(CinemachineOrbitalTransposer.Heading.HeadingDefinition.TargetForward, 4, 0.0f);
+    public CinemachineOrbitalTransposer.Heading m_Heading = new(CinemachineOrbitalTransposer.Heading.HeadingDefinition.TargetForward, 4, 0.0f);
     [Tooltip("Controls how automatic recentering of the X axis is accomplished")]
-    public CinemachineOrbitalTransposer.Recentering m_RecenterToTargetHeading = new CinemachineOrbitalTransposer.Recentering(false, 1f, 2f);
+    public CinemachineOrbitalTransposer.Recentering m_RecenterToTargetHeading = new(false, 1f, 2f);
     [Header("Orbits")]
     [Tooltip("The coordinate space to use when interpreting the offset from the target.  This is also used to set the camera's Up vector, which will be maintained when aiming the camera.")]
     public CinemachineTransposer.BindingMode m_BindingMode = CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp;
@@ -41,12 +41,11 @@ namespace Cinemachine
     [FormerlySerializedAs("m_SplineTension")]
     public float m_SplineCurvature = 0.2f;
     [Tooltip("The radius and height of the three orbiting rigs.")]
-    public Orbit[] m_Orbits = new Orbit[3]
-    {
-      new Orbit(4.5f, 1.75f),
-      new Orbit(2.5f, 3f),
-      new Orbit(0.4f, 1.3f)
-    };
+    public Orbit[] m_Orbits = [
+      new(4.5f, 1.75f),
+      new(2.5f, 3f),
+      new(0.4f, 1.3f)
+    ];
     [SerializeField]
     [HideInInspector]
     [FormerlySerializedAs("m_HeadingBias")]
@@ -96,12 +95,11 @@ namespace Cinemachine
     {
       get
       {
-        return new string[3]
-        {
+        return [
           "TopRig",
           "MiddleRig",
           "BottomRig"
-        };
+        ];
       }
     }
 
@@ -248,7 +246,7 @@ namespace Cinemachine
     private CinemachineVirtualCamera[] CreateRigs(CinemachineVirtualCamera[] copyFrom)
     {
       mOrbitals = null;
-      float[] numArray = new float[3]{ 0.5f, 0.55f, 0.6f };
+      float[] numArray = [0.5f, 0.55f, 0.6f];
       CinemachineVirtualCamera[] rigs = new CinemachineVirtualCamera[3];
       for (int index = 0; index < RigNames.Length; ++index)
       {
@@ -322,24 +320,22 @@ namespace Cinemachine
         CinemachineVirtualCamera cinemachineVirtualCamera = rig;
         string[] strArray;
         if (!m_CommonLens)
-          strArray = new string[5]
-          {
+          strArray = [
             "m_Script",
             "Header",
             "Extensions",
             "m_Priority",
             "m_Follow"
-          };
+          ];
         else
-          strArray = new string[6]
-          {
+          strArray = [
             "m_Script",
             "Header",
             "Extensions",
             "m_Priority",
             "m_Follow",
             "m_Lens"
-          };
+          ];
         cinemachineVirtualCamera.m_ExcludedPropertiesInInspector = strArray;
         rig.m_LockStageInInspector = new CinemachineCore.Stage[1];
       }
@@ -492,16 +488,9 @@ namespace Cinemachine
     }
 
     [Serializable]
-    public struct Orbit
-    {
-      public float m_Height;
-      public float m_Radius;
-
-      public Orbit(float h, float r)
-      {
-        m_Height = h;
-        m_Radius = r;
-      }
+    public struct Orbit(float h, float r) {
+      public float m_Height = h;
+      public float m_Radius = r;
     }
 
     public delegate CinemachineVirtualCamera CreateRigDelegate(

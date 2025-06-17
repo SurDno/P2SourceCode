@@ -12,8 +12,7 @@ namespace PLVirtualMachine.Objects
 {
   [TypeData(EDataType.TCombination)]
   [DataFactory("Combination")]
-  public class VMCombinationItem : VMWorldObject, IStub, IEditorDataReader
-  {
+  public class VMCombinationItem(ulong guid) : VMWorldObject(guid), IStub, IEditorDataReader {
     public override void EditorDataRead(XmlReader xml, IDataCreator creator, string typeContext)
     {
       while (xml.Read()) {
@@ -77,11 +76,6 @@ namespace PLVirtualMachine.Objects
         if (xml.NodeType == XmlNodeType.EndElement)
           break;
       }
-    }
-
-    public VMCombinationItem(ulong guid)
-      : base(guid)
-    {
     }
 
     public override EObjectCategory GetCategory() => EObjectCategory.OBJECT_CATEGORY_OTHERS;

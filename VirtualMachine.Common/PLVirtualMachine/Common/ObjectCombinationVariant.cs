@@ -12,7 +12,7 @@ namespace PLVirtualMachine.Common
     public int MinCount;
     public int MaxCount;
     public int Weight;
-    public CombinationItemParams CIParams = new CombinationItemParams();
+    public CombinationItemParams CIParams = new();
 
     public ObjectCombinationVariant()
     {
@@ -36,7 +36,7 @@ namespace PLVirtualMachine.Common
       MinCount = 0;
       MaxCount = 0;
       Weight = 1;
-      string[] separator = new string[1]{ "END&PAR" };
+      string[] separator = ["END&PAR"];
       string[] strArray = dataStr.Split(separator, StringSplitOptions.RemoveEmptyEntries);
       if (strArray.Length != 0)
         ObjectGuid = ReadObjGuid(strArray[0]);

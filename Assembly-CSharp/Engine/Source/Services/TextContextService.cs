@@ -7,7 +7,7 @@ namespace Engine.Source.Services
   [GameService(typeof (ITextContextService), typeof (TextContextService))]
   public class TextContextService : ITextContextService
   {
-    private Dictionary<string, string> contexts = new Dictionary<string, string>();
+    private Dictionary<string, string> contexts = new();
 
     public void SetInt(string tag, int value)
     {

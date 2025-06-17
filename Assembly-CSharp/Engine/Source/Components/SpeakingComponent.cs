@@ -27,7 +27,7 @@ namespace Engine.Source.Components
     [StateSaveProxy(MemberEnum.CustomListReference)]
     [StateLoadProxy(MemberEnum.CustomListReference)]
     [Inspected]
-    protected List<ILipSyncObject> initialPhrases = new List<ILipSyncObject>();
+    protected List<ILipSyncObject> initialPhrases = [];
     private bool speakAvailable;
 
     public event Action OnBeginTalking;
@@ -65,10 +65,7 @@ namespace Engine.Source.Components
       }
     }
 
-    public IEnumerable<ILipSyncObject> InitialPhrases
-    {
-      get => initialPhrases;
-    }
+    public IEnumerable<ILipSyncObject> InitialPhrases => initialPhrases;
 
     public void AddInitialPhrase(ILipSyncObject lipsync) => initialPhrases.Add(lipsync);
 

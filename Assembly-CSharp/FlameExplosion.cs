@@ -27,13 +27,12 @@ public class FlameExplosion : MonoBehaviour
     audioSource = GetComponent<AudioSource>();
     Vector3 position = this.transform.position;
     Vector3 origin = position - this.transform.forward * rayOriginShift;
-    List<FlamePatch> flamePatchList = new List<FlamePatch>();
-    List<float> floatList = new List<float>();
+    List<FlamePatch> flamePatchList = [];
+    List<float> floatList = [];
     for (int index = 0; index < rayCount; ++index)
     {
       Vector3 onUnitSphere = Random.onUnitSphere;
-      RaycastHit hitInfo;
-      if (Physics.Raycast(origin, onUnitSphere, out hitInfo, radius + rayOriginShift, collisionLayers, QueryTriggerInteraction.Ignore))
+      if (Physics.Raycast(origin, onUnitSphere, out RaycastHit hitInfo, radius + rayOriginShift, collisionLayers, QueryTriggerInteraction.Ignore))
       {
         float num1 = Vector3.Distance(hitInfo.point, position);
         if (num1 < (double) radius)

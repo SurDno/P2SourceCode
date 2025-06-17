@@ -14,7 +14,7 @@ namespace PLVirtualMachine.Common.VMDebug
     public string EngineData;
     public string EnginePath;
     public bool Static;
-    public List<ComponentInfo> Components = new List<ComponentInfo>();
+    public List<ComponentInfo> Components = [];
 
     public EngineObjectCreationInfo(
       EDataType objectType,

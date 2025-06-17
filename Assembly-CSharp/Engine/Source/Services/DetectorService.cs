@@ -12,8 +12,8 @@ namespace Engine.Source.Services
   public class DetectorService
   {
     [Inspected]
-    private Dictionary<DetectableComponent, DetectableCandidatInfo> detectablies = new Dictionary<DetectableComponent, DetectableCandidatInfo>();
-    private List<DetectableCandidatInfo> cache = new List<DetectableCandidatInfo>();
+    private Dictionary<DetectableComponent, DetectableCandidatInfo> detectablies = new();
+    private List<DetectableCandidatInfo> cache = [];
     private bool invalidate = true;
 
     public List<DetectableCandidatInfo> Detectablies

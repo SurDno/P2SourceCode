@@ -12,6 +12,6 @@ namespace Engine.Source.Services
     [StateSaveProxy]
     [StateLoadProxy()]
     [Inspected]
-    public List<WeatherLayerInfo> Layers = new List<WeatherLayerInfo>();
+    public List<WeatherLayerInfo> Layers = [];
   }
 }

@@ -11,13 +11,7 @@ namespace UnityEngine.PostProcessing
     private bool m_ResetHistory = true;
     private RenderTexture m_HistoryTexture;
 
-    public override bool active
-    {
-      get
-      {
-        return model.enabled && model.settings.method == AntialiasingModel.Method.Taa && SystemInfo.supportsMotionVectors && SystemInfo.supportedRenderTargetCount >= 2 && !context.interrupted;
-      }
-    }
+    public override bool active => model.enabled && model.settings.method == AntialiasingModel.Method.Taa && SystemInfo.supportsMotionVectors && SystemInfo.supportedRenderTargetCount >= 2 && !context.interrupted;
 
     public override DepthTextureMode GetCameraFlags()
     {

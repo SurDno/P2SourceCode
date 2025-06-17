@@ -25,9 +25,9 @@ namespace Engine.Source.UI.Menu.Protagonist.BoundCharacters
     private float singleAnimationTime = 1f;
     [SerializeField]
     private float allAnimationsTime = 3f;
-    private List<BoundCharactersGroupView> groupViews = new List<BoundCharactersGroupView>();
-    private List<BoundCharacterView> unseenGroupViews = new List<BoundCharacterView>();
-    private List<BoundCharacterView> unseenStateViews = new List<BoundCharacterView>();
+    private List<BoundCharactersGroupView> groupViews = [];
+    private List<BoundCharacterView> unseenGroupViews = [];
+    private List<BoundCharacterView> unseenStateViews = [];
     private float animationTime = -1f;
     private float animationPhase = -1f;
     private Scrollbar _scrollbar;
@@ -44,18 +44,16 @@ namespace Engine.Source.UI.Menu.Protagonist.BoundCharacters
       foreach (BoundCharacterComponent characterComponent in service.Items)
       {
         BoundCharacterGroup group = characterComponent.Group;
-        List<BoundCharacterComponent> characterComponentList;
-        if (!dictionary.TryGetValue(group, out characterComponentList))
+        if (!dictionary.TryGetValue(group, out List<BoundCharacterComponent> characterComponentList))
         {
-          characterComponentList = new List<BoundCharacterComponent>();
+          characterComponentList = [];
           dictionary.Add(group, characterComponentList);
         }
         characterComponentList.Add(characterComponent);
       }
       for (int index1 = 0; index1 < groups.Length; ++index1)
       {
-        List<BoundCharacterComponent> characterComponentList;
-        if (dictionary.TryGetValue(groups[index1], out characterComponentList))
+        if (dictionary.TryGetValue(groups[index1], out List<BoundCharacterComponent> characterComponentList))
         {
           characterComponentList.Sort(SortingComparison);
           BoundCharactersGroupView charactersGroupView = Instantiate(groupViewPrefab, layout, false);

@@ -1,10 +1,8 @@
 ﻿namespace AssetDatabases
 {
-  public class AsyncLoadInstant : IAsyncLoad
+  public class AsyncLoadInstant(object asset) : IAsyncLoad 
   {
-    public AsyncLoadInstant(object asset) => Asset = asset;
-
-    public object Asset { get; private set; }
+    public object Asset { get; private set; } = asset;
 
     public bool IsDone => true;
   }

@@ -9,20 +9,14 @@ namespace PLVirtualMachine
 {
   public static class DebugUtility
   {
-    private static Dictionary<string, DynamicParameter> changedParamsMemoryDict = new Dictionary<string, DynamicParameter>();
-    private static VMDebugger debugger = new VMDebugger();
+    private static Dictionary<string, DynamicParameter> changedParamsMemoryDict = new();
+    private static VMDebugger debugger = new();
 
     public static VMDebugger Debugger => debugger;
 
     public static bool IsDebug { get; set; } = true;
 
-    private static bool IsDebugging
-    {
-      get
-      {
-        return IsDebug && !Debugger.NeedUpdateHierarchy && Debugger.ControllerWorkMode != 0;
-      }
-    }
+    private static bool IsDebugging => IsDebug && !Debugger.NeedUpdateHierarchy && Debugger.ControllerWorkMode != 0;
 
     public static void Init()
     {

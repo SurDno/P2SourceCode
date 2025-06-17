@@ -15,13 +15,7 @@ namespace FlowCanvas.Nodes
     public OperationMethod operation = OperationMethod.Set;
     private ValueInput<string> varName;
 
-    public override string name
-    {
-      get
-      {
-        return string.Format("${0}{1}Value", varName.value, OperationTools.GetOperationString(operation));
-      }
-    }
+    public override string name => string.Format("${0}{1}Value", varName.value, OperationTools.GetOperationString(operation));
 
     protected override void RegisterPorts()
     {

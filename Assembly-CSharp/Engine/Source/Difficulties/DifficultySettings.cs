@@ -9,27 +9,24 @@ namespace Engine.Source.Difficulties
   public class DifficultySettings : SettingsInstanceByRequest<DifficultySettings>
   {
     public IValue<bool> OriginalExperience = new BoolValue(nameof (OriginalExperience), true);
-    private Dictionary<string, IValue<float>> values = new Dictionary<string, IValue<float>>();
+    private Dictionary<string, IValue<float>> values = new();
     private static readonly char separator = '|';
-    private static readonly char[] separators = new char[1]
-    {
+    private static readonly char[] separators = [
       separator
-    };
+    ];
     private const string settingsName = "DifficultySettings";
 
     public DifficultySettings() => Load();
 
     public IValue<float> GetValueItem(string name)
     {
-      IValue<float> valueItem;
-      values.TryGetValue(name, out valueItem);
+      values.TryGetValue(name, out IValue<float> valueItem);
       return valueItem;
     }
 
     public float GetValue(string name)
     {
-      IValue<float> obj;
-      return values.TryGetValue(name, out obj) ? obj.Value : 1f;
+      return values.TryGetValue(name, out IValue<float> obj) ? obj.Value : 1f;
     }
 
     protected override void OnInvalidate()
@@ -71,8 +68,7 @@ namespace Engine.Source.Difficulties
       string[] strArray = PlayerSettings.Instance.GetString(nameof (DifficultySettings)).Split(separators, StringSplitOptions.RemoveEmptyEntries);
       for (int index = 0; index < strArray.Length; index += 2)
       {
-        IValue<float> obj;
-        if (values.TryGetValue(strArray[index], out obj))
+        if (values.TryGetValue(strArray[index], out IValue<float> obj))
         {
           float num = DefaultConverter.ParseFloat(strArray[index + 1]);
           obj.Value = num;

@@ -2,24 +2,13 @@
 
 namespace TriangleNet.Log
 {
-  public class SimpleLogItem : ILogItem
+  public class SimpleLogItem(LogLevel level, string message, string info) : ILogItem 
   {
-    private string info;
-    private LogLevel level;
-    private string message;
-    private DateTime time;
+    private DateTime time = DateTime.Now;
 
     public SimpleLogItem(LogLevel level, string message)
       : this(level, message, "")
     {
-    }
-
-    public SimpleLogItem(LogLevel level, string message, string info)
-    {
-      time = DateTime.Now;
-      this.level = level;
-      this.message = message;
-      this.info = info;
     }
 
     public DateTime Time => time;

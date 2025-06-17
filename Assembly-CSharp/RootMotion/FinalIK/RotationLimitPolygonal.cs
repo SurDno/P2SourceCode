@@ -19,7 +19,7 @@ namespace RootMotion.FinalIK
     public Vector3[] P;
     [SerializeField]
     [HideInInspector]
-    public ReachCone[] reachCones = new ReachCone[0];
+    public ReachCone[] reachCones = [];
 
     [ContextMenu("User Manual")]
     private void OpenUserManual()
@@ -250,14 +250,8 @@ namespace RootMotion.FinalIK
     [Serializable]
     public class LimitPoint
     {
-      public Vector3 point;
-      public float tangentWeight;
-
-      public LimitPoint()
-      {
-        point = Vector3.forward;
-        tangentWeight = 1f;
-      }
+      public Vector3 point = Vector3.forward;
+      public float tangentWeight = 1f;
     }
   }
 }

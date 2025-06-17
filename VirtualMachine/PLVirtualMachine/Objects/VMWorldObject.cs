@@ -10,8 +10,8 @@ using IObject = PLVirtualMachine.Common.IObject;
 
 namespace PLVirtualMachine.Objects
 {
-  public class VMWorldObject : 
-    VMBlueprint,
+  public class VMWorldObject(ulong guid) :
+    VMBlueprint(guid),
     IWorldBlueprint,
     IBlueprint,
     IGameObjectContext,
@@ -24,8 +24,7 @@ namespace PLVirtualMachine.Objects
     IContext,
     ILogicObject,
     IWorldObject,
-    IEngineTemplated
-  {
+    IEngineTemplated {
     [FieldData("WorldPositionGuid")]
     protected HierarchyGuid worldPositionGuid = HierarchyGuid.Empty;
     [FieldData("EngineTemplateID")]
@@ -38,22 +37,11 @@ namespace PLVirtualMachine.Objects
     private bool vmInited;
     private bool directEngineCreated;
 
-    public VMWorldObject(ulong guid)
-      : base(guid)
-    {
-    }
-
     public Guid EngineTemplateGuid => engineTemplateID;
 
     public Guid EngineBaseTemplateGuid => engineBaseTemplateID;
 
-    public override string GuidStr
-    {
-      get
-      {
-        return EngineTemplateGuid != Guid.Empty ? GuidUtility.GetGuidString(EngineTemplateGuid) : base.GuidStr;
-      }
-    }
+    public override string GuidStr => EngineTemplateGuid != Guid.Empty ? GuidUtility.GetGuidString(EngineTemplateGuid) : base.GuidStr;
 
     public override bool IsEqual(IObject other)
     {
@@ -122,13 +110,7 @@ namespace PLVirtualMachine.Objects
       Update();
     }
 
-    public bool IsPhantom
-    {
-      get
-      {
-        return engineTemplateID == Guid.Empty && engineBaseTemplateID == Guid.Empty && name == "";
-      }
-    }
+    public bool IsPhantom => engineTemplateID == Guid.Empty && engineBaseTemplateID == Guid.Empty && name == "";
 
     protected override void MakeInheritanceMapping()
     {

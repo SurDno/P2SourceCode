@@ -16,8 +16,8 @@ namespace ClipperLib
     private IntPoint m_lowest;
     private double m_miterLim;
     private double m_StepsPerRad;
-    private List<DoublePoint> m_normals = new List<DoublePoint>();
-    private PolyNode m_polyNodes = new PolyNode();
+    private List<DoublePoint> m_normals = [];
+    private PolyNode m_polyNodes = new();
     private List<IntPoint> m_srcPoly;
 
     public double ArcTolerance { get; set; }
@@ -127,7 +127,7 @@ namespace ClipperLib
 
     private void DoOffset(double delta)
     {
-      m_destPolys = new List<List<IntPoint>>();
+      m_destPolys = [];
       m_delta = delta;
       if (ClipperBase.near_zero(delta))
       {
@@ -156,7 +156,7 @@ namespace ClipperLib
           int count = m_srcPoly.Count;
           if (count != 0 && (delta > 0.0 || count >= 3 && child.m_endtype == 0))
           {
-            m_destPoly = new List<IntPoint>();
+            m_destPoly = [];
             if (count == 1)
             {
               if (child.m_jointype == JoinType.jtRound)
@@ -211,7 +211,7 @@ namespace ClipperLib
                 for (int j = 0; j < count; ++j)
                   OffsetPoint(j, ref k1, child.m_jointype);
                 m_destPolys.Add(m_destPoly);
-                m_destPoly = new List<IntPoint>();
+                m_destPoly = [];
                 DoublePoint normal = m_normals[count - 1];
                 for (int index5 = count - 1; index5 > 0; --index5)
                   m_normals[index5] = new DoublePoint(-m_normals[index5 - 1].X, -m_normals[index5 - 1].Y);
@@ -289,13 +289,12 @@ namespace ClipperLib
       else
       {
         IntRect bounds = ClipperBase.GetBounds(m_destPolys);
-        clipper.AddPath(new List<IntPoint>(4)
-        {
-          new IntPoint(bounds.left - 10L, bounds.bottom + 10L),
-          new IntPoint(bounds.right + 10L, bounds.bottom + 10L),
-          new IntPoint(bounds.right + 10L, bounds.top - 10L),
-          new IntPoint(bounds.left - 10L, bounds.top - 10L)
-        }, PolyType.ptSubject, true);
+        clipper.AddPath([
+          new(bounds.left - 10L, bounds.bottom + 10L),
+          new(bounds.right + 10L, bounds.bottom + 10L),
+          new(bounds.right + 10L, bounds.top - 10L),
+          new(bounds.left - 10L, bounds.top - 10L)
+        ], PolyType.ptSubject, true);
         clipper.ReverseSolution = true;
         clipper.Execute(ClipType.ctUnion, solution, PolyFillType.pftNegative, PolyFillType.pftNegative);
         if (solution.Count > 0)
@@ -317,13 +316,12 @@ namespace ClipperLib
       else
       {
         IntRect bounds = ClipperBase.GetBounds(m_destPolys);
-        clipper.AddPath(new List<IntPoint>(4)
-        {
-          new IntPoint(bounds.left - 10L, bounds.bottom + 10L),
-          new IntPoint(bounds.right + 10L, bounds.bottom + 10L),
-          new IntPoint(bounds.right + 10L, bounds.top - 10L),
-          new IntPoint(bounds.left - 10L, bounds.top - 10L)
-        }, PolyType.ptSubject, true);
+        clipper.AddPath([
+          new(bounds.left - 10L, bounds.bottom + 10L),
+          new(bounds.right + 10L, bounds.bottom + 10L),
+          new(bounds.right + 10L, bounds.top - 10L),
+          new(bounds.left - 10L, bounds.top - 10L)
+        ], PolyType.ptSubject, true);
         clipper.ReverseSolution = true;
         clipper.Execute(ClipType.ctUnion, solution, PolyFillType.pftNegative, PolyFillType.pftNegative);
         if (solution.ChildCount == 1 && solution.Childs[0].ChildCount > 0)

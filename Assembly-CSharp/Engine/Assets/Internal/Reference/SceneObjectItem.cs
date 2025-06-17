@@ -29,6 +29,6 @@ namespace Engine.Assets.Internal.Reference
     [DataReadProxy]
     [DataWriteProxy()]
     [Inspected(Mode = ExecuteMode.EditAndRuntime)]
-    public List<SceneObjectItem> Items = new List<SceneObjectItem>();
+    public List<SceneObjectItem> Items = [];
   }
 }

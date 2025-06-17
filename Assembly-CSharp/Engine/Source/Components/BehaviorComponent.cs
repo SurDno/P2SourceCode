@@ -37,10 +37,10 @@ namespace Engine.Source.Components
     [CopyableProxy()]
     protected UnityAsset<ExternalBehaviorTree> behaviorTreeResource;
     private EngineBehavior behavior;
-    private Dictionary<string, IEntity> values = new Dictionary<string, IEntity>();
-    private Dictionary<string, bool> valuesBool = new Dictionary<string, bool>();
-    private Dictionary<string, int> valuesInt = new Dictionary<string, int>();
-    private Dictionary<string, float> valuesFloat = new Dictionary<string, float>();
+    private Dictionary<string, IEntity> values = new();
+    private Dictionary<string, bool> valuesBool = new();
+    private Dictionary<string, int> valuesInt = new();
+    private Dictionary<string, float> valuesFloat = new();
     private bool geometryVisible;
     private BehaviorTree behaviorTree;
     private bool needUpdate;
@@ -80,10 +80,7 @@ namespace Engine.Source.Components
     [Inspected]
     public IBehaviorObject BehaviorObject
     {
-      get
-      {
-        return ServiceLocator.GetService<ITemplateService>().GetTemplate<IBehaviorObject>(behaviorTreeResource.Id);
-      }
+      get => ServiceLocator.GetService<ITemplateService>().GetTemplate<IBehaviorObject>(behaviorTreeResource.Id);
       set
       {
         bool flag = false;
@@ -104,10 +101,7 @@ namespace Engine.Source.Components
     [Inspected]
     public IBehaviorObject BehaviorObjectForced
     {
-      get
-      {
-        return ServiceLocator.GetService<ITemplateService>().GetTemplate<IBehaviorObject>(behaviorTreeResource.Id);
-      }
+      get => ServiceLocator.GetService<ITemplateService>().GetTemplate<IBehaviorObject>(behaviorTreeResource.Id);
       set
       {
         behaviorTreeResource = new UnityAsset<ExternalBehaviorTree>(value != null ? value.Id : Guid.Empty);

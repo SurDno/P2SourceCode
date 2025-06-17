@@ -12,14 +12,14 @@ namespace Engine.Source.Blenders
   public abstract class LayerBlender<T> : EngineObject, ILayerBlender<T> where T : class, IObject, IBlendable<T>
   {
     [Inspected]
-    private List<ILayerBlenderItem<T>> items = new List<ILayerBlenderItem<T>>();
+    private List<ILayerBlenderItem<T>> items = [];
     [Inspected]
-    private T current;
+    private T current = ServiceLocator.GetService<IFactory>().Create<T>();
     [Inspected]
     private bool invalidate;
-    private OpacityBlendOperation opacityBlendOperation = new OpacityBlendOperation();
-    private T empty;
-    private T tmp;
+    private OpacityBlendOperation opacityBlendOperation = new();
+    private T empty = ServiceLocator.GetService<IFactory>().Create<T>();
+    private T tmp = ServiceLocator.GetService<IFactory>().Create<T>();
 
     public T Current
     {
@@ -34,19 +34,9 @@ namespace Engine.Source.Blenders
       }
     }
 
-    public IEnumerable<ILayerBlenderItem<T>> Items
-    {
-      get => items;
-    }
+    public IEnumerable<ILayerBlenderItem<T>> Items => items;
 
     public event Action<ILayerBlender<T>> OnChanged;
-
-    public LayerBlender()
-    {
-      current = ServiceLocator.GetService<IFactory>().Create<T>();
-      empty = ServiceLocator.GetService<IFactory>().Create<T>();
-      tmp = ServiceLocator.GetService<IFactory>().Create<T>();
-    }
 
     public void AddItem(ILayerBlenderItem<T> item)
     {

@@ -2,10 +2,7 @@
 using UnityEngine;
 using UnityEngine.AI;
 
-public class NavMeshAgentWrapper
-{
-  private NavMeshAgent agent;
-
+public class NavMeshAgentWrapper(NavMeshAgent agent) {
   [Inspected]
   private void RestorePath()
   {
@@ -13,8 +10,6 @@ public class NavMeshAgentWrapper
     agent.ResetPath();
     agent.SetDestination(destination);
   }
-
-  public NavMeshAgentWrapper(NavMeshAgent agent) => this.agent = agent;
 
   [Inspected]
   private bool HasPath => agent.hasPath;
@@ -38,7 +33,7 @@ public class NavMeshAgentWrapper
   private float StoppingDistance => agent.stoppingDistance;
 
   [Inspected]
-  private NavMeshPathWrapper Path => new NavMeshPathWrapper(agent.path);
+  private NavMeshPathWrapper Path => new(agent.path);
 
   [Inspected]
   private bool IsOnNavMesh => agent.isOnNavMesh;

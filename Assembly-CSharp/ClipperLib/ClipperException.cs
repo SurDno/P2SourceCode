@@ -2,11 +2,5 @@
 
 namespace ClipperLib
 {
-  internal class ClipperException : Exception
-  {
-    public ClipperException(string description)
-      : base(description)
-    {
-    }
-  }
+  internal class ClipperException(string description) : Exception(description);
 }

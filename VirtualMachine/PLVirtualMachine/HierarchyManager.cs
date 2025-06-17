@@ -14,10 +14,10 @@ namespace PLVirtualMachine
 {
   public static class HierarchyManager
   {
-    private static Dictionary<HierarchyGuid, IWorldHierarchyObject> worldHierarhyObjectsDict = new Dictionary<HierarchyGuid, IWorldHierarchyObject>(HierarchyGuidComparer.Instance);
+    private static Dictionary<HierarchyGuid, IWorldHierarchyObject> worldHierarhyObjectsDict = new(HierarchyGuidComparer.Instance);
     private static IWorldHierarchyObject worldHierarchyRoot;
     private static int hierarchyBuildingCurrentSerialNum;
-    private static Dictionary<HierarchyGuid, Guid> actualHierarchyEngineGuidsTable = new Dictionary<HierarchyGuid, Guid>(HierarchyGuidComparer.Instance);
+    private static Dictionary<HierarchyGuid, Guid> actualHierarchyEngineGuidsTable = new(HierarchyGuidComparer.Instance);
 
     public static bool BuildStaticHierarchy()
     {
@@ -74,8 +74,7 @@ namespace PLVirtualMachine
       foreach (IHierarchyObject hierarchyChild in worldHierarchyObject.HierarchyChilds)
       {
         IWorldHierarchyObject worldHierarchyObject1 = (IWorldHierarchyObject) hierarchyChild;
-        HierarchySceneInfoData objSceneInfo1;
-        if (Scenes.TryGetValue(worldHierarchyObject1.Blueprint.BaseGuid, out objSceneInfo1))
+        if (Scenes.TryGetValue(worldHierarchyObject1.Blueprint.BaseGuid, out HierarchySceneInfoData objSceneInfo1))
           CreateVMTemplateByEngTemplateHierarchyInfo(worldHierarchyObject1, objSceneInfo1);
         else
           RegisterHierarchyObjectEngineInstance(hierarchyChild);
@@ -87,8 +86,7 @@ namespace PLVirtualMachine
 
     public static void CreateChilds(VMWorldHierarchyObject worldHierarchyObject)
     {
-      HierarchySceneInfoData hierarchySceneInfoData;
-      if (!Scenes.TryGetValue(worldHierarchyObject.BaseGuid, out hierarchySceneInfoData))
+      if (!Scenes.TryGetValue(worldHierarchyObject.BaseGuid, out HierarchySceneInfoData hierarchySceneInfoData))
         return;
       for (int index = 0; index < hierarchySceneInfoData.Childs.Count; ++index)
       {
@@ -122,8 +120,7 @@ namespace PLVirtualMachine
 
     public static void CreateSimpleChilds(VMWorldHierarchyObject worldHierarchyObject)
     {
-      HierarchySceneInfoData hierarchySceneInfoData;
-      if (!Scenes.TryGetValue(worldHierarchyObject.BaseGuid, out hierarchySceneInfoData))
+      if (!Scenes.TryGetValue(worldHierarchyObject.BaseGuid, out HierarchySceneInfoData hierarchySceneInfoData))
         return;
       for (int index = 0; index < hierarchySceneInfoData.SimpleChilds.Count; ++index)
       {
@@ -231,7 +228,7 @@ namespace PLVirtualMachine
     public static List<IWorldHierarchyObject> GetObjectPathByHierarhyGuid(
       HierarchyGuid hierarchyGuid)
     {
-      List<IWorldHierarchyObject> pathByHierarhyGuid = new List<IWorldHierarchyObject>();
+      List<IWorldHierarchyObject> pathByHierarhyGuid = [];
       for (int index = 0; index < hierarchyGuid.Guids.Length; ++index)
       {
         IObject objectByGuid = IStaticDataContainer.StaticDataContainer.GetObjectByGuid(hierarchyGuid.Guids[index]);
@@ -278,8 +275,7 @@ namespace PLVirtualMachine
 
     public static IWorldHierarchyObject GetWorldHierarhyObjectByGuid(HierarchyGuid hGuid)
     {
-      IWorldHierarchyObject hierarhyObjectByGuid;
-      worldHierarhyObjectsDict.TryGetValue(hGuid, out hierarhyObjectByGuid);
+      worldHierarhyObjectsDict.TryGetValue(hGuid, out IWorldHierarchyObject hierarhyObjectByGuid);
       return hierarhyObjectByGuid;
     }
 
@@ -290,13 +286,7 @@ namespace PLVirtualMachine
 
     public static IWorldHierarchyObject GameHierarchyRoot => worldHierarchyRoot;
 
-    private static Dictionary<ulong, HierarchySceneInfoData> Scenes
-    {
-      get
-      {
-        return ((VMGameRoot) IStaticDataContainer.StaticDataContainer.GameRoot).HierarchyScenesStructure;
-      }
-    }
+    private static Dictionary<ulong, HierarchySceneInfoData> Scenes => ((VMGameRoot) IStaticDataContainer.StaticDataContainer.GameRoot).HierarchyScenesStructure;
 
     private static IHierarchyObject CreatePhantomHierarchyObject(ulong templateID)
     {

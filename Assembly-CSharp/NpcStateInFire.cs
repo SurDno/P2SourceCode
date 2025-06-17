@@ -4,10 +4,9 @@ using Inspectors;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class NpcStateInFire : INpcState
-{
-  private NpcState npcState;
-  private Pivot pivot;
+public class NpcStateInFire(NpcState npcState, Pivot pivot) : INpcState 
+  {
+  private NpcState npcState = npcState;
   private EngineBehavior behavior;
   private NavMeshAgent agent;
   private Animator animator;
@@ -17,7 +16,7 @@ public class NpcStateInFire : INpcState
   private bool inited;
   private bool failed;
 
-  public GameObject GameObject { get; private set; }
+  public GameObject GameObject { get; private set; } = npcState.gameObject;
 
   [Inspected]
   public NpcStateStatusEnum Status => NpcStateStatusEnum.Running;
@@ -40,13 +39,6 @@ public class NpcStateInFire : INpcState
     failed = false;
     inited = true;
     return true;
-  }
-
-  public NpcStateInFire(NpcState npcState, Pivot pivot)
-  {
-    GameObject = npcState.gameObject;
-    this.pivot = pivot;
-    this.npcState = npcState;
   }
 
   public void Activate()

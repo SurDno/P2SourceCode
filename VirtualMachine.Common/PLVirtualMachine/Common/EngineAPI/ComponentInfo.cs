@@ -2,13 +2,10 @@
 
 namespace PLVirtualMachine.Common.EngineAPI
 {
-  public class ComponentInfo
-  {
-    public readonly string ComponentName;
-    public readonly List<APIMethodInfo> Methods = new List<APIMethodInfo>();
-    public readonly List<APIEventInfo> Events = new List<APIEventInfo>();
-    public readonly List<APIPropertyInfo> Properties = new List<APIPropertyInfo>();
-
-    public ComponentInfo(string componentName) => ComponentName = componentName;
+  public class ComponentInfo(string componentName) {
+    public readonly string ComponentName = componentName;
+    public readonly List<APIMethodInfo> Methods = [];
+    public readonly List<APIEventInfo> Events = [];
+    public readonly List<APIPropertyInfo> Properties = [];
   }
 }

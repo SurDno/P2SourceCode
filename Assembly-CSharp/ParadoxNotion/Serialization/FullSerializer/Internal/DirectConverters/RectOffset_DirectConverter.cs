@@ -14,17 +14,13 @@ namespace ParadoxNotion.Serialization.FullSerializer.Internal.DirectConverters
     protected override fsResult DoDeserialize(Dictionary<string, fsData> data, ref RectOffset model)
     {
       fsResult success = fsResult.Success;
-      int bottom = model.bottom;
-      fsResult fsResult1 = success + DeserializeMember(data, null, "bottom", out bottom);
+      fsResult fsResult1 = success + DeserializeMember(data, null, "bottom", out int bottom);
       model.bottom = bottom;
-      int left = model.left;
-      fsResult fsResult2 = fsResult1 + DeserializeMember(data, null, "left", out left);
+      fsResult fsResult2 = fsResult1 + DeserializeMember(data, null, "left", out int left);
       model.left = left;
-      int right = model.right;
-      fsResult fsResult3 = fsResult2 + DeserializeMember(data, null, "right", out right);
+      fsResult fsResult3 = fsResult2 + DeserializeMember(data, null, "right", out int right);
       model.right = right;
-      int top = model.top;
-      fsResult fsResult4 = fsResult3 + DeserializeMember(data, null, "top", out top);
+      fsResult fsResult4 = fsResult3 + DeserializeMember(data, null, "top", out int top);
       model.top = top;
       return fsResult4;
     }

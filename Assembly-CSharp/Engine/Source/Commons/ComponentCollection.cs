@@ -22,7 +22,7 @@ namespace Engine.Source.Commons
     [StateSaveProxy(MemberEnum.CustomListComponent)]
     [StateLoadProxy(MemberEnum.CustomListComponent)]
     [CopyableProxy()]
-    protected List<IComponent> components = new List<IComponent>();
+    protected List<IComponent> components = [];
 
     [Inspected]
     protected bool NeedSaveComponents

@@ -55,13 +55,7 @@ namespace SRDebugger.Services.Implementation
       }
     }
 
-    public DefaultTabs? ActiveTab
-    {
-      get
-      {
-        return _debugPanelRootObject == null ? new DefaultTabs?() : _debugPanelRootObject.TabController.ActiveTab;
-      }
-    }
+    public DefaultTabs? ActiveTab => _debugPanelRootObject == null ? new DefaultTabs?() : _debugPanelRootObject.TabController.ActiveTab;
 
     public void OpenTab(DefaultTabs tab)
     {

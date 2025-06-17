@@ -21,7 +21,7 @@ namespace UnityEngine.PostProcessing
     [StructLayout(LayoutKind.Sequential, Size = 1)]
     public struct Settings
     {
-      public static Settings defaultSettings => new Settings();
+      public static Settings defaultSettings => new();
     }
   }
 }

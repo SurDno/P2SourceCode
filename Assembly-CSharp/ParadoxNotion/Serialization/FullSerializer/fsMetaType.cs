@@ -12,7 +12,7 @@ namespace ParadoxNotion.Serialization.FullSerializer
 {
   public class fsMetaType
   {
-    private static Dictionary<fsConfig, Dictionary<Type, fsMetaType>> _configMetaTypes = new Dictionary<fsConfig, Dictionary<Type, fsMetaType>>();
+    private static Dictionary<fsConfig, Dictionary<Type, fsMetaType>> _configMetaTypes = new();
     private Func<object> Generator;
     public Type ReflectedType;
     private bool _hasEmittedAotData;
@@ -21,11 +21,9 @@ namespace ParadoxNotion.Serialization.FullSerializer
 
     public static fsMetaType Get(fsConfig config, Type type)
     {
-      Dictionary<Type, fsMetaType> dictionary;
-      if (!_configMetaTypes.TryGetValue(config, out dictionary))
+      if (!_configMetaTypes.TryGetValue(config, out Dictionary<Type, fsMetaType> dictionary))
         dictionary = _configMetaTypes[config] = new Dictionary<Type, fsMetaType>();
-      fsMetaType fsMetaType;
-      if (!dictionary.TryGetValue(type, out fsMetaType))
+      if (!dictionary.TryGetValue(type, out fsMetaType fsMetaType))
       {
         fsMetaType = new fsMetaType(config, type);
         dictionary[type] = fsMetaType;
@@ -41,7 +39,7 @@ namespace ParadoxNotion.Serialization.FullSerializer
     private fsMetaType(fsConfig config, Type reflectedType)
     {
       ReflectedType = reflectedType;
-      List<fsMetaProperty> properties = new List<fsMetaProperty>();
+      List<fsMetaProperty> properties = [];
       CollectProperties(config, properties, reflectedType);
       Properties = properties.ToArray();
       try

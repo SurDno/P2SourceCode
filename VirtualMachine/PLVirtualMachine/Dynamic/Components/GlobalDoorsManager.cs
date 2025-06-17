@@ -193,7 +193,7 @@ namespace PLVirtualMachine.Dynamic.Components
         List<VMEntity> entityListByRootInfo = GameComponent.GetEntityListByRootInfo(storagesRootInfo, "Gate");
         int num1 = (int) Math.Round(operationVolume * (double) entityListByRootInfo.Count);
         int num2 = 0;
-        List<VMEntity> vmEntityList = new List<VMEntity>();
+        List<VMEntity> vmEntityList = [];
         for (int index = 0; index < entityListByRootInfo.Count; ++index)
         {
           if (num1 < entityListByRootInfo.Count && VMMath.GetRandomDouble() > operationVolume)

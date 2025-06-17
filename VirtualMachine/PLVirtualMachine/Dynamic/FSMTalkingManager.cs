@@ -16,19 +16,13 @@ using PLVirtualMachine.Objects;
 
 namespace PLVirtualMachine.Dynamic
 {
-  public class FSMTalkingManager : FSMGraphManager
-  {
+  public class FSMTalkingManager(DynamicFSM fsm) : FSMGraphManager(fsm) {
     private DynamicEvent speechReplyEvent;
-    private List<KeyValuePair<ulong, bool>> currSpeechReplyTextGuids = new List<KeyValuePair<ulong, bool>>();
-    private List<ulong> canceledSpeechGuids = new List<ulong>();
-    private List<ulong> canceledAnswerGuids = new List<ulong>();
+    private List<KeyValuePair<ulong, bool>> currSpeechReplyTextGuids = [];
+    private List<ulong> canceledSpeechGuids = [];
+    private List<ulong> canceledAnswerGuids = [];
     private bool talking;
     private static bool talkingMode;
-
-    public FSMTalkingManager(DynamicFSM fsm)
-      : base(fsm)
-    {
-    }
 
     public static bool IsTalking => talkingMode;
 

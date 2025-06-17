@@ -45,11 +45,11 @@ namespace Engine.Impl.UI.Menu.Main
     private ScrollRect scroll;
     private ProfilesService profilesService;
     private LayoutContainer layout;
-    private List<SelectableSettingsItemView> items = new List<SelectableSettingsItemView>();
+    private List<SelectableSettingsItemView> items = [];
     private SelectableSettingsItemView selectedItem;
     private ConfirmationWindow confirmationInstance;
     private int currentSelected;
-    private ControlSwitcher _controlSwitcher = new ControlSwitcher();
+    private ControlSwitcher _controlSwitcher = new();
     private bool canLoad;
     private bool canDelete;
     private bool canChangeProfile;

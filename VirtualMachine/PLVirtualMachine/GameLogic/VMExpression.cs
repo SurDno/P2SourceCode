@@ -14,16 +14,14 @@ namespace PLVirtualMachine.GameLogic
 {
   [TypeData(EDataType.TExpression)]
   [DataFactory("Expression")]
-  public class VMExpression : 
+  public class VMExpression(ulong guid) :
     IStub,
     IEditorDataReader,
     IExpression,
     IObject,
     IEditorBaseTemplate,
     IFunctionalPoint,
-    IStaticUpdateable
-  {
-    private ulong guid;
+    IStaticUpdateable {
     [FieldData("ExpressionType")]
     private ExpressionType expressionType;
     [FieldData("TargetFunctionName")]
@@ -43,7 +41,7 @@ namespace PLVirtualMachine.GameLogic
     [FieldData("TargetParam")]
     private CommonVariable targetParam;
     [FieldData("SourceParams")]
-    private List<CommonVariable> sourceParams = new List<CommonVariable>();
+    private List<CommonVariable> sourceParams = [];
     private BaseFunction functionInstance;
     private bool isValid;
     private bool isUpdated;
@@ -98,8 +96,6 @@ namespace PLVirtualMachine.GameLogic
       }
     }
 
-    public VMExpression(ulong guid) => this.guid = guid;
-
     public ulong BaseGuid => guid;
 
     public ILocalContext LocalContext => localContext;
@@ -141,10 +137,7 @@ namespace PLVirtualMachine.GameLogic
       }
     }
 
-    public string TargetFunction
-    {
-      get => targetFunctionName == null ? string.Empty : targetFunctionName;
-    }
+    public string TargetFunction => targetFunctionName == null ? string.Empty : targetFunctionName;
 
     public BaseFunction TargetFunctionInstance => functionInstance;
 
@@ -156,10 +149,7 @@ namespace PLVirtualMachine.GameLogic
 
     public List<CommonVariable> SourceParams => sourceParams;
 
-    public int ChildExpressionsCount
-    {
-      get => Type != ExpressionType.EXPRESSION_SRC_COMPLEX ? 0 : formulaChilds.Count;
-    }
+    public int ChildExpressionsCount => Type != ExpressionType.EXPRESSION_SRC_COMPLEX ? 0 : formulaChilds.Count;
 
     public IExpression GetChildExpression(int childIndex)
     {
@@ -225,7 +215,7 @@ namespace PLVirtualMachine.GameLogic
           return;
         }
         functionInstance = null;
-        List<VMType> vmTypeList = new List<VMType>();
+        List<VMType> vmTypeList = [];
         if (expressionType == ExpressionType.EXPRESSION_SRC_FUNCTION)
         {
           IVariable contextVariable = targetObject.GetContextVariable(TargetFunction);

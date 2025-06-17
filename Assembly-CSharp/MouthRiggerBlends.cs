@@ -113,7 +113,7 @@ public class MouthRiggerBlends : MonoBehaviour
   public VisemeBlendDefine GetViseme(string which)
   {
     if (VisemeBlends == null)
-      VisemeBlends = new VisemeBlendDefine[0];
+      VisemeBlends = [];
     foreach (VisemeBlendDefine visemeBlend in VisemeBlends)
     {
       foreach (string thePhone in visemeBlend.thePhones)
@@ -134,7 +134,7 @@ public class MouthRiggerBlends : MonoBehaviour
 
   public static void SaveGUIToBlendDefine(SkinnedMeshRenderer obj, VisemeBlendDefine bn)
   {
-    List<WeightedBlendShape> weightedBlendShapeList = new List<WeightedBlendShape>();
+    List<WeightedBlendShape> weightedBlendShapeList = [];
     int blendShapeCount = obj.sharedMesh.blendShapeCount;
     for (int index = 0; index < blendShapeCount; ++index)
     {

@@ -3,16 +3,8 @@ using System.Collections.Generic;
 
 namespace Scripts.Editor
 {
-  public struct AssetsEnumerator : IEnumerable<string>, IEnumerable
-  {
-    private IEnumerable<string> assets;
-    private string title;
-
-    public AssetsEnumerator(string title, IEnumerable<string> assets)
-    {
-      this.title = title;
-      this.assets = assets;
-    }
+  public struct AssetsEnumerator(string title, IEnumerable<string> assets) : IEnumerable<string>, IEnumerable {
+    private string title = title;
 
     public IEnumerator<string> GetEnumerator() => assets.GetEnumerator();
 

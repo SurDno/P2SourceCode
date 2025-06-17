@@ -15,18 +15,16 @@ namespace TriangleNet.Tools
     public static long CircumcenterCount = 0;
     public static long CircleTopCount = 0;
     public static long RelocationCount = 0;
-    private static readonly int[] plus1Mod3 = new int[3]
-    {
+    private static readonly int[] plus1Mod3 = [
       1,
       2,
       0
-    };
-    private static readonly int[] minus1Mod3 = new int[3]
-    {
+    ];
+    private static readonly int[] minus1Mod3 = [
       2,
       0,
       1
-    };
+    ];
     private int[] angleTable;
     private int boundaryEdges;
     private int constrainedEdges;
@@ -94,8 +92,7 @@ namespace TriangleNet.Tools
     private void GetAspectHistogram(Mesh mesh)
     {
       int[] numArray1 = new int[16];
-      double[] numArray2 = new double[16]
-      {
+      double[] numArray2 = [
         1.5,
         2.0,
         2.5,
@@ -112,7 +109,7 @@ namespace TriangleNet.Tools
         10000.0,
         100000.0,
         0.0
-      };
+      ];
       Otri otri = new Otri();
       Vertex[] vertexArray = new Vertex[3];
       double[] numArray3 = new double[3];

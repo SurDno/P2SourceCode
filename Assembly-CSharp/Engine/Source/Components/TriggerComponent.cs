@@ -15,7 +15,7 @@ namespace Engine.Source.Components
   public class TriggerComponent : EngineComponent, ITriggerComponent, IComponent
   {
     [Inspected]
-    private HashSet<IEntity> entities = new HashSet<IEntity>();
+    private HashSet<IEntity> entities = [];
 
     public event TriggerHandler EntityEnterEvent;
 

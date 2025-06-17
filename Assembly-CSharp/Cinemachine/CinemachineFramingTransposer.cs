@@ -92,15 +92,12 @@ namespace Cinemachine
     public float m_MaximumOrthoSize = 100f;
     private const float kMinimumCameraDistance = 0.01f;
     private Vector3 m_PreviousCameraPosition = Vector3.zero;
-    private PositionPredictor m_Predictor = new PositionPredictor();
+    private PositionPredictor m_Predictor = new();
     private float m_prevTargetHeight;
 
     public Rect SoftGuideRect
     {
-      get
-      {
-        return new Rect(m_ScreenX - m_DeadZoneWidth / 2f, m_ScreenY - m_DeadZoneHeight / 2f, m_DeadZoneWidth, m_DeadZoneHeight);
-      }
+      get => new(m_ScreenX - m_DeadZoneWidth / 2f, m_ScreenY - m_DeadZoneHeight / 2f, m_DeadZoneWidth, m_DeadZoneHeight);
       set
       {
         m_DeadZoneWidth = Mathf.Clamp01(value.width);
@@ -149,13 +146,7 @@ namespace Cinemachine
       m_MaximumOrthoSize = Mathf.Max(m_MinimumOrthoSize, m_MaximumOrthoSize);
     }
 
-    public override bool IsValid
-    {
-      get
-      {
-        return enabled && FollowTarget != null && LookAtTarget == null;
-      }
-    }
+    public override bool IsValid => enabled && FollowTarget != null && LookAtTarget == null;
 
     public override CinemachineCore.Stage Stage => CinemachineCore.Stage.Body;
 

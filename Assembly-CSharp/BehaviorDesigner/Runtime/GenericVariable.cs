@@ -25,7 +25,7 @@ namespace BehaviorDesigner.Runtime
     [DataWriteProxy]
     [CopyableProxy()]
     [SerializeField]
-    public SharedVariable value;
+    public SharedVariable value = new SharedString();
 
     public void DataWrite(IDataWriter writer)
     {
@@ -38,7 +38,5 @@ namespace BehaviorDesigner.Runtime
       this.type = DefaultDataReadUtility.Read(reader, "Type", this.type);
       value = BehaviorTreeDataReadUtility.ReadShared(reader, "Value", value);
     }
-
-    public GenericVariable() => value = new SharedString();
   }
 }

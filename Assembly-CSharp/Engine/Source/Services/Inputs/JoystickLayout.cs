@@ -18,16 +18,16 @@ namespace Engine.Source.Services.Inputs
     [DataWriteProxy]
     [CopyableProxy]
     [Inspected(Mutable = true, Mode = ExecuteMode.EditAndRuntime)]
-    public List<AxisBind> Axes = new List<AxisBind>();
+    public List<AxisBind> Axes = [];
     [DataReadProxy]
     [DataWriteProxy]
     [CopyableProxy]
     [Inspected(Mutable = true, Mode = ExecuteMode.EditAndRuntime)]
-    public List<AxisToButton> AxesToButtons = new List<AxisToButton>();
+    public List<AxisToButton> AxesToButtons = [];
     [DataReadProxy]
     [DataWriteProxy]
     [CopyableProxy()]
     [Inspected(Mutable = true, Mode = ExecuteMode.EditAndRuntime)]
-    public List<KeyToButton> KeysToButtons = new List<KeyToButton>();
+    public List<KeyToButton> KeysToButtons = [];
   }
 }

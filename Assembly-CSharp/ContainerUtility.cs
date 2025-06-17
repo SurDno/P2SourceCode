@@ -4,7 +4,7 @@ using System.Linq;
 
 public static class ContainerUtility
 {
-  private static Random rng = new Random(DateTime.UtcNow.Millisecond);
+  private static Random rng = new(DateTime.UtcNow.Millisecond);
 
   public static void Cleanup<T>(this List<T> list) where T : class
   {
@@ -49,7 +49,7 @@ public static class ContainerUtility
     this IEnumerable<TSource> source,
     Func<TSource, TKey> keySelector)
   {
-    HashSet<TKey> knownKeys = new HashSet<TKey>();
+    HashSet<TKey> knownKeys = [];
     foreach (TSource source1 in source)
     {
       TSource element = source1;
@@ -99,8 +99,7 @@ public static class ContainerUtility
 
   public static TValue GetOrCreateValue<TKey, TValue>(this Dictionary<TKey, TValue> map, TKey key) where TValue : new()
   {
-    TValue obj;
-    if (!map.TryGetValue(key, out obj))
+    if (!map.TryGetValue(key, out TValue obj))
     {
       obj = new TValue();
       map.Add(key, obj);

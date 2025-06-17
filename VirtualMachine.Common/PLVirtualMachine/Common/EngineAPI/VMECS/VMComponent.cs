@@ -88,13 +88,7 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
 
     public bool Modified => isModified;
 
-    public IRealTimeModifiable ModifiableParent
-    {
-      get
-      {
-        return Parent != null && typeof (IRealTimeModifiable).IsAssignableFrom(Parent.GetType()) ? (IRealTimeModifiable) Parent : null;
-      }
-    }
+    public IRealTimeModifiable ModifiableParent => Parent != null && typeof (IRealTimeModifiable).IsAssignableFrom(Parent.GetType()) ? (IRealTimeModifiable) Parent : null;
 
     public bool NeedSave => Modified;
   }

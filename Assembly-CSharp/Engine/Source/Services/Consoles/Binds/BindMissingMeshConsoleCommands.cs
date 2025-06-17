@@ -17,13 +17,12 @@ namespace Engine.Source.Services.Consoles.Binds
           shape = context.shape;
           if (shape.mesh == null)
           {
-            object[] objArray = new object[4]
-            {
+            object[] objArray = [
               "Mesh not found, ParticleSystem , type : ",
               null,
               null,
               null
-            };
+            ];
             shape = context.shape;
             objArray[1] = shape.shapeType;
             objArray[2] = " , info : ";
@@ -39,13 +38,12 @@ namespace Engine.Source.Services.Consoles.Binds
             shape = context.shape;
             if (shape.meshRenderer == null)
             {
-              object[] objArray = new object[4]
-              {
+              object[] objArray = [
                 "Mesh not found, ParticleSystem , type : ",
                 null,
                 null,
                 null
-              };
+              ];
               shape = context.shape;
               objArray[1] = shape.shapeType;
               objArray[2] = " , info : ";
@@ -61,13 +59,12 @@ namespace Engine.Source.Services.Consoles.Binds
               shape = context.shape;
               if (shape.skinnedMeshRenderer == null)
               {
-                object[] objArray = new object[4]
-                {
+                object[] objArray = [
                   "Mesh not found, ParticleSystem , type : ",
                   null,
                   null,
                   null
-                };
+                ];
                 shape = context.shape;
                 objArray[1] = shape.shapeType;
                 objArray[2] = " , info : ";

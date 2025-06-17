@@ -9,16 +9,10 @@ namespace AssetDatabases
 {
   public static class SceneController
   {
-    private static List<State> states = new List<State>();
-    private static List<Scene> scenes = new List<Scene>();
+    private static List<State> states = [];
+    private static List<Scene> scenes = [];
 
-    public static bool CanLoad
-    {
-      get
-      {
-        return !Disabled && (states.Count == 0 || ExternalSettingsInstance<ExternalOptimizationSettings>.Instance.MultipleSceneLoader);
-      }
-    }
+    public static bool CanLoad => !Disabled && (states.Count == 0 || ExternalSettingsInstance<ExternalOptimizationSettings>.Instance.MultipleSceneLoader);
 
     public static bool Disabled { get; set; }
 

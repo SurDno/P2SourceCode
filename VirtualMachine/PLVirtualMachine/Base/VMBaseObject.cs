@@ -3,21 +3,17 @@ using PLVirtualMachine.Common.Data;
 
 namespace PLVirtualMachine.Base
 {
-  public abstract class VMBaseObject : 
+  public abstract class VMBaseObject(ulong guid) :
     IContainer,
     IObject,
     IEditorBaseTemplate,
     INamedElement,
     INamed,
-    IStaticUpdateable
-  {
-    private ulong guid;
+    IStaticUpdateable {
     [FieldData("Name")]
     protected string name = "";
     [FieldData("Parent", DataFieldType.Reference)]
     protected IContainer parent;
-
-    public VMBaseObject(ulong guid) => this.guid = guid;
 
     public abstract EObjectCategory GetCategory();
 

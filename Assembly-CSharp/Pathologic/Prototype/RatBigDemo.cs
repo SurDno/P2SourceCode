@@ -22,7 +22,7 @@ namespace Pathologic.Prototype
     public float POIProbability = 0.3f;
     public float WanderRadius = 15f;
     public float Speed = 2f;
-    private List<Vector3> _pathCorners = new List<Vector3>();
+    private List<Vector3> _pathCorners = [];
     private float putOnNavmeshTimeLeft;
     private int _cornerPathIndex;
     private float _cornerPathDistance;
@@ -69,8 +69,7 @@ namespace Pathologic.Prototype
 
     private Vector3 SampleNavPoint(Vector3 origin, int layermask)
     {
-      NavMeshHit hit;
-      NavMesh.SamplePosition(origin, out hit, 100f, layermask);
+      NavMesh.SamplePosition(origin, out NavMeshHit hit, 100f, layermask);
       return hit.position;
     }
 
@@ -81,8 +80,7 @@ namespace Pathologic.Prototype
       _state = State.IDLING;
       _idleTime = 0.0f;
       float maxDistance = 1f;
-      NavMeshHit hit;
-      if (NavMesh.SamplePosition(gameObject.transform.position, out hit, maxDistance, -1))
+      if (NavMesh.SamplePosition(gameObject.transform.position, out NavMeshHit hit, maxDistance, -1))
       {
         gameObject.transform.position = hit.position;
       }
@@ -201,8 +199,7 @@ label_7:
         putOnNavmeshTimeLeft -= Time.deltaTime;
         if (putOnNavmeshTimeLeft < 0.0)
           return;
-        NavMeshHit hit;
-        if (NavMesh.SamplePosition(gameObject.transform.position, out hit, 1f, -1))
+        if (NavMesh.SamplePosition(gameObject.transform.position, out NavMeshHit hit, 1f, -1))
         {
           gameObject.transform.position = hit.position;
           _agent.Warp(hit.position);

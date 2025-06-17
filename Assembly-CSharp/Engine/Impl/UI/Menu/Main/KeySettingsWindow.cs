@@ -26,7 +26,7 @@ namespace Engine.Impl.UI.Menu.Main
     [SerializeField]
     private RectTransform keyView;
     private KeyItem listeningItem;
-    private List<KeyItem> keyItems = new List<KeyItem>();
+    private List<KeyItem> keyItems = [];
     private LocalizationService localizationService;
     private GameActionService gameActionService;
 

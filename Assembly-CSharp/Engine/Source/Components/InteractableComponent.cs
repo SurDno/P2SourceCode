@@ -38,8 +38,8 @@ namespace Engine.Source.Components
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     [CopyableProxy()]
-    protected List<InteractItem> items = new List<InteractItem>();
-    private static List<GameActionType> occupiedTypes = new List<GameActionType>();
+    protected List<InteractItem> items = [];
+    private static List<GameActionType> occupiedTypes = [];
     private Coroutine showSmallLoadingCoroutine;
     private bool gameWasPausedAtBeginInteract;
 

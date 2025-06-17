@@ -21,8 +21,7 @@ namespace Engine.Source.Components.Interactable.Validators
         return new ValidateResult(false, "Bolted " + component1.Bolted.Value);
       if (item.Type == InteractType.Outdoor)
       {
-        LockState lockState;
-        if (component1.LockState.TryGetValue(PriorityParameterEnum.Quest, out lockState) && lockState != 0)
+        if (component1.LockState.TryGetValue(PriorityParameterEnum.Quest, out LockState lockState) && lockState != 0)
           return new ValidateResult(false, "LockState Quest " + lockState);
       }
       else if (component1.LockState.Value != 0)

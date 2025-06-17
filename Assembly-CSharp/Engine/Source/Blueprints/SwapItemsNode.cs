@@ -82,8 +82,8 @@ namespace Engine.Source.Blueprints
     private int RemoveItemsAmount(IStorageComponent storage, IEntity item, int amount)
     {
       int num = amount;
-      List<KeyValuePair<IStorableComponent, int>> keyValuePairList = new List<KeyValuePair<IStorableComponent, int>>();
-      List<IStorableComponent> storableComponentList = new List<IStorableComponent>();
+      List<KeyValuePair<IStorableComponent, int>> keyValuePairList = [];
+      List<IStorableComponent> storableComponentList = [];
       foreach (IStorableComponent storableComponent in storage.Items)
       {
         if (GetItemId(storableComponent.Owner) == GetItemId(item))

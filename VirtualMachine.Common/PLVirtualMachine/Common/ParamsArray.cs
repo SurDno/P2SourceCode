@@ -20,7 +20,7 @@ namespace PLVirtualMachine.Common
         case "0":
           return dictionary;
         default:
-          string[] separator = new string[1]{ "&NEXT&PAR&" };
+          string[] separator = ["&NEXT&PAR&"];
           foreach (string paramInfoStr in dataStr.Split(separator, StringSplitOptions.RemoveEmptyEntries))
           {
             KeyValuePair<string, object> keyValuePair = ReadParamInfo(paramInfoStr);
@@ -32,10 +32,9 @@ namespace PLVirtualMachine.Common
 
     private static KeyValuePair<string, object> ReadParamInfo(string paramInfoStr)
     {
-      string[] separator = new string[1]
-      {
+      string[] separator = [
         "&PARAM&INFO&PART&"
-      };
+      ];
       string[] strArray = paramInfoStr.Split(separator, StringSplitOptions.RemoveEmptyEntries);
       string key = "";
       object obj = null;

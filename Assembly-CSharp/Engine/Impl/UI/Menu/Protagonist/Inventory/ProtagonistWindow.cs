@@ -147,9 +147,6 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       return base.OnOpened();
     }
 
-    public override bool IsWindowAvailable
-    {
-      get => !ServiceLocator.GetService<InterfaceBlockingService>().BlockInventoryInterface;
-    }
+    public override bool IsWindowAvailable => !ServiceLocator.GetService<InterfaceBlockingService>().BlockInventoryInterface;
   }
 }

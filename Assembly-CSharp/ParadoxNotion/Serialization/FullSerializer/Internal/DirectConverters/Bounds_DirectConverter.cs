@@ -14,11 +14,9 @@ namespace ParadoxNotion.Serialization.FullSerializer.Internal.DirectConverters
     protected override fsResult DoDeserialize(Dictionary<string, fsData> data, ref Bounds model)
     {
       fsResult success = fsResult.Success;
-      Vector3 center = model.center;
-      fsResult fsResult1 = success + DeserializeMember(data, null, "center", out center);
+      fsResult fsResult1 = success + DeserializeMember(data, null, "center", out Vector3 center);
       model.center = center;
-      Vector3 size = model.size;
-      fsResult fsResult2 = fsResult1 + DeserializeMember(data, null, "size", out size);
+      fsResult fsResult2 = fsResult1 + DeserializeMember(data, null, "size", out Vector3 size);
       model.size = size;
       return fsResult2;
     }

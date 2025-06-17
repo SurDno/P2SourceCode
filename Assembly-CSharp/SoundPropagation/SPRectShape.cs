@@ -4,7 +4,7 @@ namespace SoundPropagation
 {
   public class SPRectShape : Shape
   {
-    public Vector2 Size = new Vector2(1f, 2f);
+    public Vector2 Size = new(1f, 2f);
     private Matrix4x4 plane2world;
     private Matrix4x4 world2plane;
 

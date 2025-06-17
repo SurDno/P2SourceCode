@@ -122,15 +122,14 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory.Windows
     {
       GameActionService service = ServiceLocator.GetService<GameActionService>();
       if (buttons == null)
-        buttons = new Button[6]
-        {
+        buttons = [
           buttonWear,
           buttonUse,
           buttonInvestigate,
           buttonPourOut,
           buttonSplit,
           buttonDrop
-        };
+        ];
       service.AddListener(GameActionType.Cancel, OnClosePress, true);
       service.AddListener(GameActionType.LStickUp, OnNavigate, true);
       service.AddListener(GameActionType.LStickDown, OnNavigate, true);

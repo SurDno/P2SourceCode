@@ -3,23 +3,14 @@ using PLVirtualMachine.Common.EngineAPI.VMECS;
 
 namespace PLVirtualMachine
 {
-  public class ItemsStorageAddingInfo
-  {
-    public float MinRandInterval;
-    public float MaxRandInterval;
-    public IEntity StorageEntity;
-    public VMStorage Storage;
-
-    public ItemsStorageAddingInfo(
-      float minRand,
-      float maxRand,
-      IEntity storageEntity,
-      VMStorage storage)
-    {
-      MinRandInterval = minRand;
-      MaxRandInterval = maxRand;
-      StorageEntity = storageEntity;
-      Storage = storage;
-    }
+  public class ItemsStorageAddingInfo(
+    float minRand,
+    float maxRand,
+    IEntity storageEntity,
+    VMStorage storage) {
+    public float MinRandInterval = minRand;
+    public float MaxRandInterval = maxRand;
+    public IEntity StorageEntity = storageEntity;
+    public VMStorage Storage = storage;
   }
 }

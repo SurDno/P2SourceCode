@@ -6,7 +6,7 @@ namespace PLVirtualMachine.Dynamic.Components
   public class StorageCommandProcessor : IAssyncUpdateable
   {
     private bool isActive;
-    protected Queue<IStorageCommand> commandsQueue = new Queue<IStorageCommand>(1000);
+    protected Queue<IStorageCommand> commandsQueue = new(1000);
     private static float FINISH_INTERVAL = 1f;
     private static float MAX_FRAME_INTERVAL = 0.1f;
     private static int CommnadProcNum;

@@ -30,20 +30,8 @@ namespace Expressions
       return condition != null && trueResult != null && falseResult != null ? (condition.GetValue(context) ? trueResult.GetValue(context) : falseResult.GetValue(context)) : default (T);
     }
 
-    public string ValueView
-    {
-      get
-      {
-        return "(" + (condition != null ? condition.ValueView : "null") + " ? " + (trueResult != null ? trueResult.ValueView : "null") + " : " + (falseResult != null ? falseResult.ValueView : "null") + ")";
-      }
-    }
+    public string ValueView => "(" + (condition != null ? condition.ValueView : "null") + " ? " + (trueResult != null ? trueResult.ValueView : "null") + " : " + (falseResult != null ? falseResult.ValueView : "null") + ")";
 
-    public string TypeView
-    {
-      get
-      {
-        return "(" + (condition != null ? condition.TypeView : "null") + " ? " + (trueResult != null ? trueResult.TypeView : "null") + " : " + (falseResult != null ? falseResult.TypeView : "null") + ")";
-      }
-    }
+    public string TypeView => "(" + (condition != null ? condition.TypeView : "null") + " ? " + (trueResult != null ? trueResult.TypeView : "null") + " : " + (falseResult != null ? falseResult.TypeView : "null") + ")";
   }
 }

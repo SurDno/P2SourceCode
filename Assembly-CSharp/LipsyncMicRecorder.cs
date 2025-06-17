@@ -13,7 +13,7 @@ public class LipsyncMicRecorder : MonoBehaviour
   private int m_maxSeconds = 1;
   private State state = State.off;
   private int m_cursor;
-  private List<float[]> m_RecordBuffers = new List<float[]>();
+  private List<float[]> m_RecordBuffers = [];
   private string deviceName;
 
   public event StateChanged StateChangeListeners;
@@ -42,13 +42,7 @@ public class LipsyncMicRecorder : MonoBehaviour
 
   public string Anno => m_anno;
 
-  public bool isRecording
-  {
-    get
-    {
-      return state == State.rec_speech || state == State.rec_speech_realtime;
-    }
-  }
+  public bool isRecording => state == State.rec_speech || state == State.rec_speech_realtime;
 
   public float[] PCM
   {
@@ -69,10 +63,7 @@ public class LipsyncMicRecorder : MonoBehaviour
     }
   }
 
-  public int sampleRate
-  {
-    get => src.clip == null ? 22050 : src.clip.frequency;
-  }
+  public int sampleRate => src.clip == null ? 22050 : src.clip.frequency;
 
   public int numChannels => src.clip == null ? 1 : src.clip.channels;
 

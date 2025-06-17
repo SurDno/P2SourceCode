@@ -4,12 +4,11 @@ using System.IO;
 
 public class AnnoReader
 {
-  private List<PhonemeMixtureArticulation> m_artMarkers = new List<PhonemeMixtureArticulation>();
+  private List<PhonemeMixtureArticulation> m_artMarkers = [];
   private static PhonemeMixtureArticulation m_default;
-  private static readonly char[] splitSpace = new char[1]
-  {
+  private static readonly char[] splitSpace = [
     ' '
-  };
+  ];
 
   public AnnoReader()
   {
@@ -20,10 +19,9 @@ public class AnnoReader
     m_default.msStart = 0L;
     m_default.msEnd = 0L;
     m_default.m_constituents[0] = new t_phoneme();
-    m_default.m_constituents[0].strPhoneme = new char[1]
-    {
+    m_default.m_constituents[0].strPhoneme = [
       'x'
-    };
+    ];
     m_default.m_constituents[0].weight = 1f;
   }
 

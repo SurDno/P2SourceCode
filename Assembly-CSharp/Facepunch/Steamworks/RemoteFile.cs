@@ -209,8 +209,7 @@ namespace Facepunch.Steamworks
       AppId_t pnAppID = new AppId_t {
         Value = remoteStorage.native.steamworks.AppId
       };
-      CSteamID pSteamIDOwner;
-      remoteStorage.native.GetUGCDetails(_handle, ref pnAppID, out _fileName, out pSteamIDOwner);
+      remoteStorage.native.GetUGCDetails(_handle, ref pnAppID, out _fileName, out CSteamID pSteamIDOwner);
       _ownerId = pSteamIDOwner.Value;
     }
 

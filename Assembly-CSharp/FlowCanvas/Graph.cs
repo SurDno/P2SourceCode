@@ -22,7 +22,7 @@ namespace FlowCanvas
     {
       if (hasInitialized)
         return;
-      updatableNodes = new List<IUpdatable>();
+      updatableNodes = [];
       for (int index = 0; index < nodes.Count; ++index)
       {
         if (nodes[index] is IUpdatable node)
@@ -52,14 +52,14 @@ namespace FlowCanvas
     {
       GraphData graphData = new GraphData();
       graphData.nodes = nodes;
-      List<Connection> connectionList = new List<Connection>();
+      List<Connection> connectionList = [];
       for (int index1 = 0; index1 < graphData.nodes.Count; ++index1)
       {
         for (int index2 = 0; index2 < graphData.nodes[index1].outConnections.Count; ++index2)
           connectionList.Add(graphData.nodes[index1].outConnections[index2]);
       }
       graphData.connections = connectionList;
-      references = new List<Object>();
+      references = [];
       json = JSONSerializer.Serialize(typeof (GraphData), graphData, objectReferences: references);
     }
 
@@ -126,7 +126,7 @@ namespace FlowCanvas
 
     public bool isPaused { get; private set; }
 
-    public List<Node> nodes { get; private set; } = new List<Node>();
+    public List<Node> nodes { get; private set; } = [];
 
     public Vector2 translation { get; set; }
 
@@ -220,8 +220,8 @@ namespace FlowCanvas
 
     public BBParameter[] GetDefinedParameters()
     {
-      List<BBParameter> bbParameterList = new List<BBParameter>();
-      List<object> objectList = new List<object>();
+      List<BBParameter> bbParameterList = [];
+      List<object> objectList = [];
       objectList.AddRange(nodes);
       for (int index = 0; index < objectList.Count; ++index)
       {

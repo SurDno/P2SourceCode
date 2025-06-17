@@ -14,17 +14,14 @@ namespace ParadoxNotion.Services
   {
     private static bool isQuiting;
     [NonSerialized]
-    public List<Graph> graphs = new List<Graph>();
+    public List<Graph> graphs = [];
     [Inspected]
     private ReduceUpdateProxy<Graph> updater;
     private static BlueprintManager _current;
 
     public static UpdateMode updateMode
     {
-      get
-      {
-        return current.enabled ? UpdateMode.Auto : UpdateMode.Manual;
-      }
+      get => current.enabled ? UpdateMode.Auto : UpdateMode.Manual;
       set => current.enabled = value == UpdateMode.Auto;
     }
 

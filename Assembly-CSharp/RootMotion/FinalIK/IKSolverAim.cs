@@ -168,12 +168,6 @@ namespace RootMotion.FinalIK
       bone.rotationLimit.Apply();
     }
 
-    protected override Vector3 localDirection
-    {
-      get
-      {
-        return bones[0].transform.InverseTransformDirection(bones[bones.Length - 1].transform.forward);
-      }
-    }
+    protected override Vector3 localDirection => bones[0].transform.InverseTransformDirection(bones[bones.Length - 1].transform.forward);
   }
 }

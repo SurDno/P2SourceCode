@@ -16,8 +16,8 @@ namespace PLVirtualMachine.FSM
 {
   [TypeData(EDataType.TTalking)]
   [DataFactory("Talking")]
-  public class VMTalkingGraph : 
-    FiniteStateMachine,
+  public class VMTalkingGraph(ulong guid) :
+    FiniteStateMachine(guid),
     IStub,
     IEditorDataReader,
     ITalkingGraph,
@@ -31,8 +31,7 @@ namespace PLVirtualMachine.FSM
     INamed,
     IStaticUpdateable,
     ILocalContext,
-    IGraph
-  {
+    IGraph {
     private IGameObjectContext talkingContext;
 
     public override void EditorDataRead(XmlReader xml, IDataCreator creator, string typeContext)
@@ -92,11 +91,6 @@ namespace PLVirtualMachine.FSM
         if (xml.NodeType == XmlNodeType.EndElement)
           break;
       }
-    }
-
-    public VMTalkingGraph(ulong guid)
-      : base(guid)
-    {
     }
 
     public override bool IgnoreBlock => true;

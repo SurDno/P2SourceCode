@@ -5,18 +5,11 @@ namespace Cinemachine
 {
   [DocumentationSorting(10.2f, DocumentationSortingAttribute.Level.UserRef)]
   [Serializable]
-  public struct CinemachineBlendDefinition
-  {
+  public struct CinemachineBlendDefinition(CinemachineBlendDefinition.Style style, float time) {
     [Tooltip("Shape of the blend curve")]
-    public Style m_Style;
+    public Style m_Style = style;
     [Tooltip("Duration of the blend, in seconds")]
-    public float m_Time;
-
-    public CinemachineBlendDefinition(Style style, float time)
-    {
-      m_Style = style;
-      m_Time = time;
-    }
+    public float m_Time = time;
 
     public AnimationCurve BlendCurve
     {

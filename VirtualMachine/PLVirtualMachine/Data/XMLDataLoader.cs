@@ -21,15 +21,15 @@ namespace PLVirtualMachine.Data
   public class XMLDataLoader : IStaticDataContainer, IDataCreator
   {
     private GameDataInfo currentData;
-    private static object sync = new object();
-    public static HashSet<string> Logs = new HashSet<string>();
+    private static object sync = new();
+    public static HashSet<string> Logs = [];
 
     private XMLDataLoader()
     {
       StaticDataContainer = this;
     }
 
-    public static XMLDataLoader Instance { get; private set; } = new XMLDataLoader();
+    public static XMLDataLoader Instance { get; private set; } = new();
 
     public override IGameRoot GameRoot
     {
@@ -187,8 +187,7 @@ namespace PLVirtualMachine.Data
     {
       lock (sync)
       {
-        IObject instance;
-        if (currentData.Objects.TryGetValue(id, out instance))
+        if (currentData.Objects.TryGetValue(id, out IObject instance))
           return instance;
         instance = (IObject) Activator.CreateInstance(type, id);
         currentData.Objects.Add(id, instance);
@@ -200,8 +199,7 @@ namespace PLVirtualMachine.Data
     {
       lock (sync)
       {
-        IObject instance;
-        if (currentData.Objects.TryGetValue(id, out instance))
+        if (currentData.Objects.TryGetValue(id, out IObject instance))
           return instance;
         instance = (IObject) Activator.CreateInstance(XmlDataLoaderUtility.GetObjTypeById(id), id);
         currentData.Objects.Add(id, instance);
@@ -211,8 +209,7 @@ namespace PLVirtualMachine.Data
 
     public override IObject GetOrCreateObject(ulong id)
     {
-      IObject @object;
-      if (currentData.Objects.TryGetValue(id, out @object))
+      if (currentData.Objects.TryGetValue(id, out IObject @object))
         return @object;
       IObject instance = (IObject) Activator.CreateInstance(XmlDataLoaderUtility.GetObjTypeById(id), id);
       currentData.Objects.Add(id, instance);
@@ -221,8 +218,7 @@ namespace PLVirtualMachine.Data
 
     public override IObject GetObjectByGuid(ulong id)
     {
-      IObject objectByGuid;
-      currentData.Objects.TryGetValue(id, out objectByGuid);
+      currentData.Objects.TryGetValue(id, out IObject objectByGuid);
       return objectByGuid;
     }
 

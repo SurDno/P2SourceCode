@@ -29,7 +29,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
     [SerializeField]
     private GameObject slotNavigation;
     private bool isCraftAvailable;
-    private List<CraftBrewingSlotAnchor> activeBrewingSlots = new List<CraftBrewingSlotAnchor>();
+    private List<CraftBrewingSlotAnchor> activeBrewingSlots = [];
     private int currentBrewingSlotIndex = -1;
     private int CurrentActiveCrafts;
     private CraftBrewingSlotAnchor lastBrewingSlot;
@@ -290,15 +290,15 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
     private void Craft(IInventoryComponent targetContainer)
     {
       DisableCraftButtons();
-      List<IStorableComponent> ingredients = new List<IStorableComponent>();
+      List<IStorableComponent> ingredients = [];
       for (int index = 0; index < ingredientSelectors.Length; ++index)
       {
         IStorableComponent storableComponent = ingredientSelectors[index].Item;
         if (storableComponent != null)
           ingredients.Add(storableComponent);
       }
-      CraftRecipe recipe;
-      IStorableComponent craftResult = CraftHelper.GetCraftResult(ingredients, out recipe);
+
+      IStorableComponent craftResult = CraftHelper.GetCraftResult(ingredients, out CraftRecipe recipe);
       if (craftResult != null)
       {
         foreach (IStorableComponent storableComponent in ingredients)
@@ -324,15 +324,15 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       DisableCraftButtons();
       if (currentBrewingSlotIndex != -1 && currentBrewingSlotIndex < activeBrewingSlots.Count)
         activeBrewingSlots[currentBrewingSlotIndex].Slot.SetSelected(true);
-      List<IStorableComponent> ingredients = new List<IStorableComponent>();
+      List<IStorableComponent> ingredients = [];
       for (int index = 0; index < ingredientSelectors.Length; ++index)
       {
         IStorableComponent storableComponent = ingredientSelectors[index].Item;
         if (storableComponent != null)
           ingredients.Add(storableComponent);
       }
-      CraftRecipe recipe;
-      IStorableComponent craftResult = CraftHelper.GetCraftResult(ingredients, out recipe);
+
+      IStorableComponent craftResult = CraftHelper.GetCraftResult(ingredients, out CraftRecipe recipe);
       if (craftResult != null)
       {
         resultPreview.Storable = (StorableComponent) craftResult;

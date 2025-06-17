@@ -3,12 +3,8 @@
 namespace BehaviorDesigner.Runtime.Tasks
 {
   [AttributeUsage(AttributeTargets.Class, Inherited = false)]
-  public class TaskNameAttribute : Attribute
+  public class TaskNameAttribute(string name) : Attribute 
   {
-    private readonly string mName;
-
-    public string Name => mName;
-
-    public TaskNameAttribute(string name) => mName = name;
+    public string Name => name;
   }
 }

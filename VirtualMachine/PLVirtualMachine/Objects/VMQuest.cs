@@ -12,8 +12,7 @@ namespace PLVirtualMachine.Objects
 {
   [TypeData(EDataType.TQuest)]
   [DataFactory("Quest")]
-  public class VMQuest : VMBlueprint, IStub, IEditorDataReader
-  {
+  public class VMQuest(ulong guid) : VMBlueprint(guid), IStub, IEditorDataReader {
     [FieldData("StartEvent", DataFieldType.Reference)]
     private new IEvent startEvent;
 
@@ -71,11 +70,6 @@ namespace PLVirtualMachine.Objects
         if (xml.NodeType == XmlNodeType.EndElement)
           break;
       }
-    }
-
-    public VMQuest(ulong guid)
-      : base(guid)
-    {
     }
 
     public override EObjectCategory GetCategory() => EObjectCategory.OBJECT_CATEGORY_QUEST;

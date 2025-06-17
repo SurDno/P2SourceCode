@@ -10,15 +10,13 @@ namespace Engine.Source.Services.Profiles
   public class SaveInfo
   {
     private const char separator = '-';
-    private static readonly char[] separators = new char[1]
-    {
+    private static readonly char[] separators = [
       '-'
-    };
-    private static readonly char[] fileSeparators = new char[2]
-    {
+    ];
+    private static readonly char[] fileSeparators = [
       '/',
       '\\'
-    };
+    ];
     private const string timeMask = "yyyy_MM_dd_HH_mm_ss";
     public int Days;
     public int Hours;

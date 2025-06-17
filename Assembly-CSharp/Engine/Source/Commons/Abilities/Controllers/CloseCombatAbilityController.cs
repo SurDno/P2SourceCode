@@ -35,7 +35,7 @@ namespace Engine.Source.Commons.Abilities.Controllers
     private AbilityItem abilityItem;
     private EnemyBase attacker;
     private IEntity itemOwner;
-    private Dictionary<AbilityValueNameEnum, IAbilityValue> values = new Dictionary<AbilityValueNameEnum, IAbilityValue>();
+    private Dictionary<AbilityValueNameEnum, IAbilityValue> values = new();
 
     public ReactionType ReactionType { get; set; }
 
@@ -149,8 +149,7 @@ namespace Engine.Source.Commons.Abilities.Controllers
 
     public IAbilityValue<T> GetAbilityValue<T>(AbilityValueNameEnum parameter) where T : struct
     {
-      IAbilityValue abilityValue;
-      values.TryGetValue(parameter, out abilityValue);
+      values.TryGetValue(parameter, out IAbilityValue abilityValue);
       return abilityValue as IAbilityValue<T>;
     }
   }

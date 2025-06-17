@@ -96,14 +96,13 @@ namespace Engine.Source.Components.Interactable
       out List<KeyValuePair<GameActionType, bool>> actions)
     {
       LocalizationService service = ServiceLocator.GetService<LocalizationService>();
-      List<string> stringList = new List<string>();
-      iconSprites = new List<KeyValuePair<Sprite, bool>>();
-      actions = new List<KeyValuePair<GameActionType, bool>>();
+      List<string> stringList = [];
+      iconSprites = [];
+      actions = [];
       foreach (InteractItemInfo validateItem in validateItems)
       {
         string str1 = "";
-        bool isHold;
-        if ((InstanceByRequest<EngineApplication>.Instance.IsDebug || !validateItem.Invalid) && !InputUtility.GetHotKeyNameByAction(validateItem.Item.Action, InputService.Instance.JoystickUsed, out isHold).IsNullOrEmpty())
+        if ((InstanceByRequest<EngineApplication>.Instance.IsDebug || !validateItem.Invalid) && !InputUtility.GetHotKeyNameByAction(validateItem.Item.Action, InputService.Instance.JoystickUsed, out bool isHold).IsNullOrEmpty())
         {
           iconSprites.Add(new KeyValuePair<Sprite, bool>(ControlIconsManager.Instance.GetIconSprite(validateItem.Item.Action, out isHold), isHold));
           string str2;

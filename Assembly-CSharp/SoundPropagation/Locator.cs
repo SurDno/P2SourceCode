@@ -3,11 +3,10 @@ using UnityEngine;
 
 namespace SoundPropagation
 {
-  public class Locator
-  {
+  public class Locator(Pathfinder pathfinder = null) {
     private static Locator main;
-    private Pathfinder customPathfinder;
-    public List<PathPoint> path;
+    private Pathfinder customPathfinder = pathfinder;
+    public List<PathPoint> path = [];
     public float MaxTurnPerDistance = 2f;
     public float OcclusionPerTurn = 0.5f;
 
@@ -66,12 +65,6 @@ namespace SoundPropagation
       float occlusion = Math.Normalize(ref destDirectionality) * (Vector3.Distance(destDirectionality, pathPoint1.Direction) * OcclusionPerTurn);
       location.Filtering.AddOcclusion(occlusion);
       return location;
-    }
-
-    public Locator(Pathfinder pathfinder = null)
-    {
-      customPathfinder = pathfinder;
-      path = new List<PathPoint>();
     }
 
     public Location GetLocation(

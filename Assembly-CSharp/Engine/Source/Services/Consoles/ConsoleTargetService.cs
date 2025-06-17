@@ -8,7 +8,7 @@ namespace Engine.Source.Services.Consoles
 {
   public static class ConsoleTargetService
   {
-    private static Dictionary<string, Func<string, object>> targets = new Dictionary<string, Func<string, object>>();
+    private static Dictionary<string, Func<string, object>> targets = new();
 
     public static void AddTarget(string name, Func<string, object> func)
     {
@@ -18,8 +18,7 @@ namespace Engine.Source.Services.Consoles
     public static bool GetTarget(string name, string value, out object result)
     {
       result = null;
-      Func<string, object> func;
-      if (name.IsNullOrEmpty() || !targets.TryGetValue(name, out func))
+      if (name.IsNullOrEmpty() || !targets.TryGetValue(name, out Func<string, object> func))
         return false;
       result = func(value);
       return true;
@@ -27,8 +26,7 @@ namespace Engine.Source.Services.Consoles
 
     public static object GetTarget(Type type, ConsoleParameter parameter)
     {
-      object result;
-      if (GetTarget(type.Name, "", out result) || GetTarget(parameter.Parameter, parameter.Value, out result))
+	    if (GetTarget(type.Name, "", out object result) || GetTarget(parameter.Parameter, parameter.Value, out result))
         return GetTarget(type, result);
       return parameter.Parameter.IsNullOrEmpty() ? GetTarget(type, ServiceLocator.GetService<ISimulation>().Player) : null;
     }

@@ -12,8 +12,8 @@ namespace PLVirtualMachine.Time
 {
   public class GameTimer : ISerializeStateSave, IDynamicLoadSerializable
   {
-    private GameTime targetTime = new GameTime();
-    private GameTime currentTime = new GameTime();
+    private GameTime targetTime = new();
+    private GameTime currentTime = new();
     private bool isRepeat;
     private bool isActive;
     private Guid fsmObjGuid;
@@ -22,7 +22,7 @@ namespace PLVirtualMachine.Time
     private EGameTimerType gtType;
     private double remainder;
     private int timerSerial;
-    private GameTime eventsCutTime = new GameTime();
+    private GameTime eventsCutTime = new();
     public static int CurrTimerSerialNumber;
 
     public GameTimer()
@@ -125,10 +125,7 @@ namespace PLVirtualMachine.Time
 
     public bool Active => isActive;
 
-    public ulong TimerGuid
-    {
-      get => (ulong) timerSerial * uint.MaxValue + (ulong) timerIndex;
-    }
+    public ulong TimerGuid => (ulong) timerSerial * uint.MaxValue + (ulong) timerIndex;
 
     public object ResultMessageValue
     {

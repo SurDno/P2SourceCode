@@ -9,7 +9,7 @@ namespace Facepunch.Steamworks
   public class BaseSteamworks : IDisposable
   {
     internal NativeInterface native;
-    private List<CallbackHandle> CallbackHandles = new List<CallbackHandle>();
+    private List<CallbackHandle> CallbackHandles = [];
 
     public uint AppId { get; internal set; }
 

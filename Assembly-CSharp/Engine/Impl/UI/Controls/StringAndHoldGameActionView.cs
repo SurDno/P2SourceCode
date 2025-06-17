@@ -29,8 +29,7 @@ namespace Engine.Impl.UI.Controls
 
     private void SetCodeView(bool joystick)
     {
-      bool hold;
-      keyCodeStringView.StringValue = InputUtility.GetHotKeyByAction(GetValue(), joystick, out hold);
+      keyCodeStringView.StringValue = InputUtility.GetHotKeyByAction(GetValue(), joystick, out bool hold);
       holdObject.SetActive(hold);
     }
   }

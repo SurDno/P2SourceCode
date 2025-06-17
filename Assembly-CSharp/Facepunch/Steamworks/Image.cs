@@ -22,9 +22,7 @@ namespace Facepunch.Steamworks
 	    if (IsLoaded)
 		    return true;
 
-	    uint pnWidth = 0;
-	    uint pnHeight = 0;
-	    if (!utils.GetImageSize(Id, out pnWidth, out pnHeight))
+	    if (!utils.GetImageSize(Id, out uint pnWidth, out uint pnHeight))
 	    {
 		    IsError = true;
 		    return true;

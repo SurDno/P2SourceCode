@@ -138,8 +138,7 @@ namespace RootMotion.Dynamics
 
     private float GetGroundHeight()
     {
-      RaycastHit hitInfo = new RaycastHit();
-      return Physics.Raycast(puppetMaster.muscles[0].rigidbody.position, -puppetMaster.targetRoot.up, out hitInfo, 100f, raycastLayers) ? hitInfo.distance : float.PositiveInfinity;
+      return Physics.Raycast(puppetMaster.muscles[0].rigidbody.position, -puppetMaster.targetRoot.up, out RaycastHit hitInfo, 100f, raycastLayers) ? hitInfo.distance : float.PositiveInfinity;
     }
   }
 }

@@ -20,7 +20,7 @@ namespace PLVirtualMachine.Dynamic.Components
   public class GameComponent : VMGameComponent, IInitialiseComponentFromHierarchy, IInitialiseEvents
   {
     public static int MaxGetEntityListByRootInfoInnerEntityesCount = 10000;
-    public static List<VMEntity> GroupOperationInnerEntityesByRootList = new List<VMEntity>(MaxGetEntityListByRootInfoInnerEntityesCount);
+    public static List<VMEntity> GroupOperationInnerEntityesByRootList = new(MaxGetEntityListByRootInfoInnerEntityesCount);
     public static double totalGetComponentByNameIndexTime = 0.0;
     public static double totalGetEntityListByRootInfoTime = 0.0;
     public static double totalInnerEntityesListAddTime = 0.0;
@@ -484,7 +484,7 @@ namespace PLVirtualMachine.Dynamic.Components
         }
         num1 = 1f / num2;
       }
-      List<int> intList = new List<int>();
+      List<int> intList = [];
       for (int index = 0; index < distributionInfo.TagInfoList.Count; ++index)
         intList.Add(0);
       for (int index1 = 0; index1 < list.Count; ++index1)
@@ -553,7 +553,7 @@ namespace PLVirtualMachine.Dynamic.Components
         OperationMultiTagsInfo tagsInfo2 = new OperationMultiTagsInfo();
         tagsInfo2.Read(customTagsInfoStr);
         List<VMEntity> entityListByRootInfo = GetEntityListByRootInfo(storagesRootInfo, funcComponentName);
-        List<VMEntity> vmEntityList1 = new List<VMEntity>();
+        List<VMEntity> vmEntityList1 = [];
         for (int index = 0; index < entityListByRootInfo.Count; ++index)
         {
           VMEntity entity = entityListByRootInfo[index];
@@ -566,7 +566,7 @@ namespace PLVirtualMachine.Dynamic.Components
         float num1 = ReadContextIntParamValue(methodExecInitiator, operationVolumeStr) / 100f;
         int num2 = (int) Math.Round(num1 * (double) vmEntityList1.Count);
         int num3 = 0;
-        List<VMEntity> vmEntityList2 = new List<VMEntity>();
+        List<VMEntity> vmEntityList2 = [];
         for (int index = 0; index < vmEntityList1.Count; ++index)
         {
           if (num2 < vmEntityList1.Count && VMMath.GetRandomDouble() > num1)
@@ -720,7 +720,7 @@ namespace PLVirtualMachine.Dynamic.Components
         tagsInfo2.Read(customTagsInfoStr);
         Dictionary<string, bool> statusesParamInfo = GetBoolStatusesParamInfo(objectStatusesData);
         List<VMEntity> entityListByRootInfo = GetEntityListByRootInfo(storagesRootInfo, funcComponentName);
-        List<VMEntity> vmEntityList1 = new List<VMEntity>();
+        List<VMEntity> vmEntityList1 = [];
         for (int index = 0; index < entityListByRootInfo.Count; ++index)
         {
           VMEntity entity = entityListByRootInfo[index];
@@ -730,7 +730,7 @@ namespace PLVirtualMachine.Dynamic.Components
         float num1 = ReadContextIntParamValue(VMEngineAPIManager.LastMethodExecInitiator, operationVolumeStr) / 100f;
         int num2 = (int) Math.Round(num1 * (double) vmEntityList1.Count);
         int num3 = 0;
-        List<VMEntity> vmEntityList2 = new List<VMEntity>();
+        List<VMEntity> vmEntityList2 = [];
         for (int index = 0; index < vmEntityList1.Count; ++index)
         {
           VMEntity vmEntity = vmEntityList1[index];
@@ -767,7 +767,7 @@ namespace PLVirtualMachine.Dynamic.Components
     public static object ExtractParamFuncParam(string paramFuncInfo, Type paramType)
     {
       paramFuncInfo = paramFuncInfo.ToUpper();
-      string[] separator = new string[1]{ "PARAM&VAL" };
+      string[] separator = ["PARAM&VAL"];
       string[] strArray = paramFuncInfo.Split(separator, StringSplitOptions.RemoveEmptyEntries);
       if (!(paramType == typeof (int) | paramType == typeof (bool)))
         return null;
@@ -780,7 +780,7 @@ namespace PLVirtualMachine.Dynamic.Components
       string str = paramFuncInfo;
       if (paramFuncInfo.Contains("PARAM&VAL"))
       {
-        string[] separator = new string[1]{ "PARAM&VAL" };
+        string[] separator = ["PARAM&VAL"];
         str = paramFuncInfo.Split(separator, StringSplitOptions.RemoveEmptyEntries)[0];
       }
       string[] strArray = str.Split('.');
@@ -1080,7 +1080,7 @@ namespace PLVirtualMachine.Dynamic.Components
       if (objectStatusesData != "" && objectStatusesData != "0")
       {
         string str = objectStatusesData;
-        char[] chArray = new char[1]{ ',' };
+        char[] chArray = [','];
         foreach (string paramFuncInfo in str.Split(chArray))
         {
           string paramFuncName = ExtractParamFuncName(paramFuncInfo);

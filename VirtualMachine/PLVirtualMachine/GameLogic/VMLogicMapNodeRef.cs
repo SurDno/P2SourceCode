@@ -17,10 +17,7 @@ namespace PLVirtualMachine.GameLogic
   {
     public void Initialize(IGraphObject lmNode) => LoadStaticInstance(lmNode);
 
-    public override EContextVariableCategory Category
-    {
-      get => EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_STATE;
-    }
+    public override EContextVariableCategory Category => EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_STATE;
 
     public IGraphObject LogicMapNode
     {

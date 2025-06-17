@@ -6,7 +6,7 @@ namespace StateSetters
 {
   public static class StateSetterService
   {
-    private static Dictionary<string, IStateSetterItemController> controllers = new Dictionary<string, IStateSetterItemController>();
+    private static Dictionary<string, IStateSetterItemController> controllers = new();
 
     public static void Register(string id, IStateSetterItemController controller)
     {
@@ -18,8 +18,7 @@ namespace StateSetters
       string type = item.Type;
       if (type.IsNullOrEmpty())
         return;
-      IStateSetterItemController setterItemController;
-      if (controllers.TryGetValue(type, out setterItemController))
+      if (controllers.TryGetValue(type, out IStateSetterItemController setterItemController))
         setterItemController.Apply(item, value);
       else
         Debug.LogError("Controller not found : " + item.Type);

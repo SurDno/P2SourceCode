@@ -5,7 +5,7 @@ namespace RootMotion.FinalIK
   [AddComponentMenu("Scripts/RootMotion.FinalIK/IK/Leg IK")]
   public class LegIK : IK
   {
-    public IKSolverLeg solver = new IKSolverLeg();
+    public IKSolverLeg solver = new();
 
     [ContextMenu("User Manual")]
     protected override void OpenUserManual()

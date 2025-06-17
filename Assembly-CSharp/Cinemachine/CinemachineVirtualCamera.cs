@@ -106,7 +106,7 @@ namespace Cinemachine
 
     private void DestroyPipeline()
     {
-      List<Transform> transformList = new List<Transform>();
+      List<Transform> transformList = [];
       foreach (Transform transform in this.transform)
       {
         if (transform.GetComponent<CinemachinePipeline>() != null)
@@ -256,7 +256,7 @@ namespace Cinemachine
       if (m_ComponentOwner != null && m_ComponentPipeline != null)
         return;
       m_ComponentOwner = null;
-      List<CinemachineComponentBase> cinemachineComponentBaseList = new List<CinemachineComponentBase>();
+      List<CinemachineComponentBase> cinemachineComponentBaseList = [];
       foreach (Transform transform in this.transform)
       {
         if (transform.GetComponent<CinemachinePipeline>() != null)

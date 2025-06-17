@@ -10,7 +10,7 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
   public class VMGlobalStorageManager : VMComponent
   {
     public const string ComponentName = "GlobalStorageManager";
-    protected Dictionary<string, ITextRef> templateRTFieldValuesDict = new Dictionary<string, ITextRef>();
+    protected Dictionary<string, ITextRef> templateRTFieldValuesDict = new();
     protected bool templateRTDataUpdated;
 
     public override void Initialize(VMBaseEntity parent) => base.Initialize(parent);
@@ -176,8 +176,7 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
 
     public ITextRef GetTemplateRTFieldValue(string fieldKey)
     {
-      ITextRef templateRtFieldValue = null;
-      templateRTFieldValuesDict.TryGetValue(fieldKey, out templateRtFieldValue);
+      templateRTFieldValuesDict.TryGetValue(fieldKey, out ITextRef templateRtFieldValue);
       return templateRtFieldValue;
     }
 
@@ -198,10 +197,7 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
       templateRTDataUpdated = true;
     }
 
-    public VMGameComponent GlobalRootManager
-    {
-      get => (VMGameComponent) Parent.GetComponentByName("GameComponent");
-    }
+    public VMGameComponent GlobalRootManager => (VMGameComponent) Parent.GetComponentByName("GameComponent");
 
     public static VMGlobalStorageManager Instance { get; protected set; }
   }

@@ -4,12 +4,8 @@ using TriangleNet.Tools;
 
 namespace TriangleNet.Smoothing
 {
-  public class SimpleSmoother : ISmoother
+  public class SimpleSmoother(Mesh mesh) : ISmoother 
   {
-    private Mesh mesh;
-
-    public SimpleSmoother(Mesh mesh) => this.mesh = mesh;
-
     public void Smooth()
     {
       mesh.behavior.Quality = false;

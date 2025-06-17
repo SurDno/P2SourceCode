@@ -6,12 +6,8 @@ using UnityEngine;
 
 namespace Inspectors
 {
-  public class InspectedProvider : IInspectedProvider, IExpandedProvider
-  {
-    private static HashSet<string> expanded = new HashSet<string>();
-    private IInspectedDrawer drawer;
-
-    public InspectedProvider(IInspectedDrawer drawer) => this.drawer = drawer;
+  public class InspectedProvider(IInspectedDrawer drawer) : IInspectedProvider, IExpandedProvider {
+    private static HashSet<string> expanded = [];
 
     public void DrawInspected(
       string name,
@@ -80,13 +76,7 @@ namespace Inspectors
 
     public string ElementName { get; set; }
 
-    public Guid DrawId
-    {
-      get
-      {
-        return Application.isPlaying ? InspectedAttribute.DrawRuntimeInspectedId : InspectedAttribute.DrawEditInspectedId;
-      }
-    }
+    public Guid DrawId => Application.isPlaying ? InspectedAttribute.DrawRuntimeInspectedId : InspectedAttribute.DrawEditInspectedId;
 
     public Guid NameId => InspectedAttribute.HeaderInspectedId;
 

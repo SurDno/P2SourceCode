@@ -22,7 +22,7 @@ namespace Engine.Source.UI.Menu.Protagonist.MindMap
     private GameObject pageButtonPrototype;
     [SerializeField]
     private RectTransform pageButtonsAnchor;
-    private List<GameObject> pageButtons = new List<GameObject>();
+    private List<GameObject> pageButtons = [];
     private int currentIndex;
 
     private void OnDisable()

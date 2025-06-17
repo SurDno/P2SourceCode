@@ -17,7 +17,7 @@ namespace Engine.Impl.Services.Factories
   public class Factory : IFactory
   {
     [Inspected]
-    private static Dictionary<Type, Type> implements = new Dictionary<Type, Type>();
+    private static Dictionary<Type, Type> implements = new();
 
     public static void RegisterType(Type factory, Type face) => implements[face] = factory;
 
@@ -27,8 +27,7 @@ namespace Engine.Impl.Services.Factories
 
     public object Create(Type type, Guid id)
     {
-      Type type1;
-      if (implements.TryGetValue(type, out type1))
+      if (implements.TryGetValue(type, out Type type1))
         type = type1;
       type = ProxyFactory.GetProxyType(type);
       object instance = Activator.CreateInstance(type);

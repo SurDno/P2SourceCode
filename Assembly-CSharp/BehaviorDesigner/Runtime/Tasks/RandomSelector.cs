@@ -32,8 +32,8 @@ namespace BehaviorDesigner.Runtime.Tasks
     [CopyableProxy()]
     [SerializeField]
     public bool useSeed;
-    private List<int> childIndexList = new List<int>();
-    private Stack<int> childrenExecutionOrder = new Stack<int>();
+    private List<int> childIndexList = [];
+    private Stack<int> childrenExecutionOrder = new();
     private TaskStatus executionStatus = TaskStatus.Inactive;
 
     public void DataWrite(IDataWriter writer)

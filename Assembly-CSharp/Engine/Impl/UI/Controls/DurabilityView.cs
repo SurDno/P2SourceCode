@@ -17,7 +17,7 @@ namespace Engine.Impl.UI.Controls
     [SerializeField]
     private ProgressViewBase valueView;
     [SerializeField]
-    private List<ProgressViewBase> thresholdViews = new List<ProgressViewBase>();
+    private List<ProgressViewBase> thresholdViews = [];
     [SerializeField]
     private float defaultValue;
     private IParameter<float> parameter;

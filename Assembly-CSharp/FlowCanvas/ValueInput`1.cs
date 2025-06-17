@@ -21,10 +21,7 @@ namespace FlowCanvas
 
     public override object GetValue() => value;
 
-    public override bool isDefaultValue
-    {
-      get => Equals(_value, default (T));
-    }
+    public override bool isDefaultValue => Equals(_value, default (T));
 
     public override object serializedValue
     {

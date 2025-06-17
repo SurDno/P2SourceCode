@@ -26,8 +26,7 @@ public class AnnoBoneDeformer : IAnnoDeformer
 
   public void Blend(string sLabel, float weight)
   {
-    VisemeBoneDefine visemeBoneDefine;
-    if (boneDict.TryGetValue(sLabel, out visemeBoneDefine))
+    if (boneDict.TryGetValue(sLabel, out VisemeBoneDefine visemeBoneDefine))
     {
       if (visemeBoneDefine == basePose)
         return;

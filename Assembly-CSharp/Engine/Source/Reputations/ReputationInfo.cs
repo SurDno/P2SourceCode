@@ -21,7 +21,7 @@ namespace Engine.Source.Reputations
     [CopyableProxy]
     [Inspected]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    public List<FractionEnum> Fractions = new List<FractionEnum>();
+    public List<FractionEnum> Fractions = [];
     [DataReadProxy]
     [DataWriteProxy]
     [CopyableProxy]

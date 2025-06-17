@@ -13,11 +13,10 @@ namespace FlowCanvas.Nodes
 
     protected override string[] GetTargetMessageEvents()
     {
-      return new string[2]
-      {
+      return [
         "OnBecameVisible",
         "OnBecameInvisible"
-      };
+      ];
     }
 
     protected override void RegisterPorts()

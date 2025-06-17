@@ -7,26 +7,19 @@ using PLVirtualMachine.Common.Data;
 
 namespace PLVirtualMachine.Common.VMDebug
 {
-  public class DebugIpcController : IDisposable
+  public class DebugIpcController(EDebugIPCControllerType type) : IDisposable 
   {
     protected string serverAddress;
     protected int portAddress;
     protected Socket socket;
     protected byte[] dataBuffer;
-    private EDebugIPCControllerType ipcControllerType;
-    private EDebugIPCApplicationWorkMode workMode;
+    private EDebugIPCApplicationWorkMode workMode = EDebugIPCApplicationWorkMode.IPC_APPLICATION_WORK_MODE_PLAY;
     private Thread ipcMessageLoopThread;
-    private List<string> lastErrors = new List<string>();
-    private object mainLoopThreadLocker = new object();
+    private List<string> lastErrors = [];
+    private object mainLoopThreadLocker = new();
     private bool isInited;
     protected static readonly int MAX_DEBUG_MESSAGE_SIZE = 65536;
     protected static readonly int LOOP_SLEEP_TIME = 1;
-
-    public DebugIpcController(EDebugIPCControllerType type)
-    {
-      ipcControllerType = type;
-      workMode = EDebugIPCApplicationWorkMode.IPC_APPLICATION_WORK_MODE_PLAY;
-    }
 
     public List<string> LastErrors
     {
@@ -86,7 +79,7 @@ namespace PLVirtualMachine.Common.VMDebug
 
     public void Dispose() => Close();
 
-    public EDebugIPCControllerType ControllerType => ipcControllerType;
+    public EDebugIPCControllerType ControllerType => type;
 
     public EDebugIPCApplicationWorkMode ControllerWorkMode => workMode;
 
@@ -146,10 +139,7 @@ label_4:;
       this.workMode = workMode;
     }
 
-    protected bool IsAsyncWork
-    {
-      get => ipcControllerType == EDebugIPCControllerType.IPC_DEBUG_SERVER;
-    }
+    protected bool IsAsyncWork => type == EDebugIPCControllerType.IPC_DEBUG_SERVER;
 
     protected IPAddress GetIPAddress()
     {

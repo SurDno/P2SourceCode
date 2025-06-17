@@ -49,23 +49,18 @@ namespace UnityEngine.PostProcessing
       [Tooltip("Should the vignette be perfectly round or be dependent on the current aspect ratio?")]
       public bool rounded;
 
-      public static Settings defaultSettings
-      {
-        get
-        {
-          return new Settings {
-            mode = Mode.Classic,
-            color = new Color(0.0f, 0.0f, 0.0f, 1f),
-            center = new Vector2(0.5f, 0.5f),
-            intensity = 0.45f,
-            smoothness = 0.2f,
-            roundness = 1f,
-            mask = null,
-            opacity = 1f,
-            rounded = false
-          };
-        }
-      }
+      public static Settings defaultSettings =>
+        new() {
+          mode = Mode.Classic,
+          color = new Color(0.0f, 0.0f, 0.0f, 1f),
+          center = new Vector2(0.5f, 0.5f),
+          intensity = 0.45f,
+          smoothness = 0.2f,
+          roundness = 1f,
+          mask = null,
+          opacity = 1f,
+          rounded = false
+        };
     }
   }
 }

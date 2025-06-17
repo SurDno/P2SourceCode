@@ -29,14 +29,11 @@ namespace FlowCanvas.Nodes
 
     public override void OnGraphStoped() => current = 0;
 
-    public override string name
-    {
-      get => base.name + " " + string.Format("[{0}]", current.ToString());
-    }
+    public override string name => base.name + " " + string.Format("[{0}]", current.ToString());
 
     protected override void RegisterPorts()
     {
-      List<FlowOutput> outs = new List<FlowOutput>();
+      List<FlowOutput> outs = [];
       for (int index = 0; index < portCount; ++index)
         outs.Add(AddFlowOutput(index.ToString()));
       AddFlowInput("In", () =>

@@ -38,8 +38,8 @@ namespace UnityEngine.PostProcessing
     private VignetteComponent m_Vignette;
     private DitheringComponent m_Dithering;
     private FxaaComponent m_Fxaa;
-    private List<PostProcessingComponentBase> m_ComponentsToEnable = new List<PostProcessingComponentBase>();
-    private List<PostProcessingComponentBase> m_ComponentsToDisable = new List<PostProcessingComponentBase>();
+    private List<PostProcessingComponentBase> m_ComponentsToEnable = [];
+    private List<PostProcessingComponentBase> m_ComponentsToDisable = [];
 
     private void OnEnable()
     {
@@ -47,7 +47,7 @@ namespace UnityEngine.PostProcessing
       m_MaterialFactory = new MaterialFactory();
       m_RenderTextureFactory = new RenderTextureFactory();
       m_Context = new PostProcessingContext();
-      m_Components = new List<PostProcessingComponentBase>();
+      m_Components = [];
       m_DebugViews = AddComponent(new BuiltinDebugViewsComponent());
       m_AmbientOcclusion = AddComponent(new AmbientOcclusionComponent());
       m_ScreenSpaceReflection = AddComponent(new ScreenSpaceReflectionComponent());
@@ -301,8 +301,7 @@ namespace UnityEngine.PostProcessing
     private void RemoveCommandBuffer<T>() where T : PostProcessingModel
     {
       Type key = typeof (T);
-      KeyValuePair<CameraEvent, CommandBuffer> keyValuePair;
-      if (!m_CommandBuffers.TryGetValue(key, out keyValuePair))
+      if (!m_CommandBuffers.TryGetValue(key, out KeyValuePair<CameraEvent, CommandBuffer> keyValuePair))
         return;
       m_Camera.RemoveCommandBuffer(keyValuePair.Key, keyValuePair.Value);
       m_CommandBuffers.Remove(key);
@@ -311,9 +310,8 @@ namespace UnityEngine.PostProcessing
 
     private CommandBuffer GetCommandBuffer<T>(CameraEvent evt, string name) where T : PostProcessingModel
     {
-      KeyValuePair<CameraEvent, CommandBuffer> keyValuePair;
       CommandBuffer commandBuffer;
-      if (!m_CommandBuffers.TryGetValue(typeof (T), out keyValuePair))
+      if (!m_CommandBuffers.TryGetValue(typeof (T), out KeyValuePair<CameraEvent, CommandBuffer> keyValuePair))
         commandBuffer = AddCommandBuffer<T>(evt, name);
       else if (keyValuePair.Key != evt)
       {

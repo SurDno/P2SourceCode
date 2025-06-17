@@ -58,15 +58,9 @@ namespace SteamNative
 
     public static bool IsWindows32 => Platform.Arch == Facepunch.Steamworks.Architecture.x86 && Platform.IsWindows;
 
-    public static bool IsLinux64
-    {
-      get => Platform.Arch == Facepunch.Steamworks.Architecture.x64 && Platform.Os == Facepunch.Steamworks.OperatingSystem.Linux;
-    }
+    public static bool IsLinux64 => Platform.Arch == Facepunch.Steamworks.Architecture.x64 && Platform.Os == Facepunch.Steamworks.OperatingSystem.Linux;
 
-    public static bool IsLinux32
-    {
-      get => Platform.Arch == Facepunch.Steamworks.Architecture.x86 && Platform.Os == Facepunch.Steamworks.OperatingSystem.Linux;
-    }
+    public static bool IsLinux32 => Platform.Arch == Facepunch.Steamworks.Architecture.x86 && Platform.Os == Facepunch.Steamworks.OperatingSystem.Linux;
 
     public static bool IsOsx => Platform.Os == Facepunch.Steamworks.OperatingSystem.Osx;
 

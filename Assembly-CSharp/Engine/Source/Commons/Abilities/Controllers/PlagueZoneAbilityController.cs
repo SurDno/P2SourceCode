@@ -11,7 +11,7 @@ namespace Engine.Source.Commons.Abilities.Controllers
   public class PlagueZoneAbilityController : IAbilityController, IAbilityValueContainer, IUpdatable
   {
     private AbilityItem abilityItem;
-    private AbilityValue<float> abilityValue = new AbilityValue<float>();
+    private AbilityValue<float> abilityValue = new();
 
     public void Initialise(AbilityItem abilityItem)
     {

@@ -15,7 +15,7 @@ namespace FlowCanvas.Nodes
     protected override void RegisterPorts()
     {
       ValueInput<GameObject> go = AddValueInput<GameObject>("Value");
-      List<FlowOutput> outs = new List<FlowOutput>();
+      List<FlowOutput> outs = [];
       for (int index = 0; index < _tagNames.Length; ++index)
         outs.Add(AddFlowOutput(_tagNames[index], index.ToString()));
       AddFlowInput("In", () =>

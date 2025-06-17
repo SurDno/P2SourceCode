@@ -17,6 +17,6 @@ namespace Engine.Source.OutdoorCrowds
     [DataWriteProxy]
     [CopyableProxy()]
     [Inspected(Mode = ExecuteMode.EditAndRuntime)]
-    public List<OutdoorCrowdState> States = new List<OutdoorCrowdState>();
+    public List<OutdoorCrowdState> States = [];
   }
 }

@@ -9,12 +9,9 @@ namespace PLVirtualMachine.GameLogic
   [VMFactory(typeof (ITextRef))]
   public class VMTextRef : BaseRef, ITextRef, IRef, IVariable, INamed, IVMStringSerializable
   {
-    public override EContextVariableCategory Category
-    {
-      get => EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_TEXT;
-    }
+    public override EContextVariableCategory Category => EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_TEXT;
 
-    public override VMType Type => new VMType(typeof (ITextRef));
+    public override VMType Type => new(typeof (ITextRef));
 
     public IGameString Text
     {

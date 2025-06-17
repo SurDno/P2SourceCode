@@ -29,27 +29,24 @@ namespace Engine.Source.Components
     [Inspected]
     private InteractableComponent currentInteractable;
     [Inspected]
-    private List<InteractItemInfo> validateItems = new List<InteractItemInfo>();
+    private List<InteractItemInfo> validateItems = [];
     [Inspected]
-    private HashSet<GameActionType> pressed = new HashSet<GameActionType>();
+    private HashSet<GameActionType> pressed = [];
     [FromLocator]
     private GameActionService gameActionService;
     [FromLocator]
     private UIService uiService;
     [FromLocator]
     private PickingService pickingService;
-    private List<InteractItemInfo> tmp = new List<InteractItemInfo>();
+    private List<InteractItemInfo> tmp = [];
     private bool isJoystick;
     private IOrderedEnumerable<InteractItemInfo> validateItemsOrdered;
-    private List<GameActionType> cachedLastInteractionTypes = new List<GameActionType>();
-    private List<GameActionType> comparationList = new List<GameActionType>();
+    private List<GameActionType> cachedLastInteractionTypes = [];
+    private List<GameActionType> comparationList = [];
 
     public InteractableComponent Interactable => currentInteractable;
 
-    public IEnumerable<InteractItemInfo> ValidateItems
-    {
-      get => validateItems;
-    }
+    public IEnumerable<InteractItemInfo> ValidateItems => validateItems;
 
     public override void OnChangeEnabled()
     {
@@ -109,7 +106,7 @@ namespace Engine.Source.Components
         {
           ClearActions();
           validateItems.AddRange(currentInteractable.GetValidateItems(Owner));
-          cachedLastInteractionTypes = new List<GameActionType>(comparationList);
+          cachedLastInteractionTypes = [..comparationList];
         }
         else
           isSame = true;
@@ -168,12 +165,10 @@ namespace Engine.Source.Components
         }
         else
         {
-          List<KeyValuePair<Sprite, bool>> iconSprites = null;
           if (currentInteractable != null && !currentInteractable.IsDisposed)
           {
             InteractableWindow.IconType iconType = DefaultInteractableMapping.GetIconType(currentInteractable, validateItems);
-            List<KeyValuePair<GameActionType, bool>> actions;
-            string[] text = DefaultInteractableMapping.GetText(validateItems, out iconSprites, out actions);
+            string[] text = DefaultInteractableMapping.GetText(validateItems, out List<KeyValuePair<Sprite, bool>> iconSprites, out List<KeyValuePair<GameActionType, bool>> actions);
             interactableInterface.SetInfo(iconType, text, iconSprites, actions);
           }
           else

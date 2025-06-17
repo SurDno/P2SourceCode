@@ -6,7 +6,7 @@ using UnityEngine;
 public class CutsceneAnimator : MonoBehaviour
 {
   [SerializeField]
-  private Item[] items = new Item[0];
+  private Item[] items = [];
 
   [Inspected]
   private void Run()

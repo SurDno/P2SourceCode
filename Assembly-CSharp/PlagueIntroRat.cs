@@ -13,7 +13,7 @@ public class PlagueIntroRat : MonoBehaviour
   private Vector3 prevForward = Vector3.forward;
 
   [Inspected]
-  private NavMeshAgentWrapper agentWrapper => new NavMeshAgentWrapper(agent);
+  private NavMeshAgentWrapper agentWrapper => new(agent);
 
   private void Awake()
   {

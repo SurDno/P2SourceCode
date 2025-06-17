@@ -12,7 +12,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory.Container
 {
   public abstract class InventoryContainerUI : UIControl
   {
-    protected Dictionary<Cell, InventoryCellUI> cells = new Dictionary<Cell, InventoryCellUI>();
+    protected Dictionary<Cell, InventoryCellUI> cells = new();
     [SerializeField]
     [FormerlySerializedAs("_Content")]
     protected UIControl content;
@@ -70,10 +70,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory.Container
 
     public IInventoryComponent InventoryContainer { get; protected set; }
 
-    public IDictionary<Cell, InventoryCellUI> Cells
-    {
-      get => cells;
-    }
+    public IDictionary<Cell, InventoryCellUI> Cells => cells;
 
     public UIControl Content => content;
 

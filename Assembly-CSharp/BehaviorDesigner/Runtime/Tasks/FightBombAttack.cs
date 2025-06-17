@@ -47,8 +47,7 @@ namespace BehaviorDesigner.Runtime.Tasks
         attackCooldownTime -= deltaTime;
       if (attackCooldownTime <= 0.0 && !owner.IsAttacking && !owner.IsPushing && !owner.IsReacting && !owner.IsQuickBlock)
       {
-        float outAngle = 0.0f;
-        if (CanThrowBomb(out outAngle))
+        if (CanThrowBomb(out float outAngle))
         {
           owner.EnqueueProjectileThrow(outAngle, 15f);
           if (outAngle * 57.295780181884766 > 25.0)
@@ -68,9 +67,7 @@ namespace BehaviorDesigner.Runtime.Tasks
       float v = 15f;
       float h = 1.5f;
       Vector3 vector3 = owner.Enemy.transform.position - owner.transform.position;
-      float angle1;
-      float angle2;
-      if (BomberHelper.CalcThrowAngles(v, vector3.magnitude, h, out angle1, out angle2))
+      if (BomberHelper.CalcThrowAngles(v, vector3.magnitude, h, out float angle1, out float angle2))
       {
         Vector3 startPosition = owner.transform.position + Vector3.up * h;
         Vector3 normalized = vector3.normalized;

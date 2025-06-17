@@ -18,8 +18,8 @@ namespace RootMotion.FinalIK
     public float rootRotationSpeed = 5f;
     [Tooltip("The maximum angle of root rotation (range: 0 - 90).")]
     public float maxRootRotationAngle = 45f;
-    private Transform[] feet = new Transform[0];
-    private Quaternion[] footRotations = new Quaternion[0];
+    private Transform[] feet = [];
+    private Quaternion[] footRotations = [];
     private Vector3 animatedPelvisLocalPosition;
     private Vector3 solvedPelvisLocalPosition;
     private int solvedFeet;

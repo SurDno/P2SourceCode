@@ -19,7 +19,7 @@ namespace SRDebugger
     [SerializeField]
     private KeyboardShortcut[] _keyboardShortcuts;
     [SerializeField]
-    private KeyboardShortcut[] _newKeyboardShortcuts = new KeyboardShortcut[0];
+    private KeyboardShortcut[] _newKeyboardShortcuts = [];
     [SerializeField]
     private bool _keyboardModifierControl = true;
     [SerializeField]
@@ -50,7 +50,7 @@ namespace SRDebugger
     private void UpgradeKeyboardShortcuts()
     {
       Debug.Log("[SRDebugger] Upgrading Settings format");
-      List<KeyboardShortcut> keyboardShortcutList = new List<KeyboardShortcut>();
+      List<KeyboardShortcut> keyboardShortcutList = [];
       for (int index = 0; index < _keyboardShortcuts.Length; ++index)
       {
         KeyboardShortcut keyboardShortcut = _keyboardShortcuts[index];
@@ -62,7 +62,7 @@ namespace SRDebugger
           Control = _keyboardModifierControl
         });
       }
-      _keyboardShortcuts = new KeyboardShortcut[0];
+      _keyboardShortcuts = [];
       _newKeyboardShortcuts = keyboardShortcutList.ToArray();
     }
 

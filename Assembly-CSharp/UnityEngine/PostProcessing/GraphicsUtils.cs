@@ -7,10 +7,7 @@
 
     public static bool isLinearColorSpace => QualitySettings.activeColorSpace == ColorSpace.Linear;
 
-    public static bool supportsDX11
-    {
-      get => SystemInfo.graphicsShaderLevel >= 50 && SystemInfo.supportsComputeShaders;
-    }
+    public static bool supportsDX11 => SystemInfo.graphicsShaderLevel >= 50 && SystemInfo.supportsComputeShaders;
 
     public static Texture2D whiteTexture
     {
@@ -31,21 +28,19 @@
       {
         if (s_Quad != null)
           return s_Quad;
-        Vector3[] vector3Array = new Vector3[4]
-        {
-          new Vector3(-1f, -1f, 0.0f),
-          new Vector3(1f, 1f, 0.0f),
-          new Vector3(1f, -1f, 0.0f),
-          new Vector3(-1f, 1f, 0.0f)
-        };
-        Vector2[] vector2Array = new Vector2[4]
-        {
-          new Vector2(0.0f, 0.0f),
-          new Vector2(1f, 1f),
-          new Vector2(1f, 0.0f),
-          new Vector2(0.0f, 1f)
-        };
-        int[] numArray = new int[6]{ 0, 1, 2, 1, 0, 3 };
+        Vector3[] vector3Array = [
+          new(-1f, -1f, 0.0f),
+          new(1f, 1f, 0.0f),
+          new(1f, -1f, 0.0f),
+          new(-1f, 1f, 0.0f)
+        ];
+        Vector2[] vector2Array = [
+          new(0.0f, 0.0f),
+          new(1f, 1f),
+          new(1f, 0.0f),
+          new(0.0f, 1f)
+        ];
+        int[] numArray = [0, 1, 2, 1, 0, 3];
         s_Quad = new Mesh {
           vertices = vector3Array,
           uv = vector2Array,

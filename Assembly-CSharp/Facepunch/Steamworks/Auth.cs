@@ -12,8 +12,7 @@ namespace Facepunch.Steamworks
       byte[] source = new byte[1024];
       fixed (byte* pTicket = source)
       {
-        uint pcbTicket = 0;
-        uint authSessionTicket = client.native.user.GetAuthSessionTicket((IntPtr) pTicket, source.Length, out pcbTicket);
+        uint authSessionTicket = client.native.user.GetAuthSessionTicket((IntPtr) pTicket, source.Length, out uint pcbTicket);
         if (authSessionTicket == 0U)
           return null;
         return new Ticket {

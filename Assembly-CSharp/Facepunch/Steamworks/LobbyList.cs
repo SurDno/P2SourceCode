@@ -17,8 +17,8 @@ namespace Facepunch.Steamworks
     internal LobbyList(Client client)
     {
       this.client = client;
-      Lobbies = new List<Lobby>();
-      requests = new List<ulong>();
+      Lobbies = [];
+      requests = [];
     }
 
     public void Refresh(Filter filter = null)
@@ -108,8 +108,8 @@ namespace Facepunch.Steamworks
 
     public class Filter
     {
-      public Dictionary<string, string> StringFilters = new Dictionary<string, string>();
-      public Dictionary<string, int> NearFilters = new Dictionary<string, int>();
+      public Dictionary<string, string> StringFilters = new();
+      public Dictionary<string, int> NearFilters = new();
       public Distance DistanceFilter = Distance.Worldwide;
 
       public int? SlotsAvailable { get; set; }

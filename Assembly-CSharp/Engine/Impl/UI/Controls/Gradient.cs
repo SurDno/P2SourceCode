@@ -143,13 +143,7 @@ namespace Engine.Impl.UI.Controls
     {
     }
 
-    public override Texture mainTexture
-    {
-      get
-      {
-        return sprite == null ? s_WhiteTexture : (Texture) sprite.texture;
-      }
-    }
+    public override Texture mainTexture => sprite == null ? s_WhiteTexture : (Texture) sprite.texture;
 
     private Vector4 GetDrawingDimensions()
     {

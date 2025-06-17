@@ -10,12 +10,11 @@ namespace Engine.Source.Components.Regions
 {
   public static class RegionUtility
   {
-    private static Dictionary<RegionEnum, RegionComponent> regions = new Dictionary<RegionEnum, RegionComponent>();
+    private static Dictionary<RegionEnum, RegionComponent> regions = new();
 
     public static RegionComponent GetRegionByName(RegionEnum name)
     {
-      RegionComponent regionByName;
-      regions.TryGetValue(name, out regionByName);
+      regions.TryGetValue(name, out RegionComponent regionByName);
       return regionByName;
     }
 

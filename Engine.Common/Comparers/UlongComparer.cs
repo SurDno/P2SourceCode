@@ -4,7 +4,7 @@ namespace Engine.Common.Comparers
 {
   public class UlongComparer : IEqualityComparer<ulong>
   {
-    public static readonly UlongComparer Instance = new UlongComparer();
+    public static readonly UlongComparer Instance = new();
 
     public bool Equals(ulong x, ulong y) => (long) x == (long) y;
 

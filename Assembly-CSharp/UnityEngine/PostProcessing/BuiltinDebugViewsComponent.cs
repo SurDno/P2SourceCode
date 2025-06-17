@@ -9,13 +9,7 @@ namespace UnityEngine.PostProcessing
     private const string k_ShaderString = "Hidden/Post FX/Builtin Debug Views";
     private ArrowArray m_Arrows;
 
-    public override bool active
-    {
-      get
-      {
-        return model.IsModeActive(BuiltinDebugViewsModel.Mode.Depth) || model.IsModeActive(BuiltinDebugViewsModel.Mode.Normals) || model.IsModeActive(BuiltinDebugViewsModel.Mode.MotionVectors);
-      }
-    }
+    public override bool active => model.IsModeActive(BuiltinDebugViewsModel.Mode.Depth) || model.IsModeActive(BuiltinDebugViewsModel.Mode.Normals) || model.IsModeActive(BuiltinDebugViewsModel.Mode.MotionVectors);
 
     public override DepthTextureMode GetCameraFlags()
     {
@@ -163,15 +157,14 @@ namespace UnityEngine.PostProcessing
 
       public void BuildMesh(int columns, int rows)
       {
-        Vector3[] vector3Array = new Vector3[6]
-        {
-          new Vector3(0.0f, 0.0f, 0.0f),
-          new Vector3(0.0f, 1f, 0.0f),
-          new Vector3(0.0f, 1f, 0.0f),
-          new Vector3(-1f, 1f, 0.0f),
-          new Vector3(0.0f, 1f, 0.0f),
-          new Vector3(1f, 1f, 0.0f)
-        };
+        Vector3[] vector3Array = [
+          new(0.0f, 0.0f, 0.0f),
+          new(0.0f, 1f, 0.0f),
+          new(0.0f, 1f, 0.0f),
+          new(-1f, 1f, 0.0f),
+          new(0.0f, 1f, 0.0f),
+          new(1f, 1f, 0.0f)
+        ];
         int capacity = 6 * columns * rows;
         List<Vector3> vector3List = new List<Vector3>(capacity);
         List<Vector2> vector2List = new List<Vector2>(capacity);

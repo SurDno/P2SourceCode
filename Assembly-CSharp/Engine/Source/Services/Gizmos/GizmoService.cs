@@ -16,14 +16,14 @@ namespace Engine.Source.Services.Gizmos
     private GUIStyle textStyle;
     private GizmoRenderBehaviour gizmoRenderBehaviour;
     private bool gizmoRenderBehaviourVisible;
-    private List<BoxGizmo> boxes = new List<BoxGizmo>();
-    private List<LineGizmo> lines = new List<LineGizmo>();
-    private List<CircleGizmo> circles = new List<CircleGizmo>();
-    private List<SectorGizmo> sectors = new List<SectorGizmo>();
-    private List<EyeSectorGizmo> eyeSectors = new List<EyeSectorGizmo>();
-    private List<TextGigmo3d> texts3d = new List<TextGigmo3d>();
-    private List<TextGigmo> texts = new List<TextGigmo>();
-    private List<PositionTextGigmo> positionTexts = new List<PositionTextGigmo>();
+    private List<BoxGizmo> boxes = [];
+    private List<LineGizmo> lines = [];
+    private List<CircleGizmo> circles = [];
+    private List<SectorGizmo> sectors = [];
+    private List<EyeSectorGizmo> eyeSectors = [];
+    private List<TextGigmo3d> texts3d = [];
+    private List<TextGigmo> texts = [];
+    private List<PositionTextGigmo> positionTexts = [];
 
     public bool Visible { get; set; } = true;
 

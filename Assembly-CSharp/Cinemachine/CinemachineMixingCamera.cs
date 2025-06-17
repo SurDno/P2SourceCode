@@ -92,8 +92,7 @@ namespace Cinemachine
 
     public float GetWeight(CinemachineVirtualCameraBase vcam)
     {
-      int index;
-      if (m_indexMap.TryGetValue(vcam, out index))
+      if (m_indexMap.TryGetValue(vcam, out int index))
         return GetWeight(index);
       Debug.LogError("CinemachineMixingCamera: Invalid child: " + (vcam != null ? vcam.Name : "(null)"));
       return 0.0f;
@@ -101,8 +100,7 @@ namespace Cinemachine
 
     public void SetWeight(CinemachineVirtualCameraBase vcam, float w)
     {
-      int index;
-      if (m_indexMap.TryGetValue(vcam, out index))
+      if (m_indexMap.TryGetValue(vcam, out int index))
         SetWeight(index, w);
       else
         Debug.LogError("CinemachineMixingCamera: Invalid child: " + (vcam != null ? vcam.Name : "(null)"));
@@ -174,7 +172,7 @@ namespace Cinemachine
       if (m_ChildCameras != null)
         return;
       m_indexMap = new Dictionary<CinemachineVirtualCameraBase, int>();
-      List<CinemachineVirtualCameraBase> virtualCameraBaseList = new List<CinemachineVirtualCameraBase>();
+      List<CinemachineVirtualCameraBase> virtualCameraBaseList = [];
       foreach (CinemachineVirtualCameraBase componentsInChild in GetComponentsInChildren<CinemachineVirtualCameraBase>(true))
       {
         if (componentsInChild.transform.parent == transform)

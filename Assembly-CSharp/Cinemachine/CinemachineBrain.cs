@@ -25,23 +25,23 @@ namespace Cinemachine
     public UpdateMethod m_UpdateMethod = UpdateMethod.SmartUpdate;
     [CinemachineBlendDefinitionProperty]
     [Tooltip("The blend that is used in cases where you haven't explicitly defined a blend between two Virtual Cameras")]
-    public CinemachineBlendDefinition m_DefaultBlend = new CinemachineBlendDefinition(CinemachineBlendDefinition.Style.EaseInOut, 2f);
+    public CinemachineBlendDefinition m_DefaultBlend = new(CinemachineBlendDefinition.Style.EaseInOut, 2f);
     [Tooltip("This is the asset that contains custom settings for blends between specific virtual cameras in your scene")]
     public CinemachineBlenderSettings m_CustomBlends;
     private Camera m_OutputCamera;
     [Tooltip("This event will fire whenever a virtual camera goes live and there is no blend")]
-    public BrainEvent m_CameraCutEvent = new BrainEvent();
+    public BrainEvent m_CameraCutEvent = new();
     [Tooltip("This event will fire whenever a virtual camera goes live.  If a blend is involved, then the event will fire on the first frame of the blend.")]
-    public VcamEvent m_CameraActivatedEvent = new VcamEvent();
-    internal static BrainEvent sPostProcessingHandler = new BrainEvent();
+    public VcamEvent m_CameraActivatedEvent = new();
+    internal static BrainEvent sPostProcessingHandler = new();
     private ICinemachineCamera mActiveCameraPreviousFrame;
     private ICinemachineCamera mOutgoingCameraPreviousFrame;
     private CinemachineBlend mActiveBlend;
     private bool mPreviousFrameWasOverride;
-    private List<OverrideStackFrame> mOverrideStack = new List<OverrideStackFrame>();
+    private List<OverrideStackFrame> mOverrideStack = [];
     private int mNextOverrideId = 1;
-    private OverrideStackFrame mOverrideBlendFromNothing = new OverrideStackFrame();
-    private WaitForFixedUpdate mWaitForFixedUpdate = new WaitForFixedUpdate();
+    private OverrideStackFrame mOverrideBlendFromNothing = new();
+    private WaitForFixedUpdate mWaitForFixedUpdate = new();
     private static int msCurrentFrame;
     private static int msFirstBrainObjectId;
     private static int msSubframes;
@@ -64,13 +64,7 @@ namespace Cinemachine
 
     public static Color GetSoloGUIColor() => Color.Lerp(Color.red, Color.yellow, 0.8f);
 
-    public Vector3 DefaultWorldUp
-    {
-      get
-      {
-        return m_WorldUpOverride != null ? m_WorldUpOverride.transform.up : Vector3.up;
-      }
-    }
+    public Vector3 DefaultWorldUp => m_WorldUpOverride != null ? m_WorldUpOverride.transform.up : Vector3.up;
 
     private OverrideStackFrame GetOverrideFrame(int id)
     {
@@ -285,8 +279,7 @@ namespace Cinemachine
           {
             if (mActiveCameraPreviousFrame != null && !mPreviousFrameWasOverride && activeOverride == null && deltaTime >= 0.0)
             {
-              float duration = 0.0f;
-              AnimationCurve blendCurve = LookupBlendCurve(mActiveCameraPreviousFrame, activeVirtualCamera, out duration);
+              AnimationCurve blendCurve = LookupBlendCurve(mActiveCameraPreviousFrame, activeVirtualCamera, out float duration);
               cinemachineBlend = CreateBlend(mActiveCameraPreviousFrame, activeVirtualCamera, blendCurve, duration, mActiveBlend);
             }
             if (activeVirtualCamera != mOutgoingCameraPreviousFrame)
@@ -503,13 +496,7 @@ namespace Cinemachine
 
       public bool Active => camera != null;
 
-      public bool Expired
-      {
-        get
-        {
-          return !Application.isPlaying && Time.realtimeSinceStartup - (double) timeOfOverride > Time.maximumDeltaTime;
-        }
-      }
+      public bool Expired => !Application.isPlaying && Time.realtimeSinceStartup - (double) timeOfOverride > Time.maximumDeltaTime;
     }
   }
 }

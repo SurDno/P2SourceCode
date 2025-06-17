@@ -10,7 +10,7 @@ public static class RendererUtility
     if (gameObject == null)
       return null;
     if (searchBuffer == null)
-      searchBuffer = new List<Renderer>();
+      searchBuffer = [];
     gameObject.GetComponentsInChildren(searchBuffer);
     float num1 = 0.0f;
     Renderer biggestRenderer = null;

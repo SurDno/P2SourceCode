@@ -26,10 +26,7 @@ namespace Engine.Source.Components
     public event Action PlayCompleteEvent;
 
     [Inspected]
-    public bool IsPlaying
-    {
-      get => audioState != null && audioState.AudioSource != null;
-    }
+    public bool IsPlaying => audioState != null && audioState.AudioSource != null;
 
     public bool IsIndoor
     {

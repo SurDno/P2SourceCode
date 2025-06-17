@@ -9,17 +9,17 @@ namespace SRF.UI.Layout
   [AddComponentMenu("SRF/UI/Layout/VerticalLayoutGroup (Virtualizing)")]
   public class VirtualVerticalLayoutGroup : LayoutGroup, IPointerClickHandler, IEventSystemHandler
   {
-    private readonly SRList<object> _itemList = new SRList<object>();
-    private readonly SRList<int> _visibleItemList = new SRList<int>();
+    private readonly SRList<object> _itemList = [];
+    private readonly SRList<int> _visibleItemList = [];
     private bool _isDirty;
-    private SRList<Row> _rowCache = new SRList<Row>();
+    private SRList<Row> _rowCache = [];
     private ScrollRect _scrollRect;
     private int _selectedIndex;
     private object _selectedItem;
     [SerializeField]
     private SelectedItemChangedEvent _selectedItemChanged;
     private int _visibleItemCount;
-    private SRList<Row> _visibleRows = new SRList<Row>();
+    private SRList<Row> _visibleRows = [];
     public bool EnableSelection = true;
     public RectTransform ItemPrefab;
     public int RowPadding = 2;
@@ -56,13 +56,7 @@ namespace SRF.UI.Layout
       }
     }
 
-    public override float minHeight
-    {
-      get
-      {
-        return (float) (_itemList.Count * (double) ItemHeight + padding.top + padding.bottom + Spacing * (double) _itemList.Count);
-      }
-    }
+    public override float minHeight => (float) (_itemList.Count * (double) ItemHeight + padding.top + padding.bottom + Spacing * (double) _itemList.Count);
 
     public void OnPointerClick(PointerEventData eventData)
     {
@@ -251,21 +245,9 @@ namespace SRF.UI.Layout
       }
     }
 
-    private bool AlignBottom
-    {
-      get
-      {
-        return childAlignment == TextAnchor.LowerRight || childAlignment == TextAnchor.LowerCenter || childAlignment == TextAnchor.LowerLeft;
-      }
-    }
+    private bool AlignBottom => childAlignment == TextAnchor.LowerRight || childAlignment == TextAnchor.LowerCenter || childAlignment == TextAnchor.LowerLeft;
 
-    private bool AlignTop
-    {
-      get
-      {
-        return childAlignment == TextAnchor.UpperLeft || childAlignment == TextAnchor.UpperCenter || childAlignment == TextAnchor.UpperRight;
-      }
-    }
+    private bool AlignTop => childAlignment == TextAnchor.UpperLeft || childAlignment == TextAnchor.UpperCenter || childAlignment == TextAnchor.UpperRight;
 
     private float ItemHeight
     {

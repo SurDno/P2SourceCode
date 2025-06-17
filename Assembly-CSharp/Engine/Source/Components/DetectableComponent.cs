@@ -46,40 +46,19 @@ namespace Engine.Source.Components
     }
 
     [Inspected]
-    public float BaseVisibleDistance
-    {
-      get => visibleDistanceParameter != null ? visibleDistanceParameter.BaseValue : 0.0f;
-    }
+    public float BaseVisibleDistance => visibleDistanceParameter != null ? visibleDistanceParameter.BaseValue : 0.0f;
 
     [Inspected]
-    public float VisibleDistance
-    {
-      get => visibleDistanceParameter != null ? visibleDistanceParameter.Value : 0.0f;
-    }
+    public float VisibleDistance => visibleDistanceParameter != null ? visibleDistanceParameter.Value : 0.0f;
 
     [Inspected]
-    public DetectType VisibleDetectType
-    {
-      get
-      {
-        return visibleDetectTypeParameter != null ? visibleDetectTypeParameter.Value : DetectType.None;
-      }
-    }
+    public DetectType VisibleDetectType => visibleDetectTypeParameter != null ? visibleDetectTypeParameter.Value : DetectType.None;
 
     [Inspected]
-    public float NoiseDistance
-    {
-      get => noiseDistanceParameter != null ? noiseDistanceParameter.Value : 0.0f;
-    }
+    public float NoiseDistance => noiseDistanceParameter != null ? noiseDistanceParameter.Value : 0.0f;
 
     [Inspected]
-    public DetectType NoiseDetectType
-    {
-      get
-      {
-        return noiseDetectTypeParameter != null ? noiseDetectTypeParameter.Value : DetectType.None;
-      }
-    }
+    public DetectType NoiseDetectType => noiseDetectTypeParameter != null ? noiseDetectTypeParameter.Value : DetectType.None;
 
     public bool NeedSave
     {

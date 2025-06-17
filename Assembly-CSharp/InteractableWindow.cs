@@ -23,8 +23,8 @@ public class InteractableWindow : MonoBehaviour
   private Title titlePrefab;
   [SerializeField]
   private ProgressHiddenCircle progressCircle;
-  private List<Title> _spawnedTitleList = new List<Title>();
-  private List<GameActionType> listeners = new List<GameActionType>();
+  private List<Title> _spawnedTitleList = [];
+  private List<GameActionType> listeners = [];
   private List<KeyValuePair<GameActionType, bool>> cachedActions;
 
   public void SetInfo(IconType info, string text)

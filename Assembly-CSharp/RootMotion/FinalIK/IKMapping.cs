@@ -220,13 +220,7 @@ namespace RootMotion.FinalIK
         return solverPosition1 == solverPosition3 ? Quaternion.identity : Quaternion.LookRotation(solverPosition2 - solverPosition1, solverPosition3 - solverPosition1);
       }
 
-      private Quaternion lastAnimatedTargetRotation
-      {
-        get
-        {
-          return planeBone1.position == planeBone3.position ? Quaternion.identity : Quaternion.LookRotation(planeBone2.position - planeBone1.position, planeBone3.position - planeBone1.position);
-        }
-      }
+      private Quaternion lastAnimatedTargetRotation => planeBone1.position == planeBone3.position ? Quaternion.identity : Quaternion.LookRotation(planeBone2.position - planeBone1.position, planeBone3.position - planeBone1.position);
     }
   }
 }

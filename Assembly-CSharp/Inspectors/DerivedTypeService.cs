@@ -6,14 +6,13 @@ namespace Inspectors
 {
   public static class DerivedTypeService
   {
-    private static Dictionary<Type, Type[]> types = new Dictionary<Type, Type[]>();
+    private static Dictionary<Type, Type[]> types = new();
 
     public static Type[] GetDerivedTypes(Type baseType)
     {
-      Type[] array;
-      if (!types.TryGetValue(baseType, out array))
+      if (!types.TryGetValue(baseType, out Type[] array))
       {
-        List<Type> list = new List<Type>();
+        List<Type> list = [];
         if (!baseType.IsAbstract)
           list.Add(baseType);
         if (baseType.IsClass || baseType.IsInterface)

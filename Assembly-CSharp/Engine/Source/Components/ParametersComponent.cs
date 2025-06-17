@@ -21,8 +21,8 @@ namespace Engine.Source.Components
     [StateLoadProxy(MemberEnum.CustomListParameter)]
     [CopyableProxy()]
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    protected List<IParameter> parameters = new List<IParameter>();
-    private static List<IParameter> stubParameters = new List<IParameter>();
+    protected List<IParameter> parameters = [];
+    private static List<IParameter> stubParameters = [];
 
     [Inspected]
     public List<IParameter> Parameters => parameters;

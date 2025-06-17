@@ -6,7 +6,7 @@ using UnityEngine;
 public class SplittedItemView : ItemView
 {
   [SerializeField]
-  private ItemView[] nestedViews = new ItemView[0];
+  private ItemView[] nestedViews = [];
   private StorableComponent storable;
 
   public override StorableComponent Storable

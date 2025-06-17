@@ -6,7 +6,7 @@ namespace RootMotion.FinalIK
   [AddComponentMenu("Scripts/RootMotion.FinalIK/IK/Look At IK")]
   public class LookAtIK : IK
   {
-    public IKSolverLookAt solver = new IKSolverLookAt();
+    public IKSolverLookAt solver = new();
 
     [ContextMenu("User Manual")]
     protected override void OpenUserManual()

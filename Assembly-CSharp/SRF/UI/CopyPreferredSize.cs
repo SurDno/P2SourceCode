@@ -12,21 +12,9 @@ namespace SRF.UI
     public float PaddingHeight;
     public float PaddingWidth;
 
-    public override float preferredWidth
-    {
-      get
-      {
-        return CopySource == null || !IsActive() ? -1f : LayoutUtility.GetPreferredWidth(CopySource) + PaddingWidth;
-      }
-    }
+    public override float preferredWidth => CopySource == null || !IsActive() ? -1f : LayoutUtility.GetPreferredWidth(CopySource) + PaddingWidth;
 
-    public override float preferredHeight
-    {
-      get
-      {
-        return CopySource == null || !IsActive() ? -1f : LayoutUtility.GetPreferredHeight(CopySource) + PaddingHeight;
-      }
-    }
+    public override float preferredHeight => CopySource == null || !IsActive() ? -1f : LayoutUtility.GetPreferredHeight(CopySource) + PaddingHeight;
 
     public override int layoutPriority => 2;
   }

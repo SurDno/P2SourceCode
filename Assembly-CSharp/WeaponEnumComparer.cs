@@ -2,7 +2,7 @@
 
 public class WeaponEnumComparer : IEqualityComparer<WeaponEnum>
 {
-  public static WeaponEnumComparer Instance = new WeaponEnumComparer();
+  public static WeaponEnumComparer Instance = new();
 
   public bool Equals(WeaponEnum x, WeaponEnum y) => x == y;
 

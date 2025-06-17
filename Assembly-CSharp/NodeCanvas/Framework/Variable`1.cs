@@ -127,10 +127,9 @@ namespace NodeCanvas.Framework
               }
               catch
               {
-                setter = o => setMethod.Invoke(instance, new object[1]
-                {
+                setter = o => setMethod.Invoke(instance, [
                   o
-                });
+                ]);
               }
               if (!callSetter)
                 return;

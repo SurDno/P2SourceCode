@@ -48,7 +48,7 @@ namespace ParadoxNotion.Serialization
         else
           strArray2 = null;
         string[] source = strArray2;
-        Type[] typeArray = source == null ? new Type[0] : source.Select(n => fsTypeCache.GetType(n, null)).ToArray();
+        Type[] typeArray = source == null ? [] : source.Select(n => fsTypeCache.GetType(n, null)).ToArray();
         if (typeArray.All(t => t != null))
         {
           _method = type1.RTGetMethod(name, typeArray);

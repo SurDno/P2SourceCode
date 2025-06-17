@@ -13,7 +13,7 @@ namespace Engine.Source.Blueprints.Sounds
   {
     [SerializeField]
     private int _portCount = 2;
-    private List<ValueInput<AudioClip>> inputs = new List<ValueInput<AudioClip>>();
+    private List<ValueInput<AudioClip>> inputs = [];
 
     public int portCount
     {

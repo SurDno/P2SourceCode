@@ -35,7 +35,7 @@ namespace Engine.Behaviours.Engines.Controllers
     private bool weaponVisible;
     private float timeToLastPunch;
     private StorageComponent storage;
-    private List<StorableComponent> storageAmmo = new List<StorableComponent>();
+    private List<StorableComponent> storageAmmo = [];
     private IParameter<bool> lowStamina;
     private IParameter<bool> flashlightOn;
     private float blockStance;

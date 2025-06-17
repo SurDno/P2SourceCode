@@ -5,8 +5,7 @@
 
   public Visemes12()
   {
-    visNames = new string[12]
-    {
+    visNames = [
       "x",
       "AA",
       "AO",
@@ -19,33 +18,30 @@
       "n",
       "CH",
       "f"
-    };
+    ];
     mapping = new string[visNames.Length][];
-    mapping[0] = new string[1]{ "x" };
-    mapping[1] = new string[3]{ "AA", "AH", "h" };
-    mapping[2] = new string[6]
-    {
+    mapping[0] = ["x"];
+    mapping[1] = ["AA", "AH", "h"];
+    mapping[2] = [
       "AO",
       "AW",
       "OW",
       "OY",
       "UH",
       "UW"
-    };
-    mapping[3] = new string[4]
-    {
+    ];
+    mapping[3] = [
       "EH",
       "AE",
       "IH",
       "AY"
-    };
-    mapping[4] = new string[3]{ "y", "IY", "EY" };
-    mapping[5] = new string[2]{ "r", "ER" };
-    mapping[6] = new string[1]{ "l" };
-    mapping[7] = new string[1]{ "w" };
-    mapping[8] = new string[3]{ "m", "b", "p" };
-    mapping[9] = new string[10]
-    {
+    ];
+    mapping[4] = ["y", "IY", "EY"];
+    mapping[5] = ["r", "ER"];
+    mapping[6] = ["l"];
+    mapping[7] = ["w"];
+    mapping[8] = ["m", "b", "p"];
+    mapping[9] = [
       "n",
       "NG",
       "DH",
@@ -56,14 +52,13 @@
       "s",
       "TH",
       "k"
-    };
-    mapping[10] = new string[4]
-    {
+    ];
+    mapping[10] = [
       "CH",
       "j",
       "SH",
       "ZH"
-    };
-    mapping[11] = new string[2]{ "f", "v" };
+    ];
+    mapping[11] = ["f", "v"];
   }
 }

@@ -5,22 +5,13 @@ namespace TriangleNet
   internal class BadTriQueue
   {
     private static readonly double SQRT2 = 1.4142135623730951;
-    private int count;
-    private int firstnonemptyq;
-    private int[] nextnonemptyq;
-    private BadTriangle[] queuefront;
-    private BadTriangle[] queuetail;
+    private int count = 0;
+    private int firstnonemptyq = -1;
+    private int[] nextnonemptyq = new int[4096];
+    private BadTriangle[] queuefront = new BadTriangle[4096];
+    private BadTriangle[] queuetail = new BadTriangle[4096];
 
     public int Count => count;
-
-    public BadTriQueue()
-    {
-      queuefront = new BadTriangle[4096];
-      queuetail = new BadTriangle[4096];
-      nextnonemptyq = new int[4096];
-      firstnonemptyq = -1;
-      count = 0;
-    }
 
     public void Enqueue(BadTriangle badtri)
     {

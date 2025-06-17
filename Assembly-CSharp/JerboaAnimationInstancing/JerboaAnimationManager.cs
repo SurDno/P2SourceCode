@@ -24,8 +24,7 @@ namespace JerboaAnimationInstancing
       JerboaInstance instance)
     {
       Debug.Assert(prefab != null);
-      InstanceAnimationInfo instanceAnimationInfo = null;
-      return animationInfo.TryGetValue(prefab, out instanceAnimationInfo) ? instanceAnimationInfo : CreateAnimationInfoFromFile(jerboaInstancingManager, textAsset, prefab);
+      return animationInfo.TryGetValue(prefab, out InstanceAnimationInfo instanceAnimationInfo) ? instanceAnimationInfo : CreateAnimationInfoFromFile(jerboaInstancingManager, textAsset, prefab);
     }
 
     private InstanceAnimationInfo CreateAnimationInfoFromFile(
@@ -49,7 +48,7 @@ namespace JerboaAnimationInstancing
     private List<AnimationInfo> ReadAnimationInfo(BinaryReader reader)
     {
       int num1 = reader.ReadInt32();
-      List<AnimationInfo> animationInfoList = new List<AnimationInfo>();
+      List<AnimationInfo> animationInfoList = [];
       for (int index1 = 0; index1 != num1; ++index1)
       {
         AnimationInfo animationInfo = new AnimationInfo {
@@ -77,7 +76,7 @@ namespace JerboaAnimationInstancing
           }
         }
         int num2 = reader.ReadInt32();
-        animationInfo.eventList = new List<AnimationEvent>();
+        animationInfo.eventList = [];
         for (int index3 = 0; index3 != num2; ++index3)
           animationInfo.eventList.Add(new AnimationEvent {
             function = reader.ReadString(),
