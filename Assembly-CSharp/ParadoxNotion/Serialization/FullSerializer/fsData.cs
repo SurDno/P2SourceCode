@@ -30,7 +30,7 @@ namespace ParadoxNotion.Serialization.FullSerializer
       return new fsData(new Dictionary<string, fsData>(fsGlobalConfig.IsCaseSensitive ? StringComparer.Ordinal : (IEqualityComparer<string>) StringComparer.OrdinalIgnoreCase));
     }
 
-    public static fsData CreateList() => new([]);
+    public static fsData CreateList() => new(new List<fsData>());
 
     public static fsData CreateList(int capacity) => new(new List<fsData>(capacity));
 
